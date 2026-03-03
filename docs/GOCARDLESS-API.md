@@ -36,7 +36,7 @@ Füge folgende Variablen zur `.env`-Datei hinzu:
 GOCARDLESS_ENVIRONMENT=sandbox
 
 # Sandbox Credentials (https://manage-sandbox.gocardless.com)
-GOCARDLESS_SANDBOX_ACCESS_TOKEN=sandbox_JVlPkb1iU7aO3FKSaULejBUKFtm3t0cK9K11DQAf
+GOCARDLESS_SANDBOX_ACCESS_TOKEN=sandbox_xxxxxxxxxxxxxxxxxxxxxxxx
 GOCARDLESS_SANDBOX_WEBHOOK_SECRET=xxxxxxxxxxxxxxxxxxxxxxxx
 
 # Live Credentials (https://manage.gocardless.com)

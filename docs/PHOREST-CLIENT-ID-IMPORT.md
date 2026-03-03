@@ -49,11 +49,11 @@ Die CSV muss folgende Spalten enthalten (Semikolon-getrennt):
 ## Beispiel
 
 ```bash
-php artisan phorest:fetch-client-ids "/Users/jan/Downloads/BS LABRADO_BC (1).csv"
+php artisan phorest:fetch-client-ids "/pfad/zu/kunden-export.csv"
 
 # Output:
-# Input-Datei: /Users/jan/Downloads/BS LABRADO_BC (1).csv
-# Output-Datei: /Users/jan/Downloads/BS LABRADO_BC (1)_with_phorest_ids.csv
+# Input-Datei: /pfad/zu/kunden-export.csv
+# Output-Datei: /pfad/zu/kunden-export_with_phorest_ids.csv
 # ...
 # Ergebnis:
 #   - Gefunden: 201

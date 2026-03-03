@@ -134,8 +134,8 @@ Push auf iOS funktioniert **nur** wenn:
 Push-Benachrichtigungen benötigen VAPID-Keys in der `.env`:
 
 ```env
-VAPID_PUBLIC_KEY=BJve7ES6LYu...
-VAPID_PRIVATE_KEY=w-2jc-psCwIM...
+VAPID_PUBLIC_KEY=dein_public_key_hier...
+VAPID_PRIVATE_KEY=dein_private_key_hier...
 VAPID_SUBJECT=mailto:email@example.com
 ```
 
@@ -276,8 +276,8 @@ gcloud secrets create VAPID_PRIVATE_KEY --replication-policy="automatic"
 gcloud secrets create VAPID_SUBJECT --replication-policy="automatic"
 
 # Werte hinzufügen
-echo -n "BJve7ES6..." | gcloud secrets versions add VAPID_PUBLIC_KEY --data-file=-
-echo -n "w-2jc-psC..." | gcloud secrets versions add VAPID_PRIVATE_KEY --data-file=-
+echo -n "DEIN_PUBLIC_KEY" | gcloud secrets versions add VAPID_PUBLIC_KEY --data-file=-
+echo -n "DEIN_PRIVATE_KEY" | gcloud secrets versions add VAPID_PRIVATE_KEY --data-file=-
 echo -n "mailto:email@example.com" | gcloud secrets versions add VAPID_SUBJECT --data-file=-
 
 # Dem Cloud Run Service zuweisen
