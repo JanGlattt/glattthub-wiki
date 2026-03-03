@@ -81,6 +81,8 @@ plugins:
 
 nav:
   - Startseite: index.md
+  - Dashboard:
+    - Dashboard KPIs: DASHBOARD-KPIS.md
   - Termine:
     - Terminübersicht: APPOINTMENTS-OVERVIEW.md
     - Terminansicht: APPOINTMENT-VIEW.md
