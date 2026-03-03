@@ -42,7 +42,8 @@ theme:
     - toc.follow
   icon:
     repo: fontawesome/brands/github
-    logo: material/laser-pointer
+  logo: assets/glattt-icon.png
+  favicon: assets/favicon.png
 
 extra:
   social:
