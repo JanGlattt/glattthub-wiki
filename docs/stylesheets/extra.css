@@ -1,0 +1,338 @@
+/*
+ * ===================================================
+ * glatttHub Docs – Custom Theme
+ * Basierend auf dem GLATTT Design System (theme_glattt.css)
+ * ===================================================
+ *
+ * Primary:    #3b9b9f (Teal Blue)
+ * Gold:       #d2aa39 (GLATTT Gold)
+ * Turquoise:  #5dbea3 (GLATTT Turquoise)
+ * Success:    #10b981
+ * Warning:    #f59e0b
+ * Danger:     #ef4444
+ * Info:       #3b82f6
+ */
+
+/* ===== GOOGLE FONTS: Dosis ===== */
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@300;400;500;600;700;800&display=swap');
+
+/* ===== LIGHT MODE ===== */
+[data-md-color-scheme="default"] {
+    /* Primary palette */
+    --md-primary-fg-color:        #3b9b9f;
+    --md-primary-fg-color--light: #5dbec2;
+    --md-primary-fg-color--dark:  #2d7a7d;
+    --md-primary-bg-color:        #ffffff;
+    --md-primary-bg-color--light: rgba(255, 255, 255, 0.7);
+
+    /* Accent / links */
+    --md-accent-fg-color:         #2d7a7d;
+    --md-accent-fg-color--transparent: rgba(59, 155, 159, 0.12);
+    --md-accent-bg-color:         #ffffff;
+    --md-accent-bg-color--light:  rgba(255, 255, 255, 0.7);
+
+    /* Default (body) backgrounds */
+    --md-default-fg-color:               #111827;
+    --md-default-fg-color--light:        #6b7280;
+    --md-default-fg-color--lighter:      #9ca3af;
+    --md-default-fg-color--lightest:     rgba(0, 0, 0, 0.06);
+    --md-default-bg-color:               #ffffff;
+    --md-default-bg-color--light:        #f9fafb;
+    --md-default-bg-color--lighter:      #f3f4f6;
+    --md-default-bg-color--lightest:     #e5e7eb;
+
+    /* Code blocks */
+    --md-code-fg-color:         #2d7a7d;
+    --md-code-bg-color:         #f5f3ee;
+    --md-code-hl-color:         rgba(210, 170, 57, 0.18);
+
+    /* Footer */
+    --md-footer-fg-color:               rgba(255, 255, 255, 0.9);
+    --md-footer-fg-color--light:        rgba(255, 255, 255, 0.65);
+    --md-footer-fg-color--lighter:      rgba(255, 255, 255, 0.4);
+    --md-footer-bg-color:               #1f2937;
+    --md-footer-bg-color--dark:         #111827;
+
+    /* Typeset link color */
+    --md-typeset-a-color:       #3b9b9f;
+
+    /* Admonition custom colors */
+    --md-admonition-fg-color:   #111827;
+    --md-admonition-bg-color:   #ffffff;
+}
+
+/* ===== DARK MODE ===== */
+[data-md-color-scheme="slate"] {
+    /* Primary palette */
+    --md-primary-fg-color:        #3b9b9f;
+    --md-primary-fg-color--light: #5dbec2;
+    --md-primary-fg-color--dark:  #2d7a7d;
+    --md-primary-bg-color:        #111827;
+    --md-primary-bg-color--light: rgba(17, 24, 39, 0.7);
+
+    /* Accent */
+    --md-accent-fg-color:         #5dbec2;
+    --md-accent-fg-color--transparent: rgba(93, 190, 194, 0.12);
+
+    /* Default (body) */
+    --md-default-fg-color:               #f9fafb;
+    --md-default-fg-color--light:        #d1d5db;
+    --md-default-fg-color--lighter:      #9ca3af;
+    --md-default-fg-color--lightest:     rgba(255, 255, 255, 0.06);
+    --md-default-bg-color:               #111827;
+    --md-default-bg-color--light:        #1f2937;
+    --md-default-bg-color--lighter:      #374151;
+    --md-default-bg-color--lightest:     #4b5563;
+
+    /* Code blocks */
+    --md-code-fg-color:         #5dbec2;
+    --md-code-bg-color:         #1f2937;
+    --md-code-hl-color:         rgba(210, 170, 57, 0.15);
+
+    /* Footer */
+    --md-footer-bg-color:               #0f1623;
+    --md-footer-bg-color--dark:         #0a0f18;
+
+    /* Links */
+    --md-typeset-a-color:       #5dbec2;
+}
+
+/* ===== TYPOGRAPHY: Dosis ===== */
+:root {
+    --md-text-font: "Dosis", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --md-code-font: "JetBrains Mono", "Courier New", Consolas, monospace;
+}
+
+/* ===== HEADER ===== */
+.md-header {
+    background: linear-gradient(135deg, #3b9b9f 0%, #5dbec2 100%);
+    box-shadow: 0 2px 8px rgba(59, 155, 159, 0.25);
+}
+
+[data-md-color-scheme="slate"] .md-header {
+    background: linear-gradient(135deg, #2d7a7d 0%, #3b9b9f 100%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+/* ===== LOGO / SITE TITLE ===== */
+.md-header__title {
+    font-weight: 700;
+    letter-spacing: -0.3px;
+}
+
+/* ===== NAVIGATION SIDEBAR ===== */
+.md-nav__link--active,
+.md-nav__link:hover {
+    color: var(--md-primary-fg-color) !important;
+}
+
+.md-nav__item--active > .md-nav__link {
+    color: var(--md-primary-fg-color);
+    font-weight: 600;
+}
+
+/* Sidebar section labels */
+.md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__link,
+.md-nav--primary > .md-nav__list > .md-nav__item > label {
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    color: var(--md-default-fg-color--light);
+}
+
+/* ===== SEARCH ===== */
+.md-search__input {
+    border-radius: 10px;
+}
+
+[data-md-color-scheme="default"] .md-search__input {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-md-color-scheme="default"] .md-search__input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* ===== CONTENT ===== */
+
+/* Headings */
+.md-typeset h1 {
+    font-weight: 800;
+    color: var(--md-default-fg-color);
+    letter-spacing: -0.5px;
+}
+
+.md-typeset h2 {
+    font-weight: 700;
+    color: var(--md-default-fg-color);
+    border-bottom: 2px solid var(--md-primary-fg-color--light);
+    padding-bottom: 0.4rem;
+}
+
+.md-typeset h3 {
+    font-weight: 600;
+    color: var(--md-primary-fg-color--dark);
+}
+
+/* Links */
+.md-typeset a {
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.md-typeset a:hover {
+    color: var(--md-primary-fg-color--dark);
+}
+
+/* Inline code */
+.md-typeset code {
+    border-radius: 6px;
+    padding: 0.15em 0.4em;
+    font-size: 0.82em;
+}
+
+/* Code blocks */
+.md-typeset pre > code {
+    border-radius: 10px;
+}
+
+/* ===== TABLES ===== */
+.md-typeset table:not([class]) {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--md-default-bg-color--lightest);
+}
+
+.md-typeset table:not([class]) th {
+    background: var(--md-primary-fg-color);
+    color: #ffffff;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
+    background: var(--md-primary-fg-color--dark);
+}
+
+.md-typeset table:not([class]) td {
+    border-color: var(--md-default-bg-color--lightest);
+}
+
+/* ===== ADMONITIONS ===== */
+
+/* Note / Info → glattt Info Blue */
+.md-typeset .admonition.note,
+.md-typeset details.note {
+    border-color: #3b82f6;
+}
+.md-typeset .note > .admonition-title,
+.md-typeset .note > summary {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Tip → glattt Primary Teal */
+.md-typeset .admonition.tip,
+.md-typeset details.tip {
+    border-color: #3b9b9f;
+}
+.md-typeset .tip > .admonition-title,
+.md-typeset .tip > summary {
+    background-color: rgba(59, 155, 159, 0.1);
+}
+
+/* Warning → glattt Warning */
+.md-typeset .admonition.warning,
+.md-typeset details.warning {
+    border-color: #f59e0b;
+}
+.md-typeset .warning > .admonition-title,
+.md-typeset .warning > summary {
+    background-color: rgba(245, 158, 11, 0.1);
+}
+
+/* Danger → glattt Danger */
+.md-typeset .admonition.danger,
+.md-typeset details.danger {
+    border-color: #ef4444;
+}
+.md-typeset .danger > .admonition-title,
+.md-typeset .danger > summary {
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Success → glattt Success */
+.md-typeset .admonition.success,
+.md-typeset details.success {
+    border-color: #10b981;
+}
+.md-typeset .success > .admonition-title,
+.md-typeset .success > summary {
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+/* ===== FOOTER ===== */
+.md-footer {
+    border-top: 3px solid var(--md-primary-fg-color);
+}
+
+/* ===== GLATTT GOLD ACCENT TOUCHES ===== */
+
+/* TOC active item indicator → Gold */
+.md-nav__link--passed,
+.md-nav--secondary .md-nav__link--active {
+    border-left-color: #d2aa39 !important;
+}
+
+/* Selection highlight → Gold tint */
+::selection {
+    background: rgba(210, 170, 57, 0.25);
+    color: inherit;
+}
+
+/* Scrollbar (WebKit) */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--md-default-fg-color--lightest);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--md-default-fg-color--lighter);
+}
+
+/* ===== TABS (pymdownx) ===== */
+.md-typeset .tabbed-labels > label.tabbed-control--active,
+.md-typeset .tabbed-labels > label:hover {
+    color: var(--md-primary-fg-color);
+}
+
+.md-typeset .tabbed-labels > label.tabbed-control--active {
+    border-color: var(--md-primary-fg-color);
+}
+
+/* ===== BACK TO TOP BUTTON ===== */
+.md-top {
+    background-color: var(--md-primary-fg-color);
+    color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(59, 155, 159, 0.3);
+}
+
+.md-top:hover {
+    background-color: var(--md-primary-fg-color--dark);
+}
+
+/* ===== TAG CHIPS (if used) ===== */
+.md-typeset .md-tag {
+    background: rgba(59, 155, 159, 0.1);
+    color: var(--md-primary-fg-color--dark);
+    border-radius: 6px;
+    font-weight: 600;
+}

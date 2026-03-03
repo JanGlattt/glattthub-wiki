@@ -1,0 +1,124 @@
+site_name: glatttHub Dokumentation
+site_description: Dokumentation der glatttHub Web-Applikation
+site_url: https://glattthub.github.io/glattthub-wiki/
+repo_url: https://github.com/glattthub/glattthub-wiki
+
+theme:
+  name: material
+  language: de
+  custom_dir: overrides
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Dark Mode aktivieren
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Light Mode aktivieren
+  font: false
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+    logo: material/laser-pointer
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/glattthub
+  generator: false
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+plugins:
+  - search:
+      lang: de
+  - minify:
+      minify_html: true
+
+nav:
+  - Startseite: index.md
+  - Termine:
+    - Terminübersicht: APPOINTMENTS-OVERVIEW.md
+    - Terminansicht: APPOINTMENT-VIEW.md
+    - Terminstatistik: APPOINTMENT-STATISTICS.md
+    - Buchungsvorlauf-Analyse: BOOKING-LEAD-TIME-ANALYSIS.md
+    - Stornierte Termine: CANCELLED-APPOINTMENTS-ANALYSIS.md
+    - Wochentag & Uhrzeit-Analyse: WEEKDAY-TIME-ANALYSIS.md
+  - Kunden:
+    - Kundenprofil: CLIENT-DETAIL-MODULE.md
+    - glattt-Pakete: CLIENT-COURSES-MODULE.md
+    - Pakete-Statistik: CLIENT-COURSES-STATISTIK.md
+    - Behandlungseinstellungen: TREATMENT-SETTINGS.md
+  - Formulare:
+    - Formular-Editor: FORM-EDITOR.md
+    - Formulare extern teilen: SHARED-FORM-SYSTEM.md
+    - PDF-Erstellung: PDF-ERSTELLUNG.md
+    - Flatpickr (Datepicker): FLATPICKR.md
+    - Körperzonen-Selektor: BODY-ZONE-SELECTOR.md
+  - Verträge & Finanzen:
+    - Verträge & SEPA: CONTRACTS-SEPA-MODULE.md
+    - Preislisten: PREISLISTEN-MODUL.md
+    - glattt-Pakete & Verträge: glatttPakete.md
+    - GoCardless API: GOCARDLESS-API.md
+    - Gutscheine: GUTSCHEINE-MODULE.md
+  - Institute & Personal:
+    - Institut-Modul: INSTITUTE-MODULE.md
+    - Institut Bild-Upload: INSTITUTE-IMAGE-UPLOAD.md
+    - Profil-Integration: PROFILE-INTEGRATION.md
+    - Benutzer-Einladungen: USER-INVITATION-SYSTEM.md
+  - Kommunikation:
+    - E-Mail Versand: EMAIL-VERSAND.md
+    - Benachrichtigungen: NOTIFICATIONS.md
+  - Berichte:
+    - Reports-Modul: REPORTS-MODULE.md
+  - API-Integrationen:
+    - Phorest API: PHOREST-API.md
+    - Phorest Client-ID Import: PHOREST-CLIENT-ID-IMPORT.md
+  - Design & UI:
+    - Design System: DESIGN-SYSTEM.md
+    - Dark Mode: DARKMODE.md
+    - Login-Design: LOGIN-DESIGN.md
+    - PIN-Login: PIN-LOGIN-SYSTEM.md
+  - Technisches:
+    - Setup-Anleitung: SETUP-ANLEITUNG.md
+    - Performance-Optimierung: PERFORMANCE-OPTIMIZATION.md
+    - Lazy Loading: LAZY-LOADING-PERFORMANCE.md
+    - Cloud Scheduler: CLOUD-SCHEDULER-SETUP.md
+    - Cloud Storage: CLOUD-STORAGE-SETUP.md
