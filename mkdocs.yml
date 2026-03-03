@@ -1,7 +1,7 @@
 site_name: glatttHub Dokumentation
 site_description: Dokumentation der glatttHub Web-Applikation
-site_url: https://glattthub.github.io/glattthub-wiki/
-repo_url: https://github.com/glattthub/glattthub-wiki
+site_url: https://janglattt.github.io/glattthub-wiki/
+repo_url: https://github.com/JanGlattt/glattthub-wiki
 
 validation:
   links:

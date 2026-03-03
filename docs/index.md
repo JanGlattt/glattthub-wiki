@@ -1,12 +1,12 @@
 # glatttHub Dokumentation
 
-Willkommen zur Dokumentation der **glatttHub** Web-Applikation – der zentralen Verwaltungsplattform für GLATTT Laser-Enthaarungsinstitute.
+Willkommen zur Dokumentation der **glatttHub** Web-Applikation – der zentralen Verwaltungsplattform für glattt | Institut für dauerhafte Haarentfernung.
 
 ---
 
 ## 📚 Übersicht
 
-glatttHub ist eine Laravel-basierte Plattform, die alle geschäftsrelevanten Prozesse der GLATTT-Institute abdeckt:
+glatttHub ist eine Laravel-basierte Plattform, die alle geschäftsrelevanten Prozesse der glattt-Institute abdeckt:
 
 <div class="grid cards" markdown>
 
@@ -61,10 +61,6 @@ glatttHub ist eine Laravel-basierte Plattform, die alle geschäftsrelevanten Pro
 </div>
 
 ---
-
-## 🚀 Schnellstart
-
-Für die lokale Einrichtung siehe die [Setup-Anleitung](SETUP-ANLEITUNG.md).
 
 ## 🎨 Design
 
