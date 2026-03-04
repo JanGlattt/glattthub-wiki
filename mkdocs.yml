@@ -106,6 +106,7 @@ nav:
     - Körperzonen-Selektor: BODY-ZONE-SELECTOR.md
   - Verträge & Finanzen:
     - Verträge & SEPA: CONTRACTS-SEPA-MODULE.md
+    - Legacy-Import: LEGACY-VERTRAGS-IMPORT.md
     - Preislisten: PREISLISTEN-MODUL.md
     - glattt-Pakete & Verträge: glatttPakete.md
     - GoCardless API: GOCARDLESS-API.md
