@@ -81,6 +81,9 @@ plugins:
 
 nav:
   - Startseite: index.md
+  - Start-Page:
+    - Übersicht: START-PAGE.md
+    - KPI-System: START-PAGE-KPIS.md
   - Dashboard:
     - Dashboard KPIs: DASHBOARD-KPIS.md
   - Termine:
