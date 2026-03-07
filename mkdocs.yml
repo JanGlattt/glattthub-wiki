@@ -106,6 +106,7 @@ nav:
     - Körperzonen-Selektor: BODY-ZONE-SELECTOR.md
   - Verträge & Finanzen:
     - Verträge & SEPA: CONTRACTS-SEPA-MODULE.md
+    - Widerrufe: WIDERRUFE-MODULE.md
     - Legacy-Import: LEGACY-VERTRAGS-IMPORT.md
     - Preislisten: PREISLISTEN-MODUL.md
     - glattt-Pakete & Verträge: glatttPakete.md
@@ -126,6 +127,7 @@ nav:
     - Phorest Client-ID Import: PHOREST-CLIENT-ID-IMPORT.md
   - Design & UI:
     - Design System: DESIGN-SYSTEM.md
+    - Custom Dropdown: CUSTOM-DROPDOWN.md
     - Dark Mode: DARKMODE.md
     - Login-Design: LOGIN-DESIGN.md
     - PIN-Login: PIN-LOGIN-SYSTEM.md

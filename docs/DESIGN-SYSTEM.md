@@ -398,11 +398,27 @@ Vollständig runde Varianten der Badges.
 
 ### Select
 
+!!! tip "Empfehlung: Custom Dropdown verwenden"
+    Anstatt native `<select>` Elemente zu verwenden, nutze die Blade-Komponente
+    `<x-dropdown-glattt>` für ein einheitliches Design.
+    → Siehe [Custom Dropdown Dokumentation](CUSTOM-DROPDOWN.md)
+
 ```html
+<!-- Native Select (Legacy) -->
 <select class="select-glattt">
     <option>Option 1</option>
     <option>Option 2</option>
 </select>
+
+<!-- Custom Dropdown (empfohlen) -->
+<x-dropdown-glattt
+    model="form.field"
+    label="Label"
+    :options="[
+        ['value' => 'opt1', 'label' => 'Option 1'],
+        ['value' => 'opt2', 'label' => 'Option 2'],
+    ]"
+/>
 ```
 
 ### Textarea
