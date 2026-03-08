@@ -18,6 +18,7 @@
   - [Webhooks](#webhooks)
   - [Cloud Deployment](#cloud-deployment)
   - [API-Referenz](#api-referenz)
+  - [Migration von ContractMandate → ClientMandate](#migration-von-contractmandate--clientmandate)
 
 ---
 
@@ -31,6 +32,7 @@ Das Vertragsmodul ermöglicht die vollständige Verwaltung von Kundenverträgen 
 - **SEPA-Lastschriften** mit automatischer GoCardless-Synchronisierung
 - **Ratenzahlung** mit flexiblen Laufzeiten (3-24 Monate)
 - **Zahlungsübersicht** mit Status-Tracking
+- **Mandats-Wiederverwendung** — ein Kunde, ein Mandat, beliebig viele Verträge
 
 ### Zugang
 
@@ -86,15 +88,34 @@ Nach Erstellung eines Vertrags siehst du:
 
 Bei Verträgen mit Ratenzahlung ist ein SEPA-Lastschriftmandat erforderlich.
 
+### Mandat pro Kunde (nicht pro Vertrag)
+
+**Wichtig:** Ein SEPA-Mandat gehört immer zum **Kunden**, nicht zum einzelnen Vertrag. Das bedeutet:
+
+- Hat ein Kunde bereits ein aktives Mandat, wird ein neuer Vertrag automatisch mit dem bestehenden Mandat verknüpft
+- Die Bankdaten (IBAN, BIC, Kontoinhaber) werden nur einmal pro Kunde erfasst
+- Jeder Vertrag hat seinen **eigenen Dauerauftrag** (Subscription) — aber alle nutzen dasselbe SEPA-Mandat
+
 ### Ablauf für den Kunden
 
 1. **Vertragsformular** ausfüllen und unterschreiben
-2. **SEPA-Formular** ausfüllen:
+2. **SEPA-Formular** ausfüllen (nur bei neuem Kunden oder fehlendem Mandat):
    - IBAN eingeben
    - BIC (optional, wird automatisch ermittelt)
    - Bei abweichendem Kontoinhaber: Name, Adresse, E-Mail
    - Startdatum für erste Abbuchung wählen
 3. Fertig! Die Lastschriften werden automatisch eingezogen
+
+### Bestehendes Mandat verknüpfen
+
+Wenn ein Kunde bereits ein aktives GoCardless-Mandat hat (z.B. aus einem früheren Vertrag):
+
+1. Der Vertrag wird im Status **Entwurf** angezeigt
+2. Im SEPA-Tab erscheint der Button **"Bestehendes Mandat verknüpfen"**
+3. Das System sucht automatisch:
+   - Zuerst in der lokalen Datenbank nach einem aktiven `ClientMandate` für diesen Kunden
+   - Dann in der GoCardless API per `phorest_client_id` Metadata
+4. Bei Fund wird das Mandat verknüpft und der Zahlungsplan automatisch erstellt
 
 ### SEPA-Mandat Ansicht
 
@@ -113,7 +134,7 @@ Wenn das Mandat mit GoCardless synchronisiert wurde, erscheinen zusätzlich:
 - **Grüner Badge**: "GoCardless" - Synchronisierung erfolgreich
 - **Mandate ID**: GoCardless-Referenz
 - **Customer ID**: GoCardless-Kundennummer
-- **Ratenzahlungsplan**: GoCardless Schedule-ID
+- **Ratenzahlungsplan**: GoCardless Schedule-ID (pro Vertrag)
 - **Synchronisiert am**: Zeitstempel
 
 ### Abweichender Zahler
@@ -151,10 +172,16 @@ Alle weiteren Raten werden per SEPA eingezogen:
 
 ### Status-Farben
 
-- 🟡 **Ausstehend** (pending_submission, pending) - Noch nicht eingezogen
+- 🟡 **Vorgemerkt** (pending_submission, scheduled) - Noch nicht eingezogen / geplant
 - 🟢 **Bestätigt** (confirmed) - Abbuchung erfolgreich
 - 🔵 **Ausgezahlt** (paid_out) - Auf eurem Konto eingegangen
 - 🔴 **Fehlgeschlagen** (failed) - Abbuchung gescheitert
+
+### GoCardless-Symbol
+
+Zahlungen die bei GoCardless als Dauerauftrag vorgemerkt sind (via `upcoming_payments` API) werden mit dem GoCardless-Symbol angezeigt. Zahlungen die nur lokal in der Datenbank stehen (da GoCardless max. 10 upcoming payments liefert) zeigen das gleiche "Vorgemerkt"-Badge aber ohne GC-Symbol.
+
+Das GC-Symbol wechselt automatisch zwischen Light- und Darkmode (Primary/Negative SVG).
 
 ## Status verstehen
 
@@ -183,6 +210,31 @@ Alle weiteren Raten werden per SEPA eingezogen:
 
 ## Architektur
 
+### Mandats-Architektur (seit März 2026)
+
+Die SEPA-Mandate sind als **1:n-Beziehung pro Kunde** implementiert:
+
+```
+                    ┌──────────────────┐
+                    │  ClientMandate   │  ← Ein Mandat pro Kunde
+                    │  (client_id)     │
+                    │  Bankdaten, GC   │
+                    └────────┬─────────┘
+                             │ hasMany
+              ┌──────────────┼──────────────┐
+              │              │              │
+        ┌─────▼────┐  ┌─────▼────┐  ┌─────▼────┐
+        │ Contract  │  │ Contract  │  │ Contract  │
+        │ Zahlplan  │  │ Zahlplan  │  │ Zahlplan  │
+        │ Subscr.  │  │ Subscr.  │  │ Subscr.  │
+        └──────────┘  └──────────┘  └──────────┘
+```
+
+**Kernprinzipien:**
+- `ClientMandate` enthält: Bankdaten, Zahler-Infos, GoCardless-Verbindung (Customer, BankAccount, Mandate)
+- `Contract` enthält: `monthly_amount_cents`, `installment_count`, `first_payment_date`, `gocardless_subscription_id`
+- Eine GoCardless **Subscription (Dauerauftrag)** wird **pro Vertrag** erstellt, alle Verträge eines Kunden teilen sich dasselbe GoCardless Mandate
+
 ### Komponenten-Übersicht
 
 ```
@@ -190,13 +242,13 @@ Alle weiteren Raten werden per SEPA eingezogen:
 │                        Frontend (Hub)                           │
 ├─────────────────────────────────────────────────────────────────┤
 │  contracts/index.blade.php  │  contracts/show.blade.php         │
-│  Alpine.js Components       │  paymentsTab(), etc.              │
+│  Alpine.js Components       │  sepaTab(), paymentsTab()         │
 └──────────────────────────────┬──────────────────────────────────┘
                                │
 ┌──────────────────────────────▼──────────────────────────────────┐
 │                     Controller Layer                             │
 ├─────────────────────────────────────────────────────────────────┤
-│  ContractController      - CRUD, Zahlungen-API                  │
+│  ContractController      - CRUD, Zahlungen-API, Mandat-Link    │
 │  FormSubmissionObserver  - Automatische Vertragserstellung      │
 └──────────────────────────────┬──────────────────────────────────┘
                                │
@@ -212,7 +264,8 @@ Alle weiteren Raten werden per SEPA eingezogen:
 ┌──────────────────────────────▼──────────────────────────────────┐
 │                        Job Layer                                 │
 ├─────────────────────────────────────────────────────────────────┤
-│  SyncMandateToGoCardlessJob - Async GoCardless-Synchronisierung │
+│  SyncMandateToGoCardlessJob    - Async GoCardless-Sync          │
+│  ProcessGoCardlessWebhookJob   - Webhook-Verarbeitung           │
 └──────────────────────────────┬──────────────────────────────────┘
                                │
                     ┌──────────▼──────────┐
@@ -221,7 +274,7 @@ Alle weiteren Raten werden per SEPA eingezogen:
                     └─────────────────────┘
 ```
 
-### Datenfluss: Vertragserstellung
+### Datenfluss: Vertragserstellung (Neukunde)
 
 ```
 Kunde → Vertragsformular → FormSubmission
@@ -233,8 +286,11 @@ Kunde → Vertragsformular → FormSubmission
                                │
                     ┌──────────┴──────────┐
                     │                     │
-              Contract              ContractMandate
-            (status: draft)        (status: pending)
+              Contract              ClientMandate
+         (status: draft)          (status: pending)
+         (client_mandate_id)      (client_id)
+         (monthly_amount_cents)
+         (installment_count)
                                
                                
 Kunde → SEPA-Formular → FormSubmission
@@ -244,74 +300,75 @@ Kunde → SEPA-Formular → FormSubmission
                                │
                     ┌──────────┴──────────┐
                     │                     │
-              Contract              ContractMandate
-            (status: active)       (status: active)
+              Contract              ClientMandate
+         (status: active)         (status: active)
+         (first_payment_date)     (iban, bic, payer_*)
                                          │
                             dispatch(SyncMandateToGoCardlessJob)
+                            (mandate + contract)
                                          │
                               GoCardlessMandateService
-                              ::syncMandateToGoCardless()
                                          │
+                    Phase 1: syncMandateToGoCardless()
                     ┌────────────────────┼────────────────────┐
                     │                    │                    │
                Customer          CustomerBankAccount       Mandate
                     │                                         │
                     └──────────────────┬──────────────────────┘
                                        │
-                              InstalmentSchedule
-                              (18 Payments erstellt)
+                    Phase 2: createSubscriptionForContract()
+                                       │
+                              Subscription (Dauerauftrag)
+                              (18 Payments for this contract)
+                              (subscription_id → Contract)
+```
+
+### Datenfluss: Weiterer Vertrag (Bestandskunde)
+
+```
+Kunde → Vertragsformular → FormSubmission
+                               │
+                    ContractCreationService
+                    ::prepareMandateForContract()
+                               │
+                    Suche: ClientMandate::forClient($clientId)
+                    → Aktives Mandat gefunden!
+                               │
+                    ┌──────────┴──────────┐
+                    │                     │
+              Contract              ClientMandate (bestehend)
+         (status: active)         (bereits synced)
+         (client_mandate_id)
+         (monthly_amount_cents)
+                    │
+       dispatch(SyncMandateToGoCardlessJob)  
+       (mandate + contract)
+                    │
+       → Mandate schon sync'd → Skip Phase 1
+       → createScheduleForContract() → Neuer Schedule
 ```
 
 ## Datenmodell
 
-### contracts
+### client_mandates (Primäre Mandats-Tabelle)
 
 ```sql
-CREATE TABLE contracts (
+CREATE TABLE client_mandates (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    contract_number VARCHAR(255) UNIQUE,    -- z.B. 2026.02.10-BI005945
-    branch_id BIGINT,                        -- Standort
-    client_id VARCHAR(255),                  -- Phorest Client ID
-    client_name VARCHAR(255),
-    client_email VARCHAR(255),
     
-    -- Paket-Details
-    package_name VARCHAR(255),
-    body_zones JSON,                         -- ["achseln", "bikini", ...]
-    kpz_count INT,                           -- Körperpunktzonen
-    duration_months INT,                     -- Laufzeit
-    
-    -- Preise
-    monthly_price DECIMAL(10,2),
-    total_price DECIMAL(10,2),
-    
-    -- Zahlungsdetails
-    payment_method ENUM('sepa', 'cash', 'card'),
-    
-    -- Status
-    status ENUM('draft', 'active', 'completed', 'cancelled'),
-    
-    -- Formular-Referenzen
-    form_submission_id BIGINT,               -- Vertragsformular
-    sepa_form_submission_id BIGINT,          -- SEPA-Formular
-    
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
-);
-```
-
-### contract_mandates
-
-```sql
-CREATE TABLE contract_mandates (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    contract_id BIGINT FOREIGN KEY,
+    -- Kundenreferenz (Phorest Client ID)
+    client_id VARCHAR(255) INDEX,            -- z.B. 'bDclStpdbpEVmYSVnoKAlg'
     
     -- Mandat-Referenz
     mandate_reference VARCHAR(255) UNIQUE,   -- z.B. 2026.02.10-BI005945
     
+    -- SEPA-Formular
+    sepa_form_submission_id BIGINT FOREIGN KEY,
+    mandate_signed_at DATETIME,
+    
     -- Zahler-Informationen
     has_different_payer BOOLEAN DEFAULT FALSE,
+    payer_gender ENUM('male', 'female', 'diverse'),
     payer_first_name VARCHAR(255),
     payer_last_name VARCHAR(255),
     payer_email VARCHAR(255),
@@ -324,39 +381,89 @@ CREATE TABLE contract_mandates (
     payer_bic VARCHAR(50),
     payer_bank_name VARCHAR(255),
     
-    -- Ratenzahlung
-    first_payment_date DATE,
-    monthly_amount_cents INT,
-    total_amount_cents INT,
-    installment_count INT,
-    
-    -- Unterschrift
-    mandate_signed_at DATETIME,
-    form_submission_id BIGINT,
-    
     -- Status
     status ENUM('pending', 'active', 'submitted', 'failed', 'cancelled', 'expired'),
     
     -- GoCardless IDs
     gocardless_customer_id VARCHAR(255),
-    gocardless_customer_bank_account_id VARCHAR(255),
+    gocardless_bank_account_id VARCHAR(255),
     gocardless_mandate_id VARCHAR(255) UNIQUE,
-    gocardless_instalment_schedule_id VARCHAR(255),
     gocardless_synced_at TIMESTAMP,
     gocardless_error TEXT,
+    
+    notes TEXT,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+```
+
+**Beziehungen:**
+- `client_mandates.client_id` → Phorest Client ID (kein FK, externer Service)
+- `client_mandates` → `contracts` (hasMany, via `contracts.client_mandate_id`)
+- `client_mandates` → `contract_payments` (hasMany, via `contract_payments.client_mandate_id`)
+
+### contracts (aktualisiert)
+
+```sql
+CREATE TABLE contracts (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    contract_number VARCHAR(255) UNIQUE,    -- z.B. 2026.02.10-BI005945
+    branch_id BIGINT,                        -- Standort
+    client_id VARCHAR(255),                  -- Phorest Client ID
+    client_name VARCHAR(255),
+    client_email VARCHAR(255),
+    
+    -- Mandat-Verknüpfung (pro Kunde, nicht pro Vertrag)
+    client_mandate_id BIGINT FOREIGN KEY,    -- → client_mandates.id
+    
+    -- Zahlplan-Daten (auf Contract, nicht auf Mandat)
+    first_payment_date DATE,                 -- Erste SEPA-Abbuchung
+    monthly_amount_cents INT UNSIGNED,       -- z.B. 19995 = 199,95 €
+    installment_count SMALLINT,              -- z.B. 19 (1 vor Ort + 18 SEPA)
+    
+    -- GoCardless Subscription (Dauerauftrag, pro Vertrag)
+    gocardless_subscription_id VARCHAR(255),
+    
+    -- Paket-Details
+    price_list_id BIGINT,
+    body_zone_count INT,
+    is_full_body BOOLEAN,
+    total_value_cents INT,
+    
+    -- Zahlungsdetails
+    payment_method ENUM('sepa', 'direct'),
+    
+    -- Status
+    status ENUM('draft', 'active', 'completed', 'cancelled'),
+    
+    -- Formular-Referenzen
+    form_submission_id BIGINT,
+    
+    -- Legacy-Felder (Import)
+    legacy_product_name VARCHAR(255),
+    legacy_monatlicher_betrag DECIMAL(10,2),
+    legacy_kredit_monate VARCHAR(50),
+    legacy_mref VARCHAR(255),
+    legacy_iban TEXT,
+    -- ... weitere legacy_* Felder
     
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
 ```
 
-### contract_payments
+### contract_payments (aktualisiert)
 
 ```sql
 CREATE TABLE contract_payments (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     contract_id BIGINT FOREIGN KEY,
-    mandate_id BIGINT FOREIGN KEY,
+    
+    -- Direkte Mandatsreferenz
+    client_mandate_id BIGINT FOREIGN KEY,    -- → client_mandates.id
+    
+    -- Legacy (bleibt für alte Daten)
+    mandate_id BIGINT FOREIGN KEY,           -- → contract_mandates.id (deprecated)
     
     installment_number INT,                  -- 1 = vor Ort, 2+ = SEPA
     due_date DATE,
@@ -383,6 +490,19 @@ CREATE TABLE contract_payments (
     paid_at DATETIME,
     created_at TIMESTAMP,
     updated_at TIMESTAMP
+);
+```
+
+### contract_mandates (LEGACY — bleibt für alte Daten)
+
+```sql
+-- Diese Tabelle wird NICHT gelöscht (Datenerhalt).
+-- Neue Verträge nutzen client_mandates stattdessen.
+-- Import-Skript (ImportLegacyContracts) erstellt noch ContractMandate-Einträge.
+CREATE TABLE contract_mandates (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    contract_id BIGINT FOREIGN KEY,
+    -- ... (alte Spalten bleiben erhalten)
 );
 ```
 
@@ -415,118 +535,55 @@ return [
 ];
 ```
 
-**.env (Sandbox):**
+### Sync-Prozess im Detail (Zwei-Phasen-Ansatz)
 
-```env
-GOCARDLESS_ENVIRONMENT=sandbox
-GOCARDLESS_SANDBOX_ACCESS_TOKEN=sandbox_xxx
-GOCARDLESS_SANDBOX_WEBHOOK_SECRET=xxx
-```
+Der `SyncMandateToGoCardlessJob` arbeitet in **zwei Phasen**:
 
-**.env (Live):**
+#### Phase 1: Mandate Sync (nur wenn nötig)
 
-```env
-GOCARDLESS_ENVIRONMENT=live
-GOCARDLESS_LIVE_ACCESS_TOKEN=live_xxx
-GOCARDLESS_LIVE_WEBHOOK_SECRET=xxx
-```
-
-### Sync-Prozess im Detail
-
-Der `SyncMandateToGoCardlessJob` führt folgende Schritte aus:
-
-#### 1. Phorest-Kundendaten abrufen
+Wird übersprungen wenn `ClientMandate` bereits `gocardless_mandate_id` hat.
 
 ```php
-// Hole E-Mail und External ID aus Phorest
-$phorestClient = $this->phorest->getClient($clientId, $branchId);
-$email = $phorestClient['email'] ?? null;
-$externalId = $phorestClient['externalId'] ?? null;
+// GoCardlessMandateService::syncMandateToGoCardless($mandate, $branchId)
+
+// 1. Phorest-Kundendaten abrufen
+$phorestClient = $this->phorest->getClient($mandate->client_id, $branchId);
+
+// 2. GoCardless Customer erstellen/finden
+$customerId = $this->ensureCustomer($mandate, $branchId);
+
+// 3. Bank Account erstellen
+$bankAccountId = $this->createCustomerBankAccount($mandate, $customerId);
+
+// 4. SEPA-Mandat erstellen
+$gcMandateId = $this->createGoCardlessMandate($mandate, $bankAccountId);
+
+// → Ergebnis: ClientMandate hat jetzt gocardless_customer_id,
+//   gocardless_bank_account_id, gocardless_mandate_id
 ```
 
-#### 2. GoCardless Customer erstellen/finden
+#### Phase 2: Schedule pro Vertrag
+
+Wird für **jeden Vertrag einzeln** aufgerufen:
 
 ```php
-// Prüfe ob Customer mit E-Mail existiert
-$existingCustomer = $this->findExistingCustomer($email);
+// GoCardlessMandateService::createSubscriptionForContract($mandate, $contract)
 
-if ($existingCustomer) {
-    return $existingCustomer['id'];
-}
+// 1. Subscription-Parameter aus Contract-Feldern
+// → Liest: $contract->monthly_amount_cents, $contract->installment_count,
+//          $contract->first_payment_date
 
-// Neuen Customer erstellen
-$response = $this->api->createCustomer(
-    email: $email ?? $mandate->payer_email,
-    givenName: $mandate->payer_first_name,
-    familyName: $mandate->payer_last_name,
-    metadata: [
-        'phorest_client_id' => $clientId,
-        'kundennummer' => $externalId,
-        'vertragsnehmer' => $hasDifferentPayer ? $contractHolderName : null,
-    ]
-);
-```
+// 2. Subscription (Dauerauftrag) erstellen bei GoCardless
+$subscriptionId = $this->createSubscriptionForContractInternal($mandate, $contract);
+// → api->createSubscription(mandateId, amount, 'EUR', 'monthly', 1, dayOfMonth, startDate, count, name, metadata)
+// → Metadata: contract_id, phorest_client_id, mandate_ref
 
-#### 3. Bank Account erstellen
+// 3. Subscription-ID auf Vertrag speichern
+$contract->update(['gocardless_subscription_id' => $subscriptionId]);
 
-```php
-// IBAN entschlüsseln und Bank Account anlegen
-$iban = decrypt($mandate->payer_iban);
-
-$response = $this->api->createCustomerBankAccount(
-    customerId: $customerId,
-    accountHolderName: $accountHolder,
-    iban: $iban,
-    metadata: ['phorest_client_id' => $clientId]
-);
-```
-
-#### 4. SEPA-Mandat erstellen
-
-```php
-// Mandatsreferenz nur in Live (Sandbox unterstützt das nicht)
-$isLive = config('gocardless.environment') === 'live';
-
-$response = $this->api->createMandate(
-    customerBankAccountId: $bankAccountId,
-    scheme: 'sepa_core',
-    metadata: [
-        'phorest_client_id' => $clientId,
-        'mandate_ref' => $mandate->mandate_reference,
-        'contract_id' => (string) $mandate->contract_id,
-    ],
-    reference: $isLive ? $mandate->mandate_reference : null
-);
-```
-
-#### 5. Ratenzahlungsplan erstellen
-
-```php
-// 19 Raten insgesamt = 1 vor Ort + 18 SEPA
-$goCardlessCount = $mandate->installment_count - 1;
-
-$instalments = [];
-for ($i = 0; $i < $goCardlessCount; $i++) {
-    $chargeDate = $this->calculateChargeDate(
-        $startDate->copy()->addMonths($i)
-    );
-    
-    $instalments[] = [
-        'charge_date' => $chargeDate->format('Y-m-d'),
-        'amount' => $monthlyAmount,
-    ];
-}
-
-$response = $this->api->createInstalmentScheduleWithDates(
-    mandateId: $gcMandateId,
-    currency: 'EUR',
-    name: $mandate->mandate_reference,
-    instalments: $instalments,
-    metadata: [
-        'contract_id' => (string) $mandate->contract_id,
-        'phorest_client_id' => $clientId,
-    ]
-);
+// 4. Lokale Payments erstellen
+$this->createLocalPaymentsForSubscription($mandate, $contract);
+// → ContractPayment-Einträge mit client_mandate_id
 ```
 
 ### Metadata-Übersicht
@@ -537,8 +594,10 @@ GoCardless erlaubt max. 3 Metadata-Felder pro Ressource:
 |-----------|-----------------|
 | **Customer** | `phorest_client_id`, `kundennummer`, `vertragsnehmer` |
 | **BankAccount** | `phorest_client_id` |
-| **Mandate** | `phorest_client_id`, `mandate_ref`, `contract_id` |
-| **InstalmentSchedule** | `contract_id`, `phorest_client_id` |
+| **Mandate** | `phorest_client_id`, `mandate_ref` |
+| **Subscription** | `contract_id`, `phorest_client_id`, `mandate_ref` |
+
+> **Hinweis:** Das Mandate-Metadata enthält keine `contract_id` mehr, da ein Mandat mehreren Verträgen zugeordnet sein kann. Die `contract_id` ist stattdessen im Subscription-Metadata.
 
 ## Services & Jobs
 
@@ -549,23 +608,100 @@ Erstellt Verträge aus Formular-Einreichungen:
 ```php
 use App\Services\ContractCreationService;
 
-// Aus Vertragsformular
 $service = app(ContractCreationService::class);
+
+// Aus Vertragsformular
 $contract = $service->createFromSubmission($formSubmission);
 
 // SEPA-Formular verarbeiten
-$service->processSepaFormSubmission($sepaSubmission);
+$clientMandate = $service->processSepaFormSubmission($sepaSubmission);
 ```
 
 **Wichtige Methoden:**
 
 | Methode | Beschreibung |
 |---|---|
-| `createFromSubmission()` | Erstellt Contract + ggf. Mandate aus FormSubmission |
-| `isOneTimePayment()` | Prüft `display_mode` des contract_price-Feldes (`total_only` = Direkt) |
+| `createFromSubmission()` | Erstellt Contract + ggf. ClientMandate aus FormSubmission |
+| `prepareMandateForContract()` | Sucht bestehendes ClientMandate oder erstellt neues. Speichert Zahlplan-Daten auf Contract |
+| `processSepaFormSubmission()` | Findet ClientMandate per client_id, vervollständigt mit Bankdaten |
+| `completeMandateFromSepaForm()` | Aktiviert alle Draft-Contracts des Mandats, dispatcht Sync-Job |
+| `isOneTimePayment()` | Prüft `display_mode` des contract_price-Feldes |
 | `generateContractNumber()` | Erzeugt unique Nummer mit auto-Suffix bei Duplikaten |
-| `processSepaFormSubmission()` | Vervollständigt Mandat mit Bankdaten |
 | `extractContractPriceData()` | Liest Preisdaten aus Submission-Values |
+
+**Mandats-Suche bei Vertragserstellung (`prepareMandateForContract`):**
+
+```php
+// 1. Gibt es ein aktives/ausstehendes ClientMandate für diesen Kunden?
+$existingMandate = ClientMandate::forClient($clientId)
+    ->whereIn('status', [
+        ClientMandate::STATUS_ACTIVE, 
+        ClientMandate::STATUS_SUBMITTED, 
+        ClientMandate::STATUS_PENDING
+    ])
+    ->first();
+
+if ($existingMandate) {
+    // Vertrag mit bestehendem Mandat verknüpfen
+    $contract->update(['client_mandate_id' => $existingMandate->id]);
+} else {
+    // Neues pending Mandat erstellen
+    $mandate = ClientMandate::create([
+        'client_id' => $clientId,
+        'mandate_reference' => $contractNumber,
+        'status' => ClientMandate::STATUS_PENDING,
+    ]);
+    $contract->update(['client_mandate_id' => $mandate->id]);
+}
+
+// Zahlplan-Daten immer auf dem Vertrag speichern
+$contract->update([
+    'monthly_amount_cents' => $monthlyAmount,
+    'installment_count' => $installmentCount,
+]);
+```
+
+### GoCardlessPaymentPlanService
+
+Neuer Service für den Payment-Plan-Lifecycle (Subscription/Dauerauftrag):
+
+```php
+use App\Services\GoCardlessPaymentPlanService;
+
+$service = app(GoCardlessPaymentPlanService::class);
+
+// Zahlungsplan erstellen (vor-Ort-Zahlung + Subscription)
+$subscriptionId = $service->createPaymentPlan($contract, $clientMandate);
+
+// Ausstehende Pläne aktivieren (wird vom Webhook aufgerufen wenn Mandat aktiv wird)
+$results = $service->activatePendingPlans($clientMandate);
+// → ['contract_id' => 'SB01xxx', ...]
+
+// Zahlungsplan stornieren
+$service->cancelPaymentPlan($contract);
+```
+
+**Ablauf `createPaymentPlan()`:**
+
+1. Prüft ob Vertrag Ratenzahlung ist (`installment_count > 1`)
+2. Erstellt erste Rate als "Zahlung vor Ort" (`installment_number = 1`)
+3. Prüft ob Mandat bereit ist (`gocardless_mandate_id` + Status `active`/`submitted`)
+4. **Mandat bereit:** Erstellt GoCardless Subscription sofort → `api->createSubscription()`
+5. **Mandat nicht bereit:** Erstellt nur lokale DB-Einträge (Status `scheduled`) — Subscription wird später via `activatePendingPlans()` erstellt
+6. Startdatum: Mindestens 5 Werktage in der Zukunft, keine Wochenenden
+
+**Subscription-Parameter:**
+
+| Parameter | Wert |
+|-----------|------|
+| `amount` | `$contract->monthly_amount_cents` |
+| `currency` | `EUR` |
+| `interval_unit` | `monthly` |
+| `interval` | `1` |
+| `day_of_month` | Tag aus `first_payment_date` |
+| `start_date` | `first_payment_date` (min. 5 Werktage) |
+| `count` | `installment_count - 1` (ohne vor-Ort-Rate) |
+| `name` | `"{mandate_reference}-V{contract_id}"` |
 
 ### GoCardlessMandateService
 
@@ -576,40 +712,79 @@ use App\Services\GoCardlessMandateService;
 
 $service = app(GoCardlessMandateService::class);
 
-// Mandat synchronisieren
-$service->syncMandateToGoCardless($mandate);
+// Phase 1: Mandat synchronisieren (Customer + BankAccount + Mandate)
+$service->syncMandateToGoCardless($clientMandate, $branchId);
 
-// Bereits synchronisiert? Skip.
-if ($mandate->gocardless_mandate_id) {
-    // ...
-}
+// Phase 2: Subscription (Dauerauftrag) für einen Vertrag erstellen
+$service->createSubscriptionForContract($clientMandate, $contract);
+
+// Bankverbindung ändern (für alle Verträge des Mandats)
+$service->changeBankAccount($clientMandate, $newIban, $accountHolderName);
+
+// Mandat kündigen (kündigt alle Subscriptions aller Verträge)
+$service->cancelMandate($clientMandate);
+
+// Status prüfen
+$service->checkMandateStatus($clientMandate);
+
+// Bestehendes GC-Mandat per Phorest-ID finden
+$result = $service->findActiveMandateByPhorestClientId($phorestClientId);
 ```
 
 ### SyncMandateToGoCardlessJob
 
-Async Job für Background-Verarbeitung:
+Async Job für Background-Verarbeitung, akzeptiert `ClientMandate` und optional `Contract`:
 
 ```php
 use App\Jobs\SyncMandateToGoCardlessJob;
 
-// Manuell dispatchen
-dispatch(new SyncMandateToGoCardlessJob($mandate));
+// Mandat + alle aktiven Verträge synchronisieren
+dispatch(new SyncMandateToGoCardlessJob($clientMandate));
 
-// Mit Verzögerung
-dispatch(new SyncMandateToGoCardlessJob($mandate))
-    ->delay(now()->addMinutes(5));
+// Mandat + spezifischen Vertrag synchronisieren
+dispatch(new SyncMandateToGoCardlessJob($clientMandate, $contract));
 ```
+
+**Ablauf:**
+
+1. Phase 1: `syncMandateToGoCardless()` — nur wenn `gocardless_mandate_id` fehlt
+2. Phase 2a: Wenn `$contract` gegeben → `createSubscriptionForContract()` für diesen Vertrag
+3. Phase 2b: Wenn kein `$contract` → Subscriptions für **alle** aktiven Verträge erstellen (die noch keine haben)
 
 **Job-Konfiguration:**
 
 - Queue: `default`
 - Retries: 3
-- Backoff: 60, 300, 600 Sekunden
+- Backoff: 30, 60, 120 Sekunden
 - Timeout: 120 Sekunden
+- Unique Lock: `client_mandate:{id}` — verhindert parallele Sync-Jobs für dasselbe Mandat
+
+### ProcessGoCardlessWebhookJob
+
+Verarbeitet Webhook-Events von GoCardless:
+
+**Mandate-Events:**
+```php
+// Suche über ClientMandate
+$mandate = ClientMandate::where('gocardless_mandate_id', $gcMandateId)->first();
+$mandate->update(['status' => $newStatus]);
+```
+
+**Subscription-Events (Dauerauftrag):**
+```php
+// Subscription-ID ist auf dem Contract
+$contract = Contract::where('gocardless_subscription_id', $subscriptionId)->first();
+```
+
+**Payment-Events:**
+```php
+// Restbetrag wird nicht dekrementiert — er ist computed
+// Contract prüft: total_value_cents - sum(paid payments)
+```
 
 ### GoCardlessApiService
 
-Low-Level API-Client:
+Low-Level API-Client (unverändert):
 
 ```php
 use App\Services\GoCardlessApiService;
@@ -632,8 +807,11 @@ $response = $api->getMandate($mandateId);
 $response = $api->listPaymentsForMandate($mandateId);
 $response = $api->getPayment($paymentId);
 
-// Instalment Schedule
-$response = $api->createInstalmentScheduleWithDates($mandateId, 'EUR', $name, $instalments, $metadata);
+// Subscription (Dauerauftrag)
+$response = $api->createSubscription($mandateId, $amount, 'EUR', 'monthly', 1, $dayOfMonth, $startDate, $count, $name, $metadata);
+
+// Legacy: Instalment Schedule (nicht mehr verwendet für neue Verträge)
+// $response = $api->createInstalmentScheduleWithDates($mandateId, 'EUR', $name, $instalments, $metadata);
 ```
 
 ## Webhooks
@@ -653,20 +831,15 @@ public function handle(Request $request)
     // Signatur verifizieren
     $this->verifySignature($request);
     
-    // Events in DB speichern
+    // Events in DB speichern (Idempotenz via event_id)
     foreach ($request->input('events', []) as $event) {
-        GoCardlessWebhookEvent::create([
-            'event_id' => $event['id'],
-            'resource_type' => $event['resource_type'],
-            'action' => $event['action'],
-            'resource_id' => $event['links'][$event['resource_type']] ?? null,
-            'links' => $event['links'],
-            'details' => $event['details'] ?? null,
-        ]);
+        GoCardlessWebhookEvent::create([...]);
     }
     
     // Async verarbeiten
-    dispatch(new ProcessGoCardlessWebhooksJob());
+    dispatch(new ProcessGoCardlessWebhookJob());
+    
+    return response('OK', 200);
 }
 ```
 
@@ -677,26 +850,59 @@ public function handle(Request $request)
 | Event | Handler |
 |-------|---------|
 | `mandates.created` | Log |
-| `mandates.active` | `updateMandateStatus('active')` |
-| `mandates.failed` | `updateMandateStatus('failed')`, Error speichern |
-| `mandates.cancelled` | `updateMandateStatus('cancelled')` |
-| `mandates.expired` | `updateMandateStatus('expired')` |
+| `mandates.active` | `ClientMandate→status = 'active'`, **`GoCardlessPaymentPlanService::activatePendingPlans()`** — erstellt Subscriptions für alle Verträge ohne Subscription |
+| `mandates.failed` | `ClientMandate→status = 'failed'`, Error speichern |
+| `mandates.cancelled` | `ClientMandate→status = 'cancelled'`, alle ausstehenden Payments stornieren |
+| `mandates.expired` | `ClientMandate→status = 'expired'` |
 
 #### Payment Events
 
 | Event | Handler |
 |-------|---------|
 | `payments.created` | Log |
-| `payments.submitted` | `updatePaymentStatus('submitted')` |
-| `payments.confirmed` | `updatePaymentStatus('confirmed')` |
-| `payments.paid_out` | `updatePaymentStatus('paid_out')`, Payout-ID speichern |
-| `payments.failed` | `updatePaymentStatus('failed')`, Retry-Logic |
-| `payments.cancelled` | `updatePaymentStatus('cancelled')` |
-| `payments.charged_back` | `handleChargeback()` |
+| `payments.submitted` | `ContractPayment→status = 'submitted'` |
+| `payments.confirmed` | `ContractPayment→status = 'confirmed'` |
+| `payments.paid_out` | `ContractPayment→status = 'paid_out'`, Payout-ID speichern, Vertrag auf `completed` prüfen |
+| `payments.failed` | `ContractPayment→status = 'failed'`, Retry-Logic |
+| `payments.cancelled` | `ContractPayment→status = 'cancelled'` |
+| `payments.charged_back` | `ContractPayment→status = 'charged_back'` |
+
+#### Subscription Events (Dauerauftrag)
+
+| Event | Handler |
+|-------|---------|
+| `subscriptions.created` | Log |
+| `subscriptions.payment_created` | Neue Abo-Zahlung (Log) |
+| `subscriptions.finished` | Subscription regulär beendet (Log) |
+| `subscriptions.cancelled` | `Contract→gocardless_subscription_id = null` |
+
+#### Instalment Schedule Events (Legacy)
+
+| Event | Handler |
+|-------|---------|
+| `instalment_schedules.created` | Log (Legacy) |
+| `instalment_schedules.completed` | Log (Legacy) |
+| `instalment_schedules.cancelled` | Log (Legacy) |
+
+### Restbetrag-Berechnung
+
+Der Restbetrag wird **computed** über den Contract — kein gespeicherter Zähler mehr:
+
+```php
+// In Contract Model:
+public function getRemainingAmountCentsAttribute(): int
+{
+    $paidAmount = $this->payments()
+        ->whereIn('status', ['confirmed', 'paid_out'])
+        ->sum('amount_cents');
+    
+    return max(0, $this->total_value_cents - $paidAmount);
+}
+```
+
+**Vorteil:** Kein Risiko dass Webhook-Verarbeitung den Counter inkonsistent macht (z.B. bei Chargebacks oder Retries).
 
 ## Cloud Deployment
-
-### Environment Variables
 
 ```env
 # GoCardless (Sandbox für Tests in Produktion)
@@ -720,30 +926,13 @@ Die GoCardless-Sync-Jobs werden automatisch über den **Cloud Scheduler** verarb
 
 Der `process-queue` Job verarbeitet bis zu 20 Jobs pro Aufruf mit 25 Sekunden Timeout.
 
-### SQL-Migration (falls nötig)
-
-```sql
--- Spalten prüfen
-SHOW COLUMNS FROM contract_mandates LIKE 'gocardless%';
-
--- Falls Spalten fehlen:
-ALTER TABLE contract_mandates 
-ADD COLUMN gocardless_customer_bank_account_id VARCHAR(255) NULL,
-ADD COLUMN gocardless_instalment_schedule_id VARCHAR(255) NULL,
-ADD COLUMN gocardless_synced_at TIMESTAMP NULL,
-ADD COLUMN gocardless_error TEXT NULL;
-
-CREATE INDEX idx_gc_instalment_schedule 
-ON contract_mandates(gocardless_instalment_schedule_id);
-```
-
 ### Webhook-Setup in GoCardless
 
 1. GoCardless Dashboard → Webhooks
 2. Endpoint hinzufügen:
    - URL: `https://glattthub-web-xxx.run.app/api/webhooks/gocardless`
    - Secret: In `.env` als `GOCARDLESS_SANDBOX_WEBHOOK_SECRET` speichern
-3. Events auswählen: Mandates, Payments, Payouts
+3. Events auswählen: Mandates, Payments, Subscriptions, Payouts
 
 ## API-Referenz
 
@@ -754,6 +943,11 @@ ON contract_mandates(gocardless_instalment_schedule_id);
 | GET | `/hub/contracts` | Vertragsübersicht (View) |
 | GET | `/hub/contracts/{id}` | Vertragsdetails (View) |
 | GET | `/hub/contracts/{id}/payments` | Zahlungen abrufen (JSON) |
+| GET | `/hub/contracts/{id}/gocardless-details` | GoCardless-Details (JSON) |
+| POST | `/hub/contracts/{id}/update-bank-account` | Bankverbindung ändern (JSON) |
+| GET | `/hub/contracts/{id}/gocardless-mandates` | GC-Mandate für Stornierung (JSON) |
+| POST | `/hub/contracts/{id}/gocardless-cancel-mandate` | GC-Mandat/Subscriptions stornieren (JSON) |
+| POST | `/hub/contracts/{id}/link-existing-mandate` | Bestehendes Mandat verknüpfen (JSON) |
 
 ### Zahlungen-Endpoint
 
@@ -763,7 +957,7 @@ GET /hub/contracts/{id}/payments
 Accept: application/json
 ```
 
-**Response:**
+**Response (mit GoCardless Subscription):**
 ```json
 {
     "success": true,
@@ -771,21 +965,90 @@ Accept: application/json
         "payments": [
             {
                 "id": "PM01xxx",
-                "amount": 19995,
-                "charge_date": "2026-03-03",
-                "status": "pending_submission"
+                "amount": 5999,
+                "charge_date": "2026-04-01",
+                "status": "pending_submission",
+                "links": { "subscription": "SB01xxx" }
+            },
+            {
+                "id": null,
+                "amount": 5999,
+                "charge_date": "2027-02-01",
+                "status": "scheduled",
+                "links": []
             }
         ],
-        "source": "gocardless"
+        "source": "gocardless_subscription",
+        "subscription": {
+            "id": "SB01xxx",
+            "name": "2026.03.08-XX001234-V123",
+            "amount": 5999,
+            "interval_unit": "monthly",
+            "day_of_month": 1,
+            "count": 18,
+            "status": "active"
+        }
     }
 }
 ```
+
+**Hinweise zur Zahlungsanzeige:**
+
+- **GoCardless `upcoming_payments`** liefert max. 10 zukünftige Zahlungen → haben `links.subscription` und Status `pending_submission`
+- **Lokale DB-Einträge** füllen die restlichen Monate → haben leere `links` und Status `scheduled`
+- **Deduplizierung** erfolgt monatsbasiert (`YYYY-MM`), echte GC-Zahlungen haben Vorrang
+- Zahlungen mit `links.subscription` und ohne `id` zeigen das **GoCardless-Symbol** in der UI
+- Alle geplanten Zahlungen zeigen das **"Vorgemerkt"-Badge** (gelb)
 
 ### Webhooks
 
 | Method | Endpoint | Beschreibung |
 |--------|----------|--------------|
 | POST | `/api/webhooks/gocardless` | GoCardless Webhook-Empfang |
+
+---
+
+## Migration von ContractMandate → ClientMandate
+
+### Übersicht
+
+Die Migration `2026_03_08_100000_create_client_mandates_and_refactor_contracts.php` führt folgende Schritte durch:
+
+1. **Erstellt `client_mandates` Tabelle** mit allen Bank/Zahler/GC-Feldern
+2. **Erweitert `contracts` Tabelle** um `client_mandate_id`, `first_payment_date`, `monthly_amount_cents`, `installment_count`, `gocardless_instalment_schedule_id`
+3. **Erweitert `contract_payments` Tabelle** um `client_mandate_id`
+4. **Migriert bestehende Daten**: Gruppiert alte `ContractMandate`-Einträge per `client_id` + `gocardless_mandate_id`, erstellt `ClientMandate`-Einträge, verknüpft Contracts und Payments
+
+### Migration ausführen
+
+```bash
+php artisan migrate
+```
+
+### Rollback
+
+Die alte `contract_mandates` Tabelle wird **nicht** gelöscht. Das Legacy-Modell `ContractMandate` und die `mandate()` Beziehung auf `Contract` bleiben als Fallback erhalten.
+
+### Was bleibt Legacy?
+
+| Komponente | Status |
+|-----------|--------|
+| `ContractMandate` Model | Bleibt (für Legacy-Daten und Import-Skript) |
+| `Contract→mandate()` Relation | Bleibt (deprecated, für createPaymentSchedule Fallback) |
+| `ContractPayment→mandate()` Relation | Bleibt (für alte Payments mit `mandate_id`) |
+| `ImportLegacyContracts` Artisan Command | Erstellt weiterhin `ContractMandate` (separater Legacy-Import) |
+
+### Neuer Code verwendet
+
+| Alt | Neu |
+|-----|-----|
+| `$contract->mandate` | `$contract->clientMandate` |
+| `$contract->mandate->monthly_amount_cents` | `$contract->monthly_amount_cents` |
+| `$contract->mandate->installment_count` | `$contract->installment_count` |
+| `$contract->mandate->first_payment_date` | `$contract->first_payment_date` |
+| `$contract->mandate->gocardless_instalment_schedule_id` | `$contract->gocardless_subscription_id` |
+| `ContractMandate::STATUS_*` | `ClientMandate::STATUS_*` |
+| `SyncMandateToGoCardlessJob($mandate)` | `SyncMandateToGoCardlessJob($clientMandate, $contract)` |
 
 ---
 
@@ -801,8 +1064,9 @@ tail -100 storage/logs/laravel.log | grep -E "(GoCardless|SyncMandate|ERROR)"
 **Job manuell ausführen:**
 ```bash
 php artisan tinker
->>> $mandate = \App\Models\ContractMandate::find(10);
->>> dispatch(new \App\Jobs\SyncMandateToGoCardlessJob($mandate));
+>>> $mandate = \App\Models\ClientMandate::find(10);
+>>> $contract = $mandate->contracts()->where('status', 'active')->first();
+>>> dispatch(new \App\Jobs\SyncMandateToGoCardlessJob($mandate, $contract));
 >>> exit
 php artisan queue:work --once
 ```
@@ -822,25 +1086,43 @@ In der Sandbox sind einige Features eingeschränkt:
 - Test-IBANs verwenden (z.B. DE89370400440532013000)
 - Zahlungen werden nicht wirklich eingezogen
 
-### Spalte fehlt in Cloud DB
+### Legacy-Verträge ohne ClientMandate
 
-```sql
--- Prüfen
-SHOW COLUMNS FROM contract_mandates LIKE 'gocardless%';
-
--- Hinzufügen
-ALTER TABLE contract_mandates 
-ADD COLUMN [spaltenname] [typ] NULL;
-```
+Alte Verträge die noch kein `client_mandate_id` haben, werden über die Legacy-Fallbacks bedient:
+- `Contract→createPaymentSchedule()` prüft erst `$this->clientMandate`, dann `$this->mandate`
+- `ContractPayment→isSepaPayment` prüft sowohl `client_mandate_id` als auch `mandate_id`
 
 ---
 
 ## Changelog
 
+### v2.1.0 (März 2026) — Subscription (Dauerauftrag) statt InstalmentSchedule
+
+- **🔄 Breaking:** `gocardless_instalment_schedule_id` → `gocardless_subscription_id` auf `contracts`
+- ✨ GoCardless **Subscription** (Dauerauftrag) statt InstalmentSchedule pro Vertrag
+- ✨ `GoCardlessPaymentPlanService` — neuer Service für Payment-Plan-Lifecycle
+- ✨ `activatePendingPlans()` — erstellt Subscriptions automatisch wenn Mandat aktiv wird (Webhook)
+- ✨ Zahlungsübersicht mit GoCardless-Symbol (Light/Darkmode) für API-bestätigte Zahlungen
+- ✨ Monatsbasierte Deduplizierung (GC upcoming_payments max. 10 + lokale DB für Rest)
+- ✨ Status "Vorgemerkt" für alle geplanten Zahlungen (GC + lokal)
+- ✨ Subscription-Webhook-Handler (created/finished/cancelled)
+- ✨ Legacy InstalmentSchedule-Webhook-Handler beibehalten (Log-only)
+
+### v2.0.0 (März 2026) — ClientMandate Restructure
+
+- **🔄 Breaking:** `ContractMandate` → `ClientMandate` (1:n statt 1:1)
+- ✨ Ein Mandat pro Kunde, beliebig viele Verträge pro Mandat
+- ✨ Zahlplan-Daten auf Contract statt Mandate
+- ✨ GoCardless Subscription-ID auf Contract
+- ✨ Zwei-Phasen-Sync (Mandate Sync + Subscription Creation getrennt)
+- ✨ Restbetrag computed statt stored (keine Inkonsistenzen mehr)
+- ✨ Automatisches Mandate-Linking bei Bestandskunden
+- ✨ SyncMandateToGoCardlessJob akzeptiert optional Contract
+
 ### v1.0.0 (Februar 2026)
 
 - ✨ GoCardless Integration mit automatischer Synchronisierung
-- ✨ Ratenzahlungspläne (InstalmentSchedule)
+- ✨ Ratenzahlungspläne (InstalmentSchedule → später Subscription)
 - ✨ Webhook-Verarbeitung für Payment-Status
 - ✨ Vor-Ort-Zahlung (Rate 1) + SEPA (Raten 2-n)
 - ✨ Abweichender Zahler Support

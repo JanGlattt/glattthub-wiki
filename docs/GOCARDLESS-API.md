@@ -7,8 +7,11 @@ GoCardless ist unser Finanzdienstleister für Lastschriften (Direct Debit / SEPA
 **Dokumentation:** https://developer.gocardless.com/api-reference/
 
 **Verwandte Dokumentationen:**
+- [Verträge & SEPA-Lastschriften](CONTRACTS-SEPA-MODULE.md) - Vollständige SEPA-Integration mit ClientMandate-Architektur, Zwei-Phasen-Sync, Subscriptions (Daueraufträge)
 - [In-App Benachrichtigungen](IN-APP-NOTIFICATIONS.md) - Automatische Benachrichtigungen bei Webhook-Events
 - [Push-Benachrichtigungen](PUSH-NOTIFICATIONS.md) - Web-Push bei wichtigen Events
+
+> **Hinweis:** Diese Seite dokumentiert die allgemeine GoCardless API und den `GoCardlessApiService`. Für die glatttHub-spezifische Integration (ClientMandate, Zwei-Phasen-Sync, Subscriptions pro Vertrag) siehe [Verträge & SEPA-Lastschriften](CONTRACTS-SEPA-MODULE.md#gocardless-integration).
 
 ## Inhaltsverzeichnis
 
@@ -132,7 +135,7 @@ $service->isLive();          // true/false
 | **Payout Items** | Details einer Auszahlung | `listPayoutItems($payoutId)` |
 | **Refunds** | Erstattungen | `getRefund($id)`, `listRefunds()` |
 | **Subscriptions** | Wiederkehrende Zahlungen | `getSubscription($id)`, `listSubscriptions()` |
-| **Instalment Schedules** | Ratenzahlungen | `getInstalmentSchedule($id)`, `listInstalmentSchedules()` |
+| **Instalment Schedules** | Ratenzahlungen (Legacy) | `getInstalmentSchedule($id)`, `listInstalmentSchedules()` |
 | **Events** | Ereignisse/Aktivitäten | `getEvent($id)`, `listEvents()` |
 | **Creditors** | Zahlungsempfänger (wir) | `getCreditor($id)`, `listCreditors()` |
 | **Balances** | Kontostände | `listBalances($creditorId)` |
@@ -158,7 +161,7 @@ $service->isLive();          // true/false
 | **Refund erstellen** | Erstattung | `createRefund()` |
 | **Mandate stornieren** | Mandat beenden | `cancelMandate()` |
 | **Mandate wiederherstellen** | Mandat reaktivieren | `reinstateMandate()` |
-| **Instalment Schedule** | Ratenzahlung erstellen | `createInstalmentScheduleWithDates()` |
+| **Instalment Schedule** | Ratenzahlung erstellen (Legacy) | `createInstalmentScheduleWithDates()` |
 
 ---
 
@@ -376,7 +379,27 @@ foreach ($failed as $event) {
 
 ## Workflow: Neue Lastschrift einrichten
 
-### Empfohlener Weg: Billing Request Flow
+### glatttHub Integration (Zwei-Phasen-Sync)
+
+Die glatttHub-App nutzt einen eigenen Sync-Workflow über `GoCardlessMandateService` und `SyncMandateToGoCardlessJob`:
+
+1. **Phase 1 — Mandate Sync:** Customer → BankAccount → Mandate erstellen (einmalig pro Kunde)
+2. **Phase 2 — Subscription Creation:** Subscription (Dauerauftrag) pro Vertrag erstellen
+
+Das Mandat gehört zum **Kunden** (via `ClientMandate`-Model), nicht zum einzelnen Vertrag. Ein Kunde hat ein Mandat, aber beliebig viele Verträge mit jeweils eigener Subscription.
+
+**Metadata-Zuweisung:**
+
+| Ressource | Metadata |
+|-----------|----------|
+| **Customer** | `phorest_client_id`, `kundennummer`, `vertragsnehmer` |
+| **BankAccount** | `phorest_client_id` |
+| **Mandate** | `phorest_client_id`, `mandate_ref` |
+| **Subscription** | `contract_id`, `phorest_client_id`, `mandate_ref` |
+
+> **Vollständige Dokumentation:** [Verträge & SEPA → GoCardless Integration](CONTRACTS-SEPA-MODULE.md#gocardless-integration)
+
+### Generische API-Nutzung: Billing Request Flow
 
 ```php
 use App\Services\GoCardlessApiService;
@@ -433,19 +456,27 @@ $payment = $paymentResponse->json('payments');
 // Status: pending_submission → submitted → confirmed → paid_out
 ```
 
-### Subscription (Wiederkehrende Zahlung)
+### Subscription (Dauerauftrag — glatttHub Standard)
+
+> **Wichtig:** Seit März 2026 nutzt glatttHub **Subscriptions** statt InstalmentSchedules für alle Zahlungspläne.
 
 ```php
-// Monatliches Abo erstellen
+// Dauerauftrag für Vertrag erstellen (18 monatliche Raten)
 $subscriptionResponse = $service->createSubscription(
     mandateId: 'MD123456',
-    amount: 2999,  // 29,99 EUR
+    amount: 5999,  // 59,99 EUR in Cent
     currency: 'EUR',
     intervalUnit: 'monthly',
     interval: 1,
     dayOfMonth: 1,  // Am 1. jeden Monats
-    name: 'Premium Abo',
-    metadata: ['plan' => 'premium']
+    startDate: '2026-04-01',
+    count: 18,  // Anzahl Raten (endlich)
+    name: '2026.03.08-XX001234-V123',
+    metadata: [
+        'contract_id' => '123',
+        'phorest_client_id' => 'bDclStpdbpEVmYSVnoKAlg',
+        'mandate_ref' => '2026.03.08-XX001234'
+    ]
 );
 
 // Abo pausieren
