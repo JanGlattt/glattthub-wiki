@@ -13,6 +13,7 @@ Die Phorest API ermöglicht die Integration mit dem Phorest Salon Management Sys
 - **Services** - Behandlungs-Katalog
 - **Verfügbarkeit** - Terminslots prüfen
 - **Buchungen** - Neue Buchungen erstellen
+- **Käufe (Purchases)** - Kauf von Services, Produkten, Kursen & Gutscheinen
 - **Gutscheine** - Voucher-Verwaltung
 
 ## 🔧 Konfiguration
@@ -350,7 +351,116 @@ $response = $phorestApi->createVoucher([
 
 ---
 
-## 🔄 Deduplizierung
+## � Käufe (Purchases)
+
+Mit `createPurchase()` können Käufe in Phorest angelegt werden – z.B. für Behandlungen, Produkte, Abos (Kurse) oder Gutscheine.
+
+### Zahlungsarten abrufen
+
+Vor dem Erstellen eines Kaufs müssen die verfügbaren Zahlungsarten der Branch geladen werden:
+
+```php
+$response = $phorestApi->getPaymentTypes($branchId);
+$paymentTypes = $response->json('paymentTypes', []);
+
+// Ergebnis: [{"paymentTypeId": "abc123", "name": "Barzahlung"}, ...]
+```
+
+**Route:** `GET /phorest/branch/{branchId}/payment-types`
+
+### Kauf erstellen
+
+```php
+$response = $phorestApi->createPurchase($branchId, [
+    'number'   => 'GH-2026-00001',   // Eindeutige Kaufnummer
+    'clientId' => $clientId,
+    'payments' => [
+        [
+            'paymentTypeId' => $paymentTypeId,  // Aus getPaymentTypes()
+            'amount'        => 99.00,            // Muss Gesamtbetrag decken
+        ]
+    ],
+    'items' => [
+        [
+            'type'     => 'appointment',   // appointment|product|course|voucher
+            'itemId'   => $serviceId,       // Phorest Service/Product/Course ID
+            'quantity' => 1,
+            'price'    => 99.00,            // Brutto (inkl. MwSt.)
+            'staffId'  => $staffId,
+        ]
+    ],
+]);
+```
+
+**Route:** `POST /phorest/branch/{branchId}/purchase`
+
+### Item-Typen
+
+| Typ | Beschreibung | `itemId` |
+|-----|-------------|----------|
+| `appointment` | Behandlung/Service | Phorest Service ID |
+| `product` | Produkt-Verkauf | Phorest Product ID |
+| `course` | Abo/Kurs-Kauf | Phorest Course ID |
+| `voucher` | Gutschein-Kauf | Phorest Voucher Type ID |
+
+### Wichtige Regeln
+
+- **Zahlungsbetrag:** Muss den Gesamtpreis decken oder übersteigen (Überzahlung wird als Wechselgeld zurückgegeben). Unterzahlung wird abgelehnt.
+- **Nur 1 Zahlungsmethode** pro Kauf erlaubt.
+- **Gutschein-Kauf:** `voucherExpiryDate` muss in der Zukunft liegen (Format: `YYYY-MM-DD`). Seriennummer wird automatisch generiert, wenn nicht angegeben. `quantity > 1` erzeugt mehrere Gutscheine.
+- **Kreditkonto:** Benötigt `outstandingBalancePayment=true`, `staffId` und `price`.
+- **Steuerberechnung:** Phorest nutzt eigene Steuersätze, nicht die im Request übergebenen. Rundung: HALF UP auf Cent.
+- **Kaufnummer (`number`):** Muss eindeutig sein.
+
+### Verwendung via Facade
+
+```php
+use App\Facades\Phorest;
+
+// Zahlungsarten laden
+$paymentTypes = Phorest::getPaymentTypes($branchId)->json('paymentTypes', []);
+
+// Kauf erstellen
+$response = Phorest::createPurchase($branchId, $purchaseData);
+
+if ($response->successful()) {
+    $purchase = $response->json();
+    // Kauf erfolgreich erstellt
+}
+```
+
+### Verwendung via JavaScript (Frontend)
+
+```javascript
+// Zahlungsarten laden
+const paymentTypesRes = await fetch(`/phorest/branch/${branchId}/payment-types`);
+const { data } = await paymentTypesRes.json();
+
+// Kauf erstellen
+const purchaseRes = await fetch(`/phorest/branch/${branchId}/purchase`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+    },
+    body: JSON.stringify({
+        number: 'GH-2026-00001',
+        clientId: clientId,
+        payments: [{ paymentTypeId, amount: 99.00 }],
+        items: [{
+            type: 'appointment',
+            itemId: serviceId,
+            quantity: 1,
+            price: 99.00,
+            staffId: staffId,
+        }],
+    }),
+});
+```
+
+---
+
+## �🔄 Deduplizierung
 
 Die API liefert bei Buchungen mit mehreren Services mehrere Appointment-Einträge mit derselben `bookingId`. Die `deduplicateAppointments()` Methode:
 
@@ -395,6 +505,8 @@ Alle konfigurierten Endpoints in `config/phorest.php`:
 | **Services** | `/business/{businessId}/branch/{branchId}/service` | GET |
 | **Products** | `/business/{businessId}/branch/{branchId}/product` | GET |
 | **Vouchers** | `/business/{businessId}/voucher` | GET/POST |
+| **Purchase** | `/business/{businessId}/branch/{branchId}/purchase` | POST |
+| **Payment Types** | `/business/{businessId}/branch/{branchId}/supplemental-payment-type` | GET |
 
 ---
 
