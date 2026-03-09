@@ -185,6 +185,73 @@ Siehe `resources/views/hub/services.blade.php` für ein vollständiges Beispiel 
 - Anzeige der ausgewählten Zonen als Tags
 - Entfernen einzelner Zonen per Klick
 
+---
+
+## 🔗 Phorest-Zuordnung (Admin Backend)
+
+Jede Körperzone kann im **Admin Backend** (Filament) mit einer Phorest-Dienstleistung und einem Phorest-Abo verknüpft werden.
+
+### Felder
+
+| Spalte | Typ | Beschreibung |
+|--------|-----|--------------|
+| `phorest_service_id` | `string` (nullable) | Phorest Service-ID |
+| `phorest_service_name` | `string` (nullable) | Service-Name (automatisch gesetzt) |
+| `phorest_course_id` | `string` (nullable) | Phorest Course-ID (Abo) |
+| `phorest_course_name` | `string` (nullable) | Abo-Name (automatisch gesetzt) |
+
+### Admin-Formular
+
+Im Bearbeitungs-Formular einer Körperzone stehen zwei Searchable-Selects zur Verfügung:
+
+- **Phorest Dienstleistung** — Alle aktiven Services aus allen Branches (dedupliziert nach `serviceId`)
+- **Phorest Abo** — Alle aktiven Courses aus allen Branches (dedupliziert nach `courseId`)
+
+Beim Auswählen wird der Name automatisch in das readonly-Feld übernommen und in der DB gespeichert.
+
+### Daten-Laden
+
+Die Phorest-Daten werden **parallel** aus allen Branches geladen:
+
+1. Erste Seite jedes Branches parallel abrufen → `totalPages` ermitteln
+2. Restliche Seiten aller Branches parallel nachladen
+3. Deduplizierung nach ID (Services/Courses können in mehreren Branches existieren)
+4. Ergebnis wird **10 Minuten gecacht** (`phorest_services_select_options` / `phorest_courses_select_options`)
+
+### API-Endpoints
+
+| Datentyp | Phorest-Endpoint |
+|----------|-----------------|
+| Services | `GET /business/{businessId}/branch/{branchId}/service` |
+| Courses | `GET /business/{businessId}/branch/{branchId}/course` |
+
+### Verwendung im Code
+
+```php
+// Körperzone mit Phorest-Service laden
+$zone = BodyZone::where('key', 'unterschenkel_links')->first();
+$zone->phorest_service_id;   // "FfQB33BRWMWKGeIWCzs_jw"
+$zone->phorest_service_name; // "linker Unterschenkel"
+$zone->phorest_course_id;    // "abc123"
+$zone->phorest_course_name;  // "glattt Paket - Linker Unterschenkel"
+```
+
+### Beteiligte Dateien
+
+| Datei | Beschreibung |
+|-------|-------------|
+| `app/Filament/Resources/BodyZones/Schemas/BodyZoneForm.php` | Formular mit Phorest-Selects |
+| `app/Filament/Resources/BodyZones/Tables/BodyZonesTable.php` | Tabelle mit Service/Abo-Spalten |
+| `app/Services/PhorestApiService.php` | `getServices()`, `getCourses()` |
+| `config/phorest.php` | Endpoint-Konfiguration (`services.list`, `courses.list`) |
+
+### Cache leeren
+
+```bash
+php artisan cache:forget phorest_services_select_options
+php artisan cache:forget phorest_courses_select_options
+```
+
 ## Grafiken
 
 Die Körperzonen-Grafiken befinden sich in `/public/images/koerperzonen/`:
