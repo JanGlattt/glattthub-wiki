@@ -15,6 +15,7 @@
   - [Datenmodell](#datenmodell)
   - [GoCardless Integration](#gocardless-integration)
   - [Services & Jobs](#services--jobs)
+  - [Phorest-Kauf bei Vertragserstellung](#phorest-kauf-purchase-bei-vertragserstellung)
   - [Webhooks](#webhooks)
   - [Cloud Deployment](#cloud-deployment)
   - [API-Referenz](#api-referenz)
@@ -256,6 +257,7 @@ Die SEPA-Mandate sind als **1:n-Beziehung pro Kunde** implementiert:
 │                      Service Layer                               │
 ├─────────────────────────────────────────────────────────────────┤
 │  ContractCreationService   - Vertrag/Mandat aus Formular        │
+│  PhorestContractPurchaseService - Abo-Kauf in Phorest           │
 │  GoCardlessMandateService  - High-Level GoCardless Sync         │
 │  GoCardlessApiService      - Low-Level API Client               │
 │  PhorestApiService         - Kundendaten aus Phorest            │
@@ -346,6 +348,74 @@ Kunde → Vertragsformular → FormSubmission
                     │
        → Mandate schon sync'd → Skip Phase 1
        → createScheduleForContract() → Neuer Schedule
+```
+
+### Phorest-Kauf (Purchase) bei Vertragserstellung
+
+Nach erfolgreicher Vertragserstellung wird automatisch ein **Phorest-Kauf** erzeugt, der die gewählten Abos dem Kunden zuordnet.
+
+**Service:** `PhorestContractPurchaseService::createFromContract()`
+
+```
+Contract erstellt (DB-Transaktion abgeschlossen)
+       │
+       ▼
+PhorestContractPurchaseService
+::createFromContract()
+       │
+       ├── Körperzonen mit phorest_course_id laden
+       ├── Kaufbetrag berechnen:
+       │     • Gesamtzahlung → total_value_cents
+       │     • Ratenzahlung  → monthly_amount_cents (1. Rate)
+       ├── Betrag gleichmäßig auf Zonen verteilen
+       ├── Staff-ID vom Verkäufer auflösen (resolveStaffId)
+       │     1. User.phorest_staff_ids (Array) prüfen:
+       │        a) Assoziativ {branchId: staffId} → direkt matchen
+       │        b) Plain Array [staffId1, staffId2, ...] →
+       │           DB-Lookup in phorest_staff-Tabelle (staff_id + branch_id)
+       │     2. Fallback: User.phorest_staff_id (einzelne ID)
+       ├── Phorest createPurchase API aufrufen
+       │     • number: Vertragsnummer
+       │     • clientId: Phorest Client ID
+       │     • items[]: je Körperzone ein Course-Item
+       │     • payments[]: glatttHub Custom Payment Type
+       └── Phorest createCreditAccountTransaction API aufrufen
+             • Schuld auf Kundenkonto buchen (outstandingBalance)
+```
+
+**Aufruf-Kette in `ContractCreationService::createFromSubmission()`:**
+
+```php
+// 1. Contract wird in DB-Transaktion erstellt
+$contract = DB::transaction(function () { ... return $contract; });
+
+// 2. DANACH: Phorest-Kauf außerhalb der Transaktion
+if ($contract) {
+    $this->purchaseService->createFromContract($contract);
+}
+```
+
+> **Wichtig:** Der Purchase-Call muss **nach** dem `DB::transaction()`-Block stehen, nicht innerhalb.
+> Das Ergebnis der Transaktion wird in `$contract` gespeichert (nicht direkt `return`), damit der nachfolgende Code erreichbar ist.
+
+**Dateien:**
+
+| Datei | Zweck |
+|-------|-------|
+| `app/Services/PhorestContractPurchaseService.php` | Erstellt Phorest-Kauf + Kundenkonto-Buchung aus Vertrag |
+| `app/Services/ContractCreationService.php` | Ruft Purchase-Service nach Vertragsanlage auf |
+
+**Wichtig:** Der Phorest-Kauf wird **außerhalb** der DB-Transaktion ausgeführt. Ein API-Fehler rollt den Vertrag nicht zurück — der Fehler wird geloggt und kann manuell nachgeholt werden.
+
+**Manuell Phorest-Kauf nachholen:**
+
+```bash
+php artisan tinker --execute="
+\$contract = App\Models\Contract::find(CONTRACT_ID);
+\$service = app(App\Services\PhorestContractPurchaseService::class);
+\$result = \$service->createFromContract(\$contract);
+print_r(\$result);
+"
 ```
 
 ## Datenmodell
@@ -621,7 +691,7 @@ $clientMandate = $service->processSepaFormSubmission($sepaSubmission);
 
 | Methode | Beschreibung |
 |---|---|
-| `createFromSubmission()` | Erstellt Contract + ggf. ClientMandate aus FormSubmission |
+| `createFromSubmission()` | Erstellt Contract + ggf. ClientMandate aus FormSubmission, triggert Phorest-Kauf |
 | `prepareMandateForContract()` | Sucht bestehendes ClientMandate oder erstellt neues. Speichert Zahlplan-Daten auf Contract |
 | `processSepaFormSubmission()` | Findet ClientMandate per client_id, vervollständigt mit Bankdaten |
 | `completeMandateFromSepaForm()` | Aktiviert alle Draft-Contracts des Mandats, dispatcht Sync-Job |

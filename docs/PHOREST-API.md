@@ -14,6 +14,7 @@ Die Phorest API ermöglicht die Integration mit dem Phorest Salon Management Sys
 - **Verfügbarkeit** - Terminslots prüfen
 - **Buchungen** - Neue Buchungen erstellen
 - **Käufe (Purchases)** - Kauf von Services, Produkten, Kursen & Gutscheinen
+- **Kundenkonto (Credit Account)** - Guthaben auf dem Kunden-Kreditkonto verwalten
 - **Gutscheine** - Voucher-Verwaltung
 
 ## 🔧 Konfiguration
@@ -355,38 +356,51 @@ $response = $phorestApi->createVoucher([
 
 Mit `createPurchase()` können Käufe in Phorest angelegt werden – z.B. für Behandlungen, Produkte, Abos (Kurse) oder Gutscheine.
 
-### Zahlungsarten abrufen
+### Zahlungsarten (Payment Types)
 
-Vor dem Erstellen eines Kaufs müssen die verfügbaren Zahlungsarten der Branch geladen werden:
+Zahlungsarten werden auf **Business-Ebene** (nicht Branch!) abgerufen:
 
 ```php
-$response = $phorestApi->getPaymentTypes($branchId);
+$response = $phorestApi->getPaymentTypes();
 $paymentTypes = $response->json('paymentTypes', []);
 
-// Ergebnis: [{"paymentTypeId": "abc123", "name": "Barzahlung"}, ...]
+// Ergebnis: [{"paymentTypeId": "abc123", "name": "Barzahlung", "type": "CASH"}, ...]
 ```
 
-**Route:** `GET /phorest/branch/{branchId}/payment-types`
+**Route:** `GET /phorest/payment-types`
+**API-Endpoint:** `GET /business/{businessId}/paymenttype`
+
+#### glatttHub Payment Type
+
+In Phorest wurde ein eigener Zahlungstyp für glatttHub angelegt:
+
+| Eigenschaft | Wert |
+|-------------|------|
+| **Name** | glatttHub |
+| **Code** | Hub |
+| **Typ** | Sonstiges (OTHER) |
+| **Bankfähig** | Ja |
+| **ID** | `urLYs9iAs3RUBrYaDZY9ew` |
 
 ### Kauf erstellen
 
+> **WICHTIG:** Das `type`-Feld in `payments` ist **zwingend erforderlich**! `paymentTypeId` allein wird von der API **stillschweigend ignoriert**. Es muss immer `type` gesetzt werden.
+
 ```php
 $response = $phorestApi->createPurchase($branchId, [
-    'number'   => 'GH-2026-00001',   // Eindeutige Kaufnummer
     'clientId' => $clientId,
     'payments' => [
         [
-            'paymentTypeId' => $paymentTypeId,  // Aus getPaymentTypes()
-            'amount'        => 99.00,            // Muss Gesamtbetrag decken
+            'type'                => 'OTHER',                    // PFLICHTFELD: CASH|CREDIT|DEBIT|OTHER
+            'amount'              => 99.00,                      // Muss Gesamtbetrag decken
+            'customPaymentTypeId' => 'urLYs9iAs3RUBrYaDZY9ew',  // glatttHub Payment Type
         ]
     ],
     'items' => [
         [
-            'type'     => 'appointment',   // appointment|product|course|voucher
-            'itemId'   => $serviceId,       // Phorest Service/Product/Course ID
-            'quantity' => 1,
-            'price'    => 99.00,            // Brutto (inkl. MwSt.)
-            'staffId'  => $staffId,
+            'courseId' => $courseId,   // Phorest Course ID (für Abo-Käufe)
+            'price'    => 99.00,      // Brutto (inkl. MwSt.)
+            'staffId'  => $staffId,   // Optional
         ]
     ],
 ]);
@@ -394,68 +408,138 @@ $response = $phorestApi->createPurchase($branchId, [
 
 **Route:** `POST /phorest/branch/{branchId}/purchase`
 
-### Item-Typen
+### Payment `type`-Werte
 
-| Typ | Beschreibung | `itemId` |
-|-----|-------------|----------|
-| `appointment` | Behandlung/Service | Phorest Service ID |
-| `product` | Produkt-Verkauf | Phorest Product ID |
-| `course` | Abo/Kurs-Kauf | Phorest Course ID |
-| `voucher` | Gutschein-Kauf | Phorest Voucher Type ID |
+| Typ | Beschreibung |
+|-----|-------------|
+| `CASH` | Barzahlung |
+| `CREDIT` | Kreditkarte |
+| `DEBIT` | EC-Karte / Lastschrift |
+| `OTHER` | Sonstige (z.B. glatttHub) – benötigt `customPaymentTypeId` |
 
 ### Wichtige Regeln
 
-- **Zahlungsbetrag:** Muss den Gesamtpreis decken oder übersteigen (Überzahlung wird als Wechselgeld zurückgegeben). Unterzahlung wird abgelehnt.
-- **Nur 1 Zahlungsmethode** pro Kauf erlaubt.
-- **Gutschein-Kauf:** `voucherExpiryDate` muss in der Zukunft liegen (Format: `YYYY-MM-DD`). Seriennummer wird automatisch generiert, wenn nicht angegeben. `quantity > 1` erzeugt mehrere Gutscheine.
-- **Kreditkonto:** Benötigt `outstandingBalancePayment=true`, `staffId` und `price`.
+- **`type` ist Pflicht:** Ohne `type` im Payment-Objekt wird die Zahlung **stillschweigend ignoriert** – der Kauf wird trotzdem mit 201 erstellt, aber ohne korrekte Zahlungszuordnung.
+- **`customPaymentTypeId`:** Wird nur bei `type: 'OTHER'` benötigt.
+- **Zahlungsbetrag:** Muss den Gesamtpreis exakt decken oder übersteigen (Überzahlung = Wechselgeld). Unterzahlung wird abgelehnt.
+- **Kaufnummer (`number`):** Optional, wird automatisch generiert wenn nicht angegeben.
 - **Steuerberechnung:** Phorest nutzt eigene Steuersätze, nicht die im Request übergebenen. Rundung: HALF UP auf Cent.
-- **Kaufnummer (`number`):** Muss eindeutig sein.
+- **Kreditkonto:** Käufe allein beeinflussen **NICHT** das Kundenkonto/Guthaben. Dafür ist ein separater Credit Account Transaction nötig (siehe unten).
 
 ### Verwendung via Facade
 
 ```php
 use App\Facades\Phorest;
 
-// Zahlungsarten laden
-$paymentTypes = Phorest::getPaymentTypes($branchId)->json('paymentTypes', []);
+// Zahlungsarten laden (Business-Ebene)
+$paymentTypes = Phorest::getPaymentTypes()->json('paymentTypes', []);
 
 // Kauf erstellen
-$response = Phorest::createPurchase($branchId, $purchaseData);
+$response = Phorest::createPurchase($branchId, [
+    'clientId' => $clientId,
+    'payments' => [
+        [
+            'type'                => 'OTHER',
+            'amount'              => 99.00,
+            'customPaymentTypeId' => 'urLYs9iAs3RUBrYaDZY9ew',
+        ]
+    ],
+    'items' => [
+        ['courseId' => $courseId, 'price' => 99.00, 'staffId' => $staffId]
+    ],
+]);
+```
+
+---
+
+## Kundenkonto (Credit Account Transactions)
+
+Käufe allein beeinflussen **nicht** das Kundenkonto (Guthaben). Um das Guthaben eines Kunden aufzuladen, muss ein separater API-Call an den `creditaccounttransaction`-Endpoint gemacht werden.
+
+### Credit Account Transaction erstellen
+
+```php
+$response = $phorestApi->createCreditAccountTransaction([
+    'clientId'          => $clientId,
+    'branchId'          => $branchId,
+    'description'       => 'glatttHub Vertragskauf - Abo XY',
+    'transactionAmount' => 200.99,    // Positiv = Guthaben aufladen
+    'staffId'           => $staffId,  // Optional
+]);
+```
+
+**Route:** `POST /phorest/credit-account-transaction`
+**API-Endpoint:** `POST /business/{businessId}/creditaccounttransaction`
+
+### Wichtige Regeln
+
+- **Positiver Betrag** = Guthaben aufladen (Kunde hat Geld gut)
+- **Negativer Betrag** = Guthaben abbuchen
+- **`staffId`** ist optional, aber empfohlen für Nachvollziehbarkeit
+- **`description`** sollte den Grund der Buchung beschreiben
+
+### Verwendung via Facade
+
+```php
+use App\Facades\Phorest;
+
+$response = Phorest::createCreditAccountTransaction([
+    'clientId'          => $clientId,
+    'branchId'          => $branchId,
+    'description'       => 'glatttHub Vertragskauf',
+    'transactionAmount' => 150.00,
+]);
 
 if ($response->successful()) {
-    $purchase = $response->json();
-    // Kauf erfolgreich erstellt
+    $transaction = $response->json();
+    // Kundenkonto erfolgreich aufgeladen
 }
 ```
 
-### Verwendung via JavaScript (Frontend)
+---
 
-```javascript
-// Zahlungsarten laden
-const paymentTypesRes = await fetch(`/phorest/branch/${branchId}/payment-types`);
-const { data } = await paymentTypesRes.json();
+## Automatischer Vertragskauf (PhorestContractPurchaseService)
 
-// Kauf erstellen
-const purchaseRes = await fetch(`/phorest/branch/${branchId}/purchase`, {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-    },
-    body: JSON.stringify({
-        number: 'GH-2026-00001',
-        clientId: clientId,
-        payments: [{ paymentTypeId, amount: 99.00 }],
-        items: [{
-            type: 'appointment',
-            itemId: serviceId,
-            quantity: 1,
-            price: 99.00,
-            staffId: staffId,
-        }],
-    }),
-});
+Der `PhorestContractPurchaseService` erstellt automatisiert Käufe aus glatttHub-Verträgen. Der Prozess besteht aus **zwei Schritten**:
+
+### 2-Schritt-Ablauf
+
+1. **Purchase erstellen** – Kauf in Phorest anlegen mit glatttHub Payment Type
+2. **Credit Account Transaction** – Guthaben auf Kundenkonto buchen
+
+```php
+use App\Services\PhorestContractPurchaseService;
+
+$service = app(PhorestContractPurchaseService::class);
+
+$result = $service->createFromContract(
+    branchId:  $branchId,
+    clientId:  $clientId,
+    courseId:   $courseId,
+    sessions:  10,
+    pricePerSession: 89.00,
+    staffId:   $staffId,  // Optional
+);
+
+// Ergebnis:
+// [
+//     'success'     => true,
+//     'purchase'    => [...],         // Phorest Purchase Response
+//     'creditTx'    => [...],         // Credit Account Transaction Response
+//     'totalAmount' => 890.00,
+// ]
+```
+
+### Fehlerbehandlung
+
+Der Service behandelt **Teilfehler**: Wenn der Purchase erfolgreich ist, aber die Credit Account Transaction fehlschlägt, wird ein Partial-Success zurückgegeben:
+
+```php
+if ($result['success'] === false && isset($result['purchase'])) {
+    // Purchase OK, aber Credit Account Transaction fehlgeschlagen
+    // $result['creditError'] enthält die Fehlermeldung
+    Log::warning('Partial success: Purchase created but credit account failed', $result);
+}
 ```
 
 ---
@@ -506,7 +590,8 @@ Alle konfigurierten Endpoints in `config/phorest.php`:
 | **Products** | `/business/{businessId}/branch/{branchId}/product` | GET |
 | **Vouchers** | `/business/{businessId}/voucher` | GET/POST |
 | **Purchase** | `/business/{businessId}/branch/{branchId}/purchase` | POST |
-| **Payment Types** | `/business/{businessId}/branch/{branchId}/supplemental-payment-type` | GET |
+| **Payment Types** | `/business/{businessId}/paymenttype` | GET |
+| **Credit Account** | `/business/{businessId}/creditaccounttransaction` | POST |
 
 ---
 
