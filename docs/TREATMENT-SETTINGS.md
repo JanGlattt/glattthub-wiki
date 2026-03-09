@@ -92,7 +92,7 @@ Pro Behandlung können **Fotos** hochgeladen werden:
 
 ### Zugang
 
-Erreichbar über die **Behandlungssitzung** eines Termins (Session-Menü).
+Erreichbar über die **Unified Terminansicht** → Session-Grid → Kachel "Behandlungseinstellungen".
 
 ---
 
@@ -101,9 +101,10 @@ Erreichbar über die **Behandlungssitzung** eines Termins (Session-Menü).
 ```
 resources/views/
 ├── hub/
-│   └── appointment-session/
-│       ├── index.blade.php                 # Session-Menü
-│       └── treatment-settings.blade.php    # Hauptansicht
+│   └── appointment-unified/
+│       ├── index.blade.php                 # Unified Terminansicht (mit View-Switching)
+│       └── partials/
+│           └── treatment-content.blade.php # Behandlungseinstellungen-Content
 └── partials/
     └── body-zone-selector-treatment.blade.php  # Spezialisierte Körperzonen-Komponente
 

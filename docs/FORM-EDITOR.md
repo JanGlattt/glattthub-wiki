@@ -201,13 +201,12 @@ Alle Feld-Renderer sind in einem zentralen Partial zusammengefasst:
 resources/views/partials/form-fields/_field-renderer.blade.php  ← ZENTRALE DATEI
 ```
 
-Dieses Partial wird von 3 verschiedenen Views eingebunden:
+Dieses Partial wird von 2 verschiedenen Views eingebunden:
 
 | View | Verwendung |
 |------|------------|
 | `/resources/views/hub/forms/fill.blade.php` | Standalone Formular-Ausfüllen |
-| `/resources/views/hub/appointment-view/partials/form-fill-inline.blade.php` | Formular in Termin-Ansicht |
-| `/resources/views/hub/appointment-session/partials/form-fill-session.blade.php` | Formular in Session-Ansicht |
+| `/resources/views/hub/appointment-unified/partials/form-fill-inline.blade.php` | Formular in der Unified Terminansicht |
 
 > ⚠️ **Wichtig**: Bei Änderungen an Feldtypen nur `_field-renderer.blade.php` bearbeiten!
 
@@ -482,7 +481,7 @@ Wenn ein Formular mit Phorest-Kontext geöffnet wird (z.B. aus der Terminansicht
 
 - **Optimistic Locking**: Das Phorest API erfordert `clientId` + `version` im Payload. Die Raw-Client-Daten (inkl. `version`) werden beim Laden des Kontexts aus `/api/forms/context` → `raw.client` gespeichert
 - **Datenfluss (Terminansicht)**:
-  1. `appointment-view.js` / `appointment-session-forms.js` lädt Kontext via `/api/forms/context`
+  1. `appointment-unified.js` lädt Kontext via `/api/forms/context`
   2. Speichert `rawClientData = ctxJson.raw.client`
   3. Übergibt an `formFill()` via `{ rawClient: rawClientData }`
   4. `formFill` initialisiert `phorestRawClient` aus dem übergebenen Context
@@ -496,8 +495,7 @@ Wenn ein Formular mit Phorest-Kontext geöffnet wird (z.B. aus der Terminansicht
 |-------|--------------|
 | `public/js/components/form-fill.js` | Change-Tracking, Detection, Payload-Build, API-Call |
 | `resources/views/partials/phorest-changes-modal.blade.php` | Modal-UI (x-teleport, Design-System) |
-| `public/js/appointment-view.js` | Raw-Client-Daten speichern & weiterreichen |
-| `public/js/appointment-session-forms.js` | Raw-Client-Daten speichern & weiterreichen |
+| `public/js/appointment-unified.js` | Raw-Client-Daten speichern & weiterreichen |
 | `app/Http/Controllers/PhorestController.php` | `updateClientData()` Backend-Endpoint |
 | `config/form-placeholders.php` | Platzhalter-Definition mit Kategorien |
 
