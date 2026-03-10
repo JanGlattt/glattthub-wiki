@@ -696,8 +696,10 @@ $clientMandate = $service->processSepaFormSubmission($sepaSubmission);
 | `processSepaFormSubmission()` | Findet ClientMandate per client_id, vervollständigt mit Bankdaten |
 | `completeMandateFromSepaForm()` | Aktiviert alle Draft-Contracts des Mandats, dispatcht Sync-Job |
 | `isOneTimePayment()` | Prüft `display_mode` des contract_price-Feldes |
-| `generateContractNumber()` | Erzeugt unique Nummer mit auto-Suffix bei Duplikaten |
+| `generateContractNumber()` | Erzeugt unique Nummer im Format `YYYY.MM.DD-{externalId}` mit auto-Suffix bei Duplikaten |
+| `generateMandateReference()` | Erzeugt Mandatsreferenz im Format `{externalId}-{5-stelliger Random-Block}` (A-Z, 0-9) |
 | `extractContractPriceData()` | Liest Preisdaten aus Submission-Values |
+| `extractFirstPaymentDate()` | Liest erstes Abbuchungsdatum aus Datumsfeld mit `is_first_payment_date` Setting |
 
 **Mandats-Suche bei Vertragserstellung (`prepareMandateForContract`):**
 
@@ -1156,6 +1158,47 @@ In der Sandbox sind einige Features eingeschränkt:
 - Test-IBANs verwenden (z.B. DE89370400440532013000)
 - Zahlungen werden nicht wirklich eingezogen
 
+### Nummernformate
+
+| Referenz | Format | Beispiel |
+|----------|--------|----------|
+| **Vertragsnummer** | `YYYY.MM.DD-{externalId}` | `2026.03.10-K12345` |
+| **Mandatsreferenz** | `{externalId}-{5-Random}` | `K12345-A7B3X` |
+
+- **Vertragsnummer:** Datum + Phorest externalId, bei Duplikaten mit Suffix (`-2`, `-3`...)
+- **Mandatsreferenz:** externalId + 5-stelliger Zufallsblock (Großbuchstaben A-Z und Ziffern 0-9). Der Random-Block wird mit `random_int()` kryptographisch sicher generiert.
+
+### Startdatum Abbuchung (first_payment_date)
+
+Das erste Abbuchungsdatum wird am **Vertrag** (`Contract.first_payment_date`) gespeichert, nicht am Mandat.
+
+**Konfiguration im Form-Editor:**
+
+1. In den Vertragseinstellungen "Vertrag erstellen" aktivieren
+2. Ein Datumsfeld zum Formular hinzufügen (z.B. "Startdatum Abbuchung")
+3. In den Feld-Einstellungen (rechte Seitenleiste) den Toggle **"Startdatum Abbuchung"** aktivieren
+4. Das Feld wird als `is_first_payment_date` in den Field-Settings gespeichert
+
+**Datenfluss:**
+
+```
+Formular → Datumsfeld (is_first_payment_date: true)
+    │
+    ▼
+ContractCreationService::extractFirstPaymentDate()
+    │
+    ▼
+Contract.first_payment_date
+    │
+    ├── GoCardlessPaymentPlanService::calculateStartDate()
+    │     → start_date für Subscription (min. 5 Werktage, kein Wochenende)
+    │
+    └── GoCardlessMandateService::calculateSubscriptionStartDate()
+          → Gleiche Logik für direkten Mandate-Sync
+```
+
+**Fallback:** Wenn kein Datumsfeld mit dieser Einstellung vorhanden ist, wird `now()->addMonth()->startOfMonth()` (1. des Folgemonats) verwendet.
+
 ### Legacy-Verträge ohne ClientMandate
 
 Alte Verträge die noch kein `client_mandate_id` haben, werden über die Legacy-Fallbacks bedient:
@@ -1173,6 +1216,15 @@ Alte Verträge die noch kein `client_mandate_id` haben, werden über die Legacy-
 - ✨ `GoCardlessPaymentPlanService` — neuer Service für Payment-Plan-Lifecycle
 - ✨ `activatePendingPlans()` — erstellt Subscriptions automatisch wenn Mandat aktiv wird (Webhook)
 - ✨ Zahlungsübersicht mit GoCardless-Symbol (Light/Darkmode) für API-bestätigte Zahlungen
+
+### v2.2.0 (März 2026) — Mandatsreferenz-Format & Startdatum-Konfiguration
+
+- **🔄 Breaking:** Mandatsreferenz-Format geändert von `YYYY.MM.DD-{externalId}` zu `{externalId}-{5-Random}`
+- ✨ Neuer Toggle **"Startdatum Abbuchung"** im Form-Editor für Datumsfelder (bei aktiver Vertragserstellung)
+- ✨ `extractFirstPaymentDate()` in ContractCreationService — liest Startdatum aus Feld-Setting statt Label-Matching
+- ✨ `first_payment_date` wird direkt bei Vertragserstellung gesetzt (nicht erst beim SEPA-Formular)
+- 🐛 Fix: Phorest-Kauf wurde nie ausgeführt (Dead-Code durch `return DB::transaction(...)` statt `$contract = ...`)
+- 🐛 Fix: `resolveStaffId()` unterstützt jetzt Plain Arrays mit DB-Lookup Fallback
 - ✨ Monatsbasierte Deduplizierung (GC upcoming_payments max. 10 + lokale DB für Rest)
 - ✨ Status "Vorgemerkt" für alle geplanten Zahlungen (GC + lokal)
 - ✨ Subscription-Webhook-Handler (created/finished/cancelled)
