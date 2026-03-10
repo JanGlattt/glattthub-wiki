@@ -4,7 +4,13 @@
 
 ### Übersicht
 
-Das Kundenprofil zeigt alle relevanten Informationen zu einem Kunden in einem Tab-basierten Layout. Daten werden per Lazy-Loading erst geladen, wenn der jeweilige Tab aktiviert wird.
+Das Kundenprofil zeigt alle relevanten Informationen zu einem Kunden in einem Sidebar-Tab-Layout. Daten werden per Lazy-Loading erst geladen, wenn der jeweilige Tab aktiviert wird.
+
+### Layout
+
+**Desktop (≥ 1024px):** Vertikale Sidebar-Navigation links, Content-Bereich rechts. Die Sidebar ist sticky und scrollt mit.
+
+**Mobile (< 1024px):** Horizontale Tab-Leiste oben mit horizontalem Scrolling (identisches Verhalten wie zuvor).
 
 ### Tabs
 
@@ -95,7 +101,37 @@ routes/web.php                                # Route-Definitionen
 
 ### Architektur
 
-#### Tab-System
+#### Sidebar-Tab-Layout
+
+Das Layout verwendet das `tabs-glattt-layout` CSS-System aus `theme_glattt.css`:
+
+```html
+<div class="tabs-glattt-layout">
+    <nav class="tabs-glattt-sidebar">
+        <button class="tab-glattt-sidebar active">Übersicht</button>
+        <button class="tab-glattt-sidebar">Kundeninfos</button>
+        <!-- ... -->
+    </nav>
+    <div class="tabs-glattt-content">
+        <!-- Tab-Inhalte -->
+    </div>
+</div>
+```
+
+**CSS-Klassen (in `theme_glattt.css`):**
+
+| Klasse | Beschreibung |
+|--------|-------------|
+| `tabs-glattt-layout` | Flex-Container: column (mobil) / row (desktop) |
+| `tabs-glattt-sidebar` | Nav-Container mit Glass-Morphism, horizontal (mobil) / vertikal sticky (desktop, 220px breit) |
+| `tab-glattt-sidebar` | Einzelner Tab-Button mit Hover/Active-States |
+| `tabs-glattt-content` | Content-Bereich (flex: 1) |
+
+**Responsive Verhalten:**
+- **< 1024px:** Horizontale Scrollbar-Tabs, identisch mit `tabs-glattt`
+- **≥ 1024px:** Vertikale Sidebar, sticky (`top: 5rem`), max-height mit Overflow-Scroll
+
+#### Tab-System (Alpine.js)
 
 Das Tab-System ist vollständig in Alpine.js implementiert (`clientDetailPage()` in `detail.blade.php`):
 

@@ -115,6 +115,7 @@ nav:
   - Institute & Personal:
     - Institut-Modul: INSTITUTE-MODULE.md
     - Institut Bild-Upload: INSTITUTE-IMAGE-UPLOAD.md
+    - Personalverwaltung: STAFF-MODULE.md
     - Profil-Integration: PROFILE-INTEGRATION.md
     - Benutzer-Einladungen: USER-INVITATION-SYSTEM.md
   - Kommunikation:
@@ -125,6 +126,7 @@ nav:
   - API-Integrationen:
     - Phorest API: PHOREST-API.md
     - Phorest Client-ID Import: PHOREST-CLIENT-ID-IMPORT.md
+    - askDANTE API: ASKDANTE-API.md
   - Design & UI:
     - Design System: DESIGN-SYSTEM.md
     - Custom Dropdown: CUSTOM-DROPDOWN.md

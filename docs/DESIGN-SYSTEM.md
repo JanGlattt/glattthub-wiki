@@ -502,7 +502,55 @@ Vollständig runde Varianten der Badges.
 
 ---
 
-## 📋 Tables
+## � Tabs
+
+### Horizontal Tabs
+Standard-Tabs für einfache Navigationen.
+
+```html
+<div class="tabs-glattt">
+    <button class="tab-glattt active">Tab 1</button>
+    <button class="tab-glattt">Tab 2</button>
+    <button class="tab-glattt">Tab 3</button>
+</div>
+```
+
+### Sidebar Tabs (Responsive)
+Vertikale Sidebar-Navigation auf Desktop, horizontale Tabs auf Mobile. Ideal für Seiten mit vielen Tabs (z.B. Kundenprofil).
+
+```html
+<div class="tabs-glattt-layout">
+    <nav class="tabs-glattt-sidebar">
+        <button class="tab-glattt-sidebar active">Übersicht</button>
+        <button class="tab-glattt-sidebar">Details</button>
+        <button class="tab-glattt-sidebar">Einstellungen</button>
+    </nav>
+    <div class="tabs-glattt-content">
+        <!-- Aktiver Tab-Inhalt -->
+    </div>
+</div>
+```
+
+**Responsive Verhalten:**
+
+| Viewport | Layout |
+|----------|--------|
+| < 1024px | Horizontale Tabs mit Scroll (wie `tabs-glattt`) |
+| ≥ 1024px | Vertikale Sidebar links (220px, sticky) + Content rechts |
+
+**Klassen:**
+
+| Klasse | Beschreibung |
+|--------|-------------|
+| `tabs-glattt-layout` | Flex-Wrapper (column → row ab lg) |
+| `tabs-glattt-sidebar` | Nav-Container mit Glass-Morphism |
+| `tab-glattt-sidebar` | Tab-Button (horizontal mobil, vertikal desktop) |
+| `tab-glattt-sidebar.active` | Aktiver Tab mit Primary-Gradient |
+| `tabs-glattt-content` | Content-Bereich (flex: 1) |
+
+---
+
+## �📋 Tables
 
 ```html
 <div class="table-glattt-container">
