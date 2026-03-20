@@ -8,6 +8,8 @@ Das Reisekosten-Modul ermöglicht die digitale Erfassung, Berechnung und Einreic
 
 **URL:** `/hub/staff/reisekosten`
 
+> Siehe auch: [Reisekosten – Freigabe](REISEKOSTEN-FREIGABE.md) für die Prüfung und Genehmigung eingereichte Abrechnungen.
+
 ---
 
 ### Workflow
