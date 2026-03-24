@@ -26,6 +26,7 @@ Das Institut-Modul zeigt alle Phorest Branches als "Institute" an und bietet det
   - Hex-Code Eingabefeld
   - Sofortige Vorschau der gewählten Farbe
   - Die Farbe wird in allen Statistik-Seiten und auf der Übersichtsseite konsistent verwendet
+- **Reihenfolge:** Konfigurierbares Zahlenfeld (0–999) zur Steuerung der Sortierreihenfolge der Standorte in allen Listen, Tabellen und Statistik-Seiten
 - Weitere Informationen (Branch ID, Zeitzone, Währung)
 - Standort-Karte (Placeholder für zukünftige Integration)
 
@@ -90,12 +91,20 @@ POST /phorest/institute/{branchId}/color -> InstituteController@saveInstituteCol
 ### Standort-Farben System
 
 #### Für Endanwender
-Jedes Institut kann eine individuelle Farbe erhalten, die in allen Diagrammen und Statistik-Seiten konsistent verwendet wird:
+Jedes Institut kann eine individuelle Farbe und eine benutzerdefinierte Sortierreihenfolge erhalten:
 
+**Farbe:**
 1. Institut-Detailseite öffnen → Info-Tab
 2. Im Bereich „Standort-Farbe" eine der 12 vordefinierten Farben wählen oder über den Farbpicker eine beliebige Farbe auswählen
 3. „Farbe speichern" klicken
 4. Die Farbe wird sofort auf allen Statistik-Seiten aktiv (Terminstatistiken, Buchungsvorlauf, Freie-Slots, Stornierungen, Auslastung, Wochentag-/Uhrzeitanalyse)
+
+**Standort-Reihenfolge:**
+1. Institut-Detailseite öffnen → Info-Tab
+2. Im Feld „Reihenfolge" neben dem Farbpicker eine Zahl eingeben (0–999)
+3. Niedrigere Zahlen erscheinen weiter oben in der Liste
+4. Institute ohne Reihenfolge werden alphabetisch am Ende einsortiert
+5. Die Reihenfolge gilt überall: Sidebar, Übersichtsseite, alle Statistik-Tabellen und Diagramme
 
 #### Für Entwickler
 
@@ -140,6 +149,7 @@ BranchColorService.getCardGradient(branchId, fallbackIndex)
 | `id` | bigint | Auto-Increment |
 | `branch_id` | string (unique) | Phorest Branch-ID |
 | `hex_color` | string(7) | Hex-Farbe z.B. `#14b8a6` |
+| `sort_order` | unsigned int (nullable) | Sortierreihenfolge (0–999), NULL = Ende |
 | `updated_by` | FK → users | Letzter Bearbeiter |
 | `timestamps` | | created_at, updated_at |
 
@@ -153,7 +163,51 @@ Die folgenden Statistik-JS-Dateien verwenden nun `BranchColorService` statt loka
 - `public/js/utilization-stats.js`
 - `public/js/weekday-time-analysis.js`
 
-**Produktiv-SQL:** `database/data/production-sql-institute-colors.sql`
+**Produktiv-SQL:** `database/data/production-sql-institute-colors.sql`, `database/data/production-sql-institute-sort-order.sql`
+
+### Standort-Reihenfolge (Sort Order)
+
+#### Für Endanwender
+Die Reihenfolge, in der Standorte überall im System angezeigt werden, kann pro Institut individuell festgelegt werden. Ohne konfigurierte Reihenfolge werden Institute alphabetisch sortiert.
+
+#### Für Entwickler
+
+**Zentrale Sortierung in `PhorestApiService::getBranches()`:**
+Die Sortierung ist direkt in der API-Service-Methode implementiert, sodass **alle Aufrufer** automatisch sortierte Branches erhalten — ohne Anpassung an jeder einzelnen Stelle.
+
+**Sortierlogik (3-stufig):**
+1. Branches mit `sort_order` → aufsteigend nach Zahl
+2. Nur ein Branch hat `sort_order` → dieser kommt zuerst
+3. Beide ohne `sort_order` → alphabetisch nach Name
+
+**Betroffene Stellen:**
+
+| Bereich | Datei | Beschreibung |
+|---|---|---|
+| API-Service | `app/Services/PhorestApiService.php` | Zentrale Sortierung in `getBranches()` |
+| Model | `app/Models/InstituteColor.php` | `getSortOrderMap()` mit 5-Min-Cache |
+| Controller | `app/Http/Controllers/InstituteController.php` | Speichern/Laden der Reihenfolge |
+| Controller | `app/Http/Controllers/PhorestController.php` | `/phorest/branches` Endpoint |
+| Controller | `app/Http/Controllers/ReportController.php` | Booking-Lead-Time und Wochentag-Analyse |
+| UI | `resources/views/hub/institutes/tabs/info.blade.php` | Zahlenfeld im Info-Tab |
+| UI | `resources/views/hub/institutes/show.blade.php` | Alpine.js `sortOrder`-Property |
+| JS | `public/js/consultation-stats.js` | Sort-Order-basierte Reihenfolge |
+| Migration | `database/migrations/2026_03_24_120000_...` | `sort_order` Spalte |
+
+**API:**
+```php
+// Sort-Order-Map abrufen (cached)
+$sortOrders = InstituteColor::getSortOrderMap();
+// Ergebnis: ['branchId1' => 1, 'branchId2' => 2, ...]
+
+// Reihenfolge speichern
+POST /phorest/institute/{branchId}/color
+// Body: { hex_color: '#14b8a6', sort_order: 3 }
+// sort_order ist optional (nullable|integer|min:0|max:999)
+```
+
+**Cache:**
+Die Sort-Order-Map wird 5 Minuten gecacht (`institute_sort_order_map`). Der Cache wird automatisch geleert, wenn eine Farbe oder Reihenfolge gespeichert wird (`InstituteColor::clearColorCache()`).
 
 ## Terminologie
 - **Phorest:** "Branch"
@@ -168,3 +222,4 @@ Die folgenden Statistik-JS-Dateien verwenden nun `BranchColorService` statt loka
 5. **Berichte:** Institut-spezifische Reports
 6. **Öffnungszeiten:** Anzeige und Verwaltung der Geschäftszeiten
 7. ~~**Standort-Farben:** Konfigurierbare Farben pro Institut~~ ✅ Implementiert
+8. ~~**Standort-Reihenfolge:** Konfigurierbare Sortierung pro Institut~~ ✅ Implementiert
