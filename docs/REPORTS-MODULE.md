@@ -35,6 +35,33 @@ Am rechten Rand jeder Kalenderwoche wird eine KW-Karte angezeigt (nur Desktop >1
 - Nur Standorte mit mindestens einem Termin werden angezeigt
 - Sortierung nach konfigurierter Standort-Reihenfolge (`sort_order`)
 
+#### Feiertage
+
+Deutsche Feiertage werden automatisch im Kalender angezeigt. Die Erkennung basiert auf dem `spatie/holidays`-Paket und unterscheidet zwischen bundesweiten und regionalen Feiertagen.
+
+**Bundesweite Feiertage** (z.B. Karfreitag, Pfingstmontag, Tag der deutschen Einheit):
+
+- Werden wie Sonntage behandelt — gestreifter Hintergrund, kein Klick möglich
+- Statt "Geschlossen" wird der **Feiertagsname** angezeigt (z.B. "Karfreitag")
+- Gilt in beiden Ansichtsmodi (Auslastung & pro Standort)
+
+**Regionale Feiertage** (z.B. Fronleichnam nur NRW, Reformationstag nur Niedersachsen/Bremen):
+
+- Tag bleibt **normal nutzbar** (nicht geschlossen)
+- Goldener Rand am oberen Rand der Tageskachel
+- **Feiertags-Badge** zeigt den Namen + betroffene Standorte
+- **Pro-Standort-Ansicht**: Betroffene Standort-Balken erhalten ein gestreiftes Muster + Tooltip mit Feiertagsname
+
+**Standort → Bundesland Zuordnung** (konfiguriert in `config/holidays.php`):
+
+| Standort | Bundesland | Region-Code |
+|----------|------------|-------------|
+| Bielefeld | Nordrhein-Westfalen | DE-NW |
+| Hannover | Niedersachsen | DE-NI |
+| Osnabrück | Niedersachsen | DE-NI |
+| Bremen | Bremen | DE-HB |
+| Braunschweig | Niedersachsen | DE-NI |
+
 #### Responsive Verhalten
 
 | Breakpoint | Verhalten |
@@ -42,7 +69,7 @@ Am rechten Rand jeder Kalenderwoche wird eine KW-Karte angezeigt (nur Desktop >1
 | >1350px | Volle Ansicht: 7-Tage-Grid + KW-Spalte, beide View-Modi |
 | ≤1350px | KW-Spalte ausgeblendet, kompaktere Balken |
 | ≤768px | Pro-Standort-Ansicht + Toggle ausgeblendet, nur Auslastung. Automatischer View-Wechsel bei Resize |
-| ≤640px | Monatsname ausgeblendet, Auslastungs-Badge versteckt |
+| ≤640px | Monatsname ausgeblendet, Auslastungs-Badge + Feiertags-Badge versteckt |
 | ≤480px | 2-Buchstaben-Wochentage, ultra-kompakt |
 
 ---
@@ -251,6 +278,16 @@ public/js/
 └── cancelled-appointments-analysis.js  # Analyse-Komponenten
 ```
 
+### Backend-Services
+
+```
+app/Services/
+└── HolidayService.php              # Feiertags-Erkennung (spatie/holidays)
+
+config/
+└── holidays.php                    # Standort → Bundesland Mapping
+```
+
 ### Views
 
 ```
@@ -309,6 +346,14 @@ Alle Reports unterstützen den systemweiten Dark Mode mit angepassten Farbschema
 ---
 
 ## Changelog
+
+### v1.10.0 (März 2026) - Feiertage im Kalender
+- ⭐ **Bundesweite Feiertage**: Gestreifter Hintergrund + Feiertagsname statt "Geschlossen"
+- ⭐ **Regionale Feiertage**: Goldener Badge mit Name + betroffene Standorte
+- ⭐ **Pro-Standort-Ansicht**: Gestreifte Balken für feiertagsbetroffene Standorte + Tooltip
+- 🔧 **HolidayService**: Neuer Service mit `spatie/holidays` Paket, 30-Tage-Cache
+- 🔧 **Config-basiert**: Standort → Bundesland Mapping in `config/holidays.php`
+- 📱 Feiertags-Badge ab ≤640px ausgeblendet, Gold-Rand bleibt sichtbar
 
 ### v1.9.0 (Februar 2026) - Kalenderübersicht & KW-Zusammenfassung
 - ⭐ **Kalenderübersicht**: Interaktiver Monatskalender für Zukünftige Beratungsgespräche
