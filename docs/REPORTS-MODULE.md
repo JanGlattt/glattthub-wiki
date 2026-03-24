@@ -17,6 +17,34 @@ Zeigt geplante Beratungstermine in den nächsten 7, 14 und 28 Tagen.
 - Historischer Vergleich mit Vormonat/Vorjahr
 - Excel-Export
 
+#### Kalenderübersicht
+
+Interaktiver Monatskalender mit zwei Ansichtsmodi:
+
+- **Auslastungs-Ansicht** (Standard): Zeigt pro Tag die Anzahl Termine, freie Slots und Auslastung in %
+- **Pro-Standort-Ansicht**: Farbige Balken pro Standort mit Terminanzahl (ab Tablet-Größe ≥768px)
+- **Toggle-Switch**: Umschalten zwischen beiden Ansichten im Kalender-Header
+- **Standort-Legende**: Farbige Punkte mit Standort-Namen (nur in pro-Standort-Ansicht)
+
+#### KW-Zusammenfassung
+
+Am rechten Rand jeder Kalenderwoche wird eine KW-Karte angezeigt (nur Desktop >1350px):
+
+- **Kalenderwochen-Nummer** und Gesamtanzahl Termine der Woche
+- **Aufschlüsselung pro Standort**: Farbiger Punkt + Standort-Name + Terminanzahl
+- Nur Standorte mit mindestens einem Termin werden angezeigt
+- Sortierung nach konfigurierter Standort-Reihenfolge (`sort_order`)
+
+#### Responsive Verhalten
+
+| Breakpoint | Verhalten |
+|------------|----------|
+| >1350px | Volle Ansicht: 7-Tage-Grid + KW-Spalte, beide View-Modi |
+| ≤1350px | KW-Spalte ausgeblendet, kompaktere Balken |
+| ≤768px | Pro-Standort-Ansicht + Toggle ausgeblendet, nur Auslastung. Automatischer View-Wechsel bei Resize |
+| ≤640px | Monatsname ausgeblendet, Auslastungs-Badge versteckt |
+| ≤480px | 2-Buchstaben-Wochentage, ultra-kompakt |
+
 ---
 
 ### 2. Vergangene Beratungsgespräche
@@ -218,6 +246,7 @@ app/Http/Controllers/ReportController.php
 ```
 public/js/
 ├── reports.js                      # Reports-Übersichtsseite
+├── consultation-stats.js           # Kalenderübersicht (Alpine.js)
 ├── cancelled-appointments-page.js  # KPI-Dashboard für Stornierte
 └── cancelled-appointments-analysis.js  # Analyse-Komponenten
 ```
@@ -231,6 +260,7 @@ resources/views/hub/reports/
 ├── past-consultations.blade.php    # Vergangene Beratungen
 ├── upcoming-consultations.blade.php # Zukünftige Beratungen
 └── partials/
+    ├── consultation-all-stats.blade.php       # Kalenderübersicht
     ├── cancelled-appointments-by-state.blade.php
     ├── cancelled-appointments-monthly.blade.php
     └── cancelled-appointments-modal.blade.php
@@ -267,6 +297,8 @@ Alle Reports sind für angemeldete Benutzer zugänglich. Die Branch-Filterung er
 - Responsive Tabellen mit horizontalem Scroll
 - Charts passen sich der Bildschirmgröße an
 - KPI-Cards stapeln sich auf kleinen Bildschirmen
+- **Kalenderübersicht**: 4 CSS-Breakpoints (1350px, 768px, 640px, 480px) mit progressiver Vereinfachung
+- **Auto-Switch**: Pro-Standort-Ansicht wird ab ≤768px automatisch auf Auslastung umgeschaltet (auch bei Browser-Resize)
 
 ---
 
@@ -277,6 +309,15 @@ Alle Reports unterstützen den systemweiten Dark Mode mit angepassten Farbschema
 ---
 
 ## Changelog
+
+### v1.9.0 (Februar 2026) - Kalenderübersicht & KW-Zusammenfassung
+- ⭐ **Kalenderübersicht**: Interaktiver Monatskalender für Zukünftige Beratungsgespräche
+- ⭐ **Zwei Ansichtsmodi**: Auslastungs-Ansicht (Termine/Slots/%) und pro-Standort-Ansicht (farbige Balken)
+- ⭐ **KW-Zusammenfassung**: Wochensumme mit Aufschlüsselung pro Standort (Desktop >1350px)
+- ⭐ **Standort-Farben**: Konfigurierbare Farben pro Standort im Kalender und allen Legenden
+- 📱 **Responsive Design**: 4 Breakpoints (1350px, 768px, 640px, 480px)
+- 📱 **Auto-Switch**: Automatischer Wechsel auf Auslastung bei Resize ≤768px
+- 🔧 Pro-Standort-Ansicht nur ab Tablet (≥768px) sichtbar
 
 ### v1.8.0 (Februar 2026) - Top Services Modul
 - ⭐ **Top Services pro Monat**: Neue Analyse-Karte in Terminstatistik
