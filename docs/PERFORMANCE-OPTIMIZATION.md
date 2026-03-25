@@ -167,6 +167,43 @@ glatttHub verwendet `wire:navigate` für SPA-ähnliche Navigation:
 - Schnellere wahrgenommene Ladezeit
 - State bleibt erhalten
 
+### Externe Scripts mit `@assets` laden
+
+**Problem:** Bei SPA-Navigation via `wire:navigate` werden externe JS-Dateien in `@push('scripts')` zwar injiziert, aber Alpine.js kann `x-data`-Attribute auswerten, **bevor** das externe Script geladen ist. Das führt zu einer Race Condition (`functionName is not defined`).
+
+**Lösung:** Livewire 3 bietet die `@assets` Directive. Sie garantiert, dass externe Scripts geladen und ausgeführt sind, bevor Livewire den neuen DOM verarbeitet.
+
+```blade
+{{-- ✅ Korrekt — Script ist geladen bevor Alpine x-data auswertet --}}
+@assets
+    <script src="{{ asset('js/my-component.js') }}"></script>
+@endassets
+
+<div x-data="myComponent()" x-init="init()">
+    ...
+</div>
+```
+
+**Wann `@assets` verwenden:**
+
+| Szenario | Directive |
+|----------|-----------|
+| Externe JS-Datei definiert Alpine-Komponente (`function xyz() { return {...} }`) | `@assets` |
+| Inline `<script>` mit Alpine-Komponente | `@push('scripts')` (kein Problem) |
+| CDN-Libraries global benötigt (Chart.js, Flatpickr) | Direkt im Layout laden |
+| CSS-Dateien | `@push('styles')` (CSS hat keine Race Condition) |
+
+**Betroffene Seiten (alle auf `@assets` umgestellt):**
+
+- Startseite (`start.js`)
+- Termine (`appointments.js`)
+- Terminansicht (`appointment-unified.js`, `treatment-settings.js`, `form-fill.js`)
+- Alle Report-Seiten (`consultation-stats.js`, `cancelled-appointments-*.js`, etc.)
+- Formulare (`form-editor.js`, `form-fill.js`)
+- Services (`body-zone-selector.js`)
+- Komponenten (`components-hub.js` + Modals)
+- Lasergeräte Detail (`laser-detail.js`)
+
 ### Event-Handling für SPA-Navigation
 
 JavaScript muss auf `livewire:navigated` reagieren:
@@ -180,6 +217,18 @@ document.addEventListener('livewire:navigated', function() {
     }
 });
 ```
+
+### Global geladene Libraries
+
+Folgende Libraries werden **einmal im Hub-Layout** (`layouts/hub.blade.php`) geladen und stehen auf allen Seiten zur Verfügung:
+
+| Library | Verwendung |
+|---------|------------|
+| Chart.js 4.4.1 (CDN) | Startseite Charts, alle Report-Seiten |
+| `kpi-dashboard.js` | KPI-Karten auf Start- und Report-Seiten |
+| `hub.js` | Globale Dashboard-Funktionalität |
+| `darkmode.js` | Dark-Mode-Steuerung |
+| `branch-color-service.js` | Konsistente Standort-Farben |
 
 ---
 
@@ -375,4 +424,22 @@ Verwende Chrome DevTools:
 document.addEventListener('livewire:navigated', function() {
     console.log('Navigation detected');
 });
+```
+
+### Problem: Seite lädt nicht nach SPA-Navigation (z.B. Alpine-Komponente leer)
+
+**Ursache:** Externe JS-Datei wird per `@push('scripts')` statt `@assets` geladen → Race Condition: Alpine wertet `x-data` aus, bevor das Script verfügbar ist.
+
+**Symptome:**
+- Seite bleibt im Loading-State (Spinner dreht endlos)
+- Browser-Konsole zeigt `functionName is not defined`
+- Tritt nur bei SPA-Navigation auf, nicht bei Hard-Refresh
+- Intermittierend (abhängig von Browser-Cache und Netzwerk-Timing)
+
+**Lösung:** Externe JS-Dateien, die Alpine-Komponenten definieren, mit `@assets` statt `@push('scripts')` laden:
+
+```blade
+@assets
+    <script src="{{ asset('js/my-component.js') }}"></script>
+@endassets
 ```

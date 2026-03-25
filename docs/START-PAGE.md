@@ -271,11 +271,35 @@ Der Greeting-Bereich zeigt eine tageszeit-abhängige Begrüßung:
 
 Die Startseite ist vollständig Livewire SPA-kompatibel:
 
-- **Chart.js** wird per CDN in `@push('scripts')` geladen
-- **start.js** wird mit Cache-Bust geladen (`filemtime`)
-- **Alpine.js** `startPage()` wird bei jeder SPA-Navigation neu initialisiert
+- **Chart.js** wird global im Hub-Layout geladen (`layouts/hub.blade.php`)
+- **start.js** wird mit `@assets` Directive geladen — Livewire garantiert, dass das Script **vor** der Alpine.js-Initialisierung verfügbar ist
+- **Alpine.js** `startPage()` hat ein explizites `x-init="init()"` für zuverlässige Initialisierung bei SPA-Navigation
 - **`destroy()`** bereinigt Event-Listener und Chart-Instanzen
 - **`branchChanged`** Event-Listener werden korrekt auf-/abgebaut
+
+### Warum `@assets` statt `@push('scripts')`?
+
+Bei SPA-Navigation via `wire:navigate` ersetzt Livewire den Seiteninhalt und injiziert neue Scripts. Mit `@push('scripts')` + externen JS-Dateien kann eine **Race Condition** entstehen:
+
+1. Livewire injiziert neues HTML mit `x-data="startPage()"`
+2. Alpine.js versucht `startPage()` auszuwerten
+3. Die externe `start.js` ist aber noch nicht geladen → `startPage is not defined`
+
+Die `@assets` Directive löst dieses Problem: Livewire wartet mit der DOM-Verarbeitung, bis alle Assets geladen sind.
+
+```blade
+{{-- ✅ Korrekt: @assets garantiert Ladereihenfolge --}}
+@assets
+    <script src="{{ asset('js/start.js') }}?v={{ filemtime(public_path('js/start.js')) }}"></script>
+@endassets
+
+{{-- ❌ Veraltet: @push hat Race Condition bei SPA-Navigation --}}
+@push('scripts')
+    <script src="{{ asset('js/start.js') }}"></script>
+@endpush
+```
+
+> **Regel:** Alle externen JS-Dateien, die Alpine.js-Komponenten definieren (z.B. `function startPage() { return {...} }`), müssen mit `@assets` statt `@push('scripts')` geladen werden. Inline-Scripts in `<script>`-Tags sind davon nicht betroffen.
 
 ---
 
