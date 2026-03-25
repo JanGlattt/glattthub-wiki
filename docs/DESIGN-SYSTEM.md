@@ -1,7 +1,7 @@
 # GLATTT Design System
 
-**Version:** 1.0 Final  
-**Letzte Aktualisierung:** Februar 2026
+**Version:** 2.0 (Konsolidiert)  
+**Letzte Aktualisierung:** März 2026
 
 Das GLATTT Design System ist das zentrale Styling-Framework für den glatttHub. Es definiert alle visuellen Komponenten, Farben, Typografie und Interaktionsmuster.
 
@@ -11,10 +11,13 @@ Das GLATTT Design System ist das zentrale Styling-Framework für den glatttHub. 
 
 | Datei | Beschreibung |
 |-------|--------------|
-| `public/css/theme_glattt.css` | **Haupt-Design-System** - Alle Komponenten, Variablen, Buttons, Cards, etc. |
-| `public/css/nav.css` | Navigation-Styles (Sidebar & Topbar) |
-| `public/css/hub.css` | Dashboard-spezifische Layouts und Styles |
+| `public/css/theme_glattt.css` | **Einziges zentrales Stylesheet** (~20.700 Zeilen) — Alle Variablen, Komponenten, Navigation, Dashboard, Feature-Styles |
+| `public/css/login.css` | Login-Seite (separat, wird nicht im Hub geladen) |
+| `resources/css/app.css` | Vite/Tailwind-Basis (wird von Vite kompiliert) |
 | `resources/views/hub/component-library.blade.php` | **Live-Beispiele** aller Komponenten |
+
+!!! note "CSS-Konsolidierung (März 2026)"
+    Alle ehemals separaten CSS-Dateien (`nav.css`, `hub.css`, `theme.css`, `kpi-dashboard.css`, `form-editor.css`, `body-zone-selector.css`, etc.) wurden in `theme_glattt.css` zusammengeführt. Es gibt nur noch **eine einzige CSS-Datei** für das gesamte Design System.
 
 ---
 

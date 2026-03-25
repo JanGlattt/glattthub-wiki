@@ -14,8 +14,7 @@ Das Dashboard (Startseite) zeigt drei Live-KPI-Karten mit Daten aus der Phorest 
 | `app/Http/Controllers/DashboardKpisController.php` | Aggregierter API-Endpoint für alle Dashboard-KPIs |
 | `resources/views/hub/dashboard.blade.php` | Blade Template mit KPI-Cards, News & Quick Actions |
 | `public/js/dashboard.js` | Client-seitige KPI-Lade- und Anzeigefunktionen (IIFE) |
-| `public/css/theme_glattt.css` | Icon-Klassen (`.icon-glattt`-System) |
-| `public/css/hub.css` | Dashboard-spezifische Styles |
+| `public/css/theme_glattt.css` | Icon-Klassen (`.icon-glattt`-System) + Dashboard-Styles |
 
 ---
 

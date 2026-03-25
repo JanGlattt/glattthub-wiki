@@ -352,8 +352,7 @@ Die Seite `auth/invitation-invalid.blade.php` zeigt:
 | `App\Models\User` | Benutzer-Model (PIN + Passwort) |
 | Spatie Permissions | Rollen werden vom Admin gesetzt |
 | Alpine.js (CDN) | Interaktivität auf Setup-Seite |
-| `theme_glattt.css` | Design System Klassen |
-| `hub.css` | Dashboard-Hintergrund |
+| `theme_glattt.css` | Einziges Design System Stylesheet (inkl. Dashboard-Hintergrund, Dark Mode) |
 | `darkmode.js` | Theme-Verwaltung |
 
 ---

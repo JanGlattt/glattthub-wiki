@@ -142,7 +142,7 @@ Wenn ein Kunde aus München einen Vertrag abschließt, wird automatisch "Münche
 │                        Frontend                              │
 │  resources/views/hub/contracts/prices.blade.php             │
 │  public/js/contract-prices.js (Alpine.js)                   │
-│  public/css/contract-prices.css                             │
+│  public/css/theme_glattt.css (Sektion: Contract Prices)     │
 └─────────────────────┬───────────────────────────────────────┘
                       │ JSON API
 ┌─────────────────────▼───────────────────────────────────────┐
@@ -362,7 +362,7 @@ this.parseDecimal('49,99'); // 49.99
 this.formatCurrency(49.99); // "49,99 €"
 ```
 
-#### CSS-Klassen (contract-prices.css)
+#### CSS-Klassen (in theme_glattt.css)
 
 ```css
 /* Preislisten-Karten */

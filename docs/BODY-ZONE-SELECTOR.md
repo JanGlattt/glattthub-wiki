@@ -22,7 +22,7 @@ Der Body Zone Selector ist eine wiederverwendbare Blade-Komponente, die es ermö
 |-------|--------------|
 | `resources/views/partials/body-zone-selector.blade.php` | Blade Partial |
 | `public/js/components/body-zone-selector.js` | Alpine.js Komponente |
-| `public/css/components/body-zone-selector.css` | Styles |
+| `public/css/theme_glattt.css` | Styles (Sektion "Body Zone Selector") |
 | `app/Models/BodyZone.php` | Eloquent Model (Single Source of Truth) |
 | `database/seeders/BodyZoneSeeder.php` | Datenbank Seeder |
 
@@ -40,11 +40,9 @@ Der Body Zone Selector ist eine wiederverwendbare Blade-Komponente, die es ermö
 
 ### 1. Assets einbinden
 
-```blade
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/components/body-zone-selector.css') }}">
-@endpush
+Die Styles für den Body Zone Selector sind in `theme_glattt.css` enthalten und werden automatisch geladen. Nur das JavaScript muss eingebunden werden:
 
+```blade
 @push('scripts')
     <script src="{{ asset('js/components/body-zone-selector.js') }}"></script>
 @endpush

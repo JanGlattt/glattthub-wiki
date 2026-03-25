@@ -345,7 +345,7 @@ fetch('/cancelled-appointments/monthly/combined');
 | `routes/web.php` | Route-Definitionen |
 | `public/js/cancelled-appointments-page.js` | KPI-Dashboard Alpine.js |
 | `public/js/cancelled-appointments-analysis.js` | Analyse-Komponenten Alpine.js |
-| `public/css/components/kpi-dashboard.css` | KPI-Dashboard Styling |
+| `public/css/theme_glattt.css` | Alle Styles (inkl. KPI-Dashboard) |
 | `resources/views/hub/reports/rescheduled-cancelled.blade.php` | Haupt-View |
 | `resources/views/hub/reports/partials/cancelled-appointments-*.blade.php` | Partial Views |
 | `resources/views/components/kpi-dashboard.blade.php` | Wiederverwendbare KPI-Component |

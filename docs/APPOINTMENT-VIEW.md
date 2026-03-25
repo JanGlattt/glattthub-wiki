@@ -120,9 +120,7 @@ app/Http/Controllers/
 
 public/
 ├── css/
-│   ├── appointment-view.css               # Styles für Details-Ansicht
-│   ├── appointment-session.css            # Styles für Session-Elemente
-│   └── treatment-settings.css             # Styles für Behandlungseinstellungen
+│   └── theme_glattt.css                   # Alle Styles (inkl. Appointment View, Session, Treatment Settings)
 └── js/
     ├── appointment-unified.js             # Alpine.js Hauptkomponente
     └── treatment-settings.js              # Alpine.js Behandlungseinstellungen

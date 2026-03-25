@@ -25,7 +25,7 @@ Der Service Worker implementiert verschiedene Cache-Strategien:
 
 | Cache Name | Verwendung |
 |------------|------------|
-| `glattthub-static-v3` | Statische Assets (CSS, JS, Fonts, Bilder) |
+| `glattthub-static-v8` | Statische Assets (CSS, JS, Fonts, Bilder) |
 | `glattthub-dynamic-v1` | Dynamisch gecachte Ressourcen |
 | `glattthub-api-v1` | API-Responses |
 
@@ -36,14 +36,7 @@ Folgende kritische Assets werden beim Service Worker Install gecached:
 ```javascript
 const PRECACHE_ASSETS = [
     '/',
-    '/css/theme.css',
     '/css/theme_glattt.css',
-    '/css/nav.css',
-    '/css/hub.css',
-    '/css/profile.css',
-    '/css/auto-logout.css',
-    '/css/institutes.css',
-    '/css/components/kpi-dashboard.css',
     '/js/dashboard.js',
     '/js/consultations.js',
     '/images/glattt-icon.png',
@@ -52,6 +45,9 @@ const PRECACHE_ASSETS = [
     '/fonts/Dosis-VariableFont_wght.ttf',
 ];
 ```
+
+!!! note "CSS-Konsolidierung (März 2026)"
+    Alle separaten CSS-Dateien (`theme.css`, `nav.css`, `hub.css`, `auto-logout.css`, `kpi-dashboard.css`, etc.) wurden in `theme_glattt.css` konsolidiert. Nur noch eine einzige CSS-Datei wird gecached.
 
 ### Cache-Strategien
 
@@ -143,8 +139,7 @@ Lädt kritische Ressourcen mit hoher Priorität:
 <!-- Kritische Font (Dosis Variable Font) -->
 <link rel="preload" href="/fonts/Dosis-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin>
 
-<!-- Kritische CSS -->
-<link rel="preload" href="/css/theme.css" as="style">
+<!-- Kritische CSS (einzige Datei seit März 2026) -->
 <link rel="preload" href="/css/theme_glattt.css" as="style">
 ```
 

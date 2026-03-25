@@ -178,9 +178,12 @@ npm run build
 ## Komponenten-Dateien
 
 ### CSS
-- `/public/css/components/form-editor.css` - Editor-Styles
-- `/public/css/components/form-fill.css` - Ausfüll-Ansicht
-- `/public/css/components/signature-pad.css` - Unterschriften-Feld
+
+Alle Styles sind in `public/css/theme_glattt.css` konsolidiert (Sektionen: Form Editor, Form Fill, Signature Pad).
+
+~~`/public/css/components/form-editor.css`~~ — migriert  
+~~`/public/css/components/form-fill.css`~~ — migriert  
+~~`/public/css/components/signature-pad.css`~~ — migriert
 
 ### JavaScript (Alpine.js)
 - `/public/js/components/form-editor.js` - Editor-Logik

@@ -622,8 +622,7 @@ getDurationValue(row, field) {
 
 ### CSS
 
-- `public/css/components/kpi-dashboard.css` - KPI-Dashboard Styling
-- `public/css/theme-glattt.css` - Tabellen-Styling (`.table-glattt-heatmap`)
+- `public/css/theme_glattt.css` — Alle Styles (KPI-Dashboard, Tabellen, Heatmap etc.)
 
 ### Datenquellen
 

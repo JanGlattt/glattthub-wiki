@@ -8,7 +8,7 @@ Die Login-Seite wurde am 21.02.2026 komplett überarbeitet. Das neue Design basi
 
 ### 🎨 Konsistenz mit dem Hub
 
-- **Gleicher Hintergrund** wie die Hub-Seiten (`dashboard-background` aus `hub.css`)
+- **Gleicher Hintergrund** wie die Hub-Seiten (`dashboard-background` aus `theme_glattt.css`)
 - **Design System Klassen** aus `theme_glattt.css`
 - **Keine Custom-CSS-Datei** - nur Inline-Styles wo nötig
 - **Professioneller Footer** mit Copyright-Notice
@@ -143,9 +143,7 @@ Icon-Sichtbarkeit wird über CSS gesteuert basierend auf `data-theme` Attribut.
 ## Abhängigkeiten
 
 ### CSS-Dateien
-1. `theme.css` - Dark Mode Basis
-2. `theme_glattt.css` - GLATTT Design System
-3. `hub.css` - Für `dashboard-background`
+1. `theme_glattt.css` — Einziges Stylesheet (enthält Dark Mode, Design System, Dashboard-Hintergrund)
 
 ### JavaScript
 1. `darkmode.js` - Theme-Verwaltung (`window.themeManager`)

@@ -66,9 +66,10 @@ Alle Farben sind als CSS-Variablen definiert:
 ### Dateien
 
 #### CSS
-- `/public/css/darkmode.css` - Haupt Dark Mode CSS mit Variablen
-- `/public/css/hub-darkmode.css` - Hub-spezifische Dark Mode Styles
-- `/public/css/appointments.css` - Konvertiert zu CSS-Variablen
+- `public/css/theme_glattt.css` — **Einzige CSS-Datei**. Enthält alle Dark-Mode-Variablen in der `.dark`-Sektion.
+- ~~`/public/css/darkmode.css`~~ — Gelöscht (war leerer Platzhalter)
+- ~~`/public/css/hub-darkmode.css`~~ — Gelöscht (war leerer Platzhalter)
+- ~~`/public/css/appointments.css`~~ — Gelöscht (in `theme_glattt.css` konsolidiert)
 
 #### JavaScript
 - `/public/js/darkmode.js` - Dark Mode Manager Klasse

@@ -196,7 +196,7 @@ resources/views/hub/contracts/
 
 public/
 ├── js/contract-prices.js
-└── css/contract-prices.css
+└── css/theme_glattt.css  (Sektion: Contract Prices)
 
 routes/web.php         (Contract-Routen)
 ```
