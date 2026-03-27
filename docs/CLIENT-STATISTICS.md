@@ -94,6 +94,22 @@ Jede KPI-Karte zeigt einen Trendpfeil (↑/↓) im Vergleich zum Vormonat.
 - Persona-Analyse nach Geschlecht × Altersgruppe
 - Anzeige: Segment-Name, Anzahl Kunden, Anteil, Conversion-Rate
 
+#### 7. Herkunftsverteilung (Name-Origin-Analyse)
+
+Analyse der vermuteten kulturellen Herkunft der Kunden basierend auf Vor- und Nachnamen.
+
+- **Donut-Diagramm** mit 10 Herkunftskategorien (Deutsch, Türkisch, Arabisch, Persisch/Iranisch, Osteuropäisch, Südeuropäisch, Südasiatisch, Ostasiatisch, Afrikanisch, Sonstige)
+- **Detailtabelle** mit Anzahl, Anteil, Verträge, Conversion-Rate und Widerrufsquote pro Herkunft
+- **Zweistufige Klassifizierung:**
+    1. **Lokaler Klassifizierer** (Wörterbuch mit 3.000+ Vornamen + Nachnamen-Pattern) — läuft automatisch bei jedem Sync
+    2. **KI-Optimierung** (Google Gemini AI, Free Tier) — optionaler Button zum Nachklassifizieren der verbleibenden „Sonstige"
+- Untertitel zeigt „X von Y Kunden klassifiziert"
+- Widerrufsquote ist farbcodiert: grün (≤10%), gelb (10–20%), rot (>20%)
+
+**KI-Optimierung:**
+
+Über den Button „KI-Optimierung" werden die verbleibenden „Sonstige"-Einträge per Google Gemini AI nachklassifiziert. Die Verarbeitung erfolgt Batch für Batch (30 Namen pro Anfrage), um das kostenlose Rate-Limit (15 Anfragen/Minute) einzuhalten. Ein Fortschrittsbalken zeigt den aktuellen Status.
+
 ### Filter
 
 Über den ausklappbaren Filter-Bereich können alle Daten eingeschränkt werden:
@@ -131,8 +147,8 @@ Die Statistiken basieren auf einer **vorberechneten Tabelle** (`client_statistic
 │           (Haupt-Layout mit Alpine.js x-data + @includes)        │
 ├──────────────────────────────────────────────────────────────────┤
 │  Partials:                                                       │
-│  header │ filter-bar │ demographics │ funnel │ distance │        │
-│  body-zones │ cancellations │ map │ top-plz │ segments           │
+│  header │ filter-bar │ demographics │ name-origins │ funnel │     │
+│  distance │ body-zones │ cancellations │ map │ top-plz │ segments │
 └──────────────────────────┬───────────────────────────────────────┘
                            │
               ┌────────────┴────────────┐
@@ -144,7 +160,7 @@ Die Statistiken basieren auf einer **vorberechneten Tabelle** (`client_statistic
             │
             ▼ fetch()
    ┌──────────────────────────────────────────────┐
-   │ ClientStatisticsController (10 API-Endpoints) │
+   │ ClientStatisticsController (13 API-Endpoints) │
    └────────┬─────────────────────────────────────┘
             │
    ┌────────┴────────────────┐
@@ -165,8 +181,12 @@ Die Statistiken basieren auf einer **vorberechneten Tabelle** (`client_statistic
 
 | Datei | Zweck |
 |-------|-------|
-| `app/Http/Controllers/ClientStatisticsController.php` | API-Controller mit 10 Endpoints |
+| `app/Http/Controllers/ClientStatisticsController.php` | API-Controller mit 13 Endpoints |
 | `app/Services/ClientStatisticsService.php` | Abfragen & Aggregation mit Cache |
+| `app/Services/NameOriginClassifier.php` | Lokaler Namens-Klassifizierer (Wörterbuch + Muster) |
+| `app/Services/GeminiNameClassifier.php` | Google Gemini AI Batch-Klassifizierer |
+| `app/Console/Commands/AiClassifyNameOriginsCommand.php` | Artisan-Befehl für KI-Klassifizierung |
+| `database/data/name_origins.json` | Kuratiertes Namenswörterbuch (3.000+ Vornamen) |
 | `app/Services/ClientStatisticsSyncService.php` | Sync-Logik: Phorest + Verträge → Tabelle |
 | `app/Models/ClientStatistic.php` | Eloquent-Model mit Scopes & Constants |
 | `app/Models/PostalCodeCoordinate.php` | PLZ → Koordinaten Lookup-Model |
@@ -190,6 +210,7 @@ Denormalisierte Kundendaten für schnelle Abfragen. Wird per Sync-Prozess befül
 | `phorest_client_id` | VARCHAR UNIQUE | Phorest-Kunden-ID |
 | `branch_id` | VARCHAR | Zugeordneter Standort |
 | `first_name`, `last_name` | VARCHAR | Kundenname |
+| `name_origin` | VARCHAR(20) NULL | Klassifizierte Herkunft (german, turkish, arabic, etc.) |
 | `gender` | ENUM | male, female, non_binary, unknown |
 | `birth_date` | DATE | Geburtsdatum (für Altersberechnung) |
 | `postal_code`, `city` | VARCHAR | Adressdaten |
@@ -224,6 +245,7 @@ Denormalisierte Kundendaten für schnelle Abfragen. Wird per Sync-Prozess befül
 | `cs_birth_date_idx` | birth_date | Altersberechnung |
 | `cs_branch_no_return_idx` | branch_id, only_consultation_no_return | Absprung-Analyse |
 | `cs_first_appt_idx` | first_appointment_date | Zeitfilter |
+| `cs_name_origin_idx` | name_origin | Herkunfts-Gruppierung |
 
 #### `postal_code_coordinates` (Lookup-Tabelle)
 
@@ -263,6 +285,9 @@ Alle Endpoints unter `/hub/reports/client-statistics/` — alle unterstützen di
 | `/map` | GET | markers[], branch, center | Karten-Daten |
 | `/top-plz` | GET | top[] (limit per Query-Param) | Top Postleitzahlen |
 | `/segments` | GET | segments[] | Kundensegmente |
+| `/name-origins` | GET | total, classified, origins[] | Herkunftsverteilung |
+| `/classify-origins` | POST | success, message, classified | Lokale Namens-Klassifizierung auslösen |
+| `/ai-classify-origins` | POST | success, message, updated, remaining | KI-Batch-Klassifizierung (1 Batch) |
 | `/sync-status` | GET | last_synced_at, total_synced, status | Sync-Status |
 
 **Filter-Parameter (alle Endpoints außer sync-status):**
@@ -297,6 +322,20 @@ ClientStatistic::DISTANCE_GROUPS = [
     '10-20 km' => [10, 20],
     '20-50 km' => [20, 50],
     '50+ km'  => [50, 99999],
+];
+
+// Herkunftskategorien (Schlüssel → deutsches Label)
+ClientStatistic::ORIGIN_GROUPS = [
+    'german'           => 'Deutsch',
+    'turkish'          => 'Türkisch',
+    'arabic'           => 'Arabisch',
+    'persian'          => 'Persisch/Iranisch',
+    'eastern_european' => 'Osteuropäisch',
+    'southern_european'=> 'Südeuropäisch',
+    'south_asian'      => 'Südasiatisch',
+    'east_asian'       => 'Ostasiatisch',
+    'african'          => 'Afrikanisch',
+    'other'            => 'Sonstige',
 ];
 ```
 
@@ -419,6 +458,114 @@ Für die Ersteinrichtung auf der Produktiv-Datenbank:
    ```bash
    php artisan stats:sync-client-statistics --force
    ```
+
+#### Herkunftsanalyse (name_origin)
+
+Zusätzlich zur Ersteinrichtung muss die `name_origin`-Spalte angelegt werden:
+
+```sql
+ALTER TABLE `client_statistics`
+    ADD COLUMN `name_origin` VARCHAR(20) NULL AFTER `last_name`;
+
+CREATE INDEX `cs_name_origin_idx` ON `client_statistics` (`name_origin`);
+```
+
+Die Spalte wird beim nächsten Sync automatisch durch den lokalen Klassifizierer befüllt. Optional kann danach die KI-Optimierung über den Button auf der Statistik-Seite oder per CLI gestartet werden:
+
+```bash
+# KI-Klassifizierung per Artisan (alle verbleibenden "Sonstige")
+php artisan stats:ai-classify-origins
+
+# Trockenlauf (zeigt was klassifiziert würde, ohne API-Aufrufe)
+php artisan stats:ai-classify-origins --dry-run
+
+# Nur N Namen klassifizieren
+php artisan stats:ai-classify-origins --limit=100
+```
+
+### Herkunftsanalyse — Technische Details
+
+#### Klassifizierungs-Architektur (Zwei-Stufen-System)
+
+```
+Sync-Prozess / Button "Herkunft klassifizieren"
+         │
+         ▼
+┌───────────────────────────────┐
+│ NameOriginClassifier (lokal)  │ ← 1. Stufe: Wörterbuch
+│ • 3.000+ Vornamen-Einträge    │
+│ • Nachnamen-Pattern (Suffixe, │
+│   Präfixe, häufige Namen)     │
+│ • ~75% Trefferquote           │
+└──────────┬────────────────────┘
+           │ verbleibende → 'other'
+           ▼
+┌───────────────────────────────┐
+│ GeminiNameClassifier (KI)     │ ← 2. Stufe: Optional
+│ • Google Gemini 2.0 Flash     │
+│ • Free Tier (15 RPM, 1.500/d) │
+│ • 30 Namen pro Batch          │
+│ • Reduziert 'Sonstige' um     │
+│   ca. 30-50% zusätzlich       │
+└───────────────────────────────┘
+```
+
+#### 10 Herkunftskategorien
+
+| Schlüssel | Deutsches Label | Beispiel-Klassifizierung |
+|-----------|----------------|--------------------------|
+| `german` | Deutsch | Anna Müller, Michael Schmidt |
+| `turkish` | Türkisch | Ayse Yilmaz, Mehmet Kaya |
+| `arabic` | Arabisch | Mohammed Al-Hassan |
+| `persian` | Persisch/Iranisch | Maryam Hosseini |
+| `eastern_european` | Osteuropäisch | Katarina Nowak, Ivan Petrov |
+| `southern_european` | Südeuropäisch | Maria Rossi, Carlos García |
+| `south_asian` | Südasiatisch | Priya Sharma, Raj Patel |
+| `east_asian` | Ostasiatisch | Yuki Tanaka, Wei Zhang |
+| `african` | Afrikanisch | Amara Diallo |
+| `other` | Sonstige | Nicht zuordenbar |
+
+#### Lokaler Klassifizierer (`NameOriginClassifier`)
+
+**Klassifizierungs-Reihenfolge:**
+
+1. **Vornamen-Lookup**: Vorname wird normalisiert (Kleinbuchstaben, erster Teil bei Doppelnamen) und im Wörterbuch gesucht (`database/data/name_origins.json`)
+2. **Nachnamen-Pattern**: Falls kein Treffer, wird der Nachname geprüft:
+    - **Präfixe** (z.B. „von", „ab-", „al-", „di")
+    - **Suffixe** (z.B. „-ski", „-ovic", „-oğlu", „-enko")
+    - **Häufige Namen** pro Kategorie (z.B. „Müller", „Schmidt" → deutsch)
+3. **Fallback**: `'other'` wenn keine Zuordnung möglich
+
+**Wörterbuch** (`database/data/name_origins.json`):
+
+- ~3.000+ kuratierte Vornamen über alle 10 Kategorien
+- Enthält auch moderne/internationale Namen (Michelle, Kristina, Lara etc.) als deutsch eingestuft
+- Nachnamen-Pattern mit Suffixen, Präfixen und häufigen Namen pro Herkunft
+
+#### KI-Klassifizierer (`GeminiNameClassifier`)
+
+**Konfiguration** (`.env` + `config/google.php`):
+
+| Einstellung | Wert | Beschreibung |
+|-------------|------|--------------|
+| `GEMINI_API_KEY` | `.env` | API-Schlüssel (Google AI Studio) |
+| `gemini.model` | `gemini-2.0-flash` | Modell (schnell, kostenlos) |
+| `gemini.batch_size` | `30` | Namen pro API-Anfrage |
+| `gemini.rpm_limit` | `14` | Max. Anfragen/Minute |
+| `gemini.daily_limit` | `1.400` | Max. Anfragen/Tag |
+| `gemini.timeout` | `25` | Timeout in Sekunden |
+
+**API-Flow (pro Batch):**
+
+1. 30 „Sonstige"-Kunden als Liste „ID: Vorname Nachname" zusammenstellen
+2. Prompt an Gemini mit den 10 gültigen Kategorien + Anweisungen
+3. Antwort parsen: Format `ID|kategorie` pro Zeile
+4. Nur nicht-„other"-Ergebnisse in DB aktualisieren
+5. 4 Sekunden Pause bis zum nächsten Batch (15 RPM einhalten)
+
+**Frontend-Integration:**
+
+Der „KI-Optimierung"-Button ruft den Endpoint iterativ auf (1 Batch pro HTTP-Request). Das Frontend loopt in einer `while`-Schleife bis `remaining === 0` oder ein Fehler auftritt. Zwischen den Requests wird 4 Sekunden gewartet.
 
 ### Bekannte Gotchas
 
