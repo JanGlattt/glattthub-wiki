@@ -95,6 +95,7 @@ nav:
     - Wochentag & Uhrzeit-Analyse: WEEKDAY-TIME-ANALYSIS.md
   - Kunden:
     - Kundenprofil: CLIENT-DETAIL-MODULE.md
+    - Der glattt-Kunde (Statistik): CLIENT-STATISTICS.md
     - glattt-Pakete: CLIENT-COURSES-MODULE.md
     - Pakete-Statistik: CLIENT-COURSES-STATISTIK.md
     - Behandlungseinstellungen: TREATMENT-SETTINGS.md
@@ -137,6 +138,7 @@ nav:
     - PIN-Login: PIN-LOGIN-SYSTEM.md
   - Technisches:
     - Setup-Anleitung: SETUP-ANLEITUNG.md
+    - Chart.js + Alpine.js: JAVASCRIPT-CHARTS.md
     - Performance-Optimierung: PERFORMANCE-OPTIMIZATION.md
     - Lazy Loading: LAZY-LOADING-PERFORMANCE.md
     - Cloud Scheduler: CLOUD-SCHEDULER-SETUP.md
