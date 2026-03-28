@@ -138,6 +138,7 @@ nav:
     - PIN-Login: PIN-LOGIN-SYSTEM.md
   - Technisches:
     - Setup-Anleitung: SETUP-ANLEITUNG.md
+    - Security-Hardening: SECURITY-HARDENING.md
     - Chart.js + Alpine.js: JAVASCRIPT-CHARTS.md
     - Performance-Optimierung: PERFORMANCE-OPTIMIZATION.md
     - Lazy Loading: LAZY-LOADING-PERFORMANCE.md
