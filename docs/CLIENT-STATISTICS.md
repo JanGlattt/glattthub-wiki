@@ -131,8 +131,9 @@ Ein Badge zeigt die Anzahl aktiver Filter an. Über „Filter zurücksetzen" wer
 
 Die Statistiken basieren auf einer **vorberechneten Tabelle** (`client_statistics`), die regelmäßig synchronisiert wird. Falls noch kein Sync stattgefunden hat, erscheint ein Warnhinweis.
 
-- **Automatisch:** über Cloud Scheduler (täglich)
-- **Manuell:** `php artisan stats:sync-client-statistics --force`
+- **Nightly Delta-Sync:** Cloud Scheduler täglich um 03:30 — holt nur seit dem letzten Sync geänderte/neue Clients via Phorest `updatedAfter`-Filter
+- **Full Sync:** Manuell über Setup-Panel oder CLI — lädt alle Clients komplett neu und bereinigt gelöschte Records
+- **CLI:** `php artisan stats:sync-client-statistics --force`
 - **Datenquelle:** Phorest-Kunden ab Ersttermin 01.01.2024
 
 ---

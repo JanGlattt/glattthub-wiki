@@ -256,6 +256,17 @@ gcloud scheduler jobs create http sync-client-courses \
   --time-zone="Europe/Zurich" \
   --description="Syncs client courses (glattt-Pakete) from Phorest API" \
   --attempt-deadline="1800s"
+
+# Job 8: Sync Client Statistics (Nightly Delta-Sync)
+gcloud scheduler jobs create http sync-client-statistics \
+  --location=europe-west3 \
+  --schedule="30 3 * * *" \
+  --uri="https://DEINE-CLOUD-RUN-URL/api/cron/sync-client-statistics" \
+  --http-method=POST \
+  --headers="X-Cron-Token=DEIN_KOPIERTER_TOKEN,Content-Type=application/json" \
+  --time-zone="Europe/Zurich" \
+  --description="Nightly delta sync of client statistics (demographics, contracts, consultations)" \
+  --attempt-deadline="1800s"
 ```
 
 > **Hinweis:** Ersetze `DEINE-CLOUD-RUN-URL` mit der tatsächlichen URL (z.B. `glattthub-web-abc123-ey.a.run.app`)
@@ -272,6 +283,7 @@ gcloud scheduler jobs run cache-consultation-stats --location=europe-west3
 gcloud scheduler jobs run process-queue --location=europe-west3
 gcloud scheduler jobs run process-push-automations --location=europe-west3
 gcloud scheduler jobs run sync-client-courses --location=europe-west3
+gcloud scheduler jobs run sync-client-statistics --location=europe-west3
 ```
 
 ### Manuell per curl:
@@ -309,6 +321,12 @@ curl -X POST \
   -H "X-Cron-Token: 07dc96b65a52073fdf4eaa959d676980dc3ccb5334326f1406640335aab66718" \
   -H "Content-Type: application/json" \
   https://glattthub-web-99200336070.europe-west3.run.app/api/cron/sync-client-courses
+
+# Sync Client Statistics / Nightly Delta-Sync (mit Auth)
+curl -X POST \
+  -H "X-Cron-Token: 07dc96b65a52073fdf4eaa959d676980dc3ccb5334326f1406640335aab66718" \
+  -H "Content-Type: application/json" \
+  https://glattthub-web-99200336070.europe-west3.run.app/api/cron/sync-client-statistics
 ```
 
 ## 5. Logs überprüfen
@@ -333,6 +351,7 @@ gcloud logging read 'resource.type="cloud_run_revision" AND textPayload:"Cron:"'
 | `/api/cron/process-queue` | POST | Verarbeitet Queue-Jobs (Push, etc.) |
 | `/api/cron/process-push-automations` | POST | Prüft/triggert zeitbasierte Push-Automations |
 | `/api/cron/sync-client-courses` | POST | Sync Client Courses / glattt-Pakete (täglich) |
+| `/api/cron/sync-client-statistics` | POST | Nightly Delta-Sync Client Statistics (täglich) |
 
 ## Sicherheit
 
