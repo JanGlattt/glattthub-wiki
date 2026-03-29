@@ -121,6 +121,7 @@ nav:
     - Reisekosten Freigabe: REISEKOSTEN-FREIGABE.md
     - Profil-Integration: PROFILE-INTEGRATION.md
     - Benutzer-Einladungen: USER-INVITATION-SYSTEM.md
+    - Berechtigungssystem: BERECHTIGUNGSSYSTEM.md
   - Kommunikation:
     - E-Mail Versand: EMAIL-VERSAND.md
     - Benachrichtigungen: NOTIFICATIONS.md
