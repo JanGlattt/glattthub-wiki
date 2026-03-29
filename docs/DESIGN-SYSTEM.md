@@ -637,6 +637,108 @@ Vertikale Sidebar-Navigation auf Desktop, horizontale Tabs auf Mobile. Ideal fü
 
 ---
 
+## ℹ️ Info-Panel (Slide-Over)
+
+Kontextuelles Hilfe- und Info-Panel, das von rechts einschwebt. Für Erklärungen, Definitionen und Hinweise zu Statistiken, Charts oder Features. Wird über Alpine.js Events gesteuert und mit `x-teleport` zum `<body>` gerendert.
+
+!!! info "Info-Panel vs. Modal"
+    **Info-Panel** → Informative Inhalte (Hilfe, Erklärungen, Kontext)  
+    **Modal** → Aktionen, Bestätigungen, Formulare
+
+### Blade-Komponente
+
+```html
+<x-info-panel name="mein-panel" title="Titel" subtitle="Optionaler Untertitel">
+    <div class="info-panel-section">
+        <h4 class="info-panel-section-title">Abschnitt</h4>
+        <p class="info-panel-section-text">Inhalt…</p>
+    </div>
+</x-info-panel>
+```
+
+**Props:**
+
+| Prop | Pflicht | Default | Beschreibung |
+|------|---------|---------|--------------|
+| `name` | Ja | — | Eindeutige Panel-ID (für Event-Matching) |
+| `title` | Ja | — | Titel im Header |
+| `subtitle` | Nein | `null` | Untertitel im Header |
+| `headerVariant` | Nein | `null` | Header-Farbe: `info`, `success`, `warning` |
+
+### Trigger-Button
+
+```html
+<button class="btn-glattt-info-trigger"
+        @click="$dispatch('open-info-panel', { name: 'mein-panel' })">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+    </svg>
+</button>
+```
+
+Der Button wird typischerweise neben einem Titel im Card-Header platziert:
+
+```html
+<div class="card-glattt-header">
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <h3 class="card-glattt-title" style="margin: 0;">Titel</h3>
+        <button class="btn-glattt-info-trigger"
+                @click="$dispatch('open-info-panel', { name: 'mein-panel' })">
+            <svg><!-- ⓘ Icon --></svg>
+        </button>
+    </div>
+</div>
+```
+
+### Content-Klassen
+
+| Klasse | Zweck |
+|--------|-------|
+| `.info-panel-section` | Abschnitt (Card-Style mit Border) |
+| `.info-panel-section-title` | Titel eines Abschnitts (mit Icon-Platz) |
+| `.info-panel-section-text` | Fließtext |
+| `.info-panel-list` | Aufzählung mit goldenen Bullet-Points |
+| `.info-panel-highlight` | Hervorgehobener Hinweis-Block |
+
+### Vollständiges Beispiel
+
+```html
+<x-info-panel name="age-info" title="Altersverteilung" subtitle="Informationen zur Statistik">
+    <div class="info-panel-section">
+        <h4 class="info-panel-section-title">
+            <svg><!-- Icon --></svg>
+            Was zeigt dieses Diagramm?
+        </h4>
+        <p class="info-panel-section-text">
+            Erklärungstext zur Statistik...
+        </p>
+        <ul class="info-panel-list">
+            <li><strong>Gesamt</strong> — Alle Kunden</li>
+            <li><strong>Mit Vertrag</strong> — Kunden mit aktivem Vertrag</li>
+        </ul>
+        <div class="info-panel-highlight">
+            Wichtiger Hinweis oder Kontext-Information.
+        </div>
+    </div>
+</x-info-panel>
+```
+
+### Verhalten
+
+- **Öffnen**: Klick auf `.btn-glattt-info-trigger` → dispatcht `open-info-panel` Event
+- **Schließen**: Escape-Taste, Klick auf Backdrop, Close-Button im Header
+- **Mehrere Panels**: Pro Seite können beliebig viele Panels mit unterschiedlichen `name`-Werten existieren
+- **Responsive**: Auf < 768px nimmt das Panel die volle Bildschirmbreite ein
+
+### Relevante Dateien
+
+| Datei | Beschreibung |
+|-------|--------------|
+| `resources/views/components/info-panel.blade.php` | Blade-Komponente |
+| `public/css/theme_glattt.css` (ab L4231) | CSS-Klassen (`.info-panel-*`, `.btn-glattt-info-trigger`) |
+
+---
+
 ## 🌗 Dark Mode
 
 Das Design System unterstützt vollständig Light und Dark Mode. Der Modus wird über die Klasse `dark` auf dem `<html>` Element gesteuert.
