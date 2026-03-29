@@ -111,25 +111,63 @@ dig staging.hub.glattt.com @8.8.8.8 +short   # Muss 34.49.25.78 zeigen
 
 IAP schützt die Web-App mit einer Google-Anmeldung, die **vor** dem normalen App-Login kommt. Die Konfiguration erfolgt pro Backend-Service.
 
+#### Aktueller Zustand
+
 | Umgebung | Zugriff | IAM Member |
 |----------|---------|------------|
-| **Produktion** | Alle Google Workspace-Nutzer | `domain:labrado-schlueter.com` |
+| **Produktion** | Alle Google Workspace-Nutzer + jan explizit | `domain:labrado-schlueter.com`, `user:jan@labrado-schlueter.com` |
 | **Staging** | Einzelne Nutzer | `user:jan@labrado-schlueter.com` |
 
-**Wichtig:** IAP greift nur bei Zugriff über den Load Balancer (Custom Domains). Die alten `*.run.app`-URLs umgehen den Load Balancer und damit auch IAP.
+**Wichtig:** IAP greift nur bei Zugriff über den Load Balancer (Custom Domains). Die `*.run.app`-URLs umgehen den Load Balancer und damit auch IAP.
 
-#### Staging-Nutzer hinzufügen
+#### Voraussetzungen (bereits eingerichtet)
+
+Folgende APIs und Komponenten müssen aktiv sein, damit IAP funktioniert:
+
+| Komponente | Status | Details |
+|------------|--------|---------|
+| **IAP API** | ✅ Aktiv | `gcloud services enable iap.googleapis.com` |
+| **Cloud Resource Manager API** | ✅ Aktiv | `gcloud services enable cloudresourcemanager.googleapis.com` |
+| **OAuth Consent Screen** | ✅ Intern | App: `Anmeldung_glatttHub`, nur Google Workspace-Nutzer |
+| **IAP Service Account** | ✅ Provisioniert | `service-99200336070@gcp-sa-iap.iam.gserviceaccount.com` |
+| **Cloud Run Invoker** | ✅ Beide Services | IAP Service Account hat `roles/run.invoker` auf beiden Cloud Run Services |
+
+**Projekt-Nummer:** `99200336070`
+
+#### Zugriffsberechtigungen verwalten
+
+##### Aktuelle Policy anzeigen
+
+```bash
+# Produktion
+gcloud iap web get-iam-policy \
+    --resource-type=backend-services \
+    --service=backend-glattthub-prod \
+    --project=glattthub
+
+# Staging
+gcloud iap web get-iam-policy \
+    --resource-type=backend-services \
+    --service=backend-glattthub-staging \
+    --project=glattthub
+```
+
+##### Einzelnen Nutzer hinzufügen (Prod oder Staging)
 
 ```bash
 gcloud iap web add-iam-policy-binding \
     --resource-type=backend-services \
     --service=backend-glattthub-staging \
-    --member="user:EMAIL@labrado-schlueter.com" \
+    --member="user:EMAIL@example.com" \
     --role="roles/iap.httpsResourceAccessor" \
     --project=glattthub
 ```
 
-#### Weitere Domain für Produktion freigeben
+> Für Produktion `--service=backend-glattthub-prod` verwenden.
+
+##### Komplette Google Workspace-Domain freigeben
+
+Gibt allen Nutzern einer Google Workspace-Domain Zugriff (z.B. bei einer neuen Partnerfirma):
 
 ```bash
 gcloud iap web add-iam-policy-binding \
@@ -140,31 +178,172 @@ gcloud iap web add-iam-policy-binding \
     --project=glattthub
 ```
 
-#### Staging-Nutzer entfernen
+> **Voraussetzung:** Die Domain muss eine Google Workspace-Domain sein (kein privates Gmail).
+
+##### Google-Gruppe freigeben
+
+Statt einzelne Nutzer zu verwalten, kann auch eine Google-Gruppe berechtigt werden:
 
 ```bash
-gcloud iap web remove-iam-policy-binding \
+gcloud iap web add-iam-policy-binding \
     --resource-type=backend-services \
-    --service=backend-glattthub-staging \
-    --member="user:EMAIL@labrado-schlueter.com" \
+    --service=backend-glattthub-prod \
+    --member="group:GRUPPENNAME@labrado-schlueter.com" \
     --role="roles/iap.httpsResourceAccessor" \
     --project=glattthub
 ```
 
+> Neue Mitglieder der Gruppe erhalten automatisch Zugriff — praktisch wenn häufig Nutzer wechseln.
+
+##### Nutzer/Domain entfernen
+
+```bash
+# Einzelnen Nutzer entfernen
+gcloud iap web remove-iam-policy-binding \
+    --resource-type=backend-services \
+    --service=backend-glattthub-staging \
+    --member="user:EMAIL@example.com" \
+    --role="roles/iap.httpsResourceAccessor" \
+    --project=glattthub
+
+# Domain entfernen
+gcloud iap web remove-iam-policy-binding \
+    --resource-type=backend-services \
+    --service=backend-glattthub-prod \
+    --member="domain:DOMAIN.com" \
+    --role="roles/iap.httpsResourceAccessor" \
+    --project=glattthub
+```
+
+#### Member-Typen Übersicht
+
+| Typ | Format | Wann verwenden |
+|-----|--------|---------------|
+| **Einzelner Nutzer** | `user:email@domain.com` | Gezielte Freigabe für eine Person |
+| **Google Workspace-Domain** | `domain:domain.com` | Alle Mitarbeiter einer Organisation |
+| **Google-Gruppe** | `group:gruppe@domain.com` | Flexible Gruppen-Verwaltung |
+| **Service Account** | `serviceAccount:sa@project.iam.gserviceaccount.com` | Für automatisierte Zugriffe |
+
+#### Session-Dauer & Login-Häufigkeit
+
+Standardmäßig hält eine IAP-Session so lange, wie das Google-Login-Cookie gültig ist (typisch mehrere Stunden bis Tage). Die Session-Dauer kann über **IAP-Einstellungen** in der GCP Console angepasst werden:
+
+##### Über die GCP Console
+
+1. Öffne: [IAP-Übersicht](https://console.cloud.google.com/security/iap?project=glattthub)
+2. Backend-Service auswählen (z.B. `backend-glattthub-prod`)
+3. Rechts auf **Einstellungen** (Drei-Punkte-Menü oder Seitenleiste)
+4. Unter **Erweiterte Einstellungen**:
+   - **Session-Dauer**: Maximale Zeit bis eine erneute Anmeldung erforderlich ist
+   - Standard: Keine Begrenzung (Google-Session gilt)
+   - Empfohlene Werte: `1h`, `8h`, `24h`, `720h` (30 Tage)
+
+##### Per gcloud CLI
+
+```bash
+# Session-Dauer auf 24 Stunden setzen (Produktion)
+gcloud iap settings set \
+    --project=glattthub \
+    --resource-type=compute \
+    --service=backend-glattthub-prod \
+    SETTINGS.yaml
+```
+
+Dazu eine Datei `SETTINGS.yaml` erstellen:
+
+```yaml
+accessSettings:
+  reauthSettings:
+    method: LOGIN          # LOGIN = Google-Login, SECURE_KEY = Hardware-Key
+    maxAge: 86400s         # 24 Stunden (in Sekunden)
+    policyType: DEFAULT
+```
+
+**Gängige Werte für `maxAge`:**
+
+| Dauer | Wert | Anwendungsfall |
+|-------|------|----------------|
+| 1 Stunde | `3600s` | Hohe Sicherheit |
+| 8 Stunden | `28800s` | Arbeitstag |
+| 24 Stunden | `86400s` | Tägliches Re-Login |
+| 30 Tage | `2592000s` | Komfortabel, seltenes Re-Login |
+| Unbegrenzt | *(kein `reauthSettings` setzen)* | Standard — Google-Session gilt |
+
+> **Aktuelle Einstellung:** Standard (unbegrenzt) — der Google-Login wird nur verlangt, wenn die Google-Session abläuft oder der Nutzer Cookies löscht.
+
+#### Ersteinrichtung (Referenz)
+
+Für den Fall, dass IAP auf einem neuen Backend-Service eingerichtet werden muss (z.B. bei einer dritten Umgebung):
+
+```bash
+# 1. APIs aktivieren (einmalig pro Projekt)
+gcloud services enable iap.googleapis.com --project=glattthub
+gcloud services enable cloudresourcemanager.googleapis.com --project=glattthub
+
+# 2. IAP Service Account provisionieren (einmalig pro Projekt)
+gcloud beta services identity create --service=iap.googleapis.com --project=glattthub
+
+# 3. IAP auf Backend-Service aktivieren
+gcloud iap web enable \
+    --resource-type=backend-services \
+    --service=BACKEND-SERVICE-NAME \
+    --project=glattthub
+
+# 4. IAP Service Account als Cloud Run Invoker berechtigen
+gcloud run services add-iam-policy-binding CLOUD-RUN-SERVICE-NAME \
+    --region=europe-west3 \
+    --member="serviceAccount:service-99200336070@gcp-sa-iap.iam.gserviceaccount.com" \
+    --role="roles/run.invoker" \
+    --project=glattthub
+
+# 5. Nutzer/Domain berechtigen
+gcloud iap web add-iam-policy-binding \
+    --resource-type=backend-services \
+    --service=BACKEND-SERVICE-NAME \
+    --member="domain:labrado-schlueter.com" \
+    --role="roles/iap.httpsResourceAccessor" \
+    --project=glattthub
+```
+
+> **Hinweis:** Nach Aktivierung dauert es bis zu 5 Minuten, bis IAP auf dem Backend greift. In dieser Zeit kann ein 502-Fehler auftreten — das ist normal.
+
 ### Troubleshooting
 
 **Custom Domain nicht erreichbar:**
+
 - DNS prüfen: `dig hub.glattt.com @8.8.8.8 +short` (muss `34.49.25.78` zeigen)
 - SSL-Status prüfen (muss `ACTIVE` sein, nicht `PROVISIONING` oder `FAILED_NOT_VISIBLE`)
 - `FAILED_NOT_VISIBLE` ist oft temporär — Google versucht es automatisch alle paar Minuten erneut
 - Falls SSL dauerhaft fehlschlägt: Zertifikat löschen und neu erstellen
 - Pro Domain ein separates Zertifikat verwenden (kein Combined-Cert)
 
-**IAP blockiert Zugriff:**
+**IAP blockiert Zugriff ("You don't have access"):**
+
 - IAM-Berechtigung prüfen: `gcloud iap web get-iam-policy --resource-type=backend-services --service=backend-glattthub-prod --project=glattthub`
 - Nutzer muss die Rolle `roles/iap.httpsResourceAccessor` haben
 - Google Account muss zur korrekten Domain gehören (oder einzeln freigegeben sein)
-- Cache/Cookies löschen und neu anmelden
+- Bei `domain:`-Binding: Nutzer zusätzlich explizit als `user:` hinzufügen falls Domain-Binding nicht greift
+- Cache/Cookies löschen und im Inkognito-Fenster testen
+
+**IAP Service Account Fehler ("IAP service account is not provisioned"):**
+
+```bash
+# Service Account provisionieren
+gcloud beta services identity create --service=iap.googleapis.com --project=glattthub
+
+# Invoker-Rolle auf Cloud Run setzen
+gcloud run services add-iam-policy-binding SERVICENAME \
+    --region=europe-west3 \
+    --member="serviceAccount:service-99200336070@gcp-sa-iap.iam.gserviceaccount.com" \
+    --role="roles/run.invoker" \
+    --project=glattthub
+```
+
+**502 Bad Gateway nach IAP-Aktivierung:**
+
+- Normal in den ersten 2-5 Minuten nach IAP-Aktivierung — abwarten
+- Prüfen ob Cloud Run Service läuft: `gcloud run services describe SERVICENAME --region=europe-west3 --project=glattthub`
+- Prüfen ob IAP Service Account `roles/run.invoker` hat
 
 **Load Balancer Backend-Health:**
 
@@ -172,3 +351,5 @@ gcloud iap web remove-iam-policy-binding \
 gcloud compute backend-services get-health backend-glattthub-prod --global
 gcloud compute backend-services get-health backend-glattthub-staging --global
 ```
+
+> **Hinweis:** Bei Serverless NEGs liefert `get-health` einen Fehler — das ist normal. Den Service-Status direkt über `gcloud run services describe` prüfen.
