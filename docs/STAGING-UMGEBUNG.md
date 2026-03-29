@@ -28,11 +28,15 @@ In der **Produktion** wird kein Badge angezeigt.
 
 ### URL
 
-Die Staging-Umgebung ist erreichbar unter:
+Die Staging-Umgebung ist erreichbar unter: `https://staging.hub.glattt.com`
 
-```
-https://glattthub-web-staging-cvznpz7gha-ey.a.run.app
-```
+Weitere Details zu URLs, DNS und Load Balancer: siehe [Cloud-Infrastruktur](CLOUD-INFRASTRUKTUR.md)
+
+### Zugangsschutz
+
+Der Zugang ist durch Google Identity-Aware Proxy (IAP) geschützt — nur freigegebene Nutzer können die Staging-Umgebung erreichen.
+
+Details zur IAP-Konfiguration: siehe [Cloud-Infrastruktur](CLOUD-INFRASTRUKTUR.md#identity-aware-proxy-iap)
 
 ---
 
@@ -45,12 +49,15 @@ Lokal (MAMP)
      ↓ git push develop
 Cloud Build (cloudbuild-staging.yaml)
      ↓ Docker Build → Artifact Registry
-Cloud Run Service: glattthub-web-staging
+Cloud Run Service: glattthub-web-staging → staging.hub.glattt.com
+     ↓
      ↓ git push main (oder merge develop → main)
 Cloud Build (cloudbuild.yaml)
      ↓ Docker Build → Artifact Registry
-Cloud Run Service: glattthub-web (Produktion, wie bisher)
+Cloud Run Service: glattthub-web → hub.glattt.com
 ```
+
+Netzwerk-Architektur (Load Balancer, SSL, IAP): siehe [Cloud-Infrastruktur](CLOUD-INFRASTRUKTUR.md)
 
 ### Branching-Workflow
 
@@ -84,12 +91,14 @@ Cloud Run Service: glattthub-web (Produktion, wie bisher)
 | **Build Trigger** | Push auf `main` (global) | Push auf `develop` (global) |
 | **Artifact Registry** | `glattthub-docker` | `glattthub-docker` (gleich) |
 
+Custom Domains, Load Balancer, SSL und IAP: siehe [Cloud-Infrastruktur](CLOUD-INFRASTRUKTUR.md)
+
 ### Environment-Variablen (Unterschiede zu Prod)
 
 | Variable | Staging | Produktion |
 |----------|---------|-----------|
 | `APP_ENV` | `staging` | `production` |
-| `APP_URL` | `https://glattthub-web-staging-cvznpz7gha-ey.a.run.app` | `https://glattthub-web-99200336070.europe-west3.run.app` |
+| `APP_URL` | `https://staging.hub.glattt.com` | `https://hub.glattt.com` |
 | `APP_KEY` | Gleich wie Prod (wegen verschlüsselter DB-Daten) | `base64:...` |
 | `DB_DATABASE` | `glattthub_staging` | `glattthub` |
 | `DB_USERNAME` | `glattthub_staging` | `glattthub_user` |
@@ -114,6 +123,7 @@ Alle anderen Variablen (Phorest, Zendesk, GCS, VAPID, askDANTE, Gemini, etc.) si
 | `resources/views/partials/environment-badge.blade.php` | Umgebungs-Badge (floating card) |
 | `public/css/theme_glattt.css` | CSS für `.env-badge` Komponente (Abschnitt 27) |
 | `Dockerfile` | Gleich für beide Umgebungen |
+| `scripts/setup-staging-step*.sh` | Einrichtungs-Skripte (Cloud Shell) |
 
 ### `isCloudEnvironment()` Helper
 
@@ -330,6 +340,7 @@ Bei der Einrichtung der Staging-Umgebung wurden folgende Punkte in der Prod-Konf
 **Staging nicht erreichbar:**
 - Cloud Run Service Status prüfen
 - Container-Logs: `gcloud run services logs read glattthub-web-staging --region=europe-west3 --project=glattthub`
+- Bei Problemen mit Custom Domains oder SSL: siehe [Cloud-Infrastruktur Troubleshooting](CLOUD-INFRASTRUKTUR.md#troubleshooting)
 
 **"The MAC is invalid" Fehler:**
 - `APP_KEY` in Staging stimmt nicht mit dem Prod-Key überein

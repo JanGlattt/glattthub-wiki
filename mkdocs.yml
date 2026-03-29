@@ -138,6 +138,7 @@ nav:
     - PIN-Login: PIN-LOGIN-SYSTEM.md
   - Technisches:
     - Setup-Anleitung: SETUP-ANLEITUNG.md
+    - Cloud-Infrastruktur: CLOUD-INFRASTRUKTUR.md
     - Staging-Umgebung: STAGING-UMGEBUNG.md
     - Security-Hardening: SECURITY-HARDENING.md
     - Chart.js + Alpine.js: JAVASCRIPT-CHARTS.md
