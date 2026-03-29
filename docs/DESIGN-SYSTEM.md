@@ -730,12 +730,70 @@ Der Button wird typischerweise neben einem Titel im Card-Header platziert:
 - **Mehrere Panels**: Pro Seite können beliebig viele Panels mit unterschiedlichen `name`-Werten existieren
 - **Responsive**: Auf < 768px nimmt das Panel die volle Bildschirmbreite ein
 
+### Inhaltsstruktur auf Statistikseiten
+
+Auf Statistikseiten folgen alle Info-Panels einer **festen Sektions-Reihenfolge**:
+
+1. **Was zeigt …?** — Erklärt was die Visualisierung/Tabelle darstellt (Diagrammtyp, Datengrundlage)
+2. **Tabellen-Spalten** — Jede Spalte wird erklärt: `<strong>Spalte</strong> — Bedeutung` (nur wenn Tabellen vorhanden)
+3. **Anomalie-Erklärung** — Datenverzerrungen (z.B. erhöhte Conversion weil Daten erst bei Vertragsabschluss erfasst werden)
+4. **Filter & Datenquelle** — Wie Standort-Filter wirken, woher die Daten stammen
+
+#### Anomalie-Tabelle
+
+Bestimmte Datenfelder werden häufig erst bei Vertragsabschluss vollständig erfasst. Das führt dazu, dass Kunden ohne Vertrag in der Auswertung fehlen und die Conversion-Rate künstlich erhöht wird.
+
+| Datenfeld | Anomalie | Betroffene Panels |
+|-----------|----------|-------------------|
+| Geburtsdatum | Alter fehlt → erhöhte Conversion in Altersgruppen | Altersverteilung, Segmente |
+| Geschlecht | Geschlecht fehlt → erhöhte Conversion | Geschlecht, Segmente |
+| PLZ | PLZ fehlt → Kunden unterrepräsentiert | Entfernung, Karte, Top PLZ |
+| Körperzonen | Nur Vertragskunden → Hinweis auf Datenbasis | Körperzonen |
+| Herkunft/Name | Vertragskunden besser zuordenbar | Herkunftsverteilung |
+| Widerruf | Nur Vertragskunden → keine Verzerrung | Widerrufs-Analyse |
+
+#### Section-Title Icons
+
+Jeder Abschnittstitel hat ein Heroicon-SVG-Icon davor:
+
+| Sektion | Heroicon |
+|---------|----------|
+| Was zeigt …? | `chart-bar` / `chart-pie` / `map` (passend zum Typ) |
+| Tabellen-Spalten | `bars-3` |
+| Anomalie | `exclamation-triangle` |
+| Filter & Datenquelle | `funnel` |
+| Ansichten/Tabs | `eye` |
+| KI-Feature | `sparkles` |
+
+#### Textkonventionen
+
+- **Sprache**: Deutsch mit korrekten Umlauten (ä, ö, ü, ß) — niemals `ae/oe/ue`
+- **Trennzeichen**: Em-Dash `—` zwischen Spaltenname und Erklärung
+- **Zielgruppe**: Nicht-technische Endanwender — keine Code/Technik-Details
+- **Highlight-Blöcke** (`.info-panel-highlight`): Für wichtige Hinweise und Einschränkungen
+
+#### Checkliste für neue Info-Panels
+
+- [ ] Eindeutiger `name` (kebab-case, z.B. `revenue-overview-info`)
+- [ ] Button im Card-Header neben dem Titel platziert
+- [ ] Panel am Ende des Partials platziert
+- [ ] Sektion „Was zeigt …?" vorhanden
+- [ ] Tabellen-Spalten erklärt (wenn Tabellen existieren)
+- [ ] Anomalie beschrieben (wenn Conversion/Datenverzerrung relevant)
+- [ ] Filter & Datenquelle vorhanden
+- [ ] Alle Texte auf Deutsch mit korrekten Umlauten
+- [ ] Icons als Heroicon-SVGs im Section-Title
+
+!!! tip "Referenz-Implementierung"
+    Die Client-Statistiken (`resources/views/hub/reports/client-statistics/partials/`) enthalten 10 vollständige Info-Panels als Vorlage. Detaillierte Konventionen stehen in `.github/instructions/info-panels.instructions.md`.
+
 ### Relevante Dateien
 
 | Datei | Beschreibung |
 |-------|--------------|
 | `resources/views/components/info-panel.blade.php` | Blade-Komponente |
 | `public/css/theme_glattt.css` (ab L4231) | CSS-Klassen (`.info-panel-*`, `.btn-glattt-info-trigger`) |
+| `.github/instructions/info-panels.instructions.md` | Automatische Copilot-Konventionen für Partials |
 
 ---
 
