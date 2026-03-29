@@ -547,3 +547,145 @@ mysql -u USER -p DATENBANK < scripts/production-permissions-2026-03-29.sql
 
 !!! danger "Vor dem Ausfuehren"
     Immer zuerst ein Backup der `permissions`, `roles`, `role_has_permissions` und `model_has_roles` Tabellen erstellen.
+
+---
+
+## Standort-Beschraenkung (Erlaubte Institute)
+
+Neben dem rollenbasierten Berechtigungssystem gibt es eine separate **Standort-Beschraenkung** pro User. Damit laesst sich festlegen, welche Phorest-Branches ein Benutzer in der Sidebar sehen und auswaehlen kann.
+
+### Fuer Endanwender
+
+- **Keine Einschraenkung (Standard):** Der User sieht alle Institute in der Sidebar, inklusive der Option "Alle Standorte".
+- **Mit Einschraenkung:** Der User sieht nur die ihm zugewiesenen Institute. Die Option "Alle Standorte" ist ausgeblendet.
+- **Stamm-Institut:** Das vorausgewaehlte Institut beim Oeffnen der App. Muss aus den erlaubten Instituten stammen.
+- Beim ersten Laden wird automatisch das Stamm-Institut oder das erste erlaubte Institut ausgewaehlt, falls der User vorher "Alle Standorte" aktiv hatte.
+
+### Konfiguration im Admin-Panel
+
+Im Filament Admin-Panel unter **Benutzer bearbeiten** gibt es die Sektion **"Erlaubte Institute"**:
+
+1. Aufklappbare Sektion mit Checkbox-Liste aller verfuegbaren Branches (aus Phorest API)
+2. Keine Auswahl = keine Einschraenkung (alle Branches sichtbar)
+3. Eine oder mehrere Branches auswaehlen = User sieht nur diese in der Sidebar
+4. Das **Stamm-Institut** Dropdown passt sich automatisch an: es zeigt nur die erlaubten Institute
+5. Wird ein Branch aus den erlaubten Instituten entfernt, wird das Stamm-Institut automatisch zurueckgesetzt
+
+### Fuer Entwickler
+
+#### Datenmodell
+
+Die Spalte `allowed_branch_ids` auf der `users`-Tabelle:
+
+```sql
+ALTER TABLE users ADD COLUMN allowed_branch_ids JSON NULL AFTER home_branch_id;
+```
+
+- **Typ:** JSON (Array von Branch-IDs als Strings)
+- **Null / leeres Array:** Keine Einschraenkung — User sieht alle Branches
+- **Gefuelltes Array:** Nur diese Branches sind sichtbar
+
+Im Model (`app/Models/User.php`):
+
+```php
+protected $fillable = [
+    // ...
+    'allowed_branch_ids',
+];
+
+protected function casts(): array
+{
+    return [
+        // ...
+        'allowed_branch_ids' => 'array',
+    ];
+}
+```
+
+#### Beteiligte Dateien
+
+| Datei | Zweck |
+|-------|-------|
+| `database/migrations/2026_03_29_221505_add_allowed_branch_ids_to_users_table.php` | Migration |
+| `app/Models/User.php` | Fillable + Cast |
+| `app/Filament/Resources/Users/Schemas/UserForm.php` | Admin-Formular mit CheckboxList + reaktivem Stamm-Institut |
+| `app/Http/Controllers/PhorestController.php` | API-Filter in `branches()` |
+| `resources/views/layouts/hub.blade.php` | Meta-Tag `user-has-branch-restriction` |
+| `resources/views/layouts/partials/sidebar.blade.php` | Alpine.js-Logik fuer "Alle Standorte" und Auto-Select |
+
+#### Datenfluss
+
+```
+┌─────────────────────────────────────────────────────┐
+│  Admin-Panel (Filament)                             │
+│  UserForm.php → allowed_branch_ids (JSON) in DB     │
+└──────────────────────┬──────────────────────────────┘
+                       │
+          ┌────────────▼────────────┐
+          │  users.allowed_branch_ids │
+          │  JSON: ["abc","def"]     │
+          │  oder NULL (alle)        │
+          └────────────┬────────────┘
+                       │
+      ┌────────────────┼────────────────┐
+      ▼                ▼                ▼
+┌───────────┐  ┌──────────────┐  ┌─────────────┐
+│ Controller │  │  hub.blade   │  │  sidebar    │
+│ branches() │  │  Meta-Tag    │  │  Alpine.js  │
+│ filtert    │  │  0 oder 1    │  │  liest Tag  │
+│ API-Antwort│  └──────────────┘  │  blendet    │
+│ serverseit.│                    │  "Alle" aus │
+└───────────┘                    └─────────────┘
+```
+
+**1. Serverseitige Filterung** (`PhorestController::branches()`):
+
+```php
+$allowedIds = $user?->allowed_branch_ids;
+
+if (!empty($allowedIds) && is_array($allowedIds)) {
+    $branches = array_values(array_filter($branches, function ($branch) use ($allowedIds) {
+        return in_array($branch['branchId'], $allowedIds);
+    }));
+}
+```
+
+Die API `/phorest/branches` liefert nur noch erlaubte Branches zurueck. Das ist die primaere Sicherheitsschicht.
+
+**2. Meta-Tag** (`hub.blade.php`):
+
+```html
+<meta name="user-has-branch-restriction"
+      content="{{ !empty(Auth::user()->allowed_branch_ids) ? '1' : '0' }}">
+```
+
+**3. Clientseitige Logik** (`sidebar.blade.php`):
+
+```javascript
+// Property
+hasBranchRestriction: document.querySelector('meta[name="user-has-branch-restriction"]')?.content === '1',
+
+// "Alle Standorte" nur ohne Einschraenkung
+<template x-if="!hasBranchRestriction"> ... </template>
+
+// Auto-Select bei eingeschraenktem User
+if (this.hasBranchRestriction && (!this.selectedBranch || this.selectedBranch === '')) {
+    const homeBranch = document.querySelector('meta[name="user-home-branch"]')?.content;
+    if (homeBranch && this.branches.some(b => b.branchId === homeBranch)) {
+        this.selectBranch(homeBranch);
+    } else if (this.branches.length > 0) {
+        this.selectBranch(this.branches[0].branchId);
+    }
+}
+```
+
+#### Produktions-Deployment
+
+Das SQL-Script `scripts/production-allowed-branches-2026-03-29.sql` fuegt die Spalte idempotent hinzu:
+
+```bash
+mysql -u USER -p DATENBANK < scripts/production-allowed-branches-2026-03-29.sql
+```
+
+!!! note "Rueckwaertskompatibel"
+    Bestehende User haben `allowed_branch_ids = NULL` und sehen weiterhin alle Branches. Die Einschraenkung muss pro User explizit konfiguriert werden.
