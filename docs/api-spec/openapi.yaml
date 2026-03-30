@@ -1,0 +1,400 @@
+openapi: "3.0.3"
+info:
+  title: glatttHub REST-API
+  version: "1.0"
+  description: |
+    REST-API für die glatttHub Web-Applikation.
+    Authentifizierung via Bearer-Token (SHA-256 gehasht, `glh_`-Prefix).
+    Rate-Limit: 60 Requests/Minute.
+servers:
+  - url: https://deine-domain.de/api/v1
+    description: Produktion
+  - url: http://localhost:8888/api/v1
+    description: Lokale Entwicklung (MAMP)
+
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: "API-Token mit `glh_`-Prefix (z.B. `glh_abc123...`)"
+
+  schemas:
+    ClientStatistic:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        branch_id:
+          type: string
+          example: "urLYs9iAs3RUBrYaDZY9ew"
+        full_name:
+          type: string
+          example: "Max Mustermann"
+        first_name:
+          type: string
+          example: "Max"
+        last_name:
+          type: string
+          example: "Mustermann"
+        gender:
+          type: string
+          enum: [male, female, other]
+          example: "male"
+        name_origin:
+          type: string
+          example: "german"
+        birth_date:
+          type: string
+          format: date
+          example: "1990-05-15"
+        age:
+          type: integer
+          example: 35
+        age_group:
+          type: string
+          example: "26-35"
+        postal_code:
+          type: string
+          example: "33619"
+        city:
+          type: string
+          example: "Bielefeld"
+        distance_to_branch_km:
+          type: number
+          format: float
+          example: 2.5
+        distance_group:
+          type: string
+          example: "0-5 km"
+        first_appointment_date:
+          type: string
+          format: date
+          example: "2024-01-15"
+        last_appointment_date:
+          type: string
+          format: date
+          example: "2026-03-01"
+        total_appointments:
+          type: integer
+          example: 12
+        has_consultation:
+          type: boolean
+          example: true
+        first_consultation_date:
+          type: string
+          format: date
+          nullable: true
+          example: "2024-01-15"
+        consultation_branch_id:
+          type: string
+          nullable: true
+          example: "urLYs9iAs3RUBrYaDZY9ew"
+        has_followup_after_consultation:
+          type: boolean
+          example: true
+        has_contract:
+          type: boolean
+          example: true
+        contract_count:
+          type: integer
+          example: 2
+        contract_body_zone_count:
+          type: integer
+          example: 6
+        is_full_body:
+          type: boolean
+          example: false
+        has_cancellation:
+          type: boolean
+          example: false
+        only_consultation_no_return:
+          type: boolean
+          example: false
+        client_since:
+          type: string
+          format: date
+          example: "2024-01-10"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-03-27T11:39:03+01:00"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2026-03-27T20:08:37+01:00"
+
+    KpiItem:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "total_clients"
+        label:
+          type: string
+          example: "Kunden gesamt"
+        value:
+          oneOf:
+            - type: number
+            - type: string
+          example: 7629
+        format:
+          type: string
+          enum: [number, percent]
+          example: "number"
+
+    PaginationLinks:
+      type: object
+      properties:
+        first:
+          type: string
+        last:
+          type: string
+        prev:
+          type: string
+          nullable: true
+        next:
+          type: string
+          nullable: true
+
+    PaginationMeta:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        last_page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Nicht autorisiert."
+
+paths:
+  /client-statistics:
+    get:
+      summary: Kundenstatistiken auflisten
+      description: Listet alle Kundenstatistiken mit Pagination und Filtern.
+      operationId: listClientStatistics
+      tags:
+        - Kundenstatistiken
+      parameters:
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 25
+          description: Einträge pro Seite
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Seitennummer
+        - name: sort_by
+          in: query
+          schema:
+            type: string
+            default: id
+          description: Sortier-Spalte
+        - name: sort_direction
+          in: query
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+          description: Sortierrichtung
+        - name: branch_id
+          in: query
+          schema:
+            type: string
+          description: Filter nach Standort-ID
+        - name: gender
+          in: query
+          schema:
+            type: string
+            enum: [male, female, other]
+          description: Geschlecht
+        - name: age_group
+          in: query
+          schema:
+            type: string
+          description: "Altersgruppe (z.B. 26-35, 36-45)"
+        - name: has_contract
+          in: query
+          schema:
+            type: integer
+            enum: [0, 1]
+          description: Hat Vertrag
+        - name: has_consultation
+          in: query
+          schema:
+            type: integer
+            enum: [0, 1]
+          description: Hat Beratung
+        - name: has_cancellation
+          in: query
+          schema:
+            type: integer
+            enum: [0, 1]
+          description: Hat Stornierung
+        - name: only_consultation_no_return
+          in: query
+          schema:
+            type: integer
+            enum: [0, 1]
+          description: Nur Beratung ohne Rückkehr
+        - name: min_distance
+          in: query
+          schema:
+            type: number
+          description: Minimale Entfernung in km
+        - name: max_distance
+          in: query
+          schema:
+            type: number
+          description: Maximale Entfernung in km
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Erster Termin ab Datum (Y-m-d)
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date
+          description: Erster Termin bis Datum (Y-m-d)
+        - name: postal_code
+          in: query
+          schema:
+            type: string
+          description: Filter nach PLZ
+      responses:
+        "200":
+          description: Erfolgreiche Abfrage
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ClientStatistic"
+                  links:
+                    $ref: "#/components/schemas/PaginationLinks"
+                  meta:
+                    $ref: "#/components/schemas/PaginationMeta"
+        "401":
+          description: Nicht autorisiert
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Fehlender Scope
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: Rate-Limit überschritten
+
+  /client-statistics/kpis:
+    get:
+      summary: Aggregierte KPIs abrufen
+      description: Gibt aggregierte Kennzahlen über alle Kundenstatistiken zurück. Akzeptiert die gleichen Filter wie der Index-Endpoint.
+      operationId: getClientStatisticsKpis
+      tags:
+        - Kundenstatistiken
+      parameters:
+        - name: branch_id
+          in: query
+          schema:
+            type: string
+          description: Filter nach Standort-ID
+        - name: gender
+          in: query
+          schema:
+            type: string
+            enum: [male, female, other]
+          description: Geschlecht
+        - name: has_contract
+          in: query
+          schema:
+            type: integer
+            enum: [0, 1]
+          description: Hat Vertrag
+        - name: has_consultation
+          in: query
+          schema:
+            type: integer
+            enum: [0, 1]
+          description: Hat Beratung
+      responses:
+        "200":
+          description: Erfolgreiche Abfrage
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/KpiItem"
+        "401":
+          description: Nicht autorisiert
+        "403":
+          description: Fehlender Scope
+
+  /client-statistics/{id}:
+    get:
+      summary: Einzelnen Datensatz abrufen
+      description: Gibt einen einzelnen Kundenstatistik-Datensatz zurück.
+      operationId: getClientStatistic
+      tags:
+        - Kundenstatistiken
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID des Datensatzes
+      responses:
+        "200":
+          description: Erfolgreiche Abfrage
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/ClientStatistic"
+        "401":
+          description: Nicht autorisiert
+        "403":
+          description: Fehlender Scope
+        "404":
+          description: Datensatz nicht gefunden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                message: "Datensatz nicht gefunden."

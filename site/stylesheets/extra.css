@@ -336,3 +336,67 @@
     border-radius: 6px;
     font-weight: 600;
 }
+
+/* ===== API ENDPOINT METHOD BADGES ===== */
+.md-typeset h3.endpoint-get::before,
+.md-typeset h3.endpoint-post::before,
+.md-typeset h3.endpoint-put::before,
+.md-typeset h3.endpoint-patch::before,
+.md-typeset h3.endpoint-delete::before {
+    display: inline-block;
+    padding: 2px 10px;
+    margin-right: 10px;
+    border-radius: 4px;
+    font-size: 0.65em;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    vertical-align: middle;
+    font-family: var(--md-code-font-family, 'Roboto Mono', monospace);
+}
+
+.md-typeset h3.endpoint-get::before {
+    content: "GET";
+    background: #10b981;
+    color: #fff;
+}
+
+.md-typeset h3.endpoint-post::before {
+    content: "POST";
+    background: #3b82f6;
+    color: #fff;
+}
+
+.md-typeset h3.endpoint-put::before {
+    content: "PUT";
+    background: #f59e0b;
+    color: #fff;
+}
+
+.md-typeset h3.endpoint-patch::before {
+    content: "PATCH";
+    background: #8b5cf6;
+    color: #fff;
+}
+
+.md-typeset h3.endpoint-delete::before {
+    content: "DELETE";
+    background: #ef4444;
+    color: #fff;
+}
+
+/* Method badges in tables */
+.md-typeset .method-badge {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 3px;
+    font-size: 0.75em;
+    font-weight: 700;
+    font-family: var(--md-code-font-family, 'Roboto Mono', monospace);
+    color: #fff;
+}
+
+.md-typeset .method-badge.get    { background: #10b981; }
+.md-typeset .method-badge.post   { background: #3b82f6; }
+.md-typeset .method-badge.put    { background: #f59e0b; }
+.md-typeset .method-badge.patch  { background: #8b5cf6; }
+.md-typeset .method-badge.delete { background: #ef4444; }

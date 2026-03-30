@@ -94,7 +94,7 @@ curl -H "Authorization: Bearer glh_DEIN_TOKEN_HIER" \
 // Rate Limit überschritten → Standard 429 Too Many Requests
 ```
 
-## 📡 Endpoints
+## 📡 Endpoint-Referenz
 
 ### Base-URL
 
@@ -109,120 +109,187 @@ https://deine-domain.de/api/v1/
 | `client-statistics:read` | Kundenstatistiken lesen |
 | `client-statistics:write` | Kundenstatistiken bearbeiten (Phase 2) |
 
-### GET /api/v1/client-statistics
+### Endpoint-Übersicht
+
+| Methode | Endpoint | Beschreibung | Scope |
+|---------|----------|--------------|-------|
+| <span class="method-badge get">GET</span> | `/api/v1/client-statistics` | Kundenstatistiken auflisten (paginiert, filterbar) | `client-statistics:read` |
+| <span class="method-badge get">GET</span> | `/api/v1/client-statistics/kpis` | Aggregierte KPIs abrufen | `client-statistics:read` |
+| <span class="method-badge get">GET</span> | `/api/v1/client-statistics/{id}` | Einzelnen Datensatz abrufen | `client-statistics:read` |
+
+---
+
+### `GET` /api/v1/client-statistics {: .endpoint-get }
 
 Listet Kundenstatistiken mit Pagination und Filtern.
 
-**Scope:** `client-statistics:read`
+??? info "Query-Parameter"
 
-**Query-Parameter:**
+    **Pagination & Sortierung**
 
-| Parameter | Typ | Beschreibung |
-|-----------|-----|--------------|
-| `per_page` | int (1-100) | Einträge pro Seite (Standard: 25) |
-| `page` | int | Seitennummer |
-| `sort_by` | string | Sortier-Spalte (Standard: `id`) |
-| `sort_direction` | string | `asc` oder `desc` (Standard: `asc`) |
-| `branch_id` | string | Filter nach Standort-ID |
-| `gender` | string | `male`, `female`, `other` |
-| `age_group` | string | z.B. `26-35`, `36-45` |
-| `has_contract` | bool | Hat Vertrag (1/0) |
-| `has_consultation` | bool | Hat Beratung (1/0) |
-| `has_cancellation` | bool | Hat Stornierung (1/0) |
-| `only_consultation_no_return` | bool | Nur Beratung ohne Rückkehr (1/0) |
-| `min_distance` | float | Minimale Entfernung in km |
-| `max_distance` | float | Maximale Entfernung in km |
-| `date_from` | string (Y-m-d) | Erster Termin ab Datum |
-| `date_to` | string (Y-m-d) | Erster Termin bis Datum |
-| `postal_code` | string | Filter nach PLZ |
+    | Parameter | Typ | Standard | Beschreibung |
+    |-----------|-----|----------|--------------|
+    | `per_page` | int (1-100) | `25` | Einträge pro Seite |
+    | `page` | int | `1` | Seitennummer |
+    | `sort_by` | string | `id` | Sortier-Spalte |
+    | `sort_direction` | string | `asc` | `asc` oder `desc` |
+
+    **Filter**
+
+    | Parameter | Typ | Beschreibung |
+    |-----------|-----|--------------|
+    | `branch_id` | string | Filter nach Standort-ID |
+    | `gender` | string | `male`, `female`, `other` |
+    | `age_group` | string | z.B. `26-35`, `36-45` |
+    | `has_contract` | bool | Hat Vertrag (1/0) |
+    | `has_consultation` | bool | Hat Beratung (1/0) |
+    | `has_cancellation` | bool | Hat Stornierung (1/0) |
+    | `only_consultation_no_return` | bool | Nur Beratung ohne Rückkehr (1/0) |
+    | `min_distance` | float | Minimale Entfernung in km |
+    | `max_distance` | float | Maximale Entfernung in km |
+    | `date_from` | date | Erster Termin ab Datum (`Y-m-d`) |
+    | `date_to` | date | Erster Termin bis Datum (`Y-m-d`) |
+    | `postal_code` | string | Filter nach PLZ |
 
 **Beispiel:**
 
 ```bash
 curl -H "Authorization: Bearer glh_TOKEN" \
-     "https://domain.de/api/v1/client-statistics?branch_id=xyz&has_contract=1&per_page=10"
+     "https://domain.de/api/v1/client-statistics?gender=female&has_contract=1&per_page=5"
 ```
 
-**Response:**
+??? example "Response (200)"
 
-```json
-{
-  "data": [
+    ```json
     {
-      "id": 1,
-      "branch_id": "urLYs9iAs3RUBrYaDZY9ew",
-      "full_name": "Max Mustermann",
-      "first_name": "Max",
-      "last_name": "Mustermann",
-      "gender": "male",
-      "name_origin": "german",
-      "birth_date": "1990-05-15",
-      "age": 35,
-      "age_group": "26-35",
-      "postal_code": "33619",
-      "city": "Bielefeld",
-      "distance_to_branch_km": 2.5,
-      "distance_group": "0-5 km",
-      "first_appointment_date": "2024-01-15",
-      "last_appointment_date": "2026-03-01",
-      "total_appointments": 12,
-      "has_consultation": true,
-      "first_consultation_date": "2024-01-15",
-      "consultation_branch_id": "urLYs9iAs3RUBrYaDZY9ew",
-      "has_followup_after_consultation": true,
-      "has_contract": true,
-      "contract_count": 2,
-      "contract_body_zone_count": 6,
-      "is_full_body": false,
-      "has_cancellation": false,
-      "only_consultation_no_return": false,
-      "client_since": "2024-01-10",
-      "created_at": "2026-03-27T11:39:03+01:00",
-      "updated_at": "2026-03-27T20:08:37+01:00"
+      "data": [
+        {
+          "id": 1,
+          "branch_id": "urLYs9iAs3RUBrYaDZY9ew",
+          "full_name": "Max Mustermann",
+          "first_name": "Max",
+          "last_name": "Mustermann",
+          "gender": "male",
+          "name_origin": "german",
+          "birth_date": "1990-05-15",
+          "age": 35,
+          "age_group": "26-35",
+          "postal_code": "33619",
+          "city": "Bielefeld",
+          "distance_to_branch_km": 2.5,
+          "distance_group": "0-5 km",
+          "first_appointment_date": "2024-01-15",
+          "last_appointment_date": "2026-03-01",
+          "total_appointments": 12,
+          "has_consultation": true,
+          "first_consultation_date": "2024-01-15",
+          "consultation_branch_id": "urLYs9iAs3RUBrYaDZY9ew",
+          "has_followup_after_consultation": true,
+          "has_contract": true,
+          "contract_count": 2,
+          "contract_body_zone_count": 6,
+          "is_full_body": false,
+          "has_cancellation": false,
+          "only_consultation_no_return": false,
+          "client_since": "2024-01-10",
+          "created_at": "2026-03-27T11:39:03+01:00",
+          "updated_at": "2026-03-27T20:08:37+01:00"
+        }
+      ],
+      "links": {
+        "first": "...?page=1",
+        "last": "...?page=763",
+        "prev": null,
+        "next": "...?page=2"
+      },
+      "meta": {
+        "current_page": 1,
+        "last_page": 763,
+        "per_page": 5,
+        "total": 7629
+      }
     }
-  ],
-  "links": { "first": "...", "last": "...", "prev": null, "next": "..." },
-  "meta": { "current_page": 1, "last_page": 763, "per_page": 10, "total": 7629 }
-}
-```
+    ```
 
-### GET /api/v1/client-statistics/{id}
+---
 
-Einzelnen Kundenstatistik-Datensatz abrufen.
+### `GET` /api/v1/client-statistics/kpis {: .endpoint-get }
 
-**Scope:** `client-statistics:read`
+Aggregierte KPIs über alle Kundenstatistiken. Nutzt intern den `ClientStatisticsService`.
 
-```bash
-curl -H "Authorization: Bearer glh_TOKEN" \
-     "https://domain.de/api/v1/client-statistics/42"
-```
+**Filter:** Gleiche Query-Parameter wie beim Index-Endpoint (siehe oben).
 
-**Response:** Gleiche Struktur wie einzelnes Objekt in `data` (ohne Pagination).
-
-### GET /api/v1/client-statistics/kpis
-
-Aggregierte KPIs über alle Kundenstatistiken (nutzt `ClientStatisticsService`).
-
-**Scope:** `client-statistics:read`
-
-**Query-Parameter:** Gleiche Filter wie beim Index-Endpoint.
+**Beispiel:**
 
 ```bash
 curl -H "Authorization: Bearer glh_TOKEN" \
      "https://domain.de/api/v1/client-statistics/kpis?branch_id=xyz"
 ```
 
-**Response:**
+??? example "Response (200)"
 
-```json
-{
-  "data": [
-    { "id": "total_clients", "label": "Kunden gesamt", "value": 7629, "format": "number" },
-    { "id": "avg_age", "label": "Ø Alter", "value": 33.2, "format": "number" },
-    { "id": "consultation_rate", "label": "Beratungsquote", "value": 68.5, "format": "percent" }
-  ]
-}
+    ```json
+    {
+      "data": [
+        { "id": "total_clients", "label": "Kunden gesamt", "value": 7629, "format": "number" },
+        { "id": "avg_age", "label": "Ø Alter", "value": 33.2, "format": "number" },
+        { "id": "consultation_rate", "label": "Beratungsquote", "value": 68.5, "format": "percent" }
+      ]
+    }
+    ```
+
+---
+
+### `GET` /api/v1/client-statistics/{id} {: .endpoint-get }
+
+Einzelnen Kundenstatistik-Datensatz abrufen.
+
+| Parameter | Typ | Beschreibung |
+|-----------|-----|--------------|
+| `id` | int | **Pflicht** — ID des Datensatzes (URL-Parameter) |
+
+**Beispiel:**
+
+```bash
+curl -H "Authorization: Bearer glh_TOKEN" \
+     "https://domain.de/api/v1/client-statistics/42"
 ```
+
+??? example "Response (200)"
+
+    ```json
+    {
+      "data": {
+        "id": 42,
+        "branch_id": "0QHO0ZNAPJJsu1fVn2EBtA",
+        "full_name": "Anna Schmidt",
+        "gender": "female",
+        "age": 31,
+        "age_group": "26-35",
+        "has_contract": true,
+        "contract_count": 1,
+        "total_appointments": 8,
+        "..."
+      }
+    }
+    ```
+
+??? warning "Response (404)"
+
+    ```json
+    { "message": "Datensatz nicht gefunden." }
+    ```
+
+---
+
+## 🧪 Interaktiver API-Explorer
+
+Die API kann direkt hier im Browser getestet werden. Klicke auf einen Endpoint, dann auf **"Try it out"**, trage deinen `glh_`-Token ein und sende die Anfrage.
+
+!!! warning "Hinweis"
+    Requests gehen gegen den konfigurierten Server (Produktion oder lokal). Stelle sicher, dass du den richtigen Server ausgewählt hast.
+
+<swagger-ui src="api-spec/openapi.yaml"/>
 
 ## 🛠️ API-Verwaltung (UI)
 

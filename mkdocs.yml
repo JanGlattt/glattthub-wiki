@@ -78,6 +78,10 @@ plugins:
       lang: de
   - minify:
       minify_html: true
+  - swagger-ui-tag:
+      docExpansion: list
+      tryItOutEnabled: true
+      syntaxHighlightTheme: monokai
 
 nav:
   - Startseite: index.md
