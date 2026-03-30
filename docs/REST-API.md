@@ -39,8 +39,11 @@ Die API nutzt die bestehende Datenbankverbindung und benötigt keine externen Se
 | `app/Http/Middleware/CheckApiScope.php` | Scope-basierte Autorisierung |
 | `app/Http/Middleware/ForceJsonResponse.php` | Erzwingt JSON-Responses und Cache-Header |
 | `app/Http/Controllers/Api/V1/ClientStatisticsController.php` | API-Endpoints für Kundenstatistiken |
+| `app/Http/Controllers/Api/V1/BookingTrackingController.php` | API-Endpoints für Booking-Tracking |
 | `app/Http/Controllers/ApiClientController.php` | CRUD-Controller für API-Schlüssel-Verwaltung |
-| `app/Http/Resources/Api/V1/ClientStatisticResource.php` | JSON-Resource für Antwort-Struktur |
+| `app/Http/Resources/Api/V1/ClientStatisticResource.php` | JSON-Resource für Kundenstatistiken |
+| `app/Http/Resources/Api/V1/BookingTrackingResource.php` | JSON-Resource für Booking-Tracking |
+| `app/Models/BookingTracking.php` | Eloquent-Model für Booking-Tracking-Daten |
 | `resources/views/hub/settings/api.blade.php` | Verwaltungs-UI für API-Zugänge |
 | `routes/api.php` | API-Routen (`/api/v1/`) |
 | `database/migrations/2026_03_30_100000_create_api_clients_table.php` | Datenbank-Migration |
@@ -111,6 +114,8 @@ curl -H "Authorization: Bearer glh_DEIN_TOKEN_HIER" \
 | <span class="method-badge get">GET</span> | `/api/v1/client-statistics` | Kundenstatistiken auflisten (paginiert, filterbar) |
 | <span class="method-badge get">GET</span> | `/api/v1/client-statistics/kpis` | Aggregierte KPIs abrufen |
 | <span class="method-badge get">GET</span> | `/api/v1/client-statistics/{id}` | Einzelnen Datensatz abrufen |
+| <span class="method-badge post">POST</span> | `/api/v1/booking-tracking` | Tracking-Daten zu einer Buchung speichern |
+| <span class="method-badge get">GET</span> | `/api/v1/booking-tracking/{appointmentId}` | Tracking-Daten zu einer Buchung abrufen |
 
 ### Base-URLs
 

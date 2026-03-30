@@ -20,6 +20,8 @@ Alle verfügbaren REST-API Endpoints mit Parametern, Beispielen und Response-Str
 |-------|--------------|
 | `client-statistics:read` | Kundenstatistiken lesen |
 | `client-statistics:write` | Kundenstatistiken bearbeiten (Phase 2) |
+| `booking-tracking:write` | Booking-Tracking-Daten schreiben |
+| `booking-tracking:read` | Booking-Tracking-Daten lesen |
 
 ## Endpoint-Übersicht
 
@@ -28,6 +30,8 @@ Alle verfügbaren REST-API Endpoints mit Parametern, Beispielen und Response-Str
 | <span class="method-badge get">GET</span> | [`/api/v1/client-statistics`](#get-apiv1client-statistics) | Kundenstatistiken auflisten (paginiert, filterbar) | `client-statistics:read` |
 | <span class="method-badge get">GET</span> | [`/api/v1/client-statistics/kpis`](#get-apiv1client-statisticskpis) | Aggregierte KPIs abrufen | `client-statistics:read` |
 | <span class="method-badge get">GET</span> | [`/api/v1/client-statistics/{id}`](#get-apiv1client-statisticsid) | Einzelnen Datensatz abrufen | `client-statistics:read` |
+| <span class="method-badge post">POST</span> | [`/api/v1/booking-tracking`](#post-apiv1booking-tracking) | Tracking-Daten zu einer Buchung speichern | `booking-tracking:write` |
+| <span class="method-badge get">GET</span> | [`/api/v1/booking-tracking/{appointmentId}`](#get-apiv1booking-trackingappointmentid) | Tracking-Daten zu einer Buchung abrufen | `booking-tracking:read` |
 
 ---
 
@@ -204,3 +208,183 @@ Alle Endpoints liefern bei Fehlern einheitliche JSON-Responses:
 | `403` | Fehlender Scope | `{"error": "Forbidden", "message": "Fehlende Berechtigung: ..."}` |
 | `404` | Datensatz nicht gefunden | `{"message": "Datensatz nicht gefunden."}` |
 | `429` | Rate-Limit überschritten | Standard Laravel 429 Response |
+
+---
+
+## `POST` /api/v1/booking-tracking {: .endpoint-post }
+
+Tracking-Daten zu einer Buchung speichern. Wird vom WordPress-Booking-Plugin nach erfolgreicher Terminbuchung aufgerufen (Server-zu-Server).
+
+### Request-Body (JSON)
+
+**Pflichtfelder**
+
+| Feld | Typ | Beschreibung |
+|------|-----|--------------|
+| `appointment_id` | string (max 255) | **Pflicht** — Phorest Appointment-ID |
+
+**Optionale Felder — Buchungskontext**
+
+| Feld | Typ | Beschreibung |
+|------|-----|--------------|
+| `branch_id` | string (max 255) | Phorest Branch-ID |
+| `service_id` | string (max 255) | Phorest Service-ID |
+| `client_id` | string (max 255) | Phorest Client-ID |
+| `booked_at` | datetime | Zeitpunkt der Buchung (ISO 8601) |
+
+**Optionale Felder — Browser & Gerät**
+
+| Feld | Typ | Beschreibung |
+|------|-----|--------------|
+| `user_agent` | string (max 2000) | User-Agent-String des Browsers |
+| `browser_name` | string (max 100) | Browsername (z.B. `Chrome`) |
+| `browser_version` | string (max 50) | Browserversion (z.B. `120.0`) |
+| `os_name` | string (max 100) | Betriebssystem (z.B. `macOS`) |
+| `os_version` | string (max 50) | OS-Version (z.B. `14.2`) |
+| `device_type` | string | Gerätetyp: `desktop`, `mobile`, `tablet` |
+| `screen_width` | int (0–20000) | Bildschirmbreite in Pixel |
+| `screen_height` | int (0–20000) | Bildschirmhöhe in Pixel |
+| `viewport_width` | int (0–20000) | Viewport-Breite in Pixel |
+| `viewport_height` | int (0–20000) | Viewport-Höhe in Pixel |
+| `language` | string (max 20) | Browser-Sprache (z.B. `de-DE`) |
+
+**Optionale Felder — Marketing & Herkunft**
+
+| Feld | Typ | Beschreibung |
+|------|-----|--------------|
+| `referrer` | string (max 2000) | HTTP-Referrer |
+| `landing_page` | string (max 2000) | Erste besuchte URL |
+| `utm_source` | string (max 255) | UTM Source (z.B. `google`) |
+| `utm_medium` | string (max 255) | UTM Medium (z.B. `cpc`) |
+| `utm_campaign` | string (max 255) | UTM Campaign (z.B. `brand_2024`) |
+| `utm_content` | string (max 255) | UTM Content |
+| `utm_term` | string (max 255) | UTM Term |
+| `gclid` | string (max 255) | Google Click ID |
+| `fbclid` | string (max 255) | Facebook Click ID |
+
+**Optionale Felder — Verhalten**
+
+| Feld | Typ | Beschreibung |
+|------|-----|--------------|
+| `booking_duration_seconds` | int (0–86400) | Dauer des Buchungsvorgangs in Sekunden |
+| `page_view_count` | int (0–10000) | Seitenaufrufe vor der Buchung |
+| `cookie_consent` | string (max 50) | Cookie-Consent-Status (z.B. `all`, `essential`) |
+
+!!! info "IP-Adresse"
+    Die `ip_address` wird automatisch serverseitig aus dem Request ermittelt und muss nicht mitgesendet werden.
+
+### Beispiel
+
+```bash
+curl -X POST \
+     -H "Authorization: Bearer glh_TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "appointment_id": "pho_appt_abc123",
+       "branch_id": "urLYs9iAs3RUBrYaDZY9ew",
+       "device_type": "mobile",
+       "utm_source": "google",
+       "utm_medium": "cpc",
+       "utm_campaign": "brand_2024",
+       "gclid": "CjwKCAiA_abc123",
+       "booking_duration_seconds": 185,
+       "booked_at": "2024-12-15T14:30:00Z"
+     }' \
+     "https://staging.hub.glattt.com/api/v1/booking-tracking"
+```
+
+### Response (201)
+
+```json
+{
+  "data": {
+    "id": 1,
+    "appointment_id": "pho_appt_abc123",
+    "branch_id": "urLYs9iAs3RUBrYaDZY9ew",
+    "service_id": null,
+    "client_id": null,
+    "ip_address": "203.0.113.42",
+    "user_agent": null,
+    "browser_name": null,
+    "browser_version": null,
+    "os_name": null,
+    "os_version": null,
+    "device_type": "mobile",
+    "screen_width": null,
+    "screen_height": null,
+    "viewport_width": null,
+    "viewport_height": null,
+    "language": null,
+    "referrer": null,
+    "landing_page": null,
+    "utm_source": "google",
+    "utm_medium": "cpc",
+    "utm_campaign": "brand_2024",
+    "utm_content": null,
+    "utm_term": null,
+    "gclid": "CjwKCAiA_abc123",
+    "fbclid": null,
+    "booking_duration_seconds": 185,
+    "page_view_count": null,
+    "cookie_consent": null,
+    "booked_at": "2024-12-15T14:30:00+00:00",
+    "created_at": "2026-03-30T16:45:12+00:00",
+    "updated_at": "2026-03-30T16:45:12+00:00"
+  }
+}
+```
+
+### Response (422)
+
+```json
+{
+  "message": "The appointment id field is required.",
+  "errors": {
+    "appointment_id": ["The appointment id field is required."]
+  }
+}
+```
+
+---
+
+## `GET` /api/v1/booking-tracking/{appointmentId} {: .endpoint-get }
+
+Tracking-Daten zu einer bestimmten Buchung abrufen.
+
+| Parameter | Typ | Beschreibung |
+|-----------|-----|--------------|
+| `appointmentId` | string | **Pflicht** — Phorest Appointment-ID (URL-Parameter) |
+
+### Beispiel
+
+```bash
+curl -H "Authorization: Bearer glh_TOKEN" \
+     "https://staging.hub.glattt.com/api/v1/booking-tracking/pho_appt_abc123"
+```
+
+### Response (200)
+
+```json
+{
+  "data": {
+    "id": 1,
+    "appointment_id": "pho_appt_abc123",
+    "branch_id": "urLYs9iAs3RUBrYaDZY9ew",
+    "utm_source": "google",
+    "utm_medium": "cpc",
+    "device_type": "mobile",
+    "booking_duration_seconds": 185,
+    "booked_at": "2024-12-15T14:30:00+00:00",
+    "..."
+  }
+}
+```
+
+### Response (404)
+
+```json
+{
+  "error": "Not Found",
+  "message": "Keine Tracking-Daten für diese Buchung gefunden."
+}
+```
