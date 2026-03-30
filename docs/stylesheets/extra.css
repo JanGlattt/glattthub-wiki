@@ -400,3 +400,11 @@
 .md-typeset .method-badge.put    { background: #f59e0b; }
 .md-typeset .method-badge.patch  { background: #8b5cf6; }
 .md-typeset .method-badge.delete { background: #ef4444; }
+
+/* --------------------------------------------------
+ * Swagger UI Iframe – volle Höhe ohne Abschneiden
+ * -------------------------------------------------- */
+.swagger-ui-iframe {
+    min-height: 800px;
+    overflow: visible !important;
+}
