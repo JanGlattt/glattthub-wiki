@@ -132,7 +132,10 @@ nav:
   - Berichte:
     - Reports-Modul: REPORTS-MODULE.md
   - API-Integrationen:
-    - REST-API: REST-API.md
+    - REST-API:
+      - Übersicht: REST-API.md
+      - Endpoint-Referenz: REST-API-ENDPOINTS.md
+      - Live-Tester: REST-API-TESTER.md
     - Phorest API: PHOREST-API.md
     - Phorest Client-ID Import: PHOREST-CLIENT-ID-IMPORT.md
     - askDANTE API: ASKDANTE-API.md

@@ -7,9 +7,11 @@ info:
     Authentifizierung via Bearer-Token (SHA-256 gehasht, `glh_`-Prefix).
     Rate-Limit: 60 Requests/Minute.
 servers:
-  - url: https://deine-domain.de/api/v1
+  - url: https://staging.hub.glattt.com/api/v1
+    description: Staging
+  - url: https://hub.glattt.com/api/v1
     description: Produktion
-  - url: http://localhost:8888/api/v1
+  - url: http://glattthub.local:8888/api/v1
     description: Lokale Entwicklung (MAMP)
 
 security:

@@ -51,9 +51,11 @@ Da Cloud Run in `europe-west3` keine Domain Mappings unterstützt, werden Custom
 | **Statische IP** | `ip-glattthub` | `34.49.25.78` (global) |
 | **Serverless NEG (Prod)** | `neg-glattthub-prod` | → `glattthub-web` |
 | **Serverless NEG (Staging)** | `neg-glattthub-staging` | → `glattthub-web-staging` |
-| **Backend (Prod)** | `backend-glattthub-prod` | Backend-Service mit NEG |
-| **Backend (Staging)** | `backend-glattthub-staging` | Backend-Service mit NEG |
-| **URL Map** | `urlmap-glattthub` | Host-basiertes Routing |
+| **Backend (Prod)** | `backend-glattthub-prod` | Web-App mit IAP |
+| **Backend (Staging)** | `backend-glattthub-staging` | Web-App mit IAP |
+| **Backend API (Prod)** | `backend-glattthub-prod-api` | REST-API ohne IAP |
+| **Backend API (Staging)** | `backend-glattthub-staging-api` | REST-API ohne IAP |
+| **URL Map** | `urlmap-glattthub` | Host- und Pfad-basiertes Routing |
 | **HTTPS Proxy** | `proxy-glattthub` | Terminiert SSL |
 | **HTTP Proxy** | `proxy-glattthub-http` | Redirect HTTP → HTTPS |
 | **Forwarding Rule HTTPS** | `fwd-glattthub-https` | Port 443 → HTTPS Proxy |
@@ -61,10 +63,16 @@ Da Cloud Run in `europe-west3` keine Domain Mappings unterstützt, werden Custom
 
 #### URL-Routing
 
+Der URL-Map kombiniert Host- und Pfad-basiertes Routing. API-Pfade (`/api/*`) werden an Backend-Services **ohne IAP** geleitet, damit externe API-Clients mit Bearer Token zugreifen können.
+
 ```
-hub.glattt.com            → backend-glattthub-prod    → glattthub-web
-staging.hub.glattt.com    → backend-glattthub-staging → glattthub-web-staging
+hub.glattt.com/api/*           → backend-glattthub-prod-api    → glattthub-web       (ohne IAP)
+hub.glattt.com/*               → backend-glattthub-prod        → glattthub-web       (mit IAP)
+staging.hub.glattt.com/api/*   → backend-glattthub-staging-api → glattthub-web-staging (ohne IAP)
+staging.hub.glattt.com/*       → backend-glattthub-staging     → glattthub-web-staging (mit IAP)
 ```
+
+> **Wichtig:** Die API-Endpoints sind trotzdem geschützt — durch die eigene Bearer-Token-Authentifizierung in Laravel (`ApiTokenMiddleware`). IAP ist nur für Browser-Sessions der Web-App relevant.
 
 ### SSL-Zertifikate
 
@@ -119,6 +127,8 @@ IAP schützt die Web-App mit einer Google-Anmeldung, die **vor** dem normalen Ap
 | **Staging** | Einzelne Nutzer | `user:jan@labrado-schlueter.com` |
 
 **Wichtig:** IAP greift nur bei Zugriff über den Load Balancer (Custom Domains). Die `*.run.app`-URLs umgehen den Load Balancer und damit auch IAP.
+
+**Ausnahme:** API-Pfade (`/api/*`) sind vom IAP ausgenommen — sie werden über separate Backend-Services ohne IAP geroutet. Details siehe [API-Pfade vom IAP ausschließen](#api-pfade-vom-iap-ausschlieen).
 
 #### Voraussetzungen (bereits eingerichtet)
 
@@ -270,6 +280,33 @@ accessSettings:
 | Unbegrenzt | *(kein `reauthSettings` setzen)* | Standard — Google-Session gilt |
 
 > **Aktuelle Einstellung:** Standard (unbegrenzt) — der Google-Login wird nur verlangt, wenn die Google-Session abläuft oder der Nutzer Cookies löscht.
+
+#### API-Pfade vom IAP ausschließen
+
+Damit die REST-API (`/api/*`) ohne Google-Anmeldung per Bearer Token erreichbar ist, existieren separate Backend-Services ohne IAP. Diese zeigen auf die **gleichen** Cloud Run Services, haben aber kein IAP aktiviert.
+
+**Architektur:**
+
+| Pfad | Backend-Service | IAP | Auth |
+|------|-----------------|-----|------|
+| `/api/*` | `backend-glattthub-{env}-api` | ❌ Aus | Bearer Token (Laravel) |
+| `/*` (alles andere) | `backend-glattthub-{env}` | ✅ An | Google-Anmeldung + Laravel Session |
+
+**Setup-Script:** Die vollständigen Befehle zur Einrichtung liegen in `scripts/iap-api-bypass-setup.sh` im Projekt-Repository.
+
+**Rollback:** Falls die API-Bypass-Konfiguration Probleme macht:
+
+```bash
+# URL-Map auf Backup zurücksetzen (nur Host-Routing, kein Pfad-Routing)
+gcloud compute url-maps import urlmap-glattthub \
+    --global \
+    --source=urlmap-glattthub-backup.yaml \
+    --project=glattthub
+
+# API Backend-Services löschen
+gcloud compute backend-services delete backend-glattthub-prod-api --global --project=glattthub
+gcloud compute backend-services delete backend-glattthub-staging-api --global --project=glattthub
+```
 
 #### Ersteinrichtung (Referenz)
 
