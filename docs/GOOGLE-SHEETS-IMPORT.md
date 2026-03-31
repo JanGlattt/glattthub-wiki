@@ -24,7 +24,7 @@ Automatischer Import neuer Verträge aus einem Google Sheet in die GlattHub-Date
 | Symbol | Bedeutung |
 |--------|-----------|
 | ✅ Importiert [Datum] | Erfolgreich in GlattHub importiert |
-| ⚠️ Duplikat [Datum] | Vertrag existiert bereits (wird übersprungen) |
+| 🔄 Aktualisiert [Datum] | Bestehender Vertrag aktualisiert (gleiche Vertragsnummer) |
 | ⏳ Unvollständig: ... | Pflichtfelder fehlen (wird beim nächsten Durchlauf erneut geprüft) |
 | ❌ Fehler: ... | Import fehlgeschlagen — siehe Fehlermeldung |
 | *(leer)* | Noch nicht verarbeitet |
@@ -134,7 +134,7 @@ Content-Type: application/json
   "monthly_amount": "99,00",
   "iban": "DE89 3704 0044 0532 0130 00",
   "mandate_date": "15.03.2025",
-  "annual_price": "1.200,00",
+  "monthly_price": "99,00",
   "upfront_amount": "200,00",
   "first_debit_month": "25.04",
   "debit_day": "3"
@@ -146,8 +146,7 @@ Content-Type: application/json
 | Status | Bedeutung |
 |--------|-----------|
 | 201 | Vertrag erfolgreich erstellt |
-| 200 | Widerruf erfolgreich verarbeitet |
-| 409 | Vertrag existiert bereits (Duplikat) |
+| 200 | Vertrag aktualisiert (gleiche `contract_number`) oder Widerruf verarbeitet |
 | 422 | Validierungsfehler oder fehlende Daten (gespeichert zur manuellen Nachbearbeitung) |
 | 401 | Nicht authentifiziert |
 | 403 | Falscher Scope |
@@ -201,7 +200,7 @@ Content-Type: application/json
 | Paketart | N (14) | `product_name` | `legacy_product_name` |
 | Anzahl Zonen | O (15) | `body_zone_count` | `body_zone_count` |
 | Körperzonen | P (16) | `body_zones` | Pivot + `body_zone_description` |
-| Preis 12M | R (18) | `annual_price` | → total_value Berechnung |
+| Preis 12M | R (18) | `monthly_price` | → total_value (× 12)  |
 | Gutscheinwert | U (21) | `voucher_value` | `legacy_gutschein_betrag` |
 | Gutschein-Nr. | V (22) | `voucher_number` | `legacy_gutschein_nummer` |
 | Vor-Ort-Betrag | W (23) | `upfront_amount` | → total_value Berechnung |
@@ -213,6 +212,31 @@ Content-Type: application/json
 | Unterschriftsdatum | AK (37) | `mandate_date` | ClientMandate `mandate_signed_at` |
 | Ersteinzug YY.MM | AL (38) | `first_debit_month` | `start_date`, `first_payment_date` |
 | **Import-Status** | **AY (51)** | *(vom Script)* | — |
+
+### Preisberechnung
+
+Der Import ermittelt Preise bevorzugt aus der **Preisliste** (`price_lists` + `price_groups`):
+
+1. **Preisliste nachschlagen**: Anhand des Erstellungsdatums (`created_date`) und des Branch wird die gültige Preisliste ermittelt (`PriceList::getPriceListForDate`)
+2. **PriceGroup finden**: Mit `body_zone_count` (bei GK immer 6) und `duration` (Laufzeit, z.B. 19 oder 24 Monate) wird die passende Preisgruppe gesucht
+3. **Werte übernehmen**: `monthly_amount_cents` und `total_amount_cents` (= `monthly × months`) aus der PriceGroup
+
+**Fallback** (wenn keine passende Preisliste gefunden):
+
+- `monthly_price` vorhanden → `total_value = monthly_price × 12`
+- Direktzahler → `total_value = upfront_amount`
+- Sonst → `total_value = upfront_amount + (monthly_amount × sepa_months)`
+
+> **Wichtig:** `duration` (Spalte AA) wird für den Preislisten-Lookup verwendet, nicht `sepa_months` (Spalte AB). Die PriceGroup.months entspricht der Laufzeit.
+
+### Update-Logik (gleiche Vertragsnummer)
+
+Wenn ein Kunde im Sheet mehrfach vorkommt, definiert die **`contract_number`** (Spalte E) ob es sich um denselben oder einen neuen Vertrag handelt:
+
+- **Gleiche `contract_number`** → Die zweite (spätere) Zeile **aktualisiert** den bestehenden Vertrag. Alle Vertragsfelder, Körperzonen und das SEPA-Mandat werden überschrieben.
+- **Andere `contract_number`** → Es wird ein **neuer Vertrag** erstellt, auch wenn der Kunde derselbe ist.
+
+Da das Script Zeilen von oben nach unten verarbeitet (kleine `row_number` zuerst), werden Updates automatisch in der richtigen Reihenfolge angewendet.
 
 ### Widerruf-Logik
 
@@ -251,9 +275,9 @@ Warning-Banner auf Verträge-Seite
 
 1. Im Google Sheet: **Erweiterungen > Apps Script**
 2. Code aus `google-apps-script/ContractImport.gs` einfügen
-3. **Script Properties** setzen:
-   - `GLATTTHUB_API_URL` → API-URL
-   - `GLATTTHUB_API_TOKEN` → Bearer Token (mit `contracts:import` Scope)
+3. Die Konfiguration ist im `CONFIG`-Objekt am Anfang des Scripts hardcodiert:
+   - `API_URL` → API-URL
+   - `API_TOKEN` → Bearer Token (mit `contracts:import` Scope)
    - `SHEET_ID` → Google Sheet ID
    - `SHEET_NAME` → Blattname
 4. Funktion `setupTrigger()` einmalig ausführen
