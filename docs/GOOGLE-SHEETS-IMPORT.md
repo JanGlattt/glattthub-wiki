@@ -212,7 +212,7 @@ Content-Type: application/json
 | IBAN | AE (31) | `iban` | ClientMandate `payer_iban` |
 | Unterschriftsdatum | AK (37) | `mandate_date` | ClientMandate `mandate_signed_at` |
 | Ersteinzug YY.MM | AL (38) | `first_debit_month` | `start_date`, `first_payment_date` |
-| **Import-Status** | **AN (40)** | *(vom Script)* | — |
+| **Import-Status** | **AY (51)** | *(vom Script)* | — |
 
 ### Widerruf-Logik
 
