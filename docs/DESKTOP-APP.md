@@ -1,6 +1,6 @@
-# Desktop-App (Tauri)
+# Desktop-App (Electron)
 
-Native macOS Desktop-App für glatttHub — ein leichtgewichtiger Tauri-Wrapper um die Web-App.
+Native macOS Desktop-App für glatttHub — ein Electron-Wrapper um die Web-App.
 
 ---
 
@@ -22,20 +22,40 @@ Die glatttHub Desktop-App ist eine native macOS-Anwendung, die die Web-App (`htt
 | Feature | Beschreibung |
 |---------|-------------|
 | **Eigenes Fenster** | Unabhängig vom Browser, eigenes Dock-Icon |
+| **Overlay-Titelleiste** | Schlankes Design mit macOS Traffic Lights (Schließen/Minimieren/Maximieren) |
 | **Spotlight-Suche** | „glatttHub" eingeben → App öffnen |
 | **Cmd+Tab** | Eigenes Icon in der App-Umschaltung |
-| **Deutsche Menüleiste** | glatttHub, Bearbeiten, Darstellung, Fenster |
-| **Tastenkürzel** | Cmd+R = Neu laden, Cmd+Q = Beenden |
+| **Deutsche Menüleiste** | glatttHub, Bearbeiten, Darstellung, Fenster, Hilfe |
+| **Tray-Icon** | Schnellzugriff über die macOS-Menüleiste |
+| **Admin-Panel** | Eigenes Fenster für das Filament Admin-Panel (Cmd+Shift+A) |
+| **Push-Benachrichtigungen** | Native macOS-Benachrichtigungen (Opt-in beim ersten Start) |
+| **Tastenkürzel** | Cmd+R = Neu laden, Cmd+Shift+A = Admin-Panel, Cmd+Q = Beenden |
 | **Immer aktuell** | Die Website wird live geladen — Inhalte sind immer aktuell |
 
 ### Menüleiste
 
 | Menü | Einträge |
 |------|---------|
-| **glatttHub** | Über glatttHub, Ausblenden, Andere ausblenden, Beenden |
+| **glatttHub** | Über glatttHub, Ausblenden, Andere ausblenden, Alle einblenden, Beenden |
 | **Bearbeiten** | Widerrufen, Wiederholen, Ausschneiden, Kopieren, Einsetzen, Alles auswählen |
-| **Darstellung** | Neu laden (Cmd+R), Vollbild |
-| **Fenster** | Minimieren, Maximieren, Fenster schließen |
+| **Darstellung** | Neu laden (Cmd+R), Vergrößern, Verkleinern, Originalgröße, Vollbild |
+| **Fenster** | Minimieren, Maximieren, Admin-Panel öffnen (Cmd+Shift+A), Schließen, Alle nach vorne |
+| **Hilfe** | glatttHub Wiki (öffnet im Browser) |
+
+### Push-Benachrichtigungen
+
+Beim ersten Start der App erscheint ein Dialog, der fragt ob du Push-Benachrichtigungen aktivieren möchtest. Nach Klick auf „Aktivieren" zeigt macOS seinen eigenen Bestätigungs-Dialog. Danach erhältst du Benachrichtigungen direkt auf deinem Mac — solange die App geöffnet ist.
+
+!!! info "Hinweis"
+    Push-Benachrichtigungen funktionieren nur, wenn die App im Hintergrund oder Vordergrund läuft. Wird die App komplett beendet (Cmd+Q), werden keine Benachrichtigungen empfangen.
+
+### Tray-Icon
+
+In der macOS-Menüleiste (oben rechts) erscheint ein kleines glattt-Icon. Per Klick öffnet sich das Hauptfenster, per Rechtsklick ein Kontextmenü mit:
+
+- **glatttHub öffnen** — Hauptfenster anzeigen
+- **Admin-Panel** — Admin-Bereich in eigenem Fenster
+- **Beenden** — App komplett schließen
 
 ### Voraussetzungen
 
@@ -49,10 +69,13 @@ Die glatttHub Desktop-App ist eine native macOS-Anwendung, die die Web-App (`htt
 | Erscheint in Spotlight | ❌ | ✅ |
 | Eigenes Dock-Icon | ⚠️ Chrome-Icon | ✅ glattt-Icon |
 | Cmd+Tab | ⚠️ Chrome | ✅ glatttHub |
-| Kein Browser nötig | ❌ | ✅ (nutzt macOS WebKit) |
+| Kein Browser nötig | ❌ | ✅ |
+| Overlay-Titelleiste | ❌ | ✅ Schlankes Design |
+| Admin-Panel in eigenem Fenster | ❌ | ✅ Cmd+Shift+A |
 | Menüleiste | ❌ | ✅ Deutsch |
-| Auto-Update | ❌ | ✅ (vorbereitet) |
-| Dateigröße | — | ~3 MB |
+| Tray-Icon | ❌ | ✅ |
+| Push-Benachrichtigungen | ✅ (im Browser) | ✅ (native macOS) |
+| Push im Hintergrund | ✅ (Service Worker) | ⚠️ Nur bei offener App |
 
 ---
 
@@ -60,144 +83,240 @@ Die glatttHub Desktop-App ist eine native macOS-Anwendung, die die Web-App (`htt
 
 ### Architektur
 
-Die Desktop-App ist ein **Tauri v2 Wrapper**. Tauri öffnet ein natives macOS-Fenster mit eingebautem WebKit-WebView und lädt die Produktions-URL. Es wird kein lokaler Code der Laravel-App ausgeführt.
+Die Desktop-App ist ein **Electron-Wrapper**. Electron öffnet ein Chromium-basiertes BrowserWindow und lädt die Produktions-URL. Es wird kein lokaler Code der Laravel-App ausgeführt.
 
 ```
-┌─────────────────────────────────┐
-│  glatttHub.app (Tauri v2)       │  ← ~3 MB, Rust-Binary
-│  ┌───────────────────────────┐  │
-│  │   WebView (macOS WebKit)  │  │
-│  │                           │  │
-│  │  https://hub.glattt.com   │  │  ← Alles vom Server
-│  │                           │  │
-│  └───────────────────────────┘  │
-│  Deutsche Menüleiste (Rust)     │
-│  Auto-Updater Plugin            │
-└─────────────────────────────────┘
+┌─────────────────────────────────────────────────┐
+│  glatttHub.app (Electron)                       │
+│  ┌───────────────────────────────────────────┐  │
+│  │  ┌─ Traffic Lights ─┐  Drag-Region (CSS)  │  │
+│  │  │ 🔴 🟡 🟢         │                      │  │
+│  │  └──────────────────┘                      │  │
+│  │         BrowserWindow (Chromium)           │  │
+│  │                                            │  │
+│  │       https://hub.glattt.com               │  │  ← Alles vom Server
+│  │                                            │  │
+│  └────────────────────────────────────────────┘  │
+│  Main Process: Menü, Tray, CSS-Injection         │
+│  Preload: Drag-Region, electron-app Klasse       │
+└──────────────────────────────────────────────────┘
 ```
 
 ### Dateistruktur
 
 ```
-src-tauri/
-├── tauri.conf.json          # App-Konfiguration (URL, Fenster, Icons, Updater)
-├── Cargo.toml               # Rust-Dependencies
-├── build.rs                 # Tauri Build-Script
-├── src/
-│   ├── main.rs              # Entry Point (6 Zeilen)
-│   └── lib.rs               # App-Logik: deutsche Menüleiste, Updater, Fenster
-└── icons/
-    ├── 32x32.png            # Taskbar-Icon
-    ├── 128x128.png          # Standard-Icon
-    ├── 128x128@2x.png       # Retina-Icon
-    ├── icon.icns            # macOS App-Icon
-    ├── icon.ico             # Windows-Icon (Reserve)
-    └── icon.png             # Allgemeines Icon
+electron/
+├── main.cjs                 # Hauptprozess: Fenster, Menü, Tray, CSS-Injection
+├── preload.cjs              # Drag-Region injizieren, electron-app Body-Klasse
+├── patch-dev.sh             # Patcht Electron.app für Dev (Name, Icon, Identifier)
+├── build-icns.sh            # Erstellt .icns aus Icon Composer Exports
+├── update-web-icons.sh      # Aktualisiert Web-App Icons aus Icon Composer Exports
+├── icons/
+│   ├── glatttHub_Icon.icon  # Apple Icon Composer Asset (für Build)
+│   ├── icon.icns            # macOS App-Icon (.icns Fallback)
+│   ├── icon.png             # PNG-Fallback für Dev-Modus
+│   ├── tray-icon.png        # Tray-Icon 22×22 (Template Image)
+│   └── tray-icon@2x.png    # Tray-Icon 44×44 (Template Image)
+└── dist/                    # Build-Ausgabe (.app, .dmg, .zip)
 ```
 
-### Konfiguration (`tauri.conf.json`)
+### Build-Konfiguration (`package.json`)
 
 | Einstellung | Wert | Beschreibung |
 |------------|------|-------------|
-| `productName` | `glatttHub` | App-Name in Dock/Spotlight |
-| `identifier` | `com.glattt.hub` | Bundle-Identifier |
-| `build.frontendDist` | `https://hub.glattt.com` | Externe URL — keine lokalen Assets |
-| `app.windows[0].width` | `1280` | Standard-Fensterbreite |
-| `app.windows[0].height` | `800` | Standard-Fensterhöhe |
-| `app.windows[0].minWidth` | `1024` | Minimale Fensterbreite |
-| `app.windows[0].minHeight` | `700` | Minimale Fensterhöhe |
-| `app.windows[0].titleBarStyle` | `Visible` | Standard macOS-Titelleiste |
-| `bundle.targets` | `["dmg", "app"]` | Erzeugt `.app` und `.dmg` |
-| `bundle.macOS.minimumSystemVersion` | `10.15` | Catalina+ |
+| `build.appId` | `com.glattt.hub` | Bundle-Identifier |
+| `build.productName` | `glatttHub` | App-Name in Dock/Spotlight |
+| `build.mac.icon` | `electron/icons/glatttHub_Icon.icon` | Apple Icon Composer Asset |
+| `build.mac.category` | `public.app-category.business` | macOS App-Kategorie |
+| `build.mac.target` | `["dmg", "zip"]` | Build-Targets |
+| `build.mac.minimumSystemVersion` | `10.15` | Catalina+ |
+| `build.directories.output` | `electron/dist` | Build-Ausgabeverzeichnis |
 
-### Rust-Dependencies (`Cargo.toml`)
+### Main-Prozess (`main.cjs`)
 
-| Crate | Version | Zweck |
-|-------|---------|-------|
-| `tauri` | `2` | Core-Framework |
-| `tauri-plugin-opener` | `2` | Links in externem Browser öffnen |
-| `tauri-plugin-updater` | `2` | Auto-Update-Funktionalität |
-| `serde` / `serde_json` | `1` | JSON-Serialisierung |
+Der Main-Prozess ist in logische Abschnitte gegliedert:
 
-### Deutsche Menüleiste (`src/lib.rs`)
+#### URLs & Navigation
 
-Die Menüleiste wird in Rust aufgebaut mit `tauri::menu` und verwendet `PredefinedMenuItem` mit deutschen Bezeichnungen. Jedes Menü-Item wird mit einem deutschen Label überschrieben:
-
-```rust
-PredefinedMenuItem::about(app, Some("Über glatttHub"), None)
-PredefinedMenuItem::quit(app, Some("glatttHub beenden"))
-PredefinedMenuItem::copy(app, Some("Kopieren"))
-// etc.
+```javascript
+const APP_URL = 'https://hub.glattt.com';
+const ADMIN_URL = 'https://hub.glattt.com/admin';
+const ALLOWED_DOMAINS = [
+  'hub.glattt.com',
+  'accounts.google.com',      // Google OAuth
+  'accounts.youtube.com',     // Google Auth
+  'login.microsoftonline.com', // Microsoft Auth
+  'iap.googleapis.com',       // Identity-Aware Proxy
+];
 ```
 
-Benutzerdefinierte Menü-Items (z.B. „Neu laden") verwenden `MenuItemBuilder::with_id` und werden in `on_menu_event` abgefangen.
+Nicht-erlaubte URLs werden automatisch im System-Browser geöffnet.
+
+#### CSS-Injection
+
+CSS wird über `webContents.insertCSS()` im `dom-ready`-Event injiziert. Diese Methode ist persistent über SPA-Navigation (Livewire `wire:navigate`), im Gegensatz zu DOM-basierter Injection die bei Navigation verloren geht.
+
+Injiziertes CSS:
+
+| CSS-Regel | Zweck |
+|-----------|-------|
+| `#electron-drag-region` | 38px Drag-Region oben (Fenster verschieben) |
+| `.fi-sidebar-header`, `.fi-topbar` | 38px Padding für Traffic Lights (Filament) |
+| `nav.hub-nav`, `.hub-topbar` | 38px Padding für Traffic Lights (Hub-Layout) |
+| `a, button, input, ...` | `-webkit-app-region: no-drag` für klickbare Elemente |
+| `::-webkit-scrollbar` | Scrollbar ausblenden |
+
+#### Child-Windows
+
+Das Admin-Panel (Cmd+Shift+A) öffnet in einem eigenen Fenster. Child-Windows werden dedupliziert: Ist das Fenster für eine URL bereits offen, wird es fokussiert statt ein neues zu öffnen.
+
+#### User-Agent
+
+`Electron/X.X.X` wird aus dem User-Agent entfernt, damit Google OAuth funktioniert (Google blockiert Logins aus Electron).
+
+### Preload-Script (`preload.cjs`)
+
+Das Preload-Script hat zwei Aufgaben:
+
+1. **Drag-Region**: Erstellt ein `#electron-drag-region` div am Anfang des Body
+2. **Electron-Erkennung**: Setzt `document.body.classList.add('electron-app')`
+
+Die Drag-Region wird bei drei Events neu erstellt (Sickerheit gegen SPA-Navigation):
+
+- `DOMContentLoaded` — Erster Seitenaufbau
+- `livewire:navigated` — Nach Livewire SPA-Navigation
+- `setInterval(ensureDragRegion, 1000)` — Fallback
+
+### Electron-Erkennung in der Web-App
+
+Die Web-App erkennt die Electron-Umgebung über die CSS-Klasse:
+
+```javascript
+const isElectron = document.body.classList.contains('electron-app');
+```
+
+Wird aktuell für Push-Notifications genutzt:
+
+- Electron gewährt `Notification.permission` automatisch (`'granted'`)
+- Ohne Erkennung würde direkt subscribed werden (kein Opt-in-Dialog)
+- Mit Erkennung: Modal wird trotzdem gezeigt → User entscheidet aktiv
+- Device-Name wird auf `'glatttHub Desktop App'` gesetzt
+
+### Push-Notifications (Technisch)
+
+Der Push-Flow in Electron unterscheidet sich vom Browser:
+
+```
+Browser:                           Electron:
+────────                           ────────
+Permission = 'default'             Permission = 'granted' (auto)
+→ Modal zeigen                     → getSubscription() prüfen
+→ User klickt "Aktivieren"         → Nicht subscribed?
+→ Notification.requestPermission() → Modal zeigen (Opt-in)
+→ System-Dialog (Grant/Deny)       → User klickt "Aktivieren"
+→ Subscribe + Willkommens-Notif.   → Subscribe + Willkommens-Notif.
+                                   → macOS-System-Dialog (erste Notif.)
+```
+
+**Relevante Dateien:**
+
+| Datei | Zweck |
+|-------|-------|
+| `resources/views/layouts/hub.blade.php` | Push-Permission-Modal (Alpine.js) |
+| `public/js/push-notifications.js` | PushNotificationManager Klasse |
+| `public/sw.js` | Service Worker für Push-Empfang |
+| `app/Http/Controllers/Push/PushNotificationController.php` | API-Controller |
+| `app/Services/PushNotificationService.php` | Push-Logik & WebPush |
+
+### Icons
+
+#### App-Icon
+
+Das App-Icon wird im **Apple Icon Composer** (.icon-Format) erstellt und von `electron-builder` via `actool` (Xcode) zu `Assets.car` kompiliert.
+
+!!! warning "Xcode erforderlich"
+    Der Build benötigt eine Xcode-Installation für die `actool`-Kompilierung des `.icon`-Assets.
+
+**Wichtig:** Kein `app.dock.setIcon()` im Code verwenden — das überschreibt das native `.icns` mit falscher Größe/Format.
+
+#### Tray-Icon
+
+macOS-Menüleisten-Icon als **Template Image**:
+
+- Schwarz (#000000) auf transparentem Hintergrund
+- `tray-icon.png`: 22×22 Pixel (@1x)
+- `tray-icon@2x.png`: 44×44 Pixel (@2x)
+- Als Template markiert → macOS passt Farbe an Hell/Dunkel-Modus an
 
 ### Build-Befehle
 
 ```bash
-# Voraussetzung: Rust installiert
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+# Development (öffnet App, verbindet mit Produktions-URL)
+npm run electron:dev
 
-# Development (öffnet App direkt)
-npm run tauri:dev
+# Production Build (.app + .dmg + .zip)
+CSC_IDENTITY_AUTO_DISCOVERY=false npm run electron:build
 
-# Production Build (erzeugt .app + .dmg)
-npm run tauri:build
+# Nur DMG
+npm run electron:build:dmg
 
-# Ergebnisse:
-# src-tauri/target/release/bundle/macos/glatttHub.app
-# src-tauri/target/release/bundle/dmg/glatttHub_1.0.0_aarch64.dmg
+# Nur PKG (für MDM-Verteilung)
+npm run electron:build:pkg
 ```
 
-**Erster Build** kompiliert alle Rust-Dependencies und dauert ca. 1–2 Minuten. Folge-Builds (nur eigener Code geändert) dauern ca. 15–20 Sekunden.
-
-### Auto-Updater
-
-Der Updater ist als Plugin eingebunden und prüft den Endpoint:
+**Ergebnisse:**
 
 ```
-https://storage.googleapis.com/glattthub-public/tauri/update.json
+electron/dist/
+├── mac-arm64/
+│   └── glatttHub.app               # Die App
+├── glatttHub-1.0.0-arm64.dmg       # DMG-Installer
+└── glatttHub-1.0.0-arm64-mac.zip   # ZIP-Archiv
 ```
 
-**Wichtig:** Der Updater betrifft nur das Tauri-Kostüm (Menüleiste, Fenster-Config, Tauri-Version). Die Website selbst ist immer aktuell, da sie direkt vom Server geladen wird.
+### Dev-Modus
 
-#### Update-JSON Format
+`npm run electron:dev` startet die Electron-Entwicklungsversion. Beim `npm install` wird automatisch `patch-dev.sh` ausgeführt, das:
 
-```json
-{
-  "version": "1.1.0",
-  "notes": "Deutsche Menüleiste verbessert",
-  "pub_date": "2026-04-08T12:00:00Z",
-  "platforms": {
-    "darwin-aarch64": {
-      "url": "https://storage.googleapis.com/glattthub-public/tauri/glatttHub_1.1.0_aarch64.dmg",
-      "signature": "..."
-    }
-  }
-}
-```
+1. `CFBundleDisplayName` → `glatttHub` setzt
+2. `CFBundleName` → `glatttHub` setzt
+3. `CFBundleIdentifier` → `com.glattt.hub` setzt
+4. Das App-Icon in die lokale `Electron.app` kopiert
 
-**Aktivierung:** Der Updater benötigt ein Schlüsselpaar (`pubkey` in `tauri.conf.json`). Solange `pubkey` leer ist, ist der Updater inaktiv.
+### Dependencies
+
+| Paket | Version | Zweck |
+|-------|---------|-------|
+| `electron` | ^41.2.0 | Core-Framework |
+| `electron-builder` | ^26.8.1 | Build & Packaging |
 
 ### Code Signing (ausstehend)
 
 Ohne Code Signing zeigt macOS beim ersten Öffnen eine Warnung. Nach Erhalt des Apple Developer Accounts:
 
-1. Signing Identity in `tauri.conf.json` unter `bundle.macOS.signingIdentity` eintragen
-2. `bundle.createUpdaterArtifacts` aktivieren
-3. Notarization mit `providerShortName` konfigurieren
+1. `CSC_LINK` und `CSC_KEY_PASSWORD` als Environment-Variablen setzen
+2. `CSC_IDENTITY_AUTO_DISCOVERY=false` entfernen
+3. Notarization konfigurieren (Apple ID + App-spezifisches Passwort)
+4. `afterSign`-Hook in `package.json` für Notarization einrichten
 
 ### Verteilung
 
 | Methode | Format | Status |
 |---------|--------|--------|
-| Download-Link | `.dmg` | ✅ Bereit (hochladen auf GCS) |
-| MDM | `.pkg` | Möglich (Tauri kann `.pkg` erzeugen) |
+| Direkter Download | `.dmg` | ✅ Bereit |
+| ZIP-Archiv | `.zip` | ✅ Bereit |
+| MDM | `.pkg` | ✅ Möglich |
 | Mac App Store | — | Nicht geplant |
 
 ### Bekannte Einschränkungen
 
-- **Overlay-Titelleiste** (`titleBarStyle: "Overlay"`) funktioniert nicht zuverlässig mit externen URLs, da `data-tauri-drag-region` / `-webkit-app-region: drag` nicht in Remote-HTML injiziert werden kann. Daher wird `"Visible"` verwendet.
+| Einschränkung | Beschreibung |
+|--------------|-------------|
+| **Kein Offline-Modus** | App braucht Internet — zeigt Fehler wenn offline |
+| **Push nur bei offener App** | Kein Background Push wie bei nativen Apps oder Browser (Service Worker) |
+| **Kein Auto-Updater** | Noch nicht implementiert — Update = neue .app verteilen |
+| **Ad-hoc signiert** | macOS-Warnung beim ersten Öffnen (Rechtsklick → Öffnen) |
+| **Nur macOS/arm64** | Kein Intel-Build, kein Windows/Linux (aktuell nicht benötigt) |
 - **Offline:** Die App benötigt eine Internetverbindung — ohne Netz erscheint eine leere Seite.
 - **DMG-Bundling** kann auf manchen Systemen fehlschlagen, wenn ein altes DMG noch gemountet ist. Die `.app` wird trotzdem korrekt erzeugt.
 

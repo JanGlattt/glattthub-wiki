@@ -149,7 +149,7 @@ nav:
     - PIN-Login: PIN-LOGIN-SYSTEM.md
   - Technisches:
     - Setup-Anleitung: SETUP-ANLEITUNG.md
-    - Desktop-App (Tauri): DESKTOP-APP.md
+    - Desktop-App (Electron): DESKTOP-APP.md
     - Cloud-Infrastruktur: CLOUD-INFRASTRUKTUR.md
     - Staging-Umgebung: STAGING-UMGEBUNG.md
     - Security-Hardening: SECURITY-HARDENING.md
