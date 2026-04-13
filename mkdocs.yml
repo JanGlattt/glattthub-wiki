@@ -133,6 +133,7 @@ nav:
   - Berichte:
     - Reports-Modul: REPORTS-MODULE.md
     - Verkaufsstatistik: SALES-STATISTICS.md
+    - Mitarbeiterperformance: STAFF-PERFORMANCE.md
   - API-Integrationen:
     - REST-API:
       - Übersicht: REST-API.md
