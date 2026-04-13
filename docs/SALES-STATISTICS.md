@@ -72,10 +72,14 @@ Der Standort-Filter in der Seitenleiste filtert alle Daten auf ein bestimmtes In
 
 Die Hochrechnung (Prognose) schätzt die erwartete Vertragsanzahl und den Umsatz bis zum Monatsende. Sie wird mit einem blauen Badge gekennzeichnet.
 
+Die Prognose basiert auf **Verkaufstagen** (Mo–Sa, ohne Sonn- und Feiertage) statt auf Kalendertagen. Dadurch werden Monate mit vielen Feiertagen (z.B. Ostern, Weihnachten) fair mit normalen Monaten verglichen.
+
+Bei einem Standort-Filter werden die **regionalen Feiertage** des jeweiligen Bundeslandes berücksichtigt. Ohne Standort-Filter zählen nur **bundesweite Feiertage**.
+
 Die Prognose wird **exakter, je mehr historische Daten** vorhanden sind:
-- **≥ 12 Monate Daten**: Berücksichtigt saisonale Schwankungen (Vorjahresvergleich)
-- **≥ 3 Monate Daten**: Gewichteter Durchschnitt historischer Verkaufsmuster
-- **< 3 Monate Daten**: Einfache lineare Hochrechnung
+- **≥ 12 Monate Daten**: Berücksichtigt zusätzlich saisonale Schwankungen (Vorjahresvergleich)
+- **≥ 3 Monate Daten**: Gewichteter Durchschnitt historischer Verkaufsmuster pro Verkaufstag
+- **< 3 Monate Daten**: Einfache lineare Hochrechnung auf Basis der Verkaufstage
 
 ---
 
@@ -132,33 +136,45 @@ SalesStatisticsService (app/Services/)
 
 ### Hochrechnungs-Algorithmus
 
-Der Algorithmus ist 3-stufig und wird auf Vertragsanzahl, Gesamtumsatz und monatliche Rate angewendet:
+Der Algorithmus ist 3-stufig und wird auf Vertragsanzahl, Gesamtumsatz und monatliche Rate angewendet.
+
+**Grundlage: Verkaufstage** statt Kalendertage. Verkaufstage = Mo–Sa ohne Feiertage.
+Feiertage werden über den `HolidayService` (spatie/holidays, regional pro Bundesland) ermittelt.
+Bei Standort-Filter: regionale Feiertage. Ohne Filter: nur bundesweite Feiertage.
+
+Helper-Methoden:
+- `countSellingDays(start, end, holidays)` — Zählt Verkaufstage in einem Datumsbereich
+- `getNthSellingDay(yearMonth, n, holidays)` — Findet das Kalenderdatum des N-ten Verkaufstags
 
 **Stufe 1 — Historical Weighted** (≥3 historische Monate):
 ```
 Für jeden historischen Monat:
-  ratio = (Verkäufe bis Tag X) / (Gesamt-Verkäufe des Monats)
+  N = Verkaufstage bis heute im aktuellen Monat
+  cutoff = Kalenderdatum des N-ten Verkaufstags im hist. Monat  
+  ratio = (Verkäufe bis cutoff) / (Gesamt-Verkäufe des Monats)
   
-Gewichtung: Neuere Monate werden stärker gewichtet (letzte 3 Monate × 2)
+Gewichtung: Neuere Monate werden stärker gewichtet (exponentiell ansteigende Gewichte)
 projection = aktuelle_verkäufe / gewichteter_durchschnitt(ratios)
 ```
 
 **Stufe 2 — Historical Seasonal** (≥12 historische Monate):
 ```
 Zusätzlich zur gewichteten Ratio:
-  YoY-Wachstumsrate = (aktueller_monat_vorjahr → aktuell) berechnen
+  YoY-Wachstumsrate = (gleicher_monat_vorjahr − gleicher_monat_vor2jahren) / vor2jahren
   projection = historical_projection × (1 + yoyGrowth × 0.3)
 ```
 
 **Stufe 3 — Linear Fallback** (<3 historische Monate):
 ```
-projection = (aktuelle_verkäufe / vergangene_tage) × tage_im_monat
+projection = (aktuelle_verkäufe / verkaufstage_bisher) × verkaufstage_gesamt
 ```
 
 Die Hochrechnung wird angewendet auf:
-- Gesamt (alle Branches)
-- Pro Branch (`calculateBranchProjections()`)
-- Pro Seller (`calculateSellerProjections()`)
+- Gesamt (alle Branches) — `calculateMonthProjection()`
+- Pro Branch — `calculateBranchProjections()`
+- Pro Seller — `calculateSellerProjections()`
+
+Die Rückgabe enthält zusätzlich `selling_days_passed` und `total_selling_days`.
 
 ### Permission
 
