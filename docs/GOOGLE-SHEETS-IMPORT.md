@@ -37,6 +37,7 @@ GlattHub API → ContractImportService.php → Datenbank
 | 🔄 Aktualisiert [Datum] | Bestehender Vertrag aktualisiert (gleiche Vertragsnummer) |
 | ⏳ Unvollständig: ... | Pflichtfelder fehlen (wird beim nächsten Durchlauf erneut geprüft) |
 | ❌ Fehler: ... | Import fehlgeschlagen — siehe Fehlermeldung |
+| ❌ Fehler: Server-Fehler ... | Cloud Run war nicht erreichbar (Cold Start / 502/503/504) — wird automatisch 3× wiederholt |
 | *(leer)* | Noch nicht verarbeitet |
 ### Hinweis-Spalte (Staging-Sheet)
 
@@ -458,9 +459,12 @@ Liest das Staging-Sheet und sendet Zeilen per API an GlattHub.
 | `setupTrigger()` | 5-Minuten-Timer erstellen (einmalig) |
 | `removeTrigger()` | Timer deaktivieren |
 | `manualSync()` | Manueller Sync (für Tests) |
-| `retryFailed()` | Fehlgeschlagene erneut versuchen |
-| `showStatus()` | Statistik im Logger anzeigen |
+| `retryFailed()` | Alle fehlgeschlagenen erneut versuchen |
+| `retryServerErrors()` | Nur Server-Fehler (502/503/504) erneut versuchen |
+| `showStatus()` | Statistik im Logger anzeigen (inkl. Server-Fehler-Zähler) |
 | `testConnection()` | API-Verbindung testen |
+
+**Auto-Retry bei Server-Fehlern:** `sendToApi()` wiederholt automatisch bei HTTP 502, 503 und 504 (typisch für Cloud-Run-Cold-Starts) sowie bei Netzwerkfehlern. Bis zu 3 Versuche mit exponentiellem Backoff (3s, 6s). Erst nach 3 fehlgeschlagenen Versuchen wird die Zeile als `❌ Fehler` markiert. Falls danach noch Server-Fehler im Sheet stehen, kann manuell `retryServerErrors()` ausgeführt werden — diese Funktion findet und verarbeitet gezielt nur Zeilen mit Server-/Netzwerkfehlern.
 
 ### API-Client erstellen
 

@@ -132,6 +132,7 @@ nav:
     - Benachrichtigungen: NOTIFICATIONS.md
   - Berichte:
     - Reports-Modul: REPORTS-MODULE.md
+    - Verkaufsstatistik: SALES-STATISTICS.md
   - API-Integrationen:
     - REST-API:
       - Übersicht: REST-API.md
