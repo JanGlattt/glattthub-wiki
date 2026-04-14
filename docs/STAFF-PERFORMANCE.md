@@ -401,3 +401,39 @@ php artisan test --filter=StaffPerformance
 ```
 
 **Hinweis:** Die meisten Tests benötigen MySQL (wegen CTEs + ROW_NUMBER) und werden auf SQLite automatisch übersprungen. 2 Permission-Tests laufen auch auf SQLite.
+
+---
+
+## Performance-Optimierungen
+
+Die Staff-Performance-Seite zeigt hunderte Datenzellen, Badges und Charts gleichzeitig. Folgende Optimierungen wurden implementiert, um Ruckeln (Jank) und hohe Render-Kosten zu vermeiden.
+
+### Backend (Query-Konsolidierung)
+
+| Methode | Vorher | Nachher | Maßnahme |
+|---------|--------|---------|----------|
+| `getStaffOverview()` | 8 Queries (1 pro Zeitraum) | 1 Query | Alle 8 Zeiträume in einer CTE mit `CASE WHEN`-Aggregation |
+| `calculateKpiComparisons()` | 3 Queries | 1 Query | Vorperiode + Vergleich in einer Query |
+| `getMonthlyTrend()` | 2 Queries | 1 Query | Overall + per-Staff in einer Query via `WITH ROLLUP` |
+| `getStaffMap()` | Jeder Aufruf neu | Instance-Cache | Einmal laden, danach aus `$this->staffMapCache` |
+
+### Frontend (Alpine.js)
+
+| Optimierung | Beschreibung |
+|-------------|-------------|
+| **`x-html` statt Template-Loops** | Übersichtstabelle (`_overviewBodyHtml`, `_overviewTfootHtml`) und Ranking-Tabelle (`_rankingBodyHtml`) werden als HTML-Strings vorgebaut und via `x-html` gerendert. Eliminiert tausende Alpine-Bindings und `x-for`-Loops. |
+| **`deepFreeze()`** | Alle API-Responses werden mit `Object.freeze()` (rekursiv) eingefroren. Verhindert, dass Alpine.js Proxies um die Datenobjekte wickelt — spart erheblich Memory und Reaktivitäts-Overhead. |
+| **Batched State Changes** | `Promise.allSettled()` für parallele API-Calls, dann alle State-Updates in einem Batch. Verhindert mehrfache Re-Renders während des Ladens. |
+| **CSS-Variable-Cache** | `getCssVars()` cached Chart-Farben aus CSS-Variablen. Ein `MutationObserver` auf `<html>` invalidiert den Cache bei Dark-Mode-Wechsel (`.dark`-Klasse). |
+| **`_monthlyReversed`** | Vorberechnetes umgekehrtes Array für die Monatstrend-Tabelle — kein `.slice().reverse()` bei jedem Render. |
+| **`x-if` statt `x-show` im Targets-Modal** | Tabs im Zielwerte-Modal nutzen `x-if` statt `x-show`. Nur der aktive Tab existiert im DOM (~350 DOM-Nodes eingespart). |
+| **`content-visibility: auto`** | Below-the-fold-Sektionen (Ranking, Standort-Vergleich, Monatstrend, Körperzonen) nutzen `content-visibility: auto` mit `contain-intrinsic-size`. Der Browser rendert diese erst beim Scrollen. |
+| **Ranking-Buttons via CustomEvent** | Buttons in `x-html`-gerendertem HTML können keine Alpine-Direktiven nutzen. Stattdessen: `onclick="window.dispatchEvent(new CustomEvent('show-staff-detail', {detail: staffId}))"` mit Listener in `init()`. |
+
+### CSS (Globaler `backdrop-filter`-Bann)
+
+**Problem:** Die CSS-Eigenschaft `backdrop-filter: blur()` erzeugt pro Element eine GPU-Compositing-Layer. Bei hunderten gleichzeitig sichtbaren Badges (`.badge-glattt`) und der Seiten-Wrapper-Klasse `.dashboard-surface` führte das zu massiven Render-Kosten und spürbarem Ruckeln.
+
+**Lösung:** Alle 67 `backdrop-filter`-Deklarationen wurden global aus `theme_glattt.css` entfernt. Stattdessen werden halbtransparente Hintergründe über CSS-Variablen (`--card-glass-bg`, `--glass-bg`) verwendet — visuell kaum unterscheidbar, aber ohne GPU-Compositing-Overhead.
+
+**Regel:** `backdrop-filter` darf in keiner CSS-Klasse verwendet werden. Diese Regel ist in den Coding-Instructions und im Design-System-Agent verankert.

@@ -199,7 +199,7 @@ Für alle Button-Typen verfügbar. Fügt einen Spinner hinzu.
 ## 📦 Cards
 
 ### Standard Card
-Basis-Card mit Glass-Morphism-Effekt.
+Basis-Card mit halbtransparentem Hintergrund.
 
 ```html
 <div class="card-glattt">
@@ -546,7 +546,7 @@ Vertikale Sidebar-Navigation auf Desktop, horizontale Tabs auf Mobile. Ideal fü
 | Klasse | Beschreibung |
 |--------|-------------|
 | `tabs-glattt-layout` | Flex-Wrapper (column → row ab lg) |
-| `tabs-glattt-sidebar` | Nav-Container mit Glass-Morphism |
+| `tabs-glattt-sidebar` | Nav-Container mit halbtransparentem Hintergrund |
 | `tab-glattt-sidebar` | Tab-Button (horizontal mobil, vertikal desktop) |
 | `tab-glattt-sidebar.active` | Aktiver Tab mit Primary-Gradient |
 | `tabs-glattt-content` | Content-Bereich (flex: 1) |
@@ -816,19 +816,18 @@ Alle CSS-Variablen passen sich automatisch an. Komponenten müssen keine zusätz
 
 ---
 
-## 🔮 Glass Morphism
+## 🔮 Halbtransparente Hintergründe
 
-Das Design verwendet durchgehend Glass-Morphism für einen modernen Look:
+Das Design verwendet halbtransparente Hintergründe für einen modernen Look:
 
 ```css
 /* Card Glass Background */
 --card-glass-bg: rgba(255, 255, 255, 0.7);      /* Light */
 --card-glass-bg: rgba(17, 24, 39, 0.6);         /* Dark */
-
-/* Backdrop Filter */
-backdrop-filter: blur(20px);
--webkit-backdrop-filter: blur(20px);
 ```
+
+!!! warning "Kein `backdrop-filter`"
+    `backdrop-filter: blur()` wurde global entfernt. Diese Eigenschaft erzeugt pro Element eine GPU-Compositing-Layer. Bei hunderten gleichzeitig sichtbaren Elementen (z.B. Badges) führt das zu massivem Jank. Stattdessen werden halbtransparente Hintergründe über CSS-Variablen (`--card-glass-bg`, `--glass-bg`) verwendet.
 
 ---
 
