@@ -96,6 +96,62 @@ Balkendiagramm der meistverkauften Körperzonen bei Abschlüssen. Aufgeschlüsse
 - **Übersicht**: Beratungen, Abschlüsse, Quote, Ø KPZ
 - **Beratungsliste**: Alle Beratungen mit Datum, Uhrzeit, Standort, Typ, Ergebnis (Abschluss/Ganzkörper/Kein Abschluss), Körperzonen, Vertragswert
 
+#### Mitarbeiter-Übersichtstabelle (8 Zeiträume)
+
+Breite Tabelle ganz oben auf der Seite mit einer Zeile pro Mitarbeiter und 8 Zeitraum-Spaltengruppen:
+
+| Zeitraum | Beschreibung |
+|----------|-------------|
+| **Heute** | Nur der heutige Tag |
+| **Gestern** | Gestriger Tag |
+| **Diese Woche** | Montag bis heute |
+| **Letzte Woche** | Komplette Vorwoche (Mo–So) |
+| **Dieser Monat** | 1. des Monats bis heute |
+| **Letzter Monat** | Kompletter Vormonat |
+| **Dieses Jahr** | 1. Januar bis heute |
+| **Letztes Jahr** | Komplettes Vorjahr |
+
+Pro Zeitraum werden jeweils drei Metriken angezeigt:
+
+- **BG** — Beratungsgespräche (neutral, keine Farbkodierung)
+- **CR** — Conversion-Rate in % (farbcodiert)
+- **KpZ** — Ø Körperzonen pro Abschluss (farbcodiert)
+
+**Farbkodierung** basiert auf konfigurierbaren Schwellenwerten (global oder pro Standort):
+
+| Farbe | CR Standard | KpZ Standard |
+|-------|------------|-------------|
+| 🟢 Grün | ≥ 60% | ≥ 3,0 |
+| 🟡 Gelb | ≥ 40% | ≥ 2,0 |
+| 🔴 Rot | < 40% | < 2,0 |
+
+**Features:**
+- Sticky erste Spalte (Mitarbeitername) beim Horizontalscrollen
+- Gesamtsumme in der Footer-Zeile (Conversions/Körperzonen aus Rohdaten berechnet)
+- Toggle **„Nur Hub-Nutzer"** (Standard: aktiviert) filtert auf glatttHub-Accounts
+- Badge zeigt aktive Mitarbeiter-Anzahl
+- Sortierung nach Gesamtberatungen im aktuellen Jahr
+
+**Multi-StaffId-Zusammenführung:** Ein Hub-Nutzer kann mehrere Phorest-StaffIds haben (eine pro Standort). Diese werden automatisch zusammengeführt:
+
+1. Über `user_id` aus der `users`-Tabelle (Hub-Account)
+2. Über identischen Namen aus der `phorest_staff`-Tabelle (Fallback für Staff ohne Hub-Account)
+
+Zusammengeführte Mitarbeiter zeigen alle Standorte kommasepariert.
+
+#### Zielwerte konfigurieren (Modal)
+
+Über den Button **„Zielwerte"** im Seitenkopf öffnet sich ein Modal zur Konfiguration der Farbschwellenwerte.
+
+**Features:**
+- Pill-Buttons zur Standort-Auswahl: „Standard (Alle)" + ein Button pro Standort
+- Pro Standort/Standard jeweils 6 Felder:
+  - **KpZ**: Zielwert, Grün-Schwelle, Gelb-Schwelle
+  - **CR**: Zielwert (%), Grün-Schwelle (%), Gelb-Schwelle (%)
+- Standort-Einträge die identisch zum Standard sind, werden beim Speichern automatisch entfernt
+- Änderungen werden sofort in der Tabelle wirksam (ohne Seitenreload)
+- Zielwerte auch über Filament-Admin änderbar (`/admin/staff-performance-settings`)
+
 ### Standort-Filter
 
 Der Standort-Filter in der Seitenleiste filtert alle Daten auf ein bestimmtes Institut. Bei Wechsel werden alle Sektionen automatisch neu geladen.
@@ -121,6 +177,9 @@ StaffPerformanceController (app/Http/Controllers/)
 ├── monthlyTrend()     → JSON: Monatlicher Zeitverlauf
 ├── bodyZones()        → JSON: Körperzonen-Verteilung
 ├── staffDetail()      → JSON: Einzelansicht pro Mitarbeiter
+├── overview()         → JSON: Übersichtstabelle (8 Zeiträume, Staff-Merging)
+├── targets()          → JSON: Zielwerte lesen (GET)
+├── saveTargets()      → JSON: Zielwerte speichern (POST)
 └── preview()          → JSON: 4 Preview-KPIs für Reports-Hauptseite
 
 StaffPerformanceService (app/Services/)
@@ -130,8 +189,14 @@ StaffPerformanceService (app/Services/)
 ├── getMonthlyTrend()          → 12-Monats-Trend (gesamt + pro Branch)
 ├── getBodyZoneDistribution()  → Meistverkaufte Körperzonen
 ├── getStaffDetail()           → Einzelne Beratungen eines Mitarbeiters
+├── getStaffOverview()         → 8-Zeitraum-Übersicht mit Staff-Merging + Targets
 ├── getPreviewKpis()           → 4 Werte für Reports-Übersicht
 └── flushCache()               → Cache-Invalidierung (statisch)
+
+StaffPerformanceTarget (app/Models/)
+├── globalDefaults()    → Standard-Schwellenwerte (branch_id = NULL)
+├── forBranch(?string)  → Schwellenwerte für bestimmten Standort (Fallback auf Global)
+└── allTargetsMap()     → Map: '_default' + branch_id → Schwellenwerte
 ```
 
 ### Relevante Dateien
@@ -139,15 +204,19 @@ StaffPerformanceService (app/Services/)
 | Datei | Zweck |
 |-------|-------|
 | `app/Http/Controllers/StaffPerformanceController.php` | Controller mit Filter-Extraktion |
-| `app/Services/StaffPerformanceService.php` | Core-Logik: CTEs, Aggregation, Caching |
+| `app/Services/StaffPerformanceService.php` | Core-Logik: CTEs, Aggregation, Caching, Staff-Merging |
+| `app/Models/StaffPerformanceTarget.php` | Zielwerte-Model (global + pro Standort) |
+| `app/Filament/Pages/StaffPerformanceSettings.php` | Filament-Admin: Globale Zielwerte |
 | `resources/views/hub/reports/staff-performance.blade.php` | Haupt-View |
-| `resources/views/hub/reports/staff-performance/partials/header.blade.php` | Seitenkopf + Zurück-Button |
+| `resources/views/hub/reports/staff-performance/partials/header.blade.php` | Seitenkopf + Zurück-Button + Zielwerte-Button |
+| `resources/views/hub/reports/staff-performance/partials/overview-table.blade.php` | Übersichtstabelle (8 Zeiträume) + Hub-only Toggle |
+| `resources/views/hub/reports/staff-performance/partials/targets-modal.blade.php` | Zielwerte-Modal (Pill-Buttons, pro Standort) |
 | `resources/views/hub/reports/staff-performance/partials/staff-ranking.blade.php` | Mitarbeiter-Tabelle |
 | `resources/views/hub/reports/staff-performance/partials/branch-comparison.blade.php` | Standort-Vergleich + Chart |
 | `resources/views/hub/reports/staff-performance/partials/monthly-trend.blade.php` | Monatstrend + Chart |
 | `resources/views/hub/reports/staff-performance/partials/body-zones.blade.php` | Körperzonen-Verteilung |
 | `resources/views/hub/reports/staff-performance/partials/staff-detail-modal.blade.php` | Detail-Modal |
-| `public/js/staff-performance.js` | Alpine.js App + Chart.js Integration |
+| `public/js/staff-performance.js` | Alpine.js App + Chart.js + Targets + Staff-Merging |
 | `resources/views/hub/reports.blade.php` | Preview-Card auf Berichte-Übersicht |
 | `tests/Feature/StaffPerformanceTest.php` | Feature-Tests |
 
@@ -210,6 +279,7 @@ GROUP BY r.staff_id
 | `contract_body_zones` | Pivot: Welche Körperzonen pro Vertrag |
 | `body_zones` | Körperzonen-Stammdaten |
 | `phorest_staff` | Staff-Mapping: Phorest-ID → GlattHub-User |
+| `staff_performance_targets` | Konfigurierbare Zielwerte (global + pro Standort) |
 
 ### Beratungs-Service-IDs (Phorest)
 
@@ -230,11 +300,49 @@ stats_historic_appointments.staff_id
 
 Der Service prüft sowohl `phorest_user_id` als auch `staff_id`, da die Phorest-API unterschiedliche ID-Typen verwendet.
 
+### Staff-Merging (Multi-StaffId-Zusammenführung)
+
+Ein Mitarbeiter kann in Phorest mehrere `staffId`-Einträge haben (einen pro Standort). In der Übersichtstabelle werden diese automatisch zusammengeführt:
+
+**Merge-Key-Strategie (Priorität):**
+
+1. **`user_{userId}`** — Mitarbeiter hat einen GlattHub-Account (`users.phorest_staff_ids` enthält die staffId). Gilt als Hub-User.
+2. **`name_{md5(name)}`** — Gleicher Name in `phorest_staff`-Tabelle (Fallback für Mitarbeiter ohne Hub-Account). Gilt NICHT als Hub-User.
+3. **Rohe `staffId`** — Kein Mapping gefunden. Nur als Fallback.
+
+**Aggregation bei Zusammenführung:**
+- `consultations`, `conversions`, `body_zones` → Summe
+- `conversion_rate` → Neuberechnung: `conversions / consultations * 100`
+- `avg_zones_per_contract` → Neuberechnung: `body_zones / conversions`
+- `branches_list` → Vereinigung aller Standorte (kommasepariert)
+
+### Zielwerte-Tabelle (`staff_performance_targets`)
+
+```sql
+CREATE TABLE staff_performance_targets (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    branch_id VARCHAR(255) NULL UNIQUE,  -- NULL = globaler Standard
+    kpz_target DECIMAL(8,2) DEFAULT 3.00,
+    cr_target DECIMAL(8,2) DEFAULT 60.00,
+    kpz_green DECIMAL(8,2) DEFAULT 3.00,
+    kpz_yellow DECIMAL(8,2) DEFAULT 2.00,
+    cr_green DECIMAL(8,2) DEFAULT 60.00,
+    cr_yellow DECIMAL(8,2) DEFAULT 40.00,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL
+);
+```
+
+- `branch_id = NULL` → Globale Standardwerte
+- `branch_id = '{phorest_branch_id}'` → Standort-spezifische Überschreibung
+- Nur Standort-Einträge die vom Standard abweichen werden gespeichert
+
 ### Caching
 
 - **TTL:** 3600 Sekunden (1 Stunde)
 - **Versionierung:** `staff-perf:v{N}:{method}:{filter_hash}`
 - **Invalidierung:** Automatisch über `ContractObserver` bei Vertrags-Erstellen/Ändern/Löschen
+- **Manuelle Invalidierung:** `StaffPerformanceService::flushCache()` — wird beim Speichern von Zielwerten aufgerufen, damit Farbänderungen sofort wirksam werden
 
 ### Datenbank-Indexes
 
@@ -258,6 +366,9 @@ Migration: `2026_06_25_100000_add_staff_performance_contract_index.php`
 | GET | `/hub/reports/staff-performance/monthly` | Monatlicher Zeitverlauf |
 | GET | `/hub/reports/staff-performance/body-zones` | Körperzonen-Verteilung |
 | GET | `/hub/reports/staff-performance/staff/{staffId}` | Mitarbeiter-Detail |
+| GET | `/hub/reports/staff-performance/overview` | Übersichtstabelle (8 Zeiträume) |
+| GET | `/hub/reports/staff-performance/targets` | Zielwerte lesen |
+| POST | `/hub/reports/staff-performance/targets` | Zielwerte speichern |
 | GET | `/hub/reports/staff-performance/preview` | 4 Preview-KPIs |
 
 **Filter-Parameter** (alle optional):
