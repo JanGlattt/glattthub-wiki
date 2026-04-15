@@ -253,3 +253,43 @@ Diese Werte müssen in Google Cloud Run Secrets gesetzt bzw. geprüft werden:
 | Rollen & Berechtigungen | ✅ | Spatie Permission + `check.admin`/`check.hub` Middleware |
 | HTTPS in Produktion | ✅ | `URL::forceScheme('https')` + HSTS-Header |
 | API-Credentials | ✅ | Alle über `env()`, keine Hardcoding |
+| API-Routen-Schutz | ✅ | `RedirectDirectApiAccess` Middleware verhindert direkten Browser-Zugriff auf JSON-API-Routen |
+| Fehlerseiten | ✅ | Eigene Seiten für 403, 404, 419, 429, 500, 503 im glatttHub-Design |
+
+---
+
+### API-Routen-Schutz (RedirectDirectApiAccess)
+
+**Problem:** Alle ~80 Routen unter `/phorest/...` geben rohes JSON zurück. Wenn Nutzer direkt dorthin navigieren (Browser-Autocomplete, Vor/Zurück, altes Bookmark), sehen sie nur unleserlichen JSON-Text ohne App-Layout und können die Seite nicht verlassen.
+
+**Lösung:** Die Middleware `RedirectDirectApiAccess` prüft, ob ein Request direkt vom Browser kommt:
+
+1. `Sec-Fetch-Mode: navigate` → direkter Browser-Zugriff (moderne Browser)
+2. Fallback: Request akzeptiert HTML und ist kein AJAX-Call → Browser-Zugriff
+
+In beiden Fällen wird zum Dashboard weitergeleitet. Programmatische `fetch()`-Aufrufe gehen normal durch.
+
+**Ausgenommen** (Download-Links, die per `<a href>` funktionieren müssen):
+
+- `/phorest/reports/historic-booking-timeline/export`
+- `/phorest/user/*/nisv/document/*`
+
+**Datei:** `app/Http/Middleware/RedirectDirectApiAccess.php`
+
+---
+
+### Fehlerseiten
+
+Alle HTTP-Fehlerseiten sind im glatttHub-Design gestaltet, mit Dark-Mode-Support und einem "Zurück zur Startseite"-Button.
+
+| Code | Datei | Titel | Farbe | Beschreibung |
+|------|-------|-------|-------|-------------|
+| 403 | `resources/views/errors/403.blade.php` | Zugriff verweigert | Gradient (Primary) | Keine Berechtigung für diese Seite |
+| 404 | `resources/views/errors/404.blade.php` | Seite nicht gefunden | Gradient (Primary) | Ungültige URL |
+| 419 | `resources/views/errors/419.blade.php` | Sitzung abgelaufen | Warning (Orange) | CSRF-Token abgelaufen, z.B. nach langem Inaktiv-Sein oder altem Bookmark |
+| 429 | `resources/views/errors/429.blade.php` | Zu viele Anfragen | Warning (Orange) | Rate-Limit erreicht |
+| 500 | `resources/views/errors/500.blade.php` | Serverfehler | Danger (Rot) | Unerwarteter Fehler |
+| 503 | `resources/views/errors/503.blade.php` | Wartungsarbeiten | Gold (Accent) | `php artisan down` — Inline-CSS (Vite nicht verfügbar), Auto-Refresh alle 30 Sek. |
+
+!!! info "503 Besonderheit"
+    Die 503-Seite verwendet **Inline-CSS**, da im Wartungsmodus (`php artisan down`) weder Vite noch andere Assets verfügbar sind. Die Seite lädt sich automatisch alle 30 Sekunden neu, bis die Wartung beendet ist.
