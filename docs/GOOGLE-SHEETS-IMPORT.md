@@ -13,7 +13,7 @@ Automatischer Import neuer Verträge aus einem Google Sheet in die GlattHub-Date
 Quell-Sheet (51 Spalten, chaotisch)
     │  ContractPreprocess.gs (5-Min-Timer)
     ▼
-Staging-Sheet (31 Spalten, sauber)
+Staging-Sheet (32 Spalten, sauber)
     │  ContractImport.gs (5-Min-Timer)
     ▼
 GlattHub API → ContractImportService.php → Datenbank
@@ -244,6 +244,7 @@ Content-Type: application/json
 | Gutschein-Nr. | V (22) | `voucher_number` | `legacy_gutschein_nummer` |
 | Vor-Ort-Betrag | W (23) | `upfront_amount` | → total_value Berechnung |
 | Bezahlt Vor Ort | X (24) | `upfront_paid` | `legacy_erste_sitzung_bezahlt` |
+| Rabatt 1. Zahlung | S (19) | `discount_amount` | `legacy_rabatt_eur` |
 | Laufzeit | AA (27) | `duration` | `payment_method`, `status` |
 | SEPA-Monate | AB (28) | `sepa_months` | `installment_count` |
 | Monatl. Betrag | AC (29) | `monthly_amount` | `monthly_amount_cents` |
@@ -252,9 +253,9 @@ Content-Type: application/json
 | Ersteinzug YY.MM | AL (38) | `first_debit_month` | `start_date`, `first_payment_date` |
 | **Import-Status** | **AY (51)** | *(vom Script)* | — |
 
-### Staging-Sheet Spalten (A–AE, 31 Spalten)
+### Staging-Sheet Spalten (A–AF, 32 Spalten)
 
-Das Preprocessing (`ContractPreprocess.gs`) konvertiert die 51 Quell-Spalten in ein sauberes 31-Spalten-Format:
+Das Preprocessing (`ContractPreprocess.gs`) konvertiert die 51 Quell-Spalten in ein sauberes 32-Spalten-Format:
 
 | Spalte | Index | Inhalt |
 |--------|-------|--------|
@@ -289,6 +290,7 @@ Das Preprocessing (`ContractPreprocess.gs`) konvertiert die 51 Quell-Spalten in 
 | AC | 28 | Ersteinzug (YY.MM) |
 | **AD** | **29** | **Status** (Import-Status, vom Import-Script gesetzt) |
 | **AE** | **30** | **Hinweis** (Warnungen/Mismatches, vom Preprocess oder Import) |
+| AF | 31 | Rabatt 1. Zahlung (Cent) |
 
 ### Preisberechnung
 
@@ -402,14 +404,14 @@ Der Import besteht aus **zwei Scripts**, die in separaten Google Sheet-Projekten
 
 #### 1. ContractPreprocess.gs (Preprocessing)
 
-Bereinigt und konvertiert Rohdaten aus dem Quell-Sheet (51 Spalten) in ein sauberes Staging-Sheet (31 Spalten).
+Bereinigt und konvertiert Rohdaten aus dem Quell-Sheet (51 Spalten) in ein sauberes Staging-Sheet (32 Spalten).
 
 1. Im **Quell-Sheet**: Erweiterungen > Apps Script
 2. Code aus `google-apps-script/ContractPreprocess.gs` einfügen
 3. Konfiguration im Script anpassen:
     - `SOURCE_SHEET_ID` / `SOURCE_SHEET_NAME` → Quell-Sheet
     - `TARGET_SHEET_ID` / `TARGET_SHEET_NAME` → Staging-Sheet
-4. `initTargetSheet()` einmalig ausführen (erstellt Header-Zeile mit 31 Spalten)
+4. `initTargetSheet()` einmalig ausführen (erstellt Header-Zeile mit 32 Spalten)
 5. `setupPreprocessTrigger()` einmalig ausführen (5-Min-Timer)
 
 **Verhalten:**
