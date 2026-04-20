@@ -2,6 +2,17 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 20.04.2026
+
+Dieses Tages-Update erweitert den Vertragsbereich um einen durchgängigen Workflow für:
+
+- GoCardless-Erstellung direkt aus dem Vertragsdetail (SEPA-Tab)
+- Bearbeitung offener Raten im Zahlungen-Tab (inkl. Aussetzen)
+- Robuste Fehlerbehandlung bei veralteten GoCardless-IDs
+- Korrekte Herleitung der 1. Rate (Vor Ort) aus dem ersten relevanten Termin nach Beratung
+
+Die Details sind unten jeweils in den Abschnitten „Für Nutzer“ und „Für Entwickler“ ergänzt.
+
 ## Inhaltsverzeichnis
 
 - [Für Nutzer](#für-nutzer)
@@ -151,13 +162,35 @@ Falls jemand anderes als der Kunde die Raten zahlt:
 
 Im Tab **Zahlungen** siehst du alle geplanten und durchgeführten Zahlungen:
 
+### Ratenplan anpassen (neu)
+
+Wenn der Vertrag bereits mit GoCardless verknüpft ist und zukünftige Raten noch nicht eingereicht wurden:
+
+1. Im Zahlungen-Tab auf **Raten anpassen** klicken
+2. Offene zukünftige Raten bearbeiten:
+    - Betrag und Fälligkeitsdatum ändern
+    - Rate entfernen
+    - Rate **aussetzen** (wird an das Ende verschoben)
+    - Neue Rate hinzufügen
+3. Speichern
+
+Wichtige Regeln:
+
+- Nur **zukünftige, noch nicht eingereichte** Raten sind bearbeitbar.
+- Wenn sich die offene Gesamtsumme ändert, ist ein **Kommentar Pflicht**.
+- Wenn die Summe gleich bleibt, ist der Kommentar optional.
+- Änderungen werden als neuer Restplan an GoCardless übertragen.
+
 ### Vor-Ort-Zahlung (Rate 1)
 
-Die erste Rate wird **vor Ort bei Vertragsabschluss** gezahlt:
+Die erste Rate wird als **Vor Ort / Kasse** geführt und aus dem ersten relevanten Behandlungstermin nach der Beratung abgeleitet:
 
-- Datum: Vertragsabschlussdatum
+- Datum: Erster Nicht-Beratungs-Termin nach Beratung (gleicher Tag zählt, wenn Service direkt anschließt)
 - Betrag: Eine Monatsrate
-- Status: "Vor Ort / Kasse"
+- Statuslogik:
+    - **Gezahlt**, wenn Termin/Service als abgeschlossen gilt und das Kundenkonto keinen offenen Betrag hat
+    - **Termin ausstehend**, wenn der Termin in der Zukunft liegt
+    - **Nicht bezahlt**, wenn Termin in der Vergangenheit liegt und am Kundenkonto noch ein offener Betrag besteht
 
 ### SEPA-Lastschriften (Raten 2-19)
 
@@ -183,6 +216,8 @@ Alle weiteren Raten werden per SEPA eingezogen:
 Zahlungen die bei GoCardless als Dauerauftrag vorgemerkt sind (via `upcoming_payments` API) werden mit dem GoCardless-Symbol angezeigt. Zahlungen die nur lokal in der Datenbank stehen (da GoCardless max. 10 upcoming payments liefert) zeigen das gleiche "Vorgemerkt"-Badge aber ohne GC-Symbol.
 
 Das GC-Symbol wechselt automatisch zwischen Light- und Darkmode (Primary/Negative SVG).
+
+Zusätzlich werden in der Tabelle jetzt GoCardless-Referenzen, Typen und Notizen konsolidiert dargestellt (inkl. lokalem Fallback).
 
 ## Status verstehen
 
@@ -577,6 +612,25 @@ CREATE TABLE contract_mandates (
 ```
 
 ## GoCardless Integration
+
+### Manuelle Erstellung und Anpassung im Hub (neu)
+
+Neben dem automatischen Sync über Jobs gibt es jetzt zwei zusätzliche Hub-Flows:
+
+1. **GoCardless-Plan manuell anlegen** im SEPA-Tab des Vertrags
+2. **Offenen Restplan manuell anpassen** im Zahlungen-Tab
+
+Bei der Anpassung gilt technisch:
+
+- Bereits verarbeitete zukünftige Raten blockieren die Bearbeitung.
+- Nur offene zukünftige Raten mit lokalem Status `scheduled` werden ersetzt.
+- Bestehende offene Raten werden lokal auf `cancelled` gesetzt und mit Hinweis markiert.
+- Danach wird ein neuer Restplan via GoCardless erstellt und erneut lokal gespiegelt.
+
+Fehlertoleranz gegen alte/verwaiste GoCardless-IDs:
+
+- Plan-Typ wird per ID-Präfix und API-Fallback erkannt (`IS` = instalment schedule, `SB` = subscription).
+- 404-Fehler (`resource_not_found`) und ungültige Statusübergänge beim Storno werden als erwartbare Altzustände behandelt und blockieren das Speichern nicht mehr.
 
 ### Konfiguration
 
@@ -1016,6 +1070,9 @@ Der `process-queue` Job verarbeitet bis zu 20 Jobs pro Aufruf mit 25 Sekunden Ti
 | GET | `/hub/contracts/{id}` | Vertragsdetails (View) |
 | GET | `/hub/contracts/{id}/payments` | Zahlungen abrufen (JSON) |
 | GET | `/hub/contracts/{id}/gocardless-details` | GoCardless-Details (JSON) |
+| POST | `/hub/contracts/{id}/create-gocardless` | GoCardless-Mandat/Plan aus Vertrag anlegen (JSON) |
+| POST | `/hub/contracts/{id}/resolve-mandate-details` | Fehlende Bankdetails aus IBAN/Phorest anreichern (JSON) |
+| POST | `/hub/contracts/{id}/update-payment-plan` | Offenen Restplan bearbeiten und neu zu GoCardless übertragen (JSON) |
 | POST | `/hub/contracts/{id}/update-bank-account` | Bankverbindung ändern (JSON) |
 | GET | `/hub/contracts/{id}/gocardless-mandates` | GC-Mandate für Stornierung (JSON) |
 | POST | `/hub/contracts/{id}/gocardless-cancel-mandate` | GC-Mandat/Subscriptions stornieren (JSON) |
@@ -1071,6 +1128,7 @@ Accept: application/json
 - **Deduplizierung** erfolgt monatsbasiert (`YYYY-MM`), echte GC-Zahlungen haben Vorrang
 - Zahlungen mit `links.subscription` und ohne `id` zeigen das **GoCardless-Symbol** in der UI
 - Alle geplanten Zahlungen zeigen das **"Vorgemerkt"-Badge** (gelb)
+- Für die Plan-Bearbeitung liefert der Endpoint zusätzlich: `plan_can_be_edited`, `plan_edit_block_reason`, `is_editable`, `local_payment_id`, `local_status`
 
 ### Webhooks
 

@@ -105,8 +105,11 @@ GoCardless-Integration für automatische Lastschriften:
 - Ratenzahlung (1 vor Ort + n SEPA)
 - Zahlungsüberwachung mit Status-Updates
 - Webhook-Integration für Echtzeit-Updates
+- Manuelle Plan-Bearbeitung im Vertrag (offene Raten anpassen/aussetzen)
 
 > 📖 **Vollständige Dokumentation:** [CONTRACTS-SEPA-MODULE.md](./CONTRACTS-SEPA-MODULE.md)
+>
+> 🆕 **Tages-Update 20.04.2026:** [CONTRACTS-SEPA-MODULE.md#update-20042026](./CONTRACTS-SEPA-MODULE.md#update-20042026)
 
 ## SEPA-Mandate (Kurzübersicht)
 
@@ -120,7 +123,7 @@ Bei Verträgen mit Ratenzahlung wird automatisch ein SEPA-Mandat erstellt.
 
 ### Ratenzahlung
 
-- **Rate 1**: Vor Ort bei Vertragsabschluss
+- **Rate 1**: Vor Ort (aus erstem relevanten Termin nach Beratung)
 - **Raten 2-n**: Per SEPA-Lastschrift über GoCardless
 
 **Beispiel:** 19  Monate = 1 vor Ort + 18 SEPA-Raten
