@@ -204,18 +204,69 @@ Wird aktuell für Push-Notifications genutzt:
 
 ### Push-Notifications (Technisch)
 
-Der Push-Flow in Electron unterscheidet sich vom Browser:
+Die Desktop-App nutzt **native APNs** (Apple Push Notification Service) statt WebPush/Service Worker.
 
 ```
-Browser:                           Electron:
-────────                           ────────
-Permission = 'default'             Permission = 'granted' (auto)
-→ Modal zeigen                     → getSubscription() prüfen
-→ User klickt "Aktivieren"         → Nicht subscribed?
-→ Notification.requestPermission() → Modal zeigen (Opt-in)
-→ System-Dialog (Grant/Deny)       → User klickt "Aktivieren"
-→ Subscribe + Willkommens-Notif.   → Subscribe + Willkommens-Notif.
-                                   → macOS-System-Dialog (erste Notif.)
+Browser (WebPush):                 Electron (APNs):
+────────────────                   ───────────────
+Permission = 'default'             window.electronPush Bridge verfügbar
+→ Modal zeigen                     → Modal zeigen (Opt-in)
+→ User klickt "Aktivieren"         → User klickt "Aktivieren"
+→ requestPermission()              → electronPush.registerForApnsNotifications()
+→ Service Worker subscribiert      → APNs-Token vom System empfangen
+→ WebPush-Endpoint auf Server      → Token + Device-ID auf Server gespeichert
+                                   → Versand via edamov/pushok (PHP)
+                                   → Dock-Badge via app.setBadgeCount()
+```
+
+#### APNs-Erkennung (`isElectronNativeSupported()`)
+
+`push-notifications.js` erkennt die Electron-Umgebung durch **Live-Abfrage** von `window.electronPush`:
+
+```javascript
+isElectronNativeSupported() {
+    const bridge = this.getElectronBridge(); // Immer frisch, nicht gecacht!
+    return bridge !== null
+        && typeof bridge.registerForApnsNotifications === 'function';
+}
+```
+
+!!! warning "Kein Caching"
+    `this.electronBridge` wird im Konstruktor gesetzt — zu diesem Zeitpunkt kann `window.electronPush` noch nicht verfügbar sein. Daher immer `getElectronBridge()` frisch aufrufen.
+
+#### Preload Bridge (`preload.cjs`)
+
+Zwei Bridges werden exposed:
+
+```javascript
+// Push-Registrierung
+contextBridge.exposeInMainWorld('electronPush', {
+  registerForApnsNotifications: () => ipcRenderer.invoke('electron-push:register'),
+  unregisterForApnsNotifications: () => ipcRenderer.invoke('electron-push:unregister'),
+  onApnsNotification: (callback) => { ... },
+});
+
+// Dock-Badge
+contextBridge.exposeInMainWorld('electronBadge', {
+  setBadgeCount: (count) => ipcRenderer.send('electron-badge:set', count),
+});
+```
+
+#### Dock-Badge
+
+Nach jedem `loadNotifications()` wird der Badge im Dock aktualisiert:
+
+```javascript
+if (window.electronBadge?.setBadgeCount) {
+    window.electronBadge.setBadgeCount(data.unread_count);
+}
+```
+
+Im Main-Prozess:
+```javascript
+ipcMain.on('electron-badge:set', (_event, count) => {
+    app.setBadgeCount(count > 0 ? count : 0);
+});
 ```
 
 **Relevante Dateien:**
@@ -224,9 +275,10 @@ Permission = 'default'             Permission = 'granted' (auto)
 |-------|-------|
 | `resources/views/layouts/hub.blade.php` | Push-Permission-Modal (Alpine.js) |
 | `public/js/push-notifications.js` | PushNotificationManager Klasse |
-| `public/sw.js` | Service Worker für Push-Empfang |
+| `public/sw.js` | Service Worker für WebPush (Browser) |
 | `app/Http/Controllers/Push/PushNotificationController.php` | API-Controller |
-| `app/Services/PushNotificationService.php` | Push-Logik & WebPush |
+| `app/Services/PushNotificationService.php` | Push-Orchestrierung |
+| `app/Services/ApplePushNotificationService.php` | APNs-Versand via pushok |
 
 ### Icons
 
@@ -343,10 +395,26 @@ Der Notarization-Hook (`electron/notarize.cjs`) wird von `electron-builder` auto
 
 | Methode | Format | Status |
 |---------|--------|--------|
-| MDM (Mosyle, Jamf, etc.) | `.pkg` | ✅ Signiert & notarisiert |
+| MDM (Miradore, Mosyle, Jamf, etc.) | `.pkg` | ✅ Signiert & notarisiert |
 | Direkter Download | `.dmg` | ✅ Signiert & notarisiert |
 | ZIP-Archiv | `.zip` | ✅ Signiert & notarisiert |
 | Mac App Store | — | Nicht geplant |
+
+#### MDM-Verteilung via Miradore
+
+**Miradore → Management → Applications → Add → macOS**
+
+| Feld | Wert |
+|------|------|
+| **File** | `electron/dist/glatttHub-1.0.0-arm64.pkg` |
+| **Application name** | `glatttHub` |
+| **Bundle identifier** | `com.glattt.hub` |
+| **Version** | `1.0.0` |
+
+Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
+
+!!! info "Push-Registrierung nach MDM-Installation"
+    Nach einer Neuinstallation muss der User die Push-Benachrichtigungen einmal neu bestätigen, da ein neuer APNs-Token generiert wird. Das Opt-in-Modal erscheint automatisch beim ersten Start.
 
 ### Bekannte Einschränkungen
 
@@ -356,16 +424,18 @@ Der Notarization-Hook (`electron/notarize.cjs`) wird von `electron-builder` auto
 | **Push nur bei offener App** | Kein Background Push wie bei nativen Apps oder Browser (Service Worker) |
 | **Kein Auto-Updater** | Noch nicht implementiert — Update = neue `.pkg` per MDM verteilen |
 | **Nur macOS/arm64** | Kein Intel-Build, kein Windows/Linux (aktuell nicht benötigt) |
+| **Neuer APNs-Token nach Neuinstallation** | Nach PKG-Reinstall muss Push-Banner neu bestätigt werden (`localStorage.removeItem('push-banner-dismissed')`) |
 
 ### Relevante Dateien
 
 | Datei | Beschreibung |
 |-------|-------------|
-| `electron/main.cjs` | Hauptprozess: Fenster, Menü, Tray, CSS-Injection |
-| `electron/preload.cjs` | Drag-Region, electron-app Klasse |
+| `electron/main.cjs` | Hauptprozess: Fenster, Menü, Tray, CSS-Injection, APNs-Handler, Badge |
+| `electron/preload.cjs` | Drag-Region, electron-app Klasse, electronPush Bridge, electronBadge Bridge |
 | `electron/notarize.cjs` | afterSign-Hook für Notarization |
 | `electron/electron-builder.config.cjs` | Build-Konfiguration (Signing, Notarization, PKG) |
-| `electron/entitlements.mac.plist` | macOS Entitlements (Push, Hardened Runtime) |
+| `electron/entitlements.mac.plist` | macOS Entitlements (Push: `aps-environment: production`, Hardened Runtime) |
 | `electron/signing/glatttHub.provisionprofile` | Provisioning Profile (nicht in Git) |
 | `storage/app/private/AuthKey_4VXP44Y6GY.p8` | APNs Key (nicht in Git) |
 | `storage/app/private/AuthKey_7FJYWAUF5W.p8` | Notarization Key (nicht in Git) |
+| `app/Services/ApplePushNotificationService.php` | APNs-Versand (edamov/pushok, Key aus ENV via /tmp) |

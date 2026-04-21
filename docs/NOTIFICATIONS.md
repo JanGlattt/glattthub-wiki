@@ -129,6 +129,30 @@ Push auf iOS funktioniert **nur** wenn:
 2. iOS 16.4+ verwendet wird
 3. Die Berechtigung in der installierten App erteilt wird
 
+### APNs-Konfiguration (Desktop App)
+
+Für native macOS Push-Notifications über die Electron-App:
+
+```env
+APNS_KEY_ID=4VXP44Y6GY
+APNS_TEAM_ID=63DQ6FV92R
+APNS_BUNDLE_ID=com.glattt.hub
+APNS_ENVIRONMENT=production
+# Lokal: Pfad zur .p8-Datei
+APNS_PRIVATE_KEY_PATH=/pfad/zur/AuthKey_4VXP44Y6GY.p8
+# Cloud Run: Inhalt der .p8-Datei (ohne PEM-Header, werden automatisch ergänzt)
+APNS_PRIVATE_KEY=MIGTAgEAMBMG...
+```
+
+!!! info "Cloud Run"
+    In Cloud Run ist das Filesystem read-only. Der APNs-Key wird daher in `/tmp/apns-auth-key.p8` geschrieben (nicht in `storage/`). PEM-Header werden automatisch ergänzt wenn sie fehlen.
+
+**PHP-Bibliothek:** `edamov/pushok` (via Composer)
+
+```bash
+composer require edamov/pushok
+```
+
 ### VAPID-Keys
 
 Push-Benachrichtigungen benötigen VAPID-Keys in der `.env`:
@@ -235,8 +259,13 @@ public/
 
 **push_subscriptions:**
 ```sql
-- id, user_id, endpoint, p256dh_key, auth_key
-- browser, os, device_name, is_active
+- id, user_id
+- provider          -- 'webpush' oder 'apns'
+- native_device_id  -- Persistente Installations-ID (Electron)
+- endpoint, endpoint_hash, public_key, auth_token  -- WebPush
+- apns_device_token, apns_device_token_hash        -- APNs
+- browser, device_type, device_name, user_agent
+- is_active, failure_count, last_used_at
 - created_at, updated_at
 ```
 
@@ -249,9 +278,14 @@ public/
 | Endpoint | Methode | Beschreibung |
 |----------|---------|--------------|
 | `/push/vapid-key` | GET | VAPID Public Key abrufen |
-| `/push/subscribe` | POST | Push-Subscription registrieren |
-| `/push/unsubscribe` | POST | Push-Subscription entfernen |
+| `/push/subscribe` | POST | WebPush-Subscription registrieren |
+| `/push/unsubscribe` | POST | WebPush-Subscription entfernen |
+| `/push/subscribe/native` | POST | APNs-Token registrieren (Desktop App) |
+| `/push/unsubscribe/native` | POST | APNs-Token entfernen (Desktop App) |
 | `/push/test` | POST | Test-Push senden |
+
+!!! info "Accept-Header erforderlich"
+    Alle `/phorest/*`-Routen erfordern den Header `Accept: application/json`, sonst greift die `RedirectDirectApiAccess`-Middleware und gibt HTML zurück statt JSON.
 
 ### Cron-Endpunkte (Cloud Scheduler)
 
@@ -338,12 +372,21 @@ tail -f storage/logs/laravel.log | grep -i "notification\|push"
 
 ## Checkliste: Neue Installation
 
+**WebPush (Browser/PWA):**
 - [ ] VAPID Keys generiert (`php artisan push:generate-vapid-keys`)
 - [ ] Queue Worker läuft (`php artisan queue:work`)
 - [ ] Service Worker registriert (`/sw.js` erreichbar)
 - [ ] Manifest vorhanden (`/manifest.json`)
 - [ ] Push-Berechtigung im Browser erteilt
 - [ ] Cloud Scheduler konfiguriert (Produktion)
+
+**APNs (Desktop App):**
+- [ ] `APNS_KEY_ID`, `APNS_TEAM_ID`, `APNS_BUNDLE_ID`, `APNS_ENVIRONMENT` gesetzt
+- [ ] `APNS_PRIVATE_KEY` (Cloud Run) oder `APNS_PRIVATE_KEY_PATH` (lokal) gesetzt
+- [ ] `edamov/pushok` installiert (`composer require edamov/pushok`)
+- [ ] Entitlement `aps-environment: production` in `electron/entitlements.mac.plist`
+- [ ] App signiert und notarisiert (Provisioning Profile mit Push-Entitlement)
+- [ ] Migration `extend_push_subscriptions_for_apns` ausgeführt
 
 ---
 
