@@ -254,14 +254,23 @@ macOS-Menüleisten-Icon als **Template Image**:
 # Development (öffnet App, verbindet mit Produktions-URL)
 npm run electron:dev
 
-# Production Build (.app + .dmg + .zip)
-CSC_IDENTITY_AUTO_DISCOVERY=false npm run electron:build
+# Production Build (.app + .dmg + .zip) — mit Signing
+npm run electron:build
 
 # Nur DMG
 npm run electron:build:dmg
 
-# Nur PKG (für MDM-Verteilung)
-npm run electron:build:pkg
+# Nur PKG für MDM-Verteilung — mit Signing + Notarization
+npm run electron:build:mdm
+```
+
+Für signierten Build vor dem Ausführen im Terminal:
+
+```bash
+export CSC_NAME="Labrado & Schluter GmbH (63DQ6FV92R)"
+export APPLE_API_KEY=/Applications/MAMP/htdocs/glattthub/storage/app/private/AuthKey_7FJYWAUF5W.p8
+export APPLE_API_KEY_ID=7FJYWAUF5W
+export APPLE_API_ISSUER=84f1cc63-769a-4ea0-b54f-636f28ccbbaa
 ```
 
 **Ergebnisse:**
@@ -269,9 +278,8 @@ npm run electron:build:pkg
 ```
 electron/dist/
 ├── mac-arm64/
-│   └── glatttHub.app               # Die App
-├── glatttHub-1.0.0-arm64.dmg       # DMG-Installer
-└── glatttHub-1.0.0-arm64-mac.zip   # ZIP-Archiv
+│   └── glatttHub.app               # Signierte App (intern)
+└── glatttHub-1.0.0.pkg             # PKG-Installer für MDM
 ```
 
 ### Dev-Modus
@@ -290,22 +298,54 @@ electron/dist/
 | `electron` | ^41.2.0 | Core-Framework |
 | `electron-builder` | ^26.8.1 | Build & Packaging |
 
-### Code Signing (ausstehend)
+### Code Signing & Notarization
 
-Ohne Code Signing zeigt macOS beim ersten Öffnen eine Warnung. Nach Erhalt des Apple Developer Accounts:
+Die App ist vollständig mit Apple Developer ID signiert und notarisiert.
 
-1. `CSC_LINK` und `CSC_KEY_PASSWORD` als Environment-Variablen setzen
-2. `CSC_IDENTITY_AUTO_DISCOVERY=false` entfernen
-3. Notarization konfigurieren (Apple ID + App-spezifisches Passwort)
-4. `afterSign`-Hook in `package.json` für Notarization einrichten
+#### Apple Developer Credentials
+
+| Credential | Wert |
+|---|---|
+| **Team ID** | `63DQ6FV92R` |
+| **Bundle ID** | `com.glattt.hub` |
+| **Developer ID Application** | `Labrado & Schluter GmbH (63DQ6FV92R)` — im Schlüsselbund, gültig bis 22.04.2031 |
+| **Developer ID Installer** | `Labrado & Schluter GmbH (63DQ6FV92R)` — im Schlüsselbund, gültig bis 22.04.2031 |
+| **APNs Key ID** | `4VXP44Y6GY` — für Push Notifications |
+| **Notarization Key ID** | `7FJYWAUF5W` — App Store Connect API Key |
+| **Issuer ID** | `84f1cc63-769a-4ea0-b54f-636f28ccbbaa` |
+
+#### Signing-Dateien (nicht in Git)
+
+```
+electron/signing/
+└── glatttHub.provisionprofile   # Developer ID Provisioning Profile
+
+storage/app/private/
+├── AuthKey_4VXP44Y6GY.p8        # APNs Key (Push Notifications → Laravel)
+└── AuthKey_7FJYWAUF5W.p8        # App Store Connect API Key (Notarization → Build)
+```
+
+!!! warning "Geheime Dateien"
+    Alle `.p8`-Dateien und das Provisioning Profile dürfen **niemals** in das Git-Repo eingecheckt werden.
+    Sie sind in `.gitignore` ausgeschlossen.
+
+#### Notarization-Prozess
+
+Der Notarization-Hook (`electron/notarize.cjs`) wird von `electron-builder` automatisch nach dem Signing aufgerufen:
+
+1. App wird mit Developer ID signiert
+2. `notarize.cjs` lädt die App bei Apple hoch (`notarytool`)
+3. Apple prüft die App (~2-5 Minuten)
+4. Bei Erfolg: Apple-Stempel wird in die App eingebettet (Stapling via `electron-builder`)
+5. PKG wird erstellt
 
 ### Verteilung
 
 | Methode | Format | Status |
 |---------|--------|--------|
-| Direkter Download | `.dmg` | ✅ Bereit |
-| ZIP-Archiv | `.zip` | ✅ Bereit |
-| MDM | `.pkg` | ✅ Möglich |
+| MDM (Mosyle, Jamf, etc.) | `.pkg` | ✅ Signiert & notarisiert |
+| Direkter Download | `.dmg` | ✅ Signiert & notarisiert |
+| ZIP-Archiv | `.zip` | ✅ Signiert & notarisiert |
 | Mac App Store | — | Nicht geplant |
 
 ### Bekannte Einschränkungen
@@ -314,20 +354,18 @@ Ohne Code Signing zeigt macOS beim ersten Öffnen eine Warnung. Nach Erhalt des 
 |--------------|-------------|
 | **Kein Offline-Modus** | App braucht Internet — zeigt Fehler wenn offline |
 | **Push nur bei offener App** | Kein Background Push wie bei nativen Apps oder Browser (Service Worker) |
-| **Kein Auto-Updater** | Noch nicht implementiert — Update = neue .app verteilen |
-| **Ad-hoc signiert** | macOS-Warnung beim ersten Öffnen (Rechtsklick → Öffnen) |
+| **Kein Auto-Updater** | Noch nicht implementiert — Update = neue `.pkg` per MDM verteilen |
 | **Nur macOS/arm64** | Kein Intel-Build, kein Windows/Linux (aktuell nicht benötigt) |
-- **Offline:** Die App benötigt eine Internetverbindung — ohne Netz erscheint eine leere Seite.
-- **DMG-Bundling** kann auf manchen Systemen fehlschlagen, wenn ein altes DMG noch gemountet ist. Die `.app` wird trotzdem korrekt erzeugt.
 
 ### Relevante Dateien
 
 | Datei | Beschreibung |
 |-------|-------------|
-| `src-tauri/tauri.conf.json` | Haupt-Konfiguration |
-| `src-tauri/src/lib.rs` | App-Logik + deutsche Menüleiste |
-| `src-tauri/src/main.rs` | Entry Point |
-| `src-tauri/Cargo.toml` | Rust-Dependencies |
-| `src-tauri/icons/` | App-Icons (alle Größen) |
-| `package.json` | npm-Scripts (`tauri:dev`, `tauri:build`) |
-| `.gitignore` | `src-tauri/target/` und `src-tauri/gen/` ausgeschlossen |
+| `electron/main.cjs` | Hauptprozess: Fenster, Menü, Tray, CSS-Injection |
+| `electron/preload.cjs` | Drag-Region, electron-app Klasse |
+| `electron/notarize.cjs` | afterSign-Hook für Notarization |
+| `electron/electron-builder.config.cjs` | Build-Konfiguration (Signing, Notarization, PKG) |
+| `electron/entitlements.mac.plist` | macOS Entitlements (Push, Hardened Runtime) |
+| `electron/signing/glatttHub.provisionprofile` | Provisioning Profile (nicht in Git) |
+| `storage/app/private/AuthKey_4VXP44Y6GY.p8` | APNs Key (nicht in Git) |
+| `storage/app/private/AuthKey_7FJYWAUF5W.p8` | Notarization Key (nicht in Git) |
