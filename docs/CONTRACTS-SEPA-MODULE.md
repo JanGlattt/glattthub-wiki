@@ -13,6 +13,38 @@ Dieses Tages-Update erweitert den Vertragsbereich um einen durchgängigen Workfl
 
 Die Details sind unten jeweils in den Abschnitten „Für Nutzer“ und „Für Entwickler“ ergänzt.
 
+## Update 21.04.2026
+
+Dieses Tages-Update ergänzt den Vertragsbereich um Stabilität und Vollständigkeit in der GoCardless-Anbindung:
+
+- Mandatssuche priorisiert über `phorest_client_id` (inkl. Variante `phorest_clientid`) mit Referenz-Fallback
+- Sammel-Sync auf der Vertragsübersicht, um fehlende GoCardless-Verknüpfungen ohne Einzelklicks nachzuziehen
+- Korrekte Bearbeitbarkeit von offenen Raten auch bei Legacy-/Migrationsfällen
+- Vollständige Darstellung von Daueraufträgen über den GoCardless-Preview-Horizont hinaus bis zum Enddatum
+- Ergänzung historischer Altsystem-Monate vor dem ersten GoCardless-Monat
+- Priorisierte und gedeckelte Zahlungsanzeige (explizit GoCardless > projiziert GoCardless > Altsystem)
+- Kein GoCardless-Symbol bei rein projizierten GoCardless-Zeilen (visuell wie bei Hub-Planvorschau)
+
+### Für Nutzer (21.04.2026)
+
+- Der Button „In GoCardless suchen“ findet bestehende Mandate zuverlässiger, auch wenn die Mandatsreferenz nicht exakt passt.
+- Auf der Vertragsliste steht ein neuer Button „GoCardless-Sync“ zur Verfügung, um fehlende Verknüpfungen gesammelt nachzuziehen.
+- In der Zahlungsansicht von Daueraufträgen werden fehlende zukünftige Monate bis zum Enddatum eingeblendet.
+- Bereits vor GoCardless eingezogene Monatsraten aus dem Altsystem werden vor dem ersten GoCardless-Monat ergänzt.
+- Die Summe „unten“ wird nicht mehr durch Doppel-/Überzählungen verfälscht, da die Anzeige auf den erwarteten SEPA-Gesamtbetrag begrenzt ist.
+
+### Für Entwickler (21.04.2026)
+
+- Mandatssuche: Reihenfolge ist jetzt
+    1. lokales aktives `ClientMandate`
+    2. GoCardless Customer-Metadata (`phorest_client_id`, `phorest_clientid`)
+    3. Referenz-Suche (`mandate_reference` / `contract_number`)
+- Batch-Sync-Endpunkt für Vertragsübersicht hinzugefügt (`sync-gocardless-links`) inkl. Ergebniszähler (`checked`, `linked_via_local`, `linked_via_api`, `not_found`, `failed`).
+- Zahlungs-API liefert pro Zeile ein internes `source`-Kennzeichen für UI-Steuerung (`gc_explicit`, `gc_projected`, `legacy_local`, `legacy_projected`, `local`).
+- Daueraufträge: zukünftige Monate werden bis `subscription.end_date` monatlich ergänzt, wenn GoCardless nur den begrenzten Upcoming-Horizont liefert.
+- Legacy-Monate vor erstem expliziten GoCardless-Monat werden synthetisch ergänzt.
+- Priorisierung/Deckelung der Anzeige: explizite GoCardless-Zahlungen bleiben immer vorrangig, danach projizierte GoCardless-Zahlungen, danach Altsystem-Zahlungen bis zur erwarteten SEPA-Sollsumme.
+
 ## Inhaltsverzeichnis
 
 - [Für Nutzer](#für-nutzer)
@@ -126,7 +158,8 @@ Wenn ein Kunde bereits ein aktives GoCardless-Mandat hat (z.B. aus einem früher
 2. Im SEPA-Tab erscheint der Button **"Bestehendes Mandat verknüpfen"**
 3. Das System sucht automatisch:
    - Zuerst in der lokalen Datenbank nach einem aktiven `ClientMandate` für diesen Kunden
-   - Dann in der GoCardless API per `phorest_client_id` Metadata
+    - Dann in der GoCardless API per Customer-Metadata (`phorest_client_id` / `phorest_clientid`)
+    - Falls nötig als Fallback per Mandatsreferenz
 4. Bei Fund wird das Mandat verknüpft und der Zahlungsplan automatisch erstellt
 
 ### SEPA-Mandat Ansicht
