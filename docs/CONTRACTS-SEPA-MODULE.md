@@ -13,6 +13,41 @@ Dieses Tages-Update erweitert den Vertragsbereich um einen durchgängigen Workfl
 
 Die Details sind unten jeweils in den Abschnitten „Für Nutzer“ und „Für Entwickler“ ergänzt.
 
+## Update 22.04.2026
+
+Dieses Tages-Update ergänzt das Vertragsmodul um automatisierte Status-Verwaltung und verbesserte Filter-UX:
+
+### Für Nutzer (22.04.2026)
+
+- **Vertragsübersicht zeigt standardmäßig** nur Entwurf, Aktiv und Widerruf-Verträge — Abgeschlossene sind ausgeblendet, können aber jederzeit eingeblendet werden.
+- **Status-Filter ist nun Multi-Select**: Mehrere Status können gleichzeitig ausgewählt werden (z.B. nur Aktiv + Entwurf). Ein Klick aktiviert/deaktiviert jeden Status einzeln.
+- **Direktzahlungs-Verträge** werden täglich automatisch auf „Abgeschlossen" gesetzt, sobald Phorest eine bezahlte Sitzung (PAID) für den Kunden verbucht.
+- **Legacy-Verträge (Altdaten)**: Historische Verträge aus dem alten GoCardless-System, die vollständig bezahlt sind, wurden als Batch auf „Abgeschlossen" gesetzt.
+
+### Für Entwickler (22.04.2026)
+
+**Automatischer `completed`-Status für Direktzahlungs-Verträge:**
+- Neuer Artisan-Command: `contracts:complete-direct-payments` — prüft täglich ob für `payment_method=direct` + `status=active` Verträge eine `PAID`-Sitzung in `stats_historic_appointments` ab Vertragsunterzeichnung vorliegt.
+- Beratungstermine (3 bekannte Service-IDs) werden dabei ausgeschlossen.
+- Läuft täglich um 05:00 via Google Cloud Scheduler (`/api/cron/complete-direct-contracts`).
+- Unterstützt `--dry-run` für sichere Tests.
+
+**Legacy-Batch-Abschluss (einmalig):**
+- Artisan-Command: `contracts:mark-legacy-completed --paid-csv=... --exclude-csv=...`
+- `--paid-csv`: vollständige Vertragsnummern (Tabellenblatt2, Format `YYYY.MM.DD-KUNDENNR`)
+- `--exclude-csv`: Kundennummern-Suffixe die TROTZDEM nicht abgeschlossen werden sollen (Tabellenblatt3)
+- Matching case-insensitiv; nur `status=active` Verträge werden angefasst.
+- Schreibt `contract_changes`-Einträge zur Nachvollziehbarkeit.
+
+**Status-Filter Multi-Select:**
+- Frontend: `filters.statuses` ist jetzt ein Array (war: `filters.status` String).
+- Standard-Auswahl: `['draft', 'active', 'cancelled']` (Abgeschlossene ausgeblendet).
+- URL-Parameter: `?statuses=draft,active,cancelled` (komma-getrennt).
+- Controller akzeptiert weiterhin `?status=` als Single-Value-Fallback (rückwärtskompatibel).
+- Neue Hilfsfunktion `toggleStatus(value)` im Alpine-Component.
+
+---
+
 ## Update 21.04.2026
 
 Dieses Tages-Update ergänzt den Vertragsbereich um Stabilität und Vollständigkeit in der GoCardless-Anbindung:
@@ -260,8 +295,17 @@ Zusätzlich werden in der Tabelle jetzt GoCardless-Referenzen, Typen und Notizen
 |--------|-----------|------------------|
 | **Entwurf** | Vertrag erstellt, SEPA fehlt | Kunde füllt SEPA-Formular aus |
 | **Aktiv** | Alles bereit, Zahlungen laufen | Automatisch |
-| **Abgeschlossen** | Alle Raten bezahlt | - |
-| **Storniert** | Vertrag abgebrochen | - |
+| **Abgeschlossen** | Alle Raten / Einmalzahlung bezahlt | — |
+| **Widerruf** | Vertrag abgebrochen | — |
+
+### Automatische Status-Übergänge
+
+| Auslöser | Von | Nach | Mechanismus |
+|----------|-----|------|-------------|
+| GoCardless Webhook (`payment paid_out`) | Aktiv | Abgeschlossen | `ProcessGoCardlessWebhookJob::checkContractCompletion()` |
+| PAID-Sitzung in Phorest (Direktzahlung) | Aktiv | Abgeschlossen | `contracts:complete-direct-payments` (täglich 05:00) |
+
+> **Direktzahlungs-Verträge** (`payment_method=direct`) werden nicht per GoCardless-Webhook abgeschlossen, da es keine Lastschriften gibt. Stattdessen prüft ein täglicher Job ob Phorest eine bezahlte Behandlungssitzung verbucht hat.
 
 ### Mandat-Status
 
