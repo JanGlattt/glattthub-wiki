@@ -1,6 +1,372 @@
 # Ads-Analyse
 
-Analyse der Werbekampagnen-Performance: Google Ads & Meta Ads Buchungen, Conversions und Vergleich mit organischen Kunden.
+Analyse der Werbekampagnen-Performance: Google Ads & Meta Ads — Buchungen, Conversions, Kosten und Vergleich mit organischen Kunden.
+
+**Zugang:** Hub → Berichte → Ads-Analyse  
+**URL:** `/hub/reports/ads-analysis`  
+**Berechtigung:** `view_report_ads_analysis`
+
+---
+
+## Für Endanwender
+
+### Was zeigt diese Seite?
+
+Die Ads-Analyse wertet aus, welche Werbekampagnen (Google Ads, Meta/Facebook Ads) tatsächlich zu Buchungen und Vertragsabschlüssen führen. Sie beantwortet Fragen wie:
+
+- Wie viele Buchungen kommen über Werbeanzeigen?
+- Welche Kampagnen generieren die meisten Verträge?
+- Sind Ads-Kunden genauso wertvoll wie organische Kunden (KPZ, Vertragswert)?
+- Über welche Quellen (Google, Meta, Direkt, Referral) kommen die Buchungen?
+- Wie entwickeln sich Buchungen und Werbekosten monatlich?
+- Was kostet eine Buchung bzw. ein Vertragsabschluss durch Werbung?
+
+### Filter
+
+Der Filter-Bereich ist über den **Filter**-Button im Seitenkopf ein- und ausklappbar:
+
+| Filter | Beschreibung |
+|--------|-------------|
+| **Plattform** | Alle / Google Ads / Meta Ads |
+| **Zeitraum** | Frei wählbar als Datumsbereich (Von–Bis in einem Feld) |
+| **Schnellfilter** | Dieser Monat, Letzte 3 Monate, Dieses Jahr |
+| **Standort** | Über den globalen Standort-Filter in der Seitenleiste |
+
+Aktive Filter werden als Badge neben dem Filter-Button angezeigt. Alle Filter wirken auf alle Sektionen gleichzeitig.
+
+### Sektionen
+
+#### KPI-Dashboard
+
+Oben auf der Seite werden Kennzahlen in zwei Gruppen angezeigt:
+
+**Buchungs- & Vertrags-KPIs:**
+
+| KPI | Beschreibung |
+|-----|-------------|
+| **Ads-Buchungen** | Gesamtanzahl der Buchungen über Werbeanzeigen |
+| **Stattgefunden** | Ads-Termine, die tatsächlich stattgefunden haben (COMPLETED/PAID) |
+| **No-Show-Rate (Ads)** | Anteil der nicht wahrgenommenen Ads-Termine (invertiert: niedrig = gut) |
+| **Conversion Rate** | Verträge ÷ stattgefundene Termine (nur abgeschlossene Termine als Basis!) |
+| **Ads-Verträge** | Vertragsabschlüsse von Ads-Kunden |
+| **Ø KPZ pro Vertrag** | Durchschnittliche Körperzonenzahl pro Ads-Vertrag |
+| **Ø Vertragswert** | Durchschnittlicher monatlicher Vertragswert bei Ads-Kunden |
+| **Ads-Anteil** | Anteil der Ads-Buchungen an allen Buchungen |
+| **Zukünftige Termine** | Ads-Termine in der Zukunft — noch nicht auswertbar |
+
+**Meta Ads Kosten-KPIs** (nur wenn Meta-Daten vorhanden):
+
+| KPI | Beschreibung |
+|-----|-------------|
+| **Meta Gesamtausgaben** | Gesamte Werbeausgaben über Meta Ads API (€) |
+| **Kosten / Buchung (Meta)** | Meta-Ausgaben ÷ Meta-Buchungen |
+| **Kosten / Vertrag (Meta)** | Meta-Ausgaben ÷ Verträge von Meta-Kunden |
+| **ROAS (Meta)** | Return on Ad Spend: Vertragswert ÷ Meta-Ausgaben |
+
+**Google Ads Kosten-KPIs** (nur wenn Google-Daten vorhanden):
+
+| KPI | Beschreibung |
+|-----|-------------|
+| **Google Gesamtausgaben** | Gesamte Werbeausgaben über Google Ads API (€) |
+| **Kosten / Buchung (Google)** | Google-Ausgaben ÷ Google-Buchungen (gclid-Buchungen) |
+| **Kosten / Vertrag (Google)** | Google-Ausgaben ÷ Verträge von Google-Kunden |
+| **ROAS (Google)** | Vertragswert ÷ Google-Ausgaben |
+
+Jede Kennzahl zeigt Vergleichswerte zur Vorperiode (gleich langer Zeitraum davor).
+
+!!! info "Conversion-Rate Berechnung"
+    Die Conversion-Rate basiert ausschließlich auf **stattgefundenen Terminen** (COMPLETED/PAID). Termine, die in der Zukunft liegen oder bei denen der Kunde nicht erschienen ist (No-Show), werden **nicht** als Basis herangezogen. So ergibt sich ein realistisches Bild der tatsächlichen Abschlussquote.
+
+#### Kampagnen-Übersicht
+
+Sortierbare Tabelle aller erkannten Werbekampagnen:
+
+| Spalte | Beschreibung |
+|--------|-------------|
+| **Kampagne** | UTM-Campaign-Name (oder gclid/fbclid-Zuordnung) |
+| **Plattform** | Google Ads, Meta Ads oder Sonstige |
+| **Buchungen** | Anzahl Buchungen über diese Kampagne |
+| **Stattgef.** | Termine, die tatsächlich stattgefunden haben |
+| **No-Show** | Vergangene Termine ohne Erscheinen (nur wenn > 0) |
+| **Zukünftig** | Termine in der Zukunft, noch nicht bewertbar (nur wenn > 0) |
+| **Verträge** | Abgeschlossene Verträge von Kunden dieser Kampagne |
+| **KPZ** | Gesamte Körperzonen aus den Verträgen |
+| **Conversion** | Verträge ÷ stattgefundene Termine |
+| **Impressions** | Anzeigen-Einblendungen (Meta/Google Ads API) |
+| **Clicks** | Klicks auf die Anzeige (Meta/Google Ads API) |
+| **Kosten** | Gesamte Werbeausgaben für diese Kampagne (€) |
+| **CPC** | Cost per Click — Ø Kosten pro Klick |
+| **CTR** | Click-Through-Rate — Clicks ÷ Impressions × 100 |
+| **CPB** | Cost per Booking — Werbekosten ÷ Buchungen |
+| **CPV** | Cost per Vertrag — Werbekosten ÷ abgeschlossene Verträge |
+| **Aktionen** | Notiz bearbeiten, Detail-Ansicht |
+
+Klick auf eine Kampagne öffnet die Detail-Ansicht mit Anzeigengruppen und Suchbegriffen.
+
+#### Monatliche Entwicklung
+
+Zeigt die Ads-Performance über die Zeit als Tabelle oder Balken-/Liniendiagramm (umschaltbar):
+
+- **Ads-Buchungen** und **Verträge (Ads)** als Balken (linke Y-Achse)
+- **Meta-Ausgaben (€)** als goldene Linie (rechte Y-Achse, nur wenn Daten vorhanden)
+- **Google-Ausgaben (€)** als blaue Linie (rechte Y-Achse, nur wenn Daten vorhanden)
+
+Tabellenspalten: Monat, Buchungen, Stattgefunden, No-Show, Zukünftig, Gesamt-Buchungen, Ads-Anteil, Verträge, KPZ, Meta-Kosten, Meta-Impressions, Meta-Clicks, Google-Kosten, Google-Impressions, Google-Clicks.
+
+#### Quellen-Analyse
+
+Donut-Diagramm + Tabelle mit der Verteilung der Buchungen nach Quelle (utm_source). Die Quellen werden leserlich aufbereitet angezeigt:
+
+| Quelle | Anzeigename |
+|--------|-------------|
+| `google` | Google |
+| `fb` / `facebook` | Facebook |
+| `ig` / `instagram` | Instagram |
+| `meta` | Meta |
+| `direct` | Direkt |
+| `referral` | Referral |
+
+#### Ads vs. Organisch
+
+Side-by-Side Vergleich von Ads-Kunden und organischen Kunden mit Differenz-Berechnung (Conversion-Rate, No-Show-Rate, Ø KPZ, Ø Vertragswert).
+
+Bei vorhandenen Meta Ads Daten wird in der Ads-Karte zusätzlich ein **"Meta Ads Performance"**-Block angezeigt (Kosten, Impressions, Clicks, CPB, CPV).
+
+#### Kampagnen-Notizen
+
+Zu jeder Kampagne können strukturierte Notizen hinterlegt werden:
+
+- Plattform, Kampagnen-ID und -name, Zielgruppe, Verantwortlicher
+- Landing-Page URL, Start-/Enddatum, Monatsbudget (€)
+- Freitext-Notizen
+
+### Wie wird erkannt, ob jemand über Ads kam?
+
+Eine Buchung gilt als **Ads-Buchung** wenn mindestens eines zutrifft:
+
+- `gclid` vorhanden → **Google Ads**
+- `fbclid` vorhanden → **Meta Ads**
+- `utm_medium` = `cpc`, `paid` oder `ppc`
+
+Die Verknüpfung zu Verträgen erfolgt über die **Client-ID**.
+
+### Berichte-Übersicht (Vorschau-Kachel)
+
+Auf der Reports-Übersichtsseite (`/hub/reports`) zeigt die Ads-Analyse-Karte 4 Vorschau-KPIs:
+
+- **Conversion Rate** — Buchung → Vertrag (%)
+- **No-Show-Rate** — Ads-Termine mit No-Show (%)
+- **Kosten / Buchung** — Kombinierte Ads-Ausgaben ÷ Buchungen (€)
+- **Kosten / Vertrag** — Kombinierte Ads-Ausgaben ÷ Verträge (€)
+
+Die Kachel reagiert auf den globalen Standort-Filter.
+
+---
+
+## Für Entwickler
+
+### Architektur
+
+```
+AdsAnalysisController (app/Http/Controllers/)
+├── index()              → Blade-View rendern
+├── preview()            → JSON: 4 Vorschau-KPIs für Reports-Übersicht
+├── kpis()               → JSON: Alle KPI-Metriken (14+ Kennzahlen)
+├── campaigns()          → JSON: Kampagnen-Übersicht
+├── monthly()            → JSON: Monatliche Entwicklung
+├── sources()            → JSON: Quellen-Aufschlüsselung
+├── adsVsOrganic()       → JSON: Ads vs. Organisch Vergleich
+├── campaignDetail()     → JSON: Kampagnen-Detail (Drill-down)
+├── saveCampaignNote()   → POST: Notiz speichern
+├── getCampaignNotes()   → JSON: Notizen laden
+└── refresh()            → POST: Cache invalidieren
+
+AdsAnalysisService (app/Services/)
+├── getPreview()                 → 4 KPIs für Reports-Übersicht (nutzt getKpis())
+├── getKpis()                    → KPI-Berechnung (Meta + Google Ads) + Vergleichswerte
+├── getCampaignOverview()        → Kampagnen-Tabelle (Meta + Google Matching)
+├── getMonthlyTrend()            → Monatsdaten (Meta + Google)
+├── getSourceBreakdown()         → Quellen-Donut-Daten
+├── getAdsVsOrganic()            → Vergleichsanalyse
+├── getCampaignDetail()          → Drill-down einer Kampagne
+├── getCampaignNotes()           → Notizen laden
+└── flushCache()                 → Cache-Version erhöhen
+
+MetaAdsService (app/Services/)
+├── getCampaignInsights()        → Kampagnen-Daten via Graph API
+├── getDailyInsights()           → Tagesgenaue Daten für Monats-Aggregation
+└── isConfigured()               → Prüft ob API-Keys gesetzt sind
+
+GoogleAdsService (app/Services/)
+├── getCampaignInsights()        → Kampagnen-Daten via Google Ads API v24
+├── getDailyInsights()           → Tagesgenaue Daten
+├── normalizeNameToUtmCampaign() → Kampagnenname → UTM-Key (für Matching)
+└── isConfigured()               → Prüft ob API-Keys gesetzt sind
+```
+
+### Relevante Dateien
+
+| Datei | Zweck |
+|-------|-------|
+| `app/Http/Controllers/AdsAnalysisController.php` | Controller |
+| `app/Services/AdsAnalysisService.php` | Queries, Caching, Berechnungen |
+| `app/Services/MetaAdsService.php` | Meta Ads Graph API (SDK) |
+| `app/Services/GoogleAdsService.php` | Google Ads API v24 (OAuth2) |
+| `config/google-ads.php` | Google Ads API Konfiguration |
+| `config/meta-ads.php` | Meta Ads API Konfiguration |
+| `app/Models/AdCampaignNote.php` | Kampagnen-Notizen |
+| `app/Models/BookingTracking.php` | Basis-Model mit Ads-Scopes |
+| `resources/views/hub/reports/ads-analysis.blade.php` | Haupt-View |
+| `resources/views/hub/reports/ads-analysis/partials/header.blade.php` | Kopf + Filter (kollabierbar) |
+| `resources/views/hub/reports/ads-analysis/partials/campaign-overview.blade.php` | Kampagnen-Tabelle |
+| `resources/views/hub/reports/ads-analysis/partials/monthly-trend.blade.php` | Monatschart + Tabelle |
+| `resources/views/hub/reports/ads-analysis/partials/source-breakdown.blade.php` | Quellen-Donut + Tabelle |
+| `resources/views/hub/reports/ads-analysis/partials/ads-vs-organic.blade.php` | Vergleich |
+| `resources/views/hub/reports/ads-analysis/partials/campaign-notes-modal.blade.php` | Notizen-Modal |
+| `public/js/ads-analysis.js` | Alpine.js App + Chart.js |
+| `resources/views/hub/reports.blade.php` | Reports-Übersicht (Vorschau-Kachel) |
+| `database/migrations/2026_06_26_100000_create_ad_campaign_notes_table.php` | Migration |
+| `database/sql/ads-analysis-production.sql` | Produktiv-SQL (Berechtigungen) |
+| `tests/Unit/MetaAdsServiceTest.php` | Unit-Tests Meta |
+| `tests/Feature/AdsAnalysisMetaTest.php` | Feature-Tests Meta |
+
+### Routes
+
+```
+GET  /hub/reports/ads-analysis                        → index
+GET  /hub/reports/ads-analysis/preview                → preview  ← Reports-Übersicht
+GET  /hub/reports/ads-analysis/kpis                   → kpis
+GET  /hub/reports/ads-analysis/campaigns              → campaigns
+GET  /hub/reports/ads-analysis/monthly                → monthly
+GET  /hub/reports/ads-analysis/sources                → sources
+GET  /hub/reports/ads-analysis/ads-vs-organic         → adsVsOrganic
+GET  /hub/reports/ads-analysis/campaign/{campaign}    → campaignDetail
+POST /hub/reports/ads-analysis/campaign-notes         → saveCampaignNote
+GET  /hub/reports/ads-analysis/campaign-notes         → getCampaignNotes
+POST /hub/reports/ads-analysis/refresh                → refresh
+```
+
+Alle Routes: Middleware-Gruppe `can:view_report_ads_analysis`.
+
+### Datengrundlage
+
+- **Buchungsdaten:** `booking_trackings` — UTM-Parameter, gclid, fbclid, Device-Infos
+- **Vertragsdaten:** `contracts` — Verknüpfung über `client_id`
+- **Termin-Status:** `stats_historic_appointments` — Verknüpfung über `appointment_id`
+- **Notizen:** `ad_campaign_notes`
+
+### Termin-Status-Logik
+
+```
+booking_trackings.appointment_id → stats_historic_appointments.appointment_id
+```
+
+| Status | Bedingung |
+|--------|-----------|
+| **Stattgefunden** | `state IN ('COMPLETED', 'PAID')` |
+| **No-Show** | `state IN ('BOOKED','CONFIRMED','CHECKED_IN','NO_SHOW') AND appointment_date < heute` |
+| **Zukünftig** | `appointment_date >= heute AND state NOT IN ('CANCELLED')` |
+| **Abgesagt** | `state = 'CANCELLED'` |
+
+**Formeln:**
+```
+Conversion Rate  = Verträge ÷ stattgefundene Termine × 100
+No-Show-Rate     = No-Shows ÷ (stattgefundene + No-Shows) × 100
+```
+
+### Ads-Erkennung
+
+```php
+scopeWithGoogleAds($q) → whereNotNull('gclid')
+scopeWithMeta($q)      → whereNotNull('fbclid')
+scopeWithAds($q)       → gclid OR fbclid OR utm_medium IN ('cpc','paid','ppc')
+scopeOrganic($q)       → NOT (gclid OR fbclid OR utm_medium IN ('cpc','paid','ppc'))
+```
+
+### Google Ads Kampagnen-Matching
+
+Da Google Ads keine UTM-Parameter direkt liefert, erfolgt das Matching über einen normalisierten Schlüssel:
+
+```php
+GoogleAdsService::normalizeNameToUtmCampaign($campaignName)
+// "glattt Performance Max OS" → "GoogleAds_PMax_OS"
+```
+
+Der normalisierte Schlüssel wird als `utm_key` gespeichert und gegen `booking_trackings.utm_campaign` gematcht.
+
+### Caching
+
+- **TTL:** 3600 Sekunden (1 Stunde)
+- **Prefix:** `ads-analysis:v{N}:{methode}:{filter_hash}`
+- **Invalidierung:** Refresh-Button → `flushCache()` erhöht Version N
+
+### Permission
+
+`view_report_ads_analysis` — Beschreibung: `Bericht: Ads-Analyse`
+
+---
+
+## Google Cloud Deployment
+
+### Erforderliche Umgebungsvariablen
+
+Bei einem neuen Deployment oder nach einem API-Key-Wechsel müssen folgende Variablen am Cloud Run Service gesetzt werden:
+
+**Meta Ads API:**
+```
+META_ADS_APP_ID
+META_ADS_APP_SECRET
+META_ADS_ACCESS_TOKEN    ← Long-Lived Token (60 Tage), muss manuell verlängert werden!
+META_ADS_ACCOUNT_ID
+```
+
+**Google Ads API:**
+```
+GOOGLE_ADS_DEVELOPER_TOKEN
+GOOGLE_ADS_CUSTOMER_ID
+GOOGLE_ADS_CLIENT_ID
+GOOGLE_ADS_CLIENT_SECRET
+GOOGLE_ADS_REFRESH_TOKEN    ← Kein Ablauf, nur bei Widerruf neu generieren
+GOOGLE_ADS_LOGIN_CUSTOMER_ID
+```
+
+### Vars in Cloud Run setzen
+
+```bash
+gcloud run services update glattthub-web \
+  --region europe-west3 \
+  --project glattthub \
+  --update-env-vars \
+    "META_ADS_APP_ID=...,\
+     META_ADS_APP_SECRET=...,\
+     META_ADS_ACCESS_TOKEN=...,\
+     META_ADS_ACCOUNT_ID=...,\
+     GOOGLE_ADS_DEVELOPER_TOKEN=...,\
+     GOOGLE_ADS_CUSTOMER_ID=...,\
+     GOOGLE_ADS_CLIENT_ID=...,\
+     GOOGLE_ADS_CLIENT_SECRET=...,\
+     GOOGLE_ADS_REFRESH_TOKEN=...,\
+     GOOGLE_ADS_LOGIN_CUSTOMER_ID=..."
+```
+
+Alternativ: Google Cloud Console → Cloud Run → `glattthub-web` → Bearbeiten → Variablen & Secrets.
+
+!!! warning "Meta Access Token Ablauf"
+    Der Meta Ads Access Token läuft nach **60 Tagen** ab. Vor Ablauf muss er über die Meta App-Verwaltung oder `scripts/refresh-meta-token.php` verlängert und der neue Token in Cloud Run gesetzt werden.
+
+!!! tip "Google Ads Refresh Token"
+    Der Google Ads Refresh Token läuft **nicht ab**, solange er nicht widerrufen wird. Er muss einmalig per `scripts/generate-google-ads-token.php` generiert werden. Bei einem Widerruf (z.B. Passwortänderung des Google-Kontos) muss der Prozess wiederholt werden.
+
+### Datenbankmigrationen
+
+Die Migration für die `ad_campaign_notes`-Tabelle muss in der Produktiv-DB ausgeführt werden. Das SQL-Skript dafür liegt unter:
+
+```
+database/sql/ads-analysis-production.sql
+```
+
+Inhalt: `CREATE TABLE ad_campaign_notes ...` mit allen Feldern. Lokal testen, dann in der Google Cloud Console → Cloud SQL → Query-Editor ausführen.
+
 
 **Zugang:** Hub → Berichte → Ads-Analyse  
 **URL:** `/hub/reports/ads-analysis`  
@@ -387,24 +753,99 @@ META_ADS_ACCOUNT_ID=     # Ad Account ID (nur Ziffern, ohne act_ Prefix)
 
 ---
 
-## Phase 3: Google Ads API-Anbindung (ausstehend)
+## Phase 3: Google Ads API-Anbindung ✅ implementiert
 
-Folgt dem gleichen Pattern wie Meta Ads. Noch **nicht implementiert**.
+Folgt dem gleichen Pattern wie Meta Ads. Vollständig implementiert, aktiv sobald der Refresh Token in `.env` gesetzt ist.
 
-### Benötigt
+### Implementierte Komponenten
 
-| Komponente | Was wird benötigt? |
-|-----------|-------------------|
-| Composer-Paket | `googleads/google-ads-php` |
-| Config-Datei | `config/google-ads.php` |
-| Service | `app/Services/GoogleAdsService.php` |
-| .env | 5 neue Einträge (Developer Token, Client ID/Secret, Refresh Token, Customer ID) |
+| Komponente | Datei | Beschreibung |
+|-----------|-------|-------------|
+| Composer-Paket | `composer.json` | `googleads/google-ads-php` v33.3 (API V24) |
+| Config | `config/google-ads.php` | Credentials, Timeout, API-Version |
+| Service | `app/Services/GoogleAdsService.php` | GAQL-Queries, Cache, Normalisierung |
+| Integration | `app/Services/AdsAnalysisService.php` | Google-Daten in KPIs, Trends, Kampagnen |
+| Controller | `app/Http/Controllers/AdsAnalysisController.php` | GoogleAdsService injiziert |
+| Frontend JS | `public/js/ads-analysis.js` | Google-Ausgaben-Linie im Monatschart |
+| Blade | `partials/monthly-trend.blade.php` | Google Kosten, Impressions, Clicks |
+| Blade | `partials/ads-vs-organic.blade.php` | Google Ads Performance Block |
+| Tests | `tests/Unit/GoogleAdsServiceTest.php` | 14 Tests für Service-Methoden |
+| Tests | `tests/Feature/AdsAnalysisGoogleTest.php` | Feature-Tests aller Endpoints |
 
-### Schritt 1: API-Credentials einrichten
+### .env Einträge
+
+```env
+# Google Ads
+GOOGLE_ADS_DEVELOPER_TOKEN=         # Developer Token aus Google Ads API Center
+GOOGLE_ADS_CLIENT_ID=               # OAuth2 Client-ID aus Google Cloud Console
+GOOGLE_ADS_CLIENT_SECRET=           # OAuth2 Client-Secret
+GOOGLE_ADS_REFRESH_TOKEN=           # Muss via OAuth-Flow generiert werden (s.u.)
+GOOGLE_ADS_CUSTOMER_ID=             # Google Ads Customer-ID (ohne Bindestriche)
+GOOGLE_ADS_LOGIN_CUSTOMER_ID=       # MCC Manager-Konto-ID (falls vorhanden)
+```
+
+### GoogleAdsService — Methoden
+
+| Methode | Beschreibung |
+|---------|-------------|
+| `isConfigured()` | Prüft ob alle 5 Pflicht-Credentials gesetzt sind |
+| `getCampaignInsights(from, to)` | Kampagnen-Metriken via GAQL (ENABLED/PAUSED, impressions > 0) |
+| `getAdGroupInsights(campaignId, from, to)` | Ad-Group-Metriken für eine Kampagne |
+| `getDailyInsights(from, to)` | Tägliche Metriken aggregiert per Datum |
+| `getTotalSpend(from, to)` | Gesamtausgaben als Cents-Integer |
+| `flushCache()` | Statisch, invalidiert Cache via Versions-Inkrement |
+
+### GAQL-Queries
+
+```sql
+-- Kampagnen-Level (Campaign Insights)
+SELECT
+  campaign.id, campaign.name,
+  metrics.impressions, metrics.clicks, metrics.cost_micros,
+  metrics.ctr, metrics.average_cpc, metrics.conversions
+FROM campaign
+WHERE segments.date BETWEEN '{from}' AND '{to}'
+  AND campaign.status IN ('ENABLED', 'PAUSED')
+  AND metrics.impressions > 0
+```
+
+Kosten in Micros (millionstel Euro) → `round(micros / 10000)` = Cents.  
+CTR: Google liefert 0–1 (z.B. 0.035 = 3,5 %) → `* 100` für Prozent-Darstellung.
+
+### Kampagnen-Matching
+
+Gleiche Logik wie Meta: `booking_tracking.utm_campaign = campaign.id` (numerische ID als String).
+
+```php
+$googleLookup = $this->getGoogleAdsCampaignLookup($filters);
+// $googleLookup['123456789'] → ['spend_cents' => 150000, 'impressions' => ...]
+
+$row['google_spend_cents'] = $googleLookup[$campaignId]['spend_cents'] ?? 0;
+```
+
+### Refresh Token generieren
+
+Der Refresh Token muss einmalig über einen OAuth2-Flow erzeugt werden:
+
+```bash
+cd /Applications/MAMP/htdocs/glattthub
+php vendor/googleads/google-ads-php/examples/Authentication/GenerateUserCredentials.php
+# → Browser öffnet sich für Google-Login
+# → Token in .env eintragen: GOOGLE_ADS_REFRESH_TOKEN=...
+php artisan config:cache
+```
+
+### Graceful Degradation
+
+Wenn `GOOGLE_ADS_REFRESH_TOKEN` leer ist:
+- `isConfigured()` gibt `false` zurück
+- Alle Methoden geben leere Arrays / 0 zurück
+- Kein Fehler wird geworfen — Google-Spalten zeigen `–`
+
+### Credentials einrichten (bei Erstsetup)
 
 1. **Google Cloud Console** (console.cloud.google.com):
-   - Neues Projekt erstellen (oder bestehendes verwenden)
-   - **"Google Ads API"** aktivieren
+   - Google Ads API aktivieren
    - OAuth 2.0 Client-ID erstellen (Typ: Web Application)
    - → `GOOGLE_ADS_CLIENT_ID` + `GOOGLE_ADS_CLIENT_SECRET`
 
@@ -412,33 +853,19 @@ Folgt dem gleichen Pattern wie Meta Ads. Noch **nicht implementiert**.
    - Developer Token beantragen (Basic Access reicht)
    - → `GOOGLE_ADS_DEVELOPER_TOKEN`
 
-3. **Customer-ID** (oben rechts in Google Ads, Format: XXX-XXX-XXXX):
-   - Ohne Bindestriche in `.env` speichern
-   - → `GOOGLE_ADS_CUSTOMER_ID`
+3. **Customer-ID** aus Google Ads (oben rechts, Format: XXX-XXX-XXXX):
+   - Ohne Bindestriche → `GOOGLE_ADS_CUSTOMER_ID`
 
-4. **Refresh Token** via OAuth2-Flow generieren:
-   - Das PHP-Paket `googleads/google-ads-php` hat ein CLI-Tool: `GenerateUserCredentials`
-   - → `GOOGLE_ADS_REFRESH_TOKEN`
-
-### .env Einträge
-
-```env
-# Google Ads
-GOOGLE_ADS_DEVELOPER_TOKEN=
-GOOGLE_ADS_CLIENT_ID=
-GOOGLE_ADS_CLIENT_SECRET=
-GOOGLE_ADS_REFRESH_TOKEN=
-GOOGLE_ADS_CUSTOMER_ID=
-```
+4. Refresh Token via CLI generieren (s.o.)
 
 ### Implementierungs-Schritte
 
-- [ ] `composer require googleads/google-ads-php`
-- [ ] `config/google-ads.php` erstellen
-- [ ] `GoogleAdsService.php` erstellen (GAQL-Queries für Campaign + AdGroup Level)
-- [ ] In `AdsAnalysisService` integrieren (gleiche Matching-Logik wie Meta)
-- [ ] Frontend: Google-Kampagnen ebenfalls mit Kosten-Spalten versehen
-- [ ] Tests schreiben
+- [x] `composer require googleads/google-ads-php`
+- [x] `config/google-ads.php` erstellen
+- [x] `GoogleAdsService.php` erstellen (GAQL-Queries für Campaign + Daily Level)
+- [x] In `AdsAnalysisService` integrieren (gleiche Matching-Logik wie Meta)
+- [x] Frontend: Google-Kampagnen mit Kosten-Spalten und Trend-Linie
+- [x] Tests schreiben
 
 ---
 
