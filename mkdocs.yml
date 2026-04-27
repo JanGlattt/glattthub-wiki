@@ -96,6 +96,7 @@ nav:
     - Terminstatistik: APPOINTMENT-STATISTICS.md
     - Buchungsvorlauf-Analyse: BOOKING-LEAD-TIME-ANALYSIS.md
     - Stornierte Termine: CANCELLED-APPOINTMENTS-ANALYSIS.md
+    - Stornierte Beratungstermine: STORNIERTE-BERATUNGSTERMINE.md
     - Wochentag & Uhrzeit-Analyse: WEEKDAY-TIME-ANALYSIS.md
   - Kunden:
     - Kundenprofil: CLIENT-DETAIL-MODULE.md
