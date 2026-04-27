@@ -2,7 +2,70 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
-## Update 20.04.2026
+## Update 27.04.2026 — SEPA Compliance (GoCardless Custom Payment Pages)
+
+Dieses Update implementiert alle Pflichtanforderungen laut [GoCardless SEPA Custom Payment Pages](https://support.gocardless.com/hc/en-gb/articles/360001245585-Eurozone-SEPA-custom-payment-pages) für die Nutzung eigener Zahlungsseiten.
+
+### Für Nutzer (27.04.2026)
+
+**Im SEPA-Formular (vor dem Absenden):**
+- Zwischen dem letzten Formularfeld und dem „Formular absenden"-Button erscheinen jetzt die gesetzlich vorgeschriebenen GoCardless-Hinweise: Regulatory Status und Datenschutz-Link.
+
+**Im Erfolgs-Modal (nach dem Absenden):**
+- Überschrift zeigt jetzt: „SEPA-Lastschriftmandat erfolgreich eingerichtet."
+- Hinweis: „Zahlungen erscheinen auf dem Kontoauszug als **glattt**."
+- Hinweis: „Du erhältst vor jeder Abbuchung mindestens 3 Werktage im Voraus eine Benachrichtigung per E-Mail."
+- Regulatory Status + Datenschutz-Link (GoCardless Pflichtfelder)
+
+Diese Hinweise erscheinen **nur bei Formularen mit SEPA-Feldern** — alle anderen Formulare sind nicht betroffen.
+
+**Im Form-Editor noch manuell anzupassen (einmalig):**
+
+| Wo | Was | Typ |
+|---|---|---|
+| Nach Gläubiger-ID-Feld | Gläubiger-Name, Adresse, Land | `paragraph`-Feld |
+| Vor Kontoinhaber-Feldern | „Zahlungsart: Wiederkehrend" | `paragraph`-Feld |
+| Vor dem Einwilligungstext | Vorabhinweis (3 Werktage) | `paragraph`-Feld |
+| Bestehender Einwilligungstext | Auf offizielle EPC-Formulierung aktualisieren | Feld editieren |
+
+### Für Entwickler (27.04.2026)
+
+**Neue Dateien:**
+- `resources/views/partials/gocardless-footer.blade.php` — Statisches Partial mit Regulatory Status + Privacy Notice (eingebunden per `@include`)
+
+**Geänderte Dateien:**
+- `resources/views/forms/shared-fill.blade.php` — `$isSepaForm`-Flag (`$form->fields->contains('type', 'sepa_iban')`), Footer vor Submit-Button, SEPA-spezifischer Success State
+- `resources/views/partials/form-submission-modal.blade.php` — SEPA-Erkennung via Alpine.js `form.fields.some(f => f.type === 'sepa_iban')`, SEPA-Überschrift per `<template x-if>`, SEPA-Infoblock (Kontoauszug, Vorankündigung, Regulatory)
+- `resources/views/hub/forms/fill.blade.php` — `isSepaForm`-Variable an Modal-Include übergeben
+- `resources/views/hub/appointment-unified/partials/form-fill-inline.blade.php` — Alpine.js-basierte SEPA-Erkennung (kein PHP `$form` verfügbar), Footer vor Submit-Button
+- `public/css/theme_glattt.css` — Neue Klasse `.gocardless-footer-notice` (inkl. Dark Mode)
+
+**SEPA-Erkennung Logik:**
+- PHP-Kontext (shared-fill, fill): `$form->fields->contains('type', 'sepa_iban')`
+- Alpine.js-Kontext (Modal, inline): `form && form.fields && form.fields.some(f => f.type === 'sepa_iban')`
+- `form-fill-inline.blade.php` hat kein PHP `$form` — hier ausschließlich Alpine.js-Erkennung
+
+**GoCardless Compliance Status nach diesem Update:**
+
+| Anforderung | Seite | Status |
+|---|---|---|
+| HTTPS | alle | ✅ |
+| Vor-/Nachname | SEPA-Formular | ✅ |
+| E-Mail | SEPA-Formular | ✅ |
+| IBAN | SEPA-Formular | ✅ |
+| Adresse | SEPA-Formular | ✅ |
+| Gläubiger-Name + Adresse | SEPA-Formular | ⚠️ via Form-Editor |
+| Zahlungsart (Wiederkehrend) | SEPA-Formular | ⚠️ via Form-Editor |
+| Vorabhinweis 3 Werktage | SEPA-Formular | ⚠️ via Form-Editor |
+| Einwilligungstext EPC | SEPA-Formular | ⚠️ via Form-Editor |
+| Regulatory Footer | SEPA-Formular + Modal | ✅ |
+| Privacy Notice | SEPA-Formular + Modal | ✅ |
+| Success-Überschrift | Success Modal | ✅ |
+| Kontoauszug-Hinweis | Success Modal | ✅ |
+| IP + Timestamp | Backend | ✅ |
+| GoCardless Approval | — | ⏳ Screenshots senden |
+
+
 
 Dieses Tages-Update erweitert den Vertragsbereich um einen durchgängigen Workflow für:
 
