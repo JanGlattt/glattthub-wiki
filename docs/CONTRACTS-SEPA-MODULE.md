@@ -2,7 +2,50 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
-## Update 27.04.2026 — SEPA Compliance (GoCardless Custom Payment Pages)
+## Update 28.04.2026 — GoCardless-Plan stornieren & neu anlegen
+
+Dieses Update verbessert den Workflow rund um das Stornieren und Neu-Anlegen von GoCardless-Zahlungsplänen im SEPA-Mandat-Tab.
+
+### Für Nutzer (28.04.2026)
+
+**Zahlungsplan stornieren:**
+- Der Button „Zahlungsplan stornieren" erscheint jetzt für **alle** aktiven GoCardless-Pläne — sowohl für neuere Instalment Schedules als auch für ältere Daueraufträge (Subscriptions).
+- Nach dem Stornieren werden alle lokalen „Vorgemerkt"-Zahlungen automatisch auf „Storniert" gesetzt.
+- Im Bearbeitungsverlauf wird dokumentiert welche Summe bis zum Stornierungszeitpunkt bereits über GoCardless eingezogen wurde.
+- Im GoCardless-Status-Bereich erscheint ein grüner Hinweis mit dem bereits eingezogenen Betrag (sofern Zahlungen vorhanden).
+
+**Neuen Zahlungsplan anlegen:**
+- Nach dem Stornieren ist der Button „Neuen Zahlungsplan anlegen" direkt sichtbar — ohne Seite neu laden zu müssen.
+- Mandatsreferenz und Bankverbindung bleiben erhalten; nur der Zahlungsplan selbst wird storniert.
+
+**Anzeigebereinigung:**
+- Bei einem stornierten Mandat werden die Felder „Monatliche Rate", „Anzahl Raten" und „Erste Abbuchung" ausgeblendet — diese Werte stammen vom alten Plan und sind nach der Stornierung nicht mehr relevant.
+- Die Zeile „Erstellt am …" im Seitentitel wurde entfernt.
+
+**Kundendaten-Darstellung:**
+- E-Mail-Adresse und Telefonnummer werden wieder korrekt in einer Zeile mit Icon dargestellt (CSS-Bugfix Alpine.js).
+
+### Für Entwickler (28.04.2026)
+
+**`hasActiveGoCardlessPlan()` erweitert** (`ContractController.php`):
+- Prüft jetzt beide Plan-Typen:
+  - `ClientMandate.gocardless_instalment_schedule_id` (Instalment Schedule)
+  - `Contract.gocardless_subscription_id` (Dauerauftrag/Subscription)
+
+**`cancelGoCardlessPlan()` erweitert** (`ContractController.php`):
+- Berechnet vor dem Stornieren den bereits eingezogenen Betrag: `ContractPayment` mit `status=paid` und `gocardless_payment_id IS NOT NULL`
+- Storniert `gocardless_subscription_id` via `GoCardlessApiService::cancelSubscription()` (zusätzlich zu Instalment Schedule)
+- Setzt `contract.gocardless_subscription_id = null` und speichert
+- Setzt alle lokalen Zahlungen mit `status IN (scheduled, pending)` auf `cancelled`
+- Schreibt `ContractChange` mit Plan-ID und eingezogenem Betrag im `old_value`-Feld
+
+**View `show.blade.php` — Bedingungen angepasst:**
+- Cancel-Button: `@if((!empty($mandate->gocardless_instalment_schedule_id) && in_array(...)) || !empty($contract->gocardless_subscription_id))`
+- Bankverbindung/GoCardless-Section: jetzt auch bei `mandate->status === 'cancelled'` sichtbar (war: nur `active`, `submitted`)
+- Zahlungsplan-Felder (Rate, Anzahl Raten, Erste Abbuchung): werden bei `status === 'cancelled'` ausgeblendet
+- Alpine.js `x-show` + `display: flex` Bug bei E-Mail/Telefon-Spans: von statischem `style=` auf `:style=` (dynamisches Alpine-Binding) umgestellt
+
+
 
 Dieses Update implementiert alle Pflichtanforderungen laut [GoCardless SEPA Custom Payment Pages](https://support.gocardless.com/hc/en-gb/articles/360001245585-Eurozone-SEPA-custom-payment-pages) für die Nutzung eigener Zahlungsseiten.
 
