@@ -2,6 +2,148 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 30.04.2026 — SEPA-E-Mail-System vollständig implementiert
+
+Dieses Update implementiert ein vollständiges, GoCardless-konformes E-Mail-System für alle SEPA-relevanten Ereignisse.
+
+### Für Nutzer (30.04.2026)
+
+Kunden erhalten jetzt automatisch E-Mails bei folgenden Ereignissen:
+
+| Ereignis | Auslöser | E-Mail |
+|----------|----------|--------|
+| SEPA-Formular ausgefüllt (neuer Vertrag per Termin) | Automatisch nach GoCardless-Sync | **Onboarding** inkl. Vertrags-PDF |
+| SEPA-Mandat manuell aktiviert (Button im Hub) | Klick auf „Mandat aktivieren" | **Mandats-Aktivierung** ohne PDF |
+| Bankverbindung geändert | „Kontoverbindung ändern" im Hub | **Bankverbindung geändert** |
+| GoCardless-Mandat widerrufen | Widerruf-Button im Hub | **Mandat beendet** |
+| Vertragsdetails geändert (Rate, Datum) | Vertragsbearbeitung | **Vertragsänderung** |
+
+**E-Mail-Inhalte:**
+- Persönliche Anrede: „Liebe [Vorname]," / „Lieber [Vorname]," (geschlechtergerecht, aus Phorest)
+- Vertragsdetails: Behandlungszonen, Monatsrate, Anzahl SEPA-Raten, erste Abbuchung
+- SEPA Pre-Notification (GoCardless-Pflichtangabe): Anzahl Raten, erste und letzte Abbuchung, Betrag, Gläubiger-ID
+- Mandatsdetails: Mandatsreferenz, maskierte IBAN, Gläubiger-ID
+- Abschnitt mit Gläubiger- und GoCardless-Informationen
+
+**Ratenzählung:**
+- Bei z.B. 19 Monaten: **1 Rate vor Ort** + **18 SEPA-Lastschriften**
+- E-Mail zeigt: „18 SEPA + 1 vor Ort"
+- Pre-Notification zeigt Anzahl SEPA-Raten (= `installment_count - 1`)
+- Letzte Abbuchung = Erste Abbuchung + `installment_count - 2` Monate
+
+**Deduplication:**
+- Onboarding-Mail wird pro Mandat nur einmal versendet (kein doppelter Versand bei erneutem Sync)
+- `force_resend`-Parameter für Ausnahmen (z.B. Supportfälle)
+
+### Für Entwickler (30.04.2026)
+
+#### Neue Dateien
+
+| Datei | Zweck |
+|-------|-------|
+| `app/Services/SepaEmailService.php` | Zentraler Service für alle SEPA-E-Mails |
+| `app/Models/SepaEmailLog.php` | Logging-Model mit Deduplication-Logik |
+| `app/Mail/Sepa/OnboardingMail.php` | Mailable: Onboarding inkl. PDF |
+| `app/Mail/Sepa/MandateActivationMail.php` | Mailable: Mandats-Aktivierung |
+| `app/Mail/Sepa/ChangeNotificationMail.php` | Mailable: Vertragsänderung |
+| `app/Mail/Sepa/BankAccountChangedMail.php` | Mailable: Bankverbindung geändert |
+| `app/Mail/Sepa/MandateCancelledMail.php` | Mailable: Mandat beendet |
+| `resources/views/emails/sepa/onboarding.blade.php` | Template: Onboarding |
+| `resources/views/emails/sepa/mandate-activation.blade.php` | Template: Mandats-Aktivierung |
+| `resources/views/emails/sepa/change-notification.blade.php` | Template: Vertragsänderung |
+| `resources/views/emails/sepa/bank-account-changed.blade.php` | Template: Bankverbindung geändert |
+| `resources/views/emails/sepa/mandate-cancelled.blade.php` | Template: Mandat beendet |
+| `app/Filament/Resources/SepaEmailLogs/` | Filament Resource für E-Mail-Log-Übersicht |
+| `database/migrations/2026_04_29_180000_create_sepa_email_logs_table.php` | Tabelle `sepa_email_logs` |
+| `database/migrations/2026_04_30_100000_add_bank_account_changed_and_mandate_cancelled_to_sepa_email_logs.php` | Enum-Erweiterung für neue Mail-Typen |
+| `tests/Feature/SepaEmailServiceTest.php` | Feature-Tests (19/19 ✅) |
+
+#### `SepaEmailService` — Methoden-Übersicht
+
+```php
+sendOnboardingEmail(ClientMandate $mandate, Contract $contract, bool $forceResend = false): void
+sendMandateActivationEmail(ClientMandate $mandate, Contract $contract): void
+sendChangeNotificationEmail(ClientMandate $mandate, Contract $contract, array|Collection $changes): void
+sendBankAccountChangedEmail(ClientMandate $mandate, Contract $contract, string $maskedIban = '–'): void
+sendMandateCancelledEmail(ClientMandate $mandate, Contract $contract): void
+```
+
+Alle Methoden:
+- Ermitteln Empfänger-E-Mail aus `payer_email` (bei abweichendem Zahler) oder Phorest-API
+- Laden Name und Geschlecht aus Phorest für personalisierte Anrede
+- Loggen Erfolg/Fehler in `sepa_email_logs`
+- Wenden Mail-Einstellungen via `MailSettingsService` an (From-Name, From-Address)
+
+#### `SepaEmailLog` — Typen-Konstanten
+
+```php
+TYPE_ONBOARDING         = 'onboarding'
+TYPE_ACTIVATION         = 'activation'
+TYPE_CHANGE_NOTIFICATION = 'change_notification'
+TYPE_BANK_ACCOUNT_CHANGED = 'bank_account_changed'
+TYPE_MANDATE_CANCELLED  = 'mandate_cancelled'
+```
+
+#### Aufruf-Stellen
+
+| Mail | Aufruf in |
+|------|-----------|
+| Onboarding | `SyncMandateToGoCardlessJob` — nach erfolgreichem GoCardless-Sync |
+| Aktivierung | `ContractController::activateMandate()` — manueller Button |
+| Änderung | `ContractController::updateContractData()` — Vertragsbearbeitung |
+| Bankverbindung geändert | `GoCardlessMandateService::changeBankAccount()` — nach API-Aufruf |
+| Mandat beendet | `GoCardlessMandateService::cancelMandate()` + `ContractController::cancelGoCardlessMandate()` |
+
+#### `installment_count`-Semantik
+
+```
+installment_count = 19
+├── Rate 1: vor Ort bezahlt
+└── Rate 2-19: SEPA (= installment_count - 1 = 18 Lastschriften)
+
+GoCardless Subscription count = installment_count - 1
+E-Mail installmentCount       = installment_count - 1
+E-Mail lastPaymentDate        = first_payment_date + (installment_count - 2) Monate
+```
+
+#### GoCardless Compliance — Pre-Notification
+
+Die E-Mails erfüllen die GoCardless-Pflichtanforderungen für SEPA Pre-Notifications:
+
+| Pflichtfeld | Quelle |
+|-------------|--------|
+| Anzahl Raten | `installment_count - 1` |
+| Erste Abbuchung | `contract.first_payment_date` |
+| Letzte Abbuchung | `first_payment_date + (installment_count - 2) Monate` |
+| Abbuchungsbetrag | `monthly_amount_cents / 100` |
+| Gläubiger-ID | `DE33ZZZ00001960715` (config) |
+| Mandatsreferenz | `mandate.mandate_reference` |
+| Kontoinhaber | `mandate.payer_*` oder Phorest-Client-Name |
+
+#### Test-Mails manuell versenden
+
+```bash
+php artisan tinker --execute="
+use App\Models\ClientMandate;
+use App\Models\Contract;
+use App\Services\SepaEmailService;
+
+\$mandate = ClientMandate::where('mandate_reference', 'REFERENZ')->firstOrFail();
+\$contract = Contract::where('contract_number', 'VERTRAGSNUMMER')->firstOrFail();
+
+\$service = app(SepaEmailService::class);
+
+// Onboarding (mit force_resend um Deduplication zu umgehen):
+\$service->sendOnboardingEmail(\$mandate, \$contract, true);
+
+// Aktivierung:
+\$service->sendMandateActivationEmail(\$mandate, \$contract);
+
+// Mandat beendet:
+\$service->sendMandateCancelledEmail(\$mandate, \$contract);
+"
+```
+
 ## Update 28.04.2026 — GoCardless-Plan stornieren & neu anlegen
 
 Dieses Update verbessert den Workflow rund um das Stornieren und Neu-Anlegen von GoCardless-Zahlungsplänen im SEPA-Mandat-Tab.
