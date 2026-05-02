@@ -85,6 +85,9 @@ Historische Analyse vergangener Beratungstermine.
 - Beliebtester Wochentag (letzte 3 Monate)
 - Prognose für den aktuellen Monat
 - Detailansicht mit Wochen-Expansion
+- **Buchungseingangs-Kalender** mit Tagesdetail-Modal ⭐
+
+**Dokumentation:** [BUCHUNGSEINGANGS-KALENDER.md](BUCHUNGSEINGANGS-KALENDER.md)
 
 ---
 
@@ -257,6 +260,7 @@ app/Http/Controllers/ReportController.php
 ├── consultationWeeklyForMonth()        # ⚡ Lazy Loading - Wochen on-demand
 ├── consultationWeeksForChart()         # ⚡ Lazy Loading - Chart-Wochen
 ├── consultationDaysForChart()          # ⚡ Lazy Loading - Chart-Tage
+├── consultationBookingDay()            # ⭐ Tagesdetail-Modal (Buchungseingang)
 ├── historicBookingTimelineFast()       # ⚡ Lazy Loading - nur Monate
 ├── historicBookingTimelineWeeksForMonth() # ⚡ Lazy Loading - Wochen
 ├── historicBookingTimelineDaysForWeek()   # ⚡ Lazy Loading - Tage
@@ -272,9 +276,10 @@ app/Http/Controllers/ReportController.php
 
 ```
 public/js/
-├── reports.js                      # Reports-Übersichtsseite
-├── consultation-stats.js           # Kalenderübersicht (Alpine.js)
-├── cancelled-appointments-page.js  # KPI-Dashboard für Stornierte
+├── reports.js                          # Reports-Übersichtsseite
+├── consultation-stats.js               # Kalenderübersicht (Alpine.js)
+├── past-consultation-stats.js          # Vergangene Beratungen inkl. Buchungseingangs-Kalender
+├── cancelled-appointments-page.js      # KPI-Dashboard für Stornierte
 └── cancelled-appointments-analysis.js  # Analyse-Komponenten
 ```
 
@@ -297,7 +302,9 @@ resources/views/hub/reports/
 ├── past-consultations.blade.php    # Vergangene Beratungen
 ├── upcoming-consultations.blade.php # Zukünftige Beratungen
 └── partials/
-    ├── consultation-all-stats.blade.php       # Kalenderübersicht
+    ├── consultation-all-stats.blade.php              # Kalenderübersicht
+    ├── consultation-booking-calendar.blade.php        # Buchungseingangs-Kalender
+    ├── consultation-booking-day-modal.blade.php       # ⭐ Tagesdetail-Modal
     ├── cancelled-appointments-by-state.blade.php
     ├── cancelled-appointments-monthly.blade.php
     └── cancelled-appointments-modal.blade.php
