@@ -112,6 +112,7 @@ nav:
     - Körperzonen-Selektor: BODY-ZONE-SELECTOR.md
   - Verträge & Finanzen:
     - Verträge & SEPA: CONTRACTS-SEPA-MODULE.md
+    - Unternehmensverträge: COMPANY-CONTRACTS.md
     - Widerrufe: WIDERRUFE-MODULE.md
     - Legacy-Import: LEGACY-VERTRAGS-IMPORT.md
     - Google Sheets Import: GOOGLE-SHEETS-IMPORT.md
