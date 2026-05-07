@@ -22,8 +22,19 @@ Die Übersicht zeigt:
 - **Vertragsliste** (unten): Alle Verträge mit Bezeichnung, Typ, Vertragspartner, Standort, Betrag, Kündigungsdatum und Status
 
 **Filter:**
-- **Status**: Aktiv / Gekündigt / Ausgelaufen / Alle
-- **Typ**: Alle verfügbaren Vertragstypen
+
+Die Filterfunktion ist direkt an den Spaltenköpfen der Tabelle angebracht — identisches System wie bei den Kundenverträgen. Ein Klick auf das Filter-Icon öffnet ein Flyover-Popover.
+
+| Spalte | Filter-Art | Optionen |
+|--------|-----------|----------|
+| Typ | Multi-Select | Alle Vertragstypen (Standard + Custom) |
+| Standort | Einzel-Select | Firmenweit + alle Standorte |
+| Betrag (Netto) | Einzel-Select | Nach Zahlungsintervall (Monatlich, Jährlich, …) |
+| Status | Multi-Select | Aktiv / Gekündigt / Ausgelaufen |
+
+Zusätzlich gibt es ein **Suchfeld** (Bezeichnung oder Vertragspartner) und einen **„Filter zurücksetzen"**-Button, der erscheint sobald ein Filter aktiv ist.
+
+**Standard beim Laden:** Nur aktive Verträge angezeigt (Status-Filter auf „Aktiv" vorbelegt).
 
 ### Neuen Vertrag anlegen
 
@@ -42,6 +53,8 @@ Der Wizard führt durch **6 Schritte**:
 
 **KI-Analyse (Schritt 1):**
 Das hochgeladene PDF wird an Claude (Anthropic) gesendet. Die KI extrahiert automatisch Vertragsbezeichnung, Typ, Partner, Laufzeit und Betrag und befüllt die Felder in den nachfolgenden Schritten vor. Schritt 1 kann übersprungen werden — alle Felder sind manuell befüllbar.
+
+**Direktausgelesene Felder** (aus dem Dokument) werden normal übernommen. **Erschlossene Felder** (KI-Schlussfolgerung aus Kontext oder Branche) werden mit einem bernsteinfarbenen Badge **„★ KI-Vorschlag — bitte überprüfen"** unterhalb des Feldes markiert. Diese Felder sollten vom Nutzer explizit geprüft werden. Der Badge verschwindet sobald das Feld manuell bearbeitet wird.
 
 ### Detailseite eines Vertrags
 
@@ -190,14 +203,17 @@ CompanyContract::CONTRACT_TYPES  // ['rental' => 'Mietvertrag', 'software' => 'S
 CompanyContract::PAYMENT_INTERVALS  // ['monthly' => 'Monatlich', ...]
 CompanyContract::STATUSES  // ['active' => 'Aktiv', ...]
 
+// Statische Hilfsmethoden
+CompanyContract::getCustomTypesMap()  // ['custom_abc1' => 'Mein Typ', ...] — Custom Types aus DB (gecacht pro Request)
+
 // Scopes
 ->forBranch($branchId)   // Firmenweit (null) + eigener Standort
 ->active()               // Nur aktive Verträge
 ->upcomingReminders()    // Fällige Erinnerungen heute
 
 // Accessors
-$contract->contract_type_label      // Erster Typ als Lesebarer Text
-$contract->contract_types_labels    // Alle Typen als Array
+$contract->contract_type_label      // Erster Typ als lesbarer Text (inkl. Custom Types)
+$contract->contract_type_labels     // Alle ausgewählten Typen als Label-Array (inkl. Custom Types)
 $contract->payment_interval_label   // "Monatlich"
 $contract->status_label             // "Aktiv"
 $contract->amount_formatted         // "120,00 € / Monatlich"
@@ -226,7 +242,7 @@ Alle Routen unter `/hub/` mit Middleware `can:view_company_contracts`:
 
 | Methode | Zweck |
 |---------|-------|
-| `index()` | Übersicht, inkl. Kostenauswertung, Filter, Wizard-Daten |
+| `index()` | Übersicht — alle Verträge ohne Server-Filterung; Filterung erfolgt client-seitig via Alpine.js `companyContractsFilter()` |
 | `show($id)` | Detailseite mit Dokumenten, Änderungshistorie, Wizard-Daten |
 | `store(Request)` | Neuen Vertrag speichern (AJAX, multipart) |
 | `update(Request, $id)` | Vertrag aktualisieren + Änderungshistorie schreiben |
@@ -247,12 +263,14 @@ Nutzt **Claude claude-sonnet-4-5** via Anthropic API (`config/anthropic.php`).
 $service = new ContractAnalysisService();
 $result = $service->analyzeDocument($filePath, $mimeType);
 // $result['success'] = true/false
-// $result['data'] = [
-//   'name', 'contract_types', 'vendor_name', 'vendor_address',
-//   'start_date', 'end_date', 'notice_period_days', 'amount',
+// $result['extracted'] = [...]   // direkt aus dem Dokument ausgelesen
+// $result['suggested'] = [...]   // erschlossen (Branche/Kontext, kein direkter Beleg im Dokument)
+// Beide Arrays können enthalten: 'name', 'contract_types', 'vendor_name', 'vendor_address',
+//   'start_date', 'end_date', 'notice_period_days', 'amount' (Nettobetrag als Dezimalzahl),
 //   'payment_interval', 'auto_renewal', 'renewal_period_months', 'notes'
-// ]
 ```
+
+**Response-Format**: Die KI trennt `extracted` (direkt gelesen) von `suggested` (erschlossen). Der Wizard markiert alle Felder aus `suggested` mit einem KI-Vorschlag-Badge (`ai-suggestion-badge`).
 
 Unterstützte Dateitypen: PDF, JPG, JPEG, PNG, GIF, WebP. Max. 20 MB.
 Timeout: `set_time_limit(120)` — Claude kann bei großen PDFs länger brauchen.
@@ -288,10 +306,13 @@ contractWizard({
 | `openEditModal(contractData)` | Bearbeiten (Start bei Schritt 2, Felder vorausgefüllt) |
 | `closeModal()` | Modal schließen (verhindert Schließen während `saving`) |
 | `analyzeDocument()` | AJAX-Aufruf der KI-Analyse |
-| `applyAnalysisData(data)` | KI-Ergebnis in Formularfelder übertragen |
+| `applyAnalysisData(extracted, suggested)` | KI-Ergebnis in Felder übertragen; Felder aus `suggested` werden mit `aiSuggestedFields[key] = true` markiert |
+| `clearAiSuggestion(fieldName)` | KI-Vorschlag-Badge für ein Feld ausblenden (nach manuellem Bearbeiten) |
 | `validateCurrentStep()` | Pflichtfelder des aktuellen Schritts prüfen |
 | `submit()` | Formular absenden (POST oder PUT je nach `editMode`) |
 | `nextStep()` | Validiert und wechselt zum nächsten Schritt |
+
+**KI-Vorschlag-State**: `aiSuggestedFields` ist ein Alpine-Objekt `{ fieldName: true|false }`. **Direkte Property-Mutation** (`this.aiSuggestedFields[fieldName] = true`) ist Pflicht — Object-Spread-Ersatz (`this.obj = { ...this.obj }`) verliert das Alpine-Proxy-Tracking und macht `x-show` reaktionslos.
 
 **Edit-Mode**:
 ```js
