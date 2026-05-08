@@ -2,6 +2,81 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 08.05.2026 — SEPA-Mandat manuell anlegen
+
+### Für Nutzer (08.05.2026)
+
+Auf der SEPA-Mandat-Seite eines Vertrags erscheint nun ein Button **„Mandat manuell anlegen"**, wenn für den Vertrag noch kein SEPA-Mandat in der Datenbank registriert ist.
+
+**Wann erscheint der Button?**
+
+- Nur wenn `payment_method === 'sepa'` und noch kein `ClientMandate` mit dem Vertrag verknüpft ist
+- Nur für Nutzer mit der Berechtigung `edit_contract_data`
+
+**Formular-Felder:**
+
+| Feld | Pflicht | Hinweis |
+|------|---------|---------|
+| Vorname | ✅ | Kontoinhaber |
+| Nachname | ✅ | Kontoinhaber |
+| IBAN | ✅ | Live-Validierung mit Prüfziffer (MOD-97) |
+| BIC | – | Wird automatisch per OpenIBAN-API befüllt |
+| Bankname | – | Wird automatisch per OpenIBAN-API befüllt |
+| Mandatsreferenz | – | Leer lassen = automatisch generiert (`MAN-XXXXXXXX`) |
+| Unterschrieben am | – | Zeitpunkt der Unterschrift |
+
+**Verhalten nach dem Speichern:**
+
+1. Ein neues `ClientMandate` mit Status **Ausstehend** wird angelegt
+2. Der Vertrag wird mit dem Mandat verknüpft (`client_mandate_id`)
+3. Der Vorgang wird im Bearbeitungsverlauf protokolliert
+4. Seite wird automatisch neu geladen — der SEPA-Tab zeigt jetzt das angelegte Mandat
+
+> **Hinweis:** Das Mandat wird zunächst nur lokal gespeichert (Status: Ausstehend). Um es mit GoCardless zu synchronisieren und den Zahlungsplan zu erstellen, danach die übliche GoCardless-Suche oder den „Mandat und Zahlungsplan anlegen"-Workflow nutzen.
+
+### Für Entwickler (08.05.2026)
+
+#### Neue / geänderte Dateien
+
+| Datei | Änderung |
+|-------|----------|
+| `app/Http/Controllers/ContractController.php` | Neue Methode `createMandate()` |
+| `routes/web.php` | Route `POST hub/contracts/{contract}/create-mandate` (Middleware `edit_contract_data`) |
+| `resources/views/hub/contracts/show.blade.php` | Button + Modal-Include + Alpine.js State & Methoden |
+| `resources/views/hub/contracts/partials/create-mandate-modal.blade.php` | Neues Modal-Partial |
+
+#### Controller: `createMandate(Request $request, Contract $contract)`
+
+```php
+// Route: POST hub/contracts/{contract}/create-mandate
+// Middleware: can:edit_contract_data
+```
+
+- Prüft ob bereits ein `ClientMandate` vorhanden ist (422 falls ja)
+- Validiert: `payer_first_name`, `payer_last_name`, `payer_iban` (required), `payer_bic`, `payer_bank_name`, `mandate_reference`, `mandate_signed_at` (optional)
+- Normalisiert IBAN (Leerzeichen entfernen, Großbuchstaben)
+- Auto-generiert `mandate_reference` falls leer: `MAN-` + 8 Hex-Zeichen
+- Erstellt `ClientMandate` mit `status = pending`
+- Setzt `contract.client_mandate_id`
+- Schreibt `ContractChange` vom Typ `mandate_created`
+
+#### Alpine.js — neue State-Variablen in `sepaTab()`
+
+```js
+showCreateMandateModal: false,
+createMandateSaving: false,
+createMandateError: null,
+createMandateSuccess: false,
+createMandateIbanLoading: false,
+createMandateIbanValid: false,
+createMandateIbanError: null,
+createMandateForm: { payer_first_name, payer_last_name, payer_iban, payer_bic, payer_bank_name, mandate_reference, mandate_signed_at }
+```
+
+Neue Methode `validateAndLookupMandateIban()` — nutzt die bereits vorhandenen `validateIBAN()` und `lookupBICFromIBAN()` aus demselben Scope wieder.
+
+---
+
 ## Update 30.04.2026 — SEPA-E-Mail-System vollständig implementiert
 
 Dieses Update implementiert ein vollständiges, GoCardless-konformes E-Mail-System für alle SEPA-relevanten Ereignisse.
