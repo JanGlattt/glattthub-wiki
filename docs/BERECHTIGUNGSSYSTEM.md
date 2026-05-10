@@ -13,11 +13,19 @@ Das Berechtigungssystem steuert den Zugriff auf alle Bereiche des glatttHub. Es 
 
 | Kennzahl | Wert |
 |----------|------|
-| Permissions gesamt | 106 |
+| Permissions gesamt | 116 |
 | Permission-Gruppen | 20 |
 | Rollen (Standard) | 4 |
 | Geschuetzte Routen | 139 |
 | Verschiedene Route-Permissions | 48 |
+
+!!! info "Seit Mai 2026: DB-getriebene Permission-Labels"
+    Permissions tragen seit Migration `2026_05_10_230000_add_label_and_group_to_permissions` zwei zusaetzliche Spalten:
+
+    - `label` -- deutsches Anzeige-Label im Rollen-Editor
+    - `group_key` -- Gruppen-Schluessel (z.B. `termine`, `berichte`, `kunden`)
+
+    Der Rollen-Editor liest Permissions **dynamisch aus der DB** -- neue Permissions erscheinen automatisch, sobald sie mit gefuelltem `label` und `group_key` angelegt werden. Permissions ohne `group_key` landen am Ende in einer "Sonstiges"-Gruppe.
 
 ---
 
@@ -29,7 +37,7 @@ Jedem Benutzer wird eine oder mehrere Rollen zugewiesen. Die Rolle bestimmt, was
 
 | Rolle | Beschreibung | Berechtigungen |
 |-------|-------------|----------------|
-| **super_admin** | Vollzugriff auf alles | Alle 106 |
+| **super_admin** | Vollzugriff auf alles | Alle 116 |
 | **admin** | Hub + Admin-Panel, ohne Rollenverwaltung | 95 |
 | **user** | Basis-Hub-Zugang (Termine, Kunden, Personal ansehen) | 13 |
 | **finance** | Spezialisierte Finanz-Berechtigungen | 8 |
@@ -84,8 +92,10 @@ Benutzer-Request
 | Datei | Zweck |
 |-------|-------|
 | `database/migrations/2026_03_29_153517_add_granular_hub_permissions.php` | Migration: Erstellt alle Permissions |
-| `database/seeders/PermissionSeeder.php` | Seeder: 106 Permissions + 4 Rollen-Zuweisungen |
+| `database/migrations/2026_05_10_230000_add_label_and_group_to_permissions.php` | Migration: Spalten `label` + `group_key` plus Backfill |
+| `database/seeders/PermissionSeeder.php` | Seeder: 116 Permissions + 4 Rollen-Zuweisungen |
 | `scripts/production-permissions-2026-03-29.sql` | Idempotentes SQL fuer Produktiv-Deployment |
+| `storage/app/permissions-label-group.sql` | Produktions-SQL fuer label/group_key-Spalten + Backfill |
 | `app/Providers/AppServiceProvider.php` | Gate::before fuer super_admin-Bypass |
 | `resources/views/layouts/partials/sidebar.blade.php` | Navigation mit @can-Direktiven |
 | `resources/views/layouts/partials/bottom-nav.blade.php` | Mobile Navigation mit @can-Direktiven |
@@ -116,7 +126,7 @@ Filament-Seiten mit `canAccess()`:
 
 ### Permission-Gruppen (vollstaendige Liste)
 
-Die 106 Permissions sind in 20 Gruppen organisiert. Die Gruppen-Definition befindet sich in `RoleForm::permissionGroups()` und wird sowohl fuer das Admin-Formular als auch als zentrale Referenz verwendet.
+Die 116 Permissions sind in 20 Gruppen organisiert. Die Gruppen-Reihenfolge und -Beschreibung wird in `RoleForm::groupMeta()` gepflegt; die Permissions selbst werden ueber `RoleForm::permissionGroups()` direkt aus der DB geladen (Spalten `group_key` + `label`).
 
 #### Systemzugriff (2)
 
@@ -427,34 +437,37 @@ Die Permission-Verwaltung verwendet **keine** Filament `->relationship()` auf de
 
 #### Neue Gruppe hinzufuegen
 
-1. In `RoleForm::permissionGroups()` einen neuen Eintrag ergaenzen:
+1. In `RoleForm::groupMeta()` einen neuen Eintrag ergaenzen (nur Anzeigename + Beschreibung, keine Permissions):
 
 ```php
 'neue_gruppe' => [
-    'label' => 'Gruppenname',
+    'label'       => 'Gruppenname',
     'description' => 'Kurzbeschreibung',
-    'permissions' => [
-        'permission_name' => 'Deutsche Beschreibung',
-    ],
 ],
 ```
 
-2. Die Permission muss in der Datenbank existieren (ueber Migration oder Seeder erstellen)
-3. `buildPermissionSections()` erzeugt die Section automatisch
+2. Die Permissions werden in der DB mit `group_key = 'neue_gruppe'` angelegt -- die Section erscheint automatisch.
+3. Wird eine Permission ohne passenden `group_key` angelegt, landet sie in der Fallback-Gruppe "Sonstiges" am Ende.
 
 ---
 
 ### Neue Permission hinzufuegen (Schritt fuer Schritt)
 
-1. **Migration erstellen**: Permission in der Datenbank anlegen
+1. **Migration erstellen**: Permission in der Datenbank anlegen -- inklusive `label` und `group_key`:
 
     ```php
-    Permission::firstOrCreate(['name' => 'neue_permission', 'guard_name' => 'web']);
+    Permission::firstOrCreate(
+        ['name' => 'neue_permission', 'guard_name' => 'web'],
+        ['label' => 'Deutsches Label', 'group_key' => 'kunden'],
+    );
     ```
 
-2. **Seeder aktualisieren**: In `PermissionSeeder.php` die Permission und Rollenzuweisung ergaenzen
+    !!! tip "Self-updating Rollen-Editor"
+        Sobald Migration und Backfill auf Produktion laufen, erscheint die Permission **automatisch** im Rollen-Editor in der zugewiesenen Gruppe. Es ist **keine** Aenderung an `RoleForm.php` mehr noetig.
 
-3. **RoleForm aktualisieren**: Permission der passenden Gruppe in `permissionGroups()` hinzufuegen
+2. **Seeder aktualisieren**: In `PermissionSeeder.php` die Permission und Rollenzuweisung ergaenzen (mit `label` + `group_key`).
+
+3. **(Optional) Neue Gruppe**: Falls die Permission zu einer neuen Gruppe gehoert, in `RoleForm::groupMeta()` einen Eintrag fuer Anzeigename + Beschreibung ergaenzen.
 
 4. **Route schuetzen**: In `routes/web.php` Middleware ergaenzen
 
@@ -480,11 +493,11 @@ Die Permission-Verwaltung verwendet **keine** Filament `->relationship()` auf de
     @endcan
     ```
 
-7. **Produktions-SQL erstellen**: Fuer das Deployment ein idempotentes SQL-Statement vorbereiten
+7. **Produktions-SQL erstellen**: Fuer das Deployment ein idempotentes SQL-Statement vorbereiten -- `label` und `group_key` nicht vergessen:
 
     ```sql
-    INSERT IGNORE INTO permissions (name, guard_name, created_at, updated_at)
-    VALUES ('neue_permission', 'web', NOW(), NOW());
+    INSERT IGNORE INTO permissions (name, guard_name, label, group_key, created_at, updated_at)
+    VALUES ('neue_permission', 'web', 'Deutsches Label', 'kunden', NOW(), NOW());
     ```
 
 ---

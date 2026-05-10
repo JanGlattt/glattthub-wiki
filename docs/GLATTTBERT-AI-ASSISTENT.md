@@ -99,8 +99,13 @@ Funktionen in der Sidebar:
 - **Suchfeld oben:** Live-Suche nach Konversations-Titel (300 ms debounce)
 - **„Neue Konversation":** startet einen frischen Chat
 - **Klick auf Eintrag:** lädt die Konversation in den Hauptbereich
-- **Hover → Mülleimer-Icon:** löscht die Konversation (mit Bestätigung)
+- **Pin-Icon (Hover):** Konversation oben anheften; angeheftete Konversationen erscheinen in einer eigenen Sektion **„Angeheftet“** ganz oben
+- **Stift-Icon (Hover):** Konversation umbenennen — Inline-Edit direkt im Sidebar-Eintrag
+- **Mülleimer-Icon (Hover):** Löschen mit **Bestätigungs-Modal** (verhindert versehentliches Löschen)
 - **Aktive Konversation:** wird mit goldenem Linksbalken hervorgehoben
+
+!!! tip "Sofort-Eintrag"
+    Beim Senden der ersten Nachricht erscheint die neue Konversation **sofort** in der Sidebar (mit Platzhalter-Titel), noch bevor die Antwort generiert ist. Der Auto-Titel wird nachgereicht, sobald die Antwort vorliegt.
 
 > **Sidebar-Standardverhalten:**  
 > Im normalen Modus geschlossen, im maximierten Modus offen.  
@@ -110,7 +115,11 @@ Funktionen in der Sidebar:
 
 Nach der ersten Antwort vergibt Bert automatisch einen passenden Titel
 (maximal 6 Wörter) für die Konversation — generiert über `gpt-4o-mini` als
-Hintergrund-Job. Bestehende Titel werden nicht überschrieben.
+Hintergrund-Job. Der Job erhält den **vollen Konversations-Kontext** (User-Frage + Assistant-Antwort), nicht nur die User-Eingabe, damit der Titel das tatsächliche Thema treffender beschreibt. Bestehende Titel werden nicht überschrieben.
+
+#### Quellen-Referenzen
+
+Wenn Bert auf Wissensdatenbank-Dokumente zugreift, erscheinen am Ende der Antwort kleine **hochgestellte Ziffern** (`¹`, `²`, `³`) als Verweise auf die zugrundeliegenden Quellen. Ein Klick darauf zeigt den jeweiligen Dokument-Titel.
 
 #### Loading-Phasen
 
@@ -131,7 +140,7 @@ Der Zustand wird in `localStorage` gemerkt.
 ### Berechtigungen
 
 Bert ist nur für Nutzer mit der Berechtigung **`use_ai_assistant`**
-verfügbar. Diese kann in der Personalverwaltung pro Rolle/Nutzer vergeben
+verfügbar (Gruppe **Systemzugriff** im Rollen-Editor). Diese kann in der Personalverwaltung pro Rolle/Nutzer vergeben
 werden (siehe [Berechtigungssystem](BERECHTIGUNGSSYSTEM.md)).
 
 ---
@@ -174,8 +183,8 @@ werden (siehe [Berechtigungssystem](BERECHTIGUNGSSYSTEM.md)).
 
 | Tabelle | Zweck |
 |---|---|
-| `ai_conversations` | Eine Konversation pro Nutzer-Chat. Felder: `id`, `user_id`, `title`, `openai_thread_id`, `last_activity_at`, `created_at`, `updated_at` |
-| `ai_messages` | Einzelne Nachrichten (User + Assistant). Felder: `conversation_id`, `role`, `content` |
+| `ai_conversations` | Eine Konversation pro Nutzer-Chat. Felder: `id`, `user_id`, `title`, `openai_thread_id`, `is_pinned`, `last_activity_at`, `created_at`, `updated_at` |
+| `ai_messages` | Einzelne Nachrichten (User + Assistant). Felder: `conversation_id`, `role`, `content`, `embeds` (JSON: Quellen-Referenzen) |
 | `knowledge_articles` | Synchronisierte Drive-Inhalte. Felder: `id`, `source_type`, `source_id`, `title`, `content`, `mime_type`, `openai_file_id`, `last_synced_at` |
 
 Berechtigung: Spatie Permission `use_ai_assistant`.
@@ -278,9 +287,14 @@ generateResponse($message)
 
 - Queue: **`push`**, tries 2, timeout 30 s
 - Modell: `gpt-4o-mini`, temperature 0.3, max 30 Tokens
+- Eingabe: **Voller Kontext** — erste User-Nachricht **plus** erste Assistant-Antwort (vorher: nur User-Frage). Damit treffen Titel den tatsächlichen Inhalt der Konversation.
 - System-Prompt: deutsch, max 6 Wörter, ohne Anführungszeichen
-- Strippt smart-quotes (`„"" '`), trailing periods, mb_substr 80
+- Strippt smart-quotes (`„“” ‘`), trailing periods, mb_substr 80
 - Wird **nur dispatched, wenn `$conversation->title` leer ist**
+
+### Branch-ID-Auflösung in AI-Tool-Calls
+
+Wenn Bert ein Tool aufruft, das einen `branch_id`-Parameter erwartet, akzeptiert die Tool-Implementierung sowohl die interne ID als auch den Standortnamen (z.B. `"München"`, `"Hamburg"`). Der Resolver in `OpenAiAssistantService` mappt frei eingegebene Standortbezeichnungen automatisch auf die korrekte `branches.id`. So kann Bert auch dann antworten, wenn er den Standortnamen aus dem Kontext bezieht statt die ID zu kennen.
 
 ### Markdown-Rendering
 
@@ -330,6 +344,7 @@ ausgeführt — manuell durch den User in PROD eingespielt.
 - **OpenAI-Run-Polling** ist sequenziell und blockiert PHP-Worker während der
   Wartezeit. Bei langen Antworten kann das einen FPM-Worker bis zu 60 s
   belegen. Bei Last: ggf. auf Server-Sent-Events / Streaming umstellen.
+- **MAMP-Timeout (lokal):** PHP/Apache cancellt Requests standardmäßig nach 30 s, was Bert-Antworten abbricht. Fix: `.htaccess` setzt `php_value max_execution_time 300` und `Timeout 300` für lokale Entwicklung.
 - **Vector-Store-Limit:** OpenAI erlaubt max. 10 000 Files pro Vector Store.
   Aktuell deutlich unter dem Limit.
 - **Token-Costs:** Auto-Title-Job ≈ 0,0001 € pro Konversation. Chat-Run mit
@@ -353,6 +368,13 @@ ausgeführt — manuell durch den User in PROD eingespielt.
 | 2026-05 | Phasen-Loading-Indicator (D10) |
 | 2026-05 | Markdown-Tabellen + GFM-Extension (D4) |
 | 2026-05 | Kontextbezogene Begrüßung (E2) |
+| 2026-05 | Greeting-Bubble über dem FAB für Erstkontakt |
+| 2026-05 | Sofort-Eintrag in Sidebar beim Senden (vor Antwort) |
+| 2026-05 | Pinnen, Umbenennen, Lösch-Bestätigung in Sidebar |
+| 2026-05 | Quellen-Referenzen als hochgestellte Ziffern (Spalte `embeds`) |
+| 2026-05 | Auto-Titel mit vollem Kontext (User-Frage + Antwort) |
+| 2026-05 | Branch-ID-Resolver für AI-Tool-Calls (Standortname → ID) |
+| 2026-05 | MAMP-Timeout-Fix via `.htaccess` (300 s) |
 
 ---
 
