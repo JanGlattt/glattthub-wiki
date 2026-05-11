@@ -134,6 +134,7 @@ nav:
     - Benachrichtigungen: NOTIFICATIONS.md
   - Berichte:
     - Reports-Modul: REPORTS-MODULE.md
+    - Eigenes Dashboard: CUSTOM-DASHBOARD.md
     - Verkaufsstatistik: SALES-STATISTICS.md
     - Ads-Analyse: ADS-ANALYSE.md
     - Mitarbeiterperformance: STAFF-PERFORMANCE.md
