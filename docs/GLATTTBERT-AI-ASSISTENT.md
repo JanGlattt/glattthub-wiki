@@ -34,10 +34,14 @@ dem glatttBert-Avatar. Ein Klick öffnet das Chat-Panel.
 | Element | Funktion |
 |---|---|
 | **FAB unten rechts** | Bert öffnen/schließen |
-| **Hamburger-Icon (Header links)** | Verlauf-Sidebar ein/ausblenden |
-| **Plus-Icon im Header** | Neue Konversation starten |
+| **Hamburger-Icon (Header links)** | Verlauf-Sidebar ein/ausblenden (nur im **maximierten Modus** sichtbar) |
+| **Plus-Icon im Header** | Neue Konversation starten (Textarea erhält automatisch den Fokus) |
 | **Maximieren-Icon** | Vollbild-Modus an/aus |
 | **X-Icon** | Chat schließen |
+
+!!! info "Minimierter Modus"
+    Im normalen (kleinen) Fenster wird der Sidebar-Toggle ausgeblendet. Falls die Sidebar beim Wechsel in den kleinen Modus offen war, schließt sie sich automatisch.
+    Im Header werden Name & Untertitel „glatttBert / AI Spezialist" ausgeblendet — stattdessen erscheint der Konversationstitel kompakt neben dem Avatar (zweizeilig, kleinere Schrift).
 
 #### Tastenkürzel
 
@@ -109,6 +113,7 @@ Funktionen in der Sidebar:
 
 > **Sidebar-Standardverhalten:**  
 > Im normalen Modus geschlossen, im maximierten Modus offen.  
+> Beim Wechsel von maximiert zu minimiert schließt sich die Sidebar automatisch.  
 > Der letzte Zustand wird in `localStorage` gespeichert.
 
 #### Auto-Titel
@@ -292,6 +297,45 @@ generateResponse($message)
 - Strippt smart-quotes (`„“” ‘`), trailing periods, mb_substr 80
 - Wird **nur dispatched, wenn `$conversation->title` leer ist**
 
+### Personen-Suche (search_client)
+
+Wenn in einer Nachricht ein Vor- und/oder Nachname vorkommt, geht Bert in **zwei Schritten** vor:
+
+1. **`search_client`** — durchsucht zuerst die lokale DB + Phorest nach einem Kunden mit diesem Namen.
+   - Bei Treffer → `get_client_details` + `get_client_notes` parallel, Notizen-Zusammenfassung oben
+   - Kein Treffer → weiter mit Schritt 2
+2. **`file_search`** — durchsucht die Wissensdatenbank (Mitarbeiter, Vermieter, interne Kontakte).
+   - Bei Treffer → daraus antworten
+   - Kein Treffer → „Person nicht gefunden"
+
+**Wichtig:** Bert fragt niemals zurück, ob jemand ein Kunde ist — er sucht selbst.
+
+#### Phorest Multi-Strategy-Suche
+
+Da Phorest **kein Partial-Matching** für `lastName` unterstützt, nutzt `HubToolExecutor::searchClient()` mehrere Suchstrategien parallel:
+
+```
+1. firstName + lastName (z.B. "Laura" + "Abing")
+2. lastName + firstName (vertauscht)
+3. firstName-only für jeden Namensteil
+```
+
+Dies entspricht der Logik aus `ContractController::searchClientsForContract()`. Fehler aus der lokalen DB und der Phorest-API werden separat gecatcht und — im Developer-Mode — als `debug_info` zurückgegeben.
+
+### Developer-Mode
+
+Wenn ein Nutzer das Wort **„debug"** oder **„developer mode"** in einer Nachricht verwendet, aktiviert Bert den Developer-Mode für diese Antwort:
+
+- Falls ein Tool-Call fehlgeschlagen ist und `debug_info` im Tool-Result enthalten war → gibt Bert den Fehlerdetail als Code-Block aus
+- Falls `debug_info` fehlt (Tool erfolgreich) → antwortet Bert: „Tool erfolgreich — kein Fehler aufgetreten."
+- Bert erfindet **niemals** Fehlermeldungen, wenn `debug_info` nicht vorhanden ist
+
+`debug_info` ist ein **flacher String** (kein JSON-Objekt), da OpenAI bei verschachtelten Objekten in Tool-Outputs einen `ValueError` wirft:
+
+```
+"LocalDB-Error: ... | Phorest-API-Errors: 2x | HTTP-Status: 500 | Searched-Params: [...]"
+```
+
 ### Branch-ID-Auflösung in AI-Tool-Calls
 
 Wenn Bert ein Tool aufruft, das einen `branch_id`-Parameter erwartet, akzeptiert die Tool-Implementierung sowohl die interne ID als auch den Standortnamen (z.B. `"München"`, `"Hamburg"`). Der Resolver in `OpenAiAssistantService` mappt frei eingegebene Standortbezeichnungen automatisch auf die korrekte `branches.id`. So kann Bert auch dann antworten, wenn er den Standortnamen aus dem Kontext bezieht statt die ID zu kennen.
@@ -344,7 +388,11 @@ ausgeführt — manuell durch den User in PROD eingespielt.
 - **OpenAI-Run-Polling** ist sequenziell und blockiert PHP-Worker während der
   Wartezeit. Bei langen Antworten kann das einen FPM-Worker bis zu 60 s
   belegen. Bei Last: ggf. auf Server-Sent-Events / Streaming umstellen.
-- **MAMP-Timeout (lokal):** PHP/Apache cancellt Requests standardmäßig nach 30 s, was Bert-Antworten abbricht. Fix: `.htaccess` setzt `php_value max_execution_time 300` und `Timeout 300` für lokale Entwicklung.
+- **MAMP-Timeout (lokal):** MAMP nutzt FastCGI — daher ignoriert Apache `php_value` aus der `.htaccess` und `set_time_limit()` ist wirkungslos. Fix: **direkt in der MAMP php.ini** `max_execution_time = 300` setzen:
+  ```
+  /Applications/MAMP/bin/php/php/conf/php.ini
+  ```
+  Danach MAMP-Apache neu starten. Die `.htaccess` enthält die Einstellung trotzdem als Fallback für mod_php-Umgebungen.
 - **Vector-Store-Limit:** OpenAI erlaubt max. 10 000 Files pro Vector Store.
   Aktuell deutlich unter dem Limit.
 - **Token-Costs:** Auto-Title-Job ≈ 0,0001 € pro Konversation. Chat-Run mit
@@ -375,6 +423,14 @@ ausgeführt — manuell durch den User in PROD eingespielt.
 | 2026-05 | Auto-Titel mit vollem Kontext (User-Frage + Antwort) |
 | 2026-05 | Branch-ID-Resolver für AI-Tool-Calls (Standortname → ID) |
 | 2026-05 | MAMP-Timeout-Fix via `.htaccess` (300 s) |
+| 2026-05 | Sidebar-Toggle im minimierten Modus ausgeblendet; Sidebar schließt beim Verkleinern |
+| 2026-05 | Header im minimierten Modus: nur Avatar + Konversationstitel (Name/Subtitle ausgeblendet) |
+| 2026-05 | Neue Konversation → Textarea erhält automatisch den Fokus (`conversation-started` Event) |
+| 2026-05 | Badges auf Deutsch: „Full Body" → „Ganzkörper", Status-Labels Aktiv/Storniert/Abgeschlossen |
+| 2026-05 | Personen-Suche sequentiell: zuerst `search_client`, dann `file_search` (statt parallel) |
+| 2026-05 | Phorest Multi-Strategy-Suche (firstName+lastName-Kombos) in `HubToolExecutor` |
+| 2026-05 | Developer-Mode: `debug_info` als flacher String (kein nested JSON), KI halluziniert keine Fehler |
+| 2026-05 | MAMP-Timeout-Fix korrigiert: `php.ini` direkt (FastCGI ignoriert `.htaccess` `php_value`) |
 
 ---
 
