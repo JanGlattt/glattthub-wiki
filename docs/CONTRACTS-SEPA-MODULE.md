@@ -2,6 +2,102 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 18.05.2026 — Zahlungsart wechseln (Direktzahlung → SEPA)
+
+### Für Nutzer (18.05.2026)
+
+Ein bestehender Direktzahlungs-Vertrag kann nachträglich auf SEPA-Lastschrift umgestellt werden. Das ist zum Beispiel nötig, wenn ein Kunde zunächst bar gezahlt hat, aber der Rest auf Ratenzahlung per Lastschrift umgestellt werden soll.
+
+#### Schritt-für-Schritt
+
+1. **Vertrag öffnen** — Vertragsdetailseite über Hub → Verträge aufrufen
+2. **Vertragsübersicht bearbeiten** — Im Abschnitt „Vertragsübersicht" auf den Bearbeiten-Button klicken
+3. **Zahlungsart ändern** — Im Dropdown „Zahlungsart" von „Direktzahlung" auf „SEPA-Lastschrift" wechseln
+4. **SEPA-Felder ausfüllen** — Folgende Felder müssen zusätzlich ausgefüllt werden:
+   - **Anzahl Raten** — wie viele SEPA-Abbuchungen es geben soll
+   - **Monatliche Rate (€)** — Betrag pro Rate
+   - **Erste Abbuchung** — Datum der ersten SEPA-Abbuchung
+5. **Speichern** — Auf „Speichern" klicken → Bestätigungs-Modal zeigt die Diff-Tabelle der Änderungen
+6. **Begründung eingeben** — Pflichtfeld (mind. 10 Zeichen), z.B. „Von Direkt auf Lastschrift"
+7. **Änderungen speichern** — Klick auf „Änderungen speichern" im Modal
+8. **SEPA-Mandat anlegen** — Danach im Tab „SEPA-Mandat" ein Mandat anlegen:
+   - Entweder per **„Mandat manuell anlegen"** (Kontodaten direkt eingeben)
+   - Oder per **GoCardless-Suche**, falls der Kunde bereits ein Mandat bei GoCardless hat
+
+> **Wichtig:** Der reine Zahlungsart-Wechsel erstellt **kein** SEPA-Mandat. Schritt 8 ist zwingend nötig, damit Abbuchungen stattfinden können.
+
+#### Was wird automatisch berechnet?
+
+Wenn sich `Anzahl Raten` oder `Preisliste` ändert, berechnet das System den vorgeschlagenen Gesamtpreis neu (basierend auf der Preisgruppe der Preisliste für die entsprechende Zonenzahl und Laufzeit). Der Gesamtwert muss ggf. noch manuell angepasst werden.
+
+---
+
+### Für Entwickler (18.05.2026)
+
+#### Geänderte Dateien
+
+| Datei | Änderung |
+|-------|----------|
+| `app/Models/PriceList.php` | Neue Methode `calculatePrice()` hinzugefügt |
+| `app/Models/Contract.php` | `calculateTotalValue()` übergibt jetzt `installment_count` |
+
+#### Bugfix: `PriceList::calculatePrice()` fehlte
+
+**Fehler:** `Call to undefined method App\Models\PriceList::calculatePrice()`
+
+**Ursache:** In `Contract::calculateTotalValue()` wurde `$this->priceList->calculatePrice($bodyZoneCount)` aufgerufen, obwohl diese Methode in `PriceList` gar nicht existierte. Der Fehler trat beim Wechsel der Zahlungsart auf, weil dabei auch `installment_count` geändert wird — was `calculateTotalValue()` auslöst.
+
+**Fix:** `calculatePrice(int $bodyZoneCount, ?int $months = null): int` in `PriceList` implementiert:
+
+```php
+public function calculatePrice(int $bodyZoneCount, ?int $months = null): int
+{
+    $effectiveZones = min($bodyZoneCount, $this->max_body_zones ?? $bodyZoneCount);
+    $query = $this->priceGroups()->where('body_zone_count', $effectiveZones);
+
+    if ($months !== null) {
+        $group = $query->where('months', $months)->first()
+            ?? $query->first(); // Fallback auf erste verfügbare Gruppe
+    } else {
+        $group = $query->first();
+    }
+
+    return $group ? $group->monthly_amount_cents * $group->months : 0;
+}
+```
+
+Außerdem übergibt `calculateTotalValue()` jetzt den `installment_count`:
+
+```php
+$basePrice = $this->priceList->calculatePrice($this->body_zone_count, $this->installment_count);
+```
+
+#### Ablauf im Controller: `updateContractOverview()`
+
+Route: `PATCH /hub/contracts/{contract}/overview`  
+Middleware: `can:edit_contract_data`
+
+1. Validiert Felder: `payment_method`, `installment_count`, `monthly_amount_cents`, `total_value_cents`, `first_payment_date`, `reason`
+2. Erkennt Änderungen per Feldvergleich
+3. Speichert alle geänderten Felder auf dem Vertrag
+4. Falls `installment_count` oder `price_list_id` geändert: ruft `calculateTotalValue()` auf und gibt Vorschlagswert zurück
+5. Schreibt jeden geänderten Wert als eigenen `ContractChange`-Eintrag (Typ: `field_updated`)
+
+#### Was das Bestätigungs-Modal zeigt
+
+Das Alpine.js-Frontend baut vor dem Speichern eine **Diff-Tabelle** aus den alten (PHP-Werten) und neuen (Formular-Werten) Feldern. Typische Einträge beim Zahlungsart-Wechsel:
+
+| Feld | Vorher | Nachher |
+|------|--------|---------|
+| Zahlungsart | Direktzahlung | SEPA-Lastschrift |
+| Startdatum | – | 2026-06-03 |
+| Anzahl Raten | – | 18 |
+| Erste Abbuchung | – | 2026-06-03 |
+
+Die Begründung ist Pflichtfeld (min. 10 Zeichen) und wird bei jedem `ContractChange` gespeichert.
+
+---
+
 ## Update 08.05.2026 — SEPA-Mandat manuell anlegen
 
 ### Für Nutzer (08.05.2026)
