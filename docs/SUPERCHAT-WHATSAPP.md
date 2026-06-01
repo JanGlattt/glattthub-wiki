@@ -136,7 +136,7 @@ Signierte Download-URLs von Superchat sind kurzlebig. Damit Bilder & Dateien
 im Kundendetail jederzeit funktionieren, läuft der Zugriff über einen
 Proxy-Endpunkt:
 
-- Route: `GET /hub/superchat/media/{messageId}` (`hub.superchat.media`)
+- Route: `GET /superchat/media/{messageId}` (`superchat.media`)
 - Controller-Methode: `SuperchatController::streamMedia()`
 - Logik: Message laden → `getFile(media_file_id)` → 302-Redirect auf die
   aktuelle signierte URL (`download_url` → `signed_url` → `url` → `file_url`,
