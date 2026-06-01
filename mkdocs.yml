@@ -132,6 +132,7 @@ nav:
   - Kommunikation:
     - E-Mail Versand: EMAIL-VERSAND.md
     - Benachrichtigungen: NOTIFICATIONS.md
+    - Superchat / WhatsApp: SUPERCHAT-WHATSAPP.md
   - Berichte:
     - Reports-Modul: REPORTS-MODULE.md
     - Eigenes Dashboard: CUSTOM-DASHBOARD.md
