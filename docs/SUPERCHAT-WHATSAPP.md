@@ -123,6 +123,33 @@ Wenn `file_url` beim Webhook noch `null` ist (häufig bei Bildern!), wird
 signierte URL + MIME-Typ nach. Schlägt der Lookup fehl, wird gewarnt aber
 der Webhook erfolgreich quittiert.
 
+!!! warning "Superchat liefert teils relative API-Pfade als `url`"
+    Der Endpunkt `GET /files/{id}` antwortet je nach Datei mit
+    `url: "/files/fi_xxx"` (relativer API-Pfad) statt einer signierten
+    Download-URL. Solche Werte werden **verworfen** (sonst 404 auf eigener
+    Domain). Stattdessen wird immer `media_file_id` gespeichert und das
+    Frontend bekommt eine Proxy-URL geliefert (siehe nächster Abschnitt).
+
+### Media-Proxy (immer frische signierte URL)
+
+Signierte Download-URLs von Superchat sind kurzlebig. Damit Bilder & Dateien
+im Kundendetail jederzeit funktionieren, läuft der Zugriff über einen
+Proxy-Endpunkt:
+
+- Route: `GET /hub/superchat/media/{messageId}` (`hub.superchat.media`)
+- Controller-Methode: `SuperchatController::streamMedia()`
+- Logik: Message laden → `getFile(media_file_id)` → 302-Redirect auf die
+  aktuelle signierte URL (`download_url` → `signed_url` → `url` → `file_url`,
+  nur wenn absolut)
+- Fallback: wenn keine `media_file_id` vorhanden ist und die alte
+  `media_url` absolut ist, wird darauf weitergeleitet
+- `SuperchatController::getClientConversations` liefert nicht mehr die
+  rohe `media_url`, sondern – falls `media_file_id` vorhanden – die
+  Proxy-Route
+
+Speicherspalte: `superchat_messages.media_file_id` (Migration
+`2026_06_01_120000_add_media_file_id_to_superchat_messages`).
+
 ### Webhook-Verarbeitung
 
 !!! warning "Cloud Run hat keinen Queue-Worker"
@@ -176,10 +203,6 @@ Im WhatsApp-Tab werden Debug-Logs mit Prefix `💬 WhatsApp:` ausgegeben:
 
 - Outbound-Nachrichten können nicht über glatttHub gesendet werden
   (read-only Chat-View). Antworten geschehen weiterhin in Superchat.
-- Die Files-API-URL ist eine kurzlebige Signed-URL – beim erneuten
-  Rendern wird sie **nicht** neu geholt. Bei Bedarf könnte die URL
-  on-demand in `SuperchatController::getClientConversations` aufgefrischt
-  werden.
 - Kontakt-Matching ist rein telefonbasiert; falls ein Kunde in Phorest
   eine andere Mobilnummer hat als in WhatsApp, gibt es keinen Match.
 
