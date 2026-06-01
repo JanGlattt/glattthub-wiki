@@ -153,6 +153,26 @@ signierte URL holt und den Browser dorthin weiterleitet:
 - `SuperchatController::getClientConversations` liefert dem Frontend
   ausschließlich die Proxy-Route, niemals die rohe Superchat-URL
 
+**Download-Modus** (`?download=1`): Wird der Proxy mit diesem Query-Param
+aufgerufen, holt der Controller die Datei serverseitig von der
+signierten CDN-URL und liefert sie mit `Content-Disposition: attachment`
+und originalem Dateinamen (`name` aus der getFile-Response) zurück.
+Der Browser speichert die Datei dann direkt, statt sie anzuzeigen.
+Genutzt für den Download-Button in der Lightbox sowie für
+Nicht-Bild-Anhänge (PDF, Audio, Video).
+
+### Frontend-Darstellung (Lightbox)
+
+Bilder im WhatsApp-Tab öffnen beim Klick eine Lightbox-Vorschau
+(`x-teleport="body"`) mit zwei Aktionen:
+
+- **Herunterladen** — verlinkt auf `/superchat/media/{id}?download=1`
+- **Schließen** — schließt das Overlay (auch via Klick auf Backdrop oder Escape)
+
+Styles: `.lightbox-glattt-backdrop`, `.lightbox-glattt`,
+`.lightbox-glattt-image`, `.lightbox-glattt-actions` in
+`public/css/theme_glattt.css`.
+
 Speicherspalte: `superchat_messages.media_file_id` (Migration
 `2026_06_01_120000_add_media_file_id_to_superchat_messages`). Die
 signierte URL wird bewusst NICHT gespeichert (läuft ohnehin nach
@@ -164,6 +184,22 @@ wenigen Minuten ab).
     Auf Cloud Run läuft nur der Web-Container. Webhook-Events MÜSSEN
     synchron via `ProcessSuperchatWebhookJob::dispatchSync($id)` verarbeitet
     werden, sonst bleiben sie ewig auf `status=pending`.
+
+### Zeitzonen
+
+Superchat liefert `created_at` / `updated_at` als ISO-8601 in UTC
+(Suffix `Z`, z. B. `2026-06-01T19:29:00.000Z`). Der Webhook-Handler
+parst diese explizit als UTC und konvertiert sie auf die App-Timezone
+`Europe/Berlin`, bevor sie über den `datetime`-Cast in MySQL gespeichert
+werden — sonst landet die UTC-Uhrzeit 1:1 in der DB und wird beim Lesen
+fälschlich als Europe/Berlin interpretiert (2 h Versatz im Sommer).
+
+Implementiert in `ProcessSuperchatWebhookJob::parseSuperchatTimestamp()`.
+Bestandsdaten werden via Migration
+`2026_06_01_140000_fix_superchat_messages_timezone` aus `raw_payload`
+re-parst und korrigiert; das Prod-Pendant liegt unter
+`scripts/production-superchat-timezone-fix-2026-06-01.sql` (nutzt
+`CONVERT_TZ('UTC','Europe/Berlin')` für DST-Korrektheit).
 
 ### Webhook-Signatur
 
