@@ -130,22 +130,25 @@ der Webhook erfolgreich quittiert.
     Domain). Stattdessen wird immer `media_file_id` gespeichert und das
     Frontend bekommt eine Proxy-URL geliefert (siehe nächster Abschnitt).
 
-### Media-Proxy (immer frische signierte URL)
+### Media-Proxy (Stream durch glatttHub)
 
-Signierte Download-URLs von Superchat sind kurzlebig. Damit Bilder & Dateien
-im Kundendetail jederzeit funktionieren, läuft der Zugriff über einen
-Proxy-Endpunkt:
+Superchat stellt **keine** signierten Download-URLs zur Verfügung — der
+einzige Weg, eine Datei zu laden, ist `GET /files/{id}` mit
+`X-API-KEY`-Header. Ein bloßer Browser-Redirect dorthin schlägt fehl
+(keine Auth-Header). Deshalb läuft der Zugriff über einen
+serverseitigen Stream-Proxy:
 
 - Route: `GET /superchat/media/{messageId}` (`superchat.media`)
 - Controller-Methode: `SuperchatController::streamMedia()`
-- Logik: Message laden → `getFile(media_file_id)` → 302-Redirect auf die
-  aktuelle signierte URL (`download_url` → `signed_url` → `url` → `file_url`,
-  nur wenn absolut)
-- Fallback: wenn keine `media_file_id` vorhanden ist und die alte
-  `media_url` absolut ist, wird darauf weitergeleitet
-- `SuperchatController::getClientConversations` liefert nicht mehr die
-  rohe `media_url`, sondern – falls `media_file_id` vorhanden – die
-  Proxy-Route
+- Logik: Message laden → `SuperchatApiService::downloadFile(media_file_id)`
+  (HTTP-Call mit `X-API-KEY` + `Accept: */*`) → Body 1:1 an Browser
+  ausliefern mit `Content-Type` aus der API-Antwort (Fallback: gespeicherter
+  `media_mime_type`)
+- Caching: `Cache-Control: private, max-age=300`
+- Fallback: wenn keine `media_file_id` aber eine absolute `media_url`
+  vorhanden ist, wird ein 302 dorthin geschickt (für Altdaten)
+- `SuperchatController::getClientConversations` liefert dem Frontend
+  ausschließlich die Proxy-Route, niemals die rohe Superchat-URL
 
 Speicherspalte: `superchat_messages.media_file_id` (Migration
 `2026_06_01_120000_add_media_file_id_to_superchat_messages`).
