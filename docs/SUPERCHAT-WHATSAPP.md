@@ -40,6 +40,23 @@ Oben rechts gibt es den Button **Aktualisieren**. Beim Öffnen des Tabs werden
 die Nachrichten ohnehin automatisch geladen – der Button hilft, wenn während
 des Gesprächs neue Nachrichten reinkommen.
 
+### Nachrichten senden
+
+Unterhalb des Chat-Verlaufs liegt ein **Composer**:
+
+- **Innerhalb 24 h** nach der letzten eingehenden Kundennachricht ist das
+  *Customer Service Window* offen — Freitext und Anhänge (Bilder
+  JPG/PNG/WEBP, PDF, MP4) dürfen versendet werden. Die Restlaufzeit wird
+  als Hinweis angezeigt.
+- **Außerhalb** ist der Freitext gesperrt. Es darf dann nur eine von
+  Meta genehmigte **WhatsApp-Vorlage** verschickt werden. Über den
+  Button *Vorlage* öffnet sich ein Dialog mit allen approved Templates,
+  Platzhaltern (`{{1}}`, `{{2}}` …) und einer Live-Vorschau.
+
+Gesendete Nachrichten erscheinen sofort als „in Zustellung" und werden
+über den Webhook-Echo automatisch in den finalen Status (`sent`,
+`delivered`, `read`, `failed`) gehoben.
+
 ### Was ist, wenn nichts angezeigt wird?
 
 Möglich sind drei Gründe:
@@ -200,6 +217,30 @@ Bestandsdaten werden via Migration
 re-parst und korrigiert; das Prod-Pendant liegt unter
 `scripts/production-superchat-timezone-fix-2026-06-01.sql` (nutzt
 `CONVERT_TZ('UTC','Europe/Berlin')` für DST-Korrektheit).
+
+### Composer (Nachrichten senden)
+
+- `app/Services/SuperchatComposerService.php` — kapselt 24h-Fenster-Check,
+  Template-Caching (5 min) und die Send-Logik mit optimistischem
+  Outbound-Shadow in `superchat_messages`.
+- Controller-Endpoints (`auth + check.hub`):
+    - `GET  /superchat/composer-state` — liefert `can_freeform`,
+      `window_expires_at`, aktiven `channel_id`, Liste approved
+      WhatsApp-Templates (mit `{{n}}`-Variablen).
+    - `POST /superchat/send` — Body: `{phorest_client_id, kind: text|file|template, ...}`.
+      `text`/`file` werfen **409** wenn das 24h-Fenster zu ist.
+    - `POST /superchat/upload` — Multipart-Upload, akzeptiert nur
+      `image/jpeg|png|webp`, `application/pdf`, `video/mp4` (max 16 MB),
+      liefert `file_id` für anschließendes `kind=file`-Send.
+- 24h-Fenster-Berechnung: `max(external_created_at) WHERE direction='inbound'`
+  jünger als 24 h.
+- Aktiver Kanal: jüngste Message mit gesetzter `superchat_channel_id`
+  des Kontakts (Multi-Channel-Kunden landen auf dem zuletzt genutzten
+  Kanal).
+- Optimistisches UI: nach erfolgreichem `sendMessage()` wird ein
+  Shadow-Record mit `direction=outbound, status=sending` geschrieben.
+  Der reguläre Webhook-Pfad upsertet später per `superchat_message_id`
+  und hebt den Status.
 
 ### Webhook-Signatur
 
