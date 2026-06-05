@@ -1,5 +1,10 @@
 # Superchat / WhatsApp-Integration
 
+!!! info "Verwandte Seite"
+    Die Verwaltung der Superchat-Kontakte, der automatische Sync und die
+    Webhook-basierte Verknüpfung sind in einer eigenen Seite dokumentiert:
+    [**Superchat-Kontakte & Sync →**](SUPERCHAT-KONTAKTE.md)
+
 Die Superchat-Integration verbindet WhatsApp-Konversationen aus dem
 [Superchat](https://www.superchat.de) Posteingang mit den Phorest-Kunden in
 glatttHub. Im Kundendetail steht ein eigener Tab **WhatsApp** zur Verfügung,
