@@ -62,15 +62,46 @@ Gesendete Nachrichten erscheinen sofort als „in Zustellung" und werden
 über den Webhook-Echo automatisch in den finalen Status (`sent`,
 `delivered`, `read`, `failed`) gehoben.
 
+### Neue Konversation starten
+
+Oben rechts im WhatsApp-Tab gibt es neben **Aktualisieren** auch den Button
+**Neue Konversation**. Dieser öffnet ein Modal mit zwei Schritten:
+
+1. **Kanal (Standort) wählen** — Dropdown zeigt alle verknüpften WhatsApp-Kanäle
+   mit dem Standortnamen (z. B. „Hannover", „Bielefeld", „Osnabrück") statt
+   der rohen Telefonnummer.
+2. **Vorlage wählen** — nach Kanalwahl lädt das Modal alle genehmigten
+   WhatsApp-Templates für diesen Kanal. Platzhalter (`{{1}}`, `{{2}}` …)
+   werden als Eingabefelder dargestellt; eine Live-Vorschau zeigt den
+   ausgefüllten Text.
+
+Nach dem Absenden:
+- Gibt es noch keinen Superchat-Kontakt für den Kunden, wird er anhand der
+  Phorest-Mobilnummer gesucht (E.164-normalisiert) oder neu angelegt.
+- Die erste Nachricht erscheint sofort im Chat (kein Warten auf Webhook).
+- Der Button ist **immer** sichtbar — auch wenn bereits Konversationen
+  existieren — damit eine zweite Konversation über einen anderen Kanal
+  (anderen Standort) gestartet werden kann.
+
+### Was wird im Konversations-Header angezeigt?
+
+- **Bei mehreren Konversationen**: ein Dropdown zum Wechsel zwischen den
+  Konversationen. Jede Option zeigt Standortname + Datum.
+- **Bei genau einer Konversation**: ein Info-Badge (z. B. `Hannover · 08.06.2026`)
+  direkt neben dem Kundennamen, damit immer erkennbar ist, über welchen Kanal
+  der Chat läuft.
+
 ### Was ist, wenn nichts angezeigt wird?
 
 Möglich sind drei Gründe:
 
 1. **„Kein Superchat-Kontakt verknüpft"** → Für den Kunden gibt es in Superchat
-   keinen Kontakt mit passender Telefonnummer. Verknüpfung passiert beim
-   Sync-Job über die Phorest-Mobilnummer (normalisiert auf E.164).
+   keinen Kontakt mit passender Telefonnummer. Über **Neue Konversation**
+   kann direkt eine erste Nachricht gesendet werden — dabei wird der Kontakt
+   automatisch angelegt und verknüpft.
 2. **„Keine Konversationen vorhanden"** → Es gab noch nie eine
-   WhatsApp-Konversation mit diesem Kunden.
+   WhatsApp-Konversation mit diesem Kunden. Über **Neue Konversation**
+   lässt sich direkt eine starten.
 3. **Phorest Client ID fehlt** → Der Kunde wurde nicht über Phorest
    importiert; bitte zuerst den Kunden in Phorest anlegen und neu syncen.
 
@@ -232,11 +263,18 @@ re-parst und korrigiert; das Prod-Pendant liegt unter
     - `GET  /superchat/composer-state` — liefert `can_freeform`,
       `window_expires_at`, aktiven `channel_id`, Liste approved
       WhatsApp-Templates (mit `{{n}}`-Variablen).
+    - `GET  /superchat/channels` — alle WhatsApp-Kanäle mit Standortname
+      (aus `inbox.name`, z. B. „Hannover"). Genutzt beim Modal *Neue Konversation*.
+    - `GET  /superchat/templates?channel_id=…` — approved WhatsApp-Templates
+      für einen bestimmten Kanal (kein Kontakt-Link nötig, daher für
+      *Neue Konversation* besser geeignet als `composer-state`).
     - `POST /superchat/send` — Body: `{phorest_client_id, kind: text|file|template, ...}`.
       `text`/`file` werfen **409** wenn das 24h-Fenster zu ist.
     - `POST /superchat/upload` — Multipart-Upload, akzeptiert nur
       `image/jpeg|png|webp`, `application/pdf`, `video/mp4` (max 16 MB),
       liefert `file_id` für anschließendes `kind=file`-Send.
+    - `POST /superchat/start-conversation` — Startet eine neue Konversation
+      für einen Kunden ohne oder mit bestehendem Kontakt-Link (siehe unten).
 - 24h-Fenster-Berechnung: `max(external_created_at) WHERE direction='inbound'`
   jünger als 24 h.
 - Aktiver Kanal: jüngste Message mit gesetzter `superchat_channel_id`
@@ -246,6 +284,27 @@ re-parst und korrigiert; das Prod-Pendant liegt unter
   Shadow-Record mit `direction=outbound, status=sending` geschrieben.
   Der reguläre Webhook-Pfad upsertet später per `superchat_message_id`
   und hebt den Status.
+
+### Neue Konversation starten (`start-conversation`)
+
+`POST /superchat/start-conversation` wird vom Modal *Neue Konversation starten*
+aufgerufen. Der Ablauf im `SuperchatController::startConversation()`:
+
+1. **Telefonnummer normalisieren** — `SuperchatApiService::normalizePhone()`
+   wandelt lokale Formate (`0151…`) in E.164 (`+4915…`) um.
+2. **Kontakt suchen** — `POST /contacts/search` mit
+   `{query: {value: [{field: "phone", operator: "=", value: "+49…"}]}}`.
+   Falls nicht gefunden: zusätzlich ohne führendes `+` probieren.
+3. **Kontakt anlegen** — wenn kein Treffer: `POST /contacts` mit
+   `handles: [{type: "phone", value: "+49…"}]` (type muss `"phone"` sein,
+   nicht `"whatsapp"`).
+4. **409-Fallback** — antwortet Superchat mit 409 (Kontakt existiert bereits),
+   wird nochmals gesucht (Formatproblem beim ersten Versuch).
+5. **Link speichern** — neue Zeile in `superchat_contact_links`.
+6. **Template senden** — `POST /messages` mit `content.type = whats_app_template`.
+7. **Shadow-Record** — die gesendete Nachricht wird sofort in
+   `superchat_messages` gespeichert (mit dem aufgelösten Template-Text),
+   damit sie direkt im Chat erscheint ohne auf den Webhook warten zu müssen.
 
 ### Webhook-Signatur
 
@@ -291,10 +350,10 @@ Im WhatsApp-Tab werden Debug-Logs mit Prefix `💬 WhatsApp:` ausgegeben:
 
 ### Bekannte Einschränkungen
 
-- Outbound-Nachrichten können nicht über glatttHub gesendet werden
-  (read-only Chat-View). Antworten geschehen weiterhin in Superchat.
 - Kontakt-Matching ist rein telefonbasiert; falls ein Kunde in Phorest
-  eine andere Mobilnummer hat als in WhatsApp, gibt es keinen Match.
+  eine andere Mobilnummer hat als in WhatsApp, gibt es keinen automatischen
+  Match. Über *Neue Konversation* kann die Verknüpfung manuell ausgelöst
+  werden.
 
 ### Produktiv-DB-Migration
 

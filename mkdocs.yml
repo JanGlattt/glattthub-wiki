@@ -120,6 +120,8 @@ nav:
     - glattt-Pakete & Verträge: glatttPakete.md
     - GoCardless API: GOCARDLESS-API.md
     - Gutscheine: GUTSCHEINE-MODULE.md
+  - Laser:
+    - Laser-Modul: LASER-MODUL.md
   - Institute & Personal:
     - Institut-Modul: INSTITUTE-MODULE.md
     - Institut Bild-Upload: INSTITUTE-IMAGE-UPLOAD.md
