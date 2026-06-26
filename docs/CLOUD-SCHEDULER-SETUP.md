@@ -268,7 +268,18 @@ gcloud scheduler jobs create http sync-client-statistics \
   --description="Nightly delta sync of client statistics (demographics, contracts, consultations)" \
   --attempt-deadline="1800s"
 
-# Job 9: Sync Knowledge Base (Nightly Delta-Sync Drive → OpenAI Vector Store)
+# Job 9: Sync Superchat Consultation Dates (Nightly)
+gcloud scheduler jobs create http sync-superchat-consultation-dates \
+  --location=europe-west3 \
+  --schedule="15 3 * * *" \
+  --uri="https://DEINE-CLOUD-RUN-URL/api/cron/sync-superchat-consultation-dates" \
+  --http-method=POST \
+  --headers="X-Cron-Token=DEIN_KOPIERTER_TOKEN,Content-Type=application/json" \
+  --time-zone="Europe/Zurich" \
+  --description="Setzt/entfernt Superchat Beratungstermin anhand aktueller (nicht stornierter) Beratungen" \
+  --attempt-deadline="1800s"
+
+# Job 10: Sync Knowledge Base (Nightly Delta-Sync Drive → OpenAI Vector Store)
 gcloud scheduler jobs create http sync-knowledge-base \
   --location=europe-west3 \
   --schedule="0 3 * * *" \
@@ -295,6 +306,7 @@ gcloud scheduler jobs run process-queue --location=europe-west3
 gcloud scheduler jobs run process-push-automations --location=europe-west3
 gcloud scheduler jobs run sync-client-courses --location=europe-west3
 gcloud scheduler jobs run sync-client-statistics --location=europe-west3
+gcloud scheduler jobs run sync-superchat-consultation-dates --location=europe-west3
 gcloud scheduler jobs run sync-knowledge-base --location=europe-west3
 ```
 
@@ -340,6 +352,12 @@ curl -X POST \
   -H "Content-Type: application/json" \
   https://glattthub-web-99200336070.europe-west3.run.app/api/cron/sync-client-statistics
 
+# Sync Superchat Consultation Dates (mit Auth)
+curl -X POST \
+  -H "X-Cron-Token: 07dc96b65a52073fdf4eaa959d676980dc3ccb5334326f1406640335aab66718" \
+  -H "Content-Type: application/json" \
+  https://glattthub-web-99200336070.europe-west3.run.app/api/cron/sync-superchat-consultation-dates
+
 # Sync Knowledge Base / GlatttBert (mit Auth)
 curl -X POST \
   -H "X-Cron-Token: 07dc96b65a52073fdf4eaa959d676980dc3ccb5334326f1406640335aab66718" \
@@ -370,6 +388,7 @@ gcloud logging read 'resource.type="cloud_run_revision" AND textPayload:"Cron:"'
 | `/api/cron/process-push-automations` | POST | Prüft/triggert zeitbasierte Push-Automations |
 | `/api/cron/sync-client-courses` | POST | Sync Client Courses / glattt-Pakete (täglich) |
 | `/api/cron/sync-client-statistics` | POST | Nightly Delta-Sync Client Statistics (täglich) |
+| `/api/cron/sync-superchat-consultation-dates` | POST | Setzt/löscht Superchat-Attribut "Beratungstermin" täglich um 03:15 |
 | `/api/cron/sync-knowledge-base` | POST | Nightly Delta-Sync der Wissensdatenbank Drive → OpenAI Vector Store (täglich um 03:00) |
 
 ## Sicherheit
