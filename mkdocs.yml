@@ -93,6 +93,7 @@ nav:
   - Termine:
     - Terminübersicht: APPOINTMENTS-OVERVIEW.md
     - Terminansicht: APPOINTMENT-VIEW.md
+    - Termin buchen (ideale Slots): TERMIN-BUCHUNG-IDEAL-SLOT.md
     - Terminstatistik: APPOINTMENT-STATISTICS.md
     - Buchungsvorlauf-Analyse: BOOKING-LEAD-TIME-ANALYSIS.md
     - Stornierte Termine: CANCELLED-APPOINTMENTS-ANALYSIS.md
