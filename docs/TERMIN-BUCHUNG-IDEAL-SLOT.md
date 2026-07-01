@@ -50,6 +50,7 @@ Im sich öffnenden Modal legt der Mitarbeiter fest:
 1. **Institut** (vorausgewählt, änderbar)
 2. **Frühestens ab** – Datum, ab dem gesucht wird
 3. **Nur Termine ohne Lücke anbieten** (Toggle, standardmäßig an) – steuert den „grün/grau"-Filter (siehe unten)
+4. **Services für diesen Termin** – Checkbox-Liste aller aktiven Paket-Services + Extrazeit des Kunden (`BookingService::getServiceOptions()`, identisch zur Auswahl im Buchungsmodul für Mitarbeiter). **Standardmäßig sind alle Positionen ausgewählt** (alle aktiven Abos + ggf. Extrazeit); der Mitarbeiter kann einzelne bewusst **abwählen** oder wieder **zubuchen**, bevor der Link generiert wird. Die Desinfektion wird beim Buchen immer automatisch ergänzt und ist kein Auswahlpunkt. Ohne mindestens einen ausgewählten Service kann kein Link erstellt werden. Ein Instituts-Wechsel lädt die Service-Liste neu (andere Service-IDs/Verfügbarkeiten je Institut).
 
 Nach Klick auf „Link erstellen" wird der Link angezeigt mit **„Kopieren"**-Button und, falls eine Mobilnummer beim Kunden hinterlegt ist, einem **„Per WhatsApp senden"**-Button (öffnet `wa.me` mit vorausgefüllter Nachricht in WhatsApp/WhatsApp Web – keine Superchat-API-Integration, funktioniert immer, unabhängig vom 24h-Antwortfenster).
 
@@ -59,7 +60,7 @@ Im Slot-Kalender sind Slots mit `is_adjacent = true` **grün hervorgehoben** (`s
 
 **Was sieht der Kunde?**
 
-Eine schlanke, eigenständige Seite (`/shared/booking/{token}`, kein Login, kein Hub-Layout): Datum-Auswahl (nicht vor das festgelegte Mindestdatum), darunter die freien Slots als Liste. Institut und Services sind **fest vorgegeben** und nicht änderbar. Nach Klick auf einen Slot wird sofort gebucht bzw. der alte Termin verlegt; der Link ist danach verbraucht.
+Eine schlanke, eigenständige Seite (`/shared/booking/{token}`, kein Login, kein Hub-Layout): Datum-Auswahl (nicht vor das festgelegte Mindestdatum), darunter die freien Slots als Liste. Institut und Services (exakt die beim Link-Erstellen ausgewählten Positionen + Desinfektion) sind **fest vorgegeben** und nicht änderbar. Nach Klick auf einen Slot wird sofort gebucht bzw. der alte Termin verlegt; der Link ist danach verbraucht.
 
 **Sicherheit & Gültigkeit:** Identisches Muster wie beim Formular-Teilen – 64-Zeichen-Token, **48 Stunden gültig**, **einmalig nutzbar** (verfällt sofort nach erfolgreicher Buchung). Bei ungültigem/abgelaufenem/bereits genutztem Link sieht der Kunde eine passende Fehlermeldung statt eines Fehlers.
 
@@ -206,7 +207,7 @@ app/Http/Controllers/SharedBookingController.php   # Rendert nur die Wrapper-Sei
 | `resources/views/livewire/shared/booking-page.blade.php` | Öffentliche Buchungs-UI (Livewire, volle Seite) |
 | `resources/views/shared/booking-fill.blade.php` | Standalone-Wrapper (kein Hub-Layout, `noindex`) |
 
-**`BookingShareToken`** (Tabelle `booking_share_tokens`): `token` (64 Zeichen), `mode` (`new`/`reschedule`), `client_id`, `client_name`, `client_mobile`, `branch_id`, `old_appointment_ids` (JSON, nur bei Verlegung), `current_label`, `min_date`, `only_adjacent` (bool), `expires_at`, `accessed_at`, `booked_at`, `booking_result` (JSON). Methoden analog `FormShareToken`: `generateToken()`, `isExpired()`, `isBooked()`, `isValid()`, `markAccessed()`, `markBooked()`, `getShareUrl()`.
+**`BookingShareToken`** (Tabelle `booking_share_tokens`): `token` (64 Zeichen), `mode` (`new`/`reschedule`), `client_id`, `client_name`, `client_mobile`, `branch_id`, `old_appointment_ids` (JSON, nur bei Verlegung), `current_label`, `min_date`, `only_adjacent` (bool), `service_ids` (JSON, nullable – vom Mitarbeiter beim Erstellen ausgewählte Service-IDs; `null`/leer = Fallback auf automatische Auflösung aller aktiven Pakete für Alt-Links), `expires_at`, `accessed_at`, `booked_at`, `booking_result` (JSON). Methoden analog `FormShareToken`: `generateToken()`, `isExpired()`, `isBooked()`, `isValid()`, `markAccessed()`, `markBooked()`, `getShareUrl()`.
 
 **`BookingService::findSuggestions()`** hat einen fünften, optionalen Parameter `bool $onlyAdjacentSlots = false` bekommen (backward-kompatibel). Ist er `true`, werden `suggestionDays` und die flache `suggestions`-Liste **nach** dem Bauen gefiltert (nur `is_adjacent === true`), bevor die View-Indizes vergeben werden – dadurch bleiben Index und Anzeige konsistent, ohne die Slot-Engine selbst anzufassen.
 
@@ -224,7 +225,7 @@ Recht `view_booking` (Migration `2026_06_28_100000_add_view_booking_permission.p
 - `tests/Unit/Booking/BookingShareTokenTest.php` – Token-Model (Gültigkeit, Ablauf, Einlösung).
 - `tests/Feature/Booking/BookingServiceTest.php` – End-to-End mit gemocktem `PhorestApiService` (Slot-Findung, Buchungs-Payload mit allen Services + Desinfektion, `onlyAdjacentSlots`-Filter).
 - `tests/Feature/Booking/RescheduleSlotModalTest.php` – Verlegen-Modal (Öffnen lädt Services + Slots, Buchen storniert per `cancelAppointment` und feuert `appointment-rescheduled`).
-- `tests/Feature/Booking/BookingShareLinkModalTest.php` – Link-Erstellen-Modal (Token-Felder, wa.me-Link-Generierung).
+- `tests/Feature/Booking/BookingShareLinkModalTest.php` – Link-Erstellen-Modal (Token-Felder, wa.me-Link-Generierung, Service-Vorauswahl, manuelles Ab-/Zubuchen, Validierung bei leerer Auswahl).
 - `tests/Feature/Booking/SharedBookingPageTest.php` – Öffentliche Buchungsseite (ungültig/abgelaufen/eingelöst, Slot-Filter, erfolgreiche Buchung markiert Token als eingelöst).
 
 ```bash
