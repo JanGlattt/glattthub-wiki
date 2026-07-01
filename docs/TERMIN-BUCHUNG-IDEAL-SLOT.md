@@ -19,7 +19,7 @@ Statt zu fragen „gleicher Tag, gleiche Zeit in 8 Wochen?" sucht das Modul im K
 
 ### Wo finde ich das Modul?
 
-Das Verlegen ist direkt im **Kundenprofil → Tab „Termine"** über den Button **„Verlegen"** bei jedem zukünftigen Termin erreichbar.
+Das Verlegen ist direkt im **Kundenprofil → Tab „Termine"** über den Button **„Verlegen"** bei jedem zukünftigen, nicht stornierten Termin erreichbar. Bei bereits stornierten oder vergangenen Terminen werden „Verlegen" und „Link" ausgeblendet – ein stornierter Termin kann nicht mehr verlegt werden.
 
 > Die eigenständige Buchungsseite (`Hub → Termin buchen`) existiert noch im Code, ist aber aus der Navigation entfernt. Der primäre Weg ist ausschließlich das Modal auf der Kundenseite.
 
@@ -44,10 +44,10 @@ Zusätzlich zur Buchung durch Mitarbeiter kann ein **Self-Service-Link** an den 
 
 Im Kundenprofil → Tab **„Termine"**:
 - **Neuer Termin**: Button **„Link erstellen"** in der Karte „Selfservice-Terminbuchung" (immer sichtbar).
-- **Verlegen**: Button **„Link"** (Kettensymbol) bei jedem zukünftigen Termin, direkt neben „Verlegen".
+- **Verlegen**: Button **„Link"** (Kettensymbol) bei jedem zukünftigen, nicht stornierten Termin, direkt neben „Verlegen".
 
 Im sich öffnenden Modal legt der Mitarbeiter fest:
-1. **Institut** (vorausgewählt, änderbar)
+1. **Institut** – bei „Verlegen" das Institut des bestehenden Termins, bei „Neuer Termin" das Institut des letzten bekannten Termins bzw. (falls der Kunde noch keinen Termin hatte) `lastVisitedBranchId`/`creatingBranchId` aus den Phorest-Kundendaten. Immer frei änderbar. Solange kein Institut gewählt ist, zeigt die Service-Liste weiter unten den Hinweis „Bitte zuerst ein Institut auswählen" statt einer irreführenden „nicht gefunden"-Meldung.
 2. **Frühestens ab** – Datum, ab dem gesucht wird
 3. **Nur Termine ohne Lücke anbieten** (Toggle, standardmäßig an) – steuert den „grün/grau"-Filter (siehe unten)
 4. **Services für diesen Termin** – Checkbox-Liste aller aktiven Paket-Services + Extrazeit des Kunden (`BookingService::getServiceOptions()`, identisch zur Auswahl im Buchungsmodul für Mitarbeiter). **Standardmäßig sind alle Positionen ausgewählt** (alle aktiven Abos + ggf. Extrazeit); der Mitarbeiter kann einzelne bewusst **abwählen** oder wieder **zubuchen**, bevor der Link generiert wird. Die Desinfektion wird beim Buchen immer automatisch ergänzt und ist kein Auswahlpunkt. Ohne mindestens einen ausgewählten Service kann kein Link erstellt werden. Ein Instituts-Wechsel lädt die Service-Liste neu (andere Service-IDs/Verfügbarkeiten je Institut).
@@ -60,7 +60,7 @@ Im Slot-Kalender sind Slots mit `is_adjacent = true` **grün hervorgehoben** (`s
 
 **Was sieht der Kunde?**
 
-Eine schlanke, eigenständige Seite (`/shared/booking/{token}`, kein Login, kein Hub-Layout): Datum-Auswahl (nicht vor das festgelegte Mindestdatum), darunter die freien Slots als Liste. Institut und Services (exakt die beim Link-Erstellen ausgewählten Positionen + Desinfektion) sind **fest vorgegeben** und nicht änderbar. Nach Klick auf einen Slot wird sofort gebucht bzw. der alte Termin verlegt; der Link ist danach verbraucht. Auf der Erfolgsseite kann der Kunde per **„Zum Kalender hinzufügen"**-Button eine `.ics`-Datei herunterladen (Datum, Uhrzeit, Dauer, Institutsadresse als Ort – bewusst **ohne** die einzelnen Service-Namen, um keine Behandlungsdetails im Kalendereintrag preiszugeben).
+Eine schlanke, eigenständige Seite (`/shared/booking/{token}`, kein Login, kein Hub-Layout): Datum-Auswahl (nicht vor das festgelegte Mindestdatum), darunter die freien Slots als Liste. Institut und Services (exakt die beim Link-Erstellen ausgewählten Positionen + Desinfektion) sind **fest vorgegeben** und nicht änderbar. Bei einer Verlegung (`mode=reschedule`) wird der zu verlegende Termin oben als **„Zu verlegender Termin"**-Badge angezeigt (statt reinem Fließtext). Nach Klick auf einen Slot wird sofort gebucht bzw. der alte Termin verlegt; der Link ist danach verbraucht. Auf der Erfolgsseite kann der Kunde per **„Zum Kalender hinzufügen"**-Button eine `.ics`-Datei herunterladen (Datum, Uhrzeit, Dauer, Institutsadresse als Ort – bewusst **ohne** die einzelnen Service-Namen, um keine Behandlungsdetails im Kalendereintrag preiszugeben).
 
 **Sicherheit & Gültigkeit:** Identisches Muster wie beim Formular-Teilen – 64-Zeichen-Token, **48 Stunden gültig**, **einmalig nutzbar** (verfällt sofort nach erfolgreicher Buchung). Bei ungültigem/abgelaufenem/bereits genutztem Link sieht der Kunde eine passende Fehlermeldung statt eines Fehlers.
 
@@ -215,6 +215,10 @@ app/Http/Controllers/SharedBookingController.php   # Rendert nur die Wrapper-Sei
 
 **WhatsApp-Versand ohne Superchat-Integration:** Bewusste, pragmatische Entscheidung – statt der Superchat-API (approved Templates, 24h-Antwortfenster) wird ein einfacher `https://wa.me/<Telefonnummer>?text=<Nachricht>`-Deep-Link gebaut (`SuperchatApiService::normalizePhone()` zur E.164-Normalisierung wiederverwendet). Funktioniert ohne Einschränkungen, WhatsApp Web/App öffnet sich mit vorausgefüllter Nachricht, der Mitarbeiter klickt final auf Senden.
 
+**Kopieren-Button ohne HTTPS:** `navigator.clipboard` ist in unsicheren Kontexten (z.B. `http://*.local` ohne TLS, wie in der lokalen Entwicklung) `undefined`. Der „Kopieren"-Button im Link-Erstellen-Modal prüft das und nutzt als Fallback ein verstecktes `<input>` + `document.execCommand('copy')` (gleiches Muster wie in `public/js/components/form-fill.js`).
+
+**Kalendereintrag (.ics) auf der Erfolgsseite:** `BookingPage::downloadIcs()` erzeugt beim Klick auf „Zum Kalender hinzufügen" eine `.ics`-Datei als Datei-Download (`response()->streamDownload()`). Enthalten sind `DTSTART`/`DTEND` (aus `bookedDate` + `bookedStart` + `durationMinutes`, `Europe/Berlin` → UTC konvertiert), `SUMMARY` („Termin bei {Institut}") und `LOCATION` (Institutsadresse, zusammengesetzt aus den Phorest-Branch-Feldern `streetAddress1`, `postalCode`, `city` – dabei wird eine von Phorest teils bereits im `city`-Feld vorangestellte PLZ per Regex entfernt, um keine doppelte PLZ zu erzeugen). Bewusst **keine** Service-Namen in Titel/Beschreibung. Der Dateiname enthält Datum und Uhrzeit (`termin-{Y-m-d}-{Hi}.ics`). Werte werden nach RFC 5545 escaped (Kommas, Semikolons, Backslashes, Zeilenumbrüche) – die Escape-Funktion verkettet dabei erst den Zeilenumbruch-Ersatz und escaped danach, nicht umgekehrt (früherer Bug führte sonst zu doppelten Inhalten im Kalendereintrag).
+
 ### Berechtigung
 
 Recht `view_booking` (Migration `2026_06_28_100000_add_view_booking_permission.php`, `PermissionSeeder`, Produktiv-SQL `database/sql/booking_module_production.sql`). Zugewiesen an `super_admin`, `admin`, `user`.
@@ -226,7 +230,7 @@ Recht `view_booking` (Migration `2026_06_28_100000_add_view_booking_permission.p
 - `tests/Feature/Booking/BookingServiceTest.php` – End-to-End mit gemocktem `PhorestApiService` (Slot-Findung, Buchungs-Payload mit allen Services + Desinfektion, `onlyAdjacentSlots`-Filter).
 - `tests/Feature/Booking/RescheduleSlotModalTest.php` – Verlegen-Modal (Öffnen lädt Services + Slots, Buchen storniert per `cancelAppointment` und feuert `appointment-rescheduled`).
 - `tests/Feature/Booking/BookingShareLinkModalTest.php` – Link-Erstellen-Modal (Token-Felder, wa.me-Link-Generierung, Service-Vorauswahl, manuelles Ab-/Zubuchen, Validierung bei leerer Auswahl).
-- `tests/Feature/Booking/SharedBookingPageTest.php` – Öffentliche Buchungsseite (ungültig/abgelaufen/eingelöst, Slot-Filter, erfolgreiche Buchung markiert Token als eingelöst).
+- `tests/Feature/Booking/SharedBookingPageTest.php` – Öffentliche Buchungsseite (ungültig/abgelaufen/eingelöst, Slot-Filter, erfolgreiche Buchung markiert Token als eingelöst, `.ics`-Download enthält Ort/Dauer aber keine Servicenamen und keine doppelten Inhalte, `downloadIcs()` liefert `null` vor abgeschlossener Buchung).
 
 ```bash
 php artisan test --filter Booking
