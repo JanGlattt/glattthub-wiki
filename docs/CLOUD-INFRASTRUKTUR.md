@@ -67,16 +67,22 @@ Da Cloud Run in `europe-west3` keine Domain Mappings unterstützt, werden Custom
 
 #### URL-Routing
 
-Der URL-Map kombiniert Host- und Pfad-basiertes Routing. API-Pfade (`/api/*`) und die öffentlichen Token-Seiten (`/shared/*`) werden an Backend-Services **ohne IAP** geleitet, damit externe Clients (API-Consumer bzw. Kunden ohne Google Workspace-Account) zugreifen können.
+Der URL-Map kombiniert Host- und Pfad-basiertes Routing. API-Pfade (`/api/*`) und die öffentlichen Token-Seiten (`/shared/*`) werden an Backend-Services **ohne IAP** geleitet, damit externe Clients (API-Consumer bzw. Kunden ohne Google Workspace-Account) zugreifen können. Da die Public-Seiten auch statische Assets (CSS, JS, Fonts, Bilder) und den Livewire-Update-Endpunkt laden müssen, sind zusätzlich `/livewire/*`, `/build/*`, `/css/*`, `/js/*`, `/fonts/*` und `/images/*` von IAP ausgenommen (sonst lädt die Seite ohne Styling/Interaktivität, siehe [Bekanntes Problem](#bekanntes-problem-fehlendes-cssjs-auf-public-seiten)).
 
 ```
-hub.glattt.com/api/*           → backend-glattthub-prod-api     → glattthub-web       (ohne IAP)
-hub.glattt.com/shared/*        → backend-glattthub-prod-public  → glattthub-web       (ohne IAP)
-hub.glattt.com/*               → backend-glattthub-prod         → glattthub-web       (mit IAP)
-staging.hub.glattt.com/api/*    → backend-glattthub-staging-api    → glattthub-web-staging (ohne IAP)
-staging.hub.glattt.com/shared/* → backend-glattthub-staging-public → glattthub-web-staging (ohne IAP)
-staging.hub.glattt.com/*        → backend-glattthub-staging        → glattthub-web-staging (mit IAP)
+hub.glattt.com/api/*                                    → backend-glattthub-prod-api     → glattthub-web       (ohne IAP)
+hub.glattt.com/{shared,livewire,build,css,js,fonts,images}/* → backend-glattthub-prod-public  → glattthub-web       (ohne IAP)
+hub.glattt.com/*                                        → backend-glattthub-prod         → glattthub-web       (mit IAP)
+staging.hub.glattt.com/api/*                                    → backend-glattthub-staging-api    → glattthub-web-staging (ohne IAP)
+staging.hub.glattt.com/{shared,livewire,build,css,js,fonts,images}/* → backend-glattthub-staging-public → glattthub-web-staging (ohne IAP)
+staging.hub.glattt.com/*                                        → backend-glattthub-staging        → glattthub-web-staging (mit IAP)
 ```
+
+#### Bekanntes Problem: Fehlendes CSS/JS auf Public-Seiten
+
+Nach der Ersteinrichtung des `/shared/*`-Bypasses lud die HTML-Seite zwar, aber **ohne Styling und Interaktivität** (Konsole: `Refused to execute .../livewire/livewire.min.js` wegen `X-Content-Type-Options: nosniff`, sowie 403-Fehler für CSS/Fonts/Bilder). Ursache: Nur die HTML-Seite selbst lief über `/shared/*`, alle referenzierten Assets (`/build/*` von Vite, `/css/theme_glattt.css`, `/fonts/*`, `/images/*`) sowie der Livewire-Update-Endpunkt (`/livewire/update`, `/livewire/livewire.min.js`) liefen weiterhin über den IAP-geschützten Standard-Pfad und wurden vom Browser als Cross-Origin-Redirect zu Google IAP abgelehnt (CORS). Lösung: Diese Pfade zusätzlich in die `-public`-Pfadregel aufgenommen.
+
+> **Sicherheitsbewertung `/livewire/*`:** Der Bypass ist unbedenklich, da Livewire-Snapshots kryptographisch mit dem `APP_KEY` signiert sind (Checksum-Prüfung) und ein Angreifer ohne gültigen Snapshot keine Hub-Komponenten manipulieren kann. Einen gültigen Snapshot für eine interne Hub-Komponente kann man ohnehin nur durch einen erfolgreichen (IAP- und Laravel-authentifizierten) GET-Request auf die jeweilige Hub-Seite erhalten — das bleibt weiterhin durch IAP + `auth:sanctum`/`check.hub` geschützt, da nur die Seiten selbst unter `/hub/*` liegen, nicht `/livewire/*`.
 
 > **Wichtig:** Die API-Endpoints sind trotzdem geschützt — durch die eigene Bearer-Token-Authentifizierung in Laravel (`ApiTokenMiddleware`). Die `/shared/*`-Seiten (Terminbuchung, Formular ausfüllen) sind durch kryptographisch sichere, einmalig gültige bzw. ablaufende Tokens in der URL sowie durch `throttle:shared-page` (30 Anfragen/Min. pro IP) geschützt. IAP ist nur für interne Browser-Sessions des Hubs relevant.
 
@@ -298,8 +304,8 @@ Damit die REST-API (`/api/*`) ohne Google-Anmeldung per Bearer Token erreichbar 
 | Pfad | Backend-Service | IAP | Auth |
 |------|-----------------|-----|------|
 | `/api/*` | `backend-glattthub-{env}-api` | ❌ Aus | Bearer Token (Laravel) |
-| `/shared/*` | `backend-glattthub-{env}-public` | ❌ Aus | Token in URL (kryptographisch sicher, einmalig/ablaufend) + `throttle:shared-page` |
-| `/*` (alles andere) | `backend-glattthub-{env}` | ✅ An | Google-Anmeldung + Laravel Session |
+| `/shared/*`, `/livewire/*`, `/build/*`, `/css/*`, `/js/*`, `/fonts/*`, `/images/*` | `backend-glattthub-{env}-public` | ❌ Aus | Token in URL (kryptographisch sicher, einmalig/ablaufend) + `throttle:shared-page`; Assets/Livewire sind ungeschützte, nicht-sensible Ressourcen |
+| `/*` (alles andere, insb. `/hub/*`) | `backend-glattthub-{env}` | ✅ An | Google-Anmeldung + Laravel Session |
 
 **Einrichtung des `-public` Backend-Service (Referenz, bereits umgesetzt):**
 
@@ -319,9 +325,9 @@ gcloud compute backend-services add-backend backend-glattthub-{env}-public \
     --network-endpoint-group-region=europe-west3 \
     --project=glattthub
 
-# 3. URL-Map exportieren, /shared/* Pfadregel im jeweiligen pathMatcher ergänzen, wieder importieren
+# 3. URL-Map exportieren, Pfadregeln im jeweiligen pathMatcher ergänzen, wieder importieren
 gcloud compute url-maps export urlmap-glattthub --global --destination=urlmap-glattthub.yaml --project=glattthub
-# … pathRules um { paths: [/shared/*], service: backend-glattthub-{env}-public } ergänzen …
+# … pathRules um { paths: [/shared/*, /livewire/*, /build/*, /css/*, /js/*, /fonts/*, /images/*], service: backend-glattthub-{env}-public } ergänzen …
 gcloud compute url-maps import urlmap-glattthub --global --source=urlmap-glattthub.yaml --project=glattthub
 ```
 
