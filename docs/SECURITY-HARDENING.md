@@ -151,6 +151,7 @@ RateLimiter::for('form-submit', function (Request $request) {
 | `/api/user`, `/api/users` | `throttle:api` | 60/min pro User/IP |
 | `/api/forms/*` | `throttle:api` | 60/min pro User/IP |
 | `/api/shared/form/{token}/submit` | `throttle:form-submit` | 10/min pro IP |
+| `/shared/form/{token}`, `/shared/form/{token}/pdf`, `/shared/booking/{token}` | `throttle:shared-page` | 30/min pro IP |
 
 Bei Überschreitung gibt der Server `429 Too Many Requests` zurück.
 

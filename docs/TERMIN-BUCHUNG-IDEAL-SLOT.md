@@ -62,7 +62,9 @@ Im Slot-Kalender sind Slots mit `is_adjacent = true` **grün hervorgehoben** (`s
 
 Eine schlanke, eigenständige Seite (`/shared/booking/{token}`, kein Login, kein Hub-Layout): Datum-Auswahl (nicht vor das festgelegte Mindestdatum), darunter die freien Slots als Liste. Institut und Services (exakt die beim Link-Erstellen ausgewählten Positionen + Desinfektion) sind **fest vorgegeben** und nicht änderbar. Bei einer Verlegung (`mode=reschedule`) wird der zu verlegende Termin oben als **„Zu verlegender Termin"**-Badge angezeigt (statt reinem Fließtext). Nach Klick auf einen Slot wird sofort gebucht bzw. der alte Termin verlegt; der Link ist danach verbraucht. Auf der Erfolgsseite kann der Kunde per **„Zum Kalender hinzufügen"**-Button eine `.ics`-Datei herunterladen (Datum, Uhrzeit, Dauer, Institutsadresse als Ort – bewusst **ohne** die einzelnen Service-Namen, um keine Behandlungsdetails im Kalendereintrag preiszugeben).
 
-**Sicherheit & Gültigkeit:** Identisches Muster wie beim Formular-Teilen – 64-Zeichen-Token, **48 Stunden gültig**, **einmalig nutzbar** (verfällt sofort nach erfolgreicher Buchung). Bei ungültigem/abgelaufenem/bereits genutztem Link sieht der Kunde eine passende Fehlermeldung statt eines Fehlers.
+**Sicherheit & Gültigkeit:** Identisches Muster wie beim Formular-Teilen – 64-Zeichen-Token, **48 Stunden gültig**, **einmalig nutzbar** (verfällt sofort nach erfolgreicher Buchung). Bei ungültigem/abgelaufenem/bereits genutztem Link sieht der Kunde eine passende Fehlermeldung statt eines Fehlers. Zusätzlich `throttle:shared-page` (30 Anfragen/Min. pro IP) auf dem Seitenaufruf.
+
+**Infrastruktur-Hinweis:** `/shared/booking/{token}` läuft über einen eigenen Backend-Service ohne IAP (`backend-glattthub-{env}-public`), damit Kunden ohne `@labrado-schlueter.com`-Google-Account die Seite überhaupt erreichen können — siehe [CLOUD-INFRASTRUKTUR.md](CLOUD-INFRASTRUKTUR.md#pfade-vom-iap-ausschließen-api--token-seiten).
 
 **Benachrichtigung:** Bucht der Kunde selbst einen Termin, wird das zuständige Institut-Team per `NotificationService` benachrichtigt (`forInstitutes([$branchId])`).
 

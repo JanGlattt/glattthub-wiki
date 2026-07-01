@@ -4,6 +4,8 @@
 
 Das Shared Form System ermöglicht es, Formulare über einen Link mit externen Personen zu teilen, die keinen glatttHub-Account benötigen. Der Empfänger erhält einen einmalig verwendbaren Link, über den er das Formular ausfüllen kann.
 
+> **Infrastruktur-Hinweis:** `/shared/*`-Routen sind vom IAP-Google-Login ausgenommen (eigener Backend-Service `backend-glattthub-{env}-public` ohne IAP am Load Balancer, siehe [CLOUD-INFRASTRUKTUR.md](CLOUD-INFRASTRUKTUR.md#pfade-vom-iap-ausschließen-api--token-seiten)), da externe Empfänger keinen Google Workspace-Account der Firma haben. Schutz erfolgt stattdessen über den Token selbst sowie `throttle:shared-page` (30 Anfragen/Min. pro IP).
+
 ## Funktionsweise
 
 1. **Mitarbeiter** öffnet ein Formular in der Ausfüll-Ansicht

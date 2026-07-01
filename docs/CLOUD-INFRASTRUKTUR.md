@@ -22,6 +22,8 @@ Beide Umgebungen sind durch **Google Identity-Aware Proxy (IAP)** geschützt. Be
 
 Die Google-Anmeldung erfolgt einmalig pro Session — danach erscheint das normale GlattHub-Login wie gewohnt.
 
+**Ausnahme:** Öffentlich geteilte Kunden-Links (Selfservice-Terminbuchung, Formular ausfüllen unter `/shared/*`) sind bewusst **ohne** Google-Anmeldung erreichbar, damit auch Kunden ohne Google Workspace-Account darauf zugreifen können. Diese Seiten sind stattdessen durch individuelle, kryptographisch sichere Zugriffstokens in der URL geschützt.
+
 ---
 
 ## Für Entwickler
@@ -55,6 +57,8 @@ Da Cloud Run in `europe-west3` keine Domain Mappings unterstützt, werden Custom
 | **Backend (Staging)** | `backend-glattthub-staging` | Web-App mit IAP |
 | **Backend API (Prod)** | `backend-glattthub-prod-api` | REST-API ohne IAP |
 | **Backend API (Staging)** | `backend-glattthub-staging-api` | REST-API ohne IAP |
+| **Backend Public (Prod)** | `backend-glattthub-prod-public` | Token-Seiten (`/shared/*`) ohne IAP |
+| **Backend Public (Staging)** | `backend-glattthub-staging-public` | Token-Seiten (`/shared/*`) ohne IAP |
 | **URL Map** | `urlmap-glattthub` | Host- und Pfad-basiertes Routing |
 | **HTTPS Proxy** | `proxy-glattthub` | Terminiert SSL |
 | **HTTP Proxy** | `proxy-glattthub-http` | Redirect HTTP → HTTPS |
@@ -63,16 +67,20 @@ Da Cloud Run in `europe-west3` keine Domain Mappings unterstützt, werden Custom
 
 #### URL-Routing
 
-Der URL-Map kombiniert Host- und Pfad-basiertes Routing. API-Pfade (`/api/*`) werden an Backend-Services **ohne IAP** geleitet, damit externe API-Clients mit Bearer Token zugreifen können.
+Der URL-Map kombiniert Host- und Pfad-basiertes Routing. API-Pfade (`/api/*`) und die öffentlichen Token-Seiten (`/shared/*`) werden an Backend-Services **ohne IAP** geleitet, damit externe Clients (API-Consumer bzw. Kunden ohne Google Workspace-Account) zugreifen können.
 
 ```
-hub.glattt.com/api/*           → backend-glattthub-prod-api    → glattthub-web       (ohne IAP)
-hub.glattt.com/*               → backend-glattthub-prod        → glattthub-web       (mit IAP)
-staging.hub.glattt.com/api/*   → backend-glattthub-staging-api → glattthub-web-staging (ohne IAP)
-staging.hub.glattt.com/*       → backend-glattthub-staging     → glattthub-web-staging (mit IAP)
+hub.glattt.com/api/*           → backend-glattthub-prod-api     → glattthub-web       (ohne IAP)
+hub.glattt.com/shared/*        → backend-glattthub-prod-public  → glattthub-web       (ohne IAP)
+hub.glattt.com/*               → backend-glattthub-prod         → glattthub-web       (mit IAP)
+staging.hub.glattt.com/api/*    → backend-glattthub-staging-api    → glattthub-web-staging (ohne IAP)
+staging.hub.glattt.com/shared/* → backend-glattthub-staging-public → glattthub-web-staging (ohne IAP)
+staging.hub.glattt.com/*        → backend-glattthub-staging        → glattthub-web-staging (mit IAP)
 ```
 
-> **Wichtig:** Die API-Endpoints sind trotzdem geschützt — durch die eigene Bearer-Token-Authentifizierung in Laravel (`ApiTokenMiddleware`). IAP ist nur für Browser-Sessions der Web-App relevant.
+> **Wichtig:** Die API-Endpoints sind trotzdem geschützt — durch die eigene Bearer-Token-Authentifizierung in Laravel (`ApiTokenMiddleware`). Die `/shared/*`-Seiten (Terminbuchung, Formular ausfüllen) sind durch kryptographisch sichere, einmalig gültige bzw. ablaufende Tokens in der URL sowie durch `throttle:shared-page` (30 Anfragen/Min. pro IP) geschützt. IAP ist nur für interne Browser-Sessions des Hubs relevant.
+
+> **Hintergrund:** `/shared/*` wurde nachträglich vom IAP ausgenommen, weil Kunden ohne `@labrado-schlueter.com`-Google-Account sonst nicht auf die Selfservice-Terminbuchung bzw. das per Link geteilte Formular zugreifen konnten (IAP blockiert den Request bereits am Load Balancer, bevor Laravel überhaupt erreicht wird). Betroffen waren `GET /shared/booking/{token}` und `GET /shared/form/{token}` (inkl. `/pdf`). `/invitation/{token}` bleibt bewusst IAP-geschützt, da Einladungen nur an interne Mitarbeitende mit Firmen-Google-Account verschickt werden.
 
 ### SSL-Zertifikate
 
@@ -281,20 +289,47 @@ accessSettings:
 
 > **Aktuelle Einstellung:** Standard (unbegrenzt) — der Google-Login wird nur verlangt, wenn die Google-Session abläuft oder der Nutzer Cookies löscht.
 
-#### API-Pfade vom IAP ausschließen
+#### Pfade vom IAP ausschließen (API & Token-Seiten)
 
-Damit die REST-API (`/api/*`) ohne Google-Anmeldung per Bearer Token erreichbar ist, existieren separate Backend-Services ohne IAP. Diese zeigen auf die **gleichen** Cloud Run Services, haben aber kein IAP aktiviert.
+Damit die REST-API (`/api/*`) ohne Google-Anmeldung per Bearer Token erreichbar ist und Kunden ohne Google Workspace-Account die Token-basierten Public-Seiten (`/shared/*`) nutzen können, existieren separate Backend-Services ohne IAP. Diese zeigen auf die **gleichen** Cloud Run Services (gleiche Serverless NEG), haben aber kein IAP aktiviert.
 
 **Architektur:**
 
 | Pfad | Backend-Service | IAP | Auth |
 |------|-----------------|-----|------|
 | `/api/*` | `backend-glattthub-{env}-api` | ❌ Aus | Bearer Token (Laravel) |
+| `/shared/*` | `backend-glattthub-{env}-public` | ❌ Aus | Token in URL (kryptographisch sicher, einmalig/ablaufend) + `throttle:shared-page` |
 | `/*` (alles andere) | `backend-glattthub-{env}` | ✅ An | Google-Anmeldung + Laravel Session |
 
-**Setup-Script:** Die vollständigen Befehle zur Einrichtung liegen in `scripts/iap-api-bypass-setup.sh` im Projekt-Repository.
+**Einrichtung des `-public` Backend-Service (Referenz, bereits umgesetzt):**
 
-**Rollback:** Falls die API-Bypass-Konfiguration Probleme macht:
+```bash
+# 1. Backend-Service ohne IAP anlegen (pro Umgebung)
+gcloud compute backend-services create backend-glattthub-{env}-public \
+    --global \
+    --load-balancing-scheme=EXTERNAL_MANAGED \
+    --protocol=HTTP \
+    --port-name=http \
+    --project=glattthub
+
+# 2. Bestehende Serverless-NEG zuweisen (gleiche NEG wie Haupt-Backend)
+gcloud compute backend-services add-backend backend-glattthub-{env}-public \
+    --global \
+    --network-endpoint-group=neg-glattthub-{env} \
+    --network-endpoint-group-region=europe-west3 \
+    --project=glattthub
+
+# 3. URL-Map exportieren, /shared/* Pfadregel im jeweiligen pathMatcher ergänzen, wieder importieren
+gcloud compute url-maps export urlmap-glattthub --global --destination=urlmap-glattthub.yaml --project=glattthub
+# … pathRules um { paths: [/shared/*], service: backend-glattthub-{env}-public } ergänzen …
+gcloud compute url-maps import urlmap-glattthub --global --source=urlmap-glattthub.yaml --project=glattthub
+```
+
+> **Kein zusätzlicher IAM-Invoker nötig:** Da Cloud Run mit `--allow-unauthenticated` läuft, reicht das Fehlen von IAP am Backend-Service — analog zu den bestehenden `-api`-Backends.
+
+> **Bewusst NICHT ausgenommen:** `/invitation/{token}` bleibt hinter IAP, da Einladungslinks nur an interne Mitarbeitende mit `@labrado-schlueter.com`-Account verschickt werden.
+
+**Rollback:** Falls die Bypass-Konfiguration Probleme macht:
 
 ```bash
 # URL-Map auf Backup zurücksetzen (nur Host-Routing, kein Pfad-Routing)
@@ -306,6 +341,10 @@ gcloud compute url-maps import urlmap-glattthub \
 # API Backend-Services löschen
 gcloud compute backend-services delete backend-glattthub-prod-api --global --project=glattthub
 gcloud compute backend-services delete backend-glattthub-staging-api --global --project=glattthub
+
+# Public Backend-Services löschen (falls /shared/*-Bypass zurückgerollt werden soll)
+gcloud compute backend-services delete backend-glattthub-prod-public --global --project=glattthub
+gcloud compute backend-services delete backend-glattthub-staging-public --global --project=glattthub
 ```
 
 #### Ersteinrichtung (Referenz)
