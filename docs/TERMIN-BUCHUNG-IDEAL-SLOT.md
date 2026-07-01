@@ -36,6 +36,35 @@ Es gibt **zwei Wege**, einen Termin zu verlegen:
 
 > **Wichtig – Stornierung per appointmentId:** Bestehende Phorest-Termine besitzen **keine abrufbare `bookingId`** (diese wird nur beim Erstellen einer Buchung einmalig zurückgegeben und ist später nirgends abrufbar). Das Verlegen storniert daher jeden Service-Termin einzeln über seine `appointmentId` (`appointment/cancel?appointment_id=…`) und legt anschließend eine neue Buchung an. Ein im Profil gruppierter Termin kann aus mehreren `appointmentIds` bestehen (mehrere aufeinanderfolgende Services) – es werden alle storniert.
 
+### Selfservice: Kunde bucht/verlegt selbst per Link
+
+Zusätzlich zur Buchung durch Mitarbeiter kann ein **Self-Service-Link** an den Kunden geschickt werden, über den er sich **ohne Login** selbst einen Termin aussucht.
+
+**Wie erstellt man den Link?**
+
+Im Kundenprofil → Tab **„Termine"**:
+- **Neuer Termin**: Button **„Link erstellen"** in der Karte „Selfservice-Terminbuchung" (immer sichtbar).
+- **Verlegen**: Button **„Link"** (Kettensymbol) bei jedem zukünftigen Termin, direkt neben „Verlegen".
+
+Im sich öffnenden Modal legt der Mitarbeiter fest:
+1. **Institut** (vorausgewählt, änderbar)
+2. **Frühestens ab** – Datum, ab dem gesucht wird
+3. **Nur Termine ohne Lücke anbieten** (Toggle, standardmäßig an) – steuert den „grün/grau"-Filter (siehe unten)
+
+Nach Klick auf „Link erstellen" wird der Link angezeigt mit **„Kopieren"**-Button und, falls eine Mobilnummer beim Kunden hinterlegt ist, einem **„Per WhatsApp senden"**-Button (öffnet `wa.me` mit vorausgefüllter Nachricht in WhatsApp/WhatsApp Web – keine Superchat-API-Integration, funktioniert immer, unabhängig vom 24h-Antwortfenster).
+
+**„Nur grüne" vs. „auch graue" Termine:**
+
+Im Slot-Kalender sind Slots mit `is_adjacent = true` **grün hervorgehoben** (`slot-pill--adjacent`, `--color-success`) – sie schließen lückenlos an einen bestehenden Termin oder die Arbeitszeit-Grenze an und sind aus Produktivitätssicht **ideal**. Andere freie Slots (`is_adjacent = false`, z.B. gestapelte Füller mitten am Tag) werden **neutral/weiß** dargestellt. Ist der Toggle „Nur ohne Lücke" aktiv, sieht der Kunde **ausschließlich grüne Slots** – so kann er sich nie einen Termin aussuchen, der eine Produktivitäts-Lücke reißt.
+
+**Was sieht der Kunde?**
+
+Eine schlanke, eigenständige Seite (`/shared/booking/{token}`, kein Login, kein Hub-Layout): Datum-Auswahl (nicht vor das festgelegte Mindestdatum), darunter die freien Slots als Liste. Institut und Services sind **fest vorgegeben** und nicht änderbar. Nach Klick auf einen Slot wird sofort gebucht bzw. der alte Termin verlegt; der Link ist danach verbraucht.
+
+**Sicherheit & Gültigkeit:** Identisches Muster wie beim Formular-Teilen – 64-Zeichen-Token, **48 Stunden gültig**, **einmalig nutzbar** (verfällt sofort nach erfolgreicher Buchung). Bei ungültigem/abgelaufenem/bereits genutztem Link sieht der Kunde eine passende Fehlermeldung statt eines Fehlers.
+
+**Benachrichtigung:** Bucht der Kunde selbst einen Termin, wird das zuständige Institut-Team per `NotificationService` benachrichtigt (`forInstitutes([$branchId])`).
+
 ---
 
 ## Für Entwickler
@@ -63,6 +92,7 @@ app/Services/Booking/
 | Hub-Seite | `resources/views/hub/booking.blade.php` | Bindet die Buchungs-Komponente ein |
 | Profil | `resources/views/hub/clients/partials/appointments.blade.php` | „Verlegen"-Button je zukünftigem Termin |
 | Route | `routes/web.php` → `hub.booking` (`can:view_booking`) | Buchungsseite (technisch vorhanden, aus Sidebar entfernt) |
+| Route | `routes/web.php` → `shared.booking.show` (öffentlich, kein Auth) | Self-Service-Buchungsseite `/shared/booking/{token}` |
 | Config | `config/booking.php` | Schwellen, Geschäftszeiten, Raum-Pattern, Lücken-Regel |
 
 ### Das „Raum"-Modell
@@ -161,6 +191,29 @@ Ausschließlich dieses Pattern verwenden — **niemals** `@if ($isOpen)` außerh
 
 **Flatpickr für Datum:** `wire:ignore` am Wrapper verhindert, dass Livewire den Picker bei Re-Renders zerstört. Instanz in `fpInst` (im `x-data`-Scope) gespeichert; beim Öffnen via `$watch` + `$nextTick` mit `startDate` befüllt.
 
+### Selfservice-Modul (technisch)
+
+```
+app/Models/BookingShareToken.php                  # Token-Model (gleiches Muster wie FormShareToken)
+app/Livewire/Hub/Booking/BookingShareLinkModal.php # Link-Erstellen-Modal (Mitarbeiter, Kundenprofil)
+app/Livewire/Shared/BookingPage.php                # Öffentliche Buchungsseite (kein Login)
+app/Http/Controllers/SharedBookingController.php   # Rendert nur die Wrapper-Seite (dünn)
+```
+
+| View | Zweck |
+|---|---|
+| `resources/views/livewire/hub/booking/booking-share-link-modal.blade.php` | Link-Erstellen-Modal |
+| `resources/views/livewire/shared/booking-page.blade.php` | Öffentliche Buchungs-UI (Livewire, volle Seite) |
+| `resources/views/shared/booking-fill.blade.php` | Standalone-Wrapper (kein Hub-Layout, `noindex`) |
+
+**`BookingShareToken`** (Tabelle `booking_share_tokens`): `token` (64 Zeichen), `mode` (`new`/`reschedule`), `client_id`, `client_name`, `client_mobile`, `branch_id`, `old_appointment_ids` (JSON, nur bei Verlegung), `current_label`, `min_date`, `only_adjacent` (bool), `expires_at`, `accessed_at`, `booked_at`, `booking_result` (JSON). Methoden analog `FormShareToken`: `generateToken()`, `isExpired()`, `isBooked()`, `isValid()`, `markAccessed()`, `markBooked()`, `getShareUrl()`.
+
+**`BookingService::findSuggestions()`** hat einen fünften, optionalen Parameter `bool $onlyAdjacentSlots = false` bekommen (backward-kompatibel). Ist er `true`, werden `suggestionDays` und die flache `suggestions`-Liste **nach** dem Bauen gefiltert (nur `is_adjacent === true`), bevor die View-Indizes vergeben werden – dadurch bleiben Index und Anzeige konsistent, ohne die Slot-Engine selbst anzufassen.
+
+**`App\Livewire\Shared\BookingPage`**: volle Livewire-Seite (kein Modal, kein `x-teleport` nötig). `mount(string $token)` validiert den Token direkt (nicht im Controller) und lädt bei Gültigkeit sofort Services + Slots (`try/catch`, Fehler landen als Flash-Meldung statt 500). `book(int $index)` hat eine einfache IP+Token-basierte Rate-Limit-Bremse (`RateLimiter::hit`, max. 10/Minute) gegen Missbrauch, da Livewire-Aktionen nicht über eine eigene benannte Route laufen und sich daher nicht klassisch per `throttle:`-Middleware pro Route drosseln lassen.
+
+**WhatsApp-Versand ohne Superchat-Integration:** Bewusste, pragmatische Entscheidung – statt der Superchat-API (approved Templates, 24h-Antwortfenster) wird ein einfacher `https://wa.me/<Telefonnummer>?text=<Nachricht>`-Deep-Link gebaut (`SuperchatApiService::normalizePhone()` zur E.164-Normalisierung wiederverwendet). Funktioniert ohne Einschränkungen, WhatsApp Web/App öffnet sich mit vorausgefüllter Nachricht, der Mitarbeiter klickt final auf Senden.
+
 ### Berechtigung
 
 Recht `view_booking` (Migration `2026_06_28_100000_add_view_booking_permission.php`, `PermissionSeeder`, Produktiv-SQL `database/sql/booking_module_production.sql`). Zugewiesen an `super_admin`, `admin`, `user`.
@@ -168,8 +221,11 @@ Recht `view_booking` (Migration `2026_06_28_100000_add_view_booking_permission.p
 ### Tests
 
 - `tests/Unit/Booking/SlotFinderServiceTest.php` – Ranking-Regeln (No-Gap-Anschluss, exakte Zeit, Raum-zuerst bis 80 %, Lücken füllen, mehrere Tage, boundary-aware Lücken-Regel).
-- `tests/Feature/Booking/BookingServiceTest.php` – End-to-End mit gemocktem `PhorestApiService` (Slot-Findung, Buchungs-Payload mit allen Services + Desinfektion).
+- `tests/Unit/Booking/BookingShareTokenTest.php` – Token-Model (Gültigkeit, Ablauf, Einlösung).
+- `tests/Feature/Booking/BookingServiceTest.php` – End-to-End mit gemocktem `PhorestApiService` (Slot-Findung, Buchungs-Payload mit allen Services + Desinfektion, `onlyAdjacentSlots`-Filter).
 - `tests/Feature/Booking/RescheduleSlotModalTest.php` – Verlegen-Modal (Öffnen lädt Services + Slots, Buchen storniert per `cancelAppointment` und feuert `appointment-rescheduled`).
+- `tests/Feature/Booking/BookingShareLinkModalTest.php` – Link-Erstellen-Modal (Token-Felder, wa.me-Link-Generierung).
+- `tests/Feature/Booking/SharedBookingPageTest.php` – Öffentliche Buchungsseite (ungültig/abgelaufen/eingelöst, Slot-Filter, erfolgreiche Buchung markiert Token als eingelöst).
 
 ```bash
 php artisan test --filter Booking
