@@ -424,6 +424,15 @@ Das Mandat gehört zum **Kunden** (via `ClientMandate`-Model), nicht zum einzeln
 - **Keine DB-Transaktionen um GC-API-Aufrufe:** Jeder Schritt persistiert seinen Fortschritt sofort (Customer-ID, BankAccount-ID, Mandate-ID). Ein Rollback würde lokale Verknüpfungen zu real existierenden GC-Ressourcen verlieren.
 - **Typgerechte Plan-Stornierung:** `GoCardlessApiService::cancelPlan()` routet anhand des ID-Präfixes (`IS...` → Instalment Schedule, `SB...` → Subscription); 404/bereits storniert gilt als Erfolg (`isCancellationTolerable()`).
 
+**Dauerauftrag vs. Einzelzahlungen (Regeln, seit 07/2026):**
+
+- **Subscription (Dauerauftrag)** wird nur angelegt, wenn alle Raten dem Standard-Raster entsprechen: Betrag = Monatsrate, Fälligkeit = `first_payment_date + (Ratennummer − 2) Monate`, keine Notizen, Ratennummern lückenlos, Abbuchungstag ≤ 28 (GC-Limitierung `day_of_month`). Der Raster-Check ist **Ratennummer-basiert** — übersprungene vergangene Raten (bereits via Starmoney eingezogen) gelten nicht als Individualisierung; Startdatum und Anzahl der bestätigten Raten werden vom Erstellungs-Dialog explizit durchgereicht.
+- **Einzelzahlungen** entstehen bei jeder Abweichung vom Raster sowie bei jeder nachträglichen Zahlungsplan-Anpassung (inkl. „Rate aussetzen"). Der Geldfluss ist identisch — nur die GC-Repräsentation unterscheidet sich.
+- **Doppelbelastungs-Schutz:** Vor Anlage eines neuen Plans (Subscription oder Einzelzahlungen) werden bestehende offene GC-Einzelzahlungen aktiv bei GoCardless storniert (`cancelOpenGcPayments()`). Einzelzahlungen haben keinen übergeordneten Plan, dessen Stornierung sie mitreißen würde. Harte Storno-Fehler brechen die Neuanlage ab.
+- **Bankwechsel erhält individualisierte Pläne:** `changeBankAccount()` erkennt Einzelzahlungs-Verträge und legt deren offene Raten 1:1 (gleiche Beträge, Termine, Ratennummern) auf dem neuen Mandat neu an (`recreateIndividualPayments()`) — statt sie durch eine uniforme Subscription zu überschreiben. Fälligkeiten vor dem GC-Mindestdatum des neuen Mandats werden auf das Mindestdatum verschoben. Bei gemischten Mandaten (2 Verträge, 1 Mandat) wird pro Vertrag typgerecht entschieden.
+- **Monatsraster bleibt erhalten:** Liegt `first_payment_date` in der Vergangenheit (z.B. Plan-Neuanlage nach Bankwechsel), startet die neue Subscription am nächsten Rastertermin (z.B. nächster 15.) statt am GC-Mindestdatum — der Kunde wird weiterhin am vereinbarten Tag belastet.
+- **Nachvollziehbarkeit:** Bezahlte/eingereichte Raten werden bei keiner Operation angefasst; Stornierungen erhalten die Historie (Status `cancelled` mit Grund in `notes`). Der Zahlungen-Tab zeigt Bezahlt-/Offen-Summen und „Bereits bezahlt" in der Zusammenfassung.
+
 **Metadata-Zuweisung:**
 
 | Ressource | Metadata |
