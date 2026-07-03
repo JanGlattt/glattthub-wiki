@@ -229,12 +229,41 @@ Die ngrok-URL (z.B. `https://xxx.ngrok-free.dev/api/webhooks/gocardless`) im GoC
 
 Die Webhook-Verarbeitung folgt diesem Ablauf:
 
-1. **Request empfangen** → Signatur verifizieren
-2. **Event speichern** → In `gocardless_webhook_events` Tabelle (Idempotenz via `event_id`)
-3. **Job dispatchen** → `ProcessGoCardlessWebhookJob` in die Queue
-4. **200 OK zurückgeben** → Sofort, bevor Verarbeitung abgeschlossen
-5. **Async verarbeiten** → Job führt Business-Logik aus
-6. **Benachrichtigung** → Bei wichtigen Events wird In-App-Notification erstellt
+1. **Request empfangen** → Signatur verifizieren (HMAC-SHA256, fehlender Header wird abgelehnt)
+2. **Event speichern** → In `gocardless_webhook_events` Tabelle (Idempotenz via `event_id`), Status `pending`
+3. **200 OK zurückgeben** → Sofort, bevor Verarbeitung abgeschlossen
+4. **Async verarbeiten** → `webhooks:process` Command (Cloud Scheduler, minutlich) führt `ProcessGoCardlessWebhookJob` aus
+5. **Benachrichtigung** → Bei wichtigen Events wird In-App-Notification erstellt (nur einmal pro Event)
+
+#### Retry mit Backoff (seit 07/2026)
+
+Schlägt die Verarbeitung eines Events fehl, wird es **nicht** verworfen:
+
+- Das Event erhält Status `failed`, `retry_count` wird erhöht und `next_retry_at` mit Backoff gesetzt (5 min → 15 min → 1 h → 6 h → 24 h)
+- `webhooks:process` verarbeitet neben `pending` auch fällige `failed`-Events (max. 5 Versuche)
+- Nach dem 5. Fehlversuch: **Admin-Push-Benachrichtigung** ("GoCardless Webhook endgültig fehlgeschlagen") — manuelle Prüfung nötig
+- Relevante Felder: `gocardless_webhook_events.retry_count`, `next_retry_at`
+
+#### Selbstheilung bei unbekannten Payments (seit 07/2026)
+
+Kommt ein Payment-Webhook für eine lokal unbekannte `gocardless_payment_id` an (Race Condition, verpasste Verknüpfung), wird das Payment von der GC-API geladen und automatisch zugeordnet:
+
+1. Zuordnung über Metadata `contract_id` oder Subscription-Link
+2. Unverknüpfte lokale Rate am selben Fälligkeitstag wird verknüpft (kein Duplikat)
+3. Existiert keine passende Rate, wird eine neue angelegt (Notiz: "Automatisch aus GoCardless-Webhook angelegt")
+4. Nicht zuordenbare Payments werden geloggt und übersprungen
+
+Implementierung: `ProcessGoCardlessWebhookJob::resolveLocalPayment()`
+
+#### Reconciliation (Sicherheitsnetz, seit 07/2026)
+
+Täglich um 06:00 gleicht `gocardless:reconcile-payments` alle offenen lokalen Zahlungen (pending/submitted/confirmed) mit dem tatsächlichen GC-Status ab — falls Webhooks verloren gingen:
+
+- Status-Abweichungen werden korrigiert und geloggt
+- Überfällige Raten ohne GC-Payment werden als Anomalie gemeldet
+- Bei Korrekturen/Anomalien: Admin-Benachrichtigung
+- Cron-Endpoint: `POST /api/cron/reconcile-gocardless-payments` (X-Cron-Token)
+- Manuell: `php artisan gocardless:reconcile-payments [--dry-run]`
 
 ### In-App Benachrichtigungen
 
@@ -387,6 +416,13 @@ Die glatttHub-App nutzt einen eigenen Sync-Workflow über `GoCardlessMandateServ
 2. **Phase 2 — Subscription Creation:** Subscription (Dauerauftrag) pro Vertrag erstellen
 
 Das Mandat gehört zum **Kunden** (via `ClientMandate`-Model), nicht zum einzelnen Vertrag. Ein Kunde hat ein Mandat, aber beliebig viele Verträge mit jeweils eigener Subscription.
+
+**Zentrale Subscription-Erstellung (seit 07/2026):** Die einzige Implementierung liegt in `GoCardlessPaymentPlanService::createGoCardlessSubscription()`. Der `GoCardlessMandateService` (manueller Pfad, Bankwechsel) delegiert dorthin. Dabei gilt:
+
+- **Restraten-Berechnung:** Es werden nur die noch offenen Raten eingezogen — bereits bezahlte/eingereichte Raten (`submitted`/`confirmed`/`paid`) werden von `installment_count - 1` abgezogen. Verhindert Doppelbelastung z.B. bei Plan-Neuanlage nach Bankwechsel mitten im Vertrag.
+- **Historienschonende Raten-Erneuerung:** Bezahlte lokale Raten bleiben erhalten; offene GC-verknüpfte Raten werden als storniert markiert (Audit), rein lokale Platzhalter gelöscht. Neue Raten werden fortlaufend nummeriert.
+- **Keine DB-Transaktionen um GC-API-Aufrufe:** Jeder Schritt persistiert seinen Fortschritt sofort (Customer-ID, BankAccount-ID, Mandate-ID). Ein Rollback würde lokale Verknüpfungen zu real existierenden GC-Ressourcen verlieren.
+- **Typgerechte Plan-Stornierung:** `GoCardlessApiService::cancelPlan()` routet anhand des ID-Präfixes (`IS...` → Instalment Schedule, `SB...` → Subscription); 404/bereits storniert gilt als Erfolg (`isCancellationTolerable()`).
 
 **Metadata-Zuweisung:**
 
@@ -628,8 +664,12 @@ Sort Code: 200000
 1. **SEPA Vorlaufzeit:** Mindestens 3-5 Werktage für `charge_date`
 2. **Beträge in Cent:** Alle Beträge müssen in der kleinsten Währungseinheit angegeben werden
 3. **Webhook Idempotenz:** Webhooks können mehrfach gesendet werden - Events nur einmal verarbeiten
-4. **Sandbox vs Live:** Immer in Sandbox testen, bevor Live geschaltet wird
-5. **PCI Compliance:** Bankdaten sollten nur über Billing Request Flow erfasst werden (hosted payment page)
+4. **Idempotency-Keys (seit 07/2026):** Alle POST-Requests an GoCardless senden automatisch einen `Idempotency-Key`-Header (UUID pro Request). Beim internen HTTP-Retry (5xx/Timeout) entstehen dadurch keine doppelten Ressourcen — GoCardless antwortet mit 409 `idempotent_creation_conflict`, der `GoCardlessApiService` lädt dann automatisch die bereits erstellte Ressource
+5. **IBAN-Validierung (seit 07/2026):** Alle IBAN-Eingaben werden über `App\Rules\ValidIban` geprüft (mod-97-Prüfsumme + Länderlänge). openiban.com wird nur noch als optionaler Bank-Name-Lookup verwendet
+6. **Bankverbindungswechsel:** `changeBankAccount()` legt zuerst alle neuen Ressourcen an (Konto → Mandat), persistiert die neuen IDs sofort lokal und storniert erst danach die alten — schlägt ein Schritt fehl, bleibt das alte Mandat samt Subscriptions aktiv. Fehler bei der Neuanlage einzelner Zahlungspläne brechen den Wechsel nicht ab, sondern werden gesammelt als Warnung zurückgegeben (`subscription_errors`)
+7. **Payment-Metadata:** Auch einzelne Payments (individuelle Zahlungspläne) erhalten `contract_id`/`mandate_ref`/`phorest_client_id` als Metadata — darüber ordnet die Webhook-Selbstheilung verwaiste Zahlungen zu. Bei Teilfehlern während der Anlage werden bereits erstellte GC-Zahlungen automatisch wieder storniert (Kompensation)
+8. **Sandbox vs Live:** Immer in Sandbox testen, bevor Live geschaltet wird
+9. **PCI Compliance:** Bankdaten sollten nur über Billing Request Flow erfasst werden (hosted payment page)
 
 ---
 
