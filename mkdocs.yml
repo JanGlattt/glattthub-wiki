@@ -156,6 +156,7 @@ nav:
     - glatttBert: GLATTTBERT-AI-ASSISTENT.md
   - Design & UI:
     - Design System: DESIGN-SYSTEM.md
+    - Globale Suche: GLOBAL-SEARCH.md
     - Custom Dropdown: CUSTOM-DROPDOWN.md
     - Dark Mode: DARKMODE.md
     - Login-Design: LOGIN-DESIGN.md
