@@ -123,7 +123,17 @@ Kein neues Permission-Objekt. Der Endpoint liegt hinter `check.hub`; der Service
 - `2026_07_04_100000_add_name_indexes_to_client_statistics_table`: B-Tree-Indizes auf `first_name`/`last_name` (Prefix-`LIKE` nutzt sie; bewusst kein FULLTEXT, da Namen Einzeltokens sind und der SQLite-Test-Sonderweg entfällt).
 - `2026_07_04_110000_add_external_id_to_client_statistics_table`: Spalte `external_id` (Phorest-Kundennummer) inkl. Index.
 
-**Produktions-SQL**: `database/sql/global_search_name_indexes_production.sql` (Migration nie direkt auf Prod ausführen). Nach dem Deployment einmalig `php artisan client-statistics:backfill-external-ids` ausführen.
+**Produktions-SQL**: `database/sql/global_search_name_indexes_production.sql` (Migration nie direkt auf Prod ausführen).
+
+**Backfill auf Produktion**: Cloud Run hat keine Shell — der einmalige Kundennummern-Backfill wird über den token-geschützten Cron-Endpoint ausgelöst (Muster wie `backfill-gocardless-events`):
+
+```bash
+curl -X POST "https://hub.glattt.com/api/cron/backfill-client-external-ids" \
+     -H "X-Cron-Token: <CRON_TOKEN>"
+# Optional erst testen: ?dry_run=1
+```
+
+Der Endpoint ruft `client-statistics:backfill-external-ids` auf und liefert die Command-Ausgabe als JSON zurück (Dauer ~1–2 Minuten, Phorest wird komplett paginiert). Lokal einfach: `php artisan client-statistics:backfill-external-ids`.
 
 ### Tests
 
