@@ -2,6 +2,141 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 06.07.2026 — Vertragsdetailseite neu gestaltet + Bankwechsel-/Altsystem-Korrekturen
+
+### Für Nutzer (06.07.2026)
+
+Die Vertragsdetailseite wurde komplett überarbeitet und ist jetzt übersichtlicher aufgebaut. Die frühere Ansicht wurde abgelöst — es gibt nur noch das neue Layout.
+
+#### Was ist neu?
+
+- **Sticky-Sidebar rechts** mit allen Kerninfos auf einen Blick: Vertragsnummer, Kunde, Zahlungsfortschritt (Balken + Bezahlt/Offen/Raten), SEPA-Mandat (Status, Zahlungsplan, IBAN, Bank), Vertragsdaten (Status, Zahlungsart, Monatsrate, Rabatt 1. Sitzung, Unterschrieben-am, Verkäufer, Zonen) und Schnellaktionen. Bleibt beim Scrollen sichtbar.
+- **Vollbreites Menüband** über der Seite mit drei Tabs: **Übersicht**, **Zahlungen & SEPA**, **Verlauf**.
+- **Direkt-Links zu Tabs**: Jeder Tab hat einen eigenen Link-Anker. So kann man jemandem direkt den Zahlungen- oder Verlauf-Tab eines Vertrags schicken:
+  - Übersicht: `…/hub/contracts/{id}#uebersicht`
+  - Zahlungen & SEPA: `…/hub/contracts/{id}#zahlungen`
+  - Verlauf: `…/hub/contracts/{id}#verlauf`
+  Beim Wechsel eines Tabs aktualisiert sich der Link automatisch (teilbar/kopierbar).
+- **Zahlungen-Tabelle** überarbeitet: gebänderte Zeilen, das GoCardless-Symbol sitzt jetzt direkt im Status-Badge. Beim **Überfahren** zeigt es die Referenznummern (Zahlung/Abo/Plan), per **Klick** wird die Referenz in die Zwischenablage kopiert.
+- **Zahlungsfortschritt** berücksichtigt jetzt auch die **vor Ort bezahlte 1. Rate**, nicht nur die dokumentierten SEPA-Raten.
+- Öffnet man eines der Zahlungs-Modale (Raten anpassen, Zahlungsplan anlegen, Bankverbindung ändern), landet man nach dem Schließen automatisch im Zahlungen-Tab.
+
+#### Bankverbindung ändern — wichtige Korrektur
+
+Beim Ändern der IBAN eines Altvertrags wurden bisher **alle** noch offenen Raten neu angelegt — auch solche, die in Wahrheit **bereits über das Altsystem (Starmoney) eingezogen** worden waren. Dadurch konnten Zahlungen doppelt erzeugt werden.
+
+Jetzt gilt: Überfällige Raten ohne dokumentierten Einzug werden beim Bankwechsel **nicht** neu angelegt, sondern als Altsystem-Einzug gewertet (sie erscheinen im „Altsystem"-Block des Vertrags). Nach dem Speichern erscheint ein Hinweis, wie viele Raten (mit Summe) übersprungen wurden. Es werden nur noch die **wirklich offenen, zukünftigen** Raten auf das neue Mandat übertragen.
+
+#### Kein Altsystem-Einzug bei neuen Verträgen
+
+Verträge mit einem Vertragsdatum **ab dem 01.06.2026** hatten nie einen Altsystem-Einzug. Bei ihnen wird deshalb kein „davon Altsystem"-Betrag mehr angezeigt — auch dann nicht, wenn der SEPA-Einzug noch gar nicht gestartet ist. Der offene Betrag entspricht dort korrekt dem vollen Restwert.
+
+---
+
+### Für Entwickler (06.07.2026)
+
+#### V1 entfernt, Redesign ist Standard
+
+Das Redesign lief zunächst als „V2" hinter einem Feature-Flag. Seit diesem Update ist es die **einzige** Ansicht:
+
+| Aktion | Detail |
+|--------|--------|
+| `show-v2.blade.php` | → umbenannt zu `show.blade.php` (alte V1-View gelöscht) |
+| Gelöschte Partials | `partials/tab-details.blade.php`, `partials/tab-history.blade.php` (V1) |
+| Route entfernt | `contracts.show.v2` + Controller-Methode `showV2()` |
+| Feature-Flag entfernt | `contract_v2_enabled` (config/app.php), `CONTRACT_V2_ENABLED` (phpunit.xml, .env) |
+| UI entfernt | „Zur klassischen Ansicht"-Link, „Neue Ansicht testen"-Button |
+| Test | `ContractShowV2Test` → `ContractShowTest` (Route `hub.contracts.show`) |
+
+`ContractController::show()` rendert `hub.contracts.show`; die Daten liefert weiterhin die private Methode `buildShowData()`. CSS-Klassen (`.contract-v2-*`) und der Ordner `resources/views/hub/contracts/v2/partials/` behalten aus Kompatibilitätsgründen ihre Namen (rein historisch, keine funktionale Bedeutung).
+
+#### Seiten-Aufbau (`show.blade.php`)
+
+```
+show.blade.php
+├── @php  … serverseitige KPI-Berechnung ($v2PaidCents inkl. legacyCollectedCents(), $v2OpenCents, …)
+├── v2/partials/header          … Titelzeile (editierbare Vertragsnummer)
+├── .contract-v2-tabs           … vollbreites Segmented-Control (Übersicht | Zahlungen & SEPA | Verlauf)
+└── .contract-v2-layout (Grid)
+    ├── .contract-v2-main
+    │   ├── v2/partials/tab-overview            (tabKey=details)
+    │   ├── partials/tab-payments               (tabKey=payments, hideSummaryBand=true)
+    │   ├── partials/tab-sepa                    (tabKey=payments, nur bei SEPA)
+    │   └── v2/partials/tab-history             (tabKey=history)
+    └── aside.contract-v2-sidebar → v2/partials/summary-sidebar
+```
+
+Geteilte Partials (`tab-payments`, `tab-sepa`, `contract-scripts`, `confirm-modal`) tragen einen `$tabKey`-Parameter, damit mehrere Inhalte unter einem Tab gestapelt werden können.
+
+#### Tab-Deep-Linking (Alpine)
+
+In `contractDetail()` (`partials/contract-scripts.blade.php`):
+
+- `tabSlugs = { details: 'uebersicht', payments: 'zahlungen', history: 'verlauf' }`
+- `init()` ruft `applyTabFromHash()` und registriert einen `hashchange`-Listener (Vor/Zurück).
+- `setActiveTab(tab)` setzt `activeTab` und schreibt den Slug via `history.replaceState` in die URL (kein Scroll-Sprung, kein History-Spam).
+- Alle Tab-Buttons und Sidebar-Schnellaktionen rufen `setActiveTab(...)`.
+- Die Zahlungs-Modale (`openEditPlanModal`, `openCreateGcModal`, `openBankModal`) dispatchen `contract-goto-payments`; das Root-Element (`@contract-goto-payments.window="setActiveTab('payments')"`) wechselt dann auf den Zahlungen-Tab.
+
+#### Reaktiver Zahlungsfortschritt in der Sidebar
+
+Die Server-KPIs kennen die vor Ort bezahlte 1. Rate nicht (Phorest-Terminlogik). Deshalb dispatcht `applyPaymentsResult()` nach dem Laden der Zahlungen ein `contract-payments-summary`-Event (Beträge in **Euro**, nicht Cents!); die Sidebar aktualisiert Progressbar, Bezahlt, Offen und den Raten-Zähler darüber.
+
+#### Altsystem-Stichtag (`Contract`)
+
+```php
+const LEGACY_CUTOFF_DATE = '2026-06-01';
+
+public function mayHaveLegacyCollection(): bool
+{
+    $contractDate = $this->signed_at ?? $this->start_date ?? $this->created_at;
+    return $contractDate !== null && $contractDate->lt(Carbon::parse(self::LEGACY_CUTOFF_DATE));
+}
+```
+
+- `computedLegacyCollectedCents()` liefert `0` für Verträge ab dem Stichtag → kein irreführender Legacy-Block bei Neuverträgen.
+- `GoCardlessPaymentPlanService::hasOverdueUndocumentedPayments()` gibt für Neuverträge `false` zurück (Webhook-Guard blockiert sie nicht).
+- **Tests** benötigen für Altvertrags-Szenarien explizit `signed_at` vor dem Stichtag (sonst greift der Cutoff über `created_at = now()`).
+
+#### Bankwechsel: Altsystem-Raten nicht doppelt anlegen
+
+In `GoCardlessMandateService::changeBankAccount()`:
+
+- Vor dem Sichern der offenen Raten werden pro Vertrag **überfällige `scheduled`-Platzhalter ohne GC-Verknüpfung** (nur bei Verträgen vor dem Altsystem-Stichtag) ermittelt. Sie werden **soft-gelöscht** und als `ContractChange` (`field_name = legacy_rates_removed`) protokolliert; der Betrag wandert damit in den rechnerischen Legacy-Block.
+- Rückgabe erweitert: `['mandate', 'subscription_errors', 'skipped_legacy']` (`skipped_legacy[contract_id] = { count, amount_cents }`).
+- Die automatische Fallback-Plananlage wird bei Altsystem-Historie übersprungen (sonst würde `remainingSepaRateCount` die undokumentierten Raten neu erfinden).
+- `ContractController::updateBankAccount()` hängt einen Warnhinweis an die Erfolgsmeldung (`warning: true`); das Frontend zeigt ihn per `alert()` vor dem Reload.
+- Bei Neuverträgen (ab Stichtag) gelten überfällige Platzhalter als **echte** offene Raten und werden normal auf das neue Mandat übertragen.
+
+#### Zahlungen-Tabelle & Clipboard
+
+- GoCardless-Icon sitzt im Status-Badge (`.payment-gc-badge-icon`), Referenz-Anzeige per Custom-Tooltip (`[data-tooltip]`), Kopieren per Klick.
+- `copyPaymentReference()` nutzt die Clipboard-API nur im **Secure Context** (HTTPS/localhost). Lokal (`http://glattthub.local:8888`) greift ein Fallback über ein unsichtbares Textarea + `document.execCommand('copy')`.
+
+#### Geänderte / entfernte Dateien (Auszug)
+
+| Datei | Änderung |
+|-------|----------|
+| `app/Models/Contract.php` | `LEGACY_CUTOFF_DATE`, `mayHaveLegacyCollection()`, `computedLegacyCollectedCents()` respektiert Stichtag |
+| `app/Services/GoCardlessMandateService.php` | Altsystem-Guard im Bankwechsel, `skipped_legacy`-Rückgabe |
+| `app/Services/GoCardlessPaymentPlanService.php` | `hasOverdueUndocumentedPayments()` respektiert Stichtag |
+| `app/Http/Controllers/ContractController.php` | `showV2()` entfernt, Bankwechsel-Warnhinweis |
+| `routes/web.php`, `config/app.php`, `phpunit.xml` | Feature-Flag `contract_v2_enabled` entfernt |
+| `resources/views/hub/contracts/show.blade.php` | ehemals `show-v2`, Tab-Band, Deep-Linking |
+| `resources/views/hub/contracts/v2/partials/*` | header, summary-sidebar, tab-overview, tab-history |
+| `resources/views/hub/contracts/partials/{contract-scripts,tab-payments}.blade.php` | Deep-Linking, GC-Icon/Clipboard, reaktive Summary |
+| `public/css/theme_glattt.css` | `.contract-v2-tabs`, `.btn-glattt-ghost`, Tabellen-/Tooltip-/Progress-Feinschliff |
+
+#### Tests
+
+- `tests/Feature/ContractShowTest.php` (Route + Inhalte, 403 ohne Permission)
+- `tests/Unit/GoCardlessBankChangeTest.php` (u.a. Altsystem-Raten werden nicht neu angelegt, Neuvertrag-Verhalten)
+- `tests/Feature/ContractPaymentsDbOnlyTest.php` (Legacy-Block, Neuvertrag ohne Legacy-Block)
+
+Volle Suite: 523 Tests grün.
+
+---
+
 ## Update 18.05.2026 — Zahlungsart wechseln (Direktzahlung → SEPA)
 
 ### Für Nutzer (18.05.2026)
