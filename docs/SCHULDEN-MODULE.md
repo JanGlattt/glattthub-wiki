@@ -58,12 +58,12 @@ Die Basisseite zeigt zwei Kennzahlen-Karten und eine Kundentabelle.
 
 | Spalte | Beschreibung |
 |--------|-------------|
-| **Kunde** | Name des Kunden (aus Phorest); verlinkt auf das Kundenprofil |
+| **Kunde** | Name des Kunden (aus Phorest) mit **Kundennummer** (`#externalId`) darunter; verlinkt auf das Kundenprofil |
 | **Geplatzte Lastschriften** | Anzahl der geplatzten Raten dieses Kunden |
 | **Älteste Fälligkeit** | Fälligkeitsdatum der ältesten geplatzten Rate |
 | **Schulden** | Summe der geplatzten Lastschriften des Kunden (in Rot) |
 
-Die Liste ist nach Höhe der Schuld absteigend sortiert. Über das Suchfeld kann nach Kundenname gefiltert werden. Der Button **„Geplatzte Lastschriften ansehen"** oben rechts führt zur Detailliste.
+Alle Spalten sind **sortierbar** (Klick auf die Kopfzeile, ↑/↓), die Zeilen sind **gebändert** (Zebra). Standard-Sortierung ist Schuld absteigend. Über das Suchfeld kann nach **Kundenname oder Kundennummer** gefiltert werden. Der Button **„Geplatzte Lastschriften ansehen"** oben rechts führt zur Detailliste.
 
 !!! info "Standortübergreifend"
     Die Schulden-Übersicht zeigt Kunden über **alle Standorte** hinweg (kein Standortfilter).
@@ -78,7 +78,7 @@ Erreichbar über den Button auf der Basisseite. Listet jede einzelne geplatzte L
 
 | Spalte | Beschreibung |
 |--------|-------------|
-| **Kunde** | Name des Kunden; verlinkt auf das Kundenprofil |
+| **Kunde** | Name des Kunden mit **Kundennummer** (`#externalId`) darunter; verlinkt auf das Kundenprofil |
 | **Fällig am** | Fälligkeitsdatum der Rate |
 | **Rate** | Ratennummer (installment_number) |
 | **Status** | „Fehlgeschlagen" oder „Rückbuchung" (rot), plus Anzahl Einzugsversuche |
@@ -86,7 +86,7 @@ Erreichbar über den Button auf der Basisseite. Listet jede einzelne geplatzte L
 | **Betrag** | Betrag der Rate (in Rot) |
 | **Vertrag** | Link zur Vertragsdetailseite |
 
-Ein Suchfeld filtert nach Kundenname oder Fehlergrund. Der Zurück-Pfeil oben links führt zur Basisseite.
+Zeilen gebändert (Zebra), Spalten sortierbar; Standard-Sortierung ist Fälligkeit absteigend. Das Suchfeld filtert nach **Kundenname, Kundennummer oder Fehlergrund**. Der Zurück-Pfeil oben links führt zur Basisseite.
 
 ---
 
@@ -111,6 +111,8 @@ Beides ist Geld, das nicht (dauerhaft) angekommen ist. Der **Schuldenbetrag pro 
 ## Architektur
 
 Das Modul folgt dem klassischen Hub-MVC-Muster (Controller → Blade-View, Alpine.js, Livewire-Navigation) und legt **kein neues Datenmodell** an – es wertet die bestehende Tabelle `contract_payments` aus.
+
+**Zweistufiges Laden (Performance):** Wie die Vertragsliste liefert der Controller zunächst nur die Seiten-Shell. Die Zeilen kommen per JSON-Endpoint (schnell, nur DB), die Tabelle erscheint sofort mit **Skeleton-Loadern**; die Phorest-Kundennamen (+ Kundennummer) werden anschließend asynchron nachgeladen und je Zeile eingefüllt. Sortierung und Suche laufen client-seitig (Alpine), da alle Zeilen auf einmal geladen werden.
 
 | Baustein | Datei |
 |----------|-------|
@@ -165,7 +167,10 @@ In der `hub`-Gruppe (`routes/web.php`), geschützt über `can:view_debts`:
 ```php
 Route::middleware('can:view_debts')->group(function () {
     Route::get('/debts', [DebtController::class, 'index'])->name('debts');
+    Route::get('/debts/data', [DebtController::class, 'getData'])->name('debts.data');                       // JSON: Kunden-Aggregation
+    Route::get('/debts/clients', [DebtController::class, 'getClients'])->name('debts.clients');              // JSON: Namen + Kundennummer (Phase 2)
     Route::get('/debts/failed-debits', [DebtController::class, 'failedDebits'])->name('debts.failed-debits');
+    Route::get('/debts/failed-debits/data', [DebtController::class, 'getFailedDebitsData'])->name('debts.failed-debits.data'); // JSON: Einzelraten
 });
 ```
 
@@ -173,18 +178,20 @@ Die Sidebar hält den Menüpunkt über `request()->routeIs('hub.debts*')` auch a
 
 ## Controller
 
-`DebtController` hat zwei Actions:
+`DebtController` liefert Shells + JSON (zweistufiges Laden):
 
-- **`index()`** – aggregiert geplatzte Raten pro Kunde (siehe oben), reichert die Zeilen mit Kundennamen an und übergibt zusätzlich Gesamtkennzahlen an die View.
-- **`failedDebits()`** – lädt alle geplatzten Raten (`bounced()->with('contract')->orderByDesc('due_date')`) und mappt sie zeilenweise inkl. Status-Label/-Farbe, Fehlergrund und Vertrags-Link.
+- **`index()` / `failedDebits()`** – rendern nur die Seiten-Shell (kein Phorest-Zugriff, sofort schnell).
+- **`getData()`** – JSON: aggregiert geplatzte Raten pro Kunde (siehe oben), inkl. Gesamtsumme. Ohne Namen.
+- **`getFailedDebitsData()`** – JSON: alle geplatzten Raten (`bounced()->with('contract')->orderByDesc('due_date')`) inkl. Status-Label, Fehlergrund und Vertrags-Link. Ohne Namen.
+- **`getClients()`** – JSON (Phase 2): löst für eine ID-Liste Kundenname **+ Kundennummer** (`externalId`) via `getClientDataBulk()` auf.
 
 ## Wiederverwendete Bausteine
 
 Das Modul entstand primär durch **Wiederverwendung**:
 
-- **Kundennamen** werden über den Trait `ResolvesClientData::getClientDataBulk()` gebündelt aufgelöst (Cache-Key `client_data_{id}`, 300 s TTL, plus paralleler HTTP-Pool `PhorestApiService::getClientsParallel()` für nicht gecachte IDs). Der Trait wurde aus `ContractController` extrahiert und wird jetzt von beiden Controllern genutzt.
+- **Kundennamen + Kundennummer** werden über den Trait `ResolvesClientData::getClientDataBulk()` gebündelt aufgelöst (Cache-Key `client_data_{id}`, 300 s TTL, plus paralleler HTTP-Pool `PhorestApiService::getClientsParallel()` für nicht gecachte IDs; `externalId` = Kundennummer). Der Trait wurde aus `ContractController` extrahiert und wird jetzt von beiden Controllern genutzt; `getClients()` spiegelt `ContractController::getContractsClientData()`.
 - **Status-Labels/-Farben, Betragsformatierung** kommen aus den Accessors von `ContractPayment` (`status_label`, `status_color`, `formatted_amount`).
-- **UI** nutzt das bestehende Design-System (`table-glattt`, `card-glattt`, `badge-glattt`, `page-header-glattt`); Schuldenbeträge sind über `--color-danger` rot hervorgehoben.
+- **UI** nutzt das bestehende Design-System (`table-glattt-container`, `table-glattt table-glattt-striped` für Zebra-Zeilen, `card-glattt`, `badge-glattt`) sowie das **Skeleton-/Zwei-Phasen-Lademuster** und die **sortierbaren Spalten** der Vertragsliste (`hub/contracts/index.blade.php`); Schuldenbeträge sind über `--color-danger` rot hervorgehoben.
 
 ## Berechtigung
 
