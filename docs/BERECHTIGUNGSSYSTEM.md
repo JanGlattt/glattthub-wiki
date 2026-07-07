@@ -248,6 +248,12 @@ Die 116 Permissions sind in 20 Gruppen organisiert. Die Gruppen-Reihenfolge und 
 | `create_cancellations` | Widerrufe erstellen |
 | `edit_cancellations` | Widerrufe bearbeiten |
 
+#### Schulden (1)
+
+| Permission | Beschreibung |
+|------------|-------------|
+| `view_debts` | Schulden sehen (Kundenschulden aus geplatzten Lastschriften) |
+
 #### Institute (4)
 
 | Permission | Beschreibung |

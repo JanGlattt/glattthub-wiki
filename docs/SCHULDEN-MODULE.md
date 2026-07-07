@@ -1,0 +1,210 @@
+# Schulden (Kundenschulden)
+
+> Zentrale Übersicht über Geld, das Kunden schulden – im ersten Schritt aus geplatzten GoCardless-Lastschriften
+
+## Inhaltsverzeichnis
+
+- [Für Nutzer](#für-nutzer)
+  - [Übersicht](#übersicht)
+  - [Zugang](#zugang)
+  - [Basisseite: Kunden mit Schulden](#basisseite-kunden-mit-schulden)
+  - [Unterseite: Geplatzte Lastschriften](#unterseite-geplatzte-lastschriften)
+  - [Was zählt als Schuld?](#was-zählt-als-schuld)
+- [Für Entwickler](#für-entwickler)
+  - [Architektur](#architektur)
+  - [Datenquelle & Berechnung](#datenquelle--berechnung)
+  - [Routen](#routen)
+  - [Controller](#controller)
+  - [Wiederverwendete Bausteine](#wiederverwendete-bausteine)
+  - [Berechtigung](#berechtigung)
+  - [Erweiterbarkeit](#erweiterbarkeit)
+
+---
+
+# Für Nutzer
+
+## Übersicht
+
+Das Schulden-Modul bündelt an einer Stelle, **welche Kunden aktuell Geld schulden**. Bisher war diese Information nur verstreut in den einzelnen Vertragsdetails sichtbar.
+
+Im ersten Ausbaustufe betrachtet das Modul ausschließlich **geplatzte GoCardless-Lastschriften** – also SEPA-Einzüge, die nicht eingelöst wurden oder vom Kunden zurückgebucht wurden. Über jeden Lastschrift-Status informiert uns GoCardless per Webhook; das Modul wertet diese bereits gespeicherten Daten nur aus.
+
+- **Kundenliste** – alle Kunden mit offenen Beträgen, mit Schuldensumme
+- **Detailliste** – jede einzelne geplatzte Lastschrift mit Grund und Betrag
+- **Verlinkung** – direkter Sprung zum Kunden bzw. zum betroffenen Vertrag
+
+## Zugang
+
+1. glatttHub öffnen
+2. Im Seitenmenü **Schulden** (💰-Icon) auswählen
+3. Die Schulden-Übersicht wird angezeigt
+
+Der Menüpunkt ist nur mit der Berechtigung `view_debts` sichtbar (standardmäßig **admin** und **super_admin**).
+
+---
+
+## Basisseite: Kunden mit Schulden
+
+Die Basisseite zeigt zwei Kennzahlen-Karten und eine Kundentabelle.
+
+**Kennzahlen:**
+
+| Karte | Bedeutung |
+|-------|-----------|
+| **Kunden mit Schulden** | Anzahl der Kunden mit mindestens einer geplatzten Lastschrift |
+| **Gesamtschulden** | Summe aller geplatzten Lastschriften über alle Kunden |
+
+**Tabellenspalten:**
+
+| Spalte | Beschreibung |
+|--------|-------------|
+| **Kunde** | Name des Kunden (aus Phorest); verlinkt auf das Kundenprofil |
+| **Geplatzte Lastschriften** | Anzahl der geplatzten Raten dieses Kunden |
+| **Älteste Fälligkeit** | Fälligkeitsdatum der ältesten geplatzten Rate |
+| **Schulden** | Summe der geplatzten Lastschriften des Kunden (in Rot) |
+
+Die Liste ist nach Höhe der Schuld absteigend sortiert. Über das Suchfeld kann nach Kundenname gefiltert werden. Der Button **„Geplatzte Lastschriften ansehen"** oben rechts führt zur Detailliste.
+
+!!! info "Standortübergreifend"
+    Die Schulden-Übersicht zeigt Kunden über **alle Standorte** hinweg (kein Standortfilter).
+
+---
+
+## Unterseite: Geplatzte Lastschriften
+
+Erreichbar über den Button auf der Basisseite. Listet jede einzelne geplatzte Lastschrift.
+
+**Tabellenspalten:**
+
+| Spalte | Beschreibung |
+|--------|-------------|
+| **Kunde** | Name des Kunden; verlinkt auf das Kundenprofil |
+| **Fällig am** | Fälligkeitsdatum der Rate |
+| **Rate** | Ratennummer (installment_number) |
+| **Status** | „Fehlgeschlagen" oder „Rückbuchung" (rot), plus Anzahl Einzugsversuche |
+| **Grund** | Fehlerbeschreibung von GoCardless (`failure_reason`) + Code |
+| **Betrag** | Betrag der Rate (in Rot) |
+| **Vertrag** | Link zur Vertragsdetailseite |
+
+Ein Suchfeld filtert nach Kundenname oder Fehlergrund. Der Zurück-Pfeil oben links führt zur Basisseite.
+
+---
+
+## Was zählt als Schuld?
+
+Im ersten Schritt zählen genau zwei Zahlungsstatus als „geplatzte Lastschrift":
+
+| Status | Bedeutung |
+|--------|-----------|
+| **Fehlgeschlagen** (`failed`) | Die Lastschrift wurde nicht eingelöst (z. B. Konto nicht gedeckt) |
+| **Rückbuchung** (`chargedback`) | Der Kunde hat die bereits eingezogene Lastschrift zurückgebucht |
+
+Beides ist Geld, das nicht (dauerhaft) angekommen ist. Der **Schuldenbetrag pro Kunde** ist die Summe der Beträge genau dieser Raten – er deckt sich damit exakt mit den Zeilen der Detailliste.
+
+!!! note "Noch nicht enthalten"
+    Überfällige, aber noch nicht eingezogene Raten, andere Schuldenquellen sowie ein Mahnwesen sind bewusst **nicht** Teil dieser ersten Stufe (siehe [Erweiterbarkeit](#erweiterbarkeit)).
+
+---
+
+# Für Entwickler
+
+## Architektur
+
+Das Modul folgt dem klassischen Hub-MVC-Muster (Controller → Blade-View, Alpine.js, Livewire-Navigation) und legt **kein neues Datenmodell** an – es wertet die bestehende Tabelle `contract_payments` aus.
+
+| Baustein | Datei |
+|----------|-------|
+| Controller | `app/Http/Controllers/DebtController.php` |
+| Basisseite | `resources/views/hub/debts/index.blade.php` |
+| Unterseite | `resources/views/hub/debts/failed-debits.blade.php` |
+| Sidebar-Eintrag | `resources/views/layouts/partials/sidebar.blade.php` |
+| Query-Scope | `App\Models\ContractPayment::scopeBounced()` |
+| Kundennamen-Trait | `app/Http/Controllers/Concerns/ResolvesClientData.php` |
+| Permission-Migration | `database/migrations/2026_07_07_100000_add_view_debts_permission.php` |
+
+## Datenquelle & Berechnung
+
+„Geplatzte Lastschrift" = `ContractPayment` mit `status IN ('failed', 'chargedback')`. Dafür gibt es einen wiederverwendbaren, **join-sicheren** Scope (die Spalte wird qualifiziert, weil `contracts` ebenfalls eine `status`-Spalte hat):
+
+```php
+// App\Models\ContractPayment
+public function scopeBounced($query)
+{
+    return $query->whereIn($query->qualifyColumn('status'), [
+        self::STATUS_FAILED,
+        self::STATUS_CHARGEDBACK,
+    ]);
+}
+```
+
+Der Weg vom Zahlungsdatensatz zum Kunden führt über den Vertrag: `contract_payments.contract_id → contracts.client_id` (Phorest-Client-ID; es gibt kein lokales Kundenmodell).
+
+**Aggregation pro Kunde** (Basisseite):
+
+```php
+ContractPayment::query()->bounced()
+    ->join('contracts', 'contracts.id', '=', 'contract_payments.contract_id')
+    ->whereNull('contracts.deleted_at')
+    ->groupBy('contracts.client_id')
+    ->select([
+        'contracts.client_id',
+        DB::raw('SUM(contract_payments.amount_cents) as debt_cents'),
+        DB::raw('COUNT(*) as bounced_count'),
+        DB::raw('MIN(contract_payments.due_date) as oldest_due'),
+    ])
+    ->orderByDesc('debt_cents')
+    ->get();
+```
+
+Der SoftDelete-Scope von `contract_payments` greift automatisch (Basismodell der Query); für `contracts` wird `deleted_at` explizit gefiltert. Beträge liegen wie überall in der App in **Cent** (`amount_cents`) vor.
+
+## Routen
+
+In der `hub`-Gruppe (`routes/web.php`), geschützt über `can:view_debts`:
+
+```php
+Route::middleware('can:view_debts')->group(function () {
+    Route::get('/debts', [DebtController::class, 'index'])->name('debts');
+    Route::get('/debts/failed-debits', [DebtController::class, 'failedDebits'])->name('debts.failed-debits');
+});
+```
+
+Die Sidebar hält den Menüpunkt über `request()->routeIs('hub.debts*')` auch auf der Unterseite aktiv.
+
+## Controller
+
+`DebtController` hat zwei Actions:
+
+- **`index()`** – aggregiert geplatzte Raten pro Kunde (siehe oben), reichert die Zeilen mit Kundennamen an und übergibt zusätzlich Gesamtkennzahlen an die View.
+- **`failedDebits()`** – lädt alle geplatzten Raten (`bounced()->with('contract')->orderByDesc('due_date')`) und mappt sie zeilenweise inkl. Status-Label/-Farbe, Fehlergrund und Vertrags-Link.
+
+## Wiederverwendete Bausteine
+
+Das Modul entstand primär durch **Wiederverwendung**:
+
+- **Kundennamen** werden über den Trait `ResolvesClientData::getClientDataBulk()` gebündelt aufgelöst (Cache-Key `client_data_{id}`, 300 s TTL, plus paralleler HTTP-Pool `PhorestApiService::getClientsParallel()` für nicht gecachte IDs). Der Trait wurde aus `ContractController` extrahiert und wird jetzt von beiden Controllern genutzt.
+- **Status-Labels/-Farben, Betragsformatierung** kommen aus den Accessors von `ContractPayment` (`status_label`, `status_color`, `formatted_amount`).
+- **UI** nutzt das bestehende Design-System (`table-glattt`, `card-glattt`, `badge-glattt`, `page-header-glattt`); Schuldenbeträge sind über `--color-danger` rot hervorgehoben.
+
+## Berechtigung
+
+Die Permission `view_debts` (Label „Schulden sehen", `group_key = schulden`) wird per Migration idempotent angelegt und `super_admin` + `admin` zugewiesen. Im Rollen-Editor erscheint sie in einer eigenen Gruppe **„Schulden"** (`RoleForm::groupMeta()`).
+
+Zum Nachziehen in bestehenden Umgebungen:
+
+```bash
+php artisan migrate            # Produktion / Staging
+# alternativ (idempotent):
+php artisan db:seed --class=PermissionSeeder
+```
+
+## Erweiterbarkeit
+
+Die Basis ist bewusst schmal gehalten. Naheliegende nächste Schritte:
+
+- **Weitere Schuldenquellen** neben geplatzten Lastschriften (z. B. überfällige, noch nicht eingezogene Raten). Für Letzteres existiert bereits `ContractPayment::scopeOverdue()`.
+- **Mahnwesen / Dunning** – die Infrastruktur `contract_payment_reminders` (Model `ContractPaymentReminder`, mit `level`, `fee_cents`, Versandkanälen) ist bereits vorhanden, aber noch nicht angebunden.
+- **Aktionen aus der Liste** – Wiederholung fehlgeschlagener Einzüge (`ContractPayment::scheduleRetry()`, Accessor `can_retry`) oder „als bezahlt markieren" (`markAsPaid()`) direkt aus der Schulden-Ansicht statt nur über das Vertragsdetail.
+- **Tab „Forderungsmanagement"** im Kundenprofil (siehe `CLIENT-DETAIL-MODULE.md`) könnte auf denselben Scope aufsetzen.
+
+Siehe auch: [Verträge & SEPA](CONTRACTS-SEPA-MODULE.md), [GoCardless API](GOCARDLESS-API.md), [Berechtigungssystem](BERECHTIGUNGSSYSTEM.md).
