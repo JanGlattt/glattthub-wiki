@@ -77,6 +77,21 @@ Netzwerk-Architektur (Load Balancer, SSL, IAP): siehe [Cloud-Infrastruktur](CLOU
 6. In `main` mergen: `git checkout main && git merge develop`
 7. Push auf `main` → automatisches Prod-Deployment
 
+### Datenbank-Migrationen
+
+DB-Struktur-Änderungen laufen **ausschließlich über Laravel-Migrationen** — es wird **kein manuelles SQL** mehr gegen Prod/Staging erzeugt oder ausgeführt. Der Docker-Entrypoint (`Dockerfile`, gleich für beide Umgebungen) führt beim Container-Start automatisch aus:
+
+```bash
+php artisan migrate --force --isolated
+```
+
+- `--isolated` nimmt einen atomaren Cache-Lock (Tabelle `cache_locks`), damit bei mehreren kaltstartenden Cloud-Run-Instanzen nur **eine** migriert; die anderen überspringen mit Exit 0.
+- Bewusst **ohne** `|| true`: Schlägt eine Migration fehl, wird die neue Revision nicht healthy und Cloud Run behält die alte — der Deploy scheitert sichtbar, statt Prod/Staging mit kaputtem Schema live zu nehmen.
+
+**Workflow:** Migration schreiben → lokal testen (`php artisan migrate`) → committen → Push auf `develop` (Staging) bzw. `main` (Prod). Die Migration wird beim Deploy automatisch gefahren.
+
+> **Hintergrund (08.07.2026):** Die `migrations`-Tabellen von Prod und Staging waren lange nicht mit den Migrationsdateien synchron — die Tabellen/Spalten/Rechte existierten im Schema, waren aber nicht als „gefahren" vermerkt (Nebeneffekt der DB-Kopie, die die `migrations`-Tabelle mitzieht). Ein deployter Filament-Page-Check auf ein fehlendes Recht ließ dadurch das ganze `/admin`-Panel mit HTTP 500 abstürzen. Beide `migrations`-Tabellen wurden einmalig abgeglichen (0 pending) und die tatsächlich fehlenden Migrationen (u. a. das restliche Laser-Modul, `custom_dashboards`, granulare Rechte) nachgezogen. Seitdem ist der Auto-Migrate beim Deploy ein No-Op bzw. fährt nur echte neue Migrationen.
+
 ### Cloud-Infrastruktur
 
 | Komponente | Produktion | Staging |
@@ -209,6 +224,8 @@ gcloud builds submit --config=cloudbuild-db-copy.yaml --no-source --project=glat
 ```
 
 **Wichtig:** Der SQL-Export von Cloud SQL enthält ein `USE glattthub;` Statement. Das `cloudbuild-db-copy.yaml` bereinigt dies automatisch mittels `sed`, damit die Daten in `glattthub_staging` landen.
+
+> **Achtung – Zusammenspiel mit Auto-Migrate:** Der Dump läuft mit `--ignore-table=…cache` **und** `…cache_locks`. Die `cache_locks`-Tabelle braucht der Container-Start aber für `migrate --isolated` (siehe [Datenbank-Migrationen](#datenbank-migrationen)). Fehlt sie nach einer DB-Kopie, scheitert der nächste Staging-Deploy am Isolation-Lock. Die db-copy muss `cache_locks` daher entweder mitkopieren (nicht ignorieren) oder nach dem Import per `CREATE TABLE IF NOT EXISTS cache_locks (…)` neu anlegen. Die kopierte `migrations`-Tabelle bringt zudem den Prod-Stand mit — nach dem Abgleich vom 08.07.2026 ist das der saubere Stand (0 pending).
 
 ### GoCardless Sandbox
 
