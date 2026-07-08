@@ -10,22 +10,79 @@ Die Terminübersicht unter `/hub/appointments` zeigt alle Termine eines Tages in
 
 | Feature | Beschreibung |
 |---------|--------------|
+| **KPI-Karten** | Drei Kennzahlen-Karten zu den Beratungen des gewählten Tages (Anzahl mit Aufschlüsselung, verkaufte Körperzonen, No-Shows mit Quote) |
 | **Datum-Navigation** | Flatpickr-Kalender mit Tag/Woche vor/zurück Buttons |
-| **Filialfilter** | Termine nach Filiale filtern (Sidebar) |
+| **"Heute"-Button** | Schneller Rücksprung zum heutigen Tag (nur sichtbar, wenn ein anderer Tag gewählt ist) |
+| **Filialfilter** | Termine nach Filiale filtern (Sidebar) — gilt auch für die KPI-Karten |
 | **Beratungs-Filter** | Button um nur Beratungsgespräche anzuzeigen |
 | **Ansichts-Wechsel** | Toggle zwischen Listen- und Kalenderansicht |
 | **Tageskalender** | Spalten pro Mitarbeiter mit Zeitachse (bei ausgewählter Filiale) |
 | **Status-Indikator** | Farbcodierte linke Kante zeigt Terminstatus |
+| **No-Show-Erkennung** | Erweiterte Logik inkl. überfälliger Termine und "Absage"-Pseudo-Mitarbeitern |
 | **Beratungs-Badge** | Goldenes Badge kennzeichnet Beratungsgespräche |
 | **"Jetzt"-Linie** | Rote Linie zeigt aktuelle Uhrzeit im Kalender |
 | **Kontaktdaten** | E-Mail und Telefon direkt in Karten-Header |
 | **Ausklappbare Services** | Behandlungsliste bei Bedarf einblenden |
+| **Responsive Layout** | Terminkarten und Header brechen auf schmalen Bildschirmen kontrolliert um |
 
 ### URL
 
 ```
 /hub/appointments
 ```
+
+---
+
+## 📊 KPI-Karten (Beratungen des Tages)
+
+Über der Terminliste zeigen drei Karten die wichtigsten Beratungs-Kennzahlen des **ausgewählten Tages** (Standard: heute). Sie reagieren auf den Filialfilter der Sidebar und aktualisieren sich bei jedem Tages- oder Filialwechsel.
+
+| Karte | Wert | Unterzeile |
+|-------|------|------------|
+| **Beratungen** | Anzahl aller Beratungsgespräche des Tages | Aufschlüsselung: **X** stattgefunden · **X** im Gange · **X** geplant |
+| **Verkaufte Körperzonen** | Summe der in Beratungen verkauften Körperzonen | aus **X** Abschlüssen |
+| **No-Shows** | Anzahl nicht erschienener Beratungskunden | Quote: **X %** (No-Shows ÷ alle Beratungen des Tages) |
+
+### Definitionen
+
+| Begriff | Bedeutung |
+|---------|-----------|
+| **Beratung** | Termin mit mindestens einem Service aus `consultation_services` (`is_consultation = true`); stornierte Termine zählen nicht |
+| **stattgefunden** | Status `COMPLETED` oder `PAID` (entspricht dem "Erledigt"-Badge) |
+| **im Gange** | Status `CHECKED_IN` |
+| **geplant** | `BOOKED`/`CONFIRMED`, sofern nicht als No-Show umklassifiziert |
+| **No-Show** | Siehe Abschnitt **No-Show-Logik** weiter unten |
+| **Verkaufte Körperzonen** | `effective_body_zones_count` aus dem Beratungsprotokoll — nur bei Outcome "Vertrag abgeschlossen" (`contract_signed`); Ganzkörper = 6 Zonen |
+
+Die drei Werte der Aufschlüsselung plus die No-Shows ergeben zusammen immer die Gesamtzahl. An vergangenen Tagen stehen "im Gange" und "geplant" auf 0.
+
+### Ladeverhalten (Skeleton)
+
+- Beim Laden (initial, Tages- oder Filialwechsel) zeigen die Karten Shimmer-Platzhalter (`skeleton-glattt`) für Wert und Unterzeile; Label und Icon bleiben stehen.
+- Das Blade-Template rendert dieselben Skeleton-Karten statisch, damit vor dem ersten JS-Lauf nichts springt.
+- Die Werte erscheinen erst, wenn **auch die Mitarbeiterdaten** geladen sind (`staffDataLoaded`), weil die No-Show-Erkennung die Mitarbeiternamen braucht ("Absage"-Regel) — sonst würden die Zahlen nachträglich aufspringen.
+
+### Technik
+
+- Berechnung komplett client-seitig in `getConsultationKpis()` (`public/js/appointments.js`) aus den bereits geladenen Termindaten — **keine zusätzlichen API-Aufrufe**.
+- Die Termin-Endpoints reichern jeden Termin server-seitig mit den Beratungsprotokoll-Feldern an (`PhorestController`): `hasConsultationRecord`, `consultationOutcome`, `consultationBodyZonesCount` (nur abgeschlossene Protokolle, `is_completed = true`).
+- Rendering über `renderKpis()` / `renderKpiCard()` mit den bestehenden `.kpi-card`-Klassen aus `theme_glattt.css`; die Unterzeile nutzt die neue, wiederverwendbare Klasse `.kpi-card-breakdown` (größere Schrift, Zahlen fett in Primärtextfarbe via `<b>`).
+- Kartendefinitionen (Label, Icon, Farbe) zentral in `kpiCardDefs()`, damit Skeleton- und Normalzustand aus derselben Quelle rendern.
+- Grid: `#appointments-kpis`, 3-spaltig, unter 900px einspaltig.
+
+---
+
+## 🚫 No-Show-Logik
+
+Der effektive Terminstatus wird zentral in `getState(apt)` (`appointments.js`) bestimmt und gilt **überall auf dieser Seite**: Badge, farbige Statuslinie links an der Karte, Kalenderansicht und KPI-Karten. Ein Termin gilt als **No-Show**, wenn eine der Regeln zutrifft:
+
+1. **Expliziter Status** `NO_SHOW` aus Phorest.
+2. **Überfällig:** Status `BOOKED`/`CONFIRMED`, aber die Endzeit liegt in der Vergangenheit (vergangener Tag, oder heute mehr als 30 Minuten vorbei).
+3. **"Absage"-Pseudo-Mitarbeiter:** Der zugeordnete Mitarbeitername enthält "Absage" (Groß-/Kleinschreibung egal), z.B. `BS. Absage weniger als 24 st/ Nicht gekommen`. Diese Regel überschreibt auch `COMPLETED`/`PAID` — solche Termine zählen also **nicht** als stattgefunden.
+
+**Ausnahme:** Stornierte Termine (`CANCELLED`) bleiben storniert und werden nicht umklassifiziert.
+
+> **Hinweis:** Die Mitarbeiternamen kommen per Batch-API nach dem ersten Rendern der Liste. Ein Absage-Termin kann daher kurz sein ursprüngliches Badge zeigen und springt dann auf "No Show" um (gleiche Progressive-Loading-Mechanik wie bei den Kundennamen).
 
 ---
 
@@ -94,6 +151,11 @@ Die Datumsauswahl verwendet **Flatpickr** mit deutscher Lokalisierung und bietet
 | `‹` | 1 Tag zurück | - |
 | `›` | 1 Tag vor | - |
 | `»»` | 1 Woche vor | - |
+| `Heute` | Zurück zum heutigen Tag | - |
+
+### "Heute"-Button
+
+Rechts neben den Pfeilen erscheint ein **"Heute"**-Button (`#date-today`, Klasse `.date-nav__today`) — aber nur, wenn ein anderer Tag als heute ausgewählt ist. Ein Klick springt zurück zu heute (`goToToday()`), aktualisiert den Datepicker und lädt Termine + KPIs neu. Die Sichtbarkeit steuert `updateTodayButton()`, zentral aufgerufen in `loadAppointments()`, sodass jeder Navigationsweg (Pfeile, Wochensprung, Datepicker) abgedeckt ist.
 
 ### Flatpickr Konfiguration
 
@@ -167,21 +229,49 @@ Termine mit **Beratungsgesprächen** werden mit einem goldenen Badge hervorgehob
 
 ---
 
+## 📱 Responsive Verhalten
+
+### Terminkarten (apt-card)
+
+Die Terminkarten haben vier Layout-Stufen (Breakpoints in `theme_glattt.css`):
+
+| Breite | Layout |
+|--------|--------|
+| **> 1440px** | Einzeilig: Zeit · Kunde · Mitarbeiter/Filiale nebeneinander · Badge · Aktionen |
+| **1141–1440px** | Mitarbeiter und Filiale **gestapelt** (Spalte, max. 13rem, lange Namen brechen um), damit der Kundenname nicht abgeschnitten wird |
+| **641–1140px** | Zweizeilig: Mitarbeiter/Filiale in eigener Zeile **linksbündig unter dem Kundennamen**; Zeit-Pille, Status-Badge und Aktionen **vertikal zentriert** über die volle Kartenhöhe |
+| **≤ 640px** | Mobile: alles gestapelt, Button volle Breite |
+
+Zusätzlich darf die **Kundenzeile umbrechen** (`flex-wrap` auf `.apt-card__client-row`): Bei Platzmangel rutschen ID-Chip und Beratungs-Badge unter den Namen, statt ihn auf wenige Zeichen zusammenzudrücken.
+
+### Seiten-Header
+
+Der Header (Titel + Beratung-Button + Datumsauswahl) nutzt die Wrapper-Klasse `.appointments-page` als **CSS-Container** (`container-type: inline-size`), gescoped in `theme_glattt.css`:
+
+- **Breit:** Alles in einer Zeile rechts vom Titel.
+- **Zu schmal für eine Zeile:** Die Actions bleiben rechts neben dem Titel und brechen **intern** um — Beratung-Button oben, Datumsauswahl geschlossen darunter (der äußere Umbruch ist per `flex-wrap: nowrap` unterbunden).
+- **Sehr schmal (< 660px Inhaltsbreite, Container-Query):** Titel oben, darunter linksbündig gestapelt Button / Datumsauswahl / View-Toggle.
+
+Die Container-Query reagiert auf die tatsächliche Inhaltsbreite neben der Sidebar — Media-Queries können den Sidebar-Zustand (ausgeklappt/eingeklappt/Overlay) nicht kennen. Browser-Support: Chrome 105+, Safari 16+, Firefox 110+; ältere Browser verlieren nur den Mobile-Sonderfall.
+
+Global wurde `.page-header-glattt-actions` (alle Hub-Seiten) auf `flex-wrap: wrap` umgestellt und `flex-shrink: 0` entfernt: Bei Platzmangel brechen die Actions als ganze Blöcke um, statt rechts abgeschnitten zu werden.
+
+---
+
 ## 📁 Dateistruktur
 
 ```
 public/
 ├── css/
-│   └── theme_glattt.css       # apt-card Styles & CSS-Variablen
+│   └── theme_glattt.css       # apt-card Styles, KPI-Karten, Header-/Responsive-Regeln
 └── js/
-    └── appointments.js         # Alpine.js Komponente
+    └── appointments.js         # Vanilla-JS-Klasse AppointmentsPage (window.aptPage)
 
 resources/views/hub/
-└── appointments/
-    └── index.blade.php        # Blade-Template
+└── appointments.blade.php     # Blade-Template (Header, KPI-Skeletons, Container)
 
 app/Http/Controllers/
-└── PhorestController.php      # API-Endpoints für Termine
+└── PhorestController.php      # API-Endpoints für Termine (inkl. Beratungsprotokoll-Anreicherung)
 ```
 
 ---
@@ -192,10 +282,13 @@ app/Http/Controllers/
 
 | Endpoint | Beschreibung |
 |----------|--------------|
-| `GET /phorest/appointments` | Termine für Datum + Filiale |
-| `GET /phorest/clients/batch` | Kundendaten (max 50 IDs pro Anfrage) |
-| `GET /phorest/staff/batch` | Mitarbeiterdaten (max 50 IDs pro Anfrage) |
+| `GET /phorest/branch/{branchId}/appointment` | Termine für Datum + Filiale |
+| `GET /phorest/appointment/all` | Termine für Datum über alle Filialen |
+| `POST /phorest/clients/batch` | Kundendaten (50er-Batches, parallel) |
+| `POST /phorest/staff/batch` | Mitarbeiterdaten (50er-Batches, parallel) |
 | `GET /phorest/consultation-services` | Liste der Beratungs-Service-IDs |
+
+Beide Termin-Endpoints reichern die Antwort server-seitig mit Beratungsprotokoll-Daten an (`ConsultationRecord`, nur `is_completed = true`): `hasConsultationRecord`, `consultationOutcome`, `consultationOutcomeLabel`, `consultationBodyZonesCount` sowie Follow-Up-Termindaten. Die KPI-Karten konsumieren diese Felder direkt.
 
 ### Batch-Fetching (Performance-Optimierung)
 
@@ -307,6 +400,17 @@ SELECT * FROM consultation_services WHERE is_consultation = 1 AND is_active = 1;
 | `.filter-toggle` | Beratungs-Filter Button |
 | `.filter-toggle--active` | Aktiver Filter-Zustand |
 
+**KPI-Karten & Header:**
+
+| Klasse / ID | Beschreibung |
+|--------|--------------|
+| `#appointments-kpis` | Grid-Container der drei KPI-Karten (3-spaltig, < 900px einspaltig) |
+| `.kpi-card` | KPI-Karte (geteiltes Karten-Design aus `theme_glattt.css`, auch von den Report-Seiten genutzt) |
+| `.kpi-card-breakdown` | Auffälligere Unterzeile mit hervorgehobenen Zahlen (`<b>`) |
+| `.skeleton-glattt` | Shimmer-Platzhalter beim Laden |
+| `.appointments-page` | Seiten-Wrapper, CSS-Container für Header-Container-Query |
+| `.date-nav__today` | "Heute"-Button in der Datums-Navigation |
+
 **Kalender-Ansicht (Day Schedule):**
 
 | Klasse | Beschreibung |
@@ -334,6 +438,16 @@ SELECT * FROM consultation_services WHERE is_consultation = 1 AND is_active = 1;
 1. **Navigation:** Klicke auf "Termine" im Hauptmenü oder gehe zu `/hub/appointments`
 2. **Filiale wählen:** Dropdown für Filiale nutzen (falls mehrere)
 
+### KPI-Karten lesen
+
+Oben auf der Seite zeigen drei Karten die Beratungs-Kennzahlen des angezeigten Tages:
+
+1. **Beratungen** — Wie viele Beratungsgespräche heute anstehen, darunter wie viele schon stattgefunden haben, gerade laufen und noch geplant sind.
+2. **Verkaufte Körperzonen** — Wie viele Körperzonen heute in Beratungen verkauft wurden und aus wie vielen Vertragsabschlüssen.
+3. **No-Shows** — Wie viele Beratungskunden nicht erschienen sind, mit Quote.
+
+Die Karten folgen dem gewählten Tag (blätterst du auf ein anderes Datum, zeigen sie dessen Zahlen) und dem Filialfilter der Sidebar. Während des Ladens erscheinen animierte Platzhalter.
+
 ### Datum navigieren
 
 Die Datums-Auswahl befindet sich oben rechts mit praktischen Schnell-Buttons:
@@ -345,6 +459,7 @@ Die Datums-Auswahl befindet sich oben rechts mit praktischen Schnell-Buttons:
 | **Datumsfeld** | Klick öffnet Kalender-Popup |
 | `›` (Pfeil rechts) | Einen Tag vor |
 | `»»` (Doppelpfeil rechts) | Eine Woche vor |
+| **Heute** | Zurück zum heutigen Tag (erscheint nur, wenn ein anderer Tag gewählt ist) |
 
 **Tipps:**
 - Das Datum wird im Format "Mo, 23. Feb 2026" angezeigt
@@ -478,6 +593,17 @@ AND is_active = 1;
 ---
 
 ## 📝 Changelog
+
+### Juli 2026
+
+- ✨ **Neu:** Drei KPI-Karten über der Terminliste (Beratungen mit Aufschlüsselung stattgefunden/im Gange/geplant, verkaufte Körperzonen, No-Shows mit Quote) — folgen Tag und Filialfilter, ohne zusätzliche API-Aufrufe
+- ✨ **Neu:** Skeleton-Loading für die KPI-Karten (wartet auf Mitarbeiterdaten, um Wertesprünge zu vermeiden)
+- ✨ **Neu:** "Heute"-Button in der Datums-Navigation (nur sichtbar bei anderem Tag)
+- ✨ **Neu:** No-Show-Regel für "Absage"-Pseudo-Mitarbeiter — seitenweit (Badges, Statuslinien, Kalender, KPIs); storniert bleibt storniert
+- ✨ **Neu:** CSS-Klasse `.kpi-card-breakdown` für auffälligere KPI-Unterzeilen mit hervorgehobenen Zahlen
+- 🎨 **Responsive:** Terminkarten mit neuer Zwischenstufe (1141–1440px: Mitarbeiter/Filiale gestapelt); zweizeiliges Layout ab 1140px mit Meta linksbündig unter dem Namen und vertikal zentrierten Badges/Buttons; Kundenzeile bricht um statt Namen abzuschneiden
+- 🎨 **Responsive:** Header-Actions brechen blockweise um (Beratung-Button | Datumsauswahl), Container-Query für schmale Inhaltsbreiten (`.appointments-page`)
+- 🐛 **Fix:** `getState()` nimmt jetzt das ganze Termin-Objekt (Signaturänderung für die Absage-Regel)
 
 ### Februar 2026
 
