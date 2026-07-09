@@ -19,7 +19,7 @@ Die Terminübersicht unter `/hub/appointments` zeigt alle Termine eines Tages in
 | **Tageskalender** | Spalten pro Mitarbeiter mit Zeitachse (bei ausgewählter Filiale) |
 | **Status-Indikator** | Farbcodierte linke Kante zeigt Terminstatus |
 | **No-Show-Erkennung** | Erweiterte Logik inkl. überfälliger Termine und "Absage"-Pseudo-Mitarbeitern |
-| **Beratungs-Badge** | Goldenes Badge kennzeichnet Beratungsgespräche |
+| **Beratungs-Badge** | Goldenes Badge kennzeichnet Beratungsgespräche; bei Abschluss inkl. Anzahl der verkauften Körperzonen (z.B. "Beratung · 4 Zonen") |
 | **"Jetzt"-Linie** | Rote Linie zeigt aktuelle Uhrzeit im Kalender |
 | **Kontaktdaten** | E-Mail und Telefon direkt in Karten-Header |
 | **Ausklappbare Services** | Behandlungsliste bei Bedarf einblenden |
@@ -52,7 +52,7 @@ Die Terminübersicht unter `/hub/appointments` zeigt alle Termine eines Tages in
 | **im Gange** | Status `CHECKED_IN` |
 | **geplant** | `BOOKED`/`CONFIRMED`, sofern nicht als No-Show umklassifiziert |
 | **No-Show** | Siehe Abschnitt **No-Show-Logik** weiter unten |
-| **Verkaufte Körperzonen** | `effective_body_zones_count` aus dem Beratungsprotokoll — nur bei Outcome "Vertrag abgeschlossen" (`contract_signed`); Ganzkörper = 6 Zonen |
+| **Verkaufte Körperzonen** | Summe `body_zone_count` aus der `contracts`-Tabelle: Verträge mit `signed_at` am Stichtag, Status `active`/`completed`, nicht gelöscht — gleiche Zähllogik wie der Staff-Performance-Report. (Die Beratungsprotokolle wären die naheliegende Quelle, werden in der Praxis aber nicht gepflegt — Abschlüsse landen direkt als Vertrag.) |
 
 Die drei Werte der Aufschlüsselung plus die No-Shows ergeben zusammen immer die Gesamtzahl. An vergangenen Tagen stehen "im Gange" und "geplant" auf 0.
 
@@ -60,12 +60,12 @@ Die drei Werte der Aufschlüsselung plus die No-Shows ergeben zusammen immer die
 
 - Beim Laden (initial, Tages- oder Filialwechsel) zeigen die Karten Shimmer-Platzhalter (`skeleton-glattt`) für Wert und Unterzeile; Label und Icon bleiben stehen.
 - Das Blade-Template rendert dieselben Skeleton-Karten statisch, damit vor dem ersten JS-Lauf nichts springt.
-- Die Werte erscheinen erst, wenn **auch die Mitarbeiterdaten** geladen sind (`staffDataLoaded`), weil die No-Show-Erkennung die Mitarbeiternamen braucht ("Absage"-Regel) — sonst würden die Zahlen nachträglich aufspringen.
+- Die Werte erscheinen erst, wenn **auch die Mitarbeiterdaten** (`staffDataLoaded`, für die "Absage"-No-Show-Regel) **und die Vertragsdaten** (`contractStats`, für die Körperzonen-Karte) geladen sind — sonst würden die Zahlen nachträglich aufspringen.
 
 ### Technik
 
-- Berechnung komplett client-seitig in `getConsultationKpis()` (`public/js/appointments.js`) aus den bereits geladenen Termindaten — **keine zusätzlichen API-Aufrufe**.
-- Die Termin-Endpoints reichern jeden Termin server-seitig mit den Beratungsprotokoll-Feldern an (`PhorestController`): `hasConsultationRecord`, `consultationOutcome`, `consultationBodyZonesCount` (nur abgeschlossene Protokolle, `is_completed = true`).
+- Beratungs-/No-Show-Zahlen client-seitig in `getConsultationKpis()` (`public/js/appointments.js`) aus den bereits geladenen Termindaten; die Körperzonen-Karte lädt parallel `GET /phorest/daily-contract-stats?date=…&branch_id=…` (`PhorestController::dailyContractStats`, aggregiert aus `contracts`).
+- Die Termin-Endpoints reichern jeden Termin zusätzlich server-seitig mit den Beratungsprotokoll-Feldern an (`hasConsultationRecord`, `consultationOutcome`, `consultationBodyZonesCount`) — diese werden aktuell nur an anderen Stellen genutzt, nicht für die KPI-Karten.
 - Rendering über `renderKpis()` / `renderKpiCard()` mit den bestehenden `.kpi-card`-Klassen aus `theme_glattt.css`; die Unterzeile nutzt die neue, wiederverwendbare Klasse `.kpi-card-breakdown` (größere Schrift, Zahlen fett in Primärtextfarbe via `<b>`).
 - Kartendefinitionen (Label, Icon, Farbe) zentral in `kpiCardDefs()`, damit Skeleton- und Normalzustand aus derselben Quelle rendern.
 - Grid: `#appointments-kpis`, 3-spaltig, unter 900px einspaltig.
@@ -227,6 +227,17 @@ Termine mit **Beratungsgesprächen** werden mit einem goldenen Badge hervorgehob
 
 **Aktivierung:** Wenn eine der gebuchten Leistungen in der `consultation_services`-Tabelle als Beratungsleistung markiert ist (`is_consultation = true`).
 
+**Zonen-Angabe:** Hat der Kunde am selben Tag in derselben Filiale einen Vertrag abgeschlossen (`contracts`, Status `active`/`completed`), zeigt das Badge zusätzlich die verkauften Körperzonen, z.B. "Beratung · 4 Zonen". Zuordnung über die `byClient`-Daten des `daily-contract-stats`-Endpoints (`getContractZones()` in `appointments.js`).
+
+**Varianten (Abschluss gewinnt immer, sonst effektiver Status):**
+
+| Variante | Zustand | Optik |
+|----------|---------|-------|
+| Standard | **Abschluss** (verkaufte Zonen, egal welcher Status) sowie Im Gange und Storniert | Gold gefüllt, weiße Schrift |
+| `--completed` | Stattgefunden (`COMPLETED`/`PAID`) ohne Abschluss | Ausgegraut (wie das "Erledigt"-Pill) |
+| `--upcoming` | Steht noch aus (`BOOKED`/`CONFIRMED`) | Invertiert: heller Hintergrund, goldene Schrift, goldener Rahmen |
+| `--noshow` | No-Show (inkl. Überfällig- und Absage-Regel) | Rot (wie das "No Show"-Pill) |
+
 ---
 
 ## 📱 Responsive Verhalten
@@ -287,6 +298,7 @@ app/Http/Controllers/
 | `POST /phorest/clients/batch` | Kundendaten (50er-Batches, parallel) |
 | `POST /phorest/staff/batch` | Mitarbeiterdaten (50er-Batches, parallel) |
 | `GET /phorest/consultation-services` | Liste der Beratungs-Service-IDs |
+| `GET /phorest/daily-contract-stats` | Abschlüsse + verkaufte Körperzonen eines Tages aus `contracts` (Parameter: `date`, optional `branch_id`); zusätzlich `byClient`-Liste pro Kunde/Filiale für die Zonen-Angabe im Beratungs-Badge |
 
 Beide Termin-Endpoints reichern die Antwort server-seitig mit Beratungsprotokoll-Daten an (`ConsultationRecord`, nur `is_completed = true`): `hasConsultationRecord`, `consultationOutcome`, `consultationOutcomeLabel`, `consultationBodyZonesCount` sowie Follow-Up-Termindaten. Die KPI-Karten konsumieren diese Felder direkt.
 
@@ -596,6 +608,9 @@ AND is_active = 1;
 
 ### Juli 2026
 
+- ✨ **Neu:** Beratungs-Badge zeigt bei Abschluss die Anzahl der verkauften Körperzonen ("Beratung · 4 Zonen"), zugeordnet über Kunde + Filiale + Tag
+- ✨ **Neu:** Beratungs-Badge-Varianten: Abschluss immer gold, stattgefunden ohne Abschluss ausgegraut, noch ausstehend invertiert (goldene Schrift + Rahmen), No-Show rot
+- 🐛 **Fix:** "Verkaufte Körperzonen" zählt jetzt aus der `contracts`-Tabelle (neuer Endpoint `daily-contract-stats`) statt aus den Beratungsprotokollen — die werden in der Praxis nicht gepflegt, wodurch die Karte immer 0 zeigte
 - ✨ **Neu:** Drei KPI-Karten über der Terminliste (Beratungen mit Aufschlüsselung stattgefunden/im Gange/geplant, verkaufte Körperzonen, No-Shows mit Quote) — folgen Tag und Filialfilter, ohne zusätzliche API-Aufrufe
 - ✨ **Neu:** Skeleton-Loading für die KPI-Karten (wartet auf Mitarbeiterdaten, um Wertesprünge zu vermeiden)
 - ✨ **Neu:** "Heute"-Button in der Datums-Navigation (nur sichtbar bei anderem Tag)
