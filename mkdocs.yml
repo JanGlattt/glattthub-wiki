@@ -122,6 +122,7 @@ nav:
     - glattt-Pakete & Verträge: glatttPakete.md
     - GoCardless API: GOCARDLESS-API.md
     - Gutscheine: GUTSCHEINE-MODULE.md
+    - Gutschein-Verkauf (Online): GUTSCHEIN-VERKAUF.md
   - Laser:
     - Laser-Modul: LASER-MODUL.md
   - Institute & Personal:
