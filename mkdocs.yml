@@ -123,6 +123,7 @@ nav:
     - GoCardless API: GOCARDLESS-API.md
     - Gutscheine: GUTSCHEINE-MODULE.md
     - Gutschein-Verkauf (Online): GUTSCHEIN-VERKAUF.md
+    - Erfolgsanimation (Return-Seite): ERFOLGS-ANIMATION.md
   - Laser:
     - Laser-Modul: LASER-MODUL.md
   - Institute & Personal:
@@ -136,8 +137,10 @@ nav:
     - Berechtigungssystem: BERECHTIGUNGSSYSTEM.md
   - Kommunikation:
     - E-Mail Versand: EMAIL-VERSAND.md
+    - E-Mail-Protokoll (zentral): EMAIL-PROTOKOLL.md
     - Benachrichtigungen: NOTIFICATIONS.md
     - Superchat / WhatsApp: SUPERCHAT-WHATSAPP.md
+    - Beratungs-WhatsApp (Automatisierung): BERATUNGS-WHATSAPP.md
     - Superchat-Kontakte & Sync: SUPERCHAT-KONTAKTE.md
   - Berichte:
     - Reports-Modul: REPORTS-MODULE.md
