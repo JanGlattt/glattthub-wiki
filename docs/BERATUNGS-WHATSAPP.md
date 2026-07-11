@@ -21,7 +21,8 @@ Automatische WhatsApp-Nachricht an Kunden bei ihrer **ersten Beratungsbuchung** 
 
 ### Wann wird gesendet?
 
-- Sobald der Phorest-Sync (Cron, alle paar Minuten) eine **neue Beratungsbuchung** erkennt — standardmäßig sofort.
+- **Live-Trigger (Standard):** Das Online-Buchungswidget meldet jede abgeschlossene Buchung sofort per API (`booking_trackings`) — die WhatsApp geht innerhalb von Sekunden raus, ohne auf einen Sync zu warten.
+- **Auffangnetz:** Der Phorest-Sync (`sync:upcoming-consultations`, Cron) erkennt zusätzlich Beratungen, die nicht übers Widget gebucht wurden (telefonisch, direkt in Phorest). Die Dedupe je Termin verhindert Doppel-Nachrichten.
 - **Optionales Zeitfenster je Standort** („Versand frühestens ab / spätestens bis"): Ist eines konfiguriert, werden Buchungen außerhalb des Fensters bis zum nächsten Fensterbeginn zurückgehalten (z.B. nächtliche Buchung → Versand am Morgen). Beide Felder leer = sofort. Fenster über Mitternacht (z.B. 21:00–08:00) werden unterstützt.
 - **Nur bei der allerersten Beratung eines Kunden**: Hatte der Kunde schon einmal einen Beratungstermin (kommend oder historisch), wird übersprungen.
 - Pro Termin maximal **eine** Nachricht (auch bei mehrfachen Sync-Läufen).
@@ -43,7 +44,12 @@ Fehlgeschlagene Einträge haben eine Aktion **„Erneut versuchen"**, die den Ve
 
 ## Für Entwickler
 
-**Datenfluss:** `sync:upcoming-consultations` (Cron) legt neue Zeilen in `upcoming_consultations` an → `UpcomingConsultationObserver::created()` prüft Status (`booked`) und ob der Standort aktiviert ist → dispatcht `SendConsultationWhatsappJob` (Queue `default`).
+**Datenfluss (zwei Trigger, eine Pipeline):**
+
+1. **Live (Widget):** `POST /api/v1/booking-trackings` → `BookingTrackingObserver::created()` (Beratungs-Service? Standort aktiv? Termin noch unbekannt?) → `RegisterConsultationBookingJob` holt die Termindetails aus Phorest (`getAppointment`) und legt die Zeile in `upcoming_consultations` an → deren Observer übernimmt. Schlägt der Phorest-Abruf dauerhaft fehl (3 Versuche, Backoff), bleibt keine halbe Zeile zurück — der Sync fängt nachts auf.
+2. **Sync (Auffangnetz):** `sync:upcoming-consultations` (Cron) legt neue Zeilen in `upcoming_consultations` an (Upsert über `appointment_id` — vom Live-Trigger angelegte Zeilen werden nur aktualisiert).
+
+Beide Wege münden in `UpcomingConsultationObserver::created()` → prüft Status (`booked`) und ob der Standort aktiviert ist → dispatcht `SendConsultationWhatsappJob` (Queue `default`).
 
 **Job** (`app/Jobs/SendConsultationWhatsappJob.php`, `$tries = 1` — bewusst keine Auto-Retries, Wiederholung manuell übers Protokoll):
 
