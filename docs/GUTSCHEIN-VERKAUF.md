@@ -24,6 +24,7 @@ Pro Produkt konfigurierbar:
 | Verkauf ab / bis (Kauffenster) | Optionaler Zeitraum, in dem das Produkt kaufbar ist — außerhalb ist es auf **keinem** Kaufweg erwerbbar (auch nicht über alte Links) |
 | Kauf-Limit | 1×, N× oder unbegrenzt pro Kund:in (Match über Phorest-Kunde bzw. E-Mail) |
 | Adressfelder | Ein-/ausblendbar — aus = schlanker Checkout (empfohlen) |
+| Gebunden an Käufer | **Personengebundener Gutschein**: keine Geschenk-PDF-Option, und Kaufseite, Warenkorb & Kauf-Mail weisen darauf hin, dass nur der Käufer einlösen darf. Die Einstellung wird pro Bestellposition eingefroren — spätere Änderungen wirken nicht rückwirkend |
 | Standard-Institut | Vorauswahl der Institut-Wahl im Checkout; nur noch Fallback, falls die Institut-Liste nicht ladbar ist |
 
 Jedes aktive Produkt hat eine **generische Kaufseite** ohne Prefill: `https://hub.glattt.com/shared/voucher/p/{slug}` (Link-Symbol in der Produktliste).
@@ -106,8 +107,18 @@ Aktionen auf der Detailseite (Recht: `manage_voucher_sales`):
    - **Karte**: Eingabe direkt auf der Seite (eingebettete Mollie-Components-Felder im glattt-Design) — kein Redirect. Nur wenn die Bank 3D Secure verlangt, gibt es eine kurze Weiterleitung zur Bankfreigabe.
    - **PayPal, Klarna & Co.**: Weiterleitung direkt in den Anbieter-Flow (ohne Mollie-Zwischenseite), danach zurück auf unsere Statusseite.
 3. Statusseite aktualisiert sich automatisch, sobald die Zahlung bestätigt ist.
-4. E-Mail mit Gutschein-Code (8-stellige Seriennummer), Wert, Gültigkeit und Rechnung als PDF.
-5. Einlösung im Institut: Gutschein-Code nennen — Phorest verrechnet ihn wie jeden anderen Gutschein.
+4. E-Mail mit Gutschein-Code (8-stellige Seriennummer), Wert, Gültigkeit und Rechnung als PDF. Unter jedem Code steht der Link **„PDF-Gutschein zum Verschenken erstellen"** (außer bei personengebundenen Produkten — dort erscheint stattdessen der Hinweis, dass nur der Käufer einlösen darf).
+5. Einlösung im Institut: Gutschein-Code nennen oder den QR-Code vom Geschenk-PDF vorzeigen — Phorest verrechnet ihn wie jeden anderen Gutschein.
+
+### Geschenkgutschein-PDF (zum Verschenken)
+
+Über den Link in der Kauf-Mail öffnet der Kunde eine öffentliche Seite (kein Login) mit einer **Live-Vorschau** des Geschenkgutscheins im Design der glattt Welcome-Karte („Bye Rasieren. Hallo Freiheit."). Drei optionale Felder — **Für**, **Von**, **Anlass** — spiegeln sich beim Tippen sofort in der Vorschau; leere Felder erscheinen nicht im PDF. „PDF-Gutschein herunterladen" erzeugt ein **A5-Querformat-PDF** zum Ausdrucken oder digitalen Verschicken:
+
+- Links der **Gutscheinwert im goldenen Kasten** (Cents hochgestellt), darunter die Personalisierung.
+- Unten rechts auf dem Gold-Bogen der weiße **Einlöse-Kasten**: QR-Code (enthält den Gutscheincode, funktioniert gedruckt wie vom Bildschirm), Code in 4er-Gruppen und Ablaufdatum.
+- Bei Teilverfall gibt es **je Code ein eigenes PDF** (Grundbetrag und Bonus-Guthaben haben je einen eigenen Link in der Mail).
+
+Es wird nichts gespeichert — jeder Download rendert frisch mit den aktuellen Feldwerten. Nach einer **Stornierung** funktioniert der Link nicht mehr; bei Produkten mit **„Gebunden an Käufer"** gibt es die Option gar nicht.
 
 ---
 
@@ -171,6 +182,8 @@ GET  /shared/gutscheine/kasse       Warenkorb-Kasse (mehrere Positionen)
 POST /api/shared/voucher/cart       In den Warenkorb (Session, throttle:form-submit)
 GET  /shared/voucher/p/{slug}       generische Kaufseite (Produkt-Slug)
 GET  /shared/voucher/return/{uuid}  Return-Seite nach Mollie-Zahlung
+GET  /shared/voucher/gift/{token}/{serial}       Geschenk-Seite (Live-Vorschau + Felder)
+GET  /shared/voucher/gift/{token}/{serial}/pdf   Geschenk-PDF-Download (?to&from&message)
 GET  /shared/voucher/{token}        personalisierte Kaufseite (Prefill)
 ```
 
@@ -179,6 +192,17 @@ Alle mit `throttle:shared-page`; Checkout-Submit zusätzlich per `RateLimiter` i
 Die Return-Seite zeigt bei Pending/Erfolg eine animierte Sequenz (Kasse → Umschlag → Haken) — Details und Wiederverwendung: [ERFOLGS-ANIMATION.md](ERFOLGS-ANIMATION.md).
 
 **Erneuter Versuch nach fehlgeschlagener Zahlung:** „Erneut versuchen" führt zurück auf den **vorbefüllten Checkout** (`?retry={uuid}` — Prefill via `VoucherCheckoutPage::prefillFromRetryOrder()`, nur für unbezahlte Bestellungen desselben Produkts). Der Kunde kann dort eine andere Zahlart wählen und seine Angaben korrigieren; der Kauf läuft als neue Bestellung. Bevorzugt wird der noch gültige Kauf-Link (behält Branch + Phorest-Client), sonst die generische Produktseite (`VoucherReturnPage::buildRetryUrl()`). Ist beides nicht verfügbar (Produkt deaktiviert, Token abgelaufen), greift der Fallback `retryPayment()` — neue Mollie-Zahlung auf derselben Bestellung mit freier Methodenwahl im Hosted Checkout. Alte `pending`/`payment_failed`-Bestellungen räumt der Reconcile-Cron ab; das Kauf-Limit zählt ohnehin nur bezahlte Bestellungen.
+
+### Geschenkgutschein-PDF & Personenbindung (Entwickler)
+
+- **Zugriff**: `voucher_orders.gift_token` (`Str::random(64)`, unique) wird in `SendVoucherEmailJob` vor dem Versand erzeugt (`VoucherOrder::ensureGiftToken()`) — nur wenn mindestens eine Position nicht personengebunden ist. Auflösung in `SharedVoucherController::resolveGiftPart()`: 404 bei unbekanntem Token, fremder Seriennummer, personengebundener Position oder Status außerhalb `voucher_created|delivered` (→ Storno entwertet die Links). `VoucherOrder::giftPartForSerial()` liefert den Anteil (Grund- oder Bonus-Gutschein) mit Wert, Ablauf und Label.
+- **Personenbindung**: `voucher_products.buyer_bound` + Snapshot `voucher_order_items.buyer_bound` (gesetzt in `createOrderWithItems()`, Filament-Toggle „Gebunden an Käufer"). Hinweise: Kaufseite (`$buyerBound` in `VoucherCheckoutPage`), Kassen-Positionsliste (`buyer_bound` im Cart-Item-Array), Warenkorb-Popover (`note` im `cartPayload()`), Shop-Karte (ersetzt „ideal als Geschenk") und Kauf-Mail (statt Geschenk-Link).
+- **PDF**: `resources/views/pdf/voucher-gift.blade.php` (dompdf, A5 quer, `margin: 0`): `public/images/WelcomeKarte.png` als Ganzseiten-Hintergrund (base64), Overlays absolut positioniert in pt. Die **Live-Vorschau** (`resources/views/shared/voucher-gift.blade.php`, Vanilla-JS, kein Livewire) spiegelt dieselbe Geometrie in Prozentwerten (`cqw`-Einheiten) — Änderungen am PDF-Layout immer in beiden Dateien nachziehen.
+- **QR-Code**: `chillerlan/php-qrcode` (bereits als Dependency vorhanden), PNG-Daten-URI via GD, **Fehlerkorrektur-Level H** (30 % Redundanz), Inhalt = Gutscheincode (`SharedVoucherController::giftQrDataUri()`). Gleicher QR in Vorschau und PDF.
+- **Dosis Bold**: Die dompdf-Registry kannte nur die Default-Instanz des Variable-Fonts (alle Gewichte identisch). Der statische Schnitt `public/fonts/Dosis-Bold.ttf` wird per `@font-face` im PDF-Template registriert; die generierten Font-Caches liegen versioniert in `storage/fonts/` (`installed-fonts.json` — **Einträge müssen relative Basenamen sein**, dompdf schreibt beim Registrieren teils absolute lokale Pfade hinein, die auf Cloud Run nicht existieren).
+- **Personalisierung** läuft als Query-Parameter (`to`/`from`/`message`, validiert auf Maximallängen) — nichts wird gespeichert, jeder Download rendert frisch.
+- **E-Mail-Templates** (Kauf + Storno): eigene warme Dark-Mode-Palette (`prefers-color-scheme` + Outlook-`[data-ogsc]`/`[data-ogsb]`), `color-scheme`-Metas gegen Client-Invertierung, `mail-nolink`/`x-apple-data-detectors` gegen blaue Auto-Links auf Codes und Daten.
+- **Tests**: `tests/Feature/VoucherSales/GiftPdfTest.php` (Seite, PDF-Download, Token-/Serial-Schutz, Storno, Personenbindung, Mail-Links/-Hinweis).
 
 ### Wunschbetrag, Rabattstaffeln & Kauffenster (Entwickler)
 
