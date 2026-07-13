@@ -283,6 +283,70 @@ scopeWithAds($q)       → gclid OR fbclid OR utm_medium IN ('cpc','paid','ppc')
 scopeOrganic($q)       → NOT (gclid OR fbclid OR utm_medium IN ('cpc','paid','ppc'))
 ```
 
+### Plattform-Leads & modellierte Kennzahlen (Kampagnen-Übersicht)
+
+Die Kampagnen-Übersicht zeigt neben den im Hub nachweisbaren Buchungen auch die
+**von den Plattformen selbst gemeldeten Leads** („Lt. Plattform"):
+
+- **Meta:** Leads mit Aufschlüsselung **Klick** (7 Tage nach Klick) vs. **View**
+  (View-Through: 1 Tag nach bloßem Ansehen, nie geklickt). Abfrage über
+  `action_attribution_windows = ['7d_click', '1d_view']` in
+  `MetaAdsService::getCampaignInsights()`, extrahiert via `extractLeadSplit()`.
+- **Google:** gemeldete Conversions (klickbasiert, von Google modelliert).
+- **Erfassungsquote** (Tooltip): Hub-Buchungen ÷ Plattform-Klick-Leads — wie viel
+  Prozent der Klick-Leads per Klick-ID nachweisbar sind.
+
+**Modellierte Kennzahlen** (`CPB mod.` / `CPV mod.`) rechnen die Kosten auf eine
+modellierte Buchungszahl um, statt nur auf die im Hub nachweisbaren Buchungen:
+
+```
+modellierte Buchungen (Meta)   = Klick-Leads + view_through_weight × View-Leads
+modellierte Buchungen (Google) = gemeldete Conversions
+modellierte Verträge           = modellierte Buchungen × (Verträge ÷ Buchungen)
+CPB mod. = Spend ÷ modellierte Buchungen
+CPV mod. = Spend ÷ modellierte Verträge
+```
+
+Das View-Through-Gewicht ist konfigurierbar: `META_ADS_VIEW_THROUGH_WEIGHT`
+(Default `0.3`, siehe `config/meta-ads.php`). Berechnung in
+`AdsAnalysisService::buildPlatformLeadMetrics()` (Kampagnen-Übersicht) bzw.
+direkt in `getAdsVsOrganic()` — die Sektion **Ads vs. Organisch** zeigt dieselben
+Kennzahlen aggregiert je Plattform-Block („Leads lt. Plattform",
+„Kosten / Buchung (mod.)", „Kosten / Vertrag (mod.)").
+
+Interpretation: Die Hub-Spalten („Buchungen", CPB, CPV) sind die **beweisbare
+Untergrenze**, die Plattform-Spalten die **modellierte Obergrenze**. Da beide
+Plattformen sich dieselbe Buchung zuschreiben können, darf die Summe der
+Plattform-Leads nicht mit den Gesamt-Buchungen gleichgesetzt werden.
+
+### Meta-Conversion-Zählung (Deduplizierung)
+
+Meta meldet im `actions`-Array **dieselbe Conversion unter mehreren Action-Types
+gleichzeitig** — ein Website-Lead erscheint z.B. als `lead` (Aggregat),
+`onsite_web_lead` **und** `offsite_conversion.fb_pixel_lead`, alle mit demselben Wert.
+Ein naives Aufsummieren würde jede Conversion doppelt oder dreifach zählen
+(so geschehen bis Juli 2026: 244 statt 122 gemeldete Meta-Conversions).
+
+`MetaAdsService::extractConversions()` zählt daher pro Event-Familie genau einmal:
+
+| Familie | Bevorzugt (Aggregat) | Fallback (disjunkte Untertypen, summiert) |
+|---------|----------------------|-------------------------------------------|
+| Lead | `lead` | `offsite_conversion.fb_pixel_lead` + `onsite_conversion.lead_grouped` |
+| Purchase | `purchase` | `offsite_conversion.fb_pixel_purchase` |
+| Registrierung | `complete_registration` | — |
+
+Die Untertypen sind untereinander disjunkt (Website-Pixel-Lead ≠ natives
+Lead-Formular) und werden nur summiert, wenn das Aggregat fehlt.
+
+!!! warning "Plattform-Zahlen ≠ Hub-Zahlen"
+    Auch nach der Deduplizierung melden Google Ads & Meta systematisch **mehr**
+    Leads/Conversions als der Hub Ads-Buchungen zählt. Gründe: View-Through-Attribution
+    (Meta: „1 Tag nach Ansehen" — die Person hat nie geklickt), Cross-Device-Matching
+    über E-Mail/Telefon (Advanced Matching), modellierte Conversions (Google, erkennbar
+    an Nachkommastellen) und gegenseitige Doppel-Beanspruchung derselben Buchung durch
+    beide Plattformen. Die Hub-Zahl (Klick-ID nachweisbar) ist die konservative
+    Untergrenze, die Plattform-Zahlen sind die modellierte Obergrenze.
+
 ### Google Ads Kampagnen-Matching
 
 Da Google Ads keine UTM-Parameter direkt liefert, erfolgt das Matching über einen normalisierten Schlüssel:
