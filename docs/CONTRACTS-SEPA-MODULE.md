@@ -113,6 +113,26 @@ In `GoCardlessMandateService::changeBankAccount()`:
 - GoCardless-Icon sitzt im Status-Badge (`.payment-gc-badge-icon`), Referenz-Anzeige per Custom-Tooltip (`[data-tooltip]`), Kopieren per Klick.
 - `copyPaymentReference()` nutzt die Clipboard-API nur im **Secure Context** (HTTPS/localhost). Lokal (`http://glattthub.local:8888`) greift ein Fallback über ein unsichtbares Textarea + `document.execCommand('copy')`.
 
+#### Geplatzte Raten manuell als beglichen markieren (RLS + Gebühr)
+
+**Für Endanwender:** GoCardless spielt Rücklastschriften automatisch in den Hub zurück (Status *Fehlgeschlagen*/*Rückbuchung*). Wird eine solche Rate anschließend **per Überweisung oder bar** ausgeglichen, lässt sie sich im Zahlungen-Tab direkt als beglichen erfassen — DATEV liefert diese Info nicht zurück, deshalb der manuelle Weg:
+
+- Bei einer geplatzten Rate erscheint in der Spalte **Hinweis** der Button **„Als beglichen markieren"**.
+- Im Modal werden **Zahlungseingang** (das *tatsächliche* Eingangsdatum, nicht heute), **Zahlungsart** (Überweisung/Bar/Karte/Sonstige) und optional eine **Referenz** erfasst.
+- Zusätzlich lässt sich die **Rücklastschrift-Gebühr (RLS-Gebühr)** hinterlegen: Betrag und ob sie **bereits bezahlt** wurde. Ist die Gebühr noch offen, zeigt die Zeile ein Badge *„RLS-Gebühr offen"*; sie kann später über denselben Button nachträglich als bezahlt markiert werden (Badge *„RLS-Gebühr bezahlt"*).
+- Die Rate zählt danach als **bezahlt** und verschwindet aus dem Schulden-Modul. Es wird **kein neuer GoCardless-Einzug** ausgelöst — es ist eine rein lokale Buchung.
+
+**Für Entwickler:**
+
+- Migration `2026_07_15_100000_add_return_fee_to_contract_payments`: neue Spalten `return_fee_cents` (nullable) + `return_fee_paid_at` (nullable) auf `contract_payments`.
+- `ContractPayment::settleBounced($receivedAt, $method, $reference, $notes, $feeCents, $feePaidAt)` setzt `status=paid`, `paid_at=$receivedAt`, `direct_payment_method=$method` und die Gebührenfelder; `recordReturnFee()` aktualisiert nur die Gebühr. Accessoren: `is_bounced`, `has_return_fee`, `is_return_fee_paid`, `return_fee`.
+- Endpoint `POST /hub/contracts/{contract}/payments/{payment}/settle` → `ContractController::settleBouncedPayment()` (Middleware `can:manage_gocardless` + Rollen-Check `super_admin|admin|filialleiterin|verwaltung`). Nur auf geplatzten Raten (bzw. für Gebühren-Nachtrag auf Raten mit erfasster Gebühr).
+- **Reload-Schutz:** Weil `settleBounced()` `direct_payment_method` setzt, greift automatisch die `$protectedIds`-Regel in `ContractPaymentRebuildService::rebuild()` — die manuell beglichene Rate wird beim 🔄-Reload **nicht** storniert/überschrieben. `gocardless_payment_id` und `failure_reason` bleiben zur Historie erhalten.
+- **Leerräum-Schutz (Reload):** `rebuild()` bricht jetzt ab, wenn er bestehende (nicht geschützte) Raten stornieren würde, GoCardless aber **weder Zahlungen noch eine Vorschau** liefert (leere/ungültige GC-Antwort, Sandbox ohne Daten). So kann ein Reload den Zahlungsplan nicht mehr komplett leeren; der Fehler wird im Zahlungen-Tab sichtbar. Tests: `tests/Feature/RebuildReloadSafetyTest.php`.
+- **GC-Symbol:** Manuell beglichene Raten kamen nicht per GoCardless — `getPayments()` liefert `is_manual`, das Frontend (`hasGcReference()`) blendet das GoCardless-Symbol dann aus. Ein Auto-Hinweis („Per Überweisung beglichen am …") dokumentiert die Begleichung in der Ratenübersicht.
+- `getPayments()` liefert je Rate zusätzlich `can_settle`, `has_return_fee`, `return_fee_cents`, `return_fee_paid`, `return_fee_paid_at`; das Modal + `saveSettlement()` liegen in `paymentsTab` (`contract-scripts.blade.php`), Button/Modal in `tab-payments.blade.php`.
+- Tests: `tests/Feature/SettleBouncedPaymentTest.php`, `tests/Unit/ContractPaymentSettlementTest.php`.
+
 #### Geänderte / entfernte Dateien (Auszug)
 
 | Datei | Änderung |

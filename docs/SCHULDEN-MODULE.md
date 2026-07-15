@@ -101,6 +101,9 @@ Im ersten Schritt zählen genau zwei Zahlungsstatus als „geplatzte Lastschrift
 
 Beides ist Geld, das nicht (dauerhaft) angekommen ist. Der **Schuldenbetrag pro Kunde** ist die Summe der Beträge genau dieser Raten – er deckt sich damit exakt mit den Zeilen der Detailliste.
 
+!!! tip "Beglichene Rücklastschriften verlassen das Schulden-Set"
+    Wird eine geplatzte Rate im Vertrag manuell **als beglichen markiert** (z. B. per Überweisung ausgeglichen – Button „Als beglichen markieren" im Zahlungen-Tab, siehe `CONTRACTS-SEPA-MODULE.md`), wechselt ihr Status auf `paid`. Damit fällt sie automatisch aus `scopeBounced()` heraus und zählt nicht mehr als Schuld. Eine eventuell erfasste **RLS-Gebühr** (`return_fee_cents`) ist bewusst **nicht** Teil dieser Schulden-Summe.
+
 !!! note "Noch nicht enthalten"
     Überfällige, aber noch nicht eingezogene Raten, andere Schuldenquellen sowie ein Mahnwesen sind bewusst **nicht** Teil dieser ersten Stufe (siehe [Erweiterbarkeit](#erweiterbarkeit)).
 
