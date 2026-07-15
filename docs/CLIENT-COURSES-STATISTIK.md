@@ -26,7 +26,7 @@ Das **glattt-Pakete Statistik**-Modul zeigt Verkaufszahlen und Nutzung von Behan
 | **Aktive Pakete** | Pakete mit verbleibenden Einheiten |
 | **Neue Pakete** | Im aktuellen Monat verkauft |
 | **Ø Resteinheiten** | Durchschnittliche verbleibende Einheiten pro aktivem Paket |
-| **Körperzonen** | Summe der verkauften Körperpunktzonen im Monat |
+| **Körperzonen** | Summe der verkauften Körperzonen im Monat |
 
 ### Körperzonen-Berechnung
 

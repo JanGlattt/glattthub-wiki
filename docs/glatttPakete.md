@@ -4,7 +4,7 @@
 
 ## Einführung
 
-Das **GLATTT Pakete**-Modul verwaltet alle Aspekte rund um Kundenverträge für dauerhafte Haarentfernung. Es ermöglicht die Definition von Behandlungspaketen basierend auf **Körperpunktzonen (KPZ)**, flexible Preisgestaltung und standortspezifische Konditionen.
+Das **GLATTT Pakete**-Modul verwaltet alle Aspekte rund um Kundenverträge für dauerhafte Haarentfernung. Es ermöglicht die Definition von Behandlungspaketen basierend auf **Körperzonen (KPZ)**, flexible Preisgestaltung und standortspezifische Konditionen.
 
 ## Module im Überblick
 
@@ -20,7 +20,7 @@ Verträge (Contracts)
 
 ## Kernkonzepte
 
-### Körperpunktzonen (KPZ)
+### Körperzonen (KPZ)
 
 Eine **KPZ** ist eine behandelbare Körperzone. GLATTT-Pakete werden nach Anzahl der zu behandelnden Zonen bepreist:
 

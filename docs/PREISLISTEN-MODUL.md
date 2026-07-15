@@ -38,11 +38,11 @@ Das Preislisten-Modul ermöglicht die Verwaltung von Körperzonen-basierten Prei
 
 ### Grundkonzept
 
-Das Preissystem basiert auf **Körperpunktzonen (KPZ)**. Je mehr Körperzonen ein Kunde behandeln lässt, desto höher der monatliche Betrag. Eine Preisliste definiert:
+Das Preissystem basiert auf **Körperzonen (KPZ)**. Je mehr Körperzonen ein Kunde behandeln lässt, desto höher der monatliche Betrag. Eine Preisliste definiert:
 
 | Begriff | Bedeutung |
 |---------|-----------|
-| **KPZ** | Körperpunktzone - eine behandelbare Körperzone |
+| **KPZ** | Körperzone - eine behandelbare Zone des Körpers |
 | **Ganzkörper KPZ** | Maximale Anzahl KPZ für eine Ganzkörperbehandlung |
 | **Preisgruppe** | Kombination aus KPZ-Anzahl, Laufzeit und monatlichem Preis |
 | **Rabatt** | Preisnachlass ab einer bestimmten KPZ-Anzahl |
