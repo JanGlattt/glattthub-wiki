@@ -115,16 +115,24 @@ Tabellenspalten: Monat, Buchungen, Stattgefunden, No-Show, Zukünftig, Gesamt-Bu
 
 #### Quellen-Analyse
 
-Donut-Diagramm + Tabelle mit der Verteilung der Buchungen nach Quelle (utm_source). Die Quellen werden leserlich aufbereitet angezeigt:
+Donut-Diagramm + Tabelle mit der Verteilung der Buchungen nach Quelle. Zusätzlich zur Quelle wird pro Zeile die **Art** ausgewiesen — **Anzeige** (bezahlter Klick) oder **Organisch** —, damit direkt erkennbar ist, welche Buchungen *nicht* aus einer Anzeige stammen.
 
-| Quelle | Anzeigename |
-|--------|-------------|
-| `google` | Google |
-| `fb` / `facebook` | Facebook |
-| `ig` / `instagram` | Instagram |
-| `meta` | Meta |
-| `direct` | Direkt |
-| `referral` | Referral |
+**Anzeige vs. Organisch**: Eine Buchung gilt als *Anzeige*, wenn sie eine Ad-Klick-ID (`gclid`, `gbraid`, `fbclid`) oder ein bezahltes `utm_medium` (`cpc`, `paid`, `ppc`) trägt — sonst als *organisch*. Die Klassifizierung ist zentral im Model `BookingTracking` gekapselt (`isAd()` / `isOrganic()`, plus die Scopes `scopeWithAds()` / `scopeOrganic()`).
+
+**Aufschlüsselung des organischen Traffics**: Statt eines undurchsichtigen `referral`-Sammeltopfs wird organischer Traffic anhand der **zuletzt besuchten Seite (Referrer)** kategorisiert (`BookingTracking::organicReferrerCategory()`):
+
+| Quelle | Anzeigename | Bedeutung |
+|--------|-------------|-----------|
+| `google` / `meta` / `ig` / `fb` … | Google / Meta / Instagram / Facebook | bezahlter Traffic bzw. der über `utm_source` gesetzte Kanal |
+| `own_website` | Eigene Website | Referrer war eine `glattt.com`-Seite |
+| `organic_search` | Organische Suche | Referrer = Suchmaschine ohne Ad-Klick (Google, Bing, Ecosia …) |
+| `organic_social` | Social (organisch) | Referrer = soziales Netzwerk ohne Ad-Klick (Instagram, Facebook, TikTok …) |
+| `referral` | Referral (extern) | Verweis von einer sonstigen externen Website |
+| `direct` | Direkt | kein Referrer |
+
+> **Wichtig — Aussagekraft:** Der organische Kanal wird immer nur aus der *exakt zuletzt besuchten Seite vor der Buchung* abgeleitet. Das ist nicht zwingend die ursprüngliche Herkunft: Gerade bei „Eigene Website" und „Referral" kann der Kunde davor über eine andere Quelle (z.B. eine Anzeige) gekommen sein. Die Kennzeichnung ist ein Anhaltspunkt, keine lückenlose Attribution.
+
+Technisch: `getSourceBreakdown()` lädt die Trackings und gruppiert sie nach **(Quelle × Art)** — dieselbe Quelle kann also getrennt als Anzeige und organisch erscheinen. Jede Zeile enthält `source`, `is_organic`, `bookings` und einen eindeutigen `key`.
 
 #### Ads vs. Organisch
 

@@ -2,6 +2,16 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 15.07.2026 — Vertragsliste: Filter nach SEPA-Mandats-Status
+
+In der Vertragsübersicht (Reiter **Verträge**, `hub.contracts`) gibt es im **Status**-Filter (Trichter-Icon der Status-Spalte) zusätzlich ein Dropdown **SEPA-Mandat**. Damit lässt sich nach dem Mandats-Status filtern: *SEPA ausstehend, aktiv, eingereicht, fehlgeschlagen, storniert, abgelaufen*.
+
+Die Auswahl **„SEPA ausstehend"** spiegelt exakt den gleichnamigen Listen-Badge — d.h. sie schließt stornierte und abgeschlossene Verträge aus (nur Mandate im Status `pending` an noch offenen Verträgen). Das hilft beim Abgleich mit der Management-Liste in der Übergangsphase.
+
+- Backend: `ContractController::getContracts()` wertet den Query-Param `mandate_status` aus (`whereHas('clientMandate', …)`; bei `pending` zusätzlich `whereNotIn('status', ['cancelled','completed'])`); Optionen kommen aus `getFilterOptions()` (`mandate_statuses`). Das Mandat wird jetzt eager-geladen (behebt ein N+1).
+- Frontend: Filter-State `mandateStatus` + Dropdown im Status-Popover von `resources/views/hub/contracts/index.blade.php`.
+- Tests: `tests/Feature/ContractListMandateFilterTest.php`.
+
 ## Update 06.07.2026 — Vertragsdetailseite neu gestaltet + Bankwechsel-/Altsystem-Korrekturen
 
 ### Für Nutzer (06.07.2026)

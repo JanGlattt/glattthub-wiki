@@ -33,9 +33,11 @@ Die Statistikseite gliedert sich in folgende Bereiche von oben nach unten:
 | **Conversion Rate** | Anteil Beratung → Vertrag in % (hervorgehoben) |
 | **Nur Beratung** | Kunden, die nach dem Beratungsgespräch nie wiederkamen |
 | **Ø Entfernung** | Durchschnittliche Entfernung zum Standort in km |
-| **Anteil mit Vertrag** | Kunden mit mindestens einem aktiven Vertrag in % |
+| **Anteil mit Vertrag** | Kunden mit mindestens einem aktiven Vertrag in % — Untertitel zeigt zusätzlich die **absolute Anzahl** („2.201 von 8.634 Kunden") |
 
 Jede KPI-Karte zeigt einen Trendpfeil (↑/↓) im Vergleich zum Vormonat.
+
+> Die Kachel **Anteil mit Vertrag** führt neben dem Prozentwert die absolute Zahl der Kunden mit Vertrag als Untertitel — so ist klar, dass „Kunden gesamt" nicht die Zahl der Vertragskunden ist (`ClientStatisticsService::getKpis()`, KPI `with_contract_percentage`, Feld `subtitle`).
 
 #### 2. Demografie (Alter & Geschlecht)
 
