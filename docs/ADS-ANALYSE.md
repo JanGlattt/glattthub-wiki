@@ -119,7 +119,7 @@ Donut-Diagramm + Tabelle mit der Verteilung der Buchungen nach Quelle. Zusätzli
 
 **Anzeige vs. Organisch**: Eine Buchung gilt als *Anzeige*, wenn sie eine Ad-Klick-ID (`gclid`, `gbraid`, `fbclid`) oder ein bezahltes `utm_medium` (`cpc`, `paid`, `ppc`) trägt — sonst als *organisch*. Die Klassifizierung ist zentral im Model `BookingTracking` gekapselt (`isAd()` / `isOrganic()`, plus die Scopes `scopeWithAds()` / `scopeOrganic()`).
 
-**Aufschlüsselung des organischen Traffics**: Statt eines undurchsichtigen `referral`-Sammeltopfs wird organischer Traffic anhand der **zuletzt besuchten Seite (Referrer)** kategorisiert (`BookingTracking::organicReferrerCategory()`):
+**Aufschlüsselung des organischen Traffics**: Statt eines undurchsichtigen `referral`-Sammeltopfs wird organischer Traffic anhand des **echten Herkunfts-Referrers** kategorisiert (`BookingTracking::organicReferrerCategory()`). Bevorzugt wird `entry_referrer` (externer Referrer beim ersten Seitenaufruf der Session), Fallback ist `referrer` (letzte Seite vor der Buchung):
 
 | Quelle | Anzeigename | Bedeutung |
 |--------|-------------|-----------|
@@ -130,7 +130,7 @@ Donut-Diagramm + Tabelle mit der Verteilung der Buchungen nach Quelle. Zusätzli
 | `referral` | Referral (extern) | Verweis von einer sonstigen externen Website |
 | `direct` | Direkt | kein Referrer |
 
-> **Wichtig — Aussagekraft:** Der organische Kanal wird immer nur aus der *exakt zuletzt besuchten Seite vor der Buchung* abgeleitet. Das ist nicht zwingend die ursprüngliche Herkunft: Gerade bei „Eigene Website" und „Referral" kann der Kunde davor über eine andere Quelle (z.B. eine Anzeige) gekommen sein. Die Kennzeichnung ist ein Anhaltspunkt, keine lückenlose Attribution.
+> **Wichtig — Aussagekraft:** Seit 07/2026 basiert der organische Kanal bevorzugt auf `entry_referrer` — dem externen Referrer beim **ersten Seitenaufruf der Session** (echter Ursprung), nicht mehr nur auf der zuletzt besuchten Seite. Für Buchungen aus der Zeit davor (nur `referrer` vorhanden) bzw. wenn `entry_referrer` fehlt (z.B. gelöschter `localStorage`, Gerätewechsel) gilt weiterhin der Last-Touch-Referrer als Näherung. Die Kennzeichnung bleibt damit ein starker Anhaltspunkt, aber keine lückenlose Cross-Device-Attribution.
 
 Technisch: `getSourceBreakdown()` lädt die Trackings und gruppiert sie nach **(Quelle × Art)** — dieselbe Quelle kann also getrennt als Anzeige und organisch erscheinen. Jede Zeile enthält `source`, `is_organic`, `bookings` und einen eindeutigen `key`.
 
