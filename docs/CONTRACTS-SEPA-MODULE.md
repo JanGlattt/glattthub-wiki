@@ -133,6 +133,26 @@ In `GoCardlessMandateService::changeBankAccount()`:
 - `getPayments()` liefert je Rate zusätzlich `can_settle`, `has_return_fee`, `return_fee_cents`, `return_fee_paid`, `return_fee_paid_at`; das Modal + `saveSettlement()` liegen in `paymentsTab` (`contract-scripts.blade.php`), Button/Modal in `tab-payments.blade.php`.
 - Tests: `tests/Feature/SettleBouncedPaymentTest.php`, `tests/Unit/ContractPaymentSettlementTest.php`.
 
+#### SEPA-Pausierung (Ratenzahlung aussetzen)
+
+**Für Endanwender:** Im Zahlungen-Tab kann ein SEPA-Vertrag über **„Pausieren"** ausgesetzt werden — für Fälle wie Arbeitslosigkeit oder Zahlungsschwierigkeiten. Zwei Arten:
+
+- **Fix (N Monate):** Die offenen Raten werden **um N Monate nach hinten verschoben**. Die Laufzeit verlängert sich entsprechend, der Kunde zahlt weiterhin alle Raten (nur später). Kein „Fortsetzen" nötig — der korrigierte Plan steht sofort.
+- **Unbefristet (Schuldner):** Alle offenen Raten werden **gestoppt**. Der Vertrag zeigt ein Pause-Banner; das SEPA-Mandat bleibt aktiv. Über **„Fortsetzen"** werden die Restraten ab einem gewählten Datum neu terminiert (ohne neues Mandat).
+
+Bereits **eingereichte** Raten (`submitted`, auf dem Weg zur Bank) laufen in beiden Fällen noch durch.
+
+**Für Entwickler:**
+
+- GoCardless kann Einzelzahlungen (Standard seit 07/2026) **nicht** „pausieren" — der einzige Weg ist **Storno + Neuterminierung**. Der neue `App\Services\ContractPauseService` kapselt das und baut auf den bestehenden `public`-Bausteinen `GoCardlessPaymentPlanService::cancelOpenGcPayments()` / `recreateIndividualPayments()` / `createIndividualPaymentPlan()` auf.
+  - `pauseFixed()`: nur die **nächsten N** offenen Raten stornieren (`cancelSpecificPayments()`) + soft-deleten und ebenso viele am Planende neu anlegen — die übrigen offenen Raten behalten ihre GoCardless-Zahlung. Endergebnis identisch zu „alle um N verschieben", aber mit minimalem GC-Aufwand.
+  - `pauseIndefinite()`: offene Raten stornieren (Notiz „Pausiert – unbefristet" → im Reload geschützt, im Debt-Modul via `cancelled` ausgeschlossen), Mandat bleibt aktiv.
+  - `resume(startDate)`: Restraten ab Startdatum neu anlegen.
+- Datenmodell: Tabelle `contract_pauses` (Migration `2026_07_15_110000`), Model `App\Models\ContractPause`. Am `Contract`: `pauses()`, `activeIndefinitePause()`, Accessor `is_paused`. **Kein** neuer Contract-Status (würde zahlreiche `where('status','active')`-Filter brechen).
+- Endpoints: `POST /hub/contracts/{contract}/pause` (`type` fixed/indefinite, `months`, `reason`), `POST /hub/contracts/{contract}/resume` (`resume_date`) — `ContractController::pauseContract()` / `resumeContract()`, Gate `can:manage_gocardless` + Rollen. `getPayments()` liefert `pause` + `can_pause` für Banner/Button.
+- **Guards gegen „Wegheilen" der unbefristeten Pause:** `GoCardlessPaymentPlanService::activatePendingPlans()` (mandates.active-Webhook) und `ContractPaymentReconciler::reconcileContract()` (täglicher Cron) überspringen pausierte Verträge (`$contract->is_paused`). Fixe Pausen brauchen keine Guards — die Raten bleiben reale GC-Zahlungen, nur später terminiert.
+- Tests: `tests/Feature/ContractPauseTest.php`.
+
 #### Geänderte / entfernte Dateien (Auszug)
 
 | Datei | Änderung |

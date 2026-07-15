@@ -104,6 +104,9 @@ Beides ist Geld, das nicht (dauerhaft) angekommen ist. Der **Schuldenbetrag pro 
 !!! tip "Beglichene Rücklastschriften verlassen das Schulden-Set"
     Wird eine geplatzte Rate im Vertrag manuell **als beglichen markiert** (z. B. per Überweisung ausgeglichen – Button „Als beglichen markieren" im Zahlungen-Tab, siehe `CONTRACTS-SEPA-MODULE.md`), wechselt ihr Status auf `paid`. Damit fällt sie automatisch aus `scopeBounced()` heraus und zählt nicht mehr als Schuld. Eine eventuell erfasste **RLS-Gebühr** (`return_fee_cents`) ist bewusst **nicht** Teil dieser Schulden-Summe.
 
+!!! tip "Pausierte Verträge"
+    Wird ein Vertrag **unbefristet pausiert** (Schuldner, siehe SEPA-Pausierung in `CONTRACTS-SEPA-MODULE.md`), sind seine offenen Raten `cancelled` — sie zählen damit **nicht** als geplatzte Lastschrift/Schuld. Erst bei „Fortsetzen" entstehen wieder aktive Raten.
+
 !!! note "Noch nicht enthalten"
     Überfällige, aber noch nicht eingezogene Raten, andere Schuldenquellen sowie ein Mahnwesen sind bewusst **nicht** Teil dieser ersten Stufe (siehe [Erweiterbarkeit](#erweiterbarkeit)).
 
