@@ -147,6 +147,7 @@ nav:
     - Eigenes Dashboard: CUSTOM-DASHBOARD.md
     - Verkaufsstatistik: SALES-STATISTICS.md
     - Ads-Analyse: ADS-ANALYSE.md
+    - Besucher & Buchungs-Funnel: MATOMO-BESUCHER-TRACKING.md
     - Mitarbeiterperformance: STAFF-PERFORMANCE.md
   - API-Integrationen:
     - REST-API:
