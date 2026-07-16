@@ -113,26 +113,43 @@ Zeigt die Ads-Performance über die Zeit als Tabelle oder Balken-/Liniendiagramm
 
 Tabellenspalten: Monat, Buchungen, Stattgefunden, No-Show, Zukünftig, Gesamt-Buchungen, Ads-Anteil, Verträge, KPZ, Meta-Kosten, Meta-Impressions, Meta-Clicks, Google-Kosten, Google-Impressions, Google-Clicks.
 
-#### Quellen-Analyse
+#### Herkunfts-Analyse (Vergleich in einer Karte)
 
-Donut-Diagramm + Tabelle mit der Verteilung der Buchungen nach Quelle. Zusätzlich zur Quelle wird pro Zeile die **Art** ausgewiesen — **Anzeige** (bezahlter Klick) oder **Organisch** —, damit direkt erkennbar ist, welche Buchungen *nicht* aus einer Anzeige stammen.
+Seit 07/2026 in **einer** Karte „Herkunfts-Analyse": ein **gruppiertes horizontales Balkendiagramm** (kein Donut) plus eine **kombinierte Tabelle**. Pro Quelle stehen zwei Balken/Spalten nebeneinander — **Letzte Seite** vs. **Einstieg** —, dazu je Zeile die **Art** (**Anzeige** = bezahlter Klick / **Organisch**).
 
-**Anzeige vs. Organisch**: Eine Buchung gilt als *Anzeige*, wenn sie eine Ad-Klick-ID (`gclid`, `gbraid`, `fbclid`) oder ein bezahltes `utm_medium` (`cpc`, `paid`, `ppc`) trägt — sonst als *organisch*. Die Klassifizierung ist zentral im Model `BookingTracking` gekapselt (`isAd()` / `isOrganic()`, plus die Scopes `scopeWithAds()` / `scopeOrganic()`).
+**Anzeige vs. Organisch**: Eine Buchung gilt als *Anzeige*, wenn sie eine Ad-Klick-ID (`gclid`, `gbraid`, `fbclid`) oder ein bezahltes `utm_medium` (`cpc`, `paid`, `ppc`) trägt — sonst als *organisch*. Zentral im Model `BookingTracking` gekapselt (`isAd()` / `isOrganic()`, Scopes `scopeWithAds()` / `scopeOrganic()`).
 
-**Aufschlüsselung des organischen Traffics**: Statt eines undurchsichtigen `referral`-Sammeltopfs wird organischer Traffic anhand des **echten Herkunfts-Referrers** kategorisiert (`BookingTracking::organicReferrerCategory()`). Bevorzugt wird `entry_referrer` (externer Referrer beim ersten Seitenaufruf der Session), Fallback ist `referrer` (letzte Seite vor der Buchung):
+**Letzte Seite (`getSourceBreakdown()` → `referrer`)**: von welcher Seite die Nutzer *unmittelbar vor dem Buchungsabschluss* kamen. Bei interner Navigation meist eine `glattt.com`-Seite (`own_website`) — **nicht die ursprüngliche Herkunft**.
+
+**Einstieg (`getEntrySourceBreakdown()` → `entry_referrer`)**: die **echte Herkunft** — die Quelle, über die der Kunde *zum ersten Mal* auf glattt.com kam. Bezahlter Traffic wird über `utm_source`/Klick-ID klassifiziert, organischer über die Kategorie des Einstiegs-Referrers; organisch ohne erfassten Einstieg (`unknown`) wird **ausgeblendet**.
+
+**Wichtig — der Vergleich:** Bezahlter Traffic ist in beiden Sichten **identisch** (Herkunft = Ad-Klick, unabhängig von der letzten Seite). Der Unterschied steckt komplett im organischen Traffic. Die Serien-Farben (Blau `--color-info` = Letzte Seite, Gold `--glattt-gold` = Einstieg) sind CVD-validiert; die Tabelle liefert die exakten Werte + Anteile je Sicht.
+
+Beide nutzen dieselbe Kategorisierung (`BookingTracking::referrerCategoryFor($url)`), nur mit unterschiedlichem Referrer-Feld:
 
 | Quelle | Anzeigename | Bedeutung |
 |--------|-------------|-----------|
 | `google` / `meta` / `ig` / `fb` … | Google / Meta / Instagram / Facebook | bezahlter Traffic bzw. der über `utm_source` gesetzte Kanal |
-| `own_website` | Eigene Website | Referrer war eine `glattt.com`-Seite |
+| `own_website` | Eigene Website | Referrer war eine `glattt.com`-Seite *(nur bei „Letzte Seite")* |
 | `organic_search` | Organische Suche | Referrer = Suchmaschine ohne Ad-Klick (Google, Bing, Ecosia …) |
 | `organic_social` | Social (organisch) | Referrer = soziales Netzwerk ohne Ad-Klick (Instagram, Facebook, TikTok …) |
 | `referral` | Referral (extern) | Verweis von einer sonstigen externen Website |
 | `direct` | Direkt | kein Referrer |
 
-> **Wichtig — Aussagekraft:** Seit 07/2026 basiert der organische Kanal bevorzugt auf `entry_referrer` — dem externen Referrer beim **ersten Seitenaufruf der Session** (echter Ursprung), nicht mehr nur auf der zuletzt besuchten Seite. Für Buchungen aus der Zeit davor (nur `referrer` vorhanden) bzw. wenn `entry_referrer` fehlt (z.B. gelöschter `localStorage`, Gerätewechsel) gilt weiterhin der Last-Touch-Referrer als Näherung. Die Kennzeichnung bleibt damit ein starker Anhaltspunkt, aber keine lückenlose Cross-Device-Attribution.
+> **Beispiel (Prod-Buchung 1441):** `entry_referrer = google.com`, `referrer = glattt.com/preise/`. „Letzte Seite" zählt das als **Eigene Website**, „Herkunft (Einstieg)" korrekt als **Organische Suche**. Genau dieser Unterschied ist der Grund für die zwei Diagramme.
 
-Technisch: `getSourceBreakdown()` lädt die Trackings und gruppiert sie nach **(Quelle × Art)** — dieselbe Quelle kann also getrennt als Anzeige und organisch erscheinen. Jede Zeile enthält `source`, `is_organic`, `bookings` und einen eindeutigen `key`.
+> **Wichtig — „Unbekannt" wird ausgeblendet:** Für **bezahlten** Traffic ist die Herkunft immer bekannt (Ad-Klick via `gclid`/`fbclid`/UTM) — unabhängig vom Einstiegs-Referrer. Nur **organische** Buchungen brauchen `entry_referrer`. Organische Buchungen **ohne** erfassten Einstieg (Buchung vor 07/2026, gelöschter `localStorage`, Gerätewechsel) werden intern als `unknown` klassifiziert und in `getEntrySourceBreakdown()` **herausgefiltert** — das Diagramm zeigt nur Buchungen mit bekannter Herkunft. Der Anteil bekannter organischer Herkunft wächst mit der Zeit. Keine lückenlose Cross-Device-Attribution.
+
+Technisch: Beide Methoden gruppieren über `groupBySource()` nach **(Quelle × Art)** — dieselbe Quelle kann getrennt als Anzeige und organisch erscheinen. Jede Zeile enthält `source`, `is_organic`, `bookings` und einen eindeutigen `key`. Endpunkte: `…/sources` bzw. `…/entry-sources`.
+
+#### Suchbegriffe (utm_term)
+
+Eigene Karte „Suchbegriffe" mit Umschalter (Segmented Control) zwischen **Wortwolke** und **Tabelle**. Datenbasis ist das Feld `utm_term` der Buchungs-Trackings — bei Google-Ads-Buchungen i.d.R. das Keyword/der Suchbegriff, über den die Anzeige gefunden wurde (z.B. „haarentfernung", „intimbereich lasern", „dauerhafte haarentfernung hannover").
+
+- `getSearchTermBreakdown()` fasst `utm_term` **kleingeschrieben** zusammen und zählt je Begriff. **Rein numerische Werte** (`ctype_digit`) werden verworfen — das sind versehentlich als `utm_term` durchgereichte Kampagnen-/Adset-IDs, keine Suchbegriffe.
+- **Wortwolke** (Frontend, **wordcloud2.js** auf Canvas, per jsDelivr-CDN wie Chart.js): Spiral-Layout mit Rotation; Schriftgröße = Häufigkeit (Wurzel-Skalierung, `weightFactor`), Farbe nach Rang aus Theme-Variablen, `devicePixelRatio`-scharf, Re-Render bei Resize/Ansichtswechsel. Zeigt die **Top 25** Begriffe (`drawOutOfBound:false`, `shrinkToFit:true`).
+- **Tabelle**: alle Begriffe mit Buchungen + Anteil, absteigend sortiert.
+- Nur Buchungen **mit** `utm_term` erscheinen — überwiegend bezahlte Suchkampagnen; organische Buchungen ohne UTM sind nicht enthalten. Endpunkt: `…/search-terms`.
 
 #### Ads vs. Organisch
 
@@ -246,7 +263,9 @@ GET  /hub/reports/ads-analysis/preview                → preview  ← Reports-�
 GET  /hub/reports/ads-analysis/kpis                   → kpis
 GET  /hub/reports/ads-analysis/campaigns              → campaigns
 GET  /hub/reports/ads-analysis/monthly                → monthly
-GET  /hub/reports/ads-analysis/sources                → sources
+GET  /hub/reports/ads-analysis/sources                → sources        (Letzte Seite vor Buchung / referrer)
+GET  /hub/reports/ads-analysis/entry-sources          → entrySources   (Herkunft / entry_referrer)
+GET  /hub/reports/ads-analysis/search-terms           → searchTerms    (Suchbegriffe / utm_term)
 GET  /hub/reports/ads-analysis/ads-vs-organic         → adsVsOrganic
 GET  /hub/reports/ads-analysis/campaign/{campaign}    → campaignDetail
 POST /hub/reports/ads-analysis/campaign-notes         → saveCampaignNote
@@ -722,7 +741,9 @@ GET  /hub/reports/ads-analysis                        → index
 GET  /hub/reports/ads-analysis/kpis                   → kpis
 GET  /hub/reports/ads-analysis/campaigns              → campaigns
 GET  /hub/reports/ads-analysis/monthly                → monthly
-GET  /hub/reports/ads-analysis/sources                → sources
+GET  /hub/reports/ads-analysis/sources                → sources        (Letzte Seite vor Buchung / referrer)
+GET  /hub/reports/ads-analysis/entry-sources          → entrySources   (Herkunft / entry_referrer)
+GET  /hub/reports/ads-analysis/search-terms           → searchTerms    (Suchbegriffe / utm_term)
 GET  /hub/reports/ads-analysis/ads-vs-organic         → adsVsOrganic
 GET  /hub/reports/ads-analysis/campaign/{campaign}    → campaignDetail
 POST /hub/reports/ads-analysis/campaign-notes          → saveCampaignNote
