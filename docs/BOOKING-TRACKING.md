@@ -2,7 +2,10 @@
 
 Erfassung von Browser-, Kampagnen- und Verhaltensdaten zu jeder Terminbuchung über das WordPress-Booking-Widget.
 
-→ [API-Endpoints](REST-API-ENDPOINTS.md#post-apiv1booking-tracking) | [REST-API Übersicht](REST-API.md)
+→ [API-Endpoints](REST-API-ENDPOINTS.md#post-apiv1booking-tracking) | [REST-API Übersicht](REST-API.md) | [WordPress-Buchungswidget](WORDPRESS-BUCHUNGSWIDGET.md)
+
+!!! info "Buchungsstart seit Widget 0.11.x"
+    Der „Buchungsstart" (Google-Ads-Conversion, Meta `InitiateCheckout`, Matomo `Buchung/Start`) wird seit Plugin 0.11.x durch den Klick auf eine **Standort-Kachel** bzw. den **Start-Hero** ausgelöst — nicht mehr durch einen separaten „Buchung starten"-Button. Semantik und Events sind identisch; Details im [Widget-Dokument](WORDPRESS-BUCHUNGSWIDGET.md).
 
 ---
 

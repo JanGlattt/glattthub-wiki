@@ -150,6 +150,7 @@ nav:
     - Besucher & Buchungs-Funnel: MATOMO-BESUCHER-TRACKING.md
     - Mitarbeiterperformance: STAFF-PERFORMANCE.md
   - API-Integrationen:
+    - WordPress-Buchungswidget: WORDPRESS-BUCHUNGSWIDGET.md
     - REST-API:
       - Übersicht: REST-API.md
       - Endpoint-Referenz: REST-API-ENDPOINTS.md
