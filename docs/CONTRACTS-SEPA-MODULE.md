@@ -140,8 +140,24 @@ In `GoCardlessMandateService::changeBankAccount()`:
 - **Reload-Schutz:** Weil `settleBounced()` `direct_payment_method` setzt, greift automatisch die `$protectedIds`-Regel in `ContractPaymentRebuildService::rebuild()` — die manuell beglichene Rate wird beim 🔄-Reload **nicht** storniert/überschrieben. `gocardless_payment_id` und `failure_reason` bleiben zur Historie erhalten.
 - **Leerräum-Schutz (Reload):** `rebuild()` bricht jetzt ab, wenn er bestehende (nicht geschützte) Raten stornieren würde, GoCardless aber **weder Zahlungen noch eine Vorschau** liefert (leere/ungültige GC-Antwort, Sandbox ohne Daten). So kann ein Reload den Zahlungsplan nicht mehr komplett leeren; der Fehler wird im Zahlungen-Tab sichtbar. Tests: `tests/Feature/RebuildReloadSafetyTest.php`.
 - **GC-Symbol:** Manuell beglichene Raten kamen nicht per GoCardless — `getPayments()` liefert `is_manual`, das Frontend (`hasGcReference()`) blendet das GoCardless-Symbol dann aus. Ein Auto-Hinweis („Per Überweisung beglichen am …") dokumentiert die Begleichung in der Ratenübersicht.
-- `getPayments()` liefert je Rate zusätzlich `can_settle`, `has_return_fee`, `return_fee_cents`, `return_fee_paid`, `return_fee_paid_at`; das Modal + `saveSettlement()` liegen in `paymentsTab` (`contract-scripts.blade.php`), Button/Modal in `tab-payments.blade.php`.
+- `getPayments()` liefert je Rate zusätzlich `can_settle`, `can_correct`, `paid_at`, `direct_payment_method`, `direct_payment_reference`, `has_return_fee`, `return_fee_cents`, `return_fee_paid`, `return_fee_paid_at`; das Modal + `saveSettlement()` liegen in `paymentsTab` (`contract-scripts.blade.php`), Button/Modal in `tab-payments.blade.php`.
 - Tests: `tests/Feature/SettleBouncedPaymentTest.php`, `tests/Unit/ContractPaymentSettlementTest.php`.
+
+#### Manuelle Begleichung korrigieren oder zurücksetzen (Update 18.07.2026)
+
+**Für Endanwender:** Wurde beim manuellen Begleichen ein **falsches Datum** erfasst oder versehentlich die **falsche Rate** beglichen, lässt sich das nachträglich reparieren:
+
+- Bei jeder manuell beglichenen Rate erscheint in der Status-Spalte der Button **„Korrigieren"**. Er öffnet dasselbe Modal, vorbefüllt mit den erfassten Werten — **Zahlungseingang, Zahlungsart, Referenz und RLS-Gebühr** können geändert und neu gespeichert werden.
+- Links im Modal-Footer gibt es zusätzlich **„Begleichung zurücksetzen"** (mit Sicherheitsabfrage): Die Rate kehrt in ihren **geplatzten Ursprungszustand** zurück (*Fehlgeschlagen*/*Rückbuchung*), erscheint wieder im Schulden-Modul und kann anschließend erneut — auf der richtigen Rate — beglichen werden.
+- Beides sind rein lokale Buchungen, es wird kein GoCardless-Einzug ausgelöst. Jede Korrektur wird im **Verlauf**-Tab des Vertrags protokolliert.
+
+**Für Entwickler:**
+
+- Keine Migration — nutzt die bestehenden Spalten. Der vorherige Status wird beim Zurücksetzen aus der Vertrags-Historie rekonstruiert (`ContractChange` mit `change_type=payment_updated`, `new_value=paid` → `old_value`); Fallback `failed`, wenn `failure_reason`/`failure_code` vorhanden. Ohne beides ist kein Zurücksetzen möglich (schützt echte Direktzahlungen).
+- `ContractPayment::correctSettlement($receivedAt, $method, $reference, $feeCents, $feePaidAt)` — aktualisiert die Begleichungsfelder; die Auto-Note („Per … beglichen am …") wird neu generiert, benutzerdefinierte Notes bleiben erhalten. `ContractPayment::revertSettlement()` — stellt den geplatzten Zustand wieder her und leert `paid_at`/`direct_payment_method`/Referenz/Gebührenfelder (damit entfällt auch der Reload-Schutz — korrekt, da die Rate wieder den GC-Zustand widerspiegelt).
+- Endpoint `POST /hub/contracts/{contract}/payments/{payment}/settle/correct` → `ContractController::correctSettledPayment()` (gleiche Middleware/Rollen wie beim Begleichen). Request-Feld `action`: `correct` (Default, mit Validierung wie beim Settle) oder `revert`.
+- Frontend: `settleMode` (`settle`/`correct`/`fee`) steuert Titel, Felder und Buttons des Settle-Modals; `revertSettlement()` in `contract-scripts.blade.php`. Der „Gebühr bezahlt"-Button erscheint nur noch, wenn die Rate nicht ohnehin korrigierbar ist (Gebühr wird dann im Korrektur-Modal gepflegt).
+- Tests: `tests/Feature/CorrectSettledPaymentTest.php`, `tests/Unit/ContractPaymentSettlementTest.php`.
 
 #### SEPA-Pausierung (Ratenzahlung aussetzen)
 
