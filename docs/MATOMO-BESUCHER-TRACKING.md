@@ -77,6 +77,13 @@ Abbruchpunkten – segmentierbar nach Standort und Quelle.
   deckt Konversions-Lücken der Buchungsstrecke je Geräteklasse auf.
 - **Top-Unterseiten:** meistbesuchte Seiten und Ø Verweildauer je Seite.
 
+Die drei Tabellen-Karten (Herkunft, Geräte-Vergleich, Top-Unterseiten) haben
+oben rechts einen Umschalter **Tabelle | Diagramm**: Die Diagramm-Ansicht zeigt
+dieselben Daten als horizontale Balken (ECharts) — bei der Herkunft die
+Matomo-Stufen plus Server-Buchungen je Quelle, beim Geräte-Vergleich die beiden
+Quoten in % (Besuche im Tooltip), bei den Top-Unterseiten die Aufrufe mit
+Ø Verweildauer im Tooltip.
+
 !!! warning "Warum weichen die Zahlen von den echten Buchungen ab?"
     Matomo erfasst nur Besucher **mit Cookie-Zustimmung und ohne Adblocker**
     (client-seitig, ca. 60–70 %). Die **absolute Buchungszahl** in den KPIs
