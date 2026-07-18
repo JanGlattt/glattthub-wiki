@@ -177,7 +177,7 @@ Die Goals in Matomo sind für das Matomo-Dashboard, **nicht** für den Hub-Funne
 - Site 1: **Excluded Referrers = `glattt.com`** gesetzt (2026-07-18) — verhindert
   Self-Referral-Klassifizierung server-seitig.
 
-### Website-Tracker: Befund & offene Korrektur (Stand 2026-07-18)
+### Website-Tracker: Befund & Korrektur (behoben 2026-07-18)
 
 Auf glattt.com existiert nur **ein** `_paq`-Tracker, der zwei Konfigurationen
 durchläuft — Ursache mehrerer Datenprobleme:
@@ -195,13 +195,20 @@ Folgen: `getVisitorId()` liefert immer `''` (→ Stitching unmöglich, Plugin
 0.10.0 sendete daher nie eine `matomo_visitor_id`), `visitor_type` fast immer
 „new“, Session-Splits mit Self-Referrals, Site 1 sieht nur Post-Consent-Traffic.
 
-**Korrektur:** (a) Das Inline-matomolog-Snippet in WordPress **komplett
-entfernen** (beide `<script>`-Blöcke: Tracker + „Event-Tracking für
-Terminbuchung“; zu finden via Suche nach „matomolog“ in Theme-Custom-JS bzw.
-Code-Snippet-Plugin). Das Borlabs-Matomo-Snippet (Site 1, mit Cookies nach
-Consent) bleibt unverändert. (b) Plugin **0.10.1** wählt die Visitor-ID gezielt
-vom `matomo.glattt.com`-Tracker und wertet `''` als „keine ID“. Nach (a)+(b)
-funktioniert das Stitching für alle Consent-Besucher.
+**Korrektur (beides am 2026-07-18 umgesetzt):** (a) Das Inline-matomolog-Snippet
+saß in der `header.php` des Salient-**Child-Themes** und wurde komplett entfernt
+(beide `<script>`-Blöcke: Tracker + „Event-Tracking für Terminbuchung“). Das
+Borlabs-Matomo-Snippet (Site 1, mit Cookies nach Consent) blieb unverändert.
+(b) Plugin **0.10.1** wählt die Visitor-ID gezielt vom
+`matomo.glattt.com`-Tracker und wertet `''` als „keine ID“.
+
+**Verifiziert per Headless-Browser:** vor Consent kein Tracker mehr; nach
+Consent genau ein Tracker (Site 1) mit echter Visitor-ID → Stitching
+funktioniert für alle Consent-Besucher. Erwartbare Daten-Effekte ab jetzt:
+`booking_trackings.matomo_visitor_id` gefüllt (Consent-Besucher),
+`visitor_type` „returning“ wird aussagekräftig, deutlich weniger
+Session-Splits/„Unbekannt (interner Einstieg)“, Kategorie „Terminbuchung“
+läuft nicht mehr ein, matomolog (Site 2) erhält keine neuen Daten.
 
 ### Konfiguration (.env)
 
