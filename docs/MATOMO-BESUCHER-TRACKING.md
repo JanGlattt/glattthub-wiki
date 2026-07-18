@@ -11,13 +11,70 @@ Abbruchpunkten – segmentierbar nach Standort und Quelle.
 
 **Was die Seite zeigt:**
 
-- **KPIs:** eindeutige Besucher, Ø Verweildauer, Funnel-Abschlussquote und die
-  **absolute Buchungszahl** (server-seitig, 100 % erfasst).
-- **Buchungs-Funnel:** die drei Stufen als Trichter mit Abbruch-Quoten
-  (Schritt 1 = Terminauswahl, Schritt 2 = Dateneingabe).
-- **Funnel-Vergleich:** dieselben Stufen je **Standort** oder je **Quelle**.
-- **Herkunft:** Besuche/Starts/Abschlüsse je Referrer-Typ (direkt, Suche,
-  Kampagne, Verweis, Social).
+- **KPI-Dashboard (selbst zusammenstellbar):** Nutzt die wiederverwendbare
+  KPI-Dashboard-Komponente (wie die Verkaufsstatistik): Über **„Anpassen"**
+  lassen sich die 4 sichtbaren Karten per **Drag & Drop** anordnen, entfernen
+  oder aus **12 Kennzahlen** ergänzen (Besucher, Ø Verweildauer, Mobil-Anteil,
+  Funnel-Stufen, Quoten, server-seitige Buchungszahl …); die Auswahl wird im
+  Browser gespeichert. Trend-Pfeile zeigen die Veränderung zur **Vorperiode
+  gleicher Länge** (Zähler in %, Quoten in Prozentpunkten).
+- **„Was die Daten zeigen" (automatische Erkenntnisse):** Die Seite leitet
+  selbstständig Befunde ab — größter Abbruchpunkt, dominante Folgeseite der
+  Abbrecher (z.B. `/preise/` → Preistransparenz), Geräte-Lücke (Mobil vs.
+  Desktop), stärkste/schwächste Quelle, Standort-Gefälle, Trend zur Vorperiode
+  und die Matomo-Erfassungsquote. Erkenntnisse erscheinen nur bei ausreichender
+  Stichprobe (Mindest-Fallzahlen je Befund).
+- **Buchungs-Funnel:** vier Stufen als **Fluss-Funnel** (abgerundete
+  Stufen-Balken mit weichen Übergängen, echte Proportionen, Weiterleitungs-Quote
+  „→ N % weiter" im Übergang; ECharts-Custom-Serie) — **Standortseite besucht**
+  (Seite mit Buchungstool, `/standorte/…`) → **Buchung gestartet** → **Schritt 2**
+  (Dateneingabe) → **Buchung abgeschlossen**. An jedem Übergang hängt – per
+  Leak-Pfeil verbunden – eine **Abbruch-Karte**: verlorene Anzahl
+  (`−N`, Prozent), **Ø Zeit bis Abbruch** und **wohin es danach ging** (nächste
+  Seite / Absprungquote mit Mini-Balken) — abgeleitet aus den Roh-Aktionen. Auf
+  schmalen Viewports klappen die Karten als Liste unter den Funnel.
+- **Verlauf:** Tages-Zeitreihe des kompletten Funnels — Besuche / Buchung
+  gestartet / Schritt 2 (Dateneingabe) / Abschlüsse (Matomo). Eigener
+  **Zeitraum-Umschalter** (Seiten-Zeitraum, 30/90 Tage, Gesamt; bei langen
+  Zeiträumen mit Zoom-Slider), umschaltbar auf **Ø 7 Tage** (gleitender
+  Durchschnitt, glättet den Wochentags-Zyklus) und per Checkbox auf **Quoten in
+  % der Besuche** — so fällt z.B. auf, wenn der Traffic steigt, die Buchungen
+  aber nicht mitwachsen. In der %-Ansicht entfällt die Besuche-Linie (konstant
+  100 %); beim 7-Tage-Durchschnitt in % wird das Verhältnis der 7-Tage-Summen
+  gebildet.
+- **Funnel-Vergleich:** je **Standort** oder je **Quelle**, mit eigenem
+  Zeitraum-Umschalter und zwei Ansichten: **Stufen** (Balken; per Checkbox
+  **100 % normalisiert** — jedes Segment startet bei 100 %, sortiert nach
+  Abschlussquote → Ranking der Konversionsstärke unabhängig vom Traffic) und
+  **Verlauf** (eine Linie je Segment über die Zeit; Metrik wählbar:
+  Abschlussquote / Buchung gestartet / Abschlüsse, Täglich oder Ø 7 Tage;
+  max. 6 Segmente nach Starts). Vierte Balken-Serie **„Buchungen (Server)"**:
+  echte Buchungen je Segment (Standort via `branch_id`-Mapping, Quelle via
+  Klick-ID/Referrer-Klassifizierung) — korrigiert die Matomo-Verzerrung direkt
+  im Chart; nur server-seitig bekannte Quellen („Herkunft unbekannt") erscheinen
+  als eigene Zeile. In der **normalisierten Ansicht** entfällt die Server-Serie
+  bewusst (andere Messbasis — „Buchungen ÷ Matomo-Starts" wäre ein
+  Erfassungs-Artefakt, keine Quote); dort werden stattdessen die
+  Stichprobengrößen (`n=…`) am Label gezeigt, Segmente unter 20 Starts ans
+  Ende sortiert (nicht belastbar) und Segmente ohne Starts ausgeblendet.
+  Bei aktivem Quellen-Filter entfällt die Server-Serie ebenfalls.
+- **Herkunft:** Besuche/Starts/Abschlüsse je Referrer-Typ inkl. **Abschluss-Quote**
+  — plus Spalte **„Buchungen (Server)"**: echte Buchungen aus `booking_trackings`,
+  nach Klick-IDs (gclid/gbraid/fbclid), UTM und Referrer klassifiziert (100 %
+  erfasst). **Wichtig:** Matomo unterschätzt den Ads-Anteil systematisch —
+  Werbe-Traffic verweigert Consent überproportional bzw. verliert den
+  HTTP-Referrer und landet als „Direkt" (Prod-Vergleich 07/2026: real ~57 %
+  Ads-Buchungen, in Matomo roh nur ~21 % der Abschlüsse als Kampagne). Der
+  **Sync korrigiert das teilweise selbst**: Besuche mit Klick-IDs/UTM in der
+  Lande-URL werden auf `campaign` hochgestuft (hob den Kampagnen-Anteil der
+  Abschlüsse auf ~43 %); die Restlücke sind Besuche ganz ohne URL-Parameter.
+  Ein automatischer Erkenntnis-Hinweis warnt, wenn die verbleibende
+  Verzerrung ≥ 15 Prozentpunkte beträgt.
+  „Herkunft unbekannt" = Buchung nach interner Navigation ohne
+  Attributions-Merkmal. Für Budget-Entscheidungen gilt die Server-Spalte
+  bzw. die Ads-Analyse.
+- **Geräte-Vergleich:** Mobil / Desktop / Tablet mit Start- und Abschlussquote —
+  deckt Konversions-Lücken der Buchungsstrecke je Geräteklasse auf.
 - **Top-Unterseiten:** meistbesuchte Seiten und Ø Verweildauer je Seite.
 
 !!! warning "Warum weichen die Zahlen von den echten Buchungen ab?"
@@ -25,6 +82,18 @@ Abbruchpunkten – segmentierbar nach Standort und Quelle.
     (client-seitig, ca. 60–70 %). Die **absolute Buchungszahl** in den KPIs
     stammt deshalb server-seitig aus `booking_trackings` (100 %). Der Funnel
     zeigt den **Verlauf/Drop-off**, nicht die absolute Abschlusszahl.
+
+!!! tip "Hochrechnung auf echte Buchungen"
+    Der Funnel hat einen Schalter **„Auf echte Buchungen hochgerechnet"**:
+    Consent wirkt pro *Besuch* (ganz oder gar nicht getrackt) — Matomo ist also
+    eine Stichprobe. Da die unterste Stufe server-seitig exakt bekannt ist,
+    werden alle Stufen mit dem Faktor *Buchungen ÷ Matomo-Abschlüsse* auf
+    Realniveau skaliert (unterste Stufe = exakte Buchungszahl). **Quoten bleiben
+    unverändert** (Stichproben-Verhältnisse); Annahme: nicht getrackte Besucher
+    verhalten sich wie getrackte. Guard: min. 10 Matomo-Abschlüsse, kein
+    Quellen-Filter (Buchungen lassen sich nicht nach Matomo-Quelle filtern).
+    Zusätzlich gibt es die KPI **„Matomo-Erfassungsquote"** (Abschlüsse ÷
+    Buchungen) als Datenqualitäts-Kennzahl.
 
 ## Für Entwickler
 
@@ -50,14 +119,15 @@ Matomo (selbst-gehostet) ◀── Reporting ──│  → matomo_visit_actions
 |---|---|
 | `config/matomo.php` | URL, Site-ID, Token, Sync-/Funnel-Konfiguration |
 | `app/Services/MatomoApiService.php` | Wrapper um die Reporting API (`Live.getLastVisitsDetails`), Token im POST-Body |
-| `app/Services/MatomoVisitSyncService.php` | Mapping Besuch→DB, Funnel-Ableitung, Stitching |
+| `app/Services/MatomoVisitSyncService.php` | Mapping Besuch→DB, Funnel-Ableitung, Stitching, **Referrer-Korrekturen** (`resolveReferrer`: „direct" mit Klick-IDs/UTM in der Lande-URL → `campaign`; „direct" mit eigener Domain als Referrer = Self-Referral/Session-Fortsetzung → `unknown`) |
+| `app/Console/Commands/ReclassifyMatomoReferrers.php` | `matomo:reclassify-referrers` — einmaliger Backfill beider Referrer-Korrekturen für Bestandsdaten (`--dry-run` möglich) |
 | `app/Services/MatomoAnalysisService.php` | Aggregationen für den Bericht |
 | `app/Models/MatomoVisit.php`, `MatomoVisitAction.php` | Eloquent-Models |
 | `app/Console/Commands/SyncMatomoVisits.php` | `matomo:sync-visits` (alle 10 Min) |
 | `app/Console/Commands/PruneMatomoActions.php` | `matomo:prune-actions` (täglich) |
-| `app/Http/Controllers/MatomoFunnelController.php` | Bericht + JSON-Endpoints |
+| `app/Http/Controllers/MatomoFunnelController.php` | Bericht + JSON-Endpoints; `KPI_PORTFOLIO` liefert die Daten im Format der `components/kpi-dashboard`-Komponente (`storageKey: visitor-funnel-kpis`) |
 | `resources/views/hub/reports/visitor-funnel.blade.php` | Report-Seite |
-| `public/js/visitor-funnel.js` | Alpine-Komponente + Chart.js |
+| `public/js/visitor-funnel.js` | Alpine-Komponente + **Apache ECharts** (nativer `funnel`-Typ + gruppierte Balken) |
 
 ### Tabellen
 
@@ -126,4 +196,18 @@ MATOMO_TOKEN_AUTH=...            # Reporting-API-Token (View-Rechte genügen)
 - `tests/Feature/MatomoVisitSyncTest.php` – Funnel-Ableitung, Standort,
   Terminbuchung-Filter, Stitching, Idempotenz.
 - `tests/Feature/MatomoAnalysisServiceTest.php` – KPIs, Funnel, Drop-off,
-  Quellen, Zeitraum-Filter.
+  Quellen, Zeitraum-Filter, Zeitreihe, Geräte-Vergleich, Erkenntnisse,
+  Vorperioden-Fenster.
+- `tests/Feature/MatomoFunnelKpiConfigTest.php` – KPI-Endpoint im
+  kpi-dashboard-Format, Vorperioden-Vergleich, Permissions, neue Endpoints.
+
+### JSON-Endpoints des Berichts
+
+Alle unter `/hub/reports/visitor-funnel/…`, Filter `date_from`/`date_to`/
+`referrer_type` wirken überall: `kpis` (alle 12 KPIs im
+kpi-dashboard-Format inkl. Vorperioden-Vergleich), `funnel` (inkl.
+Abandonment), `segments` + `segment-timeseries` (Funnel-Vergleich je
+Standort/Quelle, Parameter `segment=standort|source`), `timeseries`
+(Tageswerte aller vier Funnel-Stufen),
+`devices` (Mobil/Desktop/Tablet mit Quoten), `insights`
+(automatische Erkenntnisse), `sources`, `top-pages`.
