@@ -8,6 +8,7 @@ Das Gutscheine-Modul ermöglicht die Verwaltung von Phorest-Gutscheinen im HUB. 
 
 - **Übersicht**: Alle Gutscheine mit Suchfunktion und Filterung
 - **KPI-Kacheln**: Aktive Gutscheine, aufgebrauchte Gutscheine, Gesamt-/Restwert
+- **Spalte „Zuletzt bebucht"**: Zeigt, wann ein Gutschein zuletzt verwendet/geändert wurde
 - **Inline-Bearbeitung**: Restbetrag direkt in der Tabelle anpassen
 - **Neuer Gutschein**: Modal zum Erstellen von Gutscheinen mit Kunden-Zuweisung
 - **Seriennummern**: Automatische Generierung von 8-stelligen eindeutigen Nummern
@@ -29,6 +30,12 @@ Die Seite zeigt zunächst **KPI-Kacheln** mit folgenden Werten:
 - **Aufgebraucht**: Anzahl der vollständig eingelösten Gutscheine
 - **Gesamtwert (Original)**: Summe aller ursprünglichen Gutscheinwerte
 - **Restwert (Aktiv)**: Summe der verbleibenden Guthaben
+
+### Spalte „Zuletzt bebucht"
+
+Die Tabelle (und das Detail-Modal) zeigt pro Gutschein, wann er zuletzt bebucht wurde — mit Datum und relativer Angabe (z.B. „vor 3 Monaten"). So ist auf einen Blick erkennbar, wie lange ein Restwert bereits unberührt liegt; die Spalte ist sortierbar. Gutscheine ohne jede Buchung seit Erstellung zeigen **„Unberührt"**.
+
+> **Hinweis zur Datenquelle**: Phorest liefert keine Transaktionshistorie pro Gutschein. Als „Zuletzt bebucht" wird das Phorest-Feld `updatedAt` verwendet — es wird bei jeder Einlösung an der Kasse aktualisiert, aber auch bei sonstigen Änderungen am Gutschein (z.B. Restwert-Korrektur oder Gültigkeits-Anpassung im Hub). Liegt `updatedAt` weniger als 5 Minuten nach der Erstellung, gilt der Gutschein als unberührt (Toleranz für den Anlage-Prozess).
 
 ### Gutscheine suchen
 
@@ -576,6 +583,7 @@ Laravel-Validierungsfehler werden als 422-Response zurückgegeben:
 
 ### 2026-07
 
+- **Spalte „Zuletzt bebucht"**: Übersichtstabelle und Detail-Modal zeigen, wann ein Gutschein zuletzt bebucht wurde (Phorest-Feld `updatedAt`, sortierbar, relative Anzeige). Gutscheine ohne Buchung seit Erstellung werden als „Unberührt" markiert.
 - **Gutscheine im SEPA-Zahlungsplan verrechenbar**: Gutscheine können beim Anlegen eines Zahlungsplans sowie nachträglich („Gutschein einlösen" im Zahlungen-Tab eines Vertrags) mit den letzten Raten verrechnet werden. Das Restguthaben wird dabei automatisch in Phorest reduziert und die Einlösung im Gutschein vermerkt. Details: `CONTRACTS-SEPA-MODULE.md` → „Update 19.07.2026 — Gutscheine direkt im Zahlungsplan verrechnen".
 
 ### 2025-01
