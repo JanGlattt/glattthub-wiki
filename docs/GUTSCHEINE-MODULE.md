@@ -574,6 +574,10 @@ Laravel-Validierungsfehler werden als 422-Response zurückgegeben:
 
 ## Changelog
 
+### 2026-07
+
+- **Gutscheine im SEPA-Zahlungsplan verrechenbar**: Gutscheine können beim Anlegen eines Zahlungsplans sowie nachträglich („Gutschein einlösen" im Zahlungen-Tab eines Vertrags) mit den letzten Raten verrechnet werden. Das Restguthaben wird dabei automatisch in Phorest reduziert und die Einlösung im Gutschein vermerkt. Details: `CONTRACTS-SEPA-MODULE.md` → „Update 19.07.2026 — Gutscheine direkt im Zahlungsplan verrechnen".
+
 ### 2025-01
 
 - Initial: Gutscheine-Übersicht mit Suchfunktion

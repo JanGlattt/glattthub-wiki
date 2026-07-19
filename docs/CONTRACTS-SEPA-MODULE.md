@@ -2,6 +2,42 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 19.07.2026 — Gutscheine direkt im Zahlungsplan verrechnen
+
+### Für Endanwender (19.07.2026)
+
+Phorest-Gutscheine können jetzt direkt mit dem SEPA-Zahlungsplan eines Vertrags verrechnet werden — an zwei Stellen:
+
+1. **Beim Anlegen des Zahlungsplans** (Modal „Mandat und Zahlungsplan anlegen" bzw. „Neuen Zahlungsplan anlegen"): Ganz oben gibt es die Sektion **„Gutscheine verrechnen"**. Die Gutscheine des Vertragskunden (mit Restguthaben) werden automatisch vorgeschlagen; zusätzlich kann jede beliebige **Gutscheinnummer gesucht** werden. Es können **beliebig viele** Gutscheine ausgewählt werden.
+2. **Nachträglich auf einen bestehenden Plan**: Im Zahlungen-Tab neben „Raten anpassen" über den Button **„Gutschein einlösen"** — gleiche Auswahl, mit Vorschau, welche offenen Raten gedeckt würden.
+
+So funktioniert die Verrechnung:
+
+- Das Guthaben wird **von den letzten Raten** abgezogen — der Plan **endet früher**, statt später zu beginnen. Die 1. Rate (vor Ort) ist nie betroffen.
+- **Voll gedeckte Raten** werden als **bezahlt** markiert (Zahlungsart *Gutschein*, Kommentar mit der Gutscheinnummer) — für sie wird **kein GoCardless-Einzug** angelegt bzw. der bestehende storniert.
+- Eine **teilgedeckte Rate** wird auf den Restbetrag **reduziert** (SEPA zieht nur noch den Rest ein), mit Kommentar wie „25,00 € per Gutschein 12345678 verrechnet". Technisches Minimum: mindestens 1 € Einzug (GoCardless-Untergrenze) — die Differenz bleibt auf dem Gutschein.
+- Es wird **nur der benötigte Betrag eingelöst**: Übersteigt das Guthaben die offene Plansumme, bleibt der Überschuss als Restguthaben auf dem Gutschein (kein Verfall). Das Phorest-Guthaben wird entsprechend reduziert (ggf. auf 0) und die Einlösung im Gutschein vermerkt („… € eingelöst am … (glatttHub, Zahlungsplan Vertrag …)").
+- **Abgelaufene Gutscheine** werden angezeigt und sind nutzbar — aber nur mit Warnhinweis und **expliziter Bestätigung**.
+- **Klare Trennung von Altsystem und Gutschein in allen Anzeigen**: Die Sidebar zeigt unter „Bezahlt" die Zeile **„davon Gutschein"** (analog zu „davon Altsystem"), die Zahlungstabelle bekommt für Teil-Verrechnungen eine eigene Fußzeile **„Gutschein-Verrechnung (Ratenkürzung)"** mit den Gutscheinnummern, und die Summen-Badges zeigen **„davon per Gutschein"**. Voll gedeckte Raten erscheinen als normale bezahlte Zeilen mit Typ *Gutschein*. Die Belege stehen zusätzlich im **Verlauf**-Tab.
+- **Fehlerfall Phorest**: Schlägt das Reduzieren des Guthabens nach der Plan-Anlage fehl, bleibt der Plan bestehen; eine deutliche **Warnung** (im Modal und dauerhaft im Zahlungen-Tab) fordert auf, das Guthaben manuell in der Gutschein-Verwaltung abzuziehen.
+- **Kein Auto-Restore**: Wird der Plan später storniert (Widerruf, Neuanlage), bleibt der Gutschein eingelöst — falls nötig, das Guthaben manuell über die Gutschein-Verwaltung wiederherstellen.
+
+### Für Entwickler (19.07.2026)
+
+- **Migration** `2026_07_19_100000_create_contract_voucher_redemptions_table`: Einlösungs-Belege (`contract_id`, `phorest_voucher_id`, `serial_number`, `amount_cents`, `remaining_balance_before_cents`, `was_expired`, `phorest_synced_at` — *null = Phorest-Update fehlgeschlagen*, `phorest_error`, `redeemed_by`). Model `ContractVoucherRedemption`, Relation `Contract::voucherRedemptions()`.
+- **`App\Services\ContractVoucherService`** — zentrale Logik:
+  - `clientVouchers()` / `findBySerial()`: Phorest-Gutscheine laden/suchen, normalisiert auf Cents (`normalizeVoucher()`).
+  - `validateForRedemption()`: frischer Phorest-Stand, Guthaben > 0, abgelaufen nur mit `accept_expired`.
+  - `distribute(Collection $rates, Collection $vouchers)` (statisch, unit-getestet): Von-hinten-Verteilung nach Fälligkeit, pro Rate `applied_cents`/`remaining_cents`/`fully_covered`/`parts` (welcher Gutschein deckt was), `per_voucher`, `applied_total_cents`. Konstante `MIN_REMAINDER_CENTS = 100` (GC-Minimum 1 €).
+  - `redeem()`: Load-Merge-PUT gegen Phorest (Muster wie `VoucherRefundService::zeroVoucher`), reduziert `remainingBalance` um den tatsächlich verrechneten Betrag + Notiz; Fehler → Warnung + Beleg mit `phorest_error`, **kein Abbruch**.
+- **Neue Zahlungsart** `ContractPayment::DIRECT_VOUCHER = 'voucher'` (Label „Gutschein"). Gutschein-Raten sind über `direct_payment_method` automatisch vor dem destruktiven Reload geschützt (`$protectedIds` in `ContractPaymentRebuildService`); `can_correct` ist für sie bewusst `false` (Korrektur läuft über die Gutschein-Verwaltung).
+- **Anlage-Flow** `ContractController::createGoCardless()`: optionales Request-Feld `vouchers[] = {voucher_id, accept_expired}`. Server validiert frisch, verteilt, legt **nur die nicht/teilgedeckten Raten** bei GoCardless an (teilgedeckte reduziert), erstellt danach die voll gedeckten Raten als `paid`-Gutschein-Raten und löst erst dann in Phorest ein (schlägt die GC-Anlage fehl, wurde kein Gutschein angefasst). Response: `voucher_applied_cents`, `voucher_warnings`.
+- **Nachträglicher Flow** `POST /hub/contracts/{contract}/payments/apply-vouchers` → `applyVouchersToPlan()` (Middleware `can:manage_gocardless` + Rollen-Check): verrechenbar sind die `editable_payments` aus `getOpenPaymentPlanContext()` (zukünftig, `scheduled`/`pending`). Verarbeitung von hinten, pro Rate: GC-Storno (tolerant wie `updatePaymentPlan`; zwischenzeitlich eingereichte Raten → Warnung, Rate bleibt offen) → voll gedeckt: lokal `paid` per Gutschein; teilgedeckt: reduzierter Ersatz-Einzug. Eingelöst wird **nur der tatsächlich verrechnete Betrag** — auch bei Teilabbruch.
+- **Lookup-Endpunkte**: `GET /hub/contracts/{contract}/vouchers` (Vorschläge des Kunden) und `GET …/vouchers/search?serial=` — gleiche Gates.
+- **Frontend**: Alpine-Mixin `voucherApplyMixin()` (`contract-scripts.blade.php`), per Spread in `sepaTab` und `paymentsTab`; gemeinsames Partial `voucher-apply-section.blade.php` (Vorschläge, Suche, Auswahl, Abgelaufen-Bestätigung). Vorschau der Verteilung im Anlage-Modal (Badges je Rate + Summenzeilen „Per Gutschein gedeckt" / „SEPA-Einzug nach Gutschein") und im Einlöse-Modal. `getPayments()` liefert `is_voucher` je Rate + `voucher_block` (Summe, Belege, `unsynced_count` für die Nachpflege-Warnung).
+- **Abgrenzung zum Altsystem-Block**: `Contract::voucherRedeemedCents()` (Gesamtsumme) und `voucherReductionCents()` (nur der Anteil, der als **Ratenkürzung** existiert — voll gedeckte Raten sind eigene bezahlte Zeilen). `computedLegacyCollectedCents()` zieht die Kürzung ab, sonst würde eine Gutschein-Teilverrechnung fälschlich als rechnerischer Starmoney-Einzug erscheinen. Der Plausibilitäts-Check in `updatePaymentPlan()` rechnet den Gutschein-Anteil ebenfalls mit ein (`mismatch.voucher_reduction_cents`). Frontend: `applyPaymentsResult()` addiert `voucher_block.reduction_cents` zu Bezahlt- und Gesamtsumme; die V2-Sidebar (`summary-sidebar.blade.php` + `show.blade.php`) zeigt „davon Gutschein" reaktiv über das `contract-payments-summary`-Event (`voucherAmount`).
+- **Tests**: `tests/Unit/ContractVoucherDistributionTest.php` (Verteilungslogik inkl. 1-€-Minimum und Fälligkeits-Sortierung), `tests/Feature/ContractVoucherRedemptionTest.php` (beide Flows, abgelaufene Gutscheine, Phorest-Fehler → Warnung, Abgrenzung Gutschein ≠ Altsystem).
+
 ## Update 15.07.2026 — Vertragsliste: Filter nach SEPA-Mandats-Status
 
 In der Vertragsübersicht (Reiter **Verträge**, `hub.contracts`) gibt es im **Status**-Filter (Trichter-Icon der Status-Spalte) zusätzlich ein Dropdown **SEPA-Mandat**. Damit lässt sich nach dem Mandats-Status filtern: *SEPA ausstehend, aktiv, eingereicht, fehlgeschlagen, storniert, abgelaufen*.
