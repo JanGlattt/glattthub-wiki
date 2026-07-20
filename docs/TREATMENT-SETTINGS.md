@@ -48,14 +48,50 @@ Custom-Zonen eines Kunden werden aus der Datenbank geladen:
 
 Das Modal zeigt die **komplette Behandlungshistorie** in Tabellenform:
 
-| # | Skintel | Kopf | Haarfarbe | Dicke | Dichte | Empf. ms | Empf. J | ms | Jules | Notizen |
-|---|---------|------|-----------|-------|--------|----------|---------|-----|-------|---------|
-| 1 | 10 | Klein | Schwarz | Dick | Dicht | 100 | 10-30 | 100 | 20 | Test |
-| **2** | _Eingabe_ | _Eingabe_ | ... | ... | ... | ... | ... | ... | ... | ... |
+| Sitz. | MA | Kopf | Skintel/Typ | Haarfarbe | Dicke | Dichte | Empf. ms | J-Range | Genutzte ms | Genutzte Joule | Notizen |
+|-------|----|------|-------------|-----------|-------|--------|----------|---------|-------------|----------------|---------|
+| 1 | Lina L. | Klein | 10 | Schwarz | Dick | Hoch | 100 | 10-30 | 100 | 20 | Test |
+| **2** | _automatisch_ | _Eingabe_ | ... | ... | ... | ... | ... | ... | ... | ... | ... |
 
-- Zeile 1-N: Vorherige Behandlungen (readonly)
-- Letzte Zeile: Aktuelle Behandlung (editierbar)
+- Historie-Tabelle: Vorherige Sitzungen (readonly) — inkl. **MA** (Mitarbeiter des jeweiligen Phorest-Termins, wird automatisch erfasst)
+- Darunter Formularsektion **„Sitzung #N erfassen"** als **geführte Eingabe in 6 Gruppen** (eine Reihe):
+
+  | Gruppe | Felder |
+  |---|---|
+  | 0 Laserkopf | Groß oder Klein (Dropdown) |
+  | 1 Hauttyp | Skintel-Wert **oder** Typ I–VI |
+  | 2 Haar | Haarfarbe, Haardicke, Haardichte |
+  | 3 Empfohlen | Empf. ms + J-Range min–max |
+  | 4 Genutzt | Genutzte ms + Genutzte Joule |
+  | 5 Notizen | Notizen + Fotos |
+
+  Nur die **aktive Gruppe** zeigt Eingabefelder (Standard-Komponenten: Floating Labels,
+  `<x-dropdown-glattt>` — keine nativen Selects); alle anderen Gruppen zeigen ihre Werte als
+  Text und sind per Klick wieder editierbar. Reine Auswahl-Gruppen springen nach der Auswahl
+  automatisch weiter, Zahlen-Gruppen per „Weiter"-Button/Enter. Abgeschlossene Gruppen sind mit ✓
+  markiert; der MA wird automatisch aus dem Phorest-Termin übernommen.
 - Modal-Breite: 1400px für optimale Tabellenansicht
+- **Dropdown-Overflow:** Offene `dropdown-glattt`-Panels dürfen unten über den Modalrand
+  hinausragen — `.treatment-form-container:has(.dropdown-glattt-panel[data-open="true"])`
+  setzt `overflow: visible`, nur solange ein Panel offen ist (gleiche Mechanik wie
+  `.modal-glattt-dropdown-safe`); sonst bleibt der Container Scroll-Container für lange Historien
+- Ladezustand: Skeleton-Card mit Zonen-Kachel-Raster statt Spinner
+
+### Red Flags (Joule-Warnungen)
+
+Beim Erfassen der genutzten Joule warnt das System live (rotes Feld + Hinweisbanner) und
+zusätzlich mit einem Bestätigungs-Popup vor dem Speichern („Trotzdem speichern"), wenn:
+
+- die genutzten Joule **außerhalb der J-Range (min–max)** liegen, oder
+- die genutzten Joule **niedriger als bei der letzten Sitzung** derselben Zone sind
+  (Hintergrund: Nach 3–4 Sitzungen sollten die Einstellungen steigen).
+
+### Skintel-Ausfall: Hauttyp I–VI
+
+Neben dem Skintel-Wert (0-100) kann alternativ der **Hauttyp I–VI** (Fitzpatrick) gewählt
+werden — für den Fall, dass das Skintel-Gerät nicht funktioniert. Beim Speichern ist
+**Skintel oder Typ** Pflicht (eines von beiden reicht). Anzeige in der Spalte „Skintel/Typ"
+(z.B. `45` oder `Typ III`).
 
 ### iPad-Zahlentastatur
 
@@ -63,9 +99,9 @@ Alle numerischen Eingabefelder haben `inputmode="numeric"`:
 
 - **Skintel** (0-100)
 - **Empf. ms**
-- **Empf. J MIN** / **MAX**
-- **ms** (verwendet)
-- **Jules** (verwendet)
+- **J-Range min** / **max**
+- **Genutzte ms**
+- **Genutzte Joule**
 
 Auf iPad/iPhone erscheint automatisch die Zahlentastatur.
 
@@ -147,6 +183,7 @@ CREATE TABLE `treatment_settings` (
     
     -- Geräteparameter
     `skintel` TINYINT UNSIGNED NULL COMMENT 'Skintel-Wert 0-100',
+    `skin_type` TINYINT UNSIGNED NULL COMMENT 'Hauttyp I-VI (1-6), Fallback bei defektem Skintel',
     `machine_head` ENUM('large', 'small') NULL,
     `hair_color` ENUM('s', 'd', 'hb', 'b') NULL,
     `hair_thickness` ENUM('d', 'm', 'f') NULL,
@@ -283,25 +320,27 @@ Touch-optimiertes Modal mit **Behandlungstabelle**:
 - Zonenname + Behandlungsnummer
 - Schließen-Button (X)
 
-**Tabelle mit Spalten:**
+**Historie-Tabelle mit Spalten (Reihenfolge nach Vorgabe der Fachabteilung, 07/2026); die aktuelle Sitzung wird darunter als geführtes Gruppen-Formular in derselben Reihenfolge erfasst (siehe oben):**
 | Spalte | Beschreibung |
 |--------|-------------|
-| # | Behandlungsnummer |
-| Skintel | Skintel-Wert (0-100, numerisch) |
+| Sitz. | Sitzungsnummer |
+| MA | Mitarbeiter (automatisch aus dem Phorest-Termin, readonly) |
 | Kopf | Maschinenkopf (G/K Buttons) |
-| Haarfarbe | Dropdown (Schwarz/Dunkel/Hellbraun/Blond) |
-| Dicke | Dropdown (Dick/Mittel/Fein) |
-| Dichte | Dropdown (Dicht/Mittel/Nicht dicht) |
+| Skintel/Typ | Skintel-Wert (0-100, numerisch) **oder** Hauttyp I–VI (Dropdown, Fallback bei defektem Skintel) |
+| Haarfarbe | Dropdown (Blond/Hellbraun/Dunkelbraun/Schwarz) |
+| Dicke | Dropdown (Fein/Mittel/Dick) |
+| Dichte | Dropdown (Niedrig/Mittel/Hoch) |
 | Empf. ms | Empfohlene Millisekunden (numerisch) |
-| Empf. J | Empfohlene Jules MIN-MAX (zwei Felder) |
-| ms | Genutzte ms (numerisch, hervorgehoben) |
-| Jules | Genutzte Jules (numerisch, hervorgehoben) |
+| J-Range | Empfohlene Joule min–max (zwei Felder) |
+| Genutzte ms | Genutzte ms (numerisch, hervorgehoben) |
+| Genutzte Joule | Genutzte Joule (numerisch, hervorgehoben, mit Red-Flag-Warnung) |
 | Notizen | Freitextfeld |
 
 **Behandlungshistorie:**
-- Alle vorherigen Behandlungen werden als readonly-Zeilen angezeigt
-- Aktuelle Behandlung ist die letzte editierbare Zeile
-- Genutzte Werte (ms, Jules) werden farblich hervorgehoben
+- Alle vorherigen Sitzungen werden als readonly-Zeilen angezeigt
+- Aktuelle Sitzung ist die letzte editierbare Zeile
+- Genutzte Werte (ms, Joule) werden farblich hervorgehoben
+- DB-Spalten heißen historisch weiterhin `used_jules` etc. — nur die UI-Labels wurden auf „Joule" korrigiert
 
 ---
 
@@ -522,6 +561,7 @@ CREATE TABLE IF NOT EXISTS `treatment_settings` (
     
     -- Geräteparameter
     `skintel` TINYINT UNSIGNED NULL COMMENT 'Skintel-Wert 0-100',
+    `skin_type` TINYINT UNSIGNED NULL COMMENT 'Hauttyp I-VI (1-6), Fallback bei defektem Skintel',
     `machine_head` ENUM('large', 'small') NULL COMMENT 'Maschinenkopf: groß oder klein',
     `hair_color` ENUM('s', 'd', 'hb', 'b') NULL COMMENT 'Haarfarbe: s=schwarz, d=dunkel, hb=hellbraun, b=blond',
     `hair_thickness` ENUM('d', 'm', 'f') NULL COMMENT 'Haardicke: d=dick, m=mittel, f=fein',

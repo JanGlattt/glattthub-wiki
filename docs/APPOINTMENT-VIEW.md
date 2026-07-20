@@ -211,6 +211,20 @@ Teleportiertes Modal mit Pflicht-Notiz:
 - POST an `/phorest/appointment/{b}/{a}/note`
 - Bei Erfolg: Zurück zu Details-View
 
+### Ladezustände (Skeleton-Loader, seit 07/2026)
+
+Alle Ladezustände der Terminansicht nutzen **Skeleton-Loader** (Klassen `skeleton-glattt`,
+`skeleton-card-glattt` aus `theme_glattt.css`) statt Spinnern:
+
+- **Details-View**: Skeleton spiegelt das echte Layout (Kunden-Header-Karte mit Avatar,
+  Zwei-Spalten-Grid mit Details-/Services-/Notizen-Karte) — kein Layout-Sprung beim Umschalten
+- **Behandlungseinstellungen**: Skeleton-Card mit Zonen-Kachel-Raster (`treatment-skeleton-zones`)
+- **Formulare**: Skeleton-Card mit Textzeilen
+
+Wichtig fürs Layout: `.fullscreen-container` (Layout `layouts/fullscreen.blade.php`) braucht
+`width: 100%`, da er als Flex-Item mit `margin: 0 auto` sonst auf Inhaltsbreite kollabiert —
+sichtbar wurde das erst durch die schmalen Skeleton-Platzhalter.
+
 ---
 
 ## 🔧 Technische Details
