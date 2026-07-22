@@ -43,6 +43,28 @@ Das Form Editor Modul ermöglicht das Erstellen, Bearbeiten und Verwalten von dy
 - Automatisches Speichern nach 2 Sekunden Inaktivität
 - Manuelles Speichern jederzeit möglich
 
+### 🔒 Pflichtformulare vor Behandlung
+
+**Für Endanwender:** In der Dienstleistungen-Card des Editors kann ein Formular als
+**„Pflichtformular vor Behandlung"** markiert werden. Bei Terminen, deren Dienstleistungen
+zum Formular passen, muss es dann ausgefüllt sein, bevor in der Terminansicht der
+Einstellungszettel geöffnet werden kann (Kachel ist gesperrt, Hinweis-Toast nennt die
+fehlenden Formulare). Die **Gültigkeit** ist pro Formular wählbar:
+
+- **Einmalig pro Kunde**: Jede frühere Einreichung des Kunden erfüllt die Pflicht dauerhaft (z.B. Einverständniserklärung)
+- **Bei jedem Termin neu**: Für jeden Termin muss eine neue Einreichung existieren (z.B. Tagesanamnese)
+
+Es gibt kein Überspringen — die Pflicht wird hart erzwungen. Der Termin-Start (= Check-in)
+selbst bleibt möglich; fehlen Pflichtformulare, springt die Ansicht nach dem Start direkt
+zur Formular-Auswahl. Details zur Terminansicht: `APPOINTMENT-VIEW.md`.
+
+**Für Entwickler:** Spalten `forms.is_required_for_treatment` (bool) und
+`forms.required_frequency` (`once_per_client` | `per_appointment`). Die Prüfung läuft
+clientseitig in `public/js/appointment-unified.js` (Getter `requiredForms`,
+`missingRequiredForms`, `treatmentLocked`; Erfüllungs-Check `isRequiredFormFulfilled()`
+gegen die Client-Submissions aus `GET /api/forms/submissions/client/{clientId}`, die dafür
+`appointment_id` mitliefern).
+
 ### 📄 PDF-Export
 - Ausgefüllte Formulare als PDF exportieren
 - Automatische PDF-Generierung nach Formular-Einreichung
@@ -83,6 +105,9 @@ Das Form Editor Modul ermöglicht das Erstellen, Bearbeiten und Verwalten von dy
 - slug (string, unique) - URL-freundlicher Identifier
 - description (text, nullable) - Beschreibung
 - settings (json) - Zusätzliche Einstellungen
+- service_ids (json) - Verknüpfte Phorest-Dienstleistungen (Matching in der Terminansicht)
+- is_required_for_treatment (boolean) - Pflichtformular vor Behandlung
+- required_frequency (string) - Gültigkeit der Pflicht: once_per_client | per_appointment
 - is_published (boolean) - Veröffentlichungsstatus
 - is_active (boolean) - Aktiv/Inaktiv
 - created_at, updated_at, deleted_at
@@ -451,6 +476,12 @@ sepa.creditorId     → Gläubiger-ID (DE33ZZZ00001960715)
 Statische Werte (ohne Punkt) werden direkt eingetragen.
 
 Die vollständige Platzhalter-Konfiguration befindet sich in `config/form-placeholders.php`.
+
+`{{kategorie.key}}`-Platzhalter werden beim Ausfüllen außerdem in **Absätzen sowie in
+Überschriften und deren Unterzeilen** ersetzt (zentraler Renderer
+`partials/form-fields/_field-renderer.blade.php`, `replacePlaceholders()` in
+`form-fill.js`). Hinweis: Im generierten **PDF** werden Platzhalter in Absatz-/
+Überschriften-Texten aktuell **nicht** aufgelöst — dort erscheint der Rohtext.
 
 ### Phorest-Änderungserkennung
 

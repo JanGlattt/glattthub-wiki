@@ -1,24 +1,56 @@
-# 📅 Terminansicht (Unified Appointment View)
+# 📅 Terminansicht (Split-View)
 
-Die Terminansicht ist eine **einheitliche Single-Page-Architektur**, die Termindetails und Session-Durchführung in einer Fullscreen-Ansicht vereint. Ein persistenter Header zeigt durchgehend den Kundennamen und die Terminzeit an, während der Content-Bereich je nach Kontext zwischen verschiedenen Views wechselt.
+Die Einzeltermin-Ansicht ist eine **eigenständige Fullscreen-Seite im Split-View-Layout**, gebaut für die Nutzung auf dem **iPad im Querformat** durch die Mitarbeiterinnen vor Ort. Links steht dauerhaft der Kontext (Kunde, Termin, Navigation, Aktionen), rechts wechselt der Inhalt der gewählten Ansicht — ohne Seitenwechsel und ohne Modal/iframe.
 
-## 📋 Übersicht
+## 📋 Für Endanwender
 
-Die Terminansicht ist für den Einsatz auf **iPads** während eines Kundentermins konzipiert:
+Die Ansicht öffnet sich über die Terminübersicht (`/hub/appointments`) — Klick auf einen Termin in Liste **oder** Kalender navigiert einheitlich auf die Detailseite. Beim Öffnen wird immer die **Übersicht** angezeigt.
 
-- **Single-Page-Architektur** - Terminansicht und Session-Durchführung in einer View
-- **Persistenter Header** - glattt Icon, Kundenname und Uhrzeit immer sichtbar
-- **View-Navigation** - Wechsel zwischen Details, Session-Grid, Formulare, Behandlungseinstellungen ohne Seitenladung
-- **View-History-Stack** - Zurück-Navigation über History-Stack
-- **Fullscreen-Modus** - Keine Ablenkung durch Navigation
-- **Alle Infos auf einen Blick** - Kunde, Termin, Behandlungen, Notizen
-- **Paket-Einheiten** - Zeigt verbleibende Abo-Einheiten direkt bei den Behandlungen
-- **Geburtstags-Hervorhebung** - Visueller Hinweis bei Geburtstag heute oder in den letzten 7 Tagen
-- **Inline-Formulare** - Formulare direkt in der Ansicht ausfüllen
-- **No-Show-Erkennung** - Automatische Erkennung wenn Termin >30 Min. überfällig
-- **Modal- und Standalone-Modus** - Funktioniert als eigenständige Seite und als iframe in der Appointments-Übersicht
+**Aufbau (Querformat):**
 
----
+```
+┌──────────────────────────────────────────────────────────────┐
+│ [← Termine]        glattt · Anna Müller · 14:00–14:45  [Badge]│  ← Top-Bar
+├────────────┬─────────────────────────────────────────────────┤
+│ 👤 Anna    │                                                  │
+│ Müller     │  Inhalt der gewählten Ansicht                    │
+│ 🎂 Badge   │  (scrollt intern)                                │
+│ ──────────│                                                  │
+│ Datum/Zeit │                                                  │
+│ Institut/MA│                                                  │
+│ ──────────│                                                  │
+│ ☰ Übersicht│                                                  │
+│ ▶ Session  │  (nur bei laufendem Termin)                      │
+│ 📄 Formulare│                                                 │
+│ ⚙ Einstellungszettel                                          │
+│ ──────────│                                                  │
+│ [Termin beginnen]   bzw.   ● Termin läuft / [Termin beenden] │
+└────────────┴─────────────────────────────────────────────────┘
+```
+
+- **Top-Bar:** Zurück zur Terminübersicht, Kundenname + Zeit + Institut, Status-Badge
+- **Linke Spalte (immer sichtbar):** Kunden-Karte (Avatar, Name → Kundenprofil, Kunden-ID, Geburtstags-Badges, Schnellkontakt Anrufen/E-Mail/Verlegen), Termin-Infos, **Navigation** und unten die Aktionen
+- **Navigation (linke Liste):**
+    - **Übersicht** — Behandlungen mit Paket-Einheiten + Notizen-Timeline
+    - **Session** — nur sichtbar bei laufendem Termin; zwei große Kacheln: *Formulare ausfüllen* und *Einstellungszettel*
+    - **Formulare** — Historie der **bisher ausgefüllten Formulare** der Kundin (Ansehen öffnet die Einreichung in neuem Tab)
+    - **Einstellungszettel** — **bisherige Behandlungseinstellungen** je Körperzone (read-only Tabellen)
+
+**Session-Logik:**
+
+- Ein Termin gilt **nur** als laufend, wenn unten links explizit **„Termin beginnen"** gedrückt wurde — der Start führt **gleichzeitig den Check-in** aus. Reines Navigieren durch die Ansichten startet keine Session.
+- Während der Termin läuft: grüner „Termin läuft"-Indikator + **„Termin beenden"** an derselben Stelle; die rechte Seite zeigt die Session-Kacheln (Formulare, Einstellungszettel).
+- Der **Zurück-Button „Termine" ist gesperrt** (ausgegraut, Schloss-Icon), solange der Termin läuft — ein Tipp darauf zeigt den Hinweis, dass zuerst der Termin beendet werden muss.
+- „Termin beenden" verlangt eine Pflicht-Notiz (wird nach Phorest geschrieben) und entsperrt die Ansicht wieder.
+
+**Pflichtformulare vor Behandlung:**
+
+- Formulare können im Formular-Editor als **Pflichtformular** markiert werden (siehe `FORM-EDITOR.md`). Passt ein solches Formular zu den Dienstleistungen des Termins, ist der **Einstellungszettel gesperrt**, bis alle Pflichtformulare ausgefüllt sind — die Kachel zeigt ein Schloss, ein Klick nennt die fehlenden Formulare per Toast.
+- Der **Termin-Start (= Check-in) bleibt möglich** — fehlen Pflichtformulare, springt die Ansicht nach dem Start direkt zur Formular-Auswahl statt zu den Session-Kacheln. In der Formular-Liste tragen unerfüllte Pflichtformulare ein gelbes **„Pflicht"-Badge**.
+- Die Gültigkeit ist pro Formular konfiguriert: **einmalig pro Kunde** (jede frühere Einreichung zählt) oder **bei jedem Termin neu** (Einreichung mit dieser Termin-ID nötig). Ein Überspringen ist nicht möglich.
+- Der grüne „Ausgefüllt"-Haken auf den Formular-Kacheln wird beim Laden aus den bestehenden Einreichungen des Termins vorbefüllt und übersteht damit auch einen Seiten-Reload.
+- Sind **alle** zum Termin passenden Formulare erledigt (gleiche Erfüllungs-Logik: frühere Einreichungen zählen, außer bei „bei jedem Termin neu"), wird die **Formulare-Kachel** in der Session-Übersicht grün abgehakt („Alle Formulare ausgefüllt ✓").
+- **„Zur Terminansicht"** (im Bestätigungs-Modal nach dem Einreichen bzw. im Formular-Kopf) führt bei laufender Session zurück zu den **Session-Kacheln**; „Zurück zur Formularauswahl" bleibt auf der Formular-Liste.
 
 ## 🔗 URL-Struktur
 
@@ -35,300 +67,123 @@ Die Terminansicht ist für den Einsatz auf **iPads** während eines Kundentermin
 
 | Parameter | Beschreibung | Default |
 |-----------|--------------|---------|
-| `view` | Initiale View (`details`, `session`, `forms`, `treatment-settings`) | `details` |
-| `embed` | `1` = Header ausblenden (für iframe-Einbettung in Modal) | - |
+| `view` | Initiale Ansicht (`details`, `forms-history`, `settings-history`, `session`, `forms`, `treatment-settings`) | `details` |
 
-### Beispiele:
-```
-/hub/appointment/abc123/def456              # Termindetails
-/hub/appointment/abc123/def456?view=session  # Direkt in Session-Grid
-/hub/appointment/abc123/def456?embed=1       # Im Modal (ohne eigenen Header)
-```
+Der frühere `embed=1`-Parameter (iframe-Modus) wurde **entfernt**.
 
 ---
 
-## 🏗 Architektur
+## 🏗 Für Entwickler
 
-### Vorher (veraltet, entfernt)
-```
-appointment-view/   → Terminansicht (eigene Seite)
-appointment-session/ → Session-Durchführung (eigene Seite)
-    ├── forms.blade.php
-    └── treatment-settings.blade.php
-```
+### Architektur
 
-### Jetzt (Unified)
-```
-appointment-unified/ → Alles in einer Single-Page-View
-    ├── index.blade.php (mit View-Switching via Alpine.js)
-    └── partials/ (alle Inhalte modular)
-```
+- **Eine Route, eine Seite:** `showUnified()` rendert `hub/appointment-unified/index.blade.php` im Layout `layouts/fullscreen.blade.php` (ohne Hub-Sidebar, randlos: `padding: 0`, kein Lesecontainer). Die Terminübersicht navigiert per `window.location.href` — kein iframe/Modal.
+- **Ein Alpine-Scope:** Top-Bar, Sidebar und Panels liegen alle im selben `x-data="appointmentUnified()"`-Root.
+- **Session-Zustand:** `sessionActive` wird **ausschließlich** durch `startSession()` gesetzt (Button unten links). `startSession()` führt aus: Check-in (falls Status Gebucht/Bestätigt), einmaliges `logSessionStart()`, Wechsel zur Session-Ansicht. `navigateTo(view)` ist ein reiner Ansichtswechsel ohne Nebenwirkungen. `endSession()` (Pflicht-Notiz → Phorest) setzt `sessionActive` zurück.
+- **Zurück-Sperre:** Bei `sessionActive` wird der „Termine"-Link durch einen gesperrten Button ersetzt (`.apt-detail-back--locked`); Klick zeigt einen Toast-Hinweis.
 
-**Vorteile:**
-- Kein Seitenwechsel zwischen Terminansicht und Session
-- Kundendaten werden nur einmal geladen
-- Zurück-Navigation ohne Page-Reload
-- Persistenter Header mit Kundeninfo
-
-### View-Navigation
-
-```
-┌──────────────────────────────────────────────────┐
-│  [glattt]  Julienne Wolff · 14:00 - 14:45    [X]│  ← Persistenter Header
-├──────────────────────────────────────────────────┤
-│                                                  │
-│   details ──→ session ──→ forms                  │
-│                      └──→ treatment-settings     │
-│                                                  │
-│   navigateTo(view) pusht auf viewHistory[]       │
-│   goBack() poppt vom Stack                       │
-│                                                  │
-└──────────────────────────────────────────────────┘
-```
-
-| View | Beschreibung | Einstieg |
-|------|-------------|----------|
-| `details` | Kundenheader, Termindetails, Behandlungen, Notizen | Start-View |
-| `session` | 2×2 Grid: Formulare, Behandlungseinstellungen, Upselling, Termin beenden | Button "Termin beginnen" |
-| `forms` | Formular-Auswahl und Inline-Ausfüllung | Session-Grid → Formulare |
-| `treatment-settings` | Körperzonen, Behandlungseinstellungen, Fotos | Session-Grid → Behandlungseinstellungen |
-
----
-
-## 📁 Dateistruktur
+### Dateistruktur
 
 ```
 resources/views/
 ├── layouts/
-│   └── fullscreen.blade.php              # Fullscreen Layout (ohne Navigation)
-└── hub/
-    └── appointment-unified/
-        ├── index.blade.php                # Hauptansicht mit View-Switching
-        └── partials/
-            ├── client-header.blade.php        # Kunden-Header mit Avatar, Status, Aktionen
-            ├── appointment-details.blade.php  # Datum, Zeit, Dauer, Filiale
-            ├── services.blade.php             # Behandlungsliste mit Paket-Einheiten
-            ├── notes.blade.php                # Notizen-Timeline (scrollbar)
-            ├── form-fill-inline.blade.php     # Inline-Formular
-            ├── session-grid.blade.php         # 2×2 Session-Menü
-            ├── session-forms.blade.php        # Formular-Auswahl innerhalb Session
-            ├── treatment-content.blade.php    # Behandlungseinstellungen-Content
-            └── end-session-modal.blade.php    # Modal zum Termin beenden
-
-app/Http/Controllers/
-└── AppointmentViewController.php          # Controller für View & Daten-APIs
+│   └── fullscreen.blade.php              # Fullscreen Layout (nur von dieser Seite genutzt)
+└── hub/appointment-unified/
+    ├── index.blade.php                    # Top-Bar + Split-View + Panels
+    └── partials/
+        ├── sidebar.blade.php              # Linke Spalte: Kunde, Termin-Infos, Navigation, Aktionen
+        ├── services.blade.php             # Behandlungsliste mit Paket-Einheiten (Übersicht)
+        ├── notes.blade.php                # Notizen-Timeline (Übersicht)
+        ├── forms-history.blade.php        # Historie: ausgefüllte Formulare (/api/forms/submissions/client/{id})
+        ├── settings-history.blade.php     # Historie: bisherige Einstellungen (/hub/treatment-settings/client/{id})
+        ├── session-grid.blade.php         # Session: 2 Kacheln (Formulare, Einstellungszettel)
+        ├── session-forms.blade.php        # Formular-Auswahl + Inline-Ausfüllung
+        ├── form-fill-inline.blade.php     # Inline-Formular (form-fill.js)
+        ├── treatment-content.blade.php    # Einstellungszettel-Content
+        └── end-session-modal.blade.php    # Modal „Termin beenden" (Pflicht-Notiz)
 
 public/
-├── css/
-│   └── theme_glattt.css                   # Alle Styles (inkl. Appointment View, Session, Treatment Settings)
+├── css/theme_glattt.css                   # Sektion „TERMINANSICHT SPLIT-VIEW" (.apt-detail-*)
 └── js/
-    ├── appointment-unified.js             # Alpine.js Hauptkomponente
-    └── treatment-settings.js              # Alpine.js Behandlungseinstellungen
+    ├── appointment-unified.js             # Alpine-Hauptkomponente
+    └── treatment-settings.js              # Einstellungszettel
 
-routes/
-└── web.php                                # Routes unter /hub/appointment/...
+app/Http/Controllers/AppointmentViewController.php
+tests/Feature/AppointmentDetailViewTest.php
 ```
 
----
+Entfernt wurden: `partials/client-header.blade.php`, `partials/appointment-details.blade.php` (ersetzt durch `sidebar.blade.php`), das Modal-Markup + Script in `layouts/hub.blade.php` sowie die CSS-Sektion `.appointment-fullscreen-modal`.
 
-## 🚀 Verwendung
+### CSS (`.apt-detail-*`)
 
-### 1. Über die Termine-Seite
+Alle Styles liegen in `theme_glattt.css`, Sektion **„TERMINANSICHT SPLIT-VIEW (iPad, Querformat)"**:
 
-Auf der Termine-Seite (`/hub/appointments`) öffnet ein Klick auf einen Termin die Ansicht als **Fullscreen-Modal** (iframe mit `?embed=1`). Der Header des Modals wird per `postMessage` mit Kundennamen und Terminzeit aktualisiert.
+| Klasse | Zweck |
+|--------|-------|
+| `.apt-detail` | Seiten-Root (Flex-Spalte, volle Höhe) |
+| `.apt-detail-topbar` / `-back` / `-back--locked` | Top-Bar; gesperrter Zurück-Button bei laufendem Termin |
+| `.apt-detail-body` | Flex-Row: Sidebar + Main |
+| `.apt-detail-sidebar` | Linke Spalte (320 px, scrollt intern) |
+| `.apt-detail-client-card` / `-info-card` / `-quick-btn` / `-actions` / `-running` | Sidebar-Bausteine inkl. „Termin läuft"-Indikator |
+| `.apt-detail-nav` / `-nav-item` / `-nav-item--active` | Vertikale Navigation in der Sidebar |
+| `.apt-detail-history-list` / `-history-row` | Liste der ausgefüllten Formulare |
+| `.apt-detail-panels` / `-panel` / `-panel--overview` | Content-Panels (Übersicht = 2-Spalten-Grid) |
+| `.unified-session-grid` | Session: 2 große Kacheln nebeneinander |
 
-### 2. Direkt per URL
+Breakpoints: `@media (max-width: 900px)` stapelt die Sidebar über den Content (Navigation wird horizontal scrollbar), `@media (pointer: coarse)` vergrößert die Touch-Ziele.
 
-```
-/hub/appointment/{branchId}/{appointmentId}
-```
-
-Im Standalone-Modus zeigt der eigene persistente Header das glattt Icon, den Kundennamen und die Terminzeit.
-
----
-
-## 🎨 Komponenten
-
-### Persistenter Header
-
-Im Standalone-Modus (ohne `?embed=1`) zeigt der Header:
-- **Links:** Zurück-Button (kontextabhängig, nur sichtbar wenn nicht in `details`)
-- **Mitte:** glattt Icon + Kundenname + Uhrzeit mit Filiale
-- **Rechts:** Schließen-Button (→ `/hub/appointments`)
-
-Der Header ist **außerhalb** der Alpine-Komponente und bindet an `$store.appointmentUnified`:
-
-```blade
-<img src="{{ asset('images/glattt-icon.png') }}" alt="glattt">
-<div x-text="$store.appointmentUnified.clientName"></div>
-<div x-text="$store.appointmentUnified.appointmentHeaderMeta"></div>
-```
-
-Der Alpine Store wird per `alpine:init` Event im `<head>` registriert, damit er vor dem Komponenten-Init verfügbar ist.
-
-### Modal-Modus (iframe in Appointments-Übersicht)
-
-Wenn die View als iframe in `hub.blade.php` eingebettet ist:
-- Der eigene Header wird per CSS ausgeblendet (`?embed=1`)
-- Die Komponente sendet per `postMessage` die Kundendaten an das Eltern-Fenster
-- Der Modal-Header der Elternseite wird automatisch aktualisiert
+### Alpine-Komponente (`appointment-unified.js`)
 
 ```javascript
-// In appointment-unified.js → syncStore()
-if (window.parent !== window) {
-    window.parent.postMessage({
-        type: 'appointmentHeaderUpdate',
-        clientName: this.clientName,
-        meta: this.appointmentHeaderMeta,
-    }, '*');
-}
-```
-
-### Client Header
-
-Zeigt Kundeninformationen prominent an:
-- Avatar mit Initialen (großer türkiser Kreis)
-- Vollständiger Name (klickbar → Kundenprofil)
-- Geburtstag mit Hervorhebung:
-  - 🎂 **Grüner Badge** bei Geburtstag heute (mit Pulse-Animation)
-  - 🎂 **Gelber Badge** bei Geburtstag in den letzten 7 Tagen
-- Kunden-ID
-- Quick-Actions (Telefon, E-Mail, Formular-Buttons)
-- **"Termin beginnen"** Button → `navigateTo('session')`
-
-### Session-Grid
-
-2×2 Grid mit großen Kacheln:
-- **Formulare** → `navigateTo('forms')`
-- **Behandlungseinstellungen** → `navigateTo('treatment-settings')`
-- **Upselling** (Platzhalter)
-- **Termin beenden** → End-Session-Modal
-
-### End-Session-Modal
-
-Teleportiertes Modal mit Pflicht-Notiz:
-- Textarea für Terminnotiz (required)
-- POST an `/phorest/appointment/{b}/{a}/note`
-- Bei Erfolg: Zurück zu Details-View
-
-### Ladezustände (Skeleton-Loader, seit 07/2026)
-
-Alle Ladezustände der Terminansicht nutzen **Skeleton-Loader** (Klassen `skeleton-glattt`,
-`skeleton-card-glattt` aus `theme_glattt.css`) statt Spinnern:
-
-- **Details-View**: Skeleton spiegelt das echte Layout (Kunden-Header-Karte mit Avatar,
-  Zwei-Spalten-Grid mit Details-/Services-/Notizen-Karte) — kein Layout-Sprung beim Umschalten
-- **Behandlungseinstellungen**: Skeleton-Card mit Zonen-Kachel-Raster (`treatment-skeleton-zones`)
-- **Formulare**: Skeleton-Card mit Textzeilen
-
-Wichtig fürs Layout: `.fullscreen-container` (Layout `layouts/fullscreen.blade.php`) braucht
-`width: 100%`, da er als Flex-Item mit `margin: 0 auto` sonst auf Inhaltsbreite kollabiert —
-sichtbar wurde das erst durch die schmalen Skeleton-Platzhalter.
-
----
-
-## 🔧 Technische Details
-
-### Controller
-
-```php
-// app/Http/Controllers/AppointmentViewController.php
-
-// Unified View anzeigen
-public function showUnified(string $branchId, string $appointmentId, Request $request): View
-
-// Session-Start loggen (AJAX)
-public function logSessionStart(Request $request, string $branchId, string $appointmentId): JsonResponse
-
-// Daten-APIs (AJAX, lazy loaded)
-public function getData(...)           // Termin + Kunde + Staff + Branch
-public function getNotes(...)          // Notizen-Timeline
-public function getPackages(...)       // Client-Pakete (Kurse)
-public function getMergedServices(...) // Zusammengeführte Services bei Multi-Bookings
-```
-
-### Routes
-
-```php
-// routes/web.php (innerhalb hub Prefix)
-
-// Hauptroute (zeigt die Unified View)
-Route::get('/appointment/{branchId}/{appointmentId}',
-    [AppointmentViewController::class, 'showUnified']
-)->name('appointment.view');
-
-// Daten-APIs
-Route::get('/appointment/{branchId}/{appointmentId}/data', ...)->name('appointment.view.data');
-Route::get('/appointment/{branchId}/{appointmentId}/notes', ...)->name('appointment.view.notes');
-Route::get('/appointment/{branchId}/{appointmentId}/packages', ...)->name('appointment.view.packages');
-Route::get('/appointment/{branchId}/{appointmentId}/merged-services', ...)->name('appointment.view.merged-services');
-
-// Session
-Route::post('/appointment/{branchId}/{appointmentId}/session/log-start', ...)->name('appointment.session.log-start');
-
-// Behandlungseinstellungen
-Route::get('/appointment/{branchId}/{appointmentId}/session/treatment-settings/data', ...);
-Route::post('/appointment/{branchId}/{appointmentId}/session/treatment-settings', ...);
-```
-
-### Alpine.js Komponente
-
-```javascript
-// public/js/appointment-unified.js
-
 function appointmentUnified() {
     return {
-        // Navigation
-        currentView: 'details',  // details | session | forms | treatment-settings
-        viewHistory: [],
+        // details | forms-history | settings-history | session | forms | treatment-settings
+        currentView: 'details',
+        sessionActive: false,          // NUR via startSession() / endSession()
+        sessionLogged: false,          // logSessionStart einmal pro Seitenaufruf
 
-        // Core data
-        appointment: null,
-        client: null,
-        staff: null,
-        branch: null,
+        navigateTo(view) { ... },      // reiner Ansichtswechsel + Lazy-Load des Panels;
+                                       // blockt 'treatment-settings' bei treatmentLocked
+        startSession() { ... },        // Check-in (falls möglich) + Session-Log + View
+                                       // 'session' (bzw. 'forms' bei offenen Pflichtformularen)
+        lockedBackHint() { ... },      // Toast bei Klick auf gesperrten Zurück-Button
+        lockedTreatmentHint() { ... }, // Toast mit den fehlenden Pflichtformularen
 
-        // Computed
-        get effectiveState() { ... },   // No-Show-Erkennung
-        get clientName() { ... },
-        get appointmentTime() { ... },
-        get appointmentHeaderMeta() { ... },
-        get canStartAppointment() { ... },
+        // Pflichtformulare (Getter): requiredForms, missingRequiredForms,
+        // treatmentLocked; Erfüllungs-Check isRequiredFormFulfilled(form)
+        // ('per_appointment' → Einreichung dieses Termins, sonst jede des Kunden)
 
-        // Navigation
-        navigateTo(view) { ... },       // Pusht auf viewHistory
-        goBack() { ... },               // Poppt von viewHistory
-        syncStore() { ... },            // Synct Alpine Store + postMessage
+        async loadAppointment() { ... },       // /data, danach lazy: notes/packages/merged-services
+        async loadMatchingForms() { ... },     // /api/forms + Service-Matching (Ausfüllen)
+        async loadSubmissions() { ... },       // /api/forms/submissions/client/{clientId} (Historie)
+        async loadSettingsHistory() { ... },   // /hub/treatment-settings/client/{clientId} (Historie)
 
-        // Data Loading
-        async loadAppointment() { ... },
-        async loadMatchingForms() { ... },
-        async loadNotes() { ... },      // Lazy
-        async loadPackages() { ... },   // Lazy
-        async loadMergedServices() { ... }, // Lazy
-
-        // Actions
         async checkIn() { ... },
-        async endSession() { ... },
-        async logSessionStart() { ... },
+        async endSession() { ... },            // Pflicht-Notiz → POST /phorest/.../note, sessionActive = false
     };
 }
 ```
 
-### Alpine Store
+### Controller & Routes
 
-Der Store wird im `<head>` per `alpine:init` registriert und von der Komponente per `syncStore()` aktualisiert:
+Unverändert gegenüber vorher — `showUnified()` validiert nur noch den `view`-Parameter:
 
-```javascript
-document.addEventListener('alpine:init', () => {
-    Alpine.store('appointmentUnified', {
-        clientName: 'Lädt...',
-        appointmentHeaderMeta: '',
-        currentView: 'details',
-        // ... wird von init() der Komponente befüllt
-    });
-});
+```php
+// routes/web.php (hub-Prefix, can:view_appointment_detail)
+Route::get('/appointment/{branchId}/{appointmentId}', [AppointmentViewController::class, 'showUnified'])->name('appointment.view');
+Route::get('/appointment/{branchId}/{appointmentId}/data|notes|packages|merged-services', ...);
+Route::post('/appointment/{branchId}/{appointmentId}/session/log-start', ...);
 ```
+
+### Tests
+
+`tests/Feature/AppointmentDetailViewTest.php`: Rendering des Split-Views, Übernahme/Fallback des `view`-Parameters, 403 ohne `view_appointment_detail`.
+
+`tests/Feature/RequiredFormsTest.php`: Pflichtformular-Einstellungen (Speichern über die Forms-API, Defaults, Validierung der Frequenz) und `appointment_id` in den Client-Submissions.
+
+### Headless-Testing-Hinweis
+
+Auf dieser Seite produziert Headless-Chromium keine Frames (rAF verhungert) — Alpine-`x-show`-**Updates** und Screenshots funktionieren dort nicht. Funktionale Verifikation über `Alpine.$data(document.querySelector('.apt-detail'))`-Zustands-Checks.
 
 ---
 
@@ -347,57 +202,24 @@ document.addEventListener('alpine:init', () => {
 
 ### Abgeleiteter Status: No Show
 
-Ein Termin wird als **No Show** erkannt, wenn:
-- Phorest-Status ist `BOOKED` oder `CONFIRMED`
-- **UND** die Endzeit des Termins liegt mehr als 30 Minuten in der Vergangenheit
-- **ODER** der Termintag ist bereits vergangen
-
-| Status | Anzeige | Badge |
-|--------|---------|-------|
-| `NO_SHOW` | No Show | `badge-glattt-danger` |
-
-### "Termin beginnen"-Button
-
-Der Button ist **immer sichtbar**, außer bei:
-- Status `PAID`
-- Status `NO_SHOW`
-
----
-
-## 📱 Layout & Responsive Design
-
-Die Ansicht ist für **iPads** optimiert:
-
-| Feature | Beschreibung |
-|---------|--------------|
-| **Kein Seiten-Scroll** | Details-View passt auf den Bildschirm |
-| **Interne Scroll-Bereiche** | Nur Notizen-Karte scrollt bei Bedarf |
-| **View-Transitions** | Fade-In Animation beim View-Wechsel |
-
-| Breakpoint | Anpassung |
-|------------|-----------|
-| Desktop/Tablet (>768px) | 2-Spalten-Grid, kein Scroll |
-| Mobile (≤768px) | 1-Spalte, normales Scroll-Verhalten |
+Ein Termin wird als **No Show** erkannt, wenn der Phorest-Status `BOOKED`/`CONFIRMED` ist **und** die Endzeit >30 Minuten in der Vergangenheit liegt (oder der Termintag vorbei ist). Bei `PAID` und `NO_SHOW` ist „Termin beginnen" ausgeblendet; das Session-Segment wird dann auch in der Segment-Leiste nicht angeboten.
 
 ---
 
 ## 🔮 Geplante Erweiterungen
 
 - [ ] Beratungsprotokoll direkt erstellen
-- [ ] Termin verschieben
 - [ ] Termin stornieren
-- [ ] Upselling-Kachel im Session-Grid
-- [x] ~~Behandlungshistorie des Kunden anzeigen~~ → Über Kundenprofil
-- [x] ~~Körperzonen-Auswahl integrieren~~ → In Behandlungseinstellungen
-- [x] ~~Paket-Einheiten anzeigen~~ → Bei Behandlungen sichtbar
-- [x] ~~Behandlungseinstellungen erfassen~~ → [Treatment Settings](TREATMENT-SETTINGS.md)
-- [x] ~~Getrennte Views für Ansicht/Session~~ → Unified Single-Page-Architektur
+- [ ] Upselling-Kachel mit Funktion füllen (Platzhalter „Bald verfügbar" ist reserviert)
+- [x] ~~Termin verschieben~~ → „Verlegen" in der Sidebar (Buchungsseite)
+- [x] ~~iframe-Modal ablösen~~ → Echte Unterseite mit Split-View (07/2026)
 
 ---
 
 ## 🔗 Verwandte Dokumentation
 
-- [TREATMENT-SETTINGS.md](TREATMENT-SETTINGS.md) - Laser-Behandlungseinstellungen
+- [APPOINTMENTS-OVERVIEW.md](APPOINTMENTS-OVERVIEW.md) - Terminübersicht (Tagesansicht)
+- [TREATMENT-SETTINGS.md](TREATMENT-SETTINGS.md) - Einstellungszettel / Laser-Behandlungseinstellungen
 - [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) - GLATTT Design System
 - [PHOREST-API.md](PHOREST-API.md) - Phorest API Integration
 - [BODY-ZONE-SELECTOR.md](BODY-ZONE-SELECTOR.md) - Körperzonen-Komponente

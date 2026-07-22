@@ -544,8 +544,8 @@ Die Kalender-Ansicht zeigt einen **Tagesplan** mit:
 
 ### Termin-Details öffnen
 
-- Klicke auf das **ⓘ Info-Icon** rechts in der Karte
-- Öffnet die Fullscreen-Terminansicht mit allen Details
+- Klicke auf **„Termin öffnen"** rechts in der Karte (oder auf einen Termin-Block im Kalender)
+- Beide navigieren einheitlich auf die eigenständige **Split-View-Terminansicht** (`/hub/appointment/{branchId}/{appointmentId}`) — kein Overlay/iframe-Modal mehr; der Zurück-Button der Detailseite führt zur Terminübersicht zurück (Details: [APPOINTMENT-VIEW.md](APPOINTMENT-VIEW.md))
 
 ---
 
