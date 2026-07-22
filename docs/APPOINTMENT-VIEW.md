@@ -51,6 +51,8 @@ Die Ansicht öffnet sich über die Terminübersicht (`/hub/appointments`) — Kl
 - Der grüne „Ausgefüllt"-Haken auf den Formular-Kacheln wird beim Laden aus den bestehenden Einreichungen des Termins vorbefüllt und übersteht damit auch einen Seiten-Reload.
 - Sind **alle** zum Termin passenden Formulare erledigt (gleiche Erfüllungs-Logik: frühere Einreichungen zählen, außer bei „bei jedem Termin neu"), wird die **Formulare-Kachel** in der Session-Übersicht grün abgehakt („Alle Formulare ausgefüllt ✓").
 - **„Zur Terminansicht"** (im Bestätigungs-Modal nach dem Einreichen bzw. im Formular-Kopf) führt bei laufender Session zurück zu den **Session-Kacheln**; „Zurück zur Formularauswahl" bleibt auf der Formular-Liste.
+- **Bereits eingereichte Formulare:** Ein Klick auf eine grün abgehakte Formular-Kachel öffnet nicht mehr direkt ein neues Formular, sondern ein **Auswahl-Modal**: Dort lassen sich die bisherigen Einreichungen dieses Termins **ansehen** (je Zeile mit Zeitpunkt und Mitarbeiterin, öffnet in neuem Tab) oder über **„Weiteres Formular ausfüllen"** ein neues, leeres Exemplar starten. Existieren mehrere Einreichungen (z.B. zwei SEPA-Mandate), werden alle einzeln aufgeführt.
+- **Weitere Formulare:** Über die gestrichelte Kachel **„Weiteres Formular"** (bzw. den Button im Leer-Zustand) lassen sich auch Formulare ausfüllen, die **nicht** den gebuchten Dienstleistungen zugeordnet sind — Auswahl-Modal mit allen übrigen veröffentlichten Formularen, das gewählte Formular öffnet sich direkt. Für diesen Termin eingereichte Extra-Formulare bleiben auch nach einem Reload in der Liste sichtbar (Ableitung über die Einreichungen); die Pflichtformular-Sperre gilt für sie nicht, aber der „Alle Formulare ausgefüllt"-Haken berücksichtigt sie.
 
 ## 🔗 URL-Struktur
 

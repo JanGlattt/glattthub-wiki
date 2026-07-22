@@ -480,8 +480,64 @@ Die vollständige Platzhalter-Konfiguration befindet sich in `config/form-placeh
 `{{kategorie.key}}`-Platzhalter werden beim Ausfüllen außerdem in **Absätzen sowie in
 Überschriften und deren Unterzeilen** ersetzt (zentraler Renderer
 `partials/form-fields/_field-renderer.blade.php`, `replacePlaceholders()` in
-`form-fill.js`). Hinweis: Im generierten **PDF** werden Platzhalter in Absatz-/
-Überschriften-Texten aktuell **nicht** aufgelöst — dort erscheint der Rohtext.
+`form-fill.js`).
+
+Beim Einreichen wird der **aufgelöste Platzhalter-Kontext mitgespeichert**
+(`form_submissions.metadata.placeholder_context`; Hub-Submit sendet ihn aus dem
+Browser-Kontext, Shared-Submit übernimmt ihn aus dem Share-Token). Dadurch lösen auch
+die **Einreichungs-Ansicht** (Dokumente-Modal & Einreichungs-Seite) und das **PDF** die
+Platzhalter serverseitig auf (`FormSubmission::resolvePlaceholderText()`).
+Alt-Einreichungen ohne gespeicherten Kontext zeigen weiterhin den Rohtext; bereits
+generierte PDFs sind gecacht und werden nicht rückwirkend neu erzeugt.
+
+### Einreichungs-Ansicht (formular-gleich)
+
+Eingereichte Formulare werden **formular-gleich mit gesperrten Feldern** dargestellt —
+im Dokumente-Modal des Kundenprofils und auf `/hub/forms/submission/{id}` identisch:
+gemeinsamer Payload (`FormController::buildSubmissionDetailPayload()`) + gemeinsamer
+Readonly-Renderer `partials/form-fields/_field-readonly.blade.php` (Floating-Label-Felder
+readonly, Checkboxen/Radios/Toggles als echte, deaktivierte Theme-Komponenten mit
+gesetzten Haken, Unterschrift als SVG). Gesperrte Optik über die Klasse `form-readonly`
+in `theme_glattt.css`.
+
+### Kundenzuordnung beim Standalone-Ausfüllen
+
+Einreichungen sind doppelt verknüpft: `form_submissions.client_id` (Phorest-Client-ID,
+Anzeige im Kundenprofil → Tab „Dokumente") **und** `appointment_id` (Anzeige in der
+Terminansicht). Aus der Terminansicht und über geteilte Links ist der Kundenbezug
+automatisch gesetzt. Auf der Standalone-Formularseite (`/hub/forms/fill/{form}`) gibt es
+dafür die **„Kunde zuordnen"-Card**: Kundensuche über den lokalen Spiegel
+(`/hub/clients/search` — Name, Kunden-Nr., Telefon, E-Mail), die Auswahl lädt die Seite
+mit `?clientId=…` neu — dadurch greifen Server-Prefill (`client.*`-Platzhalter) und die
+kundenscharfe Ablage. Im Kopf zeigt ein Badge „Mit Kundendaten" / „Ohne Kunde" den
+Zustand; „Kunde ändern" setzt die Zuordnung zurück. Ausfüllen ohne Kunde bleibt möglich
+(Einreichung dann ohne Kundenbezug).
+
+### Pflichtfeld-Kennzeichnung beim Ausfüllen
+
+In allen Ausfüll-Ansichten (Hub, Terminansicht, geteilter Link) tragen Pflichtfelder ein
+**rotes Sternchen** am Label (`form-glattt-label-required`, auch an Floating-Labels), und
+oberhalb der Felder erscheint die Legende „Mit \* markierte Felder sind Pflichtfelder"
+(nur wenn das Formular Pflichtfelder enthält). So ist vor dem Absenden erkennbar, was
+ausgefüllt werden muss.
+
+### Checkboxen: Vorauswahl & Phorest-Einwilligungen
+
+**Für Endanwender:** Bei Checkbox-Feldern kann im Editor pro Option festgelegt werden:
+
+- **Vorausgewählt** — die Box ist beim Öffnen des Formulars bereits angehakt
+- **Phorest-Verknüpfung** — die Option wird an eine Einwilligung des Phorest-Kundenprofils
+  gekoppelt (SMS/WhatsApp-Marketing, E-Mail-Marketing, SMS-/E-Mail-Terminerinnerung).
+  Verknüpfte Optionen werden beim Öffnen aus dem Kundenprofil **vorbelegt** (überschreibt
+  „Vorausgewählt") und die getroffene Auswahl wird beim Einreichen automatisch **nach
+  Phorest zurückgeschrieben** — auch das Entziehen einer Einwilligung (Haken entfernt).
+
+**Für Entwickler:** Gespeichert im `options`-JSON des Feldes (`checked: bool`,
+`phorest_consent: smsMarketingConsent | emailMarketingConsent | smsReminderConsent |
+emailReminderConsent`). Logik in `form-fill.js`: `isCheckboxOptionPreChecked()`
+(Vorbelegung aus `phorestRawClient`), `trackConsentOptions()` (Ausgangszustand) und
+`syncConsentsToPhorest()` (stiller `PUT /phorest/client/{clientId}` nach erfolgreichem
+Submit, nur bei tatsächlichen Änderungen; nutzt `version` für Optimistic Locking).
 
 ### Phorest-Änderungserkennung
 
