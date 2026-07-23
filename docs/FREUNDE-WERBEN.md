@@ -45,6 +45,21 @@ Unter **Verträge → Freunde werben** (`/hub/contracts/referrals`) stehen alle 
 
 Bestätigen und Bankdaten pflegen erfordert die Berechtigung **„Freunde-werben-Auszahlungen verwalten"** (`manage_referral_payouts`, Standard: super_admin, admin, verwaltung). Die Liste selbst sehen alle mit `view_contracts`.
 
+### Werber nachträglich korrigieren
+
+Wurde beim Anlegen versehentlich die falsche Person als Werber hinterlegt, lässt sich das im selben Modal berichtigen:
+
+1. Zeile öffnen („Auszahlen"/„Bankdaten") → Sektion **„Werber"** → **„Werber korrigieren"**
+2. Korrekten Werber suchen (Kundennummer oder Name — gleiche Suche wie beim Anlegen, nur werbeberechtigte Bestandskunden)
+3. Mit **„Werber speichern"** übernehmen — Name und Kundennummer werden in Liste und Statistik aktualisiert
+
+Hinweise:
+
+- Die Korrektur ist **auch nach bereits bestätigter Auszahlung** möglich — dann wird nur der Datensatz/die Statistik berichtigt; eine bereits überwiesene Prämie wird nicht zurückgeholt.
+- **Bankdaten werden nicht automatisch mitgeändert** — IBAN/Kontoinhaber bei Bedarf im selben Modal separat anpassen.
+- Selbst-Werbung (Geworbener = Werber) wird abgelehnt; jede Korrektur landet mit altem und neuem Werber in der Vertragshistorie.
+- Erfordert ebenfalls `manage_referral_payouts`.
+
 ### Push-Benachrichtigung konfigurieren
 
 Wer benachrichtigt wird, sobald eine Prämie auszahlbar ist, wird im **Filament-Backend unter Benachrichtigungen** festgelegt: neue Automation mit
@@ -71,7 +86,8 @@ Wer benachrichtigt wird, sobald eine Prämie auszahlbar ist, wird im **Filament-
 | Werber-Suche (client_statistics × qualifizierende contracts) | `ContractReferralService::searchReferrers()` |
 | Status-Ableitung (waiting/ready/paid_out/blocked) | `ContractReferralService::statusFor()` |
 | Täglicher Check (Freigabe, Entzug, Chargeback-Kennzeichnung) | `ContractReferralService::checkPayouts()` via `referrals:check-payouts` |
-| Liste/KPIs/Bankdaten/Bestätigung | `ContractReferralController` |
+| Liste/KPIs/Bankdaten/Bestätigung/Werber-Korrektur | `ContractReferralController` |
+| Werber-Korrektur (`PUT …/referrals/{referral}/referrer`, Guard: Selbst-Werbung, Audit via `ContractChange` `referral_referrer_corrected`) | `ContractReferralController::updateReferrer()` |
 
 Der abgeleitete Status basiert auf dem **ersten SEPA-Einzug** (`firstSepaPayment()`: früheste nicht stornierte Rate > 1 ohne Direktzahlungs-Beleg):
 
@@ -94,4 +110,4 @@ Der abgeleitete Status basiert auf dem **ersten SEPA-Einzug** (`firstSepaPayment
 
 ### Tests
 
-`tests/Feature/ContractReferralTest.php` (18 Tests): Rabatt-Verteilung, Karenz-Logik, Freigabe-Entzug, **Rückbuchung nach Auszahlung bleibt ausgezahlt + Kennzeichnung**, Werber-Suche, Guards (Selbst-Werbung, fehlende Berechtigung, bereits eingezogener Einzug), Auszahlungs-Endpoint inkl. Permissions.
+`tests/Feature/ContractReferralTest.php` (24 Tests): Rabatt-Verteilung, Karenz-Logik, Freigabe-Entzug, **Rückbuchung nach Auszahlung bleibt ausgezahlt + Kennzeichnung**, Werber-Suche, Guards (Selbst-Werbung, fehlende Berechtigung, bereits eingezogener Einzug), Auszahlungs-Endpoint inkl. Permissions, **Werber-Korrektur** (Erfolg + Audit-Log, nach Auszahlung erlaubt, Selbst-Werbung/unveränderter Werber abgelehnt, Permission).
