@@ -113,6 +113,30 @@ Zeigt die Ads-Performance über die Zeit als Tabelle oder Balken-/Liniendiagramm
 
 Tabellenspalten: Monat, Buchungen, Stattgefunden, No-Show, Zukünftig, Gesamt-Buchungen, Ads-Anteil, Verträge, KPZ, Meta-Kosten, Meta-Impressions, Meta-Clicks, Google-Kosten, Google-Impressions, Google-Clicks.
 
+#### Buchungen pro Quelle & Monat (seit 07/2026)
+
+Gestapeltes Balkendiagramm (ECharts): pro Monat die Anzahl Buchungen je Herkunftsquelle
+(Meta, Google, Instagram, organische Suche, eigene Website, …). Jede Quelle ist in
+**Anzeige** (bezahlt) und **organisch** getrennt — dieselbe Klassifikation wie die
+Herkunfts-Analyse (Einstieg/entry_referrer).
+
+- **Umschalter** oben rechts: *Alle / Nur Anzeigen / Nur Organisch* (wirkt sofort, ohne Neuladen)
+- **Legende** klickbar: einzelne Quellen ein-/ausblenden (Auswahl bleibt beim Filterwechsel erhalten)
+- Organische Buchungen ohne erfassten Einstieg (vor Einführung des Trackings) werden ausgeblendet
+
+#### Kostenverlauf & Kosten pro Lead (seit 07/2026)
+
+Kombichart (ECharts) mit zwei Y-Achsen:
+
+- **Balken (linke Achse):** Werbekosten pro Monat, gestapelt nach Plattform (Meta blau, Google grün)
+- **Linie (rechte Achse, gold):** Kosten pro Lead = Gesamtkosten ÷ Ads-Buchungen des Monats
+- **Gestrichelte Linien (rechte Achse):** Kosten pro Lead je Plattform — Meta (blau, Ausgaben ÷ fbclid-Buchungen) und Google (grün, Ausgaben ÷ gclid/gbraid-Buchungen)
+
+So sieht man die Abhängigkeit zwischen Budget und Lead-Preis. In Monaten ohne
+Ads-Buchungen wird keine Linie gezeichnet. Achtung: Die Kosten kommen aus den
+Meta-/Google-APIs und sind **nicht nach Standort filterbar** — bei aktivem
+Standort-Filter beziehen sich die Kosten weiterhin auf alle Standorte.
+
 #### Herkunfts-Analyse (Vergleich in einer Karte)
 
 Seit 07/2026 in **einer** Karte „Herkunfts-Analyse": ein **gruppiertes horizontales Balkendiagramm** (kein Donut) plus eine **kombinierte Tabelle**. Pro Quelle stehen zwei Balken/Spalten nebeneinander — **Letzte Seite** vs. **Einstieg** —, dazu je Zeile die **Art** (**Anzeige** = bezahlter Klick / **Organisch**).
@@ -245,15 +269,18 @@ GoogleAdsService (app/Services/)
 | `resources/views/hub/reports/ads-analysis/partials/header.blade.php` | Kopf + Filter (kollabierbar) |
 | `resources/views/hub/reports/ads-analysis/partials/campaign-overview.blade.php` | Kampagnen-Tabelle |
 | `resources/views/hub/reports/ads-analysis/partials/monthly-trend.blade.php` | Monatschart + Tabelle |
+| `resources/views/hub/reports/ads-analysis/partials/monthly-source-breakdown.blade.php` | Buchungen pro Quelle & Monat (ECharts, gestapelt) |
+| `resources/views/hub/reports/ads-analysis/partials/cost-per-lead.blade.php` | Kostenverlauf & Kosten pro Lead (ECharts, Dual-Achse) |
 | `resources/views/hub/reports/ads-analysis/partials/source-breakdown.blade.php` | Quellen-Donut + Tabelle |
 | `resources/views/hub/reports/ads-analysis/partials/ads-vs-organic.blade.php` | Vergleich |
 | `resources/views/hub/reports/ads-analysis/partials/campaign-notes-modal.blade.php` | Notizen-Modal |
-| `public/js/ads-analysis.js` | Alpine.js App + Chart.js |
+| `public/js/ads-analysis.js` | Alpine.js App + Chart.js (Bestand) + ECharts (neue Sektionen) |
 | `resources/views/hub/reports.blade.php` | Reports-Übersicht (Vorschau-Kachel) |
 | `database/migrations/2026_06_26_100000_create_ad_campaign_notes_table.php` | Migration |
 | `database/sql/ads-analysis-production.sql` | Produktiv-SQL (Berechtigungen) |
 | `tests/Unit/MetaAdsServiceTest.php` | Unit-Tests Meta |
 | `tests/Feature/AdsAnalysisMetaTest.php` | Feature-Tests Meta |
+| `tests/Feature/AdsMonthlySourceBreakdownTest.php` | Feature-Tests Quellen-Monate & Kosten pro Lead |
 
 ### Routes
 
@@ -262,7 +289,8 @@ GET  /hub/reports/ads-analysis                        → index
 GET  /hub/reports/ads-analysis/preview                → preview  ← Reports-Übersicht
 GET  /hub/reports/ads-analysis/kpis                   → kpis
 GET  /hub/reports/ads-analysis/campaigns              → campaigns
-GET  /hub/reports/ads-analysis/monthly                → monthly
+GET  /hub/reports/ads-analysis/monthly                → monthly        (inkl. total_spend_cents & cost_per_lead_cents)
+GET  /hub/reports/ads-analysis/monthly-sources        → monthlySources (Buchungen pro Quelle × Monat, Anzeige/organisch)
 GET  /hub/reports/ads-analysis/sources                → sources        (Letzte Seite vor Buchung / referrer)
 GET  /hub/reports/ads-analysis/entry-sources          → entrySources   (Herkunft / entry_referrer)
 GET  /hub/reports/ads-analysis/search-terms           → searchTerms    (Suchbegriffe / utm_term)
