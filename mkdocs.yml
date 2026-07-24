@@ -145,6 +145,7 @@ nav:
     - Superchat-Kontakte & Sync: SUPERCHAT-KONTAKTE.md
   - Berichte:
     - Reports-Modul: REPORTS-MODULE.md
+    - CSV-Export: CSV-EXPORT.md
     - Eigenes Dashboard: CUSTOM-DASHBOARD.md
     - Verkaufsstatistik: SALES-STATISTICS.md
     - Ads-Analyse: ADS-ANALYSE.md
