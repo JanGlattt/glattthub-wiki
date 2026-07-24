@@ -124,6 +124,16 @@ Herkunfts-Analyse (Einstieg/entry_referrer).
 - **Legende** klickbar: einzelne Quellen ein-/ausblenden (Auswahl bleibt beim Filterwechsel erhalten)
 - Organische Buchungen ohne erfassten Einstieg (vor Einführung des Trackings) werden ausgeblendet
 
+#### Buchungen pro Tag (seit 07/2026)
+
+Balken-/Liniendiagramm (ECharts) auf Tagesebene:
+
+- **Balken:** Anzahl Online-Buchungen pro Tag (Tage ohne Buchung = 0, lückenlose Reihe)
+- **Goldene Linie:** gleitender 7-Tage-Durchschnitt — Mittelwert aus dem Tag und den sechs Vortagen. Glättet Wochentags-Schwankungen (z. B. schwache Sonntage) und macht den Trend sichtbar
+- Die Linie startet erst am **siebten Tag** der Reihe (vorher gibt es kein volles Fenster)
+- **Zoom-Regler** unter dem Diagramm für Zeitausschnitte, Legende klickbar
+- Reagiert auf alle Filter (Standort, Zeitraum, Plattform, Kampagne)
+
 #### Kostenverlauf & Kosten pro Lead (seit 07/2026)
 
 Kombichart (ECharts) mit zwei Y-Achsen:
@@ -270,6 +280,7 @@ GoogleAdsService (app/Services/)
 | `resources/views/hub/reports/ads-analysis/partials/campaign-overview.blade.php` | Kampagnen-Tabelle |
 | `resources/views/hub/reports/ads-analysis/partials/monthly-trend.blade.php` | Monatschart + Tabelle |
 | `resources/views/hub/reports/ads-analysis/partials/monthly-source-breakdown.blade.php` | Buchungen pro Quelle & Monat (ECharts, gestapelt) |
+| `resources/views/hub/reports/ads-analysis/partials/daily-bookings.blade.php` | Buchungen pro Tag mit gleitendem 7-Tage-Durchschnitt (ECharts) |
 | `resources/views/hub/reports/ads-analysis/partials/cost-per-lead.blade.php` | Kostenverlauf & Kosten pro Lead (ECharts, Dual-Achse) |
 | `resources/views/hub/reports/ads-analysis/partials/source-breakdown.blade.php` | Quellen-Donut + Tabelle |
 | `resources/views/hub/reports/ads-analysis/partials/ads-vs-organic.blade.php` | Vergleich |
@@ -291,6 +302,7 @@ GET  /hub/reports/ads-analysis/kpis                   → kpis
 GET  /hub/reports/ads-analysis/campaigns              → campaigns
 GET  /hub/reports/ads-analysis/monthly                → monthly        (inkl. total_spend_cents & cost_per_lead_cents)
 GET  /hub/reports/ads-analysis/monthly-sources        → monthlySources (Buchungen pro Quelle × Monat, Anzeige/organisch)
+GET  /hub/reports/ads-analysis/daily-bookings         → dailyBookings  (Buchungen pro Tag inkl. gleitendem 7-Tage-Durchschnitt)
 GET  /hub/reports/ads-analysis/sources                → sources        (Letzte Seite vor Buchung / referrer)
 GET  /hub/reports/ads-analysis/entry-sources          → entrySources   (Herkunft / entry_referrer)
 GET  /hub/reports/ads-analysis/search-terms           → searchTerms    (Suchbegriffe / utm_term)

@@ -16,6 +16,7 @@ Zeigt geplante Beratungstermine in den nächsten 7, 14 und 28 Tagen.
 - Standort-Aufschlüsselung
 - Historischer Vergleich mit Vormonat/Vorjahr
 - Excel-Export
+- Alle KPI-Zusammenfassungen in Cards („Aktueller Buchungsstand", „Übersicht Beratungsgespräche", historischer Vergleich, Analysen) nutzen seit 07/2026 die einheitliche Stat-Strip-Komponente (`.stat-strip-glattt`) — verbindliche Konvention für KPIs innerhalb von Cards, siehe `.github/agents/design-system.md`
 
 #### Kalenderübersicht
 
@@ -72,6 +73,29 @@ Deutsche Feiertage werden automatisch im Kalender angezeigt. Die Erkennung basie
 | ≤640px | Monatsname ausgeblendet, Auslastungs-Badge + Feiertags-Badge versteckt |
 | ≤480px | 2-Buchstaben-Wochentage, ultra-kompakt |
 
+#### Entwicklung geplanter Beratungsgespräche (seit 07/2026)
+
+Liniendiagramm (ECharts) direkt unter dem Kalender: Für jeden Stichtag seit Juni 2023
+wird der damalige Buchungsstand rekonstruiert — wie viele BGs waren an diesem Tag
+bereits für die nächsten **1, 3, 7 oder 28 Tage** gebucht?
+
+**Für Endanwender:**
+
+- **Zeitfenster-Umschalter**: 1 Tag / 3 Tage / 7 Tage / 28 Tage (Fenster = Stichtag + Folgetage)
+- **Gesamt / Standorte**: Umschalter wie bei der Freie-Slots-Analyse (nur bei „Alle Institute") — in der Standort-Ansicht eine Linie pro Institut in der offiziellen Institutsfarbe (`BranchColorService`); Legende blendet einzelne Standorte aus
+- **Gleitender Durchschnitt**: Ø aus / Ø 7 Tage / Ø 28 Tage — glättet Wochentags-Schwankungen, startet erst bei vollem Fenster. Gesamt-Ansicht: goldene Linie; Standort-Ansicht: Ø-Linie in der jeweiligen Standortfarbe, Rohlinie wird abgeschwächt dargestellt
+- **Zoom-Regler** unter dem Diagramm, Standardansicht letzte 6 Monate
+- **Orientierung**: jeder zweite Monat ist dezent hinterlegt (Zebra-Muster, zoom-stabil), Jahreswechsel sind als vertikale Linien mit Jahreszahl markiert
+- Folgt der globalen Standort-Auswahl im Header; Info-Panel mit Erklärung je Card
+
+**Für Entwickler:**
+
+- Zähllogik identisch mit dem Buchungsstand-Verlauf: Buchung vor Stichtag (`created_at_phorest`), harte Stornos nie, `activation_state=CANCELED` nur bis zur Stornierung (`updated_at_phorest`), Live-Phorest-Ergänzung für Fenster ab heute
+- Aber als **Bulk-Berechnung** (`ConsultationBookingOutlookService`): ein DB-Read + sortierte Buchungszeitpunkte + Binärsuche statt ~4.600 Count-Queries; Cache 1 h pro Standort-Filter. Response enthält `series` (Gesamt) und `branches[]` (je Standort dieselben Horizonte)
+- Endpoint: `GET /phorest/reports/booking-outlook-timeseries` (`ReportController::bookingOutlookTimeseries`)
+- Frontend: `partials/consultation-booking-outlook.blade.php` + `public/js/booking-outlook.js` (eigene Alpine-App), gleitender Durchschnitt wird clientseitig berechnet
+- Tests: `tests/Feature/ConsultationBookingOutlookTest.php`
+
 ---
 
 ### 2. Vergangene Beratungsgespräche
@@ -126,24 +150,27 @@ Terminauslastung und Kapazitätsübersicht.
 ### 5. Freie Slots Analyse
 **Route:** `/hub/reports/free-slots-analysis`
 
-Heatmap freier Beratungsslots nach Wochentag und Uhrzeit.
+Heatmap freier Beratungsslots nach Wochentag und Uhrzeit. Seit 07/2026 im Standard-Card-Layout mit Info-Panel.
 
 **Features:**
-- 7-Tage-Vorschau
-- Heatmap-Visualisierung
-- Optimale Buchungszeiten
+- Heatmap (Gesamt oder je Standort in Institutsfarben) mit schwebendem Tooltip statt Browser-title; Σ-Pillen je Wochentag/Uhrzeit
+- **Diagramm-Ansicht** (Umschalter Heatmap/Diagramm): freie Slots je Wochentag als ECharts-Balken, in der Standort-Ansicht gestapelt nach Institut
+- Kompakte Kennzahlen-Zeile (`.stat-strip-glattt`) statt großer KPI-Karten: meiste/wenigste freie Slots, beliebteste Uhrzeit, Top Slot
+- Filter mit Theme-Komponenten (`x-dropdown-glattt`, flatpickr): 3/6/12 Monate, alle Daten, benutzerdefiniert
+- Zellfarben über Theme-Variablen → korrekt im Dark Mode
 
 ---
 
 ### 6. Buchungsvorlauf-Analyse
 **Route:** `/hub/reports/booking-lead-time-analysis`
 
-Wie viele Tage im Voraus werden Termine gebucht.
+Wie viele Tage im Voraus werden Termine gebucht. Seit 07/2026 im Standard-Card-Layout mit Info-Panel.
 
 **Features:**
-- Durchschnittlicher Vorlauf in Tagen
-- Verteilung nach Vorlauf-Kategorien
-- Trend-Analyse
+- Heatmap Wochentag × Uhrzeit (Durchschnitt oder Median), Gesamt oder je Standort in Institutsfarben; schwebender Tooltip mit Termin-Anzahl, Ø-Pillen
+- **Verteilungs-Ansicht** (Umschalter Heatmap/Verteilung): Histogramm der Vorlaufzeiten in Buckets (Gleicher Tag / 1 Tag / 2–3 / 4–7 / 8–14 / 15–30 / über 30 Tage) mit Prozent-Labels — Buckets kommen als `distribution` aus dem Endpoint
+- Kompakte Kennzahlen-Zeile: Ø/Median-Vorlauf, längster/kürzester Vorlauf-Tag, früheste Buchungen
+- Filter mit Theme-Komponenten (Zeitraum, Buchungstyp online/offline)
 
 **Dokumentation:** [BOOKING-LEAD-TIME-ANALYSIS.md](BOOKING-LEAD-TIME-ANALYSIS.md)
 
