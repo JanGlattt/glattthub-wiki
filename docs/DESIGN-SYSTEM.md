@@ -585,7 +585,8 @@ Vertikale Sidebar-Navigation auf Desktop, horizontale Tabs auf Mobile. Ideal fü
 **Table Varianten:**
 - `table-glattt-sm` - Kompaktere Zeilen
 - `table-glattt-lg` - Größere Zeilen
-- `table-glattt-striped` - Abwechselnde Zeilenfarben
+- `table-glattt-striped` - Abwechselnde Zeilenfarben (nutzt `nth-of-type`, damit Alpine-`<template>`-Elemente im `tbody` die Zählung nicht verschieben)
+- `table-glattt-container-sticky` - Zusatzklasse **auf dem Container**: Kopfzeile bleibt beim Seiten-Scroll oben am Viewport fixiert (Spalten-Filter bleiben nutzbar). Gilt ab 1280px — der Container ist dort bewusst kein Scroll-Container (`overflow-x: clip`), denn in `overflow-x: auto` funktioniert `position: sticky` nicht; darunter (iPad/Mobile) bleibt horizontales Scrollen erhalten, ohne Sticky. Verwendet auf Verträge-, Kunden- und Freunde-werben-Liste. Sobald die Kopfzeile tatsächlich klebt, setzt ein globaler Scroll-Listener in `public/js/hub.js` die Klasse `is-stuck` auf den Container — damit verlieren die oberen Ecken ihre Rundung (und bekommen sie beim Zurückscrollen wieder).
 
 **Zell-Typen:**
 - `table-glattt-cell-primary` - Hervorgehobene Zelle

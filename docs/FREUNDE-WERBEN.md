@@ -29,7 +29,8 @@ Hinweise:
 Unter **Verträge → Freunde werben** (`/hub/contracts/referrals`) stehen alle Werbungen:
 
 - **KPI-Cards**: Werbungen gesamt, wartende Auszahlungen (Anzahl + €), bereits ausgezahlt (Anzahl + €), Ø KPZ der geworbenen Verträge
-- **Tabelle**: Geworbener (mit Vertrag-Link + KPZ), Werber, Status des ersten Einzugs, Auszahlungs-Status
+- **Analyse „Werbungen nach Standort & Monat"**: standardmäßig eingeklappte Card unter den KPIs. Aufgeklappt zeigt sie einen gestapelten Balken-Chart (ECharts) je Monat mit einer Serie pro Institut — umschaltbar zwischen **„Geworbene Kunden"** (Anzahl) und **„Körperzonen (KPZ)"** (Summe, Ganzkörper = 6). Die Serien nutzen die offiziellen Institutsfarben; Monat = Vertragsdatum (ersatzweise Anlagedatum der Werbung).
+- **Tabelle**: Geworbener (mit Vertrag-Link + KPZ), Werber, Status des ersten Einzugs, Auszahlungs-Status. Die Kopfzeile bleibt beim Scrollen oben fixiert (Spalten-Filter bleiben nutzbar), die Zeilen sind abwechselnd eingefärbt.
 - **Status**:
     - *Wartet* — erster Einzug offen oder Karenzzeit läuft (mit Datum „Karenz bis")
     - *Auszahlbar* — Zeile ist grün hervorgehoben; die Überweisung kann vorgenommen werden
@@ -106,8 +107,9 @@ Der abgeleitete Status basiert auf dem **ersten SEPA-Einzug** (`firstSepaPayment
 - Plan-Anlage: Sektion in `create-gocardless-modal.blade.php`, gemeinsames Partial `referral-select-section.blade.php`, State/Logik in `referralMixin()` (`contract-scripts.blade.php`)
 - Nachträglich: Modal + Button in `tab-payments.blade.php` (`openReferralModal()`/`submitReferral()`)
 - Liste: `resources/views/hub/contracts/referrals.blade.php` (eigenständige Alpine-Seite)
+- Standort-Analyse: `list()` liefert je Werbung `branch_id`/`branch_name` (Phorest `getCachedBranches()`, bei API-Fehler `null`) sowie `institute_colors` (`InstituteColor::getColorMap()`); die Aggregation Monat × Institut läuft client-seitig (`branchChartData()`), der Chart via ECharts (`drawBranchChart()`, Instanz bewusst außerhalb des Alpine-States)
 - Zahlungen-Tab zeigt den Rabatt als Summenzeile („Freunde-werben-Rabatt") + Badge „Geworben von …"; die Plansummen-Plausibilität (`updatePaymentPlan`) rechnet `referralDiscountCents()` mit ein
 
 ### Tests
 
-`tests/Feature/ContractReferralTest.php` (24 Tests): Rabatt-Verteilung, Karenz-Logik, Freigabe-Entzug, **Rückbuchung nach Auszahlung bleibt ausgezahlt + Kennzeichnung**, Werber-Suche, Guards (Selbst-Werbung, fehlende Berechtigung, bereits eingezogener Einzug), Auszahlungs-Endpoint inkl. Permissions, **Werber-Korrektur** (Erfolg + Audit-Log, nach Auszahlung erlaubt, Selbst-Werbung/unveränderter Werber abgelehnt, Permission).
+`tests/Feature/ContractReferralTest.php` (26 Tests): Rabatt-Verteilung, Karenz-Logik, Freigabe-Entzug, **Rückbuchung nach Auszahlung bleibt ausgezahlt + Kennzeichnung**, Werber-Suche, Guards (Selbst-Werbung, fehlende Berechtigung, bereits eingezogener Einzug), Auszahlungs-Endpoint inkl. Permissions, **Werber-Korrektur** (Erfolg + Audit-Log, nach Auszahlung erlaubt, Selbst-Werbung/unveränderter Werber abgelehnt, Permission), **Standort-Daten der Liste** (Branch-Name + Institutsfarben, graceful bei Phorest-Ausfall).
