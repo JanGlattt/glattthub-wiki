@@ -908,7 +908,7 @@ Besuche `/hub/component-library` im glatttHub für eine interaktive Übersicht a
 3. **Accessibility:** Nutze semantisches HTML und ARIA-Labels
 4. **Icons:** Verwende SVG-Icons mit `currentColor` für automatische Farbänderung
 5. **Hover-States:** Alle interaktiven Elemente brauchen Hover-Feedback
-6. **Loading-States:** Zeige immer Loading-Feedback bei async Operationen
+6. **Loading-States:** Zeige immer Loading-Feedback bei async Operationen — aber **niemals kollabierend**: Beim Neuladen durch Filter/Switches bleibt der alte Inhalt in voller Größe stehen und wird nur gedimmt (`.refreshable-glattt` + `.is-refreshing` aus `theme_glattt.css`); Spinner/Skeleton nur beim allerersten Laden (`loading && !data`). Verbindliche Regeln: `.github/instructions/statistics-pages.instructions.md` Abschnitt 7 („Sanftes Neuladen"), Referenz-Implementierung No-show-Matrix (`public/js/no-show-matrix.js`)
 7. **Validation:** Nutze die Validation-States für Formulare
 
 ---
