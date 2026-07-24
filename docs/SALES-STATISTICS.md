@@ -64,6 +64,16 @@ Wie das Institut-Ranking, aber pro Verkäufer/in. Mitarbeiter, die in mehreren I
 
 **Hinweis:** Ältere Legacy-Verträge ohne zugeordneten Verkäufer erscheinen hier nicht, fließen aber in die anderen Sektionen ein.
 
+#### Bestandskunden & Flex
+
+Kompakter Kennzahlen-Ausweis (Stat-Strip) für den **aktuellen Monat** mit fairem Vormonatsvergleich zum gleichen Zeitpunkt (Same Point in Time):
+
+- **Verträge an Bestandskunden** — Folgeverträge: derselbe Kunde (`client_id`) hatte zum Abschlusszeitpunkt bereits einen früheren Vertrag (beliebiger Status außer Entwurf); dazu der Anteil an allen Abschlüssen
+- **KPZ an Bestandskunden** — Körperzonen aus diesen Folgeverträgen
+- **Flex-Behandlungen** — durchgeführte Phorest-Termine (COMPLETED/PAID) mit „Flex" im Service-Namen (gleiche Logik wie die Startseiten-KPI „Flex-Services"); Flex läuft ohne Vertrag und taucht daher in den Vertragszahlen nicht auf
+
+Der Standort-Filter der Seite wirkt auf beide Quellen. Endpoint: `existing-customer-flex` (`getExistingCustomerFlexStats()`).
+
 #### Vertragslaufzeiten
 
 Balkendiagramm: **Wie viele Verträge zahlen in wie vielen Raten?** Jeder Balken steht für eine Laufzeit (Anzahl der Raten ≙ Monate), die Höhe ist die Anzahl der Verträge. 1 Rate = Einmalzahlung (Direktzahler).
@@ -156,7 +166,14 @@ SalesStatisticsService (app/Services/)
 
 **Filter:** Alle Endpoints akzeptieren `branch_id`, `date_from`, `date_to`, `seller_id` sowie `body_zones` (`full` = Ganzkörper via `is_full_body`, numerisch = exakte KPZ-Anzahl). Der KPZ-Filter wird von den Sektionen „Vertragslaufzeiten" und „Zahlungsausfälle" genutzt. `contract-terms` kennt zusätzlich `only_active=1` (nur Status `active`) und `term_mode` (`actual` = reale Raten aus `contract_payments`, `months` = Kalendermonate erste↔letzte Rate + 1, berechnet in PHP via Carbon — portabel für SQLite-Tests; ohne Parameter: festgesetzte Ratenanzahl). Bei `actual`/`months` liefert die Antwort `excluded_without_plan` (Verträge ohne Zahlungsplan, die ausgeblendet wurden). `payment-failures` kennt zusätzlich `installments` (kommaseparierte Laufzeiten, z.B. `18,19`) und `group=installment` (Buckets je Ratennummer statt Viertel; Antwort-Feld `group`). Der Vergleichsmodus ist rein clientseitig: das Frontend ruft den Endpoint zweimal mit unterschiedlichen Filtern auf.
 
-**Charts:** Die neueren Sektionen (Vertragslaufzeiten, Zahlungsausfälle) nutzen **Apache ECharts**, die älteren noch Chart.js (Migration bei Gelegenheit, siehe `charts.instructions.md`).
+**Charts:** Seit Juli 2026 laufen **alle** Diagramme der Seite auf **Apache ECharts** (Migration von Chart.js abgeschlossen, siehe `charts.instructions.md`):
+
+- **Körperzonen pro Institut:** gruppierte Balken mit grauem Gesamt-Balken im Hintergrund (versteckte Zweitachsen), Prognose-Split für den aktuellen Monat (halbtransparent), Widerrufe als rot schraffierte Stapelung (ECharts-`decal`), mögl. Widerrufe als orange schraffierter Anteil oben im aktiven Balken. Widerruf-Serien tragen denselben Seriennamen wie ihr Institut — ein Legenden-Klick toggelt beide zusammen. Klick auf einen Balken öffnet den Verkäufer-Drill-Down.
+- **Körperzonen pro Tag:** gestapelte Tagesbalken über die **gesamte Historie**; der Zeitraum wird ausschließlich über den **Zoom-Regler** (`dataZoom`, Slider + Mausrad/Pinch) gesteuert — die frühere Monats-Mehrfachauswahl wurde entfernt. Standard-Zoom: letzte 60 Tage. **Achse und Zebra passen sich der sichtbaren Spanne an** (Muster aus `booking-outlook.js`): bis ~190 Tage Tages-Labels (⭐ Feiertage, Sonn-/Feiertage grau) + Wochen-Zebra, bis ~400 Tage KW-Labels an Montagen, darüber Monats-Labels (mittig am 15.) — ab KW-Modus wird das Zebra auf Monats-Bänder umgeschaltet (Umschaltung live im `datazoom`-Event über die Serien-`id: 'zebra'`). **Jahresgrenzen** sind als dunkle vertikale `markLine` mit Jahreszahl markiert. Gesamtzahl je Tag über dem Stapel (unsichtbare Hilfsserie mit `hideOverlap`). Über einen **Ø-Umschalter** (Segmented Control: aus / 7 / 28 Tage) lassen sich gleitende Durchschnitte als Linien einblenden — je Standort in Standortfarbe plus graue Gesamt-Linie (trailing über Kalendertage, `null` bis das Fenster voll ist). Bei aktivem Ø treten die Balken in den Hintergrund (Opacity 0,35, ohne Wert-Labels) und der Tooltip zeigt primär den Ø-Wert, den Tageswert in Klammern; ab dem KW-/Monats-Achsenmodus (> ~190 Tage sichtbar) werden die Tagesbalken komplett ausgeblendet (Serien-Daten per id geleert/zurückgesetzt — kein Re-Render, das Ziehen am Regler bleibt flüssig). Die **y-Achse skaliert nicht auf die sichtbaren Tage** (sonst springt der Chart beim Verschieben der Zoom-Leiste), sondern auf das Maximum eines auf mindestens 12 Monate erweiterten Fensters um die sichtbare Spanne (auf runde Stufen aufgerundet, live im `datazoom`-Event nachgeführt); bei aktivem Ø bestimmt das Ø-Gesamt-Maximum die Skala — einzelne Top-Tage dürfen dann oben abschneiden. Ø-Linien tragen denselben Seriennamen wie die Balken ihres Standorts → ein Legenden-Klick schaltet beide gemeinsam.
+- **Standort-Vergleich seit Eröffnung:** Linien-Chart, bei dem jede Standort-Linie auf **Tag 0 = erster Verkaufstag des Standorts** ausgerichtet ist — so sind die Anlaufkurven der Institute direkt vergleichbar. Ansichten: Ø 28 Tage / Ø 3 Monate (91 Tage, trailing) / Kumuliert; Metrik-Switch KPZ ↔ Umsatz (Brutto-Vertragswert). x-Achse adaptiv in Monaten/Jahren seit Eröffnung, Zoom-Regler in Tagen, Tooltip zeigt je Standort das echte Kalenderdatum. Gleiches Standard-Kit wie der Tages-Chart: Zebra-Blöcke (jeder zweite Monat/Quartal/Jahr **seit Eröffnung**, adaptiv zur sichtbaren Spanne), dunkle Jahrestrenner („Jahr 1", „Jahr 2" …) und feste y-Skala (Maximum je Quartals-Block, sichtbare Spanne auf ≥ 12 Monate erweitert, Legenden-Auswahl zählt mit — kein Springen beim Schieben). Eigener Endpoint `branch-opening-comparison` (`getBranchOpeningComparison()`) — bewusst **ohne Filter**, der Vergleich braucht immer alle Standorte.
+- **Monatliche Übersicht (Chart-Ansicht):** Linien-Chart mit zwei y-Achsen (Umsatz/Raten in €, Verträge).
+- Legenden-Auswahl und Zoom-Bereich überleben Re-Renders (Toggles, Theme-Wechsel), da sie im Alpine-State gemerkt und beim `dispose()`+`init()` wieder angewendet werden.
+- Auch die **Verkaufsstatistik-Karte** auf der Berichte-Übersicht (`public/js/sales-preview-charts.js`) nutzt ECharts. Ihr Tages-Chart zeigt die **letzten 60 Tage** in zwei Grids: Tage 60–15 sehr schmal links (~1/4 der Breite), die letzten 14 Tage breiter rechts — mit gemeinsamer y-Skala.
 
 ### Relevante Dateien
 
@@ -167,11 +184,14 @@ SalesStatisticsService (app/Services/)
 | `resources/views/hub/reports/sales-statistics.blade.php` | Haupt-View |
 | `resources/views/hub/reports/sales-statistics/partials/header.blade.php` | Seitenkopf |
 | `resources/views/hub/reports/sales-statistics/partials/monthly-overview.blade.php` | Monatstabelle + Chart |
+| `resources/views/hub/reports/sales-statistics/partials/branch-opening-comparison.blade.php` | Standort-Vergleich seit Eröffnung (ECharts + Ansicht-/Metrik-Switch) |
+| `resources/views/hub/reports/sales-statistics/partials/existing-customer-flex.blade.php` | Ausweis Bestandskunden & Flex (Stat-Strip) |
 | `resources/views/hub/reports/sales-statistics/partials/branch-ranking.blade.php` | Institut-Ranking |
 | `resources/views/hub/reports/sales-statistics/partials/seller-ranking.blade.php` | Mitarbeiter-Ranking |
 | `resources/views/hub/reports/sales-statistics/partials/contract-terms.blade.php` | Vertragslaufzeiten (ECharts + KPZ-Filter) |
 | `resources/views/hub/reports/sales-statistics/partials/payment-failures.blade.php` | Zahlungsausfälle nach Ratenfortschritt |
-| `public/js/sales-statistics.js` | Alpine.js App + Chart.js/ECharts Integration |
+| `public/js/sales-statistics.js` | Alpine.js App + ECharts-Integration |
+| `public/js/sales-preview-charts.js` | ECharts-Mini-Charts der Verkaufsstatistik-Karte (Berichte-Übersicht) |
 | `resources/views/hub/reports.blade.php` | Berichte-Übersicht (Report-Card) |
 
 ### Datengrundlage
