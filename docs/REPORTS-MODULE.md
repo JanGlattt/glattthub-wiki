@@ -106,6 +106,8 @@ Historische Analyse vergangener Beratungstermine.
 **Features:**
 - Monatliche Übersicht mit Chart
 - No-Show Rate Tracking
+
+**No-show-Matrix (Vorbild „Analyse Gigi", 07/2026):** Auf „Vergangene Beratungsgespräche" zeigt eine eigene Karte drei Blöcke je Institut + Gesamt — **Buchungen** (aktive Beratungstermine), **Erschienen** (COMPLETED/PAID) und **No-show-Quote** (Ampel mit festen Schwellen: ≤ 10 % grün, ~25 % gelb, ≥ 30 % rot; Buchungen/Erschienen grün relativ zum Spaltenmaximum). Granularität umschaltbar: letzte 3 Monate (Standard) / 3 Wochen / 7 Tage, mit seitenweisem Blättern in die Vergangenheit („← Älter"/„Neuer →"). Endpoint `GET /phorest/reports/historic-appointments/no-show-matrix?granularity=month|week|day&offset=N` (`ReportController::consultationNoShowMatrix()`, Perioden werden SQLite-tauglich in PHP berechnet, Cache via `ReportsOverviewCache`); Frontend `public/js/no-show-matrix.js` + Partial `resources/views/hub/reports/partials/no-show-matrix.blade.php`. Die Matrix zeigt bewusst immer alle Standorte (Standort-Filter der Seite wirkt nicht). No-show-Definition wie überall: vergangene aktive Termine mit Status NO_SHOW/BOOKED/CONFIRMED/CHECKED_IN.
 - Beliebtester Wochentag (letzte 3 Monate)
 - Prognose für den aktuellen Monat
 - Detailansicht mit Wochen-Expansion
