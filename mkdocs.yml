@@ -136,6 +136,7 @@ nav:
     - Profil-Integration: PROFILE-INTEGRATION.md
     - Benutzer-Einladungen: USER-INVITATION-SYSTEM.md
     - Berechtigungssystem: BERECHTIGUNGSSYSTEM.md
+    - Datensichtbarkeit: DATA-VISIBILITY.md
   - Kommunikation:
     - E-Mail Versand: EMAIL-VERSAND.md
     - E-Mail-Protokoll (zentral): EMAIL-PROTOKOLL.md

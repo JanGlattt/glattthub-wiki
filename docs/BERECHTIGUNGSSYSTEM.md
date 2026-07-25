@@ -708,3 +708,7 @@ mysql -u USER -p DATENBANK < scripts/production-allowed-branches-2026-03-29.sql
 
 !!! note "Rueckwaertskompatibel"
     Bestehende User haben `allowed_branch_ids = NULL` und sehen weiterhin alle Branches. Die Einschraenkung muss pro User explizit konfiguriert werden.
+
+## Datensichtbarkeit (zeilenscharfe Rechte)
+
+Seit 07/2026 gibt es zusätzlich die Permission-Gruppe **Datensichtbarkeit** (`data_scope_own` / `data_scope_branch` / `data_scope_all`): Sie schränkt serverseitig ein, **welche Datensätze** ein Benutzer in mitarbeiterbezogenen Reports sieht (nur eigene Daten / eigenes Team an den erlaubten Instituten / alle Daten). Die Stufe „eigenes Team" baut auf der oben beschriebenen Standort-Beschränkung (`allowed_branch_ids`) auf. Details: [Datensichtbarkeit](DATA-VISIBILITY.md).
