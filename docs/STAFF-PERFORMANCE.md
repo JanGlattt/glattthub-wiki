@@ -160,6 +160,12 @@ Der Standort-Filter in der Seitenleiste filtert alle Daten auf ein bestimmtes In
 
 Über Datums-Filter (Von/Bis) kann der Auswertungszeitraum eingeschränkt werden.
 
+### Durchgeführte Behandlungen pro Mitarbeiter
+
+Eigene Sektion (seit 07/2026, Asana „Anzahl Behandlungen"): zählt je Mitarbeiter die **Behandlungs-Termine** (Kunde × Tag × Institut mit mindestens einem Behandlungs-Service des Mitarbeiters) und die **Service-Positionen** (einzelne Behandlungs-Leistungen), plus die drei häufigsten Behandlungsarten. Beratungsgespräche und Desinfektion zählen nicht; gezählt werden nur durchgeführte Termine (abgeschlossen/bezahlt). Zeitraum wählbar (dieser/letzter Monat, 3 Monate, Jahr, gesamt); Standort-Filter und die [Datensichtbarkeit](DATA-VISIBILITY.md) (eigene Daten / Team / alle) greifen auch hier. Export über die CSV-Quelle „Durchgeführte Behandlungen pro Mitarbeiter".
+
+Hinweis zur Abgrenzung: Behandlungen je **Institut** und je **Behandlungsart** (ohne Mitarbeiter-Bezug) zeigt weiterhin die Terminstatistik („Monatliche Übersicht", „Top Services"). Diese Sektion ergänzt die dort fehlende Mitarbeiter-Achse — und liefert die Datenbasis für die späteren HR-KPIs (KPZ pro Arbeitsstunde).
+
 ---
 
 ## Für Entwickler
