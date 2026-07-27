@@ -41,7 +41,7 @@ Termine.
 
 | Seite | Datenquellen |
 |---|---|
-| Verkaufsstatistik | Monatliche Übersicht, Körperzonen pro Tag & Institut, Ranking nach Institut, Ranking nach Mitarbeiter, Standort-Vergleich seit Eröffnung |
+| Verkaufsstatistik | Monatliche Übersicht, Körperzonen pro Tag & Institut, Ranking nach Institut, Ranking nach Mitarbeiter, Standort-Vergleich seit Eröffnung, Sales Mix (verkauft & Portfolio), Neukunden pro Monat & Institut, Lastschriften-Bestand & Einzugsvolumen (brutto & netto), Rücklastschriften pro Monat, Direktzahler-Segment (brutto & netto) |
 | Vergangene Beratungsgespräche | No-show-Statistik pro Monat & Institut |
 | Zukünftige Beratungsgespräche | Geplante Beratungsgespräche pro Tag & Institut |
 | Terminstatistik | Termine pro Monat & Institut, Behandelte Körperzonen pro Monat & Institut |
