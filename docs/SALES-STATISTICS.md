@@ -43,26 +43,11 @@ Jede Kennzahl zeigt Vergleichswerte:
 
 #### Monatliche Übersicht
 
-Zeigt die Verkaufsentwicklung über die letzten 12 Monate als Tabelle oder Diagramm (umschaltbar).
+Zeigt die Verkaufsentwicklung über die letzten 12 Monate — standardmäßig als **Diagramm**, über das Register am rechten Kartenrand als Tabelle mit Δ-Spalten und Hochrechnung.
 
 - **Aktueller Monat** ist farblich hervorgehoben und enthält die Hochrechnung (Prognose)
 - **Δ VM**: Veränderung zum Vormonat in Prozent
 - **Δ VJ**: Veränderung zum gleichen Monat letztes Jahr
-
-#### Ranking nach Institut
-
-Alle Institute, sortiert nach Gesamtumsatz. Die Top 3 sind hervorgehoben:
-- 🥇 Gold (Platz 1)
-- 🥈 Silber (Platz 2)
-- 🥉 Bronze (Platz 3)
-
-Enthält pro Institut: Vertragsanzahl, Umsatz, Ø Vertragswert, monatliche Raten, Körperzonen, Ganzkörper-Anteil, Hochrechnung und Δ-Vergleiche.
-
-#### Ranking nach Mitarbeiter
-
-Wie das Institut-Ranking, aber pro Verkäufer/in. Mitarbeiter, die in mehreren Instituten verkaufen, werden zusammengefasst.
-
-**Hinweis:** Ältere Legacy-Verträge ohne zugeordneten Verkäufer erscheinen hier nicht, fließen aber in die anderen Sektionen ein.
 
 #### Bestandskunden & Flex
 
@@ -104,7 +89,7 @@ Beantwortet die Frage: **Platzen Lastschriften häufiger, je weiter der Vertrag 
 
 Zwei Ansichten (Segmented-Control „Viertel / Ratenmonat"):
 
-- **Viertel** — die Laufzeit jedes Ratenvertrags wird in vier gleiche Viertel geteilt; jede verarbeitete Rate wird ihrem Viertel zugeordnet (bei 24 Raten: Rate 1–6 → 1. Viertel, Rate 19–24 → 4. Viertel). Balkendiagramm + Detailtabelle
+- **Viertel** — die Laufzeit jedes Ratenvertrags wird in vier gleiche Viertel geteilt; jede verarbeitete Rate wird ihrem Viertel zugeordnet (bei 24 Raten: Rate 1–6 → 1. Viertel, Rate 19–24 → 4. Viertel). Balkendiagramm; die Zahlen dahinter stehen im Register **Tabelle**
 - **Ratenmonat** — Liniendiagramm mit der Ausfallquote **je einzelner Ratennummer** (Rate 1, 2, 3 …) zur **Kipppunkt-Suche**: gibt es einen Monat, ab dem die Quote sprunghaft steigt? Am besten mit dem Laufzeit-Filter kombinieren, damit „Rate N" überall denselben Fortschritt bedeutet
 
 Je Ansicht zwei Quoten:
@@ -176,7 +161,9 @@ Jede Diagramm-Karte hat am **rechten Rand ein Register** mit den beiden Reitern 
 - **Gesamtzeile** am Fuß über alle Daten der Karte.
 - Der Umschalter wirkt nur auf die Darstellung: Filter, Metrik-Umschalter und der Brutto/Netto-Schalter gelten für Diagramm und Tabelle gleichermaßen. Beispiel Sales Mix: „Stückzahl/Umsatz" und „Absolut/Anteil %" schlagen auch in der Tabelle durch — in der %-Ansicht zeigen die Kategorie-Spalten ihren Anteil am jeweiligen Zeitraum, die Spalte „Gesamt" bleibt der absolute Bezugswert.
 
-Zwei Karten haben bewusst **keine** zusätzliche Tabelle, weil sie ihre Zahlen ohnehin schon tabellarisch zeigen: **Zahlungsausfälle nach Ratenfortschritt** (Detailtabelle unter dem Diagramm) und die **Monatliche Übersicht** (eigene Tabelle mit Δ-Spalten und Hochrechnung).
+Eine Karte hat bewusst **kein** Register, weil sie ihre Zahlen ohnehin schon tabellarisch zeigt: die **Monatliche Übersicht** (eigene Tabelle mit Δ-Spalten und Hochrechnung).
+
+Bei den **Zahlungsausfällen nach Ratenfortschritt** lag die Detailtabelle früher fest unter dem Diagramm; seit 07/2026 sitzt sie wie überall im Register. Sie zeigt je Laufzeit-Abschnitt bzw. Ratenmonat die verarbeiteten Raten, „Geplatzt (offen)" und „Jemals geplatzt" samt Quoten — im Vergleichsmodus beide Serien nebeneinander. Die Quoten der Gesamtzeile werden aus den Summen gerechnet, nicht über die Abschnitte gemittelt.
 
 Worauf beim Lesen der zusammengefassten Zeilen zu achten ist:
 
@@ -186,7 +173,7 @@ Worauf beim Lesen der zusammengefassten Zeilen zu achten ist:
 
 ### Brutto/Netto-Umschalter
 
-Ein **globaler Umschalter im Seitenkopf** rechnet **alle Euro-Werte der gesamten Seite** zwischen brutto und netto um (netto = brutto ÷ 1,19) — KPI-Kacheln, Tabellen (Monatsübersicht, Rankings) und alle €-Charts (MRR, Direktzahler, Sales-Mix-Umsatz, Monatschart, Standort-Vergleich). Prozentwerte und Stückzahlen bleiben unverändert. Die Wahl wird pro Nutzer in `localStorage` gemerkt.
+Ein **globaler Umschalter im Seitenkopf** rechnet **alle Euro-Werte der gesamten Seite** zwischen brutto und netto um (netto = brutto ÷ 1,19) — KPI-Kacheln, Tabellen (Monatsübersicht, Chart-Tabellen) und alle €-Charts (MRR, Direktzahler, Sales-Mix-Umsatz, Monatschart, Standort-Vergleich). Prozentwerte und Stückzahlen bleiben unverändert. Die Wahl wird pro Nutzer in `localStorage` gemerkt.
 
 ### Standort-Filter
 
@@ -218,8 +205,8 @@ SalesStatisticsController (app/Http/Controllers/)
 ├── index()            → Blade-View rendern
 ├── kpis()             → JSON: 8 KPI-Metriken
 ├── monthly()          → JSON: Monatliche Übersicht + Hochrechnung
-├── branches()         → JSON: Institut-Ranking
-├── sellers()          → JSON: Mitarbeiter-Ranking
+├── branches()         → JSON: Institut-Ranking (nur noch für das Dashboard-Widget)
+├── sellers()          → JSON: Mitarbeiter-Ranking (nur noch für das Dashboard-Widget)
 ├── projection()       → JSON: Detail-Hochrechnung
 ├── contractTerms()    → JSON: Vertragslaufzeiten (Verteilung nach Raten)
 ├── paymentFailures()  → JSON: Ausfallquote nach Ratenfortschritt
@@ -244,9 +231,9 @@ SalesStatisticsService (app/Services/)
 
 **Charts:** Seit Juli 2026 laufen **alle** Diagramme der Seite auf **Apache ECharts** (Migration von Chart.js abgeschlossen, siehe `charts.instructions.md`):
 
-- **Körperzonen pro Institut:** gruppierte Balken mit grauem Gesamt-Balken im Hintergrund (versteckte Zweitachsen), Prognose-Split für den aktuellen Monat (halbtransparent), Widerrufe als rot schraffierte Stapelung (ECharts-`decal`), mögl. Widerrufe als orange schraffierter Anteil oben im aktiven Balken. Widerruf-Serien tragen denselben Seriennamen wie ihr Institut — ein Legenden-Klick toggelt beide zusammen. Klick auf einen Balken öffnet den Verkäufer-Drill-Down.
+- **Körperzonen pro Institut:** gruppierte Balken mit grauem Gesamt-Balken im Hintergrund (versteckte Zweitachsen), Prognose-Split für den aktuellen Monat (halbtransparent), Widerrufe als rot schraffierte Stapelung (ECharts-`decal`), mögl. Widerrufe als orange schraffierter Anteil oben im aktiven Balken. Zeitraum über den **Zoom-Regler** (`dataZoom` über **beide** Kategorie-Achsen — Institute und Gesamt-Balken —, Standard: letzte 12 Monate); die frühere Monats-Mehrfachauswahl im Kartenkopf wurde 07/2026 entfernt. Der feste Max-Wert der versteckten Gesamt-Achse und die Wert-Labels werden im `datazoom`-Event nachgeführt: Labels erscheinen erst ab ≤ 26 sichtbaren Spalten, sonst verschmelzen sie über die volle Historie zum Zahlenteppich. Widerruf-Serien tragen denselben Seriennamen wie ihr Institut — ein Legenden-Klick toggelt beide zusammen. Klick auf einen Balken öffnet den Verkäufer-Drill-Down.
 - **Körperzonen pro Tag:** gestapelte Tagesbalken über die **gesamte Historie**; der Zeitraum wird ausschließlich über den **Zoom-Regler** (`dataZoom`, Slider + Mausrad/Pinch) gesteuert — die frühere Monats-Mehrfachauswahl wurde entfernt. Standard-Zoom: letzte 60 Tage. **Achse und Zebra passen sich der sichtbaren Spanne an** (Muster aus `booking-outlook.js`): bis ~190 Tage Tages-Labels (⭐ Feiertage, Sonn-/Feiertage grau) + Wochen-Zebra, bis ~400 Tage KW-Labels an Montagen, darüber Monats-Labels (mittig am 15.) — ab KW-Modus wird das Zebra auf Monats-Bänder umgeschaltet (Umschaltung live im `datazoom`-Event über die Serien-`id: 'zebra'`). **Jahresgrenzen** sind als dunkle vertikale `markLine` mit Jahreszahl markiert. Gesamtzahl je Tag über dem Stapel (unsichtbare Hilfsserie mit `hideOverlap`). Über einen **Ø-Umschalter** (Segmented Control: aus / 7 / 28 Tage) lassen sich gleitende Durchschnitte als Linien einblenden — je Standort in Standortfarbe plus graue Gesamt-Linie (trailing über Kalendertage, `null` bis das Fenster voll ist). Bei aktivem Ø treten die Balken in den Hintergrund (Opacity 0,35, ohne Wert-Labels) und der Tooltip zeigt primär den Ø-Wert, den Tageswert in Klammern; ab dem KW-/Monats-Achsenmodus (> ~190 Tage sichtbar) werden die Tagesbalken komplett ausgeblendet (Serien-Daten per id geleert/zurückgesetzt — kein Re-Render, das Ziehen am Regler bleibt flüssig). Die **y-Achse skaliert nicht auf die sichtbaren Tage** (sonst springt der Chart beim Verschieben der Zoom-Leiste), sondern auf das Maximum eines auf mindestens 12 Monate erweiterten Fensters um die sichtbare Spanne (auf runde Stufen aufgerundet, live im `datazoom`-Event nachgeführt); bei aktivem Ø bestimmt das Ø-Gesamt-Maximum die Skala — einzelne Top-Tage dürfen dann oben abschneiden. Ø-Linien tragen denselben Seriennamen wie die Balken ihres Standorts → ein Legenden-Klick schaltet beide gemeinsam.
-- **Standort-Vergleich seit Eröffnung:** Linien-Chart, bei dem jede Standort-Linie auf **Tag 0 = erster Verkaufstag des Standorts** ausgerichtet ist — so sind die Anlaufkurven der Institute direkt vergleichbar. Ansichten: Ø 28 Tage / Ø 3 Monate (91 Tage, trailing) / Kumuliert; Metrik-Switch KPZ ↔ Umsatz (Brutto-Vertragswert). x-Achse adaptiv in Monaten/Jahren seit Eröffnung, Zoom-Regler in Tagen, Tooltip zeigt je Standort das echte Kalenderdatum. Gleiches Standard-Kit wie der Tages-Chart: Zebra-Blöcke (jeder zweite Monat/Quartal/Jahr **seit Eröffnung**, adaptiv zur sichtbaren Spanne), dunkle Jahrestrenner („Jahr 1", „Jahr 2" …) und feste y-Skala (Maximum je Quartals-Block, sichtbare Spanne auf ≥ 12 Monate erweitert, Legenden-Auswahl zählt mit — kein Springen beim Schieben). Eigener Endpoint `branch-opening-comparison` (`getBranchOpeningComparison()`) — bewusst **ohne Filter**, der Vergleich braucht immer alle Standorte.
+- **Standort-Vergleich seit Eröffnung:** Linien-Chart, bei dem jede Standort-Linie auf **Tag 0 = erster Verkaufstag des Standorts** ausgerichtet ist — so sind die Anlaufkurven der Institute direkt vergleichbar. Ansichten: Ø 28 Tage / Ø 3 Monate (91 Tage, trailing) / Kumuliert; Metrik-Switch KPZ ↔ Umsatz (Brutto-Vertragswert). x-Achse adaptiv in Monaten/Jahren seit Eröffnung, Zoom-Regler in Tagen, Tooltip zeigt je Standort das echte Kalenderdatum. Gleiches Standard-Kit wie der Tages-Chart: Zebra-Blöcke (jeder zweite Monat/Quartal/Jahr **seit Eröffnung**, adaptiv zur sichtbaren Spanne), dunkle Jahrestrenner („Jahr 1", „Jahr 2" …) und feste y-Skala (Maximum je Quartals-Block, sichtbare Spanne auf ≥ 12 Monate erweitert, Legenden-Auswahl zählt mit — kein Springen beim Schieben). Eigener Endpoint `branch-opening-comparison` (`getBranchOpeningComparison()`) — bewusst **ohne Filter**, der Vergleich braucht immer alle Standorte. **Tag 0 ist nicht einfach der erste Vertrag:** Der Legacy-Import enthält vereinzelt Verträge mit unplausiblem `signed_at` Monate vor dem echten Verkaufsstart (07/2026 gemessen: Bremen 258 Tage, Osnabrück 148 Tage — beide mit hoher Legacy-Kundennummer, also sicher keine Erstkunden). Ein solcher Einzelvertrag zöge Tag 0 nach vorn: monatelange Nulllinie am Anfang, verschobene Jahresgrenzen, gedrückter gleitender Durchschnitt. Deshalb gilt als Tag 0 der erste Verkaufstag, dem **innerhalb von `OPENING_MAX_GAP_DAYS` (60) Tagen ein weiterer Verkaufstag folgt** — echte Anlaufphasen haben nie mehr als 25 Tage Pause, die Schwelle trennt also mit großem Abstand. Der übersprungene Vorlauf steht je Standort als `pre_opening` in der Antwort und wird **unter dem Diagramm ausgewiesen** (keine stille Bereinigung); in allen anderen Auswertungen bleiben die Verträge unverändert enthalten. Der CSV-Export `sales-opening-comparison` nutzt dieselbe Quelle und erbt die Regel.
 - **Monatliche Übersicht (Chart-Ansicht):** Linien-Chart mit zwei y-Achsen (Umsatz/Raten in €, Verträge).
 - **Bestands-Charts (MRR, Rücklastschriften, Direktzahler):** volle Historie ab 01/2020 als Standard-Zoom, gemeinsames Deko über die Helper `monthlyYearDecor(months, zoom)` / `updateMonthlyZebra(chart, months, dz)` (`sales-statistics.js`) — unsichtbare Serie (id `year-decor`) mit **adaptivem Zebra**: > 36 sichtbare Monate = Jahres-Streifen, 13–36 = Quartale, ≤ 12 = Monate (Parität an absolute Kalenderwerte gebunden → zoomstabil; Umschaltung live im `datazoom`-Event per Serien-id, kein Re-Render) + dunkle Jahrestrennlinien mit Jahreszahl (immer sichtbar; Label per `offset: [-9, 22]` rechts der Linie — also IM markierten Jahr — und unter die Plot-Oberkante gezogen; gilt projektweit für alle Jahres-markLines). Muster wie „Körperzonen pro Tag". Die Mandate-Linie läuft durchgezogen mit Punkten in `--color-info`, rechte Achse in derselben Farbe. Der MRR-Stapel nutzt leicht transparente Verlaufsflächen (`withAlpha()` + `LinearGradient`, 0,6 → 0,22) mit farbiger Decklinie, das Rücklastschriften-Band ein rot-weißes 45°-Streifenmuster als Canvas-Pattern (`diagonalStripePattern()` — `areaStyle` kann kein ECharts-`decal`; halbtransparente Streifen, damit das Zebra durchscheint). **Klick-Freistellung** über `enableSeriesIsolation(chart)` aus dem gemeinsamen Helper `public/js/echarts-glattt.js` (projektweite Pflicht-Konvention, siehe `charts.instructions.md`): Klick auf Balken/Fläche/Linie blendet alle anderen Serien aus (per Legenden-Auswahl), erneuter Klick zeigt wieder alle; Linien-Serien brauchen dafür `triggerLineEvent: true`. Ausnahme: der Körperzonen-pro-Institut-Chart (Klick = Verkäufer-Drill-Down). Die Fußnoten unter den drei Charts sind bewusst einzeilig — alle Details stehen in den Info-Panels (eigene Sektion „Bedienung").
 - **Animierte Übergänge (seit 07/2026, projektweite Pflicht-Konvention):** Alle elf Charts der Seite blenden beim Neuzeichnen sichtbar von den alten auf die neuen Werte über, statt hart umzuspringen — bei Filter-, Metrik- und Ansichtswechseln ebenso wie beim Brutto/Netto-Umschalter. Technisch: Die ECharts-Instanz wird über `acquireChart(el, instance)` (`public/js/echarts-glattt.js`) **wiederverwendet** statt bei jedem Render `dispose()` + `init()` zu fahren (das verschluckte jeden Übergang); die Animationsparameter kommen einheitlich aus `chartAnimation(isUpdate)` (~0,45 s, `cubicOut`, leichter Versatz über die Kategorien). Jede Serie trägt dafür eine **stabile `id`**, die an ihrer Rolle bzw. am Datenfeld hängt (`mrr-collected_cents`, `branch-<id>`) und nicht am Anzeigenamen — sonst ordnet ECharts alt und neu nicht zu. `setOption` läuft mit `{ notMerge: true }`, Event-Handler werden über `bindChartEvent()` gebunden (sonst stapeln sie sich auf der überlebenden Instanz), und `forceRepaint(chart, isUpdate)` macht beim Update bewusst nichts — ein `resize()` würde die laufende Animation auf den Endzustand schnappen lassen. Der **Erstrender bleibt ohne Animation** (Enter-Animationen bleiben in `x-show`-Containern im Startzustand hängen). Zusätzlich hebt `chartAnimation()` die `animationThreshold` von 2000 auf 20.000 Datenpunkte je Serie an — sonst schaltet ECharts die Animation bei langen Historien selbst ab, was den **Standort-Vergleich seit Eröffnung** (~3500 Tage je Serie) als einzigen Chart hart umspringen ließ. Details: `charts.instructions.md`, Abschnitt „Animationen".
@@ -267,8 +254,8 @@ SalesStatisticsService (app/Services/)
 | `resources/views/hub/reports/sales-statistics/partials/monthly-overview.blade.php` | Monatstabelle + Chart |
 | `resources/views/hub/reports/sales-statistics/partials/branch-opening-comparison.blade.php` | Standort-Vergleich seit Eröffnung (ECharts + Ansicht-/Metrik-Switch) |
 | `resources/views/hub/reports/sales-statistics/partials/existing-customer-flex.blade.php` | Ausweis Bestandskunden & Flex (Stat-Strip) |
-| `resources/views/hub/reports/sales-statistics/partials/branch-ranking.blade.php` | Institut-Ranking |
-| `resources/views/hub/reports/sales-statistics/partials/seller-ranking.blade.php` | Mitarbeiter-Ranking |
+| `resources/views/hub/reports/sales-statistics/partials/branch-ranking.blade.php` | Institut-Ranking — **nur noch** als Dashboard-Widget (`sales-branch-ranking`), nicht mehr auf der Seite |
+| `resources/views/hub/reports/sales-statistics/partials/seller-ranking.blade.php` | Mitarbeiter-Ranking — **nur noch** als Dashboard-Widget (`sales-seller-ranking`), nicht mehr auf der Seite |
 | `resources/views/hub/reports/sales-statistics/partials/contract-terms.blade.php` | Vertragslaufzeiten (ECharts + KPZ-Filter) |
 | `resources/views/hub/reports/sales-statistics/partials/payment-failures.blade.php` | Zahlungsausfälle nach Ratenfortschritt |
 | `resources/views/hub/reports/sales-statistics/partials/sales-mix.blade.php` | Sales Mix — Paket-Umfang (ECharts, Umschalter Stück/Umsatz, Netto/Brutto, %) |
