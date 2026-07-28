@@ -1,5 +1,29 @@
 # Chart.js + Alpine.js Integration
 
+!!! danger "Veraltet — Chart.js gibt es im Projekt nicht mehr"
+    Im Juli 2026 wurden **alle** Diagramme auf **Apache ECharts** migriert; Chart.js
+    ist vollständig aus dem Projekt entfernt (auch aus dem Layout) und darf nicht
+    wieder eingeführt werden. Verbindlich für neue und überarbeitete Charts ist
+    `.github/instructions/charts.instructions.md`.
+
+    Dieses Dokument bleibt nur wegen des **Alpine-Proxy-Bugs** stehen (Abschnitt
+    „Das Problem" / „Die Lösung") — der gilt unverändert und ist der Grund, warum
+    Chart-Instanzen niemals im Alpine-State liegen dürfen.
+
+    **Nicht mehr gültig sind insbesondere:** „Animation deaktivieren" (Animationen
+    beim Neuzeichnen sind heute **Pflicht**, siehe unten) und die Empfehlung
+    `<template x-if>` (ECharts braucht `x-show`, sonst verliert es seinen Container).
+
+## Animationen sind heute Pflicht
+
+Jeder Chart muss beim Neuzeichnen — Filter, Metrik, Ansicht — sichtbar von den alten
+auf die neuen Werte überblenden. Umgesetzt wird das ausschließlich über die Helfer in
+`public/js/echarts-glattt.js`: `acquireChart()` (Instanz wiederverwenden statt
+`dispose()`+`init()`), `chartAnimation(isUpdate)`, stabile Serien-`id`s,
+`setOption(opt, { notMerge: true })`, `bindChartEvent()` und
+`forceRepaint(chart, isUpdate)`. Nur der Erstrender läuft bewusst ohne Animation.
+Referenz-Implementierung: `public/js/sales-statistics.js`.
+
 ## Ziel
 
 - Chart.js-Charts zuverlässig in Alpine.js-Komponenten nutzen
@@ -277,13 +301,11 @@ const branchColor = this.selectedBranch
 !!! info "Wo kommt BranchColorService her?"
     Der Service ist in `public/js/branch-color-service.js` definiert und wird in `hub.blade.php` global geladen. Die Farben werden in der Datenbanktabelle `institute_colors` pro Standort konfiguriert.
 
-### Animation deaktivieren
+### ~~Animation deaktivieren~~ (nicht mehr gültig)
 
-```javascript
-options: {
-    animation: false,  // Verhindert Crashes wenn Canvas per x-if entfernt wird
-}
-```
+Das war eine Chart.js-Notlösung gegen Crashes bei per `x-if` entferntem Canvas.
+Heute gilt das Gegenteil: **Animationen beim Neuzeichnen sind Pflicht** (siehe oben
+und `charts.instructions.md`). Ohne Animation abgenommen wird nur der Erstrender.
 
 ### Canvas-Existenz prüfen
 
