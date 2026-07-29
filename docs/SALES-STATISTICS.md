@@ -187,10 +187,41 @@ Die Prognose basiert auf **Verkaufstagen** (Mo–Sa, ohne Sonn- und Feiertage) s
 
 Bei einem Standort-Filter werden die **regionalen Feiertage** des jeweiligen Bundeslandes berücksichtigt. Ohne Standort-Filter zählen nur **bundesweite Feiertage**.
 
-Die Prognose wird **exakter, je mehr historische Daten** vorhanden sind:
-- **≥ 12 Monate Daten**: Berücksichtigt zusätzlich saisonale Schwankungen (Vorjahresvergleich)
-- **≥ 3 Monate Daten**: Gewichteter Durchschnitt historischer Verkaufsmuster pro Verkaufstag
-- **< 3 Monate Daten**: Einfache lineare Hochrechnung auf Basis der Verkaufstage
+Die Rechnung ist überall dieselbe:
+
+```
+Prognose = (Ist-Wert / Verkaufstage bisher) × Verkaufstage gesamt
+```
+
+Hochgerechnet werden **Körperzonen, Verträge und Gesamtumsatz** sowie die **Δ-Werte** des laufenden Monats
+(Δ Vormonat / Δ Vorjahr auf Basis der Prognose — der Ist-Vergleich eines angefangenen Monats gegen einen vollen
+Monat fällt sonst zwangsläufig zu niedrig aus). Ø-Vertragswert, Ø KPZ und GK-Anteil bekommen bewusst **keine**
+Prognose: Als Verhältniszahlen ändern sie sich durch die Hochrechnung nicht.
+
+In der Monatlichen Übersicht steht die Prognose in der Tabelle blau unter dem Ist-Wert (mit Fortschrittsbalken
+„N von M Verkaufstagen"). Im Diagramm liegt der Prognosepunkt als hohler Kreis **senkrecht über dem Ist-Wert
+des laufenden Monats**, verbunden durch eine gestrichelte Linie ab dem Vormonat; der Keil zwischen Ist- und
+Prognoselinie ist in der Serienfarbe schraffiert. Umgesetzt ist das über zwei gestapelte Hilfsserien je Metrik
+(`monthly-fc-<key>-base` mit den Ist-Werten, unsichtbar, plus `monthly-fc-<key>` mit der Differenz bis zur
+Prognose) — durch das Stapeln füllt die Fläche der oberen Serie exakt den Keil. Die Schraffur ist ein
+Canvas-Muster (`hatchPattern()`), das ECharts als `areaStyle.color` akzeptiert. Beide Hilfsserien tragen den
+Namen der Hauptserie, damit die Legende sie mitschaltet, und werden im Tooltip herausgefiltert; die
+Prognosewerte stehen dort als eigener Block „Hochrechnung bis Monatsende". Die Serie **Verträge** liegt auf
+der zweiten Achse und bekommt bewusst **keine** Schraffur — überlagerte Flächen sind unlesbar.
+
+Das ist kein Einzelfall-Design, sondern die **projektweite Konvention für Prognosen in Charts**:
+`.github/instructions/charts.instructions.md`, Abschnitt „Prognosen im Chart".
+
+Umsatz und monatliche Raten werden aus den hochgerechneten Verträgen × dem aktuellen Ø-Vertragswert abgeleitet.
+**Monatliche Übersicht, Institut-Ranking, Verkäufer-Ranking und Körperzonen-Diagramm nutzen exakt dieses
+Verfahren** — die Prognosen der Karten passen deshalb zueinander (die Summe der Instituts-Prognosen ergibt die
+Gesamt-Prognose).
+
+Zwei Eigenschaften der Hochrechnung:
+
+- Sie liegt **nie unter dem bereits erreichten Ist-Stand** — bis Monatsende können nur Verkäufe dazukommen.
+- Schneidet ein **Datumsfilter den laufenden Monat an**, entfällt die Hochrechnung, weil der Ist-Wert dann
+  unvollständig wäre.
 
 ---
 
@@ -300,45 +331,59 @@ SalesStatisticsService (app/Services/)
 
 ### Hochrechnungs-Algorithmus
 
-Der Algorithmus ist 3-stufig und wird auf Vertragsanzahl, Gesamtumsatz und monatliche Rate angewendet.
+Es gibt **genau ein** Verfahren (`PROJECTION_METHOD = 'linear'`), das auf Vertragsanzahl, Gesamtumsatz,
+monatliche Rate und Körperzonen angewendet wird — lineare Hochrechnung über Verkaufstage:
+
+```
+projection = (ist_wert / verkaufstage_bisher) × verkaufstage_gesamt
+```
 
 **Grundlage: Verkaufstage** statt Kalendertage. Verkaufstage = Mo–Sa ohne Feiertage.
 Feiertage werden über den `HolidayService` (spatie/holidays, regional pro Bundesland) ermittelt.
 Bei Standort-Filter: regionale Feiertage. Ohne Filter: nur bundesweite Feiertage.
 
 Helper-Methoden:
+
 - `countSellingDays(start, end, holidays)` — Zählt Verkaufstage in einem Datumsbereich
-- `getNthSellingDay(yearMonth, n, holidays)` — Findet das Kalenderdatum des N-ten Verkaufstags
+- `currentMonthSellingDays(filters)` — Verkaufstage des laufenden Monats (`passed` / `total`), eine Quelle für alle Karten
+- `projectLinear(current, passed, total)` — die Hochrechnung selbst, mit `max(projected, current)` als Untergrenze
+- `projectionApplies(filters)` — `false`, sobald ein Datumsfilter den laufenden Monat anschneidet
 
-**Stufe 1 — Historical Weighted** (≥3 historische Monate):
-```
-Für jeden historischen Monat:
-  N = Verkaufstage bis heute im aktuellen Monat
-  cutoff = Kalenderdatum des N-ten Verkaufstags im hist. Monat  
-  ratio = (Verkäufe bis cutoff) / (Gesamt-Verkäufe des Monats)
-  
-Gewichtung: Neuere Monate werden stärker gewichtet (exponentiell ansteigende Gewichte)
-projection = aktuelle_verkäufe / gewichteter_durchschnitt(ratios)
-```
+Angewendet in:
 
-**Stufe 2 — Historical Seasonal** (≥12 historische Monate):
-```
-Zusätzlich zur gewichteten Ratio:
-  YoY-Wachstumsrate = (gleicher_monat_vorjahr − gleicher_monat_vor2jahren) / vor2jahren
-  projection = historical_projection × (1 + yoyGrowth × 0.3)
-```
-
-**Stufe 3 — Linear Fallback** (<3 historische Monate):
-```
-projection = (aktuelle_verkäufe / verkaufstage_bisher) × verkaufstage_gesamt
-```
-
-Die Hochrechnung wird angewendet auf:
 - Gesamt (alle Branches) — `calculateMonthProjection()`
 - Pro Branch — `calculateBranchProjections()`
 - Pro Seller — `calculateSellerProjections()`
+- Körperzonen pro Institut — `getBodyZonesChart()`
 
-Die Rückgabe enthält zusätzlich `selling_days_passed` und `total_selling_days`.
+Die Rückgabe enthält zusätzlich `selling_days_passed`, `total_selling_days` und `projection_method`.
+Der laufende Monat der Monatlichen Übersicht führt darüber hinaus `projected_body_zones` sowie
+`projected_delta_prev_month` / `projected_delta_prev_year` (gleiche Struktur wie `delta_prev_month`).
+
+Frontend: Die Tabelle der Monatlichen Übersicht ist die Alpine-Komponente `monthlyOverviewTable()`
+(`public/js/sales-statistics.js`, Markup in `partials/monthly-overview.blade.php`). Sie nutzt bewusst
+**nicht** `<x-chart-table>`, weil sie Δ-Spalten und die Hochrechnung zeigt, aber dieselben Theme-Klassen
+(`.chart-table-glattt-*` auf `.table-glattt`). Jahr-, Quartals- und Monatszeilen haben denselben
+Spaltenaufbau, damit Aggregate unter den Werten stehen, zu denen sie gehören. Die Zwei-Werte-Darstellung
+(Ist oben, Prognose darunter) ist `.projection-glattt-*` in `theme_glattt.css`.
+
+Alle Hochrechnungen ziehen ihren Ist-Wert aus `buildBaseQuery($filters)` — also aus **derselben** gefilterten
+Query wie die Tabelle daneben. Weicht die Query der Hochrechnung von der Query der Anzeige ab, entstehen
+Prognosen unter dem Ist-Wert.
+
+!!! warning "Historie: Warum keine Ratio-/Saison-Stufen mehr"
+
+    Bis 07/2026 war der Algorithmus 3-stufig (gewichtete historische Ratio + YoY-„Saisonalitäts-Korrektur").
+    Die zweite Stufe multiplizierte die Prognose mit dem Niveau-Trend zwischen dem gleichen Monat im Vorjahr
+    und im Vor-Vorjahr. Weil die Vor-Vorjahres-Monate aus der Legacy-Ära mit ganz anderer Datenbasis stammen
+    (Juli 2024: 237 Verträge vs. Juli 2025: 115), ergab das einen Faktor von 0,85 — die Hochrechnung fiel damit
+    **unter den bereits erreichten Ist-Stand** (110 Verträge → Prognose 96). Zusätzlich rechnete das
+    Körperzonen-Diagramm schon immer rein linear, sodass dieselbe Seite denselben Monat mit zwei Verfahren
+    hochrechnete (−13 % vs. +8 %). Seit 07/2026 gilt überall die lineare Methode.
+
+    Zur Einordnung: Die lineare Methode ist bewusst optimistisch. Historisch waren am 25. von 27 Verkaufstagen
+    bereits ~97,5 % eines Monats abgeschlossen, linear unterstellt werden aber 92,6 % — die Prognose liegt am
+    Monatsende also typischerweise ~5 % über dem Ist.
 
 ### Permission
 
@@ -359,4 +404,12 @@ php artisan test --filter=SalesStatisticsTest
 php artisan test --filter=SalesStatisticsServiceTest
 ```
 
-**Hinweis:** 5 Feature-Tests benötigen MySQL (wegen `DATE_FORMAT`) und werden auf SQLite automatisch übersprungen.
+**Hinweis:** 8 Feature-Tests benötigen MySQL (wegen `DATE_FORMAT`) und werden auf SQLite automatisch übersprungen.
+Zum Ausführen eine separate Test-DB nutzen, **nie** die Entwicklungs-DB (`RefreshDatabase` leert sie):
+
+```bash
+DB_CONNECTION=mysql DB_DATABASE=glattthub_test php -d memory_limit=1G vendor/bin/phpunit tests/Feature/SalesStatisticsTest.php
+```
+
+Die Hochrechnung ist durch drei Tests abgesichert: Prognose nie unter Ist-Stand, gleiche Verkaufstage-Basis
+in allen Karten (Summe Institut-Prognosen = Gesamt-Prognose) und keine Prognose bei angeschnittenem Monat.
