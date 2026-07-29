@@ -168,6 +168,7 @@ nav:
     - glatttBert: GLATTTBERT-AI-ASSISTENT.md
   - Design & UI:
     - Design System: DESIGN-SYSTEM.md
+    - Ladeverhalten Statistikseiten: LADEVERHALTEN-STATISTIKSEITEN.md
     - Schriftart-Einstellungen: FONT-EINSTELLUNGEN.md
     - Globale Suche: GLOBAL-SEARCH.md
     - Custom Dropdown: CUSTOM-DROPDOWN.md

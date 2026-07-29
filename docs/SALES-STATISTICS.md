@@ -179,6 +179,12 @@ Ein **globaler Umschalter im Seitenkopf** rechnet **alle Euro-Werte der gesamten
 
 Der Standort-Filter in der Seitenleiste filtert alle Daten auf ein bestimmtes Institut. Bei Wechsel des Standorts werden alle Sektionen automatisch neu geladen.
 
+### Ladeverhalten
+
+Beim Öffnen steht das Kartenraster **sofort in seiner Endhöhe**: Jede Karte zeigt Titel und Umschalter, im Kartenkörper bis zum Eintreffen der Daten einen layoutgetreuen Platzhalter (Diagramm, Kennzahlen-Zeile, Tabelle). Die Sektionen laden weiterhin parallel und unabhängig — es springt dabei aber nichts mehr, auch nicht mobil und nicht beim Filtern. Fällt eine einzelne Auswertung aus, meldet nur diese Karte den Fehler (mit „Erneut laden") in derselben Höhe; die übrigen Analysen bleiben nutzbar.
+
+Details und die verbindliche Bauform: [Ladeverhalten der Statistikseiten](LADEVERHALTEN-STATISTIKSEITEN.md).
+
 ### Hochrechnung
 
 Die Hochrechnung (Prognose) schätzt die erwartete Vertragsanzahl und den Umsatz bis zum Monatsende. Sie wird mit einem blauen Badge gekennzeichnet.
@@ -299,7 +305,11 @@ SalesStatisticsService (app/Services/)
 | `public/js/chart-table.js` | Generischer Aufbau der Tabellen-Ansicht (Perioden-Baum, Aggregation, Formatierer) |
 | `resources/views/components/chart-table.blade.php` | Tabellen-Komponente (aufklappbare Zeilen, „Mehr laden", Gesamtzeile) |
 | `resources/views/components/chart-view-toggle.blade.php` | Register Diagramm ↔ Tabelle am rechten Kartenrand (direktes Kind der Karte) |
+| `resources/views/components/stat-skeleton.blade.php` | Ladeplatzhalter je Kartentyp (Chart, Tabelle, Stat-Strip, KPI, Heatmap) |
+| `resources/views/components/card-state.blade.php` | „Keine Daten"/Fehler-Hinweis in der reservierten Kartenhöhe (mit „Erneut laden") |
 | `tests/Feature/SalesStatisticsChartTableTest.php` | Sichert die Verdrahtung von Umschalter & Tabelle je Karte |
+| `tests/Feature/SalesStatisticsLoadingStateTest.php` | Sichert reservierte Höhen, Platzhalter und Fehlerzustand je Karte |
+| `tests/Feature/StatSkeletonComponentTest.php` | Verhalten von `<x-stat-skeleton>` und `<x-card-state>` |
 | `public/js/sales-preview-charts.js` | ECharts-Mini-Charts der Verkaufsstatistik-Karte (Berichte-Übersicht) |
 | `resources/views/hub/reports.blade.php` | Berichte-Übersicht (Report-Card) |
 
