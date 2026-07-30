@@ -109,6 +109,24 @@ Referenz-Implementierung: Verkaufsstatistik
   dadurch ist die Höhe unabhängig von der Textlänge und der Platzhalter kann sie
   exakt treffen.
 
+### Mobil: Breite ist der Engpass
+
+Auf einem 390-px-Handy bleiben einer Chart-Karte rund 240 px Zeichenfläche — der
+Rest geht für Seiten- und Kartenränder sowie die Register-Spalte drauf. Daraus
+folgen drei Regeln, die alle in `charts.instructions.md` stehen:
+
+| Thema | Regel |
+|---|---|
+| Zeitfenster | Die sichtbare Anzahl Rubriken kommt aus der Container-Breite (`fitVisibleCount`), nicht aus einer festen Periode. Verkaufsstatistik mobil: 7 statt 13 Monate, bei gruppierten Balken 4, im Tages-Chart 28 statt 60 Tage. Der Zoom-Regler bleibt für mehr Historie. |
+| Legende | `grid.top` über `legendGridTop()` — sonst liegt die mehrzeilig umbrechende Legende auf der Zeichenfläche (mobil bis 74 px Überlappung gemessen). |
+| Höhe | Diagramme mobil **nicht** flacher machen: Vertikal ist Platz, und die Legende braucht davon bis zu 114 px. |
+| Wert-Labels | An der Balkenbreite bemessen (`Plotbreite / (Spalten × Serien) ≥ 12 px`), nicht an der Spaltenzahl. |
+
+Die Trend-Charts über die volle Historie (MRR, Rücklastschriften, Direktzahler,
+Standort-Vergleich) behalten mobil bewusst ihren vollen Zeitraum — bei einer
+Fläche/Linie ist der Kurvenverlauf auch bei 2 px je Monat die Aussage; wer
+Einzelwerte braucht, zoomt oder wechselt in die Tabellen-Lasche.
+
 ### KPI-Zeile: gemerkte Höhe
 
 Die KPI-Zeile ist personalisierbar (Anzahl und Auswahl der KPIs, Untertitel,
