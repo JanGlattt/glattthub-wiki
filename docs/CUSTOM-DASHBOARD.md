@@ -154,6 +154,24 @@ Für das **Teilen** von Dashboards per Link und an andere Nutzer wird zusätzlic
 
 ## Für Entwickler
 
+### Tabellen-Register in Widgets (Diagramm/Tabelle)
+
+Einige Widgets betten Sales-Partials mit dem Karten-Register
+(`<x-chart-view-toggle>`/`<x-chart-table>`) ein. Dafür gilt:
+
+- `chart-table.js` wird auf **beiden** Dashboard-Views (`custom-dashboard`,
+  `shared-dashboard`) vor `statistics-widgets.js` geladen — ohne das Skript
+  ist die Tabellen-Lasche funktionslos (bis 07/2026 der Fall).
+- `statistics-widgets.js` stellt die vom Register erwarteten Alpine-Members
+  über den gemeinsamen Mixin **`_wChartTableMixin()`** bereit (`tableView`,
+  `chartTable()`, `chartTableRows()`, …) — Modelle je Widget als
+  `buildChartTable()`-Builder, gecacht in einer Closure.
+- Den Platz für die Laschen reserviert das Theme automatisch per
+  `.dashboard-widget-body-glattt:has(.card-register-glattt)` — nur Widgets,
+  deren Partial tatsächlich ein Register trägt, bekommen den rechten Rand.
+- Feldnamen der Sales-Endpoints beachten: Body-Zones-Antworten liefern
+  `zones`/`day` (nicht `zone_count`/`date`).
+
 ### Architektur-Überblick
 
 ```

@@ -41,13 +41,22 @@ Wenn für den aktuellen Monat noch keine Daten vorliegen (z.B. am 1. Februar), w
 
 ## Features
 
-### Zwei Analyse-Karten
+### Zwei Analyse-Karten (zweiseitig: Diagramm + Tabellen-Lasche)
+
+Beide Karten folgen seit 07/2026 dem verbindlichen Statistik-Bauplan
+(`statistics-pages.instructions.md`): **Diagramm ist die Standard-Ansicht**,
+die Heatmap-Tabelle liegt als zweite Lasche hinter dem **Karten-Register am
+rechten Kartenrand** (`<x-chart-view-toggle>` mit eigenem View-State, Muster
+„Monatsübersicht" der Verkaufsstatistik). Mobil wird das Register automatisch
+zum Segmented Control in der Karte. Beide Karten haben ein **Info-Panel**
+neben dem Titel und laden mit **Skeleton-Platzhaltern in Endhöhe** statt
+Spinnern (`<x-stat-skeleton>`, `<x-card-state>` für Fehler/Leer je Karte).
 
 #### 1. Stornierte Termine (Orange)
 - Zeigt Termine die in Phorest als "storniert" markiert wurden
 - Toggle zwischen **Absolute Anzahl** und **Stornoquote %**
-- Expandierbare Monate mit Wochen-Aufschlüsselung
-- Heatmap-Farbcodierung basierend auf Intensität
+- Expandierbare Monate mit Wochen-Aufschlüsselung (Tabellen-Lasche)
+- Heatmap-Farbcodierung basierend auf Intensität (Perzentil-Skalierung)
 
 #### 2. Gelöschte Termine (Rot)
 - Zeigt Termine die komplett aus dem System gelöscht wurden
@@ -56,16 +65,18 @@ Wenn für den aktuellen Monat noch keine Daten vorliegen (z.B. am 1. Februar), w
 
 ### Gemeinsame Features
 
-#### Heatmap-Visualisierung (Tabellenansicht)
+#### Heatmap-Visualisierung (Tabellen-Lasche)
 - **Zeilen**: Monate (neueste zuerst)
 - **Spalten**: Standorte (Institute)
 - **Farbintensität**: Je dunkler, desto mehr Stornierungen
 - **Gesamt-Spalte**: Aggregiert alle Standorte (bei mehreren)
 
-#### Chart-Ansicht
-- Gestapeltes Balkendiagramm nach Standorten
-- Zeitlicher Verlauf (älteste links, neueste rechts)
-- Legende mit Standort-Farben
+#### Diagramm (Standard-Ansicht)
+- Gestapeltes Balkendiagramm nach Standorten (Anzahl) bzw. Linien (Quote)
+- Zeitlicher Verlauf (älteste links, neueste rechts), Jahres-Zebra über die Kanten-Achse
+- Legende mit zentralen Standort-Farben (`BranchColorService`)
+- **Animierte Übergänge** beim Umschalten/Filtern (`acquireChart`/`chartAnimation`,
+  stabile Serien-`id`s, `notMerge`) und Klick-Freistellung einzelner Serien
 
 #### Wochen-Expansion (nur Stornierte Termine)
 - Klick auf einen Monat öffnet die Wochen-Details
@@ -88,7 +99,23 @@ Ein "Termin" wird definiert als alle aufeinanderfolgenden Einträge eines Kunden
 ### Integration mit Branch-Auswahl
 - Reagiert auf die globale Branch-Auswahl im Header
 - Zeigt Daten für alle Standorte oder einzelne Standorte
-- Automatischer Reload bei Standort-Wechsel
+- Automatischer Reload bei Standort-Wechsel (sanft: alte Ansicht bleibt gedimmt stehen)
+
+### Beratungsservice-Filter & Karte „Stornierte Beratungstermine"
+- Der Header-Button **„Nur Beratungsservices"** filtert beide Analyse-Karten
+  (Charts, Heatmap, KPIs, Detail-Modal) auf als Beratung markierte Services und
+  blendet zusätzlich die Belegliste der stornierten Beratungstermine ein
+  (steht unter der KPI-Zeile).
+- Die Belegliste kombiniert 3 Monate Historie (DB) mit 14 Tagen Zukunft **live
+  von Phorest** (~10–15 s) — die Antwort wird deshalb 15 Minuten gecacht
+  (`ReportsOverviewCache`, `cancelled-consultations-upcoming`). Der
+  Aktualisieren-Button der Karte erzwingt frische Daten (`refresh=1`).
+
+### CSV-Export
+Über den Export-Button im Seiten-Header (Details: `CSV-EXPORT.md`):
+- **Stornierte & gelöschte Termine pro Monat & Institut** (Quelle `cancelled-appointments-monthly`)
+- **Stornierte & gelöschte Termine pro Kalenderwoche & Institut** (Quelle `cancelled-appointments-weekly`, ISO-Wochen — spiegelt den Wochen-Drilldown der Heatmap)
+Beide Quellen respektieren Zeitraum- und Standort-Filter (`range`, `branch`).
 
 ## Technische Details
 

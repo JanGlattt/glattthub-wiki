@@ -45,11 +45,11 @@ Termine.
 | Vergangene Beratungsgespräche | No-show-Statistik pro Monat & Institut |
 | Zukünftige Beratungsgespräche | Geplante Beratungsgespräche pro Tag & Institut |
 | Terminstatistik | Termine pro Monat & Institut, Behandelte Körperzonen pro Monat & Institut |
-| Stornierte & gelöschte Termine | Stornierte & gelöschte Termine pro Monat & Institut |
+| Stornierte & gelöschte Termine | Stornierte & gelöschte Termine pro Monat & Institut, Stornierte & gelöschte Termine pro Kalenderwoche & Institut |
 | glattt-Pakete | Verkaufte Pakete pro Monat |
 | Ads-Analyse | Monats-Trend (Kosten, Buchungen, Verträge), Kampagnen-Übersicht, Buchungsquellen pro Monat |
 | Besucher-Funnel | Funnel-Schritte, Funnel nach Standort, Besucher-Quellen |
-| Staff-Performance | Standort-Vergleich, Monats-Trend Beratungen & Conversion |
+| Staff-Performance | Standort-Vergleich, Durchgeführte Behandlungen pro Mitarbeiter, Monats-Trend Beratungen & Conversion |
 | Kundenstatistik | Conversion-Funnel, Demografie, Kundensegmente (Personas) |
 
 ---
