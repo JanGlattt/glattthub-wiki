@@ -21,6 +21,27 @@ Die Ads-Analyse wertet aus, welche Werbekampagnen (Google Ads, Meta/Facebook Ads
 - Wie entwickeln sich Buchungen und Werbekosten monatlich?
 - Was kostet eine Buchung bzw. ein Vertragsabschluss durch Werbung?
 
+Seit 07/2026 folgt die Seite dem verbindlichen **Statistik-Bauplan**: Acht der
+zehn Analyse-Karten sind zweiseitig — das **Diagramm ist die Standard-Ansicht**,
+die vollständige Tabelle liegt als Lasche hinter dem **Karten-Register** am
+rechten Kartenrand (bei den Suchbegriffen ist die Wortwolke die Diagramm-Seite).
+Neu dabei: die **Kampagnen-Übersicht** und die **Coupon-Code-Auswertung** haben
+jetzt eigene Balken-Diagramme, „Buchungen pro Quelle & Monat", „Buchungen pro
+Tag" und der „Kostenverlauf" eigene Tabellen-Laschen. Geladen wird mit
+Skeleton-Platzhaltern in Endhöhe; Fehler erscheinen je Karte mit „Erneut laden".
+„Ads vs. Organisch" bleibt bewusst eine Kachel-Gegenüberstellung ohne Register.
+
+**CSV-Export** über den Export-Button im Seitenkopf — Quellen: Monats-Trend,
+Kampagnen-Übersicht, Buchungsquellen pro Monat, Buchungen pro Tag,
+Herkunfts-Analyse, Suchbegriffe, Coupon-Codes und Ads vs. Organisch
+(Filter: Zeitraum + Institut).
+
+> **Hinweis Standort-Filter & Kosten:** Die Werbekosten (Meta/Google) liegen nur
+> kontoweit vor und werden nicht je Standort aufgeteilt. Bei aktivem
+> Standort-Filter stehen gefilterte Buchungen ungefilterten Gesamtkosten
+> gegenüber — CPL/CPB/CPV je Standort sind dadurch systematisch überhöht.
+> Die Info-Panels der Kosten-Karten weisen darauf hin.
+
 ### Filter
 
 Der Filter-Bereich ist über den **Filter**-Button im Seitenkopf ein- und ausklappbar:
@@ -282,10 +303,13 @@ GoogleAdsService (app/Services/)
 | `resources/views/hub/reports/ads-analysis/partials/monthly-source-breakdown.blade.php` | Buchungen pro Quelle & Monat (ECharts, gestapelt) |
 | `resources/views/hub/reports/ads-analysis/partials/daily-bookings.blade.php` | Buchungen pro Tag mit gleitendem 7-Tage-Durchschnitt (ECharts) |
 | `resources/views/hub/reports/ads-analysis/partials/cost-per-lead.blade.php` | Kostenverlauf & Kosten pro Lead (ECharts, Dual-Achse) |
-| `resources/views/hub/reports/ads-analysis/partials/source-breakdown.blade.php` | Quellen-Donut + Tabelle |
-| `resources/views/hub/reports/ads-analysis/partials/ads-vs-organic.blade.php` | Vergleich |
+| `resources/views/hub/reports/ads-analysis/partials/source-comparison.blade.php` | Herkunfts-Analyse (Letzte Seite vs. Einstieg) |
+| `resources/views/hub/reports/ads-analysis/partials/coupon-code-overview.blade.php` | Coupon-Code-Auswertung |
+| `resources/views/hub/reports/ads-analysis/partials/search-terms.blade.php` | Suchbegriffe (Wortwolke + Tabelle) |
+| `resources/views/hub/reports/ads-analysis/partials/ads-vs-organic.blade.php` | Vergleich (Kacheln, ohne Register) |
 | `resources/views/hub/reports/ads-analysis/partials/campaign-notes-modal.blade.php` | Notizen-Modal |
-| `public/js/ads-analysis.js` | Alpine.js App + Chart.js (Bestand) + ECharts (neue Sektionen) |
+| `public/js/ads-analysis.js` | Alpine.js App + ECharts (alle Charts) + wordcloud2 |
+| `tests/Feature/AdsAnalysisPageTest.php` | Seiten-Skelett (Bauplan) + Export-Quellen |
 | `resources/views/hub/reports.blade.php` | Reports-Übersicht (Vorschau-Kachel) |
 | `database/migrations/2026_06_26_100000_create_ad_campaign_notes_table.php` | Migration |
 | `database/sql/ads-analysis-production.sql` | Produktiv-SQL (Berechtigungen) |
@@ -314,6 +338,28 @@ POST /hub/reports/ads-analysis/refresh                → refresh
 ```
 
 Alle Routes: Middleware-Gruppe `can:view_report_ads_analysis`.
+
+### Bauplan-Umbau (07/2026)
+
+- Alle Karten nutzen `<x-chart-view-toggle>` (Karten-Register, eigener
+  View-State je Karte), `chart-frame-glattt` + `chart-canvas-glattt-{md,lg}`,
+  `<x-stat-skeleton>` und `<x-card-state>` (Fehler je Sektion über
+  `sectionError` mit „Erneut laden" — vorher fielen 9 von 10 Endpoints still aus).
+- Die ECharts-Renderer folgen dem Pflicht-Muster aus `echarts-glattt.js`:
+  `acquireChart()`, `...chartAnimation(isUpdate)`, stabile Serien-`id`s,
+  `setOption(…, { notMerge: true })`, `forceRepaint(chart, isUpdate)` —
+  Filter-Wechsel (Plattform, Quellen-Typ, Zeitraum) blenden animiert über.
+- Neu: `renderCampaignsChart()` (Top-15-Kampagnen, Farbe nach Plattform) und
+  `renderCouponChart()` (Buchungen & Verträge je Code); die Tages-Tabelle von
+  „Buchungen pro Tag" läuft über `chart-table.js` (Jahr → Quartal → Monat → Tag).
+- Ein `dataVersion`-Zähler steckt in allen `x-for`-Keys (Stale-Scope-Schutz).
+- Entfernt: totes Partial `filter-bar.blade.php`, totes Kampagnen-Detail
+  (`openCampaignDetail` lud Daten, die nie gerendert wurden), doppelte
+  `appFontFamily`/`forceRepaint`-Definitionen.
+- CSV-Export: 5 neue Quellen in `ReportExportService::SOURCES`
+  (`ads-daily-bookings`, `ads-source-comparison`, `ads-search-terms`,
+  `ads-coupon-codes`, `ads-vs-organic`) — alle delegieren an den
+  `AdsAnalysisService`, Zahlen exakt wie im UI.
 
 ### Datengrundlage
 

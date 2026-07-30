@@ -47,7 +47,7 @@ Termine.
 | Terminstatistik | Termine pro Monat & Institut, Behandelte Körperzonen pro Monat & Institut, Termindauer pro Monat & Institut (Minuten), Top Services pro Monat (Ranking), Service-Kombinationen pro Monat (Ranking) |
 | Stornierte & gelöschte Termine | Stornierte & gelöschte Termine pro Monat & Institut, Stornierte & gelöschte Termine pro Kalenderwoche & Institut |
 | glattt-Pakete | Verkaufte Pakete pro Monat |
-| Ads-Analyse | Monats-Trend (Kosten, Buchungen, Verträge), Kampagnen-Übersicht, Buchungsquellen pro Monat |
+| Ads-Analyse | Monats-Trend (Kosten, Buchungen, Verträge), Kampagnen-Übersicht, Buchungsquellen pro Monat, Buchungen pro Tag, Herkunfts-Analyse (Letzte Seite vs. Einstieg), Suchbegriffe, Coupon-Code-Auswertung, Ads vs. Organisch |
 | Besucher-Funnel | Funnel-Schritte, Funnel nach Standort, Besucher-Quellen |
 | Staff-Performance | Standort-Vergleich, Durchgeführte Behandlungen pro Mitarbeiter, Monats-Trend Beratungen & Conversion |
 | Kundenstatistik | Conversion-Funnel, Demografie, Kundensegmente (Personas) |
