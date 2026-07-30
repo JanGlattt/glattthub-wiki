@@ -4,6 +4,23 @@
 
 Bestandskunden können Neukunden werben: Der **Neukunde erhält 50 € Rabatt auf den ersten SEPA-Einzug**, der **Werber erhält 50 € per Überweisung** — allerdings erst, wenn der erste SEPA-Einzug des Neukunden erfolgreich eingezogen wurde und eine **Karenzzeit von 7 Tagen** (Rückbuchungs-Fenster) verstrichen ist.
 
+## Update 30.07.2026 — Werber auch bei Direktzahlern
+
+### Für Endanwender (30.07.2026)
+
+Auch **Direktzahler** (Einmalzahlung vor Ort) können jetzt geworben werden. Im Zahlungen-Tab des Vertrags gibt es dafür den Button **„Werber hinterlegen"** an der Einmalzahlungs-Karte. Wichtig:
+
+- Der geworbene Direktzahler erhält **keinen Ratenrabatt** (es gibt keine Raten — der Vertrag wurde bereits voll bezahlt).
+- Der **Werber erhält seine 50 € Prämie** wie gewohnt: Freigabe, sobald die Zahlung eingegangen ist (erkennbar am automatischen Vertragsabschluss durch die bezahlte Behandlungssitzung in Phorest) und die 7-tägige Karenz ab Vertragsunterzeichnung verstrichen ist.
+- Die Werbung erscheint ganz normal in der Liste **Verträge → Freunde werben** (Rabatt-Spalte: 0 €).
+
+### Für Entwickler (30.07.2026)
+
+- `ContractController::addReferralToPlan()` legt bei `payment_method = direct` den Referral mit `discount_cents = 0` an (kein `applyDiscountToOpenRates()`); `storeReferralRecord()` protokolliert den Direktzahler-Fall im `ContractChange`.
+- `ContractReferralService::checkPayouts()`/`statusFor()`: Direktzahler-Zweig — „Zahlung eingegangen" = `Contract::STATUS_COMPLETED` (gesetzt von `contracts:complete-direct-payments` bei PAID-Sitzung in Phorest), Karenzbasis `signed_at` (Fallback `created_at`).
+- UI: Referral-Modal in eigenes Partial `hub/contracts/partials/referral-modal.blade.php` ausgelagert (Texte je Zahlungsart), Einbindung für SEPA **und** Direkt in `tab-payments.blade.php`; im Direkt-Zweig wird `referralBlock` serverseitig initialisiert (kein Mandat → `loadPayments()` lädt dort nichts).
+- Tests: 3 neue Fälle in `tests/Feature/ContractReferralTest.php` (Anlage ohne Rabatt, Freigabe nach Abschluss + Karenz, Warten auf Karenz).
+
 ## Für Endanwender
 
 ### Werber beim Vertrag hinterlegen

@@ -2,6 +2,23 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 30.07.2026 — Pausierung für Daueraufträge, Plan-Storno für Einzelzahlungen, manuelle Zahlungsverbuchung
+
+### Für Endanwender (30.07.2026)
+
+**Pausieren funktioniert jetzt auch bei Legacy-Verträgen mit Dauerauftrag.** Bisher meldete das Pausieren-Modal bei solchen Verträgen „Es gibt keine offenen Raten, die pausiert werden könnten", obwohl offene Raten angezeigt wurden. Jetzt wird beim Pausieren der GoCardless-Dauerauftrag gekündigt; beim **Fortsetzen** werden die Restraten als Einzelzahlungen neu angelegt — der Vertrag läuft ab dann auf dem aktuellen Einzelzahlungs-Modell.
+
+**„Zahlungsplan stornieren" gibt es jetzt auch für Einzelzahlungs-Verträge** (Standard seit 07/2026). Der Button im Tab „Zahlungen & SEPA" erscheint, sobald offene GoCardless-Raten existieren; beim Storno werden alle offenen Einzelzahlungen aktiv bei GoCardless storniert (vorher wurden sie nur lokal ausgeblendet — der Einzug wäre weitergelaufen!).
+
+**Neu: „Zahlung verbuchen"** im Zahlungen-Tab. Hat ein Kunde offene Raten vorab bezahlt (z.B. per Überweisung), lassen sich die betroffenen Raten auswählen und mit Zahlungsdatum, Zahlungsart und Referenz als **extern bezahlt** verbuchen. Verknüpfte GoCardless-Einzüge werden dabei automatisch storniert — es wird also nichts doppelt eingezogen. Sind danach alle Raten beglichen, wird der Vertrag **automatisch abgeschlossen**. Bereits eingereichte Einzüge (submitted) laufen durch und können nicht verbucht werden.
+
+### Für Entwickler (30.07.2026)
+
+- **Pausierung Daueraufträge:** `ContractPauseService::openRates()` verlangt die GC-Verknüpfung (`gocardless_payment_id NOT NULL`) nur noch für Einzelzahlungs-Verträge — bei Verträgen mit `gocardless_subscription_id` zählen die lokalen Platzhalter (GoCardless materialisiert Subscription-Raten erst kurz vor Fälligkeit, siehe `ContractPaymentReconciler::projectSubscriptionInstallments()`). `pauseIndefinite()` kündigt die Subscription über `GoCardlessPaymentPlanService::cancelPaymentPlan()` (neuer optionaler Parameter `$localNote` → Platzhalter werden mit „Pausiert – unbefristet" storniert); `pauseFixed()` nutzt den neuen Zweig `pauseFixedSubscription()`: Subscription kündigen, Platzhalter soft-deleten, alle offenen Raten um N Monate verschoben via `recreateIndividualPayments()` neu anlegen. Das Fortsetzen (`resume()`) blieb unverändert — `createIndividualPaymentPlan()` legt die Restraten als Einzelzahlungen an.
+- **Plan-Storno:** `ContractController::hasActiveGoCardlessPlan()` erkennt jetzt auch Einzelzahlungs-Pläne (`GoCardlessPaymentPlanService::hasOpenGcPayments()`); `cancelGoCardlessPlan()` storniert offene GC-Einzelzahlungen aktiv per `cancelOpenGcPayments()` statt sie nur lokal auf `cancelled` zu setzen. Blade: `$hasActivePlan` in `tab-sepa.blade.php` berücksichtigt `$v2OpenGcCount`.
+- **Manuelle Zahlungsverbuchung:** neuer Endpoint `POST /hub/contracts/{contract}/payments/record-external` (`recordExternalPayments()`, Gate `manage_gocardless` + Rollen-Check), Modal & Button in `tab-payments.blade.php`, JS in `contract-scripts.blade.php` (`openRecordPaymentModal()`/`saveRecordPayment()`). Model: `ContractPayment::settleOpenExternally()` (analog `settleBounced()`, `direct_payment_method` schützt vor destruktivem Reload). Vollständige Begleichung (`remaining_amount_cents === 0`) schließt den Vertrag automatisch ab (`ContractChange` `TYPE_STATUS_CHANGED`).
+- Tests: `tests/Feature/ContractExternalPaymentTest.php` (Verbuchung, Abschluss, submitted-Guard, Fremdraten, Plan-Storno Einzelzahlungen) + 2 neue Fälle in `tests/Feature/ContractPauseTest.php` (Dauerauftrag unbefristet/fix).
+
 ## Update 19.07.2026 — Gutscheine direkt im Zahlungsplan verrechnen
 
 ### Für Endanwender (19.07.2026)
