@@ -20,6 +20,23 @@ Die Seite ist für alle Hub-Benutzer mit Report-Zugriff verfügbar. Die Daten we
 
 ### Seitenbereiche
 
+Seit 07/2026 folgt die Seite dem verbindlichen **Statistik-Bauplan**: Alle neun
+Analyse-Karten sind zweiseitig — das **Diagramm ist die Standard-Ansicht**, die
+Tabelle liegt als Lasche hinter dem **Karten-Register** am rechten Kartenrand.
+Neu dabei: **Top 10 Postleitzahlen** und **Persona-Segmente** haben eigene
+Balken-Diagramme bekommen (die PLZ-Suche wirkt auf Diagramm und Tabelle);
+Altersverteilung, Geschlecht, Funnel und Entfernung haben erstmals Tabellen.
+Nur die **Einzugsgebiets-Karte** (Leaflet) bleibt ohne Register — ihre Zahlen
+stehen in der Top-PLZ-Karte. Geladen wird mit Skeleton-Platzhaltern in Endhöhe;
+Fehler erscheinen je Karte mit „Erneut laden". Das frühere Verhalten, dass die
+gesamte Seite erst nach dem Sync-Status-Check erschien (leere Seite beim
+Öffnen), ist behoben — die Karten stehen sofort in Endhöhe da.
+
+**CSV-Export** über den Export-Button im Seitenkopf — Quellen: Conversion-Funnel,
+Demografie, Kundensegmente, Herkunftsverteilung, Entfernungsverteilung,
+Körperzonen-Verteilung (inkl. Details), Widerrufs-Analyse und Einzugsgebiet
+(Kunden pro PLZ). Filter: Zeitraum (1. Visit) + Institut.
+
 Die Statistikseite gliedert sich in folgende Bereiche von oben nach unten:
 
 #### 1. KPI-Dashboard (8 Kennzahlen)
@@ -395,6 +412,28 @@ php artisan stats:sync-client-statistics --queue
 ### JavaScript-Architektur
 
 Die Alpine.js-Komponente `clientStatisticsApp()` steuert die gesamte Seite.
+
+#### Bauplan-Umbau (07/2026)
+
+- Alle 9 Analyse-Karten nutzen `<x-chart-view-toggle>` (eigener View-State je
+  Karte, z.B. `ageView`/`setAgeView()`), `chart-frame-glattt` +
+  `chart-canvas-glattt-sm`, `<x-stat-skeleton>` und `<x-card-state>`
+  (`sectionError.<key>` je Karte mit „Erneut laden").
+- Das frühere **Sync-Gate** (`x-if="syncStatus.status === 'synced'"` um die
+  gesamte Seite) ist aufgelöst — Karten stehen dauerhaft im DOM; Nutzer ohne
+  `trigger_data_sync` sehen bei ungesyncten Daten einen Hinweis statt einer
+  leeren Seite.
+- Alle 9 ECharts-Renderer folgen dem Pflicht-Muster aus `echarts-glattt.js`
+  (`acquireChart`, `chartAnimation(isUpdate)`, stabile Serien-`id`s,
+  `notMerge: true`, `forceRepaint(chart, isUpdate)`) — Modus-Wechsel
+  (Körperzonen, Widerruf) und die PLZ-Suche blenden animiert über.
+- Neu: `renderTopPlzChart()` (nutzt `filteredPlzRows` → Suche wirkt aufs
+  Diagramm) und `renderSegmentsChart()`. Ein `dataVersion`-Zähler steckt in
+  allen `x-for`-Keys (Stale-Scope-Schutz beim Filter-Reload).
+- CSV-Export: 5 neue Quellen in `ReportExportService::SOURCES`
+  (`clients-name-origins`, `clients-distance`, `clients-body-zones`,
+  `clients-cancellations`, `clients-postal-codes`) — alle delegieren an den
+  `ClientStatisticsService`. Tests: `tests/Feature/ClientStatisticsPageTest.php`.
 
 #### Lade-Strategie (Zwei-Wellen-Ansatz)
 

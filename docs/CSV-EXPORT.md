@@ -50,7 +50,7 @@ Termine.
 | Ads-Analyse | Monats-Trend (Kosten, Buchungen, Verträge), Kampagnen-Übersicht, Buchungsquellen pro Monat, Buchungen pro Tag, Herkunfts-Analyse (Letzte Seite vs. Einstieg), Suchbegriffe, Coupon-Code-Auswertung, Ads vs. Organisch |
 | Besucher-Funnel | Funnel-Schritte, Funnel nach Standort, Besucher-Quellen |
 | Staff-Performance | Standort-Vergleich, Durchgeführte Behandlungen pro Mitarbeiter, Monats-Trend Beratungen & Conversion |
-| Kundenstatistik | Conversion-Funnel, Demografie, Kundensegmente (Personas) |
+| Kundenstatistik | Conversion-Funnel, Demografie, Kundensegmente (Personas), Herkunftsverteilung, Entfernungsverteilung, Körperzonen-Verteilung (inkl. Details), Widerrufs-Analyse, Einzugsgebiet: Kunden pro Postleitzahl |
 
 ---
 
