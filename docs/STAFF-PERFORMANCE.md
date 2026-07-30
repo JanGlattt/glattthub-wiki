@@ -32,6 +32,20 @@ Eine Beratung zählt als **Abschluss**, wenn:
 
 Bei **mehreren Beratungen desselben Kunden am selben Tag** bekommt die **letzte Beratung** (späteste Uhrzeit) die Zuordnung zum Vertrag.
 
+### Aufbau der Seite (Statistik-Bauplan, seit 07/2026)
+
+Die Seite folgt dem verbindlichen Statistikseiten-Bauplan: Jede Analyse-Karte ist
+**zweiseitig** — Diagramm als Standard-Ansicht, die Tabelle dahinter über das
+**Register am rechten Kartenrand** (mobil als Segmented Control). Beim Laden
+zeigen die Karten **Skeletons in Endhöhe** (nichts springt), Filterwechsel dimmen
+die alte Ansicht, bis die neue Antwort da ist. Fällt ein Endpoint aus, zeigt
+**nur diese Karte** einen Fehlerhinweis mit „Erneut laden" — die übrigen Analysen
+laden unabhängig weiter. Jede Karte hat ein Info-Panel (ℹ️) mit Erklärung,
+Spalten, Anomalien und Datenquelle.
+
+Einzige Karte ohne Register ist die **Mitarbeiter-Übersicht** (Ampel-Matrix über
+8 Zeiträume — als begründete Ausnahme rein tabellarisch).
+
 ### Sektionen
 
 #### KPI-Dashboard
@@ -53,9 +67,15 @@ Jede Kennzahl zeigt Vergleichswerte:
 - **vs. Vormonat**: Veränderung zum letzten Monat
 - **vs. Vorjahr**: Veränderung zum gleichen Monat im Vorjahr
 
+Quoten-KPIs (Conversion-Rate, Ganzkörper-Anteil) vergleichen in
+**Prozentpunkten (PP)** statt als Prozent-Veränderung der Quote.
+
 #### Mitarbeiter-Ranking
 
-Sortierbare Tabelle aller Mitarbeiter mit:
+**Diagramm (Standard):** horizontale Balken der Top 15 — Conversion-Rate
+(untere Achse) und Ø Körperzonen (obere Achse); die Reihenfolge folgt der
+Sortierung der Tabelle. **Tabellen-Lasche:** sortierbare Tabelle aller
+Mitarbeiter mit:
 
 | Spalte | Beschreibung |
 |--------|-------------|
@@ -79,15 +99,22 @@ Per Klick auf das Detail-Icon öffnet sich ein Modal mit allen Beratungen des Mi
 
 #### Standort-Vergleich
 
-Diagramm (Doppelachse: Conversion-Rate + Ø Körperzonen) und Vergleichstabelle der Standorte. Zeigt, welches Institut die höchste Abschlussquote hat.
+Diagramm (Doppelachse: Conversion-Rate + Ø Körperzonen, Balken in den
+Standort-Farben und der konfigurierten Instituts-Reihenfolge); die
+Tabellen-Lasche zeigt alle Kennzahlen inkl. Gesamtzeile — Quote, Ø KPZ und
+Ganzkörper-Anteil werden dort aus den Summen berechnet, nicht gemittelt.
 
 #### Monatlicher Zeitverlauf
 
-Liniendiagramm der Conversion-Rate über die letzten 12 Monate. Umschaltbar zwischen Diagramm und Tabelle. Zeigt sowohl den Gesamt-Trend als auch die Einzeltrends pro Standort.
+Liniendiagramm der Conversion-Rate über die letzten 12 Monate — Gesamt-Trend
+plus gestrichelte Standort-Linien. Die Tabellen-Lasche fasst die Monate zu
+Quartalen/Jahren zusammen (aufklappbar, laufender Monat markiert).
 
 #### Körperzonen-Verteilung
 
-Balkendiagramm der meistverkauften Körperzonen bei Abschlüssen. Aufgeschlüsselt pro Standort (Top 8 je Standort).
+Balkendiagramm der meistverkauften Körperzonen bei Conversion-Verträgen. Die
+Tabellen-Lasche schlüsselt jede Zone zusätzlich **je Standort** auf (ersetzt
+das frühere Karten-Raster „Top 8 je Standort").
 
 #### Mitarbeiter-Detailansicht (Modal)
 
@@ -160,9 +187,25 @@ Der Standort-Filter in der Seitenleiste filtert alle Daten auf ein bestimmtes In
 
 Über Datums-Filter (Von/Bis) kann der Auswertungszeitraum eingeschränkt werden.
 
+### CSV-Export
+
+Über den Export-Button im Seitenkopf stehen alle Auswertungen der Seite als
+CSV bereit (Quellen in `ReportExportService::SOURCES`, alle mit Standort-Filter):
+
+| Quelle | Inhalt |
+|--------|--------|
+| `staff-overview` | Mitarbeiter-Übersicht: BG, CR & KpZ je Zeitraum (eine Zeile pro Mitarbeiter × Zeitraum) |
+| `staff-ranking` | Mitarbeiter-Ranking mit allen Kennzahlen |
+| `staff-branch-comparison` | Standort-Vergleich |
+| `staff-monthly-trend` | Monats-Trend (gesamt + je Institut) |
+| `staff-body-zones` | Körperzonen-Verteilung (gesamt + je Institut) |
+| `staff-treatments` | Durchgeführte Behandlungen pro Mitarbeiter |
+
 ### Durchgeführte Behandlungen pro Mitarbeiter
 
-Eigene Sektion (seit 07/2026, Asana „Anzahl Behandlungen"): zählt je Mitarbeiter die **Behandlungs-Termine** (Kunde × Tag × Institut mit mindestens einem Behandlungs-Service des Mitarbeiters) und die **Service-Positionen** (einzelne Behandlungs-Leistungen), plus die drei häufigsten Behandlungsarten. Beratungsgespräche und Desinfektion zählen nicht; gezählt werden nur durchgeführte Termine (abgeschlossen/bezahlt). Zeitraum wählbar (dieser/letzter Monat, 3 Monate, Jahr, gesamt); Standort-Filter und die [Datensichtbarkeit](DATA-VISIBILITY.md) (eigene Daten / Team / alle) greifen auch hier. Export über die CSV-Quelle „Durchgeführte Behandlungen pro Mitarbeiter".
+Eigene Sektion (seit 07/2026, Asana „Anzahl Behandlungen"): Diagramm (Top 15
+nach Behandlungs-Terminen) als Standard, Tabelle mit allen Mitarbeitern und
+Top-Behandlungen als Lasche. Zählt je Mitarbeiter die **Behandlungs-Termine** (Kunde × Tag × Institut mit mindestens einem Behandlungs-Service des Mitarbeiters) und die **Service-Positionen** (einzelne Behandlungs-Leistungen), plus die drei häufigsten Behandlungsarten. Beratungsgespräche und Desinfektion zählen nicht; gezählt werden nur durchgeführte Termine (abgeschlossen/bezahlt). Zeitraum wählbar (dieser/letzter Monat, 3 Monate, Jahr, gesamt); Standort-Filter und die [Datensichtbarkeit](DATA-VISIBILITY.md) (eigene Daten / Team / alle) greifen auch hier. Export über die CSV-Quelle „Durchgeführte Behandlungen pro Mitarbeiter".
 
 Hinweis zur Abgrenzung: Behandlungen je **Institut** und je **Behandlungsart** (ohne Mitarbeiter-Bezug) zeigt weiterhin die Terminstatistik („Monatliche Übersicht", „Top Services"). Diese Sektion ergänzt die dort fehlende Mitarbeiter-Achse — und liefert die Datenbasis für die späteren HR-KPIs (KPZ pro Arbeitsstunde).
 
@@ -221,10 +264,23 @@ StaffPerformanceTarget (app/Models/)
 | `resources/views/hub/reports/staff-performance/partials/branch-comparison.blade.php` | Standort-Vergleich + Chart |
 | `resources/views/hub/reports/staff-performance/partials/monthly-trend.blade.php` | Monatstrend + Chart |
 | `resources/views/hub/reports/staff-performance/partials/body-zones.blade.php` | Körperzonen-Verteilung |
-| `resources/views/hub/reports/staff-performance/partials/staff-detail-modal.blade.php` | Detail-Modal |
-| `public/js/staff-performance.js` | Alpine.js App + Chart.js + Targets + Staff-Merging |
-| `resources/views/hub/reports.blade.php` | Preview-Card auf Berichte-Übersicht |
-| `tests/Feature/StaffPerformanceTest.php` | Feature-Tests |
+| `resources/views/hub/reports/staff-performance/partials/staff-detail-modal.blade.php` | Detail-Modal (Stat-Strip + Beratungsliste) |
+| `resources/views/hub/reports/staff-performance/partials/treatments.blade.php` | Durchgeführte Behandlungen |
+| `public/js/staff-performance.js` | Alpine.js App: Loader je Karte (sectionError), ECharts-Renderer (acquireChart-Muster), chart-table-Modelle, Targets, Staff-Merging |
+| `public/js/chart-table.js` | Gemeinsame Tabellen-Lasche der Chart-Karten |
+| `app/Services/ReportExportService.php` | CSV-Export-Quellen `staff-*` |
+| `resources/views/components/statistics/widgets/partials/staff-*.blade.php` | **Eingefrorene Kopien** der alten Partials für die Custom-Dashboard-Widgets (siehe unten) |
+| `resources/views/hub/reports/partials/overview-cards/mitarbeiterperformance-card.blade.php` | Preview-Card auf Berichte-Übersicht |
+| `tests/Feature/StaffPerformanceTest.php` | Feature-Tests (Kernlogik, benötigt MySQL) |
+| `tests/Feature/StaffPerformancePageTest.php` | Seiten-Skelett (Register, Skeletons, Info-Panels) + Export-Quellen |
+| `tests/Feature/StaffPerformanceScopeTest.php` / `StaffTreatmentsTest.php` | Datensichtbarkeit / Behandlungs-Zählung |
+
+**Custom-Dashboard-Widgets entkoppelt (07/2026):** Die 5 Staff-Widgets des
+Custom-Dashboards (`components/statistics/widgets/staff-*.blade.php`) teilten
+sich die Partials mit der Berichtsseite. Seit dem Bauplan-Umbau binden sie
+eingefrorene Kopien des alten Stands ein (`widgets/partials/staff-*.blade.php`)
+— ihre Modernisierung gehört zur separaten Aufgabe „Custom Dashboard
+überarbeiten".
 
 ### SQL-Kernlogik (CTEs)
 
@@ -418,10 +474,15 @@ Die Staff-Performance-Seite zeigt hunderte Datenzellen, Badges und Charts gleich
 
 | Methode | Vorher | Nachher | Maßnahme |
 |---------|--------|---------|----------|
-| `getStaffOverview()` | 8 Queries (1 pro Zeitraum) | 1 Query | Alle 8 Zeiträume in einer CTE mit `CASE WHEN`-Aggregation |
-| `calculateKpiComparisons()` | 3 Queries | 1 Query | Vorperiode + Vergleich in einer Query |
-| `getMonthlyTrend()` | 2 Queries | 1 Query | Overall + per-Staff in einer Query via `WITH ROLLUP` |
+| `getStaffOverview()` | 8 Queries (1 pro Zeitraum) | 1 Query | Alle 8 Zeiträume in einer CTE mit `CASE WHEN`-Aggregation; Cache-Key enthält das Tagesdatum (Perioden-Grenzen aus `Carbon::today()`) |
+| `calculateKpiComparisons()` | 3 Queries | 1 Query | Vorperiode + Vergleich in einer Query (gruppiert nach Monat); übernimmt Branch-Filter **und** Datensichtbarkeits-Scope |
+| `getMonthlyTrend()` | 2 Queries | 1 Query | Ein `GROUP BY Monat, branch_id`, Gesamt wird in PHP aufaddiert |
 | `getStaffMap()` | Jeder Aufruf neu | Instance-Cache | Einmal laden, danach aus `$this->staffMapCache` |
+
+**Instituts-Reihenfolge:** `getBranchComparison()`, `getMonthlyTrend()` und
+`getBodyZoneDistribution()` sortieren ihre Institute serverseitig über den
+`SortsBranchIds`-Trait (`InstituteColor.sort_order`) — Charts, Tabellen und
+Exporte zeigen dieselbe konfigurierte Reihenfolge.
 
 ### Frontend (Alpine.js)
 
@@ -429,12 +490,21 @@ Die Staff-Performance-Seite zeigt hunderte Datenzellen, Badges und Charts gleich
 |-------------|-------------|
 | **`x-html` statt Template-Loops** | Übersichtstabelle (`_overviewBodyHtml`, `_overviewTfootHtml`) und Ranking-Tabelle (`_rankingBodyHtml`) werden als HTML-Strings vorgebaut und via `x-html` gerendert. Eliminiert tausende Alpine-Bindings und `x-for`-Loops. |
 | **`deepFreeze()`** | Alle API-Responses werden mit `Object.freeze()` (rekursiv) eingefroren. Verhindert, dass Alpine.js Proxies um die Datenobjekte wickelt — spart erheblich Memory und Reaktivitäts-Overhead. |
-| **Batched State Changes** | `Promise.allSettled()` für parallele API-Calls, dann alle State-Updates in einem Batch. Verhindert mehrfache Re-Renders während des Ladens. |
+| **Loader je Karte + `sectionError`** | Jede Karte hat einen eigenen Loader mit deklariertem Race-Guard (`_seq…`), Fehler-Flag und Retry — ein ausgefallener Endpoint betrifft nur seine Karte. |
+| **ECharts nach Bauplan-Muster** | Alle 5 Renderer nutzen `acquireChart()` (Instanz-Reuse statt dispose/init), stabile Serien-`id`s, `chartAnimation(isUpdate)`, `setOption(…, { notMerge: true })` und `bindChartEvent()` — Filterwechsel blenden animiert über. |
 | **CSS-Variable-Cache** | `getCssVars()` cached Chart-Farben aus CSS-Variablen. Ein `MutationObserver` auf `<html>` invalidiert den Cache bei Dark-Mode-Wechsel (`.dark`-Klasse). |
 | **`_monthlyReversed`** | Vorberechnetes umgekehrtes Array für die Monatstrend-Tabelle — kein `.slice().reverse()` bei jedem Render. |
 | **`x-if` statt `x-show` im Targets-Modal** | Tabs im Zielwerte-Modal nutzen `x-if` statt `x-show`. Nur der aktive Tab existiert im DOM (~350 DOM-Nodes eingespart). |
-| **`content-visibility: auto`** | Below-the-fold-Sektionen (Ranking, Standort-Vergleich, Monatstrend, Körperzonen) nutzen `content-visibility: auto` mit `contain-intrinsic-size`. Der Browser rendert diese erst beim Scrollen. |
 | **Ranking-Buttons via CustomEvent** | Buttons in `x-html`-gerendertem HTML können keine Alpine-Direktiven nutzen. Stattdessen: `onclick="window.dispatchEvent(new CustomEvent('show-staff-detail', {detail: staffId}))"` mit Listener in `init()`. |
+
+Die früheren `content-visibility: auto`-Wrapper wurden mit dem Bauplan-Umbau
+entfernt — sie hielten die Chart-Container beim Erstrender auf 0 px Breite
+(ECharts-Breitenmessung), das Skeleton-System reserviert die Höhen jetzt ohnehin.
+
+**Bugfix 07/2026 (Zeitzone):** Die Zeitraum-Berechnung der Behandlungs-Karte
+(`treatmentsRange()`) formatierte lokale Daten mit `toISOString()` — in
+Europe/Berlin kippte das Datum dadurch auf den Vortag, „Dieser Monat" enthielt
+immer den letzten Tag des Vormonats. Jetzt lokale Formatierung.
 
 ### CSS (Globaler `backdrop-filter`-Bann)
 
