@@ -4,6 +4,19 @@
 
 Bestandskunden können Neukunden werben: Der **Neukunde erhält 50 € Rabatt auf den ersten SEPA-Einzug**, der **Werber erhält 50 € per Überweisung** — allerdings erst, wenn der erste SEPA-Einzug des Neukunden erfolgreich eingezogen wurde und eine **Karenzzeit von 7 Tagen** (Rückbuchungs-Fenster) verstrichen ist.
 
+## Update 30.07.2026 (2) — Werber ohne Hub-Vertrag & klickbare Liste
+
+### Für Endanwender (30.07.2026, 2)
+
+- **Werber ohne qualifizierenden Hub-Vertrag** (Altkunden, die vor der Hub-Ära abgelöst haben, oder Phorest-Dubletten) können jetzt hinterlegt werden: Die Werber-Suche zeigt sie mit dem Badge „kein Hub-Vertrag"; die Auswahl erfordert die Checkbox „Werbeberechtigung wurde manuell geprüft".
+- **Freunde-werben-Liste:** Die ganze Zeile ist jetzt klickbar und öffnet das Detail-/Auszahlungs-Modal (vorher nur über den Button, der jetzt „Details" statt „Bankdaten" heißt). Dort sitzt auch „50 € Rabatt verrechnen" für Alt-Import-Werbungen ohne verrechneten Rabatt — sichtbar nur mit Permission `manage_referral_payouts`.
+
+### Für Entwickler (30.07.2026, 2)
+
+- `ContractReferralService::searchReferrers()`: Eligibility-Filter entfernt, stattdessen `eligible`-Flag je Treffer (werbeberechtigt zuerst sortiert). `ContractController::validateReferralInput()`: neuer Bypass `accept_ineligible_referrer` (Flag in beiden Validierungen — `createGoCardless` `referral.*` + `addReferralToPlan`).
+- UI: Badge + Pflicht-Checkbox in `referral-select-section.blade.php`, Guard in `submitReferral()` (`referralIneligibleUnconfirmed()`), Zeilen-Klick + `@click.stop` auf dem Vertragslink in `referrals.blade.php`.
+- Tests: `ContractReferralTest` — Suche markiert statt filtert; Anlage mit/ohne Bestätigung; Kombination Direktzahler + nicht-qualifizierter Werber.
+
 ## Update 30.07.2026 — Werber auch bei Direktzahlern
 
 ### Für Endanwender (30.07.2026)
