@@ -10,11 +10,19 @@ Die **Terminstatistik** bietet eine umfassende Analyse aller stattgefundenen Ter
 3. **Beratung + Behandlung** (türkis): Kombinierte Termine mit beiden Service-Arten
 
 ### Analyse-Module
-1. **Termine pro Monat**: Anzahl der Termine nach Kategorien (Tabelle & Chart)
-2. **Termindauer pro Monat**: Gesamtdauer aller Termine in Stunden/Minuten (Tabelle & Chart)
-3. **Körperzonen pro Monat**: Anzahl behandelter Körperzonen (Tabelle & Chart)
-4. **Top Services pro Monat**: Beliebteste Dienstleistungen mit Trends (Tabelle & Chart)
-5. **Service-Kombinationen pro Monat**: Häufigste Service-Kombinationen pro Termin (Tabelle & Chart) ⭐ NEU
+1. **Termine pro Monat**: Anzahl der Termine nach Kategorien (Diagramm & Tabelle)
+2. **Termindauer pro Monat**: Gesamtdauer aller Termine in Stunden/Minuten (Diagramm & Tabelle)
+3. **Körperzonen pro Monat**: Anzahl behandelter Körperzonen (Diagramm & Tabelle)
+4. **Top Services pro Monat**: Beliebteste Dienstleistungen mit Trends (Diagramm & Tabelle)
+5. **Service-Kombinationen pro Monat**: Häufigste Service-Kombinationen pro Termin (Diagramm & Tabelle)
+
+Seit 07/2026 folgt die Seite dem verbindlichen **Statistik-Bauplan**: Alle fünf
+Karten sind zweiseitig — das **Diagramm ist die Standard-Ansicht**, die Tabelle
+(inkl. Wochen-Drilldown bzw. Monats-Rankings) liegt als Lasche hinter dem
+**Karten-Register** am rechten Kartenrand. Geladen wird mit Skeleton-Platzhaltern
+in Endhöhe statt Spinnern; Fehler erscheinen je Karte mit „Erneut laden"; jede
+Karte hat ein **Info-Panel** (ⓘ) mit Erklärung, Spalten, Anomalien und
+Datenquelle. Alle Daten sind über den **CSV-Export** im Seitenkopf abrufbar.
 
 ---
 
@@ -229,8 +237,8 @@ Klicken Sie auf das **Filter-Icon** (rechts neben dem Tabelle/Chart Toggle), um 
 
 | Aktion | Ergebnis |
 |--------|----------|
-| Klick auf Monatszeile | Expandiert/Kollabiert Wochen-Details |
-| Toggle Tabelle/Chart | Wechselt zwischen Visualisierungen |
+| Klick auf Monatszeile | Expandiert/Kollabiert Wochen-Details (in der Tabellen-Lasche) |
+| Karten-Register (rechter Kartenrand) | Wechselt je Karte zwischen Diagramm (Standard) und Tabelle |
 | Toggle Total/Durchschnitt | Wechselt Dauer-Anzeige (nur bei Termindauer/Körperzonen) |
 | Branch-Auswahl ändern | Lädt Daten für neuen Standort neu |
 | KPI-Card ziehen | Personalisiert Dashboard-Reihenfolge |
@@ -610,8 +618,13 @@ getDurationValue(row, field) {
 | `resources/views/hub/reports/partials/appointments-count.blade.php` | Termine pro Monat Card |
 | `resources/views/hub/reports/partials/appointment-duration.blade.php` | Termindauer pro Monat Card |
 | `resources/views/hub/reports/partials/appointment-body-zones.blade.php` | Körperzonen pro Monat Card |
-| `resources/views/hub/reports/partials/top-services.blade.php` | Top Services pro Monat Card ⭐ NEU |
+| `resources/views/hub/reports/partials/top-services.blade.php` | Top Services pro Monat Card |
+| `resources/views/hub/reports/partials/service-combinations.blade.php` | Service-Kombinationen Card |
 | `resources/views/components/kpi-dashboard.blade.php` | Wiederverwendbare KPI-Component |
+
+Alle fünf Cards nutzen `<x-chart-view-toggle>` (Karten-Register, eigener
+View-State je Card), `chart-frame-glattt` + `chart-canvas-glattt-{md,lg}`,
+`<x-stat-skeleton>` und `<x-card-state>` (Fehler je Sektion via `sectionError`).
 
 ### JavaScript-Dateien
 
@@ -619,6 +632,23 @@ getDurationValue(row, field) {
 |-------|--------------|
 | `public/js/appointments-body-zones.js` | Alpine.js App (~2200 Zeilen) |
 | `public/js/components/kpi-dashboard.js` | KPI-Dashboard Logik |
+
+Die fünf ECharts-Renderer folgen seit 07/2026 dem Pflicht-Muster aus
+`echarts-glattt.js`: `acquireChart()` (Instanz wiederverwenden),
+`...chartAnimation(isUpdate)`, **stabile Serien-ids**, `setOption(…, { notMerge:
+true })`, `forceRepaint(chart, isUpdate)` — Filter-/Modus-Wechsel blenden dadurch
+animiert über. Ein `dataVersion`-Zähler steckt in allen `x-for`-Keys
+(Stale-Scope-Schutz beim Daten-Reload).
+
+### CSV-Export
+
+Export-Quellen in `ReportExportService::SOURCES` (Filter: Zeitraum + Institut):
+`appointments-monthly`, `appointments-zones-monthly`,
+`appointments-duration-monthly` (Minuten + Zählungen je Kategorie),
+`appointments-top-services` (Ranking je Monat, ohne „Desinfektion") und
+`appointments-service-combinations` (Ranking je Monat, ab 2 Services / 2
+Terminen). Tests: `tests/Feature/ReportExportTest.php`,
+`tests/Feature/AppointmentsBodyZonesPageTest.php`.
 
 ### CSS
 
@@ -719,6 +749,15 @@ Vollständig kompatibel mit Light/Dark Mode durch CSS-Variablen.
 ---
 
 ## Changelog
+
+### v2.2.0 (Juli 2026) - Statistik-Bauplan
+- Alle fünf Cards zweiseitig: **Diagramm als Standard-Ansicht**, Tabelle als Lasche hinter dem Karten-Register
+- Skeleton-Platzhalter in Endhöhe statt Spinner; Fehler je Karte mit „Erneut laden"
+- Info-Panels für alle fünf Cards (Was zeigt…? / Spalten / Anomalien / Datenquelle)
+- ECharts auf `acquireChart`/`chartAnimation` umgestellt — Filter-/Modus-Wechsel animieren
+- 3 neue CSV-Export-Quellen: Termindauer, Top Services, Service-Kombinationen
+- Bugfix: `subMonths()`-Überlauf am 29.–31. erzeugte doppelte/fehlende Monate in Top Services & Service-Kombinationen (Alpine „Duplicate key")
+- Toter Partial `body-zones-distribution.blade.php` + zugehöriger JS-Code entfernt
 
 ### v2.1.0 (Februar 2026) - Stattgefundene Termine & UX
 - ⭐ **Alle KPIs** zeigen standardmäßig nur **stattgefundene Termine**

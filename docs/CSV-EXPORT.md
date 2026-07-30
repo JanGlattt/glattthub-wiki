@@ -44,7 +44,7 @@ Termine.
 | Verkaufsstatistik | Monatliche Übersicht, Körperzonen pro Tag & Institut, Standort-Vergleich seit Eröffnung, Sales Mix (verkauft & Portfolio), Neukunden pro Monat & Institut, Lastschriften-Bestand & Einzugsvolumen (brutto & netto), Rücklastschriften pro Monat, Direktzahler-Segment (brutto & netto) |
 | Vergangene Beratungsgespräche | No-show-Statistik pro Monat & Institut |
 | Zukünftige Beratungsgespräche | Geplante Beratungsgespräche pro Tag & Institut |
-| Terminstatistik | Termine pro Monat & Institut, Behandelte Körperzonen pro Monat & Institut |
+| Terminstatistik | Termine pro Monat & Institut, Behandelte Körperzonen pro Monat & Institut, Termindauer pro Monat & Institut (Minuten), Top Services pro Monat (Ranking), Service-Kombinationen pro Monat (Ranking) |
 | Stornierte & gelöschte Termine | Stornierte & gelöschte Termine pro Monat & Institut, Stornierte & gelöschte Termine pro Kalenderwoche & Institut |
 | glattt-Pakete | Verkaufte Pakete pro Monat |
 | Ads-Analyse | Monats-Trend (Kosten, Buchungen, Verträge), Kampagnen-Übersicht, Buchungsquellen pro Monat |
