@@ -1,5 +1,11 @@
 # Wochentag & Uhrzeit Analyse - Dokumentation
 
+> **Update 07/2026 (Statistik-Bauplan):** Die Karte hat jetzt ein Karten-Register
+> (Heatmap ⇄ Zahlen-Tabelle), ein Info-Panel, Skeleton statt Spinner und einen
+> Fehlerzustand mit „Erneut laden". Die Werte sind zusätzlich als CSV-Quelle
+> `consultation-weekday-time` exportierbar. Gesamtübersicht der Seite:
+> [PAST-CONSULTATIONS.md](PAST-CONSULTATIONS.md).
+
 ## Übersicht
 
 Die **Wochentag & Uhrzeit Analyse** ist eine Heatmap-Visualisierung, die zeigt, wann die meisten Beratungsgespräche stattfinden. Sie hilft dabei, "Sweetspots" zu identifizieren - die beliebtesten Tage und Uhrzeiten für Beratungen.
