@@ -37,7 +37,7 @@ Strukturgleiche Auswertungen sind zu Karten mit **Dimensions-Umschalter** zusamm
 | Sektion | Inhalt |
 |---|---|
 | **KPI-Zeile** | personalisierbar (kpi-dashboard): echte Widerrufe, Quote, verlorenes/gefährdetes Volumen, **widerrufene/gefährdete Körperzonen (KPZ)**, Eingänge, Ø Tage, Akzeptierungsquote, offene Fälle … — mit Vorperioden-Vergleich (Quoten in PP) |
-| **Entwicklung über Zeit** | gestapelte Balken (echte Widerrufe + weitere Eingänge) + Quote-Linie; Tabelle nach Jahr/Quartal aufklappbar inkl. verlorener KPZ und Volumen |
+| **Entwicklung über Zeit** | Metrik-Umschalter **Widerrufe ⇄ Körperzonen**: gestapelte Balken (echte Widerrufe + weitere Eingänge bzw. verlorene + weitere gefährdete KPZ) + Quote-Linie (Widerrufsquote bzw. **KPZ-Quote** = verlorene ÷ verkaufte KPZ); Tabelle nach Jahr/Quartal aufklappbar mit beiden Sichten |
 | **Struktur der Widerrufe** | Dimensions-Umschalter: **Nach Grund** (Balken; „Keine Angabe" durch Legacy-Importe überzeichnet) · **Nach Ergebnis** (Donut: akzeptiert/abgelehnt/Upgrade/…) · **Erste Sitzung** (Widerrufe mit/ohne erste Behandlung, Akzeptierungsquote + Ø Tage) |
 | **Zeitraum bis Widerruf** | Histogramm (0–7 … über 90 Tage) + Ø/Median im Kartenkopf |
 | **Widerrufsquote im Vergleich** | Dimensions-Umschalter: **Standorte** (Institutsfarben + Quote-Linie, konfigurierte Reihenfolge) · **Verkäufer:innen** (Quote-Ranking, n am Balken, „Ohne Zuordnung" am Ende) · **Vertragswert**-Klassen · **Körperzonen**-Klassen (1–2 … ab 6 KPZ/GK) — identische Tabellen-Spalten inkl. verlorener KPZ |
