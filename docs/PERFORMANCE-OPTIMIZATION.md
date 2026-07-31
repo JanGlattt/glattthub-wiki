@@ -148,6 +148,12 @@ Lädt kritische Ressourcen mit hoher Priorität:
 
 ## 3. SPA-Navigation mit Livewire
 
+> **Stand 07/2026:** `wire:navigate` ist der **einzige** Übergangs-Mechanismus —
+> das frühere `page-transitions.js` wurde entfernt, alle internen Links tragen
+> `wire:navigate` (Sidebar: `wire:navigate.hover` mit Prefetch), und beim
+> Navigieren zeigt das Layout layoutgetreue Navigations-Skeletons.
+> Details: `SEITENUEBERGAENGE.md`.
+
 glatttHub verwendet `wire:navigate` für SPA-ähnliche Navigation:
 
 ```html
