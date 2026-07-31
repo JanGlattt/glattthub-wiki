@@ -192,6 +192,23 @@ Zwischensumme; die Summe der Institute ergibt die Gesamtzeile im Fuß.
 - Sortierung innerhalb der Gruppe nach Beratungsvolumen der Monatsblöcke
 - Mobil bricht der Kartenkopf um, die fixierten Spalten schrumpfen mit
 
+##### Ehemalige Mitarbeiter („Unbekannt")
+
+Der nächtliche `phorest:sync-staff` holt **nur aktive** Mitarbeiter (kein
+`fetch_archived`) — 193 Datensätze, während die Phorest-API insgesamt 476 kennt,
+davon 291 archivierte. Ausgeschiedene Mitarbeiter fehlen deshalb in
+`phorest_staff`; genau dafür gibt es Stufe 3 des Lookups, den API-Fallback mit
+`fetch_archived=true`.
+
+> **Bug bis 31.07.2026:** Dieser Fallback las `_embedded.staff`, Phorest liefert
+> die Liste aber unter **`_embedded.staffs`** (Plural). Die Abfrage war
+> erfolgreich und lieferte schlicht eine leere Liste — dadurch blieb jeder
+> ausgeschiedene Mitarbeiter dauerhaft „Unbekannt", ohne Fehlermeldung.
+> Derselbe Pfad war auch in `PhorestApiService::getCachedStaff()`,
+> `PhorestController` und `TestPhorestApi` falsch; der Sync-Command hatte ihn
+> als einziger bereits korrigiert. Ein Test mit gefaketer Phorest-Antwort
+> sichert die Auflösung jetzt ab.
+
 **Multi-StaffId-Zusammenführung:** Ein Hub-Nutzer kann mehrere Phorest-StaffIds haben (eine pro Standort). Diese werden automatisch zusammengeführt:
 
 1. Über `user_id` aus der `users`-Tabelle (Hub-Account)
