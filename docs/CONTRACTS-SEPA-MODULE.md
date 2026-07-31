@@ -2,6 +2,52 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 31.07.2026 — Bankwechsel übernimmt den Zahlungsplan, statt ihn neu zu rechnen
+
+### Für Endanwender (31.07.2026)
+
+**Behoben: Nach einer Änderung der Bankverbindung stimmte der Zahlungsplan nicht mehr.** Bei bestimmten Verträgen verschwanden die bereits per SEPA eingezogenen Raten aus dem Plan und es stand wieder die volle Ratenzahl aus dem Vertrag da — der Plan musste anschließend jedes Mal von Hand korrigiert werden (falsche Raten löschen, eine Minus-Differenz bestätigen, die gar nicht stimmte).
+
+Ab sofort gilt beim Bankwechsel: **Der vorhandene Restplan wird 1:1 auf das neue Mandat übertragen** — gleiche Ratennummern, gleiche Beträge, gleiche Fälligkeiten. Es wird nichts mehr aus der Vertragslaufzeit nachgerechnet. Findet der Hub keinen Restplan zum Übertragen (z.B. weil lokal gar keine offenen Raten hinterlegt sind), erfindet er **bewusst keinen** — stattdessen erscheint nach dem Speichern ein Hinweis mit Vertragsnummer und Anzahl der fehlenden Raten, und der Plan wird gezielt über „Zahlungsplan anlegen" im Zahlungen-Tab erstellt.
+
+**Neu: Vorschau im Modal „Bankverbindung ändern".** Schon vor dem Speichern steht dort, was passieren wird:
+
+- wie viele offene Raten mit welcher Summe auf das neue Konto umgebucht werden (Ratenliste über „Alle Raten anzeigen" aufklappbar),
+- wie viele bereits eingezogene Raten unverändert stehen bleiben,
+- geplatzte Raten, die **nicht** mit umgebucht werden (die laufen weiter über das Schulden-Verfahren),
+- überfällige Raten ohne dokumentierten Einzug, die als Altsystem-Einzug gewertet werden,
+- der Warnhinweis, wenn Raten im Plan fehlen und er hinterher manuell angelegt werden muss.
+
+**Stornierte Raten verschwinden nicht mehr spurlos.** Beim Bankwechsel und beim Stornieren eines Zahlungsplans wurden Raten teilweise ohne Notiz storniert — der Zahlungen-Tab blendet solche Zeilen komplett aus, für die Verwaltung waren sie damit weg. Jetzt bekommt jede stornierte Rate einen Grund und bleibt durchgestrichen sichtbar.
+
+**Der GoCardless-Abgleich (🔄) bricht ab, statt Geld zu verlieren.** Lagen bereits eingezogene Raten an einem früheren Mandat und GoCardless liefert sie nicht mit, hätte der Abgleich sie bisher aus dem Plan entfernt, ohne Ersatz anzulegen. Jetzt wird der Vorgang mit einer Meldung abgebrochen und die Verknüpfung kann geprüft werden.
+
+### Für Entwickler (31.07.2026)
+
+**Ursache.** Der Neuaufbau steckte nicht im `ContractPaymentRebuildService` (der hängt nur am 🔄-Button), sondern in `GoCardlessMandateService::changeBankAccount()`. Schritt 4 sicherte bei Einzelzahlungs-Verträgen nur Raten **mit** `gocardless_payment_id`; Verträge, deren Restplan aus rein lokalen Platzhaltern besteht (Import, Dauerauftrags-Historie, nie materialisierter Plan), fielen dadurch in Schritt 6 in den `else`-Zweig → `createIndividualPaymentPlan()` → `remainingSepaRateCount()` = `installment_count - 1 -` Raten in `submitted|confirmed|paid`. Nicht abgezogen wurden dabei u.a. gerade gelöschte Altsystem-Raten, gerade stornierte Raten und eingezogene Raten, deren Webhook nie ankam.
+
+**Umbau.**
+
+- Neue Methode `classifyRatesForBankChange(Contract)` — seiteneffektfreie Klassifizierung in `legacy_rates` (überfällige Platzhalter ohne GC-ID bei Verträgen vor `Contract::LEGACY_CUTOFF_DATE`) und `open_rates` (der echte Restplan, **mit und ohne** GC-Verknüpfung). Vorschau und Ausführung nutzen dieselbe Methode, damit sie nicht auseinanderlaufen können.
+- Schritt 6 kennt nur noch `recreateIndividualPayments()`. Der Neuberechnungs-Zweig ist ersatzlos entfallen; ohne Restplan wird der Vertrag über den neuen Rückgabewert `contracts_without_plan` (`contract_number`, `missing_rates`) gemeldet und im Controller als Warnung ausgegeben. `missing_rates` zieht bereits als Altsystem-Einzug gewertete Raten ab.
+- Lokale Aufräumung ist für beide Plan-Typen gleich: GC-verknüpfte offene Raten werden mit der Notiz `GoCardlessMandateService::BANK_CHANGE_CANCEL_NOTE` storniert, Platzhalter ohne GC-ID gelöscht (sie werden 1:1 durch die neuen, verknüpften Raten mit derselben Ratennummer ersetzt — sonst gäbe es jede Rate doppelt).
+- `GoCardlessPaymentPlanService::cancelLocalPayments()` storniert nie mehr ohne Notiz (Default `'Zahlungsplan storniert'`). Hintergrund: `ContractController::getPayments()` filtert `status === cancelled && ! filled($notes)` heraus.
+- `ContractPaymentRebuildService`: fehlt die `gocardless_customer_id` lokal, wird sie über `getMandate()->links.customer` nachgeschlagen und persistiert (sonst fragt der Reload nur das aktuelle Mandat ab und verpasst alles vom alten). Zusätzlich zweites Sicherheitsnetz neben dem bestehenden „leere GC-Antwort"-Abbruch: Enthält `$toSupersede` eine Rate in `paid|confirmed` mit GC-ID, die in der GC-Antwort fehlt, bricht der Reload mit Exception ab.
+
+**Vorschau-Endpoint.** `GET /hub/contracts/{contract}/bank-account/preview` (`ContractController::previewBankAccountChange()`, Middleware `can:edit_contracts` + Rollen-Check) → `GoCardlessMandateService::previewBankChange(ClientMandate)`. Liefert je aktivem Vertrag des Mandats: `transfer_rates` (Nummer/Fälligkeit/Betrag), `transfer_amount_cents`, `settled_count`, `legacy_count`/`legacy_amount_cents`, `bounced_count`/`bounced_amount_cents` (failed/chargedback — laufen über das Schulden-Verfahren), `missing_rates`. Frontend: `loadBankPreview()` in `public/js/contract-detail.js` (aufgerufen aus `openBankModal()`), Markup in `tab-sepa.blade.php`, Styles `.bank-preview-glattt*` in `theme_glattt.css`; die Ratenliste ist eingeklappt, damit das IBAN-Feld ohne Scrollen erreichbar bleibt.
+
+**Tests.** `tests/Unit/GoCardlessBankChangeTest.php`: Restplan ohne GC-Verknüpfung wird übertragen statt nachgerechnet (Regression — prüft die **Anzahl** der GC-POSTs), kein erfundener Plan + Meldung, Storno nur mit Notiz, Vorschau-Klassifizierung. `tests/Feature/RebuildReloadSafetyTest.php`: Abbruch bei fehlenden eingezogenen Raten. `tests/Feature/ContractShowTest.php`: Vorschau-Endpoint + Berechtigung.
+
+| Datei | Änderung |
+|---|---|
+| `app/Services/GoCardlessMandateService.php` | `classifyRatesForBankChange()`, `previewBankChange()`, Fallback entfernt, `contracts_without_plan`, Storno-Notiz |
+| `app/Services/GoCardlessPaymentPlanService.php` | `cancelLocalPayments()` immer mit Notiz |
+| `app/Services/ContractPaymentRebuildService.php` | Customer-ID-Nachschlag + Abbruch bei fehlenden eingezogenen Raten |
+| `app/Http/Controllers/ContractController.php` | `previewBankAccountChange()`, Warnung für Verträge ohne Restplan |
+| `resources/views/hub/contracts/partials/tab-sepa.blade.php` | Vorschau-Block im Bankwechsel-Modal |
+| `public/js/contract-detail.js` | `loadBankPreview()`, Vorschau-State |
+| `public/css/theme_glattt.css` | `.bank-preview-glattt*` |
+
 ## Update 31.07.2026 — SEPA-Ablösung: Wunsch-/Restbetrag per einmaligem Einzug
 
 ### Für Endanwender (31.07.2026)
