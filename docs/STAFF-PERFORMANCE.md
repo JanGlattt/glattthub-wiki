@@ -181,10 +181,11 @@ Zwischensumme; die Summe der Institute ergibt die Gesamtzeile im Fuß.
 > Sichten sind korrekt, sie beantworten nur unterschiedliche Fragen.
 
 **Weitere Features:**
-- Quoten aus **weniger als 5 Beratungen** sind in den Tages- und Monatsspalten
-  blass und kursiv (eingeschränkte Aussagekraft); der Grund steht im Tooltip der
-  Zelle. **In den Wochenspalten nicht** — dort sind kleine Fallzahlen der
-  Regelfall, die Dämpfung träfe fast jede Zelle und wäre damit wertlos
+- Quoten aus **weniger als 5 Beratungen** sind **nur in den Monatsspalten** blass
+  und kursiv (eingeschränkte Aussagekraft); der Grund steht im Tooltip der Zelle.
+  In den Tages- und Wochenspalten nicht — dort sind einstellige Fallzahlen der
+  Regelfall, die Dämpfung träfe fast jede Zelle und wäre damit wertlos. Gesteuert
+  über `periodType` der Spalte (`day` | `week` | `month`)
 - Zeilen ohne eine einzige Beratung im gesamten Zeitfenster werden ausgeblendet
 - Toggle **„Nur Hub-Nutzer"** (Standard: aktiviert) filtert auf glatttHub-Accounts —
   blendet zugleich Phorest-Platzhalter (Kabinen-, Absage-Spalten) und Profile aus,
