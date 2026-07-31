@@ -58,27 +58,51 @@ dem Diagramm.
 #### KPI-Dashboard
 
 Steht direkt unter der Header-Card (seit 07/2026 — vorher lag die Zeile hinter der
-Tagesmessung und damit unterhalb des Bildschirms). 8 Kennzahlen stehen zur
+Tagesmessung und damit unterhalb des Bildschirms). 12 Kennzahlen stehen zur
 Auswahl, sichtbar sind standardmäßig 4; Auswahl und Reihenfolge sind per Drag &
-Drop personalisierbar und liegen im localStorage (`staff-performance-kpis`):
+Drop personalisierbar und liegen im localStorage (`staff-performance-kpis`).
+
+> **Bezugszeitraum ist der laufende Monat** — im Titel der Zeile ausgeschrieben
+> („Laufender Monat — Juli 2026"). Das ist die einzige Stelle der Seite mit
+> Monatsbezug; alle Karten darunter zählen über die gesamte Historie.
+>
+> **Warum:** Die Vergleichszeilen („vs. Vormonat", „vs. Vorjahr") beziehen sich
+> zwangsläufig auf einen Monat. Bis 07/2026 stand daneben eine Lebenszeit-Summe —
+> „9.546 Beratungen, +43,7 % vs. Vorjahr" las sich wie ein Wachstum der 9.546,
+> gemeint waren aber 296 (Juli 26) gegen 206 (Juli 25). Wert und Delta beschreiben
+> jetzt denselben Zeitraum. `getKpis()` ignoriert deshalb bewusst mitgegebene
+> `date_from`/`date_to`; Standort- und Sichtbarkeits-Filter gelten weiterhin.
 
 | KPI | Beschreibung |
 |-----|-------------|
-| **Beratungen** | Gesamtanzahl der Beratungsgespräche |
-| **Abschlüsse** | Anzahl Beratungen mit Vertragsabschluss am selben Tag |
-| **Conversion-Rate** | Prozentsatz Beratung → Vertrag |
-| **Ø Körperzonen** | Durchschnittliche Anzahl Körperzonen pro Abschluss |
-| **Körperzonen gesamt** | Summe aller bei Abschlüssen verkauften Körperzonen |
-| **Ganzkörper-Anteil** | Prozentsatz der Ganzkörper-Verträge bei Abschlüssen |
+| **Beratungen** ⭐ | Beratungsgespräche im laufenden Monat |
+| **Abschlüsse** | Beratungen mit Vertragsabschluss am selben Tag |
+| **Conversion-Rate** ⭐ | Anteil Beratung → Vertrag |
+| **Ø KPZ je Beratung** | Körperzonen ÷ **alle** Beratungen (auch die ohne Abschluss) — dieselbe Definition wie die KpZ-Spalte der Tagesmessung |
+| **Ø KPZ je Abschluss** | Körperzonen ÷ Verträge — die Zahl, die im Verkauf üblicherweise mit „Ø KPZ" gemeint ist |
+| **Aktive Berater** | Mitarbeiter mit mindestens einem Beratungsgespräch; mehrere Phorest-Profile derselben Person zählen einmal |
+| **BG je Berater** | Beratungen ÷ aktive Berater |
+| **Berater über Ziel-CR** | Anteil der Berater, die die Ziel-Conversion-Rate erreichen — nur Berater mit ≥ 5 Beratungen zählen (sonst stünde ein einziges abgeschlossenes Gespräch mit 100 % drin). Schwelle ist der Zielwert des gefilterten Standorts, sonst der globale Standard |
+| **Körperzonen** | Summe der bei Abschlüssen verkauften Körperzonen |
+| **Ganzkörper-Anteil** | Anteil der Ganzkörper-Verträge an den Abschlüssen |
 | **Ø Vertragswert** | Durchschnittlicher Vertragswert bei Abschlüssen |
-| **Gesamtumsatz** | Summe aller Vertragswerte bei Abschlüssen |
+| **Umsatz** | Summe der Vertragswerte bei Abschlüssen |
+
+⭐ = hervorgehobene Karte (Bauplan: höchstens zwei).
 
 Jede Kennzahl zeigt Vergleichswerte:
-- **vs. Vormonat**: Veränderung zum letzten Monat
+- **vs. Vormonat**: Veränderung zum Vormonat
 - **vs. Vorjahr**: Veränderung zum gleichen Monat im Vorjahr
 
-Quoten-KPIs (Conversion-Rate, Ganzkörper-Anteil) vergleichen in
-**Prozentpunkten (PP)** statt als Prozent-Veränderung der Quote.
+Quoten-KPIs (Conversion-Rate, Ganzkörper-Anteil, Berater über Ziel-CR) vergleichen
+in **Prozentpunkten (PP)** statt als Prozent-Veränderung der Quote.
+
+> **Behobener Fehler (07/2026):** `subMonth()` auf einem Datum vom 29.–31. läuft über
+> (31.07. − 1 Monat = 01.07.). „Vormonat" war dadurch an diesen Tagen der laufende
+> Monat und **jeder** Vormonatsvergleich zeigte exakt „+0,0 %" — ohne jeden Hinweis
+> darauf, dass da nichts gerechnet wurde. Der Anker ist jetzt `startOfMonth()` vor
+> `subMonth()` (derselbe Fallstrick wie in `getStaffOverview()`); abgesichert durch
+> `test_kpi_comparison_does_not_collapse_at_month_end`.
 
 #### Mitarbeiter-Ranking
 
@@ -332,18 +356,36 @@ bei den übrigen 57 lag das letzte BG 1–7 Tage (15), 8–30 Tage (14) oder üb
 
 ### Standort-Filter
 
-Der Standort-Filter in der Seitenleiste filtert alle Daten auf ein bestimmtes Institut. Bei Wechsel werden alle Sektionen automatisch neu geladen.
+Der Standort-Filter in der Seitenleiste filtert alle Daten auf ein bestimmtes
+Institut. Bei Wechsel werden alle Sektionen automatisch neu geladen
+(`branchChanged`-Event → `reloadAllData()`), jede Karte lädt dabei unabhängig.
+Serverseitig hängt er als `branch_id` an jedem Endpunkt und wirkt in
+`buildConsultationFilters()` (Beratungstermine) **und**
+`buildContractFilters()` (Verträge) — beide Seiten des Joins müssen gefiltert
+sein, sonst zählen Verträge fremder Standorte mit.
+
+> **Behobener Fehler (07/2026):** In `getConversionContractIds()` (Datenbasis der
+> Körperzonen-Verteilung) stehen die Vertrags-Platzhalter **zuerst** im SQL — im
+> INNER JOIN, vor den Service-IDs. Die Bindings wurden aber in der Reihenfolge von
+> `executeAggregateQuery()` zusammengesetzt (Beratung zuerst). Ohne Standortfilter
+> fiel das nicht auf, weil die Vertrags-Bindings dann leer sind; **mit** Filter
+> landete die `branch_id` auf dem falschen Platzhalter und die erste Service-UUID
+> in `c.branch_id = ?` — die Karte „Körperzonen-Verteilung" war bei jedem
+> ausgewählten Standort leer. Abgesichert durch
+> `test_body_zone_distribution_respects_the_branch_filter`.
 
 ### Zeitraum: bewusst kein Seiten-Filter
 
 Die Seite hat **keinen Zeitraum-Filter im Kopf** — anders als die übrigen
-Statistikseiten. **KPI-Zeile, Mitarbeiter-Ranking, Standort-Vergleich und
+Statistikseiten. **Mitarbeiter-Ranking, Standort-Vergleich und
 Körperzonen-Verteilung zählen deshalb über die gesamte Historie**; das steht seit
 07/2026 ausdrücklich im Seiten-Untertitel, in der Hinweiszeile der betroffenen
 Karten und in deren Info-Panels, damit es nicht stillschweigend passiert. Die
-zeitliche Entwicklung liefern die Karten, die ihre Perioden selbst mitbringen:
-Tagesmessung (Tage/Wochen/Monate, 4–12 Monate Tiefe), Monatlicher Zeitverlauf
-(12 Monate) und Durchgeführte Behandlungen (eigenes Zeitraum-Dropdown).
+**KPI-Zeile** ist die Ausnahme: Sie zeigt den **laufenden Monat** (siehe oben) und
+schreibt ihn in den Titel. Weitere zeitliche Entwicklung liefern die Karten, die
+ihre Perioden selbst mitbringen: Tagesmessung (Tage/Wochen/Monate, 4–12 Monate
+Tiefe), Monatlicher Zeitverlauf (12 Monate) und Durchgeführte Behandlungen
+(eigenes Zeitraum-Dropdown).
 
 Die **Endpunkte** akzeptieren `date_from`/`date_to` trotzdem (siehe
 `StaffPerformanceController::extractFilters()`) — der CSV-Export nutzt das für die
@@ -622,11 +664,26 @@ Die Reports-Übersicht (`/hub/reports`) zeigt eine Vorschau-Karte mit 4 KPIs des
 ### Tests
 
 ```bash
-# Alle StaffPerformance-Tests
-php artisan test --filter=StaffPerformance
+# Seiten-Skelett, Tagesmessung, Export — laufen auf SQLite
+php artisan test --filter='StaffPerformancePageTest|StaffDailyMeasurementTest'
+
+# Kernlogik (StaffPerformanceTest) braucht MySQL — CTEs + ROW_NUMBER + DATE_FORMAT.
+# Einmalig eine leere Test-DB anlegen, dann gegen sie fahren:
+#   CREATE DATABASE glattthub_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+DB_CONNECTION=mysql DB_DATABASE=glattthub_test \
+  php -d memory_limit=1G vendor/bin/phpunit --filter=StaffPerformanceTest
 ```
 
-**Hinweis:** Die meisten Tests benötigen MySQL (wegen CTEs + ROW_NUMBER) und werden auf SQLite automatisch übersprungen. 2 Permission-Tests laufen auch auf SQLite.
+**Nie gegen die Entwicklungs-DB laufen lassen** — `RefreshDatabase` migriert frisch
+und leert dabei alles.
+
+**Hinweis:** Auf SQLite überspringt `StaffPerformanceTest` sich selbst
+(`requiresMysql()`), deshalb blieb er lange unbemerkt kaputt: Fixtures ohne
+`end_time`, `state = 'COMPLETED'` statt `'PAID'`, fehlende `consultation_services`
+und ein fehlender `Http::fake()` ließen 15 von 19 Tests scheitern, sobald man ihn
+doch gegen MySQL fuhr. Seit 07/2026 läuft die Suite wieder grün (22 Tests) — wer
+`getKpis()`, `executeAggregateQuery()` oder die Staff-Auflösung anfasst, sollte sie
+fahren, die SQLite-Suiten decken diese Pfade nicht ab.
 
 ---
 
