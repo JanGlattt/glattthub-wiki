@@ -33,6 +33,8 @@ Im ersten Ausbaustufe betrachtet das Modul ausschließlich **geplatzte GoCardles
 - **Detailliste** – jede einzelne geplatzte Lastschrift mit Grund und Betrag
 - **Verlinkung** – direkter Sprung zum Kunden bzw. zum betroffenen Vertrag
 
+> **Hinweis (seit 31.07.2026):** Wird eine geplatzte Rate im Vertrag über **„RLS anhängen"** ans Ende des Zahlungsplans verschoben, verschwindet sie aus dieser Liste — der Betrag ist dann keine offene Schuld mehr, sondern eine terminierte Rate. Technisch: Die Rate wechselt von `failed`/`chargedback` auf `paid` mit `direct_payment_method = 'rescheduled'` und fällt damit aus `ContractPayment::scopeBounced()`. Details: `CONTRACTS-SEPA-MODULE.md`.
+
 ## Zugang
 
 1. glatttHub öffnen

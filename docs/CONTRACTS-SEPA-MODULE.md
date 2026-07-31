@@ -2,6 +2,36 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 31.07.2026 — „RLS anhängen": geplatzte Rate ans Ende des Zahlungsplans
+
+### Für Endanwender (31.07.2026)
+
+**Neu: Button „RLS anhängen"** hinter jeder geplatzten Rate im Zahlungen-Tab, direkt neben „Beglichen". Statt die Rücklastschrift nachzufassen, wandert ihr Betrag als **zusätzliche Rate ans Ende des Zahlungsplans** — der Plan verlängert sich um einen Monat, genau wie es in der letzten Mahnung angekündigt wird. Gedacht für den Fall, dass ihr das mit dem Kunden vereinbart oder er auf nichts reagiert.
+
+Im Modal steht vorab, was passiert: welche Rate erledigt wird, welche neue Ratennummer zu welchem Datum entsteht und wie sich der Betrag zusammensetzt. Die **RLS-Gebühr kann mit eingezogen werden** — ist an der Rate bereits eine offene Gebühr erfasst, ist der Haken vorbelegt und der Betrag eingetragen; er lässt sich ändern oder abwählen.
+
+Nach dem Anhängen:
+
+- Die alte Rate steht auf **Bezahlt** mit der Zahlungsart **„Angehängt"** und dem Vermerk, als welche Rate sie weiterläuft. Sie verschwindet damit aus der Schuldenliste und dem Mahnwesen.
+- **Wichtig:** Sie zählt bewusst **nicht** als Zahlungseingang. „Bezahlt", „Offen", der Zahlungsfortschritt und die Umsatzzahlen bleiben unverändert — es ist ja kein Geld geflossen, der Betrag steht jetzt nur an anderer Stelle im Plan. In der Verkaufsstatistik erscheint die Rate weiterhin im Monat des Platzens als Rücklastschrift und **nicht** als „RLS nachgezahlt".
+- Die neue Rate wird sofort als eigener GoCardless-Einzug angelegt.
+
+Voraussetzungen: aktives GoCardless-Mandat und ein Einzelzahlungs-Plan. Bei Verträgen mit altem Dauerauftrag erscheint der Button nicht (dort erst den Zahlungsplan stornieren). Mehrere geplatzte Raten werden einzeln angehängt. Der Bezahlt-Status der Gebühr wird nach dem Eingang wie gewohnt über „Gebühr bezahlt" nachgetragen.
+
+### Für Entwickler (31.07.2026)
+
+- **Endpoints:** `GET /hub/contracts/{contract}/payments/{payment}/append-info` (`getAppendBouncedInfo()` — Zielraten-Nummer, Fälligkeit, Betrag, erfasste Gebühr) und `POST …/payments/{payment}/append` (`appendBouncedPayment()`), beide unter `can:manage_gocardless` + Rollen-Check (super_admin, admin, filialleiterin, verwaltung).
+- **Zieltermin:** `appendTargetFor()` — ein Monat nach der letzten nicht stornierten Rate (`addMonthNoOverflow()`), frühestens das `next_possible_charge_date` des Mandats. Ratennummer = `max(installment_number) + 1`.
+- **Reihenfolge wie bei der SEPA-Ablösung:** GC-Einzug ZUERST anlegen (scheitert er, ist nichts verändert; `tooSoonErrorHint()` als 422), danach in einer DB-Transaktion die neue Rate + Update der alten + `ContractChange` (`field_name = bounced_payment_appended`). Wirft die Transaktion, wird der Einzug als Kompensation storniert. Das echte `charge_date` aus der GC-Antwort wird übernommen (GoCardless verschiebt Wochenenden/Feiertage).
+- **Buchhaltungs-Kern — `ContractPayment::DIRECT_RESCHEDULED = 'rescheduled'`** (Migration `2026_07_31_170000_…`, ENUM-Erweiterung wie bei `voucher`): Die alte Rate steht auf `paid`, ist aber **kein Geldeingang**. Neu deshalb:
+  - `ContractPayment::scopeMoneyIn()` — `paid` UND nicht `rescheduled`. Ersetzt `where(status, PAID)` in `Contract::remaining_amount_cents`, `ContractMandate::paid_installments_count`/`updateRemainingAmount()` und im Kündigungs-Pfad des `ContractController`.
+  - `Contract::documentedSepaRatesCents()` schließt `rescheduled` aus, sonst wäre der Betrag doppelt dokumentiert und der rechnerische Altsystem-Block zu klein.
+  - `ContractPayment::sqlIsRescheduled()` / `sqlIsNotRescheduled()` für die Raw-Queries der `SalesStatisticsService`: angehängte Raten zählen im MRR-/RLS-Trend als **RLS** (sie platzten und wurden nicht nachgezahlt), nie als „eingezogen" oder „nachgezahlt"; in der Ausfall-Analyse zählen sie in `failed_ever`, nicht in `failed_open`.
+  - **Falle:** Das SQL-Prädikat MUSS `COALESCE(direct_payment_method,'')` verwenden. Ohne ist der Vergleich bei NULL weder wahr noch falsch, sondern NULL — ein umschließendes `NOT (...)` bleibt dann NULL und wirft ganz normale Zahlungen aus ihrem Band (genau so sind beim Bauen 4 MRR-Tests rot geworden).
+- **Kein „Korrigieren" für angehängte Raten:** `can_correct` schließt `rescheduled` aus (wie schon `voucher`) — es gibt keine Zahlung, die korrigiert werden könnte. Neues Flag `can_append` in `getPayments()` (geplatzt + GC-Mandat + kein Dauerauftrag), Anzeige-Typ „Angehängt".
+- **Frontend:** Button in `tab-payments.blade.php` neben „Beglichen", Modal darunter; `openAppendModal()`/`appendFeeCents()`/`appendTotalCents()`/`saveAppend()` in `public/js/contract-detail.js` (Komponente `paymentsTab`). Gebühr über das Projektmuster „transparenter Input + €-Overlay".
+- **Tests:** `tests/Feature/ContractAppendBouncedTest.php` — Anhängen (Nummer/Termin/Betrag, alte Rate `rescheduled`, Schuldenliste leer, `moneyIn` und Restbetrag unverändert), Gebühr inklusive, Guards (nur geplatzte Raten, Dauerauftrag, fremde Rate → 404), Vorschau-Endpoint.
+
 ## Update 31.07.2026 — Bankwechsel übernimmt den Zahlungsplan, statt ihn neu zu rechnen
 
 ### Für Endanwender (31.07.2026)
