@@ -223,6 +223,17 @@ bei den übrigen 57 lag das letzte BG 1–7 Tage (15), 8–30 Tage (14) oder üb
   **nach dem Rendern gemessen** (`_syncMatrixOffsets()` schreibt `--mx-off-1…4`) —
   feste `calc()`-Werte aus den Variablen säßen bei gedehnten Spalten daneben. Der
   Verifikationslauf prüft das über den Versatz zwischen Kopf- und Datenzellen.
+- **Die Institutszeile ist eine `colspan`-Zelle über die volle Tabellenbreite.**
+  `position: sticky` auf der Zelle hält nur die Zelle — der Text am Zellenanfang
+  scrollt trotzdem aus dem Bild. Sticky gehört auf den Inhalt
+  (`.matrix-glattt-group-label`), und sein `left` muss dem horizontalen
+  Zellenpolster entsprechen, sonst springt der Name beim ersten Scrollschritt.
+- Auch die Kopfzeilen brauchen jede ein eigenes `top` — ohne wirkt `sticky`
+  nicht. Bei aufgeklapptem Monat sind es drei Zeilen; die Offsets kommen aus
+  `_syncMatrixOffsets()` (gemessene Zeilenhöhen, `--mx-top-2/-3`).
+- Wochenspalten haben eigene, schmalere Breiten (`--mx-wbg/-wcr/-wkpz`), damit
+  ein aufgeklappter Monat in den freien Bereich neben den fixierten Spalten
+  passt und `_centerMonth()` ihn tatsächlich mittig setzen kann.
 - `thead`, `tbody`, `tfoot` und `colgroup` werden als HTML-Strings gebaut
   (`x-html`) — bei ~3.000 Zellen wäre ein Alpine-Scope je Zelle spürbar träge.
   Der Klick auf die Monatsköpfe läuft deshalb über Event-Delegation am Container
