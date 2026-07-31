@@ -43,15 +43,24 @@ die alte Ansicht, bis die neue Antwort da ist. Fällt ein Endpoint aus, zeigt
 laden unabhängig weiter. Jede Karte hat ein Info-Panel (ℹ️) mit Erklärung,
 Spalten, Anomalien und Datenquelle.
 
-Einzige Karte ohne Register ist die **Tagesmessung** (dichte Ampel-Matrix über
-Tagesspalten, Monate und aufklappbare Wochen — als begründete Ausnahme rein
-tabellarisch: für 40+ Wertspalten gibt es keine sinnvolle Diagrammform).
+Die **Reihenfolge** ist die des Bauplans: Header-Card → KPI-Zeile
+(`components/kpi-dashboard`, personalisierbar) → Auswertungs-Karten, beginnend mit
+der Tagesmessung.
+
+Die **Tagesmessung** ist die einzige Karte, bei der das Register **umgekehrt**
+vorbelegt ist: **Tabelle als Standard-Ansicht, Diagramm dahinter**. Begründung:
+Diese Karte wird abgelesen, nicht überflogen — sie ist das tägliche Arbeitsmittel
+und ersetzt das frühere Google-Sheet. Alle anderen Karten starten wie üblich mit
+dem Diagramm.
 
 ### Sektionen
 
 #### KPI-Dashboard
 
-Oben auf der Seite werden 8 Kennzahlen angezeigt:
+Steht direkt unter der Header-Card (seit 07/2026 — vorher lag die Zeile hinter der
+Tagesmessung und damit unterhalb des Bildschirms). 8 Kennzahlen stehen zur
+Auswahl, sichtbar sind standardmäßig 4; Auswahl und Reihenfolge sind per Drag &
+Drop personalisierbar und liegen im localStorage (`staff-performance-kpis`):
 
 | KPI | Beschreibung |
 |-----|-------------|
@@ -193,6 +202,52 @@ Zwischensumme; die Summe der Institute ergibt die Gesamtzeile im Fuß.
 - Sortierung innerhalb der Gruppe nach Beratungsvolumen der Monatsblöcke
 - Mobil bricht der Kartenkopf um, die fixierten Spalten schrumpfen mit
 
+##### Diagramm-Ansicht (seit 07/2026)
+
+Hinter der Tabelle liegt über das Register ein Diagramm mit **drei Sichten** auf
+exakt dieselben Zahlen — alle rein clientseitig aus der bereits geladenen Antwort,
+das Umschalten löst **kein** Neuladen aus:
+
+| Sicht | Inhalt | Ebene |
+|---|---|---|
+| **Heatmap** (Standard) | Mitarbeiter × Periode als Ampel-Farbbild — die Matrix, ohne Zahlen lesen zu müssen | Mitarbeiter |
+| **Verlauf** | Gesamtzeile über die Monate: BG als Balken, CR und Ø KpZ als Linien | Gesamt |
+| **Institute** | Instituts-Zwischensummen je Monat als gruppierte Balken in den Standortfarben | Standort |
+
+Heatmap und Institutsvergleich zeigen **eine** Kennzahl, umschaltbar über
+**BG / CR / KpZ** im Kartenkopf. Beim Verlauf entfällt der Umschalter — dort stehen
+ohnehin alle drei Kennzahlen im Bild.
+
+**Leserichtung: alt → neu.** Anders als die Tabelle (neueste Periode links, weil man
+nach rechts in die Vergangenheit scrollt) laufen die Diagramme chronologisch von
+links nach rechts. In der Heatmap stehen „Diese Woche" und „Heute" deshalb ganz
+rechts am Ende; die beiden Monatsdiagramme lassen sie weg, weil sich Monate und
+Tage nicht auf einer Zeitachse vergleichen lassen.
+
+Weitere Festlegungen:
+
+- **Die Heatmap zeigt maximal 20 Zeilen** (die Mitarbeiter mit den meisten
+  Beratungsgesprächen im Zeitfenster) — bei 40+ Zeilen wären die Bänder nur noch
+  Striche. Die vollständige Liste steht in der Tabellen-Ansicht; der Hinweis unter
+  der Karte sagt, ob gekürzt wurde.
+- Die Heatmap nutzt die **flache** Mitarbeiterliste, nicht die Instituts-Gruppen —
+  sonst stünde eine Person mit Einsätzen an zwei Standorten zweimal mit gleichem
+  Namen auf der Achse. Der Toggle „Nach Institut" ist daher in der Diagramm-Ansicht
+  ausgeblendet, „Nur Hub-Nutzer" wirkt weiterhin auf beide Ansichten.
+- Gefärbt wird nach den **globalen** Zielwerten (nicht standortspezifisch) —
+  benachbarte Zeilen verschiedener Institute wären sonst unterschiedlich skaliert
+  und optisch nicht vergleichbar. Bei der Kennzahl **BG** gibt es keine Zielwerte;
+  dort ist die Farbe eine reine Mengenskala (Verlauf von blass nach kräftig).
+- Der **Verlauf** nutzt drei y-Achsen (BG links, CR und Ø KpZ je rechts). CR (0–100 %)
+  und Ø KpZ (0–6) auf eine gemeinsame Skala zu zwingen würde eine der beiden Linien
+  flach drücken.
+- Die Kategorie-Achsen laufen mit `axisLabel.interval = 0` — sonst beschriftet
+  ECharts nur jede zweite Spalte, und ausgerechnet die jüngste Periode bleibt
+  namenlos.
+- Beim **Zurückschalten auf die Tabelle** werden die `position: sticky`-Offsets neu
+  gemessen (`_syncMatrixOffsets()` im nächsten Frame, nicht nur in `$nextTick`):
+  Die Matrix lag ausgeblendet, alle gemessenen Spaltenbreiten wären sonst 0.
+
 ##### Ehemalige Mitarbeiter („Unbekannt")
 
 Der nächtliche `phorest:sync-staff` holt **nur aktive** Mitarbeiter (kein
@@ -279,9 +334,21 @@ bei den übrigen 57 lag das letzte BG 1–7 Tage (15), 8–30 Tage (14) oder üb
 
 Der Standort-Filter in der Seitenleiste filtert alle Daten auf ein bestimmtes Institut. Bei Wechsel werden alle Sektionen automatisch neu geladen.
 
-### Datums-Filter
+### Zeitraum: bewusst kein Seiten-Filter
 
-Über Datums-Filter (Von/Bis) kann der Auswertungszeitraum eingeschränkt werden.
+Die Seite hat **keinen Zeitraum-Filter im Kopf** — anders als die übrigen
+Statistikseiten. **KPI-Zeile, Mitarbeiter-Ranking, Standort-Vergleich und
+Körperzonen-Verteilung zählen deshalb über die gesamte Historie**; das steht seit
+07/2026 ausdrücklich im Seiten-Untertitel, in der Hinweiszeile der betroffenen
+Karten und in deren Info-Panels, damit es nicht stillschweigend passiert. Die
+zeitliche Entwicklung liefern die Karten, die ihre Perioden selbst mitbringen:
+Tagesmessung (Tage/Wochen/Monate, 4–12 Monate Tiefe), Monatlicher Zeitverlauf
+(12 Monate) und Durchgeführte Behandlungen (eigenes Zeitraum-Dropdown).
+
+Die **Endpunkte** akzeptieren `date_from`/`date_to` trotzdem (siehe
+`StaffPerformanceController::extractFilters()`) — der CSV-Export nutzt das für die
+Quellen mit `range`-Filter. Wer den Filter später auch im UI will, muss ihn nur in
+der Header-Card ergänzen und an `buildUrl()` durchreichen.
 
 ### CSV-Export
 
@@ -291,7 +358,7 @@ CSV bereit (Quellen in `ReportExportService::SOURCES`, alle mit Standort-Filter)
 | Quelle | Inhalt |
 |--------|--------|
 | `staff-overview` | Tagesmessung: BG, CR & KpZ je Zeitraum (eine Zeile pro Mitarbeiter × Zeitraum) |
-| `staff-overview-branches` | Tagesmessung je Institut: Mitarbeiter-Zeilen standortweise **plus** Instituts-Zwischensummen (Spalte „Zeilenart“) |
+| `staff-overview-branches` | Tagesmessung je Institut: Mitarbeiter-Zeilen standortweise, Instituts-Zwischensummen **und** die Gesamtzeile je Zeitraum (Spalte „Zeilenart“ = Mitarbeiter / Institut gesamt / Gesamt). Die Gesamtzeilen sind zugleich die Datenreihe der Diagramm-Sicht „Verlauf“ |
 | `staff-ranking` | Mitarbeiter-Ranking mit allen Kennzahlen |
 | `staff-branch-comparison` | Standort-Vergleich |
 | `staff-monthly-trend` | Monats-Trend (gesamt + je Institut) |
@@ -355,7 +422,7 @@ StaffPerformanceTarget (app/Models/)
 | `app/Filament/Pages/StaffPerformanceSettings.php` | Filament-Admin: Globale Zielwerte |
 | `resources/views/hub/reports/staff-performance.blade.php` | Haupt-View |
 | `resources/views/hub/reports/staff-performance/partials/header.blade.php` | Seitenkopf + Zurück-Button + Zielwerte-Button |
-| `resources/views/hub/reports/staff-performance/partials/overview-table.blade.php` | Tagesmessung: Ansichts-/Monats-Umschalter, Instituts- und Hub-only-Toggle |
+| `resources/views/hub/reports/staff-performance/partials/overview-table.blade.php` | Tagesmessung: Register (Tabelle als Standard), Matrix, Diagramm-Container, Monats-/Sicht-/Kennzahl-Umschalter, Instituts- und Hub-only-Toggle |
 | `resources/views/hub/reports/staff-performance/partials/targets-modal.blade.php` | Zielwerte-Modal (Pill-Buttons, pro Standort) |
 | `resources/views/hub/reports/staff-performance/partials/staff-ranking.blade.php` | Mitarbeiter-Tabelle |
 | `resources/views/hub/reports/staff-performance/partials/branch-comparison.blade.php` | Standort-Vergleich + Chart |
@@ -363,7 +430,7 @@ StaffPerformanceTarget (app/Models/)
 | `resources/views/hub/reports/staff-performance/partials/body-zones.blade.php` | Körperzonen-Verteilung |
 | `resources/views/hub/reports/staff-performance/partials/staff-detail-modal.blade.php` | Detail-Modal (Stat-Strip + Beratungsliste) |
 | `resources/views/hub/reports/staff-performance/partials/treatments.blade.php` | Durchgeführte Behandlungen |
-| `public/js/staff-performance.js` | Alpine.js App: Loader je Karte (sectionError), ECharts-Renderer (acquireChart-Muster), chart-table-Modelle, Targets, Staff-Merging |
+| `public/js/staff-performance.js` | Alpine.js App: Loader je Karte (sectionError), ECharts-Renderer (acquireChart-Muster), Matrix-HTML + die drei Tagesmessungs-Diagramme (`_overviewHeatmapOption` / `_overviewTrendOption` / `_overviewBranchOption`), chart-table-Modelle, Targets, Staff-Merging |
 | `public/js/chart-table.js` | Gemeinsame Tabellen-Lasche der Chart-Karten |
 | `app/Services/ReportExportService.php` | CSV-Export-Quellen `staff-*` |
 | `resources/views/components/statistics/widgets/partials/staff-*.blade.php` | **Eingefrorene Kopien** der alten Partials für die Custom-Dashboard-Widgets (siehe unten) |
