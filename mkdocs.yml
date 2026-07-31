@@ -156,6 +156,7 @@ nav:
     - Ads-Analyse: ADS-ANALYSE.md
     - Besucher & Buchungs-Funnel: MATOMO-BESUCHER-TRACKING.md
     - Mitarbeiterperformance: STAFF-PERFORMANCE.md
+    - Widerruf-Statistik: REVOCATION-STATISTICS.md
   - API-Integrationen:
     - WordPress-Buchungswidget: WORDPRESS-BUCHUNGSWIDGET.md
     - REST-API:

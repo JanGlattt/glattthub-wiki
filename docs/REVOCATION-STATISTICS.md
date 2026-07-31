@@ -1,41 +1,53 @@
-# Widerrufsstatistik
+# Widerruf-Statistik
 
-Interner Bericht zur Analyse eingehender Widerrufe in den glattt-Instituten.
+Interner Bericht zur Analyse eingehender Widerrufe: absolut, als Quote der Verkäufe, in Euro und im Zeitverlauf (implementiert 07/2026 nach dem Statistik-Bauplan; Asana „Widerrufe im Berichtswesen").
+
+**Zugang:** Hub → Berichte → Widerruf-Statistik
+**URL:** `/hub/reports/revocation-statistics`
+**Berechtigung:** `view_report_revocation_statistics` (eigene Permission; Standard-Vergabe an admin/super_admin, weitere Rollen im Hub freischaltbar)
 
 ---
 
 ## Für Endanwender
 
-### Was zeigt die Widerrufsstatistik?
+### Was zeigt die Widerruf-Statistik?
 
-Die Widerrufsstatistik zeigt eine detaillierte Übersicht über alle Widerrufe von Verträgen. Im Mittelpunkt steht die Frage: **Wie viele Kund:innen haben ihren Vertrag widerrufen, aus welchen Gründen, und wie wurde damit umgegangen?**
+Wie viele Verträge werden widerrufen, aus welchen Gründen, was kostet das in Euro — und wo (Institut/Verkäufer:in) fallen Ausreißer auf? Die Widerrufsquote ist ein Frühindikator für Beratungsqualität und Verkaufsdruck.
+
+### Zentrale Begriffe
+
+| Begriff | Bedeutung |
+|---|---|
+| **Widerrufs-Eingänge** | alle erfassten Widerrufe (ein Fall je Vertrag), unabhängig vom Ausgang |
+| **Echte Widerrufe** | akzeptierte Widerrufe **plus** stornierte Verträge (Legacy-Widerrufe existieren teils nur als Storno ohne Widerrufs-Datensatz) |
+| **Widerrufsquote** | echte Widerrufe ÷ **alle** Verträge inkl. Legacy-Import (Entscheidung Jan, 31.07.2026) |
+| **Gefährdetes Volumen** | Gesamtvertragswert aller Eingänge |
+| **Verlorenes Volumen** | Gesamtvertragswert der echten Widerrufe |
 
 ### Datumsbasis: Vertragsabschluss vs. Widerruf-Datum
 
-Standardmäßig werden Widerrufe dem Monat des **Vertragsabschlusses** zugeordnet — also: "Wann wurde der Vertrag geschlossen, der später widerrufen wurde?" Das erlaubt eine Bewertung der Vertragsqualität je Monat.
+Standardmäßig zählt ein Widerruf im Monat des **Vertragsabschlusses** („Wie gut waren die Verträge dieses Monats?"). Umschaltbar auf **Widerruf-Datum** (Eingangsmonat). Die Vertrags-Basis der Quote bleibt immer dem Abschlussmonat zugeordnet. Achtung: Bei Datumsbasis „Vertragsabschluss" wirken junge Monate systematisch besser — Widerrufe können noch eintreffen.
 
-Mit der Umschaltung auf **Widerruf-Datum** werden Widerrufe dem Monat zugeordnet, in dem sie eingegangen sind.
+### Sektionen (alle Karten zweiseitig: Diagramm ⇄ Tabelle über das Karten-Register)
 
-### Sektionen im Bericht
-
-| Sektion | Beschreibung |
+| Sektion | Inhalt |
 |---|---|
-| **KPI-Kacheln** | Gesamtanzahl, Widerrufsquote, Ø Tage, Akzeptierungsquote, Statusverteilung |
-| **Entwicklung über Zeit** | Monatliche Widerrufe und Quote als Trend-Chart (Diagramm oder Tabelle) |
-| **Nach Widerrufsgrund** | Aufschlüsselung nach dem Grund des Widerrufs (z.B. Preis, Unzufriedenheit) |
-| **Ergebnisse (Reaktions-Matrix)** | Wie wurden Widerrufe abgeschlossen? (akzeptiert, abgelehnt, Upgrade, ...) |
-| **Zeitraum bis Widerruf** | Histogramm: Wie viele Tage lagen zwischen Vertragsabschluss und Widerruf? |
-| **Erste-Sitzung-Effekt** | Vergleich: Erst-Kund:innen vs. Bestandskund:innen |
-| **Vertragswert-Analyse** | Werden eher günstige oder teure Verträge widerrufen? |
-| **Nach Standort** | Widerrufsquote pro Institut |
-| **Nach Verkäufer:in** | Widerrufsquote je Verkäufer:in |
+| **KPI-Zeile** | personalisierbar (kpi-dashboard): echte Widerrufe, Quote, beide Volumen, Eingänge, Ø Tage, Akzeptierungsquote, offene Fälle … — mit Vorperioden-Vergleich (Quoten in PP) |
+| **Entwicklung über Zeit** | gestapelte Balken (echte Widerrufe + weitere Eingänge) + Quote-Linie; Tabelle nach Jahr/Quartal aufklappbar inkl. Volumen |
+| **Nach Widerrufsgrund** | horizontale Balken; „Keine Angabe" ist durch Legacy-Importe überzeichnet (im Info-Panel erklärt) |
+| **Ergebnisse der Widerrufe** | Donut: akzeptiert/abgelehnt/Upgrade/Downgrade/Korrektur/Laufzeit/offen |
+| **Zeitraum bis Widerruf** | Histogramm (0–7 … über 90 Tage) + Ø/Median im Kartenkopf |
+| **Erste-Sitzung-Effekt** | Widerrufe mit/ohne absolvierte erste Behandlung, je Gruppe Akzeptierungsquote + Ø Tage |
+| **Vertragswert-Analyse** | Widerrufsquote je Wert-Klasse (unter 1.500 € … ab 5.000 €) |
+| **Nach Standort** | Balken in Institutsfarben + Quote-Linie, Institute in konfigurierter Reihenfolge |
+| **Nach Verkäufer:in** | Quote-Ranking (höchste oben, n am Balken); „Ohne Zuordnung (v.a. Legacy)" immer am Ende |
 
 ### Filter
 
-- **Von / Bis**: Zeitraum einschränken
-- **Datumsbasis**: Vertragsabschluss (Standard) oder Widerruf-Datum
-- **Verkäufer:in**: Nur Widerrufe einer bestimmten Person
-- **Standort**: Wird über die globale Standort-Auswahl (oben im Hub) gesteuert
+- **Zeitraum** (Standard: letzte 12 Monate) und **Datumsbasis** im Seitenkopf
+- **Verkäufer:in**-Dropdown
+- **Standort** über die globale Sidebar-Auswahl — wirkt serverseitig auf jede Karte
+- **CSV-Export** im Seitenkopf: 8 Quellen (`revocation-*`), alle mit Zeitraum- und Standort-Filter, Datumsbasis der Exporte = Vertragsabschluss
 
 ---
 
@@ -44,110 +56,52 @@ Mit der Umschaltung auf **Widerruf-Datum** werden Widerrufe dem Monat zugeordnet
 ### Architektur
 
 ```
-RevocationStatisticsService     app/Services/RevocationStatisticsService.php
-RevocationStatisticsController  app/Http/Controllers/RevocationStatisticsController.php
-ContractCancellationObserver    app/Observers/ContractCancellationObserver.php
-revocation-statistics.js        public/js/revocation-statistics.js
-revocation-statistics.blade.php resources/views/hub/reports/revocation-statistics.blade.php
-partials/                       resources/views/hub/reports/revocation-statistics/partials/
-widerrufsstatistik-card.blade   resources/views/hub/reports/partials/overview-cards/widerrufsstatistik-card.blade.php
+RevocationStatisticsService      app/Services/RevocationStatisticsService.php
+RevocationStatisticsController   app/Http/Controllers/RevocationStatisticsController.php
+ContractCancellationObserver     app/Observers/ContractCancellationObserver.php (via #[ObservedBy] am Model)
+revocation-statistics.js         public/js/revocation-statistics.js
+revocation-statistics.blade.php  resources/views/hub/reports/revocation-statistics.blade.php
+partials/                        resources/views/hub/reports/revocation-statistics/partials/ (Header + 8 Karten)
+widerrufsstatistik-card          resources/views/hub/reports/partials/overview-cards/widerrufsstatistik-card.blade.php
 ```
 
-### Datenmodell
+### Datenmodell & Fallermittlung
 
-- **`contract_cancellations`**: Haupttabelle — ein Eintrag pro Widerruf
-  - `contract_id`: Verknüpfung mit `contracts`
-  - `cancellation_date`: Datum des Widerrufs
-  - `reason`: Widerrufsgrund (Enum: `ContractCancellation::REASON_*`)
-  - `reaction`: Ergebnis (Enum: `ContractCancellation::REACTION_*`)
-  - `status`: Bearbeitungsstatus (`offen`, `in_verhandlung`, `abgeschlossen`)
-  - `first_session_completed`: Boolean — hatte die Kund:in schon eine Behandlung?
-  - `deleted_at`: SoftDelete
+Zwei Widerrufsquellen, dedupliziert auf **einen Fall je Vertrag** (`cancellationCases()`):
 
-- **`contracts`**: Verträge
-  - `signed_at`: Vertragsabschluss-Datum (Basis für Datums-Filterung)
-  - `branch_id`: Phorest-Standort-ID (String)
-  - `seller_id`: FK → `users`
-  - `total_value_cents`, `monthly_amount_cents`: Werte in Cent
+1. `contract_cancellations` JOIN `contracts` (bei mehreren Sätzen zählt der neueste; `contracts.deleted_at` wird gefiltert — **`contract_cancellations` hat KEINE SoftDeletes**, anders als eine frühere Version dieser Doku behauptete)
+2. **Synthetische Legacy-Fälle**: `contracts.status = 'cancelled'` ohne Cancellation-Satz → Grund `keine_angabe`, Reaktion `widerruf_akzeptiert`, Widerruf-Datum = `cancelled_at ?? signed_at`
 
-### Service-Schicht
+„Echt" = `reaction = widerruf_akzeptiert` ODER `contracts.status = 'cancelled'`. Vertrags-Basis = alle Verträge mit `status != draft` (inkl. Legacy), zeitlich immer über `signed_at`. Tage-Berechnung und Histogramm laufen in PHP (kein `DATEDIFF` — SQLite-testbar); Monats-Gruppierung über den `monthExpr()`-Guard (DATE_FORMAT/strftime).
 
-**`RevocationStatisticsService`** berechnet alle Kennzahlen. Zentrale Methoden:
+### Service-Methoden
 
-| Methode | Beschreibung |
-|---|---|
-| `getKpis(filters)` | Gesamtzahlen, Quoten, Status-Zähler |
-| `getTrend(filters)` | Monatlicher Verlauf (Widerrufe + Verträge) |
-| `getByReason(filters)` | Aufschlüsselung nach Grund |
-| `getByReaction(filters)` | Reaktions-Matrix |
-| `getByBranch(filters, branchNames)` | Pro Standort |
-| `getBySeller(filters)` | Pro Verkäufer:in |
-| `getDaysBetween(filters)` | Histogramm + Statistiken |
-| `getFirstSessionEffect(filters)` | Erst-Kund:innen-Vergleich |
-| `getContractValueComparison(filters)` | Vertragswert-Analyse |
-| `getSellers(filters)` | Verkäufer-Liste für Filter-Dropdown |
-| `static flushCache()` | Cache invalidieren (via Version-Counter) |
+`getKpis`, `getTrend` (lückenlose Monatsachse), `getByReason`, `getByReaction`, `getByBranch(filters, branchNames)` (SortsBranchIds!), `getBySeller` (Quote-Ranking, „Ohne Zuordnung" letzte Zeile), `getDaysBetween`, `getFirstSessionEffect`, `getContractValueComparison`, `getSellers`, `previousPeriodFilters`, `static flushCache()`.
 
-**Wichtig**: `buildBaseQuery()` JOINt `contract_cancellations` mit `contracts` und filtert `deleted_at` für beide Tabellen manuell (da Raw-Queries, kein Eloquent SoftDeletes).
+Gemeinsame Filter: `date_from`, `date_to`, `date_mode` (`signed_at`|`cancellation_date`), `branch_id`, `seller_id` — **`branch_id` wirkt in jeder Teilabfrage**.
 
 ### Cache
 
-- Treiber: `database`
-- TTL: 3600 Sekunden
-- Version-Counter: `revocation-stats:version` — wird bei `flushCache()` inkrementiert
-- Cache-Key-Schema: `revocation-stats:v{version}:{methode}:{filter-hash}`
-- Invalidierung: `ContractCancellationObserver` ruft `flushCache()` bei `created`, `updated`, `deleted`, `restored` auf
+`Cache::remember` mit Version-Counter `revocation-stats:version`, TTL 3600, Key `revocation-stats:v{v}:{methode}:{md5(filter)}`. Invalidierung: `ContractCancellationObserver` (created/updated/deleted) **und** `ContractObserver` (Vertragsänderungen beeinflussen Basis und Storni).
 
-### Datumsbasis-Logik
+### Routen & Permission
 
-Der `date_mode`-Parameter (`signed_at` oder `cancellation_date`) steuert, welches Datum für die Zeitraum-Filterung verwendet wird:
-- `signed_at` (Standard): Filter auf `contracts.signed_at` — bewertet Vertragsqualität
-- `cancellation_date`: Filter auf `contract_cancellations.cancellation_date` — bewertet eingehende Widerrufe
-
-### Permission
-
-| Permission | Bezeichnung |
-|---|---|
-| `view_report_revocation_statistics` | Bericht: Widerrufsstatistik |
-
-Wird in `PermissionSeeder` definiert und für `admin`/`super_admin` automatisch vergeben.
-
-### Routen
-
-Alle Routen unter `hub.` prefix mit `check.hub` Middleware und `can:view_report_revocation_statistics` Gate:
-
-```
-GET /hub/reports/revocation-statistics            hub.reports.revocation-statistics
-GET /hub/reports/revocation-statistics/kpis       hub.reports.revocation-statistics.kpis
-GET /hub/reports/revocation-statistics/trend      hub.reports.revocation-statistics.trend
-GET /hub/reports/revocation-statistics/by-reason  hub.reports.revocation-statistics.by-reason
-GET /hub/reports/revocation-statistics/by-reaction
-GET /hub/reports/revocation-statistics/by-branch
-GET /hub/reports/revocation-statistics/by-seller
-GET /hub/reports/revocation-statistics/days-between
-GET /hub/reports/revocation-statistics/first-session
-GET /hub/reports/revocation-statistics/contract-value
-```
+10 Routen unter `can:view_report_revocation_statistics` (`routes/web.php`): `index, kpis, trend, by-reason, by-reaction, by-branch, by-seller, days-between, first-session, contract-value`. Permission via Migration `2026_07_31_100000_add_revocation_statistics_report_permission.php` (+ `PermissionSeeder`), Label „Bericht: Widerruf-Statistik", `group_key = berichte`.
 
 ### Frontend
 
-**`revocation-statistics.js`** enthält `revocationStatisticsApp()` als Alpine.js-Funktion.
+`revocationStatisticsApp()` (eine Alpine-App) nach Bauplan: acquireChart-Muster mit animierten Übergängen (**ECharts**, nicht mehr Chart.js wie in der Ur-Spez), stabile Serien-ids, `sectionError` je Karte, deklarierte `_seq`-Guards, `dataVersion` in allen `x-for`-Keys, Trend-Tabelle via `chart-table.js`, Standort-Balken über `BranchColorService`.
 
-**Wichtig**: Chart-Instanzen werden in Closure-Scope-Variablen (`let trendChartInstance`, ...) gespeichert, **nicht** als Alpine-Properties. Das verhindert den Chart.js-Proxy-Bug (Alpine reaktiviert Chart-Objekte, was zu Fehlern führt).
+### Registries
 
-Charts:
-- Trend: Bar+Line Combo (Chart.js)
-- Widerrufsgrund: Horizontaler Balken
-- Reaktion: Doughnut
-- Histogramm (Tage): Balken
-
-### SQLite-Kompatibilität
-
-Die Queries verwenden `DATEDIFF(date1, date2)` — eine MySQL-spezifische Funktion. Tests die diese Queries auslösen werden in der SQLite-Test-Datenbank übersprungen (`markTestSkipped`). Auf dem Produktiv-System (MySQL) laufen alle Endpunkte fehlerfrei.
+- `GlobalSearchService::PAGES` — Eintrag mit allen Sektionstiteln als Keywords
+- `ReportExportService::SOURCES` — 8 Quellen `revocation-*` (filters `['range','branch']`) + Resolver
+- Berichte-Übersichtskachel mit KPI-Vorschau (per-id-Lookup auf das KPI-Array)
 
 ### Tests
 
+```bash
+php artisan test --filter=RevocationStatisticsPageTest
 ```
-tests/Feature/RevocationStatisticsTest.php   — Auth, Permission, HTTP-Endpunkte
-tests/Unit/RevocationStatisticsServiceTest.php — Cache, Median, Histogramm
-```
+
+8 Tests (SQLite): Seiten-Skelett, Permission, Legacy-Union + beide Volumen, Datumsbasis-Umschaltung, Branch-Filter, Verkäufer-Ranking, Export-Quellen-Deklaration, Trend-CSV.
