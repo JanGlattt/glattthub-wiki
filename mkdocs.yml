@@ -157,6 +157,7 @@ nav:
     - Besucher & Buchungs-Funnel: MATOMO-BESUCHER-TRACKING.md
     - Mitarbeiterperformance: STAFF-PERFORMANCE.md
     - Widerruf-Statistik: REVOCATION-STATISTICS.md
+    - HR-Kennzahlen: HR-KENNZAHLEN.md
   - API-Integrationen:
     - WordPress-Buchungswidget: WORDPRESS-BUCHUNGSWIDGET.md
     - REST-API:

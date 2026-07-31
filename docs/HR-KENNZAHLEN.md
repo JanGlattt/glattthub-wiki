@@ -5,9 +5,7 @@ Verfügbarkeit und Struktur — auf Ebene glattt gesamt und je Institut.
 Zielgruppe sind Geschäftsführung und kaufmännische Leitung, nicht die
 Standortsteuerung (dafür gibt es die [Mitarbeiterperformance](STAFF-PERFORMANCE.md)).
 
-> **Stand August 2026:** Die Datenschicht steht (askDANTE-Spiegel, Zuordnung zu
-> Phorest, Vergütungsdaten). Die Berichtsseite `/hub/reports/hr-kennzahlen` wird
-> darauf aufgesetzt.
+**Seite:** `/hub/reports/hr-kennzahlen`
 
 ---
 
@@ -21,6 +19,37 @@ Standortsteuerung (dafür gibt es die [Mitarbeiterperformance](STAFF-PERFORMANCE
 | Soll- und Ist-Arbeitszeit, Krankheit, Urlaub, Pausen | askDANTE | nächtlich, rollierend 3 Monate |
 | Behandlungen, Beratungsgespräche, Körperzonen | Phorest (über den Hub) | nächtlich 03:00 |
 | Gehälter und Boni | im Hub gepflegt | manuell |
+
+### Was die Seite zeigt
+
+Vier Blöcke, jeder als zweiseitige Karte (Diagramm als Standard, Tabelle über das
+Register am Kartenrand):
+
+| Karte | Inhalt |
+|---|---|
+| **Kapazität: Soll gegen Ist** | Vertragsstunden, geleistete Stunden und Stundensaldo je Monat |
+| **Produktivität je Stunde** | Umsatz, Körperzonen und Behandlungen je gearbeiteter Stunde, dazu die Produktivstundenquote |
+| **Personalkosten und Kostenquote** | Brutto, Arbeitgeber-Gesamtkosten und Kostenquote — nur mit `view_hr_salaries` |
+| **Abwesenheiten und Krankenquote** | Kranktage nach Kurz- und Langzeit, alle Abwesenheitsgründe |
+| **Eintritte, Austritte und Fluktuation** | Personalbewegungen und Fluktuationsquote je Monat |
+| **Befristungs- und Probezeit-Radar** | Was in den nächsten 90 Tagen ausläuft (Einzelfallliste) |
+| **Personalstruktur** | Betriebszugehörigkeit, Beschäftigungsgrad, Alter, Geschlecht |
+| **Institutsvergleich** | Alle Kennzahlen je Standort |
+| **Mitarbeiter im Detail** | Eine Zeile je Person, sortierbar |
+| **Datenqualität** | Offene Pflegepunkte, die Kennzahlen verzerren |
+
+### Zwei Dinge, die Zahlen erklären
+
+**Mitarbeiter ohne Zeiterfassung.** Die Geschäftsführung stempelt nicht. Solche
+Personen fließen in Kopfzahl, VZÄ und Personalkosten ein, aber **nicht** in
+Stundensaldo und Produktivität — sonst entstünde ein Minus, das niemand aufholen
+kann. In der Detailtabelle sind sie mit „ohne Zeiterfassung" markiert.
+
+**Kurz- und Langzeitkrankheit getrennt.** 2025 stammte der Großteil der Kranktage
+aus wenigen Langzeitfällen; die Quote lag zeitweise über 15 %, obwohl das
+alltägliche Ausfallrisiko unverändert niedrig war. Kurzzeitkrankheit ist die Größe
+für die Einsatzplanung, Langzeitkrankheit eine Strukturgröße. Eine Episode gilt ab
+30 zusammenhängenden Tagen als Langzeitfall.
 
 ### Was gepflegt sein muss
 
@@ -165,6 +194,49 @@ kein einziges Mal auf `PAID` — dasselbe Statusprofil wie die No-Show-Spalte. A
 Mitarbeiter und `ends_on` der zum Stichtag gültigen Beschäftigungsperiode. Beides
 allein reicht nicht: Es gibt Mitarbeiterinnen mit befristeter Periode ohne
 Austrittsdatum und umgekehrt.
+
+### Aufbau der Seite
+
+Nach dem Statistik-Bauplan: `HrKpiController` liefert die View, alle Daten kommen
+über JSON-Endpoints unter `/hub/reports/hr-kennzahlen/…`, die Rechnerei steckt in
+`HrKpiService`. Die Alpine-App liegt in `public/js/hr-kpis.js`, die Blades in
+`resources/views/hub/reports/hr-kpis/partials/`.
+
+Zwei Karten sind bewusst **ohne** Diagramm-Register gebaut (enge Ausnahme des
+Bauplans): das Befristungs-Radar und die Detailtabelle zeigen Einzelfälle statt
+Aggregate, die Karte „Datenqualität" ist eine Hinweisliste.
+
+Gehaltsbezogene Werte werden **serverseitig** entfernt, wenn `view_hr_salaries`
+fehlt — die KPI-Zeile filtert ihr Portfolio, der Institutsvergleich entfernt die
+Kostenspalten, der `costs`-Endpoint antwortet mit 403. Die Kostenkarte wird gar
+nicht erst eingebunden.
+
+### Fallen bei den Kennzahlen
+
+- **Abwesenheiten nicht doppelt abziehen.** askDANTE setzt die Soll-Zeit an
+  Kranken-, Urlaubs- und Feiertagen bereits auf 0 — Soll minus Ist **ist** der
+  Stundensaldo.
+- **Institutszuordnung zeitpunktgenau.** Ein Tag zählt zu dem Standort, der in der
+  an diesem Tag gültigen Beschäftigungsperiode stand. Sonst wandert die Historie
+  bei jedem Standortwechsel mit.
+- **Kopfzahl ohne Eintrittsdatum.** Wer kein Eintrittsdatum hat, wird über den
+  Beginn seiner Beschäftigungsperiode geprüft — sonst zählen künftige Kolleginnen
+  rückwirkend mit.
+- **Zeitprofile einzeln nachladen.** `/timeProfiles` listet nur die gemeinsamen
+  Vorlagen; individuelle Profile müssen über `/timeProfiles/{id}` geholt werden
+  (08/2026: 8 gelistet gegenüber 29 referenzierten). Ohne den Nachschlag sind VZÄ
+  und Teilzeitquote falsch.
+- **Pausen-Compliance ist nicht messbar.** askDANTE meldet als genommene Pause
+  immer exakt die gesetzliche Pflichtpause (5.748 von 5.748 Tagen) — eine
+  Compliance-Kennzahl daraus wäre konstant 100 % und wurde deshalb verworfen.
+
+### CSV-Export
+
+Acht Quellen unter der Seite `hr-kennzahlen`: `hr-capacity`, `hr-productivity`,
+`hr-absence`, `hr-turnover`, `hr-structure`, `hr-branches`, `hr-contract-radar`
+und `hr-costs` (letztere hinter `view_hr_salaries`). Das Befristungs-Radar wird
+für den Export **auf Monatssummen verdichtet** — der Export bleibt frei von
+personenbezogenen Daten.
 
 ### Relevante Dateien
 
