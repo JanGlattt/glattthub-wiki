@@ -353,6 +353,23 @@ kleiner), TTF bleibt Fallback und dompdf-Quelle:
   läuft idempotent im Docker-Entrypoint. Ohne Konverter-Tool (lokal) bleibt es
   beim TTF — nichts bricht.
 
+### Bilder: WebP + Anzeigegröße (Juli 2026)
+
+- **Statisch:** `glatttBert.webp` (30 statt 949 KB — das PNG war 901×710 px für
+  einen 56-px-Button, der auf jeder Hub-Seite lädt) und
+  `Hintergrund_alleStanorte.webp` (145 statt 465 KB, 1920 px). Referenzen direkt
+  auf `.webp` (interne App, alle Browser seit ~2020). Ungenutzte Stadtfotos
+  (~2,7 MB) aus dem Repo entfernt (Git-History hat sie).
+- **Instituts-Uploads:** `InstituteController::uploadInstituteImage` verkleinert
+  (max. 2560 px) und konvertiert nach WebP via `ImageOptimizerService`
+  (ImageMagick-CLI, im Docker-Image; lokal ohne ImageMagick wird das Original
+  gespeichert).
+- **Backfill:** `php artisan images:webp-backfill` konvertiert Bestandsbilder,
+  läuft idempotent im Docker-Entrypoint. **Originale werden bewusst nicht
+  gelöscht** — Staging und Prod teilen sich den GCS-Bucket bei getrennten
+  Datenbanken; ein Löschen würde die jeweils andere Umgebung brechen.
+- Instituts-Icons (klein, oft SVG) bleiben unverändert.
+
 ### Mobiler Navigations-Prefetch
 
 `public/js/nav-prefetch.js`: Auf Touch-Geräten feuern `mousedown`/`mouseenter`
