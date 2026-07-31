@@ -61,7 +61,7 @@ RevocationStatisticsController   app/Http/Controllers/RevocationStatisticsContro
 ContractCancellationObserver     app/Observers/ContractCancellationObserver.php (via #[ObservedBy] am Model)
 revocation-statistics.js         public/js/revocation-statistics.js
 revocation-statistics.blade.php  resources/views/hub/reports/revocation-statistics.blade.php
-partials/                        resources/views/hub/reports/revocation-statistics/partials/ (Header + 8 Karten)
+partials/                        resources/views/hub/reports/revocation-statistics/partials/ (Header + 4 Register-Karten: trend, structure, days-between, compare)
 widerrufsstatistik-card          resources/views/hub/reports/partials/overview-cards/widerrufsstatistik-card.blade.php
 ```
 
@@ -86,7 +86,7 @@ Gemeinsame Filter: `date_from`, `date_to`, `date_mode` (`signed_at`|`cancellatio
 
 ### Routen & Permission
 
-10 Routen unter `can:view_report_revocation_statistics` (`routes/web.php`): `index, kpis, trend, by-reason, by-reaction, by-branch, by-seller, days-between, first-session, contract-value`. Permission via Migration `2026_07_31_100000_add_revocation_statistics_report_permission.php` (+ `PermissionSeeder`), Label „Bericht: Widerruf-Statistik", `group_key = berichte`.
+11 Routen unter `can:view_report_revocation_statistics` (`routes/web.php`): `index, kpis, trend, by-reason, by-reaction, by-branch, by-seller, by-zones, days-between, first-session, contract-value`. Permission via Migration `2026_07_31_100000_add_revocation_statistics_report_permission.php` (+ `PermissionSeeder`), Label „Bericht: Widerruf-Statistik", `group_key = berichte`.
 
 ### Frontend
 
@@ -95,7 +95,7 @@ Gemeinsame Filter: `date_from`, `date_to`, `date_mode` (`signed_at`|`cancellatio
 ### Registries
 
 - `GlobalSearchService::PAGES` — Eintrag mit allen Sektionstiteln als Keywords
-- `ReportExportService::SOURCES` — 8 Quellen `revocation-*` (filters `['range','branch']`) + Resolver
+- `ReportExportService::SOURCES` — 9 Quellen `revocation-*` (filters `['range','branch']`, inkl. `revocation-zones`) + Resolver
 - Berichte-Übersichtskachel mit KPI-Vorschau (per-id-Lookup auf das KPI-Array)
 
 ### Tests
@@ -104,4 +104,4 @@ Gemeinsame Filter: `date_from`, `date_to`, `date_mode` (`signed_at`|`cancellatio
 php artisan test --filter=RevocationStatisticsPageTest
 ```
 
-8 Tests (SQLite): Seiten-Skelett, Permission, Legacy-Union + beide Volumen, Datumsbasis-Umschaltung, Branch-Filter, Verkäufer-Ranking, Export-Quellen-Deklaration, Trend-CSV.
+9 Tests (SQLite): Seiten-Skelett (inkl. Dimensions-/Metrik-Umschalter), Permission, Legacy-Union + beide Volumen + KPZ, KPZ-Klassen-Buckets, Datumsbasis-Umschaltung, Branch-Filter, Verkäufer-Ranking, Export-Quellen-Deklaration, Trend-CSV (inkl. KPZ-Spalten).
