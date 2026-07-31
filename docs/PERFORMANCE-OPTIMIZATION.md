@@ -43,7 +43,7 @@ const PRECACHE_ASSETS = [
     '/images/glattt-icon.png',
     '/images/glattt_Alle.svg',
     '/images/glattt-logo.png',
-    '/fonts/Dosis-VariableFont_wght.ttf',
+    '/fonts/Dosis-VariableFont_wght.woff2',
 ];
 ```
 
@@ -138,7 +138,7 @@ Lädt kritische Ressourcen mit hoher Priorität:
 
 ```html
 <!-- Kritische Font (Dosis Variable Font) -->
-<link rel="preload" href="/fonts/Dosis-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="/fonts/Dosis-VariableFont_wght.woff2" as="font" type="font/woff2" crossorigin>
 
 <!-- Kritische CSS (einzige Datei seit März 2026) -->
 <link rel="preload" href="/css/theme_glattt.css" as="style">
@@ -317,6 +317,48 @@ function showDashboardLoading() {
 ```
 
 ---
+
+## 7. Auslieferungs-Kompression & Fonts (Juli 2026)
+
+### Brotli/gzip in Produktion
+
+nginx (Docker) komprimiert seit 07/2026 alle Text-Antworten — vorher ging
+**alles unkomprimiert** über die Leitung (663 KB Theme-CSS!):
+
+- `docker/nginx.conf`: `brotli on` (Modul `nginx-mod-http-brotli`) + `gzip on`
+  als Fallback, jeweils mit `*_static on`.
+- `Dockerfile`: statische CSS/JS/SVG/TTF werden beim Build mit `brotli -q 11`
+  und `gzip -9` **vorkomprimiert** (`.br`/`.gz` neben der Datei) — nginx liefert
+  sie direkt aus, on-the-fly komprimiert wird nur noch Dynamisches (HTML/JSON).
+- Gemessene Raten: `theme_glattt.css` 663 → 87 KB (Brotli), `sales-statistics.js`
+  228 → 36 KB.
+- Statische Assets: `Cache-Control: public, max-age=2592000` (30 Tage) — alle
+  veränderlichen Dateien tragen `?v=filemtime`-Buster.
+- **Achtung lokal (MAMP/Apache):** keine Kompression konfiguriert — lokale
+  Messungen entsprechen dem alten Prod-Verhalten.
+
+### WOFF2-Fonts (Standard + Admin-Schriftwechsler)
+
+Alle App-Schriften werden bevorzugt als **WOFF2** ausgeliefert (~50–60 %
+kleiner), TTF bleibt Fallback und dompdf-Quelle:
+
+- **Dosis (Standard):** `public/fonts/Dosis-VariableFont_wght.woff2` (48 statt
+  118 KB), registriert in `theme_glattt.css`, Preload in `partials/app-font.blade.php`.
+- **Custom-Schriften** (Admin → Schriftarten, z. B. Lato): Beim Aktivieren
+  konvertiert `WoffConverterService` (CLI `woff2_compress`, Alpine-Paket `woff2`
+  im Docker-Image) die Google-Fonts-TTFs; beide Formate liegen in `font_files`
+  (`file`/`file_woff2`). Auslieferung über `/api/fonts/{weight}.woff2` bzw.
+  `.ttf`; `FontSettingsService::webFaces()` liefert je Gewicht beide URLs.
+- **Backfill:** `php artisan fonts:woff2-backfill` konvertiert Bestandsdateien,
+  läuft idempotent im Docker-Entrypoint. Ohne Konverter-Tool (lokal) bleibt es
+  beim TTF — nichts bricht.
+
+### Mobiler Navigations-Prefetch
+
+`public/js/nav-prefetch.js`: Auf Touch-Geräten feuern `mousedown`/`mouseenter`
+erst nach dem Abheben des Fingers — der Prefetch von `wire:navigate` startet
+deshalb dort per `touchstart` (~100–200 ms Vorsprung). Details zu Skeletons &
+Navigation: `SEITENUEBERGAENGE.md`.
 
 ## Service Worker Update
 

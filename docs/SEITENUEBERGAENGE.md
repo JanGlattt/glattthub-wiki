@@ -41,6 +41,9 @@ Regeln:
   funktionieren). Ausnahmen: Datei-Downloads/PDFs, externe Links,
   `target="_blank"`, `/admin/` (Filament).
 - **Sidebar-Menüpunkte nutzen `wire:navigate.hover`** (Prefetch beim Hover).
+  Auf Touch-Geräten startet der Prefetch per `touchstart`
+  (`public/js/nav-prefetch.js`) — dort gibt es kein Hover, und `mousedown`
+  feuert erst nach dem Abheben des Fingers.
 - **Externe Skripte einer Seite via `@assets`**, nie `@push('scripts')`
   (Race Condition bei SPA-Navigation, siehe `PERFORMANCE-OPTIMIZATION.md`).
   Inline-`<script>` mit Alpine-Komponenten darf in `@push` bleiben.
