@@ -1,6 +1,6 @@
 # Vergangene Beratungsgespräche
 
-Historische Analyse aller Beratungstermine aus der Phorest-Terminhistorie: monatliche Entwicklung, No-Show-Verhalten, Wochentag/Uhrzeit-Muster, No-show-Matrix („Analyse Gigi") und Buchungseingänge.
+Historische Analyse aller Beratungstermine aus der Phorest-Terminhistorie: Beratungsgespräche-Analyse (monatliche Entwicklung, No-Shows, Ampel-Tabelle), Wochentag/Uhrzeit-Muster, No-show-Matrix („Analyse Gigi") und Buchungseingänge.
 
 **Zugang:** Hub → Berichte → Vergangene Beratungsgespräche
 **URL:** `/hub/reports/past-consultations`
@@ -29,15 +29,19 @@ weiterhin konzernweite Zahlen — direkt neben korrekt gefilterten KPIs.
 | Karte | Standard-Ansicht | Tabellen-Lasche |
 |---|---|---|
 | **KPI-Zeile** | personalisierbare Kennzahlen (kpi-dashboard, Drag & Drop) | — |
-| **Monatliche Beratungsgespräche** | Ampel-Tabelle Monat × Institut (Anzahl oder No-Show %) mit Wochen-Drilldown und Klick auf jede Zelle → Termine-Liste; begründete Ausnahme ohne Register | — |
-| **Trend-Analyse** | Balken (Beratungen) + No-Show-Quote als Linie; umschaltbar auf Linien je Standort; Zoom-Leiste | Monate → Quartal/Jahr aufklappbar, bei „Alle Institute" mit Standort-Spalten |
-| **No Show-Analyse** | gestapelte Balken Stattgefunden/Nicht stattgefunden + Quote; umschaltbar auf Quoten je Standort | Monate → Quartal/Jahr aufklappbar |
+| **Beratungsgespräche-Analyse** | Diagramm mit Metrik-Umschalter: **Beratungen** (Balken + No-Show-Quote als Linie) oder **No-Shows** (gestapelt Stattgefunden/Nicht stattgefunden + Quote); umschaltbar auf Linien je Standort; Zoom-Leiste | die Ampel-Tabelle Monat × Institut (Anzahl oder No-Show %) mit Wochen-Drilldown und Klick auf jede Zelle → Termine-Liste |
 | **Wochentag & Uhrzeit** | Heatmap Wochentag × Stunde (Gesamt oder Mini-Heatmaps je Standort), Filter-Drawer (Status, Buchungstyp, Zeitraum) | dieselben Werte als Zahlen-Tabelle mit Summen |
-| **No-show-Matrix** („Analyse Gigi") | **neu:** Verlaufs-Diagramm der gewählten Kennzahl je Institut | die bekannte Ampel-Matrix (Quote/Gebucht/Erschienen, Färbungs-Vergleichsmodus, „Frühere Zeiträume laden") |
+| **No-show-Matrix** („Analyse Gigi") | Verlaufs-Diagramm der gewählten Kennzahl je Institut | die bekannte Ampel-Matrix (Quote/Gebucht/Erschienen, Färbungs-Vergleichsmodus, „Frühere Zeiträume laden") |
 | **Buchungseingänge** | Kalender (Buchungszeitpunkt statt Termindatum); begründete Ausnahme ohne Register | — |
 
-Beide Chart-Karten haben Buchungstyp-Umschalter (Alle/Online/Offline) und eine
-Zoom-Leiste (Standard: letzte 12 Monate); die Auswahl bleibt beim Neuzeichnen erhalten.
+**Zusammenlegung 07/2026:** Die früheren drei Karten „Monatliche
+Beratungsgespräche", „Trend-Analyse" und „No Show-Analyse" basierten alle exakt
+auf demselben Monats-Datensatz und sind jetzt EINE Karte. Sie teilt sich einen
+**Buchungstyp-Umschalter** (Alle/Online/Offline — wirkt auf Diagramm und Tabelle
+gemeinsam; die KPI-Zeile zeigt immer alle Buchungen) und eine Zoom-Leiste
+(Standard: letzte 12 Monate); Auswahl und Zoom bleiben beim Neuzeichnen erhalten.
+Die früheren Quartal/Jahr-Summen-Tabellen entfielen — Aggregate liefert der
+CSV-Export (`consultation-noshow-monthly`).
 
 ### Datenbasis & Sync
 
@@ -53,7 +57,7 @@ nie final gepflegte Termine; stornierte/gelöschte Termine zählen nicht.
 
 | Quelle | Inhalt |
 |--------|--------|
-| `consultation-noshow-monthly` | No-show-Statistik pro Monat & Institut (deckt Monatstabelle, beide Charts und die Matrix auf Monatsebene) |
+| `consultation-noshow-monthly` | No-show-Statistik pro Monat & Institut (deckt die Beratungsgespräche-Analyse und die Matrix auf Monatsebene, inkl. Quartal/Jahr-Aggregation per Tabellenkalkulation) |
 | `consultation-weekday-time` | Termine/Erschienen/No-Shows/Quote je Wochentag & Stunde |
 | `consultation-booking-days` | Buchungseingänge pro Tag & Institut (beide Quellen, dedupliziert) |
 
@@ -66,8 +70,10 @@ nie final gepflegte Termine; stornierte/gelöschte Termine zählen nicht.
 ```
 ReportController (app/Http/Controllers/) — Ausschnitt dieser Seite
 ├── pastConsultations()             → Blade-View
-├── consultationMonthlyStatsFast()  → JSON: Monatsdaten (KPIs, Tabelle, Charts) — gecacht (ReportsOverviewCache)
-├── consultationMonthlyStats()      → JSON: Monatsdaten mit Buchungstyp-Filter (+ weeks/days)
+├── consultationMonthlyStatsFast()  → JSON: DER Monats-Datensatz der Analyse-Karte (KPIs, Chart, Ampel-Tabelle)
+│                                     — gecacht (ReportsOverviewCache, Params: booking_type + branch_id)
+├── consultationMonthlyStats()      → JSON: Monatsdaten (+ weeks/days) — von dieser Seite seit der
+│                                     Zusammenlegung 07/2026 NICHT mehr genutzt (nur Berichte-KPI-Vorschau)
 ├── consultationWeeklyForMonth()    → JSON: Wochen-Drilldown eines Monats
 ├── consultationNoShowMatrix()      → JSON: Matrix (Granularität month/week/day, offset-Paging) — gecacht
 ├── weekdayTimeAnalysis()           → JSON: Heatmap Wochentag × Stunde
@@ -75,6 +81,14 @@ ReportController (app/Http/Controllers/) — Ausschnitt dieser Seite
 ├── consultationBookingCalendar()   → JSON: Buchungseingänge (booking_trackings + Phorest, dedupliziert)
 └── consultationBookingDay()        → JSON: Buchungen eines Tages (Modal)
 ```
+
+**Ein Datensatz für die ganze Analyse-Karte:** Vor der Zusammenlegung hielten
+Monatstabelle, Trend- und No-Show-Chart **drei getrennte Buchungstyp-Zustände**
+und luden denselben Monats-Datensatz bis zu **dreimal**. Jetzt gibt es einen
+gemeinsamen `bookingTypeFilter` (`setBookingType()`), einen Load über
+`/consultation-monthly/fast` und ein Chart (`renderAnalysisChart()`), das je
+nach Metrik/Ansicht nur andere Serien aus demselben Datensatz zeichnet. Die
+KPI-Zeile hängt bewusst am ungefilterten `monthlyStats` („Alle Buchungen").
 
 **Alle Endpoints wenden `branch_id` an** (seit 07/2026 — vorher ignorierten
 `consultation-monthly`, `…/fast`, `consultation-weekly` und `no-show-matrix`
@@ -90,9 +104,9 @@ waren tot (kein Aufrufer) und wurden mitsamt Routen entfernt.
 | Datei | Zweck |
 |-------|-------|
 | `resources/views/hub/reports/past-consultations.blade.php` | Seiten-Skelett (aus Partials komponiert; vorher 98-KB-Monolith) |
-| `resources/views/hub/reports/past-consultations/partials/*.blade.php` | Header/Sync, Monatstabelle, Trend, No-Show, Wochentag-Heatmap, Matrix, Kalender, 2 Modals |
-| `public/js/past-consultation-stats.js` | Haupt-Alpine-App: Loader (sectionError je Karte), KPI-Berechnung, chart-table-Modelle, Sync/Modals (~600 Zeilen toter Chart.js-Code entfernt) |
-| `public/js/past-consultation-stats-chart2.js` | ECharts-Renderer Trend + No-Show (acquireChart-Muster, stabile Serien-ids, animierte Übergänge) |
+| `resources/views/hub/reports/past-consultations/partials/*.blade.php` | Header/Sync, Beratungsgespräche-Analyse, Wochentag-Heatmap, Matrix, Kalender, 2 Modals |
+| `public/js/past-consultation-stats.js` | Haupt-Alpine-App: Loader (sectionError je Karte), KPI-Berechnung, Buchungstyp (`setBookingType`), Sync/Modals |
+| `public/js/past-consultation-stats-chart2.js` | ECharts-Renderer der Analyse-Karte (`renderAnalysisChart`, Metrik × Ansicht; acquireChart-Muster, stabile Serien-ids, animierte Übergänge) |
 | `public/js/weekday-time-analysis.js` | Heatmap-Karte (eigene App, Register Heatmap ⇄ Tabelle) |
 | `public/js/no-show-matrix.js` | Matrix-Karte (eigene App, neu mit Verlaufs-Diagramm + Branch-Filter) |
 | `app/Services/ReportExportService.php` | CSV-Quellen `consultation-*` |
