@@ -43,8 +43,9 @@ die alte Ansicht, bis die neue Antwort da ist. Fällt ein Endpoint aus, zeigt
 laden unabhängig weiter. Jede Karte hat ein Info-Panel (ℹ️) mit Erklärung,
 Spalten, Anomalien und Datenquelle.
 
-Einzige Karte ohne Register ist die **Mitarbeiter-Übersicht** (Ampel-Matrix über
-8 Zeiträume — als begründete Ausnahme rein tabellarisch).
+Einzige Karte ohne Register ist die **Tagesmessung** (Ampel-Matrix über 10 Zeiträume
+bzw. 6–24 Monate — als begründete Ausnahme rein tabellarisch: für 30 Wertspalten
+gibt es keine sinnvolle Diagrammform).
 
 ### Sektionen
 
@@ -123,9 +124,13 @@ das frühere Karten-Raster „Top 8 je Standort").
 - **Übersicht**: Beratungen, Abschlüsse, Quote, Ø KPZ
 - **Beratungsliste**: Alle Beratungen mit Datum, Uhrzeit, Standort, Typ, Ergebnis (Abschluss/Ganzkörper/Kein Abschluss), Körperzonen, Vertragswert
 
-#### Mitarbeiter-Übersichtstabelle (8 Zeiträume)
+#### Tagesmessung (Ampel-Matrix)
 
-Breite Tabelle ganz oben auf der Seite mit einer Zeile pro Mitarbeiter und 8 Zeitraum-Spaltengruppen:
+Breite Tabelle ganz oben auf der Seite — der Nachbau der bisher extern gepflegten
+„Tagesmessung" (Google-Sheet). Eine Zeile pro Mitarbeiter, pro Spaltengruppe die
+drei Kernkennzahlen. Zwei Ansichten über den Umschalter im Kartenkopf:
+
+**Ansicht „Zeiträume"** — 10 Spaltengruppen:
 
 | Zeitraum | Beschreibung |
 |----------|-------------|
@@ -133,16 +138,22 @@ Breite Tabelle ganz oben auf der Seite mit einer Zeile pro Mitarbeiter und 8 Zei
 | **Gestern** | Gestriger Tag |
 | **Diese Woche** | Montag bis heute |
 | **Letzte Woche** | Komplette Vorwoche (Mo–So) |
+| **Vorletzte Woche** | Woche davor (Mo–So) |
 | **Dieser Monat** | 1. des Monats bis heute |
 | **Letzter Monat** | Kompletter Vormonat |
+| **Vorletzter Monat** | Monat davor |
 | **Dieses Jahr** | 1. Januar bis heute |
 | **Letztes Jahr** | Komplettes Vorjahr |
 
-Pro Zeitraum werden jeweils drei Metriken angezeigt:
+**Ansicht „Monate"** — die letzten **6, 12 oder 24 Kalendermonate** nebeneinander
+(Spaltenkopf im Format `26.07`), für den Verlauf über das Jahr.
+
+Pro Spaltengruppe werden jeweils drei Metriken angezeigt:
 
 - **BG** — Beratungsgespräche (neutral, keine Farbkodierung)
 - **CR** — Conversion-Rate in % (farbcodiert)
-- **KpZ** — Ø Körperzonen pro Abschluss (farbcodiert)
+- **KpZ** — Ø Körperzonen **pro Beratungsgespräch** (farbcodiert; Nenner sind alle
+  BG des Zeitraums, nicht nur die Abschlüsse)
 
 **Farbkodierung** basiert auf konfigurierbaren Schwellenwerten (global oder pro Standort):
 
@@ -152,19 +163,44 @@ Pro Zeitraum werden jeweils drei Metriken angezeigt:
 | 🟡 Gelb | ≥ 40% | ≥ 2,0 |
 | 🔴 Rot | < 40% | < 2,0 |
 
-**Features:**
+**Gruppierung nach Institut** (Toggle „Nach Institut", Standard: aktiviert):
+Kopfzeile je Standort, darunter dessen Mitarbeiter, abgeschlossen mit einer
+Zwischensumme; die Summe der Institute ergibt die Gesamtsumme im Fuß.
+
+> **Wichtig:** In der gruppierten Ansicht erscheint ein Mitarbeiter mit Einsätzen an
+> zwei Standorten **in beiden Gruppen** mit seinen dortigen Zahlen — sonst würden die
+> Instituts-Zwischensummen nicht aufgehen. Schaltet man die Gruppierung aus, wird er zu
+> einer Zeile zusammengeführt und seine BG-Zahl ist die Summe beider Standorte. Beide
+> Sichten sind korrekt, sie beantworten nur unterschiedliche Fragen.
+
+**Weitere Features:**
 - Sticky erste Spalte (Mitarbeitername) beim Horizontalscrollen
-- Gesamtsumme in der Footer-Zeile (Conversions/Körperzonen aus Rohdaten berechnet)
-- Toggle **„Nur Hub-Nutzer"** (Standard: aktiviert) filtert auf glatttHub-Accounts
-- Badge zeigt aktive Mitarbeiter-Anzahl
-- Sortierung nach Gesamtberatungen im aktuellen Jahr
+- Quoten aus **weniger als 5 Beratungen** werden blass und kursiv dargestellt
+  (eingeschränkte Aussagekraft); der Grund steht im Tooltip der Zelle
+- Zeilen ohne Werte in den sichtbaren Spalten werden ausgeblendet
+- Toggle **„Nur Hub-Nutzer"** (Standard: aktiviert) filtert auf glatttHub-Accounts —
+  blendet zugleich Phorest-Platzhalterprofile (Blocker, Absage-Konten) aus
+- Sortierung innerhalb der Gruppe nach Beratungen im aktuellen Jahr
+- Mobil bricht der Kartenkopf um, die Tabelle scrollt horizontal weiter
 
 **Multi-StaffId-Zusammenführung:** Ein Hub-Nutzer kann mehrere Phorest-StaffIds haben (eine pro Standort). Diese werden automatisch zusammengeführt:
 
 1. Über `user_id` aus der `users`-Tabelle (Hub-Account)
 2. Über identischen Namen aus der `phorest_staff`-Tabelle (Fallback für Staff ohne Hub-Account)
 
-Zusammengeführte Mitarbeiter zeigen alle Standorte kommasepariert.
+Zusammengeführte Mitarbeiter zeigen alle Standorte kommasepariert. In der
+Instituts-Gruppierung greift dasselbe Merging, aber **nur innerhalb eines Standorts**.
+
+##### Abgleich mit der bisherigen Tagesmessung (Google-Sheet, 31.07.2026)
+
+Die BG-Zahlen decken sich (Monatssummen April–Juni: 284/315/272 im Hub gegen
+285/321/275 im Sheet); auf Mitarbeiterebene waren im Juni sieben Personen in allen
+drei Kennzahlen identisch. **CR und KpZ liegen im Hub systematisch 4–8 Punkte
+niedriger**, weil der Hub einen Abschluss nur zählt, wenn der Vertrag **am selben Tag
+im selben Institut** unterschrieben wurde (Definition Jan, 25.07.2026: „nur Verkäufe,
+die direkt im BG stattfinden"). Von 520 Verträgen aus April–Juni traf das auf 463 zu;
+bei den übrigen 57 lag das letzte BG 1–7 Tage (15), 8–30 Tage (14) oder über 30 Tage
+(25) zurück, 8 hatten gar kein BG. Das Sheet zählt diese mit.
 
 #### Zielwerte konfigurieren (Modal)
 
@@ -194,7 +230,9 @@ CSV bereit (Quellen in `ReportExportService::SOURCES`, alle mit Standort-Filter)
 
 | Quelle | Inhalt |
 |--------|--------|
-| `staff-overview` | Mitarbeiter-Übersicht: BG, CR & KpZ je Zeitraum (eine Zeile pro Mitarbeiter × Zeitraum) |
+| `staff-overview` | Tagesmessung: BG, CR & KpZ je Zeitraum (eine Zeile pro Mitarbeiter × Zeitraum) |
+| `staff-overview-branches` | Tagesmessung je Institut: Mitarbeiter-Zeilen standortweise **plus** Instituts-Zwischensummen (Spalte „Zeilenart“) |
+| `staff-monthly-matrix` | Tagesmessung Monatsvergleich: Mitarbeiter × Kalendermonat (feste 12 Monate) |
 | `staff-ranking` | Mitarbeiter-Ranking mit allen Kennzahlen |
 | `staff-branch-comparison` | Standort-Vergleich |
 | `staff-monthly-trend` | Monats-Trend (gesamt + je Institut) |
@@ -226,7 +264,8 @@ StaffPerformanceController (app/Http/Controllers/)
 ├── monthlyTrend()     → JSON: Monatlicher Zeitverlauf
 ├── bodyZones()        → JSON: Körperzonen-Verteilung
 ├── staffDetail()      → JSON: Einzelansicht pro Mitarbeiter
-├── overview()         → JSON: Übersichtstabelle (8 Zeiträume, Staff-Merging)
+├── overview()         → JSON: Tagesmessung (10 Zeiträume, Staff-Merging, Instituts-Gruppen)
+├── monthlyMatrix()    → JSON: Tagesmessung als Monatsvergleich (?months=6|12|24)
 ├── targets()          → JSON: Zielwerte lesen (GET)
 ├── saveTargets()      → JSON: Zielwerte speichern (POST)
 └── preview()          → JSON: 4 Preview-KPIs für Reports-Hauptseite
@@ -258,7 +297,7 @@ StaffPerformanceTarget (app/Models/)
 | `app/Filament/Pages/StaffPerformanceSettings.php` | Filament-Admin: Globale Zielwerte |
 | `resources/views/hub/reports/staff-performance.blade.php` | Haupt-View |
 | `resources/views/hub/reports/staff-performance/partials/header.blade.php` | Seitenkopf + Zurück-Button + Zielwerte-Button |
-| `resources/views/hub/reports/staff-performance/partials/overview-table.blade.php` | Übersichtstabelle (8 Zeiträume) + Hub-only Toggle |
+| `resources/views/hub/reports/staff-performance/partials/overview-table.blade.php` | Tagesmessung: Ansichts-/Monats-Umschalter, Instituts- und Hub-only-Toggle |
 | `resources/views/hub/reports/staff-performance/partials/targets-modal.blade.php` | Zielwerte-Modal (Pill-Buttons, pro Standort) |
 | `resources/views/hub/reports/staff-performance/partials/staff-ranking.blade.php` | Mitarbeiter-Tabelle |
 | `resources/views/hub/reports/staff-performance/partials/branch-comparison.blade.php` | Standort-Vergleich + Chart |
@@ -428,7 +467,8 @@ Migration: `2026_06_25_100000_add_staff_performance_contract_index.php`
 | GET | `/hub/reports/staff-performance/monthly` | Monatlicher Zeitverlauf |
 | GET | `/hub/reports/staff-performance/body-zones` | Körperzonen-Verteilung |
 | GET | `/hub/reports/staff-performance/staff/{staffId}` | Mitarbeiter-Detail |
-| GET | `/hub/reports/staff-performance/overview` | Übersichtstabelle (8 Zeiträume) |
+| GET | `/hub/reports/staff-performance/overview` | Tagesmessung (10 Zeiträume) |
+| GET | `/hub/reports/staff-performance/monthly-matrix` | Tagesmessung als Monatsvergleich (`months`, 1–24, Standard 6) |
 | GET | `/hub/reports/staff-performance/targets` | Zielwerte lesen |
 | POST | `/hub/reports/staff-performance/targets` | Zielwerte speichern |
 | GET | `/hub/reports/staff-performance/preview` | 4 Preview-KPIs |
@@ -474,7 +514,7 @@ Die Staff-Performance-Seite zeigt hunderte Datenzellen, Badges und Charts gleich
 
 | Methode | Vorher | Nachher | Maßnahme |
 |---------|--------|---------|----------|
-| `getStaffOverview()` | 8 Queries (1 pro Zeitraum) | 1 Query | Alle 8 Zeiträume in einer CTE mit `CASE WHEN`-Aggregation; Cache-Key enthält das Tagesdatum (Perioden-Grenzen aus `Carbon::today()`) |
+| `getStaffOverview()` | 8 Queries (1 pro Zeitraum) | 1 Query | Alle Zeiträume in einer CTE; die Zeilen werden in PHP auf die Perioden verteilt (`buildPeriodMatrix()`, geteilt mit `getStaffMonthlyMatrix()`). Cache-Key enthält das Tagesdatum (Perioden-Grenzen aus `Carbon::today()`) |
 | `calculateKpiComparisons()` | 3 Queries | 1 Query | Vorperiode + Vergleich in einer Query (gruppiert nach Monat); übernimmt Branch-Filter **und** Datensichtbarkeits-Scope |
 | `getMonthlyTrend()` | 2 Queries | 1 Query | Ein `GROUP BY Monat, branch_id`, Gesamt wird in PHP aufaddiert |
 | `getStaffMap()` | Jeder Aufruf neu | Instance-Cache | Einmal laden, danach aus `$this->staffMapCache` |
