@@ -30,24 +30,24 @@ Standardmäßig zählt ein Widerruf im Monat des **Vertragsabschlusses** („Wie
 
 ### Sektionen (alle Karten zweiseitig: Diagramm ⇄ Tabelle über das Karten-Register)
 
+Strukturgleiche Auswertungen sind zu Karten mit **Dimensions-Umschalter** zusammengelegt
+(Jan, 31.07.2026); die **Körperzonen** der widerrufenen Verträge laufen überall mit
+(KPIs, Trend-Tooltip/-Tabelle, Vergleichs-Tabellen, Exporte).
+
 | Sektion | Inhalt |
 |---|---|
-| **KPI-Zeile** | personalisierbar (kpi-dashboard): echte Widerrufe, Quote, beide Volumen, Eingänge, Ø Tage, Akzeptierungsquote, offene Fälle … — mit Vorperioden-Vergleich (Quoten in PP) |
-| **Entwicklung über Zeit** | gestapelte Balken (echte Widerrufe + weitere Eingänge) + Quote-Linie; Tabelle nach Jahr/Quartal aufklappbar inkl. Volumen |
-| **Nach Widerrufsgrund** | horizontale Balken; „Keine Angabe" ist durch Legacy-Importe überzeichnet (im Info-Panel erklärt) |
-| **Ergebnisse der Widerrufe** | Donut: akzeptiert/abgelehnt/Upgrade/Downgrade/Korrektur/Laufzeit/offen |
+| **KPI-Zeile** | personalisierbar (kpi-dashboard): echte Widerrufe, Quote, verlorenes/gefährdetes Volumen, **widerrufene/gefährdete Körperzonen (KPZ)**, Eingänge, Ø Tage, Akzeptierungsquote, offene Fälle … — mit Vorperioden-Vergleich (Quoten in PP) |
+| **Entwicklung über Zeit** | gestapelte Balken (echte Widerrufe + weitere Eingänge) + Quote-Linie; Tabelle nach Jahr/Quartal aufklappbar inkl. verlorener KPZ und Volumen |
+| **Struktur der Widerrufe** | Dimensions-Umschalter: **Nach Grund** (Balken; „Keine Angabe" durch Legacy-Importe überzeichnet) · **Nach Ergebnis** (Donut: akzeptiert/abgelehnt/Upgrade/…) · **Erste Sitzung** (Widerrufe mit/ohne erste Behandlung, Akzeptierungsquote + Ø Tage) |
 | **Zeitraum bis Widerruf** | Histogramm (0–7 … über 90 Tage) + Ø/Median im Kartenkopf |
-| **Erste-Sitzung-Effekt** | Widerrufe mit/ohne absolvierte erste Behandlung, je Gruppe Akzeptierungsquote + Ø Tage |
-| **Vertragswert-Analyse** | Widerrufsquote je Wert-Klasse (unter 1.500 € … ab 5.000 €) |
-| **Nach Standort** | Balken in Institutsfarben + Quote-Linie, Institute in konfigurierter Reihenfolge |
-| **Nach Verkäufer:in** | Quote-Ranking (höchste oben, n am Balken); „Ohne Zuordnung (v.a. Legacy)" immer am Ende |
+| **Widerrufsquote im Vergleich** | Dimensions-Umschalter: **Standorte** (Institutsfarben + Quote-Linie, konfigurierte Reihenfolge) · **Verkäufer:innen** (Quote-Ranking, n am Balken, „Ohne Zuordnung" am Ende) · **Vertragswert**-Klassen · **Körperzonen**-Klassen (1–2 … ab 6 KPZ/GK) — identische Tabellen-Spalten inkl. verlorener KPZ |
 
 ### Filter
 
 - **Zeitraum** (Standard: letzte 12 Monate) und **Datumsbasis** im Seitenkopf
 - **Verkäufer:in**-Dropdown
 - **Standort** über die globale Sidebar-Auswahl — wirkt serverseitig auf jede Karte
-- **CSV-Export** im Seitenkopf: 8 Quellen (`revocation-*`), alle mit Zeitraum- und Standort-Filter, Datumsbasis der Exporte = Vertragsabschluss
+- **CSV-Export** im Seitenkopf: 9 Quellen (`revocation-*`, inkl. `revocation-zones`), alle mit Zeitraum- und Standort-Filter und KPZ-Spalten, Datumsbasis der Exporte = Vertragsabschluss
 
 ---
 
@@ -76,13 +76,13 @@ Zwei Widerrufsquellen, dedupliziert auf **einen Fall je Vertrag** (`cancellation
 
 ### Service-Methoden
 
-`getKpis`, `getTrend` (lückenlose Monatsachse), `getByReason`, `getByReaction`, `getByBranch(filters, branchNames)` (SortsBranchIds!), `getBySeller` (Quote-Ranking, „Ohne Zuordnung" letzte Zeile), `getDaysBetween`, `getFirstSessionEffect`, `getContractValueComparison`, `getSellers`, `previousPeriodFilters`, `static flushCache()`.
+`getKpis` (inkl. `lost_zones`/`at_risk_zones`/`sold_zones`), `getTrend` (lückenlose Monatsachse inkl. KPZ), `getByReason`, `getByReaction`, `getByBranch(filters, branchNames)` (SortsBranchIds!), `getBySeller` (Quote-Ranking, „Ohne Zuordnung" letzte Zeile), `getByZoneCount` (KPZ-Klassen), `getDaysBetween`, `getFirstSessionEffect`, `getContractValueComparison`, `getSellers`, `previousPeriodFilters`, `static flushCache()`.
 
 Gemeinsame Filter: `date_from`, `date_to`, `date_mode` (`signed_at`|`cancellation_date`), `branch_id`, `seller_id` — **`branch_id` wirkt in jeder Teilabfrage**.
 
 ### Cache
 
-`Cache::remember` mit Version-Counter `revocation-stats:version`, TTL 3600, Key `revocation-stats:v{v}:{methode}:{md5(filter)}`. Invalidierung: `ContractCancellationObserver` (created/updated/deleted) **und** `ContractObserver` (Vertragsänderungen beeinflussen Basis und Storni).
+`Cache::remember` mit Version-Counter `revocation-stats:version`, TTL 3600, Key `revocation-stats:s{schema}:v{v}:{methode}:{md5(filter)}`. `CACHE_SCHEMA` bei Änderungen am Antwort-Format hochzählen — sonst serviert der Cache nach dem Deploy bis zu 1h alte Strukturen. Invalidierung: `ContractCancellationObserver` (created/updated/deleted) **und** `ContractObserver` (Vertragsänderungen beeinflussen Basis und Storni).
 
 ### Routen & Permission
 
