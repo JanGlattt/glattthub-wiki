@@ -138,6 +138,11 @@ damit mehrere Institute gleichzeitig ins Bild passen.
 | **Diese Woche** (fixiert) | BG und CR seit Montag |
 | **Monatsblöcke** | die letzten 4, 6 oder 12 Kalendermonate — je BG, CR, KpZ |
 
+**Leserichtung: neu → alt.** Der laufende Monat steht direkt neben den Tagesspalten,
+nach rechts geht es in die Vergangenheit. Innerhalb eines aufgeklappten Monats gilt
+dasselbe: zuerst die Monatssumme („Σ 26.07"), dann die Kalenderwochen absteigend
+(KW31, KW30, …). Der CSV-Export bleibt davon unberührt und sortiert chronologisch.
+
 Die beiden Tagesblöcke und die Mitarbeiterspalte bleiben beim seitlichen Scrollen
 stehen (`position: sticky`), damit die Zuordnung beim Blick nach rechts erhalten bleibt.
 
@@ -211,8 +216,13 @@ bei den übrigen 57 lag das letzte BG 1–7 Tage (15), 8–30 Tage (14) oder üb
 - **`table-layout: fixed` ist Pflicht**, nicht Kosmetik: Ohne feste Spaltenbreiten
   dehnen breite Blocklabels („Diese Woche") ihre Spalten, während die `left`-Offsets
   der fixierten Spalten aus CSS-Variablen kommen — Kopf und Werte laufen dann
-  sichtbar gegeneinander. Breiten stehen in `--mx-name/-bg/-cr/-kpz`, die Tabelle
-  bekommt ihre Gesamtbreite als `calc()` aus dem Spaltenmodell.
+  sichtbar gegeneinander. Breiten stehen in `--mx-name/-bg/-cr/-kpz`, die aus dem
+  Spaltenmodell berechnete Summe wird zur **`min-width`**.
+- Die Tabelle läuft auf `width: 100%` und nutzt damit die Kartenbreite aus; der
+  Browser dehnt die Spalten dabei proportional. Deshalb werden die sticky-Offsets
+  **nach dem Rendern gemessen** (`_syncMatrixOffsets()` schreibt `--mx-off-1…4`) —
+  feste `calc()`-Werte aus den Variablen säßen bei gedehnten Spalten daneben. Der
+  Verifikationslauf prüft das über den Versatz zwischen Kopf- und Datenzellen.
 - `thead`, `tbody`, `tfoot` und `colgroup` werden als HTML-Strings gebaut
   (`x-html`) — bei ~3.000 Zellen wäre ein Alpine-Scope je Zelle spürbar träge.
   Der Klick auf die Monatsköpfe läuft deshalb über Event-Delegation am Container
