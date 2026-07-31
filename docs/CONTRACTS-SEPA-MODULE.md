@@ -16,7 +16,9 @@ Nach dem Anhängen:
 - **Wichtig:** Sie zählt bewusst **nicht** als Zahlungseingang. „Bezahlt", „Offen", der Zahlungsfortschritt und die Umsatzzahlen bleiben unverändert — es ist ja kein Geld geflossen, der Betrag steht jetzt nur an anderer Stelle im Plan. In der Verkaufsstatistik erscheint die Rate weiterhin im Monat des Platzens als Rücklastschrift und **nicht** als „RLS nachgezahlt".
 - Die neue Rate wird sofort als eigener GoCardless-Einzug angelegt.
 
-Voraussetzungen: aktives GoCardless-Mandat und ein Einzelzahlungs-Plan. Bei Verträgen mit altem Dauerauftrag erscheint der Button nicht (dort erst den Zahlungsplan stornieren). Mehrere geplatzte Raten werden einzeln angehängt. Der Bezahlt-Status der Gebühr wird nach dem Eingang wie gewohnt über „Gebühr bezahlt" nachgetragen.
+Wird die Gebühr mit angehängt, gilt sie **automatisch als bezahlt**, sobald der Einzug der angehängten Rate durch ist — sie steckt ja im eingezogenen Betrag. Kein manuelles Nachtragen über „Gebühr bezahlt" mehr.
+
+Voraussetzungen: aktives GoCardless-Mandat und ein Einzelzahlungs-Plan. Bei Verträgen mit altem Dauerauftrag erscheint der Button nicht (dort erst den Zahlungsplan stornieren). Mehrere geplatzte Raten werden einzeln angehängt.
 
 ### Für Entwickler (31.07.2026)
 
@@ -29,6 +31,7 @@ Voraussetzungen: aktives GoCardless-Mandat und ein Einzelzahlungs-Plan. Bei Vert
   - `ContractPayment::sqlIsRescheduled()` / `sqlIsNotRescheduled()` für die Raw-Queries der `SalesStatisticsService`: angehängte Raten zählen im MRR-/RLS-Trend als **RLS** (sie platzten und wurden nicht nachgezahlt), nie als „eingezogen" oder „nachgezahlt"; in der Ausfall-Analyse zählen sie in `failed_ever`, nicht in `failed_open`.
   - **Falle:** Das SQL-Prädikat MUSS `COALESCE(direct_payment_method,'')` verwenden. Ohne ist der Vergleich bei NULL weder wahr noch falsch, sondern NULL — ein umschließendes `NOT (...)` bleibt dann NULL und wirft ganz normale Zahlungen aus ihrem Band (genau so sind beim Bauen 4 MRR-Tests rot geworden).
 - **Kein „Korrigieren" für angehängte Raten:** `can_correct` schließt `rescheduled` aus (wie schon `voucher`) — es gibt keine Zahlung, die korrigiert werden könnte. Neues Flag `can_append` in `getPayments()` (geplatzt + GC-Mandat + kein Dauerauftrag), Anzeige-Typ „Angehängt".
+- **Automatische Gebühren-Quittierung:** Migration `2026_07_31_180000_…` ergänzt `appended_from_payment_id` (Ursprungsrate) und `appended_fee_cents` (eingerechnete Gebühr) an `contract_payments`. `ContractPayment::settleAppendedReturnFee()` setzt `return_fee_paid_at` an der Ursprungsrate und ist idempotent; aufgerufen aus `ProcessGoCardlessWebhookJob::handlePaymentsConfirmed()` (und als Sicherheitsnetz in `handlePaymentsPaidOut()`, falls das confirmed-Event ausbleibt). Ohne eingerechnete Gebühr passiert nichts — eine Gebühr, die bewusst NICHT mit angehängt wurde, bleibt offen.
 - **Frontend:** Button in `tab-payments.blade.php` neben „Beglichen", Modal darunter; `openAppendModal()`/`appendFeeCents()`/`appendTotalCents()`/`saveAppend()` in `public/js/contract-detail.js` (Komponente `paymentsTab`). Gebühr über das Projektmuster „transparenter Input + €-Overlay".
 - **Tests:** `tests/Feature/ContractAppendBouncedTest.php` — Anhängen (Nummer/Termin/Betrag, alte Rate `rescheduled`, Schuldenliste leer, `moneyIn` und Restbetrag unverändert), Gebühr inklusive, Guards (nur geplatzte Raten, Dauerauftrag, fremde Rate → 404), Vorschau-Endpoint.
 
