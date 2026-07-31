@@ -104,6 +104,25 @@ Quoten in % (Besuche im Tooltip), bei den Top-Unterseiten die Aufrufe mit
 
 ## Für Entwickler
 
+> **Update 07/2026 (Statistik-Bauplan):** Die Seite folgt jetzt dem
+> verbindlichen Bauplan — jede Analyse-Karte ist zweiseitig (Diagramm als
+> Standard, Tabelle über das Karten-Register; Herkunft/Geräte/Top-Seiten
+> zeigten vorher die Tabelle als Standard), mit Skeleton in Endhöhe,
+> Fehlerzustand je Karte (`sectionError` + „Erneut laden") und Info-Panel.
+> Alle Charts laufen über das `acquireChart`-Muster mit animierten Übergängen.
+> **Standort-Segmente** kommen serverseitig in der konfigurierten
+> Instituts-Reihenfolge (`SortsBranchIds`) und mit `branch_id` für die
+> zentralen Institutsfarben (`BranchColorService`).
+> **Dokumentierte Ausnahme:** Der Standort-Filter der Sidebar wirkt auf dieser
+> Seite nicht — Matomo-Besuche haben erst ab der Buchung eine
+> Instituts-Zuordnung (Entscheidung Jan, 31.07.2026); Standort-Vergleiche
+> laufen über die Karte „Funnel-Vergleich" (`matomo_visits.standort`).
+> Neue CSV-Quellen: `funnel-timeseries`, `funnel-devices`, `funnel-pages`
+> (zusätzlich zu `funnel-steps`, `funnel-branches`, `funnel-sources`) — damit
+> ist jede Karte exportierbar. `funnel-branches` exportierte zuvor den rohen
+> Seiten-Pfad als Spalte „Besucher" (behoben). Die Berichte-Übersichtskachel
+> las noch das alte KPI-Objekt-Format und zeigte dauerhaft 0 (behoben).
+
 ### Datenfluss
 
 ```
@@ -133,8 +152,8 @@ Matomo (selbst-gehostet) ◀── Reporting ──│  → matomo_visit_actions
 | `app/Console/Commands/SyncMatomoVisits.php` | `matomo:sync-visits` (alle 10 Min) |
 | `app/Console/Commands/PruneMatomoActions.php` | `matomo:prune-actions` (täglich) |
 | `app/Http/Controllers/MatomoFunnelController.php` | Bericht + JSON-Endpoints; `KPI_PORTFOLIO` liefert die Daten im Format der `components/kpi-dashboard`-Komponente (`storageKey: visitor-funnel-kpis`) |
-| `resources/views/hub/reports/visitor-funnel.blade.php` | Report-Seite |
-| `public/js/visitor-funnel.js` | Alpine-Komponente + **Apache ECharts** (nativer `funnel`-Typ + gruppierte Balken) |
+| `resources/views/hub/reports/visitor-funnel.blade.php` + `visitor-funnel/partials/*` | Report-Seite (seit 07/2026 nach Statistik-Bauplan: Karten-Register Diagramm ⇄ Tabelle, Skeletons, Fehlerzustand + Info-Panel je Karte; vorher 543-Zeilen-Monolith) |
+| `public/js/visitor-funnel.js` | Alpine-Komponente + **Apache ECharts** (Custom-Serie „Fluss-Funnel" + Linien/Balken-Karten, acquireChart-Muster mit animierten Übergängen; Verlauf-Tabelle via `chart-table.js`) |
 
 ### Tabellen
 
@@ -243,6 +262,9 @@ MATOMO_TOKEN_AUTH=...            # Reporting-API-Token (View-Rechte genügen)
   Vorperioden-Fenster.
 - `tests/Feature/MatomoFunnelKpiConfigTest.php` – KPI-Endpoint im
   kpi-dashboard-Format, Vorperioden-Vergleich, Permissions, neue Endpoints.
+- `tests/Feature/VisitorFunnelPageTest.php` – Seiten-Skelett nach
+  Statistik-Bauplan (Register, Skeletons, Info-Panels), Instituts-Reihenfolge
+  der Standort-Segmente, CSV-Export-Quellen.
 
 ### JSON-Endpoints des Berichts
 
