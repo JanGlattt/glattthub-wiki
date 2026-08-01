@@ -744,9 +744,21 @@ Tag zu niedrig (gemeldet 08/2026).
 Gelöst über **`sync:appointments-recent`** (`SyncRecentAppointments`): Der
 Command holt die **letzten 3 Tage inklusive heute** nach und leert anschließend
 die Report-Caches (`StaffPerformanceService`, `ReportsOverviewCache`,
-`SalesStatisticsService`, `GlatttKpiService`, `ClientStatisticsService`) — ohne
-den Flush zeigten die Auswertungen die frischen Termine erst nach Ablauf ihrer
-TTL von bis zu einer Stunde.
+`SalesStatisticsService`, `GlatttKpiService`) — ohne den Flush zeigten die
+Auswertungen die frischen Termine erst nach Ablauf ihrer TTL von bis zu einer
+Stunde.
+
+> **Nur diese vier Caches — bewusst.** Jeder Flush kostet den nächsten Besucher
+> einen kalten Cache. Die Kundenstatistik etwa liest gar nicht aus der
+> Terminhistorie (sie hängt an `client_statistics` mit eigenem Sync); sie
+> mitzuleeren entwertete ihre teuren Auswertungen alle 15 Minuten grundlos.
+>
+> **Der Warmer läuft 2 Minuten versetzt** (`2,17,32,47` statt `*/15`): Vorher
+> liefen `reports:warm-cache` und der Sync zur selben Minute, der Sync warf den
+> frisch gewärmten Cache also sofort wieder weg und Nutzer trafen trotz Warmer
+> auf einen kalten Cache. Der Sync braucht ~20 s, der Warmer ~9 s — zwei
+> Minuten Abstand reichen mit Puffer. Gilt für Laravel-Scheduler **und** den
+> Cloud-Scheduler-Job.
 
 Weil die Daten in dieselbe Tabelle geschrieben werden, werden **alle** Perioden
 automatisch korrekt; an der Auswertungs-Logik musste nichts geändert werden.
