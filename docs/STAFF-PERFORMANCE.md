@@ -1,6 +1,6 @@
 # Mitarbeiterperformance
 
-Die Mitarbeiterperformance zeigt, welche Berater wie viele Beratungsgespräche hatten und wie oft daraus am selben Tag ein Vertrag abgeschlossen wurde — inklusive Conversion-Rate, Körperzonen-Analyse und Standort-Vergleich.
+Die Mitarbeiterperformance zeigt, welche Berater wie viele Beratungsgespräche hatten und wie oft daraus am selben Tag ein Vertrag abgeschlossen wurde — Tagesmessung, Ranking nach Conversion-Rate und durchgeführte Behandlungen je Mitarbeiter.
 
 **Zugang:** Hub → Berichte → Mitarbeiterperformance  
 **URL:** `/hub/reports/staff-performance`  
@@ -18,8 +18,8 @@ Die Mitarbeiterperformance beantwortet Fragen wie:
 - In wie vielen davon wurde am selben Tag ein Vertrag abgeschlossen? (Conversion-Rate)
 - Wie viele Körperzonen wurden pro Abschluss verkauft?
 - Welcher Mitarbeiter hat die beste Conversion-Rate?
-- Welches Institut hat die höchste Abschlussquote?
-- Welche Körperzonen werden am häufigsten verkauft?
+- Wie stehen die Institute im gewählten Zeitraum zueinander? (Tagesmessung, Diagramm)
+- Wie viele Behandlungen hat ein Mitarbeiter durchgeführt?
 
 ### Verknüpfungslogik
 
@@ -62,16 +62,21 @@ Tagesmessung und damit unterhalb des Bildschirms). 12 Kennzahlen stehen zur
 Auswahl, sichtbar sind standardmäßig 4; Auswahl und Reihenfolge sind per Drag &
 Drop personalisierbar und liegen im localStorage (`staff-performance-kpis`).
 
-> **Bezugszeitraum ist der laufende Monat** — im Titel der Zeile ausgeschrieben
-> („Laufender Monat — Juli 2026"). Das ist die einzige Stelle der Seite mit
-> Monatsbezug; alle Karten darunter zählen über die gesamte Historie.
+> **Bezugszeitraum ist immer der laufende Monat** — im Titel der Zeile
+> ausgeschrieben („Laufender Monat — August 2026"). Die Zeile folgt dem
+> seitenweiten Zeitraum-Picker bewusst **nicht** (zweite Ausnahme neben dem
+> Tagesmessungs-Diagramm): Die Vergleichszeilen „vs. Vormonat"/„vs. Vorjahr"
+> bleiben so stabil lesbar, und Wert und Delta beschreiben denselben Zeitraum
+> (bis 07/2026 stand daneben eine Lebenszeit-Summe — „9.546 Beratungen,
+> +43,7 % vs. Vorjahr" las sich wie ein Wachstum der 9.546).
 >
-> **Warum:** Die Vergleichszeilen („vs. Vormonat", „vs. Vorjahr") beziehen sich
-> zwangsläufig auf einen Monat. Bis 07/2026 stand daneben eine Lebenszeit-Summe —
-> „9.546 Beratungen, +43,7 % vs. Vorjahr" las sich wie ein Wachstum der 9.546,
-> gemeint waren aber 296 (Juli 26) gegen 206 (Juli 25). Wert und Delta beschreiben
-> jetzt denselben Zeitraum. `getKpis()` ignoriert deshalb bewusst mitgegebene
-> `date_from`/`date_to`; Standort- und Sichtbarkeits-Filter gelten weiterhin.
+> Der **Endpoint** `getKpis()` kann seit 08/2026 trotzdem einen Zeitraum
+> (`date_from`/`date_to`, Monatsraster): Er aggregiert dann die Monate des
+> Fensters und vergleicht gegen die **gleich lange Vorperiode**
+> („vs. Vorperiode", bei einem Monat „vs. Vormonat") und dieselben Monate im
+> Vorjahr — Quoten aus Rohsummen, nie gemittelt
+> (`test_kpis_follow_the_page_date_range`). Die Seite selbst schickt keine
+> Datumsparameter mit; ohne sie ist der Standard der laufende Monat.
 
 | KPI | Beschreibung |
 |-----|-------------|
@@ -104,12 +109,53 @@ in **Prozentpunkten (PP)** statt als Prozent-Veränderung der Quote.
 > `subMonth()` (derselbe Fallstrick wie in `getStaffOverview()`); abgesichert durch
 > `test_kpi_comparison_does_not_collapse_at_month_end`.
 
-#### Mitarbeiter-Ranking
+#### Beratungs-Ranking (bis 08/2026 „Mitarbeiter-Ranking")
 
-**Diagramm (Standard):** horizontale Balken der Top 15 — Conversion-Rate
-(untere Achse) und Ø Körperzonen (obere Achse); die Reihenfolge folgt der
-Sortierung der Tabelle. **Tabellen-Lasche:** sortierbare Tabelle aller
-Mitarbeiter mit:
+**Diagramm (Standard, seit 08/2026 Zeitverlauf):** je gewähltem Verkäufer zwei
+Linien in **einer Farbe** über die Kalendermonate — die **Conversion-Rate
+durchgezogen** (linke Achse, 0–100 %) und die **Ø Körperzonen gepunktet**
+(rechte Achse). Beide Serien tragen denselben Namen und teilen sich dadurch
+einen Legenden-Eintrag: Legende und Klick-Freistellung schalten immer das
+Linienpaar. Das Diagramm lädt — wie das Tagesmessungs-Diagramm — **immer die
+gesamte Historie** (gemeinsamer Historien-Datensatz `overviewChartData`, wird
+deshalb eager geladen); der Zeitausschnitt wird ausschließlich über die
+**Zoom-Leiste** darunter gewählt (`rankingZoom` überlebt Re-Renders), der
+Seiten-Zeitraum gilt hier bewusst nicht. Der Filter wählt nur Zeilen aus, es
+wird nichts nachgeladen. Vorher stand hier ein Lollipop-Ranking auf der
+CR-Skala; der Zeitverlauf zeigt zusätzlich, **wie sich** die Quoten entwickeln.
+
+**Verkäufer-Filter (max. 5):** Dropdown „Verkäufer" oben rechts in der Karte
+(`.picker-tree-glattt`, Baum im Dropdown-Look mit Theme-Checkboxen). Oberste
+Ebene = Standorte: Ein Haken wählt deren Mitarbeiter einzeln aus (nach
+Beratungsvolumen, bis das Limit `RANKING_MAX_LINES = 5` voll ist; erneuter
+Haken entfernt sie wieder), Teil-Auswahl zeigt die Checkbox als Strich.
+Aufklappen (▸) listet die einzelnen Mitarbeiter mit BG-Zahl — so lassen sich
+auch Mitarbeiter **verschiedener Standorte** direkt vergleichen. Bei vollem
+Limit sind weitere Checkboxen deaktiviert (Hinweis im Panel). Vorausgewählt
+sind die **ersten 5 der Bestenliste** (`staffData`, server-sortiert nach
+belastbarer Quote und CR) — je Person die Standort-Zeile mit den meisten
+Beratungen; fällt der Ranking-Endpoint aus, greift ein Volumen-Fallback. Nach
+einem Daten-Reload (Standortwechsel) wird die Auswahl abgeglichen
+(verschwundene Schlüssel raus, leere Auswahl → wieder Vorauswahl). Auswahl-Schlüssel ist die `staff_id` der
+Tagesmessung (`mergeKey|branchId`) — dieselbe Person an zwei Standorten ist
+bewusst zweimal wählbar (Label trägt dann den Standort).
+
+**Regeln der Bestenlisten-Tabelle (seit 07/2026):**
+
+- **Standorte werden zusammengeführt.** Eine Person hat in Phorest pro Institut
+  eine eigene StaffId. In der Tabelle bilden diese Profile **immer eine Zeile**:
+  Beratungen, Abschlüsse, Körperzonen und Umsatz sind die Summe über alle
+  Standorte, die Quoten werden aus diesen Summen gerechnet. In der Spalte
+  „Standort" stehen dann alle beteiligten Institute (`branch_count` sagt, wie
+  viele). Die standortweise Aufteilung zeigen Diagramm-Filter und Tagesmessung.
+- **Mindestens 20 Beratungsgespräche** (`StaffPerformanceService::RANKING_MIN_SAMPLE`)
+  im gewählten Seiten-Zeitraum, sonst gilt die Quote als nicht belastbar
+  (`is_reliable = false`). Solche Zeilen bleiben in der Tabelle, werden dort aber
+  blass/kursiv dargestellt (`.table-glattt-row-thin`) und ans Ende sortiert.
+  Vorher führten 100-%-Quoten aus ein bis zwei Gesprächen die Bestenliste an —
+  darunter auch Phorest-Platzhalter wie Kabinen- oder Absage-Profile.
+
+**Tabellen-Lasche:** sortierbare Tabelle aller Mitarbeiter mit:
 
 | Spalte | Beschreibung |
 |--------|-------------|
@@ -131,24 +177,24 @@ Die Quote ist farbcodiert:
 
 Per Klick auf das Detail-Icon öffnet sich ein Modal mit allen Beratungen des Mitarbeiters.
 
-#### Standort-Vergleich
+#### Gestrichene Karten (07/2026)
 
-Diagramm (Doppelachse: Conversion-Rate + Ø Körperzonen, Balken in den
-Standort-Farben und der konfigurierten Instituts-Reihenfolge); die
-Tabellen-Lasche zeigt alle Kennzahlen inkl. Gesamtzeile — Quote, Ø KPZ und
-Ganzkörper-Anteil werden dort aus den Summen berechnet, nicht gemittelt.
+**Standort-Vergleich**, **Monatlicher Zeitverlauf** und
+**Körperzonen-Verteilung** wurden ersatzlos aus dem Report entfernt — sie
+beantworteten Fragen, die die Tagesmessung (Institutsvergleich über die Legende,
+Monatsverlauf über die Zeitachse) bereits abdeckt, und machten die Seite lang.
 
-#### Monatlicher Zeitverlauf
+Was das für den Rest bedeutet:
 
-Liniendiagramm der Conversion-Rate über die letzten 12 Monate — Gesamt-Trend
-plus gestrichelte Standort-Linien. Die Tabellen-Lasche fasst die Monate zu
-Quartalen/Jahren zusammen (aufklappbar, laufender Monat markiert).
-
-#### Körperzonen-Verteilung
-
-Balkendiagramm der meistverkauften Körperzonen bei Conversion-Verträgen. Die
-Tabellen-Lasche schlüsselt jede Zone zusätzlich **je Standort** auf (ersetzt
-das frühere Karten-Raster „Top 8 je Standort").
+- Die **JSON-Endpoints bleiben bestehen** (`/branches`, `/monthly`,
+  `/body-zones`). An ihnen hängen drei Widgets des Custom-Dashboards
+  („Filial-Vergleich Performance", „Performance-Monatstrend",
+  „Körperzonen-Spezialisierung"); `/branches` liefert außerdem die Instituts-Tabs
+  des Zielwerte-Modals. Wer die Auswertungen weiter braucht, legt sich das
+  passende Widget aufs eigene Dashboard.
+- Die zugehörigen **CSV-Export-Quellen sind entfallen**
+  (`staff-branch-comparison`, `staff-monthly-trend`, `staff-body-zones`) — der
+  Export einer Seite spiegelt, was die Seite zeigt.
 
 #### Mitarbeiter-Detailansicht (Modal)
 
@@ -169,7 +215,22 @@ damit mehrere Institute gleichzeitig ins Bild passen.
 |---|---|
 | **Heute** (fixiert) | BG und CR des laufenden Tages |
 | **Diese Woche** (fixiert) | BG und CR seit Montag |
-| **Monatsblöcke** | die letzten 4, 6 oder 12 Kalendermonate — je BG, CR, KpZ |
+| **Monatsblöcke** | je ein Block pro Kalendermonat im gewählten Zeitraum — je BG, CR, KpZ |
+
+**Zeitraum auf Monatsebene (seit 08/2026).** Die Monatsspalten folgen dem
+**seitenweiten Monatsbereich-Picker im Seitenkopf** `<x-month-range-picker>`
+(`resources/views/components/month-range-picker.blade.php`, Styles
+`.month-picker-glattt-*` in `theme_glattt.css`, kompakte `size="sm"`-Variante):
+eine Monatsübersicht je Jahr im Look des Custom-Dropdowns — **kein
+Tageskalender, kein flatpickr**. Zwei Klicks wählen Start- und Endmonat
+(Reihenfolge egal, ein Hover zeigt die Vorschau); das Enddatum ist der
+Monatsletzte, im laufenden Monat der heutige Tag. Vorausgewählt sind die
+**letzten vier Kalendermonate**; nach hinten reicht die Auswahl bis zum
+**ältesten Beratungstermin aus Phorest** (geliefert von
+`getEarliestConsultationDate()`), nach vorn bis zum laufenden Monat — spätere
+Monate und Jahre sind deaktiviert. „Heute" und „Diese Woche" stehen unabhängig
+vom Zeitraum immer links. Der gewählte Bereich kommt als `range` in der Antwort
+zurück und steuert auch den CSV-Export.
 
 **Leserichtung: neu → alt.** Der laufende Monat steht direkt neben den Tagesspalten,
 nach rechts geht es in die Vergangenheit. Innerhalb eines aufgeklappten Monats gilt
@@ -203,9 +264,11 @@ Metriken je Block:
 | 🟡 Gelb | ≥ 40% | ≥ 2,0 |
 | 🔴 Rot | < 40% | < 2,0 |
 
-**Gruppierung nach Institut** (Toggle „Nach Institut", Standard: aktiviert):
-Kopfzeile je Standort, darunter dessen Mitarbeiter, abgeschlossen mit einer
-Zwischensumme; die Summe der Institute ergibt die Gesamtzeile im Fuß.
+**Gruppierung** (Segmented Control „Nach Institut ⇄ Gesamt", Standard: nach
+Institut — seit 07/2026 als Umschalter statt als Toggle, damit alle Bedienelemente
+der Karte dieselbe Bauform haben): Kopfzeile je Standort, darunter dessen
+Mitarbeiter, abgeschlossen mit einer Zwischensumme; die Summe der Institute ergibt
+die Gesamtzeile im Fuß.
 
 > **Wichtig:** In der gruppierten Ansicht erscheint ein Mitarbeiter mit Einsätzen an
 > zwei Standorten **in beiden Gruppen** mit seinen dortigen Zahlen — sonst würden die
@@ -220,54 +283,73 @@ Zwischensumme; die Summe der Institute ergibt die Gesamtzeile im Fuß.
   Regelfall, die Dämpfung träfe fast jede Zelle und wäre damit wertlos. Gesteuert
   über `periodType` der Spalte (`day` | `week` | `month`)
 - Zeilen ohne eine einzige Beratung im gesamten Zeitfenster werden ausgeblendet
-- Toggle **„Nur Hub-Nutzer"** (Standard: aktiviert) filtert auf glatttHub-Accounts —
-  blendet zugleich Phorest-Platzhalter (Kabinen-, Absage-Spalten) und Profile aus,
-  die im Stammdaten-Abgleich fehlen und sonst als „Unbekannt" erscheinen
+- **Alle Nutzer werden gezeigt** (seit 07/2026). Den früheren Toggle „Nur
+  Hub-Nutzer" gibt es nicht mehr — die Trennung Hub-Konto / kein Hub-Konto ist für
+  die Tagesmessung ohne Bedeutung. In der Liste stehen dadurch auch
+  Phorest-Platzhalter (Kabinen-, Absage-Spalten) und Profile, die im
+  Stammdaten-Abgleich fehlen und als „Unbekannt" erscheinen
 - Sortierung innerhalb der Gruppe nach Beratungsvolumen der Monatsblöcke
 - Mobil bricht der Kartenkopf um, die fixierten Spalten schrumpfen mit
 
-##### Diagramm-Ansicht (seit 07/2026)
+##### Diagramm-Ansicht (überarbeitet 07/2026)
 
-Hinter der Tabelle liegt über das Register ein Diagramm mit **drei Sichten** auf
-exakt dieselben Zahlen — alle rein clientseitig aus der bereits geladenen Antwort,
-das Umschalten löst **kein** Neuladen aus:
+Hinter der Tabelle liegt über das Register **ein einziges Diagramm**, das alle drei
+Kennzahlen zusammen zeigt. Es hat einen **eigenen Datensatz über die gesamte
+Historie** (ältester Beratungstermin bis heute, selber `overview`-Endpoint mit
+explizitem `date_from`/`date_to`) — unabhängig vom Zeitraum-Feld der Tabelle.
+Geladen wird er lazy beim ersten Wechsel auf die Diagramm-Lasche; Zoomen und
+Legende lösen danach **kein** Neuladen aus:
 
-| Sicht | Inhalt | Ebene |
+| Element | Inhalt | Achse |
 |---|---|---|
-| **Heatmap** (Standard) | Mitarbeiter × Periode als Ampel-Farbbild — die Matrix, ohne Zahlen lesen zu müssen | Mitarbeiter |
-| **Verlauf** | Gesamtzeile über die Monate: BG als Balken, CR und Ø KpZ als Linien | Gesamt |
-| **Institute** | Instituts-Zwischensummen je Monat als gruppierte Balken in den Standortfarben | Standort |
+| **Balken, gestapelt** | Beratungsgespräche je Monat, ein Stapelsegment pro Institut in seiner Standortfarbe | links (BG) |
+| **Goldene Linie** | Conversion-Rate der **eingeblendeten** Institute | rechts (0–100 %) |
+| **Gestrichelte Linie** | Ø Körperzonen der **eingeblendeten** Institute | zweite rechte Achse |
 
-Heatmap und Institutsvergleich zeigen **eine** Kennzahl, umschaltbar über
-**BG / CR / KpZ** im Kartenkopf. Beim Verlauf entfällt der Umschalter — dort stehen
-ohnehin alle drei Kennzahlen im Bild.
+Die frühere Aufteilung in drei Sichten (**Heatmap**, **Verlauf**, **Institute**) mit
+zusätzlichem Kennzahl-Umschalter (BG / CR / KpZ) ist entfallen: Die Heatmap
+verdoppelte nur die Tabelle, und die Umschalterei zwang dazu, drei Bilder
+nacheinander zu lesen, um eine Aussage zu bekommen.
+
+Bedienung:
+
+- **Klick auf einen Balken stellt das Institut frei** (Projekt-Konvention
+  `enableSeriesIsolation`) — alle anderen Institute werden ausgeblendet, ein
+  erneuter Klick zeigt wieder alle. Über die **Legende** lassen sich Institute
+  auch einzeln aus- und einblenden.
+- Die beiden **Quotenlinien folgen der sichtbaren Instituts-Menge**: Sie werden
+  clientseitig aus den Rohsummen (Beratungen, Abschlüsse, Körperzonen) der
+  eingeblendeten Instituts-Gruppen gerechnet — Quoten aus Summen, nie gemittelt.
+  Wer einen Standort freistellt, sieht CR und Ø KpZ exakt dieses Standorts.
+  Die Linien selbst sind von der Klick-Freistellung ausgenommen
+  (`exclude: OVERVIEW_LINE_NAMES`) — sie sind Kontext, keine wählbare Serie.
+- **Zoom-Leiste unten** (`dataZoom`, Slider + Mausrad) ist in der
+  Diagramm-Ansicht die **einzige Zeitauswahl** — das Zeitraum-Feld im
+  Kartenkopf ist dort ausgeblendet und wirkt nur auf die Tabelle; das Diagramm
+  hat immer die volle Historie im Zugriff. Der Ausschnitt überlebt Re-Renders
+  (`overviewZoom`).
+- Die **Legenden-Auswahl übersteht Re-Renders** über das `legendFor()`-Muster
+  (Auswahl aus der überlebenden Instanz lesen, nicht über
+  `legendselectchanged` — das Event feuert bei der Klick-Freistellung nicht).
+  Weil die Quotenlinien auf die Auswahl reagieren, zeichnet die Karte bei jedem
+  Legenden-Event neu (alle drei Events gebunden, per `requestAnimationFrame`
+  zu einem Render zusammengefasst).
 
 **Leserichtung: alt → neu.** Anders als die Tabelle (neueste Periode links, weil man
-nach rechts in die Vergangenheit scrollt) laufen die Diagramme chronologisch von
-links nach rechts. In der Heatmap stehen „Diese Woche" und „Heute" deshalb ganz
-rechts am Ende; die beiden Monatsdiagramme lassen sie weg, weil sich Monate und
-Tage nicht auf einer Zeitachse vergleichen lassen.
+nach rechts in die Vergangenheit scrollt) läuft das Diagramm chronologisch von
+links nach rechts. „Heute" und „Diese Woche" bleiben weg, weil sich Monate und
+einzelne Tage nicht auf einer Zeitachse vergleichen lassen.
 
 Weitere Festlegungen:
 
-- **Die Heatmap zeigt maximal 20 Zeilen** (die Mitarbeiter mit den meisten
-  Beratungsgesprächen im Zeitfenster) — bei 40+ Zeilen wären die Bänder nur noch
-  Striche. Die vollständige Liste steht in der Tabellen-Ansicht; der Hinweis unter
-  der Karte sagt, ob gekürzt wurde.
-- Die Heatmap nutzt die **flache** Mitarbeiterliste, nicht die Instituts-Gruppen —
-  sonst stünde eine Person mit Einsätzen an zwei Standorten zweimal mit gleichem
-  Namen auf der Achse. Der Toggle „Nach Institut" ist daher in der Diagramm-Ansicht
-  ausgeblendet, „Nur Hub-Nutzer" wirkt weiterhin auf beide Ansichten.
-- Gefärbt wird nach den **globalen** Zielwerten (nicht standortspezifisch) —
-  benachbarte Zeilen verschiedener Institute wären sonst unterschiedlich skaliert
-  und optisch nicht vergleichbar. Bei der Kennzahl **BG** gibt es keine Zielwerte;
-  dort ist die Farbe eine reine Mengenskala (Verlauf von blass nach kräftig).
-- Der **Verlauf** nutzt drei y-Achsen (BG links, CR und Ø KpZ je rechts). CR (0–100 %)
-  und Ø KpZ (0–6) auf eine gemeinsame Skala zu zwingen würde eine der beiden Linien
-  flach drücken.
-- Die Kategorie-Achsen laufen mit `axisLabel.interval = 0` — sonst beschriftet
-  ECharts nur jede zweite Spalte, und ausgerechnet die jüngste Periode bleibt
-  namenlos.
+- Drei y-Achsen (BG links, CR und Ø KpZ je rechts). CR (0–100 %) und Ø KpZ (0–6)
+  auf eine gemeinsame Skala zu zwingen würde eine der beiden Linien flach drücken.
+- Die **Kanten-Achse** für die Jahreslinien (`categoryEdgeAxis`) gehört **nicht** in
+  `dataZoom.xAxisIndex` — sie wird im `datazoom`-Handler per
+  `syncCategoryEdgeAxis(chart, 1)` nachgeführt (siehe `echarts-glattt.js`).
+- Die Kategorie-Achse läuft mit `axisLabel.interval = 0`, solange die Breite reicht —
+  sonst beschriftet ECharts nur jede zweite Spalte, und ausgerechnet die jüngste
+  Periode bleibt namenlos.
 - Beim **Zurückschalten auf die Tabelle** werden die `position: sticky`-Offsets neu
   gemessen (`_syncMatrixOffsets()` im nächsten Frame, nicht nur in `$nextTick`):
   Die Matrix lag ausgeblendet, alle gemessenen Spaltenbreiten wären sonst 0.
@@ -374,23 +456,32 @@ sein, sonst zählen Verträge fremder Standorte mit.
 > ausgewählten Standort leer. Abgesichert durch
 > `test_body_zone_distribution_respects_the_branch_filter`.
 
-### Zeitraum: bewusst kein Seiten-Filter
+### Zeitraum: EIN Seiten-Filter (Monatsraster), eine Ausnahme
 
-Die Seite hat **keinen Zeitraum-Filter im Kopf** — anders als die übrigen
-Statistikseiten. **Mitarbeiter-Ranking, Standort-Vergleich und
-Körperzonen-Verteilung zählen deshalb über die gesamte Historie**; das steht seit
-07/2026 ausdrücklich im Seiten-Untertitel, in der Hinweiszeile der betroffenen
-Karten und in deren Info-Panels, damit es nicht stillschweigend passiert. Die
-**KPI-Zeile** ist die Ausnahme: Sie zeigt den **laufenden Monat** (siehe oben) und
-schreibt ihn in den Titel. Weitere zeitliche Entwicklung liefern die Karten, die
-ihre Perioden selbst mitbringen: Tagesmessung (Tage/Wochen/Monate, 4–12 Monate
-Tiefe), Monatlicher Zeitverlauf (12 Monate) und Durchgeführte Behandlungen
-(eigenes Zeitraum-Dropdown).
+Seit 08/2026 sitzt im **Seitenkopf** (neben Export/Zielwerte) der
+**Monatsbereich-Picker** `<x-month-range-picker>` — er ist der Zeitraum-Filter
+der **ganzen Seite** (JS-State `filterFrom`/`filterTo`, `setFilterRange()` lädt
+alle zeitraumabhängigen Karten neu). Vorauswahl: die letzten vier
+Kalendermonate inkl. des laufenden, zurück wählbar bis zum ältesten
+Beratungstermin. Die früheren Karten-eigenen Filter (flatpickr an Tagesmessung
+und Behandlungen) sind entfallen.
 
-Die **Endpunkte** akzeptieren `date_from`/`date_to` trotzdem (siehe
-`StaffPerformanceController::extractFilters()`) — der CSV-Export nutzt das für die
-Quellen mit `range`-Filter. Wer den Filter später auch im UI will, muss ihn nur in
-der Header-Card ergänzen und an `buildUrl()` durchreichen.
+| Karte | Zeitraum |
+|---|---|
+| **KPI-Zeile** | **Ausnahme: immer laufender Monat** (steht im Titel der Zeile) |
+| **Tagesmessung, Tabelle** | Seiten-Zeitraum |
+| **Tagesmessung, Diagramm** | **Ausnahme: immer gesamte Historie** — Ausschnitt über die Zoom-Leiste |
+| **Beratungs-Ranking, Diagramm** | **Ausnahme: immer gesamte Historie** — Ausschnitt über die Zoom-Leiste |
+| **Beratungs-Ranking, Bestenliste** (+ Detail-Modal) | Seiten-Zeitraum |
+| **Durchgeführte Behandlungen** | Seiten-Zeitraum |
+
+Alle Ausnahmen stehen in Hinweiszeile bzw. Titel der jeweiligen Karte und im
+Info-Panel, damit der Bezug nicht stillschweigend passiert.
+
+Die **Endpunkte** akzeptieren durchgehend `date_from`/`date_to` (siehe
+`StaffPerformanceController::extractFilters()`); die Tagesmessung zieht daraus ihre
+Monatsspalten (`getStaffOverview($filters, $from, $to)`), der CSV-Export nutzt
+dieselben Parameter für die Quellen mit `range`-Filter.
 
 ### CSV-Export
 
@@ -399,19 +490,32 @@ CSV bereit (Quellen in `ReportExportService::SOURCES`, alle mit Standort-Filter)
 
 | Quelle | Inhalt |
 |--------|--------|
-| `staff-overview` | Tagesmessung: BG, CR & KpZ je Zeitraum (eine Zeile pro Mitarbeiter × Zeitraum) |
-| `staff-overview-branches` | Tagesmessung je Institut: Mitarbeiter-Zeilen standortweise, Instituts-Zwischensummen **und** die Gesamtzeile je Zeitraum (Spalte „Zeilenart“ = Mitarbeiter / Institut gesamt / Gesamt). Die Gesamtzeilen sind zugleich die Datenreihe der Diagramm-Sicht „Verlauf“ |
-| `staff-ranking` | Mitarbeiter-Ranking mit allen Kennzahlen |
-| `staff-branch-comparison` | Standort-Vergleich |
-| `staff-monthly-trend` | Monats-Trend (gesamt + je Institut) |
-| `staff-body-zones` | Körperzonen-Verteilung (gesamt + je Institut) |
+| `staff-overview` | Tagesmessung: BG, CR & KpZ je Zeitraum (eine Zeile pro Mitarbeiter × Zeitraum); `date_from`/`date_to` steuern die Monatsspalten wie im UI |
+| `staff-overview-branches` | Tagesmessung je Institut: Mitarbeiter-Zeilen standortweise, Instituts-Zwischensummen **und** die Gesamtzeile je Zeitraum (Spalte „Zeilenart“ = Mitarbeiter / Institut gesamt / Gesamt). Die Gesamtzeilen sind zugleich die Datenreihe der Diagramm-Linien |
+| `staff-ranking` | Bestenliste des Beratungs-Rankings mit allen Kennzahlen, standortübergreifend zusammengeführt; Spalte „Quote belastbar“ = ja/nein (≥ 20 Beratungen) |
 | `staff-treatments` | Durchgeführte Behandlungen pro Mitarbeiter |
+
+Mit den drei gestrichenen Karten sind auch deren Quellen entfallen
+(`staff-branch-comparison`, `staff-monthly-trend`, `staff-body-zones`) — der Export
+einer Seite spiegelt, was die Seite zeigt.
 
 ### Durchgeführte Behandlungen pro Mitarbeiter
 
 Eigene Sektion (seit 07/2026, Asana „Anzahl Behandlungen"): Diagramm (Top 15
 nach Behandlungs-Terminen) als Standard, Tabelle mit allen Mitarbeitern und
-Top-Behandlungen als Lasche. Zählt je Mitarbeiter die **Behandlungs-Termine** (Kunde × Tag × Institut mit mindestens einem Behandlungs-Service des Mitarbeiters) und die **Service-Positionen** (einzelne Behandlungs-Leistungen), plus die drei häufigsten Behandlungsarten. Beratungsgespräche und Desinfektion zählen nicht; gezählt werden nur durchgeführte Termine (abgeschlossen/bezahlt). Zeitraum wählbar (dieser/letzter Monat, 3 Monate, Jahr, gesamt); Standort-Filter und die [Datensichtbarkeit](DATA-VISIBILITY.md) (eigene Daten / Team / alle) greifen auch hier. Export über die CSV-Quelle „Durchgeführte Behandlungen pro Mitarbeiter".
+Top-Behandlungen als Lasche. Zählt je Mitarbeiter die **Behandlungs-Termine** (Kunde × Tag × Institut mit mindestens einem Behandlungs-Service des Mitarbeiters) und die **Service-Positionen** (einzelne Behandlungs-Leistungen), plus die drei häufigsten Behandlungsarten. Beratungsgespräche und Desinfektion zählen nicht; gezählt werden nur durchgeführte Termine (abgeschlossen/bezahlt). Standort-Filter und die [Datensichtbarkeit](DATA-VISIBILITY.md) (eigene Daten / Team / alle) greifen auch hier. Export über die CSV-Quelle „Durchgeführte Behandlungen pro Mitarbeiter".
+
+**Überarbeitet 07/2026:**
+
+- **Zeitraum:** seit 08/2026 der seitenweite Monatsbereich-Picker im Seitenkopf
+  (vorher ein Karten-eigener flatpickr-Bereich, davor ein Dropdown mit festen
+  Stufen).
+- **Chart-Typ:** ein sortierter Balken je Mitarbeiter (Behandlungs-Termine) plus
+  eine **Raute** für die **Ø Service-Positionen je Termin** auf einer eigenen
+  oberen Achse. Vorher standen Termine und Positionen als zwei Balken
+  nebeneinander — sie laufen fast parallel und sagten damit zweimal dasselbe. Das
+  Verhältnis sagt dagegen, wie umfangreich die einzelnen Termine waren. Beide
+  absoluten Zahlen stehen weiterhin im Tooltip und in der Tabelle.
 
 Hinweis zur Abgrenzung: Behandlungen je **Institut** und je **Behandlungsart** (ohne Mitarbeiter-Bezug) zeigt weiterhin die Terminstatistik („Monatliche Übersicht", „Top Services"). Diese Sektion ergänzt die dort fehlende Mitarbeiter-Achse — und liefert die Datenbasis für die späteren HR-KPIs (KPZ pro Arbeitsstunde).
 
@@ -427,24 +531,25 @@ Die Seite folgt dem bewährten Statistik-Muster: **Controller → Service → JS
 StaffPerformanceController (app/Http/Controllers/)
 ├── index()            → Blade-View rendern
 ├── kpis()             → JSON: 8 KPI-Metriken mit Vergleichswerten
-├── staffRanking()     → JSON: Mitarbeiter-Ranking
-├── branchComparison() → JSON: Standort-Vergleich
-├── monthlyTrend()     → JSON: Monatlicher Zeitverlauf
-├── bodyZones()        → JSON: Körperzonen-Verteilung
+├── staffRanking()     → JSON: Bestenliste des Beratungs-Rankings (standortübergreifend zusammengeführt)
+├── branchComparison() → JSON: Standort-Vergleich (nur Dashboard-Widget + Zielwerte-Tabs)
+├── monthlyTrend()     → JSON: Monatlicher Zeitverlauf (nur Dashboard-Widget)
+├── bodyZones()        → JSON: Körperzonen-Verteilung (nur Dashboard-Widget)
 ├── staffDetail()      → JSON: Einzelansicht pro Mitarbeiter
-├── overview()         → JSON: Tagesmessung (Tagesspalten + Monate + Wochen, Instituts-Gruppen)
+├── overview()         → JSON: Tagesmessung (date_from/date_to → Monate + Wochen, Instituts-Gruppen)
 ├── targets()          → JSON: Zielwerte lesen (GET)
 ├── saveTargets()      → JSON: Zielwerte speichern (POST)
 └── preview()          → JSON: 4 Preview-KPIs für Reports-Hauptseite
 
 StaffPerformanceService (app/Services/)
 ├── getKpis()                  → KPI-Berechnung mit Vormonat/Vorjahr-Vergleich
-├── getStaffRanking()          → Ranking nach Conversion-Rate
-├── getBranchComparison()      → Vergleich aller Standorte
-├── getMonthlyTrend()          → 12-Monats-Trend (gesamt + pro Branch)
-├── getBodyZoneDistribution()  → Meistverkaufte Körperzonen
+├── getStaffRanking()          → Ranking nach Conversion-Rate, Standorte je Person zusammengeführt, is_reliable ab RANKING_MIN_SAMPLE
+├── getBranchComparison()      → Vergleich aller Standorte (Dashboard-Widget + Zielwerte-Tabs)
+├── getMonthlyTrend()          → 12-Monats-Trend (gesamt + pro Branch, Dashboard-Widget)
+├── getBodyZoneDistribution()  → Meistverkaufte Körperzonen (Dashboard-Widget)
 ├── getStaffDetail()           → Einzelne Beratungen eines Mitarbeiters
-├── getStaffOverview()         → 8-Zeitraum-Übersicht mit Staff-Merging + Targets
+├── getStaffOverview($f,$from,$to) → Tagesmessung: Tagesspalten + ein Monatsblock je Kalendermonat im Zeitraum, Staff-Merging + Targets
+├── getEarliestConsultationDate()  → ältester Beratungstermin = minDate des Zeitraum-Pickers
 ├── getPreviewKpis()           → 4 Werte für Reports-Übersicht
 └── flushCache()               → Cache-Invalidierung (statisch)
 
@@ -464,16 +569,12 @@ StaffPerformanceTarget (app/Models/)
 | `app/Filament/Pages/StaffPerformanceSettings.php` | Filament-Admin: Globale Zielwerte |
 | `resources/views/hub/reports/staff-performance.blade.php` | Haupt-View |
 | `resources/views/hub/reports/staff-performance/partials/header.blade.php` | Seitenkopf + Zurück-Button + Zielwerte-Button |
-| `resources/views/hub/reports/staff-performance/partials/overview-table.blade.php` | Tagesmessung: Register (Tabelle als Standard), Matrix, Diagramm-Container, Monats-/Sicht-/Kennzahl-Umschalter, Instituts- und Hub-only-Toggle |
+| `resources/views/hub/reports/staff-performance/partials/overview-table.blade.php` | Tagesmessung: Register (Tabelle als Standard), Matrix, Diagramm-Container, Zeitraum-Picker, Gruppierungs-Umschalter |
 | `resources/views/hub/reports/staff-performance/partials/targets-modal.blade.php` | Zielwerte-Modal (Pill-Buttons, pro Standort) |
-| `resources/views/hub/reports/staff-performance/partials/staff-ranking.blade.php` | Mitarbeiter-Tabelle |
-| `resources/views/hub/reports/staff-performance/partials/branch-comparison.blade.php` | Standort-Vergleich + Chart |
-| `resources/views/hub/reports/staff-performance/partials/monthly-trend.blade.php` | Monatstrend + Chart |
-| `resources/views/hub/reports/staff-performance/partials/body-zones.blade.php` | Körperzonen-Verteilung |
+| `resources/views/hub/reports/staff-performance/partials/staff-ranking.blade.php` | Beratungs-Ranking (Zeitverlauf CR/KPZ + Verkäufer-Filter + Bestenlisten-Tabelle) |
 | `resources/views/hub/reports/staff-performance/partials/staff-detail-modal.blade.php` | Detail-Modal (Stat-Strip + Beratungsliste) |
 | `resources/views/hub/reports/staff-performance/partials/treatments.blade.php` | Durchgeführte Behandlungen |
-| `public/js/staff-performance.js` | Alpine.js App: Loader je Karte (sectionError), ECharts-Renderer (acquireChart-Muster), Matrix-HTML + die drei Tagesmessungs-Diagramme (`_overviewHeatmapOption` / `_overviewTrendOption` / `_overviewBranchOption`), chart-table-Modelle, Targets, Staff-Merging |
-| `public/js/chart-table.js` | Gemeinsame Tabellen-Lasche der Chart-Karten |
+| `public/js/staff-performance.js` | Alpine.js App: Loader je Karte (sectionError), ECharts-Renderer (acquireChart-Muster), Matrix-HTML, kombiniertes Tagesmessungs-Diagramm (`_overviewChartOption`), Beratungs-Ranking (Zeitverlauf + Verkäufer-Filter), Targets, Staff-Merging |
 | `app/Services/ReportExportService.php` | CSV-Export-Quellen `staff-*` |
 | `resources/views/components/statistics/widgets/partials/staff-*.blade.php` | **Eingefrorene Kopien** der alten Partials für die Custom-Dashboard-Widgets (siehe unten) |
 | `resources/views/hub/reports/partials/overview-cards/mitarbeiterperformance-card.blade.php` | Preview-Card auf Berichte-Übersicht |
@@ -629,12 +730,12 @@ Migration: `2026_06_25_100000_add_staff_performance_contract_index.php`
 |---------|-----|-------------|
 | GET | `/hub/reports/staff-performance` | Hauptseite (Blade-View) |
 | GET | `/hub/reports/staff-performance/kpis` | 8 KPI-Metriken |
-| GET | `/hub/reports/staff-performance/staff-ranking` | Mitarbeiter-Ranking |
+| GET | `/hub/reports/staff-performance/staff-ranking` | Bestenliste des Beratungs-Rankings |
 | GET | `/hub/reports/staff-performance/branches` | Standort-Vergleich |
 | GET | `/hub/reports/staff-performance/monthly` | Monatlicher Zeitverlauf |
 | GET | `/hub/reports/staff-performance/body-zones` | Körperzonen-Verteilung |
 | GET | `/hub/reports/staff-performance/staff/{staffId}` | Mitarbeiter-Detail |
-| GET | `/hub/reports/staff-performance/overview` | Tagesmessung (`months`, 1–12, Standard 4) |
+| GET | `/hub/reports/staff-performance/overview` | Tagesmessung (`date_from`/`date_to`, Standard: letzte 4 Kalendermonate) |
 | GET | `/hub/reports/staff-performance/targets` | Zielwerte lesen |
 | POST | `/hub/reports/staff-performance/targets` | Zielwerte speichern |
 | GET | `/hub/reports/staff-performance/preview` | 4 Preview-KPIs |
