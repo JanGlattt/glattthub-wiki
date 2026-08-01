@@ -102,6 +102,33 @@ Jede Kennzahl zeigt Vergleichswerte:
 Quoten-KPIs (Conversion-Rate, Ganzkörper-Anteil, Berater über Ziel-CR) vergleichen
 in **Prozentpunkten (PP)** statt als Prozent-Veränderung der Quote.
 
+##### Tagesgleicher Vergleich im laufenden Monat (seit 08/2026)
+
+Der laufende Monat ist noch nicht vorbei — am Monatsersten steckt darin genau
+ein Tag. Verglichen wurde bis 08/2026 trotzdem gegen den **vollen** Vormonat,
+was jede zeitabhängige Kennzahl in einen Scheineinbruch stürzte („Beratungen
+−97,8 % vs. Vormonat", während der Wert tatsächlich über dem Vergleichstag lag).
+
+Deshalb gibt es zwei Vergleichsarten:
+
+| Art | Kennzahlen | Vergleichszeitraum |
+|---|---|---|
+| **zeitabhängig** (wächst mit der Dauer) | Beratungen, Abschlüsse, Körperzonen, Umsatz, Aktive Berater, BG je Berater | **derselbe Tagesausschnitt** des Vormonats/Vorjahres (1.–X.) |
+| **normiert** (Quote oder Schnitt) | Conversion-Rate, Ø KPZ je Beratung/Abschluss, Ganzkörper-Anteil, Berater über Ziel-CR, Ø Vertragswert | voller Vormonat/Vorjahresmonat — mehr Daten machen die Quote stabiler |
+
+Beispiel vom 01.08.2026: 7 Beratungen gegen 5 am 01.07. = **+40 %** statt
+gegen 315 im ganzen Juli = −97,8 %.
+
+Der Zuschnitt greift **nur, solange der Zeitraum unvollständig ist**. Ein
+abgeschlossener Monat vergleicht weiter ganze Monate. Kürzere Vormonate
+(Februar!) begrenzen den Ausschnitt zusätzlich auf ihr eigenes Ende. Der Titel
+der KPI-Zeile trägt den Stichtag („Laufender Monat — August 2026 (bis 01.08.)"),
+damit der Teilzeitraum sichtbar ist. Technisch nötig war dafür die Umstellung
+der KPI-Aggregation von Monats- auf **Tagesgruppierung**
+(`DATE(r.appointment_date)`), sonst ließe sich kein Tagesausschnitt bilden.
+Abgesichert durch `test_scaled_kpis_compare_against_the_same_days_of_the_previous_month`
+und `test_completed_months_still_compare_full_periods`.
+
 > **Behobener Fehler (07/2026):** `subMonth()` auf einem Datum vom 29.–31. läuft über
 > (31.07. − 1 Monat = 01.07.). „Vormonat" war dadurch an diesen Tagen der laufende
 > Monat und **jeder** Vormonatsvergleich zeigte exakt „+0,0 %" — ohne jeden Hinweis
