@@ -281,16 +281,19 @@ gcloud scheduler jobs create http sync-superchat-consultation-dates \
 
 # Job: Sync Staff Shifts (Schichtzeiten für Behandlungs-Ranking/Auslastung)
 # Rollierendes Fenster (35 Tage zurück bis heute); Backfill einmalig per curl
-# mit from=2023-01-01 (siehe unten)
+# mit from=2023-01-01 (siehe unten).
+# Angelegt 01.08.2026 als `sync-staff-shifts` (Prod) und
+# `sync-staff-shifts-staging` (Staging, --uri auf glattthub-web-staging).
 gcloud scheduler jobs create http sync-staff-shifts \
   --location=europe-west3 \
   --schedule="30 3 * * *" \
   --uri="https://DEINE-CLOUD-RUN-URL/api/cron/sync-staff-shifts" \
   --http-method=POST \
   --headers="X-Cron-Token=DEIN_KOPIERTER_TOKEN,Content-Type=application/json" \
-  --time-zone="Europe/Zurich" \
+  --time-zone="Europe/Berlin" \
   --description="Syncs staff work shifts (Phorest WorkTimeTable) for utilization analysis" \
-  --attempt-deadline="1800s"
+  --attempt-deadline="1800s" \
+  --max-retry-attempts=3 --min-backoff=10s
 
 # Job 10: Sync Knowledge Base (Nightly Delta-Sync Drive → OpenAI Vector Store)
 gcloud scheduler jobs create http sync-knowledge-base \
@@ -305,6 +308,14 @@ gcloud scheduler jobs create http sync-knowledge-base \
 ```
 
 > **Hinweis:** Ersetze `DEINE-CLOUD-RUN-URL` mit der tatsächlichen URL (z.B. `glattthub-web-abc123-ey.a.run.app`)
+
+> **Immer `--max-retry-attempts` setzen.** Cloud Run skaliert (vor allem auf
+> Staging) auf null herunter. Trifft ein Scheduler-Request auf einen Cold Start,
+> antwortet nginx mit **502**, solange php-fpm noch hochfährt — der Job scheitert
+> dann mit Status 13 (INTERNAL) und der nächtliche Sync fällt ersatzlos aus.
+> Beim Anlegen von `sync-staff-shifts-staging` am 01.08.2026 genau so passiert;
+> mit drei Wiederholungen läuft derselbe Job sauber durch. Jobs ohne
+> `retryCount` sind entsprechend einen Blick wert.
 
 ## 4. Jobs testen
 
