@@ -279,6 +279,19 @@ gcloud scheduler jobs create http sync-superchat-consultation-dates \
   --description="Setzt/entfernt Superchat Beratungstermin anhand aktueller (nicht stornierter) Beratungen" \
   --attempt-deadline="1800s"
 
+# Job: Sync Staff Shifts (Schichtzeiten für Behandlungs-Ranking/Auslastung)
+# Rollierendes Fenster (35 Tage zurück bis heute); Backfill einmalig per curl
+# mit from=2023-01-01 (siehe unten)
+gcloud scheduler jobs create http sync-staff-shifts \
+  --location=europe-west3 \
+  --schedule="30 3 * * *" \
+  --uri="https://DEINE-CLOUD-RUN-URL/api/cron/sync-staff-shifts" \
+  --http-method=POST \
+  --headers="X-Cron-Token=DEIN_KOPIERTER_TOKEN,Content-Type=application/json" \
+  --time-zone="Europe/Zurich" \
+  --description="Syncs staff work shifts (Phorest WorkTimeTable) for utilization analysis" \
+  --attempt-deadline="1800s"
+
 # Job 10: Sync Knowledge Base (Nightly Delta-Sync Drive → OpenAI Vector Store)
 gcloud scheduler jobs create http sync-knowledge-base \
   --location=europe-west3 \
@@ -307,7 +320,17 @@ gcloud scheduler jobs run process-push-automations --location=europe-west3
 gcloud scheduler jobs run sync-client-courses --location=europe-west3
 gcloud scheduler jobs run sync-client-statistics --location=europe-west3
 gcloud scheduler jobs run sync-superchat-consultation-dates --location=europe-west3
+gcloud scheduler jobs run sync-staff-shifts --location=europe-west3
 gcloud scheduler jobs run sync-knowledge-base --location=europe-west3
+```
+
+### Einmaliger Schichtzeiten-Backfill (nach dem ersten Deploy des Behandlungs-Rankings):
+
+```bash
+curl -X POST \
+  -H "X-Cron-Token: DEIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  "https://DEINE-CLOUD-RUN-URL/api/cron/sync-staff-shifts?from=2023-01-01"
 ```
 
 ### Manuell per curl:

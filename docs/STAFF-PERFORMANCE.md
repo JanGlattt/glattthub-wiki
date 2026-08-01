@@ -1,6 +1,6 @@
 # Mitarbeiterperformance
 
-Die Mitarbeiterperformance zeigt, welche Berater wie viele Beratungsgespräche hatten und wie oft daraus am selben Tag ein Vertrag abgeschlossen wurde — Tagesmessung, Ranking nach Conversion-Rate und durchgeführte Behandlungen je Mitarbeiter.
+Die Mitarbeiterperformance zeigt, welche Berater wie viele Beratungsgespräche hatten und wie oft daraus am selben Tag ein Vertrag abgeschlossen wurde — Tagesmessung, Beratungs-Ranking nach Conversion-Rate und Behandlungs-Ranking (Behandlungszeit & Auslastung je Mitarbeiter).
 
 **Zugang:** Hub → Berichte → Mitarbeiterperformance  
 **URL:** `/hub/reports/staff-performance`  
@@ -473,7 +473,8 @@ und Behandlungen) sind entfallen.
 | **Tagesmessung, Diagramm** | **Ausnahme: immer gesamte Historie** — Ausschnitt über die Zoom-Leiste |
 | **Beratungs-Ranking, Diagramm** | **Ausnahme: immer gesamte Historie** — Ausschnitt über die Zoom-Leiste |
 | **Beratungs-Ranking, Bestenliste** (+ Detail-Modal) | Seiten-Zeitraum |
-| **Durchgeführte Behandlungen** | Seiten-Zeitraum |
+| **Behandlungs-Ranking, Diagramm** | **Ausnahme: immer gesamte Historie** — Ausschnitt über die Zoom-Leiste |
+| **Behandlungs-Ranking, Tabelle** | Seiten-Zeitraum |
 
 Alle Ausnahmen stehen in Hinweiszeile bzw. Titel der jeweiligen Karte und im
 Info-Panel, damit der Bezug nicht stillschweigend passiert.
@@ -493,29 +494,113 @@ CSV bereit (Quellen in `ReportExportService::SOURCES`, alle mit Standort-Filter)
 | `staff-overview` | Tagesmessung: BG, CR & KpZ je Zeitraum (eine Zeile pro Mitarbeiter × Zeitraum); `date_from`/`date_to` steuern die Monatsspalten wie im UI |
 | `staff-overview-branches` | Tagesmessung je Institut: Mitarbeiter-Zeilen standortweise, Instituts-Zwischensummen **und** die Gesamtzeile je Zeitraum (Spalte „Zeilenart“ = Mitarbeiter / Institut gesamt / Gesamt). Die Gesamtzeilen sind zugleich die Datenreihe der Diagramm-Linien |
 | `staff-ranking` | Bestenliste des Beratungs-Rankings mit allen Kennzahlen, standortübergreifend zusammengeführt; Spalte „Quote belastbar“ = ja/nein (≥ 20 Beratungen) |
-| `staff-treatments` | Durchgeführte Behandlungen pro Mitarbeiter |
+| `staff-treatments` | Behandlungs-Ranking: Termine, Service-Positionen, Behandlungs-/Schichtzeit (Std.), Auslastung (%), mögliche Termine, Termin-Anteil (%) + Behandlungsstunden des Instituts |
 
 Mit den drei gestrichenen Karten sind auch deren Quellen entfallen
 (`staff-branch-comparison`, `staff-monthly-trend`, `staff-body-zones`) — der Export
 einer Seite spiegelt, was die Seite zeigt.
 
-### Durchgeführte Behandlungen pro Mitarbeiter
+### Behandlungs-Ranking (bis 08/2026 „Durchgeführte Behandlungen")
 
-Eigene Sektion (seit 07/2026, Asana „Anzahl Behandlungen"): Diagramm (Top 15
-nach Behandlungs-Terminen) als Standard, Tabelle mit allen Mitarbeitern und
-Top-Behandlungen als Lasche. Zählt je Mitarbeiter die **Behandlungs-Termine** (Kunde × Tag × Institut mit mindestens einem Behandlungs-Service des Mitarbeiters) und die **Service-Positionen** (einzelne Behandlungs-Leistungen), plus die drei häufigsten Behandlungsarten. Beratungsgespräche und Desinfektion zählen nicht; gezählt werden nur durchgeführte Termine (abgeschlossen/bezahlt). Standort-Filter und die [Datensichtbarkeit](DATA-VISIBILITY.md) (eigene Daten / Team / alle) greifen auch hier. Export über die CSV-Quelle „Durchgeführte Behandlungen pro Mitarbeiter".
+Zeigt, wie viele Behandlungen die einzelnen Mitarbeiter wahrnehmen — seit
+08/2026 als **Monats-Zeitverlauf** (vorher ein Balken-Ranking der Top 15).
 
-**Überarbeitet 07/2026:**
+**Zwei Ansichten** (Umschalter oben links neben dem Titel):
 
-- **Zeitraum:** seit 08/2026 der seitenweite Monatsbereich-Picker im Seitenkopf
-  (vorher ein Karten-eigener flatpickr-Bereich, davor ein Dropdown mit festen
-  Stufen).
-- **Chart-Typ:** ein sortierter Balken je Mitarbeiter (Behandlungs-Termine) plus
-  eine **Raute** für die **Ø Service-Positionen je Termin** auf einer eigenen
-  oberen Achse. Vorher standen Termine und Positionen als zwei Balken
-  nebeneinander — sie laufen fast parallel und sagten damit zweimal dasselbe. Das
-  Verhältnis sagt dagegen, wie umfangreich die einzelnen Termine waren. Beide
-  absoluten Zahlen stehen weiterhin im Tooltip und in der Tabelle.
+- **Mitarbeiter** — bis zu fünf ausgewählte Personen als einzelne Linien
+  (Standard, siehe unten).
+- **Team** — die Behandlungszeit **aller** Mitarbeiter eines Instituts als
+  **gestapelte Flächen**; die Gesamthöhe ist die komplette Behandlungszeit des
+  Standorts im jeweiligen Monat. Das Institut wird über den Filter oben rechts
+  gewählt; mit **„Alle Institute"** wird stattdessen je Standort gestapelt (in
+  den zentralen Instituts-Farben aus `BranchColorService`). Zwei Darstellungen:
+  **Stunden** (absolut — zeigt zugleich die Entwicklung des Gesamtvolumens) und
+  **Anteil 100 %** (jeder Monat auf volle Höhe normalisiert — zeigt allein die
+  Verschiebung der Anteile, etwa wenn jemand Aufgaben übernimmt oder ausfällt).
+  Auslastung und Termin-Anteil gibt es hier bewusst nicht: Quoten mehrerer
+  Personen ergeben aufeinandergestapelt keinen sinnvollen Wert. Da je Institut
+  über die Historie bis zu 40 Personen zusammenkommen, werden die Farben über
+  eine Rotation im goldenen Winkel erzeugt (`stackColor()`), die Legende ist
+  scrollbar. **Die Legende folgt dem Zoom:** Beim Verkleinern des Ausschnitts
+  fallen Mitarbeiter ohne Behandlung im Fenster heraus (bei Bielefeld z.B. von 35
+  auf 6 Einträge), beim Aufziehen kommen sie zurück. Die Farbzuordnung wird
+  vorher über die vollständige Liste vergeben, damit eine Person beim Zoomen
+  nicht die Farbe wechselt; neu gezeichnet wird nur, wenn sich die Menge der
+  sichtbaren Flächen tatsächlich ändert (`_treatShownKeys`), sonst löste jedes
+  Zucken am Regler einen Re-Render aus. Die Monatssummen für die
+  100-%-Normalisierung laufen bewusst weiter über **alle** Serien — sonst
+  summierten sich die Anteile nicht mehr auf die tatsächliche Gesamtzeit.
+  **Klick-Freistellung** nach Projekt-Konvention (`enableSeriesIsolation()`):
+  Ein Klick auf eine Fläche blendet alle übrigen aus, ein erneuter Klick zeigt
+  wieder alle. Die Flächen brauchen dafür `triggerLineEvent: true` — mit
+  `symbol: 'none'` gäbe es sonst keine klickbaren Punkte und das Event käme nie
+  an. Die Dekor-Serien (Jahreslinien, „laufend") tragen bewusst keinen `name`
+  und sind damit automatisch von der Freistellung ausgenommen.
+
+> **Der laufende Monat ist immer unvollständig** und wird deshalb in beiden
+> Ansichten gekennzeichnet: schraffierte Zone mit der Beschriftung „laufend",
+> bei den Mitarbeiter-Linien zusätzlich ein gestricheltes Endsegment (Muster wie
+> bei Prognosen). Ohne diese Markierung stürzte die Kurve am Monatsersten auf
+> null ab und die Karte sah jeden Monatsanfang nach Einbruch aus.
+
+**Diagramm, Ansicht „Mitarbeiter" (Standard):** je gewähltem Mitarbeiter eine
+Linie über die Kalendermonate, umschaltbar über das Segmented Control oben rechts:
+
+- **Stunden** — die Zeit in Behandlungen je Monat (verschmolzene Zeitfenster,
+  Überlappungen zählen nur einmal).
+- **Auslastung %** — Behandlungszeit ÷ (Schichtzeit − Beratungszeit −
+  Desinfektionszeit). Die Schichtzeiten kommen aus dem Phorest-Dienstplan
+  (nächtlicher Sync, siehe Entwickler-Teil). Beratungsgespräche sind explizit
+  keine Behandlungen und werden komplett herausgehalten (weder Zähler noch
+  Nenner); Desinfektion ist Pflichtzeit nach jedem Kunden und wird deshalb
+  ebenfalls vom Nenner abgezogen — sonst käme selbst ein voll ausgebuchter Tag
+  nie in die Nähe von 100 % (die ~10-min-Blöcke summieren sich auf gut ein
+  Viertel der belegten Zeit). Pausen werden bewusst **nicht** abgezogen (in
+  Phorest teils zweckentfremdet gepflegt). Überlappende oder parallel gebuchte
+  Zeitfenster zählen nur einmal — es kann nur ein Termin gleichzeitig
+  wahrgenommen werden. Da Termine nicht parallel laufen, ist die verfügbare
+  Schichtzeit zugleich die maximal mögliche Behandlungszeit — der Tooltip
+  rechnet sie zusätzlich in **„X von Y möglichen Terminen"** um (verfügbare
+  Zeit ÷ tatsächliche Ø-Termindauer des Monats, nichts geschätzt). Monate ohne
+  gepflegte Schichtzeiten zeigen eine **Lücke** statt 0 % (Dienstpläne sind ab
+  ca. 2024 flächendeckend gepflegt, 2023 lückig). 100 % hieße: die komplette
+  verfügbare Schichtzeit war lückenlos mit Behandlungen gefüllt — Leerlauf
+  zwischen Terminen ist genau das Signal, das die Ansicht zeigen soll.
+- **Termin-Anteil %** — eigene Behandlungszeit ÷ Behandlungszeit **aller
+  Mitarbeiter des Instituts im selben Schichtfenster**. Beantwortet die andere
+  Frage: nicht „war meine Schicht voll?", sondern „von dem, was da war, habe ich
+  wie viel übernommen?". Wer allein in der Schicht ist und alles Gebuchte
+  behandelt, steht bei **100 %** — unabhängig davon, wie voll der Kalender war.
+  Verglichen wird nur, was zeitgleich mit der eigenen Schicht lief; Termine vor
+  Schichtbeginn oder nach Schichtende zählen nicht gegen den Mitarbeiter.
+
+> **Die beiden Quoten gehören zusammen:** Ein Institut mit wenig Terminen, aber
+> nur einer Kraft in der Schicht (typisch Braunschweig) → niedrige Auslastung,
+> 100 % Termin-Anteil: Die Person hat alles übernommen, was da war — die Lücke
+> ist ungenutzte Kapazität des Instituts, kein Versäumnis. Ein großes Team an
+> einem vollen Tag → hohe Auslastung, aber je Person ein kleiner Anteil. Deshalb
+> stehen im Tooltip **immer alle Werte**, unabhängig von der gewählten Linie.
+
+Das Diagramm lädt — wie das Beratungs-Ranking — **immer die gesamte Historie**
+(eigener Endpoint `treatments-timeline`); der Ausschnitt wird über die
+**Zoom-Leiste** unten gewählt. Bis zu **5 Mitarbeiter** über den Baum-Filter
+„Mitarbeiter" (Standorte → Mitarbeiter, sortiert nach Behandlungszeit);
+vorausgewählt sind die 5 mit der meisten Behandlungszeit. Dieselbe Person an
+zwei Standorten ist je Standort wählbar.
+
+**Tabelle (Lasche):** alle Mitarbeiter über den Seiten-Zeitraum mit
+**Behandlungs-Terminen** (Kunde × Tag × Institut mit mindestens einem
+Behandlungs-Service), **Service-Positionen**, **Behandlungszeit (Std.)**,
+**Schichtzeit (Std.)**, **Auslastung (%)** (Tooltip: „X von Y möglichen
+Terminen"), **Termin-Anteil (%)** (Tooltip: „X von Y Behandlungsstunden im
+Institut") und den drei **Top-Behandlungen**. Ohne Schichtdaten steht „–". In
+der Gesamtzeile bleibt der Termin-Anteil leer — über alle Mitarbeiter zusammen
+wären es definitionsgemäß 100 %.
+
+Beratungsgespräche und Desinfektion zählen nicht; gezählt werden nur
+durchgeführte Termine (abgeschlossen/bezahlt). Standort-Filter und die
+[Datensichtbarkeit](DATA-VISIBILITY.md) (eigene Daten / Team / alle) greifen
+auch hier. Export über die CSV-Quelle „Behandlungs-Ranking".
 
 Hinweis zur Abgrenzung: Behandlungen je **Institut** und je **Behandlungsart** (ohne Mitarbeiter-Bezug) zeigt weiterhin die Terminstatistik („Monatliche Übersicht", „Top Services"). Diese Sektion ergänzt die dort fehlende Mitarbeiter-Achse — und liefert die Datenbasis für die späteren HR-KPIs (KPZ pro Arbeitsstunde).
 
@@ -536,6 +621,8 @@ StaffPerformanceController (app/Http/Controllers/)
 ├── monthlyTrend()     → JSON: Monatlicher Zeitverlauf (nur Dashboard-Widget)
 ├── bodyZones()        → JSON: Körperzonen-Verteilung (nur Dashboard-Widget)
 ├── staffDetail()      → JSON: Einzelansicht pro Mitarbeiter
+├── treatments()       → JSON: Behandlungs-Ranking-Tabelle (Termine, Zeiten, Auslastung; Seiten-Zeitraum)
+├── treatmentsTimeline() → JSON: Behandlungs-Zeitverlauf je Monat (gesamte Historie, fürs Diagramm)
 ├── overview()         → JSON: Tagesmessung (date_from/date_to → Monate + Wochen, Instituts-Gruppen)
 ├── targets()          → JSON: Zielwerte lesen (GET)
 ├── saveTargets()      → JSON: Zielwerte speichern (POST)
@@ -549,6 +636,8 @@ StaffPerformanceService (app/Services/)
 ├── getBodyZoneDistribution()  → Meistverkaufte Körperzonen (Dashboard-Widget)
 ├── getStaffDetail()           → Einzelne Beratungen eines Mitarbeiters
 ├── getStaffOverview($f,$from,$to) → Tagesmessung: Tagesspalten + ein Monatsblock je Kalendermonat im Zeitraum, Staff-Merging + Targets
+├── getTreatmentsByStaff()      → Behandlungs-Ranking-Tabelle inkl. Behandlungs-/Schicht-/Beratungszeit + Auslastung
+├── getTreatmentTimeline()      → Monats-Zeitverlauf je Mitarbeiter × Standort (Diagramm-Datensatz, gesamte Historie)
 ├── getEarliestConsultationDate()  → ältester Beratungstermin = minDate des Zeitraum-Pickers
 ├── getPreviewKpis()           → 4 Werte für Reports-Übersicht
 └── flushCache()               → Cache-Invalidierung (statisch)
@@ -573,14 +662,19 @@ StaffPerformanceTarget (app/Models/)
 | `resources/views/hub/reports/staff-performance/partials/targets-modal.blade.php` | Zielwerte-Modal (Pill-Buttons, pro Standort) |
 | `resources/views/hub/reports/staff-performance/partials/staff-ranking.blade.php` | Beratungs-Ranking (Zeitverlauf CR/KPZ + Verkäufer-Filter + Bestenlisten-Tabelle) |
 | `resources/views/hub/reports/staff-performance/partials/staff-detail-modal.blade.php` | Detail-Modal (Stat-Strip + Beratungsliste) |
-| `resources/views/hub/reports/staff-performance/partials/treatments.blade.php` | Durchgeführte Behandlungen |
+| `resources/views/hub/reports/staff-performance/partials/treatments.blade.php` | Behandlungs-Ranking (Zeitverlauf Stunden/Auslastung + Mitarbeiter-Filter + Tabelle) |
+| `app/Services/StaffShiftSyncService.php` | Schichtzeiten-Sync (Phorest WorkTimeTable → `stats_staff_shifts`) |
+| `app/Console/Commands/SyncStaffShifts.php` | `sync:staff-shifts` (nächtlich + Backfill über `--from`/`--to`) |
+| `app/Models/StatsStaffShift.php` | Schicht-Slots (eine Zeile je WORKING-Slot) |
 | `public/js/staff-performance.js` | Alpine.js App: Loader je Karte (sectionError), ECharts-Renderer (acquireChart-Muster), Matrix-HTML, kombiniertes Tagesmessungs-Diagramm (`_overviewChartOption`), Beratungs-Ranking (Zeitverlauf + Verkäufer-Filter), Targets, Staff-Merging |
 | `app/Services/ReportExportService.php` | CSV-Export-Quellen `staff-*` |
 | `resources/views/components/statistics/widgets/partials/staff-*.blade.php` | **Eingefrorene Kopien** der alten Partials für die Custom-Dashboard-Widgets (siehe unten) |
 | `resources/views/hub/reports/partials/overview-cards/mitarbeiterperformance-card.blade.php` | Preview-Card auf Berichte-Übersicht |
 | `tests/Feature/StaffPerformanceTest.php` | Feature-Tests (Kernlogik, benötigt MySQL) |
 | `tests/Feature/StaffPerformancePageTest.php` | Seiten-Skelett (Register, Skeletons, Info-Panels) + Export-Quellen |
-| `tests/Feature/StaffPerformanceScopeTest.php` / `StaffTreatmentsTest.php` | Datensichtbarkeit / Behandlungs-Zählung |
+| `tests/Feature/StaffPerformanceScopeTest.php` / `StaffTreatmentsTest.php` | Datensichtbarkeit / Behandlungs-Zählung + Zeit-/Auslastungsspalten |
+| `tests/Feature/StaffTreatmentTimelineTest.php` | Zeitverlauf: Intervall-Verschmelzung, Auslastungs-Rechnung, Scope |
+| `tests/Unit/StaffShiftSyncServiceTest.php` | Schichtzeiten-Sync (Slot-Parsing, delete+insert, Fehlerpfad) |
 
 **Custom-Dashboard-Widgets entkoppelt (07/2026):** Die 5 Staff-Widgets des
 Custom-Dashboards (`components/statistics/widgets/staff-*.blade.php`) teilten
@@ -649,6 +743,50 @@ GROUP BY r.staff_id
 | `body_zones` | Körperzonen-Stammdaten |
 | `phorest_staff` | Staff-Mapping: Phorest-ID → GlattHub-User |
 | `staff_performance_targets` | Konfigurierbare Zielwerte (global + pro Standort) |
+| `stats_staff_shifts` | Schichtzeiten aus dem Phorest-Dienstplan (Auslastung im Behandlungs-Ranking) |
+
+### Schichtzeiten-Sync (`stats_staff_shifts`, seit 08/2026)
+
+Die Auslastungs-Rechnung des Behandlungs-Rankings braucht die Dienstplan-Schichten.
+Die Phorest-API (`staff/worktimetable`) erlaubt **max. 1 Monat pro Abfrage** —
+live abfragen ist für einen Monats-Zeitverlauf unmöglich, deshalb liegt eine
+lokale Kopie in `stats_staff_shifts` (eine Zeile je WORKING-Slot; NON_WORKING
+wird verworfen, ebenso Slots mit Start = Ende).
+
+- **Sync:** `StaffShiftSyncService` chunked in 28-Tage-Blöcke und ersetzt je
+  Branch + Block den kompletten Bestand (**delete + insert**) — so kommen auch
+  nachträglich gelöschte/verschobene Schichten sauber an.
+- **Nächtlich:** `sync:staff-shifts` ohne Optionen synct ein rollierendes
+  Fenster (35 Tage zurück bis heute). Laravel-Scheduler 03:30, Prod: Cloud
+  Scheduler → `POST /api/cron/sync-staff-shifts` (Job muss einmalig angelegt
+  werden, siehe [CLOUD-SCHEDULER-SETUP](CLOUD-SCHEDULER-SETUP.md)).
+- **Backfill:** einmalig `php artisan sync:staff-shifts --from=2023-01-01`
+  bzw. auf Prod/Staging der Cron-Endpoint mit Parametern
+  (`POST /api/cron/sync-staff-shifts` mit `from=2023-01-01`, `X-Cron-Token`).
+  Ohne Backfill zeigt der %-Modus keine Historie.
+- **Auslastungs-Rechnung** (`getTreatmentTimeline()` / `getTreatmentsByStaff()`):
+  Behandlungs- und Beratungszeit werden je Mitarbeiter × Standort × Tag über
+  eine **Islands-Query** (Fensterfunktionen, läuft auf MySQL 8 **und** SQLite)
+  zu verschmolzenen Intervallen aggregiert — überlappende/parallel gebuchte
+  Service-Positionen zählen nur einmal. Auslastung = Behandlungszeit ÷
+  (Schichtzeit − Beratungszeit − Desinfektionszeit); „mögliche Termine" =
+  verfügbare Zeit ÷ tatsächliche Ø-Termindauer des Monats. Ohne Schichtdaten
+  bleiben die Auslastungs-Felder `null` (Lücke im Chart, „–" in der Tabelle).
+- **Phorest-Platzhalter ausgeschlossen** (`getNonPersonStaffIds()`): Kabinen-,
+  Sammel-, Absage- und Zugangs-Spalten haben Dienstpläne über die kompletten
+  Öffnungszeiten (14 h/Tag) und verfälschten dadurch jede Auslastung — die
+  Gesamtzeile stand vor dem Fix bei 23 % statt 39 % (08/2026). Der Filter greift
+  in `buildTreatmentFilters()` **und** `getShiftIntervalsByDay()` und nutzt die
+  erprobten Muster aus `HrStaffLinkService::isNonPerson()`, damit
+  Behandlungs-Ranking und HR-Kennzahlen dieselbe Definition teilen.
+- **Termin-Anteil** (`getTakeShareSecondsByDay()`): schneidet die verschmolzenen
+  Behandlungs-Intervalle **aller** Mitarbeiter des Instituts mit den eigenen
+  Schichtfenstern (`intersectSeconds()`). Zähler = eigene Schnittmenge, Nenner =
+  Summe über alle Kollegen. Zähler und Nenner werden über Tage/Monate **getrennt
+  summiert** und erst am Ende geteilt — Tagesquoten dürfen nie gemittelt werden.
+  Der Nenner ignoriert bewusst `scope_staff_ids` (nur Aggregat der Kollegen,
+  keine Einzeldaten); sonst sähe ein „eigene Daten"-Nutzer sich selbst immer bei
+  100 %. Branch-Scope und Standort-Filter gelten unverändert.
 
 ### Beratungs-Service-IDs (Phorest)
 
@@ -735,6 +873,8 @@ Migration: `2026_06_25_100000_add_staff_performance_contract_index.php`
 | GET | `/hub/reports/staff-performance/monthly` | Monatlicher Zeitverlauf |
 | GET | `/hub/reports/staff-performance/body-zones` | Körperzonen-Verteilung |
 | GET | `/hub/reports/staff-performance/staff/{staffId}` | Mitarbeiter-Detail |
+| GET | `/hub/reports/staff-performance/treatments` | Behandlungs-Ranking-Tabelle (Seiten-Zeitraum) |
+| GET | `/hub/reports/staff-performance/treatments-timeline` | Behandlungs-Zeitverlauf je Monat (Diagramm, gesamte Historie) |
 | GET | `/hub/reports/staff-performance/overview` | Tagesmessung (`date_from`/`date_to`, Standard: letzte 4 Kalendermonate) |
 | GET | `/hub/reports/staff-performance/targets` | Zielwerte lesen |
 | POST | `/hub/reports/staff-performance/targets` | Zielwerte speichern |
