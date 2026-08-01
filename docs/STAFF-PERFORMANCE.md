@@ -733,6 +733,45 @@ GROUP BY r.staff_id
 - `contract_agg` CTE voraggregiert Verträge, damit der LEFT JOIN nie Row-Multiplikation verursacht
 - Die `AND r.rn = 1` Bedingung im JOIN stellt sicher, dass nur die letzte Beratung den Abschluss zugeordnet bekommt
 
+### Aktualität der Daten (Termine von heute)
+
+Alle Auswertungen lesen aus `stats_historic_appointments`. Der nächtliche
+`sync:appointments` holt jedoch **nur den Vortag** — der laufende Tag fehlte
+dadurch komplett: In der Tagesmessung blieb die Spalte **„Heute" leer**, und
+„Diese Woche", die laufende Kalenderwoche und der Monat waren um den heutigen
+Tag zu niedrig (gemeldet 08/2026).
+
+Gelöst über **`sync:appointments-recent`** (`SyncRecentAppointments`): Der
+Command holt die **letzten 3 Tage inklusive heute** nach und leert anschließend
+die Report-Caches (`StaffPerformanceService`, `ReportsOverviewCache`,
+`SalesStatisticsService`, `GlatttKpiService`, `ClientStatisticsService`) — ohne
+den Flush zeigten die Auswertungen die frischen Termine erst nach Ablauf ihrer
+TTL von bis zu einer Stunde.
+
+Weil die Daten in dieselbe Tabelle geschrieben werden, werden **alle** Perioden
+automatisch korrekt; an der Auswertungs-Logik musste nichts geändert werden.
+Auch andere Berichte auf Basis der Terminhistorie profitieren davon.
+
+- **Zeitfenster 3 Tage, nicht nur heute:** Ein Termin zählt erst als
+  durchgeführt, wenn er in Phorest auf `PAID` steht — das passiert oft erst beim
+  Abrechnen, teils am Folgetag. Der nächtliche Lauf sieht solche Nachzügler nie,
+  das rollierende Fenster fängt sie ein. Laufzeit ~7 Sekunden (3 Tage,
+  ~680 Termine).
+- **Automatisch alle 15 Minuten:** Laravel-Scheduler `everyFifteenMinutes()`,
+  in der Cloud die Jobs `sync-recent-appointments` (Prod) und
+  `sync-recent-appointments-staging`.
+- **Manuell:** Button **„Aktualisieren"** im Seitenkopf der
+  Mitarbeiterperformance (`POST /hub/reports/staff-performance/refresh-recent`,
+  Permission `trigger_data_sync` wie die übrigen manuellen Syncs). Ein
+  Cache-Lock (`staff-perf:manual-refresh`, 120 s) verhindert parallele
+  Phorest-Abfragen bei mehreren Nutzern; ein zweiter Aufruf antwortet sofort mit
+  `skipped: true`. Nach Erfolg lädt die Seite alle Karten neu.
+
+> **Was der Button nicht heilt:** Die Zahlen des laufenden Tages sind
+> naturgemäß unfertig — Termine laufen noch, und Abschlüsse werden teils erst
+> später erfasst. Eine niedrige Conversion-Rate am selben Tag ist deshalb kein
+> verlässliches Signal.
+
 ### Datengrundlagen
 
 | Tabelle | Rolle |

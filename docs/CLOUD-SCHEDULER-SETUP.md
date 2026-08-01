@@ -279,6 +279,20 @@ gcloud scheduler jobs create http sync-superchat-consultation-dates \
   --description="Setzt/entfernt Superchat Beratungstermin anhand aktueller (nicht stornierter) Beratungen" \
   --attempt-deadline="1800s"
 
+# Job: Sync Recent Appointments (Termine von heute + Nachzügler, alle 15 Min)
+# Ohne diesen Lauf fehlt der laufende Tag in allen Auswertungen — der nächtliche
+# sync:appointments holt nur den Vortag.
+gcloud scheduler jobs create http sync-recent-appointments \
+  --location=europe-west3 \
+  --schedule="*/15 * * * *" \
+  --uri="https://DEINE-CLOUD-RUN-URL/api/cron/sync-recent-appointments" \
+  --http-method=POST \
+  --headers="X-Cron-Token=DEIN_KOPIERTER_TOKEN,Content-Type=application/json" \
+  --time-zone="Europe/Berlin" \
+  --description="Holt Termine der letzten 3 Tage nach und leert die Report-Caches" \
+  --attempt-deadline="600s" \
+  --max-retry-attempts=3 --min-backoff=10s
+
 # Job: Sync Staff Shifts (Schichtzeiten für Behandlungs-Ranking/Auslastung)
 # Rollierendes Fenster (35 Tage zurück bis heute); Backfill einmalig per curl
 # mit from=2023-01-01 (siehe unten).
