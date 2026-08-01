@@ -757,13 +757,17 @@ wird verworfen, ebenso Slots mit Start = Ende).
   Branch + Block den kompletten Bestand (**delete + insert**) — so kommen auch
   nachträglich gelöschte/verschobene Schichten sauber an.
 - **Nächtlich:** `sync:staff-shifts` ohne Optionen synct ein rollierendes
-  Fenster (35 Tage zurück bis heute). Laravel-Scheduler 03:30, Prod: Cloud
-  Scheduler → `POST /api/cron/sync-staff-shifts` (Job muss einmalig angelegt
-  werden, siehe [CLOUD-SCHEDULER-SETUP](CLOUD-SCHEDULER-SETUP.md)).
+  Fenster (35 Tage zurück bis heute). Laravel-Scheduler 03:30; in der Cloud über
+  zwei Scheduler-Jobs (europe-west3, Zeitzone Europe/Berlin, Deadline 1800s):
+  **`sync-staff-shifts`** (Prod) und **`sync-staff-shifts-staging`** (Staging).
+  Beide Umgebungen nutzen denselben `CRON_SECRET_TOKEN`.
 - **Backfill:** einmalig `php artisan sync:staff-shifts --from=2023-01-01`
-  bzw. auf Prod/Staging der Cron-Endpoint mit Parametern
-  (`POST /api/cron/sync-staff-shifts` mit `from=2023-01-01`, `X-Cron-Token`).
-  Ohne Backfill zeigt der %-Modus keine Historie.
+  bzw. in der Cloud der Cron-Endpoint mit Parametern
+  (`POST /api/cron/sync-staff-shifts?from=2023-01-01`, Header `X-Cron-Token`).
+  Ohne Backfill zeigt der %-Modus keine Historie. Am 01.08.2026 einmalig für
+  Staging und Prod gefahren: je **24.515 Slots über 5 Institute**, Laufzeit
+  rund 70 Sekunden — dieselbe Zahl wie lokal, da alle Umgebungen dieselbe
+  Phorest-Quelle lesen.
 - **Auslastungs-Rechnung** (`getTreatmentTimeline()` / `getTreatmentsByStaff()`):
   Behandlungs- und Beratungszeit werden je Mitarbeiter × Standort × Tag über
   eine **Islands-Query** (Fensterfunktionen, läuft auf MySQL 8 **und** SQLite)
