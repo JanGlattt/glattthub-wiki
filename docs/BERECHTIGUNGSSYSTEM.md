@@ -683,6 +683,36 @@ Push-Einstellungen unter `api/push/*`.
 
 ---
 
+### Rollen in Produktion weichen vom Seeder ab
+
+!!! danger "Vor jedem Deploy mit neuen Gates pruefen"
+    Die Rollen auf Produktion sind **nicht** die des `PermissionSeeder` (Stand 02.08.2026):
+
+    | Produktion | Seeder / lokal |
+    |---|---|
+    | `admin` | `admin` |
+    | `Büro` | — |
+    | `Institute Leitung` | — |
+    | `Institute MA` | — |
+    | — | `super_admin`, `user`, `finance` |
+
+    Zwei Konsequenzen:
+
+    1. **Eine Migration, die Rechte ueber feste Rollennamen vergibt, erreicht in Prod nur `admin`.**
+       Am 02.08.2026 hat das Behandler (`Institute MA`) vom Termin-Check-in ausgesperrt: Der
+       Endpunkt hatte vorher gar kein Gate, danach besass nur `admin` das neue Recht.
+       Richtig ist die Ableitung aus einem Referenzrecht -- wer `view_appointment_detail` hat,
+       bekommt `checkin_appointments`. Muster:
+       `2026_08_02_190000_grant_new_permissions_to_existing_roles`.
+    2. **Es gibt in Prod keinen `super_admin`**, der Gate-Bypass greift dort also nie. Fehlt ein
+       Recht in der Datenbank, kommt niemand mehr an die zugehoerige Seite -- auch kein
+       Administrator.
+
+    Pruefzugang: Cloud SQL Auth Proxy. Die Zugangsdaten stehen als Env-Vars am Cloud-Run-Dienst
+    (`gcloud run services describe glattthub-web --region=europe-west3`), **nicht** im Secret Manager.
+
+---
+
 ### Wirken Rechte-Aenderungen sofort? (Cache)
 
 Ja -- nachgewiesen in `tests/Feature/PermissionCacheInvalidationTest.php`.
