@@ -13,19 +13,45 @@ Das Berechtigungssystem steuert den Zugriff auf alle Bereiche des glatttHub. Es 
 
 | Kennzahl | Wert |
 |----------|------|
-| Permissions gesamt | 116 |
-| Permission-Gruppen | 20 |
+| Permissions gesamt | 103 |
+| Baum-Zweige im Rollen-Editor | 20 |
 | Rollen (Standard) | 4 |
-| Geschuetzte Routen | 139 |
-| Verschiedene Route-Permissions | 48 |
+| Geschuetzte Hub-Routen | 293 von 302 |
+| Geschuetzte Formular-API-Routen | 22 von 22 |
 
-!!! info "Seit Mai 2026: DB-getriebene Permission-Labels"
-    Permissions tragen seit Migration `2026_05_10_230000_add_label_and_group_to_permissions` zwei zusaetzliche Spalten:
+!!! warning "August 2026: Permission-Audit und Umbau des Rollen-Editors"
+    Alle Rechte wurden gegen den tatsaechlichen Code geprueft (Routen-Gates, `@can`-Direktiven,
+    Policies). Ergebnis:
 
-    - `label` -- deutsches Anzeige-Label im Rollen-Editor
-    - `group_key` -- Gruppen-Schluessel (z.B. `termine`, `berichte`, `kunden`)
+    - **30 wirkungslose Rechte entfernt** -- sie standen nur im Seeder und in Migrationen, wurden
+      aber nirgends geprueft (komplettes Push-Modul, Beratungs-Rechte, alle `sync_*`, die drei
+      `view_any_*`-Dubletten). Den Rollen waren sie trotzdem zugewiesen.
+    - **7 Keys umbenannt**, weil sie irrefuehrend oder sprachlich gemischt waren:
+      `view_cancellations` → `view_revocations`, `create_cancellations` → `create_revocations`,
+      `manage_contract_cancellations` → `manage_revocations`, `manage_own_reisekosten` →
+      `manage_own_travel_expenses`, `approve_reisekosten` → `approve_travel_expenses`,
+      `view_report_rescheduled_cancelled` → `view_report_cancelled_appointments`,
+      `custom-dashboard.share` → `share_custom_dashboard`.
+    - **11 Rechte ohne Label und Gruppe** nachgetragen (Laser-Modul, Besucher-Funnel,
+      Buchungseingang, Audit, Schrift-Einstellungen, Dashboard-Freigabe).
+    - **`use_sepa_form_fields` und `use_advanced_form_fields` scharfgestellt** -- sie waren als
+      Feinsteuerung der Feldpalette im Formular-Editor gedacht, wurden aber nie eingebaut.
+    - **Die Formular-API abgesichert**: 22 Endpunkte unter `api/forms/*` liefen nur hinter `auth`.
 
-    Der Rollen-Editor liest Permissions **dynamisch aus der DB** -- neue Permissions erscheinen automatisch, sobald sie mit gefuelltem `label` und `group_key` angelegt werden. Permissions ohne `group_key` landen am Ende in einer "Sonstiges"-Gruppe.
+    Migration: `2026_08_02_120000_restructure_permission_catalog`
+
+!!! info "Spalten der Tabelle `permissions`"
+    | Spalte | Zweck |
+    |---|---|
+    | `label` | Deutsche Beschriftung im Rollen-Editor |
+    | `group_key` | Alte Gruppierung (bleibt fuer Bestandscode erhalten) |
+    | `page_key` | Zweig im Baum, z.B. `termine`, `berichte` |
+    | `page_sub` | Unterzweig, z.B. `Behandlung`, `Preislisten` |
+    | `access_level` | Zugriffsstufe: `read`, `read_write` oder `full` |
+
+    Massgeblich zur Laufzeit ist immer die Datenbank -- Zuordnung und Stufe sind ohne Deployment
+    pflegbar. Die Stammdaten fuer neu angelegte Rechte liefert `App\Support\PermissionCatalog`.
+
 
 ---
 
@@ -50,11 +76,50 @@ Jedem Benutzer wird eine oder mehrere Rollen zugewiesen. Die Rolle bestimmt, was
 
 ### Rollen bearbeiten (nur fuer Administratoren)
 
-1. Im Admin-Panel unter **Rollen** die gewuenschte Rolle oeffnen
-2. Im Bereich **Berechtigungen** sind alle Permissions in aufklappbaren Gruppen organisiert (z.B. "Termine", "Kunden", "Berichte")
-3. Gruppe aufklappen, gewuenschte Checkboxen setzen oder entfernen
-4. Mit "Alle auswaehlen" koennen alle Permissions einer Gruppe auf einmal aktiviert werden
+Im Admin-Panel unter **Rollen** die gewuenschte Rolle oeffnen. Die Rechte stehen dort als **Baum
+entlang der Hub-Struktur**: Ebene 1 sind die Seiten in der Reihenfolge der Sidebar, Ebene 2 deren
+Unterseiten, Ebene 3 die einzelnen Rechte.
+
+1. Zweig aufklappen (Pfeil links) und einzelne Rechte setzen
+2. Die Checkbox am Zweig selbst vergibt oder entzieht **alle** Rechte des Zweigs auf einmal.
+   Ein waagerechter Strich statt Haekchen bedeutet: nur ein Teil der Rechte ist vergeben
+3. Der Zaehler rechts (`2/4`) zeigt, wie viele Rechte des Zweigs vergeben sind
+4. "Alle" und "Keine" oben wirken auf den gesamten Baum
 5. Speichern
+
+**Farbcodierung der Zugriffsstufe** -- damit ohne Lesen des Labels erkennbar ist, wie weit ein
+Recht reicht:
+
+| Farbe | Stufe | Bedeutung |
+|---|---|---|
+| Blau | Lesen | Sehen und oeffnen, nichts veraendern |
+| Orange | Bearbeiten | Anlegen und aendern, nichts unwiderruflich entfernen |
+| Rot | Vollzugriff | Loeschen, Geld bewegen, Systemkonfiguration |
+
+**Datensichtbarkeit** steht als eigener Bereich ueber den Berechtigungen. Da sich die drei Stufen
+gegenseitig ausschliessen, ist es eine Auswahl und keine Sammlung von Checkboxen. Ohne bewusste
+Auswahl gilt "Alle Daten"; hat ein Benutzer mehrere Rollen, gewinnt die weiteste Stufe.
+
+### Rechte pflegen: Admin-Panel → Berechtigungen
+
+Wie ein Recht im Rollen-Editor erscheint, wird unter **Berechtigungen** gepflegt -- ohne Deployment:
+
+- **Beschriftung**, **Zweig**, **Unterzweig** und **Zugriffsstufe** sind direkt in der Tabelle aenderbar
+- Filter nach Zweig, Zugriffsstufe und "keiner Rolle zugewiesen"
+- Mehrere Rechte lassen sich per Sammelaktion umhaengen oder auf eine Stufe setzen
+
+Neue Rechte **anlegen** und **loeschen** bleibt bewusst den Migrationen vorbehalten -- ein Recht
+ohne Gate im Code waere wirkungslos, genau das hat das Audit aufgeraeumt.
+
+### Wirken Aenderungen sofort?
+
+Ja. Der Berechtigungs-Cache wird bei jeder Aenderung an einer Rolle oder einem Recht automatisch
+geleert, und er liegt im Datenbank-Store -- ein Flush wirkt damit fuer alle laufenden
+Cloud-Run-Instanzen zugleich.
+
+Der Knopf **"Rechte jetzt anwenden"** im Kopf der Rollen- und der Berechtigungs-Seite wird nur
+gebraucht, wenn am Model vorbei geschrieben wurde: direktes SQL, eine Datenkorrektur oder ein
+Import. Dann haelt der Cache sonst bis zu 24 Stunden den alten Stand.
 
 ---
 
@@ -93,7 +158,7 @@ Benutzer-Request
 |-------|-------|
 | `database/migrations/2026_03_29_153517_add_granular_hub_permissions.php` | Migration: Erstellt alle Permissions |
 | `database/migrations/2026_05_10_230000_add_label_and_group_to_permissions.php` | Migration: Spalten `label` + `group_key` plus Backfill |
-| `database/seeders/PermissionSeeder.php` | Seeder: 116 Permissions + 4 Rollen-Zuweisungen |
+| `database/seeders/PermissionSeeder.php` | Seeder: Basis-Rechte + 4 Rollen-Zuweisungen (Stammdaten aus `PermissionCatalog`) |
 | `scripts/production-permissions-2026-03-29.sql` | Idempotentes SQL fuer Produktiv-Deployment |
 | `storage/app/permissions-label-group.sql` | Produktions-SQL fuer label/group_key-Spalten + Backfill |
 | `app/Providers/AppServiceProvider.php` | Gate::before fuer super_admin-Bypass |
@@ -124,221 +189,257 @@ Filament-Seiten mit `canAccess()`:
 
 ---
 
-### Permission-Gruppen (vollstaendige Liste)
+### Alle Berechtigungen (Baum-Struktur)
 
-Die 116 Permissions sind in 20 Gruppen organisiert. Die Gruppen-Reihenfolge und -Beschreibung wird in `RoleForm::groupMeta()` gepflegt; die Permissions selbst werden ueber `RoleForm::permissionGroups()` direkt aus der DB geladen (Spalten `group_key` + `label`).
+Die 103 Rechte haengen an 20 Zweigen entlang der Hub-Struktur. Zuordnung (`page_key`, `page_sub`)
+und Zugriffsstufe (`access_level`) stehen in der Datenbank und sind im Admin-Panel unter
+**Berechtigungen** pflegbar -- die folgende Liste ist der Stand nach dem Audit vom 02.08.2026.
 
-#### Systemzugriff (2)
+Ein Unterzweig wird nur dargestellt, wenn er mindestens zwei Rechte hat. Sonst waere er eine
+Ueberschrift ueber einer einzelnen Checkbox -- das betrifft vor allem die Berichte, wo jeder
+Bericht genau ein Recht hat und das Label ihn bereits benennt.
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `access_hub` | Zugriff auf den glatttHub |
-| `access_admin` | Zugriff auf das Admin-Backend (Filament) |
 
-#### Dashboard (2)
+#### Startseite (2)
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_dashboard` | Startseite sehen |
-| `configure_dashboard` | KPIs und Charts konfigurieren |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `configure_dashboard` | KPIs und Charts konfigurieren | Bearbeiten |
+| `view_dashboard` | Startseite sehen | Lesen |
 
-#### Termine (6)
+#### Termine (4)
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_appointments` | Terminuebersicht sehen |
-| `view_appointment_detail` | Termin-Detailansicht oeffnen |
-| `checkin_appointments` | Kunden einchecken |
-| `manage_appointment_notes` | Terminnotizen bearbeiten |
-| `manage_treatment_settings` | Behandlungseinstellungen verwalten |
-| `manage_treatment_photos` | Behandlungsfotos hoch-/runterladen |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `view_appointment_detail` | Termin-Detailansicht oeffnen | Lesen |
+| `view_appointments` | Terminuebersicht sehen | Lesen |
 
-#### Kunden (4)
+**Behandlung**
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_clients` | Kundenliste sehen |
-| `view_client_detail` | Kundendetail oeffnen |
-| `edit_clients` | Kunden bearbeiten |
-| `create_clients` | Kunden anlegen |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `manage_treatment_settings` | Behandlungseinstellungen verwalten | Vollzugriff |
+| `manage_treatment_photos` | Behandlungsfotos hoch-/runterladen | Bearbeiten |
 
-#### Personal (9)
+#### Kunden (3)
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_staff` | Personalliste sehen |
-| `view_any_staff` | Alle Mitarbeiter auflisten (Admin) |
-| `view_staff_overview` | Personal-Uebersicht sehen |
-| `view_staff_detail` | Personal-Detailansicht |
-| `edit_staff` | Personal bearbeiten |
-| `create_staff` | Personal anlegen |
-| `delete_staff` | Personal loeschen |
-| `sync_staff` | Personal mit Phorest synchronisieren |
-| `manage_nisv` | NiSV-Zertifikate verwalten |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `edit_clients` | Kunden bearbeiten | Bearbeiten |
+| `view_client_detail` | Kundendetail oeffnen | Lesen |
+| `view_clients` | Kundenliste sehen | Lesen |
 
-#### Reisekosten (2)
+#### Personal (7)
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `manage_own_reisekosten` | Eigene Reisekosten verwalten |
-| `approve_reisekosten` | Reisekosten freigeben (Vorgesetzte) |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `manage_staff_aliases` | Mitarbeiter-Aliase verwalten | Bearbeiten |
+| `delete_staff` | Personal loeschen | Vollzugriff |
+| `view_staff_detail` | Personal-Detailansicht | Lesen |
+| `view_staff_overview` | Personal-Uebersicht sehen | Lesen |
+| `view_staff` | Personalliste sehen | Lesen |
 
-#### Beratungen (4)
+**HR-Daten**
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_consultations` | Beratungen ansehen |
-| `create_consultations` | Beratungen erstellen |
-| `edit_consultations` | Beratungen bearbeiten |
-| `delete_consultations` | Beratungen loeschen |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `manage_hr_salaries` | HR: Gehälter und Boni pflegen | Vollzugriff |
+| `view_hr_salaries` | HR: Gehälter und Personalkosten sehen | Lesen |
 
-#### Services (3)
+#### Services (1)
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_services` | Services sehen |
-| `edit_services` | Services bearbeiten |
-| `sync_services` | Services mit Phorest synchronisieren |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `view_services` | Services sehen | Lesen |
 
-#### Berichte (8)
+#### Berichte (16)
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_reports` | Berichte-Uebersicht sehen |
-| `view_report_upcoming_consultations` | Bericht: Zukuenftige Beratungen |
-| `view_report_past_consultations` | Bericht: Vergangene Beratungen |
-| `view_report_rescheduled_cancelled` | Bericht: Storniert und Umgebucht |
-| `view_report_appointments_body_zones` | Bericht: Terminstatistik |
-| `view_report_client_courses` | Bericht: glattt-Pakete |
-| `view_report_client_statistics` | Bericht: Kundenstatistiken |
-| `trigger_data_sync` | Daten-Sync ausloesen (Admin-Aktion) |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `view_report_ads_analysis` | Bericht: Anzeigen-Analyse | Lesen |
+| `view_report_visitor_funnel` | Bericht: Besucher-Funnel | Lesen |
+| `view_report_glattt_kpis` | Bericht: glattt-KPIs | Lesen |
+| `view_report_client_courses` | Bericht: glattt-Pakete | Lesen |
+| `view_report_hr_kpis` | Bericht: HR-Kennzahlen | Lesen |
+| `view_report_client_statistics` | Bericht: Kundenstatistiken | Lesen |
+| `view_report_cancelled_appointments` | Bericht: Stornierte und gelöschte Termine | Lesen |
+| `view_report_appointments_body_zones` | Bericht: Terminstatistik | Lesen |
+| `view_report_past_consultations` | Bericht: Vergangene Beratungen | Lesen |
+| `view_report_sales_statistics` | Bericht: Verkaufsstatistik | Lesen |
+| `view_report_revocation_statistics` | Bericht: Widerruf-Statistik | Lesen |
+| `view_report_upcoming_consultations` | Bericht: Zukuenftige Beratungen | Lesen |
+| `view_reports` | Berichte-Uebersicht sehen | Lesen |
+| `trigger_data_sync` | Daten-Sync ausloesen (Admin-Aktion) | Vollzugriff |
+| `share_custom_dashboard` | Eigenes Dashboard teilen | Bearbeiten |
+| `view_year_end_report` | Jahresabschluss-Auswertung (Sitzungen vs. Lastschriften) | Lesen |
 
-#### Gutscheine (3)
+#### Audit (2)
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_vouchers` | Gutscheine sehen |
-| `create_vouchers` | Gutscheine erstellen |
-| `edit_vouchers` | Gutscheine bearbeiten |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `manage_audit_settings` | Audit-Vorgaben verwalten | Vollzugriff |
+| `view_audit` | Audit-Übersicht sehen | Lesen |
 
-#### Vertraege (5)
+#### Gutscheine (6)
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_contracts` | Vertraege sehen |
-| `create_contracts` | Vertraege erstellen |
-| `edit_contracts` | Vertraege bearbeiten |
-| `manage_contract_cancellations` | Vertragskuendigungen verwalten |
-| `manage_gocardless` | GoCardless-Mandate verwalten |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `edit_vouchers` | Gutscheine bearbeiten | Bearbeiten |
+| `create_vouchers` | Gutscheine erstellen | Bearbeiten |
+| `view_vouchers` | Gutscheine sehen | Lesen |
 
-#### Preislisten (4)
+**Verkauf**
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_price_lists` | Preislisten sehen |
-| `create_price_lists` | Preislisten erstellen |
-| `edit_price_lists` | Preislisten bearbeiten |
-| `delete_price_lists` | Preislisten loeschen |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `manage_voucher_products` | Gutschein-Produkte verwalten | Vollzugriff |
+| `view_voucher_sales` | Gutschein-Verkäufe sehen | Lesen |
+| `manage_voucher_sales` | Gutschein-Verkäufe verwalten | Vollzugriff |
+
+#### Verträge (9)
+
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `manage_referral_payouts` | Freunde-werben-Auszahlungen verwalten | Vollzugriff |
+| `manage_gocardless` | GoCardless-Mandate verwalten | Vollzugriff |
+| `edit_contracts` | Vertraege bearbeiten | Bearbeiten |
+| `view_contracts` | Vertraege sehen | Lesen |
+| `edit_contract_data` | Vertragsdaten bearbeiten (erweiterte Felder) | Bearbeiten |
+
+**Preislisten**
+
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `edit_price_lists` | Preislisten bearbeiten | Bearbeiten |
+| `create_price_lists` | Preislisten erstellen | Bearbeiten |
+| `delete_price_lists` | Preislisten loeschen | Vollzugriff |
+| `view_price_lists` | Preislisten sehen | Lesen |
 
 #### Widerrufe (3)
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_cancellations` | Widerrufe sehen |
-| `create_cancellations` | Widerrufe erstellen |
-| `edit_cancellations` | Widerrufe bearbeiten |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `manage_revocations` | Widerrufe erfassen und bearbeiten | Vollzugriff |
+| `create_revocations` | Widerrufe erstellen | Bearbeiten |
+| `view_revocations` | Widerrufe sehen | Lesen |
 
 #### Schulden (1)
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_debts` | Schulden sehen (Kundenschulden aus geplatzten Lastschriften) |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `view_debts` | Schulden sehen | Lesen |
 
-#### Institute (4)
+#### Firmenverträge (2)
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_branches` | Institute sehen |
-| `edit_branches` | Institute bearbeiten |
-| `sync_branches` | Institute mit Phorest synchronisieren |
-| `manage_branch_images` | Institut-Bilder verwalten |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `view_company_contracts` | Firmenvertraege sehen | Lesen |
+| `manage_company_contracts` | Firmenvertraege verwalten | Vollzugriff |
 
-#### Laser und Komponenten (8)
+#### Institute (2)
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_lasers` | Laser sehen |
-| `create_lasers` | Laser erstellen |
-| `edit_lasers` | Laser bearbeiten |
-| `manage_laser_maintenance` | Laser-Wartung verwalten |
-| `view_laser_components` | Komponenten sehen |
-| `create_laser_components` | Komponenten erstellen |
-| `edit_laser_components` | Komponenten bearbeiten |
-| `manage_component_repairs` | Reparaturen verwalten |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `manage_branch_images` | Institut-Bilder verwalten | Bearbeiten |
+| `view_branches` | Institute sehen | Lesen |
+
+#### Laser (5)
+
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `manage_laser_inventory` | Laser-Inventar verwalten | Bearbeiten |
+| `view_laser` | Laser-Modul sehen | Lesen |
+| `manage_laser_repairs` | Laser-Reparaturen, STK und Behördenanzeigen verwalten | Bearbeiten |
+| `manage_laser_master_data` | Laser-Stammdaten verwalten | Vollzugriff |
+| `perform_laser_maintenance` | Laser-Wartungen durchführen und Fehler melden | Bearbeiten |
 
 #### Formulare (8)
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_forms` | Formulare sehen |
-| `create_forms` | Formulare erstellen (Editor) |
-| `edit_forms` | Formulare bearbeiten |
-| `delete_forms` | Formulare loeschen |
-| `fill_forms` | Formulare ausfuellen |
-| `view_form_submissions` | Einreichungen ansehen |
-| `use_advanced_form_fields` | Erweiterte Felder (Koerperzonen, Vertragspreis, Upload, Signatur) |
-| `use_sepa_form_fields` | SEPA-Felder (IBAN, BIC, Kontoinhaber) |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `view_form_submissions` | Einreichungen ansehen | Lesen |
+| `use_advanced_form_fields` | Erweiterte Felder (Koerperzonen, Vertragspreis, Upload, Signatur) | Bearbeiten |
+| `fill_forms` | Formulare ausfuellen | Lesen |
+| `edit_forms` | Formulare bearbeiten | Bearbeiten |
+| `create_forms` | Formulare erstellen (Editor) | Bearbeiten |
+| `delete_forms` | Formulare loeschen | Vollzugriff |
+| `view_forms` | Formulare sehen | Lesen |
+| `use_sepa_form_fields` | SEPA-Felder (IBAN, BIC, Kontoinhaber) | Bearbeiten |
 
-#### Einstellungen (3)
+#### Buchungseingang (1)
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_settings` | Einstellungen sehen |
-| `edit_settings` | Einstellungen bearbeiten |
-| `manage_cache` | Cache verwalten |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `view_booking` | Buchungseingang sehen | Lesen |
 
-#### Benutzer und Rollen (10)
+#### Reisekosten (2)
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_users` | Benutzer sehen |
-| `view_any_users` | Alle Benutzer auflisten (Admin) |
-| `create_users` | Benutzer erstellen |
-| `edit_users` | Benutzer bearbeiten |
-| `delete_users` | Benutzer loeschen |
-| `view_roles` | Rollen sehen |
-| `view_any_roles` | Alle Rollen auflisten (Admin) |
-| `create_roles` | Rollen erstellen |
-| `edit_roles` | Rollen bearbeiten |
-| `delete_roles` | Rollen loeschen |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `manage_own_travel_expenses` | Eigene Reisekosten verwalten | Bearbeiten |
+| `approve_travel_expenses` | Reisekosten freigeben (Vorgesetzte) | Bearbeiten |
 
-#### Admin-Panel (8)
+#### Einstellungen (5)
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `manage_news` | Nachrichten verwalten |
-| `manage_body_zones` | Koerperzonen verwalten |
-| `manage_consultation_services` | Beratungsdienstleistungen verwalten |
-| `manage_absence_types` | Abwesenheitstypen verwalten |
-| `manage_phorest_staff` | Phorest-Personal verwalten |
-| `manage_pdf_settings` | PDF-Einstellungen verwalten |
-| `manage_email_settings` | E-Mail-Einstellungen verwalten |
-| `manage_notifications_admin` | Benachrichtigungen verwalten |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `manage_api_clients` | API-Clients verwalten | Vollzugriff |
+| `manage_cache` | Cache verwalten | Vollzugriff |
+| `edit_settings` | Einstellungen bearbeiten | Bearbeiten |
+| `view_settings` | Einstellungen sehen | Lesen |
+| `manage_settings` | Einstellungen verwalten (erweitert) | Vollzugriff |
 
-#### Push-Benachrichtigungen (10)
+#### Admin-Panel (18)
 
-| Permission | Beschreibung |
-|------------|-------------|
-| `view_push_campaigns` | Push-Kampagnen ansehen |
-| `create_push_campaigns` | Push-Kampagnen erstellen |
-| `edit_push_campaigns` | Push-Kampagnen bearbeiten |
-| `delete_push_campaigns` | Push-Kampagnen loeschen |
-| `view_push_subscriptions` | Push-Geraete ansehen |
-| `manage_push_subscriptions` | Push-Geraete verwalten |
-| `view_push_types` | Push-Typen ansehen |
-| `edit_push_types` | Push-Typen bearbeiten |
-| `view_push_statistics` | Push-Statistiken ansehen |
-| `send_test_push` | Test-Push senden |
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+
+**Benutzer & Rollen**
+
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `edit_users` | Benutzer bearbeiten | Bearbeiten |
+| `create_users` | Benutzer erstellen | Bearbeiten |
+| `delete_users` | Benutzer loeschen | Vollzugriff |
+| `view_users` | Benutzer sehen | Lesen |
+| `edit_roles` | Rollen bearbeiten | Bearbeiten |
+| `create_roles` | Rollen erstellen | Bearbeiten |
+| `delete_roles` | Rollen loeschen | Vollzugriff |
+| `view_roles` | Rollen sehen | Lesen |
+
+**Stammdaten**
+
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `manage_absence_types` | Abwesenheitstypen verwalten | Vollzugriff |
+| `manage_consultation_services` | Beratungsdienstleistungen verwalten | Vollzugriff |
+| `manage_body_zones` | Koerperzonen verwalten | Vollzugriff |
+| `manage_body_zone_aliases` | Koerperzonen-Aliase verwalten | Bearbeiten |
+| `manage_news` | Nachrichten verwalten | Vollzugriff |
+| `manage_phorest_staff` | Phorest-Personal verwalten | Vollzugriff |
+
+**Systemkonfiguration**
+
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `manage_notifications_admin` | Benachrichtigungen verwalten | Vollzugriff |
+| `manage_email_settings` | E-Mail-Einstellungen verwalten | Vollzugriff |
+| `manage_pdf_settings` | PDF-Einstellungen verwalten | Vollzugriff |
+| `manage_font_settings` | Schrift-Einstellungen verwalten | Vollzugriff |
+
+#### Systemübergreifend (3)
+
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `use_ai_assistant` | glatttBert (KI-Assistent) verwenden | Bearbeiten |
+
+**Zugriff**
+
+| Permission | Beschriftung | Stufe |
+|---|---|---|
+| `access_admin` | Zugriff auf das Admin-Backend (Filament) | Vollzugriff |
+| `access_hub` | Zugriff auf den glatttHub | Lesen |
+
 
 ---
 
@@ -400,80 +501,113 @@ Auf den einzelnen Seiten werden Action-Buttons und Bereiche mit `@can`-Direktive
 
 ### Rollen-Verwaltung im Admin-Panel
 
-Die Rollen-Bearbeitung im Filament-Admin-Panel verwendet ein gruppiertes Layout mit aufklappbaren Sektionen.
+Der Rollen-Editor zeigt die Rechte seit 08/2026 als **Baum entlang der Hub-Struktur**. Er ersetzt
+die frueheren 20 Gruppen-Karten mit je einer CheckboxList.
 
 #### Aufbau des Formulars
 
-Das Formular besteht aus drei Bereichen:
-
 1. **Rollen-Informationen** -- Rollenname (eindeutig) und Guard
 2. **Standard-Rolle** -- Toggle, ob neue Benutzer diese Rolle automatisch bekommen
-3. **Berechtigungen** -- 20 aufklappbare Gruppen mit je einem CheckboxList
+3. **Datensichtbarkeit** -- Stufenauswahl (`data_scope_own` / `_branch` / `_all`), kein Teil des Baums
+4. **Berechtigungen** -- der Baum als `ViewField`
 
-#### Technische Umsetzung
+#### Aufbau des Baums
 
-Die Permission-Verwaltung verwendet **keine** Filament `->relationship()` auf dem CheckboxList, sondern manuelle Hydration und Synchronisation:
+`RoleForm::permissionTree()` liest die Rechte aus der Datenbank und gruppiert sie:
 
-**Warum:** Ein einzelner CheckboxList mit 106 Eintraegen ist unuebersichtlich. Stattdessen wird pro Permission-Gruppe eine eigene aufklappbare Section mit eigenem CheckboxList erzeugt.
+- **Ebene 1** aus `page_key`, in der Reihenfolge von `PermissionCatalog::NODES` (entspricht der Sidebar)
+- **Ebene 2** aus `page_sub`, alphabetisch
+- **Ebene 3** die Rechte selbst, alphabetisch nach Label
 
-**Datenfluss beim Bearbeiten:**
+Zwei Regeln dabei:
+
+- Rechte ohne `page_key` landen im Zweig `system` ("Systemuebergreifend") -- keines faellt heraus
+- Ein Unterzweig mit genau **einem** Recht wird in die Hauptliste geklappt: eine Ueberschrift ueber
+  einer einzelnen Checkbox ist keine Gliederung. Ohne diese Regel haette der Berichte-Zweig
+  14 Unterzweige mit je einem Eintrag
+
+#### Datenfluss
 
 ```
 1. mutateFormDataBeforeFill()
-   - Liest bestehende Permissions der Rolle
-   - Verteilt sie auf perm_system, perm_dashboard, perm_termine, ...
+   - $data['permissions'] = Rechte der Rolle, geschnitten mit dem Baum
+   - $data['data_scope']  = weiteste vergebene Stufe, sonst data_scope_all
 
 2. Formular-Anzeige
-   - 20 aufklappbare Sections, jeweils mit CheckboxList
-   - bulkToggleable pro Gruppe ("Alle auswaehlen")
+   - ViewField rendert filament/forms/components/permission-tree.blade.php
+   - Alpine haelt die Auswahl ueber $wire.$entangle synchron
 
 3. mutateFormDataBeforeSave()
-   - Sammelt alle perm_*-Felder zusammen
-   - Entfernt perm_*-Keys aus $data (nicht in DB speichern)
+   - permissions + data_scope zu einer Liste zusammenfuehren
+   - beide Keys aus $data entfernen (keine Spalten auf roles)
 
 4. afterSave()
    - $role->syncPermissions($permissionsToSync)
 ```
 
+#### Fallstricke
+
+- **Das Alpine-Objekt steht direkt in der View, nicht in `@push('scripts')`.** Filament rendert den
+  Script-Stack erst am Ende des Body; ist Alpine bis dahin gestartet, waere `permissionTree()` beim
+  Auswerten von `x-data` noch nicht definiert.
+- **`display` der aufklappbaren Zweige kommt aus der CSS-Klasse**, nie als Inline-Style -- Alpine
+  ueberschreibt bei `x-show` das inline `display` und das Layout kollabiert still.
+- **Mass Assignment auf neuen Spalten:** Laravel merkt sich die Spaltenliste je Modellklasse
+  statisch (`isGuardableColumn`). Stammt der Cache aus der Zeit vor einer Migration, verwirft
+  `update()` die neuen Spalten **stillschweigend**. Seeder und Sammelaktionen nutzen deshalb
+  `forceFill()->save()`.
+
 **Relevante Dateien:**
 
-- `app/Filament/Resources/Roles/Schemas/RoleForm.php` -- Gruppen-Definition und Section-Builder
-- `app/Filament/Resources/Roles/Pages/EditRole.php` -- Hydration (beforeFill) + Sync (afterSave)
-- `app/Filament/Resources/Roles/Pages/CreateRole.php` -- Sync (afterCreate)
+- `app/Support/PermissionCatalog.php` -- Stammdaten aller Rechte und die 20 Zweige
+- `app/Filament/Resources/Roles/Schemas/RoleForm.php` -- Baumaufbau und Formular
+- `app/Filament/Resources/Roles/Pages/EditRole.php` -- Hydration + Sync
+- `app/Filament/Resources/Roles/Pages/CreateRole.php` -- Sync beim Anlegen
+- `resources/views/filament/forms/components/permission-tree.blade.php` -- Baum-View
+- `app/Filament/Resources/Permissions/` -- Pflege-Oberflaeche fuer Zuordnung und Stufe
+- `app/Filament/Actions/FlushPermissionCacheAction.php` -- "Rechte jetzt anwenden"
+- `public/css/theme_glattt.css` -- Abschnitt `permission-tree-glattt`
 
-#### Neue Gruppe hinzufuegen
+#### Einen neuen Zweig hinzufuegen
 
-1. In `RoleForm::groupMeta()` einen neuen Eintrag ergaenzen (nur Anzeigename + Beschreibung, keine Permissions):
+1. In `PermissionCatalog::NODES` einen Eintrag ergaenzen (Schluessel → Anzeigename), an der Stelle,
+   an der die Seite auch in der Sidebar steht
+2. Die betroffenen Rechte im Admin-Panel unter **Berechtigungen** auf den neuen Zweig umhaengen --
+   oder bei neuen Rechten `page_key` gleich in der Migration setzen
 
-```php
-'neue_gruppe' => [
-    'label'       => 'Gruppenname',
-    'description' => 'Kurzbeschreibung',
-],
-```
-
-2. Die Permissions werden in der DB mit `group_key = 'neue_gruppe'` angelegt -- die Section erscheint automatisch.
-3. Wird eine Permission ohne passenden `group_key` angelegt, landet sie in der Fallback-Gruppe "Sonstiges" am Ende.
-
----
 
 ### Neue Permission hinzufuegen (Schritt fuer Schritt)
 
-1. **Migration erstellen**: Permission in der Datenbank anlegen -- inklusive `label` und `group_key`:
+1. **Migration erstellen**: Permission anlegen -- mit `label`, `page_key`, `page_sub` und `access_level`:
 
     ```php
     Permission::firstOrCreate(
         ['name' => 'neue_permission', 'guard_name' => 'web'],
-        ['label' => 'Deutsches Label', 'group_key' => 'kunden'],
+        [
+            'label'        => 'Deutsches Label',
+            'group_key'    => 'kunden',      // Bestandsgruppierung
+            'page_key'     => 'kunden',      // Zweig im Baum
+            'page_sub'     => null,          // Unterzweig, meist null
+            'access_level' => 'read_write',  // read | read_write | full
+        ],
     );
     ```
 
-    !!! tip "Self-updating Rollen-Editor"
-        Sobald Migration und Backfill auf Produktion laufen, erscheint die Permission **automatisch** im Rollen-Editor in der zugewiesenen Gruppe. Es ist **keine** Aenderung an `RoleForm.php` mehr noetig.
+    !!! tip "Der Rollen-Editor aktualisiert sich selbst"
+        Sobald die Migration durch ist, erscheint das Recht **automatisch** im Baum. Es ist keine
+        Aenderung an `RoleForm.php` noetig. Fehlt `page_key`, landet es im Zweig
+        "Systemuebergreifend" -- sichtbar, aber an der falschen Stelle.
 
-2. **Seeder aktualisieren**: In `PermissionSeeder.php` die Permission und Rollenzuweisung ergaenzen (mit `label` + `group_key`).
+    !!! warning "Ein Recht ohne Gate ist wirkungslos"
+        Das Audit 08/2026 hat 30 Rechte entfernt, die nur im Seeder standen und nirgends geprueft
+        wurden -- den Rollen aber zugewiesen waren. Das ist Scheinsicherheit: Wegnehmen aendert
+        nichts, Vergeben bringt nichts. Schritt 4 bis 6 sind deshalb **nicht optional**.
 
-3. **(Optional) Neue Gruppe**: Falls die Permission zu einer neuen Gruppe gehoert, in `RoleForm::groupMeta()` einen Eintrag fuer Anzeigename + Beschreibung ergaenzen.
+2. **Stammdaten ergaenzen**: In `App\Support\PermissionCatalog::ENTRIES` einen Eintrag
+   `'key' => [Label, Gruppe, Zweig, Unterzweig, Stufe]` hinzufuegen, damit der Seeder das Recht
+   vollstaendig anlegt.
+
+3. **Seeder aktualisieren**: In `PermissionSeeder.php` das Recht und die Rollenzuweisung ergaenzen.
 
 4. **Route schuetzen**: In `routes/web.php` Middleware ergaenzen
 
@@ -505,6 +639,76 @@ Die Permission-Verwaltung verwendet **keine** Filament `->relationship()` auf de
     INSERT IGNORE INTO permissions (name, guard_name, label, group_key, created_at, updated_at)
     VALUES ('neue_permission', 'web', 'Deutsches Label', 'kunden', NOW(), NOW());
     ```
+
+---
+
+### Schutz der Datenschicht (Stand 02.08.2026)
+
+Neben den Hub-Seiten wurden die AJAX-Endpunkte dahinter abgesichert. Sie liefen bis dahin nur
+hinter `auth`: Jeder angemeldete Benutzer -- auch einer **ohne** Hub-Zugang -- konnte darueber
+Kunden anlegen, Kaeufe buchen, Gutscheine erstellen, NiSV-Dokumente loeschen oder WhatsApp an
+Kunden senden.
+
+Die einzige Middleware dort war `RedirectDirectApiAccess`. Sie leitet lediglich direkte
+Browser-Aufrufe von JSON-URLs um (Pruefung auf `Sec-Fetch-Mode`) und ist **ausdruecklich keine
+Rechtepruefung** -- ein `fetch()` kommt durch.
+
+| Bereich | Schutz seit 08/2026 |
+|---|---|
+| `phorest/*` (123) | `CheckHubAccess` fuer die gesamte Gruppe, 32 schreibende Endpunkte zusaetzlich mit eigenem Recht |
+| `superchat/*` (8) | Lesen `view_client_detail`, Senden zusaetzlich `send_client_messages` |
+| `zendesk/*` (6) | `view_client_detail` |
+| `askdante/*` (5) | `view_staff_detail` |
+| `google/*` (6) | `view_company_contracts` |
+| `api/users`, `api/legacy-payments` | `view_users` bzw. `view_contracts` |
+
+Migration: `2026_08_02_150000_add_write_permissions_for_phorest_endpoints`
+
+!!! note "Lesende Phorest-Endpunkte bewusst nur mit CheckHubAccess"
+    Die rund 90 lesenden Endpunkte sind innerhalb des Hub fuer jeden Benutzer erreichbar. Das ist
+    eine bewusste Entscheidung (Jan, 08/2026): Auch Phorest selbst loest den Lesezugriff auf diese
+    Daten nicht feingranular auf. Eine feinere Staffelung waere strenger als das Quellsystem und
+    haette keinen praktischen Gewinn.
+
+!!! warning "Doppelte Routendefinitionen"
+    Beim Absichern fiel auf, dass neun Routen in der `phorest`-Gruppe **zweimal** definiert waren,
+    rund 360 Zeilen auseinander. Laravel registriert beide, wirksam ist die **spaetere** -- ein
+    Gate an der frueheren Definition tut stillschweigend nichts. Die Dubletten wurden entfernt.
+    Bei Aenderungen an dieser Gruppe lohnt ein Blick, ob ein Pfad mehrfach vorkommt.
+
+Nicht betroffen und bewusst offen: `api/cron/*` (Token im Controller), `api/webhooks/*`
+(Signaturpruefung), `api/v1/*` (Bearer-Token mit Scopes), `shared/*` und `api/shared/*`
+(Token-basierte oeffentliche Flows), `user/*` (eigenes Profil) sowie die persoenlichen
+Push-Einstellungen unter `api/push/*`.
+
+---
+
+### Wirken Rechte-Aenderungen sofort? (Cache)
+
+Ja -- nachgewiesen in `tests/Feature/PermissionCacheInvalidationTest.php`.
+
+Rechte werden 24 Stunden zwischengespeichert (`config/permission.php`). Der Cache liegt im
+**Datenbank-Store**, ein Flush wirkt daher fuer alle laufenden Cloud-Run-Instanzen zugleich.
+Geleert wird er automatisch bei jedem `saved` und `deleted` auf einer Rolle oder einem Recht
+(Spatie-Trait `RefreshesPermissionCache`) -- das deckt ab:
+
+| Weg | Cache wird geleert |
+|---|---|
+| Rollen-Editor speichern (`syncPermissions`) | ja |
+| Inline-Bearbeitung unter **Berechtigungen** | ja |
+| Sammelaktionen (Zweig zuordnen, Stufe setzen) | ja |
+| Rollenwechsel am Benutzer (`syncRoles`) | ja |
+| Migration mit direktem `DB::table()->update()` | **nein** -- dort explizit `forgetCachedPermissions()` aufrufen |
+
+Zwei Gruende, warum das auch im Betrieb zuverlaessig greift:
+
+- **Kein Octane.** Jeder Web-Request bootet frisch, der `PermissionRegistrar` haelt nichts ueber
+  Requests hinweg im Speicher.
+- **Der Queue-Worker prueft keine Rechte.** Er waere der einzige langlebige Prozess (Neustart
+  ohnehin stuendlich ueber `--max-time=3600`).
+
+Der Knopf **"Rechte jetzt anwenden"** ist damit ein Notnagel fuer Aenderungen am Model vorbei:
+direktes SQL, eine Datenkorrektur oder ein Import.
 
 ---
 
