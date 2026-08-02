@@ -6,6 +6,36 @@ Diese Anleitung beschreibt, wie die automatischen Cronjobs für glattthub auf Go
 
 Da Cloud Run serverless ist (Container laufen nur bei Requests), können keine traditionellen Cronjobs verwendet werden. Stattdessen nutzen wir **Google Cloud Scheduler**, der HTTP-Requests an unsere API-Endpoints sendet.
 
+!!! danger "Der Laravel-Scheduler läuft in Produktion NICHT"
+    Kein Container führt `schedule:run` aus (weder Web noch Worker — der Worker macht
+    ausschließlich `queue:work`). Ein Eintrag in `routes/console.php` ist deshalb
+    **reine Dokumentation** und löst von sich aus gar nichts aus.
+
+    **Jeder geplante Befehl braucht drei Dinge:**
+
+    1. `Schedule::command(...)` in `routes/console.php` (Zeitpunkt dokumentieren)
+    2. einen Cron-Endpoint in `routes/api.php` → `CronController`
+    3. einen **Cloud-Scheduler-Job**, der diesen Endpoint aufruft
+
+    Fehlt Punkt 3, läuft der Befehl nie — ohne Fehlermeldung. Bei der Prüfung am
+    02.08.2026 traf das auf **sieben** Aufgaben zu, darunter
+    `gocardless:reconcile-payments` (Sicherheitsnetz für ausgefallene
+    Zahlungs-Webhooks, seit 07/2026 nie gelaufen) und `askdante:sync` (Datenbasis der
+    HR-Kennzahlen). `tests/Feature/CronScheduleCoverageTest.php` hält Punkt 1 und 2
+    seitdem zusammen; Punkt 3 muss weiterhin von Hand geprüft werden:
+
+    ```bash
+    gcloud scheduler jobs list --location=europe-west3 \
+      --format="table(name.basename(),schedule,state,httpTarget.uri)"
+    ```
+
+!!! tip "Neue Jobs immer mit Retries anlegen"
+    `--max-retry-attempts=3` setzen. Ohne Retries reicht ein Cold-Start-502, um einen
+    nächtlichen Lauf komplett ausfallen zu lassen — der Job gilt dann als „ausgeführt".
+
+    Als Ziel-URL `https://hub.glattt.com/...` verwenden, nicht die rohe
+    `run.app`-URL.
+
 ## Kurzübersicht: Was wird wo eingetragen?
 
 | Wo | Was | Beispiel |
@@ -319,6 +349,63 @@ gcloud scheduler jobs create http sync-knowledge-base \
   --time-zone="Europe/Berlin" \
   --description="Nightly delta sync der Wissensdatenbank (Google Drive → OpenAI Vector Store) für GlatttBert" \
   --attempt-deadline="1800s"
+```
+
+### Nachgezogene Jobs (02.08.2026)
+
+Diese sieben Befehle waren in `routes/console.php` geplant, hatten aber keinen
+Auslöser und liefen deshalb nie. Zwei Endpoints existierten bereits, die anderen
+fünf wurden zusammen mit den Jobs ergänzt.
+
+```bash
+TOKEN=$(gcloud scheduler jobs describe process-webhooks --location=europe-west3 \
+  --format="value(httpTarget.headers.'X-Cron-Token')")
+
+# GoCardless-Sicherheitsnetz — der wichtigste der sieben
+gcloud scheduler jobs create http reconcile-gocardless-payments \
+  --location=europe-west3 --schedule="0 6 * * *" --time-zone="Europe/Berlin" \
+  --uri="https://hub.glattt.com/api/cron/reconcile-gocardless-payments" \
+  --http-method=POST --headers="X-Cron-Token=$TOKEN" \
+  --attempt-deadline=1800s --max-retry-attempts=3 --min-backoff=30s
+
+# Beratungs-Statistik-Cache (Wiki nannte „alle 15 Minuten", lief nie)
+gcloud scheduler jobs create http cache-consultation-stats \
+  --location=europe-west3 --schedule="*/15 * * * *" --time-zone="Europe/Berlin" \
+  --uri="https://hub.glattt.com/api/cron/cache-consultation-stats" \
+  --http-method=POST --headers="X-Cron-Token=$TOKEN" \
+  --attempt-deadline=600s --max-retry-attempts=3 --min-backoff=30s
+
+# Die folgenden fünf Endpoints entstanden erst mit diesem Commit —
+# Jobs erst NACH dem Prod-Deploy anlegen, sonst laufen sie in 404.
+gcloud scheduler jobs create http sync-phorest-staff \
+  --location=europe-west3 --schedule="15 4 * * *" --time-zone="Europe/Berlin" \
+  --uri="https://hub.glattt.com/api/cron/sync-phorest-staff" \
+  --http-method=POST --headers="X-Cron-Token=$TOKEN" \
+  --attempt-deadline=1800s --max-retry-attempts=3 --min-backoff=30s
+
+gcloud scheduler jobs create http sync-askdante \
+  --location=europe-west3 --schedule="30 4 * * *" --time-zone="Europe/Berlin" \
+  --uri="https://hub.glattt.com/api/cron/sync-askdante" \
+  --http-method=POST --headers="X-Cron-Token=$TOKEN" \
+  --attempt-deadline=1800s --max-retry-attempts=3 --min-backoff=30s
+
+gcloud scheduler jobs create http check-laser-reminders \
+  --location=europe-west3 --schedule="30 7 * * *" --time-zone="Europe/Berlin" \
+  --uri="https://hub.glattt.com/api/cron/check-laser-reminders" \
+  --http-method=POST --headers="X-Cron-Token=$TOKEN" \
+  --attempt-deadline=600s --max-retry-attempts=3 --min-backoff=30s
+
+gcloud scheduler jobs create http check-company-contract-deadlines \
+  --location=europe-west3 --schedule="0 8 * * *" --time-zone="Europe/Berlin" \
+  --uri="https://hub.glattt.com/api/cron/check-company-contract-deadlines" \
+  --http-method=POST --headers="X-Cron-Token=$TOKEN" \
+  --attempt-deadline=600s --max-retry-attempts=3 --min-backoff=30s
+
+gcloud scheduler jobs create http sync-wiki \
+  --location=europe-west3 --schedule="30 2 * * *" --time-zone="Europe/Berlin" \
+  --uri="https://hub.glattt.com/api/cron/sync-wiki" \
+  --http-method=POST --headers="X-Cron-Token=$TOKEN" \
+  --attempt-deadline=1800s --max-retry-attempts=3 --min-backoff=30s
 ```
 
 > **Hinweis:** Ersetze `DEINE-CLOUD-RUN-URL` mit der tatsächlichen URL (z.B. `glattthub-web-abc123-ey.a.run.app`)

@@ -186,15 +186,24 @@ Cloud Run ist ideal für Webhooks:
 
 **Webhook-URL für Production:**
 ```
-https://glattthub-web-99200336070.europe-west3.run.app/api/webhooks/gocardless
+https://hub.glattt.com/api/webhooks/gocardless
 ```
+
+!!! warning "Nicht die rohe Cloud-Run-URL eintragen"
+    Bis 08/2026 stand hier `https://glattthub-web-99200336070.europe-west3.run.app/...`.
+    Im GoCardless-Dashboard waren dadurch **zwei** Endpunkte gepflegt. Jeder Endpunkt hat
+    ein **eigenes Secret**; die App kennt aber nur eines (`GOCARDLESS_LIVE_WEBHOOK_SECRET`).
+    Der zweite Endpunkt scheiterte deshalb dauerhaft an der Signaturprüfung und lieferte
+    **HTTP 498** — in 30 Tagen 235 abgewiesene Zustellungen, die GoCardless immer weiter
+    wiederholte. Immer genau **einen** Endpunkt auf `hub.glattt.com` pflegen.
 
 **Im GoCardless Dashboard eintragen:**
 1. Developers → Webhook Endpoints → "Create webhook endpoint"
 2. Name: `Production_glatttHub`
-3. URL: `https://glattthub-web-99200336070.europe-west3.run.app/api/webhooks/gocardless`
+3. URL: `https://hub.glattt.com/api/webhooks/gocardless`
 4. Events: Alle auswählen
 5. Secret kopieren und als Google Cloud Secret speichern
+6. Prüfen, dass **kein weiterer** Endpunkt für dieselbe Organisation existiert
 
 **Secret als Google Cloud Secret:**
 ```bash
@@ -235,6 +244,65 @@ Die Webhook-Verarbeitung folgt diesem Ablauf:
 4. **Async verarbeiten** → `webhooks:process` Command (Cloud Scheduler, minutlich) führt `ProcessGoCardlessWebhookJob` aus
 5. **Benachrichtigung** → Bei wichtigen Events wird In-App-Notification erstellt (nur einmal pro Event)
 
+#### Handler-Auflösung (Fallstrick)
+
+`ProcessGoCardlessWebhookJob::processEventLogic()` bildet den Methodennamen aus
+`resource_type` und `action`:
+
+```php
+$method = 'handle'.Str::studly($event->resource_type).Str::studly($event->action);
+```
+
+**`Str::studly()` ist Pflicht, nicht `ucfirst()`.** GoCardless liefert beides in
+snake_case — `paid_out`, `charged_back`, `instalment_schedules`. Mit `ucfirst()`
+entstand `handlePaymentsPaid_out` statt `handlePaymentsPaidOut`; `method_exists()`
+lieferte `false`, es passierte nichts, und das Event wurde trotzdem **als
+erfolgreich verarbeitet** markiert.
+
+Betroffen waren (Vorfall 08/2026, behoben):
+
+| Event | Wirkung des Ausfalls |
+|---|---|
+| `payments.paid_out` | Rate blieb dauerhaft auf „Bestätigt", wurde nie „Bezahlt" |
+| `payments.charged_back` | Rückbuchungen erreichten den Hub überhaupt nicht |
+| `instalment_schedules.*` | Legacy-Pläne wurden nicht aufgeräumt |
+
+Weil `STATUS_PAID` die Grundlage für den Geldeingang ist (`Contract::scopeMoneyIn()`),
+wiesen auch Verkaufsstatistik und Schuldenliste zu niedrige Ist-Zahlen aus. Sichtbar
+wurde es als „der Zahlungsplan stimmt erst, wenn man auf Aktualisieren klickt" — der
+manuelle Abgleich setzt genau diese beiden Übergänge.
+
+**Ausmaß in Produktion (Messung 02.08.2026):** 7041 `payments.paid_out`-Events lagen
+als „processed" in `gocardless_webhook_events` und hatten nichts bewirkt. 2192 Raten
+über **364.889 €** standen auf „Bestätigt" statt „Bezahlt" — davon 2190 allein aus dem
+Einzug vom 03.07.2026. Kein einziges Event stand auf `pending` oder `failed`: Die Kette
+lief einwandfrei und verwarf die Ergebnisse.
+
+Ein Event **ohne** passenden Handler wird seit 08/2026 mit `Log::warning` protokolliert
+(„Kein Handler für Event-Typ", inkl. `expected_method`), statt still zu verschwinden.
+Abgesichert durch `tests/Feature/GoCardlessWebhookHandlerDispatchTest.php`.
+
+#### Nachträgliche Fehlschläge und Rückbuchungs-Folgeevents (seit 08/2026)
+
+Drei Events hatten zuvor **gar keinen** Handler:
+
+| Event | Verarbeitung |
+|---|---|
+| `payments.late_failure_settled` | Einzug ist nach der Auszahlung geplatzt → Rate zurück auf `failed` (inkl. `failure_reason`/`failure_code`, `retry_count` +1). Gehört damit wieder in Schuldenliste und Mahnwesen. |
+| `payments.chargeback_settled` | Rückbuchung endgültig → Rate auf `chargedback` |
+| `payments.chargeback_cancelled` | Rückbuchung zurückgenommen → Rate zurück auf `paid`, **nur** aus dem Zustand `chargedback` heraus |
+
+**Schutz für extern beglichene Raten:** Alle drei prüfen vorher
+`keepsExternalSettlement()`. Wurde eine Rate über „Zahlung verbuchen" als extern
+beglichen erfasst (`direct_payment_method`, Status `paid`), dokumentiert die lokale
+Zeile einen echten Geldeingang — das GC-Folgeevent bezieht sich nur auf den
+gescheiterten Einzug und darf ihn nicht überschreiben.
+
+Das ist der Regelfall, nicht die Ausnahme: Von 65 Altfällen, bei denen GoCardless einen
+Fehlschlag meldete und die Rate lokal auf „Bezahlt" stand, waren **61 korrekt** — die
+Kundin hatte überwiesen und jemand hatte es verbucht. Nur 4 Raten (599,92 €) waren
+tatsächlich falsch.
+
 #### Retry mit Backoff (seit 07/2026)
 
 Schlägt die Verarbeitung eines Events fehl, wird es **nicht** verworfen:
@@ -264,6 +332,16 @@ Täglich um 06:00 gleicht `gocardless:reconcile-payments` alle offenen lokalen Z
 - Bei Korrekturen/Anomalien: Admin-Benachrichtigung
 - Cron-Endpoint: `POST /api/cron/reconcile-gocardless-payments` (X-Cron-Token)
 - Manuell: `php artisan gocardless:reconcile-payments [--dry-run]`
+
+!!! danger "Der Cloud-Scheduler-Job fehlte bis 08/2026 komplett"
+    `Schedule::command('gocardless:reconcile-payments')` steht seit 07/2026 in
+    `routes/console.php` — auf Cloud Run läuft aber **kein `schedule:run`**. Ohne
+    zugehörigen Cloud-Scheduler-Job ist der Befehl nie gelaufen. Damit fiel das
+    Sicherheitsnetz für die oben beschriebene Handler-Lücke ersatzlos aus: Weder der
+    Webhook noch die Reconciliation korrigierten den Status, weshalb die Zahlen auch
+    am Folgetag nicht stimmten. Job seit 02.08.2026 angelegt (06:00, 3 Retries).
+    **Jeder neue `Schedule::command()`-Eintrag braucht einen Cron-Endpoint und einen
+    Cloud-Scheduler-Job** — abgesichert durch `tests/Feature/CronScheduleCoverageTest.php`.
 
 ### In-App Benachrichtigungen
 
