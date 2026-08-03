@@ -67,8 +67,10 @@ oder abgeschlossen** sein und darf nur **einem** BG zugeordnet werden. Wird der
 zugeordnete Vertrag später widerrufen, entfällt der Abschluss wieder
 (Live-Betrachtung). Pro Termin ist nur eine Korrektur möglich.
 
-Korrigierte Termine bleiben in der Detailansicht sichtbar markiert (inkl.
-Begründung und Ersteller) und lassen sich dort jederzeit wieder **aufheben** —
+Korrigierte Termine sind in der Detailansicht an einem **goldenen Streifen am
+Zeilenanfang** samt zartem Goldton erkennbar (`.table-glattt-row-adjusted`) und
+tragen Begründung und Ersteller; ausgeschlossene sind zusätzlich zurückgenommen
+(`.table-glattt-row-excluded`). Aufheben ist dort jederzeit möglich —
 eine separate Verwaltungsseite gibt es bewusst nicht, der Weg über die Zelle ist
 immer der kürzeste.
 
