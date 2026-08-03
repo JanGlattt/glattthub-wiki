@@ -1020,14 +1020,29 @@ Wichtige Regeln:
 
 ### Vor-Ort-Zahlung (Rate 1)
 
-Die erste Rate wird als **Vor Ort / Kasse** geführt und aus dem ersten relevanten Behandlungstermin nach der Beratung abgeleitet:
+Die erste Rate wird als **Vor Ort / Kasse** geführt und aus dem ersten **Behandlungstermin** nach der Beratung abgeleitet.
 
-- Datum: Erster Nicht-Beratungs-Termin nach Beratung (gleicher Tag zählt, wenn Service direkt anschließt)
-- Betrag: Eine Monatsrate
-- Statuslogik:
-    - **Gezahlt**, wenn Termin/Service als abgeschlossen gilt und das Kundenkonto keinen offenen Betrag hat
-    - **Termin ausstehend**, wenn der Termin in der Zukunft liegt
-    - **Nicht bezahlt**, wenn Termin in der Vergangenheit liegt und am Kundenkonto noch ein offener Betrag besteht
+**Was als Behandlung zählt.** Nur Services mit `body_zones > 0` aus `consultation_services`. „Keine Beratung" reicht nicht: Phorest kennt zahlreiche Positionen, die wie Services gebucht werden, aber niemanden behandeln — Extrazeit, Desinfektion, Vorbereitung, Formularschritte („2. Lastschrift + Behandlungsvertrag"), Storno- und NoShow-Marker. Sie alle haben `body_zones = 0`.
+
+> **Für die Pflege wichtig:** Wird in Phorest ein neuer Service angelegt, kommt er mit `body_zones = 0` in den Hub und gilt damit **nicht** als Behandlung. Echte Behandlungs-Services müssen in Filament unter *Beratungs-Services* mit ihrer Körperzonen-Zahl gepflegt werden — sonst erkennt der Hub die erste Sitzung nicht.
+
+- **Datum:** Erster Termin mit einer echten Behandlung nach der Beratung (gleicher Tag zählt, wenn die Behandlung direkt anschließt). „Vorbei" ist ein Termin ab seiner tatsächlichen Startzeit, nicht ab Mitternacht.
+- **Betrag:** Eine Monatsrate (oder der bei der Bestätigung erfasste Betrag).
+- **Statuslogik:**
+    - **Gezahlt** — nur mit echter Zahlungs-Evidenz: Der Behandlungstermin ist in Phorest kassiert (`PAID`) oder der Kunde war eingecheckt und das Kundenkonto ist ausgeglichen.
+    - **Termin ausstehend** — die erste Sitzung liegt noch in der Zukunft oder hat noch nicht stattgefunden.
+    - **Keine Zahlung geleistet** — Termin vorbei, am Kundenkonto steht noch ein offener Betrag („Auf das Kundenkonto gebucht").
+    - **Zahlung nicht bestätigt** — Termin vorbei, aber keine kassierte Zahlung dokumentiert (NoShow, Checkout fehlt).
+
+#### Zahlung manuell bestätigen
+
+Phorest liefert nur den **aktuellen** Kundensaldo, keine Kontohistorie: Eine Barzahlung an der Kasse oder eine Woche später eingegangene Überweisung kann der Hub nicht selbst erkennen. Deshalb lässt sich die 1. Rate von Hand bestätigen — Button **„Zahlung bestätigen"** an der Rate (Recht `manage_gocardless`).
+
+- Erfasst werden Zahlungsdatum, Zahlungsart (bar/Karte/Überweisung/sonstige), Betrag (voreingestellt die Monatsrate) und optional eine Referenz.
+- Es entsteht eine echte `contract_payments`-Zeile mit `installment_number = 1`, Status `paid` und dem Hinweis „Per Überweisung beglichen am TT.MM.JJJJ".
+- Die Bestätigung **schlägt die Phorest-Heuristik**: Ist sie gesetzt, hängt der Status nicht mehr am Terminkalender.
+- **Korrigieren** und **Zurücknehmen** sind über denselben Dialog möglich.
+- Es wird **kein** GoCardless-Einzug ausgelöst. Zahlungsplan-Neuberechnung und Reconciler fassen Rate 1 nicht an (beide arbeiten auf `installment_number > 1`).
 
 ### SEPA-Lastschriften (Raten 2-19)
 
