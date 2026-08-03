@@ -63,7 +63,7 @@ Jedem Benutzer wird eine oder mehrere Rollen zugewiesen. Die Rolle bestimmt, was
 
 | Rolle | Beschreibung | Berechtigungen |
 |-------|-------------|----------------|
-| **super_admin** | Vollzugriff auf alles | Alle 116 |
+| **super_admin** | Alle Rechte zugewiesen (nur lokal/Seeder, nicht in Prod) | Alle 116 |
 | **admin** | Hub + Admin-Panel, ohne Rollenverwaltung | 95 |
 | **user** | Basis-Hub-Zugang (Termine, Kunden, Personal ansehen) | 13 |
 | **finance** | Spezialisierte Finanz-Berechtigungen | 8 |
@@ -129,7 +129,7 @@ Import. Dann haelt der Cache sonst bis zu 24 Stunden den alten Stand.
 
 - **Paket**: [spatie/laravel-permission](https://spatie.be/docs/laravel-permission) v6.21
 - **Guard**: `web` (einziger Guard)
-- **Gate::before**: In `AppServiceProvider` -- `super_admin` umgeht alle Permission-Checks
+- **Kein Rollen-Bypass**: Zugriff entscheidet ausnahmslos das Recht (seit 03.08.2026)
 - **Middleware**: `can:permission_name` auf Routen (Laravel-Alias fuer `Illuminate\Auth\Middleware\Authorize`)
 - **Blade-Direktive**: `@can('permission_name')` / `@endcan`
 - **Frontend-Helper**: `window.userPermissions` (JSON-Array in jedem Layout)
@@ -161,7 +161,7 @@ Benutzer-Request
 | `database/seeders/PermissionSeeder.php` | Seeder: Basis-Rechte + 4 Rollen-Zuweisungen (Stammdaten aus `PermissionCatalog`) |
 | `scripts/production-permissions-2026-03-29.sql` | Idempotentes SQL fuer Produktiv-Deployment |
 | `storage/app/permissions-label-group.sql` | Produktions-SQL fuer label/group_key-Spalten + Backfill |
-| `app/Providers/AppServiceProvider.php` | Gate::before fuer super_admin-Bypass |
+| `tests/Feature/RoleNameFreeAuthorizationTest.php` | Haelt die Autorisierung frei von Rollennamen |
 | `resources/views/layouts/partials/sidebar.blade.php` | Navigation mit @can-Direktiven |
 | `resources/views/layouts/partials/bottom-nav.blade.php` | Mobile Navigation mit @can-Direktiven |
 | `resources/views/layouts/partials/permissions-meta.blade.php` | Frontend-Helper (window.userPermissions) |
@@ -704,12 +704,96 @@ Push-Einstellungen unter `api/push/*`.
        Richtig ist die Ableitung aus einem Referenzrecht -- wer `view_appointment_detail` hat,
        bekommt `checkin_appointments`. Muster:
        `2026_08_02_190000_grant_new_permissions_to_existing_roles`.
-    2. **Es gibt in Prod keinen `super_admin`**, der Gate-Bypass greift dort also nie. Fehlt ein
-       Recht in der Datenbank, kommt niemand mehr an die zugehoerige Seite -- auch kein
-       Administrator.
+    2. **Es gibt in Prod keinen `super_admin`.** Fehlt ein Recht in der Datenbank, kommt
+       niemand mehr an die zugehoerige Seite -- auch kein Administrator. Seit dem
+       03.08.2026 gilt das ueberall gleich: Den frueheren `Gate::before`-Bypass fuer
+       diese Rolle gibt es nicht mehr.
+    3. **Rollennamen gehoeren nicht in den Controller.** Ein `hasAnyRole([...])` mit
+       Rollen, die es in Prod nicht gibt, sperrt still aus -- und zwar hinter einem
+       Gate, das den Zugriff bereits erlaubt hat. Autorisiert wird ueber das Recht
+       (`can:`-Middleware bzw. `$user->can()`), nie ueber den Rollennamen.
 
     Pruefzugang: Cloud SQL Auth Proxy. Die Zugangsdaten stehen als Env-Vars am Cloud-Run-Dienst
     (`gcloud run services describe glattthub-web --region=europe-west3`), **nicht** im Secret Manager.
+
+!!! bug "Vorfall 03.08.2026 -- 25 tote Rollen-Checks im ContractController"
+    Jede schreibende Vertrags-Aktion pruefte zusaetzlich zum Routen-Gate
+    `hasAnyRole(['super_admin', 'admin', 'filialleiterin', 'verwaltung'])`. Von diesen
+    vier Rollen existiert in Prod nur `admin` -- alle uebrigen Kraefte liefen trotz
+    vorhandenem Recht in ein `abort(403)`.
+
+    **Symptom in der Oberflaeche:** Die Aktion war sichtbar (die Sichtbarkeit haengt an
+    Datenfeldern des Zahlungen-Endpunkts, nicht an Rechten), das Speichern brach mit
+    "Fehler beim Speichern." ab. Der Grund fuer die nichtssagende Meldung: `abort(403)`
+    liefert auf JSON-Anfragen eine **leere** `message`, die Oberflaeche zeigt dann ihren
+    eigenen Standardtext.
+
+    **Ausmass** laut Cloud-Run-Logs (7 Tage vor dem Fix): 50 abgewiesene Requests --
+    30x `create-gocardless` ("Mandat und Zahlungsplan anlegen"), 14x
+    `resolve-mandate-details`, 5x `payments/{id}/settle`, 1x `payments/record-external`.
+
+    **Fix:** Alle 25 kaputten Checks entfernt, Autorisierung liegt allein an den
+    `can:`-Gates der Routen. Zwei Routen wurden dabei bewusst umgehaengt (siehe
+    `CONTRACTS-SEPA-MODULE.md`). Zusaetzlich liefert ein Renderer in `bootstrap/app.php`
+    jetzt fuer **jeden** 403 auf JSON-Anfragen eine verstaendliche deutsche Meldung
+    statt einer leeren oder englischen. Regressionsschutz:
+    `tests/Feature/ContractPermissionGateTest.php` -- der Test benutzt bewusst nur die
+    real existierenden Rollen und verbietet Rollennamen im ContractController.
+
+    **Warum die bestehenden Tests das nie fanden:** Sie legten die Rolle `verwaltung`
+    im Setup selbst an. Ein Test, der eine in Prod nicht existierende Rolle erfindet,
+    kann diese Klasse Fehler grundsaetzlich nicht sehen.
+
+!!! success "Audit 03.08.2026 -- Rollennamen vollstaendig aus der Autorisierung entfernt"
+    Im Anschluss wurde die gesamte Anwendung durchsucht. Ergebnis: 15 weitere
+    Stellen, an denen Rollennamen ueber Zugriff oder Empfaengerkreis entschieden.
+    Alle sind umgestellt; `tests/Feature/RoleNameFreeAuthorizationTest.php` haelt
+    den Zustand (statische Pruefung ueber `app/` plus Laufzeit-Gegenproben).
+
+    **Zugriffsentscheidungen -- vorher/nachher:**
+
+    | Stelle | vorher | jetzt |
+    |---|---|---|
+    | `AppServiceProvider` | `Gate::before` → `super_admin` darf alles | entfernt, kein Bypass |
+    | `ContractController::resetGocardlessLink` | `hasAnyRole(super_admin, admin)` | Routen-Gate `manage_gocardless` |
+    | `BertDashboard` (Filament) | `hasRole(admin, super_admin)` | Recht `view_ai_messages` (neu) |
+    | `SuperchatPlayground` (Filament) | `hasRole(admin, super_admin)`, kein Recht | Recht `use_superchat_playground` (neu) |
+    | `CompanyContractController` (3x) | `$isAdmin` steuert Standort-Sichtbarkeit | `$user->dataScope()` |
+    | `StartPageConfig` / `StartPageController` | Kartentypen je Rollenname | Recht `configure_dashboard` |
+
+    **Benachrichtigungs-Empfaenger:** Acht Stellen verschickten an
+    `forRoles(['admin','super_admin'])` bzw. `User::role('admin')` -- in Prod also
+    nur an die sechs `admin`-Konten, waehrend die operativ zustaendigen
+    `Büro`-Kraefte nichts sahen. Neu entscheidet das fachliche Recht ueber
+    `NotificationService::forPermission()` (SEPA-Stoerungen →
+    `manage_gocardless`, Gutscheine → `manage_voucher_sales`, Firmenvertraege →
+    `manage_company_contracts`). Aufgeloest wird zum Sendezeitpunkt in konkrete
+    Empfaenger; Rechte aus Rollen und direkt vergebene zaehlen gleichermassen.
+
+    **Legitime Rollenbezuege bleiben:** Wo Rollen aus der Datenbank stammen
+    (`target_roles` der Benachrichtigungs-Vorlagen) oder das Fachobjekt selbst
+    sind (Rollenverwaltung), aendert sich nichts. Der Regressionstest fuehrt
+    diese Dateien als Ausnahmenliste.
+
+!!! warning "Datensichtbarkeit: Fallback ohne vergebene Stufe ist 'alle Daten'"
+    `DataVisibilityService::resolve()` liefert `DataScope::all()`, wenn eine Rolle
+    **keine** der Stufen `data_scope_own` / `_branch` / `_all` besitzt. Das war
+    folgenlos, solange Standort-Einschraenkungen an Rollennamen hingen -- mit der
+    Umstellung der Firmenvertraege auf `dataScope()` haetten `Institute MA` und
+    `Institute Leitung` (beide ohne Stufe) ploetzlich alle Standorte gesehen.
+
+    Migration `2026_08_03_140000` traegt deshalb allen Rollen **ohne** Stufe die
+    Stufe `data_scope_branch` nach; Rollen mit vorhandener Stufe bleiben
+    unangetastet. Abgegrenzt wird ueber die vorhandene Zuordnung, nicht ueber
+    Rollennamen.
+
+    Wirkung ueber die Firmenvertraege hinaus: `dataScope()` steuert auch
+    Mitarbeiter-Reports und CSV-Exporte. `Institute MA` und `Institute Leitung`
+    sehen dort ab jetzt nur noch den eigenen Standort -- vorher griff fuer sie der
+    Fallback auf alle Daten.
+
+    **Beim Anlegen einer neuen Rolle immer eine Sichtbarkeitsstufe setzen**
+    (Radio-Auswahl im Rollen-Editor). Ohne Stufe gilt weiterhin der Fallback.
 
 ---
 
@@ -742,25 +826,28 @@ direktes SQL, eine Datenkorrektur oder ein Import.
 
 ---
 
-### super_admin-Bypass
+### Kein Rollen-Bypass mehr (seit 03.08.2026)
 
-In `AppServiceProvider::boot()` ist ein `Gate::before` registriert:
+Frueher lag in `AppServiceProvider::boot()` ein `Gate::before`, das der Rolle
+`super_admin` **jeden** Permission-Check automatisch bestehen liess. Das ist
+entfernt.
 
-```php
-Gate::before(function ($user, $ability) {
-    return $user->hasRole('super_admin') ? true : null;
-});
-```
+Zwei Gruende:
 
-Das bedeutet: Benutzer mit der Rolle `super_admin` bestehen **jeden** Permission-Check automatisch, unabhaengig davon, ob die Permission explizit zugewiesen ist. Das gilt fuer:
+1. **Auf Produktion gab es die Rolle nie** -- der Bypass griff dort also
+   ohnehin nicht, waehrend er lokal genau die fehlenden Rechte verdeckte, die
+   in Produktion zu 403ern fuehrten.
+2. Ein pauschales "darf alles" ist an keiner Stelle in der Rechteverwaltung
+   sichtbar und laesst sich dort auch nicht zuruecknehmen.
 
-- `@can`-Direktiven in Blade
-- `can:`-Middleware auf Routen
-- `$user->can()` in PHP
-- Policy-Checks in Filament
+Zugriff entscheidet damit ausnahmslos das Recht -- lokal wie in Produktion.
+Wer lokal alles sehen will, gibt seiner Rolle alle Rechte (der
+`PermissionSeeder` tut das fuer `admin`).
 
-!!! warning "Wichtig"
-    Der super_admin-Bypass wird nicht durch `$user->hasPermissionTo()` ausgeloest. Dieser Spatie-Methode prueft nur die direkte Zuweisung. Fuer konsistentes Verhalten immer `$user->can()` oder `@can` verwenden.
+!!! warning "Weiterhin gilt"
+    `$user->hasPermissionTo()` prueft nur die direkte Zuweisung am Benutzer.
+    Fuer Rechte, die ueber eine Rolle kommen, immer `$user->can()` oder `@can`
+    verwenden.
 
 ---
 
