@@ -32,6 +32,50 @@ Eine Beratung zählt als **Abschluss**, wenn:
 
 Bei **mehreren Beratungen desselben Kunden am selben Tag** bekommt die **letzte Beratung** (späteste Uhrzeit) die Zuordnung zum Vertrag.
 
+**Live-Betrachtung:** Die Seite zeigt immer den aktuellen Stand. Wird ein Vertrag
+**widerrufen**, verschwinden Abschluss und Körperzonen rückwirkend aus dem Monat
+des Abschlusses — CR und KpZ können sich also nachträglich verschlechtern. Das
+ist gewollt (gezählt wird, was Bestand hat) und unterscheidet die Tagesmessung
+von einer stichtagsbezogenen Handerfassung. In der Zell-Detailansicht bleibt der
+Fall sichtbar markiert („Vertrag widerrufen").
+
+### Zell-Detailansicht & manuelle Korrekturen (seit 08/2026)
+
+Ein **Klick auf einen Wert der Tagesmessung** öffnet die Liste der
+Beratungsgespräche dahinter — je Termin: Datum/Uhrzeit, Kunde (Name +
+Kundennummer), Service, Ergebnis-Status und Körperzonen. Zusätzliche Hinweise:
+
+- **„Vertrag widerrufen"** — am BG-Tag wurde unterschrieben, der Vertrag wurde
+  aber storniert; er zählt nicht (mehr).
+- **„Vertrag vom TT.MM."** — der Kunde hat einen aktiven Vertrag, der kurz vor
+  oder nach dem BG (±7 Tage) unterschrieben wurde. Er zählt nicht automatisch
+  (Tagesgleich-Regel), ist aber ein Kandidat für eine manuelle Zuordnung.
+- **„Weiterer Termin"** — zweiter Beratungstermin desselben Kunden am selben Tag;
+  das Ergebnis trägt immer der letzte Termin des Tages.
+
+Mit dem Recht **„Tagesmessung korrigieren"** (`adjust_staff_performance_data`)
+lassen sich direkt in der Detailansicht zwei Korrekturen erfassen — beide mit
+**Pflicht-Begründung**, jederzeit aufhebbar:
+
+| Korrektur | Wirkung | Typische Fälle |
+|---|---|---|
+| **BG ausschließen** | Der Termin zählt nicht als Beratungsgespräch (raus aus BG, CR-Nenner und KpZ-Nenner) | Reine Preisauskunft, Testkauf zur Qualitätssicherung |
+| **Abschluss zuordnen** | Ein aktiver Vertrag des Kunden zählt als Abschluss auf den BG-Tag, obwohl er an einem anderen Tag unterschrieben wurde | Storno + Neuunterschrift wegen Wechsel der Zahlungsart; Unterschrift am Folgetag |
+
+Regeln der Zuordnung: Der Vertrag muss zum **selben Kunden** gehören, **aktiv
+oder abgeschlossen** sein und darf nur **einem** BG zugeordnet werden. Wird der
+zugeordnete Vertrag später widerrufen, entfällt der Abschluss wieder
+(Live-Betrachtung). Pro Termin ist nur eine Korrektur möglich.
+
+Korrigierte Termine bleiben in der Detailansicht sichtbar markiert (inkl.
+Begründung und Ersteller) und lassen sich dort jederzeit wieder **aufheben** —
+eine separate Verwaltungsseite gibt es bewusst nicht, der Weg über die Zelle ist
+immer der kürzeste.
+
+Korrekturen wirken **auf der gesamten Seite**: Tagesmessung, KPI-Zeile,
+Beratungs-Ranking, Einzelansicht und CSV-Export rechnen mit denselben
+korrigierten Zahlen.
+
 ### Aufbau der Seite (Statistik-Bauplan, seit 07/2026)
 
 Die Seite folgt dem verbindlichen Statistikseiten-Bauplan: Jede Analyse-Karte ist
@@ -1009,6 +1053,48 @@ doch gegen MySQL fuhr. Seit 07/2026 läuft die Suite wieder grün (22 Tests) —
 fahren, die SQLite-Suiten decken diese Pfade nicht ab.
 
 ---
+
+## Tagesmessung-Korrekturen (Entwickler)
+
+- **Tabelle `staff_performance_adjustments`** (Migration `2026_08_03_170000`):
+  `type` (`exclude` | `assign_contract`), `appointment_id`
+  (`stats_historic_appointments.appointment_id` als fachlicher Anker),
+  denormalisiert `client_id`/`branch_id`/`appointment_date`/`staff_id`,
+  `contract_id` (nur Zuordnung), `reason` (Pflicht), `created_by`, SoftDeletes
+  („Aufheben" = Soft-Delete, Audit bleibt).
+- **Recht `adjust_staff_performance_data`** (Katalog + Migration, Vergabe
+  abgeleitet von `trigger_data_sync` — keine Rollennamen im Code). Seitenzugriff
+  bleibt `view_report_sales_statistics`; die beiden Korrektur-Endpoints
+  (`POST /adjustments`, `DELETE /adjustments/{id}`) sind zusätzlich gegated.
+  Eine Listen-/Verwaltungsansicht gibt es nicht — erfasst und aufgehoben wird
+  ausschließlich in der Zell-Detailansicht.
+- **Zentrale Integration in `executeAggregateQuery()`**
+  (`StaffPerformanceService`): Ausschlüsse filtern die `ranked`-CTE (ROW_NUMBER
+  läuft neu über die verbleibenden Termine), manuell zugeordnete Verträge zählen
+  über die neue `manual_agg`-CTE auf den BG-Tag und sind aus `contract_agg`
+  ausgenommen (kein Doppelzählen). Der Status-Filter (`active`/`completed`)
+  gilt auch für zugeordnete Verträge — Widerruf entfernt den Abschluss.
+  Dadurch erben **alle** Auswertungen die Korrekturen: Tagesmessung, KPIs,
+  Ranking, Instituts-Gruppen, Preview und die CSV-Exporte (`staff-overview`,
+  `staff-ranking`, …). `getConversionContractIds()` (Körperzonen-Verteilung der
+  Dashboard-Widgets) und `getStaffDetail()` sind separat nachgezogen.
+- **Zell-Detailansicht**: `GET /hub/reports/staff-performance/cell-details`
+  (`staff_key` = mergeKey der Matrix-Zeile, `from`/`to` aus den
+  Perioden-Metadaten, optional `cell_branch_id` für die Instituts-Ansicht) →
+  `StaffPerformanceService::getCellConsultations()`. Bewusst **ungecacht**;
+  liefert je Termin Korrektur-Status, Widerruf-Hinweis (tagesgleicher
+  stornierter Vertrag), ±7-Tage-Vertragshinweis und Zuordnungs-Kandidaten
+  (±45 Tage). Die Perioden-Metadaten der Overview tragen dafür seit Schema 5
+  `from`/`to` (`MATRIX_SCHEMA`-Bump).
+- **Frontend** (`staff-performance.js` + Partials `cell-detail-modal`,
+  `adjustments-modal`): Matrix-Zellen tragen `data-staff`/`data-branch`/
+  `data-period` (Event-Delegation `onMatrixClick`, Klasse
+  `matrix-glattt-cell-link`). Korrektur-Buttons rendert Blade nur innerhalb
+  `@can('adjust_staff_performance_data')`. Nach jeder Korrektur: Server-Cache
+  wird im Controller geflusht, das Frontend lädt Zelle + alle Karten neu.
+- **Tests**: `tests/Feature/StaffPerformanceAdjustmentsTest.php` (Permissions,
+  Validierung, Detailansicht auf SQLite; Wirkung auf die Aggregat-Query als
+  `requiresMysql`-Tests gegen `glattthub_test`).
 
 ## Performance-Optimierungen
 
