@@ -78,6 +78,14 @@ Korrekturen wirken **auf der gesamten Seite**: Tagesmessung, KPI-Zeile,
 Beratungs-Ranking, Einzelansicht und CSV-Export rechnen mit denselben
 korrigierten Zahlen.
 
+**In der Matrix sichtbar:** Jede Zelle, deren Zeitraum eine Korrektur enthält,
+trägt eine **kleine goldene Ecke oben rechts** (Tooltip „Enthält manuelle
+Korrekturen") — so ist auf einen Blick erkennbar, welche Zahlen nicht rein aus
+den Rohdaten stammen. Markiert werden nur die Mitarbeiter-Zeilen, nicht die
+Zwischen- und Gesamtsummen: Dort ließe sich die Korrektur nicht per Klick
+auflösen. Wird der einzige BG eines Zeitraums ausgeschlossen, bleibt die Zelle
+leer (statt markiert) — es gibt dann nichts mehr zu zeigen.
+
 ### Aufbau der Seite (Statistik-Bauplan, seit 07/2026)
 
 Die Seite folgt dem verbindlichen Statistikseiten-Bauplan: Jede Analyse-Karte ist
@@ -1088,6 +1096,13 @@ fahren, die SQLite-Suiten decken diese Pfade nicht ab.
   stornierter Vertrag), ±7-Tage-Vertragshinweis und Zuordnungs-Kandidaten
   (±45 Tage). Die Perioden-Metadaten der Overview tragen dafür seit Schema 5
   `from`/`to` (`MATRIX_SCHEMA`-Bump).
+- **Zell-Markierung**: `buildAdjustedPeriodMap()` bildet aus der
+  Korrektur-Tabelle (nicht aus den Aggregat-Zeilen — ein ausgeschlossener BG
+  taucht dort nicht mehr auf) zwei Achsen `mergeKey → periodKey` und
+  `"mergeKey|branchId" → periodKey`; betroffene Perioden bekommen im Payload
+  `adjusted: true`, das JS setzt daraus `matrix-glattt-adjusted` (Gold-Ecke via
+  `::after`; `position: relative` bewusst nur auf nicht-fixierten Zellen, weil
+  `sticky` selbst schon Positionierungskontext ist).
 - **Frontend** (`staff-performance.js` + Partials `cell-detail-modal`,
   `adjustments-modal`): Matrix-Zellen tragen `data-staff`/`data-branch`/
   `data-period` (Event-Delegation `onMatrixClick`, Klasse
