@@ -265,14 +265,65 @@ Vorab-Pakete vor/parallel zu AP2: **(P1)** `can:`-Gates auf alle `/phorest`-Stat
 
 ---
 
-## Offene Entscheidungen (bewusst NICHT entschieden — Abstimmung mit Jan steht aus)
+## Entscheidungen (04.08.2026, mit Jan abgestimmt)
 
-Die Abschnitte oben enthalten Empfehlungen, aber keine der folgenden Fragen ist entschieden; die Umsetzung wartet auf die Abstimmung:
+Die vormals offenen Fragen sind entschieden — AP2 läuft auf dieser Grundlage:
 
-1. **Zuschnitt (AP0-Entscheidung 6):** Rendern Report-Seite und Kachel dasselbe **Partial** (stärkste Variante, erfüllt „jede Änderung wirkt auch auf die Card"; Machbarkeit durch die zwei AP1-Piloten belegt) — oder teilen sie nur den **Endpoint** (weniger Umbau, Darstellungs-Drift bleibt möglich)?
-2. **Umfangs-Abgrenzung:** Werden Kalenderansichten, mehrstufige Drilldowns und Live-Listen (6+ Ansichten) bewusst nicht registriert und bleiben Seiten-exklusiv — oder bekommen sie vereinfachte Kachel-Varianten?
-3. **Permission-Lücke (Liste 2):** Sofort als eigenes Vorab-Paket schließen (Sicherheitsgewinn unabhängig vom Dashboard) — oder seitenweise im Zuge von AP2?
-4. **Filter-Harmonisierung:** `date_from`/`date_to` als verbindliches Schema mit Aliasen an den abweichenden Endpoints — einmalig zentral oder je Portierung?
-5. **Umgang mit dem unkommittierten AP1-Stand:** Das lokal gebaute Fundament (Migration, Registry, neues Dashboard, 2 Piloten, 19 grüne Tests) setzt die Partial-Variante aus Frage 1 bereits um — es bleibt unkommittiert, bis Fragen 1–4 entschieden sind, und wird dann nachgeschärft (u.a. valueMode-fähiger Currency-Formatter, Kategorien).
+1. **Zuschnitt: Partial-Variante.** Report-Seite und Kachel rendern dasselbe Partial (`<x-statistic>`) — jede Änderung an einer Statistik wirkt automatisch an beiden Stellen. Der AP1-Stand setzt das bereits um.
+2. **Umfangs-Abgrenzung: Kalender, mehrstufige Drilldowns und Live-Listen werden vorerst NICHT registriert** — auf später verschoben. Welche Ansichten das sind, wird **genau dokumentiert** (siehe Abschnitt „Nicht registrierte Statistiken" in `CUSTOM-DASHBOARD.md` bzw. Liste im Zuge von AP2).
+3. **Permission-Lücke: seitenweise im Zuge von AP2 schließen** — beim Portieren einer Seite werden ihre `/phorest`-Endpoints hinter das jeweilige `can:`-Gate gelegt (Liste 2 als Checkliste).
+4. **Filter-Harmonisierung: je Portierung, aber vollständig** — Ziel bleibt, dass am Ende ALLE Statistik-Endpoints das gemeinsame Schema `date_from`/`date_to` + `branch_id` sprechen (abweichende Alt-Namen als Alias weiterhin akzeptiert); karteneigene Parameter über den `params()`-Hook.
+
+---
+
+## Ergebnis AP2 (abgeschlossen 04.08.2026)
+
+Alle 13 Report-Seiten sind portiert. **78 Statistiken** liegen in
+`StatisticRegistry` und werden über `<x-statistic>` gerendert — auf der
+Report-Seite wie als Dashboard-Kachel:
+
+| Kategorie | Anzahl |
+|---|---|
+| Termine | 18 |
+| Verkauf (inkl. glattt-KPIs) | 16 |
+| Personal (HR + Mitarbeiterperformance) | 13 |
+| Kunden | 10 |
+| Ads | 9 |
+| Besucher | 7 |
+| Widerrufe | 4 |
+| Pakete | 1 |
+
+Über den ursprünglichen Umfang hinaus wurden **entgegen Entscheidung 2 doch
+registriert**, weil sie sich sauber kapseln ließen: Kalenderübersicht
+(`termine.consultation-calendar`), Buchungsstand-Verlauf mit dreistufigem
+Drilldown (`termine.booking-timeline`) und Buchungseingangs-Kalender
+(`termine.booking-calendar`). Die zugehörigen Modale (Tagesliste, Buchungs-
+details, Termine-Liste der Ampel-Tabelle, Zell-Detail und Korrekturen der
+Tagesmessung, Mitarbeiter-Einzelansicht) gehören jeweils zu ihrer Karte und
+stehen damit auch im Dashboard zur Verfügung.
+
+### Nicht registriert — und warum
+
+Der Rest der Report-Seiten ist bewusst Rahmen oder Verwaltung, keine Statistik:
+
+| Ansicht | Report | Grund |
+|---|---|---|
+| Stornierte Beratungstermine (14 Tage) | Stornierte & verschobene Termine | Live-Belegliste aus Phorest: Einzeldatensätze statt Aggregate; erscheint nur bei aktivem Beratungsservice-Filter |
+| Termin-Modal der Storno-Liste | Stornierte & verschobene Termine | gehört zur Liste |
+| Admin-Aktionen der Herkunfts-Analyse | Der glattt-Kunde | Aktionen (Klassifizierung, KI-Optimierung) mit `trigger_data_sync`; die Kachel `kunden.name-origins` zeigt nur die Auswertung |
+| Filterleiste | Der glattt-Kunde | Seiten-Filter, kein Inhalt |
+| Zielwerte-Modal | Mitarbeiterperformance | Verwaltung der Ampel-Schwellen |
+| Sync-Status & Sync-Aktionen | Vergangene Beratungsgespräche | Betriebs-UI, keine Auswertung |
+| Header-Card, Export-Modal | alle Seiten | Rahmen |
+| KPI-Zeile (`components/kpi-dashboard`) | alle Seiten | eigener, personalisierbarer Mechanismus — bewusst kein Registry-Typ |
+
+### Offene Punkte
+
+- **CSV-Export:** Für vier Karten fehlt noch eine Quelle in
+  `ReportExportService::SOURCES` — `termine.historic-booking-comparison`,
+  `termine.no-show-matrix`, `personal.employees`, `personal.data-quality`.
+  Alle vier sind Altbestand, nicht durch AP2 entstanden.
+- **Alt-System entfernt:** `WidgetRegistry`, `components/statistics/widgets/*`
+  und `public/js/statistics-widgets.js` sind mit AP2 ersatzlos entfallen.
 
 *Erstellt im Rahmen von AP0 (04.08.2026) auf Basis von sechs parallelen Code-Analysen über alle 13 Report-Seiten. Entwickler-Doku der neuen Konvention: `.github/instructions/statistic-components.instructions.md`; Nutzer-/Architektur-Doku des Dashboards: `CUSTOM-DASHBOARD.md`.*
