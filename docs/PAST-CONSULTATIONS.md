@@ -51,6 +51,15 @@ fehlende Tage lassen sich dort nachladen. Als „nicht erschienen" zählen
 vergangene Termine mit Status *NO_SHOW, BOOKED, CONFIRMED, CHECKED_IN* — auch
 nie final gepflegte Termine; stornierte/gelöschte Termine zählen nicht.
 
+**Heutige, noch anstehende Termine bleiben komplett außen vor** (Scope
+`StatsHistoricAppointment::settled()`): Seit dem 15-Minuten-Sync (08/2026)
+enthält die Tabelle auch den laufenden Tag — Termine von heute mit Status
+*BOOKED/CONFIRMED/CHECKED_IN* sind aber weder stattgefunden noch No-Show und
+zählen deshalb weder im Zähler noch im Nenner der Quoten. Heutige Termine mit
+*PAID/COMPLETED* oder explizitem *NO_SHOW* zählen normal. Ohne diese Regel
+stünde die No-Show-Quote jeden Morgen bei fast 100 %, weil alle noch
+anstehenden Tagestermine als „nicht erschienen" gewertet würden (Bug 08/2026).
+
 ### CSV-Export
 
 Über den Export-Button im Seitenkopf (alle Quellen mit Standort-Filter):
