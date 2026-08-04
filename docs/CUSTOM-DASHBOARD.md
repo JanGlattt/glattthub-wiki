@@ -5,6 +5,12 @@ Statistiken des Hubs** zusammen — frei geordnet, in halber oder voller Breite.
 Es sind exakt dieselben Auswertungen wie auf den Report-Seiten: eine Statistik
 ist genau einmal definiert und wird an beiden Stellen identisch gerendert.
 
+!!! danger "Für Entwickler — die eine Regel"
+    **Jede Statistik steht ab dem Tag ihrer Entstehung im Eigenen Dashboard.**
+    Es wird nie wieder eine Statistik gebaut, die später nachportiert werden
+    muss. Wie das geht und was der Wächter-Test prüft, steht unter
+    [Neue Statistik hinzufügen](#neue-statistik-hinzufugen-und-warum-es-keinen-anderen-weg-gibt).
+
 ---
 
 ## Für Endanwender
@@ -340,16 +346,49 @@ StatisticRegistry::extraEndpointUrls($definition): array
 grundsätzlich nicht ausgeliefert (`StatisticRegistryTest` prüft das, ebenso
 die Existenz von Route, View und Script-Bundle).
 
-#### Neue Statistik hinzufügen
+#### Neue Statistik hinzufügen — und warum es keinen anderen Weg gibt
 
-1. Eintrag in `StatisticRegistry::definitions()` ergänzen
+!!! danger "Verbindlich, ohne Ausnahme"
+    **Jede Statistik steht ab dem Tag ihrer Entstehung im Eigenen Dashboard.**
+    Es wird nie wieder eine Statistik gebaut, die später nachportiert werden muss.
+
+    Wer eine Analyse-Karte direkt in eine Report-Seite schreibt, baut sie
+    zwangsläufig ein zweites Mal — genau daher kamen bis 08/2026 die falschen
+    Zahlen auf dem Dashboard. Der Umbau hat das beseitigt, und
+    `tests/Unit/StatisticConventionTest.php` hält den Zustand fest.
+
+Vier Schritte, mehr nicht:
+
+1. Eintrag in `StatisticRegistry::definitions()` — **Permission ist Pflichtfeld**
 2. Selbstständiges Partial unter `resources/views/statistics/<bereich>/<statistik>.blade.php`
-3. JS-Komponente via `GlatttStats.register("<key>", factory)` in `public/js/statistics/<bereich>.js`
-4. Auf der Report-Seite mit `<x-statistic statistic="<key>" />` einbinden
+   (bindet nur an den Komponenten-Scope, Chart-Container per `x-ref`)
+3. JS-Komponente via `GlatttStats.register("<bereich>.<statistik>", factory)` in
+   `public/js/statistics/<bereich>.js`
+4. Einbinden mit `<x-statistic statistic="<bereich>.<statistik>" />`
 
 Danach ist die Statistik ohne weiteren Code im Dashboard wählbar. CSV-Export-
 Quelle (`ReportExportService::SOURCES`) und Such-Registry
-(`GlobalSearchService::PAGES`) mitpflegen.
+(`GlobalSearchService::PAGES`) mitpflegen. **Modale gehören zur Karte**, nicht
+zur Seite — sonst fehlt der Drilldown auf dem Dashboard.
+
+#### Der Wächter: StatisticConventionTest
+
+Der Test bricht, sobald
+
+| Verstoß | Erkennung |
+|---|---|
+| Eine Report-Seite baut eine Analyse-Karte selbst | `<x-chart-view-toggle>`, `<x-chart-table>` oder `chart-canvas-glattt` in einer View unter `resources/views/hub/` |
+| JS-Komponente ohne Registry-Eintrag — oder umgekehrt | Abgleich `GlatttStats.register(…)` ⇄ `StatisticRegistry` in beide Richtungen |
+| Partial unter `statistics/` gehört zu keiner Statistik | Abgleich der View-Namen gegen die Registry |
+| Das alte Widget-System kommt zurück | `WidgetRegistry`, `components/statistics/widgets/`, `statistics-widgets.js` |
+
+Die Antwort auf einen roten Lauf ist **nie**, den Test zu lockern, sondern die
+Statistik nach der Konvention zu bauen.
+
+**Echte Ausnahmen** — und nur die — sind Live-Listen (Einzeldatensätze statt
+Aggregate), Verwaltungs- und Sync-UIs sowie der Seiten-Rahmen (Header,
+KPI-Zeile, Filterleiste). Sie tragen kein Karten-Register, lösen den Test also
+nicht aus, und gehören mit Begründung ins `STATISTIK-INVENTAR.md`.
 
 ---
 
