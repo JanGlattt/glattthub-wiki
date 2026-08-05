@@ -206,8 +206,10 @@ Ein bereits stornierter Vertrag wird durch ein späteres Downgrade nicht wieder
 auf „Geändert" zurückgestuft — der schärfere Zustand gewinnt.
 
 **Offene Raten:** Rein lokale Raten (Platzhalter ohne registrierten
-GoCardless-Einzug) werden beim Beenden storniert — sonst zählen sie als offene
-Forderung weiter und blähen die Schuldenliste auf. Raten **mit** Einzug bleiben
+GoCardless-Einzug) werden beim Beenden storniert — sonst stehen sie weiter als
+offene Raten im Zahlungsplan eines beendeten Vertrags. (Die Schulden-Übersicht
+selbst zählt nur geplatzte Lastschriften, ist davon also nicht betroffen.)
+Raten **mit** Einzug bleiben
 unangetastet und werden nur gemeldet (`open_collections` in der Antwort, Hinweis
 in der Rückmeldung): Sie zu stornieren hiesse, GoCardless aus einem
 Automatismus heraus anzufassen — und das läuft seit dem 31.07.2026
@@ -216,8 +218,9 @@ ausschliesslich manuell über den SEPA-Tab.
 > **Vorgeschichte:** Bis 08/2026 stand die Logik als `if` mitten im
 > Update-Endpoint und griff **nur** bei `widerruf_akzeptiert`. Ein per Downgrade
 > abgeschlossener Widerruf liess den Vertrag deshalb aktiv, mit komplett offenem
-> Ratenplan; der Anlege-Pfad fasste den Vertragsstatus nie an. Beides trieb die
-> Schuldenliste hoch (gemeldet 31.07./03.08.2026).
+> Ratenplan; der Anlege-Pfad fasste den Vertragsstatus nie an. Der Vertrag zählte
+> damit in jeder Auswertung als laufender Vertrag mit offener Forderung
+> (gemeldet 31.07./03.08.2026, HB001383 — auf Prod der einzige solche Fall).
 
 ---
 
