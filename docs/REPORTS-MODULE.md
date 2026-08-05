@@ -223,7 +223,52 @@ Umfassende Analyse aller stattgefundenen Termine nach Kategorien und Dauer.
 
 ## 🎯 Reports-Übersichtsseite
 
-Die Übersichtsseite `/hub/reports` zeigt KPI-Vorschauen für jeden Report:
+Die Übersichtsseite `/hub/reports` ist seit 08/2026 zweigeteilt.
+
+**1. Eigene Dashboards — ganz oben**
+
+Vor allen festen Berichten stehen die selbst gebauten Dashboards, erkennbar an
+einem abgesetzten Rahmen. Zwei Tabs: **„Meine Dashboards"** und
+**„Mit mir geteilt"** (der zweite erscheint nur, wenn tatsächlich etwas geteilt
+wurde; jede Karte dort weist aus, wer sie geteilt hat). Daneben der Knopf
+**„Neues Dashboard bauen"** — sichtbar mit dem Recht `create_custom_dashboard`.
+Er öffnet den Setup-Wizard als Modal, ohne die Übersicht zu verlassen.
+Details: [Eigenes Dashboard](CUSTOM-DASHBOARD.md).
+
+**2. Die festen Berichte — aus der ReportRegistry**
+
+Die 13 Standard-Karten waren bis 08/2026 hart in `hub/reports.blade.php`
+eingebunden; Titel, Untertitel und Berechtigung standen dort **und** ein
+zweites Mal in der Such-Registry. Beides kommt jetzt aus
+`app/Services/Statistics/ReportRegistry.php`:
+
+```php
+[
+    'route' => 'hub.reports.sales-statistics',
+    'label' => 'Verkaufsstatistik',
+    'description' => 'Vertragsverkäufe pro Institut und Mitarbeiter …',
+    'keywords' => 'umsatz verkäufe sales statistik …',
+    'permission' => 'view_report_sales_statistics',   // identisch mit dem Routen-Gate
+    'card' => 'hub.reports.partials.overview-cards.verkaufsstatistik-card',
+],
+```
+
+- Die Übersicht rendert die Karten in der Reihenfolge der Registry und
+  überspringt, wofür die Berechtigung fehlt (`ReportRegistry::forUser()`)
+- `GlobalSearchService::pages()` mischt `ReportRegistry::searchEntries()` unter
+  die App-Seiten — in `PAGES` stehen **keine Berichte mehr**
+- Die **Vorschau je Karte** bleibt ein eigenes Partial unter
+  `resources/views/hub/reports/partials/overview-cards/`: Jede Karte zeigt
+  etwas anderes und lädt sich selbst. Das ist der Inhalt der Karte, keine
+  Doppelpflege.
+
+!!! danger "Neuer Bericht = ein Eintrag in der ReportRegistry"
+    Karte und Sucheintrag entstehen daraus. `ReportRegistryTest` bricht, wenn
+    eine Definition unvollständig ist, das Karten-Partial fehlt, die Übersicht
+    wieder Karten fest einbindet oder Berichte zurück in
+    `GlobalSearchService::PAGES` wandern.
+
+### KPI-Vorschauen der Standard-Karten
 
 ### Zukünftige Beratungsgespräche
 - **Heute**: Termine am aktuellen Tag
