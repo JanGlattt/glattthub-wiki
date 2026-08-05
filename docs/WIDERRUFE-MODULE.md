@@ -190,6 +190,35 @@ Klick auf eine **Tabellenzeile** öffnet ebenfalls das Widerrufs-Modal.
 | `korrektur` | Grau | Vertrag wurde korrigiert |
 | `laufzeit` | Grau | Laufzeit wurde angepasst |
 
+### Was der Abschluss mit dem Ursprungsvertrag macht (ab 05.08.2026)
+
+Sobald ein Vorgang auf **Abgeschlossen** steht, wendet
+`RevocationOutcomeService` das Ergebnis auf den Ursprungsvertrag an — in beiden
+Pfaden, beim Anlegen **und** beim Aktualisieren des Widerrufs:
+
+| Reaktion | Vertrag danach | Zusätzlich |
+|---|---|---|
+| `widerruf_akzeptiert` | **Storniert** | Stornodatum + Widerrufsgrund |
+| `downgrade`, `upgrade` | **Geändert** | `successor_contract_id` aus der Folgevertrag-ID, Änderungsgrund |
+| `widerruf_abgelehnt`, `korrektur`, `laufzeit`, `offen` | unverändert aktiv | — |
+
+Ein bereits stornierter Vertrag wird durch ein späteres Downgrade nicht wieder
+auf „Geändert" zurückgestuft — der schärfere Zustand gewinnt.
+
+**Offene Raten:** Rein lokale Raten (Platzhalter ohne registrierten
+GoCardless-Einzug) werden beim Beenden storniert — sonst zählen sie als offene
+Forderung weiter und blähen die Schuldenliste auf. Raten **mit** Einzug bleiben
+unangetastet und werden nur gemeldet (`open_collections` in der Antwort, Hinweis
+in der Rückmeldung): Sie zu stornieren hiesse, GoCardless aus einem
+Automatismus heraus anzufassen — und das läuft seit dem 31.07.2026
+ausschliesslich manuell über den SEPA-Tab.
+
+> **Vorgeschichte:** Bis 08/2026 stand die Logik als `if` mitten im
+> Update-Endpoint und griff **nur** bei `widerruf_akzeptiert`. Ein per Downgrade
+> abgeschlossener Widerruf liess den Vertrag deshalb aktiv, mit komplett offenem
+> Ratenplan; der Anlege-Pfad fasste den Vertragsstatus nie an. Beides trieb die
+> Schuldenliste hoch (gemeldet 31.07./03.08.2026).
+
 ---
 
 # Für Entwickler
