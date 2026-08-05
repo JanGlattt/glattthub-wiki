@@ -1058,19 +1058,26 @@ Wichtige Regeln:
 
 ### Vor-Ort-Zahlung (Rate 1)
 
-Die erste Rate wird als **Vor Ort / Kasse** geführt und aus dem ersten **Behandlungstermin** nach der Beratung abgeleitet.
+Die erste Rate wird als **Vor Ort / Kasse** geführt und aus dem ersten **Behandlungstermin ab Vertragsunterschrift** abgeleitet.
 
 **Was als Behandlung zählt.** Nur Services mit `body_zones > 0` aus `consultation_services`. „Keine Beratung" reicht nicht: Phorest kennt zahlreiche Positionen, die wie Services gebucht werden, aber niemanden behandeln — Extrazeit, Desinfektion, Vorbereitung, Formularschritte („2. Lastschrift + Behandlungsvertrag"), Storno- und NoShow-Marker. Sie alle haben `body_zones = 0`.
 
 > **Für die Pflege wichtig:** Wird in Phorest ein neuer Service angelegt, kommt er mit `body_zones = 0` in den Hub und gilt damit **nicht** als Behandlung. Echte Behandlungs-Services müssen in Filament unter *Beratungs-Services* mit ihrer Körperzonen-Zahl gepflegt werden — sonst erkennt der Hub die erste Sitzung nicht.
 
-- **Datum:** Erster Termin mit einer echten Behandlung nach der Beratung (gleicher Tag zählt, wenn die Behandlung direkt anschließt). „Vorbei" ist ein Termin ab seiner tatsächlichen Startzeit, nicht ab Mitternacht.
+**Welcher Termin gehört zu welchem Vertrag.** Maßgeblich ist die **Vertragsunterschrift** (`signed_at`, ersatzweise `start_date`/`created_at`): Termine davor gehören nicht zu diesem Vertrag. Vorher genügte „nach dem letzten Beratungsgespräch des Kunden" — bei einem Upgrade auf ein größeres Paket lag dieses Gespräch aber vor **beiden** Verträgen, sodass der Folgevertrag die bereits vor Ort bezahlte erste Sitzung des Vorvertrags erbte (gemeldet 05.08.2026, BI006136: angezeigtes Datum sieben Wochen vor der eigenen Unterschrift).
+
+Unter den Terminen ab Unterschrift ist die erste Sitzung der erste, an dem eine Position hängt, die **überhaupt etwas kostet**. Im Paket enthaltene Folgebehandlungen laufen in Phorest als `Abo.LS-…` mit 0,00 €, Erstsitzungen (`Erste.Sitz …`) tragen den vor Ort fälligen Betrag. Gibt es keine kostenpflichtige Position, bleibt der erste Behandlungstermin als Datum stehen — er gilt dann aber nie als bezahlt.
+
+- **Datum:** Wie oben. „Vorbei" ist ein Termin ab seiner tatsächlichen Startzeit, nicht ab Mitternacht.
 - **Betrag:** Eine Monatsrate (oder der bei der Bestätigung erfasste Betrag).
 - **Statuslogik:**
-    - **Gezahlt** — nur mit echter Zahlungs-Evidenz: Der Behandlungstermin ist in Phorest kassiert (`PAID`) oder der Kunde war eingecheckt und das Kundenkonto ist ausgeglichen.
+    - **Gezahlt** — nur mit echter Zahlungs-Evidenz: An der ersten Sitzung wurde eine Position **mit Betrag** kassiert (`PAID`) bzw. der Kunde war eingecheckt und das Kundenkonto ist ausgeglichen. Eine kassierte 0-€-Behandlung belegt keine Zahlung.
+    - **Gezahlt (laut Altsystem)** — beim Altbestand steht die Vor-Ort-Zahlung im Übergabe-Sheet (`legacy_erste_sitzung_bezahlt`). Das ist die belastbarere Quelle, weil die Sitzungen dieser Verträge in Phorest häufig mit 0,00 € geführt werden; der Hinweis nennt den Betrag (Entscheidung Jan, 05.08.2026).
     - **Termin ausstehend** — die erste Sitzung liegt noch in der Zukunft oder hat noch nicht stattgefunden.
     - **Keine Zahlung geleistet** — Termin vorbei, am Kundenkonto steht noch ein offener Betrag („Auf das Kundenkonto gebucht").
-    - **Zahlung nicht bestätigt** — Termin vorbei, aber keine kassierte Zahlung dokumentiert (NoShow, Checkout fehlt).
+    - **Zahlung nicht bestätigt** — Termin vorbei, aber keine kassierte Zahlung dokumentiert (NoShow, Checkout fehlt) — oder von Hand als nicht geleistet vermerkt.
+
+> **Gelöschte Positionen sind Karteileichen.** `stats_historic_appointments` behält Positionen mit `deleted = 1` samt altem Preis, obwohl Phorest sie nicht mehr führt. Für die Zahlungsfrage müssen sie ausgeschlossen werden — im gemeldeten Fall stand dort eine gelöschte Erstsitzung über 179,99 €, die es in Phorest gar nicht mehr gibt.
 
 #### Zahlung manuell bestätigen
 
@@ -1081,6 +1088,15 @@ Phorest liefert nur den **aktuellen** Kundensaldo, keine Kontohistorie: Eine Bar
 - Die Bestätigung **schlägt die Phorest-Heuristik**: Ist sie gesetzt, hängt der Status nicht mehr am Terminkalender.
 - **Korrigieren** und **Zurücknehmen** sind über denselben Dialog möglich. Zurücknehmen **löscht die Zeile nicht**, sondern setzt sie in den Platzhalter-Zustand zurück (siehe unten).
 - Es wird **kein** GoCardless-Einzug ausgelöst. Zahlungsplan-Neuberechnung und Reconciler fassen Rate 1 nicht an (beide arbeiten auf `installment_number > 1`).
+
+#### Einem falschen „Gezahlt" widersprechen
+
+Die Gegenrichtung zur Bestätigung: Zeigt der Hub „Gezahlt", weil er es aus Phorest herleitet, obwohl real nichts geflossen ist, ließ sich das bis 08/2026 im Hub nirgends festhalten — es blieb nur, den Fall zu melden. Jetzt steht an einer solchen Rate der Button **„Nicht gezahlt"** (Recht `manage_gocardless`).
+
+- Der Vermerk landet als `onsite_denied_at` auf derselben Zeile (`installment_number = 1`) und **schlägt jede Termin-Heuristik**: Die Rate zeigt dann „Zahlung nicht bestätigt" mit dem Hinweis „Als nicht vor Ort gezahlt vermerkt am TT.MM.JJJJ".
+- **„Vermerk aufheben"** nimmt ihn zurück, danach gilt wieder, was Phorest hergibt. Wer den Vermerk gesetzt oder aufgehoben hat, steht in der Vertragshistorie.
+- Eine anschließende Bestätigung („Zahlung bestätigen") hebt den Vermerk automatisch auf — beides gleichzeitig gibt es nicht.
+- Typischer Anlass: Verträge, bei denen gar keine Vor-Ort-Zahlung vereinbart war, weil die erste Rate mit abgebucht wird.
 
 > **Platzhalter ≠ Zahlung — die wichtigste Fallgrube an dieser Stelle.**
 > `GoCardlessPaymentPlanService::createFirstPaymentRecord()` legt bei **jeder**
