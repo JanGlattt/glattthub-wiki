@@ -108,6 +108,44 @@ Der Betrag löst die **letzten offenen Raten** ab: Voll abgedeckte Raten werden 
 
 **Neu: „Zahlung verbuchen"** im Zahlungen-Tab — als **Sondertilgung**: Es wird ein beliebiger überwiesener Betrag eingegeben (Zahlungsdatum, Zahlungsart, Referenz), der von den **letzten offenen Raten** des Plans abgezogen wird. Voll gedeckte Raten werden als extern bezahlt markiert (GoCardless-Einzug storniert), eine teilweise gedeckte Rate wird **reduziert** (Einzug storniert + reduziert neu angelegt, gleiche Fälligkeit); der gezahlte Teilbetrag erscheint als eigene bezahlte Zeile mit derselben Ratennummer. Der Toggle **„Restsumme gesamt beglichen"** setzt den Betrag auf die komplette offene Restsumme — dann wird der Vertrag nach der Verbuchung **automatisch abgeschlossen**. Eine Vorschau im Modal zeigt vor dem Speichern, welche Raten beglichen bzw. reduziert werden. Bereits eingereichte Einzüge (submitted) laufen durch; Verträge mit Dauerauftrag werden abgelehnt (erst Plan stornieren/pausieren).
 
+#### Verrechnen mit: Planende oder bestimmte Raten (05.08.2026)
+
+Die Verteilung von hinten ist für eine echte Sondertilgung richtig, für eine
+**nachgetragene** Zahlung aber falsch: Ein Alt-Einzug aus 03/2026 landete so auf
+der Rate mit Fälligkeit 03/2027 — gemeldet am 04.08.2026 (H004468, zwei
+Star-Money-Einzüge). Im Modal steht deshalb oben ein Umschalter:
+
+- **Letzte offene Raten** (Vorgabe) — Sondertilgung wie bisher, verkürzt den Plan vom Ende her.
+- **Bestimmte Raten** — Auswahlliste aller offenen Raten mit Fälligkeit und Betrag.
+  Die Zahlung deckt die gewählten Raten **von der ältesten her**, ein Teilbetrag
+  reduziert die letzte davon. Der Plan wird nicht verkürzt.
+
+Technisch: `recordExternalPayments()` nimmt optional `payment_ids` entgegen. Mit
+Auswahl wird aufsteigend nach `due_date` verteilt und gegen die **Summe der
+gewählten Raten** geprüft (nicht gegen die ganze Restsumme); enthält die Auswahl
+eine nicht mehr offene Rate, antwortet der Endpoint mit 422. Der `ContractChange`
+hält im Feld `target` fest, welcher Modus gegriffen hat (`plan_end` /
+`selected_rates`).
+
+> **Fallstrick beim Zurücknehmen:** `cancelSpecificPayments()` läuft **vor** dem
+> Verbuchen und setzt GC-verknüpfte Zeilen auf `cancelled`. Würde
+> `settleOpenExternally()` einfach den aktuellen Status protokollieren, stünde in
+> der Historie `cancelled` statt `scheduled` — und `revertSettlement()` fände
+> keinen brauchbaren Vorzustand. Der Ausgangszustand wird deshalb **vor** der
+> Storno-Runde festgehalten und als vierter Parameter übergeben.
+
+#### Begleichung zurücknehmen
+
+`revertSettlement()` rekonstruiert den Vorzustand aus der Vertrags-Historie und
+akzeptiert dabei **jeden** dokumentierten Ausgangsstatus, nicht nur
+`failed`/`chargedback`. Vorher liess sich eine über „Zahlung verbuchen"
+beglichene **offene** Rate nie zurücknehmen (sie kam aus `scheduled`) — der
+Dialog meldete „Diese Zahlung kann nicht zurückgesetzt werden". Ohne jede Spur in
+der Historie bleibt es beim Fehlschlag-Fallback (`failed`); ein Vorzustand wird
+**nicht** geraten, sonst würde eine eigenständig dokumentierte Zahlung zur
+offenen Rate. War beim Verbuchen ein GoCardless-Einzug storniert worden, weist
+die Rückmeldung darauf hin, dass er nicht wieder auflebt.
+
 ### Für Entwickler (30.07.2026)
 
 - **Pausierung Daueraufträge:** `ContractPauseService::openRates()` verlangt die GC-Verknüpfung (`gocardless_payment_id NOT NULL`) nur noch für Einzelzahlungs-Verträge — bei Verträgen mit `gocardless_subscription_id` zählen die lokalen Platzhalter (GoCardless materialisiert Subscription-Raten erst kurz vor Fälligkeit, siehe `ContractPaymentReconciler::projectSubscriptionInstallments()`). `pauseIndefinite()` kündigt die Subscription über `GoCardlessPaymentPlanService::cancelPaymentPlan()` (neuer optionaler Parameter `$localNote` → Platzhalter werden mit „Pausiert – unbefristet" storniert); `pauseFixed()` nutzt den neuen Zweig `pauseFixedSubscription()`: Subscription kündigen, Platzhalter soft-deleten, alle offenen Raten um N Monate verschoben via `recreateIndividualPayments()` neu anlegen. Das Fortsetzen (`resume()`) blieb unverändert — `createIndividualPaymentPlan()` legt die Restraten als Einzelzahlungen an.
