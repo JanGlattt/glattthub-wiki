@@ -215,6 +215,13 @@ in der Rückmeldung): Sie zu stornieren hiesse, GoCardless aus einem
 Automatismus heraus anzufassen — und das läuft seit dem 31.07.2026
 ausschliesslich manuell über den SEPA-Tab.
 
+**Was man am beendeten Vertrag sieht (05.08.2026):**
+
+- Statusbadge **„Bearbeitet"** (vorher stand dort das rohe `modified`), Widerruf bleibt „Widerruf".
+- Sidebar-Zeilen **„Ersetzt durch"** bzw. **„Ersetzt Vertrag"** verlinken beide Verträge, dazu der Änderungsgrund. Fehlt die Folgevertrag-ID im Widerruf, steht dort „nicht hinterlegt" mit dem Hinweis, sie nachzutragen.
+- Im Zahlungen-Tab erscheint statt der Ratenliste der Hinweis **„Vertrag ersetzt — erste Sitzung und Raten gehören zum Folgevertrag"** (mit Link). Die synthetische Vor-Ort-Rate wird **nicht mehr angeboten**; eine tatsächlich geleistete Zahlung bleibt dagegen als Beleg stehen.
+- Im SEPA-Tab entfällt die Einladung „Mandat bereit zur Aktivierung" — für einen beendeten Vertrag wird nichts mehr aktiviert.
+
 > **Vorgeschichte:** Bis 08/2026 stand die Logik als `if` mitten im
 > Update-Endpoint und griff **nur** bei `widerruf_akzeptiert`. Ein per Downgrade
 > abgeschlossener Widerruf liess den Vertrag deshalb aktiv, mit komplett offenem
