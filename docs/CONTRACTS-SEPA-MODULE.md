@@ -1039,10 +1039,24 @@ Die erste Rate wird als **Vor Ort / Kasse** geführt und aus dem ersten **Behand
 Phorest liefert nur den **aktuellen** Kundensaldo, keine Kontohistorie: Eine Barzahlung an der Kasse oder eine Woche später eingegangene Überweisung kann der Hub nicht selbst erkennen. Deshalb lässt sich die 1. Rate von Hand bestätigen — Button **„Zahlung bestätigen"** an der Rate (Recht `manage_gocardless`).
 
 - Erfasst werden Zahlungsdatum, Zahlungsart (bar/Karte/Überweisung/sonstige), Betrag (voreingestellt die Monatsrate) und optional eine Referenz.
-- Es entsteht eine echte `contract_payments`-Zeile mit `installment_number = 1`, Status `paid` und dem Hinweis „Per Überweisung beglichen am TT.MM.JJJJ".
+- Die Bestätigung landet in der `contract_payments`-Zeile mit `installment_number = 1` — Status `paid`, `paid_at` gesetzt, Hinweis „Per Überweisung beglichen am TT.MM.JJJJ".
 - Die Bestätigung **schlägt die Phorest-Heuristik**: Ist sie gesetzt, hängt der Status nicht mehr am Terminkalender.
-- **Korrigieren** und **Zurücknehmen** sind über denselben Dialog möglich.
+- **Korrigieren** und **Zurücknehmen** sind über denselben Dialog möglich. Zurücknehmen **löscht die Zeile nicht**, sondern setzt sie in den Platzhalter-Zustand zurück (siehe unten).
 - Es wird **kein** GoCardless-Einzug ausgelöst. Zahlungsplan-Neuberechnung und Reconciler fassen Rate 1 nicht an (beide arbeiten auf `installment_number > 1`).
+
+> **Platzhalter ≠ Zahlung — die wichtigste Fallgrube an dieser Stelle.**
+> `GoCardlessPaymentPlanService::createFirstPaymentRecord()` legt bei **jeder**
+> Vertragsanlage eine Zeile mit `installment_number = 1`, `status = scheduled`,
+> `notes = "Zahlung vor Ort"` und `due_date = first_payment_date` an. Sie hält nur
+> den Platz für die vor Ort fällige Rate und sagt **nichts** darüber aus, ob jemand
+> gezahlt hat. Wer die Bestätigung über „Zeile vorhanden und nicht storniert"
+> erkennt, erklärt damit jeden Neuvertrag für bezahlt und zeigt statt des
+> Behandlungstermins das **erste Abbuchungsdatum** an — im August 2026 genau so
+> passiert (alle betroffenen Verträge zeigten „den 3. eines Monats"). Beglichen ist
+> die Rate nur mit Zahlungs-Evidenz: Status `paid` **oder** gesetztes `paid_at`
+> (`ContractController::findConfirmedFirstInstallment()`). Aus demselben Grund darf
+> „Zurücknehmen" die Zeile nicht löschen — sie ist zugleich der Platzhalter des
+> Zahlungsplans.
 
 ### SEPA-Lastschriften (Raten 2-19)
 
