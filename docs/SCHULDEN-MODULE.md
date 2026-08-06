@@ -84,11 +84,16 @@ Erreichbar über den Button auf der Basisseite. Listet jede einzelne geplatzte L
 | **Fällig am** | Fälligkeitsdatum der Rate |
 | **Rate** | Ratennummer (installment_number) |
 | **Status** | „Fehlgeschlagen" oder „Rückbuchung" (rot), plus Anzahl Einzugsversuche |
-| **Grund** | Fehlerbeschreibung von GoCardless (`failure_reason`) + Code |
+| **Grund** | Rücklastschrift-Grund auf Deutsch, abgeleitet aus dem Bankcode (`GoCardlessFailureReason::label()`), darunter der Code selbst. Der englische Originaltext von GoCardless hängt als Tooltip daran. Unbekannte Codes zeigen den Originaltext. |
 | **Betrag** | Betrag der Rate (in Rot) |
 | **Vertrag** | Link zur Vertragsdetailseite |
 
-Zeilen gebändert (Zebra), Spalten sortierbar; Standard-Sortierung ist Fälligkeit absteigend. Das Suchfeld filtert nach **Kundenname, Kundennummer oder Fehlergrund**. Der Zurück-Pfeil oben links führt zur Basisseite.
+Zeilen gebändert (Zebra), Spalten sortierbar; Standard-Sortierung ist Fälligkeit absteigend. Das Suchfeld filtert nach **Kundenname, Kundennummer, Fehlergrund** (deutsch wie englisch) **oder Bankcode**. Der Zurück-Pfeil oben links führt zur Basisseite.
+
+!!! note "Warum steht bei den meisten Zeilen „Bank nennt keinen Grund"?"
+    Deutsche Banken legen den Grund einer SEPA-Rückgabe in aller Regel nicht offen und
+    melden den Sammelcode `MS03`. Das ist keine Lücke im Hub, sondern die Auskunft, die
+    GoCardless von der Bank bekommt. Details: Wiki `GOCARDLESS-API.md`.
 
 ---
 

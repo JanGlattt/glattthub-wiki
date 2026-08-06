@@ -288,7 +288,7 @@ Drei Events hatten zuvor **gar keinen** Handler:
 
 | Event | Verarbeitung |
 |---|---|
-| `payments.late_failure_settled` | Einzug ist nach der Auszahlung geplatzt → Rate zurück auf `failed` (inkl. `failure_reason`/`failure_code`, `retry_count` +1). Gehört damit wieder in Schuldenliste und Mahnwesen. |
+| `payments.late_failure_settled` | Einzug ist nach der Auszahlung geplatzt → Rate zurück auf `failed`. Gehört damit wieder in Schuldenliste und Mahnwesen. **Trägt keinen Rücklastschrift-Grund** (s. unten). |
 | `payments.chargeback_settled` | Rückbuchung endgültig → Rate auf `chargedback` |
 | `payments.chargeback_cancelled` | Rückbuchung zurückgenommen → Rate zurück auf `paid`, **nur** aus dem Zustand `chargedback` heraus |
 
@@ -302,6 +302,62 @@ Das ist der Regelfall, nicht die Ausnahme: Von 65 Altfällen, bei denen GoCardle
 Fehlschlag meldete und die Rate lokal auf „Bezahlt" stand, waren **61 korrekt** — die
 Kundin hatte überwiesen und jemand hatte es verbucht. Nur 4 Raten (599,92 €) waren
 tatsächlich falsch.
+
+#### Der Rücklastschrift-Grund steht nur im `payments.failed` (Korrektur 08/2026)
+
+Ein nachträglich geplatzter Einzug erzeugt bei GoCardless **zwei** Events:
+
+1. `payments.failed` — die Meldung der Bank, **mit** Grund (`details.description`)
+   und Bankcode (`details.reason_code`, z.B. `MS03`, `AC04`, `AM04`)
+2. `payments.late_failure_settled` — reine Verrechnungsmeldung („This late failed
+   payment has been settled against a payout."), **ohne** `reason_code`
+
+Der Handler für das zweite Event hat anfangs beides überschrieben: Der Bankgrund wurde
+durch den Buchungssatz ersetzt, der Code auf `NULL` gesetzt und **derselbe Einzug ein
+zweites Mal als Versuch gezählt** — in der Schuldenliste stand dann „2× versucht" bei
+einer einzigen Lastschrift (gemeldet 06.08.2026 von Janine).
+
+Seitdem gilt: Das Folge-Event setzt Grund und Code **nur**, wenn beide noch leer sind
+(dann mit dem Ersatztext „Nachträglich zurückgegeben (Grund von der Bank nicht
+übermittelt)"), und erhöht `retry_count` nur, wenn die Rate nicht ohnehin schon auf
+`failed` stand. Bestandszeilen repariert der einmalige Command
+`php artisan gocardless:repair-late-failure-reasons` (`--dry-run` zeigt die Änderungen
+vorab). Er holt Grund und Code aus dem gespeicherten `payments.failed`-Event zurück und
+deckt zwei Fälle ab:
+
+- **überschrieben** — der Buchungssatz steht noch wörtlich als Grund drin; hier wird
+  zusätzlich der doppelt gezählte Versuch zurückgenommen
+- **leer** — die Rate wurde ohne Bankauskunft auf `failed` gesetzt (typischerweise über
+  `gocardless:reconcile-payments`, das nur den Status abgleicht) und zeigte in der
+  Schuldenliste „–"; der Versuchszähler bleibt hier unangetastet
+
+Zeilen mit einem echten Grund bleiben unberührt. Prod-Lauf 06.08.2026: 57 Raten
+korrigiert (18 überschrieben, 39 leer), 18 Versuchszähler zurückgesetzt, alle mit
+Bankcode `MS03`.
+
+#### Deutsche Rücklastschrift-Gründe
+
+`failure_reason`/`failure_code` werden **im GoCardless-Original gespeichert** (englischer
+Fließtext + Bankcode) — als Rohauskunft für Rückfragen bei der Bank. Übersetzt wird erst
+bei der Anzeige über `App\Support\GoCardlessFailureReason::label()`, angebunden als
+Accessor `ContractPayment::$failure_reason_label`.
+
+Maßgeblich ist dabei der **Code**, nicht der Text: Er ist stabil, während GoCardless die
+Beschreibung jederzeit umformulieren kann. Ein unbekannter Code reicht den Originaltext
+unverändert durch — lieber englisch als falsch übersetzt. Der Originaltext bleibt in der
+Schuldenliste als Tooltip erreichbar und wird von der Suche mitgefunden.
+
+| Code | Anzeige im Hub |
+|---|---|
+| `AM04` | Konto nicht gedeckt |
+| `MS03` | Bank nennt keinen Grund |
+| `MD01` | Mandat bei der Bank widerrufen |
+| `MD06` | Widerspruch des Kunden — Betrag zurückgefordert |
+| `AC04` | Konto erloschen — Mandat wurde ebenfalls beendet |
+| `AC06` | Konto gesperrt |
+
+Vollständige Liste in `app/Support/GoCardlessFailureReason.php`; **`MS03` dominiert in der
+Praxis**, weil deutsche Banken den Grund einer SEPA-Rückgabe meist nicht offenlegen.
 
 #### Retry mit Backoff (seit 07/2026)
 
