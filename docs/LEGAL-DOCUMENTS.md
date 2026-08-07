@@ -21,15 +21,16 @@ Unter **Admin-Panel → Content → Rechtsdokumente** (Recht `manage_legal_docum
 
 In der Feld-Leiste (Kategorie **Erweitert**, Recht `use_advanced_form_fields`) gibt es die Card **„Zentral verwaltetes Dokument"**. Nach dem Einfügen rechts in den Feld-Einstellungen:
 
-1. **Dokument** wählen (alle aktiven Rechtsdokumente)
+1. **Dokument** wählen (alle aktiven Rechtsdokumente) — im Formular erscheint immer der **Titel des Dokuments** als Überschrift, nicht das Feld-Label
 2. **Darstellung** wählen:
-    - Volltext im Formular, **einklappbar** (Standard)
-    - Volltext im Formular, **dauerhaft ausgeklappt**
-    - **Link** — Volltext öffnet sich im Modal
+    - Volltext im Formular, **einklappbar** (Standard, Scrollbox)
+    - Volltext im Formular, **ausgeklappt** (Scrollbox)
+    - Volltext im Formular, **komplett ohne Scrollen** (gesamter Text sichtbar)
+    - **Bestätigung beim Absenden im Modal**: Das Feld ist im Formular unsichtbar. Beim Klick auf „Formular absenden" öffnet sich das Dokument in einem großen Modal — erst wenn bis zum Ende gescrollt wurde, lässt sich die Bestätigungs-Checkbox anhaken, dann „Bestätigen & absenden". Mehrere Modal-Dokumente in einem Formular werden **nacheinander in Feld-Reihenfolge** angezeigt; Abbrechen stoppt das Absenden.
 3. **Pflichtfeld**-Schalter: macht die Bestätigungs-Checkbox verpflichtend (ohne Haken kein Absenden — client- **und** serverseitig geprüft)
 4. **„Aus PDF ausschließen"**: die bestehende PDF-Sichtbarkeitslogik greift auch hier
 
-Die Bestätigungs-Checkbox erscheint in allen Darstellungsvarianten, mit Versionshinweis („Version 2, gültig ab 01.08.2026"). Der Text der Checkbox ist über das Feld **Beschreibung** anpassbar (Standard: „Ich habe … gelesen und stimme zu.").
+Bei den Inline-Varianten sitzt die Bestätigungs-Checkbox als hervorgehobene Zeile unter dem Dokument, mit Versionshinweis („Version 2, gültig ab 01.08.2026") und Pflicht-Sternchen direkt am Text. Der Text der Checkbox ist über das Feld **Beschreibung** anpassbar (Standard: „Ich habe … gelesen und stimme zu.").
 
 ### Nachweis
 
@@ -61,7 +62,8 @@ Versions-Auflösung nach dem `valid_from`-Muster (wie `HrSalary`/Preislisten): `
 
 ### Formular-Feldtyp `legal_document`
 
-- Registry: `FormField::TYPE_LEGAL_DOCUMENT`, Kategorie `advanced`, `has_value = true`; Settings: `legal_document_id`, `display_mode` (`inline_collapsed` / `inline_expanded` / `modal`)
+- Registry: `FormField::TYPE_LEGAL_DOCUMENT`, Kategorie `advanced`, `has_value = true`; Settings: `legal_document_id`, `display_mode` (`inline_collapsed` / `inline_expanded` / `inline_full` / `modal`)
+- **Modal-Modus**: `startLegalModalFlow()` in `form-fill.js`/`shared-form-fill.js` fängt `submitForm()` ab und arbeitet eine Warteschlange der unbestätigten Modal-Felder in Feld-Reihenfolge ab (Scroll-Gate über `initLegalModalScroll()`/`onLegalModalScroll()`, Messung nach dem Öffnen per `requestAnimationFrame`); der leere Feld-Wrapper wird über `isFieldVisibleInLayout()` ausgeblendet, damit im Feld-Raster keine Lücke entsteht
 - **Auslieferung an alle Ausfüll-Ansichten** über das automatisch angehängte Attribut `FormField::getLegalDocumentAttribute()` (`$appends`) — liefert `{id, title, version, valid_from, content}` der aktuell gültigen Fassung; kein eigener Endpoint je View nötig
 - Dokumentliste für die Editor-Auswahl: `GET /api/forms/legal-documents` (`FormController::getLegalDocuments()`)
 - **Serverseitige Pflicht-Prüfung**: Closure-Regel in `FormField::getValidationRules()` — ein bloßes `required` würde den String `"false"` durchlassen. Greift in `FormController::submit()` **und** `SharedFormController::submit()`
