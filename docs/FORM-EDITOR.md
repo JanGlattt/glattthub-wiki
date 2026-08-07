@@ -33,6 +33,7 @@ Das Form Editor Modul ermöglicht das Erstellen, Bearbeiten und Verwalten von dy
 | `body_zones` | Körperzonen-Auswahl (Partial) | Spezial |
 | `signature` | Unterschriftenfeld (Touch/Maus) | Spezial |
 | `contract_price` | Vertragspreis (readonly) | Spezial |
+| `legal_document` | Zentral verwaltetes Rechtsdokument (AGB & Co.) mit Bestätigungs-Checkbox und Versions-Nachweis — siehe [LEGAL-DOCUMENTS.md](LEGAL-DOCUMENTS.md) | Spezial |
 
 > **Mehrere contract_price-Felder:** Ein Formular kann mehrere `contract_price`-Felder mit unterschiedlichen `display_mode` (`rates_only`, `total_only`) und `show_condition` haben (z.B. eins für Ratenzahlung, eins für Gesamtpreis). Der Preiswert wird automatisch in **alle** contract_price-Felder geschrieben, damit das jeweils sichtbare Feld den korrekten Wert an den Server übermittelt.
 | `sepa_iban` | SEPA IBAN mit BIC-Autofill | SEPA |

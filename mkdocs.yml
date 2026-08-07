@@ -110,6 +110,7 @@ nav:
     - Behandlungseinstellungen: TREATMENT-SETTINGS.md
   - Formulare:
     - Formular-Editor: FORM-EDITOR.md
+    - Rechtsdokumente: LEGAL-DOCUMENTS.md
     - Formulare extern teilen: SHARED-FORM-SYSTEM.md
     - PDF-Erstellung: PDF-ERSTELLUNG.md
     - Flatpickr (Datepicker): FLATPICKR.md
