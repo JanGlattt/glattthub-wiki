@@ -125,7 +125,15 @@ Custom Domains, Load Balancer, SSL und IAP: siehe [Cloud-Infrastruktur](CLOUD-IN
 
 **Wichtig:** `APP_KEY` muss in Staging **identisch** mit Prod sein, da die Staging-DB eine Kopie der Prod-DB ist und verschlüsselte Spalten (z.B. `email_settings`) sonst nicht entschlüsselt werden können.
 
-Alle anderen Variablen (Phorest, Zendesk, GCS, VAPID, askDANTE, Gemini, etc.) sind identisch.
+> **`APP_URL` war bis 07.08.2026 abgewichen** — am Dienst stand die run.app-Adresse
+> (`glattthub-web-staging-…run.app`) statt der hier dokumentierten Domain. Alle erzeugten
+> Links (SEPA-Formular, geteilte Formulare, GoCardless-Redirects) zeigten dorthin. Bei
+> Zweifeln am Wert dieser Tabelle immer am Dienst nachsehen, nicht hier:
+> `gcloud run services describe glattthub-web-staging --region=europe-west3 --format=json | jq …`
+
+Alle anderen Variablen (Phorest, Zendesk, GCS, VAPID, askDANTE, Gemini, etc.) sind identisch —
+**mit Ausnahme von `SUPERCHAT_API_KEY`, das auf Staging bewusst leer ist** (siehe
+[Fremdsysteme auf Staging](#fremdsysteme-auf-staging)).
 
 ### Relevante Dateien
 
@@ -210,22 +218,63 @@ Statt des alten gelben Top-Banners gibt es jetzt eine **schwebende Karte unten r
 
 ### Tägliche DB-Kopie
 
-Die Produktionsdatenbank wird täglich automatisch nach Staging kopiert.
+Die Produktionsdatenbank wird über den Cloud-Build-Job `cloudbuild-db-copy.yaml`
+nach Staging kopiert.
 
-**Konfiguration:**
-- **Cloud Scheduler**: Täglich um 03:00 Uhr (Europe/Berlin)
-- **Cloud Build Job**: `cloudbuild-db-copy.yaml`
-- **Nach dem Import** werden `jobs`, `failed_jobs` und `sessions` in Staging geleert
-
-**Manuell auslösen:**
+**Auslösung: ausschliesslich manuell** (Entscheidung 07.08.2026, für die Dauer der
+Readiness-Prüfung „Verkauf"). Ein nächtlicher Lauf würde jeden Abend die auf Staging
+angelegten Testverträge verwerfen — mehrtägige Szenarien (Mandats-Aktivierung, Rate
+zum 3. des Monats) wären damit nicht verfolgbar. Der Scheduler-Job kommt erst nach
+dem Go-Live-Check dazu (Vorlage siehe [Ersteinrichtung](#6-cloud-scheduler-fur-db-kopie)).
 
 ```bash
-gcloud builds submit --config=cloudbuild-db-copy.yaml --no-source --project=glattthub
+gcloud builds submit --no-source \
+  --config=cloudbuild-db-copy.yaml \
+  --project=glattthub \
+  --service-account=projects/glattthub/serviceAccounts/99200336070-compute@developer.gserviceaccount.com
 ```
 
-**Wichtig:** Der SQL-Export von Cloud SQL enthält ein `USE glattthub;` Statement. Das `cloudbuild-db-copy.yaml` bereinigt dies automatisch mittels `sed`, damit die Daten in `glattthub_staging` landen.
+> **Historie (07.08.2026):** Die Kopie lief bis dahin **nie** — trotz gegenteiliger
+> Aussage an dieser Stelle. Drei unabhängige Gründe, jeder für sich tödlich:
+>
+> 1. **Kein Auslöser** — weder Scheduler-Job noch Build-Trigger existierten.
+> 2. **Secrets fehlten** — `db-prod-user`, `db-prod-password`, `db-staging-user`,
+>    `db-staging-password` waren im Secret Manager nicht angelegt; der Build
+>    scheiterte am Secret-Zugriff, bevor er irgendetwas tat. Zusätzlich braucht der
+>    Build-Service-Account `roles/secretmanager.secretAccessor` **pro Secret** —
+>    `roles/editor` schliesst `secretmanager.versions.access` nicht ein.
+> 3. **Ungenutzte Substitutions** — `_PROJECT_ID` und `_REGION` waren deklariert, aber
+>    im Template nicht verwendet. Cloud Build lehnt das ab („key … is not matched in
+>    the template"), der Build startet gar nicht erst.
+>
+> Folge: `glattthub_staging` enthielt 36 Zahlungen gegenüber rund 19.000 in Produktion.
 
-> **Achtung – Zusammenspiel mit Auto-Migrate:** Der Dump läuft mit `--ignore-table=…cache` **und** `…cache_locks`. Die `cache_locks`-Tabelle braucht der Container-Start aber für `migrate --isolated` (siehe [Datenbank-Migrationen](#datenbank-migrationen)). Fehlt sie nach einer DB-Kopie, scheitert der nächste Staging-Deploy am Isolation-Lock. Die db-copy muss `cache_locks` daher entweder mitkopieren (nicht ignorieren) oder nach dem Import per `CREATE TABLE IF NOT EXISTS cache_locks (…)` neu anlegen. Die kopierte `migrations`-Tabelle bringt zudem den Prod-Stand mit — nach dem Abgleich vom 08.07.2026 ist das der saubere Stand (0 pending).
+**Volatile Tabellen werden struktur-only kopiert — nicht ausgelassen.**
+`mysqldump --ignore-table` wirft auch das `CREATE TABLE` weg. Da der Job vor dem Import
+`DROP DATABASE` fährt, fehlten die Tabellen danach vollständig, mit zwei Folgen:
+
+- **`cache_locks` fehlt** → der Container-Start scheitert an
+  `php artisan migrate --force --isolated` (Isolation-Lock, siehe
+  [Datenbank-Migrationen](#datenbank-migrationen)); die Revision wird nie healthy und
+  Cloud Run behält die alte.
+- **`sessions`/`cache` fehlen** → `SESSION_DRIVER`/`CACHE_STORE=database` laufen ins Leere.
+
+Deshalb läuft ein zweiter Dump mit `--no-data` über `jobs`, `job_batches`, `failed_jobs`,
+`sessions`, `cache`, `cache_locks`: Struktur vorhanden, Inhalt leer. Das frühere
+`DELETE FROM jobs` nach dem Import entfällt damit — es wäre ohnehin an der fehlenden
+Tabelle gescheitert.
+
+Weitere Eigenheiten des Jobs:
+
+- **DEFINER-Klauseln werden per `sed` entfernt** — der Staging-User hat kein `SUPER`,
+  ein `DEFINER=…` aus Prod liesse den Import scheitern.
+- **Plausibilitätsprüfung vor dem Import**: ein Dump unter 10 MB gilt als abgebrochen
+  und darf Staging nicht überschreiben.
+- **Abnahme-Schritt am Ende**: prüft, dass `cache_locks`, `sessions`, `jobs`, `cache`,
+  `migrations` und `contract_payments` existieren, und gibt Vertrags-/Zahlungszahlen aus.
+- **`timeout: 3600s`** — der Cloud-Build-Default von 10 Minuten reicht für Dump + Import nicht.
+- Die kopierte `migrations`-Tabelle bringt den Prod-Stand mit — nach dem Abgleich vom
+  08.07.2026 ist das der saubere Stand (0 pending).
 
 ### GoCardless Sandbox
 
@@ -235,6 +284,63 @@ Staging nutzt die GoCardless Sandbox-Umgebung. Die Config-Datei (`config/gocardl
 - `GOCARDLESS_ENVIRONMENT=live` → API: `https://api.gocardless.com`
 
 Sandbox und Live haben separate Access Tokens und Webhook Secrets (`GOCARDLESS_SANDBOX_ACCESS_TOKEN` / `GOCARDLESS_LIVE_ACCESS_TOKEN`).
+
+#### Webhook-Endpunkt der Sandbox
+
+Der Endpunkt heisst `https://staging.hub.glattt.com/api/webhooks/gocardless`.
+Das zugehörige Secret liegt als `GOCARDLESS_SANDBOX_WEBHOOK_SECRET` an **beiden**
+Staging-Diensten (`glattthub-web-staging` und `glattthub-worker-staging`).
+
+**Endpunkte lassen sich nur im GoCardless-Dashboard verwalten** — die API bietet dafür
+nichts an (`/webhook_endpoints` antwortet mit 403). Auslesbar ist über die API nur die
+Zustell*historie*:
+
+```bash
+curl -s "https://api-sandbox.gocardless.com/webhooks?limit=100" \
+  -H "Authorization: Bearer $GOCARDLESS_SANDBOX_ACCESS_TOKEN" \
+  -H "GoCardless-Version: 2015-07-06" \
+| jq -r '.webhooks | group_by(.url) | map({url:.[0].url, n:length,
+    letzte:(max_by(.created_at).created_at), codes:(map(.response_code)|unique)}) | .[]'
+```
+
+Achtung: Die Historie ist rückblickend. Ein gelöschter Endpunkt verschwindet dort
+**nicht** — ob die Umstellung wirkt, zeigt erst das nächste neue Event.
+
+Die Kette lässt sich ohne GoCardless gegen Staging prüfen, indem die Signatur selbst
+gerechnet wird (korrekt → `200 {"status":"ok"}`, falsch → `498`):
+
+```bash
+BODY='{"events":[]}'
+SIG=$(printf '%s' "$BODY" | openssl dgst -sha256 -hmac "$SECRET" | sed 's/^.*= //')
+curl -s -w '\nHTTP %{http_code}\n' -X POST https://staging.hub.glattt.com/api/webhooks/gocardless \
+  -H "Content-Type: application/json" -H "Webhook-Signature: $SIG" -d "$BODY"
+```
+
+> **Vorfall 07.08.2026:** In der Sandbox waren zwei falsche Endpunkte eingetragen — ein
+> toter ngrok-Tunnel aus lokaler Entwicklung (25/25 mit HTTP 404) und die
+> **Produktions-URL** `glattthub-web-99200336070.europe-west3.run.app` (25/25 mit
+> HTTP 498). Die Sandbox feuerte ihre Test-Events also gegen Produktion; abgewiesen hat
+> sie einzig die Signaturprüfung gegen das Live-Secret. Staging bekam im Gegenzug
+> überhaupt keine Webhooks, die Kette war dort nicht testbar. Beide Endpunkte wurden
+> gelöscht und durch die Staging-URL ersetzt.
+
+#### Fremdsysteme auf Staging
+
+`GOCARDLESS_ENVIRONMENT=sandbox` schützt nur GoCardless. **Phorest, Superchat und
+Zendesk haben keinen Umgebungsschalter** — weder `PhorestApiService` noch
+`SuperchatApiService` prüfen die Umgebung (einzige Ausnahme im Code:
+`SendVoucherEmailJob`). Auf Staging liegen dort die Produktions-Zugangsdaten, ein
+End-to-End-Test schreibt also in die echten Systeme.
+
+Stand 07.08.2026 (Entscheidung für die Readiness-Prüfung):
+
+| System | Auf Staging | Bedeutung für Tests |
+|---|---|---|
+| GoCardless | Sandbox | ungefährlich |
+| Phorest | **live** | Käufe landen wirklich → nur mit selbst angelegten Testkunden arbeiten, nie mit einem echten Datensatz aus der Prod-Kopie |
+| Superchat | **stillgelegt** (`SUPERCHAT_API_KEY=""`) | Anfragen laufen in ein 401, werden geloggt, nichts wird zugestellt |
+| Zendesk | **live** | ein mitgeprüfter Widerruf erzeugt echte Tickets |
+| Mail | `MAIL_MAILER=log` | ungefährlich |
 
 ### Mail-Konfiguration
 
@@ -322,7 +428,15 @@ gcloud run deploy glattthub-web-staging \
 
 #### 6. Cloud Scheduler für DB-Kopie
 
-*(Noch einzurichten)*
+**Bewusst nicht eingerichtet** (Stand 07.08.2026) — die Kopie läuft bis zum Abschluss
+der Readiness-Prüfung „Verkauf" nur auf Abruf, siehe [Tägliche DB-Kopie](#tagliche-db-kopie).
+
+Wenn der nächtliche Lauf später doch kommen soll, ist zu beachten: Der Scheduler ruft
+einen **Cloud-Build-Trigger** auf, und der existiert nicht — für den manuellen Lauf
+braucht es keinen (`gcloud builds submit --no-source`). Also zuerst einen Trigger für
+`cloudbuild-db-copy.yaml` anlegen, dessen ID unten einsetzen und als Service-Account
+`99200336070-compute@developer.gserviceaccount.com` verwenden (hat `cloudsql.admin`
+und die pro Secret erteilte Rolle `secretmanager.secretAccessor`).
 
 ```bash
 gcloud scheduler jobs create http db-copy-prod-to-staging \
