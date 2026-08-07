@@ -16,7 +16,7 @@ Zeigt geplante Beratungstermine in den nächsten 7, 14 und 28 Tagen.
 - Standort-Aufschlüsselung
 - Historischer Vergleich mit Vormonat/Vorjahr
 - Excel-Export
-- Alle KPI-Zusammenfassungen in Cards („Aktueller Buchungsstand", „Übersicht Beratungsgespräche", historischer Vergleich, Analysen) nutzen seit 07/2026 die einheitliche Stat-Strip-Komponente (`.stat-strip-glattt`) — verbindliche Konvention für KPIs innerhalb von Cards, siehe `.github/agents/design-system.md`
+- Alle KPI-Zusammenfassungen in Cards („Aktueller Buchungsstand", „Übersicht Beratungsgespräche", historischer Vergleich, Analysen) **und alle Karten der Berichte-Übersicht** nutzen die einheitliche Stat-Strip-Komponente (`.stat-strip-glattt`) — verbindliche Konvention für KPIs innerhalb von Cards, seit 08/2026 ohne Altbestand und durch `tests/Unit/StatStripConventionTest.php` abgesichert, siehe `.github/agents/design-system.md`
 
 #### Kalenderübersicht
 
@@ -429,6 +429,22 @@ Alle Reports unterstützen den systemweiten Dark Mode mit angepassten Farbschema
 ---
 
 ## Changelog
+
+### v1.11.0 (August 2026) - KPI-Zeilen einheitlich als Stat-Strip
+- ⭐ **Alle Übersichtskarten auf `.stat-strip-glattt` umgebaut** — vorher zeigten 11 der
+  12 Karten noch das alte Kachel-Gitter (`.stats-card-glattt`), nur die glattt-KPIs-Karte
+  war bereits umgestellt
+- ⭐ **Legacy vollständig abgelöst:** auch Startseiten-Kacheln, Mitarbeiter-Detail
+  (Abwesenheiten/Arbeitszeit), Beratungs-Tagesmodal und Cache-Einstellungen
+- ⭐ **Zahlenformat korrigiert:** `de-CH` (Tausender-Apostroph `1'234`) → `de-DE` (`1.234`)
+  in der Übersicht sowie in der Pakete-, Vergangene-Beratungen- und Storno-Karte
+- ⭐ **Neu im Theme:** `.stat-strip-glattt-trend` (Vergleichswert in der Zusatz-Zeile,
+  ersetzt `.stats-card-trend`/`.kpi-comparison-badge`), Icon-Variante `-danger`,
+  `.stat-strip-glattt-item-muted`
+- 🔧 Ladeplatzhalter je Karte auf `<x-stat-skeleton type="stat-strip">` gezogen
+- 🔧 Inline-SVGs durch Heroicons-Mini-Komponenten ersetzt
+- 📝 Als verbindliche Konvention festgeschrieben: `tests/Unit/StatStripConventionTest.php`,
+  `.github/copilot-instructions.md`, `.github/agents/design-system.md`, Komponenten-Katalog
 
 ### v1.10.0 (März 2026) - Feiertage im Kalender
 - ⭐ **Bundesweite Feiertage**: Gestreifter Hintergrund + Feiertagsname statt "Geschlossen"

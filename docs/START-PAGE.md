@@ -19,7 +19,7 @@ Die neue Startseite ersetzt das alte Dashboard und bietet eine **vollständig pe
 | `resources/views/hub/start/_card-news.blade.php` | News-Karte |
 | `resources/views/hub/start/_card-quicklinks.blade.php` | Quicklinks-Karte |
 | `resources/views/hub/start/_card-mitteilungen.blade.php` | Mitteilungen-Karte |
-| `resources/views/hub/start/_card-kpis.blade.php` | KPI-Karte (stats-card-glattt) |
+| `resources/views/hub/start/_card-kpis.blade.php` | KPI-Zeile (stat-strip-glattt) |
 | `resources/views/hub/start/_card-charts.blade.php` | Charts-Karte (Chart.js) |
 | `resources/views/hub/start/_modal-add-card.blade.php` | Modal: Karte hinzufügen |
 | `resources/views/hub/start/_modal-quicklink-config.blade.php` | Modal: Quicklinks konfigurieren |
@@ -169,7 +169,7 @@ Browser (Alpine.js)                    Server (Laravel)
 |-------------|------|
 | **Rollen** | admin, super_admin |
 | **Datenquelle** | `/hub/start-kpis` (aggregiert aus 4 Report-Endpoints) |
-| **Styling** | `stats-card-glattt` (einheitlich mit Report-Seiten) |
+| **Styling** | `stat-strip-glattt` (einheitlich mit Report-Seiten) |
 | **Features** | Trend-Vergleich, konfigurierbares Portfolio (1–8 KPIs) |
 
 → Vollständige Dokumentation: [Start-Page KPI-System](START-PAGE-KPIS.md)

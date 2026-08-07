@@ -73,7 +73,7 @@ Referenz-Implementierung: Verkaufsstatistik
 |---|---|---|
 | `.chart-canvas-glattt` + `-sm/-md/-lg/-xl/-2xl` | `theme_glattt.css` | **Einzige** Definition der Chart-Höhen (320–440 px, mobil kleiner) |
 | `.chart-frame-glattt` | `theme_glattt.css` | Bezugsrahmen: Chart, Tabelle und Zustands-Ebenen liegen darin |
-| `<x-stat-skeleton>` | `resources/views/components/stat-skeleton.blade.php` | Layoutgetreuer Platzhalter, Typen `chart`, `table`, `stat-strip`, `kpi`, `heatmap`, `tiles` (KPI-Vorschau-Kacheln der Berichte-Übersichtskarten; `:cols="3\|4"`, `:icons="false"`, `tall`) |
+| `<x-stat-skeleton>` | `resources/views/components/stat-skeleton.blade.php` | Layoutgetreuer Platzhalter, Typen `chart`, `table`, `stat-strip`, `kpi`, `heatmap`, `tiles` (echte Kachel-Gitter, u.a. der neutrale Navigations-Platzhalter; `:cols="3\|4"`, `:icons="false"`, `tall`). **Für KPI-Zeilen in Cards immer `stat-strip`** — die Berichte-Übersichtskarten nutzen seit 08/2026 diesen Typ |
 | `<x-card-state>` | `resources/views/components/card-state.blade.php` | „Keine Daten" und Fehler samt „Erneut laden" |
 | `.refreshable-glattt` / `.is-refreshing` | `theme_glattt.css` | Sanftes Neuladen (Dimmen statt Ersetzen) |
 

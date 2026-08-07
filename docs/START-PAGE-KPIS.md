@@ -3,7 +3,7 @@
 **Version:** 1.0  
 **Letzte Aktualisierung:** März 2026
 
-Das KPI-System der Startseite ermöglicht es Admins, aus einem Portfolio von **19 Kennzahlen** individuell auszuwählen, welche KPIs auf ihrer Startseite angezeigt werden. Die Darstellung verwendet das `stats-card-glattt` Design-System, einheitlich mit den Report-Seiten.
+Das KPI-System der Startseite ermöglicht es Admins, aus einem Portfolio von **19 Kennzahlen** individuell auszuwählen, welche KPIs auf ihrer Startseite angezeigt werden. Die Darstellung verwendet den Stat-Strip (`.stat-strip-glattt`) — einheitlich mit den Report-Seiten.
 
 → Übergeordnete Dokumentation: [Startseite](START-PAGE.md)
 
@@ -15,10 +15,10 @@ Das KPI-System der Startseite ermöglicht es Admins, aus einem Portfolio von **1
 |-------|--------------|
 | `app/Http/Controllers/StartPageController.php` | KPI-Portfolio, Aggregation, Speichern |
 | `app/Models/StartPageConfig.php` | `selected_kpis` JSON-Feld |
-| `resources/views/hub/start/_card-kpis.blade.php` | KPI-Karte mit stats-card-glattt |
+| `resources/views/hub/start/_card-kpis.blade.php` | KPI-Zeile als Stat-Strip |
 | `resources/views/hub/start/_modal-kpi-config.blade.php` | KPI-Auswahl-Modal |
 | `public/js/start.js` | Alpine.js Methoden für Laden, Portfolio, Speichern |
-| `public/css/theme_glattt.css` | stats-card-glattt + KPI-Config-Modal Styles |
+| `public/css/theme_glattt.css` | stat-strip-glattt + KPI-Config-Modal Styles |
 
 ---
 
@@ -196,32 +196,37 @@ Das Portfolio ist in 4 Kategorien gruppiert, jeweils einer Datenquelle zugeordne
 
 ## 🎨 Darstellung
 
-### stats-card-glattt Design
+### Stat-Strip (seit 08/2026)
 
-Jede KPI wird als `stats-card-glattt` Karte dargestellt — identisch zum Design auf den Report-Seiten:
+Die Kennzahlen stehen als **Stat-Strip** (`.stat-strip-glattt`) in der Karte — die
+verbindliche Bauform für KPI-Zeilen innerhalb einer Card. Vorher waren es einzelne
+`stats-card-glattt`-Kacheln; die sind seit 08/2026 abgelöst und werden von
+`tests/Unit/StatStripConventionTest.php` auch nicht wieder zugelassen.
 
 ```html
-<div class="stats-card-glattt" style="padding: 1rem;">
-    <!-- Header: Label + Icon -->
-    <div class="stats-card-header" style="margin-bottom: 0.5rem;">
-        <span class="stats-card-label">Beratungen heute</span>
-        <div class="stats-card-icon">
-            <svg style="color: var(--color-primary)">...</svg>
+<div class="stat-strip-glattt">
+    <div class="stat-strip-glattt-item">
+        <!-- Symbol: Heroicon Mini, Farbe je Kennzahl aus der KPI-Registry -->
+        <div class="stat-strip-glattt-icon stat-strip-glattt-icon-success">
+            <x-heroicon-m-check-circle />
         </div>
-    </div>
-    
-    <!-- Wert -->
-    <div class="stats-card-value" style="font-size: 1.5rem;">12</div>
-    
-    <!-- Footer: Trend + Beschreibung -->
-    <div class="stats-card-footer">
-        <span class="stats-card-trend stats-card-trend-up">
-            <svg>↗</svg> +15.3%
-        </span>
-        <span class="stats-card-description">vs. Vormonat</span>
+        <div>
+            <div class="stat-strip-glattt-value">12</div>
+            <div class="stat-strip-glattt-label">Beratungen heute</div>
+            <!-- Vergleichswert steht IN der Zusatz-Zeile (feste Item-Höhe) -->
+            <div class="stat-strip-glattt-sub">
+                <span class="stat-strip-glattt-trend stat-strip-glattt-trend-up">
+                    <x-heroicon-m-arrow-up /><span>+15,3 %</span>
+                </span>
+                <span>vs. Vormonat</span>
+            </div>
+        </div>
     </div>
 </div>
 ```
+
+Icon-Varianten: (Primary) · `-secondary` · `-success` · `-warning` · `-danger`.
+Zahlen immer im deutschen Format (`de-DE`), nie `de-CH`.
 
 ### Grid-Layout
 
@@ -450,5 +455,5 @@ Bei den Standard-KPIs werden 3 von 4 Quell-Endpunkten aufgerufen:
 
 - [Startseite](START-PAGE.md) — Übergeordnete Start-Page-Dokumentation
 - [Reports-Modul](REPORTS-MODULE.md) — Quell-Endpunkte für KPI-Daten
-- [Design System](DESIGN-SYSTEM.md) — `stats-card-glattt`, `stats-card-trend-*` Klassen
+- [Design System](DESIGN-SYSTEM.md) — `stat-strip-glattt`, `stat-strip-glattt-trend-*` Klassen
 - [Dashboard KPIs](DASHBOARD-KPIS.md) — Altes Dashboard-KPI-System (Vorgänger)
