@@ -2,6 +2,38 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 08.08.2026 — Readiness Verkauf: Rabatt auf die 1. Sitzung, GK-Abo-Buchung, Onboarding-Mail bei Bestandsmandat
+
+Drei Ergebnisse der Go-Live-Prüfung der Verkaufsstrecke (Asana `1217088816996378`):
+
+**Rabatt auf die 1. Sitzung (Entscheidung Jan):** Der Preislisten-Rabatt mindert
+ausschliesslich die **1. Rate vor Ort** — die SEPA-Monatsraten bleiben unverändert.
+
+- `Contract::firstSessionDiscountCents()` = Ratensumme − `total_value_cents`
+  (nur bei gesetzter `discount_id`); `plannedFirstInstallmentCents()` = Monatsrate − Rabatt.
+- Zahlungsplan: Rate 1 wird mit dem geminderten Betrag angelegt (Notiz nennt den
+  Rabatt), die Plausibilitätsprüfung beim Plan-Update geht damit auf 0 auf.
+- Phorest-Aufbuchung bei SEPA bucht die geminderte 1. Rate.
+- Vertrags-PDF zeigt jetzt: volle Monatsrate, „1. Rate vor Ort" (mit Rabatt-Verrechnung)
+  und den **Gesamtbetrag** (auch ohne Rabatt — Preisklarheit).
+- Vorher war das inkonsistent: PDF verteilte den Rabatt rechnerisch auf alle Monate,
+  GoCardless zog voll ein. Ausserdem brach jede Vertragsbearbeitung mit Rabatt still ab
+  (Aufruf nie existierender Methoden auf `PriceDiscount`) — behoben.
+
+**GK-Abo in Phorest:** Bei GK-Verträgen (`is_full_body`, Zonen ≥ `max_body_zones`
+der Preisliste) bucht `PhorestContractPurchaseService` jetzt **ein** GK-Abo mit dem
+Gesamtbetrag statt der Einzelzonen-Courses. Die Course-ID ist im Admin-Backend
+konfigurierbar (Einstellungen → „Phorest (GK-Abo)", Tabelle `phorest_settings`,
+Permission `manage_consultation_services`). Ohne Konfiguration greift bewusst das
+bisherige Einzelzonen-Verhalten (mit Warn-Log). Die gewählten Körperzonen bleiben
+unabhängig davon vollständig am Vertrag gespeichert (`contract_body_zones`).
+
+**Onboarding-Mail bei Bestandsmandat:** Die SEPA-Onboarding-Mail (Pre-Notification)
+wird jetzt je **(Mandat, Vertrag)** dedupliziert und auch beim wiederverwendeten
+Mandat versendet — vorher bekam ein Bestandskunde für den zweiten Vertrag nie eine
+Vorabankündigung. Tests: `ContractFirstSessionDiscountTest`,
+`PhorestFullBodyPurchaseTest`, `SepaEmailServiceTest`.
+
 ## Update 31.07.2026 — „RLS anhängen": geplatzte Rate ans Ende des Zahlungsplans
 
 ### Für Endanwender (31.07.2026)
