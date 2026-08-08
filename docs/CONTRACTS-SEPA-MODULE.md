@@ -2,6 +2,35 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 08.08.2026 (abends) — Preis-Modul: Gutscheine & Freunde-werben beim Abschluss
+
+Das `contract_price`-Feld des Vertragsformulars kann jetzt direkt beim Abschluss
+im Termin Gutscheine und Freunde-werben erfassen (nur Hub-Kontext, nicht im
+Shared-Link — Gate `supportsSigningExtras` in `form-fill.js`):
+
+- **Gutscheine:** Bei bekanntem Kunden werden dessen Phorest-Gutscheine mit
+  Restguthaben automatisch angezeigt (`GET /api/forms/client-vouchers`,
+  `ContractVoucherService::vouchersForClient()`). Abgelaufene sind rot markiert
+  und brauchen eine explizite Bestätigung (`accept_expired`, protokolliert als
+  `was_expired` im Einlöse-Beleg).
+- **Freunde werben:** Werber-Suche im Formular (`GET /api/forms/referrer-search`
+  → `ContractReferralService::searchReferrers()`, inkl. „Kein aktiver
+  Vertrag"-Badge). Beim Abschluss legt `ContractCreationService` den
+  `ContractReferral`-Datensatz an (Direktzahler: `discount_cents = 0`).
+- **Verrechnungs-Kaskade (Entscheidung Jan):** Rabatt, Freunde-werben und
+  Gutscheine mindern zuerst vollständig die **Vor-Ort-Rate**, ein Rest die
+  **1. SEPA-Rate** (dort bleibt das GC-Minimum 1 € stehen). Umsetzung:
+  `GoCardlessPaymentPlanService::resolveSigningCascade()` — die Auswahl steht im
+  Preis-JSON der Submission (`Contract::signingInstructions()`) und übersteht so
+  auch den asynchronen Mandats-Flow. Gutscheine werden erst eingelöst und die
+  Referral-Allocation erst geschrieben, wenn die Raten wirklich bei GoCardless
+  entstehen (`finalizeSigningCascade()`, idempotent). Ein Gutschein-Rest über
+  der Kaskaden-Kapazität bleibt als Guthaben auf dem Gutschein.
+- Tests: `tests/Feature/SigningCascadeTest.php`. Bekannte Grenze: Bei einem
+  späteren Plan-Neuaufbau bleibt der Preislisten-Rabatt erhalten (deterministisch),
+  bereits eingelöste Gutscheine/Referral-Reduktionen werden nicht erneut
+  angewandt (Einlösung ist einmalig — wie im nachträglichen Flow).
+
 ## Update 08.08.2026 — Readiness Verkauf: Rabatt auf die 1. Sitzung, GK-Abo-Buchung, Onboarding-Mail bei Bestandsmandat
 
 Drei Ergebnisse der Go-Live-Prüfung der Verkaufsstrecke (Asana `1217088816996378`):
