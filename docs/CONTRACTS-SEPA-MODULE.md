@@ -2,6 +2,47 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 08.08.2026 (spät) — Verkaufbare Position „2 Kleine Zonen"
+
+Neben den 18 Grafik-Zonen gibt es jetzt die Position **„2 Kleine Zonen"**
+(z.B. Zehen, Nasenrücken) — verkaufbar wie jede andere Körperzone.
+
+**Für Endanwender:**
+
+- Im Körperzonen-Selector des Vertragsformulars unter der neuen Kategorie
+  **„Sonstiges"** wählbar (Listeneintrag ohne Grafik-Overlay). „Alle auswählen"
+  überspringt die Position bewusst.
+- Bei Auswahl erscheinen **zwei Pflicht-Textfelder** („Kleine Zone 1/2") — ohne
+  beide Angaben lässt sich das Formular nicht absenden (Client- und
+  Server-Validierung, auch im Shared-Link).
+- Die Angabe erscheint überall als `2 Kleine Zonen (Zehen & Nasenrücken)`:
+  im **Vertrags-PDF** am Zonen-Tag, in der Einreichungs-Ansicht und in den
+  Vertragslisten des Hubs.
+- Preislich zählt die Position als **1 KPZ** (Entscheidung Jan 08/2026 — die
+  Phorest-Preise entsprechen einer normalen Zone).
+- Behandlungs-Dokumentation: keine eigene Grafik-Zone — die konkreten kleinen
+  Zonen werden im Behandlungs-Selector über die bestehende Funktion
+  **„Weitere Zonen"** (Custom-Zonen) dokumentiert.
+
+**Für Entwickler:**
+
+- Zone `zwei_kleine_zonen` (`BodyZone::KEY_SMALL_ZONES`, Kategorie `sonstiges`)
+  — Migration `2026_08_08_150000_add_small_zones_body_zone_and_contract_note`
+  legt die Zone an (hebt Alt-Handanlagen auf den Key) und ergänzt
+  `contracts.small_zones_note`.
+- Die beiden Angaben laufen als `fields._small_zones_details` (kein eigenes
+  Formularfeld!) mit und landen in `form_submissions.metadata.small_zones_details`
+  — Validierung zentral in `FormController::resolveSmallZonesDetails()`
+  (auch vom `SharedFormController` genutzt). Draft/Share-Prefill nehmen den
+  Wert explizit mit (`_small_zones_details` in `form-fill.js`).
+- `ContractCreationService` schreibt `small_zones_note` („Zehen & Nasenrücken")
+  auf den Vertrag; Anzeige über `Contract::bodyZonesDisplay()` (sortiert nach
+  `sort_order`, Fallback Legacy-`body_zone_description`).
+- **Phorest:** Für die Aufbuchung braucht die Zone wie alle anderen ein
+  gemapptes Abo (Einstellungen → Körperzonen) — insgesamt also
+  **19 Zonen-Abos + 1 GK-Abo = 20 Courses**.
+- Tests: `tests/Feature/SmallZonesContractTest.php` (5 Tests).
+
 ## Update 08.08.2026 (abends) — Preis-Modul: Gutscheine & Freunde-werben beim Abschluss
 
 Das `contract_price`-Feld des Vertragsformulars kann jetzt direkt beim Abschluss
