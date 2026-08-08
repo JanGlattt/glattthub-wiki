@@ -23,6 +23,7 @@ Die Terminübersicht unter `/hub/appointments` zeigt alle Termine eines Tages in
 | **"Jetzt"-Linie** | Rote Linie zeigt aktuelle Uhrzeit im Kalender |
 | **Kontaktdaten** | E-Mail und Telefon direkt in Karten-Header |
 | **Ausklappbare Services** | Behandlungsliste bei Bedarf einblenden |
+| **Terminnotiz bei Beratungen** | Beim Ausklappen einer Beratungs-Karte wird unter den Services die Phorest-Terminnotiz angezeigt (Lazy-Load beim ersten Ausklappen) |
 | **Responsive Layout** | Terminkarten und Header brechen auf schmalen Bildschirmen kontrolliert um |
 
 ### URL
@@ -299,6 +300,7 @@ app/Http/Controllers/
 | `POST /phorest/staff/batch` | Mitarbeiterdaten (50er-Batches, parallel) |
 | `GET /phorest/consultation-services` | Liste der Beratungs-Service-IDs |
 | `GET /phorest/daily-contract-stats` | Abschlüsse + verkaufte Körperzonen eines Tages aus `contracts` (Parameter: `date`, optional `branch_id`); zusätzlich `byClient`-Liste pro Kunde/Filiale für die Zonen-Angabe im Beratungs-Badge |
+| `GET /phorest/appointment/{branchId}/{appointmentId}/details` | Einzeltermin mit `includeNotes=true` — wird von der Terminnotiz-Anzeige beim ersten Ausklappen einer Beratungs-Karte gerufen |
 
 Beide Termin-Endpoints reichern die Antwort server-seitig mit Beratungsprotokoll-Daten an (`ConsultationRecord`, nur `is_completed = true`): `hasConsultationRecord`, `consultationOutcome`, `consultationOutcomeLabel`, `consultationBodyZonesCount` sowie Follow-Up-Termindaten. Die KPI-Karten konsumieren diese Felder direkt.
 
@@ -327,6 +329,19 @@ async loadClientsBatch(clientIds) {
     // ...
 }
 ```
+
+### Terminnotiz bei Beratungen (Lazy-Load)
+
+Beratungs-Karten zeigen im ausgeklappten Bereich unter den Services die **Phorest-Terminnotiz**.
+
+**Für Endanwender:** Karte einer Beratung ausklappen (Pfeil rechts) → unter „Services:" erscheint „Terminnotiz:" mit dem Notiztext des Termins (z.B. Körperzonen-Wunsch, WhatsApp-Absprachen). Gibt es keine Notiz, steht dort „Keine Terminnotiz hinterlegt". Bei Nicht-Beratungsterminen erscheint der Block nicht.
+
+**Für Entwickler:**
+
+- Die Phorest-**Listen-API liefert trotz `includeNotes=true` keine Notizfelder** (empirisch geprüft 08/2026: 10 Tage, >500 Termine, 0 Notizen — der Detail-Endpoint liefert für dieselben Termine durchgehend Notizen). Deshalb werden Notizen **beim ersten Ausklappen** je Karte über `GET /phorest/appointment/{branchId}/{appointmentId}/details` nachgeladen (`ensureAppointmentNotes()` in `appointments.js`).
+- `PhorestApiService::deduplicateAppointments()` sammelt dafür `allAppointmentIds` (alle gemergten Phorest-Zeilen einer Karte) sowie `allNotes` (falls die Listen-API die Felder `notes`/`note`/`serviceNote` doch einmal liefert, entfällt der Nachlade-Request). Abgesichert durch `tests/Unit/AppointmentNotesDedupTest.php`.
+- Ergebnis wird am Termin-Objekt gecacht (`_notesLoaded`); beim Patchen des DOM wird geprüft, dass `renderedAppointments[index]` noch derselbe Termin ist (Tages-/Filterwechsel während des Fetches).
+- Styling: `.apt-card__notes`, `.apt-card__note`, `.apt-card__note--none` in `theme_glattt.css` (mehrzeilige Notizen via `white-space: pre-line`).
 
 ### Beratungs-Service Erkennung
 
