@@ -169,11 +169,11 @@ Vorbildlich: alle Endpoints einheitlich `branch_id, date_from, date_to, date_mod
 | Zeitraum bis Widerruf | `/days-between` | **(a)** — nächstliegender Kandidat |
 | Quote im Vergleich | `/by-branch` + `/by-seller` + `/contract-value` + `/by-zones` | (d)/(b) — 4-in-1-Karte |
 
-### Zukünftige Beratungsgespräche (Seite: `view_report_upcoming_consultations`) — 5 kachelfähige
+### Zukünftige Beratungsgespräche (Seite: `view_report_upcoming_consultations`) — 6 kachelfähige
 
 **⚠ Daten-Endpoints ohne Permission** (`/phorest`). Parameter-Wildwuchs: `from_date/to_date`, `start_date/end_date`, Stichtag `date`.
 
-Kachelfähig: Buchungsstand (`/upcoming-consultations-data`, b+c), Entwicklung geplanter BGs (`/booking-outlook-timeseries`, **a** — eigener x-data, einzige Karte mit echtem `x-chart-table`), Historischer Buchungsvergleich (`/historic-booking-comparison`, b/c — Stichtag statt Range), Freie Slots (`/free-slots-analysis`, a/c), Buchungsvorlauf (`/booking-lead-time-analysis`, **a**).
+Kachelfähig: Buchungsstand (`/upcoming-consultations-data`, b+c), Entwicklung geplanter BGs (`/booking-outlook-timeseries`, **a** — eigener x-data, einzige Karte mit echtem `x-chart-table`), Historischer Buchungsvergleich (`/historic-booking-comparison`, b/c — Stichtag statt Range), Freie Slots (`/free-slots-analysis`, a/c), Freie Slots Vorschau (`/free-slots-outlook`, fester 3-Wochen-Horizont, Ampel & Prime Time), Buchungsvorlauf (`/booking-lead-time-analysis`, **a**).
 Ungeeignet als Kachel: Kalenderübersicht (d), Buchungsstand-Verlauf (3-stufiger Drilldown, d), Tages-Modal.
 
 ### Vergangene Beratungsgespräche (Seite: `view_report_past_consultations`) — 3 kachelfähige
