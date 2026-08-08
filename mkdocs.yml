@@ -169,6 +169,7 @@ nav:
     - Phorest API: PHOREST-API.md
     - Phorest Client-ID Import: PHOREST-CLIENT-ID-IMPORT.md
     - askDANTE API: ASKDANTE-API.md
+    - Zendesk API: ZENDESK-API.md
   - KI-Assistent:
     - glatttBert: GLATTTBERT-AI-ASSISTENT.md
   - Design & UI:
