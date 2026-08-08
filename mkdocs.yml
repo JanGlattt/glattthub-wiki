@@ -181,6 +181,7 @@ nav:
     - Dark Mode: DARKMODE.md
     - Login-Design: LOGIN-DESIGN.md
     - PIN-Login: PIN-LOGIN-SYSTEM.md
+    - Session-Ablauf & Modal: SESSION-ABLAUF.md
   - Technisches:
     - Setup-Anleitung: SETUP-ANLEITUNG.md
     - Desktop-App (Electron): DESKTOP-APP.md
