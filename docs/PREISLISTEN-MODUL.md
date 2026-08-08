@@ -27,10 +27,10 @@
 Das Preislisten-Modul ermöglicht die Verwaltung von Körperzonen-basierten Preisen (KPZ) für GLATTT-Behandlungspakete. Es unterstützt:
 
 - **Flexible Preisgestaltung** nach Anzahl der Körperzonen (KPZ)
-- **Zeitliche Gültigkeit** mit automatischer Versionierung
+- **Zeitliche Gültigkeit** über eine Gültig-ab-Kette: Je Datum gilt die Fassung mit dem jüngsten `valid_from` in der Vergangenheit; neue Fassungen entstehen per **Duplizieren**
 - **Multi-Branch-Support** für standortspezifische Preise
 - **Rabattsysteme** (Euro-Beträge oder Prozent)
-- **Historische Nachverfolgbarkeit** aller Preisänderungen
+- **Schutz historischer Fassungen**: Fassungen, die bereits gültig waren oder auf die Verträge verweisen, sind gegen preisrelevante Änderungen, Löschung und Statuswechsel gesperrt (siehe „Gesperrte Fassungen")
 
 ---
 
@@ -84,14 +84,26 @@ Preisgruppen legen fest, welchen Monatsbetrag ein Kunde zahlt:
 
 Rabatte werden automatisch angewendet, wenn die Mindest-KPZ erreicht wird:
 
-| Name | Ab KPZ | Typ | Wert | Beschreibung |
-|------|--------|-----|------|--------------|
-| Ganzkörper-Rabatt | 6 | Euro | 20,00 € | Abzug bei Ganzkörper |
-| Treue-Rabatt | 3 | Prozent | 5 % | 5% ab 3 Zonen |
+| Name | Ab KPZ | Typ | Wert | Gültig von | Gültig bis | Beschreibung |
+|------|--------|-----|------|------------|------------|--------------|
+| Ganzkörper-Rabatt | 6 | Euro | 20,00 € | – | – | Abzug bei Ganzkörper |
+| Oster-Aktion | 1 | Prozent | 10 % | 01.04.2026 | 30.04.2026 | Nur im Aktionszeitraum |
 
 **Rabatt-Typen:**
 - **Euro (fixed)**: Fester Betrag wird vom Monatspreis abgezogen
 - **Prozent (percentage)**: Prozentualer Abzug vom Monatspreis
+
+**Gültigkeitszeitraum (seit 08/2026):** Jeder Rabatt kann optional ein „Gültig von"
+und/oder „Gültig bis" tragen — leer bedeutet offen. **Es gilt entweder der
+Aktiv-Haken oder der Zeitraum, nie beides:** Sobald ein Datum gesetzt ist, steuert
+allein der Zeitraum die Verfügbarkeit (der Haken wird im Editor ausgeblendet und
+ignoriert); ohne Datum entscheidet der Haken. So sind widersprüchliche Zustände
+(„im Zeitraum, aber abgehakt") ausgeschlossen. Die Preisberechnung (Vertragsanlage,
+Formulare) bietet nur verfügbare Rabatte an. Abgelaufene oder zukünftige Rabatte
+bleiben sichtbar dokumentiert (in der Kartenansicht ausgegraut, mit Zeitraum),
+werden aber nicht angewendet. So entsteht eine Rabatt-Historie: Aktionen werden
+beendet statt gelöscht, Änderungen laufen über einen neuen Rabatt mit eigenem
+Zeitraum.
 
 ### Branch-Zuordnung
 
@@ -121,15 +133,44 @@ Wenn ein Kunde aus München einen Vertrag abschließt, wird automatisch "Münche
 
 | Aktion | Beschreibung |
 |--------|--------------|
-| **Bearbeiten** | Preisgruppen und Rabatte ändern |
-| **Duplizieren** | Kopie erstellen (z.B. für neue Preisperiode) |
-| **Aktivieren/Deaktivieren** | Preisliste ein-/ausschalten |
-| **Löschen** | Preisliste entfernen (Vorsicht!) |
+| **Bearbeiten** | Preisgruppen und Rabatte ändern (nur bei ungesperrten Fassungen) |
+| **Duplizieren** | Kopie erstellen (z.B. für neue Preisperiode) — der Weg für Preisänderungen an gesperrten Fassungen |
+| **Aktivieren/Deaktivieren** | Preisliste ein-/ausschalten (nur bei ungesperrten Fassungen) |
+| **Löschen** | Preisliste entfernen (nur bei ungesperrten Fassungen) |
 
 **Status-Anzeige:**
 - 🟢 **Aktuell gültig**: Diese Preisliste wird derzeit verwendet
 - 🔵 **Geplant**: Gültig ab einem zukünftigen Datum
 - ⚫ **Inaktiv**: Deaktiviert, wird nicht verwendet
+- 🔒 **Gesperrt**: Historische/verwendete Fassung, preisrelevante Felder schreibgeschützt
+
+### Gesperrte Fassungen
+
+Der Sales Mix und die Ganzkörper-Klassifizierung ordnen jeden Vertrag der Preislisten-Fassung zu, die zu seinem Verkaufszeitpunkt galt (über die `valid_from`-Kette bzw. `contracts.price_list_id`). Würde eine solche Fassung nachträglich geändert oder gelöscht, verschöben sich historische Auswertungen still. Deshalb gilt seit 08/2026:
+
+**Eine Fassung ist gesperrt, sobald**
+
+- sie **aktiv** ist und ihr **Gültig-ab in der Vergangenheit** liegt (sie klassifiziert dann Verkäufe über die Gültig-ab-Kette), **oder**
+- **Verträge direkt auf sie verweisen** (auch wenn sie inaktiv ist).
+
+**Bei gesperrten Fassungen gilt:**
+
+- **Änderbar bleiben Name, Notizen und Rabatte** (siehe unten). Gültig-ab, Ganzkörper-KPZ, Branch-Zuordnung und Preisgruppen sind schreibgeschützt (im Editor ausgegraut, serverseitig mit Fehlermeldung abgelehnt).
+- **Löschen und Aktiv-Umschalten sind nicht möglich** — beides würde die Fassung aus der Gültig-ab-Kette nehmen.
+- **Preisänderungen laufen immer über „Duplizieren"**: Kopie anlegen, Preise anpassen, Gültig-ab setzen, aktivieren. Die alte Fassung bleibt unverändert stehen und klassifiziert weiterhin die Verkäufe ihres Zeitraums.
+- Es gibt **keinen Ausnahme-Weg im UI**. Echte Datenfehler in historischen Fassungen werden bewusst nur direkt in der Datenbank korrigiert.
+
+**Rabatte auf gesperrten Fassungen (Versionierung):** Rabatte beeinflussen nur
+zukünftige Verkäufe, nicht die historischen Auswertungen (die Umsätze stehen
+fixiert am Vertrag) — deshalb bleiben sie eingeschränkt pflegbar:
+
+- **Erlaubt:** neue Rabatte anlegen, aktivieren/deaktivieren, Gültigkeitszeitraum
+  setzen oder ändern, Name/Beschreibung anpassen. Ganz neue (noch ungespeicherte)
+  Rabatt-Zeilen sind vollständig editier- und entfernbar.
+- **Gesperrt:** Wert, Typ und Ab-KPZ **bestehender** Rabatte sowie deren Löschung.
+  Wer einen laufenden Rabatt ändern will, beendet ihn („Gültig bis" setzen oder
+  deaktivieren) und legt einen neuen mit den gewünschten Konditionen an — so
+  bleibt nachvollziehbar, welcher Rabatt wann galt.
 
 ---
 
@@ -260,6 +301,28 @@ $priceList = PriceList::getPriceListForDate($date, $branchId);
 
 // Prüfen ob aktuell gültig
 $priceList->isCurrentlyValid(); // bool
+
+// Sperre für historische/verwendete Fassungen (siehe „Gesperrte Fassungen")
+$priceList->isLockedForEditing(); // bool
+$priceList->lockReason();         // ?string — deutscher Grund oder null
+$priceList->contracts();          // HasMany — Verträge mit price_list_id
+
+// Durchgesetzt wird die Sperre in ContractPriceController
+// (updatePriceList/deletePriceList/togglePriceListStatus, HTTP 422);
+// die Endpunkte /prices/list und /prices/{id} liefern is_locked + lock_reason.
+// Rabatte bleiben auf gesperrten Fassungen im Rahmen der Versionierung pflegbar
+// (neu anlegen, is_active, valid_from/valid_until, Name/Beschreibung — Wert/Typ/
+// Ab-KPZ bestehender Rabatte und Löschen sind fixiert).
+// Abgesichert durch tests/Feature/PriceListLockTest.php.
+
+// PriceDiscount: Gültigkeitsfenster (valid_from/valid_until, null = offen)
+// Mit Fenster steuert ALLEIN das Fenster, ohne Fenster der is_active-Haken.
+$discount->hasValidityWindow();         // valid_from oder valid_until gesetzt?
+$discount->isAvailableOn($date);        // Fenster enthält Datum bzw. is_active
+PriceDiscount::availableOn($date);      // Query-Scope, gleiche Logik, Default: heute
+$discount->validity_label;              // "01.04.2026 – 30.04.2026" | "ab …" | "bis …" | null
+// Preisberechnung (calculatePrice, SharedFormController, activeDiscounts())
+// berücksichtigt das Fenster automatisch über appliesTo()/availableOn().
 
 // Ist global (alle Branches)?
 $priceList->is_global; // bool (Accessor)
@@ -431,11 +494,12 @@ if ($priceList) {
 
 | Datei | Beschreibung |
 |-------|--------------|
-| `2026_02_09_170000_create_price_lists_table.php` | Haupttabelle |
-| `2026_02_09_170001_create_price_groups_table.php` | Preisgruppen |
-| `2026_02_09_170002_create_price_discounts_table.php` | Rabatte |
+| `2026_02_09_100001_create_price_lists_table.php` | Haupttabelle |
+| `2026_02_09_100002_create_price_groups_table.php` | Preisgruppen |
+| `2026_02_09_100003_create_price_discounts_table.php` | Rabatte |
 | `2026_02_09_180000_add_branch_id_to_price_lists_table.php` | Branch-Feld (deprecated) |
 | `2026_02_09_190000_create_price_list_branches_pivot_table.php` | Multi-Branch-Support |
+| `2026_08_08_094417_add_validity_window_to_price_discounts_table.php` | Gültigkeitsfenster (`valid_from`/`valid_until`) für Rabatte |
 
 ---
 
