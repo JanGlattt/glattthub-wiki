@@ -61,7 +61,7 @@ Jede KPI-Karte zeigt einen Trendpfeil (↑/↓) im Vergleich zum Vormonat.
 - **Altersverteilung**: Balkendiagramm mit Gruppen 18-25, 26-35, 36-45, 46-55, 56+ — aufgeschlüsselt nach Geschlecht (gruppierte Balken)
 - **Geschlechterverteilung**: Donut-Diagramm mit Weiblich / Männlich / Non-binär
 
-#### 3. Conversion-Funnel & Entfernungsverteilung (nebeneinander)
+#### 3. Conversion-Funnel & Akquisekanäle (nebeneinander)
 
 **Conversion-Funnel:**
 
@@ -72,6 +72,32 @@ Jede KPI-Karte zeigt einen Trendpfeil (↑/↓) im Vergleich zum Vormonat.
     4. Mit Vertrag
 - Widerrufe werden als gestreifter Balken innerhalb der Vertragsstufe dargestellt
 - Conversion-Rate zwischen den Stufen als Prozentangabe
+
+**Akquisekanäle** (`kunden.acquisition-channel`, seit 08/2026):
+
+- Über welchen Kanal jeder Kunde gewonnen wurde — **First-Touch-Attribution**
+  aus dem ältesten Buchungs-Tracking des Kunden (`booking_trackings`, existiert
+  seit 30.03.2026): Google/Meta Ads (Klick-IDs + UTM, inkl. Auflösung nackter
+  Kampagnen-IDs), organische Suche, Social Media, KI-Assistenten (ChatGPT,
+  Perplexity …), Verweis-Websites, Direkt.
+- Zwei Sonderkanäle überlagern das Tracking: **Empfehlung** (Vertrag über
+  Kunde-wirbt-Kunde, `contract_referrals` — Conversion konstruktionsbedingt
+  ~100 %, nicht vergleichbar) und **Gutschein-/Aktionscode** (Coupon am
+  First-Touch, wenn sonst nur direct/Verweis).
+- Kunden ohne Tracking (Bestand vor 30.03.2026, Telefon-/Vor-Ort-Buchungen)
+  erscheinen als eigene **„Unbekannt"-Zeile** statt still zu fehlen; der
+  Kartenkopf zeigt den zuordenbaren Anteil. Für echte Kanal-Vergleiche den
+  Zeitraum auf ab April 2026 stellen (dort >80 % zuordenbar).
+- Conversion-Basis wie im Funnel: Vertrag zählt nur nach Beratungsgespräch.
+- Technik: Spalte `client_statistics.acquisition_channel` (NULL = unbekannt),
+  befüllt am Ende jedes Syncs durch
+  `ClientStatisticsSyncService::updateAcquisitionChannels()`; die
+  Klassifizierung teilt sich der Sync mit der Ads-Analyse über
+  `App\Services\AcquisitionChannelResolver` (Kanal-Labels:
+  `ClientStatistic::ACQUISITION_CHANNELS`). CSV-Export-Quelle:
+  `clients-acquisition-channels`.
+
+#### 3b. Entfernungsverteilung
 
 **Entfernungsverteilung:**
 
@@ -111,7 +137,22 @@ Jede KPI-Karte zeigt einen Trendpfeil (↑/↓) im Vergleich zum Vormonat.
 **Kundensegmente:**
 
 - Persona-Analyse nach Geschlecht × Altersgruppe
-- Anzeige: Segment-Name, Anzahl Kunden, Anteil, Conversion-Rate
+- Anzeige: Segment-Name, Anzahl Kunden, Beratungen, Verträge (nach BG), Conversion-Rate, Ø Alter, Ø Entfernung
+- **Conversion-Basis wie im Conversion Funnel** (seit 08/2026): Verträge zählen nur bei
+  Kunden mit Beratungsgespräch — Segment- und Funnel-Conversion sind damit direkt
+  vergleichbar. Vorher zählte jeder Vertrag (auch ohne BG), was die Segment-CR leicht erhöhte.
+- **Summenzeilen:** „Alle Frauen" und „Alle Männer" (inkl. Kunden ohne Geburtsdatum)
+  sowie „Ohne vollständige Angaben" (unbekanntes Geschlecht oder fehlendes
+  Geburtsdatum). Letztere Gruppe konvertiert deutlich seltener (unvollständige
+  Datensätze = oft Laufkundschaft); sie still auszublenden würde die Segment-CR
+  künstlich erhöhen — genau das war die Ursache der 2026-07 gemeldeten Diskrepanz
+  „Persona-CR deutlich über Funnel-CR". Der Kartenkopf zeigt die Zahl der nicht
+  segmentierbaren Kunden, `meta` liefert `total_clients`/`segmented`/`unsegmented`/`coverage`.
+- **Achtung lange Zeiträume:** Vertragsdaten existieren erst seit der Hub-Ära —
+  Kunden mit Beratung vor 2025 haben nur ~7 % hinterlegte Verträge (Datenlücke,
+  keine echte Conversion). Aussagekräftig ist der Zeitraum ab Januar 2025.
+- Technisch: eine gruppierte Query je Kreuz-Segment-Satz statt fünf Queries pro
+  Segment (`getSegments()`, Cache-Key `segments:v2`).
 
 #### 7. Herkunftsverteilung (Name-Origin-Analyse)
 
