@@ -1,5 +1,37 @@
 # 📅 Terminansicht (Split-View)
 
+## Update 08.08.2026 — Verkaufsstrecke: Formular-Kette, Kundenkonto-Warnung, Überwachung, schnelle Navigation
+
+Vier Ergänzungen aus der Go-Live-Prüfung (Asana „Readiness Verkauf"):
+
+- **Formular-Kette erzwungen:** Die Formular-Kacheln folgen der Reihenfolge
+  Kundeninformation → Behandlungsvertrag → SEPA-Mandat. Der Vertrag ist gesperrt,
+  solange Pflichtformulare (die weder Vertrag noch SEPA sind) unerfüllt sind;
+  das SEPA-Mandat ist gesperrt, bis der Vertrag dieses Termins eingereicht ist.
+  Gesperrte Kacheln sind ausgegraut mit Sperr-Grund; Klick zeigt einen
+  Warn-Toast. Nach einem **Ratenzahlungs**-Vertrag erscheint ein Pflicht-Banner
+  „Nächster Schritt: SEPA-Mandat" (Zahlungsart kommt per `form-submitted`-Event
+  aus dem Preis-Modul, `detectContractPaymentMethod()` in `form-fill.js`).
+  Erkennung: Vertrag = `settings.contract.enabled`, SEPA =
+  `settings.sepa_mandate.enabled` (`formBlockedReason()` in
+  `appointment-unified.js`). Bei Direktzahlung entfällt die SEPA-Pflicht.
+- **Roter Vollbild-Hinweis beim Termin-Beenden:** Nach dem Beenden prüft der Hub
+  den offenen Phorest-Kundenkonto-Saldo (`GET /phorest/client/{id}/balance`,
+  live ohne Cache — die Vor-Ort-Rate wird beim Abschluss als Schuld aufs
+  Kundenkonto gebucht). Ist er > 0, erscheint ein roter Vollbild-Screen mit dem
+  Betrag, der aktiv bestätigt werden muss; erst danach öffnet sich die
+  Folgetermin-Planung. Partial `outstanding-balance-screen.blade.php`.
+- **Überwachung der Vor-Ort-Zahlung:** `contracts:check-onsite-payments`
+  (täglich 07:00, Cron-Endpoint `/api/cron/check-onsite-payments`) meldet aktive
+  SEPA-Verträge, deren Rate 1 einen Monat nach Abschluss weder bestätigt noch als
+  „nicht gezahlt" vermerkt ist — Benachrichtigung an alle mit
+  `manage_gocardless`. Deckt auch Kunden ab, die nie zur 1. Sitzung erscheinen
+  (passend zur „spätestens am"-Klausel in Anlage 1 des Vertrags-PDF).
+  Achtung Deploy: Cloud-Scheduler-Job mit `--max-retry-attempts=3` anlegen.
+- **Schnelle Navigation:** Die Terminübersicht öffnet die Terminansicht jetzt
+  per `Livewire.navigate()` (SPA-Seitenwechsel) statt hartem Reload
+  (`openAppointment()` in `appointments.js`).
+
 Die Einzeltermin-Ansicht ist eine **eigenständige Fullscreen-Seite im Split-View-Layout**, gebaut für die Nutzung auf dem **iPad im Querformat** durch die Mitarbeiterinnen vor Ort. Links steht dauerhaft der Kontext (Kunde, Termin, Navigation, Aktionen), rechts wechselt der Inhalt der gewählten Ansicht — ohne Seitenwechsel und ohne Modal/iframe.
 
 ## 📋 Für Endanwender
