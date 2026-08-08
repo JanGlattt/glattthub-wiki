@@ -48,8 +48,12 @@ kann. In der Detailtabelle sind sie mit „ohne Zeiterfassung" markiert.
 **Kurz- und Langzeitkrankheit getrennt.** 2025 stammte der Großteil der Kranktage
 aus wenigen Langzeitfällen; die Quote lag zeitweise über 15 %, obwohl das
 alltägliche Ausfallrisiko unverändert niedrig war. Kurzzeitkrankheit ist die Größe
-für die Einsatzplanung, Langzeitkrankheit eine Strukturgröße. Eine Episode gilt ab
-30 zusammenhängenden Tagen als Langzeitfall.
+für die Einsatzplanung, Langzeitkrankheit eine Strukturgröße. Eine Episode gilt als
+Langzeitfall, wenn sie länger als 6 Wochen dauert (43+ zusammenhängende
+Kalendertage, analog zum Ende der Entgeltfortzahlung; Wochenenden und Lücken bis
+4 Tage trennen eine Episode nicht). Hinweis 08/2026: Bis dahin verschmolzen durch
+einen Vorzeichen-Fehler alle Kranktage eines Mitarbeiters zu einer Episode — die
+Langzeitquote war dadurch massiv überzeichnet (95 % statt real ~40 %).
 
 ### Was gepflegt sein muss
 
@@ -64,6 +68,32 @@ brauchen Aufmerksamkeit:
 
 Fehlende Werte werden im Bericht offen ausgewiesen statt stillschweigend
 geschätzt.
+
+### Mitarbeiter-Verknüpfung & Kennzahlen-Schalter (seit 08/2026)
+
+Im **Benutzer-Dialog der Admin-Seite** (`/admin/users`, Sektion
+„Mitarbeiter-Verknüpfung") wird ein Hub-Benutzer mit beiden externen Identitäten
+verknüpft:
+
+- **Phorest-Mitarbeiter** (`users.phorest_user_id`) — Termine und Verkäufe
+- **askDANTE-Mitarbeiter** (`users.hr_employee_id`, neu) — Arbeitszeiten,
+  Krankheitstage und HR-Kennzahlen. Jeder askDANTE-Mitarbeiter kann höchstens
+  einem Benutzer zugeordnet sein; bereits vergebene werden nicht mehr angeboten.
+
+Dort sitzt auch der Schalter **„HR-Kennzahlen erfassen"** (gespeichert als
+`hr_employees.kpi_relevant`): Steht er auf „aus" — sinnvoll für Management und
+Büro —, fließt der Mitarbeiter **nicht** in Leistungs- und Fehlzeiten-Kennzahlen
+ein (KPZ/Stunde, Produktivität, Kapazität, Krankenquote, Resturlaub,
+Mitarbeiter-Tabelle). **Vollständig bleiben** dagegen Personalstruktur,
+Kopfzahl, Fluktuation, Befristungs-Radar und Personalkosten — dort gehören
+Büro und Management fachlich dazu. Die Benutzer-Übersicht zeigt beide
+Verknüpfungen als Status-Spalten (Phorest / askDANTE).
+
+Für Entwickler: Der Filter greift zentral in `HrKpiService::timeQuery()` und
+`appointmentQuery()` (`e.kpi_relevant = true`) sowie in `leaveBalance()`;
+Struktur-Karten laufen über `employeesOn()` ohne diesen Filter. Der Schalter im
+Formular ist ein virtuelles Feld und wird in `EditUser`/`CreateUser` per
+`afterSave()` am `HrEmployee` persistiert.
 
 ### Gehälter und Personalkosten
 
