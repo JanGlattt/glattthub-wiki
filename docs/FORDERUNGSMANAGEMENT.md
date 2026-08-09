@@ -77,6 +77,11 @@ Vorlagen-Varianten hinterlegt werden.
   Fall-Seite (Recht `manage_receivables`) — mit Autor und Zeitstempel in der
   Timeline, mehrzeilig möglich. Ersetzt die Kommentar-Spalten der alten
   Excel-Liste; auch bei geschlossenen Fällen nutzbar.
+- **Zendesk-Verknüpfung**: Ticketnummern in Notizen („#4046", „Ticket 4071")
+  werden automatisch erkannt, in der Timeline klickbar zum Zendesk-Agent
+  verlinkt und im Fall-Info-Kasten als Ticketliste gesammelt (zusammen mit
+  den Tickets der versendeten Mahn-E-Mails). Gilt für importierte
+  Alt-Kommentare genauso wie für neue Notizen (`ZendeskTicketRefs`).
 
 ### Wo sehe ich was?
 
