@@ -54,7 +54,10 @@ Vorlagen-Varianten hinterlegt werden.
 
 - **E-Mails** werden aus Vorlagen gerendert, im Modal geprüft (Vorschau +
   optionaler Freitext) und per Klick als **Zendesk-Ticket** versendet —
-  Antworten des Kunden laufen im Ticket auf.
+  Antworten des Kunden laufen im Ticket auf. Sie gehen im **gestalteten
+  Mail-Rahmen** raus (Kopfleiste mit Stufe und Bezug, offener Betrag und Frist,
+  Bezahl-Button, Forderungsaufstellung, Bankverbindung) — das Gegenstück zum
+  Briefbogen.
 - **Postalische Mahnungen** erzeugt der Hub als **PDF** (Druck & Versand manuell).
   Jedes Schreiben nennt automatisch die **Bankverbindung des Instituts, in dem
   der Vertrag geschlossen wurde** (Pflege: Institut öffnen → Tab „Bankverbindung").
@@ -223,7 +226,8 @@ Fälligkeit („Heute fällig") ist ebenfalls einmal definiert:
   (`receivables/case-{id}/…`, Disk `gcs-private`/`public`).
   Kontoinhaber ist über `ACCOUNT_HOLDER` fest die **Labrado & Schlüter GmbH**;
   die **IBAN bleibt standortbezogen** (`InstituteBankAccount::forBranch`).
-  Ohne Bankverbindung des Standorts bricht jeder Briefversand ab.
+  Ohne Bankverbindung des Standorts bricht jeder Versand ab — Brief wie E-Mail.
+  Das E-Mail-HTML kommt aus `emails/dunning-message` (siehe „E-Mail-Rahmen").
 
 #### Der Briefbogen (`resources/views/pdf/dunning-letter.blade.php`)
 
@@ -271,11 +275,107 @@ dem Ausgleich ist die gesamte restliche Vertragsforderung erledigt — weitere
 Lastschriften ziehen wir nicht ein." Der erste Satz wäre nach Fälligstellung
 schlicht falsch.
 
-**Brieftexte sind kürzer als E-Mail-Texte:** Beträge, Frist, Bankverbindung und
-Grußformel kommen aus dem Bogen. In die Vorlage gehören nur Anrede, Begründung
-und Hinweise. Neuer Platzhalter **`{{zahlungen}}`** — ohne ihn ging die Rechnung
+**In die Vorlage gehört nur das Anschreiben** — für Brief wie E-Mail: Beträge,
+Frist, Bankverbindung und Grußformel kommen aus dem Bogen bzw. dem Mail-Rahmen.
+Neuer Platzhalter **`{{zahlungen}}`** — ohne ihn ging die Rechnung
 „Hauptforderung + Kosten = offener Betrag" nicht auf, sobald Zahlungen eingingen
-(Migration `2026_08_09_160000`, überschreibt nur unbearbeitete Vorlagen).
+(Migrationen `2026_08_09_160000` für Briefe, `2026_08_09_180000` für E-Mails;
+beide überschreiben nur unbearbeitete Vorlagen).
+
+### E-Mail-Rahmen (`emails/dunning-message`)
+
+Digitales Gegenstück zum Briefbogen, gerendert in
+`DunningMessageService::emailHtml()`. **Zendesk setzt die Regeln:** Die Mail geht
+als `html_body` eines Ticket-Kommentars raus und wird gefiltert — `<style>`-Blöcke,
+CSS-Klassen und Media-Queries überleben nicht, Zendesk hängt seine eigene Hülle
+darum. Anders als die Mails unter `emails/sepa/*` gilt hier deshalb:
+
+- Layout ausschließlich über Tabellen, **alle Angaben als Inline-Styles**
+- keine Klassen, keine Media-Queries, kein Dark-Mode-Block
+- Breite über `width="100%"` + `max-width:640px` — ein festes `width="640"`
+  zwingt Handy-Clients zum Herauszoomen und macht die Mail unlesbar
+- **`font-family` wird von Zendesk restlos entfernt** (im zurückgelesenen
+  Kommentar: null Treffer). Die Schrift der Mail bestimmt die Zendesk-Mailvorlage,
+  nicht der Hub. Die Angabe bleibt trotzdem im Partial, weil dasselbe HTML als
+  Snapshot am Fall gespeichert und im Hub-Verlauf angezeigt wird — dort wirkt sie.
+- **Jede Zelle setzt `border:0` und ihr Padding ausdrücklich.** Die Zendesk-
+  Mailvorlage bindet über den Platzhalter `{{styles}}` eigenes Tabellen-CSS ein;
+  ohne Reset liegt im Postfach ein Gitter aus Linien über dem ganzen Layout
+  (Outlook-Test 09.08.2026). Inline schlägt Stylesheet. Abgesichert durch
+  `test_jede_zelle_setzt_rahmen_und_padding_selbst`.
+- **Beträge mit geschütztem Leerzeichen vor dem €** (`\u{00A0}`) plus
+  `white-space:nowrap` — sonst steht der Betrag in der einen und das €-Zeichen
+  in der nächsten Zeile.
+- **Datumsangaben werden von iOS/Outlook automatisch verlinkt** (blau,
+  unterstrichen). Innerhalb eines `<a>` greift die Erkennung nicht, deshalb
+  hängt die Frist im Kopf am Bezahllink. Flächendeckend lösen lässt sich das
+  nur in der Zendesk-Mailvorlage (`a[x-apple-data-detectors]`), weil ein
+  `<style>`-Block im Kommentar nicht überlebt.
+
+Aufbau: Kopf (Logo, Stufe, Vertrag + Kunden-Nr.) → abgesetzter Betrags-Block
+(offener Betrag, Frist, Bezahl-Button) → Anschreiben aus der Vorlage →
+Forderungsaufstellung mit Bezugszeile → Bankverbindung des Vertrags-Standorts →
+Grußformel → Fußzeile.
+
+**Farbflächen sparsam — das ist eine Dunkelmodus-Entscheidung.** Outlook für Mac
+rechnet Mails im Dunkelmodus um; je größer die eingefärbte Fläche, desto
+schmutziger das Ergebnis. Die erste Fassung hatte eine dunkle Kopfleiste und eine
+weiße Kartenfläche: Beides wurde zu grau-braunem Matsch, der dunkle Button
+verschwand auf dem dann ebenfalls dunklen Grund (Outlook-Test 09.08.2026).
+Deshalb gibt es weder Seiten- noch Kartenhintergrund; Struktur entsteht über
+Linien und Typografie. Fläche tragen nur noch der Betrags-Block — bewusst
+behalten, damit sich der wichtigste Teil abhebt — und die kleinen Hinweiskästen,
+alle in sehr hellen Tönen. Der Button hat zusätzlich eine **goldene Kante**:
+Kippt die Füllung im Dunkelmodus weg, bleibt er als Schaltfläche erkennbar.
+
+**Zwei Ausprägungen wie beim Brief.** `ESCALATED_EMAIL_KEYS` steuert den
+eskalierenden Bogen: Gold wird Signalrot (Akzentlinie, Stufenzeile, Betrag,
+Summenlinie, Wash des Betrags-Blocks), dazu kommt der Konsequenz-Block
+(SEPA-Einzüge gestoppt, Fälligstellung möglich), das Gesprächsangebot entfällt.
+Derzeit nur `reminder_hard` — die Anmahnung der Restsumme nach Mandatsentzug
+bleibt bewusst im Standard-Bogen, dort hat der Kunde meist selbst gekündigt.
+Der Button bleibt in beiden Fällen dunkel: rot auf rotem Grund verliert die
+Signalwirkung, die der Betrag darüber aufbaut.
+
+**Absenderin ist immer die Labrado & Schlüter GmbH**, nie das Institut — die
+Forderung stellt die Gesellschaft. Das Institut steht nur im Bezug. Abgesichert
+durch `DunningEmailFrameTest` (Absender, Eskalation, Zendesk-Tauglichkeit,
+Mobilbreite, Pflicht-Bankverbindung).
+
+**Ohne hinterlegte Bankverbindung des Standorts geht auch keine E-Mail mehr
+raus** (vorher nur Briefe): Der Rahmen führt die IBAN immer, eine
+Zahlungsaufforderung ohne Konto wäre für den Kunden nicht erfüllbar.
+
+#### Was in der Zendesk-Mailvorlage steht (und warum)
+
+Die Mailvorlage (`settings.email.html_mail_template`, Admin Center → Kanäle →
+Talk und E-Mail → E-Mail) umschließt jeden Ticket-Kommentar. Sie ist der einzige
+Ort mit einem echten `<head>` und `<style>` — alles, was Zendesk aus dem
+Kommentar entfernt, lässt sich nur dort setzen. Am 09.08.2026 ergänzt:
+
+- **`@import` für Lato** plus Fallback-Kette im Wrapper-`<div>`. Damit hat die
+  Mail die Hausschrift, wo der Client Webfonts lädt (Outlook für Mac ja, Gmail
+  und Outlook für Windows nein — dort Segoe UI/Arial). Der Hub kann das nicht
+  liefern, weil Zendesk `font-family` aus dem Kommentar streicht.
+- **`a[x-apple-data-detectors]`-Reset** gegen die blaue Auto-Verlinkung von
+  Datum, IBAN und Adresse. Wirkt in allen Zendesk-Mails, nicht nur den Mahnungen.
+- **`<meta name="color-scheme" content="light">` + `:root { color-scheme: light }`**
+  — der Versuch, Clients vom Umrechnen abzuhalten. **Outlook für Mac ignoriert
+  das** (getestet). Die Zeilen bleiben trotzdem drin, weil andere Clients sie
+  respektieren; die Dunkelmodus-Tauglichkeit musste über das Layout kommen
+  (siehe oben), nicht über diese Deklaration.
+
+Nicht vergessen: Änderungen an der Vorlage betreffen **alle** Zendesk-Mails.
+
+**Zwei Fremdtexte gehören Zendesk, nicht dem Hub:** Der Vorspann über der
+Mahnung („Dieses Ticket wurde in Ihrem Namen erstellt…") kommt aus dem Auslöser
+„Anfragenden über neues proaktives Ticket benachrichtigen"; die Kennung am Fuß
+(`[XXXXXX-XXXXX]`) ist die Ticket-Referenz für die Antwort-Zuordnung, sichtbar
+weil `no_mail_delimiter = true` die Trennzeile abschaltet. Auch der Absendername
+kommt von dort: Zendesk schreibt den Kommentar dem API-Konto zu
+(`ZENDESK_EMAIL`), der Absender lautet „Agentenname (Account-Name)" — Schalter
+dafür ist `personalized_replies`. Offene Punkte dazu im Asana-Subtask
+„Zendesk-Konfiguration für die Mahn-E-Mails anpassen".
 
 ### UI
 
@@ -378,7 +478,8 @@ Zeitreihen beginnen mit dem Modulstart 08/2026.
 Eskalation, Mandatsentzug, § 367), `DebtCaseActionsTest` (Zendesk, PDF, Fristen,
 Monitoring, Entscheid), `ReceivablesPagesTest` (Seiten, Rechte, Banner),
 `ReceivablesManagementTest` (Vorlagen, IBAN, HTTP-Aktionen, Gericht, Kosten, RZV),
-`DetectDirectUnpaidTest`.
+`DunningEmailFrameTest` (Mail-Rahmen: Absender, Eskalation, Zendesk-Tauglichkeit,
+Mobilbreite), `DetectDirectUnpaidTest`.
 
 ### Import der Bestandsliste (Excel/CSV)
 
