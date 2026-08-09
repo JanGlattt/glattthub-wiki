@@ -84,6 +84,37 @@ Vorlagen-Varianten hinterlegt werden.
 - **Vertragsseite**: rotes Banner, solange ein Fall im harten Weg/gerichtlich
   läuft; die Verlinkung zum Fall bleibt **dauerhaft** in der Sidebar.
 
+### Online-Bezahlseite (`/shared/pay/{token}`)
+
+Jede Zahlungserinnerung und Mahnung enthält automatisch einen **Bezahl-Button**
+(E-Mail) bzw. einen **QR-Code** (Brief-PDF), der auf eine öffentliche,
+mobil-optimierte Bezahlseite führt (ohne Login, IAP-Bypass, noindex):
+
+- **Betrag fixiert**: Es wird exakt der im Schreiben genannte Betrag gezahlt —
+  keine Teilzahlung, keine freie Eingabe. Wächst die Forderung danach, bleibt
+  der Rest im Fall offen und wird mit der nächsten Stufe erneut angefordert.
+- **Gültigkeit**: zahlbar, solange der Fall aktiv ist und kein neueres
+  Schreiben existiert — das jeweils neueste Schreiben ersetzt die alten Links
+  (alte QR-Codes zeigen den Kontakthinweis). Vier Zustände: offen / online
+  bezahlt / anderweitig beglichen (Doppelzahlungs-Schutz) / nicht mehr aktuell.
+- **Methoden**: alle im Mollie-Profil aktiven Bezahlarten **außer
+  SEPA-Lastschrift** (sie hat die Forderung meist verursacht).
+- **Verbuchung automatisch & idempotent**: Mollie-Webhook (+ Return-Polling
+  + stündlicher Reconcile-Cron als Sicherheitsnetz) verbucht die Zahlung als
+  Zahlungseingang je Fall (Sammel-Link wird exakt auf die enthaltenen Fälle
+  aufgeteilt), schließt Fälle bei 0 € und benachrichtigt das Büro (In-App,
+  Recht `manage_receivables`). Row-Lock in `DebtPaymentLink::markPaid()`
+  verhindert Doppelverbuchung.
+- **Sammel-Link**: Button „Sammel-Bezahllink erzeugen" am Fall — bewusst
+  manuell, das Büro verschickt ihn selbst (z. B. nach einem Telefonat).
+- Erstattungen bei versehentlicher Doppelzahlung (Überweisung + online):
+  vorerst manuell im Mollie-Dashboard; die Mollie-Referenz steht am Fall.
+
+Technik: `debt_payment_links` (+ `_items`), `DebtPaymentLinkService`
+(Erzeugen/finalize/discard, Checkout, Sync/Settle), `SharedPaymentController`,
+`ProcessDebtLinkPaymentJob` (Webhook-Folge), Views `shared/debt-payment*.blade.php`.
+Cron: `receivables:reconcile-payment-links` (stündlich).
+
 ### Rechte
 
 | Recht | Wirkung |
@@ -150,9 +181,20 @@ bzw. Restbetrag bei `full_balance_due`), `costsCents()`, `paymentsReceivedCents(
 ### Cron
 
 - `receivables:detect-direct-unpaid` täglich 07:15 (Route
-  `/api/cron/detect-direct-unpaid`, Cloud-Scheduler-Job mit
-  `--max-retry-attempts=3` anlegen). Cutoff `signed_at >= 2026-08-01` —
+  `/api/cron/detect-direct-unpaid`). Cutoff `signed_at >= 2026-08-01` —
   ältere Bestände über den Excel-Import (offen).
+- `receivables:reconcile-payment-links` stündlich (Route
+  `/api/cron/reconcile-debt-payment-links`) — Mollie-Sicherheitsnetz.
+- Beide Cloud-Scheduler-Jobs mit `--max-retry-attempts=3` anlegen.
+
+### Statistik
+
+Berichtsseite **„Schulden"** auf `/hub/reports` (Recht `view_report_debts`):
+8 KPIs (`KpiRegistry`, Quelle `schulden`) und 4 Statistiken
+(`schulden.flow`, `schulden.rls-reasons`, `schulden.pipeline`,
+`schulden.outcomes`) — als Registry-Statistiken auch im Eigenen Dashboard
+wählbar. CSV-Export-Quellen `debts-flow`, `debts-pipeline`, `debts-outcomes`.
+Zeitreihen beginnen mit dem Modulstart 08/2026.
 
 ### Tests
 
@@ -165,7 +207,5 @@ Monitoring, Entscheid), `ReceivablesPagesTest` (Seiten, Rechte, Banner),
 ### Offen / Nachgang
 
 - Excel-Import der Bestandsfälle (bewusst zurückgestellt)
-- Statistikseite „Schulden" auf der Reports-Seite (in Arbeit)
-- Online-Bezahlseite für Zahlungsaufforderungen (eigener Asana-Task)
 - Feinkonzept: härtere Eskalation bei Cluster „aktiv widersprochen",
   Bündelung mehrerer Verträge eines Kunden, automatischer Wochenreport
