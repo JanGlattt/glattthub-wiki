@@ -69,9 +69,19 @@ Vorlagen-Varianten hinterlegt werden.
   dann Zinsen (vorerst 0), zuletzt Hauptforderung.
 - **Kostenposition erfassen**: Gerichtskosten Mahnbescheid/PfÜB, Gerichtsvollzieher,
   Melderegister-Auskunft, Sonstiges — mit Beleg-Upload. Fließt in den offenen Betrag ein.
-- **RZV festhalten**: Ratenzahlungsvereinbarung dokumentieren; der Fall schließt
-  mit Ausgang „RZV". Den Einzug legt das Büro **manuell über den SEPA-Tab** des
-  Vertrags an. Platzt eine RZV-Rate, eröffnet automatisch ein neuer Fall im harten Weg.
+- **RZV festhalten**: Ratenzahlungsvereinbarung dokumentieren; der Fall
+  **bleibt offen** in der Stufe „RZV läuft" (eigene Board-Spalte) und liegt zu
+  jeder Rate wieder vor (`monitoring_until`). Jeder Zahlungseingang wird aktiv
+  am Fall erfasst — die Wiedervorlage rückt dann einen Monat weiter; ist alles
+  bezahlt, schließt der Fall automatisch mit Ausgang „RZV" und die Vereinbarung
+  wird als abgeschlossen markiert. **Einzug wahlweise per GoCardless**: Checkbox
+  im RZV-Dialog (nur bei aktivem SEPA-Mandat) legt die Raten sofort als
+  GoCardless-Einzelzahlungen am Vertrag an
+  (`GoCardlessPaymentPlanService::createRzvInstallments`, letzte Rate =
+  Restbetrag; bestehende Einzüge werden bewusst nicht storniert — bei
+  parallelen offenen GC-Zahlungen kommt ein Prüfhinweis für den SEPA-Tab).
+  Ohne Checkbox läuft der Einzug extern (Überweisung/Dauerauftrag). Platzt eine
+  GoCardless-RZV-Rate, eskaliert der Fall automatisch im harten Weg.
 - **WNB (abschreiben)**: eigenes Recht; der Kunde bleibt in Phorest archiviert.
 - **Notiz hinzufügen**: Freitext-Kommentar direkt in der Verlauf-Card der
   Fall-Seite (Recht `manage_receivables`) — mit Autor und Zeitstempel in der
@@ -250,10 +260,39 @@ Umsetzung in `LegacyDebtImportService` (+ Command `ImportLegacyDebtList`):
 - GoCardless wird beim Import **nicht** angefasst; `sepa_paused_at` ist nur der
   Marker aus der Liste.
 
+### Import der Bestands-RZV-Liste („RATENZAHLUNGEN"-Sheet)
+
+```bash
+php artisan receivables:import-rzv datei.csv            # Dry-Run mit Report
+php artisan receivables:import-rzv datei.csv --execute  # echter Lauf
+```
+
+`LegacyRzvImportService` (+ Command `ImportLegacyRzvList`), **nach** dem
+Schulden-Import ausführen:
+
+- Kundennummer → Vertrag (gleiche Auflösung wie beim Schulden-Import) →
+  **aktiver Fall des Vertrags** (sonst wird ein neuer Fall angelegt) — die
+  RZVs sind damit beim Prod-Einspielen direkt mit den importierten Fällen
+  verlinkt.
+- Konditionen als `DebtRzvAgreement` (Zahltag 01./15. + Bemerkung in den
+  Notizen), Fall in Stufe „RZV läuft" mit Wiedervorlage im Monat nach der
+  letzten gezahlten Rate; Restsumme 0 → geschlossen mit Ausgang „RZV".
+- Jede gezahlte Monatsspalte (Format „10 25") wird ein Zahlungseingang;
+  Marker in Monatszellen („Stundung", „MAHNVERFAHREN", „wird angehängt")
+  werden Notizen. Zahlenformat des Sheets ist englisch („1,361.44 €") —
+  der Parser kann beide Formate.
+- Die Hauptforderung wird so gesetzt, dass der offene Saldo **exakt der
+  Restsumme** entspricht; Plausibilitätsprüfung Forderung − Raten = Rest
+  (Abweichungen → Warnungs-Report, meist Zahlungen vor Beginn der
+  Monatsspalten). Idempotent über einen Import-Marker an der Vereinbarung.
+- GoCardless wird nicht angefasst — Alt-RZVs laufen extern.
+
 ### Tests (Import)
 
 `LegacyDebtImportTest`: bezahlt/WNB/offen/gerichtlich, Kommentar-Übernahme,
 Saldo-Rechnung, Idempotenz, Kollision mit aktivem Hub-Fall.
+`LegacyRzvImportTest`: laufende/abbezahlte RZV, Verknüpfung mit bestehendem
+Fall, Saldo = Restsumme, Marker als Notizen, Idempotenz.
 
 ### Offen / Nachgang
 
