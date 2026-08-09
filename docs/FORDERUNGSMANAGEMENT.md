@@ -73,6 +73,10 @@ Vorlagen-Varianten hinterlegt werden.
   mit Ausgang „RZV". Den Einzug legt das Büro **manuell über den SEPA-Tab** des
   Vertrags an. Platzt eine RZV-Rate, eröffnet automatisch ein neuer Fall im harten Weg.
 - **WNB (abschreiben)**: eigenes Recht; der Kunde bleibt in Phorest archiviert.
+- **Notiz hinzufügen**: Freitext-Kommentar direkt in der Verlauf-Card der
+  Fall-Seite (Recht `manage_receivables`) — mit Autor und Zeitstempel in der
+  Timeline, mehrzeilig möglich. Ersetzt die Kommentar-Spalten der alten
+  Excel-Liste; auch bei geschlossenen Fällen nutzbar.
 
 ### Wo sehe ich was?
 
@@ -204,8 +208,51 @@ Monitoring, Entscheid), `ReceivablesPagesTest` (Seiten, Rechte, Banner),
 `ReceivablesManagementTest` (Vorlagen, IBAN, HTTP-Aktionen, Gericht, Kosten, RZV),
 `DetectDirectUnpaidTest`.
 
+### Import der Bestandsliste (Excel/CSV)
+
+Der Alt-Bestand (Google Sheet „Schuldner-Liste und Mahnverfahren", ~3.100
+Zeilen, 2021–2026) wird per Command importiert:
+
+```bash
+php artisan contracts:resolve-legacy-client-ids   # 1. fehlende Client-IDs der Altverträge via Phorest auflösen
+php artisan receivables:import-legacy datei.csv    # 2. Dry-Run mit Report
+php artisan receivables:import-legacy datei.csv --execute  # 3. echter Lauf
+```
+
+Umsetzung in `LegacyDebtImportService` (+ Command `ImportLegacyDebtList`):
+
+- **Zuordnung**: Mandatsreferenz → `contracts.legacy_mref`, sonst Kundennummer →
+  `contracts.legacy_kundennummer` (bei mehreren Verträgen: Vertrag mit Client-ID
+  bevorzugt, dann der zuletzt vor dem Vorfall geschlossene). Fehlende Client-IDs
+  werden über `client_statistics.external_id` nachgeschlagen.
+- **Fall-Bildung**: alle *offenen* Zeilen eines Vertrags → **ein aktiver Fall**
+  (Stufe aus dem weitesten dokumentierten Schritt: Mail → Brief → letzte Mahnung →
+  Mahn-/Vollstreckungsbescheid inkl. Gerichtsakte); jede *abgeschlossene* Zeile →
+  eigener geschlossener Fall (`paid` bzw. `written_off` mit WNB-Datum/-Grund).
+- **Salden**: Hauptforderung als fester Betrag in `debt_cases.legacy_principal_cents`
+  (Altverträge haben keine Raten-Zeilen; `principalCents()` bevorzugt diesen Wert),
+  10-€-Strafen als `rls_fee`-Kostenpositionen, „Sonstige Kosten" als `other`,
+  Zahlungen als `debt_case_payments`. Plausibilitätsprüfung: müsste − bezahlt ≙
+  NOCH OFFEN, Abweichungen landen im Warnungs-Report.
+- **Kommentare** der Liste (inkl. Bearbeiter-Kürzel und Datum) werden Notiz-
+  Ereignisse in der Fall-Timeline; Ereignis-Daten (`created_at`) sind die
+  historischen Daten aus der Liste — die Statistik stimmt damit rückwirkend.
+- **Idempotenz** über `debt_cases.legacy_source_key` (Zeilen-Fingerprint bzw.
+  `legacy-contract:{id}`); ein erneuter Lauf legt nichts doppelt an. Verträge
+  mit bereits aktivem Hub-Fall werden übersprungen (Warnung → manuell mergen).
+- **Reports**: nicht zuordenbare/übersprungene Zeilen und Warnungen als CSV
+  unter `storage/app/legacy-debt-import/{timestamp}/`.
+- GoCardless wird beim Import **nicht** angefasst; `sepa_paused_at` ist nur der
+  Marker aus der Liste.
+
+### Tests (Import)
+
+`LegacyDebtImportTest`: bezahlt/WNB/offen/gerichtlich, Kommentar-Übernahme,
+Saldo-Rechnung, Idempotenz, Kollision mit aktivem Hub-Fall.
+
 ### Offen / Nachgang
 
-- Excel-Import der Bestandsfälle (bewusst zurückgestellt)
+- Import der Bestandsliste auf Prod ausführen (erst
+  `contracts:resolve-legacy-client-ids`, dann Dry-Run prüfen, dann `--execute`)
 - Feinkonzept: härtere Eskalation bei Cluster „aktiv widersprochen",
   Bündelung mehrerer Verträge eines Kunden, automatischer Wochenreport
