@@ -121,6 +121,19 @@ mobil-optimierte Bezahlseite führt (ohne Login, IAP-Bypass, noindex):
   bezahlt / anderweitig beglichen (Doppelzahlungs-Schutz) / nicht mehr aktuell.
 - **Methoden**: alle im Mollie-Profil aktiven Bezahlarten **außer
   SEPA-Lastschrift** (sie hat die Forderung meist verursacht).
+- **Bezahlt wird auf unserer Seite** (seit 08/2026): Die Zahlarten stehen direkt
+  auf der Seite, **Kreditkarte** läuft über Mollie Components (iFrame-Felder im
+  glattt-Look, Kartendaten erreichen unseren Server nie) und **Apple Pay** über
+  das native Sheet. Mollies Auswahlseite wird nicht mehr betreten. PayPal,
+  Klarna & Co. lassen sich technisch nicht einbetten — dort leitet die Seite mit
+  **vorgewählter Methode** direkt in den Anbieter-Flow.
+- **Jeder Zahlungsversuch wird festgehalten** (`debt_payment_attempts`). Mit
+  eingebetteten Feldern ist der zweite Versuch der Normalfall (abgelehnte Karte,
+  dann eine andere). Der Abgleich prüft **alle offenen Versuche**, nicht nur den
+  jüngsten: Geht eine früher abgebrochene Zahlung verzögert doch noch durch,
+  würde sie sonst nie gefunden und das Geld läge unzugeordnet auf dem Konto. Die
+  zahlende Zahlungs-ID wandert beim Verbuchen an den Link, damit Buchungs-
+  referenz und Beleg zusammenpassen.
 - **Verbuchung automatisch & idempotent**: Mollie-Webhook (+ Return-Polling
   + stündlicher Reconcile-Cron als Sicherheitsnetz) verbucht die Zahlung als
   Zahlungseingang je Fall (Sammel-Link wird exakt auf die enthaltenen Fälle
@@ -132,10 +145,24 @@ mobil-optimierte Bezahlseite führt (ohne Login, IAP-Bypass, noindex):
 - Erstattungen bei versehentlicher Doppelzahlung (Überweisung + online):
   vorerst manuell im Mollie-Dashboard; die Mollie-Referenz steht am Fall.
 
-Technik: `debt_payment_links` (+ `_items`), `DebtPaymentLinkService`
-(Erzeugen/finalize/discard, Checkout, Sync/Settle), `SharedPaymentController`,
+Technik: `debt_payment_links` (+ `_items`, `debt_payment_attempts`),
+`DebtPaymentLinkService` (Erzeugen/finalize/discard, `startPayment()`,
+Sync/Settle), `SharedPaymentController` (inkl. Apple-Pay-Merchant-Session),
+Livewire-Kasse `Shared\DebtPaymentPage` + `public/js/debt-checkout.js`,
 `ProcessDebtLinkPaymentJob` (Webhook-Folge), Views `shared/debt-payment*.blade.php`.
 Cron: `receivables:reconcile-payment-links` (stündlich).
+
+!!! note "Kasse bewusst nicht mit dem Gutschein-Shop geteilt"
+    Die Gutschein-Kasse (`Shared\VoucherCheckoutPage`) macht technisch
+    dasselbe. Sie wurde **nicht** zur gemeinsamen Komponente umgebaut, weil dort
+    ein laufender Bezahlweg hängt, an dem kein Regressionsrisiko entstehen
+    sollte — bewusste Entscheidung, in beiden Dateien kommentiert. Wer das
+    zusammenlegt, testet beide Wege mit echten Zahlungen gegen.
+
+    Fallstrick beim Nachbau: Die Kartenfelder brauchen den Stapel-Container
+    (`voucher-field-stack`), sonst kleben sie aneinander — `.form-glattt-group`
+    bringt keinen eigenen Abstand mit. Sieht nach Alpine aus, ist CSS.
+    Abgesichert durch `tests/Unit/FloatingLabelStackConventionTest.php`.
 
 ### Rechte
 
