@@ -162,12 +162,44 @@ Cron: `receivables:reconcile-payment-links` (stündlich).
 | `institute_bank_accounts` | IBAN je Standort (encrypted Cast, Muster `institute_colors`) |
 | `dunning_templates` | Vorlagen je Stufe × Kanal × Cluster (NULL = alle); Startwerte via Migration `2026_08_09_110000` |
 
-Salden werden **nie gespeichert**: `DebtCase::principalCents()` (geplatzte Raten
-bzw. Restbetrag bei `full_balance_due`), `costsCents()`, `paymentsReceivedCents()`,
-`openCents()`, `allocationCents()` (§ 367).
+Salden werden **nie gespeichert** und **nur an einer Stelle gerechnet**:
+`DebtCaseBalanceService`. `DebtCase::principalCents()`, `costsCents()`,
+`paymentsReceivedCents()`, `openCents()` und `allocationCents()` (§ 367) sind
+nur noch Durchreichen auf `balance()`.
+
+Hauptforderung je Einstieg:
+
+| Fall | Hauptforderung |
+|---|---|
+| Bestandsfall aus dem Import (`legacy_principal_cents` gesetzt) | fester Betrag aus der Liste |
+| `full_balance_due` oder Einstieg ≠ RLS | offener Vertrags-Restbetrag |
+| RLS-Fall | die geplatzten Raten **dieses** Falls — zugeordnet über `debt_cost_items.source_payment_id` der je RLS gebuchten Gebühr |
+
+!!! warning "Nie eine zweite Saldo-Rechnung aufmachen"
+    Übersicht, Kunden-Tab, Fall-Detailseite und die Berichtsseite „Schulden"
+    zeigen dieselben Zahlen. Bis 08/2026 rechnete der `ReceivablesController`
+    die Hauptforderung selbst und ließ dabei `legacy_principal_cents` weg —
+    importierte Bestandsfälle standen in der Übersicht mit 10,00 € (nur der
+    RLS-Gebühr), auf der Detailseite mit 160,00 €. Für Listen immer
+    `DebtCaseBalanceService::forCases()` verwenden (wenige Queries für alle
+    Fälle), nie `openCents()` in einer Schleife.
+
+Die geplatzten Raten des Vertrags dürfen **nicht** pauschal summiert werden:
+Nach einem abgeschlossenen Vorgänger-Fall stünden dessen Raten sonst im neuen
+Fall noch einmal drin. Aus demselben Grund zählt `generateLetter()` für die
+Schwelle „Fälligstellung ab 2 RLS" `max(geplatzte Raten, RLS-Gebühren)` —
+addiert man beide, ist die Schwelle schon bei der ersten RLS erreicht.
+
+Fälligkeit („Heute fällig") ist ebenfalls einmal definiert:
+`DebtCase::isDueForAction()` / `scopeDueForAction()` / `daysOverdue()`.
 
 ### Services (`app/Services/Receivables/`)
 
+- **`DebtCaseBalanceService`** — einzige Saldo-Rechnung des Moduls.
+  `forCase()` für einen Fall, `forCases()` für Listen (Kosten, Zahlungen,
+  RLS-Hauptforderung und Vertrags-Restbeträge in je einer Query). Liefert
+  `principal`, `costs`, `interest`, `payments`, `open` und die
+  § 367-Verteilung (`costs_open`, `interest_open`, `principal_open`).
 - **`DebtCaseIntakeService`** — Einstiege: `handleBouncedPayment()` (aus
   `ProcessGoCardlessWebhookJob` bei failed/charged_back/late_failure_settled/
   chargeback_settled; idempotent über die RLS-Gebühr), `handleMandateRevoked()`
@@ -180,16 +212,141 @@ bzw. Restbetrag bei `full_balance_due`), `costsCents()`, `paymentsReceivedCents(
   `startMonitoring()` (Einzug + 3 + 10 Tage), `recordPayment()`, `pauseSepa()`/
   `resumeSepa()` (via `ContractPauseService::pauseIndefinite`/`resume`),
   `archiveInPhorest()` (PUT `archived: true`, Fallback manuell), `decide()`
-  (250-€-Weiche), `writeOff()`, `close()`.
+  (250-€-Weiche; **genau** 250,00 € wird abgeschrieben, erst darüber geht es
+  gerichtlich weiter), `writeOff()`, `close()`.
+  `recordPayment()` ist der einzige Weg, einen Eingang zu verbuchen — auch die
+  Online-Bezahlseite ruft ihn auf (`DebtPaymentLinkService::settle()`), damit
+  RZV-Abschluss (`OUTCOME_RZV` + Vereinbarung auf `completed`) und Fall-Ausgang
+  überall gleich gesetzt werden.
 - **`DunningMessageService`** — Vorlagen-Auflösung (`DunningTemplate::resolve`,
   Cluster vor allgemein), Platzhalter, E-Mail-HTML, PDF-Ablage
   (`receivables/case-{id}/…`, Disk `gcs-private`/`public`).
+  Kontoinhaber ist über `ACCOUNT_HOLDER` fest die **Labrado & Schlüter GmbH**;
+  die **IBAN bleibt standortbezogen** (`InstituteBankAccount::forBranch`).
+  Ohne Bankverbindung des Standorts bricht jeder Briefversand ab.
+
+#### Der Briefbogen (`resources/views/pdf/dunning-letter.blade.php`)
+
+Absenderin ist immer die GmbH, nicht das Institut — Forderungen stellt die
+Gesellschaft. Das Institut steht nur als Bezug im Kopf. Aufbau: Logo ·
+Anschriftenfeld + Bezugsblock (Kunden-Nr., Vertrag, Vertragsdatum, Institut,
+**Rückfragen-Adresse** `DunningMessageService::CONTACT_EMAIL`, Ort/Datum) · Betreff · **Forderungsaufstellung + Fristfeld** · Text ·
+Grußformel mit 16 mm Unterschriftsfeld und „Labrado & Schlüter GmbH /
+Forderungsmanagement" · Zahlungsleiste (QR + IBAN) · Fußzeile.
+
+Zwei Ausprägungen über `$escalated` (nur `letter_postal_final`): dunkle
+Kopfleiste, Summe und Frist in Signalrot. Alle anderen Stufen bekommen den
+ruhigen Bogen.
+
+!!! warning "dompdf-Fallstricke, die hier schon zugeschlagen haben"
+    - **Kein `* { margin: 0 }` und keine Regel auf `html`.** dompdf legt die
+      `@page`-Ränder als Style des **Wurzel-Frames (`<html>`)** ab — jede Regel,
+      die `<html>` trifft, setzt sie zurück. Der Universal-Selektor tat genau
+      das: Der Brief stand randlos auf dem Blatt (und passte nur deshalb auf
+      eine Seite). Der Reset zählt die Elemente deshalb ausdrücklich auf.
+    - **Seitenränder gehören zu `@page`, nicht zusätzlich als `body`-Padding.**
+      dompdf addiert beides — der Brief lief dadurch auf Seite 2 über, selbst
+      ohne Freitext.
+    - **Innenabstand nie auf eine Tabelle mit `width: 100%`**, immer in die
+      Zellen. Sonst rechnet dompdf Breite + Padding zusammen und schiebt den
+      Kasten über den Blattrand — genau so wurde der QR-Kasten abgeschnitten.
+    - Kein Flexbox/Grid — der ganze Bogen ist mit Tabellen gebaut.
+
+    Abgesichert über `DebtCaseActionsTest`: Seitenzahl des echten PDFs,
+    Prüfung des gerenderten CSS und `test_mahnbrief_hat_echte_seitenraender`,
+    das den linken Rand aus dem Content-Stream des fertigen PDFs misst.
+
+**Satzspiegel:** `@page { margin: 11mm 20mm 14mm }`, Fußzeile fest bei 6 mm.
+**Platz auf dem Blatt:** Standardbrief verträgt ~500 Zeichen mehr als die
+Vorlage, die letzte Mahnung (längerer Text + Kopfleiste) ~200. Wer Elemente
+ergänzt oder die Vorlagen verlängert, prüft das mit
+`test_mahnbriefe_passen_auf_eine_seite` — die Kontaktzeile sitzt aus genau dem
+Grund im Bezugsblock (neben der Anschrift, kostet keine Bauhöhe) und nicht unter
+der Grußformel. Darüber bricht der Brief bewusst auf
+Seite 2 um, statt etwas abzuschneiden.
+
+**Der Hinweis an der Zahlungsleiste hängt an `full_balance_due`:** Solange der
+Vertrag läuft „Laufende Raten … bleiben unberührt", nach Fälligstellung „Mit
+dem Ausgleich ist die gesamte restliche Vertragsforderung erledigt — weitere
+Lastschriften ziehen wir nicht ein." Der erste Satz wäre nach Fälligstellung
+schlicht falsch.
+
+**Brieftexte sind kürzer als E-Mail-Texte:** Beträge, Frist, Bankverbindung und
+Grußformel kommen aus dem Bogen. In die Vorlage gehören nur Anrede, Begründung
+und Hinweise. Neuer Platzhalter **`{{zahlungen}}`** — ohne ihn ging die Rechnung
+„Hauptforderung + Kosten = offener Betrag" nicht auf, sobald Zahlungen eingingen
+(Migration `2026_08_09_160000`, überschreibt nur unbearbeitete Vorlagen).
 
 ### UI
 
-- `ReceivablesController` + `resources/views/hub/receivables/` (Index mit Board,
-  Show mit Aktionen/Modals, Templates-Seite). Board-Styles: `theme_glattt.css`
-  Abschnitt „Forderungsmanagement — Pipeline-Board".
+- `ReceivablesController` + `resources/views/hub/receivables/` (Index mit
+  Arbeitsliste und Prozess-Flow, Show mit Aktionen/Modals, Templates-Seite).
+- **Arbeitsliste** ist nach Art der Arbeit getrennt (`work_list` im
+  Daten-Endpoint, Kategorie je Fall im Feld `category`):
+
+    | Kategorie | Bedeutung | Kriterium |
+    |---|---|---|
+    | `todo` | echter To-do, Schreiben oder Entscheid steht an | fällig **und** `nextAction()` liefert einen Schritt |
+    | `check_payment` | nur Zahlungseingang prüfen (RZV-Rate, angehängte Lastschrift) | fällig, aber **kein** Schritt vorgesehen |
+    | `waiting` | Frist bzw. Wartefenster läuft — nichts zu tun | nicht fällig |
+    | `judicial` | eigener Bereich | `area = judicial` |
+
+    Maßgeblich ist also **nicht die Frist allein**, sondern ob ein Prozess-Schritt
+    ansteht. Vorher stand alles Fällige in einer Card „Heute fällig": 127 Zeilen,
+    in denen laufende Ratenzahlungen und beobachtete Lastschriften die
+    eigentliche Arbeit verdeckten.
+- **Prozess-Flow statt Kanban-Board**: Die Stufen liegen untereinander und
+  verbunden (`.stage-flow-glattt` in `theme_glattt.css`), je Zeile Anzahl,
+  offene Summe und ein Anteilsbalken; die Fälle einer Stufe klappen bei Bedarf
+  auf (`x-collapse`). Das frühere horizontale Board (`.pipeline-board-glattt`)
+  ist entfallen — neun Spalten nebeneinander zwangen zum Scrollen in zwei
+  Richtungen und zeigten nie, wie viel Geld je Stufe offen ist. Die Fall-Karten
+  (`.pipeline-card-glattt`) sind geblieben.
+- **Standortfilter**: ausschließlich der Sidebar-Filter (`localStorage.selectedBranch`
+  + Event `branchChanged`) — die Seite hat bewusst keinen eigenen Standort-Dropdown.
+  Beim Wechsel bleibt die Ansicht stehen und wird nur gedimmt
+  (`refreshable-glattt`/`is-refreshing`); Ladeplatzhalter nur beim Erstaufruf,
+  layoutgetreu (`x-stat-skeleton type="table"` bzw. Skelett-Board mit denselben
+  Spalten- und Kartenklassen).
+- **Datumsfelder**: flatpickr (`altFormat: 'd.m.Y'`, `locale: 'de'`, `$watch` je
+  Feld). Die Skripte werden auf der Detailseite selbst geladen — das Hub-Layout
+  bringt sie nicht mit; ohne sie zeigen alle fünf Felder den ISO-Wert. Das
+  Kalender-Design kommt aus `theme_glattt.css` (Abschnitt „FLATPICKR"), dort
+  liegt auch der z-index, damit der Kalender vor dem Modal-Backdrop steht.
+- **Nachweis am Fall**: Das versendete Schreiben hängt **an seinem
+  Verlaufseintrag** — der Nachweis steht dort, wo der Vorgang steht (verknüpft
+  über `payload.message_id` des Events, Komponente `.timeline-doc-glattt`).
+  Aufklappbar zeigt es den **exakten Wortlaut zum Versandzeitpunkt**
+  (`debt_case_messages.body_html`), den Download des abgelegten PDFs
+  (`pdf_path`/`pdf_disk`) und den Link zum Zendesk-Ticket. Ein Badge „Text
+  angepasst" (`text_edited`) zeigt, ob jemand vor dem Versand von Hand
+  eingegriffen hat — gesetzt wird es nur bei **echter** Abweichung vom
+  Vorlagentext (`render()` liefert `text_edited`), denn das Modal schickt den
+  Text immer mit, auch unverändert. Vorlagenänderungen wirken nie rückwirkend —
+  der Snapshot bleibt. Eine eigene Card „Versendete Schreiben" gibt es nicht
+  mehr; sie hat denselben Vorgang ein zweites Mal aufgelistet.
+- **Der Text im Aktions-Modal ist frei bearbeitbar.** Das Feld ist mit dem
+  gerenderten Vorlagentext vorbelegt; abgeschickt wird genau der Inhalt des
+  Feldes (`body_text` → `render(..., $bodyOverride)`). Platzhalter werden auch
+  im bearbeiteten Text noch ersetzt, ein Knopf stellt die Vorlage wieder her.
+  Das frühere „Eigener Text"-Feld ist damit entfallen — es konnte nur anhängen,
+  nichts ändern.
+  Beim Brief steht unter dem Feld, was der **Bogen zusätzlich beisteuert**
+  (Anschrift, Bezug, Forderungsaufstellung, Bankverbindung, Grußformel) —
+  sonst wirkt das PDF wie ein anderes Schreiben als die Vorschau.
+- **Aktions-Modal ist kanalabhängig**: Symbol, Kopffarbe, Empfänger-Zeile und
+  Button-Text kommen aus `nextAction()['channel']`. E-Mail → Papierflieger,
+  „Versand per Zendesk an <Adresse>", Button „Jetzt per Zendesk senden". Brief →
+  Drucker-Symbol, **Anschrift** statt E-Mail (fehlt sie in Phorest, steht das
+  rot da), Button „PDF erzeugen & Fall weiterschalten". Vorher stand über jeder
+  Vorschau „Versand per Zendesk an …", auch wenn nur ein PDF zum Ausdrucken
+  entstand.
+- **Modale** folgen dem Theme-Kopf (`modal-glattt-header-content` →
+  `-icon`/`-text`/`-title`/`-close` + Farbvariante). `modal-glattt-title` und
+  `modal-glattt-close` gibt es **nicht** — mit ihnen blieb der Titel schwarz auf
+  dem farbigen Gradient und das „×" unformatiert. Rückfragen laufen über das
+  Bestätigungs-Modal (`askConfirm()`), Rückmeldungen über `window.showToast()`;
+  kein `confirm()`/`alert()`/`prompt()`.
 - Kunden-Tab: `resources/views/hub/clients/partials/claims.blade.php`
   (Endpoint `/hub/receivables/client/{clientId}`).
 - Vertrags-Banner: `hub/contracts/show.blade.php`; Sidebar-Link:
