@@ -112,12 +112,47 @@ Jedes Institut kann eine individuelle Farbe und eine benutzerdefinierte Sortierr
 
 | Komponente | Datei | Beschreibung |
 |---|---|---|
-| Model | `app/Models/InstituteColor.php` | Eloquent-Model mit Cache-Logik (5 Min.) |
+| Model | `app/Models/InstituteColor.php` | Eloquent-Model mit Cache-Logik (5 Min.), `DEFAULT_COLORS` als Rückfallebene |
 | Controller | `app/Http/Controllers/InstituteController.php` | 3 API-Methoden (getAll, get, save) |
 | Migration | `database/migrations/2026_03_23_...` | `institute_colors` Tabelle |
 | JS-Service | `public/js/branch-color-service.js` | Zentraler Client-Service |
 | Color Picker UI | `resources/views/hub/institutes/tabs/info.blade.php` | Alpine.js Farbpicker |
+| Auslieferung | `resources/views/layouts/hub.blade.php` | `window.__branchColors` vor dem Service |
 | CSS | `public/css/theme_glattt.css` | `.institute-color-*` Klassen |
+
+**Woher die Farben kommen (Reihenfolge, Stand 08/2026):**
+
+1. **Mit der Seite ausgeliefert** — das Hub-Layout schreibt die Farbkarte als
+   `window.__branchColors` ins Dokument, direkt vor `branch-color-service.js`.
+   Der Service übernimmt sie **synchron**, bevor die erste Komponente rendert.
+2. `localStorage`-Puffer (5 Minuten) für Seiten ohne ausgelieferte Farben
+3. `DEFAULT_BRANCH_COLORS` — die hinterlegte Farbe des Instituts
+4. Erst für ein unbekanntes, noch nicht gepflegtes Institut die Ersatzpalette
+
+> **Nicht auf Nachladen umbauen.** Vorher holte der Service die Farben per
+> `fetch()`, ohne dass jemand darauf wartete: Rendert eine Karte schneller als
+> die Antwort eintrifft, greift sie zur Ersatzpalette **nach Index** und
+> korrigiert sich nie mehr — das dafür gedachte Event `branchColorsLoaded`
+> hatte keinen einzigen Listener. Nach Ablauf des localStorage-Puffers war das
+> Zeitfenster bei jedem ersten Seitenaufruf wieder offen; sichtbar als
+> Standortfarben, die „manchmal" falsch waren. Abgesichert durch
+> `tests/Feature/BranchColorDeliveryTest.php`.
+
+**Standardfarben als zweite Sicherung:**
+`InstituteColor::DEFAULT_COLORS` hält die Farbe je Institut fest (Quelle der
+Wahrheit, abgeglichen mit dem Produktivstand); `getColorMap()` legt sie unter
+die Datenbankwerte, die **immer** Vorrang haben. Gespiegelt als
+`DEFAULT_BRANCH_COLORS` in `branch-color-service.js`, damit auch eine Seite
+ohne Server-Farben die gewohnte Farbe zeigt. Laufen die beiden Listen
+auseinander, bricht der Test.
+
+**Achtung bei eigenen Aufrufen der Standort-Endpunkte:** `fetch()` **immer** mit
+`Accept: application/json` und `X-Requested-With: XMLHttpRequest` aufrufen. Ein
+nackter `fetch()` schickt `Accept: */*`; `RedirectDirectApiAccess` hält das für
+eine Browser-Navigation und antwortet mit **302 auf hub.start**. Genau daran
+scheiterte bis 08/2026 das Laden von Farbe, Icon und Bild auf der Standort-Seite
+— die Farbauswahl stand dauerhaft auf ihrem Startwert, und wer dort speicherte,
+überschrieb damit die echte Farbe.
 
 **BranchColorService (JavaScript):**
 Wird global im Hub-Layout geladen und bietet eine einheitliche API für alle Statistik-Seiten:
