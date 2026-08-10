@@ -379,54 +379,59 @@ Kennzahlen (Festlegung Jan, 11.08.2026):
 
 | Zahl | Quelle | Recht |
 |---|---|---|
-| Beratungsgespräche heute (stattgefunden / laufend / offen / No-Show) | `stats_historic_appointments`, Service-IDs aus `consultation_services`, `GROUP BY state` | `view_appointments` |
+| Beratungsgespräche heute (stattgefunden / laufend / offen / No-Show) | **Phorest live**, gefiltert auf Beratungs-Services aus `consultation_services` | `view_appointments` |
 | Verkaufte KPZ heute | `SUM(contracts.body_zone_count)` nach `signed_at`, Status aktiv/abgeschlossen | `view_report_sales_statistics` |
 | Prognose KPZ bis Monatsende | `SalesStatisticsService::getProjection()['overall']['projected_body_zones']` | `view_report_sales_statistics` |
 
+> **Es geht ausschliesslich um Beratungstermine, nicht um alle Termine des
+> Tages.** Ein Termin zählt nur, wenn eine seiner Dienstleistungen in
+> `consultation_services` mit `is_consultation` steht — bei mehreren Leistungen
+> reicht eine (`allServiceIds`).
+
 **Bewusste Entscheidungen:**
 
-- **Lokale Tabelle statt Phorest live.** `sync:appointments-recent` hält den
-  laufenden Tag alle 15 Minuten aktuell; ein Live-Abruf über alle Institute
-  dauert 10–15 Sekunden und ist für den ersten Bildschirm untragbar. Der Stand
-  steht sichtbar in der Karte.
-- **Kein `settled()` bei den Beratungen.** Der Scope wirft heutige offene
-  Termine heraus — richtig für No-Show-Quoten (sonst zählt morgens jeder
-  anstehende Termin als No-Show), hier aber fatal: „noch offen" wäre dann immer
-  0. Sobald die Kachel eine *Quote* oder einen Vortagsvergleich zeigt, ist
-  `settled()` dagegen Pflicht.
-- **Zustands-Gruppierung wie die Terminübersicht** (`appointments.js`):
+- **Beratungen LIVE aus Phorest, nicht aus `stats_historic_appointments`.**
+  Der laufende Tag steht in der Auswertungstabelle in der Praxis nicht
+  zuverlässig zur Verfügung — gemessen: dort 0 Termine, während Phorest 87
+  führte. Eine Startseite mit anderen Zahlen als die Terminübersicht ist
+  wertlos. Kosten: **~520 ms** für einen parallelen Abruf über alle Institute
+  für EINEN Tag; die oft zitierten 10–15 Sekunden gelten für Zeiträume über
+  mehrere Wochen.
+- **Zustandslogik 1:1 wie `getState()` in `public/js/appointments.js`** —
   `COMPLETED|PAID` = stattgefunden, `CHECKED_IN` = laufend, `BOOKED|CONFIRMED`
-  = offen, `NO_SHOW` separat. Stornierte und gelöschte zählen nicht mit.
-- **Service-IDs aus `consultation_services`**, nicht aus
-  `StatsHistoricAppointment::scopeConsultations()` — der Scope hat drei IDs
-  hart verdrahtet und verpasst jeden neu angelegten Beratungs-Service.
-- **Datumsvergleich als Bereich** (`>= heute AND < morgen`), nicht
-  `whereDate()`: Der Model-Cast schreibt in SQLite „Y-m-d H:i:s", MySQL hält
-  „Y-m-d"; der Bereich ist in beiden richtig und kann anders als `DATE(spalte)`
-  den Index `[appointment_date, branch_id]` nutzen.
+  = offen, `NO_SHOW` separat, Stornierte raus. Dazu die beiden Regeln der
+  Terminübersicht, die über den Phorest-Zustand hinausgehen:
+  1. Termine auf **„Absage"-Pseudo-Mitarbeitern** gelten als No-Show
+     (Mitarbeiternamen über `getCachedStaff()`, 30 Min. Cache).
+  2. Ein offener Termin, dessen **Ende mehr als 30 Minuten zurückliegt**, gilt
+     als No-Show — sonst stünde er den ganzen Tag als „offen".
+
+  Das ist bewusst eine zweite Umsetzung derselben Regel (PHP und JS). Wer eine
+  Seite ändert, muss die andere mitziehen; abgesichert durch eigene Tests.
+- **KPZ und Prognose aus der Datenbank.** Verträge stehen dort ohnehin, und die
+  Terminübersicht rechnet sie über denselben Weg
+  (`/phorest/daily-contract-stats`: `signed_at`, Status aktiv/abgeschlossen).
 - **Prognose nicht selbst gerechnet**, sondern aus der Verkaufsstatistik geholt
   (linear über Verkaufstage, Mo–Sa ohne Feiertage). Eine eigene Formel würde
   zwangsläufig von der Verkaufsstatistik abweichen. Der Standortfilter wird
   durchgereicht — Feiertage sind standortabhängig. Der Aufruf ist in einen
-  `try/catch` gefasst: Die Hochrechnung nutzt MySQL-Funktionen
-  (`DATE_FORMAT`) und darf den Tagesüberblick nicht mitreißen.
+  `try/catch` gefasst: Die Hochrechnung nutzt MySQL-Funktionen (`DATE_FORMAT`)
+  und darf den Tagesüberblick nicht mitreissen. Auch der Phorest-Abruf ist
+  abgesichert: Fällt er aus, bleibt die Kennzahl leer, die übrigen laufen weiter.
 
 **Bekannte Abweichungen — kein Fehler:**
 
 - **KPZ sind bei Ganzkörper-Verträgen untererfasst.** `body_zone_count` ist auf
   `price_lists.max_body_zones` gedeckelt (6 bzw. 7 je Fassung); die tatsächlich
   gewählten Zonen stehen nur in `contract_body_zones`. Bewusst nicht
-  korrigiert, damit die Kachel dieselbe Zahl zeigt wie die Verkaufsstatistik.
+  korrigiert, damit die Kachel dieselbe Zahl zeigt wie die Verkaufsstatistik
+  und die Terminübersicht.
 - **„Stattgefunden" ist tagsüber zu niedrig.** `COMPLETED`/`PAID` wird in
   Phorest oft erst beim Abrechnen gesetzt, teils am Folgetag.
-- **Beratungen ≠ glattt-KPI „Beratungen heute".** Der Tagesüberblick zählt
-  BG-*Termine* (Zeilen, `notCancelled()`); die glattt-KPIs zählen strenger
-  (dedupliziert je Kunde und Tag, nur `PAID`, `activation_state = ACTIVE`) und
-  kommen aus einem Phorest-Live-Abruf. Beide Zahlen stehen auf derselben Seite
-  und dürfen leicht auseinanderliegen.
 
-Beratungen und KPZ sind je Institut und Tag **60 Sekunden gecacht**, die
-Prognose folgt dem 1-Stunden-Cache der Verkaufsstatistik.
+KPZ sind je Institut und Tag **60 Sekunden gecacht**, die Beratungen ebenfalls
+(ein Phorest-Abruf je Minute und Institut), die Prognose folgt dem
+1-Stunden-Cache der Verkaufsstatistik.
 
 ### Tests
 
