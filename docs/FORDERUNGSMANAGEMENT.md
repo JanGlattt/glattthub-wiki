@@ -648,42 +648,67 @@ Importformat sind **dieselbe Datei**, gelesen wird nach Spaltenüberschrift —
 die Spaltenreihenfolge ist also egal, und die Datei kann beliebig oft
 überarbeitet und erneut geprüft werden.
 
-| Spalte | Wer füllt | Bedeutung |
+#### Eine Zeile je Vorfall
+
+Die Liste ist bewusst **flach**: Jede Rücklastschrift, jede Zahlung, jeder
+Verzicht bekommt eine eigene Zeile — 150 Fälle ergeben so **307 Vorfalls-Zeilen**
+(39 Spalten). Ein Fall ist die Gruppe zusammenhängender Zeilen, getrennt durch
+eine kräftigere Linie. Damit ist der Verlauf im Blatt selbst nachvollziehbar,
+statt in einer aggregierten Zeile zu verschwinden.
+
+**Kopfdaten stehen nur in der ersten Zeile eines Falls** (Fall-Schlüssel, Kunde,
+Vertrag, Institut) — ebenso die Schritt- und Gerichtsdaten, die den ganzen Fall
+betreffen. Tragen mehrere Zeilen desselben Falls widersprüchliche Schritt-Daten
+ein, gewinnt das **späteste** und der Import meldet es im Hinweis-Report.
+
+| Spaltengruppe | Wer füllt | Bedeutung |
 |---|---|---|
-| Schlüssel | Hub | `legacy_source_key` des Falls — **nicht ändern**, daran hängt die Zuordnung |
+| Fall (nicht ändern), Zeile lt. Liste | Hub | Zuordnungs-Schlüssel — nicht überschreiben |
 | Aktion | Büro | `importieren` / `ignorieren` (Auswahlliste) |
-| Kunden-Nr., Name lt. Liste | Hub | aus der Alt-Liste |
-| **Name lt. Phorest** | Hub | Gegenprobe zur Zuordnung — erst lokaler Kundenspiegel, dann Phorest live |
-| Vertrag, Institut, Vorfälle, Erster Vorfall | Hub | aufgelöster Vertrag und Umfang |
-| Hauptforderung, Kosten, Bereits gezahlt | Büro | vorbelegt aus der Liste, hier wird korrigiert |
-| Offen lt. Liste | Hub | nur zum Vergleich — den offenen Betrag rechnet der Hub aus den drei Zahlen |
-| Stufe im Hub | Büro | vorbelegt aus dem weitesten dokumentierten Schritt (Auswahlliste) |
+| Status | Büro | `offen` / `bezahlt` / `abgeschrieben (WNB)` / `Ratenzahlung läuft` |
+| Kunden-Nr., Name lt. Liste, **Name lt. Phorest** | Hub | Gegenprobe der Zuordnung — erst lokaler Kundenspiegel, dann Phorest live |
+| Vertrag, Mandatsreferenz, Institut | Hub | aufgelöster Vertrag |
+| Datum, Wievielte RLS in Folge, Was | Büro | der Vorfall selbst (Auswahlliste bei „Was") |
+| **Betrag dieses Vorfalls €**, Gebühren, Sonstige Kosten | Büro | **der einzelne Vorfall, nicht der Gesamtstand** |
+| Zahlung eingegangen am, Zahlbetrag € | Büro | Teilzahlungen zeilengenau |
+| Abgeschrieben am, Grund der Abschreibung | Büro | bei Status WNB |
+| 1./2. Zahlungserinnerung, 1./letzte Mahnung | Büro | außergerichtliche Schritte als Datum |
+| Mahnbescheid, Widerspruch, Vollstreckungsbescheid, Einspruch, Aktenzeichen | Büro | gerichtliches Verfahren |
+| Zwangsvollstreckung, PfÜB, Gerichtsvollzieher | Büro | Vollstreckung |
+| Wer/Wann/Kommentar 1 + 2 | Büro | werden Notiz-Ereignisse in der Timeline |
 | Auffälligkeit | Hub | Saldo unplausibel, Vertrag hat schon einen aktiven Fall … |
-| Bemerkung | Büro | landet als Notiz am Fall |
 
-Vorbefüllte Spalten sind grau hinterlegt, Aktion und Stufe haben
-Excel-Auswahllisten (Tippfehler sind damit ausgeschlossen), Beträge sind als
-Euro formatiert, die Kopfzeile ist eingefroren. Sortiert wird **auffällige
-Fälle zuerst, darunter nach offenem Betrag absteigend**.
+**Es gibt keine Spalte „Stufe"**: Der Hub leitet Prozessstufe *und* Wiedervorlage
+aus dem letzten ausgefüllten Schritt ab. Wer die Daten pflegt, pflegt damit
+automatisch die Stufe — eine Fehlerquelle weniger.
 
-Beim Rückimport gilt:
+Vorbefüllte Spalten sind grau hinterlegt, Aktion, Status und „Was" haben
+Excel-Auswahllisten, Beträge sind als Euro und Daten als `TT.MM.JJJJ` formatiert,
+die Kopfzeile ist eingefroren. Sortiert wird **auffällige Fälle zuerst, darunter
+nach offenem Betrag absteigend**.
 
-- **`ignorieren`** hält den Fall komplett heraus; der Report weist ihn separat
-  aus und zieht ihn von „Geplant: aktive Fälle" und der offenen Summe ab.
-- **Geänderte Beträge** ersetzen die Einzelbuchungen der Liste durch **eine**
-  Position „lt. Prüfliste" — Cent-Beträge sind vorzeichenlos, eine
-  Differenzbuchung ginge also nicht. Unveränderte Werte lassen die
-  Einzelbuchungen (10-€-Gebühren, Teilzahlungen) unangetastet. Die Timeline
-  (RLS-Ereignisse, Schreiben, Kommentare) bleibt in beiden Fällen vollständig.
-- **Jede Korrektur wird am Fall protokolliert** — was aus der Liste kam und was
-  das Büro geändert hat, bleibt unterscheidbar.
-- **Zeilen ohne Schlüssel** sind neu erfasste Fälle: Der Vertrag wird über die
-  Kundennummer gesucht; findet sich keiner, aber ein Phorest-Kunde, entsteht ein
-  **Kundenkonto-Fall ohne Vertrag** (dafür ist `contract_id` nullable). Die
+#### Rückimport
+
+Mit `--worksheet=` ist die Prüfliste die **alleinige Quelle der offenen Fälle**;
+die CSV liefert dann nur noch die abgeschlossene Historie (bezahlt, WNB). Es gibt
+keine Korrekturschicht mehr, die nachträglich Beträge überschreibt — was in der
+Excel steht, wird angelegt. Weiter gilt:
+
+- **`ignorieren`** hält die Zeile heraus; bleibt keine Zeile übrig, entsteht kein Fall.
+- **Beträge werden je Vorfall gebucht** — 10-€-Gebühren, sonstige Kosten und
+  Teilzahlungen bleiben als eigene Positionen sichtbar. Die Hauptforderung ist
+  die Summe der Vorfalls-Beträge; weicht sie vom Wert der Alt-Liste ab, ist das
+  ein Fund und keine Ungenauigkeit (in der Echtliste betraf das genau einen Fall,
+  10 € Differenz).
+- **Zeilen ohne Fall-Schlüssel** sind neu erfasste Fälle: Der Vertrag wird über
+  die Kundennummer gesucht; findet sich keiner, aber ein Phorest-Kunde, entsteht
+  ein **Kundenkonto-Fall ohne Vertrag** (dafür ist `contract_id` nullable). Die
   Vorlage bringt dafür 30 Leerzeilen mit.
 - **Unlesbare Zeilen brechen den Lauf ab**, bevor irgendetwas angelegt wird
-  (falsche Aktion, unbekannte Stufe) — ein halb eingelesener Bestand wäre
-  schlimmer als gar keiner.
+  (falsche Aktion, unbekannter Status, unlesbares Datum) — ein halb eingelesener
+  Bestand wäre schlimmer als gar keiner. Zeilennummer und Kunde stehen im Abbruch.
+- **Hinweise** (widersprüchliche Schritt-Daten, Saldo-Abweichungen) landen als
+  `pruefliste-hinweise.csv` im Report-Ordner.
 
 ### Import der Bestands-RZV-Liste („RATENZAHLUNGEN"-Sheet)
 
