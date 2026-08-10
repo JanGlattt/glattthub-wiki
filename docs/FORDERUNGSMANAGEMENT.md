@@ -12,12 +12,13 @@ Spezifikation: Asana-Task „Forderungsmanagement" (User Story mit Prozess-Visua
 
 ### Was macht das Modul?
 
-Jeder säumige Zahler wird als **Fall** geführt. Ein Fall hängt immer an einem
-Vertrag und wandert durch feste Stufen — je Stufe gibt es genau **eine nächste
-Aktion**, die der Hub vorschlägt. Nichts bleibt liegen: Ist eine Zahlungsfrist
-abgelaufen, erscheint der Fall in der Arbeitsliste **„Heute fällig"**.
+Jeder säumige Zahler wird als **Fall** geführt. Ein Fall hängt in der Regel an
+einem Vertrag (Ausnahme: offenes Kundenkonto, siehe Einstieg 4) und wandert
+durch feste Stufen — je Stufe gibt es genau **eine nächste Aktion**, die der Hub
+vorschlägt. Nichts bleibt liegen: Ist eine Zahlungsfrist abgelaufen, erscheint
+der Fall in der Arbeitsliste **„Heute fällig"**.
 
-### Drei Einstiege (automatisch)
+### Vier Einstiege (automatisch)
 
 1. **Rücklastschrift (RLS)**: Platzt eine GoCardless-Lastschrift, entsteht der
    Fall von selbst. Automatisch werden **10 € RLS-Gebühr** gebucht. Hatte der
@@ -27,6 +28,30 @@ abgelaufen, erscheint der Fall in der Arbeitsliste **„Heute fällig"**.
    nicht bezahlt → Fall in Stufe „Kontaktaufnahme" (täglicher Prüflauf 07:15).
 3. **SEPA-Mandatsentzug**: Entzieht der Kunde (oder seine Bank) das Mandat,
    wird die Restsumme fällig und ein Fall mit Gesamtforderung eröffnet.
+4. **Offenes Kundenkonto (Flex-Zahler)**: Kunden ohne Vertrag — sie buchen
+   einzelne Flex-Behandlungen — hinterlassen ihre Schuld auf dem
+   **Phorest-Kundenkonto**. Der Hub spiegelt diese Kontostände täglich und
+   eröffnet einen Fall, sobald ein Saldo **mindestens 20 €** beträgt und
+   **14 Tage** ununterbrochen offen steht (täglicher Prüflauf 07:30).
+
+!!! note "Ein Kunde, ein Fall"
+    Läuft für den Kunden bereits ein Fall (z. B. aus einer Rücklastschrift),
+    wird **kein zweiter** eröffnet. Der Kontostand erscheint stattdessen als
+    Hinweis oben auf der Fall-Detailseite — sonst bekäme der Kunde zwei
+    Schreiben über teils dasselbe Geld.
+
+### Kundenkonto-Fall von Hand anlegen
+
+Die 20-€/14-Tage-Regel greift bewusst nicht sofort. Für alles darunter oder für
+eilige Fälle gibt es auf der Übersichtsseite den Button **„Kundenkonto-Fall"**
+(Recht `manage_receivables`): Er zeigt **alle** Kunden mit offenem Kundenkonto
+mit Betrag, Standort und Beobachtungsdauer. Ein Klick auf die Zeile übernimmt
+den Betrag, der sich vor dem Anlegen noch korrigieren lässt.
+
+Der Betrag wird beim Anlegen **eingefroren** — eine Behandlung, die der Kunde
+danach bucht, erhöht die laufende Mahnung nicht mehr (sonst stimmte der Betrag
+im bereits versendeten Schreiben nicht). Weicht der aktuelle Kontostand später
+ab, zeigt der Hinweis oben auf der Fall-Detailseite beide Zahlen.
 
 ### Die Wege
 
@@ -35,6 +60,10 @@ abgelaufen, erscheint der Fall in der Arbeitsliste **„Heute fällig"**.
   + 3 + 10 Tage) → letzte Mahnung per Post (10 Tage) → Rate ans Planende anhängen.
   Platzt die angehängte oder die nächste Lastschrift (**2. RLS in Folge**),
   wechselt der Fall automatisch in den harten Weg.
+- **Sanfter Weg ohne Vertrag** (offenes Kundenkonto): 1. Zahlungserinnerung →
+  2. Zahlungserinnerung → **direkt** 1. postalische Mahnung → letzte Mahnung →
+  250-€-Entscheid. Monitoring und „Rate anhängen" entfallen: Es gibt keinen
+  Zahlungsplan und keine Lastschrift, auf die man warten könnte.
 - **Harter Weg**: Zahlungserinnerung über alle offenen Schulden + SEPA-Einzüge
   pausieren (7 Tage) → 1. postalische Mahnung (10 Tage) → letzte Mahnung über die
   **gesamte Restsumme** (14 Tage; Fälligstellung ab 2 RLS) → **250-€-Entscheid**:
@@ -182,7 +211,8 @@ Cron: `receivables:reconcile-payment-links` (stündlich).
 
 | Tabelle | Zweck |
 |---|---|
-| `debt_cases` | Mahnfall je Vertrag: Einstieg, Weg, Stufe, Frist, Cluster, Status/Ausgang. Kunden-Klammer über `client_id` (Phorest) |
+| `debt_cases` | Mahnfall: Einstieg, Weg, Stufe, Frist, Cluster, Status/Ausgang. Kunden-Klammer über `client_id` (Phorest). `contract_id` ist seit 08/2026 **nullable** — Fälle aus dem offenen Kundenkonto haben keinen Vertrag |
+| `client_account_balances` | täglicher Spiegel der Phorest-Kundenkonten (`creditAccount.outstandingBalance`): Betrag, Standort, „beobachtet seit", `handled_cents`, letzter Fall |
 | `debt_case_events` | Timeline (jede Aktion/Statusänderung) |
 | `debt_case_messages` | Schreiben-Snapshots (Kanal, Vorlage, HTML, Freitext, PDF-Pfad, Zendesk-Ticket) |
 | `debt_cost_items` | Kostenpositionen; 10-€-RLS-Gebühr automatisch, `source_payment_id` + Unique-Index = Idempotenz |
@@ -202,6 +232,7 @@ Hauptforderung je Einstieg:
 | Fall | Hauptforderung |
 |---|---|
 | Bestandsfall aus dem Import (`legacy_principal_cents` gesetzt) | fester Betrag aus der Liste |
+| Offenes Kundenkonto (`account_principal_cents` gesetzt) | bei der Eröffnung eingefrorener Kontostand |
 | `full_balance_due` oder Einstieg ≠ RLS | offener Vertrags-Restbetrag |
 | RLS-Fall | die geplatzten Raten **dieses** Falls — zugeordnet über `debt_cost_items.source_payment_id` der je RLS gebuchten Gebühr |
 
@@ -235,7 +266,9 @@ Fälligkeit („Heute fällig") ist ebenfalls einmal definiert:
   chargeback_settled; idempotent über die RLS-Gebühr), `handleMandateRevoked()`
   (nur `origin` bank/customer), `handleRateAppended()` (Hook in
   `ContractController::appendBouncedPayment`), `handlePaymentSettled()`
-  (angehängte Rate eingezogen → Fall schließt). Cluster: `clusterFor()`.
+  (angehängte Rate eingezogen → Fall schließt), `openClientAccountCase()`
+  (offenes Kundenkonto; einziger Weg zu einem Fall **ohne** Vertrag — von der
+  Erkennung wie vom manuellen Anlegen genutzt). Cluster: `clusterFor()`.
 - **`DebtCaseActionService`** — `nextAction()` (Aktions-Katalog je Stufe/Weg),
   `sendEmail()` (Zendesk `createTicket` mit `html_body`), `generateLetter()`
   (dompdf `pdf.dunning-letter`, Fristen aus der Vorlage: sanft 10 / hart 14 Tage),
@@ -476,6 +509,15 @@ dafür ist `personalized_replies`. Offene Punkte dazu im Asana-Subtask
   kein `confirm()`/`alert()`/`prompt()`.
 - Kunden-Tab: `resources/views/hub/clients/partials/claims.blade.php`
   (Endpoint `/hub/receivables/client/{clientId}`).
+- **Kundenkonto-Modal** auf der Übersicht: Liste aus
+  `/hub/receivables/account-balances` (Salden + Namen aus `client_statistics`,
+  kein Phorest-Aufruf), Anlegen per `POST /hub/receivables`
+  (`ReceivablesController::store` → `openClientAccountCase()`). Der Betrag ist
+  ein Text-Feld mit Komma und dynamischem €-Overlay, kein `type="number"`.
+- **Ohne Vertrag blendet die Oberfläche aus**, was einen Zahlungsplan
+  voraussetzt: Vertragslink, SEPA-Zeile und SEPA-Aktionen. Board, Arbeitsliste
+  und Kunden-Tab zeigen statt der Vertragsnummer „Kundenkonto"
+  (`casePayload()['has_contract']`).
 - Vertrags-Banner: `hub/contracts/show.blade.php`; Sidebar-Link:
   `v2/partials/summary-sidebar.blade.php`.
 - IBAN-Tab: `hub/institutes/tabs/bank.blade.php`
@@ -488,7 +530,36 @@ dafür ist `personalized_replies`. Offene Punkte dazu im Asana-Subtask
   ältere Bestände über den Excel-Import (offen).
 - `receivables:reconcile-payment-links` stündlich (Route
   `/api/cron/reconcile-debt-payment-links`) — Mollie-Sicherheitsnetz.
-- Beide Cloud-Scheduler-Jobs mit `--max-retry-attempts=3` anlegen.
+- `receivables:sync-client-account-balances` täglich 06:45 (Route
+  `/api/cron/sync-client-account-balances`) — spiegelt die Phorest-Kundenkonten.
+- `receivables:detect-client-account-debts` täglich 07:30 (Route
+  `/api/cron/detect-client-account-debts`) — eröffnet reife Fälle. **Muss nach
+  dem Sync laufen**, sonst arbeitet die Erkennung mit dem Stand von gestern.
+- Alle Cloud-Scheduler-Jobs mit `--max-retry-attempts=3` anlegen.
+
+#### Kundenkonto-Spiegel im Detail
+
+Der Sync läuft **einmal** über die Kundenliste (`getAllClientsPaginated`,
+200 je Seite, ~110 Requests bei 22.000 Kunden) — der Kontostand steckt bereits
+in der Listen-Antwort (`creditAccount.outstandingBalance`), es braucht also
+keinen Aufruf je Kunde. Archivierte Kunden bleiben außen vor: Wer im
+postalischen Mahnweg ist, wurde vom Hub selbst archiviert und hat längst einen
+Fall.
+
+- `open_since` = **erste Sichtung**, nicht das echte Alter der Schuld: Phorest
+  liefert nur den aktuellen Stand. Die 14-Tage-Regel zählt deshalb ab dem
+  ersten Sync — nach dem Rollout entstehen die ersten automatischen Fälle also
+  zwei Wochen später. Bestand vorher: über den Button „Kundenkonto-Fall". In
+  der Oberfläche heißt das Feld darum bewusst **„beobachtet seit"**.
+- `open_since` bleibt bei Teilzahlungen stehen (sonst startete die Reifezeit bei
+  jeder Zahlung neu) und wird erst zurückgesetzt, wenn das Konto **ausgeglichen**
+  ist.
+- `handled_cents` merkt den Betrag, für den bereits ein Fall eröffnet wurde.
+  Ohne diese Marke entstünde nach einer Abschreibung (WNB) jede Nacht ein neuer
+  Fall — der Saldo bleibt in Phorest ja stehen. Beim Ausgleich des Kontos fällt
+  die Marke weg, damit eine spätere neue Schuld wieder greift.
+- Salden **ohne Standort** werden übersprungen und geloggt: Ohne Institut gibt
+  es keine Bankverbindung und damit kein versendbares Schreiben.
 
 ### Statistik
 
@@ -506,7 +577,16 @@ Eskalation, Mandatsentzug, § 367), `DebtCaseActionsTest` (Zendesk, PDF, Fristen
 Monitoring, Entscheid), `ReceivablesPagesTest` (Seiten, Rechte, Banner),
 `ReceivablesManagementTest` (Vorlagen, IBAN, HTTP-Aktionen, Gericht, Kosten, RZV),
 `DunningEmailFrameTest` (Mail-Rahmen: Absender, Eskalation, Zendesk-Tauglichkeit,
-Mobilbreite), `DetectDirectUnpaidTest`.
+Mobilbreite), `DetectDirectUnpaidTest`, `ClientAccountDebtsTest` (Kundenkonto:
+Spiegel, Reifezeit, Erkennung, Guards, Prozessweg ohne Vertrag, manuelles
+Anlegen).
+
+!!! warning "Http::fake() ersetzt keinen bestehenden Stub"
+    Ein zweiter `Http::fake([...])`-Aufruf im selben Test hängt sich **hinter**
+    den ersten — beim Matching gewinnt weiterhin der alte. Wer im Testverlauf
+    unterschiedliche Antworten braucht (z. B. Kontostand vor und nach einer
+    Teilzahlung), registriert **einen** Stub als Closure, die eine
+    Test-Eigenschaft ausliest.
 
 ### Import der Bestandsliste (Excel/CSV)
 
