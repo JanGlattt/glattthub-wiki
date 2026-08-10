@@ -579,7 +579,8 @@ Monitoring, Entscheid), `ReceivablesPagesTest` (Seiten, Rechte, Banner),
 `DunningEmailFrameTest` (Mail-Rahmen: Absender, Eskalation, Zendesk-Tauglichkeit,
 Mobilbreite), `DetectDirectUnpaidTest`, `ClientAccountDebtsTest` (Kundenkonto:
 Spiegel, Reifezeit, Erkennung, Guards, Prozessweg ohne Vertrag, manuelles
-Anlegen).
+Anlegen), `LegacyDebtImportTest` und `LegacyDebtWorksheetTest` (Prüflisten-
+Round-Trip: Vorbefüllung, Aussortieren, Korrekturen, neue Zeilen, Zahlenformate).
 
 !!! warning "Http::fake() ersetzt keinen bestehenden Stub"
     Ein zweiter `Http::fake([...])`-Aufruf im selben Test hängt sich **hinter**
@@ -594,10 +595,17 @@ Der Alt-Bestand (Google Sheet „Schuldner-Liste und Mahnverfahren", ~3.100
 Zeilen, 2021–2026) wird per Command importiert:
 
 ```bash
-php artisan contracts:resolve-legacy-client-ids   # 1. fehlende Client-IDs der Altverträge via Phorest auflösen
-php artisan receivables:import-legacy datei.csv    # 2. Dry-Run mit Report
-php artisan receivables:import-legacy datei.csv --execute  # 3. echter Lauf
+php artisan contracts:resolve-legacy-client-ids            # 1. fehlende Client-IDs der Altverträge via Phorest auflösen
+php artisan receivables:legacy-worksheet datei.csv          # 2. Excel-Prüfliste der offenen Fälle erzeugen
+#    … Prüfliste vom Büro durchgehen lassen …
+php artisan receivables:import-legacy datei.csv --worksheet=pruefliste.xlsx             # 3. Dry-Run mit Report
+php artisan receivables:import-legacy datei.csv --worksheet=pruefliste.xlsx --execute   # 4. echter Lauf
 ```
+
+!!! tip "Ohne Prüfliste geht es auch"
+    `--worksheet` ist optional; ohne die Option importiert der Befehl die Liste
+    unverändert. Für den echten Bestand ist die Prüfliste aber der vorgesehene
+    Weg — siehe nächster Abschnitt.
 
 Umsetzung in `LegacyDebtImportService` (+ Command `ImportLegacyDebtList`):
 
@@ -624,6 +632,58 @@ Umsetzung in `LegacyDebtImportService` (+ Command `ImportLegacyDebtList`):
   unter `storage/app/legacy-debt-import/{timestamp}/`.
 - GoCardless wird beim Import **nicht** angefasst; `sepa_paused_at` ist nur der
   Marker aus der Liste.
+
+### Prüfliste: Excel raus, korrigierte Excel wieder rein
+
+Die Alt-Liste ist über Jahre gewachsen und in Beträgen und Mahnstufen nicht
+durchgängig verlässlich. Die **Zuordnung** dagegen sitzt: Von 3.106 Zeilen
+finden 3.061 ihren Vertrag (34 nicht zuordenbar, 11 unlesbar/Duplikat). Geprüft
+werden muss also nur das, was noch Geld bedeutet — und das sind **150 offene
+Fälle über 127.163,99 €** (Median 260 €, 82 davon über 250 €). Genau die stehen
+in der Prüfliste.
+
+`LegacyDebtWorksheetService` (+ Command `ExportLegacyDebtWorksheet`) erzeugt eine
+`.xlsx` mit zwei Blättern: „Offene Fälle" und „Anleitung". Export- und
+Importformat sind **dieselbe Datei**, gelesen wird nach Spaltenüberschrift —
+die Spaltenreihenfolge ist also egal, und die Datei kann beliebig oft
+überarbeitet und erneut geprüft werden.
+
+| Spalte | Wer füllt | Bedeutung |
+|---|---|---|
+| Schlüssel | Hub | `legacy_source_key` des Falls — **nicht ändern**, daran hängt die Zuordnung |
+| Aktion | Büro | `importieren` / `ignorieren` (Auswahlliste) |
+| Kunden-Nr., Name lt. Liste | Hub | aus der Alt-Liste |
+| **Name lt. Phorest** | Hub | Gegenprobe zur Zuordnung — erst lokaler Kundenspiegel, dann Phorest live |
+| Vertrag, Institut, Vorfälle, Erster Vorfall | Hub | aufgelöster Vertrag und Umfang |
+| Hauptforderung, Kosten, Bereits gezahlt | Büro | vorbelegt aus der Liste, hier wird korrigiert |
+| Offen lt. Liste | Hub | nur zum Vergleich — den offenen Betrag rechnet der Hub aus den drei Zahlen |
+| Stufe im Hub | Büro | vorbelegt aus dem weitesten dokumentierten Schritt (Auswahlliste) |
+| Auffälligkeit | Hub | Saldo unplausibel, Vertrag hat schon einen aktiven Fall … |
+| Bemerkung | Büro | landet als Notiz am Fall |
+
+Vorbefüllte Spalten sind grau hinterlegt, Aktion und Stufe haben
+Excel-Auswahllisten (Tippfehler sind damit ausgeschlossen), Beträge sind als
+Euro formatiert, die Kopfzeile ist eingefroren. Sortiert wird **auffällige
+Fälle zuerst, darunter nach offenem Betrag absteigend**.
+
+Beim Rückimport gilt:
+
+- **`ignorieren`** hält den Fall komplett heraus; der Report weist ihn separat
+  aus und zieht ihn von „Geplant: aktive Fälle" und der offenen Summe ab.
+- **Geänderte Beträge** ersetzen die Einzelbuchungen der Liste durch **eine**
+  Position „lt. Prüfliste" — Cent-Beträge sind vorzeichenlos, eine
+  Differenzbuchung ginge also nicht. Unveränderte Werte lassen die
+  Einzelbuchungen (10-€-Gebühren, Teilzahlungen) unangetastet. Die Timeline
+  (RLS-Ereignisse, Schreiben, Kommentare) bleibt in beiden Fällen vollständig.
+- **Jede Korrektur wird am Fall protokolliert** — was aus der Liste kam und was
+  das Büro geändert hat, bleibt unterscheidbar.
+- **Zeilen ohne Schlüssel** sind neu erfasste Fälle: Der Vertrag wird über die
+  Kundennummer gesucht; findet sich keiner, aber ein Phorest-Kunde, entsteht ein
+  **Kundenkonto-Fall ohne Vertrag** (dafür ist `contract_id` nullable). Die
+  Vorlage bringt dafür 30 Leerzeilen mit.
+- **Unlesbare Zeilen brechen den Lauf ab**, bevor irgendetwas angelegt wird
+  (falsche Aktion, unbekannte Stufe) — ein halb eingelesener Bestand wäre
+  schlimmer als gar keiner.
 
 ### Import der Bestands-RZV-Liste („RATENZAHLUNGEN"-Sheet)
 
@@ -662,6 +722,8 @@ Fall, Saldo = Restsumme, Marker als Notizen, Idempotenz.
 ### Offen / Nachgang
 
 - Import der Bestandsliste auf Prod ausführen (erst
-  `contracts:resolve-legacy-client-ids`, dann Dry-Run prüfen, dann `--execute`)
+  `contracts:resolve-legacy-client-ids`, dann `receivables:legacy-worksheet`
+  und die Prüfliste vom Büro durchgehen lassen, dann Dry-Run mit
+  `--worksheet=…`, dann `--execute`)
 - Feinkonzept: härtere Eskalation bei Cluster „aktiv widersprochen",
   Bündelung mehrerer Verträge eines Kunden, automatischer Wochenreport
