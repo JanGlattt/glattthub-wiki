@@ -80,18 +80,63 @@ Dasselbe Attribut darf **mehrfach** vorkommen: Sidebar und mobile Navigation
 tragen beide z. B. `data-tour="nav-start"`. Das Frontend nimmt das Element, das
 gerade sichtbar ist.
 
-### Sichtbarkeitsprüfung — der Fallstrick
+### Scrollen: driver.js allein reicht nicht
 
-Die mobile Ansicht schiebt die Sidebar nur aus dem Bild (Transform); sie bleibt
-im DOM und hat weiterhin ein `offsetParent`. `offsetParent !== null` reicht als
-Prüfung also **nicht**. `isVisible()` prüft deshalb zusätzlich, ob das Element
-waagerecht im Viewport liegt — senkrecht bewusst **nicht**, sonst fallen
-Menüpunkte unterhalb der Faltung heraus, die driver.js von allein in den Blick
-scrollt.
+driver.js scrollt ein Ziel nur dann heran, wenn es ausserhalb des **Viewports**
+liegt. Die Navigation der Sidebar ist aber ein eigener Scroll-Container — auf
+kurzen Bildschirmen (1440 × 600 gemessen) nur rund **120 px hoch** bei 754 px
+Inhalt. Ein Menüpunkt weiter unten liegt dann zwar im Viewport, wird vom
+Container aber abgeschnitten: Die Tour hob eine **leere Stelle** hervor
+(betroffen waren Verträge, Berichte, Gutscheine, Einstellungen).
 
-Zweiter Fallstrick aus der Umsetzung: Ein Anker auf einem Element mit
-**Höhe 0** (der Profil-Link in der Sidebar) lässt den Schritt kommentarlos
-entfallen. Anker lieber auf den umgebenden Container setzen.
+Deshalb holt `bringIntoView()` das Ziel in `onHighlightStarted` selbst heran
+(`scrollIntoView({ block: 'center' })` zieht alle scrollenden Vorfahren mit) und
+`onHighlighted` zieht die Bühne einmalig per `driverObj.refresh()` nach, weil
+das Ziel durch das Scrollen an einer anderen Stelle sitzt. Das Flag
+`stageRefreshed` verhindert die Endlosschleife, da `refresh()` erneut in
+`onHighlighted` läuft.
+
+### Sichtbarkeitsprüfung — drei Fallstricke
+
+`offsetParent !== null` reicht **nicht**:
+
+1. **Off-canvas.** Die mobile Ansicht schiebt die Sidebar nur aus dem Bild
+   (Transform); sie bleibt im DOM samt `offsetParent`. Deshalb zusätzlich
+   prüfen, ob das Element waagerecht im Viewport liegt.
+2. **Weggeschnitten vs. weggescrollt.** `isClippedAway()` trennt beides, und die
+   Reihenfolge ist entscheidend: Beim ersten **scrollbaren** Vorfahren
+   (`overflow: auto/scroll`) endet die Prüfung mit „erreichbar“ — was er
+   scrollen kann, holt `bringIntoView()` heran. Nur ein Vorfahre mit
+   `overflow: hidden`, ausserhalb dessen das Element liegt, bedeutet
+   „unerreichbar“. Ein Container **ohne jede Ausdehnung** zählt immer als
+   weggeschnitten: Genau so verhält sich die **eingeklappte Seitenleiste**
+   (72 px), die `.sidebar-action-buttons` auf Höhe 0 fährt — Institut, Suche und
+   Mitteilungen bleiben im DOM, sieht sie aber niemand. Diese drei Schritte
+   entfallen dort bewusst.
+   Wer nur auf „hidden“ prüft, verwirft die weggescrollten Menüpunkte gleich
+   mit (gemessen: 15 Schritte fielen auf 10).
+3. **Höhe 0 am Ziel selbst.** Ein Anker auf einem Element ohne Höhe (der
+   Profil-Link in der Sidebar) lässt den Schritt kommentarlos entfallen. Anker
+   auf den umgebenden Container setzen.
+
+Gemessener Stand nach den Korrekturen — je Fall trifft jeder Schritt sein Ziel
+(geprüft per `elementFromPoint` auf den Mittelpunkt):
+
+| Fall | Schritte |
+|---|---|
+| Desktop 1440 × 900 | 15 |
+| Kurzer Viewport 1440 × 600 (Navigation scrollt) | 15 |
+| Eingeklappte Seitenleiste (72 px) | 12 (3 bewusst übersprungen) |
+| Mobil 390 × 844 | 8 |
+
+### Aussehen
+
+Die Sprechblase übernimmt den Aufbau von `.modal-glattt`: Verlaufs-Kopf
+(primary → primary-dark) mit weisser Schrift und dem Schliesskreuz im Stil von
+`.modal-glattt-header-close`, heller Körper, Fussleiste mit Trennlinie,
+Schaltflächen in der Geometrie von `.btn-glattt-primary` / `-secondary`. Der
+Pfeil trägt die Farbe **der Kante, an der er sitzt** — bei „side-bottom“ (Blase
+unter dem Ziel) also den Kopf-Verlauf, bei „side-top“ die Fussleiste.
 
 ### Auto-Start-Regel
 
