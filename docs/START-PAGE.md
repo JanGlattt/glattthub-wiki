@@ -67,6 +67,21 @@ Wechsel einer Statistik und dem Ändern der Quicklinks lädt die Seite einmal ne
 **Zurücksetzen** löscht die eigene Fassung. Danach gilt wieder die
 Voreinstellung der Rolle (siehe unten) bzw. die Standard-Belegung.
 
+### Kennzahlen-Kachel
+
+Zur Wahl stehen **alle Kennzahlen des Hubs**, die man sehen darf — aktuell 129
+aus 13 Quellen (Verkauf, Ads, Kunden, Personal, glattt-KPIs, HR, Widerrufe,
+Besucher, Termine, Pakete, Schulden …). Bis 08/2026 waren es nur vier Quellen
+rund um Termine und Pakete.
+
+Wegen der Menge hat der Dialog ein **Suchfeld**. Bereits Gewähltes bleibt beim
+Filtern sichtbar, damit die Auswahl nicht aus dem Blick gerät und der Zähler
+„x / 8" zur Liste passt. Pro Kachel sind 8 Kennzahlen möglich, bei halber
+Breite 4.
+
+Beträge, Prozentwerte und Nachkommastellen werden korrekt dargestellt
+(„1.234,50 €" statt „1234.5").
+
 ### Statistik-Kacheln
 
 Jede Statistik des Hubs kann als Kachel auf der Startseite stehen — dieselbe
@@ -215,6 +230,32 @@ Mitteilungen). Beide in `components/stat-skeleton.blade.php`.
 > Bearbeitungsmodus beim Betreten die verbindliche Belegung nach.
 > Abgesichert durch `StartPageTest::test_verschieben_erhaelt_die_gewaehlte_statistik`.
 
+### Kennzahlen: volle Registry-IDs
+
+Die Kachel speichert seit 08/2026 die **volle Registry-ID** (`sales.total_revenue`)
+statt der Kurzform (`total_revenue`). Die Kurzform ist nur **innerhalb einer
+Quelle** eindeutig — sie funktionierte, solange nur vier Quellen angeboten
+wurden, und wäre quellenübergreifend mehrdeutig geworden.
+
+- `getKpis()` reicht die IDs direkt an `KpiValueService::values()` durch
+  (kein `shortIds: true` mehr) und liefert `format`, `unit` und `decimals` mit;
+  formatiert wird clientseitig in `startCard.formatKpi()` nach denselben Regeln
+  wie die KPI-Zeile der Statistikseiten.
+- `getKpiPortfolio()` listet `KpiRegistry::forUser($user)`, gruppiert nach
+  `KpiRegistry::sourceLabel()`.
+- `saveSelectedKpis()` prüft gegen `KpiRegistry::forUser()` — eine Kennzahl
+  ohne Berechtigung lässt sich nicht ins eigene Layout schreiben (422).
+- Migration `2026_08_11_100000_migrate_start_page_kpi_ids_to_registry` überführt
+  gespeicherte Auswahlen (Kachel-Config **und** die alte globale
+  `selected_kpis`); sie ist idempotent (volle IDs bleiben stehen).
+
+> **Aufwand im Blick behalten:** Vorher lagen alle vier Quellen im
+> `ReportController` und waren gecacht. Jetzt kann eine Kachel Kennzahlen aus
+> bis zu acht verschiedenen Quellen ziehen — `KpiValueService` macht zwar
+> höchstens einen Service-Aufruf je Quelle, aber acht Quellen sind acht
+> Aufrufe. Die Services cachen ihre Aggregate; wenn die Kachel spürbar träge
+> wird, ist das der Ansatzpunkt.
+
 ### Statistik-Kacheln
 
 Der frühere Kartentyp `charts` mit sechs fest verdrahteten Diagrammen
@@ -290,7 +331,7 @@ Inhalt zeigt, entscheidet allein die Berechtigung der jeweiligen Kennzahl
 | DELETE | `/hub/start-config` | `configure_dashboard` | Auf Voreinstellung zurücksetzen |
 | POST | `/hub/start-config/add-card` | `configure_dashboard` | Kachel anlegen |
 | POST | `/hub/start-config/remove-card` | `configure_dashboard` | Kachel entfernen |
-| GET | `/hub/start-kpis/portfolio` | `configure_dashboard` | Kennzahlen zur Auswahl |
+| GET | `/hub/start-kpis/portfolio` | `configure_dashboard` | Kennzahlen zur Auswahl (alle der KpiRegistry, rechtegefiltert) |
 | POST | `/hub/start-kpis/save` | `configure_dashboard` | Kennzahlen-Auswahl speichern |
 | GET | `/hub/start-statistic/portfolio` | `configure_dashboard` | Statistiken zur Auswahl |
 | POST | `/hub/start-statistic/save` | `configure_dashboard` | Statistik einer Kachel speichern |
