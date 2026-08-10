@@ -1,347 +1,352 @@
 # 🏠 Startseite (Start Page)
 
-**Version:** 1.0  
-**Letzte Aktualisierung:** März 2026
+**Version:** 2.0
+**Letzte Aktualisierung:** August 2026
 
-Die neue Startseite ersetzt das alte Dashboard und bietet eine **vollständig personalisierbare Card-basierte Oberfläche**. Jeder Benutzer kann seine Startseite individuell gestalten — Karten hinzufügen, entfernen, umsortieren und in der Breite anpassen.
+Die Startseite ist der erste Bildschirm nach dem Login: oben Begrüßung und
+Tagesüberblick, darunter frei zusammenstellbare Kacheln.
 
----
-
-## 📁 Dateien
-
-| Datei | Beschreibung |
-|-------|--------------|
-| `app/Http/Controllers/StartPageController.php` | API-Controller für Konfiguration, Quicklinks und KPIs |
-| `app/Models/StartPageConfig.php` | Eloquent Model mit Default-Konfiguration pro Rolle |
-| `database/migrations/2026_03_04_100000_create_start_page_configs_table.php` | Hauptmigration (cards, quicklinks JSON) |
-| `database/migrations/2026_03_04_113244_add_selected_kpis_to_*.php` | Erweiterung um selected_kpis JSON |
-| `resources/views/hub/start.blade.php` | Haupt-Template mit Greeting, Edit-Bar, Card-Grid |
-| `resources/views/hub/start/_card-news.blade.php` | News-Karte |
-| `resources/views/hub/start/_card-quicklinks.blade.php` | Quicklinks-Karte |
-| `resources/views/hub/start/_card-mitteilungen.blade.php` | Mitteilungen-Karte |
-| `resources/views/hub/start/_card-kpis.blade.php` | KPI-Zeile (stat-strip-glattt) |
-| `resources/views/hub/start/_card-charts.blade.php` | Charts-Karte (Chart.js) |
-| `resources/views/hub/start/_modal-add-card.blade.php` | Modal: Karte hinzufügen |
-| `resources/views/hub/start/_modal-quicklink-config.blade.php` | Modal: Quicklinks konfigurieren |
-| `resources/views/hub/start/_modal-kpi-config.blade.php` | Modal: KPIs auswählen |
-| `public/js/start.js` | Alpine.js Component mit D&D, Datenladung, Modals |
-| `public/css/theme_glattt.css` | Styles (start-page-*, start-card-*, KPI Config) |
+Seit **08/2026** wird sie **serverseitig gerendert**: Das vollständige
+Kachelraster steht schon im ersten HTML, jede Kachel holt ihre Daten danach
+einzeln nach. Vorher baute der Browser das Raster erst, nachdem die
+Konfiguration per fetch eingetroffen war — bis dahin lag ein Ganzseiten-Spinner
+über der Seite, und ein Reload war oft nötig.
 
 ---
 
-## 🏗️ Architektur
+## Für Endanwender
 
-### Übersicht
+### Was zeigt die Startseite?
+
+| Bereich | Inhalt |
+|---|---|
+| **Begrüßung** | Tageszeit-abhängiger Gruß, Datum, aktuelles Institut |
+| **Heute** (Tagesüberblick) | Termine heute (gesamt, durchgeführt, offen), Beratungsgespräche heute, ungelesene Mitteilungen |
+| **Kacheln** | News, Quicklinks, Mitteilungen, Kennzahlen und beliebig viele **Statistiken** |
+
+Der Tagesüberblick ist fest und lässt sich nicht entfernen — er ist das, was
+nach dem Login sofort arbeitsfähig macht. Termine und Mitteilungen sind
+anklickbar und führen in den jeweiligen Bereich.
+
+### Aktualisieren sich die Zahlen von selbst?
+
+Ja. Ein manueller Reload ist nicht mehr nötig:
+
+- beim **Zurückkehren auf den Tab** (wenn die Zahlen älter als eine Minute sind)
+- zusätzlich **alle 5 Minuten**, solange der Tab sichtbar ist
+
+Beim Auffrischen bleiben die alten Werte stehen und werden nur kurz gedimmt —
+die Seite springt nicht und Kacheln kollabieren nicht.
+
+> **Stand der Zahlen:** Termine und Beratungen kommen aus der lokalen
+> Auswertungstabelle, die alle 15 Minuten mit Phorest abgeglichen wird. Der
+> tatsächliche Stand steht rechts oben in der „Heute"-Karte. „Durchgeführt"
+> wird in Phorest oft erst beim Abrechnen gesetzt, teils am Folgetag — die Zahl
+> ist tagsüber daher eher zu niedrig.
+
+### Startseite anpassen
+
+Mit dem Recht **„KPIs und Charts konfigurieren"** (`configure_dashboard`)
+erscheint oben rechts der Knopf **Anpassen**:
+
+| Aktion | Wie |
+|---|---|
+| Reihenfolge ändern | Kachel greifen und verschieben |
+| Breite umschalten | Pfeil-Symbol an der Kachel (100 % ⇄ 50 %) |
+| Kachel entfernen | X-Symbol an der Kachel |
+| Kachel hinzufügen | Feld „Karte hinzufügen" am Ende des Rasters |
+| Statistik wechseln | Symbol an der Statistik-Kachel → Auswahl mit Suchfeld |
+| Kennzahlen wählen | Zahnrad an der Kennzahlen-Kachel |
+| Quicklinks wählen | Zahnrad an der Quicklinks-Kachel |
+| Zurücksetzen | „Zurücksetzen" in der Bearbeitungsleiste |
+
+Änderungen werden sofort gespeichert. Nach dem Hinzufügen einer Kachel, dem
+Wechsel einer Statistik und dem Ändern der Quicklinks lädt die Seite einmal neu
+— diese Inhalte baut der Server.
+
+**Zurücksetzen** löscht die eigene Fassung. Danach gilt wieder die
+Voreinstellung der Rolle (siehe unten) bzw. die Standard-Belegung.
+
+### Statistik-Kacheln
+
+Jede Statistik des Hubs kann als Kachel auf der Startseite stehen — dieselbe
+Karte wie auf der Berichtsseite, inklusive Diagramm, Tabellen-Register und
+Info-Panel. Es gibt keine gesonderten „Startseiten-Diagramme" mehr.
+
+Angeboten wird nur, was man auch sehen darf. Eine Statistik, für die die
+Berechtigung fehlt (oder später entzogen wird), verschwindet still aus dem
+Raster statt als leerer Rahmen stehen zu bleiben.
+
+Statistiken folgen dem **Standortfilter der Seitenleiste**. Einen Zeitraum-
+Filter hat die Startseite bewusst nicht — jede Statistik zeigt ihren
+Standardzeitraum; Statistiken mit festem Zeitraum weisen ihn als Hinweis aus.
+
+---
+
+## Für Entwickler
+
+### Dateien
+
+| Datei | Zweck |
+|---|---|
+| `app/Http/Controllers/StartPageController.php` | Seite (`show`), Tagesüberblick, Konfiguration, KPI- und Statistik-Auswahl |
+| `app/Services/StartPageOverviewService.php` | Die drei Zahlen des Tagesüberblicks |
+| `app/Models/StartPageConfig.php` | Eigene Belegung, Auflösungs-Reihenfolge, Kartentypen, Quicklink-Katalog |
+| `app/Models/StartPageRoleDefault.php` | Voreinstellung je Rolle |
+| `app/Filament/Resources/StartPageRoleDefaults/` | Admin-Backend für die Rollen-Voreinstellung |
+| `resources/views/hub/start.blade.php` | Seiten-Skelett, serverseitig gerendertes Kachelraster |
+| `resources/views/hub/start/_overview.blade.php` | Begrüßung + Tagesüberblick |
+| `resources/views/hub/start/_card-{news,quicklinks,mitteilungen,kpis}.blade.php` | Kachel-Partials |
+| `resources/views/hub/start/_quicklink-icon.blade.php` | Symbol eines Quicklinks (Heroicons) |
+| `resources/views/hub/start/_modal-*.blade.php` | Karte hinzufügen, Quicklinks, Kennzahlen, Statistik |
+| `public/js/start.js` | `startPage()`, `startCard()`, `startOverview()` |
+| `public/css/theme_glattt.css` | Abschnitte `START PAGE – *` |
+
+### Aufbau
 
 ```
-Browser (Alpine.js)                    Server (Laravel)
-┌────────────────────────┐     ┌──────────────────────────────┐
-│ start.blade.php         │     │ StartPageController           │
-│ + start.js (Alpine)     │     │   ├─ getConfig()             │
-│                         │────▶│   ├─ saveConfig()            │
-│ x-data="startPage()"   │◀────│   ├─ resetConfig()           │
-│                         │     │   ├─ addCard() / removeCard() │
-│ Cards: News, KPIs,      │     │   ├─ getKpis()              │
-│   Quicklinks, Charts,   │     │   ├─ getKpiPortfolio()      │
-│   Mitteilungen          │     │   └─ saveSelectedKpis()     │
-│                         │     │                              │
-│ Drag & Drop             │     │ StartPageConfig (Model)      │
-│ Edit Mode               │     │   ├─ cards (JSON)            │
-│ Branch-Aware            │     │   ├─ quicklinks (JSON)       │
-└────────────────────────┘     │   └─ selected_kpis (JSON)    │
-                                └──────────────────────────────┘
+Erster Request                          Danach, je Kachel
+┌──────────────────────────────┐        ┌────────────────────────────┐
+│ StartPageController@show      │        │ GET /hub/start-overview     │
+│  └─ StartPageConfig           │        │ GET /phorest/news/latest    │
+│      ::resolveForUser()       │        │ GET /phorest/notifications  │
+│         ↓                     │        │ GET /hub/start-kpis         │
+│  hub/start.blade.php          │        │ (Statistik-Kacheln: eigener │
+│   ├─ Begrüßung + Überblick    │        │  Endpoint aus der Registry) │
+│   ├─ Kachelraster (@foreach)  │        └────────────────────────────┘
+│   │   └─ <x-statistic> je                     ↑
+│   │      Statistik-Kachel                     │
+│   └─ Platzhalter je Kachel  ──────────────────┘
+└──────────────────────────────┘
 ```
 
-### Datenfluss
+**Warum serverseitig?** Zwei Gründe, beide zwingend:
 
-1. **Blade-Template** wird geladen (`@extends('layouts.hub')`, Livewire SPA-kompatibel)
-2. **Alpine.js** `startPage()` initialisiert: `loadConfig()` + `loadBranches()` parallel
-3. **Konfiguration** wird von `/hub/start-config` geladen (Karten, Quicklinks, verfügbare Typen)
-4. **Kartendaten** werden für jede sichtbare Karte einzeln geladen (`loadCardData()`)
-5. **Edit Mode** erlaubt Drag & Drop, Breitenanpassung, Hinzufügen/Entfernen
-6. **Speichern** erfolgt automatisch über `/hub/start-config` POST bei jeder Änderung
+1. **Gerüst sofort.** Das Raster steht in ihrer Endhöhe im ersten HTML.
+2. **`<x-statistic>` ist eine Blade-Komponente.** Sie lässt sich nur
+   serverseitig rendern — ohne diesen Umbau könnte die Startseite die
+   StatisticRegistry gar nicht nutzen.
 
----
+### Alpine-Komponenten
 
-## 📡 API-Endpoints
+| Komponente | Ort | Aufgabe |
+|---|---|---|
+| `startPage(cfg)` | Seiten-Wurzel | Standortfilter, Auto-Aktualisierung, Bearbeitungsmodus, Dialoge |
+| `startCard(card)` | je Kachel | Lädt die Daten einer Kachel |
+| `startOverview()` | Tagesüberblick | Lädt die drei Tageszahlen |
 
-### Konfiguration
+Der Rahmen stellt **`statFilters`** (`{date_from, date_to, branch_id}`) und
+**`refreshTick`** reaktiv bereit. Kacheln lesen beides über `x-effect`:
 
-| Method | Route | Controller | Beschreibung |
-|--------|-------|------------|--------------|
-| GET | `/hub/start-config` | `getConfig()` | Aktuelle Konfiguration laden |
-| POST | `/hub/start-config` | `saveConfig()` | Konfiguration speichern |
-| DELETE | `/hub/start-config` | `resetConfig()` | Auf Werkseinstellung zurücksetzen |
-| POST | `/hub/start-config/add-card` | `addCard()` | Karte hinzufügen |
-| POST | `/hub/start-config/remove-card` | `removeCard()` | Karte entfernen |
+```blade
+x-data="startCard({...})"
+x-effect="syncContext(JSON.stringify(statFilters), refreshTick)"
+```
 
-### KPIs
+Dieselbe Mechanik nutzt `<x-statistic>` (siehe `glattt-stats.js`) — keine
+Events, keine Listener, gilt auch für nachträglich eingefügte Kacheln.
 
-| Method | Route | Controller | Beschreibung |
-|--------|-------|------------|--------------|
-| GET | `/hub/start-kpis` | `getKpis()` | KPI-Daten für ausgewählte KPIs |
-| GET | `/hub/start-kpis/portfolio` | `getKpiPortfolio()` | Vollständiges KPI-Portfolio |
-| POST | `/hub/start-kpis/save` | `saveSelectedKpis()` | KPI-Auswahl speichern |
+> **Kein `x-init="init()"`.** Alpine ruft `init()` bei einem Datenobjekt mit
+> `init()`-Methode selbst auf. Beides zusammen liesse jede Kachel doppelt laden
+> — genau der bekannte Doppel-Ladefehler anderer Seiten.
 
-→ Details zum KPI-System: [Start-Page KPI-System](START-PAGE-KPIS.md)
+> **Zähler immer deklarieren.** `_seq` und `_context` stehen im Datenobjekt.
+> Undeklarierte Properties teilen sich verschachtelte `x-data`-Komponenten über
+> die Scope-Kette und verwerfen sich gegenseitig die Race-Guards.
 
----
+### Auto-Aktualisierung
 
-## 🗃️ Datenbank
+`startPage()` erhöht `refreshTick` und ruft zusätzlich `load()` auf jeder
+`.statistic-glattt`-Instanz:
 
-### Tabelle: `start_page_configs`
-
-| Spalte | Typ | Beschreibung |
-|--------|-----|--------------|
-| `id` | bigint | Primary Key |
-| `user_id` | foreignId | Benutzer (unique, cascade delete) |
-| `cards` | JSON | Array von Karten-Objekten |
-| `quicklinks` | JSON | Array von Quicklink-Slugs |
-| `selected_kpis` | JSON | Array von ausgewählten KPI-IDs |
-| `created_at` / `updated_at` | timestamp | Zeitstempel |
-
-### Card-Objekt Struktur
-
-```json
-{
-    "id": "kpis-1",
-    "type": "kpis",
-    "width": "full",
-    "position": 3
+```js
+refreshAll() {
+    this.refreshTick++;
+    document.querySelectorAll('.statistic-glattt')
+        .forEach(el => window.Alpine?.$data(el)?.load?.());
 }
 ```
 
-| Feld | Typ | Werte |
-|------|-----|-------|
-| `id` | string | Eindeutige ID (z.B. `news-a3f2b1`) |
-| `type` | string | `news`, `quicklinks`, `mitteilungen`, `kpis`, `charts` |
-| `width` | string | `full` (100%) oder `half` (50%) |
-| `position` | integer | Sortier-Position (0-basiert) |
+Der Umweg über die Instanz ist nötig, weil `GlatttStats.syncFilters()` nur die
+**Filter** vergleicht — bei unverändertem Standort würde ein Takt-Signal dort
+nichts auslösen.
 
----
+Auslöser: `visibilitychange` (mindestens 60 s Abstand) und ein 5-Minuten-Takt,
+der nur bei sichtbarem Tab feuert.
 
-## 🃏 Kartentypen
+### Ladeverhalten
 
-### 1. News
+Die Seite folgt `statistics-pages.instructions.md`, Abschnitt 8:
 
-| Eigenschaft | Wert |
-|-------------|------|
-| **Rollen** | Alle |
-| **Datenquelle** | `/phorest/news/latest` |
-| **Features** | Bild + Titel + Datum, Link zu Detail, Branch-gefiltert |
+| Regel | Umsetzung |
+|---|---|
+| Endhöhe ab dem ersten Rendern | Raster kommt fertig vom Server, jede Kachel mit Platzhalter |
+| Keine Spinner | `<x-stat-skeleton>`; die Klassen `.start-card-loading*` sind entfallen |
+| Höhen genau einmal | CSS in `theme_glattt.css` — kein `style="height: …"` im Partial |
+| Fehler je Kachel | `<x-card-state type="error" retry="load()">`, kein seitenweiter Fehlerblock |
+| Sanftes Neuladen | `refreshable-glattt` + `:class="loading && data ? 'is-refreshing' : ''"` |
 
-### 2. Quicklinks
+Für die Startseite kamen zwei Skeleton-Typen dazu: **`news`** (Aufmacher mit
+Bild, zwei Einträge, Fußzeile) und **`list`** (Symbol + zwei Textzeilen, für
+Mitteilungen). Beide in `components/stat-skeleton.blade.php`.
 
-| Eigenschaft | Wert |
-|-------------|------|
-| **Rollen** | Alle |
-| **Datenquelle** | Statisch (12 verfügbare Seiten) |
-| **Features** | 2-Spalten-Grid, Zahnrad-Button zum Konfigurieren, frei wählbar |
+### Kartentypen
 
-**Verfügbare Quicklinks:**
+`StartPageConfig::CARD_TYPES` — `news`, `quicklinks`, `mitteilungen`, `kpis`,
+`statistic`.
 
-| Slug | Label | Icon |
-|------|-------|------|
-| `appointments` | Termine | calendar |
-| `clients` | Kunden | users |
-| `staff` | Personal | user-group |
-| `services` | Dienstleistungen | sparkles |
-| `reports` | Reports | chart-bar |
-| `vouchers` | Gutscheine | ticket |
-| `contracts` | Verträge & SEPA | document-text |
-| `branches` | Standorte | building-office |
-| `lasers` | Lasergeräte | bolt |
-| `forms` | Formulare | clipboard-document |
-| `settings` | Einstellungen | cog-6-tooth |
-| `news-archiv` | News-Archiv | newspaper |
-
-### 3. Mitteilungen
-
-| Eigenschaft | Wert |
-|-------------|------|
-| **Rollen** | Alle |
-| **Datenquelle** | `/phorest/notifications` |
-| **Features** | Typ-Icon mit Farbe, max. 5 Einträge, „Alle anzeigen"-Link |
-
-### 4. KPIs
-
-| Eigenschaft | Wert |
-|-------------|------|
-| **Rollen** | admin, super_admin |
-| **Datenquelle** | `/hub/start-kpis` (aggregiert aus 4 Report-Endpoints) |
-| **Styling** | `stat-strip-glattt` (einheitlich mit Report-Seiten) |
-| **Features** | Trend-Vergleich, konfigurierbares Portfolio (1–8 KPIs) |
-
-→ Vollständige Dokumentation: [Start-Page KPI-System](START-PAGE-KPIS.md)
-
-### 5. Charts
-
-| Eigenschaft | Wert |
-|-------------|------|
-| **Rollen** | admin, super_admin |
-| **Datenquelle** | Demo-Daten (Chart.js 4.4.1) |
-| **Features** | Woche/Monat-Tabs, Bar-Chart, responsive |
-
----
-
-## 🎨 Edit Mode
-
-### Funktionen
-
-- **Drag & Drop**: Karten per ID-basiertem Index umsortieren
-- **Breite umschalten**: full ↔ half mit Button in der Kartenecke
-- **Karte entfernen**: X-Button (mit Positions-Neuindizierung)
-- **Karte hinzufügen**: Modal mit verfügbaren Kartentypen
-- **Quicklinks konfigurieren**: Zahnrad-Button → Checkbox-Modal
-- **KPIs konfigurieren**: Zahnrad-Button → Kategorie-basiertes Portfolio-Modal
-- **Zurücksetzen**: Config löschen → Rolle-basierte Defaults
-- **Wobble-Animation**: Karten wackeln leicht im Edit-Mode (CSS `@keyframes start-card-wobble`)
-
-### Visuelles Feedback
-
-| Element | Klasse/Verhalten |
-|---------|-----------------|
-| Edit-Bar | `.start-page-edit-bar` mit Label + 2 Buttons |
-| Breitenanzeige | `.start-card-width-indicator` zeigt „100%" / „50%" |
-| Wobble | `@keyframes start-card-wobble` mit -0.5° bis +0.5° Rotation |
-| Dragging | `.dragging` Klasse (Opacity + Scale) |
-| Drop-Target | `.drag-over` Klasse (Border-Highlight) |
-
----
-
-## 🔀 Rollenbasierte Defaults
-
-### Standard-Karten nach Rolle
-
-| Rolle | Karten |
-|-------|--------|
-| `user` / `moderator` | News (full), Quicklinks (half), Mitteilungen (half) |
-| `admin` / `super_admin` | + KPIs (full), Charts (full) |
-
-### Standard-Quicklinks
-
-- `appointments`, `clients`, `staff`, `reports`
-
-### Standard-KPIs
-
-- `upcoming_today`, `avg_per_day`, `appointments_current`, `treatments`
-
----
-
-## 🏪 Branch/Standort-Auswahl
-
-Die Standort-Auswahl erfolgt über die Sidebar und wird in `localStorage` als `selectedBranch` gespeichert.
-
-| Verhalten | Beschreibung |
-|-----------|--------------|
-| **Branch-Badge** | Zeigt aktuell ausgewählten Standort oder „Alle Institute" |
-| **Branch-Wechsel** | `branchChanged` Event → alle Karten werden neu geladen |
-| **KPI-Filterung** | `branch_id` Parameter wird an `/hub/start-kpis` weitergegeben |
-| **News/Mitteilungen** | Werden ebenfalls nach Branch gefiltert |
-
----
-
-## 🎭 Greeting-Header
-
-Der Greeting-Bereich zeigt eine tageszeit-abhängige Begrüßung:
-
-| Uhrzeit | Gruß |
-|---------|------|
-| 23:00 – 03:59 | Gute Nacht |
-| 04:00 – 08:59 | Guten Morgen |
-| 09:00 – 17:59 | Guten Tag |
-| 18:00 – 22:59 | Guten Abend |
-
-**Aufbau:**
-
-```
-┌──────────────────────────────────────────────────┐
-│ Guten Tag, Jan!                 📍 Alle Institute │
-│ Montag, 3. März 2026                   [Anpassen] │
-└──────────────────────────────────────────────────┘
+```json
+{
+    "id": "statistic-a3f2b1",
+    "type": "statistic",
+    "width": "full",
+    "position": 4,
+    "config": { "statisticKey": "termine.monthly" }
+}
 ```
 
-- Der **Vorname** wird serverseitig aus `Auth::user()->name` extrahiert (erster Teil vor Leerzeichen)
-- Das **Datum** nutzt `Carbon::isoFormat('dddd, D. MMMM YYYY')` (deutsch)
-- Der **Anpassen-Button** ist nur im Nicht-Edit-Mode sichtbar
+`config` trägt die Feineinstellung: `statisticKey` bei Statistik-Kacheln,
+`selectedKpis` bei Kennzahlen-Kacheln.
 
----
+> **Achtung beim Speichern:** Das Layout wird aus dem DOM abgeleitet
+> (Reihenfolge), die Kartenobjekte selbst kommen aus `this.cards`. Würde man
+> die Karten aus dem DOM neu aufbauen, ginge `config` verloren und jeder Nutzer
+> verlöre beim Verschieben seine gewählte Statistik. Deshalb lädt der
+> Bearbeitungsmodus beim Betreten die verbindliche Belegung nach.
+> Abgesichert durch `StartPageTest::test_verschieben_erhaelt_die_gewaehlte_statistik`.
 
-## 🔌 Livewire SPA-Kompatibilität
+### Statistik-Kacheln
 
-Die Startseite ist vollständig Livewire SPA-kompatibel:
+Der frühere Kartentyp `charts` mit sechs fest verdrahteten Diagrammen
+(`CHART_PORTFOLIO` im Controller, fünf Builder-Methoden, eigenes ECharts-Setup
+in `start.js`) ist **ersatzlos entfallen** — alle sechs existierten längst als
+Statistik in der Registry:
 
-- **Chart.js** wird global im Hub-Layout geladen (`layouts/hub.blade.php`)
-- **start.js** wird mit `@assets` Directive geladen — Livewire garantiert, dass das Script **vor** der Alpine.js-Initialisierung verfügbar ist
-- **Alpine.js** `startPage()` hat ein explizites `x-init="init()"` für zuverlässige Initialisierung bei SPA-Navigation
-- **`destroy()`** bereinigt Event-Listener und Chart-Instanzen
-- **`branchChanged`** Event-Listener werden korrekt auf-/abgebaut
+| Altes Diagramm | Registry-Schlüssel |
+|---|---|
+| `appointments_monthly` | `termine.monthly` |
+| `consultation_trend` / `completed_vs_noshow` | `termine.consultation-monthly` |
+| `cancelled_monthly` | `termine.cancelled-monthly` |
+| `body_zones_monthly` | `termine.body-zones` |
+| `top_services` | `termine.top-services` |
 
-### Warum `@assets` statt `@push('scripts')`?
+Die Migration `2026_08_10_210200_migrate_start_page_chart_cards_to_statistics`
+überführt gespeicherte Auswahlen (inklusive Rückweg im `down()`).
 
-Bei SPA-Navigation via `wire:navigate` ersetzt Livewire den Seiteninhalt und injiziert neue Scripts. Mit `@push('scripts')` + externen JS-Dateien kann eine **Race Condition** entstehen:
+**Assets:** Geladen werden nur die Bundles der tatsächlich platzierten
+Statistiken (`$statistikSkripte` aus dem Controller), nicht alle 84 wie beim
+Eigenen Dashboard. Leaflet und wordcloud2 kommen nur mit, wenn `kunden.map`
+bzw. `ads.search-terms` auf der Seite liegt.
 
-1. Livewire injiziert neues HTML mit `x-data="startPage()"`
-2. Alpine.js versucht `startPage()` auszuwerten
-3. Die externe `start.js` ist aber noch nicht geladen → `startPage is not defined`
+### Rollen-Voreinstellung
 
-Die `@assets` Directive löst dieses Problem: Livewire wartet mit der DOM-Verarbeitung, bis alle Assets geladen sind.
+Reihenfolge in `StartPageConfig::resolveForUser()`:
 
-```blade
-{{-- ✅ Korrekt: @assets garantiert Ladereihenfolge --}}
-@assets
-    <script src="{{ asset('js/start.js') }}?v={{ filemtime(public_path('js/start.js')) }}"></script>
-@endassets
-
-{{-- ❌ Veraltet: @push hat Race Condition bei SPA-Navigation --}}
-@push('scripts')
-    <script src="{{ asset('js/start.js') }}"></script>
-@endpush
+```
+eigene Konfiguration  →  Voreinstellung der Rolle  →  Code-Voreinstellung
 ```
 
-> **Regel:** Alle externen JS-Dateien, die Alpine.js-Komponenten definieren (z.B. `function startPage() { return {...} }`), müssen mit `@assets` statt `@push('scripts')` geladen werden. Inline-Scripts in `<script>`-Tags sind davon nicht betroffen.
+Sobald ein Nutzer seine Startseite selbst gespeichert hat, gilt nur noch seine
+Fassung — eine spätere Änderung der Rollen-Voreinstellung fasst sie nicht mehr
+an. Hat jemand mehrere Rollen, gewinnt die Rolle mit den **meisten Kacheln**
+(die umfassendste Voreinstellung ist die hilfreichste; eine willkürliche
+Reihenfolge wäre für den Nutzer nicht nachvollziehbar).
+
+Gepflegt wird sie im Admin-Backend unter **Einstellungen → Startseite je
+Rolle**; Recht: `manage_start_page_defaults` (vergeben abgeleitet aus
+`create_roles`).
+
+Tabelle `start_page_role_defaults`: `role_id` (unique, FK auf `roles`), `cards`
+(JSON), `quicklinks` (JSON).
+
+### Berechtigungen
+
+| Recht | Wirkung |
+|---|---|
+| `view_dashboard` | Startseite und ihre Kacheln sehen |
+| `configure_dashboard` | Bearbeitungsmodus: Kacheln hinzufügen, entfernen, verschieben, konfigurieren |
+| `manage_start_page_defaults` | Rollen-Voreinstellung im Admin-Backend pflegen |
+
+**Geändert 08/2026 — behobener Fehler:** `GET /hub/start-config` lag hinter
+`configure_dashboard`, während `start.js` die Route für **jeden** Nutzer
+aufrief. Wer das Recht nicht hatte, bekam 403 und damit eine **leere
+Startseite**. Die Leseroute liegt jetzt unter `view_dashboard`; schreibende
+Routen bleiben hinter `configure_dashboard`.
+
+Damit einher ging eine saubere Trennung: `configure_dashboard` regelt das
+**Einrichten**, nicht das **Sehen**. Ob eine Kennzahlen- oder Statistik-Kachel
+Inhalt zeigt, entscheidet allein die Berechtigung der jeweiligen Kennzahl
+(`KpiValueService`) bzw. Statistik (`StatisticRegistry` + `<x-statistic>`).
+
+### Endpoints
+
+| Methode | Route | Recht | Zweck |
+|---|---|---|---|
+| GET | `/hub` | `view_dashboard` | Die Seite |
+| GET | `/hub/start-overview` | `view_dashboard` | Tagesüberblick |
+| GET | `/hub/start-kpis` | `view_dashboard` | Werte einer Kennzahlen-Kachel |
+| GET | `/hub/start-config` | `view_dashboard` | Eigene Belegung lesen |
+| POST | `/hub/start-config` | `configure_dashboard` | Belegung speichern |
+| DELETE | `/hub/start-config` | `configure_dashboard` | Auf Voreinstellung zurücksetzen |
+| POST | `/hub/start-config/add-card` | `configure_dashboard` | Kachel anlegen |
+| POST | `/hub/start-config/remove-card` | `configure_dashboard` | Kachel entfernen |
+| GET | `/hub/start-kpis/portfolio` | `configure_dashboard` | Kennzahlen zur Auswahl |
+| POST | `/hub/start-kpis/save` | `configure_dashboard` | Kennzahlen-Auswahl speichern |
+| GET | `/hub/start-statistic/portfolio` | `configure_dashboard` | Statistiken zur Auswahl |
+| POST | `/hub/start-statistic/save` | `configure_dashboard` | Statistik einer Kachel speichern |
+
+Die frühere Route `/hub/start-chart` samt Portfolio und Speichern ist entfallen.
+
+### Tagesüberblick — Datenquellen
+
+`StartPageOverviewService::forUser(User $user, ?string $branchId)`:
+
+| Zahl | Quelle | Recht |
+|---|---|---|
+| Termine heute (gesamt/durchgeführt/offen/im Haus/No-Show) | `stats_historic_appointments`, ein `GROUP BY state` | `view_appointments` |
+| Beratungsgespräche heute | dieselbe Tabelle, Service-IDs aus `consultation_services` (`is_consultation`) | `view_appointments` |
+| Ungelesene Mitteilungen | `Notification::forUser(...)->unreadForUser(...)` als `COUNT` | — |
+
+**Bewusste Entscheidungen:**
+
+- **Lokale Tabelle statt Phorest live.** `sync:appointments-recent` hält den
+  laufenden Tag alle 15 Minuten aktuell; ein Live-Abruf über alle Institute
+  dauert 10–15 Sekunden und ist für den ersten Bildschirm untragbar. Der Stand
+  steht sichtbar in der Karte.
+- **Service-IDs aus `consultation_services`**, nicht aus
+  `StatsHistoricAppointment::scopeConsultations()` — der Scope hat drei IDs
+  hart verdrahtet und verpasst jeden neu angelegten Beratungs-Service.
+- **Datumsvergleich als Bereich** (`>= heute AND < morgen`), nicht
+  `whereDate()`: Der Model-Cast schreibt in SQLite „Y-m-d H:i:s", MySQL hält
+  „Y-m-d"; der Bereich ist in beiden richtig und kann anders als `DATE(spalte)`
+  den Index `[appointment_date, branch_id]` nutzen.
+- **Zustands-Gruppierung wie die Terminübersicht** (`appointments.js`):
+  `COMPLETED|PAID` = durchgeführt, `BOOKED|CONFIRMED` = offen, `CHECKED_IN` =
+  im Haus. Stornierte und gelöschte zählen nicht mit.
+- **Mitteilungen direkt als COUNT.** Der Endpoint `/phorest/notifications`
+  liefert zwar `unread_count`, lädt dafür aber jede Benachrichtigung und feuert
+  je Zeile eine eigene Lese-Abfrage.
+
+Termine und Beratungen sind je Institut und Tag **60 Sekunden gecacht**.
+
+### Tests
+
+| Datei | Prüft |
+|---|---|
+| `tests/Feature/StartPageTest.php` | Raster im ersten HTML, Platzhalter statt Spinner, sanftes Neuladen, Statistik-Kacheln über die Registry, Rechte-Filterung, Rollen-Voreinstellung, Layout-Speichern ohne Verlust der Feineinstellung |
+| `tests/Feature/StartPageOverviewServiceTest.php` | Zustands-Gruppierung, Stornos/gelöschte, Tagesgrenze, Standortfilter, Beratungs-Erkennung, Rechte, Mitteilungs-Zähler |
+
+> **Nicht auf `@assets`-Ausgabe testen.** Livewire spielt jeden `@assets`-Block
+> pro Prozess nur **einmal** aus — im Gesamtlauf fehlen die Script-Tags ab dem
+> zweiten Seitenaufruf, obwohl die Seite korrekt ist. Stattdessen die
+> View-Daten prüfen (`$response->viewData('statistikSkripte')`).
 
 ---
 
-## 📐 CSS-Struktur
+## Verwandte Dokumentation
 
-### Start-Page Grid
-
-| Klasse | Beschreibung |
-|--------|--------------|
-| `.start-page-grid` | CSS Grid Container (auto-fit, 20rem min) |
-| `.start-card` | Basis-Karte (card-glass-bg, Backdrop-Blur) |
-| `.start-card-full` | 100% Breite (grid-column: 1 / -1) |
-| `.start-card-half` | 50% Breite |
-| `.start-card-header` | Flex-Header mit Icon + Titel |
-| `.start-card-body` | Karten-Inhalt |
-| `.start-card-loading` | Lade-Spinner |
-| `.start-card-empty` | Leerzustand |
-
-### Edit-Mode
-
-| Klasse | Beschreibung |
-|--------|--------------|
-| `.start-page-edit-bar` | Bearbeitungsleiste oben |
-| `.start-card-controls` | Breit/Löschen-Buttons (absolut positioniert) |
-| `.start-card-width-indicator` | Breitenangabe-Badge |
-| `.start-card-add` | „Karte hinzufügen"-Platzhalter |
-| `.edit-mode` | Wobble-Animation auf Karten |
-
-### Modals
-
-| Klasse | Beschreibung |
-|--------|--------------|
-| `.start-add-modal-overlay` | Semi-transparenter Overlay |
-| `.start-add-modal` | Modal-Container (max-width 28rem) |
-| `.start-add-modal-wide` | Breiterer Modal (max-width 36rem, für KPI-Config) |
-| `.start-quicklink-config-item` | Checkbox-Item in Konfig-Modals |
-
----
-
-## 🔗 Verwandte Dokumentation
-
-- [Start-Page KPI-System](START-PAGE-KPIS.md) — KPI-Portfolio, Datenquellen, Konfigurationsmodal
-- [Dashboard KPIs](DASHBOARD-KPIS.md) — Altes Dashboard (wird durch Start-Page ersetzt)
-- [Design System](DESIGN-SYSTEM.md) — CSS-Klassen und Komponenten
-- [Reports-Modul](REPORTS-MODULE.md) — Report-Endpunkte (Datenquelle für KPIs)
+- [Start-Page KPI-System](START-PAGE-KPIS.md) — Kennzahlen-Portfolio und Auswahl
+- [Eigenes Dashboard](CUSTOM-DASHBOARD.md) — der zweite Rahmen für Registry-Statistiken
+- [Ladeverhalten Statistikseiten](LADEVERHALTEN-STATISTIKSEITEN.md) — Skeletons, Fehler je Karte, sanftes Neuladen
+- [Berechtigungssystem](BERECHTIGUNGSSYSTEM.md)
+- [Design System](DESIGN-SYSTEM.md)
