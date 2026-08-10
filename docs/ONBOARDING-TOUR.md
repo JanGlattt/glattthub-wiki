@@ -1,15 +1,36 @@
-# Einführungstour (Onboarding)
+# Einführungstouren (Onboarding)
 
-Geführter Rundgang durch den Hub-Rahmen, der neuen Nutzern beim ersten Login
-zeigt, wo sie was finden — ohne dass jemand persönlich einweisen muss.
+Geführte Rundgänge, die neuen Nutzern zeigen, wo sie was finden — ohne dass
+jemand persönlich einweisen muss. Es gibt die **Rahmen-Tour** durch den Hub und
+**Seiten-Touren** für die wichtigsten Arbeitsseiten.
 
 ---
 
 ## Für Endanwender
 
-### Wann erscheint die Tour?
+### Die Touren im Überblick
 
-Die Tour startet **von allein beim ersten Aufruf des Hubs**. Sie besteht aus
+| Tour | Erscheint |
+|---|---|
+| Einführung in den Hub | beim ersten Aufruf des Hubs, auf jeder Seite |
+| Terminübersicht | beim ersten Besuch von Termine |
+| Terminansicht | beim ersten Öffnen eines Termins |
+| Kundenakte | beim ersten Öffnen eines Kunden |
+| Vertrag im Detail | beim ersten Öffnen eines Vertrags |
+| Forderungsmanagement | beim ersten Besuch von Forderungen |
+| Forderungsfall bearbeiten | beim ersten Öffnen eines Falls |
+| Berichte und eigene Dashboards | beim ersten Besuch von Berichte |
+| Eine Statistikseite lesen | beim ersten Besuch der Verkaufsstatistik |
+| Eigenes Dashboard | beim ersten Öffnen eines eigenen Dashboards |
+
+Die Seiten-Touren melden sich erst, wenn die Rahmen-Tour durch ist — sonst kämen
+einem neuen Nutzer am ersten Tag zwei Touren gleichzeitig entgegen. Auf jeder
+Seite mit eigener Tour steht oben ein **Fragezeichen**, das sie jederzeit erneut
+startet.
+
+### Wann erscheint die Rahmen-Tour?
+
+Sie startet **von allein beim ersten Aufruf des Hubs**. Sie besteht aus
 kurzen Sprechblasen, die nacheinander auf ein Bedienelement zeigen: Institut
 auswählen, globale Suche, Mitteilungen, die Menüpunkte, glatttBert, Hell-/
 Dunkelmodus und das eigene Profil.
@@ -52,6 +73,38 @@ werden übersprungen — die Tour bricht deswegen nicht ab.
 | Ablauf | `public/js/onboarding-tour.js` | driver.js nachladen, Ziele auflösen, Ergebnis melden |
 | Aussehen | `public/css/theme_glattt.css`, Abschnitt „EINFÜHRUNGSTOUR“ | Farben/Schrift im glattt-Design, hell & dunkel |
 | Manueller Start | `resources/views/hub/profile/partials/onboarding.blade.php` | Karte im Profil, ruft `window.glatttTourStart()` |
+
+### Rahmen- und Seiten-Touren
+
+`TourRegistry::tours()` hält alle Touren. Die Rahmen-Tour hat **keine** Routen
+und gilt überall; jede Seiten-Tour nennt die Route, auf der sie greift. Das
+Layout liefert pro Aufruf die Rahmen-Tour und — falls vorhanden — die Tour der
+aktuellen Seite aus; `autoStart` benennt die eine, die von allein läuft (der
+Rahmen hat Vorrang).
+
+`tests/Unit/TourRegistryTest.php` prüft, dass jede hinterlegte Route
+**tatsächlich existiert** — ein Tippfehler im Routennamen würde die Tour sonst
+stumm nie erscheinen lassen (genau das passierte beim Bauen mit
+`hub.custom-dashboard.show` statt `hub.reports.custom-dashboard.show`).
+
+**Zwei Fallen bei den Auslieferungswegen:**
+
+1. **Das Vollbild-Layout nicht vergessen.** Die Terminansicht nutzt
+   `layouts.fullscreen`, nicht `layouts.hub` — ohne den Einbau dort gibt es auf
+   dieser Seite gar keine Tour (`window.glatttTour` ist schlicht nicht da).
+2. **Kein `data-navigate-once` an der Konfiguration.** Bei `wire:navigate` wird
+   die Seite ausgetauscht; die Konfiguration muss mit der neuen Seite kommen,
+   sonst kennt der Hub die Tour der Zielseite nicht. Das Skript selbst trägt
+   `data-navigate-once` und hört zusätzlich auf `livewire:navigated`.
+
+### Auf langsame Seiten warten
+
+Seiten wie die Terminansicht holen ihre Daten per Fetch; bis dahin sind die
+Ziele unsichtbar. Startet die Tour zu früh, überspringt sie reihenweise Schritte
+und zeigt am Ende nur die Begrüßung — ohne Fehlermeldung. Gemessen: Die
+Terminansicht zeigte so **1 statt 4** Schritten. `waitForTargets()` pollt
+deshalb vor dem automatischen Start bis zu 6 Sekunden, bis mindestens ein Ziel
+sichtbar ist, und startet danach in jedem Fall.
 
 ### Eine Tour, nach Rechten gefiltert
 
