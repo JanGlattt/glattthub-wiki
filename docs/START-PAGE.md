@@ -21,7 +21,7 @@ Konfiguration per fetch eingetroffen war — bis dahin lag ein Ganzseiten-Spinne
 | Bereich | Inhalt |
 |---|---|
 | **Begrüßung** | Tageszeit-abhängiger Gruß, Datum, aktuelles Institut |
-| **Heute** (Tagesüberblick) | Termine heute (gesamt, durchgeführt, offen), Beratungsgespräche heute, ungelesene Mitteilungen |
+| **Heute** (Tagesüberblick) | Beratungsgespräche heute (stattgefunden / laufend / offen / No-Show), verkaufte KPZ heute, Prognose KPZ bis Monatsende |
 | **Kacheln** | News, Quicklinks, Mitteilungen, Kennzahlen und beliebig viele **Statistiken** |
 
 Der Tagesüberblick ist fest und lässt sich nicht entfernen — er ist das, was
@@ -49,20 +49,25 @@ die Seite springt nicht und Kacheln kollabieren nicht.
 Mit dem Recht **„KPIs und Charts konfigurieren"** (`configure_dashboard`)
 erscheint oben rechts der Knopf **Anpassen**:
 
+Alle Aktionen einer Kachel sitzen im Bearbeitungsmodus in **einer** Leiste oben
+rechts an der Kachel:
+
 | Aktion | Wie |
 |---|---|
 | Reihenfolge ändern | Kachel greifen und verschieben |
 | Breite umschalten | Pfeil-Symbol an der Kachel (100 % ⇄ 50 %) |
 | Kachel entfernen | X-Symbol an der Kachel |
+| Inhalt wählen | Zahnrad bzw. Wechsel-Symbol an der Kachel (Statistik, Kennzahlen, Quicklinks) |
 | Kachel hinzufügen | Feld „Karte hinzufügen" am Ende des Rasters |
-| Statistik wechseln | Symbol an der Statistik-Kachel → Auswahl mit Suchfeld |
-| Kennzahlen wählen | Zahnrad an der Kennzahlen-Kachel |
-| Quicklinks wählen | Zahnrad an der Quicklinks-Kachel |
 | Zurücksetzen | „Zurücksetzen" in der Bearbeitungsleiste |
 
-Änderungen werden sofort gespeichert. Nach dem Hinzufügen einer Kachel, dem
-Wechsel einer Statistik und dem Ändern der Quicklinks lädt die Seite einmal neu
-— diese Inhalte baut der Server.
+**Kachel hinzufügen läuft in zwei Schritten:** erst der Kartentyp, dann sein
+Inhalt (welche Statistik, welche Kennzahlen). News, Quicklinks und Mitteilungen
+haben keinen zweiten Schritt und werden direkt angelegt.
+
+Änderungen werden sofort gespeichert; **die Seite lädt dabei nicht neu** — auch
+nicht beim Hinzufügen einer Kachel oder beim Wechsel einer Statistik. Nur
+„Zurücksetzen" lädt neu, weil es das ganze Raster austauscht.
 
 **Zurücksetzen** löscht die eigene Fassung. Danach gilt wieder die
 Voreinstellung der Rolle (siehe unten) bzw. die Standard-Belegung.
@@ -230,6 +235,34 @@ Mitteilungen). Beide in `components/stat-skeleton.blade.php`.
 > Bearbeitungsmodus beim Betreten die verbindliche Belegung nach.
 > Abgesichert durch `StartPageTest::test_verschieben_erhaelt_die_gewaehlte_statistik`.
 
+### Karten einsetzen statt Seite neu laden
+
+Kacheln werden serverseitig gerendert — das gilt auch für eine **neu
+hinzugefügte** Karte. Statt die ganze Seite neu zu laden, liefert der Server
+das Markup einer einzelnen Kachel:
+
+- `hub/start/_card.blade.php` ist die **einzige** Quelle des Karten-Markups.
+  Dieselbe Datei rendert das Raster beim Seitenaufruf und die Einzelkarte für
+  `addCard()` / `renderCard()`.
+- Die Antwort enthält neben `html` auch `assets` — die Bibliotheken und
+  Bundles, die diese Kachel braucht. `startPage.ensureAssets()` lädt sie in
+  Reihenfolge nach und überspringt, was schon im DOM steht (Vergleich über den
+  Pfad, ohne `?v=`-Parameter).
+- **Warum das nötig ist:** Die Seite lädt nur die Bundles der Statistiken, die
+  beim Aufruf schon lagen. Wer im Bearbeitungsmodus eine Statistik aus einem
+  anderen Bereich hinzufügt, braucht deren Bundle — sonst kennt `GlatttStats`
+  die Komponente nicht und die Kachel bliebe leer.
+- Eingefügt wird per `insertBefore` vor die Kachel „Karte hinzufügen"; Alpine
+  erkennt den neuen Knoten selbst und startet die Komponente.
+- Die Liste in `StartPageController::statisticAssets()` speist **beides**: den
+  `@assets`-Block der Seite und die Nachlade-Liste. Liefen beide auseinander,
+  funktionierte eine frisch hinzugefügte Statistik erst nach einem
+  Seitenwechsel.
+
+Ohne Neuladen laufen: Karte hinzufügen, entfernen, verschieben, Breite
+umschalten, Statistik wechseln, Quicklinks ändern, Kennzahlen ändern. Nur
+„Zurücksetzen" lädt neu — es tauscht das ganze Raster.
+
 ### Kennzahlen: volle Registry-IDs
 
 Die Kachel speichert seit 08/2026 die **volle Registry-ID** (`sales.total_revenue`)
@@ -331,6 +364,7 @@ Inhalt zeigt, entscheidet allein die Berechtigung der jeweiligen Kennzahl
 | DELETE | `/hub/start-config` | `configure_dashboard` | Auf Voreinstellung zurücksetzen |
 | POST | `/hub/start-config/add-card` | `configure_dashboard` | Kachel anlegen |
 | POST | `/hub/start-config/remove-card` | `configure_dashboard` | Kachel entfernen |
+| POST | `/hub/start-config/render-card` | `configure_dashboard` | Eine Kachel als HTML + benötigte Skripte |
 | GET | `/hub/start-kpis/portfolio` | `configure_dashboard` | Kennzahlen zur Auswahl (alle der KpiRegistry, rechtegefiltert) |
 | POST | `/hub/start-kpis/save` | `configure_dashboard` | Kennzahlen-Auswahl speichern |
 | GET | `/hub/start-statistic/portfolio` | `configure_dashboard` | Statistiken zur Auswahl |
@@ -340,13 +374,14 @@ Die frühere Route `/hub/start-chart` samt Portfolio und Speichern ist entfallen
 
 ### Tagesüberblick — Datenquellen
 
-`StartPageOverviewService::forUser(User $user, ?string $branchId)`:
+`StartPageOverviewService::forUser(User $user, ?string $branchId)` — drei feste
+Kennzahlen (Festlegung Jan, 11.08.2026):
 
 | Zahl | Quelle | Recht |
 |---|---|---|
-| Termine heute (gesamt/durchgeführt/offen/im Haus/No-Show) | `stats_historic_appointments`, ein `GROUP BY state` | `view_appointments` |
-| Beratungsgespräche heute | dieselbe Tabelle, Service-IDs aus `consultation_services` (`is_consultation`) | `view_appointments` |
-| Ungelesene Mitteilungen | `Notification::forUser(...)->unreadForUser(...)` als `COUNT` | — |
+| Beratungsgespräche heute (stattgefunden / laufend / offen / No-Show) | `stats_historic_appointments`, Service-IDs aus `consultation_services`, `GROUP BY state` | `view_appointments` |
+| Verkaufte KPZ heute | `SUM(contracts.body_zone_count)` nach `signed_at`, Status aktiv/abgeschlossen | `view_report_sales_statistics` |
+| Prognose KPZ bis Monatsende | `SalesStatisticsService::getProjection()['overall']['projected_body_zones']` | `view_report_sales_statistics` |
 
 **Bewusste Entscheidungen:**
 
@@ -354,6 +389,14 @@ Die frühere Route `/hub/start-chart` samt Portfolio und Speichern ist entfallen
   laufenden Tag alle 15 Minuten aktuell; ein Live-Abruf über alle Institute
   dauert 10–15 Sekunden und ist für den ersten Bildschirm untragbar. Der Stand
   steht sichtbar in der Karte.
+- **Kein `settled()` bei den Beratungen.** Der Scope wirft heutige offene
+  Termine heraus — richtig für No-Show-Quoten (sonst zählt morgens jeder
+  anstehende Termin als No-Show), hier aber fatal: „noch offen" wäre dann immer
+  0. Sobald die Kachel eine *Quote* oder einen Vortagsvergleich zeigt, ist
+  `settled()` dagegen Pflicht.
+- **Zustands-Gruppierung wie die Terminübersicht** (`appointments.js`):
+  `COMPLETED|PAID` = stattgefunden, `CHECKED_IN` = laufend, `BOOKED|CONFIRMED`
+  = offen, `NO_SHOW` separat. Stornierte und gelöschte zählen nicht mit.
 - **Service-IDs aus `consultation_services`**, nicht aus
   `StatsHistoricAppointment::scopeConsultations()` — der Scope hat drei IDs
   hart verdrahtet und verpasst jeden neu angelegten Beratungs-Service.
@@ -361,14 +404,29 @@ Die frühere Route `/hub/start-chart` samt Portfolio und Speichern ist entfallen
   `whereDate()`: Der Model-Cast schreibt in SQLite „Y-m-d H:i:s", MySQL hält
   „Y-m-d"; der Bereich ist in beiden richtig und kann anders als `DATE(spalte)`
   den Index `[appointment_date, branch_id]` nutzen.
-- **Zustands-Gruppierung wie die Terminübersicht** (`appointments.js`):
-  `COMPLETED|PAID` = durchgeführt, `BOOKED|CONFIRMED` = offen, `CHECKED_IN` =
-  im Haus. Stornierte und gelöschte zählen nicht mit.
-- **Mitteilungen direkt als COUNT.** Der Endpoint `/phorest/notifications`
-  liefert zwar `unread_count`, lädt dafür aber jede Benachrichtigung und feuert
-  je Zeile eine eigene Lese-Abfrage.
+- **Prognose nicht selbst gerechnet**, sondern aus der Verkaufsstatistik geholt
+  (linear über Verkaufstage, Mo–Sa ohne Feiertage). Eine eigene Formel würde
+  zwangsläufig von der Verkaufsstatistik abweichen. Der Standortfilter wird
+  durchgereicht — Feiertage sind standortabhängig. Der Aufruf ist in einen
+  `try/catch` gefasst: Die Hochrechnung nutzt MySQL-Funktionen
+  (`DATE_FORMAT`) und darf den Tagesüberblick nicht mitreißen.
 
-Termine und Beratungen sind je Institut und Tag **60 Sekunden gecacht**.
+**Bekannte Abweichungen — kein Fehler:**
+
+- **KPZ sind bei Ganzkörper-Verträgen untererfasst.** `body_zone_count` ist auf
+  `price_lists.max_body_zones` gedeckelt (6 bzw. 7 je Fassung); die tatsächlich
+  gewählten Zonen stehen nur in `contract_body_zones`. Bewusst nicht
+  korrigiert, damit die Kachel dieselbe Zahl zeigt wie die Verkaufsstatistik.
+- **„Stattgefunden" ist tagsüber zu niedrig.** `COMPLETED`/`PAID` wird in
+  Phorest oft erst beim Abrechnen gesetzt, teils am Folgetag.
+- **Beratungen ≠ glattt-KPI „Beratungen heute".** Der Tagesüberblick zählt
+  BG-*Termine* (Zeilen, `notCancelled()`); die glattt-KPIs zählen strenger
+  (dedupliziert je Kunde und Tag, nur `PAID`, `activation_state = ACTIVE`) und
+  kommen aus einem Phorest-Live-Abruf. Beide Zahlen stehen auf derselben Seite
+  und dürfen leicht auseinanderliegen.
+
+Beratungen und KPZ sind je Institut und Tag **60 Sekunden gecacht**, die
+Prognose folgt dem 1-Stunden-Cache der Verkaufsstatistik.
 
 ### Tests
 
