@@ -20,7 +20,7 @@ jemand persönlich einweisen muss. Es gibt die **Rahmen-Tour** durch den Hub und
 | Forderungsmanagement | beim ersten Besuch von Forderungen |
 | Forderungsfall bearbeiten | beim ersten Öffnen eines Falls |
 | Berichte und eigene Dashboards | beim ersten Besuch von Berichte |
-| Eine Statistikseite lesen | beim ersten Besuch der Verkaufsstatistik |
+| Eine Statistikseite lesen | beim ersten Besuch **irgendeiner** Berichtsseite |
 | Eigenes Dashboard | beim ersten Öffnen eines eigenen Dashboards |
 
 Die Seiten-Touren melden sich erst, wenn die Rahmen-Tour durch ist — sonst kämen
@@ -96,6 +96,60 @@ stumm nie erscheinen lassen (genau das passierte beim Bauen mit
    die Seite ausgetauscht; die Konfiguration muss mit der neuen Seite kommen,
    sonst kennt der Hub die Tour der Zielseite nicht. Das Skript selbst trägt
    `data-navigate-once` und hört zusätzlich auf `livewire:navigated`.
+
+### Eine Tour für alle Statistikseiten
+
+Die Berichtsseiten folgen alle demselben Bauplan, deshalb gibt es für sie **eine
+gemeinsame** Tour statt vierzehn. Weil der Stand am Tour-Schlüssel hängt, läuft
+sie damit automatisch nur ein einziges Mal — egal, welche Berichtsseite jemand
+zuerst öffnet. Das Fragezeichen steht trotzdem auf jeder.
+
+Die Routen kommen aus der `ReportRegistry`
+(`'routes' => array_keys(ReportRegistry::all())`): Ein neuer Bericht bekommt die
+Tour und den Hilfe-Knopf damit ohne weiteres Zutun.
+
+Damit die Schritte auf **jeder** dieser Seiten ein Ziel finden, sitzen die Anker
+in den geteilten Bausteinen statt in einzelnen Seiten:
+
+| Schritt | Anker in |
+|---|---|
+| Zeitraum und Umschalter | Kopf-Partial der jeweiligen Seite (`data-tour="stats-header"`) |
+| Zahlen mitnehmen | `components/export-modal` |
+| Kennzahlen-Zeile | `components/kpi-dashboard` |
+| Diagramm oder Tabelle | `components/chart-view-toggle` |
+| Woher kommen die Zahlen? | jeder `.btn-glattt-info-trigger` (84 Stück) |
+
+Fehlt einer davon auf einer Seite, entfällt genau dieser Schritt — die Tour läuft
+weiter. Gemessen: *glattt-Pakete* hat kein Diagramm-Register und zeigt deshalb
+fünf statt sechs Schritten, was richtig ist.
+
+**Eine neue Statistikseite braucht nur zwei Zeilen** — `data-tour="stats-header"`
+an der Kopf-Karte und `<x-tour-help />` im Header (direkt vor
+`<x-export-modal>`). Die Tour selbst wird **nie** je Seite kopiert.
+`tests/Feature/StatisticsPageTourConventionTest.php` rendert jede Seite der
+`ReportRegistry` und bricht, wenn eines von beidem fehlt oder wenn eine Seite
+eine eigene Tour bekommen hat. Verbindlich beschrieben in
+`statistics-pages.instructions.md`, Abschnitt 9.
+
+### Fallstrick: driver.js kappt überstehende Ziele
+
+driver.js zwingt dem **Elternelement** des markierten Ziels `overflow: hidden`
+auf:
+
+```css
+:not(body):has(>.driver-active-element){overflow:hidden!important}
+```
+
+Das Register „Diagramm/Tabelle" hängt per `left: calc(100% + 1px)` bewusst
+*ausserhalb* der Karte — die Karte schnitt es dadurch komplett weg, und die Tour
+hob einen leeren Streifen hervor. Tückisch bei der Suche: Die berechneten Stile
+des Elements bleiben dabei völlig unverändert (Position, Deckkraft,
+Sichtbarkeit), und die Regel steht im **CDN-Stylesheet**, das ein
+`document.styleSheets`-Durchlauf wegen Cross-Origin überspringt.
+
+Die Gegenregel steht in `theme_glattt.css` (Abschnitt „Einführungstour") und
+greift nur, solange das Register hervorgehoben ist. Bei jedem weiteren Anker,
+der über seinen Container hinausragt, ist dasselbe zu erwarten.
 
 ### Auf langsame Seiten warten
 
