@@ -145,6 +145,28 @@ Herkunfts-Analyse (Einstieg/entry_referrer).
 - **Legende** klickbar: einzelne Quellen ein-/ausblenden (Auswahl bleibt beim Filterwechsel erhalten)
 - Organische Buchungen ohne erfassten Einstieg (vor Einführung des Trackings) werden ausgeblendet
 
+#### Zuordnungslücke Plattform ↔ Tracking (seit 08/2026)
+
+Beantwortet die Frage „Warum meldet Meta so viel mehr Leads, als wir im Hub sehen?".
+Je Monat steht für jede Plattform ein gestapelter Balken: unten (in der
+Plattformfarbe) die Buchungen, die das eigene Tracking dieser Plattform sicher
+zuordnen kann, darüber **orange schraffiert** der Rest bis zu den Leads, die
+Meta bzw. Google selbst melden.
+
+- Verglichen wird gegen die **Klick-Leads**. Leads, die nur nach dem Ansehen
+  einer Anzeige entstehen (nur Meta), können technisch keine Spur hinterlassen —
+  sie stehen als gepunktete Linie daneben und zählen nicht in die Lücke.
+- Die Lücke wird **nicht der anderen Plattform zugeschlagen**. Die verbreitete
+  Vermutung, ein Teil der „Google"-Buchungen stamme real aus Instagram, ist
+  plausibel, aber aus diesen Zahlen nicht belegbar — genauso gut fehlt die
+  Kennung, weil der Kunde die Seite später direkt aufgerufen, das Gerät
+  gewechselt oder Cookies abgelehnt hat.
+- **Erfassungsquote** je Plattform: Anteil der gemeldeten Klick-Leads, der im Hub
+  wieder auftaucht.
+- **Achtung beim Standortfilter:** Die Plattform-Zahlen gelten fürs ganze Konto,
+  nicht je Institut — bei gesetztem Filter schrumpft nur die Tracking-Seite und
+  die Lücke wirkt größer. Für den Vergleich „Alle Institute" wählen.
+
 #### Buchungen pro Tag (seit 07/2026)
 
 Balken-/Liniendiagramm (ECharts) auf Tagesebene:
@@ -326,6 +348,7 @@ GET  /hub/reports/ads-analysis/kpis                   → kpis
 GET  /hub/reports/ads-analysis/campaigns              → campaigns
 GET  /hub/reports/ads-analysis/monthly                → monthly        (inkl. total_spend_cents & cost_per_lead_cents)
 GET  /hub/reports/ads-analysis/monthly-sources        → monthlySources (Buchungen pro Quelle × Monat, Anzeige/organisch)
+GET  /hub/reports/ads-analysis/attribution-gap        → attributionGap (gemeldete Leads vs. eigenes Tracking je Monat/Plattform)
 GET  /hub/reports/ads-analysis/daily-bookings         → dailyBookings  (Buchungen pro Tag inkl. gleitendem 7-Tage-Durchschnitt)
 GET  /hub/reports/ads-analysis/sources                → sources        (Letzte Seite vor Buchung / referrer)
 GET  /hub/reports/ads-analysis/entry-sources          → entrySources   (Herkunft / entry_referrer)
@@ -431,6 +454,51 @@ Interpretation: Die Hub-Spalten („Buchungen", CPB, CPV) sind die **beweisbare
 Untergrenze**, die Plattform-Spalten die **modellierte Obergrenze**. Da beide
 Plattformen sich dieselbe Buchung zuschreiben können, darf die Summe der
 Plattform-Leads nicht mit den Gesamt-Buchungen gleichgesetzt werden.
+
+### Zuordnungslücke Plattform ↔ Tracking (Karte, 08/2026)
+
+Eigene Statistik `ads.attribution-gap`: Je Monat und Plattform stehen die
+**gemeldeten Klick-Leads** den **Buchungen gegenüber, die das eigene Tracking
+dieser Plattform zuordnen kann**. Die Differenz heißt bewusst
+**„nicht zuordenbar"** und wird **nicht** der anderen Plattform zugeschlagen.
+
+Anlass war die Beobachtung, dass Meta für einen Monat 158 Leads meldete, während
+das eigene Tracking 29 Meta-Buchungen bei 258 Google-Buchungen sah — daraus die
+naheliegende These, ein Teil der „Google"-Buchungen stamme real aus Instagram.
+Plausibel, aber aus diesen Daten nicht belegbar: Ein Klick-Nachweis fehlt bei
+Direkteinstieg, Cross-Device, abgelehnten Cookies und abgeschnittenen
+utm-Parametern gleichermaßen, und beide Plattformen modellieren zusätzlich.
+Belastbar wäre die These erst über eine gemeinsame Kennung über mehrere
+Sitzungen hinweg (Ansatzpunkt: `booking_trackings.matomo_visitor_id`).
+
+Rechenregeln:
+
+- Verglichen wird gegen die **Klick-Leads**, nicht gegen alle Leads — nur die
+  können überhaupt eine Klick-ID hinterlassen. View-Through-Leads (nur Meta)
+  werden getrennt ausgewiesen (Kachel „+ N nur nach Ansicht", gepunktete Linie
+  im Chart) und zählen nicht in die Lücke.
+- Google liefert keine View-Through-Zahl → dort ist `platform_leads_view` immer 0.
+- Die Lücke wird **bei null abgeschnitten**: Sieht der Hub mehr Buchungen als die
+  Plattform Leads meldet, ist das keine negative Lücke.
+- Plattform-Zuordnung der Buchung über `AcquisitionChannelResolver::channelForTracking()`
+  (kennt auch `ig`/`fb` und die numerischen Meta-Kampagnen-IDs als `utm_source`).
+
+**Einschränkung Standortfilter:** Meta- und Google-Zahlen sind kontoweit und
+kennen keine Institute. Bei gesetztem Standortfilter schrumpft nur die
+Tracking-Seite, die Lücke wirkt größer als sie ist — für den Vergleich „Alle
+Institute" wählen. Steht so auch im Info-Panel.
+
+Technisch: `AdsAnalysisService::getAttributionGap()` + `attributionSeries()`,
+Endpoint `GET /hub/reports/ads-analysis/attribution-gap`, Partial
+`resources/views/statistics/ads/attribution-gap.blade.php`, JS-Komponente
+`ads.attribution-gap` in `public/js/statistics/ads.js`, CSV-Quelle
+`ads-attribution-gap`. Für den Monatsverlauf holt
+`MetaAdsService::getDailyInsights()` seit 11.08.2026 denselben Klick-/View-Split
+wie die Kampagnen-Insights (`action_attribution_windows`); der Cache-Key trägt
+deshalb `daily-v2`, der Karten-Cache `s2` — Format-Änderungen bumpen den
+Versions-Zähler von `flushCache()` nicht, sonst servierte der Cache nach dem
+Deploy bis zu einer Stunde die alte Struktur. Tests:
+`tests/Feature/AdsAttributionGapTest.php`.
 
 ### Meta-Conversion-Zählung (Deduplizierung)
 
