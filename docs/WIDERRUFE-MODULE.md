@@ -48,13 +48,21 @@ Das Widerrufs-Modul ermöglicht die vollständige Verwaltung von Vertragswiderru
 
 Die Übersichtsseite zeigt alle Vertragswiderrufe in einer sortierbaren Tabelle.
 
-### Status-Buckets (seit 08/2026)
+### Bucket-Board (seit 08/2026)
 
-Die Übersicht ist in drei Buckets gegliedert, umgeschaltet über eine Segmented Control in der
-Filterleiste — **Alle · Offen · Abgabe an RA · Abgeschlossen**. Neben „Offen" und „Abgabe an RA"
-steht die ungefilterte Gesamtzahl (aus dem Daten-Endpoint mitgeliefert, unabhängig von Filtern).
+Die Übersicht ist ein Board aus drei Bereichen:
+
+- **Offen** und **Abgabe an RA** liegen als zwei Karten-Buckets nebeneinander (mobil gestapelt).
+  Jeder Fall ist eine kleine Karte (Kunde, Vertragsnummer, Widerrufsdatum, Standort, Grund,
+  KPZ- und Zendesk-Badge) — Klick öffnet die Fall-Detailseite. Im Kartenkopf steht die
+  ungefilterte Gesamtzahl je Bucket.
+- **Abgeschlossene Fälle** folgen darunter als Tabelle mit **Infinite Scroll** (50er-Seiten,
+  Nachladen beim Scrollen; Sortier-Header sortieren die bereits geladenen Zeilen). Die Suche
+  filtert clientseitig — bei aktiver Suche mit noch ungeladenen Seiten erscheint der Button
+  „Alle laden".
+
 Der frühere Status „In Verhandlung" ist abgeschafft; Altfälle wurden per Migration nach „Offen"
-verschoben.
+verschoben. Grund-/Ergebnis-Filter wirken serverseitig auf alle drei Bereiche.
 
 ---
 
@@ -163,7 +171,7 @@ Die Filterleiste bietet Live-Filter ohne zusätzlichen „Filtern"-Button:
 | Filter | Typ | Beschreibung |
 |--------|-----|-------------|
 | **Suche** | Textfeld (Pill-Form) | Durchsucht Kunde, Vertragsnummer, Produkt, Grund, Zendesk-Ticket, Notizen |
-| **Status** | Segmented Control (Buckets) | Alle · Offen · Abgabe an RA · Abgeschlossen |
+| **Status** | Board-Bereiche | Offen · Abgabe an RA (Karten-Buckets) · Abgeschlossen (Liste) — kein eigener Filter mehr |
 | **Reaktion** | Dropdown | Alle Reaktionen · Offen · Akzeptiert · Abgelehnt · Upgrade · Downgrade · Korrektur · Laufzeitanpassung |
 | **Grund** | Dropdown | Alle Gründe + alle 9 Widerrufsgründe |
 
@@ -188,7 +196,9 @@ Alle Spaltenköpfe sind klickbar zum Sortieren (aufsteigend ↑ / absteigend ↓
 | **Phorest** | ✓ oder ✗ – ob in Phorest aktualisiert | ❌ |
 | **Aktion** | ↗-Symbol öffnet die Fall-Detailseite | ❌ |
 
-Klick auf eine **Tabellenzeile** öffnet ebenfalls das Widerrufs-Modal.
+Klick auf eine **Tabellenzeile** (und auf eine Bucket-Karte) öffnet die Fall-Detailseite.
+Das Widerrufs-Modal wird von der Übersicht nur noch für die **Neuanlage** genutzt; bearbeitet
+wird über die Detailseite (bis Phase 3 via Vertragsseite).
 
 ---
 
