@@ -457,16 +457,22 @@ In `GoCardlessMandateService::changeBankAccount()`:
 
 Bereits **eingereichte** Raten (`submitted`, auf dem Weg zur Bank) laufen in beiden Fällen noch durch.
 
+**Endet der Vertrag, endet die Pause automatisch** (seit 11.08.2026). Wird einem Widerruf stattgegeben — oder der Vertrag durch Downgrade/Upgrade ersetzt —, verschwindet das Pause-Banner von selbst. Es wird dabei **nichts fortgesetzt**: Es werden keine Raten neu terminiert und GoCardless wird nicht angefasst; der Vorgang ist reine Zustandskorrektur und im Bearbeitungsverlauf als „SEPA-Pause beendet" vermerkt. Vorher blieb die Pausierung sichtbar stehen, obwohl es nichts mehr zu pausieren gab (gemeldet 06.08.2026, Janine).
+
 **Für Entwickler:**
 
 - GoCardless kann Einzelzahlungen (Standard seit 07/2026) **nicht** „pausieren" — der einzige Weg ist **Storno + Neuterminierung**. Der neue `App\Services\ContractPauseService` kapselt das und baut auf den bestehenden `public`-Bausteinen `GoCardlessPaymentPlanService::cancelOpenGcPayments()` / `recreateIndividualPayments()` / `createIndividualPaymentPlan()` auf.
   - `pauseFixed()`: nur die **nächsten N** offenen Raten stornieren (`cancelSpecificPayments()`) + soft-deleten und ebenso viele am Planende neu anlegen — die übrigen offenen Raten behalten ihre GoCardless-Zahlung. Endergebnis identisch zu „alle um N verschieben", aber mit minimalem GC-Aufwand.
   - `pauseIndefinite()`: offene Raten stornieren (Notiz „Pausiert – unbefristet" → im Reload geschützt, im Debt-Modul via `cancelled` ausgeschlossen), Mandat bleibt aktiv.
   - `resume(startDate)`: Restraten ab Startdatum neu anlegen.
+  - `endBecauseContractEnded($contract, $reason, $userId)` (11.08.2026): beendet eine laufende unbefristete Pause, weil der **Vertrag** endet. Ruft ausdrücklich **nicht** `resume()` auf (das würde Restraten neu terminieren) und fasst GoCardless nicht an — bei einer unbefristeten Pause sind die offenen Raten längst storniert, alles Weitere entscheidet der SEPA-Tab von Hand (Festlegung 31.07.2026). Fixe Pausen bleiben unberührt: Sie sind reine Historie.
 - Datenmodell: Tabelle `contract_pauses` (Migration `2026_07_15_110000`), Model `App\Models\ContractPause`. Am `Contract`: `pauses()`, `activeIndefinitePause()`, Accessor `is_paused`. **Kein** neuer Contract-Status (würde zahlreiche `where('status','active')`-Filter brechen).
+- **Zwei Ausgänge einer Pause** (Migration `2026_08_11_090000`): `resumed_at`/`resume_date` = fortgesetzt (Raten neu terminiert), `ended_at`/`ended_reason` = ohne Fortsetzung beendet, weil der Vertrag endete. Bewusst getrennte Spalten — ein gesetztes `resumed_at` ohne `resume_date` würde im Verlauf behaupten, die Einzüge liefen wieder. `ContractPause::is_active` und `Contract::activeIndefinitePause()` prüfen beide Felder.
+- **Auslöser** (alle drei Wege, auf denen ein Vertrag beendet wird): `RevocationOutcomeService::apply()` (Widerruf im Hub abgeschlossen — Rückgabe enthält `ended_pause`, die Meldung an den Bearbeiter nennt es), `ContractImportService::handleWiderruf()` (Widerruf aus dem Google Sheet) und `ContractController::resolveWiderrufImport()` (Widerruf manuell zugeordnet).
+- **Altbestand:** `php artisan revocations:apply-outcomes` hat einen dritten Schritt „Laufende SEPA-Pausen auf beendeten Verträgen" (Trockenlauf ohne `--force`, listet Vertragsnummer, Status, Pausenbeginn und Grund).
 - Endpoints: `POST /hub/contracts/{contract}/pause` (`type` fixed/indefinite, `months`, `reason`), `POST /hub/contracts/{contract}/resume` (`resume_date`) — `ContractController::pauseContract()` / `resumeContract()`, Gate `can:manage_gocardless`. `getPayments()` liefert `pause` + `can_pause` für Banner/Button.
 - **Guards gegen „Wegheilen" der unbefristeten Pause:** `GoCardlessPaymentPlanService::activatePendingPlans()` (mandates.active-Webhook) und `ContractPaymentReconciler::reconcileContract()` (täglicher Cron) überspringen pausierte Verträge (`$contract->is_paused`). Fixe Pausen brauchen keine Guards — die Raten bleiben reale GC-Zahlungen, nur später terminiert.
-- Tests: `tests/Feature/ContractPauseTest.php`.
+- Tests: `tests/Feature/ContractPauseTest.php`, `tests/Feature/RevocationOutcomeTest.php` (Pause endet mit Widerruf/Downgrade, bleibt bei Ablehnung und bei fixer Pause stehen), `tests/Feature/ApplyRevocationOutcomesCommandTest.php`, `tests/Feature/ContractImportMandateSyncTest.php`.
 
 #### Geänderte / entfernte Dateien (Auszug)
 
