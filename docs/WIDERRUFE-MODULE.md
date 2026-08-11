@@ -9,6 +9,7 @@
   - [Widerrufe-Seite](#widerrufe-seite)
   - [Fall-Detailseite](#fall-detailseite-seit-082026)
   - [RA-Vorgang](#ra-vorgang-seit-082026)
+  - [Fristprüfung, Wiedervorlage & Dokumente](#fristprüfung-wiedervorlage--dokumente-seit-082026)
   - [Widerruf erfassen](#widerruf-erfassen)
   - [Widerruf bearbeiten](#widerruf-bearbeiten)
   - [Filter & Suche](#filter--suche)
@@ -70,7 +71,8 @@ verschoben. Grund-/Ergebnis-Filter wirken serverseitig auf alle drei Bereiche.
 ## Fall-Detailseite (seit 08/2026)
 
 Jeder Widerruf hat eine eigene, verlinkbare Seite unter `/hub/cancellations/{id}` — das Herzstück
-des Widerrufe-Umbaus 08/2026 (Phasen 1–5: Detailseite, Buckets, Wizard, Konversationsverlauf, RA-Vorgang).
+des Widerrufe-Umbaus 08/2026 (Phasen 1–6: Detailseite, Buckets, Wizard, Konversationsverlauf,
+RA-Vorgang, Fristprüfung/Wiedervorlage/Dokumente).
 
 **Erreichbar über:**
 
@@ -129,6 +131,42 @@ protokolliert.
 Widerruf-Statistik-Seite (und als Dashboard-Kachel, Statistik-Key `widerrufe.ra`) stellt
 Kosten und vereinnahmte Summen je Ergebnisart gegenüber; laufende Fälle ohne Ergebnis bilden
 eine eigene Gruppe. CSV-Export über die Quelle `revocation-ra`.
+
+---
+
+## Fristprüfung, Wiedervorlage & Dokumente (seit 08/2026)
+
+Phase 6 des Umbaus ergänzt die Fall-Detailseite um vier Bausteine:
+
+**Fristprüfung:** In der Widerrufsgrund-Karte steht die 14-Tage-Einordnung — Badge
+**Fristgerecht** (≤ 14 Tage), **Grenzfall** (15–17 Tage, Postweg/Zugang unklar) oder
+**Verspätet** (> 17 Tage), jeweils mit Tagen seit Fristbeginn. Standard-Fristbeginn ist das
+Vertragsdatum; ein **abweichender Fristbeginn** (z.B. verspätete Widerrufsbelehrung) lässt
+sich im Bearbeiten-Modal manuell setzen und wird als „manuell gesetzt" ausgewiesen. Die
+Einordnung ist ausdrücklich **Entscheidungshilfe, keine Rechtsberatung**.
+
+**Wertersatz:** Zeile in der Behandlungsstand-Karte. Der Bewertungsmaßstab ist noch nicht
+festgelegt (Entscheidung 11.08.2026) — die Berechnung steckt hinter dem Interface
+`App\Services\Revocations\WertersatzCalculator` (Auflösung über
+`config('revocations.wertersatz_calculator')`). Bis eine konkrete Strategie hinterlegt ist,
+zeigt die Zeile „Maßstab noch nicht festgelegt"; danach erscheint der Betrag automatisch.
+
+**Wiedervorlage:** Datumsfeld im Bearbeiten-Modal (Muster `DebtCase::deadline_at`).
+Fällige Wiedervorlagen (heute oder überfällig, Fall nicht abgeschlossen) zeigen ein rotes
+Badge in den Fall-Informationen und auf den Bucket-Karten der Übersicht (`WV TT.MM.JJJJ`).
+Der Command `cancellations:check-follow-ups` (täglich 08:00, Cloud Scheduler →
+`/api/cron/check-cancellation-follow-ups`) sendet EINE gesammelte Hub-Benachrichtigung an
+alle mit `manage_revocations`. Dazu zeigt die Detailseite die **Liegezeit** (Tage seit der
+letzten Bewegung im Verlauf, ab 14 Tagen rot).
+
+**Dokumentenablage:** Karte „Dokumente" auf der Detailseite — Anhänge je Fall nach dem
+Muster der Unternehmensvertrags-Dokumente (Cloud: `gcs-private`, lokal: `public`;
+Streaming über den Hub, nie öffentliche URLs). Upload (Mehrfachauswahl, PDF/Bilder/Word/
+E-Mail-Dateien, max. 20 MB) und Löschen brauchen `manage_revocations`, Ansehen reicht
+`view_revocations`. Jeder Upload/Löschvorgang landet im Fall-Verlauf. Beim **Festhalten
+eines RA-Schriftwechsels können bis zu 5 Dokumente direkt mit hochgeladen** werden — sie
+hängen dann am Verlaufseintrag (Badge „RA-Schriftwechsel" in der Ablage, Anhang-Chips am
+Eintrag im Konversationsverlauf).
 
 ---
 
@@ -353,9 +391,13 @@ ausschliesslich manuell über den SEPA-Tab.
 | `resources/views/hub/cancellations/partials/create-wizard.blade.php` | Neuanlage-Wizard (4 Schritte) |
 | `resources/views/hub/cancellations/partials/settlement.blade.php` | Umsetzungs-Karte (Formulare, Phorest, GoCardless) |
 | `resources/views/hub/cancellations/partials/ra-process.blade.php` | RA-Vorgang-Karte (Kosten, Schriftwechsel, Ergebnis, Wirtschaftlichkeit) |
+| `resources/views/hub/cancellations/partials/documents.blade.php` | Dokumentenablage-Karte (Upload, Download, Löschen) |
 | `resources/views/statistics/widerrufe/ra.blade.php` | Statistik-Partial `widerrufe.ra` (RA-Wirtschaftlichkeit) |
 | `app/Models/CancellationCostItem.php` | Kostenposition des RA-Vorgangs |
-| `public/js/cancellation-case.js` | Alpine-Komponenten: Aktionen, Umsetzung, Konversation, Wizard, RA-Vorgang |
+| `app/Models/CancellationDocument.php` | Anhang eines Falls (gcs-private, Disk-Umschaltung) |
+| `app/Services/Revocations/WertersatzCalculator.php` | Austauschbare Wertersatz-Strategie (Config `revocations.wertersatz_calculator`) |
+| `app/Console/Commands/CheckCancellationFollowUps.php` | Tägliche Wiedervorlage-Erinnerung (08:00) |
+| `public/js/cancellation-case.js` | Alpine-Komponenten: Aktionen, Umsetzung, Konversation, Wizard, RA-Vorgang, Dokumente |
 | `app/Http/Controllers/ContractController.php` | storeCancellation + Behandlungsdaten-API |
 | `app/Http/Controllers/CancellationCaseController.php` | Fall-Detailseite, Update, Notizen, Konversation |
 | `app/Services/CancellationConversationService.php` | Konversationsverlauf (alle Kanäle, fehlertolerant) |
@@ -435,6 +477,8 @@ Der Bestand (5 Verträge, Stand 11.08.2026) wurde mit `contracts:repair-misassig
 | `status` | string | Widerrufs-Status (`offen`, `abgabe_ra`, `abgeschlossen`) |
 | `ra_outcome` | string (nullable) | Ergebnisart des RA-Vorgangs (`vergleich`, `urteil_pro_uns`, `urteil_pro_kunde`, `eingestellt`, `zahlung_nach_mahnung`) |
 | `ra_recovered_amount_cents` | uint (nullable) | Manuell erfasste vereinnahmte Summe in Cents |
+| `withdrawal_period_started_on` | date (nullable) | Abweichender Fristbeginn (Standard: Vertragsdatum) |
+| `follow_up_on` | date (nullable) | Wiedervorlage-Datum (Scope `dueForFollowUp`) |
 | `created_by` | bigint (nullable, FK) | Erstellt von (User-ID) |
 | `created_at` | timestamp | Erstellt am |
 | `updated_at` | timestamp | Aktualisiert am |
@@ -453,6 +497,18 @@ Kostenpositionen des RA-Vorgangs — Muster `debt_cost_items` aus dem Forderungs
 | `created_by` | bigint (nullable, FK) | Erfasst von |
 | `deleted_at` | timestamp (nullable) | SoftDeletes — Raw-SQL-Abfragen brauchen `deleted_at IS NULL` |
 
+### `cancellation_documents` (seit 08/2026, Phase 6)
+
+Anhänge je Fall — Muster `company_contract_documents` (Datei wird beim Löschen des
+Datensatzes mit entfernt, siehe Model-Boot).
+
+| Feld | Typ | Beschreibung |
+|------|-----|-------------|
+| `contract_cancellation_id` | bigint (FK, cascade) | Zugehöriger Fall |
+| `event_id` | bigint (nullable, FK) | Verlaufseintrag, z.B. RA-Schriftwechsel (nullOnDelete) |
+| `file_name` / `file_path` / `disk` / `file_size` | — | Ablage (Cloud: `gcs-private`, lokal: `public`) |
+| `uploaded_by` | bigint (nullable, FK) | Hochgeladen von |
+
 ### Beziehungen
 
 ```php
@@ -460,10 +516,12 @@ ContractCancellation::belongsTo(Contract::class);
 ContractCancellation::belongsTo(User::class, 'created_by');
 ContractCancellation::belongsTo(Contract::class, 'follow_up_contract_id');
 ContractCancellation::hasMany(CancellationCostItem::class);   // costItems()
+ContractCancellation::hasMany(CancellationDocument::class);   // documents()
 ```
 
 Berechnete Attribute: `ra_total_costs_cents` (Summe Kostenpositionen), `ra_net_cents`
-(vereinnahmt − Kosten), `has_ra_process` (steuert die Sichtbarkeit der RA-Karte).
+(vereinnahmt − Kosten), `has_ra_process` (steuert die Sichtbarkeit der RA-Karte),
+`withdrawal_period_check` (Frist-Einordnung mit Tagen/Verdict), `days_idle` (Liegezeit).
 
 ---
 
@@ -488,7 +546,10 @@ Alle Routen liegen unter dem Prefix `/hub` und sind authentifiziert.
 | `PUT` | `/hub/cancellations/{id}` | `CancellationCaseController::update()` | Fall bearbeiten (Teil-Updates, loggt Diffs, wendet Ergebnis an) |
 | `POST` | `/hub/cancellations/{id}/notes` | `CancellationCaseController::addNote()` | Notiz im Verlauf |
 | `POST` | `/hub/cancellations/{id}/costs` | `CancellationCaseController::recordCost()` | Kostenposition des RA-Vorgangs erfassen |
-| `POST` | `/hub/cancellations/{id}/correspondence` | `CancellationCaseController::addCorrespondence()` | RA-Schriftwechsel festhalten (party/direction/text) |
+| `POST` | `/hub/cancellations/{id}/correspondence` | `CancellationCaseController::addCorrespondence()` | RA-Schriftwechsel festhalten (party/direction/text, optional `files[]`) |
+| `POST` | `/hub/cancellations/{id}/documents` | `CancellationCaseController::uploadDocuments()` | Dokumente hochladen (Multipart, max. 10) |
+| `GET` | `/hub/cancellations/{id}/documents/{docId}` | `CancellationCaseController::serveDocument()` | Dokument streamen (`?download=1` für Attachment) |
+| `DELETE` | `/hub/cancellations/{id}/documents/{docId}` | `CancellationCaseController::deleteDocument()` | Dokument löschen (entfernt auch die Datei) |
 | `GET` | `/hub/cancellations/{id}/conversation` | `CancellationCaseController::conversation()` | Konversationsverlauf (alle Kanäle) |
 | `GET` | `/hub/cancellations/by-contract/{contract}` | `CancellationCaseController::showByContract()` | Redirect zum neuesten Fall des Vertrags |
 

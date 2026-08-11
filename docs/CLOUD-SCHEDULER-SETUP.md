@@ -406,6 +406,12 @@ gcloud scheduler jobs create http sync-wiki \
   --uri="https://hub.glattt.com/api/cron/sync-wiki" \
   --http-method=POST --headers="X-Cron-Token=$TOKEN" \
   --attempt-deadline=1800s --max-retry-attempts=3 --min-backoff=30s
+
+gcloud scheduler jobs create http check-cancellation-follow-ups \
+  --location=europe-west3 --schedule="0 8 * * *" --time-zone="Europe/Berlin" \
+  --uri="https://hub.glattt.com/api/cron/check-cancellation-follow-ups" \
+  --http-method=POST --headers="X-Cron-Token=$TOKEN" \
+  --attempt-deadline=600s --max-retry-attempts=3 --min-backoff=30s
 ```
 
 > **Hinweis:** Ersetze `DEINE-CLOUD-RUN-URL` mit der tatsächlichen URL (z.B. `glattthub-web-abc123-ey.a.run.app`)
