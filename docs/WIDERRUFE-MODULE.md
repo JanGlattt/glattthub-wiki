@@ -48,18 +48,13 @@ Das Widerrufs-Modul ermöglicht die vollständige Verwaltung von Vertragswiderru
 
 Die Übersichtsseite zeigt alle Vertragswiderrufe in einer sortierbaren Tabelle.
 
-### Status-Badges (Header)
+### Status-Buckets (seit 08/2026)
 
-Oben rechts werden die Gesamtzahlen pro Status angezeigt:
-
-| Badge | Farbe | Bedeutung |
-|-------|-------|-----------|
-| **X Offen** | Orange | Neue Widerrufe ohne Verhandlung |
-| **X In Verhandlung** | Teal | Widerrufe in aktiver Bearbeitung |
-| **X Abgeschlossen** | Grün | Abgeschlossene Widerrufe |
-
-!!! info "Immer Gesamtzahlen"
-    Die Status-Badges zeigen stets die ungefilterten Gesamtzahlen – unabhängig davon, welche Filter gesetzt sind.
+Die Übersicht ist in drei Buckets gegliedert, umgeschaltet über eine Segmented Control in der
+Filterleiste — **Alle · Offen · Abgabe an RA · Abgeschlossen**. Neben „Offen" und „Abgabe an RA"
+steht die ungefilterte Gesamtzahl (aus dem Daten-Endpoint mitgeliefert, unabhängig von Filtern).
+Der frühere Status „In Verhandlung" ist abgeschafft; Altfälle wurden per Migration nach „Offen"
+verschoben.
 
 ---
 
@@ -168,7 +163,7 @@ Die Filterleiste bietet Live-Filter ohne zusätzlichen „Filtern"-Button:
 | Filter | Typ | Beschreibung |
 |--------|-----|-------------|
 | **Suche** | Textfeld (Pill-Form) | Durchsucht Kunde, Vertragsnummer, Produkt, Grund, Zendesk-Ticket, Notizen |
-| **Status** | Dropdown | Alle Status · Offen · In Verhandlung · Abgeschlossen |
+| **Status** | Segmented Control (Buckets) | Alle · Offen · Abgabe an RA · Abgeschlossen |
 | **Reaktion** | Dropdown | Alle Reaktionen · Offen · Akzeptiert · Abgelehnt · Upgrade · Downgrade · Korrektur · Laufzeitanpassung |
 | **Grund** | Dropdown | Alle Gründe + alle 9 Widerrufsgründe |
 
@@ -187,11 +182,11 @@ Alle Spaltenköpfe sind klickbar zum Sortieren (aufsteigend ↑ / absteigend ↓
 | **Kunde** | Kundenname aus Phorest | ✅ |
 | **Vertrag** | Vertragsnummer + Produktname | ✅ |
 | **Grund** | Widerrufsgrund (Klartext) | ✅ |
-| **Status** | Farbiges Badge (Offen/In Verhandlung/Abgeschlossen) | ✅ |
+| **Status** | Farbiges Badge (Offen/Abgabe an RA/Abgeschlossen) | ✅ |
 | **Reaktion** | Farbiges Badge (Offen/Akzeptiert/Abgelehnt/…) | ✅ |
 | **SEPA** | ✓ oder ✗ – ob SEPA-Mandat storniert | ❌ |
 | **Phorest** | ✓ oder ✗ – ob in Phorest aktualisiert | ❌ |
-| **Aktion** | Bearbeiten-Button (öffnet Widerrufs-Modal) | ❌ |
+| **Aktion** | ↗-Symbol öffnet die Fall-Detailseite | ❌ |
 
 Klick auf eine **Tabellenzeile** öffnet ebenfalls das Widerrufs-Modal.
 
@@ -203,9 +198,16 @@ Klick auf eine **Tabellenzeile** öffnet ebenfalls das Widerrufs-Modal.
 
 | Status | Badge-Farbe | Bedeutung |
 |--------|------------|-----------|
-| `offen` | 🟡 Warning (Orange) | Neu erfasst, noch nicht bearbeitet |
-| `in_verhandlung` | 🔵 Primary (Teal) | Aktiv in Verhandlung |
-| `abgeschlossen` | 🟢 Success (Grün) | Verhandlung abgeschlossen |
+| `offen` | 🟡 Warning (Orange) | Neu erfasst bzw. in Bearbeitung |
+| `abgabe_ra` | 🔴 Danger (Rot) | An den Rechtsanwalt abgegeben (eigener Bucket, seit 08/2026) |
+| `abgeschlossen` | 🟢 Success (Grün) | Vorgang abgeschlossen |
+
+!!! note "„In Verhandlung" abgeschafft (08/2026)"
+    Der frühere Status `in_verhandlung` existiert nicht mehr — alle Bestandsfälle wanderten per
+    Migration nach `offen` (bewusst keine automatische Einsortierung nach Reaktion). Die Spalte
+    ist seitdem ein `VARCHAR`, die gültigen Werte prüft die Request-Validierung über
+    `ContractCancellation::statusLabels()`. Reaktion/Ergebnis wird erst beim Status
+    „Abgeschlossen" abgefragt.
 
 ### Reaktionen
 
@@ -359,7 +361,7 @@ Der Bestand (5 Verträge, Stand 11.08.2026) wurde mit `contracts:repair-misassig
 | `armpits_treated_in_consultation` | boolean (nullable) | Achseln im BG behandelt |
 | `sepa_cancelled` | boolean | SEPA-Mandat storniert |
 | `phorest_updated` | boolean | In Phorest aktualisiert |
-| `status` | string | Widerrufs-Status (`offen`, `in_verhandlung`, `abgeschlossen`) |
+| `status` | string | Widerrufs-Status (`offen`, `abgabe_ra`, `abgeschlossen`) |
 | `created_by` | bigint (nullable, FK) | Erstellt von (User-ID) |
 | `created_at` | timestamp | Erstellt am |
 | `updated_at` | timestamp | Aktualisiert am |
@@ -400,7 +402,7 @@ Alle Routen liegen unter dem Prefix `/hub` und sind authentifiziert.
 |-----------|-----|---------|-------------|
 | `page` | int | 1 | Seitennummer |
 | `per_page` | int | 50 | Einträge pro Seite (max 200) |
-| `status` | string | – | Filter: `offen`, `in_verhandlung`, `abgeschlossen` |
+| `status` | string | – | Filter: `offen`, `abgabe_ra`, `abgeschlossen` |
 | `reaction` | string | – | Filter: `offen`, `widerruf_akzeptiert`, etc. |
 | `reason` | string | – | Filter: `finanzen`, `gesundheit`, etc. |
 | `date_from` | date | – | Filter: Widerrufsdatum ab |
