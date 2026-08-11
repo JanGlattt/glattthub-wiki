@@ -82,21 +82,39 @@ Widerrufe-Umbaus (Buckets, Wizard, Konversationsverlauf und RA-Vorgang folgen in
 Standort, Zendesk-Ticket verlinkt, SEPA/Phorest-Kennzeichen), **Verknüpfungen** (Vertrag,
 Folgevertrag, Kundenprofil) und **Bearbeiten**.
 
-**Verlauf & Änderungshistorie:** Seit dem Umbau wird jede Bewegung am Fall festgehalten — Anlage,
-Feldänderungen (mit Alt-/Neu-Wert), Statuswechsel, das angewendete Ergebnis (Vertrag
-storniert/geändert) und manuelle **Notizen** (Eingabefeld oben im Verlauf, Recht „Widerrufe
-erfassen und bearbeiten"). Zendesk-Ticketnummern in Notizen (`#4201`) werden automatisch verlinkt.
-Ältere Fälle zeigen einen leeren Verlauf — Bewegungen vor dem Umbau wurden nicht rückwirkend erfasst.
+**Verlauf & Kommunikation (seit Phase 4):** Die Karte bündelt ALLE Bewegungen und die
+Kundenkommunikation als einen chronologischen Strang — Fall-Ereignisse (Anlage,
+Feldänderungen mit Alt/Neu, Statuswechsel, angewendetes Ergebnis), manuelle **Notizen**
+(Zendesk-Ticketnummern wie `#4201` klickbar), **Zendesk-Ticket-Kommentare** (über die
+verknüpfte Ticketnummer, 5 Minuten gecacht), **Hub-Mails** (SEPA-/Vertragsmails am Vertrag
+plus Mails an die Kundenadresse aus dem E-Mail-Protokoll) und der **WhatsApp-Verlauf**
+(lokaler Superchat-Spiegel). Ein Kanal-Filter blendet einzelne Quellen ein/aus; fällt eine
+Quelle aus (typisch Zendesk), erscheinen die übrigen trotzdem und der Ausfall wird als
+Hinweis angezeigt. Datenaufbereitung: `CancellationConversationService`, Endpoint
+`GET /hub/cancellations/{id}/conversation`.
 
-!!! note "Bearbeiten noch über die Vertragsseite"
-    Bis zum Wizard-Umbau (Phase 3) öffnet „Widerruf bearbeiten" weiterhin das Modal auf der
-    Vertragsseite. Danach wird ausschließlich auf der Detailseite bearbeitet.
+Ältere Fälle zeigen wenige Fall-Ereignisse — der Verlauf wird erst seit dem Umbau im
+August 2026 geführt; Kommunikation (Zendesk/E-Mail/WhatsApp) erscheint auch rückwirkend,
+soweit die Quellsysteme sie kennen.
 
 ---
 
 ## Widerruf erfassen
 
-Ein neuer Widerruf wird über die **Vertragsdetailseite** erstellt oder über die Widerrufe-Übersicht bearbeitet.
+Neue Widerrufe entstehen seit 08/2026 (Phase 3 des Umbaus) über einen **4-Schritte-Wizard**
+(„Neuer Widerruf" auf der Übersicht bzw. „Widerruf erfassen" in der Kundenakte):
+
+1. **Vertrag** — Vertragssuche (Nummer/Kundenname) bzw. vorbelegter Vertrag mit Eckdaten
+2. **Widerruf** — Datum (flatpickr), Zendesk-Ticket (Lookup, Suche, Vorschläge aus der
+   Kunden-E-Mail; Ticket-Auswahl übernimmt das Datum), Grund, Beschreibung, Anmerkungen
+3. **Prüfung** — Frist-Einordnung (Tage seit Vertragsabschluss, als Entscheidungshilfe
+   gekennzeichnet) und Behandlungsstand aus Phorest; Achseln-Checkbox
+4. **Zusammenfassung** — Speichern; der Fall startet immer im Bucket **Offen** und der
+   Wizard leitet direkt auf die Fall-Detailseite weiter
+
+Partial: `hub/cancellations/partials/create-wizard.blade.php`, JS `cancellationCreateWizard()`
+in `public/js/cancellation-case.js`. Status/Ergebnis werden im Wizard bewusst nicht abgefragt —
+der Abschluss passiert auf der Detailseite.
 
 ### Pflichtfelder
 
@@ -144,23 +162,24 @@ Folgende Daten werden automatisch aus Phorest geladen:
 
 ## Widerruf bearbeiten
 
-Beim Öffnen eines bestehenden Widerrufs wechselt das Modal in den **Bearbeitungsmodus**:
+Bearbeitet wird seit 08/2026 **ausschließlich auf der Fall-Detailseite** — das alte
+Create+Edit-Modal existiert nicht mehr. Die Detailseite bietet dafür (Recht „Widerrufe
+erfassen und bearbeiten"):
 
-- Header wird **teal** statt rot
-- Titel zeigt **„Widerruf bearbeiten"**
-- Zusätzlicher Abschnitt **„Widerrufs-Verhandlungen"** wird sichtbar
+- **Aktionen-Karte** (rechte Spalte): je nach Status „Abschließen …" (Modal mit
+  Ergebnis-Auswahl, bei Downgrade/Upgrade Folgevertrag-Suche, Hinweis was der Abschluss mit
+  dem Ursprungsvertrag macht), „An Rechtsanwalt abgeben" bzw. „Zurück zu Offen" sowie
+  „Fall bearbeiten" (Modal mit Datum, Grund, Zendesk-Ticket, Beschreibung, Anmerkungen,
+  Folgevertrag, SEPA-/Phorest-Kennzeichen). Abgeschlossene Fälle haben keine
+  Statuswechsel mehr; Felder wie der Folgevertrag bleiben nachtragbar (die Verknüpfung
+  zum Ursprungsvertrag wird dann automatisch hergestellt).
+- **Umsetzungs-Karte** (linke Spalte): Downgrade-Formulare (solange der Fall läuft bzw.
+  bei Ergebnis Downgrade), nach dem Abschluss mit vertragsbeendendem Ergebnis zusätzlich
+  Phorest-Pakete (Rest-Einheiten auf 0 setzen) und GoCardless (Mandate/Einzüge prüfen und
+  **ausschließlich manuell** kündigen).
 
-### Verhandlungen
-
-| Feld | Optionen |
-|------|----------|
-| **Status** | Offen · In Verhandlung · Abgeschlossen |
-| **Reaktion glattt** | Offen · Akzeptiert · Abgelehnt · Upgrade · Downgrade · Korrektur · Laufzeitanpassung |
-| **Folgevertrag-ID** | Wird angezeigt bei Reaktion Upgrade/Downgrade/Korrektur/Laufzeit |
-| **Anmerkungen** | Freitextfeld für interne Notizen |
-| **Verhandlung abgeschlossen am** | Datum |
-| **In SEPA umgesetzt** | Checkbox |
-| **In Phorest umgesetzt** | Checkbox |
+Gespeichert wird über `PUT /hub/cancellations/{id}` (Teil-Updates); jede Änderung landet
+als Alt/Neu-Diff im Fall-Verlauf.
 
 ---
 
@@ -296,15 +315,21 @@ ausschliesslich manuell über den SEPA-Tab.
 
 | Datei | Zweck |
 |-------|-------|
-| `resources/views/hub/cancellations/index.blade.php` | Übersichtsseite mit Tabelle, Filtern, Pagination |
-| `resources/views/hub/cancellations/show.blade.php` | Fall-Detailseite (seit 08/2026) |
-| `resources/views/hub/contracts/partials/cancellation-modal.blade.php` | Wiederverwendbares Modal (Create + Edit) |
-| `app/Http/Controllers/ContractController.php` | Backend: CRUD + Daten-API |
-| `app/Http/Controllers/CancellationCaseController.php` | Fall-Detailseite + Notizen (seit 08/2026) |
-| `app/Models/ContractCancellation.php` | Eloquent-Model (inkl. `events()`/`logEvent()`) |
+| `resources/views/hub/cancellations/index.blade.php` | Übersicht: Bucket-Board + Infinite-Scroll-Archiv |
+| `resources/views/hub/cancellations/show.blade.php` | Fall-Detailseite |
+| `resources/views/hub/cancellations/partials/create-wizard.blade.php` | Neuanlage-Wizard (4 Schritte) |
+| `resources/views/hub/cancellations/partials/settlement.blade.php` | Umsetzungs-Karte (Formulare, Phorest, GoCardless) |
+| `public/js/cancellation-case.js` | Alpine-Komponenten: Aktionen, Umsetzung, Konversation, Wizard |
+| `app/Http/Controllers/ContractController.php` | storeCancellation + Behandlungsdaten-API |
+| `app/Http/Controllers/CancellationCaseController.php` | Fall-Detailseite, Update, Notizen, Konversation |
+| `app/Services/CancellationConversationService.php` | Konversationsverlauf (alle Kanäle, fehlertolerant) |
+| `app/Models/ContractCancellation.php` | Eloquent-Model (inkl. `events()`/`logEvent()`/`logFieldChanges()`) |
 | `app/Models/ContractCancellationEvent.php` | Verlaufseintrag je Fall (append-only) |
 | `routes/web.php` | Route-Definitionen |
 | `resources/views/layouts/partials/sidebar.blade.php` | Sidebar-Eintrag „Widerrufe" |
+
+Das alte `cancellation-modal.blade.php` (2.200 Zeilen, Create + Edit) ist mit Phase 3
+entfallen.
 
 ### Fall-Verlauf (`contract_cancellation_events`, seit 08/2026)
 
@@ -397,14 +422,19 @@ Alle Routen liegen unter dem Prefix `/hub` und sind authentifiziert.
 | `GET` | `/hub/cancellations` | `cancellationsIndex()` | `hub.cancellations` | Rendert die Übersichtsseite |
 | `GET` | `/hub/cancellations/data` | `getCancellations()` | `hub.cancellations.data` | JSON-API: Paginierte Widerrufe |
 
-### CRUD pro Vertrag
+### CRUD (seit 08/2026 fall-bezogen)
 
-| Method | Route | Controller | Name | Beschreibung |
-|--------|-------|-----------|------|-------------|
-| `POST` | `/hub/contracts/{contract}/cancellation` | `storeCancellation()` | `hub.contracts.cancellation.store` | Neuen Widerruf erstellen |
-| `GET` | `/hub/contracts/{contract}/cancellation` | `getCancellation()` | `hub.contracts.cancellation.show` | Bestehenden Widerruf laden |
-| `PUT` | `/hub/contracts/{contract}/cancellation` | `updateCancellation()` | `hub.contracts.cancellation.update` | Widerruf aktualisieren |
-| `GET` | `/hub/contracts/{contract}/cancellation-data` | `getCancellationData()` | `hub.contracts.cancellation.data` | Behandlungshistorie aus Phorest |
+| Method | Route | Controller | Beschreibung |
+|--------|-------|-----------|-------------|
+| `POST` | `/hub/contracts/{contract}/cancellation` | `ContractController::storeCancellation()` | Neuen Widerruf erstellen (Wizard) |
+| `GET` | `/hub/contracts/{contract}/cancellation-data` | `ContractController::getCancellationData()` | Behandlungshistorie aus Phorest |
+| `GET` | `/hub/cancellations/{id}` | `CancellationCaseController::show()` | Fall-Detailseite |
+| `PUT` | `/hub/cancellations/{id}` | `CancellationCaseController::update()` | Fall bearbeiten (Teil-Updates, loggt Diffs, wendet Ergebnis an) |
+| `POST` | `/hub/cancellations/{id}/notes` | `CancellationCaseController::addNote()` | Notiz im Verlauf |
+| `GET` | `/hub/cancellations/{id}/conversation` | `CancellationCaseController::conversation()` | Konversationsverlauf (alle Kanäle) |
+| `GET` | `/hub/cancellations/by-contract/{contract}` | `CancellationCaseController::showByContract()` | Redirect zum neuesten Fall des Vertrags |
+
+Das frühere `GET`/`PUT /hub/contracts/{contract}/cancellation` (Modal-Edit) ist entfallen.
 
 ### `GET /hub/cancellations/data` – Query-Parameter
 
