@@ -195,13 +195,46 @@ späterer Abschluss den Automatismus nicht durch die Idempotenz-Sperre blockiert
 
 | Kennzahl | Quelle |
 |---|---|
-| Versendet / fehlgeschlagen / übersprungen | `consultation_whatsapp_logs.status` |
+| Versendet / nicht zugestellt / übersprungen | `consultation_whatsapp_logs.status` |
 | Gutscheinkäufer | `voucher_orders` (bezahlte Status) mit Kampagnen-Kennzeichen |
-| Termine, No-Show | `consultation_appointments` (`no_show`) |
+| Termine, wahrgenommen, No-Show | `stats_historic_appointments` + `consultation_services.is_consultation` |
 | Conversion, Ø KPZ, Ø Vertragswert | `contracts` (ohne `draft` und `cancelled`) |
 
-Der Zeitraum bezieht sich beim Versand auf `appointment_date`, beim Kauf auf `paid_at` und beim
-Vertrag auf `signed_at`. Ergebnisse werden 15 Minuten gecacht (Schlüssel enthält die Filter).
+Der Zeitraum bezieht sich beim Versand auf `sent_at` (ersatzweise `created_at`), beim Kauf auf
+`paid_at`, beim Termin auf `appointment_date` und beim Vertrag auf `signed_at`. Ergebnisse werden
+15 Minuten gecacht (Schlüssel enthält die Filter).
+
+**Termin-Ausgang** folgt derselben Ableitung wie die Ads-Analyse, damit „stattgefunden" hubweit
+dasselbe bedeutet:
+
+- **wahrgenommen**: `state` in `COMPLETED`, `PAID`
+- **No-Show**: `state` in `BOOKED`, `CONFIRMED`, `CHECKED_IN`, `NO_SHOW` **und** Termin liegt in der
+  Vergangenheit
+- **bevorstehend**: Termin in der Zukunft — zählt weder als wahrgenommen noch als versäumt und ist
+  deshalb nicht Teil der No-Show-Bezugsgröße
+- Stornierte, deaktivierte und gelöschte Termine fallen ganz heraus
+
+#### Zwei Datenfallen, die diese Auswertung anfangs verfälscht haben
+
+**`consultation_appointments` ist tot.** Die Tabelle wird seit dem 25.11.2025 nicht mehr befüllt und
+enthält für 2026 keine einzige Zeile. Die erste Fassung der Auswertung las von dort und fand deshalb
+zu keinem Kampagnen-Kunden einen Termin: „Beratung wahrgenommen" stand auf 0, obwohl darunter 26
+Verträge ausgewiesen waren, und der Gruppenvergleich zeigte ausschliesslich Altbestand aus 2025.
+**Für alles, was Termine ab 2026 auswertet, ist `stats_historic_appointments` die Quelle.**
+
+**Das Versandprotokoll trägt zwei Daten.** `appointment_date` ist der Termin, `sent_at` der Versand —
+und zwischen beiden liegen oft Monate (in Prod bis Februar 2027). Über `appointment_date` gefiltert
+landen Angebote im Zeitraum ihres Termins statt in dem ihres Versands, und ein Zeitraum „bis heute"
+schneidet alle Angebote mit Zukunftstermin ab (08/2026 waren so 345 statt 450 sichtbar).
+
+### „Nicht zugestellt" — was die Zahl bedeutet
+
+Ausgewiesen wird der **fehlgeschlagene Versand** (`status = failed`) samt Fehlversand-Quote, bezogen
+auf die tatsächlichen Versuche (versendet + fehlgeschlagen); Übersprungene sind kein Versuch und
+zählen nicht in den Nenner. Sichtbar ist das als eigene Kennzahl, als Kennzahlen-Zeile unter dem
+Trichter und in dessen Tabellen-Ansicht.
+
+Das ist **nicht** dasselbe wie eine nicht zugestellte Nachricht im WhatsApp-Sinn — dazu siehe unten.
 
 ### Zustellstatus: nicht verfügbar
 
