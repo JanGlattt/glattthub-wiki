@@ -143,7 +143,13 @@ Die Rücklastschriften (RLS/Chargebacks) je **Fälligkeitsmonat** über die **vo
 
 **Gleiche Datenbasis wie der MRR-Chart:** Bis 05/2026 die Alt-Auswertung — Anzahl („Anzahl der RLS" ÷ „Anzahl der Lasts. gesamt") und Wert („Original Wert der RLS" ÷ „Wert der Lasts. gesamt") kommen als Monats-Aggregate aus der CSV; Nachzahlungen sind dort unbekannt. Ab 06/2026 das Hub-Zahlungsbuch: Basis sind **verarbeitete Raten** (Einzugsversuch erfolgt: `paid`/`confirmed`/`failed`/`chargedback`); noch geplante/offene Raten (`scheduled`/`pending`) zählen nicht mit, damit die Quote nicht künstlich sinkt. Standard-Zoom: volle Historie.
 
-Raten, die nach einer Rücklastschrift doch noch bezahlt wurden (Wiederholungseinzug oder manuelle Begleichung), zählen nicht mehr als RLS — die Quote zeigt den **endgültigen Ausfall**. Manuell nachgezahlte RLS werden im Tooltip separat als **„Nachgezahlt"** ausgewiesen (Anzahl + Wert).
+Raten, die nach einer Rücklastschrift doch noch bezahlt wurden (Wiederholungseinzug oder manuelle Begleichung), zählen nicht mehr als RLS — die Quote zeigt den **endgültigen Ausfall**. Sie stehen separat als **„Nachgezahlt"** (Anzahl + Wert) in Tooltip und Tabelle.
+
+**Abgleich mit dem Kontoauszug — Spalte „Rückläufer gesamt" (seit 08/2026):** Die Buchhaltung zählt im Kontoauszug **jeden** zurückgegebenen Einzug, der Hub-Balken zeigt dagegen nur den endgültigen Ausfall. Beide Zahlen sind richtig und weichen trotzdem auseinander. Die Tabelle (und der CSV-Export) führen deshalb zusätzlich **„Rückläufer gesamt" = Rücklastschriften + nachgezahlt** — das ist die Zahl aus dem Kontoauszug, und die gehört in den Abgleich. Anlass war ein Abgleich am 11.08.2026: 41 Rückläufer laut Bank gegen 28 im Hub, aufgelöst in 27 endgültige RLS + 7 nachgezahlte + 5 fälschlich als bezahlt geführte (Webhook-Fehler, siehe `GOCARDLESS-API.md`) + 3 auf widerrufenen/geänderten Verträgen.
+
+**Als „nachgezahlt" zählt auch der erfolgreiche Wiedereinzug durch GoCardless.** Bis 08/2026 setzte die Auswertung ein manuelles Zahlungsmittel voraus — von GoCardless wiederholte Einzüge fielen dadurch aus **beiden** Zahlen heraus und waren nirgends sichtbar.
+
+**Vertragsstatus:** Diese Auswertung (und „Zahlungsausfälle nach Ratenfortschritt") zählt Einzüge auf allen Verträgen, die je eingezogen haben — **auch auf widerrufenen und geänderten**. Geplatzt ist geplatzt, unabhängig davon, was später aus dem Vertrag wurde; nur Entwürfe bleiben außen vor (`SalesStatisticsService::COLLECTION_STATUSES`). Die übrigen Verkaufszahlen (Umsatz, MRR, Einzugsvolumen) rechnen weiterhin nur mit aktiven und abgeschlossenen Verträgen (`SALE_STATUSES`) — ein widerrufener Vertrag trägt keinen Bestandsumsatz mehr.
 
 ### Direktzahler-Segment
 
@@ -300,7 +306,8 @@ SalesStatisticsService (app/Services/)
 | `resources/views/hub/reports/sales-statistics/partials/sales-mix.blade.php` | Sales Mix — Paket-Umfang (ECharts, Umschalter Stück/Umsatz, Netto/Brutto, %) |
 | `resources/views/hub/reports/sales-statistics/partials/new-customers.blade.php` | Neukunden pro Monat je Institut (ECharts) |
 | `resources/views/hub/reports/sales-statistics/partials/mrr.blade.php` | Lastschriften-Bestand & Einzugsvolumen (Soll/Ist + aktive Mandate) |
-| `resources/views/hub/reports/sales-statistics/partials/chargebacks.blade.php` | Rücklastschriften pro Monat (Quote/Anzahl) |
+| `resources/views/statistics/sales/chargebacks.blade.php` | Rücklastschriften pro Monat (Quote/Anzahl) — Statistik-Partial, auch im Eigenen Dashboard |
+| `public/js/statistics/sales.js` | Registrierte Statistik-Komponenten der Verkaufsseite (`GlatttStats.register`) |
 | `resources/views/hub/reports/sales-statistics/partials/direct-pay.blade.php` | Direktzahler-Segment (Kunden/Umsatz/KPZ + Anteil) |
 | `public/js/sales-statistics.js` | Alpine.js App + ECharts-Integration + Tabellen-Modelle je Chart |
 | `public/js/chart-table.js` | Generischer Aufbau der Tabellen-Ansicht (Perioden-Baum, Aggregation, Formatierer) |

@@ -335,6 +335,41 @@ Zeilen mit einem echten Grund bleiben unberührt. Prod-Lauf 06.08.2026: 57 Raten
 korrigiert (18 überschrieben, 39 leer), 18 Versuchszähler zurückgesetzt, alle mit
 Bankcode `MS03`.
 
+#### Die Auszahlungsmeldung kommt NACH dem Ausfall (Korrektur 08/2026)
+
+Ein nachträglich geplatzter Einzug endet nicht mit dem Fehlschlag. Die reale
+Ereignisfolge vom 03.08.2026 lautet:
+
+```
+confirmed → failed (MS03) → late_failure_settled → paid_out
+```
+
+`payments.paid_out` belegt hier **keinen Geldeingang**: GoCardless verrechnet den
+Ausfall mit einer Auszahlung und meldet die Auszahlung trotzdem. Der Handler hat
+daraufhin bedingungslos `paid` gesetzt und damit den eine Minute zuvor korrekt
+gesetzten Fehlstatus überschrieben. Folge: **5 Raten über 1.084,89 € galten im
+August als bezahlt** — sie fehlten sowohl in der Rücklastschrift-Statistik als auch
+in der Schuldenliste, wurden also von niemandem nachgefasst. Aufgefallen beim
+Abgleich von Janines Bankliste (41 Rückläufer) mit dem Hub (28).
+
+Seitdem prüfen `handlePaymentsPaidOut()` und `handlePaymentsConfirmed()` über
+`keepsBounced()`, ob die Rate bereits auf `failed`/`chargedback` steht — dann bleibt
+sie es. Die Auszahlungs-Referenz (`gocardless_payout_id`) wird trotzdem
+festgehalten, sie belegt die Verrechnung.
+
+**Der echte Wiedereinzug bleibt davon unberührt**, weil er immer mit einem neuen
+`payments.submitted` beginnt: Das holt die Rate über `handlePaymentsSubmitted()` aus
+dem Fehlzustand, danach greifen `confirmed`/`paid_out` wieder normal. Genau daran
+unterscheidet man beide Fälle — in Produktion waren 3 der 8 betroffenen Raten (Juni)
+echte Wiedereinzüge und zu Recht bezahlt.
+
+Bestandszeilen repariert der einmalige Command
+`php artisan gocardless:repair-late-failure-statuses` (`--dry-run` zeigt die
+Änderungen vorab). Er nimmt nur Raten zurück, nach deren letztem Ausfall-Event
+**kein** `submitted`/`resubmission_requested` mehr kam, und lässt extern beglichene
+Raten (`direct_payment_method`) unangetastet. `paid_at` wird dabei geleert — es
+dokumentierte nur die Auszahlungsmeldung.
+
 #### Deutsche Rücklastschrift-Gründe
 
 `failure_reason`/`failure_code` werden **im GoCardless-Original gespeichert** (englischer
