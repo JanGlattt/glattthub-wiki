@@ -161,6 +161,7 @@ nav:
     - Mitarbeiterperformance: STAFF-PERFORMANCE.md
     - Widerruf-Statistik: REVOCATION-STATISTICS.md
     - HR-Kennzahlen: HR-KENNZAHLEN.md
+    - Gutschein-Aktion: GUTSCHEIN-AKTION.md
   - API-Integrationen:
     - WordPress-Buchungswidget: WORDPRESS-BUCHUNGSWIDGET.md
     - REST-API:

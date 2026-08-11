@@ -70,3 +70,9 @@ Beide Wege münden in `UpcomingConsultationObserver::created()` → prüft Statu
 **Nachgezogene Migration:** `2026_07_11_225000_create_upcoming_consultations_table_if_missing.php` — die Tabelle existierte auf allen Umgebungen, aber nicht im Repo; die Migration ist auf Bestandsumgebungen ein No-op und versorgt Test-DB/frische Umgebungen.
 
 **Tests:** `tests/Feature/ConsultationWhatsapp/ConsultationWhatsappAutomationTest.php` (Happy Path mit Variablen-Mapping, Zweitberatung übersprungen, fehlende Nummer, deaktivierter Standort, stornierte Buchung, Dedupe).
+
+**Anschluss-Auswertung & automatische Gutschein-Verlängerung:** Was aus den versendeten Angeboten
+wird — Annahmequote, Conversion und Vergleich der Kundengruppen — steht unter
+[Gutschein-Aktion](GUTSCHEIN-AKTION.md). Dort ist auch beschrieben, wie der geschenkte Bonus-Gutschein
+beim Vertragsabschluss automatisch auf sechs Monate verlängert wird und warum das Kampagnen-Kennzeichen
+`Beratungs-WhatsApp` am Kauf-Token die eindeutige Erkennung liefert.
