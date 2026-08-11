@@ -8,6 +8,7 @@
   - [Übersicht](#übersicht)
   - [Widerrufe-Seite](#widerrufe-seite)
   - [Fall-Detailseite](#fall-detailseite-seit-082026)
+  - [RA-Vorgang](#ra-vorgang-seit-082026)
   - [Widerruf erfassen](#widerruf-erfassen)
   - [Widerruf bearbeiten](#widerruf-bearbeiten)
   - [Filter & Suche](#filter--suche)
@@ -68,8 +69,8 @@ verschoben. Grund-/Ergebnis-Filter wirken serverseitig auf alle drei Bereiche.
 
 ## Fall-Detailseite (seit 08/2026)
 
-Jeder Widerruf hat eine eigene, verlinkbare Seite unter `/hub/cancellations/{id}` — Phase 1 des
-Widerrufe-Umbaus (Buckets, Wizard, Konversationsverlauf und RA-Vorgang folgen in den nächsten Phasen).
+Jeder Widerruf hat eine eigene, verlinkbare Seite unter `/hub/cancellations/{id}` — das Herzstück
+des Widerrufe-Umbaus 08/2026 (Phasen 1–5: Detailseite, Buckets, Wizard, Konversationsverlauf, RA-Vorgang).
 
 **Erreichbar über:**
 
@@ -96,6 +97,38 @@ Hinweis angezeigt. Datenaufbereitung: `CancellationConversationService`, Endpoin
 Ältere Fälle zeigen wenige Fall-Ereignisse — der Verlauf wird erst seit dem Umbau im
 August 2026 geführt; Kommunikation (Zendesk/E-Mail/WhatsApp) erscheint auch rückwirkend,
 soweit die Quellsysteme sie kennen.
+
+---
+
+## RA-Vorgang (seit 08/2026)
+
+Wird ein Fall an den Rechtsanwalt abgegeben (Status **„Abgabe an RA"**), erscheint auf der
+Fall-Detailseite die Karte **„RA-Vorgang"** (Phase 5 des Umbaus). Sie bleibt auch nach dem
+Abschluss sichtbar, solange der Fall RA-Daten trägt — dann als Bilanz des Rechtswegs.
+
+**Kennzahlen-Zeile:** Kosten gesamt, vereinnahmte Summe und die **Wirtschaftlichkeit**
+(vereinnahmt − Kosten, grün/rot nach Vorzeichen).
+
+**Kostenpositionen** (nur mit `manage_revocations`): vier Kostenarten nach dem Muster des
+Forderungsmanagements — **RA-Honorar**, **Gerichtskosten**, **gegnerische Anwaltskosten**,
+**Gutachter / Sonstiges**. Je Position Betrag (Komma-Eingabe, in Cents gespeichert), Datum
+und optionale Anmerkung; jede Buchung landet als Ereignis im Fall-Verlauf. Positionen sind
+bewusst nicht löschbar (append-only wie im Forderungsmanagement).
+
+**Schriftwechsel festhalten:** Korrespondenz mit dem **eigenen Anwalt** oder der **Gegenseite**,
+jeweils gesendet/eingegangen, optional mit Datum des Schreibens. Die Einträge erscheinen im
+Konversationsverlauf als eigener Kanal **„RA-Schriftwechsel"** und sind dort nach Beteiligten
+unterscheidbar und filterbar.
+
+**Ergebnis des RA-Vorgangs:** fünf Ergebnisarten — **Vergleich**, **Urteil pro uns**,
+**Urteil pro Kunde**, **Eingestellt / zurückgenommen**, **Kunde zahlt nach Mahnung** — plus
+die manuell erfasste **vereinnahmte Summe**. Beides wird als Feldänderung im Verlauf
+protokolliert.
+
+**Auswertung:** Die Statistik **„RA-Vorgänge: Wirtschaftlichkeit"** auf der
+Widerruf-Statistik-Seite (und als Dashboard-Kachel, Statistik-Key `widerrufe.ra`) stellt
+Kosten und vereinnahmte Summen je Ergebnisart gegenüber; laufende Fälle ohne Ergebnis bilden
+eine eigene Gruppe. CSV-Export über die Quelle `revocation-ra`.
 
 ---
 
@@ -319,7 +352,10 @@ ausschliesslich manuell über den SEPA-Tab.
 | `resources/views/hub/cancellations/show.blade.php` | Fall-Detailseite |
 | `resources/views/hub/cancellations/partials/create-wizard.blade.php` | Neuanlage-Wizard (4 Schritte) |
 | `resources/views/hub/cancellations/partials/settlement.blade.php` | Umsetzungs-Karte (Formulare, Phorest, GoCardless) |
-| `public/js/cancellation-case.js` | Alpine-Komponenten: Aktionen, Umsetzung, Konversation, Wizard |
+| `resources/views/hub/cancellations/partials/ra-process.blade.php` | RA-Vorgang-Karte (Kosten, Schriftwechsel, Ergebnis, Wirtschaftlichkeit) |
+| `resources/views/statistics/widerrufe/ra.blade.php` | Statistik-Partial `widerrufe.ra` (RA-Wirtschaftlichkeit) |
+| `app/Models/CancellationCostItem.php` | Kostenposition des RA-Vorgangs |
+| `public/js/cancellation-case.js` | Alpine-Komponenten: Aktionen, Umsetzung, Konversation, Wizard, RA-Vorgang |
 | `app/Http/Controllers/ContractController.php` | storeCancellation + Behandlungsdaten-API |
 | `app/Http/Controllers/CancellationCaseController.php` | Fall-Detailseite, Update, Notizen, Konversation |
 | `app/Services/CancellationConversationService.php` | Konversationsverlauf (alle Kanäle, fehlertolerant) |
@@ -397,9 +433,25 @@ Der Bestand (5 Verträge, Stand 11.08.2026) wurde mit `contracts:repair-misassig
 | `sepa_cancelled` | boolean | SEPA-Mandat storniert |
 | `phorest_updated` | boolean | In Phorest aktualisiert |
 | `status` | string | Widerrufs-Status (`offen`, `abgabe_ra`, `abgeschlossen`) |
+| `ra_outcome` | string (nullable) | Ergebnisart des RA-Vorgangs (`vergleich`, `urteil_pro_uns`, `urteil_pro_kunde`, `eingestellt`, `zahlung_nach_mahnung`) |
+| `ra_recovered_amount_cents` | uint (nullable) | Manuell erfasste vereinnahmte Summe in Cents |
 | `created_by` | bigint (nullable, FK) | Erstellt von (User-ID) |
 | `created_at` | timestamp | Erstellt am |
 | `updated_at` | timestamp | Aktualisiert am |
+
+### `cancellation_cost_items` (seit 08/2026, Phase 5)
+
+Kostenpositionen des RA-Vorgangs — Muster `debt_cost_items` aus dem Forderungsmanagement.
+
+| Feld | Typ | Beschreibung |
+|------|-----|-------------|
+| `contract_cancellation_id` | bigint (FK, cascade) | Zugehöriger Fall |
+| `type` | string | `ra_fee`, `court`, `opponent_fee`, `expert_other` |
+| `amount_cents` | uint | Betrag in Cents |
+| `incurred_on` | date | Angefallen am |
+| `notes` | text (nullable) | Anmerkung |
+| `created_by` | bigint (nullable, FK) | Erfasst von |
+| `deleted_at` | timestamp (nullable) | SoftDeletes — Raw-SQL-Abfragen brauchen `deleted_at IS NULL` |
 
 ### Beziehungen
 
@@ -407,7 +459,11 @@ Der Bestand (5 Verträge, Stand 11.08.2026) wurde mit `contracts:repair-misassig
 ContractCancellation::belongsTo(Contract::class);
 ContractCancellation::belongsTo(User::class, 'created_by');
 ContractCancellation::belongsTo(Contract::class, 'follow_up_contract_id');
+ContractCancellation::hasMany(CancellationCostItem::class);   // costItems()
 ```
+
+Berechnete Attribute: `ra_total_costs_cents` (Summe Kostenpositionen), `ra_net_cents`
+(vereinnahmt − Kosten), `has_ra_process` (steuert die Sichtbarkeit der RA-Karte).
 
 ---
 
@@ -431,6 +487,8 @@ Alle Routen liegen unter dem Prefix `/hub` und sind authentifiziert.
 | `GET` | `/hub/cancellations/{id}` | `CancellationCaseController::show()` | Fall-Detailseite |
 | `PUT` | `/hub/cancellations/{id}` | `CancellationCaseController::update()` | Fall bearbeiten (Teil-Updates, loggt Diffs, wendet Ergebnis an) |
 | `POST` | `/hub/cancellations/{id}/notes` | `CancellationCaseController::addNote()` | Notiz im Verlauf |
+| `POST` | `/hub/cancellations/{id}/costs` | `CancellationCaseController::recordCost()` | Kostenposition des RA-Vorgangs erfassen |
+| `POST` | `/hub/cancellations/{id}/correspondence` | `CancellationCaseController::addCorrespondence()` | RA-Schriftwechsel festhalten (party/direction/text) |
 | `GET` | `/hub/cancellations/{id}/conversation` | `CancellationCaseController::conversation()` | Konversationsverlauf (alle Kanäle) |
 | `GET` | `/hub/cancellations/by-contract/{contract}` | `CancellationCaseController::showByContract()` | Redirect zum neuesten Fall des Vertrags |
 
