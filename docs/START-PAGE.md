@@ -299,6 +299,21 @@ behoben):
   `:not(.start-card-dragging)` aus, damit keine Karten-ID doppelt in der
   Reihenfolge steht.
 
+**Gleiche Höhe je Zeile.** Das Raster zieht jede Kachel auf Zeilenhöhe
+(`align-items: stretch`). Bei Statistik-Kacheln ist die sichtbare Karte aber
+nicht die Kachel selbst, sondern die `.card-glattt` der Statistik — und die
+blieb auf Inhaltshöhe stehen. Neben einem höheren Nachbarn endete eine
+Diagramm-Karte deshalb sichtbar zu früh (gemessen: 555 px in einer 900 px hohen
+Zeile). Eine Flex-Kette `.start-card-statistic` → `.statistic-glattt` →
+`.card-glattt` reicht die Zeilenhöhe durch.
+
+**Kein `fixed_range`-Schild auf der Startseite.** Die Startseite hat keinen
+Zeitraum-Filter, gegen den sich eine feste Zeitspanne abgrenzen müsste — das
+Schild („Gesamte Historie — Ausschnitt über den Zoom-Regler") erklärte hier
+nichts und schwebte nur über dem Kartenrand. Den Zeitraum nennt weiterhin der
+Auswahl-Dialog; auf den **eigenen Dashboards** (mit Zeitraum-Filter) steht das
+Schild unverändert an der Kachel.
+
 Nach dem Breitenwechsel löst `toggleCardWidth()` ein `resize`-Event aus:
 Diagramme messen ihren Container nur beim Zeichnen und hängen sonst am
 `window`-Resize (`glattt-stats.js`) — sonst behielte ECharts die alte Breite.
