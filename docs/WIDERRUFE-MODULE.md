@@ -7,6 +7,7 @@
 - [Für Nutzer](#für-nutzer)
   - [Übersicht](#übersicht)
   - [Widerrufe-Seite](#widerrufe-seite)
+  - [Fall-Detailseite](#fall-detailseite-seit-082026)
   - [Widerruf erfassen](#widerruf-erfassen)
   - [Widerruf bearbeiten](#widerruf-bearbeiten)
   - [Filter & Suche](#filter--suche)
@@ -59,6 +60,34 @@ Oben rechts werden die Gesamtzahlen pro Status angezeigt:
 
 !!! info "Immer Gesamtzahlen"
     Die Status-Badges zeigen stets die ungefilterten Gesamtzahlen – unabhängig davon, welche Filter gesetzt sind.
+
+---
+
+## Fall-Detailseite (seit 08/2026)
+
+Jeder Widerruf hat eine eigene, verlinkbare Seite unter `/hub/cancellations/{id}` — Phase 1 des
+Widerrufe-Umbaus (Buckets, Wizard, Konversationsverlauf und RA-Vorgang folgen in den nächsten Phasen).
+
+**Erreichbar über:**
+
+- das ↗-Symbol am rechten Rand jeder Zeile der Übersicht (Klick auf die Zeile öffnet weiterhin das Bearbeiten-Modal),
+- den Button **„Zum Widerruf"** im roten Banner der Vertragsseite,
+- die globale Suche (Treffer führen jetzt direkt auf den Fall).
+
+**Aufbau** (analog zur Schuldenfall-Seite): links **Widerrufsgrund**, **Behandlungsstand** (BG,
+1. Sitzung, Tage dazwischen) und der **Verlauf**; rechts **Fall-Informationen** (Paket, Vertragswert,
+Standort, Zendesk-Ticket verlinkt, SEPA/Phorest-Kennzeichen), **Verknüpfungen** (Vertrag,
+Folgevertrag, Kundenprofil) und **Bearbeiten**.
+
+**Verlauf & Änderungshistorie:** Seit dem Umbau wird jede Bewegung am Fall festgehalten — Anlage,
+Feldänderungen (mit Alt-/Neu-Wert), Statuswechsel, das angewendete Ergebnis (Vertrag
+storniert/geändert) und manuelle **Notizen** (Eingabefeld oben im Verlauf, Recht „Widerrufe
+erfassen und bearbeiten"). Zendesk-Ticketnummern in Notizen (`#4201`) werden automatisch verlinkt.
+Ältere Fälle zeigen einen leeren Verlauf — Bewegungen vor dem Umbau wurden nicht rückwirkend erfasst.
+
+!!! note "Bearbeiten noch über die Vertragsseite"
+    Bis zum Wizard-Umbau (Phase 3) öffnet „Widerruf bearbeiten" weiterhin das Modal auf der
+    Vertragsseite. Danach wird ausschließlich auf der Detailseite bearbeitet.
 
 ---
 
@@ -256,11 +285,31 @@ ausschliesslich manuell über den SEPA-Tab.
 | Datei | Zweck |
 |-------|-------|
 | `resources/views/hub/cancellations/index.blade.php` | Übersichtsseite mit Tabelle, Filtern, Pagination |
+| `resources/views/hub/cancellations/show.blade.php` | Fall-Detailseite (seit 08/2026) |
 | `resources/views/hub/contracts/partials/cancellation-modal.blade.php` | Wiederverwendbares Modal (Create + Edit) |
 | `app/Http/Controllers/ContractController.php` | Backend: CRUD + Daten-API |
-| `app/Models/ContractCancellation.php` | Eloquent-Model |
+| `app/Http/Controllers/CancellationCaseController.php` | Fall-Detailseite + Notizen (seit 08/2026) |
+| `app/Models/ContractCancellation.php` | Eloquent-Model (inkl. `events()`/`logEvent()`) |
+| `app/Models/ContractCancellationEvent.php` | Verlaufseintrag je Fall (append-only) |
 | `routes/web.php` | Route-Definitionen |
 | `resources/views/layouts/partials/sidebar.blade.php` | Sidebar-Eintrag „Widerrufe" |
+
+### Fall-Verlauf (`contract_cancellation_events`, seit 08/2026)
+
+Append-only-Verlauf nach dem Muster von `debt_case_events` (Forderungsmanagement):
+`contract_cancellation_id`, `type`, `description`, `payload` (JSON), `user_id` (null = System).
+
+| Typ | Ausgelöst durch | Payload |
+|-----|-----------------|---------|
+| `created` | `storeCancellation()` | status, reason, reaction |
+| `updated` | `updateCancellation()` (Feld-Diff via `logCancellationChanges()`) | `changes: {feld: {old, new}}` |
+| `status_changed` | Statuswechsel beim Update (eigener Eintrag) | old, new |
+| `note` | `POST /hub/cancellations/{id}/notes` | ggf. `zendesk_tickets` (via `ZendeskTicketRefs::extract`) |
+| `outcome_applied` | `RevocationOutcomeService::apply()` / `linkSuccessorIfMissing()` | new_contract_status, cancelled_rates, ended_pause |
+
+Routen: `GET /hub/cancellations/{id}` (`can:view_revocations`, `whereNumber` — nach den literalen
+`/data`-Routen registriert!) und `POST /hub/cancellations/{id}/notes` (`can:manage_revocations`).
+Tests: `tests/Feature/CancellationCasePageTest.php`.
 
 ### Importierte Widerrufe am falschen Vertrag (Vorfall 08/2026)
 
