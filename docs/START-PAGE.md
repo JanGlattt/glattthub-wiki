@@ -57,7 +57,7 @@ rechts an der Kachel:
 | Reihenfolge ändern | Kachel greifen und verschieben |
 | Breite umschalten | Pfeil-Symbol an der Kachel (100 % ⇄ 50 %) |
 | Kachel entfernen | X-Symbol an der Kachel |
-| Inhalt wählen | Zahnrad bzw. Wechsel-Symbol an der Kachel (Statistik, Kennzahlen, Quicklinks) |
+| Inhalt wählen | Zahnrad an der Kachel — dasselbe Symbol für Statistik, Kennzahlen und Quicklinks |
 | Kachel hinzufügen | Feld „Karte hinzufügen" am Ende des Rasters |
 | Zurücksetzen | „Zurücksetzen" in der Bearbeitungsleiste |
 
@@ -262,6 +262,46 @@ das Markup einer einzelnen Kachel:
 Ohne Neuladen laufen: Karte hinzufügen, entfernen, verschieben, Breite
 umschalten, Statistik wechseln, Quicklinks ändern, Kennzahlen ändern. Nur
 „Zurücksetzen" lädt neu — es tauscht das ganze Raster.
+
+### Raster, halbe Breite und Sortieren
+
+Vier Eigenheiten, die beim Nachbauen leicht wieder hineinrutschen (alle 08/2026
+behoben):
+
+- **`grid-template-columns: repeat(2, minmax(0, 1fr))`.** `1fr` bedeutet
+  `minmax(auto, 1fr)` — eine Spalte darf also über ihren Anteil hinauswachsen,
+  wenn ihr Inhalt breiter ist. Diagramme und breite Tabellen sprengten damit
+  ihre Spalte (gemessen: 264 px | 1270 px statt 622 px | 622 px), und eine
+  Kachel auf 50 % stand faktisch über die ganze Breite. Dazu gehört
+  `min-width: 0` auf `.start-card`: Rasterkinder haben von Haus aus die
+  Mindestbreite ihres Inhalts.
+- **`border-width: 0` auf `.start-card-statistic`.** `border: none` setzt die
+  Breite auf `medium` (3 px) und blendet den Rahmen nur über `style: none` aus.
+  Sobald `.start-card.edit-mode` den Stil auf `dashed` drehte, war die Breite
+  wieder gültig — im Bearbeitungsmodus lag deshalb ein dicker schwarzer
+  Strichrahmen (`currentColor`) um jede Diagramm-Kachel und um sonst keine.
+- **Sortable im Zeiger-Modus** (`forceFallback: true`). Ohne den Schalter nutzt
+  Sortable die HTML5-Drag-API: Der Browser erzeugt erst ein Drag-Bild, die
+  Karte blieb spürbar liegen und sprang dann an den Zeiger. Dazu:
+  `transition` auf `.start-card` einzeln aufzählen statt `all` (ein
+  `transition: all` fasst `transform` mit, an dem Sortable zerrt), und
+  `is-sorting` am Raster stellt das Wackeln der übrigen Karten still — deren
+  Keyframes schreiben `transform`, dieselbe Eigenschaft, mit der Sortable die
+  Karten beiseiteschiebt.
+- **`x-ignore` auf der gezogenen Karte** (`onChoose`, zurück in `onEnd`). Im
+  Zeiger-Modus klont Sortable die Karte samt Alpine-Attributen an den Body.
+  Ohne `x-ignore` versucht Alpine, den Klon zu initialisieren: Der findet
+  seinen Scope nicht mehr (`editMode is not defined`), und eine
+  Statistik-Kachel baute beim Anfassen ein zweites Diagramm auf und fragte
+  ihren Endpoint erneut ab. Das Attribut vererbt sich beim Klonen mit; das
+  Original ist längst initialisiert und bleibt unberührt.
+  `persistOrderFromDom()` nimmt den Klon zusätzlich per
+  `:not(.start-card-dragging)` aus, damit keine Karten-ID doppelt in der
+  Reihenfolge steht.
+
+Nach dem Breitenwechsel löst `toggleCardWidth()` ein `resize`-Event aus:
+Diagramme messen ihren Container nur beim Zeichnen und hängen sonst am
+`window`-Resize (`glattt-stats.js`) — sonst behielte ECharts die alte Breite.
 
 ### Kennzahlen: volle Registry-IDs
 
