@@ -219,6 +219,43 @@ Permission = 'default'             window.electronPush Bridge verfügbar
                                    → Dock-Badge via app.setBadgeCount()
 ```
 
+#### Abo-Zustand: Server-Abfrage statt Service Worker
+
+Der entscheidende Unterschied zum Browser: Dort weiß der Service Worker
+**lokal**, ob ein Abo besteht (`registration.pushManager.getSubscription()`) —
+in der Desktop-App gibt es ihn nicht, der Zustand kommt über
+`GET /api/push/subscriptions` und wird über die Geräte-ID
+(`glattthub-electron-device-id` im localStorage) der Zeile in
+`push_subscriptions` zugeordnet.
+
+Daraus folgen zwei Regeln, deren Verletzung 08/2026 dazu führte, dass die App
+**täglich erneut** nach der Push-Erlaubnis fragte, obwohl der Nutzer sie längst
+erteilt hatte (im Browser trat der Fehler nie auf):
+
+1. **Die Abfrage braucht ein eigenes `AbortSignal`.** `nav-abort.js` hängt jeden
+   gleich-origin-GET ohne eigenes Signal an seinen Controller und bricht ihn
+   beim nächsten Seitenwechsel ab. Für Anzeige-Daten ist das gewollt — für den
+   Abo-Zustand war es fatal: Wer nach dem Öffnen der App gleich weiterklickte,
+   verlor die Antwort.
+2. **Eine gescheiterte Abfrage heißt „unbekannt", nicht „nicht abonniert".**
+   Abgebrochen, offline oder Sitzung abgelaufen — in all diesen Fällen wissen
+   wir gar nichts und dürfen nicht erneut fragen. Dafür gibt es
+   `isSubscriptionStateKnown()`; das Modal im Hub-Layout fragt nur, wenn der
+   Zustand feststeht.
+
+Warum es wie ein Speicherproblem aussah: Der Deckel
+`push-banner-dismissed` (localStorage) lässt die Nachfrage höchstens **einmal
+pro Tag** zu — der Fehler zeigte sich deshalb als tägliche Frage, nicht als
+Dauerfeuer. Das Abo selbst war die ganze Zeit korrekt gespeichert.
+
+Abgesichert durch `tests/Unit/PushSubscriptionStateConventionTest.php`.
+
+!!! tip "Kein App-Neubau nötig"
+    `push-notifications.js` und das Modal liegen auf dem Server; die App lädt
+    sie bei jedem Start von `hub.glattt.com` (mit `?v=<filemtime>` am
+    Cache-first-Service-Worker vorbei). Änderungen daran wirken nach einem
+    normalen Web-Deploy — die `.dmg`/`.pkg` muss dafür nicht neu gebaut werden.
+
 #### APNs-Erkennung (`isElectronNativeSupported()`)
 
 `push-notifications.js` erkennt die Electron-Umgebung durch **Live-Abfrage** von `window.electronPush`:
