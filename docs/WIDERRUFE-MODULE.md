@@ -262,6 +262,27 @@ ausschliesslich manuell über den SEPA-Tab.
 | `routes/web.php` | Route-Definitionen |
 | `resources/views/layouts/partials/sidebar.blade.php` | Sidebar-Eintrag „Widerrufe" |
 
+### Importierte Widerrufe am falschen Vertrag (Vorfall 08/2026)
+
+Widerrufe aus dem [Google-Sheets-Import](GOOGLE-SHEETS-IMPORT.md) trugen bis 08/2026 das Risiko, am **falschen Vertrag** zu landen: Die Vertragsnummer ist Datum + Kundennummer und damit nicht eindeutig, sobald ein Kunde am selben Tag zwei Verträge hat — beim Downgrade/Upgrade der Regelfall. Der Import überschrieb den ersten Vertrag mit dem zweiten, und die Widerrufs-Zeile stornierte anschließend den einzigen verbliebenen — also den laufenden.
+
+Folgen, sichtbar erst Monate später: Der Vertrag stand auf „widerrufen", während der Kunde weiter zahlte, und `revocations:apply-outcomes` stornierte seine Zukunftsraten (bei Kunde OS003635 1.079,73 €).
+
+**Woran man solche Fälle erkennt:** Der Widerruf trägt als Begründung den Kommentar der ersetzten Vertragszeile — typischerweise „zahlt die erste Sitzung vor Ort", was kein Widerrufsgrund ist —, und nach dem Widerrufsdatum wurden weiter Raten eingezogen. Abfrage:
+
+```sql
+SELECT c.contract_number, cc.cancellation_date, COUNT(p.id) AS raten_nach_widerruf
+FROM contracts c
+JOIN contract_cancellations cc ON cc.contract_id = c.id AND cc.notes LIKE 'Automatisch importiert%'
+JOIN contract_payments p ON p.contract_id = c.id AND p.deleted_at IS NULL
+     AND p.status IN ('paid','confirmed','failed','chargedback')
+     AND p.due_date > DATE(cc.cancellation_date)
+WHERE c.deleted_at IS NULL
+GROUP BY c.contract_number, cc.cancellation_date;
+```
+
+Der Bestand (5 Verträge, Stand 11.08.2026) wurde mit `contracts:repair-misassigned-revocations` bereinigt — Fälle einzeln mit der Buchhaltung geklärt und im Command fest verdrahtet, `--dry-run` zeigt jede Änderung vorab. Die Ursache im Import ist behoben (Sheet-Zeile als Schlüssel, Nummern-Suffix, Widerruf-Zuordnung über Zonen/Betrag).
+
 ---
 
 ## Datenmodell

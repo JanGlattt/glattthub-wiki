@@ -328,12 +328,20 @@ Wenn die Beträge aus dem Sheet von der Preisliste abweichen:
 
 > **Wichtig:** `duration` (Spalte AA) wird für den Preislisten-Lookup verwendet, nicht `sepa_months` (Spalte AB). Die PriceGroup.months entspricht der Laufzeit.
 
-### Update-Logik (gleiche Vertragsnummer)
+### Update-Logik (maßgeblich ist die Sheet-Zeile)
 
-Wenn ein Kunde im Sheet mehrfach vorkommt, definiert die **`contract_number`** (Spalte E) ob es sich um denselben oder einen neuen Vertrag handelt:
+Ob eine Zeile einen bestehenden Vertrag aktualisiert oder einen neuen anlegt, entscheidet seit 08/2026 die **Sheet-Zeile** (`row_number`), nicht mehr die Vertragsnummer:
 
-- **Gleiche `contract_number`** → Die zweite (spätere) Zeile **aktualisiert** den bestehenden Vertrag. Alle Vertragsfelder, Körperzonen und das SEPA-Mandat werden überschrieben.
-- **Andere `contract_number`** → Es wird ein **neuer Vertrag** erstellt, auch wenn der Kunde derselbe ist.
+- **Gleiche `row_number`** → dieselbe Zeile, also derselbe Vertrag: Alle Vertragsfelder, Körperzonen und das SEPA-Mandat werden **aktualisiert**. Der Vertrag behält seine gespeicherte Nummer.
+- **Andere `row_number`, gleiche `contract_number`** → zwei Verträge desselben Kunden am selben Tag: Der zweite wird **zusätzlich angelegt** und bekommt ein Nummern-Suffix (`2025.12.02-OS003635-2`).
+- **Vertrag ohne `row_number`** (Altbestand aus dem CSV-Import) → wird über die Vertragsnummer gefunden und aktualisiert.
+
+!!! warning "Warum das Suffix nötig ist"
+    Die Vertragsnummer entsteht aus **Datum + Kundennummer** und ist deshalb nicht eindeutig: Schließt ein Kunde am selben Tag zwei Verträge ab — beim **Downgrade oder Upgrade der Regelfall** —, tragen beide dieselbe Nummer. `contracts.contract_number` ist aber eindeutig indiziert (ebenso `client_mandates.mandate_reference`), ein zweiter Vertrag ließe sich ohne Suffix gar nicht speichern.
+
+    Bis 08/2026 hat der Import deshalb den zweiten Vertrag **über den ersten geschrieben**. Im Hub blieb einer übrig, und die zugehörige Widerrufs-Zeile traf anschließend den falschen Vertrag. In Produktion standen dadurch fünf laufende Verträge auf „widerrufen"; bei einem hat der Aufräumlauf `revocations:apply-outcomes` 1.079,73 € an Zukunftsraten storniert, während der Kunde weiterzahlte (gemeldet 11.08.2026, Kunde OS003635 — der GK-Vertrag war im Hub nie zu finden). Bereinigt mit `contracts:repair-misassigned-revocations`.
+
+    Das Suffix bekommt die **zuerst importierte Zeile nicht** — sie behält die schlichte Nummer. Welcher der beiden Verträge das ist, hängt an der Reihenfolge im Sheet (kleine `row_number` zuerst).
 
 Da das Script Zeilen von oben nach unten verarbeitet (kleine `row_number` zuerst), werden Updates automatisch in der richtigen Reihenfolge angewendet.
 
@@ -341,13 +349,14 @@ Da das Script Zeilen von oben nach unten verarbeitet (kleine `row_number` zuerst
 
 Wenn `duration` = "Widerruf":
 
-1. Der originale Vertrag wird gesucht per exakter **`contract_number`** + Status `active`
-2. Falls gefunden:
+1. Der originale Vertrag wird gesucht per **`contract_number`** (inklusive der Suffix-Varianten `…-2`) + Status `active`
+2. Bei **mehreren** aktiven Verträgen desselben Tages entscheiden die Daten der Widerrufs-Zeile, welcher gemeint ist: Ganzkörper-Kennzeichen, Zonenzahl und Betrag werden gegen die Kandidaten gewertet. Ist die Zeile **nicht eindeutig zuzuordnen** — Gleichstand oder gar keine Übereinstimmung —, wird **nichts** storniert; die Zeile landet als `FailedContractImport` zur manuellen Klärung. Einen laufenden Vertrag zu Unrecht auf „widerrufen" zu setzen ist der teurere Fehler: Der Aufräumlauf storniert danach seine Zukunftsraten.
+3. Falls gefunden:
     - Status → `cancelled`, `cancelled_at` → Datum des Widerrufs
     - `ContractCancellation` wird erstellt (Grund: `keine_angabe`, Reaktion: `widerruf_akzeptiert`, Status: `abgeschlossen`)
     - `ContractChange` Audit-Eintrag mit `related_type` → `ContractCancellation` (Verweis auf die Stornierung)
-3. Falls **nicht** gefunden: Wird als `FailedContractImport` gespeichert → manuell im Hub lösbar (siehe [Widerruf ohne zugehörigen Vertrag](#widerruf-ohne-zugehorigen-vertrag))
-4. Es wird **kein** neuer Vertrag erstellt
+4. Falls **nicht** gefunden: Wird als `FailedContractImport` gespeichert → manuell im Hub lösbar (siehe [Widerruf ohne zugehörigen Vertrag](#widerruf-ohne-zugehorigen-vertrag))
+5. Es wird **kein** neuer Vertrag erstellt
 
 !!! note "Zwei-Pass-Verarbeitung"
     Das Import-Script verarbeitet erst alle normalen Verträge, dann alle Widerrufe. So ist sichergestellt, dass der Originalvertrag bereits existiert.
