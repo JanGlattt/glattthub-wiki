@@ -281,6 +281,24 @@ Fälligkeit („Heute fällig") ist ebenfalls einmal definiert:
   Online-Bezahlseite ruft ihn auf (`DebtPaymentLinkService::settle()`), damit
   RZV-Abschluss (`OUTCOME_RZV` + Vereinbarung auf `completed`) und Fall-Ausgang
   überall gleich gesetzt werden.
+- **`SettlementCaseSyncService`** (Update 13.08.2026) — Brücke von der
+  Vertragsseite: Das manuelle **„Beglichen"** einer geplatzten Rate im
+  Zahlungen-Tab führt den zugehörigen Mahnfall automatisch mit. Deklarativer
+  Abgleich: Aus dem Ratenzustand werden Soll-Spiegel-Eingänge abgeleitet
+  (`debt_case_payments.source_contract_payment_id` + `source_component`
+  `rate`/`return_fee`, Migration `2026_08_13_100000_…`) und der Bestand darauf
+  gebracht — idempotent über Begleichen, Korrektur, Gebühren-Nachtrag und
+  Zurücksetzen hinweg. Bei 0 € offen schließt der Fall (`OUTCOME_PAID`), nach
+  einem Revert wird ein so geschlossener Fall **wiedereröffnet**
+  (abgeschriebene/RZV-Ausgänge bleiben unangetastet). **Teilzahlungen** buchen
+  bewusst keinen Spiegel-Eingang: Der Split reduziert `amount_cents` der
+  RLS-Zeile, damit sinkt die Hauptforderung (`rlsPrincipals()` summiert
+  statusunabhängig) von selbst — ein Eingang würde doppelt abziehen; die
+  Timeline bekommt stattdessen einen `payment_recorded`-Eintrag
+  (`notePartialSettlement()`). Aufrufer: `ContractController::
+  settleBouncedPayment()`/`correctSettledPayment()`; die angehängte Rate im
+  Monitoring schließt weiterhin `DebtCaseIntakeService::handlePaymentSettled()`.
+  Tests: `tests/Feature/SettleBouncedPaymentTest.php`.
 - **`DunningMessageService`** — Vorlagen-Auflösung (`DunningTemplate::resolve`,
   Cluster vor allgemein), Platzhalter, E-Mail-HTML, PDF-Ablage
   (`receivables/case-{id}/…`, Disk `gcs-private`/`public`).
