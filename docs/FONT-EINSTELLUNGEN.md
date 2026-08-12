@@ -52,6 +52,7 @@ Die App-Schriftart lässt sich im Admin-Backend zentral wechseln — zwischen **
 
 - **Theme-CSS nie ein zweites Mal per `@push('styles')` einbinden** — der späte Link überschreibt die Font-Variablen des Partials wieder mit dem Standard (so geschah es auf der Profilseite). Das Layout lädt `theme_glattt.css` bereits.
 - Neue Layouts/Standalone-Seiten mit eigenem `<head>`: immer `@include('partials.app-font')` **nach** dem Theme-CSS-Link setzen (übernimmt auch den Font-Preload).
+- **`theme_glattt.css` immer versioniert einbinden** — `?v={{ filemtime(public_path('css/theme_glattt.css')) }}` an den Link. Ohne den Parameter rendern Browser mit altem Cache (bzw. der Service-Worker-Precache) die Seite mit einem veralteten Theme-Stand: So zeigten Login, Einladungs- und Fehlerseiten nach der Lato-Umstellung monatelang die alte Hausschrift, während der (versionierte) Hub korrekt war (Bug 08/2026). `sw.js` darf die Datei deshalb auch nicht unversioniert vorcachen. Abgesichert durch `tests/Unit/ThemeCssVersionConventionTest.php`.
 - `tailwind.config.js` referenziert `var(--font-primary)` statt einer festen Familie — bei Änderungen dort `npm run build` nicht vergessen.
 
 ### JS-Diagramme
