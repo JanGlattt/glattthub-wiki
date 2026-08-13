@@ -70,7 +70,10 @@ offenen Widerrufe mit Bonus-Relevanz.
 
 Die Google-API ist nicht nutzbar (und Scraper verstoßen gegen die Google-ToS),
 deshalb wird **jede Bewertung einzeln manuell erfasst**: Institut, Datum,
-Sterne, mit/ohne Text. Zählweise (seit 05/2026): 4-5 Sterne +1, 1-3 Sterne −1,
+Sterne, mit/ohne Text. Hat die Bewertung einen Text, wird der **Originaltext
+aus Google mitkopiert und gespeichert** (Pflichtfeld bei gesetztem Text-Haken,
+Spalte `review_text`); die Tabelle zeigt einen Auszug, der volle Text steht im
+Tooltip. Zählweise (seit 05/2026): 4-5 Sterne +1, 1-3 Sterne −1,
 ohne Text jeweils die Hälfte (±0,5). Der Positiv-Saldo je Institut × Monat ist
 die Kennzahl `google_review_balance` und das Google-Mindestziel der Behandler-
 und Leitungs-Boni. Eigenes Recht: `manage_google_reviews`.
