@@ -2,6 +2,64 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 13.08.2026 — Direktzahler-Verbuchung + Ausweg aus fehlgeschlagenem SEPA-Mandat
+
+Zwei gemeldete Fälle (H004872, BS001318) deckten drei Lücken auf.
+
+### Für Endanwender (13.08.2026)
+
+- **Direktzahler: „Zahlung verbuchen" gibt es jetzt auch hier.** Zahlt ein
+  Direktzahler-Kunde nicht vor Ort, sondern per Überweisung, lässt sich der
+  Eingang im Zahlungen-Tab über den Button **„Zahlung verbuchen"** erfassen
+  (Betrag, Eingangsdatum, Zahlungsart, Referenz). Verbuchte Zahlungen erscheinen
+  in der Karte „Einmalzahlung" mit offenem Restbetrag; ist der gesamte
+  Vertragswert beglichen, wird der Vertrag automatisch abgeschlossen.
+- **Fehlgeschlagenes SEPA-Mandat ist keine Sackgasse mehr.** Steht ein Mandat
+  auf „Fehlgeschlagen" (z.B. weil die IBAN falsch aufgenommen war), zeigt der
+  SEPA-Tab jetzt den Fehlergrund und dieselben Aktionen wie bei „Ausstehend":
+  Bankverbindung ändern → „In GoCardless suchen" → „Mandat und Zahlungsplan
+  anlegen". Nach erfolgreicher Anlage springt der Status auf „Aktiv".
+- **Statusänderung über das Stift-Symbol funktioniert wieder** — vorher wurde
+  eine Statusänderung dort stillschweigend verworfen.
+- **Abweichender Kontoinhaber wird beim Bankwechsel gespeichert:** Wer im
+  Modal „Bankverbindung ändern" einen abweichenden Zahler mit E-Mail/Adresse
+  erfasst, findet diese Angaben jetzt am Mandat wieder (vorher gingen sie
+  verloren, der GoCardless-Kunde wurde mit den Daten der Vertragsnehmerin
+  angelegt).
+
+### Für Entwickler (13.08.2026)
+
+- **`getPayments()` ohne Mandat** (Direktzahler): liefert jetzt verbuchte
+  Zahlungen (Zeilen mit `installment_number > 1`), `can_record_without_plan`,
+  `remaining_cents` und `referral_block`; `loadPayments()` in
+  `contract-detail.js` lädt entsprechend auch ohne `mandateId`.
+  `recordStandaloneExternalPayment()` vermerkt bei Direktzahlern
+  „Direktzahler-Zahlung verbucht" statt „Ohne offenen Restplan verbucht".
+- **Modal „Manuelle Zahlung verbuchen"** liegt jetzt als eigenes Partial
+  `hub/contracts/partials/record-payment-modal.blade.php` und wird für SEPA-
+  UND Direktzahler-Verträge eingebunden (Texte per `$isDirectPayer`).
+- **Statuslücke geschlossen:** `tab-sepa.blade.php` rendert `failed`/`expired`
+  über den `pending`-Zweig (plus Danger-/Warning-Alert mit
+  `$mandate->gocardless_error`). `createGoCardless()` akzeptiert
+  `failed`/`expired` und hebt sie nach erfolgreichem Sync auf `active`
+  (`gocardless_error` wird geleert). `checkGoCardlessForMandate()` heilt den
+  Zustand „GC-IDs vorhanden, lokal pending/failed/expired" beim
+  `already_linked`-Early-Return auf `active` — vorher Endlos-Reload-Schleife.
+- **`updateMandateInfo()`** validiert jetzt `status`
+  (`in:pending,active,submitted,failed,cancelled,expired`) — das Feld wurde
+  vom Stift-Formular immer gesendet, aber nie übernommen.
+- **`updateBankAccount()`** validiert und persistiert `is_contract_holder_payer`
+  (→ `has_different_payer`), `payer_email` (`ValidGoCardlessEmail`),
+  `payer_street/postal_code/city`; beim Rückwechsel auf „Vertragsnehmer zahlt"
+  werden die Zahlerfelder geleert. Ohne das Flag im Payload bleibt alles
+  unverändert (Abwärtskompatibilität).
+- **Bewusst NICHT geändert:** Ein Verbindungsfehler bei „In GoCardless suchen"
+  schaltet den Anlegen-Button weiterhin nicht frei (`gcSearchNoResult` bleibt
+  false) — bei einem Timeout könnte in GC doch ein Mandat existieren,
+  Freischalten würde Duplikate riskieren.
+- Tests: `tests/Feature/ContractDirectPayerPaymentTest.php`,
+  `tests/Feature/ContractMandateRecoveryTest.php`.
+
 ## Update 08.08.2026 (spät) — Verkaufbare Position „2 Kleine Zonen"
 
 Neben den 18 Grafik-Zonen gibt es jetzt die Position **„2 Kleine Zonen"**
