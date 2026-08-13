@@ -51,8 +51,13 @@ offenen Widerrufe mit Bonus-Relevanz.
   KPZ, KPZ je Beratungsgespräch, Google-Saldo) und **jede Kennzahl der
   KpiRegistry** zur Verfügung (Registry-Kennzahlen nur je Institut oder
   unternehmensweit — mitarbeiterscharf liefert die Registry nicht).
-- **Minimalziele**: KPZ-Minimalziel (absolut) und Google-Mindestziel
-  (Positiv-Saldo) je Institut × Monat.
+- **Minimalziele**: KPZ-Minimalziel für das Team, **separates
+  KPZ-Minimalziel für Leitungen** (leer = Team-Ziel gilt) und
+  Google-Mindestziel (Positiv-Saldo) je Institut × Monat. **Ziele gelten
+  weiter, bis sie geändert werden**: Ein Monat ohne eigenen Eintrag erbt den
+  jüngsten früheren Monat (Hinweis „übernommen aus …" in der Verwaltung;
+  Speichern legt eigene Monats-Werte an). Jede Speicherung wird per Toast
+  bestätigt.
 - **Offene Widerrufe**: je Fall „zählt" / „zählt nicht" entscheiden (mit
   optionaler Begründung). Ohne Entscheidung zählen die KPZ weiter, stehen aber
   überall sichtbar „unter Vorbehalt".
@@ -102,7 +107,7 @@ ganzen Monat nach ihr bewertet.
 | Tabelle | Zweck |
 |---|---|
 | `user_bonus_classes` | Zeitwirksame Klassen-Historie (Muster `hr_salaries`), Resolver `UserBonusClass::forUserInMonth()` |
-| `bonus_monthly_targets` | Minimalziele je Institut × Monat (KPZ absolut, Google-Saldo) |
+| `bonus_monthly_targets` | Minimalziele je Institut × Monat (KPZ Team + `leadership_kpz_target` für Leitungen, Google-Saldo); `mapForMonth()` erbt fehlende Monate aus dem jüngsten früheren Eintrag |
 | `google_reviews` | Manuell erfasste Einzelbewertungen, Gewicht via Accessor |
 | `bonus_rules` | Der Baukasten (Empfänger, Kennzahl, Bedingung, Prämie, Serien, Sichtbarkeit) — Soft Deletes |
 | `bonus_rule_achievements` | Beim Einfrieren persistierte Monatsergebnisse — Serien-Basis |
