@@ -728,6 +728,47 @@ Excel steht, wird angelegt. Weiter gilt:
 - **Hinweise** (widersprüchliche Schritt-Daten, Saldo-Abweichungen) landen als
   `pruefliste-hinweise.csv` im Report-Ordner.
 
+#### Konventionen der geprüften Liste (Janine, 08/2026)
+
+Die vom Büro durchgearbeitete Prüfliste nutzt Konventionen, die der Import
+versteht (abgestimmte Entscheidungen vom 14.08.2026):
+
+- **Zukünftiges „Zahlung eingegangen am" ohne Zahlbetrag** ist kein
+  Zahlungseingang, sondern der **geplante Einzugstermin der ans Planende
+  angehängten Rate**. Der Import legt je Termin ein `rate_appended`-Ereignis an,
+  verknüpft die geplante Vertragsrate mit passendem Fälligkeitsdatum
+  (±5 Tage Toleranz, weil GoCardless auf den nächsten Werktag schiebt —
+  IDs in `debt_cases.appended_payment_ids`) und stellt den Fall auf
+  „Rate angehängt — Beobachtung" (`monitoring_until` = nächster Einzug + 13
+  Tage). Gerichts- und RZV-Fälle behalten ihre Stufe. Termine ohne geplante
+  Rate im Hub (GC-seitiger Dauerauftrag) stehen als Hinweis im Ereignis.
+  Der GoCardless-Webhook verbucht die Serie dann automatisch
+  (`DebtCaseIntakeService::handleAppendedSeriesSettled()`): jeder Einzug wird
+  dem Fall gutgeschrieben (Spiegel über `source_contract_payment_id`,
+  idempotent), der letzte schließt ihn bei Saldo 0 als `appended_settled` —
+  bleibt ein Rest (Gebühren), fällt der Fall in die Arbeitsliste. Eine RLS auf
+  eine Rate der Serie eskaliert wie gehabt in den harten Weg.
+- **Zukünftiges Zahldatum MIT Zahlbetrag**: Der Betrag ist real eingegangen
+  (z.B. überwiesene Gebühren), das Datum nur der Anhänge-Termin — gebucht wird
+  zum **Vorfallsdatum**.
+- **Zusatzspalte „GEPRÜFT"** (nicht Teil des Exports): Der Wert „ANWALT"
+  erzeugt eine Notiz „⚖️ Anwalt eingeschaltet" am Fall, verknüpft mit dem
+  Widerruf des Vertrags (`ContractCancellation`), wo einer im Hub existiert.
+- **Freitext-Gründe** werden auf die Auswahlliste gemappt („Konto gesperrt"/
+  „Konto erloschen" → „Konto gesperrt/erloschen", „RUECKGABE MANGELS DECKUNG" →
+  „Keine Deckung", „Phorest-Schuld" → „Unbezahlte Behandlung"). Der Sonderwert
+  **„direkte Vorauszahlung"** bleibt stehen und startet den Fall als
+  **Direktzahler-Einstieg** (`direct_unpaid`).
+- **Aus der Prüfliste gestrichene Fälle**: Ein offener Fall der CSV, dessen
+  Fall-Schlüssel in der Prüfliste fehlt, wurde vom Büro als erledigt
+  aussortiert — er wird als **bezahlter Alt-Fall** importiert (Ausgleichs-
+  zahlung auf Saldo 0), damit Historie und Statistik ihn behalten. Einzelne
+  gestrichene Zeilen innerhalb bestehender Fälle bleiben dagegen draußen.
+- **Kommentar-Kürzel** werden beim Round-Trip nicht doppelt vorangestellt
+  („[JaTa] [JaTa] …").
+
+Abgesichert in `LegacyDebtWorksheetTest` (Konventions-Abschnitt am Ende).
+
 ### Import der Bestands-RZV-Liste („RATENZAHLUNGEN"-Sheet)
 
 ```bash
