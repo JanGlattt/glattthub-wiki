@@ -121,12 +121,16 @@ CREATE TABLE booking_trackings (
     utm_term VARCHAR(255) NULL,
     gclid VARCHAR(255) NULL,
     gbraid VARCHAR(255) NULL,         -- Google Ads iOS/App Click-ID
+    wbraid VARCHAR(255) NULL,         -- Google Ads Web-to-App Click-ID
     fbclid VARCHAR(255) NULL,
     fbp VARCHAR(255) NULL,            -- Meta-Browser-Pixel-ID (_fbp-Cookie)
     coupon_code VARCHAR(255) NULL,
     booking_duration_seconds INT UNSIGNED NULL,
     page_view_count INT UNSIGNED NULL,
-    cookie_consent VARCHAR(50) NULL,
+    cookie_consent VARCHAR(50) NULL,          -- nur Banner-Präsenz-Marker ("borlabs")
+    consent_google_ads TINYINT(1) NULL,       -- Borlabs-Consent Service "google-ads" (null = unbekannt)
+    consent_meta_pixel TINYINT(1) NULL,       -- Borlabs-Consent Service "meta-pixel" (null = unbekannt)
+    consent_services VARCHAR(255) NULL,       -- alle eingewilligten Borlabs-Services (CSV, Audit)
     booked_at TIMESTAMP NULL,
     created_at TIMESTAMP NULL,
     updated_at TIMESTAMP NULL,
@@ -142,6 +146,7 @@ CREATE TABLE booking_trackings (
     - `2026_05_18_102432_add_coupon_code…` / `…_add_gbraid…` — Gutschein-Code + gbraid
     - `2026_07_15_120000_dedupe_and_unique_booking_trackings.php` — Duplikate bereinigt + **Unique-Index** auf `appointment_id`
     - `2026_07_15_120100_add_entry_origin_to_booking_trackings.php` — `entry_referrer` + `fbp`
+    - `2026_08_15_140000_add_consent_and_wbraid_to_booking_trackings.php` — `wbraid` + echter Borlabs-Consent je Service (Vorbereitung Conversion-Upload an Google/Meta)
 
 ### Model-Scopes
 
@@ -189,11 +194,11 @@ Im WordPress-Admin unter *Einstellungen → glattt Booking*:
 **UTM-Parameter** (First-Touch aus URL-Query-String, in `localStorage` persistiert):
 
 - `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`, `utm_term`
-- `gclid` / `gbraid` (Google Ads), `fbclid` (Meta/Facebook)
+- `gclid` / `gbraid` / `wbraid` (Google Ads), `fbclid` (Meta/Facebook)
 
 **Click-ID-Cookie-Fallback** (beim Buchen, falls Click-ID nicht in URL/localStorage):
 
-- `_gcl_aw` → `gclid`, `_fbc` → `fbclid`, `_fbp` → `fbp` (Meta-Browser-ID)
+- `_gcl_aw` → `gclid`, `_gcl_gb` → `wbraid`, `_fbc` → `fbclid`, `_fbp` → `fbp` (Meta-Browser-ID)
 - Verhindert verpasste Ad-Buchungen, wenn die Click-ID nicht mehr in der URL steht
 
 **Verhalten**:
@@ -201,8 +206,18 @@ Im WordPress-Admin unter *Einstellungen → glattt Booking*:
 - `booking_duration_seconds` — Verweildauer berechnet via `sessionStorage` Timestamp
 - `page_view_count` — (noch nicht implementiert, Platzhalter)
 
-**Cookie-Consent** (erkannt über):
+**Cookie-Consent** (seit 08/2026 echter Status je Borlabs-Service):
 
-- Borlabs Cookie (`BorlabsCookie`)
-- CookieYes (`cookieyes-consent`)
-- Generischer Consent-Cookie (`cookie_consent`)
+- `consent_google_ads` / `consent_meta_pixel` — Einwilligung für die Borlabs-Services
+  `google-ads` bzw. `meta-pixel` **zum Buchungszeitpunkt**. `null` = Banner nicht
+  auswertbar (unbekannt), `false` = keine Einwilligung. Ausgelesen über die
+  Borlabs-v3-API (`BorlabsCookie.Consents.hasConsent(...)`), Fallback: das
+  `borlabs-cookie`-Cookie (JSON mit `consents` je Gruppe).
+- `consent_services` — alle eingewilligten Borlabs-Service-IDs als CSV (Audit-Trail).
+- First-Touch-Semantik: Der beim ersten Request gespeicherte Status wird durch
+  spätere Requests **nicht** überschrieben (auch `false` nicht) — maßgeblich ist
+  die Einwilligung zum Buchungszeitpunkt.
+- Grundlage für den **serverseitigen Conversion-Upload** an Google (Data Manager
+  API) und Meta (CAPI): Nur Buchungen mit Einwilligung für den jeweiligen Dienst
+  dürfen übermittelt werden.
+- `cookie_consent` (Alt-Feld) bleibt als reiner Banner-Präsenz-Marker (`borlabs`) bestehen.
