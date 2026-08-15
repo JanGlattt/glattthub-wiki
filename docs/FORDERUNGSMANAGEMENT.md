@@ -124,6 +124,14 @@ Vorlagen-Varianten hinterlegt werden.
   „Zahlung verbuchen" und den Verweis auf den SEPA-Tab für IBAN-/Mandatswechsel.
   Ohne Checkbox läuft der Einzug extern (Überweisung/Dauerauftrag); bleibt eine
   Rate aus, taucht der Fall nach der Karenz in „Zahlung prüfen" auf.
+  **Bestands-RZVs, deren Raten schon bei GoCardless laufen** (über den SEPA-Tab
+  angelegte Einzelzahlungen): Der Dialog bietet die offenen GC-Raten des
+  Vertrags zum **Verknüpfen** an (vorausgewählt; Betrag, Anzahl und Start
+  werden aus der Auswahl übernommen, der Start darf in der Vergangenheit
+  liegen) — bei GoCardless wird dann **nichts Neues** angelegt, die Vereinbarung
+  merkt sich nur die IDs (`link_payment_ids` → `gocardless_payment_ids`).
+  Die Wiedervorlage richtet sich nach dem nächsten anstehenden Einzug + Karenz.
+  Bereits mit einer Vereinbarung verknüpfte Raten erscheinen nicht erneut.
   **Platzt eine GoCardless-RZV-Rate, eskaliert der Fall bewusst NICHT
   automatisch**: Die Vereinbarung wird als „geplatzt" markiert, die 10-€-Gebühr
   gebucht und der Fall sofort vorgelegt (Badge „RZV geplatzt") — ob weiter
