@@ -2,6 +2,43 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 16.08.2026 — Reload über alle GC-Customer der Kundin + Kundennummer-Fallback beim Verbinden
+
+### Für Endanwender (16.08.2026)
+
+Zwei Sackgassen aus dem Alt-Import sind behoben:
+
+- **Kundin doppelt in GoCardless** (z. B. nach Vertragswechsel je Mandat ein
+  eigener Customer, Fall BS000962): Der 🔄-Abgleich im Zahlungen-Tab zieht jetzt
+  die Zahlungen **aller** Mandate/Customer der Kundin zusammen. Vorher brach er
+  mit „GoCardless kennt N bereits eingezogene Rate(n) nicht" ab, weil die am
+  alten Customer eingezogenen Raten bei der Abfrage des neuen fehlten.
+- **„GoCardless verbinden" findet Alt-Import-Kundinnen** (Fall HB001200): Wenn
+  weder `phorest_client_id` (Kundin in Phorest neu angelegt) noch die
+  Mandatsreferenz (GoCardless hat eine eigene vergeben, z. B. `GYBMGAF`)
+  treffen, sucht der Hub jetzt zusätzlich über die **Kundennummer** im
+  Customer-Metadatum (`kundennummer`/`custom_number`). Der Massen-Sync auf der
+  Vertragsliste nutzt denselben Fallback.
+
+### Für Entwickler (16.08.2026)
+
+- `ContractPaymentRebuildService::rebuild()`: sammelt `gocardless_customer_id`
+  aller `client_mandates` der Kundin (`client_id`, inkl. soft-deleted) und lädt
+  `/payments` je Customer (Dedupe über die Payment-ID). Geschwister-Verträge
+  für die Zuordnungs-/Ambiguitätslogik sind jetzt alle Verträge derselben
+  Kundin plus Verträge mit Mandat an einem der abgefragten Customer.
+- `GoCardlessMandateService::findActiveMandateByCustomerNumber()`: Customer-
+  Metadatum `kundennummer` oder `custom_number` (Alt-Import) exakt gegen die
+  Kundennummer des Vertrags; gemeinsame Mandats-Auswahl mit der
+  phorest_client_id-Suche in `pickActiveMandateFromCustomers()` extrahiert.
+- `Contract::customerNumber()`: `legacy_kundennummer`, sonst Suffix der
+  Vertragsnummer nach dem letzten `-`; nur plausible Nummern
+  (`/^[A-Za-z]{1,3}\d+$/`), sonst `null`.
+- Eingebaut als dritter Fallback in `ContractController::checkGoCardlessForMandate`
+  und `RunGoCardlessContractSyncJob`.
+- Tests: `RebuildReloadSafetyTest::test_reload_zieht_zahlungen_aller_customer_der_kundin`,
+  `GoCardlessCustomerNumberLookupTest`, `ContractCustomerNumberTest`.
+
 ## Update 15.08.2026 — SEPA-Mandat reaktivieren (Widerruf zurückgezogen)
 
 ### Für Endanwender (15.08.2026)
