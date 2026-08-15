@@ -244,17 +244,20 @@ erfassen und bearbeiten"):
   Folgevertrag, SEPA-/Phorest-Kennzeichen). Abgeschlossene Fälle haben keine
   Statuswechsel mehr; Felder wie der Folgevertrag bleiben nachtragbar (die Verknüpfung
   zum Ursprungsvertrag wird dann automatisch hergestellt).
-- **Umsetzungs-Karte** (linke Spalte): Downgrade-Formulare (solange der Fall läuft bzw.
-  bei Ergebnis Downgrade), nach dem Abschluss mit vertragsbeendendem Ergebnis zusätzlich
-  Phorest-Pakete (Rest-Einheiten auf 0 setzen). GoCardless (Mandate/Einzüge prüfen und
-  **ausschließlich manuell** kündigen) ist seit 08/2026 **ab dem Eintrag des Widerrufs**
-  verfügbar — nicht mehr erst nach dem Abschluss (Anforderung Kundenservice).
+- **Umsetzungs-Aktionen** (seit 15.08.2026 als Button-Block **in der Aktionen-Karte**,
+  rechte Spalte — die frühere Umsetzungs-Karte in der linken Spalte ist entfallen):
+  Jeder Button öffnet ein eigenes Modal — „Downgrade-Formulare …" (solange der Fall
+  läuft bzw. bei Ergebnis Downgrade), „Phorest-Pakete auf 0 setzen …" (nach dem
+  Abschluss mit vertragsbeendendem Ergebnis) und „SEPA-Mandat stornieren …"
+  (**ab dem Eintrag des Widerrufs**, Recht `manage_gocardless`; GoCardless wird
+  **ausschließlich manuell** ausgelöst).
 
 ### SEPA-Mandat im laufenden Prozess stornieren (08/2026)
 
-- **Für Endanwender:** „Auswahl kündigen …" in der GoCardless-Sektion öffnet einen
-  Bestätigungs-Dialog. Beim Mandats-Storno wird dort entschieden, ob **zugleich ein
-  Forderungsfall über die Restsumme** eröffnet wird (Einstieg „SEPA-Mandatsentzug":
+- **Für Endanwender:** „SEPA-Mandat stornieren …" in der Aktionen-Karte öffnet ein
+  Modal mit den Mandaten/Einzügen des Vertrags. Beim Mandats-Storno wird dort
+  entschieden, ob **zugleich ein Forderungsfall über die Restsumme** eröffnet wird
+  (Einstieg „SEPA-Mandatsentzug":
   Restsumme wird per E-Mail mit Frist angemahnt, danach letzte Mahnung). Ohne Häkchen
   entsteht kein Fall — z.B. solange der Widerruf noch geprüft wird. Der Kunde erhält
   automatisch die Mandats-gekündigt-E-Mail; der Storno wird als Kennzeichen
