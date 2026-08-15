@@ -27,9 +27,10 @@ an `ContractCancellation`).
 | Config | `config/zendesk.php` |
 | Tests | `tests/Unit/ZendeskOAuthTest.php` |
 
-Der Hub **liest nur** (Tickets, Ticket-Kommentare, Users, Search);
-`createTicket()`/`updateTicket()` existieren im Service, werden aber nirgends
-aufgerufen.
+Der Hub **liest** (Tickets, Ticket-Kommentare, Users, Search) und **erstellt
+Tickets**: `createTicket()` versendet die Mahn-Mails des Forderungsmanagements
+(`DebtCaseActionService`). `updateTicket()` existiert im Service, wird aber
+nirgends aufgerufen.
 
 ### Authentifizierung: OAuth (client_credentials)
 
@@ -40,8 +41,9 @@ client_credentials-Grant** — Server-zu-Server, ohne Nutzerkontext:
 
 - Token-Endpoint: `POST https://{subdomain}.zendesk.com/oauth/tokens` mit
   `grant_type=client_credentials`, `client_id`, `client_secret`, `scope`.
-- Scope ist `read` (deckt Tickets/Users **und** die Search-API ab — die
-  Search-API unterstützt granulare Scopes wie `tickets:read` nicht).
+- Scope ist `read write` — `read` deckt Tickets/Users **und** die Search-API
+  ab (die Search-API unterstützt granulare Scopes wie `tickets:read` nicht),
+  `write` braucht die Ticket-Erstellung der Mahn-Mails.
 - Dieser Grant liefert **keine Refresh-Tokens**: Access-Tokens laufen ab
   (`expires_in`, Erwartung ~30 Minuten) und werden einfach **neu angefordert**.
 - Der Service cached das Token (`Cache`-Key `zendesk:access-token`,
@@ -64,7 +66,7 @@ nur für die Übergangszeit bestehen.
 | `ZENDESK_SUBDOMAIN` / `ZENDESK_BASE_URL` | Instanz (`glatttkundenservice`) |
 | `ZENDESK_OAUTH_CLIENT_ID` | OAuth-Client aus dem Zendesk Admin Center |
 | `ZENDESK_OAUTH_CLIENT_SECRET` | Secret des OAuth-Clients |
-| `ZENDESK_OAUTH_SCOPE` | Default `read` |
+| `ZENDESK_OAUTH_SCOPE` | Default `read write` |
 | `ZENDESK_EMAIL` / `ZENDESK_TOKEN` | Legacy-Fallback (läuft aus) |
 
 ### Runbook: Umstellung auf OAuth (Staging → Prod)
