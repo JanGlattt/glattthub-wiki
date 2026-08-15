@@ -28,6 +28,11 @@ der Fall in der Arbeitsliste **„Heute fällig"**.
    nicht bezahlt → Fall in Stufe „Kontaktaufnahme" (täglicher Prüflauf 07:15).
 3. **SEPA-Mandatsentzug**: Entzieht der Kunde (oder seine Bank) das Mandat,
    wird die Restsumme fällig und ein Fall mit Gesamtforderung eröffnet.
+   Seit 08/2026 kann dieser Einstieg auch **bewusst aus dem Widerruf-Prozess**
+   ausgelöst werden: Beim manuellen Mandats-Storno auf der Widerruf-Detailseite
+   entscheidet das Büro per Häkchen, ob zugleich ein Fall über die Restsumme
+   entsteht (Stornos über unsere eigene API eröffnen weiterhin **nie**
+   automatisch einen Fall).
 4. **Offenes Kundenkonto (Flex-Zahler)**: Kunden ohne Vertrag — sie buchen
    einzelne Flex-Behandlungen — hinterlassen ihre Schuld auf dem
    **Phorest-Kundenkonto**. Der Hub spiegelt diese Kontostände täglich und

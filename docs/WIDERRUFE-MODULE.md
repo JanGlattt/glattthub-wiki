@@ -246,8 +246,36 @@ erfassen und bearbeiten"):
   zum Ursprungsvertrag wird dann automatisch hergestellt).
 - **Umsetzungs-Karte** (linke Spalte): Downgrade-Formulare (solange der Fall läuft bzw.
   bei Ergebnis Downgrade), nach dem Abschluss mit vertragsbeendendem Ergebnis zusätzlich
-  Phorest-Pakete (Rest-Einheiten auf 0 setzen) und GoCardless (Mandate/Einzüge prüfen und
-  **ausschließlich manuell** kündigen).
+  Phorest-Pakete (Rest-Einheiten auf 0 setzen). GoCardless (Mandate/Einzüge prüfen und
+  **ausschließlich manuell** kündigen) ist seit 08/2026 **ab dem Eintrag des Widerrufs**
+  verfügbar — nicht mehr erst nach dem Abschluss (Anforderung Kundenservice).
+
+### SEPA-Mandat im laufenden Prozess stornieren (08/2026)
+
+- **Für Endanwender:** „Auswahl kündigen …" in der GoCardless-Sektion öffnet einen
+  Bestätigungs-Dialog. Beim Mandats-Storno wird dort entschieden, ob **zugleich ein
+  Forderungsfall über die Restsumme** eröffnet wird (Einstieg „SEPA-Mandatsentzug":
+  Restsumme wird per E-Mail mit Frist angemahnt, danach letzte Mahnung). Ohne Häkchen
+  entsteht kein Fall — z.B. solange der Widerruf noch geprüft wird. Der Kunde erhält
+  automatisch die Mandats-gekündigt-E-Mail; der Storno wird als Kennzeichen
+  („SEPA storniert") und als Ereignis im Fall-Verlauf festgehalten.
+- **Widerruf zurückgezogen?** Ein von uns storniertes Mandat lässt sich im
+  **SEPA-Tab des Vertrags** per Knopfdruck reaktivieren („SEPA-Mandat reaktivieren"):
+  GoCardless setzt das Mandat wieder ein und der beim Storno gesicherte Restplan wird
+  als Einzelzahlungen neu angelegt. Von Bank/Kunde entzogene Mandate lehnt GoCardless
+  ab — dann bleibt nur ein neues Mandat („GoCardless neu verknüpfen").
+- **Für Entwickler:** `POST /hub/contracts/{id}/gocardless-cancel-mandate` nimmt
+  zusätzlich `cancellation_id` + `open_debt_case`; vor dem Storno sichert
+  `snapshotOpenRatesForReinstate()` die offenen Raten als `ContractChange`
+  (`sepa_cancel_restore_plan`). Der Forderungsfall entsteht über
+  `DebtCaseIntakeService::handleMandateRevoked()` (gleicher Einstieg wie beim
+  Webhook-Entzug, eigener Verlaufs-Text). Die Reaktivierung läuft über
+  `POST /hub/contracts/{id}/gocardless-reinstate-mandate`
+  (`GoCardlessApiService::reinstateMandate()` + `recreateIndividualPayments()`).
+  Verlaufs-Ereignisse: `sepa_cancelled` / `sepa_reinstated`. Das automatische
+  Origin-Gating im Webhook bleibt unverändert: Nur `bank`/`customer` eröffnet
+  automatisch einen Fall, `api`-Stornos nie. Tests:
+  `tests/Feature/CancellationSepaActionTest.php`.
 
 Gespeichert wird über `PUT /hub/cancellations/{id}` (Teil-Updates); jede Änderung landet
 als Alt/Neu-Diff im Fall-Verlauf.

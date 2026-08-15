@@ -2,6 +2,37 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 15.08.2026 — SEPA-Mandat reaktivieren (Widerruf zurückgezogen)
+
+### Für Endanwender (15.08.2026)
+
+Wird ein Mandat **von uns** storniert (typisch: im Widerruf-Prozess über die
+Widerruf-Detailseite) und zieht der Kunde den Widerruf später zurück, gibt es im
+**SEPA-Tab** des Vertrags jetzt die Box **„SEPA-Mandat reaktivieren"** (sichtbar
+bei Mandat-Status „Storniert"):
+
+- GoCardless setzt das Mandat wieder ein (kein neues Mandats-Formular nötig).
+- Der beim Storno automatisch gesicherte **Restplan wird 1:1 als Einzelzahlungen
+  neu angelegt** — Beträge, Ratennummern und Termine bleiben erhalten; Termine in
+  der Vergangenheit rutschen auf das früheste mögliche Einzugsdatum.
+- **Grenze:** Von Bank oder Kunde entzogene sowie abgelaufene Mandate lehnt
+  GoCardless ab — dann wie bisher „GoCardless neu verknüpfen" (neues Mandat).
+
+### Für Entwickler (15.08.2026)
+
+`POST /hub/contracts/{id}/gocardless-reinstate-mandate`
+(`ContractController::reinstateGoCardlessMandate`, Recht `manage_gocardless`):
+`GoCardlessApiService::reinstateMandate()` → lokaler Mandats-Status aus der
+Antwort (i.d.R. `submitted`, Webhook setzt später `active`) → Restplan aus dem
+jüngsten `ContractChange` mit `field_name = 'sepa_cancel_restore_plan'` über
+`GoCardlessPaymentPlanService::recreateIndividualPayments()`. Der Snapshot
+entsteht in `cancelGoCardlessMandate()` (`snapshotOpenRatesForReinstate()`),
+bevor der Webhook die offenen Raten storniert. Hat der Vertrag noch offene
+GC-Einzüge oder fehlt ein Snapshot, wird nichts angelegt und die Antwort sagt
+das explizit. Ein zugehöriger Widerruf-Fall bekommt `sepa_cancelled = false`
+zurück plus Verlaufs-Ereignis `sepa_reinstated`.
+Tests: `tests/Feature/CancellationSepaActionTest.php`.
+
 ## Update 13.08.2026 — Direktzahler-Verbuchung + Ausweg aus fehlgeschlagenem SEPA-Mandat
 
 Zwei gemeldete Fälle (H004872, BS001318) deckten drei Lücken auf.
