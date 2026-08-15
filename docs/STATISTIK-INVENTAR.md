@@ -327,3 +327,10 @@ Der Rest der Report-Seiten ist bewusst Rahmen oder Verwaltung, keine Statistik:
   und `public/js/statistics-widgets.js` sind mit AP2 ersatzlos entfallen.
 
 *Erstellt im Rahmen von AP0 (04.08.2026) auf Basis von sechs parallelen Code-Analysen über alle 13 Report-Seiten. Entwickler-Doku der neuen Konvention: `.github/instructions/statistic-components.instructions.md`; Nutzer-/Architektur-Doku des Dashboards: `CUSTOM-DASHBOARD.md`.*
+
+### Conversion-Upload (Seite: `view_report_ads_analysis`) — 0 kachelfähige
+
+Reines **Übermittlungsprotokoll/Verwaltungs-UI** (Einzeldatensätze mit
+Retry-Aktion, keine Aggregat-Analyse) — bewusst außerhalb der
+Statistik-Registry, siehe `CONVERSION-UPLOAD.md`. Die zugehörigen
+Auswertungen (Kampagnen-Performance) leben weiterhin in der Ads-Analyse.
