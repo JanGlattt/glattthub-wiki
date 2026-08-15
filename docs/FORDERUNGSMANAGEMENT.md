@@ -58,8 +58,11 @@ ab, zeigt der Hinweis oben auf der Fall-Detailseite beide Zahlen.
 - **Sanfter Weg**: 1. Zahlungserinnerung (E-Mail, 7 Tage) → 2. Zahlungserinnerung
   (+ Androhung Terminabsage, 7 Tage) → Monitoring (nächster Einzugstermin
   + 3 + 10 Tage) → letzte Mahnung per Post (10 Tage) → Rate ans Planende anhängen.
-  Platzt die angehängte oder die nächste Lastschrift (**2. RLS in Folge**),
-  wechselt der Fall automatisch in den harten Weg.
+  Die letzte Mahnung **kündigt das Anhängen an** („Zahlen Sie bis X, sonst
+  hängen wir die geplatzte Lastschrift zzgl. der bereits angefallenen Gebühren
+  ans Planende an" — Vorlage `letter_final_soft`, keine zusätzliche Gebühr
+  beim Anhängen). Platzt die angehängte oder die nächste Lastschrift
+  (**2. RLS in Folge**), wechselt der Fall automatisch in den harten Weg.
 - **Sanfter Weg ohne Vertrag** (offenes Kundenkonto): 1. Zahlungserinnerung →
   2. Zahlungserinnerung → **direkt** 1. postalische Mahnung → letzte Mahnung →
   250-€-Entscheid. Monitoring und „Rate anhängen" entfallen: Es gibt keinen
@@ -103,7 +106,8 @@ Vorlagen-Varianten hinterlegt werden.
   Melderegister-Auskunft, Sonstiges — mit Beleg-Upload. Fließt in den offenen Betrag ein.
 - **RZV festhalten**: Ratenzahlungsvereinbarung dokumentieren; der Fall
   **bleibt offen** in der Stufe „RZV läuft" (eigene Board-Spalte) und liegt zu
-  jeder Rate wieder vor (`monitoring_until`). Jeder Zahlungseingang wird aktiv
+  jeder Rate wieder vor (`monitoring_until`, mit Karenz: GoCardless-Einzug
+  +13 Tage, Überweisung +5 Tage). Jeder Zahlungseingang wird aktiv
   am Fall erfasst — die Wiedervorlage rückt dann einen Monat weiter; ist alles
   bezahlt, schließt der Fall automatisch mit Ausgang „RZV" und die Vereinbarung
   wird als abgeschlossen markiert. **Einzug wahlweise per GoCardless**: Checkbox
@@ -112,8 +116,30 @@ Vorlagen-Varianten hinterlegt werden.
   (`GoCardlessPaymentPlanService::createRzvInstallments`, letzte Rate =
   Restbetrag; bestehende Einzüge werden bewusst nicht storniert — bei
   parallelen offenen GC-Zahlungen kommt ein Prüfhinweis für den SEPA-Tab).
-  Ohne Checkbox läuft der Einzug extern (Überweisung/Dauerauftrag). Platzt eine
-  GoCardless-RZV-Rate, eskaliert der Fall automatisch im harten Weg.
+  Die angelegten Raten werden an der Vereinbarung gemerkt
+  (`gocardless_payment_ids`) und auf der Fall-Detailseite im Tab
+  **„Ratenzahlung"** mit ihrem GoCardless-Status angezeigt; dort gibt es auch
+  **„Zahlungsplan ändern"** (storniert die noch nicht eingereichten GC-Raten
+  und legt sie mit den neuen Konditionen neu an — nur als manuelle Aktion),
+  „Zahlung verbuchen" und den Verweis auf den SEPA-Tab für IBAN-/Mandatswechsel.
+  Ohne Checkbox läuft der Einzug extern (Überweisung/Dauerauftrag); bleibt eine
+  Rate aus, taucht der Fall nach der Karenz in „Zahlung prüfen" auf.
+  **Platzt eine GoCardless-RZV-Rate, eskaliert der Fall bewusst NICHT
+  automatisch**: Die Vereinbarung wird als „geplatzt" markiert, die 10-€-Gebühr
+  gebucht und der Fall sofort vorgelegt (Badge „RZV geplatzt") — ob weiter
+  gemahnt oder der Plan angepasst wird, entscheidet das Büro. Die geplatzte
+  RZV-Rate erhöht die Hauptforderung dabei nicht (die Schuld bestand schon —
+  `DebtCaseBalanceService::rlsPrincipals()` schließt RZV-Raten aus).
+- **Fall ruhend stellen (Geparkt / Beim Anwalt)**: manuelle Einzelfallentscheidung
+  mit Pflicht-Grund und Pflicht-Begründung (landet im Verlauf). Der Fall bleibt
+  aktiv, verliert aber Fristen und Arbeitsliste und liegt im eigenen Bereich
+  **„Ruhend"** unten im Prozess-Board. **Geparkt** ist für Kleinforderungen
+  gedacht (z. B. nicht mitüberwiesene RLS-Gebühren), für die nie postalisch
+  gemahnt würde; **Beim Anwalt** für extern abgegebene Fälle (sie verlassen
+  auch die Liste des gerichtlichen Tabs). Eine **neue Rücklastschrift
+  reaktiviert den Fall automatisch**: Stufe zurück auf „Neu", die 50-€-Weiche
+  wird neu entschieden — der geparkte Altbetrag zählt mit. Manuelles
+  Fortsetzen jederzeit über „Fall fortsetzen" (Fall ist sofort wieder fällig).
 - **WNB (abschreiben)**: eigenes Recht; der Kunde bleibt in Phorest archiviert.
 - **Notiz hinzufügen**: Freitext-Kommentar direkt in der Verlauf-Card der
   Fall-Seite (Recht `manage_receivables`) — mit Autor und Zeitstempel in der
@@ -127,9 +153,16 @@ Vorlagen-Varianten hinterlegt werden.
 
 ### Wo sehe ich was?
 
-- **Hauptseite** `/hub/receivables` (Sidebar „Forderungen"): Kennzahlen,
-  Arbeitsliste, Pipeline-Board (Spalten je Stufe, bewusst ohne Drag & Drop),
-  Tab „Gerichtliches Verfahren".
+- **Hauptseite** `/hub/receivables` (Sidebar „Forderungen"): Kennzahlen
+  (inkl. „Ruhend"), Arbeitsliste, Pipeline-Board (Spalten je Stufe, bewusst
+  ohne Drag & Drop, unten der Ruhend-Bereich), Tab „Gerichtliches Verfahren".
+- **Fall-Detailseite mit Tabs** (Muster Vertragsseite, Deep-Links über den
+  URL-Hash): **Übersicht** (`#uebersicht` — Forderungsaufstellung, angehängte
+  Lastschriften), **Ratenzahlung** (`#ratenzahlung`, nur wenn eine RZV
+  existiert), **Gerichtliches Verfahren** (`#gericht`, nur im gerichtlichen
+  Bereich — dort landet der Fall auch als Start-Tab) und **Verlauf**
+  (`#verlauf` — Timeline mit Notizen und Schreiben-Snapshots). Die Sidebar
+  (Fall-Informationen, Verknüpfungen, Aktionen) bleibt auf allen Tabs sichtbar.
 - **Kundenseite** → Tab „Forderungsmanagement": alle Fälle des Kunden,
   auch abgeschlossene.
 - **Vertragsseite**: rotes Banner, solange ein Fall im harten Weg/gerichtlich
@@ -211,14 +244,14 @@ Cron: `receivables:reconcile-payment-links` (stündlich).
 
 | Tabelle | Zweck |
 |---|---|
-| `debt_cases` | Mahnfall: Einstieg, Weg, Stufe, Frist, Cluster, Status/Ausgang. Kunden-Klammer über `client_id` (Phorest). `contract_id` ist seit 08/2026 **nullable** — Fälle aus dem offenen Kundenkonto haben keinen Vertrag |
+| `debt_cases` | Mahnfall: Einstieg, Weg, Stufe, Frist, Cluster, Status/Ausgang. Kunden-Klammer über `client_id` (Phorest). `contract_id` ist seit 08/2026 **nullable** — Fälle aus dem offenen Kundenkonto haben keinen Vertrag. Ruhend-Status über `held_at`/`hold_reason` (`parked`/`lawyer`)/`held_by` (Migration `2026_08_15_100000`): Der Fall bleibt `status = active` (alle „Ein Kunde, ein Fall"-Guards und die 50-€-Weiche greifen weiter), fällt aber aus `scopeDueForAction()`/`isDueForAction()` heraus; die Stufe bleibt stehen |
 | `client_account_balances` | täglicher Spiegel der Phorest-Kundenkonten (`creditAccount.outstandingBalance`): Betrag, Standort, „beobachtet seit", `handled_cents`, letzter Fall |
 | `debt_case_events` | Timeline (jede Aktion/Statusänderung) |
 | `debt_case_messages` | Schreiben-Snapshots (Kanal, Vorlage, HTML, Freitext, PDF-Pfad, Zendesk-Ticket) |
 | `debt_cost_items` | Kostenpositionen; 10-€-RLS-Gebühr automatisch, `source_payment_id` + Unique-Index = Idempotenz |
 | `debt_case_payments` | manuell erfasste Zahlungseingänge |
 | `debt_judicial_proceedings` | gerichtlicher Teil (1:1 je Fall, harte Trennung) |
-| `debt_rzv_agreements` | RZV-Konditionen |
+| `debt_rzv_agreements` | RZV-Konditionen; seit 08/2026 zusätzlich `collect_via_gocardless` + `gocardless_payment_ids` (IDs der als GC-Einzelzahlungen angelegten Vertragsraten — Grundlage für die Status-Anzeige im Tab „Ratenzahlung" und die Plan-Anpassung) |
 | `institute_bank_accounts` | IBAN je Standort (encrypted Cast, Muster `institute_colors`) |
 | `dunning_templates` | Vorlagen je Stufe × Kanal × Cluster (NULL = alle); Startwerte via Migration `2026_08_09_110000` |
 
@@ -226,6 +259,17 @@ Salden werden **nie gespeichert** und **nur an einer Stelle gerechnet**:
 `DebtCaseBalanceService`. `DebtCase::principalCents()`, `costsCents()`,
 `paymentsReceivedCents()`, `openCents()` und `allocationCents()` (§ 367) sind
 nur noch Durchreichen auf `balance()`.
+
+**Mischfall angehängte Lastschriften (08/2026):** `balance()` liefert
+zusätzlich `appended_pending` (Summe der angehängten Raten, die als
+scheduled/pending/submitted noch im SEPA-Einzug unterwegs sind — geplatzte
+oder stornierte zählen nicht) und `open_excl_appended` (= `open` −
+`appended_pending`). **Alle Schreiben, der Platzhalter `{{offener_betrag}}`
+und sämtliche Bezahllinks fordern nur `open_excl_appended` an** — sonst
+zahlt der Kunde doppelt; Brief- und Mail-Bogen weisen den Einzugs-Anteil als
+Abzugszeile aus. Analog zählen geplatzte RZV-Raten nicht zur Hauptforderung
+(`rlsPrincipals()` schließt die in `gocardless_payment_ids` verknüpften
+Raten aus — nur die 10-€-Gebühr kommt dazu).
 
 Hauptforderung je Einstieg:
 
@@ -269,7 +313,9 @@ Fälligkeit („Heute fällig") ist ebenfalls einmal definiert:
   (angehängte Rate eingezogen → Fall schließt), `openClientAccountCase()`
   (offenes Kundenkonto; einziger Weg zu einem Fall **ohne** Vertrag — von der
   Erkennung wie vom manuellen Anlegen genutzt). Cluster: `clusterFor()`.
-- **`DebtCaseActionService`** — `nextAction()` (Aktions-Katalog je Stufe/Weg),
+- **`DebtCaseActionService`** — `nextAction()` (Aktions-Katalog je Stufe/Weg;
+  liefert für ruhende Fälle `null`), `hold()`/`resumeHold()` (Ruhend-Status
+  mit Pflicht-Begründung; Events `case_held`/`case_resumed`),
   `sendEmail()` (Zendesk `createTicket` mit `html_body`), `generateLetter()`
   (dompdf `pdf.dunning-letter`, Fristen aus der Vorlage: sanft 10 / hart 14 Tage),
   `startMonitoring()` (Einzug + 3 + 10 Tage), `recordPayment()`, `pauseSepa()`/
@@ -459,6 +505,21 @@ dafür ist `personalized_replies`. Offene Punkte dazu im Asana-Subtask
 
 - `ReceivablesController` + `resources/views/hub/receivables/` (Index mit
   Arbeitsliste und Prozess-Flow, Show mit Aktionen/Modals, Templates-Seite).
+- **Fall-Detailseite in Tabs zerlegt (08/2026, Muster Vertragsseite):**
+  `show.blade.php` ist nur noch der Rahmen (Kopf, Banner, Tab-Leiste
+  `.contract-v2-tabs`, Layout `.contract-v2-layout`); die Inhalte liegen in
+  `partials/tab-overview`, `tab-rzv`, `tab-judicial`, `tab-history`,
+  `appended-debits` und `case-sidebar` (Fall-Informationen, Verknüpfungen,
+  Aktionen samt aller Modals — auf jedem Tab sichtbar). Tab-Zustand mit
+  Hash-Deep-Links in `caseDetail()` (Alpine, analog `contract-detail.js`);
+  gerichtliche Fälle starten auf dem Tab „Gerichtliches Verfahren".
+  Achtung: Die `use`-Importe aus `show.blade.php` gelten NICHT in den
+  Partials — jedes Partial bringt seinen eigenen `@php use …;`-Block mit.
+- **Ruhend-Bereich im Prozess-Flow**: Pseudo-Spalte `on_hold` in
+  `BOARD_COLUMNS` (Pause-Marker statt Stufennummer); ruhende Fälle erscheinen
+  ausschließlich dort (auch gerichtliche), mit Badges „Geparkt"/„Beim Anwalt"
+  und „ruht seit … — Stand: <Stufe>". Arbeitslisten filtern `is_on_hold`
+  heraus; die Pipeline-Statistik führt „Ruhend" als eigenen Posten.
 - **Arbeitsliste** ist nach Art der Arbeit getrennt (`work_list` im
   Daten-Endpoint, Kategorie je Fall im Feld `category`):
 
@@ -592,7 +653,12 @@ Zeitreihen beginnen mit dem Modulstart 08/2026.
 
 `tests/Feature/Receivables/`: `DebtCaseIntakeTest` (Weiche, Cluster, Gebühr,
 Eskalation, Mandatsentzug, § 367), `DebtCaseActionsTest` (Zendesk, PDF, Fristen,
-Monitoring, Entscheid), `ReceivablesPagesTest` (Seiten, Rechte, Banner),
+Monitoring, Entscheid), `DebtCaseHoldTest` (Ruhend-Status: Pflicht-Begründung,
+Arbeitslisten-Ausschluss, automatische Reaktivierung inkl. neu entschiedener
+Weiche), `RzvAgreementTest` (GC-Verknüpfung, geplatzte RZV-Rate ohne
+Auto-Eskalation, Plan-Anpassung beider Einzugsarten), `AppendedDebitsTest`
+(Mischfall: zahlbarer Rest in Schreiben und Bezahllinks, Brief-Ankündigung des
+Anhängens), `ReceivablesPagesTest` (Seiten, Rechte, Banner),
 `ReceivablesManagementTest` (Vorlagen, IBAN, HTTP-Aktionen, Gericht, Kosten, RZV),
 `DunningEmailFrameTest` (Mail-Rahmen: Absender, Eskalation, Zendesk-Tauglichkeit,
 Mobilbreite), `DetectDirectUnpaidTest`, `ClientAccountDebtsTest` (Kundenkonto:
