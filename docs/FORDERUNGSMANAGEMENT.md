@@ -132,6 +132,18 @@ Vorlagen-Varianten hinterlegt werden.
   merkt sich nur die IDs (`link_payment_ids` → `gocardless_payment_ids`).
   Die Wiedervorlage richtet sich nach dem nächsten anstehenden Einzug + Karenz.
   Bereits mit einer Vereinbarung verknüpfte Raten erscheinen nicht erneut.
+  **Kombinierte Bestands-Pläne** (Einzug = reguläre Vertragsrate + Abstottern,
+  z. B. 280 € = 179,99 € Rate + 100,01 € Schuldentilgung): Als Vereinbarungs-
+  Summe wird automatisch nur der **Forderungs-Anteil** übernommen (max. offener
+  Fall-Saldo — der Dialog belegt das so vor und erklärt es). Die Karte erkennt
+  den Kombi-Fall daran, dass die verknüpften Einzüge mehr abdecken als die
+  Summe, und zeigt ein Hinweis-Banner mit dem regulären Anteil und dem
+  rechnerischen Forderungs-Anteil je Einzug — **am Fall wird nur dieser Anteil
+  als Zahlungseingang erfasst**, der Rest ist Vertragserfüllung.
+  **Arbeitsregel: Für NEUE RZVs nie kombinieren** — reguläre Raten weiterlaufen
+  lassen und die RZV-Raten separat anlegen (genau das macht die Checkbox
+  „Raten neu per GoCardless einziehen"); kombinierte Pläne sind ein
+  Bestands-Muster aus der SEPA-Tab-Zeit.
   **Platzt eine GoCardless-RZV-Rate, eskaliert der Fall bewusst NICHT
   automatisch**: Die Vereinbarung wird als „geplatzt" markiert, die 10-€-Gebühr
   gebucht und der Fall sofort vorgelegt (Badge „RZV geplatzt") — ob weiter
