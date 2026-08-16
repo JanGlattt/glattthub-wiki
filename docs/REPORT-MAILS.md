@@ -13,9 +13,12 @@ Unter **Report-Mails** in der Sidebar (Recht `manage_own_report_mails`, an
 `view_reports`-Rollen vergeben) richtet sich jede Nutzerin eigene Report-Mails
 ein — Empfänger ist dabei immer die eigene Hub-Adresse:
 
-- **Inhalt**: ganze Berichte (z.B. Verkaufsstatistik — mit allen Auswertungen
-  des Berichts) und/oder einzeln kombinierte Kennzahlen aus dem KPI-Katalog.
-  Wählbar ist nur, was die Nutzerin auch im Hub sehen darf.
+- **Inhalt**: Ein mehrstufiger Wizard (Muster des Dashboard-Wizards) stellt
+  einzelne Statistiken/Tabellen aus allen Berichten frei zusammen, bringt sie
+  per Drag & Drop in eine persönliche Reihenfolge und gibt **je Position einen
+  eigenen Datenhorizont** (leer = Standard-Zeitraum des Abos). Dazu optional
+  eine Kennzahlen-Zeile aus dem KPI-Katalog. Wählbar ist nur, was die Nutzerin
+  auch im Hub sehen darf.
 - **Zeitplan**: täglich, wöchentlich (Wochentag) oder monatlich (1.–28.),
   Uhrzeit in 30-Minuten-Schritten.
 - **Berichtszeitraum**: frei je Abo (gestern, letzte Woche, letzter Monat,
@@ -82,11 +85,11 @@ stehen im Admin-Backend drei Bereiche bereit:
 
 Die Inhalte kommen vollständig aus den bestehenden Registries:
 
-- **Ganze Berichte** = alle CSV-Export-Quellen der Berichtsseite
-  (`ReportExportService::sourcesForPage()` → `resolve(key, filters)`), je Quelle
-  eine Tabelle (gekappt auf 200 Zeilen, Hinweis im PDF) plus ein generisch
-  abgeleiteter Chart. Dazu die KPI-Zeile über
-  `KpiValueService::portfolioForSource()`.
+- **Positionen (`content_items`)** = geordnete Liste einzelner CSV-Export-
+  Quellen (`ReportExportService::resolve(key, filters)`), je Position mit
+  optional eigenem Zeitraum-Preset; gerendert als Tabelle (gekappt auf 200
+  Zeilen, Hinweis im PDF) plus generisch abgeleiteter Chart. Die Berechtigung
+  kommt je Quelle direkt aus `SOURCES[key]['permission']`.
 - **Freie Kennzahlen** = `KpiValueService::values()` mit den IDs aus der
   `KpiRegistry`.
 - Die Zuordnung Bericht → Export-Seite/KPI-Quelle ist nicht ableitbar
@@ -134,7 +137,8 @@ Option (PHP) → node resources/node/render-chart.mjs (echarts SSR → SVG)
 
 ### Tabellen
 
-`report_mail_subscriptions` (Zeitplan/Inhalt/Formate, SoftDeletes),
+`report_mail_subscriptions` (Zeitplan, `content_items` als geordnete
+Positions-Liste mit Zeitraum je Position, Formate, SoftDeletes),
 `report_mail_recipients` (User ODER externe Adresse, `unsubscribe_token`),
 `report_mail_external_recipients` (freigegebene Adressen, SoftDeletes),
 `report_mail_deliveries` (Protokoll mit Snapshot des versendeten Inhalts,
