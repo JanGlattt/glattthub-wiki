@@ -18,9 +18,11 @@ Damit der Inhalt beim Scrollen nicht mit Uhr/Notch kollidiert (Instagram-Muster,
 16.08.2026):
 
 - Ein fixer **Scrim** (Verlauf + Blur) liegt dauerhaft unter der iOS-Statusleiste
-- Beim **Hochscrollen** blendet ein Kompakt-Header mit dem Seitennamen ein
-  (Scroll-Richtungs-Erkennung); beim Runterscrollen und nahe Seitenanfang
-  verschwindet er wieder
+- Beim **Hochscrollen** blendet ein Kompakt-Header ein (Scroll-Richtungs-
+  Erkennung): glattt-Icon links, Seitenname mittig, **Lupe rechts**. Die Lupe
+  öffnet das Mehr-Sheet und springt direkt ins Suchfeld, sodass am Smartphone
+  sofort die Tastatur aufgeht. Beim Runterscrollen und nahe Seitenanfang
+  verschwindet die Leiste wieder
 
 ### Navigation: Bottom-Leiste + „Mehr"
 
@@ -148,6 +150,14 @@ dass nichts über den rechten Rand ragt.
 - Theme-Status im Sheet: `localStorage('glattthub-theme')` beim Init +
   `themeChanged`-Event von `darkmode.js` — das Icon spiegelt immer den
   aktuellen Modus.
+- **Lupe im Scroll-Header:** Der Header liegt im Layout, also ausserhalb der
+  Alpine-Komponente — der Klick feuert `open-mobile-search` am `window`,
+  `mobileBottomNav()` hört darauf und ruft `openSearch()`. Dort wird das
+  Overlay **von Hand** per `style.display` sichtbar gemacht, bevor `focus()`
+  läuft: iOS öffnet die Tastatur nur, wenn der Fokus im selben Task wie die
+  Berührung gesetzt wird, Alpines `x-show` schaltet aber erst im nächsten Tick.
+  Alpine räumt das Inline-`display` bei seinem eigenen Lauf wieder ab (geprüft:
+  nach dem Schliessen bleibt nichts kleben).
 - Mitteilungs-Zähler: `/phorest/notifications` (Accept + X-Requested-With
   Header, sonst 302), alle 2 Minuten; die Inline-Liste nutzt denselben
   Endpoint, Gelesen-Markierung via POST `/phorest/notifications/{id}/read`
