@@ -65,7 +65,7 @@ Endpoints einheitlich über `extractFilters()`: `branch_id, date_from, date_to, 
 | **Ranking nach Institut** | `/branches` | R B | **portiert** | ⚠ Currency-Bug offen (s. Abweichungen) |
 | Ranking nach Mitarbeiter | `/sellers` | R B | (a)/(b) | Partial verwaist (nur Alt-Widget nutzte es) |
 
-### Der glattt-Kunde (`view_report_client_statistics`) — 10 Statistiken
+### Der glattt-Kunde (`view_report_client_statistics`) — 11 Statistiken
 
 Endpoints einheitlich: `branch_id, date_from, date_to, consultation_only, gender, age_group, min_distance, max_distance`. Cache-Key enthält alle Filter (sicher).
 
@@ -81,6 +81,7 @@ Endpoints einheitlich: `branch_id, date_from, date_to, consultation_only, gender
 | Einzugsgebiet (PLZ-Karte) | `/map` | R B + | (d) | Leaflet statt ECharts, Seiten-Assets; nur full |
 | Top-PLZ | `/top-plz` (+`limit`) | R B + | (d) | PLZ-Suche greift auf Karten-Daten der Nachbar-Sektion zu |
 | Persona-Segmente | `/segments` | R B + | (b) | |
+| Zufriedenheit nach Paketende | `/satisfaction` | R B | konventionskonform (17.08.) | Registry-Karte `kunden.zufriedenheit`; Datenbasis `satisfaction_surveys` (Zufriedenheitsbefragung), s. ZUFRIEDENHEITSBEFRAGUNG.md |
 | KPI-Zeile (8 KPIs, serverseitig) | `/kpis` | R B + | (d) | |
 
 ### glattt-Pakete / Client-Courses (Seite: `view_report_client_courses`) — 1 Statistik
