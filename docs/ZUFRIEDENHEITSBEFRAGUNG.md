@@ -16,9 +16,12 @@ dazu immer eine Auffrisch-Anfrage und der Freunde-werben-Hinweis.
 Sichtbar mit dem Recht **Zufriedenheitsbefragung verwalten** (Institute + Büro); die
 Datensichtbarkeit begrenzt auf die eigenen Standorte, der Sidebar-Standortfilter wirkt zusätzlich.
 
-- **Kandidatinnen**: Kundinnen, deren Paket vor mindestens 4 Wochen endete (aufgebraucht
-  oder verfallen), ohne Folgetermin und ohne weiteres aktives Paket. Kundinnen mit einem
-  Widerruf in der Historie werden **markiert, nicht versteckt** — die Entscheidung liegt beim Team.
+- **Kandidatinnen**: Kundinnen, deren Paket vor mindestens 4 Wochen **durchbehandelt** war
+  (alle Einheiten verbraucht), ohne Folgetermin und ohne weiteres aktives Paket. Kundinnen
+  mit einem Widerruf in der Historie werden **markiert, nicht versteckt** — die Entscheidung
+  liegt beim Team. Weil Kundinnen fast immer mehrere Abos haben (im Schnitt 2,5 Körperzonen),
+  bündelt **eine Zeile alle gemeinsam beendeten Pakete** — die Paket-Spalte zeigt z.B.
+  „Abo.SEPA CRM 2x9er — Beine, Bikinizone, Intim (3)".
   - **Senden**: löst den Versand sofort aus (Bestätigungs-Dialog). WhatsApp wird bevorzugt,
     sonst E-Mail — je nach Marketing-Einwilligung im Phorest-Kundenprofil. Je Kundin nur einmal.
   - **Überspringen**: mit Pflicht-Begründung, im Verlauf nachvollziehbar; „Zurückholen" ist möglich.
@@ -74,33 +77,45 @@ Variablen-Zuordnung im Admin: Position 1 = Vorname; Button-Variable = „Nur der
 | E-Mail | `app/Mail/SatisfactionSurveyMail.php`, `resources/views/emails/satisfaction-survey.blade.php` |
 | Statistik | `statistics/kunden/zufriedenheit.blade.php`, `kunden.zufriedenheit` in `public/js/statistics/kunden.js` |
 | Admin | `app/Filament/Resources/SatisfactionSurveySettings/` |
-| Tests | `tests/Feature/SatisfactionSurveyTest.php` (16 Tests) |
+| Tests | `tests/Feature/SatisfactionSurveyTest.php` (19 Tests) |
 
 ### Datenmodell & Ablauf
 
-`satisfaction_surveys` — **eine Zeile je Kundin × Paket**, unique (`client_id`,
-`client_course_id`): erst Kandidat (`pending`), dann `sent`/`skipped`/`failed`; dieselbe
-Zeile trägt Antwort (Sterne/Freitext) und Folgeaktionen (Rückruf/Auffrischung samt
-Erledigt-Feldern). Token (`Str::random(64)`, 30 Tage ab Versand) hängt direkt an der Zeile;
-je Versandversuch wird ein frischer Token vergeben.
+`satisfaction_surveys` — **eine Zeile je Kundin** (unique `client_id` + `client_course_id`,
+verankert am jüngsten Paket; `course_names` trägt alle gebündelten Abos): erst Kandidat
+(`pending`), dann `sent`/`skipped`/`failed`; dieselbe Zeile trägt Antwort (Sterne/Freitext)
+und Folgeaktionen (Rückruf/Auffrischung samt Erledigt-Feldern). Token (`Str::random(64)`,
+30 Tage ab Versand) hängt direkt an der Zeile; je Versandversuch wird ein frischer Token
+vergeben.
 
 **Paketende-Erkennung** (`refreshCandidates()`, wird beim Laden der Hub-Seite mit
 `?refresh=1` ausgeführt):
 
-- Quelle `stats_client_courses`: aufgebraucht = `total_remaining_units = 0` und nicht
-  storniert (bzw. `not_found_in_api` — der Sync setzt Resteinheiten dann auf 0);
-  verfallen = `expiry_date` überschritten mit Rest. **`archived` ohne `not_found` =
-  storniert → kein Kandidat.**
+- Quelle `stats_client_courses`: **nur aufgebraucht** = `total_remaining_units = 0` und
+  nicht storniert (bzw. `not_found_in_api` — der Sync setzt Resteinheiten dann auf 0).
+  **`archived` ohne `not_found` = storniert → kein Kandidat.**
 - Paketende-Datum = letzte durchgeführte Sitzung (`stats_historic_appointments`,
   `COMPLETED`/`PAID`, über die `service_id`s der Paket-Positionen — bewusst ohne Join,
-  die Tabellen haben unterschiedliche Kollationen); Fallback `expiry_date` bzw.
-  `last_modified_at` (Sync-Zeitpunkt).
+  die Tabellen haben unterschiedliche Kollationen); Fallback `last_modified_at`
+  (Sync-Zeitpunkt, an dem der Kurs erstmals leer war).
+- **Bündelung je Kundin**: alle beendeten Pakete innerhalb von `BUNDLE_DAYS = 90` Tagen
+  um das jüngste Paketende landen in einer Zeile; `SatisfactionSurvey::packageLabel()`
+  kürzt den gemeinsamen Namensteil heraus.
 - Fenster: `WAIT_DAYS = 28` bis `MAX_AGE_DAYS = 120` Tage nach Paketende.
 - Ausschlüsse: weiteres aktives (nicht verfallenes) Paket, gebuchter Termin in
   `upcoming_appointments`, bereits vorhandene Survey-Zeile (einmalig je Kundin).
   Widerruf (`contracts.status = cancelled`) wird nur als Flag gesetzt.
-- Nicht mehr qualifizierende `pending`-Zeilen werden beim Refresh entfernt;
-  Entscheidungen (sent/skipped) bleiben stehen.
+- Nicht mehr qualifizierende `pending`-Zeilen werden beim Refresh entfernt, offene
+  Kandidatenzeilen werden aktualisiert (weitere Pakete geendet); Entscheidungen
+  (sent/skipped) bleiben stehen.
+
+!!! warning "Verfallene Pakete sind bewusst keine Kandidaten (17.08.2026)"
+    Der erste Wurf wertete auch „Ablaufdatum überschritten, Rest verfällt" als Paketende.
+    Das ist unbrauchbar: Ein Verfall entsteht **rechnerisch schon dann, wenn der
+    Kurs-Sync stehen bleibt** — die lokale Testumgebung (letzter Sync 23.02.2026) erzeugte
+    so 155 Geister-Kandidatinnen, deren Resteinheiten in Wahrheit längst genutzt sein
+    können. Zum jeweiligen Sync-Zeitpunkt war **kein einziger** Kurs abgelaufen-mit-Rest.
+    Für eine Zufriedenheitsfrage zählt ohnehin nur das durchbehandelte Paket.
 
 **Versand** (`SatisfactionSurveySender`, synchron — Muster Bewertungs-WhatsApp): Kundin live
 aus Phorest (`getCachedClient`), Kanalwahl WhatsApp (Handynummer + `smsMarketingConsent` +
@@ -119,6 +134,13 @@ Benachrichtigungs-Regel-Engine, s. NOTIFICATIONS.md).
 
 ### Gotchas
 
+- **`client_statistics` taugt nicht als Namensquelle.** Der Sync überspringt alle
+  Kundinnen mit Erstbesuch vor 2024 (`CUTOFF_DATE`) — also ausgerechnet die langjährigen
+  Kundinnen, deren Pakete jetzt enden (in der ersten Version stand bei 127 von 156 Zeilen
+  „Unbekannt"). Fehlende Namen kommen deshalb über `resolveMissingNames()` direkt aus
+  Phorest (`getClientBatch()`, 100 je Aufruf) und werden an der Zeile gespeichert; der
+  Abruf bleibt einmalig. Gilt sinngemäß für jede Stelle, die Kundennamen zu beliebigen
+  Phorest-Client-IDs braucht.
 - **`Feedback@if` kompiliert nicht** — Blade-Direktiven brauchen eine Wortgrenze davor,
   sonst bleibt `@if` literal stehen und das `@endif` wird verwaist (Parse-Error erst
   beim Rendern).
