@@ -151,6 +151,7 @@ nav:
     - Superchat / WhatsApp: SUPERCHAT-WHATSAPP.md
     - Beratungs-WhatsApp (Automatisierung): BERATUNGS-WHATSAPP.md
     - Terminerinnerungen (Automatisierung): TERMINERINNERUNGEN.md
+    - Zufriedenheitsbefragung: ZUFRIEDENHEITSBEFRAGUNG.md
     - Superchat-Kontakte & Sync: SUPERCHAT-KONTAKTE.md
   - Berichte:
     - Reports-Modul: REPORTS-MODULE.md
@@ -180,6 +181,7 @@ nav:
     - glatttBert: GLATTTBERT-AI-ASSISTENT.md
   - Design & UI:
     - Design System: DESIGN-SYSTEM.md
+    - Mobile Design: MOBILE-DESIGN.md
     - Ladeverhalten Statistikseiten: LADEVERHALTEN-STATISTIKSEITEN.md
     - Schriftart-Einstellungen: FONT-EINSTELLUNGEN.md
     - Globale Suche: GLOBAL-SEARCH.md

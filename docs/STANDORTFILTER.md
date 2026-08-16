@@ -18,14 +18,13 @@ an, startet er mit seinem eigenen Standard (Stamm-Institut bzw.
 
 ### Standortwechsel und Abmelden auf dem Smartphone
 
-Auf dem Smartphone (Bottom-Navigation, „Mehr"-Bereich) gibt es zwei Einträge:
+Im Mehr-Sheet der Bottom-Navigation (siehe `MOBILE-DESIGN.md`) gibt es dafür
+zwei Stellen:
 
-- **Standort** — öffnet ein Auswahl-Sheet mit „Alle Standorte" und allen
-  Instituten (identisch zur Instituts-Kachel der Sidebar). Das Icon des
-  Eintrags zeigt immer den aktuell gewählten Standort.
-- **Abmelden** — meldet ab und setzt den Standortfilter zurück (vorher war
-  Abmelden mobil gar nicht erreichbar, weil die Sidebar auf Smartphones
-  nicht geöffnet werden kann).
+- **Standort** (Utilities-Zeile) — öffnet ein Auswahl-Sheet mit
+  „Alle Standorte" und allen Instituten (identisch zur Instituts-Kachel der
+  Sidebar). Das Icon des Eintrags zeigt immer den aktuell gewählten Standort.
+- **Abmelden** (Profil-Zeile) — meldet ab und setzt den Standortfilter zurück.
 
 ## Für Entwickler
 
@@ -83,6 +82,6 @@ Validierung, den Abmelden-Eintrag samt localStorage-Bereinigung, das
 
 ### Bekannte Grenzen
 
-- Zwischen 769 px und 1023 px (Tablet hochkant) gibt es weiterhin weder
-  Bottom-Nav noch aufklappbare Sidebar — dort existiert außer der Topbar
-  keine Navigation (offener Punkt).
+- ~~Zwischen 769 px und 1023 px (Tablet hochkant) keine Navigation~~ —
+  seit dem Mobile-Redesign 08/2026 gilt die Bottom-Nav durchgängig bis
+  1023 px (siehe `MOBILE-DESIGN.md`).
