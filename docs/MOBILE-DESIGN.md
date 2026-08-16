@@ -59,8 +59,18 @@ Ab 1024 px gilt unverändert die Desktop-Ansicht mit Sidebar.
 ### Tabellen
 
 Tabellen bleiben mobil Tabellen (seitlich wischbar), werden aber kompakter.
-Bei wichtigen Listen (z. B. Verträge) bleibt die erste Spalte beim
-Seitwärts-Wischen stehen, damit klar bleibt, zu welcher Zeile ein Wert gehört.
+Bei Listen bleibt die erste Spalte beim Seitwärts-Wischen stehen, damit klar
+bleibt, zu welcher Zeile ein Wert gehört — seit dem Rollout 08/2026 in rund 60
+Listen quer durch den Hub (Kunden, Gutscheine, Forderungen, Schulden, Personal,
+Widerrufe, Bonus, Laser, Statistik-Matrizen …). Ausgenommen sind
+Ranking-Tabellen, deren erste Spalte nur die Rangnummer enthält, sowie kleine
+Aggregat- und Detailtabellen, die ohnehin auf den Bildschirm passen.
+
+### Rollout auf alle Seiten (17.08.2026)
+
+Nach der Abnahme der vier Beispielseiten wurde das Muster flächendeckend
+ausgerollt. Geprüft wurde jede Seite automatisiert bei 390 px Breite darauf,
+dass nichts über den rechten Rand ragt.
 
 ## Für Entwickler
 
@@ -93,9 +103,24 @@ Seitwärts-Wischen stehen, damit klar bleibt, zu welcher Zeile ein Wert gehört.
 - **Mobile Tabellen:** kompakte Dichte kommt automatisch (`≤767px`). Für Listen,
   deren Zeilen ohne erste Spalte nicht zuordenbar sind, die Opt-in-Klasse
   `table-glattt-sticky-first` auf die `<table>` setzen (braucht die deckenden
-  Hintergründe aus dem Theme — nie selbst nachbauen).
-- **Kopf-Aktionen einer Seite** gehören in eine umbruchfähige Gruppe
-  (`.card-glattt-header-controls`), sonst laufen Buttons mobil aus dem Bild.
+  Hintergründe aus dem Theme — nie selbst nachbauen). Sticky wirkt nur, wenn
+  ein Vorfahre horizontal scrollt: `.table-glattt-container`,
+  `.table-glattt-scrollbox`, `.chart-table-glattt` — oder, für Tabellen direkt
+  im randlosen Card-Body, automatisch über
+  `.card-glattt-body-flush:has(> table)`. Braucht eine Tabelle anderswo einen
+  schlanken Scroll-Rahmen ohne eigenen Border, gibt es `.table-glattt-scroll-x`.
+  `.table-glattt-heatmap` bringt sticky bereits selbst mit.
+- **Kopf-Aktionen einer Seite** gehören in eine umbruchfähige Gruppe:
+  Seitenkopf `.page-header-glattt` + `.page-header-glattt-grow` +
+  `.page-header-glattt-actions`, in Karten `.card-glattt-header-controls`.
+  `.card-glattt-header`, `.card-row-glattt-actions` und
+  `.segmented-control-glattt` brechen seit 08/2026 zentral um; direkte Kinder
+  von Seiten- und Kartenköpfen bekommen `min-width: 0`, damit Titelblöcke
+  schrumpfen können.
+- **Suchfelder in Kopfzeilen:** `.search-glattt-wrapper-flex` statt
+  `style="width:240px;flex-shrink:0"`.
+- **Raster:** immer `minmax(min(100%, NNNpx), 1fr)` — `auto-fill`/`auto-fit`
+  legt sonst auch auf 358 px Inhaltsbreite eine NNN-px-Spalte an.
 - **Safe-Area:** `.dashboard-main-wrapper` rechnet `env(safe-area-inset-top)`
   ein (kein fixer Header mehr, der die Notch abdeckt); die Bottom-Nav bringt
   `safe-area-inset-bottom` mit. `<html>` trägt `--dashboard-bg-start` als
@@ -128,9 +153,33 @@ Seitwärts-Wischen stehen, damit klar bleibt, zu welcher Zeile ein Wert gehört.
   Endpoint, Gelesen-Markierung via POST `/phorest/notifications/{id}/read`
   bzw. `/phorest/notifications/mark-all-read` (CSRF-Header).
 
-### Bewusst offen (Stand 16.08.2026)
+### Alpine-Fallstrick: `display` auf `x-show`
 
-- Flächendeckender Rollout auf alle übrigen Seiten erfolgt nach Abnahme der
-  vier Beispielseiten (Start, Verträge, Termine, Ads-Analyse).
-- Tabellenlastige Seiten außer Verträgen (Kunden, Gutscheine, Forderungen)
-  bekommen `table-glattt-sticky-first` beim Rollout.
+Alpine entfernt beim Einblenden das Inline-`display` eines `x-show`-Elements.
+Ein dort gesetztes `display: flex|grid` ist danach weg, das Layout stapelt
+still. Beim Rollout wurden 38 solcher Stellen bereinigt; das `display` liegt
+jetzt in einer Klasse (sprechende Layout-Klasse oder die reinen Träger
+`.d-glattt-flex` / `.d-glattt-inline-flex` / `.d-glattt-grid`), die übrigen
+Inline-Eigenschaften überleben Alpine und durften bleiben.
+Abgesichert durch `tests/Unit/AlpineShowDisplayConventionTest.php`.
+
+### Prüfen, ob eine Seite mobil sauber ist
+
+Maßstab ist: bei 390 px Viewport ragt nichts über den rechten Rand. Achtung —
+ein `overflow: hidden` weiter oben verhindert, dass das Dokument scrollt; der
+Inhalt ist dann trotzdem abgeschnitten. Deshalb nicht nur
+`document.documentElement.scrollWidth` prüfen, sondern die Elemente selbst:
+
+```js
+[...document.querySelectorAll('body *')]
+    .filter(el => el.getBoundingClientRect().right > innerWidth + 1)
+```
+und davon die ausblenden, die in einem Container mit `overflow-x: auto|scroll`
+liegen (die scrollen absichtlich).
+
+### Bewusst offen (Stand 17.08.2026)
+
+- Ranking-Tabellen (erste Spalte `#`) hätten von einer `sticky-second`-Variante
+  mehr als von `sticky-first`; alternativ Rang und Name in eine Zelle legen.
+- Der Wochenkalender (`.calendar-week-row`) behält mobil eine 90-px-Spalte je
+  Wochentag — dort ist eine eigene Mobil-Ansicht sinnvoller als Umbrüche.
