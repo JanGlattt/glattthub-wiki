@@ -110,7 +110,9 @@ Termine.
 - **Ads-Quellen** (`ads-monthly-trend`, `ads-campaigns`) nutzen
   `AdsAnalysisService` mit 1h-Cache; bei kaltem Cache können Meta/Google/Phorest
   live angefragt werden (wie beim Seitenaufruf selbst). `ads-sources-monthly`
-  liest nur `booking_trackings`.
+  und `ads-sources-daily` (Langformat Tag × Quelle × Art) lesen nur
+  `booking_trackings`; `ads-daily-bookings` enthält zusätzlich die
+  plattform-gemeldeten Leads je Tag (Meta Klick-Leads, Google Conversions).
 - **Streaming**: `response()->streamDownload()` + `fputcsv` — auch große Exporte
   laufen speicherschonend.
 - Dateiname: `{key}_{date_from}_{date_to}.csv` bzw. `{key}_{heute}.csv`.

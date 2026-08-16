@@ -167,15 +167,37 @@ Meta bzw. Google selbst melden.
   nicht je Institut — bei gesetztem Filter schrumpft nur die Tracking-Seite und
   die Lücke wirkt größer. Für den Vergleich „Alle Institute" wählen.
 
-#### Buchungen pro Tag (seit 07/2026)
+#### Buchungen pro Tag (seit 07/2026, Quellen-Ansicht seit 08/2026)
 
-Balken-/Liniendiagramm (ECharts) auf Tagesebene:
+Balken-/Liniendiagramm (ECharts) auf Tagesebene mit **zwei Ansichten**
+(Umschalter im Kartenkopf):
+
+**Gesamt** (Standard):
 
 - **Balken:** Anzahl Online-Buchungen pro Tag (Tage ohne Buchung = 0, lückenlose Reihe)
 - **Goldene Linie:** gleitender 7-Tage-Durchschnitt — Mittelwert aus dem Tag und den sechs Vortagen. Glättet Wochentags-Schwankungen (z. B. schwache Sonntage) und macht den Trend sichtbar
 - Die Linie startet erst am **siebten Tag** der Reihe (vorher gibt es kein volles Fenster)
-- **Zoom-Regler** unter dem Diagramm für Zeitausschnitte, Legende klickbar
-- Reagiert auf alle Filter (Standort, Zeitraum, Plattform, Kampagne)
+
+**Nach Quelle** („Anzahl Leads pro Tag mit Herkunftsquelle"):
+
+- **Gestapelte Balken:** dieselben Tages-Buchungen je Herkunftsquelle (Meta,
+  Google, organische Suche, eigene Website …) — Klassifikation identisch zur
+  Karte „Buchungen pro Quelle & Monat" (bezahlt über `utm_source`/Klick-ID,
+  organisch über den Einstiegs-Referrer; organisch ohne erfassten Einstieg
+  fehlt in den Balken, zählt aber in der Gesamt-Ansicht)
+- Zweiter Umschalter **Alle / Nur Anzeigen / Nur Organisch** (clientseitig,
+  wirkt auf Chart und Tabelle)
+- **Gestrichelte Linien:** von den Plattformen selbst gemeldete Leads je Tag —
+  **Meta gemeldet (Klick)** (Klick-Leads; View-Through bleibt außen vor, weil
+  ohne Klick-ID nie zuordenbar) und **Google gemeldet** (Conversions). Liegen
+  die Linien über den Balken, konnte das Tracking einen Teil der gemeldeten
+  Leads keiner Buchung zuordnen — Tagesvariante der „Zuordnungslücke".
+  **Achtung:** kontoweit, Standort-/Kampagnen-Filter wirken auf die Linien nicht;
+  der Plattform-Filter blendet die jeweils andere Linie aus
+
+Gemeinsam: **Zoom-Regler** unter dem Diagramm, klickbare Legende, Tabelle
+(Jahr → Quartal → Monat → Tag) mit Quellen- und Plattform-Spalten; Buchungen
+reagieren auf alle Filter (Standort, Zeitraum, Plattform, Kampagne).
 
 #### Kostenverlauf & Kosten pro Lead (seit 07/2026)
 
@@ -338,6 +360,7 @@ GoogleAdsService (app/Services/)
 | `tests/Unit/MetaAdsServiceTest.php` | Unit-Tests Meta |
 | `tests/Feature/AdsAnalysisMetaTest.php` | Feature-Tests Meta |
 | `tests/Feature/AdsMonthlySourceBreakdownTest.php` | Feature-Tests Quellen-Monate & Kosten pro Lead |
+| `tests/Feature/AdsDailyBookingsTest.php` | Feature-Tests Buchungen pro Tag (Gesamt, Quellen, Plattform-Leads, CSV) |
 
 ### Routes
 
@@ -349,7 +372,7 @@ GET  /hub/reports/ads-analysis/campaigns              → campaigns
 GET  /hub/reports/ads-analysis/monthly                → monthly        (inkl. total_spend_cents & cost_per_lead_cents)
 GET  /hub/reports/ads-analysis/monthly-sources        → monthlySources (Buchungen pro Quelle × Monat, Anzeige/organisch)
 GET  /hub/reports/ads-analysis/attribution-gap        → attributionGap (gemeldete Leads vs. eigenes Tracking je Monat/Plattform)
-GET  /hub/reports/ads-analysis/daily-bookings         → dailyBookings  (Buchungen pro Tag inkl. gleitendem 7-Tage-Durchschnitt)
+GET  /hub/reports/ads-analysis/daily-bookings         → dailyBookings  (Buchungen pro Tag: Gesamtreihe + 7-Tage-Schnitt, Quellen-Serien je Tag, plattform-gemeldete Leads)
 GET  /hub/reports/ads-analysis/sources                → sources        (Letzte Seite vor Buchung / referrer)
 GET  /hub/reports/ads-analysis/entry-sources          → entrySources   (Herkunft / entry_referrer)
 GET  /hub/reports/ads-analysis/search-terms           → searchTerms    (Suchbegriffe / utm_term)
