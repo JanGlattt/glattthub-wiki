@@ -112,6 +112,14 @@ Seitwärts-Wischen stehen, damit klar bleibt, zu welcher Zeile ein Wert gehört.
   Standort und Mitteilungen tauschen nur den Content aus, ein separates
   Standort-Sheet gibt es nicht mehr. Neue Unteransichten diesem Muster folgen
   (Eintrag in `sheetTitle`, `openSheetView()`, eigener `x-show`-Block).
+- **Feste Sheet-Höhe:** `.mobile-more-sheet` hat `height: min(70vh, 720px)` —
+  das Sheet darf beim Ansichts-Wechsel oder Laden nie mit dem Inhalt
+  schrumpfen/aufspringen. Jede Ansicht startet oben (`resetSheetScroll()`).
+- **Motion:** Unteransichten sliden von rechts ein, das Menü beim Zurückgehen
+  von links (`.mobile-sheet-view-enter*`-Klassen via `x-transition`);
+  Grid-/Listen-Elemente blenden gestaffelt ein (`mobile-more-pop-in`,
+  Verzögerung über `nth-child`-Gruppen); Antippen federt per
+  `:active { scale(0.95) }`. Neue Sheet-Inhalte bekommen dieselben Klassen.
 - Theme-Status im Sheet: `localStorage('glattthub-theme')` beim Init +
   `themeChanged`-Event von `darkmode.js` — das Icon spiegelt immer den
   aktuellen Modus.
