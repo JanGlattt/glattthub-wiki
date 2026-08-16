@@ -28,7 +28,7 @@ Das System unterstützt drei Arten von Benachrichtigungen:
 | Modus | Trigger | InApp | Push |
 |-------|---------|-------|------|
 | ✍️ Manuell | Sofort beim Erstellen | ✅ | ✅ |
-| 🔄 Webhook | GoCardless Event | ✅ | ✅ |
+| 🔄 Webhook/Ereignis | GoCardless Event **oder internes Hub-Ereignis** | ✅ | ✅ |
 | ⏰ Zeitbasiert | Cron (Cloud Scheduler) | ✅ | ✅ |
 | ⚡ Aktionsbasiert | Datenbank-Event | ✅ | ✅ |
 
@@ -69,6 +69,43 @@ Automatische Benachrichtigungen bei GoCardless Events (Zahlungen, Mandate, etc.)
 | Abonnements | created, payment_created, cancelled, finished |
 | Erstattungen | created, paid, failed |
 | Auszahlungen | paid |
+
+**Provider "glatttHub" (interne Ereignisse, seit 08/2026):**
+
+Neben GoCardless speisen auch interne Hub-Ereignisse dieselbe Regel-Engine.
+Für Endanwender funktioniert alles wie bei GoCardless-Regeln — nur der
+Provider ist ein anderer:
+
+1. Modus: "Ereignis-Automatisierung" wählen
+2. Provider: **🏠 glatttHub (interne Ereignisse)**
+3. Ressourcen-Typ + Aktion wählen (siehe Tabelle)
+4. **Frequenz** wählen: ⚡ Einzelbenachrichtigung bei jedem Ereignis ODER
+   📦 Tages-Zusammenfassung (Digest) mit Sendezeitpunkt — bei häufigen
+   Ereignissen (z.B. Verkäufe) ist der Digest empfohlen, sonst stumpft die
+   Zielgruppe ab und schaltet Push komplett aus
+5. Titel/Nachricht mit Platzhaltern, Zielgruppe wie gewohnt
+
+| Ressource | Aktion | Bedeutung |
+|-----------|--------|-----------|
+| Verträge | `created` | Neuer Vertrag / Verkauf — zählt ab Anlage, auch als Entwurf (Legacy-Importe lösen nichts aus) |
+| Widerrufe | `created` | Widerruf zu einem Vertrag wurde erfasst |
+| Beratungsgespräche | `completed_without_contract` | Beratungsgespräch beendet, ohne dass ein Vertrag zustande kam |
+
+**Besonderheiten des Hub-Providers:**
+
+- **Sichtbarkeitsgrenzen:** Empfänger werden gegen die Datensichtbarkeit
+  geprüft (`DataVisibilityService`, siehe `DATA-VISIBILITY.md`). Wer einen
+  Datensatz im Hub nicht sehen darf (z.B. anderes Institut bei
+  `data_scope_branch`), bekommt auch keine Benachrichtigung dazu — weder
+  In-App noch Push. Beim Digest sieht jede Empfängergruppe nur die für sie
+  sichtbaren Ereignisse in der Liste.
+- **Idempotenz:** Ein Ereignis erzeugt genau eine Benachrichtigung, auch wenn
+  der auslösende Datensatz mehrfach gespeichert wird (Ereignis-Log
+  `hub_notification_events` mit Unique-Index je Anlass + Datensatz).
+- **Datenschutz:** Verkaufs- und Widerrufsmeldungen enthalten Kundennamen und
+  Beträge; die Meldung zu einem BG ohne Abschluss zusätzlich eine
+  personenbezogene Leistungsinformation über die Mitarbeiterin. Zielgruppe je
+  Regel bewusst eng wählen.
 
 ### 3. ⏰ Zeitbasierte Automatisierungen
 
@@ -188,6 +225,25 @@ Verwenden `{platzhalter}` Syntax:
 | `{scheme}` | Zahlungsschema (sepa_core, bacs) |
 | `{reason_code}` | Bank-Fehlercode |
 
+### Hub-Ereignis-Platzhalter (Provider glatttHub)
+
+Ebenfalls `{platzhalter}`-Syntax, deutsche Keys — je Ereignistyp definiert in
+`HubEventRegistry` (das Formular zeigt immer die passenden an):
+
+| Ereignis | Platzhalter |
+|----------|-------------|
+| Neuer Vertrag / Verkauf | `{vertragsnummer}`, `{kundenname}`, `{betrag}`, `{monatsrate}`, `{kpz}`, `{institut}`, `{verkaeuferin}`, `{zahlungsart}`, `{status}` |
+| Widerruf eingegangen | `{vertragsnummer}`, `{kundenname}`, `{institut}`, `{grund}`, `{zendesk_ticket}`, `{datum}` |
+| BG ohne Abschluss | `{kundenname}`, `{institut}`, `{mitarbeiterin}`, `{ergebnis}`, `{datum}` |
+
+Bei Frequenz "Tages-Zusammenfassung" gelten stattdessen die Digest-Platzhalter:
+
+| Platzhalter | Beschreibung |
+|-------------|--------------|
+| `{anzahl}` | Anzahl der Ereignisse seit dem letzten Versand |
+| `{datum}` | Datum des Versands |
+| `{liste}` | Aufzählung der Ereignisse (eine Zeile je Ereignis, max. 15 + "… und N weitere") |
+
 ### Zeitbasierte Platzhalter
 
 Verwenden `{{platzhalter}}` Syntax:
@@ -224,7 +280,12 @@ app/
 ├── Services/
 │   ├── NotificationAutomationService.php   # Observer-Registrierung
 │   ├── NotificationService.php             # Manuelle Benachrichtigungen
-│   └── PushNotificationService.php         # Push-Versand
+│   ├── PushNotificationService.php         # Push-Versand
+│   └── Notifications/                      # Hub-Provider (interne Ereignisse)
+│       ├── HubEventRegistry.php            # Ereignis-Katalog + Platzhalter
+│       ├── HubNotificationDispatcher.php   # Regel-Matching, Idempotenz, Versand
+│       ├── HubDigestService.php            # Tages-Zusammenfassungen
+│       └── NotificationRecipientResolver.php  # Zielgruppe + Datensichtbarkeit
 ├── Jobs/
 │   ├── SendNotificationAutomationJob.php   # Automatisierte Benachrichtigungen
 │   └── ProcessGoCardlessWebhookJob.php     # Webhook-Verarbeitung
@@ -243,6 +304,19 @@ public/
 └── js/push-notifications.js  # Frontend Push-Manager
 ```
 
+### Neuen Hub-Anlass ergänzen (ohne Frontend-Änderung)
+
+1. Ereignis in `app/Services/Notifications/HubEventRegistry.php` definieren
+   (Resource-Type, Aktion, Label, Platzhalter)
+2. Convenience-Methode im `HubNotificationDispatcher` ergänzen (Payload mit
+   exakt den Platzhalter-Keys bauen; `branchId` + `ownerUserIds` für die
+   Sichtbarkeitsprüfung, `summary` für die Digest-Zeile mitgeben)
+3. Aufruf an der auslösenden Stelle (Observer/Service) — Fehler fängt der
+   Dispatcher selbst, der Geschäftsvorgang bricht nie
+
+Das Admin-Formular, die Platzhalter-Hilfe, Digest und Sichtbarkeitsfilter
+greifen danach automatisch. Konsistenz sichert `tests/Unit/HubEventRegistryTest.php`.
+
 ### Datenbank-Tabellen
 
 **notifications:**
@@ -250,6 +324,7 @@ public/
 - id, type, title, message, link, icon_type
 - is_global, target_user_ids, target_institute_ids, target_roles
 - is_webhook_template, webhook_provider, webhook_resource_type, webhook_action
+- delivery_frequency, digest_time   -- Frequenz je Hub-Regel (immediate/daily_digest)
 - is_automation_template, automation_type
 - schedule_days, schedule_time, schedule_timezone
 - trigger_model, trigger_event, trigger_conditions
