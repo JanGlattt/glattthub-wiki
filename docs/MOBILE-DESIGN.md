@@ -14,6 +14,14 @@ Seitennamen (nur auf Seiten ohne eigene Überschrift); sie scrollt mit dem Inhal
 weg. Der gewonnene Platz (vorher bis zu ~120 px auf iPhones mit Notch) gehört
 jetzt dem Inhalt.
 
+Damit der Inhalt beim Scrollen nicht mit Uhr/Notch kollidiert (Instagram-Muster,
+16.08.2026):
+
+- Ein fixer **Scrim** (Verlauf + Blur) liegt dauerhaft unter der iOS-Statusleiste
+- Beim **Hochscrollen** blendet ein Kompakt-Header mit dem Seitennamen ein
+  (Scroll-Richtungs-Erkennung); beim Runterscrollen und nahe Seitenanfang
+  verschwindet er wieder
+
 ### Navigation: Bottom-Leiste + „Mehr"
 
 Unten schwebt die Navigations-Leiste mit den vier Hauptbereichen **Start,
@@ -22,10 +30,12 @@ Termine, Kunden, Berichte** — im Daumenbereich erreichbar. Der fünfte Knopf
 
 - **Globaler Suche** (Seiten, Berichte, Kunden, Verträge, Gutscheine — wie die
   Sidebar-Suche am Desktop, inkl. Phorest-Suche ab 3 Zeichen)
-- **allen weiteren Bereichen** als Icon-Grid (Personal, Services, Report-Mails,
-  Audit, Gutscheine, Verträge, Widerrufe, Bonus-Board, Forderungen, Schulden,
-  Unternehmensverträge, Institute, Laser, Formulare, Einstellungen, Admin Panel) —
-  jeweils nur mit entsprechender Berechtigung sichtbar
+- **allen Bereichen** als Icon-Grid — inklusive der vier Haupttabs (Start,
+  Termine, Kunden, Berichte), damit das Sheet vollständig ist, plus Personal,
+  Services, Report-Mails, Audit, Gutscheine, Verträge, Widerrufe, Bonus-Board,
+  Forderungen, Schulden, Unternehmensverträge, Institute, Laser, Formulare,
+  Einstellungen, Admin Panel — jeweils nur mit entsprechender Berechtigung
+  sichtbar
 - **Standort-Wahl**, **Mitteilungen** (mit Ungelesen-Zähler; ein roter Punkt am
   „Mehr"-Knopf zeigt neue Mitteilungen), **Theme-Umschalter**
 - **Profil-Zeile** mit Abmelden
@@ -82,7 +92,14 @@ Seitwärts-Wischen stehen, damit klar bleibt, zu welcher Zeile ein Wert gehört.
   (`.card-glattt-header-controls`), sonst laufen Buttons mobil aus dem Bild.
 - **Safe-Area:** `.dashboard-main-wrapper` rechnet `env(safe-area-inset-top)`
   ein (kein fixer Header mehr, der die Notch abdeckt); die Bottom-Nav bringt
-  `safe-area-inset-bottom` mit.
+  `safe-area-inset-bottom` mit. `<html>` trägt `--dashboard-bg-start` als
+  Hintergrund und die `theme-color`-Metas entsprechen den Verlaufsfarben —
+  sonst malt Safari eine weiße Kante hinter die Statusleiste.
+- **backdrop-filter-Ausnahme:** Statusleisten-Scrim (`.mobile-status-scrim-glattt`)
+  und Scroll-Up-Header (`.mobile-scroll-header-glattt`) sind die einzigen
+  erlaubten `backdrop-filter`-Nutzer — genau zwei fixe Einzel-Elemente, keine
+  Listen. Nicht als Vorlage für Cards/Badges verwenden (Verbot bleibt bestehen).
+  Die Einblende-Logik des Scroll-Headers steckt in `layouts/hub.blade.php`.
 - Das Mehr-Sheet nutzt die Bottom-Sheet-Basisklassen des Standort-Sheets
   (`.mobile-branch-sheet*`) plus `.mobile-more-*` — neue Sheets darauf aufbauen.
 - Mitteilungs-Zähler: `/phorest/notifications` (Accept + X-Requested-With
