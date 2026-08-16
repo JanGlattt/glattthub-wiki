@@ -155,6 +155,7 @@ nav:
   - Berichte:
     - Reports-Modul: REPORTS-MODULE.md
     - glattt-KPIs: GLATTT-KPIS.md
+    - Report-Mails (geplanter Versand): REPORT-MAILS.md
     - CSV-Export: CSV-EXPORT.md
     - Eigenes Dashboard: CUSTOM-DASHBOARD.md
     - Verkaufsstatistik: SALES-STATISTICS.md
