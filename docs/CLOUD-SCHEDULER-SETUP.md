@@ -21,13 +21,41 @@ Da Cloud Run serverless ist (Container laufen nur bei Requests), können keine t
     02.08.2026 traf das auf **sieben** Aufgaben zu, darunter
     `gocardless:reconcile-payments` (Sicherheitsnetz für ausgefallene
     Zahlungs-Webhooks, seit 07/2026 nie gelaufen) und `askdante:sync` (Datenbasis der
-    HR-Kennzahlen). `tests/Feature/CronScheduleCoverageTest.php` hält Punkt 1 und 2
-    seitdem zusammen; Punkt 3 muss weiterhin von Hand geprüft werden:
+    HR-Kennzahlen). Am **16.08.2026** fielen beim Durchsehen von Hand **drei weitere**
+    auf, alle erst wenige Tage alt: `contracts:check-onsite-payments`,
+    `receivables:sync-client-account-balances` und
+    `receivables:detect-client-account-debts` — der komplette Flex-Zahler-Einstieg
+    ins Forderungsmanagement war damit seit dem 10.08. tot.
+
+!!! success "Prüfung: `php artisan cron:audit`"
+    Seit 16.08.2026 gibt es dafür ein Werkzeug, das **alle drei Punkte** abgleicht —
+    inklusive der Frage, ob der Cloud-Scheduler-Job wirklich existiert:
 
     ```bash
-    gcloud scheduler jobs list --location=europe-west3 \
-      --format="table(name.basename(),schedule,state,httpTarget.uri)"
+    php artisan cron:audit                 # Prod (Standard)
+    php artisan cron:audit --target=staging
     ```
+
+    Es liest die Job-Liste per `gcloud` (lokal, angemeldet), meldet fehlende und
+    pausierte Jobs und liefert Exit-Code 1 — damit auch in CI nutzbar. Ohne gcloud:
+    `gcloud scheduler jobs list --format=json > jobs.json` und
+    `php artisan cron:audit --jobs=jobs.json`.
+
+    **Nach jedem neuen `Schedule::command(...)` einmal laufen lassen.** Zwei
+    Fallstricke, die der Befehl bereits berücksichtigt und die beim Prüfen von Hand
+    regelmäßig zu Fehlschlüssen führen:
+
+    - **Abgeglichen wird über die Job-URI, nicht den Job-Namen.** Im Bestand weichen
+      beide ab: `sync-free-consulting-slots` ruft `/api/cron/sync-free-slots`, und
+      `matomo-sync-visits-staging` sowie `prune-matomo-actions-staging` zeigen trotz
+      ihres Namens auf **Prod**.
+    - **Prod hängt an zwei Hosts:** `hub.glattt.com` *und* der run.app-URL des
+      Dienstes. Wer nur die Custom Domain prüft, hält die halbe Liste für fehlend.
+      Staging erkennt man am Präfix `glattthub-web-staging`.
+
+    Die Zuordnung „Befehl → Endpoint" steht einmalig in
+    `app/Support/CronSchedule.php`; `CronScheduleCoverageTest` prüft daraus Punkt 1
+    und 2, `CronAuditCommandTest` deckt den Befehl selbst ab.
 
 !!! tip "Neue Jobs immer mit Retries anlegen"
     `--max-retry-attempts=3` setzen. Ohne Retries reicht ein Cold-Start-502, um einen
@@ -93,6 +121,17 @@ gcloud run services update glattthub-web \
 ## Schritt 3: Cloud Scheduler Jobs erstellen
 
 Jetzt erstellst du die Scheduler Jobs. Diese senden HTTP-Requests an deine App – mit dem **gleichen Token** im Header.
+
+!!! warning "Die nummerierte Liste unten ist historisch, nicht vollständig"
+    Sie zeigt, **wie** ein Job angelegt wird — nicht, welche es gibt. Seit 08/2026
+    sind etliche dazugekommen (Terminerinnerungen, Report-Mails, Forderungs-Jobs),
+    die hier nie nachgetragen wurden. Der aktuelle Stand kommt immer aus der Cloud:
+
+    ```bash
+    php artisan cron:audit                 # Soll/Ist inkl. fehlender Jobs
+    gcloud scheduler jobs list --location=europe-west3 \
+      --format="table(name.basename(),schedule,state,httpTarget.uri)"
+    ```
 
 ### Option A: Via Google Cloud Console (empfohlen)
 
