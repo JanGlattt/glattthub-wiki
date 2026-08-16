@@ -36,8 +36,14 @@ Termine, Kunden, Berichte** — im Daumenbereich erreichbar. Der fünfte Knopf
   Forderungen, Schulden, Unternehmensverträge, Institute, Laser, Formulare,
   Einstellungen, Admin Panel — jeweils nur mit entsprechender Berechtigung
   sichtbar
-- **Standort-Wahl**, **Mitteilungen** (mit Ungelesen-Zähler; ein roter Punkt am
-  „Mehr"-Knopf zeigt neue Mitteilungen), **Theme-Umschalter**
+- **Standort-Wahl** und **Mitteilungen** — beide öffnen KEIN eigenes Sheet und
+  keine eigene Seite, sondern wechseln nur den Inhalt des Mehr-Sheets
+  (Zurück-Pfeil im Kopf führt zum Menü zurück). Die Mitteilungs-Ansicht listet
+  alle Mitteilungen inline (ungelesene mit Punkt), bietet „Alle als gelesen
+  markieren" und verlinkt am Fuß weiterhin auf die Mitteilungsseite
+- **Theme-Umschalter**, dessen Icon und Beschriftung den AKTUELLEN Modus zeigen
+  (Sonne = Hell, Mond = Dunkel, Monitor = System) und bei jedem Wechsel
+  mitwandern
 - **Profil-Zeile** mit Abmelden
 
 Ein rotes Badge am „Mehr"-Knopf erscheint, sobald ungelesene Mitteilungen
@@ -100,10 +106,19 @@ Seitwärts-Wischen stehen, damit klar bleibt, zu welcher Zeile ein Wert gehört.
   erlaubten `backdrop-filter`-Nutzer — genau zwei fixe Einzel-Elemente, keine
   Listen. Nicht als Vorlage für Cards/Badges verwenden (Verbot bleibt bestehen).
   Die Einblende-Logik des Scroll-Headers steckt in `layouts/hub.blade.php`.
-- Das Mehr-Sheet nutzt die Bottom-Sheet-Basisklassen des Standort-Sheets
-  (`.mobile-branch-sheet*`) plus `.mobile-more-*` — neue Sheets darauf aufbauen.
+- Das Mehr-Sheet nutzt die Bottom-Sheet-Basisklassen (`.mobile-branch-sheet*`)
+  plus `.mobile-more-*`. Es ist EIN Sheet mit Ansichts-Wechsel
+  (`sheetView: 'menu' | 'branch' | 'notifications'` in `mobileBottomNav()`) —
+  Standort und Mitteilungen tauschen nur den Content aus, ein separates
+  Standort-Sheet gibt es nicht mehr. Neue Unteransichten diesem Muster folgen
+  (Eintrag in `sheetTitle`, `openSheetView()`, eigener `x-show`-Block).
+- Theme-Status im Sheet: `localStorage('glattthub-theme')` beim Init +
+  `themeChanged`-Event von `darkmode.js` — das Icon spiegelt immer den
+  aktuellen Modus.
 - Mitteilungs-Zähler: `/phorest/notifications` (Accept + X-Requested-With
-  Header, sonst 302), alle 2 Minuten.
+  Header, sonst 302), alle 2 Minuten; die Inline-Liste nutzt denselben
+  Endpoint, Gelesen-Markierung via POST `/phorest/notifications/{id}/read`
+  bzw. `/phorest/notifications/mark-all-read` (CSRF-Header).
 
 ### Bewusst offen (Stand 16.08.2026)
 
