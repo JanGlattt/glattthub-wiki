@@ -168,6 +168,8 @@ nav:
     - Gutschein-Aktion: GUTSCHEIN-AKTION.md
   - API-Integrationen:
     - WordPress-Buchungswidget: WORDPRESS-BUCHUNGSWIDGET.md
+    - WordPress-Bewertungen: WORDPRESS-BEWERTUNGEN.md
+    - WordPress-Medien-Ordner: WORDPRESS-MEDIEN-ORDNER.md
     - REST-API:
       - Übersicht: REST-API.md
       - Endpoint-Referenz: REST-API-ENDPOINTS.md
