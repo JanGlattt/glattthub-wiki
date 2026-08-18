@@ -261,3 +261,14 @@ das Theme.
 
 - [WordPress-Buchungswidget](WORDPRESS-BUCHUNGSWIDGET.md) — zweites eigenes
   Plugin auf glattt.com, gleiche Ablage- und Deploy-Konventionen
+
+
+## Elemente im WPBakery-Editor (seit 18.08.2026, Bewertungen 0.5.1)
+
+WPBakery lädt Elemente im Frontend-Editor per AJAX in die bereits
+gerenderte Seite. Ein `wp_enqueue_style()` aus dem Shortcode heraus kommt
+dann zu spät — das Element stand bis zum nächsten Neuladen ohne CSS und JS
+da. Das Plugin fragt jetzt `vc_is_inline()` / `vc_is_page_editable()` ab und
+lädt seine Assets im Editor immer. Auf ausgelieferten Seiten ändert sich
+nichts. Hintergrund und gleiche Lösung in allen vier Plugins:
+[WordPress-FAQ](WORDPRESS-FAQ.md).

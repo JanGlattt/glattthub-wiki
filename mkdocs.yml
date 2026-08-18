@@ -170,6 +170,8 @@ nav:
     - WordPress-Buchungswidget: WORDPRESS-BUCHUNGSWIDGET.md
     - WordPress-Bewertungen: WORDPRESS-BEWERTUNGEN.md
     - WordPress-Medien-Ordner: WORDPRESS-MEDIEN-ORDNER.md
+    - WordPress-FAQ: WORDPRESS-FAQ.md
+    - WordPress-Anfahrt: WORDPRESS-ANFAHRT.md
     - REST-API:
       - Übersicht: REST-API.md
       - Endpoint-Referenz: REST-API-ENDPOINTS.md
