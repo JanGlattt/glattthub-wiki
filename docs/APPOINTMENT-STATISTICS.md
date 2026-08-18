@@ -136,22 +136,31 @@ Oben links neben dem Titel können Sie umschalten zwischen:
 
 ### Körperzonen pro Monat ⭐ NEU
 
-Zeigt wie viele Körperzonen pro Monat in allen Terminen behandelt wurden.
+Zeigt wie viele Körperzonen pro Monat in allen Behandlungsterminen behandelt wurden.
+Gezählt werden nur stattgefundene Termine mit mindestens einer Behandlung —
+reine Beratungen fließen nicht ein.
 
-> ℹ️ **Hinweis:** Die Anzahl der Körperzonen wird pro Service definiert (im Admin unter "Beratungsgespräche/Services"). Jeder Service kann 0-50 Körperzonen haben.
+> ℹ️ **Hinweis:** Die Anzahl der Körperzonen wird pro Service definiert (im Admin unter "Beratungsgespräche/Services"). Ganzkörper-Services zählen 6 Körperzonen (Maximum); Services ohne Zuordnung fließen mit 0 ein.
 
-#### Total / Durchschnitt Toggle
-Oben links neben dem Titel können Sie umschalten zwischen:
-- **Total**: Gesamtzahl behandelter Körperzonen (z.B. "1.250")
-- **Ø pro Termin**: Durchschnittliche Körperzonen pro Termin (z.B. "3,2")
+#### Körperzonen / Zeit Toggle
+Neben dem Titel kann die Kennzahl der Karte umgeschaltet werden:
+- **Körperzonen** (Standard): Balken = Summe der behandelten Körperzonen, Linie = Ø Körperzonen pro Termin (z.B. "3,2")
+- **Zeit**: Balken = gebuchte Gesamtdauer derselben Behandlungstermine in Stunden, Linie = Ø Minuten pro Termin — die Zeit kommt aus den gebuchten Start-/Endzeiten der Termine
+
+> 💡 **Unterschied zur Karte „Termindauer pro Monat":** Die Termindauer-Karte zählt alle Termin-Arten inklusive reiner Beratungen; der Zeit-Modus hier zeigt nur die Zeit der Behandlungstermine — also exakt der Terminmenge der Körperzonen-Zahlen.
 
 #### Tabellenansicht
-- **Spalten**: Monat, Körperzonen (Total/Durchschnitt), Anzahl Termine
+- **Spalten**: Monat, Körperzonen bzw. Gesamtdauer (je Modus), Ø pro Termin, Anzahl Termine
 - Wochen-Expansion mit Lazy Loading verfügbar
 
 #### Chart-Ansicht
-- Bar-Chart mit Körperzonen pro Monat
-- Adaptiv je nach Modus (Total oder Durchschnitt)
+- Bar-Chart (Summe) mit Ø-Linie auf zweiter Y-Achse
+- Achsen und Tooltip passen sich dem Modus an (Körperzonen bzw. Stunden/Minuten)
+
+#### Technik (für Entwickler)
+- Statistik `termine.body-zones` (StatisticRegistry) — Endpoint `/phorest/reports/appointments-body-zones/body-zones` (+ `/weeks`) liefert je Monat/Woche zusätzlich `duration` (gebuchte Minuten)
+- JS-Komponente in `public/js/statistics/termine.js` (`zonesMode: 'zones' | 'time'`)
+- CSV-Export-Quelle `appointments-zones-monthly` enthält die Spalte „Gebuchte Dauer (Minuten)"
 
 ### Top Services pro Monat ⭐ NEU
 
