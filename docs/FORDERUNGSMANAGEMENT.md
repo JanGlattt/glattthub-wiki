@@ -388,12 +388,15 @@ Zeile im Block) · Betreff · **Forderungsaufstellung + Fristfeld** · Text ·
 Grußformel mit Unterschriftsfeld und „Labrado & Schlüter GmbH /
 Forderungsmanagement" · Zahlungsleiste (QR + IBAN) · Fußzeile.
 
-**Anschriftfeld nach DIN 5008 Form A (seit 19.08.2026):** Rücksendezeile ab
-27 mm, Anschrift ab ~33 mm Blattoberkante, 88 mm breit ab 20 mm links — passt
-ins Standard-Fensterkuvert (DIN lang), wenn an den **Falzmarken** gefaltet wird
-(87 mm und 192 mm, plus Lochmarke bei 148,5 mm; alle drei stehen als feine
-Striche am linken Blattrand). Wer nach Augenmaß drittelt (Form-B-Falz bei
-105 mm), hat die Anschrift über dem Fenster — immer an den Marken falten.
+**Anschriftfeld nach DIN 5008 Form B (seit 20.08.2026, Jans Abnahme):**
+Rücksendezeile (ohne Länderangabe — die filtert der Bogen aus
+`footer_line_1` heraus) ab 45 mm, Anschrift ab ~50 mm Blattoberkante, 88 mm
+breit ab 20 mm links — die klassische Geschäftsbrief-Position, passt ins
+Standard-Fensterkuvert (DIN lang) mit gewohnter Drittel-Falzung. Falzmarken
+bei 105/210 mm plus Lochmarke bei 148,5 mm stehen als feine Striche am linken
+Blattrand. Der Bezugsblock rechts ist 64 mm schmal und 6 mm unters Logo
+abgesetzt; Forderungsaufstellung + Fälligkeit teilen sich **einen** Kasten in
+exakter Banner-Breite, der direkt an die schwarze Eskalations-Leiste andockt.
 **dompdf-Eigenheit dabei:** `position: fixed` rechnet relativ zur Margin-Box,
 nicht zum Papier — die Marken-Koordinaten im CSS haben die Seitenränder
 (20 mm links, 11 mm oben) bereits abgezogen und sind im PDF-Content-Stream
@@ -421,19 +424,28 @@ ruhigen Bogen.
     Prüfung des gerenderten CSS und `test_mahnbrief_hat_echte_seitenraender`,
     das den linken Rand aus dem Content-Stream des fertigen PDFs misst.
 
-**Satzspiegel:** `@page { margin: 11mm 20mm 22mm }`, Fußzeile fest bei 6 mm.
-Der untere Rand ist bewusst so groß, dass die **fixe Fußzeile komplett im
-Seitenrand liegt** — dompdf reserviert für `position: fixed` keinen Platz; bei
-kleinerem Rand druckte ein randvoller Brief mitten in die Fußzeile (19.08.2026
-im Worst-Case-Test aufgefallen). **Platz auf dem Blatt:** Alle drei Briefstufen
-passen inkl. voller Forderungsaufstellung (Kosten-, Zahlungs- UND
-Anhänge-Zeile) und zwei Zeilen Freitext auf eine Seite; erst darüber bricht der
-Brief bewusst sauber auf Seite 2 um (Zahlungsleiste komplett auf Seite 2, nichts
-wird abgeschnitten — laut Jan ausdrücklich in Ordnung). Wer Elemente ergänzt
-oder die Vorlagen verlängert, prüft das mit
-`test_mahnbriefe_passen_auf_eine_seite` — die Kontakt- und Datumszeile sitzen
-aus genau dem Grund im Bezugsblock (neben der Anschrift, kostet keine Bauhöhe)
-und nicht unter der Grußformel.
+**Satzspiegel:** `@page { margin: 11mm 20mm 58mm }`. Der große untere Rand ist
+Absicht: **Zahlungsleiste (QR + IBAN) und Fußzeile sind fixe Elemente und
+liegen komplett im Seitenrand** — die Zahlungsleiste sitzt dadurch auf jeder
+Seite konstant knapp über der Fußzeile (Unterkante 18 mm bzw. 8 mm über der
+Blattkante) und kann sich konstruktionsbedingt nie mit dem Fließtext
+überschneiden. dompdf reserviert für `position: fixed` keinen Platz im
+Textfluss; zwei dabei gefundene Fallen: (1) `bottom` rechnet margin-box-relativ
+— wächst der Seitenrand, wandern fixe Elemente mit nach oben in den Inhalt;
+(2) **Tabellen** verankert dompdf bei `bottom` an der Oberkante statt der
+Unterkante (die Leiste rutschte übers Blattende) — deshalb hängt die Position
+am Wrapper-DIV `.paystrip-anchor`, nie an der Tabelle selbst.
+**Platz auf dem Blatt:** Alle drei Briefstufen passen inkl. voller
+Forderungsaufstellung (Kosten-, Zahlungs- UND Anhänge-Zeile) und zwei Zeilen
+Freitext auf eine Seite; erst darüber bricht der Text sauber auf Seite 2 um
+(die fixe Zahlungsleiste erscheint dann auf beiden Seiten — laut Jan sind zwei
+Seiten ausdrücklich in Ordnung). Wer Elemente ergänzt oder die Vorlagen
+verlängert, prüft das mit `test_mahnbriefe_passen_auf_eine_seite` — die
+Kontakt- und Datumszeile sitzen aus genau dem Grund im Bezugsblock (neben der
+Anschrift, kostet keine Bauhöhe) und nicht unter der Grußformel.
+**Zeilenhöhe:** Der Brieftext läuft kompakt auf 1,15 — `paragraphs()` liefert
+für den Brief bewusst Absätze **ohne** Inline-Styles (`inlineStyles: false`),
+denn die Inline-1,55 der E-Mail wäre per CSS nicht überschreibbar gewesen.
 
 **Der Hinweis an der Zahlungsleiste hängt an `full_balance_due`:** Solange der
 Vertrag läuft „Laufende Raten … bleiben unberührt", nach Fälligstellung „Mit
