@@ -2,6 +2,57 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 19.08.2026 (abends) — SEPA-Mail-Anrede repariert („Hallo Kunde"), Frankreich-IBAN-Hinweis, kaputte Blade-@php-Paarung
+
+Asana-Bug `1217629981905180`: Eine Aktivierungs-Mail grüßte mit **„Hallo Kunde,"**
+statt mit dem Kundennamen, obwohl die E-Mail-Adresse korrekt aufgelöst wurde.
+
+### Für Endanwender (19.08.2026)
+
+- SEPA-Mails (Onboarding, Aktivierung, Planänderung, Bankwechsel, Kündigung)
+  grüßen wieder zuverlässig mit dem Kundennamen. Ist ausnahmsweise wirklich kein
+  Name auflösbar, steht dort neutral „Hallo," — nie mehr „Hallo Kunde".
+- Onboarding- und Aktivierungs-Mail erklären jetzt in einer Info-Box, dass
+  GoCardless den Betrag über ein **französisches Konto einzieht** (FR-IBAN auf
+  dem Kontoauszug) — das hatte wiederholt zu verunsicherten Rückfragen geführt.
+
+### Für Entwickler (19.08.2026)
+
+**Ursache 1 — Cache-Key-Kollision:** Drei Stellen schrieben `client_data_{id}`
+in unterschiedlichen Formaten (SepaEmailService: `fullName`/`gender`;
+`ResolvesClientData`-Trait und `ContractController::getClientData()`: nur
+`name`). Cachte zuerst eine Listen-/Detailseite (z.B. unmittelbar vor „Zahlung
+verbuchen"), fand der Mail-Versand kein `fullName` → Fallback „Kunde", und
+`gender` fehlte → neutrale Anrede. Fix: **ein** zentraler
+`app/Services/ClientDataResolver.php` (resolve/resolveBulk, einheitliche
+Superset-Struktur `clientId/externalId/firstName/lastName/name/fullName/email/
+mobile/gender`, 300s-Cache, Fehlschläge 60s mit `failed`-Flag). Alle drei
+bisherigen Schreiber delegieren dorthin; Einträge in fremdem/altem Format werden
+erkannt und neu geladen. `resolve()` ignoriert gecachte Fehlschläge (Mail-Versand
+darf nicht an einem gescheiterten Listen-Aufruf hängen). `fullName` ist jetzt
+`null` statt Magic-String, wenn unbekannt; die Mailables akzeptieren
+`?string $recipientName`, die gemeinsame Anrede liegt in
+`resources/views/emails/sepa/_greeting.blade.php`.
+
+**Ursache 2 — Blade-@php-Paarung (separater, schwerer Fund):** Blades
+Raw-Block-Regex paart jedes `@php` lazy mit dem **nächsten** `@endphp` im
+Dokument. Der Schriftarten-Wechsler (22.07.2026) hatte in die Mail-Templates ein
+Inline-`@php($appFontFamily = …)` gesetzt — in Dateien mit einem späteren
+`@php … @endphp`-Block verschluckte das alles dazwischen als rohen PHP-Block.
+**Betroffen und seitdem zur Laufzeit kaputt:** `emails/sepa/onboarding`,
+`emails/sepa/mandate-cancelled`, `pdf/year-end-report`,
+`filament/pages/bert-dashboard`. Fix: Inline-Form dort in Block-Form
+umgeschrieben; `tests/Unit/BladePhpBlockConventionTest.php` kompiliert alle
+Views und bricht, sobald irgendwo wieder beide Formen kollidieren.
+
+Frankreich-IBAN-Hinweis: `resources/views/emails/sepa/_french-iban-hint.blade.php`,
+eingebunden in Onboarding + Aktivierung vor der Gläubiger-Info.
+
+Tests: `ClientDataResolverTest` (5), `BladePhpBlockConventionTest`,
+`SepaEmailServiceTest` (+2 Regression: fremdes Cache-Format → Name wird neu
+geladen; kein Name auflösbar → neutrale Anrede, nie „Hallo Kunde"),
+`SepaMailablesTest` (+1: FR-IBAN-Hinweis in beiden Mails).
+
 ## Update 19.08.2026 — „Zahlung verbuchen" stellt Alt-Daueraufträge auf Einzelzahlungen um
 
 ### Für Endanwender (19.08.2026)
