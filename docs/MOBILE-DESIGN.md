@@ -93,6 +93,7 @@ dass nichts über den rechten Rand ragt.
 |---|---|
 | `resources/views/layouts/hub.blade.php` | Layout ohne Topbar/Spacer/Overlay, mobile Titelzeile |
 | `resources/views/layouts/partials/bottom-nav.blade.php` | Bottom-Nav + Mehr-Sheet (Grid aus `$moreMenuItems`, Suche, Utilities, Profil) + Standort-Sheet |
+| `app/Services/Navigation/NavigationGroups.php` | Gruppen-Überschriften im Mehr-Raster (gleicher Zuschnitt wie die Sidebar) — siehe `NAVIGATION-GRUPPEN.md` |
 | `public/css/theme_glattt.css` | Abschnitte „MOBILE SEITENTITEL", „MEHR-SHEET", „MOBILE TABELLEN-MUSTER"; Bottom-Nav-Breakpoint 1023 px |
 | `tests/Unit/MobileNavParityTest.php` | Konventionstest: jeder Sidebar-Menüpunkt, Suche, Mitteilungen, Profil mobil erreichbar; kein Topbar-Rückfall |
 | `tests/Unit/MobileNavLogoutAndBranchFilterTest.php` | Abmelden/Standortfilter-Absicherung (bestand schon) |
