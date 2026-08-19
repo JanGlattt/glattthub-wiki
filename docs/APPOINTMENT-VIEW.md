@@ -15,12 +15,36 @@ Vier Ergänzungen aus der Go-Live-Prüfung (Asana „Readiness Verkauf"):
   Erkennung: Vertrag = `settings.contract.enabled`, SEPA =
   `settings.sepa_mandate.enabled` (`formBlockedReason()` in
   `appointment-unified.js`). Bei Direktzahlung entfällt die SEPA-Pflicht.
-- **Roter Vollbild-Hinweis beim Termin-Beenden:** Nach dem Beenden prüft der Hub
-  den offenen Phorest-Kundenkonto-Saldo (`GET /phorest/client/{id}/balance`,
-  live ohne Cache — die Vor-Ort-Rate wird beim Abschluss als Schuld aufs
-  Kundenkonto gebucht). Ist er > 0, erscheint ein roter Vollbild-Screen mit dem
-  Betrag, der aktiv bestätigt werden muss; erst danach öffnet sich die
-  Folgetermin-Planung. Partial `outstanding-balance-screen.blade.php`.
+- **Kundenkonto-Schuld: Signal-Banner + Kassen-Schritt (umgebaut 20.08.2026):**
+  Die Terminansicht lädt beim Öffnen den offenen Phorest-Kundenkonto-Saldo im
+  Termin-Kontext (`GET /phorest/appointment/{branch}/{apt}/outstanding-balance`,
+  live ohne Cache) und zeigt bei offenem Betrag ein **rotes Banner** über der
+  Ansicht. **Ausnahme-Regel (Entscheidung Jan):** Der Anteil, der in DIESEM
+  Termin durch einen Vertragsabschluss entstanden ist (Submission des Vertrags
+  gehört zum Termin, heute erstellt — Betrag aus `signing_cascade.rate1_amount`
+  bzw. der Einmalzahler-Schuld), wird herausgerechnet, solange im Termin keine
+  Behandlung stattfand (`ConsultationService::treatments()` gegen die
+  Termin-Services); Alt-Schulden warnen immer.
+
+  **„Termin beenden" läuft seitdem als geführter Ablauf: Kasse → Folgetermin →
+  Terminnotiz.** Der Termin ist erst beendet, wenn alle Schritte durch sind —
+  die Kassen-Frage lässt sich nicht durch Schliessen umgehen (vorher lief die
+  Prüfung erst NACH dem Speichern der Notiz):
+
+  1. Klick auf „Termin beenden" → frische Saldo-Prüfung (`beginEndSessionFlow()`).
+  2. Effektiver Betrag > 0 → roter Vollbild-Screen
+     (`outstanding-balance-screen.blade.php`): entweder **„Betrag wird jetzt
+     kassiert"** bestätigen oder **„Wird nicht bezahlt …"** mit
+     Pflicht-Begründung — die Nicht-Kassierung wird in
+     `appointment_payment_waivers` protokolliert (Betrag, Begründung,
+     Mitarbeiter) und das Büro per Hub-Benachrichtigung informiert
+     (Permission `view_debts`); die Begründung wird zusätzlich in die
+     Terminnotiz vorbefüllt.
+  3. Folgetermin-Planung (bestehendes `FollowUpBookingModal`; dessen
+     Schliessen dispatcht `follow-up-booking-closed`).
+  4. Terminnotiz-Modal (Pflicht wie bisher) → erst jetzt ist der Termin beendet.
+
+  Tests: `tests/Feature/AppointmentOutstandingBalanceTest.php`.
 - **Überwachung der Vor-Ort-Zahlung:** `contracts:check-onsite-payments`
   (täglich 07:00, Cron-Endpoint `/api/cron/check-onsite-payments`) meldet aktive
   SEPA-Verträge, deren Rate 1 einen Monat nach Abschluss weder bestätigt noch als

@@ -12,6 +12,40 @@ Das Form Editor Modul ermöglicht das Erstellen, Bearbeiten und Verwalten von dy
 - Mitte: Formular-Canvas zum Zusammenstellen
 - Rechts: Einstellungen für das ausgewählte Feld
 
+**Bedienung (seit 08/2026 auf SortableJS umgestellt):**
+
+- **Element hinzufügen**: Sidebar-Element in den Canvas ziehen (Einfügeposition wird
+  animiert freigemacht) — oder das Element einfach **anklicken**: Es wird hinter dem
+  aktuell ausgewählten Feld bzw. am Ende eingefügt
+- **Umsortieren**: ausschließlich am **Drag-Griff** (☰ links im Feldkopf) ziehen —
+  der Rest der Karte bleibt fürs Auswählen reserviert; alternativ die
+  **Pfeil-Buttons** (hoch/runter) im Feldkopf
+- **Touch-Geräte**: Drag & Drop funktioniert auch auf Tablets (SortableJS,
+  150 ms Halte-Verzögerung gegen versehentliche Drags beim Scrollen)
+- **Löschen mit Rückgängig**: Nach dem Löschen erscheint 8 Sekunden lang eine
+  Undo-Leiste über dem Canvas
+- **Ungespeicherte Änderungen**: Beim Verlassen der Seite (Navigation oder
+  Tab-Schließen) warnt der Editor, solange Feld-Änderungen nicht gespeichert sind
+
+**Technik (für Entwickler):**
+
+- SortableJS (CDN, `@assets` in `editor.blade.php`) — Canvas-Liste mit
+  `handle`-Option, Sidebar-Kategorien als Klon-Quellen
+  (`group: { pull: 'clone', put: false }`)
+- Beim Drop aus der Sidebar wird das **Alpine-Original zurückgetauscht** und der
+  Klon entfernt (`evt.clone.parentNode.replaceChild(evt.item, evt.clone)`) —
+  sonst initialisiert Alpine den scopelosen Klon neu und zeigt „undefined"
+- Indizes immer aus `evt.oldDraggableIndex`/`evt.newDraggableIndex` lesen —
+  `evt.oldIndex`/`newIndex` zählen alle Kind-Elemente mit (auch den
+  Empty-State-Div) und sind verschoben
+- Nach jeder Strukturänderung wird `listVersion` hochgezählt und steckt im
+  `x-for`-Key: Alpine baut die Karten frisch aus dem Array auf, statt seine
+  Move-Logik gegen die von SortableJS bereits veränderte DOM-Reihenfolge laufen
+  zu lassen (DOM/Daten-Divergenz)
+- `init()` wird von Alpine **automatisch** aufgerufen — kein `x-init="init()"`
+  am Wurzelelement, sonst laufen Sortables, Watcher und Guards doppelt
+- Abgesichert durch `tests/Unit/FormEditorSortableConventionTest.php`
+
 ### 📋 Unterstützte Feldtypen
 
 | Typ | Beschreibung | Kategorie |
@@ -40,9 +74,12 @@ Das Form Editor Modul ermöglicht das Erstellen, Bearbeiten und Verwalten von dy
 | `sepa_bic` | SEPA BIC (auto-ausgefüllt) | SEPA |
 | `sepa_account_holder` | SEPA Kontoinhaber | SEPA |
 
-### 💾 Auto-Save
-- Automatisches Speichern nach 2 Sekunden Inaktivität
-- Manuelles Speichern jederzeit möglich
+### 💾 Speichern
+- **Formular-Einstellungen** (Vertrag/SEPA/Pflichtformular/Mail & Download) speichern
+  automatisch nach 2 Sekunden Inaktivität
+- **Feld-Änderungen** (Hinzufügen, Umsortieren, Konfigurieren) werden erst mit dem
+  Speichern-Button persistiert — ungespeicherte Änderungen lösen beim Verlassen
+  der Seite eine Warnung aus (Dirty-Guard)
 
 ### 🔒 Pflichtformulare vor Behandlung
 

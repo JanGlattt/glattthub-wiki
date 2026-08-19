@@ -276,18 +276,74 @@ Shared-Link — Gate `supportsSigningExtras` in `form-fill.js`):
   `ContractVoucherService::vouchersForClient()`). Abgelaufene sind rot markiert
   und brauchen eine explizite Bestätigung (`accept_expired`, protokolliert als
   `was_expired` im Einlöse-Beleg).
+- **Gutschein manuell hinzufügen (19.08.2026):** Unter der Vorschlagsliste kann
+  jeder beliebige Gutschein erfasst werden — per **Seriennummer** (Eingabefeld +
+  „Hinzufügen") oder per **QR-/Barcode-Scan** über die Gerätekamera. Der QR-Code
+  aus der Kauf-Mail und dem Geschenk-PDF enthält die Seriennummer im Klartext
+  (`VoucherQrService`), der Scan löst also direkt zur Seriennummer auf. Endpoint:
+  `GET /api/forms/voucher-by-serial?serial=` → `ContractVoucherService::findBySerial()`
+  (Gate `can:view_forms`). Gefundene Gutscheine landen in derselben Auswahl-Liste
+  und laufen unverändert durch die bestehende Einlösung (`voucher_redemptions`
+  im Preis-JSON, serverseitige Revalidierung). Gehört der Gutschein einem anderen
+  Kunden (verschenkt), zeigt ein Info-Badge den Karteninhaber — einlösbar bleibt
+  er trotzdem. Scanner: `html5-qrcode` (CDN, lazy erst beim ersten Scan geladen,
+  QR + gängige 1D-Barcodes); Kamera braucht HTTPS, auf `http://glattthub.local`
+  erscheint eine erklärende Fehlermeldung. Tests:
+  `tests/Feature/FormVoucherSerialLookupTest.php`.
+- **Einmalzahlung (total_only) kann Extras seit 19.08.2026 auch (vorher komplett
+  ausgeblendet):** Gutscheine und Freunde-werben stehen in beiden Zahlungsmodi zur
+  Verfügung. Da Einmalzahler keinen SEPA-Plan haben, über den die Kaskade laufen
+  könnte, löst `ContractCreationService::redeemSigningVouchersForDirectContract()`
+  die gewählten Gutscheine **sofort bei der Vertragsanlage** in Phorest ein
+  (Belege in `contract_voucher_redemptions`, Phorest-Notiz mit Kontext „Vertrag
+  (Einmalzahlung)"). Eingelöst wird höchstens der Vertragswert — der Überschuss
+  bleibt auf dem Gutschein; Fehler brechen die Vertragsanlage nie ab (Warnung im
+  Log, Verrechnung dann manuell). Der **Vertragswert bleibt unverändert** —
+  Gutscheine sind eine Zahlung, kein Preisnachlass: Die Zusammenfassung im
+  Formular zeigt „Gutschein-Verrechnung: −X €" und „Vor Ort zu zahlen: Y €"
+  (`signingVoucherAppliedCents()`/`signingVoucherRemainderCents()` in
+  `form-fill.js`). **Freunde werben gilt seit 19.08.2026 auch für Einmalzahler**
+  (Entscheidung Jan — ersetzt die frühere Regel `discount_cents = 0`): Der
+  50-€-Rabatt mindert die Zahlung vor Ort und wird sofort als verrechnet
+  dokumentiert (`discount_allocation = ['direct' => 5000]`, Notiz am Referral);
+  die Gutschein-Kapazität rechnet den Rabatt vorher ab (Reihenfolge wie die
+  SEPA-Kaskade: Rabatt zuerst, dann Gutscheine). Die Zusammenfassung zeigt
+  „Freunde werben: −50,00 €" als eigene Zeile. Außerdem blendet sie bei
+  total_only die (dort sinnlose) **Laufzeit-Zeile** aus. Tests:
+  `tests/Feature/DirectContractVoucherRedemptionTest.php`.
+- **Phorest-Kundenkonto spiegelt die Vor-Ort-Zahlung (19.08.2026):** Der
+  Phorest-Kauf (Courses, Zahlart „Hub") bleibt beim **vollen** Betrag
+  (Umsatz!), aber die Kundenkonto-Schuld
+  (`PhorestContractPurchaseService::calculateOnSiteDebtCents()`) wird nur noch
+  über das gebucht, was der Kunde an der Kasse tatsächlich zahlen soll:
+  SEPA = die hinterlegte reduzierte Vor-Ort-Rate (`signing_cascade.rate1_amount`),
+  Einmalzahlung = Vertragswert − Freunde-werben − eingelöste Gutscheine. Ist der
+  Betrag 0, wird gar keine Schuld gebucht. Ohne hinterlegte Kaskade
+  (Bestandsverträge, Fehler-Fallback) wird wie bisher der volle Kaufbetrag als
+  Schuld gebucht. Tests: `tests/Feature/SigningCascadeUpfrontTest.php`.
 - **Freunde werben:** Werber-Suche im Formular (`GET /api/forms/referrer-search`
   → `ContractReferralService::searchReferrers()`, inkl. „Kein aktiver
   Vertrag"-Badge). Beim Abschluss legt `ContractCreationService` den
   `ContractReferral`-Datensatz an (Direktzahler: `discount_cents = 0`).
-- **Verrechnungs-Kaskade (Entscheidung Jan):** Rabatt, Freunde-werben und
-  Gutscheine mindern zuerst vollständig die **Vor-Ort-Rate**, ein Rest die
-  **1. SEPA-Rate** (dort bleibt das GC-Minimum 1 € stehen). Umsetzung:
-  `GoCardlessPaymentPlanService::resolveSigningCascade()` — die Auswahl steht im
-  Preis-JSON der Submission (`Contract::signingInstructions()`) und übersteht so
-  auch den asynchronen Mandats-Flow. Gutscheine werden erst eingelöst und die
-  Referral-Allocation erst geschrieben, wenn die Raten wirklich bei GoCardless
-  entstehen (`finalizeSigningCascade()`, idempotent). Ein Gutschein-Rest über
+- **Verrechnungs-Kaskade (Entscheidung Jan, erweitert 19.08.2026):** Rabatt,
+  Freunde-werben und Gutscheine mindern zuerst vollständig die **Vor-Ort-Rate**,
+  ein Rest die **folgenden SEPA-Raten der Reihe nach** (auf jeder bleibt das
+  GC-Minimum 1 € stehen — vorher endete die Kaskade bei Rate 2). Seit 19.08.2026
+  wird die Kaskade **bereits bei der Vertragsanlage** berechnet: Gutscheine
+  werden sofort in Phorest eingelöst (Kontext „Vertrag (Abschluss)"), die
+  Referral-Allocation sofort geschrieben und das Ergebnis in
+  **`contracts.signing_cascade`** (JSON: `rate1_amount`, `rates`-Map
+  installment_number → Betrag/Notiz, eingelöste Gutscheine) hinterlegt —
+  `GoCardlessPaymentPlanService::computeAndStoreSigningCascade()`, aufgerufen
+  aus `ContractCreationService`. Die Plan-Erstellung
+  (`resolveSigningCascade()`) greift dann **nur noch auf das Hinterlegte zu**
+  (keine Neuberechnung, keine Doppel-Einlösung — `finalizeSigningCascade()`
+  wird zum No-op). Schlägt das Vorab-Hinterlegen fehl (z.B. Phorest down),
+  bleibt `signing_cascade` leer und die Plan-Erstellung rechnet **live wie
+  bisher** — derselbe Fallback gilt für Bestandsverträge von vor der
+  Umstellung. Die Auswahl steht im Preis-JSON der Submission
+  (`Contract::signingInstructions()`) und übersteht so
+  auch den asynchronen Mandats-Flow. Ein Gutschein-Rest über
   der Kaskaden-Kapazität bleibt als Guthaben auf dem Gutschein.
 - Tests: `tests/Feature/SigningCascadeTest.php`. Bekannte Grenze: Bei einem
   späteren Plan-Neuaufbau bleibt der Preislisten-Rabatt erhalten (deterministisch),
