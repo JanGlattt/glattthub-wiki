@@ -383,9 +383,21 @@ Fälligkeit („Heute fällig") ist ebenfalls einmal definiert:
 Absenderin ist immer die GmbH, nicht das Institut — Forderungen stellt die
 Gesellschaft. Das Institut steht nur als Bezug im Kopf. Aufbau: Logo ·
 Anschriftenfeld + Bezugsblock (Kunden-Nr., Vertrag, Vertragsdatum, Institut,
-**Rückfragen-Adresse** `DunningMessageService::CONTACT_EMAIL`, Ort/Datum) · Betreff · **Forderungsaufstellung + Fristfeld** · Text ·
-Grußformel mit 16 mm Unterschriftsfeld und „Labrado & Schlüter GmbH /
+**Rückfragen-Adresse** `DunningMessageService::CONTACT_EMAIL`, Ort/Datum als
+Zeile im Block) · Betreff · **Forderungsaufstellung + Fristfeld** · Text ·
+Grußformel mit Unterschriftsfeld und „Labrado & Schlüter GmbH /
 Forderungsmanagement" · Zahlungsleiste (QR + IBAN) · Fußzeile.
+
+**Anschriftfeld nach DIN 5008 Form A (seit 19.08.2026):** Rücksendezeile ab
+27 mm, Anschrift ab ~33 mm Blattoberkante, 88 mm breit ab 20 mm links — passt
+ins Standard-Fensterkuvert (DIN lang), wenn an den **Falzmarken** gefaltet wird
+(87 mm und 192 mm, plus Lochmarke bei 148,5 mm; alle drei stehen als feine
+Striche am linken Blattrand). Wer nach Augenmaß drittelt (Form-B-Falz bei
+105 mm), hat die Anschrift über dem Fenster — immer an den Marken falten.
+**dompdf-Eigenheit dabei:** `position: fixed` rechnet relativ zur Margin-Box,
+nicht zum Papier — die Marken-Koordinaten im CSS haben die Seitenränder
+(20 mm links, 11 mm oben) bereits abgezogen und sind im PDF-Content-Stream
+nachgemessen.
 
 Zwei Ausprägungen über `$escalated` (nur `letter_postal_final`): dunkle
 Kopfleiste, Summe und Frist in Signalrot. Alle anderen Stufen bekommen den
@@ -409,14 +421,19 @@ ruhigen Bogen.
     Prüfung des gerenderten CSS und `test_mahnbrief_hat_echte_seitenraender`,
     das den linken Rand aus dem Content-Stream des fertigen PDFs misst.
 
-**Satzspiegel:** `@page { margin: 11mm 20mm 14mm }`, Fußzeile fest bei 6 mm.
-**Platz auf dem Blatt:** Standardbrief verträgt ~500 Zeichen mehr als die
-Vorlage, die letzte Mahnung (längerer Text + Kopfleiste) ~200. Wer Elemente
-ergänzt oder die Vorlagen verlängert, prüft das mit
-`test_mahnbriefe_passen_auf_eine_seite` — die Kontaktzeile sitzt aus genau dem
-Grund im Bezugsblock (neben der Anschrift, kostet keine Bauhöhe) und nicht unter
-der Grußformel. Darüber bricht der Brief bewusst auf
-Seite 2 um, statt etwas abzuschneiden.
+**Satzspiegel:** `@page { margin: 11mm 20mm 22mm }`, Fußzeile fest bei 6 mm.
+Der untere Rand ist bewusst so groß, dass die **fixe Fußzeile komplett im
+Seitenrand liegt** — dompdf reserviert für `position: fixed` keinen Platz; bei
+kleinerem Rand druckte ein randvoller Brief mitten in die Fußzeile (19.08.2026
+im Worst-Case-Test aufgefallen). **Platz auf dem Blatt:** Alle drei Briefstufen
+passen inkl. voller Forderungsaufstellung (Kosten-, Zahlungs- UND
+Anhänge-Zeile) und zwei Zeilen Freitext auf eine Seite; erst darüber bricht der
+Brief bewusst sauber auf Seite 2 um (Zahlungsleiste komplett auf Seite 2, nichts
+wird abgeschnitten — laut Jan ausdrücklich in Ordnung). Wer Elemente ergänzt
+oder die Vorlagen verlängert, prüft das mit
+`test_mahnbriefe_passen_auf_eine_seite` — die Kontakt- und Datumszeile sitzen
+aus genau dem Grund im Bezugsblock (neben der Anschrift, kostet keine Bauhöhe)
+und nicht unter der Grußformel.
 
 **Der Hinweis an der Zahlungsleiste hängt an `full_balance_due`:** Solange der
 Vertrag läuft „Laufende Raten … bleiben unberührt", nach Fälligstellung „Mit
@@ -430,6 +447,23 @@ Neuer Platzhalter **`{{zahlungen}}`** — ohne ihn ging die Rechnung
 „Hauptforderung + Kosten = offener Betrag" nicht auf, sobald Zahlungen eingingen
 (Migrationen `2026_08_09_160000` für Briefe, `2026_08_09_180000` für E-Mails;
 beide überschreiben nur unbearbeitete Vorlagen).
+
+**Bezugs-Platzhalter `{{bezug}}` und `{{vertragsbezug}}` (seit 19.08.2026):**
+`{{vertragsnummer}}` wird bei Fällen ohne Vertrag zu „Kundenkonto" und
+`{{vertragsdatum}}` bleibt ohne Unterschriftsdatum leer — Formulierungen wie
+„Vertrag {{vertragsnummer}}" oder „am {{vertragsdatum}} geschlossenen
+Behandlungsvertrag" ergeben dann kaputte Sätze („Vertrag Kundenkonto", „am
+geschlossenen …"). Die neuen Platzhalter liefern ganze Satzteile je Fall:
+`{{bezug}}` → „Vertrag 2025.01.01-XY000001" bzw. „Kundenkonto",
+`{{vertragsbezug}}` → „auf den am 01.01.2025 geschlossenen Behandlungsvertrag"
+/ „auf Ihren Behandlungsvertrag …" (ohne Datum) / „auf den offenen Saldo Ihres
+Kundenkontos". Die Standard-Vorlagen nutzen sie seit Migration
+`2026_08_19_190000` (gezielte `str_replace`-Ersetzungen — Büro-Bearbeitungen
+bleiben erhalten); die Anrede der Briefe ist seither „Guten Tag …" wie in den
+E-Mails (vorher stand „Sehr geehrte/r Vorname Nachname" wörtlich im Schreiben).
+**Bekannte Grenze:** Der Fälligstellungs-Absatz der 1. postalischen Mahnung
+verweist weiter auf den Behandlungsvertrag — bei (bislang nicht vorkommenden)
+Kundenkonto-Briefen passt das Büro den Text im Versand-Modal an.
 
 ### E-Mail-Rahmen (`emails/dunning-message`)
 
