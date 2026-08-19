@@ -2,7 +2,7 @@
 
 **glatttBert** ist der interne KI-Assistent von glatttHub. Er beantwortet
 Fragen zu Kunden, Verträgen, Statistiken, internen Prozessen und der
-Wissensdatenbank — direkt im Hub als Chat-Panel unten rechts.
+Wissensdatenbank — direkt im Hub, angedockt neben der Seitenleiste.
 
 ![glatttBert Avatar](assets/glatttBert.png){ align=right width=120 }
 
@@ -12,8 +12,20 @@ Wissensdatenbank — direkt im Hub als Chat-Panel unten rechts.
 
 ### Wo finde ich Bert?
 
-In jedem Hub-Bereich erscheint unten rechts ein **goldener Chat-Button** mit
-dem glatttBert-Avatar. Ein Klick öffnet das Chat-Panel.
+**Am Desktop** ganz unten in der Seitenleiste, direkt über deinem Profil: die
+Zeile mit Berts Avatar und „glatttBert / fragen". Ein Klick öffnet den Chat —
+er fährt neben der Leiste heraus, auf ihrer vollen Höhe, und wächst dabei aus
+dem Einstieg heraus. Die Seite dahinter bleibt sichtbar und bedienbar.
+
+**Am Smartphone/Tablet** über „Mehr" in der unteren Leiste: Bert ist dort die
+erste der vier Schaltflächen unter dem Bereichs-Raster (neben Standort,
+Mitteilungen und Theme).
+
+!!! note "Seit 19.08.2026 ohne schwebende Blase"
+    Vorher klebte Bert als runder Knopf unten rechts über dem Inhalt. Weil er
+    inzwischen fest zum Arbeitsalltag gehört, hat er einen festen Platz in der
+    Navigation bekommen — an der Stelle, an der vorher die Verbindungsanzeige
+    („Verbunden") stand. Die Anzeige ist ersatzlos entfallen.
 
 > **Tastenkürzel:** `⌘K` (Mac) bzw. `Strg+K` (Windows) öffnet/schließt Bert von
 > jeder Seite aus und setzt den Fokus direkt ins Eingabefeld.
@@ -33,7 +45,7 @@ dem glatttBert-Avatar. Ein Klick öffnet das Chat-Panel.
 
 | Element | Funktion |
 |---|---|
-| **FAB unten rechts** | Bert öffnen/schließen |
+| **Einstieg in der Seitenleiste** (mobil: „Mehr" → glatttBert) | Bert öffnen/schließen |
 | **Hamburger-Icon (Header links)** | Verlauf-Sidebar ein/ausblenden (nur im **maximierten Modus** sichtbar) |
 | **Plus-Icon im Header** | Neue Konversation starten (Textarea erhält automatisch den Fokus) |
 | **Maximieren-Icon** | Vollbild-Modus an/aus |
@@ -367,7 +379,8 @@ if (!Auth::user()->can('use_ai_assistant')) {
 }
 ```
 
-Im Blade ist das gesamte FAB+Panel in `@can('use_ai_assistant')` gewrappt.
+Im Blade ist das gesamte Panel in `@can('use_ai_assistant')` gewrappt — ebenso
+die beiden Einstiege in `sidebar.blade.php` und `bottom-nav.blade.php`.
 
 ### Migration für Produktion
 
@@ -400,6 +413,34 @@ ausgeführt — manuell durch den User in PROD eingespielt.
 
 ---
 
+### Einstiege und Andockung (19.08.2026)
+
+Der Chat liegt weiterhin als Livewire-Komponente im Hub-Layout
+(`@livewire('hub.ai-assistant')`) und **nicht** in der Seitenleiste — dort
+würden ihn deren Overflow-Container beschneiden. Die Auslöser stehen also
+ausserhalb der Komponente und verständigen sich über Fenster-Ereignisse:
+
+| Ereignis | Richtung | Zweck |
+|---|---|---|
+| `glattt-bert-toggle` | Auslöser → Chat | Öffnen/Schließen (`x-on:glattt-bert-toggle.window`) |
+| `glattt-bert-state` | Chat → Auslöser | Zustand, damit sich der Einstieg einfärbt (`bertOpen` in `sidebarPanels()`) |
+
+Andockung (`.bert-chat-panel`, ab 1024 px): `left`, `top` und `height` folgen
+denselben Layout-Variablen wie `#sidebar`, dazu `--bert-dock-left` als
+gemeinsamer Anker. Klappt die Leiste ein, wechselt nur diese Variable
+(`body:has(#sidebar.sidebar-collapsed)`), der maximierte Modus rechnet seine
+Breite daraus. `transform-origin: left bottom` lässt das Panel aus dem Einstieg
+wachsen. Unter 1024 px bleibt die bisherige schwebende Geometrie, nur höher
+gesetzt, damit die untere Leiste frei bleibt.
+
+Die Begrüßungsblase wird per JS an den Einstieg geheftet
+(`positionGreeting()`): Dessen Höhe hängt vom Profilbereich ab (u. a. die von
+`auto-logout.js` nachgeschobene Countdown-Leiste) und lässt sich nicht in CSS
+festnageln. Gemessen wird im `requestAnimationFrame` nach `x-show`, gesetzt
+wird nur `top` — **kein** `transform`, den bespielt bereits `x-transition`.
+
+Abgesichert durch `tests/Feature/BertSidebarEntryTest.php`.
+
 ## Feature-Historie
 
 | Datum | Feature |
@@ -431,6 +472,7 @@ ausgeführt — manuell durch den User in PROD eingespielt.
 | 2026-05 | Phorest Multi-Strategy-Suche (firstName+lastName-Kombos) in `HubToolExecutor` |
 | 2026-05 | Developer-Mode: `debug_info` als flacher String (kein nested JSON), KI halluziniert keine Fehler |
 | 2026-05 | MAMP-Timeout-Fix korrigiert: `php.ini` direkt (FastCGI ignoriert `.htaccess` `php_value`) |
+| 2026-08 | Fester Platz in der Seitenleiste statt schwebender Blase; Chat dockt neben der Leiste an, mobiler Einstieg im Mehr-Sheet |
 
 ---
 
