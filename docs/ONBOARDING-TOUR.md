@@ -37,8 +37,10 @@ Dunkelmodus und das eigene Profil.
 
 - **Durchklicken** mit „Weiter“ bis „Fertig“ — danach erscheint die Tour nie
   wieder von allein.
-- **Wegklicken** über das × oder die Esc-Taste — dann meldet sie sich **am
-  Folgetag** noch einmal, aber nicht mehr am selben Tag.
+- **Wegklicken** über das × oder die Esc-Taste — auch dann erscheint sie **nie
+  wieder von allein**. Bis 19.08.2026 meldete sie sich am Folgetag erneut; das
+  wurde als tägliches Willkommens-Popup empfunden und abgeschafft. Wer die Tour
+  doch sehen will, startet sie über das Profil (siehe unten).
 
 ### Jederzeit erneut ansehen
 
@@ -249,9 +251,10 @@ unter dem Ziel) also den Kopf-Verlauf, bei „side-top“ die Fussleiste.
 
 `UserTour::shouldAutoStart()`:
 
-- `completed` → nie wieder automatisch
-- `dismissed` → nur wenn `dismissed_at` vor dem heutigen Tagesbeginn liegt
-- sonst → ja
+- nur `pending` startet automatisch — `completed` **und** `dismissed` gelten
+  beide dauerhaft. Das frühere Tages-Verhalten (dismissed = nur heute weg, am
+  Folgetag erneut) wurde am 19.08.2026 abgeschafft: Es erschien den Nutzern
+  als tägliches Willkommens-Popup beim Anmelden.
 
 Der manuelle Start aus dem Profil ändert den Stand nicht.
 

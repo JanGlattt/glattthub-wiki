@@ -2,6 +2,51 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 19.08.2026 — „Zahlung verbuchen" stellt Alt-Daueraufträge auf Einzelzahlungen um
+
+### Für Endanwender (19.08.2026)
+
+**„Manuelle Zahlung verbuchen" funktioniert jetzt auch bei Verträgen mit altem
+GoCardless-Dauerauftrag.** Bisher blockte das Modal mit „Verbuchung ist nur für
+Einzelzahlungs-Pläne möglich" — Vorauszahlungen per Überweisung ließen sich bei
+Altverträgen nicht eintragen (gemeldet 17.08.2026, H004627: Kunde hatte zwei
+Raten vorab überwiesen).
+
+Jetzt passiert beim Verbuchen automatisch die Umstellung aufs aktuelle Modell:
+
+- Der **Dauerauftrag wird bei GoCardless gekündigt** — er würde die extern
+  bezahlten Raten sonst weiter einziehen.
+- Die **gedeckten Raten** werden wie gewohnt als extern bezahlt markiert, eine
+  teilweise gedeckte Rate wird reduziert.
+- Die **verbleibenden offenen Raten** werden als GoCardless-Einzelzahlungen neu
+  angelegt — mit **denselben Ratennummern, Terminen und Beträgen** (gleiches
+  Muster wie Pause und Bankwechsel). Der Vertrag läuft ab dann dauerhaft auf dem
+  Einzelzahlungs-Modell (Standard seit 07/2026).
+
+Das Modal kündigt die Umstellung mit einem Warnhinweis an, die Erfolgsmeldung
+bestätigt sie. Raten, die der Dauerauftrag bereits als GC-Zahlung angelegt hat,
+laufen unverändert durch.
+
+### Für Entwickler (19.08.2026)
+
+- `GoCardlessPaymentPlanService::cancelRemotePlan()` — neuer Baustein, kündigt
+  **nur** den GC-Plan und löst die Verknüpfung am Vertrag, lokale Raten bleiben
+  stehen (idempotent: ohne verknüpften Plan gilt die Kündigung als erledigt,
+  ein Wiederholversuch nach Teilfehler läuft durch). `cancelPaymentPlan()`
+  nutzt ihn jetzt intern und storniert weiterhin zusätzlich die lokalen Raten.
+- `ContractController::recordExternalPayments()`: statt 422 bei
+  `gocardless_subscription_id` → innerhalb der Transaktion erst
+  `cancelRemotePlan()`, nach der Verrechnung werden die verbleibenden offenen
+  Raten **ohne** GC-Verknüpfung soft-deleted und via
+  `recreateIndividualPayments()` mit identischen Nummern/Terminen/Beträgen
+  GC-verknüpft neu angelegt (eine reduzierte Teilrate behält ihren reduzierten
+  Betrag). Guard: Dauerauftrag ohne Mandat mit `gocardless_mandate_id` → 422.
+- Warnhinweis im Modal: `record-payment-modal.blade.php` (server-gerendert über
+  `$contract->gocardless_subscription_id`).
+- Tests: 4 neue Fälle in `tests/Feature/ContractExternalPaymentTest.php`
+  (Umstellung, reduzierte Teilrate, GC-Fehler bricht ab, fehlendes Mandat);
+  der alte Ablehnungs-Test ist ersetzt.
+
 ## Update 16.08.2026 — Reload über alle GC-Customer der Kundin + Kundennummer-Fallback beim Verbinden
 
 ### Für Endanwender (16.08.2026)
