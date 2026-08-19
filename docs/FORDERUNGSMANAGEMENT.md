@@ -635,15 +635,26 @@ dafür ist `personalized_replies`. Offene Punkte dazu im Asana-Subtask
   Text immer mit, auch unverändert. Vorlagenänderungen wirken nie rückwirkend —
   der Snapshot bleibt. Eine eigene Card „Versendete Schreiben" gibt es nicht
   mehr; sie hat denselben Vorgang ein zweites Mal aufgelistet.
-- **Der Text im Aktions-Modal ist frei bearbeitbar.** Das Feld ist mit dem
-  gerenderten Vorlagentext vorbelegt; abgeschickt wird genau der Inhalt des
-  Feldes (`body_text` → `render(..., $bodyOverride)`). Platzhalter werden auch
-  im bearbeiteten Text noch ersetzt, ein Knopf stellt die Vorlage wieder her.
-  Das frühere „Eigener Text"-Feld ist damit entfallen — es konnte nur anhängen,
-  nichts ändern.
-  Beim Brief steht unter dem Feld, was der **Bogen zusätzlich beisteuert**
-  (Anschrift, Bezug, Forderungsaufstellung, Bankverbindung, Grußformel) —
-  sonst wirkt das PDF wie ein anderes Schreiben als die Vorschau.
+- **Das Versand-Modal zeigt das komplette Schreiben in echter Optik und der
+  Text wird direkt darin bearbeitet (seit 20.08.2026).** Die Vorschau liefert
+  das voll gerenderte Schreiben als `frame_html` (E-Mail: echter Mail-Rahmen;
+  Brief: `dunning-letter` mit `webPreview`-Flag — fixe Elemente laufen im
+  Fluss mit, Logo als Data-URI, keine Falzmarken) in einen iframe
+  (`.letter-preview-glattt`). Der Fließtext-Bereich `#editable-body` wird per
+  JS `contenteditable` (plaintext-only, Paste immer als Klartext) und gold
+  markiert; jede Eingabe fließt als Klartext in `body_text` →
+  `render(..., $bodyOverride)`. Abgeschickt wird exakt, was im Blatt steht;
+  Platzhalter werden auch im bearbeiteten Text noch ersetzt, „Vorlage
+  wiederherstellen" lädt den Frame neu. Bei E-Mails ist zusätzlich der
+  **Betreff editierbar** (`subject` → `render(..., $subjectOverride)`).
+  Drei Fallstricke: (1) `networkidle` wird auf Hub-Seiten nie erreicht —
+  Browser-Tests warten auf `domcontentloaded`; (2) auf schmalen Screens zoomt
+  `resizeFrame()` das 210-mm-Blatt passend; (3) die Vorschau **simuliert die
+  Fälligstellung** der letzten Mahnung im Speicher
+  (`wouldDemandFullBalance()`), sonst zeigte sie eine andere
+  Forderungsaufstellung als der später erzeugte Brief. QR-Code und
+  Bezahl-Button sind in der Vorschau Platzhalter — der echte Link entsteht
+  erst beim Versand.
 - **Aktions-Modal ist kanalabhängig**: Symbol, Kopffarbe, Empfänger-Zeile und
   Button-Text kommen aus `nextAction()['channel']`. E-Mail → Papierflieger,
   „Versand per Zendesk an <Adresse>", Button „Jetzt per Zendesk senden". Brief →
