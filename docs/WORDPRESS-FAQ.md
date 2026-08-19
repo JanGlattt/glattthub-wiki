@@ -4,11 +4,11 @@ Eigenes WordPress-Plugin für **glattt.com**, das die häufigen Fragen als
 wiederverwendbares Element bereitstellt — in drei Darstellungen, mit einem
 Call-to-Action je Frage.
 
-- **Plugin:** `WPglatttFAQ`, Version 0.1.0 (seit 18.08.2026)
-- **Ablage:** Google Drive `2. Operations/7. IT/WPFAQ/WPglatttFAQ` (+ ZIP daneben)
-- **Deploy:** ZIP von Hand in WordPress hochladen — kein Git, kein Automatismus
-- **Verwandte Plugins:** [WordPress-Bewertungen](WORDPRESS-BEWERTUNGEN.md),
-  [WordPress-Buchungswidget](WORDPRESS-BUCHUNGSWIDGET.md)
+- **Plugin:** `WPglatttFAQ`, Version 0.3.0 (seit 18.08.2026)
+- **Repository:** `JanGlattt/WPglatttFAQ` (privat)
+- **Ablage:** Google Drive `2. Operations/7. IT/Wordpress-Plugins/WPFAQ/WPglatttFAQ` (+ ZIP daneben)
+- **Deploy:** ZIP von Hand in WordPress hochladen — kein Automatismus
+- **Übersicht aller Plugins:** [WordPress-Plugins](WORDPRESS-PLUGINS.md)
 
 ---
 

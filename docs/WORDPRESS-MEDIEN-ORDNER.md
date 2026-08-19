@@ -4,10 +4,11 @@ Das WordPress-Plugin **glattt Medien** bringt eine Ordnerstruktur in die
 Mediathek von glattt.com — in der Übersicht **und** im Auswahldialog, also auch
 beim Einfügen von Bildern in WPBakery.
 
-Stand: Plugin-Version 1.0.0 (17.08.2026). Quellcode: Google Drive
-`2. Operations/7. IT/WPMedien/WPglatttMedien` (wird als ZIP in WordPress
-hochgeladen, wie das [Buchungswidget](WORDPRESS-BUCHUNGSWIDGET.md) und die
-[Bewertungen](WORDPRESS-BEWERTUNGEN.md)).
+- **Plugin:** `WPglatttMedien`, Version 1.0.0 (seit 17.08.2026)
+- **Repository:** `JanGlattt/WPglatttMedien` (privat)
+- **Ablage:** Google Drive `2. Operations/7. IT/Wordpress-Plugins/WPMedien/WPglatttMedien` (+ ZIP daneben)
+- **Deploy:** ZIP von Hand in WordPress hochladen — kein Automatismus
+- **Übersicht aller Plugins:** [WordPress-Plugins](WORDPRESS-PLUGINS.md)
 
 ---
 

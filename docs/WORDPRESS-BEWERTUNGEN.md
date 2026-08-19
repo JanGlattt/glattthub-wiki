@@ -5,9 +5,11 @@ als Karussell im Google-Look und als Trust-Leiste („4,9 Sterne bei über 1.000
 Google-Bewertungen“). Die Bewertungen werden **selbst gepflegt** und je Standort
 zugeordnet.
 
-Stand: Plugin-Version 0.5.0 (August 2026). Quellcode: Google Drive
-`2. Operations/7. IT/WPReviews/WPglatttReviews` (wird als ZIP in WordPress
-hochgeladen, wie das [Buchungswidget](WORDPRESS-BUCHUNGSWIDGET.md)).
+- **Plugin:** `WPglatttReviews`, Version 0.5.1
+- **Repository:** `JanGlattt/WPglatttReviews` (privat)
+- **Ablage:** Google Drive `2. Operations/7. IT/Wordpress-Plugins/WPReviews/WPglatttReviews` (+ ZIP daneben)
+- **Deploy:** ZIP von Hand in WordPress hochladen — kein Automatismus
+- **Übersicht aller Plugins:** [WordPress-Plugins](WORDPRESS-PLUGINS.md)
 
 ---
 
@@ -116,7 +118,7 @@ Beim Kopieren aus Google gehen die **Sterne** verloren — sie sind Symbole, kei
 und stehen deshalb auf 5.
 
 !!! info "Abzug vom 16.08.2026"
-    Im Google Drive unter `2. Operations/7. IT/WPReviews/Import/` liegen 728
+    Im Google Drive unter `2. Operations/7. IT/Wordpress-Plugins/WPReviews/Import/` liegen 728
     Bewertungen (4–5 Sterne, mit Text) sowie eine Auswahl von 150 (je Standort 30)
     als JSON, dazu die Kennzahlen je Standort: Bielefeld 4,9/364, Bremen 5,0/157,
     Hannover 4,9/381, Osnabrück 5,0/298, Braunschweig 4,9/167 — zusammen **1.367
@@ -198,7 +200,7 @@ nicht in der Website-Suche — Bewertungen erscheinen nur über die Shortcodes.
 ### Vorschau ohne Upload
 
 ```bash
-cd "…/7. IT/WPReviews/WPglatttReviews"
+cd "…/2. Operations/7. IT/Wordpress-Plugins/WPReviews/WPglatttReviews"
 php -S localhost:8124 -t .
 # http://localhost:8124/preview/index.php
 ```

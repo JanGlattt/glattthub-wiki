@@ -167,11 +167,13 @@ nav:
     - HR-Kennzahlen: HR-KENNZAHLEN.md
     - Gutschein-Aktion: GUTSCHEIN-AKTION.md
   - API-Integrationen:
+    - WordPress-Plugins (Übersicht): WORDPRESS-PLUGINS.md
     - WordPress-Buchungswidget: WORDPRESS-BUCHUNGSWIDGET.md
+    - WordPress-Anfahrt: WORDPRESS-ANFAHRT.md
+    - WordPress-FAQ: WORDPRESS-FAQ.md
+    - WordPress-Rechner: WORDPRESS-RECHNER.md
     - WordPress-Bewertungen: WORDPRESS-BEWERTUNGEN.md
     - WordPress-Medien-Ordner: WORDPRESS-MEDIEN-ORDNER.md
-    - WordPress-FAQ: WORDPRESS-FAQ.md
-    - WordPress-Anfahrt: WORDPRESS-ANFAHRT.md
     - REST-API:
       - Übersicht: REST-API.md
       - Endpoint-Referenz: REST-API-ENDPOINTS.md

@@ -1,9 +1,12 @@
 # WordPress: Anfahrt auf den Standortseiten
 
-> **Stand: 18.08.2026 — Plugin gebaut, erste Fassung auf Hannover erprobt.**
-> `WPglatttAnfahrt` 0.2.0, Ablage
-> `2. Operations/7. IT/WPAnfahrt/WPglatttAnfahrt` (+ ZIP daneben).
-> Gebaut wie [WordPress-FAQ](WORDPRESS-FAQ.md).
+- **Plugin:** `WPglatttAnfahrt`, Version 0.6.0 (seit 18.08.2026)
+- **Repository:** `JanGlattt/WPglatttAnfahrt` (privat)
+- **Ablage:** Google Drive `2. Operations/7. IT/Wordpress-Plugins/WPAnfahrt/WPglatttAnfahrt` (+ ZIP daneben)
+- **Deploy:** ZIP von Hand in WordPress hochladen — kein Automatismus
+- **Braucht:** [WordPress-Buchungswidget](WORDPRESS-BUCHUNGSWIDGET.md) — Adresse,
+  Telefon und Öffnungszeiten kommen aus dessen Institutsverwaltung
+- **Übersicht aller Plugins:** [WordPress-Plugins](WORDPRESS-PLUGINS.md)
 
 Der Bereich „Du findest uns hier" der fünf Standortseiten wird durch ein eigenes
 WPBakery-Element ersetzt: **ein Kartenbild** statt dreier PNG-Kreise, die
