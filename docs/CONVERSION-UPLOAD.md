@@ -9,8 +9,11 @@ optimieren statt auf bloße Buchungsmenge.
 ### Was wird übermittelt?
 
 Drei Ereignisse entlang der Verkaufsstrecke — ausschließlich für Kunden, die
-beim Buchen über das Cookie-Banner in den jeweiligen Dienst eingewilligt haben
-**und** über eine Anzeige kamen (Klick-ID vorhanden):
+beim Buchen über das Cookie-Banner in den jeweiligen Dienst eingewilligt haben.
+Bei **Google** genügt seit 20.08.2026 die Einwilligung (Klick-ID optional —
+Google matcht sonst über die gehashten Kundendaten, „Enhanced Conversions for
+Leads"); bei **Meta** muss zusätzlich eine Klick-/Browser-Kennung (fbclid/fbp)
+vorhanden sein:
 
 | Ereignis | Wert | Google-Aktion | Meta-Event |
 |---|---|---|---|
@@ -49,7 +52,7 @@ Zeilen außerhalb des Fensters werden als fehlgeschlagen markiert (Grund im Prot
 ### Ablauf
 
 ```
-booking_trackings (Consent + Klick-ID)          contracts (signed_at, Wert)
+booking_trackings (Consent-Gate)                contracts (signed_at, Wert)
         │                                              │
         ▼                                              ▼
 conversions:detect (alle 15 Min) ──► conversion_uploads (pending, 1 Zeile je Plattform+Ereignis)
@@ -61,13 +64,17 @@ conversions:detect (alle 15 Min) ──► conversion_uploads (pending, 1 Zeile 
 ```
 
 - **Consent-Gate im Detector** (`ConversionEventDetector`): Zeilen entstehen nur
-  bei `consent_google_ads`/`consent_meta_pixel === true` UND Klick-ID
-  (google: gclid/gbraid/wbraid · meta: fbclid/fbp). Alt-Daten ohne
+  bei `consent_google_ads`/`consent_meta_pixel === true`; Meta zusätzlich nur
+  mit Klick-/Browser-ID (fbclid/fbp), Google auch ohne Klick-ID — der Sender
+  schickt dann ein Event nur mit gehashten Kundendaten (Googles Empfehlung;
+  behebt den Kontohinweis „Importing limited user-provided data"). Fehlen
+  Klick-ID UND Kundendaten, schlägt die Zeile im Sender fehl. Alt-Daten ohne
   Consent-Erfassung (vor 15.08.2026) werden nie übermittelt.
 - **„BG wahrgenommen"** kommt per Polling aus `stats_historic_appointments`
   (state COMPLETED/PAID) — es gibt kein Event beim Statuswechsel.
 - **Vertrag → Klick** wird über die Phorest-Client-ID aufgelöst (jüngstes
-  Tracking des Kunden mit Consent+Klick-ID der Plattform).
+  Consent-Tracking des Kunden; bei Google gewinnt ein Tracking **mit**
+  Klick-ID gegen ein neueres ohne).
 - **Deduplizierung:** Unique (platform, event_id); event_id = `bg-<appointment>`,
   `bgw-<appointment>`, `vertrag-<contract>` — bei Google zugleich transactionId,
   bei Meta event_id (dedupliziert auch gegen Pixel-Events).
