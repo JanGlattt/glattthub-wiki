@@ -95,9 +95,11 @@ Die Ansicht öffnet sich über die Terminübersicht (`/hub/appointments`) — Kl
 **Session-Logik:**
 
 - Ein Termin gilt **nur** als laufend, wenn unten links explizit **„Termin beginnen"** gedrückt wurde — der Start führt **gleichzeitig den Check-in** aus. Reines Navigieren durch die Ansichten startet keine Session.
+- **Check-in trifft alle Behandlungen des Termins** (seit 08/2026): Ein Termin mit mehreren Services besteht in Phorest aus mehreren Appointment-Zeilen (je Service eine ID). Der Checkin-Endpoint löst serverseitig über `AppointmentGroupResolver` alle Zeilen der Gruppe auf (gleiche `bookingId`, sonst gleicher Kunde mit angrenzenden Zeitfenstern) und checkt jede einzeln ein — bereits erschienene/bezahlte Zeilen werden übersprungen. Vorher wurde nur die erste Zeile „Erschienen".
 - Während der Termin läuft: grüner „Termin läuft"-Indikator + **„Termin beenden"** an derselben Stelle; die rechte Seite zeigt die Session-Kacheln (Formulare, Einstellungszettel).
 - Der **Zurück-Button „Termine" ist gesperrt** (ausgegraut, Schloss-Icon), solange der Termin läuft — ein Tipp darauf zeigt den Hinweis, dass zuerst der Termin beendet werden muss.
-- „Termin beenden" verlangt eine Pflicht-Notiz (wird nach Phorest geschrieben) und entsperrt die Ansicht wieder.
+- „Termin beenden" verlangt eine Pflicht-Notiz (wird nach Phorest geschrieben) und entsperrt die Ansicht wieder. Auch die **Notiz wird an alle Service-Zeilen des Termins** geschrieben, damit jeder Service-Block im Phorest-Kalender sie zeigt; die Lesepfade im Hub deduplizieren identische Notizen.
+- **Beenden schließt den Termin in Phorest als `PAID` ab** (seit 08/2026): `PAID` ist in Phorest der „beendet"-Status (einen eigenen kennt die API nicht, nur `BOOKED`/`CHECKED_IN`/`PAID`; ein `state`-Feld ist per Update-API nicht beschreibbar). Nach dem Speichern der Notiz prüft der Server den effektiven offenen Saldo (gleiche Logik wie der Kassen-Schritt): Ist **nichts offen**, werden alle noch nicht bezahlten Service-Zeilen per **0-€-Kauf** (Purchase-Items mit `appointmentId`, Zahlungsart „Hub") ausgecheckt — sonst zählt der Termin in den Statistiken nicht (nur `PAID` zählt). Hat der Kunde an dem Tag **wirklich etwas zu bezahlen**, passiert nichts — `PAID` setzt dann die Phorest-Kasse beim echten Kassiervorgang. Schlägt das Markieren fehl, bleibt die Notiz gespeichert und das Team bekommt einen Warn-Toast, in Phorest manuell auszuchecken (`markAppointmentRowsPaid()` in `PhorestController`).
 
 **Pflichtformulare vor Behandlung:**
 
