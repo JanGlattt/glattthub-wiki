@@ -149,12 +149,28 @@ Vorlagen-Varianten hinterlegt werden.
   +13 Tage, Überweisung +5 Tage). Jeder Zahlungseingang wird aktiv
   am Fall erfasst — die Wiedervorlage rückt dann einen Monat weiter; ist alles
   bezahlt, schließt der Fall automatisch mit Ausgang „RZV" und die Vereinbarung
-  wird als abgeschlossen markiert. **Einzug wahlweise per GoCardless**: Checkbox
-  im RZV-Dialog (nur bei aktivem SEPA-Mandat) legt die Raten sofort als
+  wird als abgeschlossen markiert.
+  **Individueller Ratenplan (21.08.2026):** Aus Gesamtbetrag, Anzahl und
+  erster Fälligkeit erzeugt der Dialog einen Ratenplan, in dem **jede Rate
+  einzeln anpassbar** ist (Fälligkeit + Betrag, Raten ergänzen/entfernen) —
+  wie beim Zahlungsplan am Vertrag. Gespeichert wird genau dieser Plan
+  (`debt_rzv_agreements.installments`); die Summe der Raten ist die
+  Vereinbarungs-Summe. Auch „Zahlungsplan ändern" arbeitet mit dem Plan-Editor;
+  bei Selbstzahlern zeigt der Tab „Ratenzahlung" die vereinbarten Zeilen.
+  **Einzug wahlweise per GoCardless**: Checkbox
+  im RZV-Dialog (bei aktivem SEPA-Mandat) legt die Raten sofort als
   GoCardless-Einzelzahlungen am Vertrag an
-  (`GoCardlessPaymentPlanService::createRzvInstallments`, letzte Rate =
-  Restbetrag; bestehende Einzüge werden bewusst nicht storniert — bei
+  (`GoCardlessPaymentPlanService::createRzvInstallmentsFromRows` — exakt die
+  Zeilen des Plans; bestehende Einzüge werden bewusst nicht storniert — bei
   parallelen offenen GC-Zahlungen kommt ein Prüfhinweis für den SEPA-Tab).
+  **SEPA-Mandat direkt aus dem Fall anlegen (21.08.2026, Fall Al-Kaki):** Hat
+  der Vertrag kein aktiv verknüpftes Mandat (Mandatsentzug, fehlgeschlagene
+  Anlage), bietet der RZV-Dialog „Raten per GoCardless einziehen — neues
+  SEPA-Mandat anlegen": Kontoinhaber (Vor-/Nachname) + IBAN erfassen, beim
+  Festhalten wird das Mandat bei GoCardless angelegt (Customer + BankAccount +
+  Mandate, gleicher Weg wie am Vertrag inkl. Referenz-Suffix bei Kollision,
+  `ReceivablesController::createMandateForRzv`) und die Raten des Plans werden
+  direkt zum Einzug eingestellt. Voraussetzung ist das unterschriebene Mandat.
   Die angelegten Raten werden an der Vereinbarung gemerkt
   (`gocardless_payment_ids`) und auf der Fall-Detailseite im Tab
   **„Ratenzahlung"** mit ihrem GoCardless-Status angezeigt; dort gibt es auch
@@ -351,7 +367,7 @@ Cron: `receivables:reconcile-payment-links` (stündlich).
 | `debt_cost_items` | Kostenpositionen; 10-€-RLS-Gebühr automatisch, `source_payment_id` + Unique-Index = Idempotenz |
 | `debt_case_payments` | manuell erfasste Zahlungseingänge |
 | `debt_judicial_proceedings` | gerichtlicher Teil (1:1 je Fall, harte Trennung) |
-| `debt_rzv_agreements` | RZV-Konditionen; seit 08/2026 zusätzlich `collect_via_gocardless` + `gocardless_payment_ids` (IDs der als GC-Einzelzahlungen angelegten Vertragsraten — Grundlage für die Status-Anzeige im Tab „Ratenzahlung" und die Plan-Anpassung) |
+| `debt_rzv_agreements` | RZV-Konditionen; seit 08/2026 zusätzlich `collect_via_gocardless` + `gocardless_payment_ids` (IDs der als GC-Einzelzahlungen angelegten Vertragsraten — Grundlage für die Status-Anzeige im Tab „Ratenzahlung" und die Plan-Anpassung) sowie `installments` (individueller Ratenplan als JSON: `due_date` + `amount_cents` je Rate, seit 21.08.2026) |
 | `institute_bank_accounts` | IBAN je Standort (encrypted Cast, Muster `institute_colors`) |
 | `dunning_templates` | Vorlagen je Stufe × Kanal × Cluster (NULL = alle); Startwerte via Migration `2026_08_09_110000` |
 
@@ -853,7 +869,9 @@ Arbeitslisten-Ausschluss, automatische Reaktivierung inkl. neu entschiedener
 Weiche), `ReceivablesProcessFlexibilityTest` (Umbau 08/2026: Wartend mit
 Wiedervorlage, extern erledigte Schritte, Fälligstellungs-Wahl, Zahlung mit
 Raten-Zuordnung), `RzvAgreementTest` (GC-Verknüpfung, geplatzte RZV-Rate ohne
-Auto-Eskalation, Plan-Anpassung beider Einzugsarten), `AppendedDebitsTest`
+Auto-Eskalation, Plan-Anpassung beider Einzugsarten),
+`RzvIndividualPlanTest` (individueller Ratenplan inkl. Summen-Prüfung,
+Mandats-Neuanlage aus dem Fall mit GC-Ratenanlage, Al-Kaki-Migration), `AppendedDebitsTest`
 (Mischfall: zahlbarer Rest in Schreiben und Bezahllinks, Brief-Ankündigung des
 Anhängens), `ReceivablesPagesTest` (Seiten, Rechte, Banner),
 `ReceivablesManagementTest` (Vorlagen, IBAN, HTTP-Aktionen, Gericht, Kosten, RZV),
