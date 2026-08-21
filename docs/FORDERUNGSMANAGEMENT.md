@@ -211,11 +211,18 @@ Vorlagen-Varianten hinterlegt werden.
   **keine Automatik** mehr. Der Fall erscheint in „Zu erledigen" mit dem
   Hinweis „Neue Rücklastschrift — Entscheidung treffen", und die
   Aktionen-Karte bietet zwei Wege:
-  **„Zurück zur Zahlungserinnerung (alle offenen Schulden)"** setzt den Fall
-  auf „Neu" im harten Weg zurück — das nächste Schreiben ist die
-  1. Zahlungserinnerung über alte **und** neue Forderung zusammen, danach
-  läuft der Mahnweg regulär weiter (der Weg für Fälle wie „2. RLS während der
-  1. Mahnung" oder „RLS auf die angehängte Rate").
+  **Neustart** setzt den Fall auf „Neu" zurück — **der Fall behält dabei
+  seinen Weg** (präzisiert 21.08.2026, Fall Karknawi): Im **sanften Weg**
+  (z.B. Fall mit angehängter Serie) heißt der Button „Prozess von vorne
+  starten (nur neue Forderung)" — es folgen wieder 1. und
+  2. Zahlungserinnerung und die Mahnung, jeweils **nur über die offenen,
+  nicht angehängten Forderungen** (die angehängte Serie läuft unverändert
+  weiter und wird per `appended_pending` abgezogen); am Ende steht erneut
+  die Wahl „Rate anhängen oder Gesamtforderung fällig stellen". Im **harten
+  Weg** heißt er „Zurück zur Zahlungserinnerung (alle offenen Schulden)" —
+  die 1. Zahlungserinnerung fordert alte **und** neue Forderung zusammen an,
+  danach geht es direkt in den postalischen Mahnweg (der Weg für Fälle wie
+  „2. RLS während der 1. Mahnung", z.B. Özata).
   **„Im aktuellen Schritt weiter"** lässt Stufe und Frist unverändert — die
   neue Forderung läuft im Saldo mit und wird vom nächsten regulären Schreiben
   erfasst. Solange die Entscheidung offen ist, wird bewusst **kein Schreiben
@@ -425,8 +432,11 @@ Fälligkeit („Heute fällig") ist ebenfalls einmal definiert:
   Erkennung wie vom manuellen Anlegen genutzt). Cluster: `clusterFor()`.
 - **`DebtCaseActionService`** — `nextAction()` (Aktions-Katalog je Stufe/Weg;
   liefert für ruhende Fälle **und** Fälle mit offener RLS-Entscheidung `null`),
-  `resolveRlsDecision()` (Entscheidung nach neuer RLS: `restart` = harter Weg
-  auf „Neu", `continue` = unverändert weiter), `hold()`/`resumeHold()`
+  `resolveRlsDecision()` (Entscheidung nach neuer RLS: `restart` = zurück auf
+  „Neu" **im bisherigen Weg** — sanft durchläuft wieder beide
+  Zahlungserinnerungen über die nicht angehängten Forderungen, hart die
+  Kompakt-Kette über alle offenen Schulden; `continue` = unverändert
+  weiter), `hold()`/`resumeHold()`
   (Ruhend-Status mit Pflicht-Begründung und optionaler Wiedervorlage
   `hold_until`; Events `case_held`/`case_resumed`),
   `markActionDoneExternally()` (extern erledigten Schritt nachtragen:

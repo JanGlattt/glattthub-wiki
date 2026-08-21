@@ -2,6 +2,43 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 21.08.2026 — „Gezahlte Rate nachtragen" (fehlende Zeile dokumentieren)
+
+Asana-Bug „Zahlung pausierte Lastschrift" (Fall Roppel BS000955): Eine bei der
+unbefristeten Pausierung entfallene Rate wurde vom Kunden trotzdem bezahlt —
+im Zahlungsplan gab es aber keine Zeile mehr, auf die sich die Zahlung buchen
+ließ, und „Zahlung verbuchen" hätte fälschlich die (korrekten) offenen Raten
+verrechnet.
+
+### Für Endanwender (21.08.2026)
+
+Im Aktionen-Menü des Zahlungen-Tabs gibt es **„Gezahlte Rate nachtragen"**
+(sichtbar, solange der Vertrag einen offenen Restbetrag hat): Betrag,
+ursprüngliche Fälligkeit, Zahlungseingang, Zahlungsart, optional Referenz und
+Notiz. Die Zahlung wird als **eigene bezahlte Zeile** dokumentiert — offene
+Raten bleiben unangetastet, es wird **kein GoCardless-Einzug** ausgelöst.
+Gedacht für Lücken in der Historie: die bei einer Pausierung entfallene Rate
+oder ein fehlender Alt-Einzug aus der Star-Money-Ära. Ist der Restbetrag
+danach 0, wird der Vertrag automatisch abgeschlossen.
+
+### Für Entwickler (21.08.2026)
+
+`ContractController::recordBackfilledPayment()` (`POST
+/hub/contracts/{contract}/payments/backfill`): legt eine `paid`-Zeile mit
+Ratennummer max+1 an (zählt damit in `documentedSepaRatesCents()`, der
+rechnerische Altsystem-Block schrumpft entsprechend), Obergrenze
+`remaining_amount_cents`, `ContractChange` mit `field_name =
+payment_backfilled`. Kein FM-Sync nötig — die Zeile hat keinen
+RLS-Gebühr-Anker, `SettlementCaseSyncService::caseFor()` findet sie nie.
+UI: `openBackfillModal()`/`saveBackfill()` in `paymentsTab`
+(`public/js/contract-detail.js`), Modal in `tab-payments.blade.php`.
+Verwandter Daten-Nachtrag: Migration
+`2026_08_21_150000_settle_oliinyk_paid_bounced_rate` zieht bei OS003246 die
+per Überweisung gezahlte, im Forderungsmanagement bereits verbuchte Rate vom
+03.08.2026 am Vertrag nach (bewusst ohne Sync — der geschlossene Fall führt
+die Zahlung schon, eine Spiegelung würde doppelt zählen).
+Tests: `tests/Feature/ContractPaymentBackfillTest.php`.
+
 ## Update 19.08.2026 (abends) — SEPA-Mail-Anrede repariert („Hallo Kunde"), Frankreich-IBAN-Hinweis, kaputte Blade-@php-Paarung
 
 Asana-Bug `1217629981905180`: Eine Aktivierungs-Mail grüßte mit **„Hallo Kunde,"**
