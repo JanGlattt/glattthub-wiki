@@ -109,6 +109,13 @@ Die Ansicht öffnet sich über die Terminübersicht (`/hub/appointments`) — Kl
 - Nach der Buchung wird der **Beratungstermin normal beendet** (Kasse → Notiz → PAID; die Folgetermin-Frage entfällt) und die Ansicht wechselt automatisch in den neuen Behandlungstermin (`?start=1` = Session startet dort selbst, inkl. Check-in und Staff-Zuordnung). Pflichtformulare (Sitzungsbestätigung) und Einstellungszettel hängen damit automatisch am neuen Termin.
 - Für Endanwender: Verkauf abschließen → Kachel „Direkt behandeln" → Behandlungen bestätigen → Beratungstermin wird beendet → es geht nahtlos im Behandlungstermin weiter.
 
+**Zusatz-Services hinzubuchen (z.B. Rasieren, seit 08/2026):**
+
+- Kommt eine Kundin z.B. unrasiert zum Termin, bucht das Team über **„Service hinzubuchen"** in der Behandlungen-Karte einen Zusatz-Service zum bestehenden Termin. Welche Services das dürfen, pflegt das Backend: **Admin → Beratungs-Services → Haken „Zusatzbuchung erlaubt"** (`consultation_services.is_bookable_addon`). Die Auflösung gegen den Phorest-Katalog läuft je Institut über die Service-ID, sonst über den Namen — ein Haken wirkt damit in allen Instituten; Preis und Dauer kommen aus dem Phorest-Katalog.
+- Gebucht wird die Zeile **exakt im Anschluss an die letzte Service-Zeile in derselben Spalte** — sie gehört damit zur Termin-Gruppe (Phorest hängt aufeinanderfolgende API-Buchungen desselben Kunden ohnehin an dieselbe `bookingId`). Läuft der Termin bereits, wird die neue Zeile direkt eingecheckt.
+- **Bezahlung wie Schulden:** Ein unbezahlter Zusatz-Service zählt als offener Betrag — dasselbe **große rote Banner** und der **rote Kassen-Screen** beim Beenden nennen ihn namentlich („Enthält Zusatz-Service: Rasieren (20,00 €)"). Der Hub-0-€-PAID-Abschluss unterbleibt dann komplett; die Phorest-Kasse checkt beim Kassieren den ganzen Termin aus (Entscheidung 21.08.2026). Endpoints: `GET /phorest/branch/{branchId}/addon-services`, `POST …/appointment/{appointmentId}/addon-service` (Recht `checkin_appointments`).
+- Am echten System verprobt (21.08.2026, Bielefeld): Addon angrenzend gebucht + auto-eingecheckt, roter Hinweis mit Betrag, PAID-Abschluss blockiert.
+
 **Pflichtformulare vor Behandlung:**
 
 - Formulare können im Formular-Editor als **Pflichtformular** markiert werden (siehe `FORM-EDITOR.md`). Passt ein solches Formular zu den Dienstleistungen des Termins, ist der **Einstellungszettel gesperrt**, bis alle Pflichtformulare ausgefüllt sind — die Kachel zeigt ein Schloss, ein Klick nennt die fehlenden Formulare per Toast.
