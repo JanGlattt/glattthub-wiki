@@ -151,6 +151,20 @@ bei Mandat-Status „Storniert"):
 - **Grenze:** Von Bank oder Kunde entzogene sowie abgelaufene Mandate lehnt
   GoCardless ab — dann wie bisher „GoCardless neu verknüpfen" (neues Mandat).
 
+**Neuanlage nach Mandatsentzug (Fix 21.08.2026, Fall BS000714):** Nach
+„GoCardless neu verknüpfen" schlug „Mandat und Zahlungsplan anlegen" mit
+*„Validation failed (reference: matches the reference used by another
+mandate)"* fehl — GoCardless verlangt je Creditor **eindeutige
+Mandatsreferenzen**, auch gegenüber dem alten, entzogenen Mandat, und der Hub
+schickte die gespeicherte Referenz unverändert erneut.
+`GoCardlessMandateService::createGoCardlessMandate()` erkennt genau diesen
+Validierungsfehler jetzt und versucht es automatisch mit Suffix
+(`…-2`, `…-3`, bis `-6`) erneut; die tatsächlich verwendete Referenz wird am
+`ClientMandate` gespeichert und steht so auch in Einzugs-Metadaten und
+SEPA-Tab. Andere Fehler werden unverändert durchgereicht (kein Retry). Nur im
+Live-Betrieb relevant — die Sandbox vergibt eigene Referenzen.
+Tests: `tests/Feature/GoCardlessMandateReferenceRetryTest.php`.
+
 ### Für Entwickler (15.08.2026)
 
 `POST /hub/contracts/{id}/gocardless-reinstate-mandate`
@@ -735,7 +749,7 @@ In `GoCardlessMandateService::changeBankAccount()`:
 **Für Endanwender:** Im Zahlungen-Tab kann ein SEPA-Vertrag über **„Pausieren"** ausgesetzt werden — für Fälle wie Arbeitslosigkeit oder Zahlungsschwierigkeiten. Zwei Arten:
 
 - **Fix (N Monate):** Die offenen Raten werden **um N Monate nach hinten verschoben**. Die Laufzeit verlängert sich entsprechend, der Kunde zahlt weiterhin alle Raten (nur später). Kein „Fortsetzen" nötig — der korrigierte Plan steht sofort.
-- **Unbefristet (Schuldner):** Alle offenen Raten werden **gestoppt**. Der Vertrag zeigt ein Pause-Banner; das SEPA-Mandat bleibt aktiv. Über **„Fortsetzen"** werden die Restraten ab einem gewählten Datum neu terminiert (ohne neues Mandat).
+- **Unbefristet (Schuldner):** Alle offenen Raten werden **gestoppt**. Der Vertrag zeigt ein Pause-Banner; das SEPA-Mandat bleibt aktiv. Über **„Fortsetzen"** kommen **genau die beim Pausieren gestoppten Raten** ab einem gewählten Datum zurück (Anzahl und Beträge bleiben erhalten, ohne neues Mandat) — seit 21.08.2026 merkt sich die Pause dafür die stornierten Raten (`contract_pauses.paused_payment_ids`). Vorher rechnete das Fortsetzen den Plan aus `installment_count − bezahlte Zeilen` neu; bei Bestandsverträgen ohne Alt-Einzugs-Zeilen (Star-Money-Ära) entstand so ein kompletter neuer Zahlplan statt der Restraten (gemeldet 20.08.2026, Fall OS003246).
 
 Bereits **eingereichte** Raten (`submitted`, auf dem Weg zur Bank) laufen in beiden Fällen noch durch.
 
@@ -746,7 +760,7 @@ Bereits **eingereichte** Raten (`submitted`, auf dem Weg zur Bank) laufen in bei
 - GoCardless kann Einzelzahlungen (Standard seit 07/2026) **nicht** „pausieren" — der einzige Weg ist **Storno + Neuterminierung**. Der neue `App\Services\ContractPauseService` kapselt das und baut auf den bestehenden `public`-Bausteinen `GoCardlessPaymentPlanService::cancelOpenGcPayments()` / `recreateIndividualPayments()` / `createIndividualPaymentPlan()` auf.
   - `pauseFixed()`: nur die **nächsten N** offenen Raten stornieren (`cancelSpecificPayments()`) + soft-deleten und ebenso viele am Planende neu anlegen — die übrigen offenen Raten behalten ihre GoCardless-Zahlung. Endergebnis identisch zu „alle um N verschieben", aber mit minimalem GC-Aufwand.
   - `pauseIndefinite()`: offene Raten stornieren (Notiz „Pausiert – unbefristet" → im Reload geschützt, im Debt-Modul via `cancelled` ausgeschlossen), Mandat bleibt aktiv.
-  - `resume(startDate)`: Restraten ab Startdatum neu anlegen.
+  - `resume(startDate)`: legt **genau die an der Pause gemerkten Raten** (`paused_payment_ids`, Migration `2026_08_21_110000`) ab Startdatum via `recreateIndividualPayments()` neu an — mit Original-Ratennummern und -Beträgen; die stornierten Ursprungszeilen werden soft-gelöscht (keine Doppel-Nummern). Nur Pausen aus der Zeit **vor** dem Feld fallen auf die alte Neuberechnung (`createIndividualPaymentPlan()`, `installment_count − bezahlte Zeilen`) zurück.
   - `endBecauseContractEnded($contract, $reason, $userId)` (11.08.2026): beendet eine laufende unbefristete Pause, weil der **Vertrag** endet. Ruft ausdrücklich **nicht** `resume()` auf (das würde Restraten neu terminieren) und fasst GoCardless nicht an — bei einer unbefristeten Pause sind die offenen Raten längst storniert, alles Weitere entscheidet der SEPA-Tab von Hand (Festlegung 31.07.2026). Fixe Pausen bleiben unberührt: Sie sind reine Historie.
 - Datenmodell: Tabelle `contract_pauses` (Migration `2026_07_15_110000`), Model `App\Models\ContractPause`. Am `Contract`: `pauses()`, `activeIndefinitePause()`, Accessor `is_paused`. **Kein** neuer Contract-Status (würde zahlreiche `where('status','active')`-Filter brechen).
 - **Zwei Ausgänge einer Pause** (Migration `2026_08_11_090000`): `resumed_at`/`resume_date` = fortgesetzt (Raten neu terminiert), `ended_at`/`ended_reason` = ohne Fortsetzung beendet, weil der Vertrag endete. Bewusst getrennte Spalten — ein gesetztes `resumed_at` ohne `resume_date` würde im Verlauf behaupten, die Einzüge liefen wieder. `ContractPause::is_active` und `Contract::activeIndefinitePause()` prüfen beide Felder.

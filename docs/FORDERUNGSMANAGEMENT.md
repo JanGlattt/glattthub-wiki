@@ -67,15 +67,18 @@ ab, zeigt der Hinweis oben auf der Fall-Detailseite beide Zahlen.
   hängen wir die geplatzte Lastschrift zzgl. der bereits angefallenen Gebühren
   ans Planende an" — Vorlage `letter_final_soft`, keine zusätzliche Gebühr
   beim Anhängen). Platzt die angehängte oder die nächste Lastschrift
-  (**2. RLS in Folge**), wechselt der Fall automatisch in den harten Weg.
+  (**2. RLS in Folge**), liegt der Fall **zur Entscheidung** vor (siehe
+  „Neue Rücklastschrift während laufender Bearbeitung").
 - **Sanfter Weg ohne Vertrag** (offenes Kundenkonto): 1. Zahlungserinnerung →
   2. Zahlungserinnerung → **direkt** 1. postalische Mahnung → letzte Mahnung →
   250-€-Entscheid. Monitoring und „Rate anhängen" entfallen: Es gibt keinen
   Zahlungsplan und keine Lastschrift, auf die man warten könnte.
 - **Harter Weg**: Zahlungserinnerung über alle offenen Schulden + SEPA-Einzüge
   pausieren (7 Tage) → 1. postalische Mahnung (10 Tage) → letzte Mahnung über die
-  **gesamte Restsumme** (14 Tage; Fälligstellung ab 2 RLS) → **250-€-Entscheid**:
-  darunter abschreiben (WNB), darüber gerichtliches Mahnverfahren.
+  **gesamte Restsumme** (14 Tage; Fälligstellung standardmäßig ab 2 RLS) →
+  **250-€-Entscheid**: darunter abschreiben (WNB), darüber gerichtliches
+  Mahnverfahren. Ob die Gesamtsumme fällig gestellt wird, ist seit 08/2026
+  eine **sichtbare Checkbox im Versand-Modal** (siehe „Versand").
 - **Gerichtliches Verfahren** (eigener Bereich): Mahnbescheid → Widerspruch? →
   Vollstreckungsbescheid → Einspruch? → Zwangsvollstreckung → PfÜB/Gerichtsvollzieher.
   Der Hub trackt Status, Aktenzeichen, Daten und Kosten — Anträge laufen außerhalb.
@@ -99,6 +102,23 @@ Vorlagen-Varianten hinterlegt werden.
   Jedes Schreiben nennt automatisch die **Bankverbindung des Instituts, in dem
   der Vertrag geschlossen wurde** (Pflege: Institut öffnen → Tab „Bankverbindung").
 - Der versendete Text wird als **Snapshot am Fall** gespeichert (Nachweis).
+- **Fälligstellung ist eine sichtbare Wahl (08/2026)**: Bei postalischen
+  Mahnungen an RLS-Fällen zeigt das Versand-Modal die Checkbox **„Gesamte
+  Restsumme des Vertrags fällig stellen"** — vorbelegt nach der Standard-Regel
+  (letzte Mahnung im harten Weg ab der zweiten RLS), aber in beide Richtungen
+  übersteuerbar: Auch die letzte Mahnung des sanften Wegs kann die Gesamtsumme
+  fordern, und eine bereits (automatisch) gesetzte Fälligstellung lässt sich
+  vor dem Erzeugen wieder abwählen. Die Vorschau rechnet die
+  Forderungsaufstellung sofort mit dem gewählten Stand; wirksam wird die Wahl
+  mit dem Erzeugen des Schreibens (Verlaufseintrag). Kein Wahlrecht gibt es,
+  wo die Forderungsbasis fest ist: Mandatsentzug/Direktzahler (immer
+  Restsumme), Bestandsimport (eingefrorene Summe), Kundenkonto (Saldo).
+- **Schritt extern erledigt nachtragen (08/2026)**: Wurde das anstehende
+  Schreiben außerhalb des Hubs erstellt/versendet (z. B. Mahnung von Hand zur
+  Post gegeben), trägt „Schritt extern erledigt nachtragen" in der
+  Aktionen-Karte den Schritt mit **Datum und Pflicht-Vermerk** nach: Stufe und
+  Zahlungsfrist werden ab dem tatsächlichen Versanddatum nachgezogen, es wird
+  **kein** Schreiben erzeugt (Message-Eintrag mit Status „extern", ohne PDF).
 - Beim Eintritt in den postalischen Mahnweg wird der Kunde **in Phorest
   archiviert** (Button, Pflicht laut Prozess).
 
@@ -107,6 +127,15 @@ Vorlagen-Varianten hinterlegt werden.
 - **Zahlungseingang erfassen** (Überweisung/vor Ort) — bei vollem Ausgleich
   schließt der Fall automatisch. Verrechnung nach **§ 367 BGB**: erst Kosten,
   dann Zinsen (vorerst 0), zuletzt Hauptforderung.
+  **Zuordnung auf geplatzte Raten (08/2026)**: Das Zahlungs-Modal listet die
+  offenen Rücklastschriften des Falls (je Rate optional „inkl. RLS-Gebühr")
+  zum Ankreuzen — zugeordnete Raten werden **am Vertrag als beglichen
+  markiert** (derselbe Weg wie „Rate begleichen" auf der Vertragsseite,
+  inklusive Spiegelung über den `SettlementCaseSyncService`), damit
+  Zahlungsplan und Fall in einem Schritt übereinstimmen. Der Betrag wird aus
+  der Auswahl vorbelegt; ein Mehrbetrag ohne Zuordnung wird als freier
+  Eingang am Fall verbucht. Vorher liefen beide Welten auseinander: Die
+  Zahlung stand am Fall, die Rate im Zahlungsplan blieb offen.
 - **Kostenposition erfassen**: Gerichtskosten Mahnbescheid/PfÜB, Gerichtsvollzieher,
   Melderegister-Auskunft, Sonstiges — mit Beleg-Upload. Fließt in den offenen Betrag ein.
 - **RZV festhalten**: Ratenzahlungsvereinbarung dokumentieren; der Fall
@@ -155,16 +184,41 @@ Vorlagen-Varianten hinterlegt werden.
   gemahnt oder der Plan angepasst wird, entscheidet das Büro. Die geplatzte
   RZV-Rate erhöht die Hauptforderung dabei nicht (die Schuld bestand schon —
   `DebtCaseBalanceService::rlsPrincipals()` schließt RZV-Raten aus).
-- **Fall ruhend stellen (Geparkt / Beim Anwalt)**: manuelle Einzelfallentscheidung
-  mit Pflicht-Grund und Pflicht-Begründung (landet im Verlauf). Der Fall bleibt
-  aktiv, verliert aber Fristen und Arbeitsliste und liegt im eigenen Bereich
-  **„Ruhend"** unten im Prozess-Board. **Geparkt** ist für Kleinforderungen
-  gedacht (z. B. nicht mitüberwiesene RLS-Gebühren), für die nie postalisch
-  gemahnt würde; **Beim Anwalt** für extern abgegebene Fälle (sie verlassen
-  auch die Liste des gerichtlichen Tabs). Eine **neue Rücklastschrift
+- **Fall ruhend stellen (Geparkt / Beim Anwalt / Wartend)**: manuelle
+  Einzelfallentscheidung mit Pflicht-Grund und Pflicht-Begründung (landet im
+  Verlauf). Der Fall bleibt aktiv, verliert aber Fristen und Arbeitsliste und
+  liegt im eigenen Bereich **„Ruhend"** unten im Prozess-Board. **Geparkt**
+  ist für Kleinforderungen gedacht (z. B. nicht mitüberwiesene RLS-Gebühren),
+  für die nie postalisch gemahnt würde; **Beim Anwalt** für extern abgegebene
+  Fälle (sie verlassen auch die Liste des gerichtlichen Tabs); **Wartend
+  (08/2026)** für Fälle, die auf eine externe Antwort warten (Melderegister-
+  Auskunft, Gericht, Kunde). Beim Ruhendstellen kann optional ein
+  **Wiedervorlage-Datum** gesetzt werden (`hold_until`, für jeden Grund):
+  Am Stichtag taucht der Fall automatisch wieder in „Zu erledigen" auf
+  (Badge „Wiedervorlage erreicht", Aktion „Fall fortsetzen") — ohne Datum
+  ruht er, bis er manuell fortgesetzt wird. Eine **neue Rücklastschrift
   reaktiviert den Fall automatisch**: Stufe zurück auf „Neu", die 50-€-Weiche
   wird neu entschieden — der geparkte Altbetrag zählt mit. Manuelles
   Fortsetzen jederzeit über „Fall fortsetzen" (Fall ist sofort wieder fällig).
+- **Neue Rücklastschrift während laufender Bearbeitung (08/2026)**: Trifft
+  eine neue RLS ein, während der Fall schon mitten im Prozess steht (Schreiben
+  verschickt, Wartefenster, Rate angehängt, Restsumme angemahnt …), passiert
+  **keine Automatik** mehr. Der Fall erscheint in „Zu erledigen" mit dem
+  Hinweis „Neue Rücklastschrift — Entscheidung treffen", und die
+  Aktionen-Karte bietet zwei Wege:
+  **„Zurück zur Zahlungserinnerung (alle offenen Schulden)"** setzt den Fall
+  auf „Neu" im harten Weg zurück — das nächste Schreiben ist die
+  1. Zahlungserinnerung über alte **und** neue Forderung zusammen, danach
+  läuft der Mahnweg regulär weiter (der Weg für Fälle wie „2. RLS während der
+  1. Mahnung" oder „RLS auf die angehängte Rate").
+  **„Im aktuellen Schritt weiter"** lässt Stufe und Frist unverändert — die
+  neue Forderung läuft im Saldo mit und wird vom nächsten regulären Schreiben
+  erfasst. Solange die Entscheidung offen ist, wird bewusst **kein Schreiben
+  erzeugt** (es ginge mit veralteter Forderungsaufstellung raus). In den
+  frühen Stufen („Neu", „Kontaktaufnahme") braucht es keine Entscheidung —
+  dort deckt das erste Schreiben die neue Forderung ohnehin mit ab; die
+  RZV behält ihre eigene Vorlage-Logik (Vereinbarung „geplatzt", Büro
+  entscheidet), ruhende Fälle werden wie bisher automatisch reaktiviert.
 - **WNB (abschreiben)**: eigenes Recht; der Kunde bleibt in Phorest archiviert.
 - **Notiz hinzufügen**: Freitext-Kommentar direkt in der Verlauf-Card der
   Fall-Seite (Recht `manage_receivables`) — mit Autor und Zeitstempel in der
@@ -231,6 +285,15 @@ mobil-optimierte Bezahlseite führt (ohne Login, IAP-Bypass, noindex):
   manuell, das Büro verschickt ihn selbst (z. B. nach einem Telefonat).
 - Erstattungen bei versehentlicher Doppelzahlung (Überweisung + online):
   vorerst manuell im Mollie-Dashboard; die Mollie-Referenz steht am Fall.
+- **Brief-QR (Fix 08/2026, Asana „QR-Code")**: Neue Link-Tokens sind 32 statt
+  64 Zeichen, der QR wird mit **ECC-Level M** (statt H) erzeugt
+  (`VoucherQrService::dataUriForUrl()`) und im Brief mit **18 mm** gedruckt —
+  vorher war der Code so dicht, dass Handykameras ihn vom Papier oft nicht
+  lasen. Der QR der **Modal-Vorschau** trägt das Platzhalter-Token
+  `vorschau` (`DebtPaymentLink::PREVIEW_TOKEN`): Er ist in der Vorschau rot
+  als „Vorschau-QR — nicht versenden" markiert, und `/shared/pay/vorschau`
+  zeigt eine Kontakthinweis-Seite statt 404 — falls doch einmal ein
+  Vorschau-Ausdruck statt des erzeugten PDFs verschickt wurde.
 
 Technik: `debt_payment_links` (+ `_items`, `debt_payment_attempts`),
 `DebtPaymentLinkService` (Erzeugen/finalize/discard, `startPayment()`,
@@ -269,7 +332,7 @@ Cron: `receivables:reconcile-payment-links` (stündlich).
 
 | Tabelle | Zweck |
 |---|---|
-| `debt_cases` | Mahnfall: Einstieg, Weg, Stufe, Frist, Cluster, Status/Ausgang. Kunden-Klammer über `client_id` (Phorest). `contract_id` ist seit 08/2026 **nullable** — Fälle aus dem offenen Kundenkonto haben keinen Vertrag. Ruhend-Status über `held_at`/`hold_reason` (`parked`/`lawyer`)/`held_by` (Migration `2026_08_15_100000`): Der Fall bleibt `status = active` (alle „Ein Kunde, ein Fall"-Guards und die 50-€-Weiche greifen weiter), fällt aber aus `scopeDueForAction()`/`isDueForAction()` heraus; die Stufe bleibt stehen |
+| `debt_cases` | Mahnfall: Einstieg, Weg, Stufe, Frist, Cluster, Status/Ausgang. Kunden-Klammer über `client_id` (Phorest). `contract_id` ist seit 08/2026 **nullable** — Fälle aus dem offenen Kundenkonto haben keinen Vertrag. Ruhend-Status über `held_at`/`hold_reason` (`parked`/`lawyer`/`waiting`)/`held_by` (Migration `2026_08_15_100000`): Der Fall bleibt `status = active` (alle „Ein Kunde, ein Fall"-Guards und die 50-€-Weiche greifen weiter), fällt aber aus `scopeDueForAction()`/`isDueForAction()` heraus; die Stufe bleibt stehen. Seit 08/2026 zusätzlich `hold_until` (optionales Wiedervorlage-Datum — am Stichtag wird der Fall wieder fällig, `isHoldResumeDue()`) und `rls_decision_pending_at` (neue RLS während laufender Bearbeitung — Fall ist fällig, aber `nextAction()` liefert `null`, bis das Büro über `resolveRlsDecision()` entschieden hat; Migration `2026_08_21_100000`) |
 | `client_account_balances` | täglicher Spiegel der Phorest-Kundenkonten (`creditAccount.outstandingBalance`): Betrag, Standort, „beobachtet seit", `handled_cents`, letzter Fall |
 | `debt_case_events` | Timeline (jede Aktion/Statusänderung) |
 | `debt_case_messages` | Schreiben-Snapshots (Kanal, Vorlage, HTML, Freitext, PDF-Pfad, Zendesk-Ticket) |
@@ -316,9 +379,19 @@ Hauptforderung je Einstieg:
 
 Die geplatzten Raten des Vertrags dürfen **nicht** pauschal summiert werden:
 Nach einem abgeschlossenen Vorgänger-Fall stünden dessen Raten sonst im neuen
-Fall noch einmal drin. Aus demselben Grund zählt `generateLetter()` für die
-Schwelle „Fälligstellung ab 2 RLS" `max(geplatzte Raten, RLS-Gebühren)` —
-addiert man beide, ist die Schwelle schon bei der ersten RLS erreicht.
+Fall noch einmal drin. Aus demselben Grund zählt `wouldDemandFullBalance()`
+für die Schwelle „Fälligstellung ab 2 RLS" `max(geplatzte Raten, RLS-Gebühren)`
+— addiert man beide, ist die Schwelle schon bei der ersten RLS erreicht.
+
+**Fälligstellung ist seit 08/2026 eine explizite Wahl:**
+`DebtCaseActionService::fullBalanceOption()` sagt, ob das Versand-Modal die
+Checkbox anbietet (nur Briefe an RLS-Fällen mit Vertrag, ohne
+`legacy_principal_cents`/`account_principal_cents` — überall sonst ist die
+Forderungsbasis fest), mit Default aus `wouldDemandFullBalance()`.
+`generateLetter()` nimmt die Wahl als fünften Parameter und setzt
+`full_balance_due` in **beide** Richtungen (auch Aufheben einer gesetzten
+Fälligstellung, jeweils mit Verlaufseintrag); `previewAction` simuliert die
+Wahl über den Query-Parameter `demand_full_balance` nur im Speicher.
 
 Fälligkeit („Heute fällig") ist ebenfalls einmal definiert:
 `DebtCase::isDueForAction()` / `scopeDueForAction()` / `daysOverdue()`.
@@ -339,19 +412,32 @@ Fälligkeit („Heute fällig") ist ebenfalls einmal definiert:
   (offenes Kundenkonto; einziger Weg zu einem Fall **ohne** Vertrag — von der
   Erkennung wie vom manuellen Anlegen genutzt). Cluster: `clusterFor()`.
 - **`DebtCaseActionService`** — `nextAction()` (Aktions-Katalog je Stufe/Weg;
-  liefert für ruhende Fälle `null`), `hold()`/`resumeHold()` (Ruhend-Status
-  mit Pflicht-Begründung; Events `case_held`/`case_resumed`),
+  liefert für ruhende Fälle **und** Fälle mit offener RLS-Entscheidung `null`),
+  `resolveRlsDecision()` (Entscheidung nach neuer RLS: `restart` = harter Weg
+  auf „Neu", `continue` = unverändert weiter), `hold()`/`resumeHold()`
+  (Ruhend-Status mit Pflicht-Begründung und optionaler Wiedervorlage
+  `hold_until`; Events `case_held`/`case_resumed`),
+  `markActionDoneExternally()` (extern erledigten Schritt nachtragen:
+  Message mit Status `external`, Stufe + Frist ab Versanddatum via
+  `DunningMessageService::TEMPLATE_DEADLINE_DAYS`),
   `sendEmail()` (Zendesk `createTicket` mit `html_body`), `generateLetter()`
-  (dompdf `pdf.dunning-letter`, Fristen aus der Vorlage: sanft 10 / hart 14 Tage),
-  `startMonitoring()` (Einzug + 3 + 10 Tage), `recordPayment()`, `pauseSepa()`/
+  (dompdf `pdf.dunning-letter`, Fristen aus der Vorlage: sanft 10 / hart 14 Tage;
+  fünfter Parameter = Fälligstellungs-Wahl aus dem Modal),
+  `fullBalanceOption()` (Checkbox-Verfügbarkeit + Default),
+  `startMonitoring()` (Einzug + 3 + 10 Tage), `recordPayment()`,
+  `recordPaymentWithAllocations()` (Zahlung mit Zuordnung auf geplatzte
+  Raten: `settleBounced()` am Vertrag + `handlePaymentSettled()` +
+  `syncManualSettlement()` je Rate, Rest als freier Eingang), `pauseSepa()`/
   `resumeSepa()` (via `ContractPauseService::pauseIndefinite`/`resume`),
   `archiveInPhorest()` (PUT `archived: true`, Fallback manuell), `decide()`
   (250-€-Weiche; **genau** 250,00 € wird abgeschrieben, erst darüber geht es
   gerichtlich weiter), `writeOff()`, `close()`.
-  `recordPayment()` ist der einzige Weg, einen Eingang zu verbuchen — auch die
-  Online-Bezahlseite ruft ihn auf (`DebtPaymentLinkService::settle()`), damit
-  RZV-Abschluss (`OUTCOME_RZV` + Vereinbarung auf `completed`) und Fall-Ausgang
-  überall gleich gesetzt werden.
+  `recordPayment()` ist der einzige Weg, einen **freien** Eingang zu verbuchen
+  — auch die Online-Bezahlseite ruft ihn auf (`DebtPaymentLinkService::settle()`),
+  damit RZV-Abschluss (`OUTCOME_RZV` + Vereinbarung auf `completed`) und
+  Fall-Ausgang überall gleich gesetzt werden; zugeordnete Eingänge laufen über
+  `recordPaymentWithAllocations()` und entstehen am Fall als Spiegel des
+  Vertrags-Settles (keine Doppelbuchung).
 - **`SettlementCaseSyncService`** (Update 13.08.2026) — Brücke von der
   Vertragsseite: Das manuelle **„Beglichen"** einer geplatzten Rate im
   Zahlungen-Tab führt den zugehörigen Mahnfall automatisch mit. Deklarativer
@@ -588,15 +674,18 @@ dafür ist `personalized_replies`. Offene Punkte dazu im Asana-Subtask
   Partials — jedes Partial bringt seinen eigenen `@php use …;`-Block mit.
 - **Ruhend-Bereich im Prozess-Flow**: Pseudo-Spalte `on_hold` in
   `BOARD_COLUMNS` (Pause-Marker statt Stufennummer); ruhende Fälle erscheinen
-  ausschließlich dort (auch gerichtliche), mit Badges „Geparkt"/„Beim Anwalt"
-  und „ruht seit … — Stand: <Stufe>". Arbeitslisten filtern `is_on_hold`
-  heraus; die Pipeline-Statistik führt „Ruhend" als eigenen Posten.
+  ausschließlich dort (auch gerichtliche), mit Badges „Geparkt"/„Beim Anwalt"/
+  „Wartend (bis …)" und „ruht seit … — Stand: <Stufe>". Arbeitslisten filtern
+  `is_on_hold` heraus — Ausnahme seit 08/2026: erreichte Wiedervorlage
+  (`hold_resume_due`) bringt den Fall zusätzlich in `todo` (Badge
+  „Wiedervorlage erreicht"); die Pipeline-Statistik führt „Ruhend" als
+  eigenen Posten.
 - **Arbeitsliste** ist nach Art der Arbeit getrennt (`work_list` im
   Daten-Endpoint, Kategorie je Fall im Feld `category`):
 
     | Kategorie | Bedeutung | Kriterium |
     |---|---|---|
-    | `todo` | echter To-do, Schreiben oder Entscheid steht an | fällig **und** `nextAction()` liefert einen Schritt |
+    | `todo` | echter To-do, Schreiben oder Entscheid steht an | fällig **und** (`nextAction()` liefert einen Schritt **oder** RLS-Entscheidung offen **oder** Wiedervorlage erreicht) |
     | `check_payment` | nur Zahlungseingang prüfen (RZV-Rate, angehängte Lastschrift) | fällig, aber **kein** Schritt vorgesehen |
     | `waiting` | Frist bzw. Wartefenster läuft — nichts zu tun | nicht fällig |
     | `judicial` | eigener Bereich | `area = judicial` |
@@ -654,7 +743,8 @@ dafür ist `personalized_replies`. Offene Punkte dazu im Asana-Subtask
   (`wouldDemandFullBalance()`), sonst zeigte sie eine andere
   Forderungsaufstellung als der später erzeugte Brief. QR-Code und
   Bezahl-Button sind in der Vorschau Platzhalter — der echte Link entsteht
-  erst beim Versand.
+  erst beim Versand; der Vorschau-QR ist deshalb rot als „Vorschau-QR — nicht
+  versenden" markiert und führt auf die Hinweis-Seite `/shared/pay/vorschau`.
 - **Aktions-Modal ist kanalabhängig**: Symbol, Kopffarbe, Empfänger-Zeile und
   Button-Text kommen aus `nextAction()['channel']`. E-Mail → Papierflieger,
   „Versand per Zendesk an <Adresse>", Button „Jetzt per Zendesk senden". Brief →
@@ -734,10 +824,13 @@ Zeitreihen beginnen mit dem Modulstart 08/2026.
 ### Tests
 
 `tests/Feature/Receivables/`: `DebtCaseIntakeTest` (Weiche, Cluster, Gebühr,
-Eskalation, Mandatsentzug, § 367), `DebtCaseActionsTest` (Zendesk, PDF, Fristen,
+RLS-Entscheidung statt Auto-Eskalation, Mandatsentzug, § 367),
+`DebtCaseActionsTest` (Zendesk, PDF, Fristen,
 Monitoring, Entscheid), `DebtCaseHoldTest` (Ruhend-Status: Pflicht-Begründung,
 Arbeitslisten-Ausschluss, automatische Reaktivierung inkl. neu entschiedener
-Weiche), `RzvAgreementTest` (GC-Verknüpfung, geplatzte RZV-Rate ohne
+Weiche), `ReceivablesProcessFlexibilityTest` (Umbau 08/2026: Wartend mit
+Wiedervorlage, extern erledigte Schritte, Fälligstellungs-Wahl, Zahlung mit
+Raten-Zuordnung), `RzvAgreementTest` (GC-Verknüpfung, geplatzte RZV-Rate ohne
 Auto-Eskalation, Plan-Anpassung beider Einzugsarten), `AppendedDebitsTest`
 (Mischfall: zahlbarer Rest in Schreiben und Bezahllinks, Brief-Ankündigung des
 Anhängens), `ReceivablesPagesTest` (Seiten, Rechte, Banner),
@@ -895,7 +988,8 @@ versteht (abgestimmte Entscheidungen vom 14.08.2026):
   dem Fall gutgeschrieben (Spiegel über `source_contract_payment_id`,
   idempotent), der letzte schließt ihn bei Saldo 0 als `appended_settled` —
   bleibt ein Rest (Gebühren), fällt der Fall in die Arbeitsliste. Eine RLS auf
-  eine Rate der Serie eskaliert wie gehabt in den harten Weg.
+  eine Rate der Serie legt den Fall zur Entscheidung vor (zurück zur
+  Zahlungserinnerung oder weiter — seit 08/2026 keine Auto-Eskalation mehr).
 - **Zukünftiges Zahldatum MIT Zahlbetrag**: Der Betrag ist real eingegangen
   (z.B. überwiesene Gebühren), das Datum nur der Anhänge-Termin — gebucht wird
   zum **Vorfallsdatum**.
