@@ -112,7 +112,12 @@ Vorlagen-Varianten hinterlegt werden.
   Forderungsaufstellung sofort mit dem gewählten Stand; wirksam wird die Wahl
   mit dem Erzeugen des Schreibens (Verlaufseintrag). Kein Wahlrecht gibt es,
   wo die Forderungsbasis fest ist: Mandatsentzug/Direktzahler (immer
-  Restsumme), Bestandsimport (eingefrorene Summe), Kundenkonto (Saldo).
+  Restsumme) und Kundenkonto (Saldo). **Bestandsimport-Fälle haben die Wahl
+  seit 21.08.2026 ebenfalls**: Bei gesetzter Fälligstellung gilt der
+  **dokumentierte Vertragsrest** (Vertragswert − Geldeingänge −
+  Alt-Einzüge über `Contract::legacyCollectedCents()`, manuell übersteuerbar
+  via `legacy_collected_cents`); die geprüfte Import-Summe + neue RLS bleibt
+  dabei die **Untergrenze** (`DebtCaseBalanceService::principalFor()`).
 - **Schritt extern erledigt nachtragen (08/2026)**: Wurde das anstehende
   Schreiben außerhalb des Hubs erstellt/versendet (z. B. Mahnung von Hand zur
   Post gegeben), trägt „Schritt extern erledigt nachtragen" in der
@@ -351,8 +356,15 @@ nur noch Durchreichen auf `balance()`.
 **Mischfall angehängte Lastschriften (08/2026):** `balance()` liefert
 zusätzlich `appended_pending` (Summe der angehängten Raten, die als
 scheduled/pending/submitted noch im SEPA-Einzug unterwegs sind — geplatzte
-oder stornierte zählen nicht) und `open_excl_appended` (= `open` −
-`appended_pending`). **Alle Schreiben, der Platzhalter `{{offener_betrag}}`
+oder stornierte zählen nicht; **Ausnahme seit 21.08.2026:** durch eine
+unbefristete SEPA-Pause stornierte Raten, erkennbar an der Notiz „Pausiert –
+unbefristet", zählen weiter — sie leben beim Fortsetzen über
+`paused_payment_ids` wieder auf) und `open_excl_appended` (= `open` −
+`appended_pending`). **Achtung Plan-Reload:** Ein Neuladen des Zahlungsplans
+ersetzt Raten-Zeilen (neue IDs, gleiche Ratennummern) — zeigen
+`appended_payment_ids` danach auf die alten, gelöschten Zeilen, läuft der
+Abzug ins Leere und Schreiben fordern zu viel (21.08.2026, Fall H003435;
+einmalig repariert durch Migration `2026_08_21_140000`). **Alle Schreiben, der Platzhalter `{{offener_betrag}}`
 und sämtliche Bezahllinks fordern nur `open_excl_appended` an** — sonst
 zahlt der Kunde doppelt; Brief- und Mail-Bogen weisen den Einzugs-Anteil als
 Abzugszeile aus. Analog zählen geplatzte RZV-Raten nicht zur Hauptforderung
