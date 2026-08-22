@@ -32,7 +32,10 @@ Das Kundenprofil zeigt alle relevanten Informationen zu einem Kunden in einem Si
 
 Der Tab zeigt die mit Phorest synchronisierten Stammdaten (Notizen, persönliche
 Daten, Kontakt, Adresse, Marketing-Einwilligungen). Alle Felder sind zunächst
-**gesperrt** und tragen ein kleines **Schloss-Symbol** rechts im Feld.
+**gesperrt** und tragen ein kleines **Schloss-Symbol** rechts im Feld — die
+Felder selbst sehen dabei aus wie normale Felder (kein Ausgrauen). Bei Hover
+über dem Schloss und beim Klick in ein gesperrtes Feld erscheint ein Tooltip
+„Zum Entsperren gedrückt halten".
 
 **Entsperren — zwei Wege:**
 
@@ -52,11 +55,18 @@ Speichern gleicht die Änderungen nach Bestätigung mit Phorest ab
   wiederverwendbar; erwartet ein `isEditing` im umgebenden Alpine-Scope,
   blendet sich bei `isEditing = true` selbst aus und setzt es beim
   erfolgreichen Halten (900 ms Timeout, muss zur CSS-Transition passen).
-- Styles: `theme_glattt.css`, Abschnitt „FIELD-LOCK" — Varianten
-  `-offset` (neben nativen Icons wie dem Select-Pfeil), `-static` (läuft in
-  Flex-Zeilen wie Toggles mit), `-top` (Textareas), `-host` (Bezugsrahmen für
-  Container ohne eigene Positionierung). Der Fortschrittsring ist ein
-  SVG-Kreis mit `pathLength="100"` und `stroke-dashoffset`-Transition.
+- Styles: `theme_glattt.css`, Abschnitt „FIELD-LOCK" — Varianten `-static`
+  (läuft in Flex-Zeilen wie Toggles mit; bewusst `position: relative`, damit
+  der absolut positionierte Ring im Button verankert bleibt), `-top`
+  (Textareas), `-host` (Bezugsrahmen für Container ohne eigene
+  Positionierung). Der Fortschrittsring ist ein SVG-Kreis mit
+  `pathLength="100"` und `stroke-dashoffset`-Transition.
+- Tooltip: generisches `data-tooltip`-Muster des Themes; die Klasse
+  `tooltip-visible-glattt` erzwingt ihn programmatisch. Der Klick in ein
+  gesperrtes Feld landet auf dem Feld-Wrapper
+  (`handleLockedFieldClick($event)` — auf disabled/pointer-events-none
+  Elementen feuern Handler nicht) und feuert ein `field-lock-hint`-Event auf
+  das Schloss des Feldes.
 - Absicherung: `tests/Feature/ClientInfoPartialTest.php` prüft zusätzlich,
   dass im gerenderten Partial kein Attribut-Code als sichtbarer Text steht
   (Regression eines Markup-Bugs: verlorenes öffnendes `<button`-Tag ließ
