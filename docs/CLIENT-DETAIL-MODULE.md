@@ -58,6 +58,11 @@ Felder selbst sehen dabei aus wie normale Felder (kein Ausgrauen). Bei Hover
   Felder mit Bestätigungs-Dialog speichern, wie bisher).
 
 Beide Wege gleichen mit Phorest ab (`PUT /phorest/client/{id}`).
+Erfolgs- und Fehlermeldungen erscheinen als **Toast unten rechts** (nicht mehr
+als Banner oben — der wurde übersehen). Die **E-Mail-Adresse wird schon beim
+Tippen validiert**: ungültiges Format markiert das Feld rot, zeigt eine
+Meldung darunter und deaktiviert den Speichern-Haken bzw. blockiert das
+Sammelspeichern.
 
 **Für Entwickler:**
 
