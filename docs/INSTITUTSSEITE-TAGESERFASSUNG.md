@@ -51,21 +51,44 @@ Folgetermin ausgewählt werden.
 Der Kommentar wird automatisch als **Terminnotiz nach Phorest** kopiert
 (`[Datum – Name] Text`).
 
+### Kundennummern-Automatik
+
+Die Seite macht die **manuelle Vergabe von Kundennummern** (Phorest-externalId,
+z. B. `BS001034`) überflüssig: Sobald ein Beratungstermin in Phorest
+**eingecheckt** ist, bekommt ein Kunde ohne Kundennummer automatisch die
+nächste Nummer aus dem Nummernkreis seines Instituts — auch wenn er am Ende
+nicht kauft. Format: Instituts-Präfix (BI, BS, HB, OS, H, MD) + sechsstellige
+laufende Nummer, z. B. `MD000001`.
+
+- Die Nummer erscheint in der Tagesliste (klein hinter dem Kunden, `#MD000001`)
+  und im Daten-Check des Verkaufs-Assistenten.
+- Spätestens beim Daten-Check bzw. beim Speichern eines Verkaufs wird die
+  Nummer vergeben — die **Vertragsnummer** (`JJJJ.MM.TT-Kundennummer`) hat
+  damit nie mehr den Client-ID-Fallback.
+- Bereits (manuell) vergebene Nummern werden erkannt und **übersprungen**.
+- **Go-Live je Standort:** Ein Admin legt vorher im Admin-Backend unter
+  **Einstellungen → Kundennummern** den Nummernkreis an (Präfix + erste
+  Nummer, abgestimmt oberhalb des manuellen Bestands). Ohne Nummernkreis
+  vergibt die Seite nichts — alles läuft wie bisher.
+
 ### Verkauf
 
-Button **„Verkauf"** öffnet einen Assistenten in fünf Schritten:
+Button **„Verkauf"** öffnet einen Assistenten in sechs Schritten:
 
 1. **Daten-Check** — Stammdaten (Name, E-Mail, Mobilnummer, Adresse) mit dem
-   Kunden prüfen; Korrekturen werden direkt in Phorest gespeichert.
-2. **Paket** — Körperzonen ankreuzen (inkl. „2 kleine Zonen" mit Angabe der
-   konkreten Zonen; ab der Maximal-Zonenzahl automatisch Ganzkörper). Laufzeit/
-   Rate und Rabatt kommen aus der gültigen Preisliste des Instituts.
-3. **Zahlung** — Ratenzahlung (SEPA: IBAN, Kontoinhaber, ggf. abweichender
+   Kunden prüfen; Korrekturen werden direkt in Phorest gespeichert. Oben steht
+   die (ggf. gerade automatisch vergebene) Kundennummer.
+2. **Körperzonen** — direkt auf der Körper-Figur anklicken (inkl. „2 kleine
+   Zonen" mit Angabe der konkreten Zonen; ab der Maximal-Zonenzahl automatisch
+   Ganzkörper).
+3. **Paket & Preis** — Laufzeit/Rate und Rabatt kommen aus der gültigen
+   Preisliste des Instituts.
+4. **Zahlung** — Ratenzahlung (SEPA: IBAN, Kontoinhaber, ggf. abweichender
    Zahler mit Adresse + E-Mail, erste Abbuchung) oder Direktzahlung vor Ort.
    Dazu das Vertrags-/Unterschriftsdatum.
-4. **Extras** — Gutschein per Seriennummer prüfen und anrechnen,
+5. **Extras** — Gutschein per Seriennummer prüfen und anrechnen,
    „Freunde werben Freunde"-Werber suchen (Selbstwerbung ist gesperrt).
-5. **Abschluss** — Zusammenfassung, Pflichtkommentar + Gesprächsführer,
+6. **Abschluss** — Zusammenfassung, Pflichtkommentar + Gesprächsführer,
    speichern.
 
 Ergebnis: Der Vertrag steht sofort im Hub (Herkunft **„Institut"**), das Büro
@@ -119,6 +142,7 @@ stellen (Hinweis steht auch auf der Seite).
 | View | `resources/views/shared/institute-day.blade.php` + Partials `shared/institute/*` (Standalone-Blade, noindex, Theme-Bootstrap, Institut-Branding aus `InstituteColor`/`InstituteImage`) |
 | Frontend-Logik | `public/js/institute-page.js` (Alpine, `institutePage(cfg)`) |
 | Vertragserstellung | `ContractCreationService::createFromInstituteCapture()` |
+| Kundennummern | `client_number_sequences` + `App\Models\ClientNumberSequence` + `App\Services\ClientNumberService`; Admin-Resource `Filament/Resources/ClientNumberSequences` |
 | Statistik-Proxy | `SharedInstitutePageController::statData()` + `<x-institute-statistic>` |
 
 ### Tagesliste
@@ -135,6 +159,20 @@ stellen (Hinweis steht auch auf der Seite).
   (Kabinen etc., `HrStaffLinkService::isNonPerson`) fehlen im
   Mitarbeiter-Dropdown.
 - Erfassungsstatus über vorhandene `ConsultationRecord` (per `appointment_id`).
+- **Kundennummern-Automatik** (`attachClientNumbers()`): Für heutige Gruppen
+  mit Status `CHECKED_IN`/`PAID` und ohne Nummer im Kundenspiegel ruft die
+  Tagesliste `ClientNumberService::assignIfMissing()` auf (max. 5 je Request,
+  Rest beim nächsten Refresh). Der Service prüft live in Phorest nach
+  (manuelle Nummern sind im Spiegel erst nach dem Nacht-Sync), reserviert die
+  nächste freie Nummer sperrend (`lockForUpdate`, Kollisionen mit dem Bestand
+  werden übersprungen), schreibt sie als `externalId` nach Phorest und zieht
+  `client_statistics` sofort nach (Kollisionsprüfung + Upsell-Suche kennen
+  die Nummer damit sofort; Neukunden bekommen eine Spiegel-Zeile).
+  Sicherheitsnetze: `clientDetails()` (Daten-Check) und `storeSale()` vergeben
+  ebenfalls, damit die Vertragsnummer nie auf das Client-ID-Fragment
+  zurückfällt. Ohne `client_number_sequences`-Eintrag ist die Automatik für
+  das Institut komplett aus. Scheitert das Phorest-Update, verfällt die
+  reservierte Nummer (Lücke, geloggt) — sie wird nie doppelt vergeben.
 
 ### Erfassung
 
@@ -191,6 +229,12 @@ Registry-Definitionen — nichts ist doppelt gebaut.
   Token-Verwaltung mit Recht.
 - `tests/Unit/InstituteAccessTokenTest.php` — Token-Lebenszyklus +
   `signingInstructions()`-Spaltenvorrang.
+- `tests/Unit/ClientNumberServiceTest.php` — Nummernkreis (Padding,
+  Kollisions-Überspringen, Phorest-Fehlerfall, Spiegel-Nachzug) und
+  `tests/Feature/ClientNumberSequenceAdminTest.php` — Admin-Resource.
+  Kundennummern-Szenarien der Seite stecken mit in
+  `SharedInstitutePageTest` (Check-in-Vergabe, kein Nummernkreis ⇒ keine
+  Vergabe, Vertragsnummer ohne Fallback).
 
 ### Betrieb
 
@@ -198,3 +242,7 @@ Registry-Definitionen — nichts ist doppelt gebaut.
   Path-Rule) — neue Endpoints müssen unter diesen Präfixen bleiben.
 - Abschaltung des Google-Sheets-Imports ist ein **separater Task** (Freigabe
   durch Jan); bis dahin Parallelbetrieb mit Dubletten-Warnung.
+- **Go-Live der Kundennummern-Automatik je Standort:** am Stichtag im
+  Admin-Backend (**Einstellungen → Kundennummern**) den Nummernkreis anlegen —
+  Präfix (Vorschlag kommt aus dem Institutsnamen) + erste Nummer oberhalb des
+  manuellen Bestands. Ab dann keine Nummern mehr von Hand vergeben.
