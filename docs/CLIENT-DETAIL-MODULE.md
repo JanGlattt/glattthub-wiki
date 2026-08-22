@@ -37,24 +37,42 @@ Felder selbst sehen dabei aus wie normale Felder (kein Ausgrauen). Bei Hover
 über dem Schloss und beim Klick in ein gesperrtes Feld erscheint ein Tooltip
 „Zum Entsperren gedrückt halten".
 
-**Entsperren — zwei Wege:**
+**Entsperren — je Feld oder alle auf einmal:**
 
-1. **Bearbeiten**-Button oben rechts klicken, oder
-2. das **Schloss an einem Feld gedrückt halten**: Um das Schloss schließt sich
-   ein Fortschrittsring (~1 Sekunde); danach öffnet sich das Schloss in einer
-   kurzen Animation und alle Felder werden bearbeitbar. Ein kurzer Klick
-   entsperrt bewusst nicht (Schutz vor versehentlichem Entsperren) und zeigt
-   stattdessen den Hinweis-Toast.
+1. **Schloss an einem Feld gedrückt halten**: Um das Schloss schließt sich ein
+   Fortschrittsring (~1 Sekunde); danach öffnet es sich in einer kurzen
+   Animation — **nur dieses Feld** wird bearbeitbar und zeigt ein grünes,
+   offenes Schloss. Ein Klick auf das offene Schloss sperrt das Feld wieder
+   (und verwirft eine ungespeicherte Änderung). Ein kurzer Klick auf das
+   geschlossene Schloss entsperrt bewusst nicht und zeigt den Hinweis-Toast.
+2. **„Alle Felder entsperren"** oben rechts entsperrt alle Felder auf einmal.
 
-Speichern gleicht die Änderungen nach Bestätigung mit Phorest ab
-(`PUT /phorest/client/{id}`).
+**Speichern:**
+
+- Sobald ein entsperrtes Feld geändert wird, ersetzen **Haken** (Änderung
+  speichern) und **X** (Änderung verwerfen und sperren) das Schloss direkt im
+  Feld. Der Haken speichert **genau dieses eine Feld** sofort nach Phorest —
+  ohne Bestätigungs-Dialog; das Feld wird danach wieder gesperrt.
+- Sobald mindestens ein Feld entsperrt ist, sitzen oben rechts **Abbrechen**
+  (alles verwerfen und sperren) und **Änderungen speichern** (alle geänderten
+  Felder mit Bestätigungs-Dialog speichern, wie bisher).
+
+Beide Wege gleichen mit Phorest ab (`PUT /phorest/client/{id}`).
 
 **Für Entwickler:**
 
 - Schloss-Komponente: `resources/views/components/field-lock.blade.php` —
-  wiederverwendbar; erwartet ein `isEditing` im umgebenden Alpine-Scope,
-  blendet sich bei `isEditing = true` selbst aus und setzt es beim
-  erfolgreichen Halten (900 ms Timeout, muss zur CSS-Transition passen).
+  wiederverwendbar; bekommt den Feld-Schlüssel als Prop (`field="firstName"`)
+  und erwartet die Feld-Sperr-API im umgebenden Alpine-Scope: `fieldUnlocked`,
+  `unlockField`, `lockField`, `fieldDirty`, `saveField`, `savingField`
+  (implementiert in `clientDetailPage()`). Haltezeit 900 ms — muss zur
+  CSS-Transition des Rings passen.
+- Einzelfeld-Speichern (`saveField`): sendet die Phorest-Pflichtfelder
+  (`clientId`, `version`, `firstName`, `lastName`) **plus genau das eine
+  geänderte Feld** — für Vor-/Nachname bewusst den gespeicherten Stand, damit
+  ungespeicherte Änderungen anderer Felder nicht mitrutschen. Nach Erfolg wird
+  die `version` aus der Antwort übernommen (Optimistic Locking) und der lokale
+  `client`-Stand nachgezogen, ohne die Seite neu zu laden.
 - Styles: `theme_glattt.css`, Abschnitt „FIELD-LOCK" — Varianten `-static`
   (läuft in Flex-Zeilen wie Toggles mit; bewusst `position: relative`, damit
   der absolut positionierte Ring im Button verankert bleibt), `-top`
