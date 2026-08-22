@@ -28,6 +28,40 @@ Das Kundenprofil zeigt alle relevanten Informationen zu einem Kunden in einem Si
 
 ---
 
+### Kundeninfos-Tab (Bearbeiten & Feld-Schloss)
+
+Der Tab zeigt die mit Phorest synchronisierten Stammdaten (Notizen, persönliche
+Daten, Kontakt, Adresse, Marketing-Einwilligungen). Alle Felder sind zunächst
+**gesperrt** und tragen ein kleines **Schloss-Symbol** rechts im Feld.
+
+**Entsperren — zwei Wege:**
+
+1. **Bearbeiten**-Button oben rechts klicken, oder
+2. das **Schloss an einem Feld gedrückt halten**: Um das Schloss schließt sich
+   ein Fortschrittsring (~1 Sekunde); danach öffnet sich das Schloss in einer
+   kurzen Animation und alle Felder werden bearbeitbar. Ein kurzer Klick
+   entsperrt bewusst nicht (Schutz vor versehentlichem Entsperren) und zeigt
+   stattdessen den Hinweis-Toast.
+
+Speichern gleicht die Änderungen nach Bestätigung mit Phorest ab
+(`PUT /phorest/client/{id}`).
+
+**Für Entwickler:**
+
+- Schloss-Komponente: `resources/views/components/field-lock.blade.php` —
+  wiederverwendbar; erwartet ein `isEditing` im umgebenden Alpine-Scope,
+  blendet sich bei `isEditing = true` selbst aus und setzt es beim
+  erfolgreichen Halten (900 ms Timeout, muss zur CSS-Transition passen).
+- Styles: `theme_glattt.css`, Abschnitt „FIELD-LOCK" — Varianten
+  `-offset` (neben nativen Icons wie dem Select-Pfeil), `-static` (läuft in
+  Flex-Zeilen wie Toggles mit), `-top` (Textareas), `-host` (Bezugsrahmen für
+  Container ohne eigene Positionierung). Der Fortschrittsring ist ein
+  SVG-Kreis mit `pathLength="100"` und `stroke-dashoffset`-Transition.
+- Absicherung: `tests/Feature/ClientInfoPartialTest.php` prüft zusätzlich,
+  dass im gerenderten Partial kein Attribut-Code als sichtbarer Text steht
+  (Regression eines Markup-Bugs: verlorenes öffnendes `<button`-Tag ließ
+  `@click="cancelEdit()" …` im Frontend erscheinen, behoben 08/2026).
+
 ### Dokumente-Tab
 
 Zeigt alle vom Kunden eingereichten Formulare (z.B. Aufklärungsbögen, Verträge).
