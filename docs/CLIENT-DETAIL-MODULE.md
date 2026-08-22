@@ -16,7 +16,7 @@ Das Kundenprofil zeigt alle relevanten Informationen zu einem Kunden in einem Si
 
 | Tab | Beschreibung |
 |-----|-------------|
-| **Übersicht** | Stammdaten, Kontaktinfos, Phorest-Daten |
+| **Übersicht** | Das Wichtigste aus allen Unterseiten — eine Karte je Tab im 2×3-Raster |
 | **Kundeninfos** | Erweiterte Kundeninformationen |
 | **Termine** | Vergangene und zukünftige Termine aus Phorest |
 | **glattt Pakete** | Gebuchte Pakete und Kurse |
@@ -27,6 +27,28 @@ Das Kundenprofil zeigt alle relevanten Informationen zu einem Kunden in einem Si
 | **Kundenservice** | Service-Anfragen und Notizen |
 
 ---
+
+### Übersicht-Tab (Karten-Raster)
+
+Die Übersicht zeigt das Wichtigste aus allen Unterseiten als **sechs Karten im
+2×3-Raster** (mobil einspaltig); jede Karte springt über „Öffnen" in ihren Tab:
+
+1. **Kundeninfos** — Kontakt, Adresse, Geburtsdatum, „Kunde seit", Einwilligungs-Badges
+2. **Termine** — nächster Termin prominent, letzter Termin, Zähler kommend/vergangen (Stat-Strip)
+3. **glattt Pakete** — aktive Pakete mit Einheiten-Fortschrittsbalken
+4. **Vertrag & Zahlungen** — aktiver Vertrag (Paket, Status, Rate, Zahlart) plus
+   roter Hinweis auf **offene Forderungen** (springt ins Forderungsmanagement)
+5. **Behandlung** — letzte Behandlung (Datum, Zone, Mitarbeiterin), Zonen-/Behandlungszähler
+6. **Dokumente & Kommunikation** — letzte Formulare, letzte WhatsApp, letztes Zendesk-Ticket
+
+**Für Entwickler:** `partials/overview.blade.php` + `loadOverview()` in
+`clientDetailPage()`. Die Übersicht nutzt die **bestehenden Tab-Loader**
+(Pakete, Dokumente, Behandlungseinstellungen — Tabs sind danach schon geladen)
+und holt Verträge/Forderungen/Zendesk/Superchat über dieselben Endpoints wie
+die Tab-Partials in eigene `overview*`-Stores (die Tab-Partials kapseln ihren
+Zustand lokal und sind von außen nicht erreichbar). Karten zeigen
+`<x-stat-skeleton type="list">` beim Laden; Styles unter „CLIENT-OVERVIEW"
+in `theme_glattt.css`. Test: `tests/Feature/ClientOverviewPartialTest.php`.
 
 ### Kundeninfos-Tab (Bearbeiten & Feld-Schloss)
 
