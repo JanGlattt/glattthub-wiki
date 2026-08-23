@@ -138,6 +138,12 @@ Endpoints: `date_from, date_to, standort, referrer_type` — **kein `branch_id`*
 
 Gestrichene Karten mit lebenden Endpoints: `/branches`, `/monthly`, `/body-zones` — Partials existieren nicht mehr; als Dashboard-Statistik wäre das **Neubau**, kein Port.
 
+**Ausnahme (bewusst keine Statistik-Komponente):** Die **Badge-Vitrine**
+(Gamification, seit 08/2026) am Seitenende ist eine Live-Liste verdienter
+Badges je Mitarbeiterin — Einzeldatensätze ohne Aggregat/Chart/Register,
+serverseitig gerendert (`partials/badge-vitrine.blade.php`). Als
+Dashboard-Kachel ungeeignet; Details Wiki `GAMIFICATION.md`.
+
 ### HR-Kennzahlen (`view_report_hr_kpis`) — 10 Statistiken, alle (b)
 
 Endpoints einheitlich `date_from/date_to/branch_id`. **Kein DataScope** (Gehaltsschutz via `view_hr_salaries`). Einzige Seite, die `chart-table.js` bereits lädt — Registry-Muster passt hier direkt.
