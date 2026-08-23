@@ -40,6 +40,15 @@ Badges sind im Admin-Backend verwaltbar.
   Schwellen (z.B. „Party ab 3 KPZ"), Text-Varianten (rotieren automatisch)
   und Animations-Pool. Anlässe „in Vorbereitung" brauchen noch Zusatzlogik
   und lassen sich nicht aktivieren.
+- **Ziele je Institut:** Unter Gamification → **Ziele je Institut** bekommt
+  jeder Standort ein eigenes **Wochenziel** und **Monatsziel** (KPZ) sowie
+  optional **eigene Instituts-Marken** (überschreiben die globale
+  Marken-Liste). Die Anlässe „Wochenziel erreicht" und „Monatsziel
+  erreicht" feuern nur für Institute mit gesetztem Ziel (einmal je
+  Woche/Monat, mit Ziel-Treffer-Feier am Balken); ein gesetztes
+  Monatsziel erscheint zusätzlich als Marke auf dem Instituts-Balken
+  **jeder** Verkaufs-Feier — das Team sieht bei jedem Abschluss, wie weit
+  es noch ist.
 - **Wichtig — Ziele sind eigene Werte (Entscheidung Jan 24.08.2026):**
   Instituts-Marken, Bonus-Minimalziel und €/KPZ werden **hier** gepflegt
   und kommen bewusst **nicht** aus dem Bonus-Board oder den
@@ -132,6 +141,7 @@ Badge-Vollprüfung. Alles über Dedupe-Keys idempotent.
 | `gamification_triggers` | Verwaltungs-Einstellungen je Anlass (aktiv, Config, Texte, Animations-Pool, Rotations-Zeiger) |
 | `gamification_events` | Abzuspielende Feiern (Feed + Hintergrund-Overlays), Dedupe-Key unique |
 | `gamification_snapshots` | KV-Speicher für künftige Zustands-Vergleiche (Ausbau) |
+| `gamification_branch_goals` | Wochen-/Monatsziel + eigene Marken je Institut (Anlässe `goal.week`/`goal.month`, Ziel-Marker auf dem Verkaufs-Balken) |
 | `badges` | Badge-Definitionen (Kennzahl, Zeitraum, Stufen mit Prämie) |
 | `badge_awards` | Eingefrorenes Verleihungs-Log inkl. Auszahlungsstatus |
 
