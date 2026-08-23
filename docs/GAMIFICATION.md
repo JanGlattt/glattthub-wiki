@@ -40,6 +40,13 @@ Badges sind im Admin-Backend verwaltbar.
   Schwellen (z.B. „Party ab 3 KPZ"), Text-Varianten (rotieren automatisch)
   und Animations-Pool. Anlässe „in Vorbereitung" brauchen noch Zusatzlogik
   und lassen sich nicht aktivieren.
+- **Wichtig — Ziele sind eigene Werte (Entscheidung Jan 24.08.2026):**
+  Instituts-Marken, Bonus-Minimalziel und €/KPZ werden **hier** gepflegt
+  und kommen bewusst **nicht** aus dem Bonus-Board oder den
+  Performance-Zielen. Ändert sich dort etwas (z.B. das Minimalziel der
+  BG-Spezialistinnen), die Werte in der Anlass-Verwaltung manuell
+  nachziehen — sonst feiert die Seite nach alten Zahlen. Nur die Frage,
+  *wer* BG-Spezialistin ist, kommt automatisch aus der Bonus-Klasse.
 - **Badges:** Badge anlegen = Name + Emoji + Kennzahl (aus dem Katalog) +
   Zeitraum (Woche/Monat/Gesamt) + Stufen mit Schwellwert und optionaler
   **Prämie in €**. Die Prämie wird bei Verleihung **eingefroren** — spätere
