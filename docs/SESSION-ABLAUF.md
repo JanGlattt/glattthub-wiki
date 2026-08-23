@@ -9,9 +9,13 @@ Hintergrundabfragen (leere Suche, hängende Karten) erscheint das Modal
 - Läuft die Anmeldung ab, erscheint automatisch ein Modal „Sitzung abgelaufen" —
   auch ohne Klick, spätestens nach einer Minute (Heartbeat) oder bei der
   nächsten Aktion (z.B. globale Suche).
-- Im Modal einfach das Passwort eingeben (E-Mail ist vorausgefüllt) →
-  **„Anmelden"**. Danach bist du wieder genau auf derselben Seite; offene
-  Formulareingaben bleiben erhalten.
+- Im Modal einfach die **4-stellige PIN** eingeben → **„Anmelden"**. Danach
+  bist du wieder genau auf derselben Seite; offene Formulareingaben bleiben
+  erhalten. Wer keine PIN hinterlegt hat (Profil → PIN-Verwaltung), meldet
+  sich mit dem Passwort an (E-Mail ist vorausgefüllt); der Umschalter
+  **PIN ⇄ E-Mail** steht im Modal jederzeit bereit.
+- Auch die **419-Fehlerseite** („Sitzung abgelaufen" nach einem abgeschickten
+  Formular) bietet die direkte Neuanmeldung per PIN bzw. E-Mail/Passwort.
 - Alternativ führt „Zur Anmeldeseite" zum normalen Login (nötig z.B. bei
   aktivierter Zwei-Faktor-Anmeldung — das Modal leitet dann automatisch um).
 - Die **Session-Dauer** stellt ein Admin unter Admin-Panel → Einstellungen →
@@ -47,16 +51,34 @@ aktualisieren und die Session am Leben halten. Bei anderem Session-Treiber als
 ### Modal & Re-Login ohne Seitenwechsel
 
 Markup in `layouts/hub.blade.php` (`#session-guard-modal`, `modal-glattt`-Klassen,
-z-index über allem). Ablauf beim Anmelden:
+z-index über allem). **PIN ist die Standard-Methode** — analog zur Login-Seite:
+Das Layout rendert `data-has-pin` (hat der angemeldete Nutzer eine PIN?); nur
+dann gibt es den Umschalter PIN ⇄ E-Mail (`segmented-control-glattt`), sonst
+zeigt das Modal direkt E-Mail/Passwort. Ablauf beim Anmelden:
 
 1. `GET /login` → frisches CSRF-Token aus dem `csrf-token`-Meta der Antwort
    (neue Gast-Session).
-2. `POST /login` (Fortify, `Accept: application/json`) mit E-Mail + Passwort.
+2. Je nach Methode `POST /login/pin` (nur `pin`) oder `POST /login` (Fortify,
+   E-Mail + Passwort) — beide mit `Accept: application/json`.
+   `PinLoginController` antwortet bei `expectsJson()` mit `{success: true}`
+   statt Redirect.
 3. Erfolg → nochmal Token holen (Login regeneriert die Session!) und **alle
    `csrf-token`-Metas der offenen Seite aktualisieren**, Modal schließen,
    Erfolgs-Toast. `two_factor: true` → Redirect auf die volle Login-Seite.
 
 Kein `window.location`-Wechsel — DOM samt Formulareingaben bleibt stehen.
+
+**Throttling:** `POST /login/pin` läuft hinter `throttle:pin-login`
+(5/min pro IP, definiert im `FortifyServiceProvider`) — eine 4-stellige PIN
+wäre sonst frei ratbar. `POST /login/credentials` nutzt Fortifys
+`throttle:login`. Das Modal meldet 429 als „Zu viele Versuche".
+
+### 419-Seite mit Re-Login
+
+`resources/views/errors/419.blade.php` bietet dieselbe Anmeldung als normale
+Formulare (kein fetch): PIN-Formular → `route('login.pin')`, E-Mail-Formular →
+`route('login.credentials')`, Umschalter per Vanilla-JS. Die große PIN-Eingabe
+teilt sich die Theme-Klasse `.input-glattt-pin` mit dem Modal.
 
 ### Session-Dauer aus dem Admin-Backend
 
@@ -83,3 +105,7 @@ network-only.
 Admin-Einstellung wirkt) und `tests/Unit/SessionSettingTest.php`
 (Fallback + Cache-Invalidierung). Test-Gotcha: `getJson()` schickt Cookies nur
 mit `$this->withCredentials()`.
+
+`tests/Feature/PinLoginTest.php` deckt den PIN-Login ab: Redirect- und
+JSON-Flow, 422 bei falscher PIN, Throttling (429 ab dem 6. Versuch pro IP)
+sowie die Konvention, dass Modal und 419-Seite die PIN-Anmeldung anbieten.

@@ -110,6 +110,17 @@ Das glatttHub-System wurde um ein PIN-basiertes Login-System erweitert. Jeder Be
 3. Gib E-Mail und Passwort ein
 4. Klicke auf **"Mit E-Mail anmelden"**
 
+### Nach Session-Ablauf (seit 08/2026):
+
+Die PIN ist überall die primäre Anmeldemethode — nicht nur auf der Login-Seite:
+
+- Das Modal **„Sitzung abgelaufen"** im Hub fragt zuerst die PIN ab
+  (E-Mail/Passwort über den Umschalter; ohne hinterlegte PIN direkt
+  E-Mail/Passwort).
+- Die **419-Fehlerseite** bietet dieselbe Neuanmeldung als PIN-first-Formular.
+
+Details: [SESSION-ABLAUF.md](SESSION-ABLAUF.md)
+
 ## Sicherheit
 
 ### Implementierte Maßnahmen:
@@ -118,9 +129,12 @@ Das glatttHub-System wurde um ein PIN-basiertes Login-System erweitert. Jeder Be
 2. **Passwort-Bestätigung**: PIN-Änderung erfordert aktuelles Passwort
 3. **PIN-Validierung**: Nur 4 Ziffern erlaubt
 4. **CSRF-Protection**: Alle Forms verwenden `@csrf`
-5. **Rate Limiting**: Laravel's Standard-Rate-Limiting auf Login-Routes
+5. **Rate Limiting** (seit 08/2026): `POST /login/pin` hinter `throttle:pin-login`
+   (5 Versuche/Minute pro IP, Definition im `FortifyServiceProvider`);
+   `POST /login/credentials` hinter Fortifys `throttle:login`
 6. **Session Regeneration**: Nach erfolgreichem Login wird Session erneuert
-7. **Hashing**: PIN wird NICHT gehasht (da nur 10.000 Kombinationen möglich)
+7. **Hashing** (seit 10/2025): PIN wird bcrypt-gehasht gespeichert
+   (`PinAuthenticationService`, Migration `hash_existing_pins_in_users_table`)
 
 ### Sicherheits-Hinweise:
 
