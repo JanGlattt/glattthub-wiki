@@ -107,14 +107,32 @@ Ohne aktive Anlass-Zeile feuert nichts — deshalb ist der Rollout gefahrlos:
      `UserBonusClass::CLASS_BERATUNGSGESPRAECHSSPEZIALISTIN`) und
      Badge-Overlays; Feed-Banner max. 3 je Verkauf. Läuft komplett
      defensiv — ein Fehler hier gefährdet nie das Speichern.
-   - `BadgeMetricCatalog` — kuratierte Kennzahlen (kpz_sold,
+   - `BadgeMetricCatalog` — 27 kuratierte Kennzahlen: Verkauf (kpz_sold,
      contracts_count, gk_contracts, upsell_count, consultations_count,
-     avg_kpz_per_bg, treatments_count, review_mentions). Neue Kennzahl =
-     ein Eintrag + eine Berechnung, danach im Admin kombinierbar.
+     avg_kpz_per_bg, sale_streak_best, first_sale_days, double_strikes,
+     hattrick_days, comebacks, full_sale_weeks, fast_first_sale,
+     distinct_zones_sold, no_sale_follow_ups), Rennen (week_wins,
+     month_wins, months_avg_reached), Behandlung & Kundinnen
+     (treatments_count, first_treatments, loyal_clients, direct_rebookings,
+     busy_weeks mit echter Auslastung aus stats_staff_shifts,
+     allround_months, years_at_glattt) sowie review_mentions und
+     bonus_target_months. Cross-DB-tauglich (keine YEARWEEK-Funktionen —
+     Perioden entstehen in PHP aus Tages-Aggregaten), Ergebnisse je
+     Prüf-Lauf gecacht. Neue Kennzahl = ein Eintrag + eine Berechnung,
+     danach im Admin kombinierbar.
    - `BadgeAwardService` — Stufen-Prüfung je User × Badge × Periode
      (`badge_awards` mit Unique-Index badge/user/tier/period; Woche
      `2026-W34`, Monat `2026-08`, sonst `gesamt`), Prämie eingefroren,
-     `payout_status` open/paid/none.
+     `payout_status` open/paid/none. Ein Lauf verleiht **alle** erreichten
+     Stufen sofort (jede Stufe = eigene Prämie), gefeiert wird nur die
+     höchste — keine Nachzügler-Feiern über mehrere Tage.
+   - **Standard-Badges:** Zwei Daten-Migrationen legen die **29 Badges des
+     abgestimmten Katalogs** an (idempotent über den Namen, Prämien starten
+     mit 0 €). Besonderheiten: „Senkrechtstarterin" nutzt als Näherung das
+     Anlage-Datum des Hub-Zugangs, „glattt-Jubiläum" die Termin-Historie
+     (kein echtes Eintrittsdatum vorhanden), „Ausgebucht!" die echte
+     Auslastung aus `stats_staff_shifts` (≥ 90 %, ab 20 Schichtstunden/Woche),
+     „Zonen-Entdeckerin" die Zahl aktiver Körperzonen zum Migrationszeitpunkt.
 3. **Auslieferung:**
    - Sofort-Overlays kommen als `celebrations`-Array in der Antwort von
      `storeSale`/`storeRecord` (die Mitarbeiterin steht am Gerät).
