@@ -262,6 +262,14 @@ erfassen und bearbeiten"):
   entsteht kein Fall — z.B. solange der Widerruf noch geprüft wird. Der Kunde erhält
   automatisch die Mandats-gekündigt-E-Mail; der Storno wird als Kennzeichen
   („SEPA storniert") und als Ereignis im Fall-Verlauf festgehalten.
+  **Kein Mandat vorhanden (24.08.2026):** Wurde das SEPA nie nach GoCardless
+  übertragen, zeigt das Modal statt der (leeren) Mandatsliste den Hinweis
+  „Keine GoCardless-Mandate am Vertrag" **plus den Button „SEPA als erledigt
+  vermerken (kein Mandat vorhanden)"** — der setzt das Kennzeichen
+  `sepa_cancelled` über den normalen Bearbeiten-Endpoint (`PUT
+  /hub/cancellations/{id}`, landet als Feldänderung im Verlauf). Vorher war
+  der Storno-Button in diesem Fall dauerhaft ausgegraut und der Schritt eine
+  Sackgasse (Nancy, Fall BI007432).
 - **Widerruf zurückgezogen?** Ein von uns storniertes Mandat lässt sich im
   **SEPA-Tab des Vertrags** per Knopfdruck reaktivieren („SEPA-Mandat reaktivieren"):
   GoCardless setzt das Mandat wieder ein und der beim Storno gesicherte Restplan wird

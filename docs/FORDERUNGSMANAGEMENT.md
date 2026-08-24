@@ -79,6 +79,14 @@ ab, zeigt der Hinweis oben auf der Fall-Detailseite beide Zahlen.
   **250-€-Entscheid**: darunter abschreiben (WNB), darüber gerichtliches
   Mahnverfahren. Ob die Gesamtsumme fällig gestellt wird, ist seit 08/2026
   eine **sichtbare Checkbox im Versand-Modal** (siehe „Versand").
+  **Ohne Fälligstellung (seit 24.08.2026):** Wird die letzte Mahnung bewusst
+  nur über die einzelne Lastschrift verschickt (Checkbox abgewählt, z. B. eine
+  RLS bei sonst laufendem Plan), zieht der Hub die
+  **Einzel-Lastschrift-Vorlage** `letter_final_soft` (Frist 10 Tage, normaler
+  Bogen statt Eskalations-Leiste) — und als Folgeschritt steht wie im sanften
+  Weg **„Rate ans Planende anhängen"** an, nicht der 250-€-Entscheid. Damit
+  ist die Angelegenheit erst einmal erledigt; eine weitere RLS reaktiviert den
+  Fall über den RLS-Entscheid.
 - **Gerichtliches Verfahren** (eigener Bereich): Mahnbescheid → Widerspruch? →
   Vollstreckungsbescheid → Einspruch? → Zwangsvollstreckung → PfÜB/Gerichtsvollzieher.
   Der Hub trackt Status, Aktenzeichen, Daten und Kosten — Anträge laufen außerhalb.
@@ -118,6 +126,37 @@ Vorlagen-Varianten hinterlegt werden.
   Alt-Einzüge über `Contract::legacyCollectedCents()`, manuell übersteuerbar
   via `legacy_collected_cents`); die geprüfte Import-Summe + neue RLS bleibt
   dabei die **Untergrenze** (`DebtCaseBalanceService::principalFor()`).
+- **Vorlagen-Weiche der letzten Mahnung (24.08.2026)**: Die Vorlage folgt dem
+  Forderungsumfang. Mit Fälligstellung der Gesamtsumme bleibt es bei
+  `letter_postal_final` (Eskalations-Bogen, 14 Tage). **Ohne** Fälligstellung
+  (Checkbox abgewählt bzw. Standard-Regel greift nicht) zieht der Hub
+  automatisch `letter_final_soft` — der Text fordert dann nur die offenen
+  Positionen an, Frist 10 Tage, normaler Bogen. Vorher zog auch die
+  Einzel-Lastschrift-Mahnung die Gesamtsummen-Vorlage, deren Text die gesamte
+  restliche Vertragsforderung fällig stellte (Bug, Janine 24.08.2026).
+  Umsetzung: `DebtCaseActionService::effectiveTemplateKey()`, greift in
+  `generateLetter()`, `markActionDoneExternally()` und der Modal-Vorschau.
+- **Anschrift korrigieren (24.08.2026)**: Im Versand-Modal postalischer
+  Mahnungen steht neben der Anschrift **„Anschrift korrigieren …"** — Straße,
+  Zusatz, PLZ und Ort werden aus Phorest vorbelegt, die Korrektur wird in die
+  **Phorest-Stammdaten** zurückgeschrieben (kompletter Datensatz samt
+  `version`, wie beim Archivieren) und die Vorschau lädt die Adresse live neu.
+  Jede Korrektur steht als Notiz im Fall-Verlauf. Endpoints:
+  `GET/POST /hub/receivables/{case}/client-address` (Recht `manage_receivables`).
+- **Schreiben verwerfen & Schritt zurücksetzen (24.08.2026)**: Ist ein
+  Mahn-PDF erzeugt, aber **nie rausgegangen** (z. B. defekter QR-Code), lässt
+  sich das **jüngste** Post-Schreiben im Verlauf verwerfen (Button am
+  Schreiben-Eintrag, Pflicht-Grund) — solange der Fall noch auf der Stufe
+  dieses Schreibens steht. Das setzt die Stufe auf die Vorstufe zurück
+  (sanfter Weg: zurück ins Wartefenster, sofort fällig), storniert den
+  Bezahllink des Schreibens (ein doch gedrucktes Exemplar läuft auf „Link
+  nicht mehr gültig") und nimmt eine durch genau dieses Schreiben ausgelöste
+  Fälligstellung zurück. Der Eintrag bleibt als Nachweis stehen (Status
+  „verworfen"). Versendete E-Mails und extern nachgetragene Schritte sind
+  beim Kunden und lassen sich **nicht** zurückholen.
+  Umsetzung: `DebtCaseActionService::discardGeneratedLetter()` /
+  `discardableLetter()`, Route
+  `POST /hub/receivables/{case}/messages/{message}/discard`.
 - **Schritt extern erledigt nachtragen (08/2026)**: Wurde das anstehende
   Schreiben außerhalb des Hubs erstellt/versendet (z. B. Mahnung von Hand zur
   Post gegeben), trägt „Schritt extern erledigt nachtragen" in der
@@ -518,7 +557,15 @@ Rücksendezeile (ohne Länderangabe — die filtert der Bogen aus
 breit ab 20 mm links — die klassische Geschäftsbrief-Position, passt ins
 Standard-Fensterkuvert (DIN lang) mit gewohnter Drittel-Falzung. Falzmarken
 bei 105/210 mm plus Lochmarke bei 148,5 mm stehen als feine Striche am linken
-Blattrand. Der Bezugsblock rechts ist 64 mm schmal und 6 mm unters Logo
+Blattrand.
+**Fixe Kopfhöhe (24.08.2026):** Die Anschrift-Zelle hat eine feste Höhe
+(26 mm Padding + 41 mm Inhalt), sodass Betreff bzw. schwarze
+Eskalations-Leiste **immer erst bei ~97–100 mm** beginnen — sicher unterhalb
+des Kuvertfensters, das bis 90 mm Blattoberkante reicht. Vorher hing der
+Inhaltsbeginn von der Zeilenzahl im Kopf ab, und bei der letzten Mahnung
+ragte die Leiste „Letzte Mahnung vor dem gerichtlichen Mahnverfahren" ins
+Fenster (Janine, 24.08.2026). dompdf-Eigenheit: `height` auf einer
+Tabellenzelle ist die **Content**-Höhe, das Padding kommt obendrauf. Der Bezugsblock rechts ist 64 mm schmal und 6 mm unters Logo
 abgesetzt; Forderungsaufstellung + Fälligkeit teilen sich **einen** Kasten in
 exakter Banner-Breite, der direkt an die schwarze Eskalations-Leiste andockt.
 **dompdf-Eigenheit dabei:** `position: fixed` rechnet relativ zur Margin-Box,
