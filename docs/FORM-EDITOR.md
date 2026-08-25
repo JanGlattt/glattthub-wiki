@@ -63,7 +63,9 @@ Das Form Editor Modul ermöglicht das Erstellen, Bearbeiten und Verwalten von dy
 | `checkbox` | Multi-Choice (Checkboxen) | Auswahl |
 | `dropdown` | Dropdown-Auswahl | Auswahl |
 | `toggle` | Ja/Nein Schalter | Auswahl |
-| `consent` | Einwilligungs-Checkbox (z.B. DSGVO): einzelne Checkbox mit frei formulierbarem, mehrzeiligem Text daneben (kein Label darüber — mehrere Einwilligungen stapeln als gleichartige Kästen). „Pflichtfeld" entscheidet, ob angehakt werden muss (serverseitig erzwungen). Text unterstützt `**fett**`, `__unterstrichen__` und `{{platzhalter}}`. Die Einreichung speichert einen Nachweis-Snapshot (`accepted`, `accepted_at` und den damals angezeigten Text) — Tests: `tests/Feature/ConsentFieldTest.php` | Auswahl |
+| `consent` | Einwilligungs-Checkbox (z.B. DSGVO): einzelne Checkbox mit frei formulierbarem, mehrzeiligem Text daneben (kein Label darüber — mehrere Einwilligungen stapeln als gleichartige Kästen). „Pflichtfeld" entscheidet, ob angehakt werden muss (serverseitig erzwungen). Text unterstützt `**fett**`, `__unterstrichen__`, `*kursiv*`, `- `-Aufzählungen und `{{platzhalter}}`. Die Einreichung speichert einen Nachweis-Snapshot (`accepted`, `accepted_at` und den damals angezeigten Text) — Tests: `tests/Feature/ConsentFieldTest.php` | Auswahl |
+| `gender` | Geschlecht des Kunden, fest an das Phorest-Kundenfeld `gender` gekoppelt: Auswahl Männlich / Weiblich / Divers (Phorest-Rohwerte `MALE`/`FEMALE`/`NON_BINARY`, serverseitig validiert). Der `prefill_key` `client.gender` wird beim Anlegen automatisch gesetzt — das Feld wird mit der Angabe aus Phorest **vorausgefüllt**; ändert der Ausfüllende die Auswahl, greift die Phorest-Änderungserkennung und fragt vor dem Absenden, ob die Änderung ins Phorest-Kundenprofil **zurückgeschrieben** werden soll (nur Hub-Ausfüllansichten; Shared-Link füllt nur vor). Tests: `tests/Feature/GenderFieldTest.php` | Auswahl |
+| `yes_no` | Ja/Nein-Frage (z.B. Anamnese „Medizinische Vorgeschichte"): langer, formatierbarer Fragetext (`**fett**`, `__unterstrichen__`, `*kursiv*`, `- `-Aufzählungen, `{{platzhalter}}`) mit Ja/Nein-Auswahl darunter. Die laufende Nummer (`1.`, `2.`, …) ergibt sich automatisch aus der Reihenfolge der Ja/Nein-Felder im Formular. Optional je Frage zuschaltbar: **Zusatzangabe bei „Ja"** (Freitext, Beschriftung konfigurierbar, auf Wunsch Pflicht — serverseitig erzwungen, bei „Nein" wird eine zurückgebliebene Zusatzangabe verworfen). „Pflichtfeld" entscheidet, ob die Frage beantwortet werden muss. Die Einreichung speichert einen Nachweis-Snapshot (`answer`, `details`, `question` = damals angezeigter Fragetext) — Tests: `tests/Feature/YesNoFieldTest.php` | Auswahl |
 | `file_upload` | Datei-Upload | Spezial |
 | `body_zones` | Körperzonen-Auswahl (Partial) | Spezial |
 | `signature` | Unterschriftenfeld (Touch/Maus) | Spezial |
@@ -114,7 +116,7 @@ gegen die Client-Submissions aus `GET /api/forms/submissions/client/{clientId}`,
   - Unterschriften als eingebettete Bilder
   - Körperzonen mit benutzerfreundlichen Namen
   - Toggle-Switches mit korrektem Ja/Nein-Status
-  - Markdown-Formatierung (**fett**, __unterstrichen__)
+  - Markdown-Formatierung (**fett**, __unterstrichen__, *kursiv*, `- `-Aufzählungen)
 
 #### Vertrags-Layout (seit 25.08.2026, Renderer-Version 7)
 
@@ -342,11 +344,19 @@ Das Formular-System nutzt das bestehende Body Zone Selector Partial:
 
 ### Neuen Feldtyp hinzufügen
 
-1. Konstante in `FormField::TYPE_*` hinzufügen
-2. In `getFieldTypes()` registrieren
-3. **Renderer in `_field-renderer.blade.php` hinzufügen** (zentral für alle 3 Ausfüll-Views)
-4. Preview in `editor.blade.php` hinzufügen
-5. PDF-Darstellung in `pdf.blade.php` hinzufügen
+Vorlage: die Commits der Feldtypen `consent` und `yes_no` — sie fassen alle Stellen an.
+
+1. **Registry**: Konstante `FormField::TYPE_*` + Eintrag in `getFieldTypes()` (Label, Icon, Kategorie, `has_value`)
+2. **Editor-JS** (`form-editor.js`): Icon in `getFieldIcon()`, ggf. Default-Settings in `getDefaultSettings()`
+3. **Editor-View** (`editor.blade.php`): Canvas-Vorschau (`<template x-if>`) + Settings-Block; Ausschluss-Listen (Label/Hilfetext/Prefill/Optionen) mitpflegen
+4. **Renderer in `_field-renderer.blade.php`** (zentral für alle 3 Ausfüll-Views)
+5. **Ausfüll-JS**: `form-fill.js` (Init-Wert, Validierung, `resetForm()`, `loadDraft()`) **und** die bewusst duplizierte Kopie `shared-form-fill.js` (Init, Validierung)
+6. **Serverseitige Validierung**: `FormField::getValidationRules()` (Pflicht-Logik als Closure, `required` allein reicht bei Bool-/Objekt-Werten nicht)
+7. **Snapshot/Speicherung** (falls der Wert mehr als ein Skalar ist): `buildXSnapshot()` im Model + Aufruf in **beiden** Submit-Pfaden (`FormController` und `SharedFormController`)
+8. **Einreichungs-Payload**: `FormController::buildSubmissionDetailPayload()` (`display_value` etc.)
+9. **Readonly-Ansicht**: `_field-readonly.blade.php` (eigenes Template + Ausschluss aus dem Einzeiler-Fallback)
+10. **PDF**: `pdf.blade.php` — eigener `@case` + Eintrag in `$complexTypes`, oder nichts tun (Feld landet im kompakten Label/Wert-Block); bei Layout-Änderung `PDF_RENDERER_VERSION` hochzählen
+11. **CSS** in `theme_glattt.css`, **Tests** (`tests/Feature/<Typ>FieldTest.php`) und diese Feldtyp-Tabelle
 
 > 💡 **Tipp**: Die Feld-Templates in `_field-renderer.blade.php` verwenden Alpine.js `x-if` Direktiven.
 > Einfach ein neues `<template x-if="field.type === 'neuer_typ'">` Block hinzufügen.
@@ -394,9 +404,14 @@ Felder können basierend auf dem Wert anderer Felder ein-/ausgeblendet werden.
 
 1. Feld auswählen
 2. Bereich "Bedingte Anzeige" öffnen
-3. Abhängiges Feld auswählen
+3. Abhängiges Feld auswählen — mögliche Quellen: Radio, Checkboxen, Dropdown und **Ja/Nein-Fragen** (`yes_no`, Werte „Ja"/„Nein")
 4. Operator wählen (ist gleich, ist nicht gleich, enthält, ist ausgefüllt)
 5. Wert auswählen
+
+Typisches Anamnese-Muster: „Wenn Frage 3 = Ja, zeige Frage 4" — die Folgefrage
+bekommt als Bedingung die Ja/Nein-Frage mit Wert „Ja". (Für ein einfaches
+Freitextfeld direkt unter der Frage reicht die eingebaute „Zusatzangabe bei Ja"
+des `yes_no`-Felds, dafür braucht es kein eigenes bedingtes Feld.)
 
 ### Technische Umsetzung
 
@@ -404,6 +419,10 @@ Felder können basierend auf dem Wert anderer Felder ein-/ausgeblendet werden.
 - **Backend**: `isFieldVisible()` in `FormController.php` wiederholt die gleiche Logik
 - **Validierung**: Versteckte Pflichtfelder werden nicht validiert
 - **Speicherung**: Versteckte Felder werden nicht gespeichert
+- **Ja/Nein-Fragen als Quelle**: Der Wert kommt als `{answer, details}` (Objekt, im
+  FormData-Pfad als JSON-String) — alle vier Prüfstellen (`form-fill.js`,
+  `shared-form-fill.js`, beide Controller, PDF) normalisieren auf `answer`
+  (`yes`/`no`), bevor verglichen wird
 
 ### Beispiel Settings
 ```json
@@ -526,6 +545,8 @@ client.firstName    → Vorname
 client.lastName     → Nachname
 client.email        → E-Mail
 client.mobile       → Handynummer
+client.gender       → Geschlecht (Phorest-Rohwert: MALE/FEMALE/NON_BINARY)
+client.genderLabel  → Geschlecht (Anzeige: Männlich/Weiblich/Divers)
 client.dateOfBirth  → Geburtsdatum (Anzeige: DD.MM.YYYY)
 client.dateOfBirthInput → Geburtsdatum (für Datum-Feld: YYYY-MM-DD)
 client.address.street   → Straße
@@ -629,7 +650,8 @@ Wenn ein Formular mit Phorest-Kontext geöffnet wird (z.B. aus der Terminansicht
 | `client.mobile` | `mobile` | Handynummer |
 | `client.phone` | `mobile` | Telefon (→ mobile) |
 | `client.externalId` | `externalId` | Kunden-ID |
-| `client.dateOfBirth` | `dateOfBirth` | Geburtsdatum (wird in Epoch konvertiert) |
+| `client.gender` | `gender` | Geschlecht (`MALE`/`FEMALE`/`NON_BINARY`; Leerwert wird als `null` gesendet) |
+| `client.dateOfBirth` | `birthDate` | Geburtsdatum (dd.mm.yyyy → ISO `YYYY-MM-DD`) |
 | `client.address.street` | `address.streetAddress1` | Straße |
 | `client.address.city` | `address.city` | Stadt |
 | `client.address.postalCode` | `address.postalCode` | Postleitzahl |
