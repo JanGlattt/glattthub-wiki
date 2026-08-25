@@ -269,7 +269,11 @@ erfassen und bearbeiten"):
   `sepa_cancelled` über den normalen Bearbeiten-Endpoint (`PUT
   /hub/cancellations/{id}`, landet als Feldänderung im Verlauf). Vorher war
   der Storno-Button in diesem Fall dauerhaft ausgegraut und der Schritt eine
-  Sackgasse (Nancy, Fall BI007432).
+  Sackgasse (Nancy, Fall BI007432). Trägt ein Widerruf das Kennzeichen
+  `sepa_cancelled`, warnt zusätzlich der **SEPA-Tab der Vertragsseite**
+  („SEPA im Widerruf storniert — kein SEPA anlegen"), damit niemand für den
+  widerrufenen Vertrag ein neues Mandat oder einen Zahlungsplan anlegt
+  (Test: `ContractCancellationBannerTest`).
 - **Widerruf zurückgezogen?** Ein von uns storniertes Mandat lässt sich im
   **SEPA-Tab des Vertrags** per Knopfdruck reaktivieren („SEPA-Mandat reaktivieren"):
   GoCardless setzt das Mandat wieder ein und der beim Storno gesicherte Restplan wird
