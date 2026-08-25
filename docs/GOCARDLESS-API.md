@@ -419,10 +419,23 @@ Implementierung: `ProcessGoCardlessWebhookJob::resolveLocalPayment()`
 Täglich um 06:00 gleicht `gocardless:reconcile-payments` alle offenen lokalen Zahlungen (pending/submitted/confirmed) mit dem tatsächlichen GC-Status ab — falls Webhooks verloren gingen:
 
 - Status-Abweichungen werden korrigiert und geloggt
-- Überfällige Raten ohne GC-Payment werden als Anomalie gemeldet
+- Überfällige Raten ohne GC-Payment werden als Anomalie gemeldet — die betroffenen
+  Raten stehen seit 08/2026 mit Vertragsnummer im Log (`Reconcile: Überfällige Raten
+  ohne GoCardless-Zahlung`), vorher wurde nur der Zähler geloggt
 - Bei Korrekturen/Anomalien: Admin-Benachrichtigung
 - Cron-Endpoint: `POST /api/cron/reconcile-gocardless-payments` (X-Cron-Token)
 - Manuell: `php artisan gocardless:reconcile-payments [--dry-run]`
+
+Von der Anomalie-Meldung ausgenommen sind unbefristet pausierte Verträge **und**
+(seit 25.08.2026) Verträge mit aktivem Forderungsfall, in dem der SEPA-Einzug ruht
+(`debt_cases.sepa_paused_at`): Der Bestandsimport des Forderungsmanagements
+(14.08.2026) setzt nur diesen Marker und legt keine Vertragspause an — solche
+Verträge lösten die Meldung täglich als Fehlalarm aus (Fall #2817). Der
+Einmal-Command `receivables:backfill-sepa-pauses [--dry-run] [--case=…]` hat für
+diese Import-Fälle die unbefristete Vertragspause nachgetragen (Platzhalter-Raten
+lokal storniert, `paused_payment_ids` gemerkt, **ohne** GoCardless-Aufrufe);
+Prod-Lauf 25.08.2026: 13 Pausen nachgetragen, 12 Fälle mit noch offenen
+GC-verknüpften Raten zur manuellen Prüfung übersprungen.
 
 !!! danger "Der Cloud-Scheduler-Job fehlte bis 08/2026 komplett"
     `Schedule::command('gocardless:reconcile-payments')` steht seit 07/2026 in
