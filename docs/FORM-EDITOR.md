@@ -110,12 +110,40 @@ gegen die Client-Submissions aus `GET /api/forms/submissions/client/{clientId}`,
 - Download direkt im Erfolgs-Modal
 - Professionelles Layout mit glattt Logo und Firmenbranding
 - Fußzeile mit vollständigen Firmendaten (Labrado & Schlüter GmbH)
-- Dosis-Schriftart für konsistentes Branding
 - Alle Feldtypen werden korrekt dargestellt:
   - Unterschriften als eingebettete Bilder
   - Körperzonen mit benutzerfreundlichen Namen
   - Toggle-Switches mit korrektem Ja/Nein-Status
   - Markdown-Formatierung (**fett**, __unterstrichen__)
+
+#### Vertrags-Layout (seit 25.08.2026, Renderer-Version 7)
+
+Das PDF-Template (`resources/views/hub/forms/pdf.blade.php`) ist auf einen
+Vertrags-Look ausgelegt:
+
+- **Sektionen fließen über Seitengrenzen** — kein pauschales
+  `page-break-inside: avoid` je Sektion mehr (das erzeugte fast leere Seiten,
+  weil zu lange Sektionen komplett auf die Folgeseite rutschten). Unteilbar
+  bleiben: einzelne Felder/Absätze, Überschrift + erstes Feld (`.keep-next`,
+  dompdf kennt kein `page-break-after: avoid` — Ausnahme vor mehrseitigen
+  Rechtstexten) und Sektionen mit Unterschriftsfeld (`.section-keep`).
+- **Kompakte Angaben-Blöcke:** Aufeinanderfolgende einfache Felder (Text,
+  E-Mail, Zahl, Datum, Auswahl, Toggle — alles außerhalb der
+  `$complexTypes`-Liste) werden gepuffert und als EINE durchgehende Tabelle
+  (`.compact-table`) ausgegeben: kleines Versal-Label links (30 %), Wert
+  rechts, Haarlinien dazwischen. Die `field-table`-Labels (Preisblock,
+  Körperzonen …) nutzen dieselbe Label-Optik und Spaltenbreite, damit
+  gestapelte Tabellen fluchten.
+- **Blocksatz** für Absätze, Rechtstexte und Einwilligungstexte;
+  Zustimmungs-/Bestätigungsvermerke mit goldener Akzentleiste;
+  Einwilligung (Text + Vermerk) bleibt zusammen auf einer Seite; der Titel
+  eines Rechtsdokuments entfällt, wenn er der Sektions-Überschrift direkt
+  darüber entspricht.
+- **Seitenränder** kommen aus den Admin-„PDF-Einstellungen"
+  (Empfehlung: 80 px links/rechts ≈ 21 mm).
+- Layout-Änderungen am Template erfordern einen Bump von
+  `FormController::PDF_RENDERER_VERSION` — bestehende PDFs werden dann beim
+  nächsten Abruf automatisch neu gerendert.
 
 ## UI/UX Features
 
