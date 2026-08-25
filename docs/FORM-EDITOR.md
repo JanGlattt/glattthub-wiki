@@ -63,6 +63,7 @@ Das Form Editor Modul ermöglicht das Erstellen, Bearbeiten und Verwalten von dy
 | `checkbox` | Multi-Choice (Checkboxen) | Auswahl |
 | `dropdown` | Dropdown-Auswahl | Auswahl |
 | `toggle` | Ja/Nein Schalter | Auswahl |
+| `consent` | Einwilligungs-Checkbox (z.B. DSGVO): einzelne Checkbox mit frei formulierbarem, mehrzeiligem Text daneben (kein Label darüber — mehrere Einwilligungen stapeln als gleichartige Kästen). „Pflichtfeld" entscheidet, ob angehakt werden muss (serverseitig erzwungen). Text unterstützt `**fett**`, `__unterstrichen__` und `{{platzhalter}}`. Die Einreichung speichert einen Nachweis-Snapshot (`accepted`, `accepted_at` und den damals angezeigten Text) — Tests: `tests/Feature/ConsentFieldTest.php` | Auswahl |
 | `file_upload` | Datei-Upload | Spezial |
 | `body_zones` | Körperzonen-Auswahl (Partial) | Spezial |
 | `signature` | Unterschriftenfeld (Touch/Maus) | Spezial |
