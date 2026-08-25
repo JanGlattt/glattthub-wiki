@@ -75,17 +75,23 @@ laufende Nummer, z. B. `MD000001`.
 
 Button **„Verkauf"** öffnet einen Assistenten in sechs Schritten:
 
-1. **Daten-Check** — Stammdaten (Name, E-Mail, Mobilnummer, Adresse) mit dem
-   Kunden prüfen; Korrekturen werden direkt in Phorest gespeichert. Oben steht
-   die (ggf. gerade automatisch vergebene) Kundennummer.
+1. **Daten-Check** — Stammdaten (Name, E-Mail, Mobilnummer, Adresse) noch
+   einmal überprüfen; Korrekturen werden direkt in Phorest gespeichert. Oben
+   steht die (ggf. gerade automatisch vergebene) Kundennummer.
 2. **Körperzonen** — direkt auf der Körper-Figur anklicken (inkl. „2 kleine
    Zonen" mit Angabe der konkreten Zonen; ab der Maximal-Zonenzahl automatisch
    Ganzkörper).
 3. **Paket & Preis** — Laufzeit/Rate und Rabatt kommen aus der gültigen
    Preisliste des Instituts.
-4. **Zahlung** — Ratenzahlung (SEPA: IBAN, Kontoinhaber, ggf. abweichender
-   Zahler mit Adresse + E-Mail, erste Abbuchung) oder Direktzahlung vor Ort.
-   Dazu das Vertrags-/Unterschriftsdatum.
+4. **Zahlung** — Ratenzahlung (SEPA) oder Direktzahlung vor Ort, dazu das
+   Vertrags-/Unterschriftsdatum. Bei SEPA: erste Abbuchung, IBAN und
+   Kontoinhaber — die **IBAN wird live geprüft** (mod-97 über
+   `POST …/check-iban`) und die **BIC samt Bankname automatisch ergänzt**
+   (OpenIBAN-Lookup); der **Kontoinhaber ist mit dem Kundennamen vorbelegt**.
+   Wird „abweichender Zahler" angehakt, leert sich das Feld (plus Adresse +
+   E-Mail des Zahlers); beim Abhaken kommt der Kundenname zurück. Eine
+   ungültige IBAN blockiert den Weiter-Knopf und wird auch serverseitig
+   abgelehnt (`ValidIban`-Rule im `storeSale`).
 5. **Extras** — Gutschein per Seriennummer prüfen und anrechnen,
    „Freunde werben Freunde"-Werber suchen (Selbstwerbung ist gesperrt).
 6. **Abschluss** — Zusammenfassung, Pflichtkommentar + Gesprächsführer,
