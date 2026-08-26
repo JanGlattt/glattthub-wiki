@@ -190,9 +190,18 @@ stellen (Hinweis steht auch auf der Seite).
   gleiche Bausteine wie der Hub-Flow (Vertragsnummer `YYYY.MM.DD-externalId`,
   Preislisten-Deckelung/`is_full_body`, `ContractReferral`,
   Gutschein-Kaskade via `computeAndStoreSigningCascade`, Phorest-Kauf) — aber
-  **ohne FormSubmission** und **ohne jeden GoCardless-Aufruf**. SEPA ⇒
-  Vertrag `draft` + `ClientMandate` `pending` mit erfassten Bankdaten
-  (OpenIBAN-Lookup für Bankname/BIC); Direktzahlung ⇒ `active`.
+  **ohne FormSubmission** und **ohne jeden GoCardless-Aufruf**. Der Vertrag
+  startet **immer als `active`** (vor Ort unterschrieben, zählt sofort in
+  Tagesübersicht und Statistiken — seit 26.08.2026, davor blieben
+  SEPA-Verträge dauerhaft `draft` und damit unsichtbar). Bei SEPA entsteht
+  zusätzlich ein `ClientMandate` `pending` mit den erfassten Bankdaten
+  (OpenIBAN-Lookup für Bankname/BIC) — die offene Büro-Arbeit bleibt über
+  den Badge „SEPA ausstehend" sichtbar, Mandat + Zahlungsplan legt das Büro
+  manuell im SEPA-Tab an. Sicherheitsnetz
+  `ContractCreationService::activateDraftContractsOfMandate()`: Wird ein
+  Mandat aktiv (SEPA-Tab-Anlage, Selbstheilung, GoCardless-Webhook
+  `mandates.active`), werden hängen gebliebene `draft`-Verträge des Mandats
+  mit aktiviert.
 - `contracts.source = 'institute'` (`Contract::SOURCE_INSTITUTE`) — eigenes
   Badge in Vertragsliste/Kundendetail; `HubNotificationDispatcher` pusht wie
   bei Hub-Verträgen (nur `legacy` ist stumm).
