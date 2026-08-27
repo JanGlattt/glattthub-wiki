@@ -1,8 +1,10 @@
 # Terminerinnerungen (Automatisierung)
 
-Automatische Erinnerungen vor Terminen — per WhatsApp (Superchat, Meta-Template)
-oder E-Mail-Fallback, mit persönlichem Link zum **Bestätigen, Verlegen oder
-Absagen**. Konfigurierbar je Terminart × Standort mit beliebig vielen
+Automatische Erinnerungen vor Terminen — per **WhatsApp** (Superchat,
+Meta-Template), **SMS** (zentraler Superchat-SMS-Kanal) oder **E-Mail**, mit
+persönlichem Link zum **Bestätigen, Verlegen oder Absagen**. Die
+Kanal-Reihenfolge ist je Erinnerungsstufe frei wählbar (z.B. WhatsApp → SMS →
+E-Mail). Konfigurierbar je Terminart × Standort mit beliebig vielen
 Erinnerungsstufen (z.B. 7 Tage und 1 Tag vorher).
 
 ## Für Endanwender
@@ -11,14 +13,24 @@ Erinnerungsstufen (z.B. 7 Tage und 1 Tag vorher).
 
 - Vor jedem gebuchten Termin prüft der Hub alle 15 Minuten, ob eine
   Erinnerung fällig ist (Regeln siehe unten). Je Termin und Stufe wird
-  **genau eine** Nachricht über **genau einen** Kanal versendet:
-  **WhatsApp bevorzugt, E-Mail als Fallback — nie beide.**
-- WhatsApp setzt voraus: Mobilnummer im Phorest-Profil, Einwilligung
-  **„SMS-Terminerinnerung"** (Phorest-Kundenprofil), ein konfigurierter
-  Superchat-Kanal des Standorts und eine von Meta genehmigte Vorlage.
-  Sonst greift E-Mail — Voraussetzung dort: E-Mail-Adresse + Einwilligung
-  **„E-Mail-Terminerinnerung"**. Ist beides nicht möglich, wird das im
-  Protokoll sichtbar gemacht (kein stilles Scheitern).
+  **genau eine** Nachricht über **genau einen** Kanal versendet — der erste
+  mögliche aus der an der Stufe eingestellten **Kanal-Reihenfolge**
+  (WhatsApp/SMS/E-Mail, frei sortierbar). Ist ein Kanal blockiert (kein
+  Consent, keine Nummer, kein Inhalt gepflegt …) **oder schlägt der Versand
+  fehl**, rückt der nächste Kanal der Reihenfolge nach; nicht aufgeführte
+  Kanäle werden nie verwendet. Ohne explizite Auswahl gilt das
+  Bestandsverhalten (WhatsApp bevorzugt, E-Mail-Fallback).
+- Voraussetzungen je Kanal:
+    - **WhatsApp**: Mobilnummer im Phorest-Profil, Einwilligung
+      **„SMS-Terminerinnerung"** (Phorest-Kundenprofil), ein konfigurierter
+      Superchat-Kanal des Standorts und eine von Meta genehmigte Vorlage.
+    - **SMS**: Mobilnummer + Einwilligung **„SMS-Terminerinnerung"** (gleicher
+      Consent wie WhatsApp), der **zentrale SMS-Kanal** muss konfiguriert sein
+      und die Stufe braucht einen SMS-Text. SMS ist freier Text — keine
+      Meta-Freigabe nötig.
+    - **E-Mail**: E-Mail-Adresse + Einwilligung **„E-Mail-Terminerinnerung"**.
+  Ist kein Kanal möglich, wird das im Protokoll sichtbar gemacht (kein
+  stilles Scheitern).
 - Jede Nachricht enthält einen persönlichen Link ins Selfservice-Modul.
   Der Kunde kann dort **bestätigen** (ein Klick), **verlegen** (neuen Slot
   wählen — der alte Termin wird automatisch storniert) oder **absagen**
@@ -36,10 +48,13 @@ Erinnerungsstufen (z.B. 7 Tage und 1 Tag vorher).
     - **Terminerinnerungen** — Regeln anlegen: Standort (oder alle),
       Terminart (Beratung/Behandlung/Sonstige oder alle), Sendefenster
       (z.B. 09:00–20:00), Testmodus, und je Regel beliebig viele Stufen
-      mit Vorlauf, WhatsApp-Vorlage + Variablen-Zuordnung und
-      E-Mail-Betreff/-Text mit Platzhaltern.
-    - **Terminerinnerungen: Kanäle** — je Standort der Superchat-Absenderkanal
-      („Standorte laden" legt die Zeilen an). Ohne Kanal: nur E-Mail.
+      mit Vorlauf, **Kanal-Reihenfolge**, WhatsApp-Vorlage +
+      Variablen-Zuordnung, SMS-Text und E-Mail-Betreff/-Text mit Platzhaltern.
+    - **Terminerinnerungen: Kanäle** — je Standort der
+      Superchat-WhatsApp-Absenderkanal („Standorte laden" legt die Zeilen an)
+      sowie der **eine zentrale SMS-Kanal** für alle Standorte
+      (Header-Aktion „SMS-Kanal wählen"). Ohne WhatsApp-Kanal wird WhatsApp
+      übersprungen, ohne SMS-Kanal SMS.
     - **Terminerinnerungen: Protokoll** — jeder Ausgang je Termin und Stufe
       (gesendet/übersprungen/fehlgeschlagen/Testmodus) mit Grund;
       „Erneut versuchen" gibt den Eintrag frei, der nächste Engine-Lauf
@@ -77,10 +92,16 @@ reminders:dispatch (15-min, Minute 7/22/37/52 — nach dem Sync)
 
 SendAppointmentReminderJob
   Storno-Recheck → PhorestApiService::getCachedClient (Consents!) →
-  Kanalwahl → ReminderLinkService (frischer BookingShareToken, expires_at =
-  Terminbeginn, alte Engine-Tokens invalidiert) →
-  WhatsappTemplateSender (Superchat) ODER AppointmentReminderMail (Laravel-Mail)
-  → Protokoll (sent/skipped/failed/test)
+  Kanal-Reihenfolge der Stufe (channelPriority, Default whatsapp→email) →
+  je Kanal Vorab-Blocker prüfen → ReminderLinkService (frischer
+  BookingShareToken, expires_at = Terminbeginn, alte Engine-Tokens
+  invalidiert) → Versand über den ersten möglichen Kanal, bei Fehlschlag
+  rückt der nächste nach:
+  WhatsappTemplateSender (Superchat-Template) ODER SMS als Text-Message über
+  den zentralen Kanal (AppointmentReminderSmsSetting::current()) ODER
+  AppointmentReminderMail (Laravel-Mail)
+  → Protokoll (sent/skipped/failed/test; bei Ausweichkanal steht die
+  Fehlschlag-Kette im Grund)
 ```
 
 ### Zentrale Klassen & Tabellen
@@ -94,15 +115,24 @@ SendAppointmentReminderJob
 | Gemeinsame WhatsApp-Versandschicht | `app/Services/Messaging/WhatsappTemplateSender.php` (Payload/Response/`resolveBody` — vorher 3× dupliziert) |
 | E-Mail | `app/Mail/AppointmentReminderMail.php` + `resources/views/emails/appointment-reminder.blade.php` (Platzhalter via `strtr`, Muster `dunning_templates`; automatisches E-Mail-Protokoll) |
 | Regeln/Stufen/Kanäle/Protokoll | `appointment_reminder_rules` / `_stages` / `_settings` / `_logs` (Migration `2026_08_16_100000`) |
+| SMS-Kanal (zentral) + Kanal-Reihenfolge | `appointment_reminder_sms_settings` (Singleton, `AppointmentReminderSmsSetting::current()`) + `appointment_reminder_stages.channel_priority`/`sms_body` (Migration `2026_08_27_100000`) |
 | Filament | `app/Filament/Resources/AppointmentReminder{Rules,Settings,Logs}/` |
 | Selfservice Bestätigen/Absagen | `app/Livewire/Shared/BookingPage.php` (`confirmAppointment`/`cancelAppointment`, nur bei `canRespond` = Engine-Token), `BookingService::cancelOnly()` |
 | Hub-Badges | `PhorestController::appointmentReminderStatus` (`GET /phorest/appointment-reminder-status`), `public/js/appointments.js` (`fetchReminderStatus`/`renderClientResponseBadge`) |
 
-### Entscheidungen (Jan, 11.08. + 16.08.2026)
+### Entscheidungen (Jan, 11.08. + 16.08. + 27.08.2026)
 
 - **Opt-in**: dedizierte Phorest-Felder `smsReminderConsent` /
   `emailReminderConsent` (NICHT die Marketing-Consents des Bewertungslinks,
-  NICHT der Kein-Check der Beratungs-WhatsApp).
+  NICHT der Kein-Check der Beratungs-WhatsApp). WhatsApp und SMS teilen
+  sich den SMS-Consent.
+- **SMS über einen zentralen Superchat-Account** (27.08.): ein SMS-Kanal für
+  alle Standorte — bewusst nicht standortgebunden wie WhatsApp. Der
+  Standortbezug kommt über Platzhalter in den Text.
+- **Kanal-Reihenfolge je Stufe** (27.08.): explizit wählbar, welcher Kanal
+  zuerst und welcher Fallback ist; Ausweichen sowohl bei Vorab-Blockern als
+  auch bei fehlgeschlagenem Versand (bewusste Abwägung: höhere Zustellquote
+  vor Restrisiko einer Doppelzustellung bei uneindeutigen API-Fehlern).
 - **Token je Stufe frisch** zum Versandzeitpunkt, ältere invalidiert —
   nie ein abgelaufener Link in einer frischen Nachricht.
 - **Absage** = Rückfrage-Stufe im Modal, dann echter Phorest-Storno
