@@ -1,10 +1,10 @@
 # Terminerinnerungen (Automatisierung)
 
 Automatische Erinnerungen vor Terminen — per **WhatsApp** (Superchat,
-Meta-Template), **SMS** (zentraler Superchat-SMS-Kanal) oder **E-Mail**, mit
-persönlichem Link zum **Bestätigen, Verlegen oder Absagen**. Die
-Kanal-Reihenfolge ist je Erinnerungsstufe frei wählbar (z.B. WhatsApp → SMS →
-E-Mail). Konfigurierbar je Terminart × Standort mit beliebig vielen
+Meta-Template), **SMS** (Twilio, Absender „glattt" statt Telefonnummer) oder
+**E-Mail**, mit persönlichem Link zum **Bestätigen, Verlegen oder Absagen**.
+Die Kanal-Reihenfolge ist je Erinnerungsstufe frei wählbar (z.B. WhatsApp →
+SMS → E-Mail). Konfigurierbar je Terminart × Standort mit beliebig vielen
 Erinnerungsstufen (z.B. 7 Tage und 1 Tag vorher).
 
 ## Für Endanwender
@@ -25,9 +25,12 @@ Erinnerungsstufen (z.B. 7 Tage und 1 Tag vorher).
       **„SMS-Terminerinnerung"** (Phorest-Kundenprofil), ein konfigurierter
       Superchat-Kanal des Standorts und eine von Meta genehmigte Vorlage.
     - **SMS**: Mobilnummer + Einwilligung **„SMS-Terminerinnerung"** (gleicher
-      Consent wie WhatsApp), der **zentrale SMS-Kanal** muss konfiguriert sein
-      und die Stufe braucht einen SMS-Text. SMS ist freier Text — keine
-      Meta-Freigabe nötig.
+      Consent wie WhatsApp), Twilio muss konfiguriert sein und die Stufe
+      braucht einen SMS-Text. SMS ist freier Text — keine Meta-Freigabe nötig.
+      Beim Empfänger steht **„glattt"** als Absender (Alphanumeric Sender ID)
+      statt einer Telefonnummer. **Einbahnstraße**: auf diese SMS kann nicht
+      geantwortet werden — Bestätigen/Verlegen/Absagen läuft ausschließlich
+      über den persönlichen Link.
     - **E-Mail**: E-Mail-Adresse + Einwilligung **„E-Mail-Terminerinnerung"**.
   Ist kein Kanal möglich, wird das im Protokoll sichtbar gemacht (kein
   stilles Scheitern).
@@ -51,10 +54,10 @@ Erinnerungsstufen (z.B. 7 Tage und 1 Tag vorher).
       mit Vorlauf, **Kanal-Reihenfolge**, WhatsApp-Vorlage +
       Variablen-Zuordnung, SMS-Text und E-Mail-Betreff/-Text mit Platzhaltern.
     - **Terminerinnerungen: Kanäle** — je Standort der
-      Superchat-WhatsApp-Absenderkanal („Standorte laden" legt die Zeilen an)
-      sowie der **eine zentrale SMS-Kanal** für alle Standorte
-      (Header-Aktion „SMS-Kanal wählen"). Ohne WhatsApp-Kanal wird WhatsApp
-      übersprungen, ohne SMS-Kanal SMS.
+      Superchat-WhatsApp-Absenderkanal („Standorte laden" legt die Zeilen an).
+      Ohne WhatsApp-Kanal wird WhatsApp übersprungen. Der SMS-Versand hat
+      **keine Admin-Konfiguration** — er läuft zentral über Twilio (.env,
+      siehe Betrieb).
     - **Terminerinnerungen: Protokoll** — jeder Ausgang je Termin und Stufe
       (gesendet/übersprungen/fehlgeschlagen/Testmodus) mit Grund;
       „Erneut versuchen" gibt den Eintrag frei, der nächste Engine-Lauf
@@ -97,11 +100,11 @@ SendAppointmentReminderJob
   BookingShareToken, expires_at = Terminbeginn, alte Engine-Tokens
   invalidiert) → Versand über den ersten möglichen Kanal, bei Fehlschlag
   rückt der nächste nach:
-  WhatsappTemplateSender (Superchat-Template) ODER SMS als Text-Message über
-  den zentralen Kanal (AppointmentReminderSmsSetting::current()) ODER
-  AppointmentReminderMail (Laravel-Mail)
-  → Protokoll (sent/skipped/failed/test; bei Ausweichkanal steht die
-  Fehlschlag-Kette im Grund)
+  WhatsappTemplateSender (Superchat-Template) ODER TwilioSmsService (SMS mit
+  Alphanumeric Sender ID, direkt an die Handynummer — kein Superchat-Kontakt)
+  ODER AppointmentReminderMail (Laravel-Mail)
+  → Protokoll (sent/skipped/failed/test; provider_message_id trägt Superchat-
+  bzw. Twilio-Message-ID; bei Ausweichkanal steht die Fehlschlag-Kette im Grund)
 ```
 
 ### Zentrale Klassen & Tabellen
@@ -115,7 +118,7 @@ SendAppointmentReminderJob
 | Gemeinsame WhatsApp-Versandschicht | `app/Services/Messaging/WhatsappTemplateSender.php` (Payload/Response/`resolveBody` — vorher 3× dupliziert) |
 | E-Mail | `app/Mail/AppointmentReminderMail.php` + `resources/views/emails/appointment-reminder.blade.php` (Platzhalter via `strtr`, Muster `dunning_templates`; automatisches E-Mail-Protokoll) |
 | Regeln/Stufen/Kanäle/Protokoll | `appointment_reminder_rules` / `_stages` / `_settings` / `_logs` (Migration `2026_08_16_100000`) |
-| SMS-Kanal (zentral) + Kanal-Reihenfolge | `appointment_reminder_sms_settings` (Singleton, `AppointmentReminderSmsSetting::current()`) + `appointment_reminder_stages.channel_priority`/`sms_body` (Migration `2026_08_27_100000`) |
+| SMS-Versand (Twilio) + Kanal-Reihenfolge | `app/Services/TwilioSmsService.php` (Config `services.twilio`, .env) + `appointment_reminder_stages.channel_priority`/`sms_body` (Migrationen `2026_08_27_100000` + `_120000`) |
 | Filament | `app/Filament/Resources/AppointmentReminder{Rules,Settings,Logs}/` |
 | Selfservice Bestätigen/Absagen | `app/Livewire/Shared/BookingPage.php` (`confirmAppointment`/`cancelAppointment`, nur bei `canRespond` = Engine-Token), `BookingService::cancelOnly()` |
 | Hub-Badges | `PhorestController::appointmentReminderStatus` (`GET /phorest/appointment-reminder-status`), `public/js/appointments.js` (`fetchReminderStatus`/`renderClientResponseBadge`) |
@@ -126,9 +129,21 @@ SendAppointmentReminderJob
   `emailReminderConsent` (NICHT die Marketing-Consents des Bewertungslinks,
   NICHT der Kein-Check der Beratungs-WhatsApp). WhatsApp und SMS teilen
   sich den SMS-Consent.
-- **SMS über einen zentralen Superchat-Account** (27.08.): ein SMS-Kanal für
-  alle Standorte — bewusst nicht standortgebunden wie WhatsApp. Der
-  Standortbezug kommt über Platzhalter in den Text.
+- **SMS über Twilio mit Alphanumeric Sender ID** (27.08.): beim Empfänger
+  steht „glattt" statt einer Telefonnummer (in Deutschland dynamisch ohne
+  Registrierung, Sender ID wird von den Carriern bewahrt). Ein zentraler
+  Account für alle Standorte — bewusst nicht standortgebunden wie WhatsApp;
+  der Standortbezug kommt über Platzhalter in den Text. Trade-off: auf die
+  SMS kann nicht geantwortet werden (kein STOP, keine Inbox) — Opt-in/Opt-out
+  liegt im Phorest-Consent, Reaktionen laufen über den Link. Der zunächst
+  gebaute Superchat-SMS-Weg wurde noch am selben Tag wieder ersetzt
+  (Migration `2026_08_27_120000`).
+- **RCS als konfigurierbarer Ausbau** (27.08.): sobald ein verifizierter
+  Twilio-RCS-Absender existiert (Marken-Profil mit Logo, „Überprüft von
+  <Carrier>" — Verifizierung über Twilio/Google nötig), wird nur
+  `TWILIO_RCS_SENDER` gesetzt: Nachrichten gehen dann als RCS raus und
+  fallen bei Empfängern ohne RCS automatisch auf die SMS mit Absender
+  „glattt" zurück (`FallbackFrom`). Kein Code-Änderungsbedarf.
 - **Kanal-Reihenfolge je Stufe** (27.08.): explizit wählbar, welcher Kanal
   zuerst und welcher Fallback ist; Ausweichen sowohl bei Vorab-Blockern als
   auch bei fehlgeschlagenem Versand (bewusste Abwägung: höhere Zustellquote
@@ -183,6 +198,11 @@ Variablen-Zuordnung im Admin: 1 = Vorname, 2 = Standort-Name, 3 = Termin-Datum,
 - Superchat-Rate-Limit (2500 Requests/5 Min workspace-weit) wird mit
   Contact-Sync & Co. geteilt; `SuperchatApiService::makeRequest()` hat
   bewusst noch kein Retry/429-Handling — bei Skalierungsproblemen dort ansetzen.
+- **Twilio-Konfiguration** (Cloud-Run-Env bzw. `.env`): `TWILIO_ACCOUNT_SID`,
+  `TWILIO_AUTH_TOKEN`, `TWILIO_SMS_SENDER_ID` (Default `glattt`, max. 11
+  Zeichen), optional `TWILIO_RCS_SENDER`. Ohne Credentials wird der SMS-Kanal
+  mit klarem Grund übersprungen. Alphanumeric Sender IDs funktionieren nur
+  auf bezahlten Twilio-Accounts.
 
 ### Bekannte Grenzen (v1)
 
