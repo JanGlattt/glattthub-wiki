@@ -83,9 +83,16 @@ flow" mit öffentlich erreichbarer URL):
 - **Öffentliche Seite `/shared/erinnerungen`:** Handynummer eingeben →
   6-stelliger Bestätigungscode per SMS (Double-Opt-in) → Einstellungen
   schalten. Diese Seite ist die „hosted opt-in experience" für das
-  Twilio-Registrierungsformular. Unbekannte Nummern werden freundlich ans
-  Institut verwiesen. Missbrauchsschutz: max. 3 Codes je Nummer bzw. 10 je
-  IP pro Stunde, Code 10 Minuten gültig, 5 Fehlversuche.
+  Twilio-Registrierungsformular; das öffentliche Policy-Bild dafür liegt
+  unter `/shared/reminder-optin-policy.png` (statisch in `public/shared/` —
+  bewusst unter `/shared/*`, weil alles andere auf hub.glattt.com hinter IAP
+  liegt). Verifizierte Nummern **ohne** Phorest-Profil (Interessenten,
+  Carrier-Prüfer) schließen den Opt-in trotzdem ab: Die Einwilligung landet
+  als Vormerk in `reminder_consent_optins` (Admin → „Terminerinnerungen:
+  Opt-in-Vormerke"); das Büro übernimmt sie ins Kundenprofil, sobald ein
+  Kunde mit der Nummer existiert, und löscht die Vormerkung. Missbrauchs-
+  schutz: max. 3 Codes je Nummer bzw. 10 je IP pro Stunde, Code 10 Minuten
+  gültig, 5 Fehlversuche.
 - **RCS-Antworten (STOP/START/HELP):** Der Twilio-Webhook
   `POST /api/webhooks/twilio` (Signaturprüfung `X-Twilio-Signature`) schaltet
   bei STOP/STOPP den SMS-Consent in Phorest aus, bei START wieder ein und
