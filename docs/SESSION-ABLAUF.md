@@ -8,12 +8,15 @@ Hintergrundabfragen (leere Suche, hängende Karten) erscheint das Modal
 
 - Läuft die Anmeldung ab, erscheint automatisch ein Modal „Sitzung abgelaufen" —
   auch ohne Klick, spätestens nach einer Minute (Heartbeat) oder bei der
-  nächsten Aktion (z.B. globale Suche).
-- Im Modal einfach die **4-stellige PIN** eingeben → **„Anmelden"**. Danach
-  bist du wieder genau auf derselben Seite; offene Formulareingaben bleiben
-  erhalten. Wer keine PIN hinterlegt hat (Profil → PIN-Verwaltung), meldet
-  sich mit dem Passwort an (E-Mail ist vorausgefüllt); der Umschalter
-  **PIN ⇄ E-Mail** steht im Modal jederzeit bereit.
+  nächsten Aktion (z.B. globale Suche). Die Seite dahinter wird dabei
+  **unscharf gestellt**, damit niemand mitlesen kann, solange die Sitzung
+  abgelaufen ist.
+- Das Modal sieht aus wie die normale Anmeldeseite: einfach die **4-stellige
+  PIN** eingeben → **„Mit PIN anmelden"**. Danach bist du wieder genau auf
+  derselben Seite; offene Formulareingaben bleiben erhalten. Wer keine PIN
+  hinterlegt hat (Profil → PIN-Verwaltung), meldet sich mit dem Passwort an
+  (E-Mail ist vorausgefüllt); der Umschalter **PIN ⇄ E-Mail** steht im Modal
+  jederzeit bereit.
 - Auch die **419-Fehlerseite** („Sitzung abgelaufen" nach einem abgeschickten
   Formular) bietet die direkte Neuanmeldung per PIN bzw. E-Mail/Passwort.
 - Alternativ führt „Zur Anmeldeseite" zum normalen Login (nötig z.B. bei
@@ -51,9 +54,19 @@ aktualisieren und die Session am Leben halten. Bei anderem Session-Treiber als
 ### Modal & Re-Login ohne Seitenwechsel
 
 Markup in `layouts/hub.blade.php` (`#session-guard-modal`, `modal-glattt`-Klassen,
-z-index über allem). **PIN ist die Standard-Methode** — analog zur Login-Seite:
-Das Layout rendert `data-has-pin` (hat der angemeldete Nutzer eine PIN?); nur
-dann gibt es den Umschalter PIN ⇄ E-Mail (`segmented-control-glattt`), sonst
+z-index über allem). **Optik = Login-Seite** (Asana 1217860682857967, 27.08.2026):
+zentrierter Titel statt Header-Balken, türkiser Umschalter
+(`segmented-control-glattt-primary`), große PIN-Eingabe
+(`input-glattt-pin` + `input-glattt-pin-lg`), vollbreiter Button „Mit PIN/E-Mail
+anmelden" (Text wechselt mit der Methode über `#session-guard-submit-label`,
+gesetzt in `session-guard.js`) und „Zur Anmeldeseite" als Textlink. Diese
+Theme-Klassen teilen sich Login-Seite, Modal und 419-Seite —
+`PinLoginTest::test_relogin_views_share_the_login_page_look` wacht darüber.
+Der Backdrop **blurt die Seite dahinter** (`backdrop-filter` auf
+`#session-guard-modal` — dokumentierte Ausnahme vom backdrop-filter-Verbot,
+Einzel-Element aus Datenschutzgründen). **PIN ist die Standard-Methode** —
+analog zur Login-Seite: Das Layout rendert `data-has-pin` (hat der angemeldete
+Nutzer eine PIN?); nur dann gibt es den Umschalter PIN ⇄ E-Mail, sonst
 zeigt das Modal direkt E-Mail/Passwort. Ablauf beim Anmelden:
 
 1. `GET /login` → frisches CSRF-Token aus dem `csrf-token`-Meta der Antwort
@@ -77,8 +90,9 @@ wäre sonst frei ratbar. `POST /login/credentials` nutzt Fortifys
 
 `resources/views/errors/419.blade.php` bietet dieselbe Anmeldung als normale
 Formulare (kein fetch): PIN-Formular → `route('login.pin')`, E-Mail-Formular →
-`route('login.credentials')`, Umschalter per Vanilla-JS. Die große PIN-Eingabe
-teilt sich die Theme-Klasse `.input-glattt-pin` mit dem Modal.
+`route('login.credentials')`, Umschalter per Vanilla-JS. Optik wie Login-Seite
+und Modal über die geteilten Theme-Klassen (`segmented-control-glattt-primary`,
+`input-glattt-pin-lg`, `session-guard-submit`, `session-guard-login-link`).
 
 ### Session-Dauer aus dem Admin-Backend
 
@@ -107,5 +121,7 @@ Admin-Einstellung wirkt) und `tests/Unit/SessionSettingTest.php`
 mit `$this->withCredentials()`.
 
 `tests/Feature/PinLoginTest.php` deckt den PIN-Login ab: Redirect- und
-JSON-Flow, 422 bei falscher PIN, Throttling (429 ab dem 6. Versuch pro IP)
-sowie die Konvention, dass Modal und 419-Seite die PIN-Anmeldung anbieten.
+JSON-Flow, 422 bei falscher PIN, Throttling (429 ab dem 6. Versuch pro IP),
+die Konvention, dass Modal und 419-Seite die PIN-Anmeldung anbieten, sowie
+dass Login-Seite, Modal und 419-Seite die geteilten Optik-Klassen nutzen und
+das Button-Label-Span für `session-guard.js` adressierbar bleibt.
