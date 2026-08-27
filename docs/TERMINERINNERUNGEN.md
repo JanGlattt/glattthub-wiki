@@ -71,6 +71,34 @@ Terminart schlägt „alle". Wird ein Termin kurzfristig gebucht, sodass
 mehrere Stufen gleichzeitig fällig wären, wird nur die Stufe mit dem
 kleinsten Vorlauf gesendet (die anderen erscheinen als „übersprungen").
 
+### Opt-in & Opt-out (Selfservice)
+
+Kunden können ihre Erinnerungs-Einwilligungen jederzeit selbst verwalten —
+Pflichtbaustein der Twilio-/Google-RCS-Freigabe („functional opt-in/opt-out
+flow" mit öffentlich erreichbarer URL):
+
+- **Aus jeder Nachricht heraus:** Der persönliche Link führt auf die
+  Selfservice-Seite; dort gibt es die Karte **„Erinnerungs-Einstellungen"**
+  (SMS/Nachricht + E-Mail an/aus, schreibt direkt nach Phorest).
+- **Öffentliche Seite `/shared/erinnerungen`:** Handynummer eingeben →
+  6-stelliger Bestätigungscode per SMS (Double-Opt-in) → Einstellungen
+  schalten. Diese Seite ist die „hosted opt-in experience" für das
+  Twilio-Registrierungsformular. Unbekannte Nummern werden freundlich ans
+  Institut verwiesen. Missbrauchsschutz: max. 3 Codes je Nummer bzw. 10 je
+  IP pro Stunde, Code 10 Minuten gültig, 5 Fehlversuche.
+- **RCS-Antworten (STOP/START/HELP):** Der Twilio-Webhook
+  `POST /api/webhooks/twilio` (Signaturprüfung `X-Twilio-Signature`) schaltet
+  bei STOP/STOPP den SMS-Consent in Phorest aus, bei START wieder ein und
+  antwortet bei HELP/HILFE mit dem Link auf die Einstellungs-Seite —
+  Webhook-URL im Twilio-Account auf den Messaging-Eingang legen.
+  Freitext-Antworten werden nicht automatisch beantwortet.
+
+Quelle bleibt immer Phorest (`smsReminderConsent`/`emailReminderConsent`);
+nach jedem Update wird der Client-Cache geleert, damit Engine und
+Kundenprofil sofort den neuen Stand sehen. Gemeinsame Logik:
+`app/Services/Reminders/ReminderConsentService.php` (Telefon-Varianten-Suche
+wie beim Superchat-Kontaktabgleich, Phorest-Update mit `version`-Locking).
+
 ### Testmodus
 
 Regel auf „Testmodus" stellen: Der komplette Ablauf inkl. Kanalwahl läuft
@@ -217,4 +245,6 @@ Variablen-Zuordnung im Admin: 1 = Vorname, 2 = Standort-Name, 3 = Termin-Datum,
 Tests: `tests/Unit/AppointmentReminderRuleTest.php`,
 `tests/Feature/AppointmentReminderEngineTest.php`,
 `tests/Feature/AppointmentReminderJobTest.php`,
-`tests/Feature/SharedBookingResponseTest.php`.
+`tests/Feature/SharedBookingResponseTest.php`,
+`tests/Feature/ReminderConsentPageTest.php`,
+`tests/Feature/TwilioInboundWebhookTest.php`.
