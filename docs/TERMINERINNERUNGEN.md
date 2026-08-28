@@ -89,7 +89,19 @@ Erinnerungsstufen (z.B. 7 Tage und 1 Tag vorher).
     - **Terminerinnerungen: Protokoll** — jeder Ausgang je Termin und Stufe
       (gesendet/übersprungen/fehlgeschlagen/Testmodus) mit Grund;
       „Erneut versuchen" gibt den Eintrag frei, der nächste Engine-Lauf
-      entscheidet neu.
+      entscheidet neu. Zusätzlich die Spalte **„Zustellung"** (Twilio-
+      Callbacks: Zugestellt/Gelesen/Fehlgeschlagen/Nicht zugestellt) mit
+      eigenem Filter — so lassen sich kaputte Kontaktdaten gezielt finden.
+- **Fehlerhafte Kontaktdaten fallen aktiv auf (29.08.):** Schlägt der Versand
+  auf allen Kanälen fehl (z.B. ungültige E-Mail-Adresse oder Nummer) ODER
+  meldet Twilio eine als „gesendet" geführte SMS/RCS später als unzustellbar
+  (Status-Callback failed/undelivered, meist falsche Handynummer), passiert
+  dreierlei: Grund am Protokoll-Eintrag (inkl. Twilio-Fehlercode),
+  `Log::warning` im Server-Log und eine **Hub-Benachrichtigung ans Institut**
+  („Terminerinnerung fehlgeschlagen" bzw. „… nicht zustellbar") mit Kunde,
+  Kontaktdaten und Termin — damit dem Kundenprofil explizit nachgegangen
+  werden kann. Die Zustellfehler-Benachrichtigung feuert genau einmal je
+  Protokoll-Eintrag.
 
 ### Welche Regel greift?
 
