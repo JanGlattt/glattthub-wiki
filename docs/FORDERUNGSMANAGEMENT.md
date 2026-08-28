@@ -49,9 +49,16 @@ der Fall in der Arbeitsliste **„Heute fällig"**.
 
 Die 20-€/14-Tage-Regel greift bewusst nicht sofort. Für alles darunter oder für
 eilige Fälle gibt es auf der Übersichtsseite den Button **„Kundenkonto-Fall"**
-(Recht `manage_receivables`): Er zeigt **alle** Kunden mit offenem Kundenkonto
-mit Betrag, Standort und Beobachtungsdauer. Ein Klick auf die Zeile übernimmt
-den Betrag, der sich vor dem Anlegen noch korrigieren lässt.
+(Recht `manage_receivables`). Das Modal hat seit 28.08.2026 **zwei Modi**:
+
+- **Offene Kundenkonten:** zeigt **alle** Kunden mit offenem Phorest-Kundenkonto
+  mit Betrag, Standort und Beobachtungsdauer. Ein Klick auf die Zeile übernimmt
+  den Betrag, der sich vor dem Anlegen noch korrigieren lässt.
+- **Kunde frei wählen:** beliebigen Kunden über die Kundensuche wählen und
+  Betrag + Vermerk **frei erfassen** — für Forderungen, die außerhalb von
+  Verträgen und Kundenkonto entstehen (z.B. ein in Rechnung gestellter,
+  nicht wahrgenommener Termin; Anlass war Fall OS001031). Der Verlauf
+  dokumentiert solche Fälle als „Forderung von Hand eingebucht".
 
 Der Betrag wird beim Anlegen **eingefroren** — eine Behandlung, die der Kunde
 danach bucht, erhöht die laufende Mahnung nicht mehr (sonst stimmte der Betrag
@@ -69,6 +76,17 @@ ab, zeigt der Hinweis oben auf der Fall-Detailseite beide Zahlen.
   beim Anhängen). Platzt die angehängte oder die nächste Lastschrift
   (**2. RLS in Folge**), liegt der Fall **zur Entscheidung** vor (siehe
   „Neue Rücklastschrift während laufender Bearbeitung").
+  **Seit 28.08.2026:** Ist im sanften Weg die **Gesamtsumme fällig gestellt**
+  oder ist es ein **Nicht-RLS-Einstieg** (Mandatsentzug/Direktzahler), führt
+  „Rate anhängen" ins Leere — nach der letzten Mahnung steht dann wie im
+  harten Weg der **250-€-Entscheid** an.
+- **Mandatsentzug (Abgabe aus dem Kundenservice, seit 28.08.2026)**:
+  E-Mail-Anmahnung der Restsumme (macht i.d.R. der Kundenservice — als
+  „extern erledigt" nachtragen) → **direkt** letzte Mahnung per Post über die
+  Restsumme (keine „1. Mahnung" dazwischen) → 250-€-Entscheid. Läuft am
+  Vertrag bereits ein aktiver Fall, eröffnet der Mandatsentzug **keinen
+  zweiten** — der bestehende Fall wird auf die **Restsumme hochgestuft**
+  (Verlaufseintrag „Gesamte Restsumme fällig gestellt").
 - **Sanfter Weg ohne Vertrag** (offenes Kundenkonto): 1. Zahlungserinnerung →
   2. Zahlungserinnerung → **direkt** 1. postalische Mahnung → letzte Mahnung →
   250-€-Entscheid. Monitoring und „Rate anhängen" entfallen: Es gibt keinen
@@ -90,6 +108,13 @@ ab, zeigt der Hinweis oben auf der Fall-Detailseite beide Zahlen.
 - **Gerichtliches Verfahren** (eigener Bereich): Mahnbescheid → Widerspruch? →
   Vollstreckungsbescheid → Einspruch? → Zwangsvollstreckung → PfÜB/Gerichtsvollzieher.
   Der Hub trackt Status, Aktenzeichen, Daten und Kosten — Anträge laufen außerhalb.
+  Seit 28.08.2026 gibt es je Bescheid ein **Zustelldatum** („Mahnbescheid
+  zugestellt", „Vollstreckungsbescheid zugestellt"): Mit der Zustellung beginnt
+  die 14-tägige Widerspruchs- bzw. Einspruchsfrist — beim Speichern legt der Hub
+  das Fristende automatisch als **Wiedervorlage** auf den Fall (Verlaufseintrag
+  inklusive), damit sichtbar ist, wann der nächste Schritt (VB beantragen bzw.
+  Zwangsvollstreckung einleiten) möglich ist. Werden beide Zustelldaten in einem
+  Rutsch geändert, zählt das spätere Verfahrensstadium.
 
 ### RLS-Gründe
 
