@@ -54,20 +54,26 @@ Erinnerungsstufen (z.B. 7 Tage und 1 Tag vorher).
       mit Vorlauf, **Kanal-Reihenfolge**, WhatsApp-Vorlage +
       Variablen-Zuordnung, SMS-Text und E-Mail-Betreff/-Text mit Platzhaltern.
       Dazu je Stufe die **E-Mail-Bausteine** (eingeklappte Sektion):
-      Termin-Karte (Datum/Uhrzeit/Institut/Behandlung), Selfservice-Button,
-      Behandlungshinweise (Einleitung + Punkte + Abschluss), 24-Stunden-Hinweis,
-      Link auf weitere Hinweise (Text/Beschriftung/URL frei), Abschluss/Gruß
-      und Instituts-Footer — alle einzeln an-/abschaltbar, alle Texte editierbar
-      und platzhalterfähig. Welche Termine welche Mail bekommen, steuert die
-      Regel-Zuordnung (z.B. Behandlungshinweise nur in der Behandlungs-Regel
-      aktivieren). **„Vorschau der E-Mail"** rendert den aktuellen, auch
-      ungespeicherten Formularstand mit Beispieldaten im echten Versand-Template.
-    - **Einstellungen → Instituts-Kontakte** — Telefon, WhatsApp-Nummer und
-      E-Mail je Standort („Standorte laden" legt die Zeilen an; Phorest kennt
-      je Branch nur Name + Adresse). Speist den Instituts-Footer der
-      Erinnerungs-Mails und die Platzhalter `{{institut_telefon}}`,
-      `{{institut_whatsapp}}`, `{{institut_mail}}`; `{{institut_adresse}}`
-      kommt automatisch aus Phorest.
+      Kunden-Kasten (Name + Kundennummer oben rechts), Termin-Karte
+      (Datum/Uhrzeit/Institut/Behandlung), Selfservice-Button („Termin
+      verlegen oder absagen" — bewusst ohne „bestätigen"; die
+      Selfservice-Seite selbst behält die Bestätigen-Option),
+      Vorbereitungs-Tipps (Überschrift + Tipps als Titel/Text-Liste +
+      Anruf-Abschluss; `**Sternchen**` macht fett, die Instituts-
+      Telefonnummer wird automatisch zum tel:-Link), 24-Stunden-Hinweis,
+      Abschluss/Gruß, Instituts-Footer und Kalender-Anhang — alle einzeln
+      an-/abschaltbar, alle Texte editierbar und platzhalterfähig. Welche
+      Termine welche Mail bekommen, steuert die Regel-Zuordnung (z.B.
+      Vorbereitungs-Tipps nur in der Behandlungs-Regel aktivieren).
+      **„Vorschau der E-Mail"** rendert den aktuellen, auch ungespeicherten
+      Formularstand mit Beispieldaten im echten Versand-Template.
+- **Instituts-Seite (Betrieb → Institute → Infos)** — Telefon, WhatsApp-Nummer
+  und E-Mail je Standort werden dort in der Kontaktdaten-Karte gepflegt
+  (Phorest kennt je Branch nur Name + Adresse; Schreibrecht wie
+  Farbe/Icon/Bild). Speist den Instituts-Footer inkl. der Buttons
+  **„Anrufen"** (tel:) und **„WhatsApp schreiben"** (wa.me) und die
+  Platzhalter `{{institut_telefon}}`, `{{institut_whatsapp}}`,
+  `{{institut_mail}}`; `{{institut_adresse}}` kommt automatisch aus Phorest.
     - **Terminerinnerungen: Kanäle** — je Standort der
       Superchat-WhatsApp-Absenderkanal („Standorte laden" legt die Zeilen an).
       Ohne WhatsApp-Kanal wird WhatsApp übersprungen. Der SMS-Versand hat
@@ -167,8 +173,8 @@ SendAppointmentReminderJob
 | Link-Erzeugung | `app/Services/Reminders/ReminderLinkService.php` (Engine-Tokens: `created_by = null`) |
 | Gemeinsame WhatsApp-Versandschicht | `app/Services/Messaging/WhatsappTemplateSender.php` (Payload/Response/`resolveBody` — vorher 3× dupliziert) |
 | E-Mail | `app/Mail/AppointmentReminderMail.php` + `resources/views/emails/appointment-reminder.blade.php` — Design „Termin-Karte" (28.08.), Bausteine aus `ReminderMailComposer::compose()`; automatisches E-Mail-Protokoll |
-| E-Mail-Bausteine | `appointment_reminder_stages.email_blocks` (JSON, Defaults in `AppointmentReminderStage::defaultEmailBlocks()`, Merge via `emailBlocks()`) + `app/Services/Reminders/ReminderMailComposer.php` (Versand UND Vorschau — identische Zusammenstellung); Vorschau-View `resources/views/filament/reminder-mail-preview.blade.php` (Migration `2026_08_28_150000`) |
-| Instituts-Kontakte | `institute_contacts` (Telefon/WhatsApp/E-Mail je Branch, Cache 5 Min via `InstituteContact::dataFor()`), Admin `app/Filament/Resources/InstituteContacts/`; Adresse aus `PhorestApiService::getCachedBranches()` |
+| E-Mail-Bausteine | `appointment_reminder_stages.email_blocks` (JSON, Defaults in `AppointmentReminderStage::defaultEmailBlocks()`, Merge via `emailBlocks()`) + `app/Services/Reminders/ReminderMailComposer.php` (Versand UND Vorschau — identische Zusammenstellung; `richText()` für **fett** + tel:-Links, `buildIcs()` für den Kalender-Anhang über den ganzen Besuch OHNE Leistungsnennung); Vorschau-View `resources/views/filament/reminder-mail-preview.blade.php`; Footer-Icons `public/shared/reminder-icon-{phone,whatsapp}.png` (Migration `2026_08_28_150000`) |
+| Instituts-Kontakte | `institute_contacts` (Telefon/WhatsApp/E-Mail je Branch, Cache 5 Min via `InstituteContact::dataFor()`), gepflegt auf der Instituts-Seite (`hub/institutes/tabs/info.blade.php`, Endpoints `GET/POST /phorest/institute/{branchId}/contact`, Schreibrecht `manage_branch_images`); Adresse aus `PhorestApiService::getCachedBranches()` |
 | Regeln/Stufen/Kanäle/Protokoll | `appointment_reminder_rules` / `_stages` / `_settings` / `_logs` (Migration `2026_08_16_100000`) |
 | SMS-Versand (Twilio) + Kanal-Reihenfolge | `app/Services/TwilioSmsService.php` (Config `services.twilio`, .env) + `appointment_reminder_stages.channel_priority`/`sms_body` (Migrationen `2026_08_27_100000` + `_120000`) |
 | Filament | `app/Filament/Resources/AppointmentReminder{Rules,Settings,Logs}/` |
@@ -224,17 +230,27 @@ SendAppointmentReminderJob
   kein Rückschreiben nach Phorest; bewusst keine Benachrichtigung.
 - **E-Mail** über das Bestandssystem (SMTP-Settings + zentrales Protokoll),
   kein zweites Vorlagensystem.
-- **E-Mail-Design „Termin-Karte" + Baukasten** (28.08.): Logo-Kopf wie die
-  Mahn-Mail, Anschreiben aus der Vorlage, Termin-Karte als einzige (sehr
-  helle) Farbfläche, Button mit Goldkante — alle Dark-Mode-Erkenntnisse aus
-  `emails/dunning-message` übernommen. Die Inhalte der alten Phorest-Mail
-  (Behandlungshinweise, 24h-Absagefrist, Hinweis-Link, Instituts-Footer)
-  sind konfigurierbare Bausteine je Stufe (`email_blocks`); die Steuerung
+- **E-Mail-Design „Termin-Karte" + Baukasten** (28./29.08.): Logo-Kopf wie
+  die Mahn-Mail, Anschreiben aus der Vorlage, Kunden-Kasten und Termin-Karte
+  als einzige (sehr helle) Farbflächen, Buttons mit Goldkante — alle
+  Dark-Mode-Erkenntnisse aus `emails/dunning-message` übernommen. Die
+  Inhalte von alter Phorest-Mail und gedruckter Kundeninformation sind
+  konfigurierbare Bausteine je Stufe (`email_blocks`); die Steuerung
   „welche Termine bekommen welche Mail" läuft über die Regel-Zuordnung nach
   Terminart, nicht über Automatik im Template. Vorschau im Regel-Editor
   rendert das echte Versand-Template mit dem ungespeicherten Formularstand.
-  Da Phorest je Branch keine Kontaktdaten liefert, gibt es die
-  **Instituts-Kontakte** als Admin-Stammdaten (Telefon/WhatsApp/E-Mail).
+  Da Phorest je Branch keine Kontaktdaten liefert, werden Telefon/WhatsApp/
+  E-Mail auf der **Instituts-Seite** gepflegt (Entscheidung 29.08.: Frontend
+  statt Admin-Backend).
+- **Inhalts-Entscheidungen 29.08.:** Absagefrist in der Mail = **24 Stunden**
+  (die 48 h stehen nur absichernd in den AGB). Vorbereitungs-Tipps ersetzen
+  die separate „nicht behandelbar"-Checkliste — die Auslöser stecken im
+  jeweils passenden Tipp (keine Redundanz); kuratiert aus der
+  Kundeninformation, ohne Nachsorge-/Paket-Themen. Mail wirbt nur für
+  **verlegen/absagen** (kein „bestätigen"; die Selfservice-Seite behält die
+  Option). Echter **Opt-out-Link** im Fuß jeder Mail (persönliche
+  Erinnerungs-Einstellungen) — erscheint immer, auch ohne Footer/Button.
+  Kalender-Anhang **ohne Leistungsnennung** (Diskretion).
 
 ### Meta-Templates (Superchat)
 

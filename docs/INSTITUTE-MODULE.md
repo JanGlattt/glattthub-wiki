@@ -19,7 +19,16 @@ Das Institut-Modul zeigt alle Phorest Branches als "Institute" an und bietet det
 - **Tab-Navigation mit 4 Bereichen:**
 
 #### 1. Infos Tab
-- Kontaktdaten (Name, Adresse, Telefon, E-Mail, Website)
+- Kontaktdaten (Name, Adresse aus Phorest)
+- **Kontakt-Stammdaten (seit 29.08.2026):** Telefon, WhatsApp-Nummer und
+  E-Mail je Institut werden direkt in der Kontaktdaten-Karte gepflegt
+  (Tabelle `institute_contacts`, Endpoints `GET/POST
+  /phorest/institute/{branchId}/contact`, Schreibrecht wie Farbe/Icon/Bild:
+  `manage_branch_images`; ohne Recht Leseansicht). Phorest liefert je Branch
+  keine Kontaktdaten. Genutzt von den **Terminerinnerungs-Mails**:
+  Instituts-Footer, „Anrufen"-/„WhatsApp schreiben"-Buttons und die
+  Platzhalter `{{institut_telefon}}`/`{{institut_whatsapp}}`/`{{institut_mail}}`
+  (siehe `TERMINERINNERUNGEN.md`).
 - **Standort-Farbe:** Konfigurierbarer Farbpicker mit:
   - 12 vordefinierten Farben als Schnellauswahl
   - Freier Farbwähler (nativer Color-Picker)
