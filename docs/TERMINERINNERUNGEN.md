@@ -179,6 +179,22 @@ SendAppointmentReminderJob
   `TWILIO_RCS_SENDER` gesetzt: Nachrichten gehen dann als RCS raus und
   fallen bei Empfängern ohne RCS automatisch auf die SMS mit Absender
   „glattt" zurück (`FallbackFrom`). Kein Code-Änderungsbedarf.
+- **RCS-Karten im Backend gestaltbar** (28.08.): je Erinnerungsstufe eine
+  Rich Card — Bild-URL, Titel (Platzhalter), bis zu 2 Buttons (Verlege-Link
+  oder feste URL) und bis zu 3 Antwort-Chips. Beim Speichern synchronisiert
+  `AppointmentReminderStageObserver` → `SyncReminderStageRcsContentJob` die
+  Karte als **Twilio-Content-Template** (`TwilioContentService`; Content-
+  Ressourcen sind nicht editierbar → neu anlegen, alte SID löschen).
+  Versand mit `ContentSid` + Positions-Variablen ({{1}} Titel, {{2}} Text
+  ohne Link, {{3}} Buchungs-Token, {{4}} kompletter Link); SMS-Empfänger
+  bekommen den `twilio/text`-Fallback des Templates. Der SMS-Text der Stufe
+  ist zugleich der Kartentext — der Verlege-Link gehört dann NICHT hinein.
+  Scheitert die Karte beim Versand, wird die Text-SMS versucht.
+- **Zustell-/Lese-Tracking** (28.08.): jeder Twilio-Send bekommt automatisch
+  `StatusCallback` auf `POST /api/webhooks/twilio/status` (signiert) —
+  delivered/read landen als `delivery_status`/`delivered_at`/`read_at` am
+  Erinnerungs-Protokoll (Lesebestätigungen gibt es nur bei RCS) und speisen
+  die Nachrichten-Timeline der Kundenseite (siehe `CLIENT-DETAIL-MODULE.md`).
 - **Kanal-Reihenfolge je Stufe** (27.08.): explizit wählbar, welcher Kanal
   zuerst und welcher Fallback ist; Ausweichen sowohl bei Vorab-Blockern als
   auch bei fehlgeschlagenem Versand (bewusste Abwägung: höhere Zustellquote

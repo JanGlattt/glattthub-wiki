@@ -76,3 +76,32 @@ wird — Annahmequote, Conversion und Vergleich der Kundengruppen — steht unte
 [Gutschein-Aktion](GUTSCHEIN-AKTION.md). Dort ist auch beschrieben, wie der geschenkte Bonus-Gutschein
 beim Vertragsabschluss automatisch auf sechs Monate verlängert wird und warum das Kampagnen-Kennzeichen
 `Beratungs-WhatsApp` am Kauf-Token die eindeutige Erkennung liefert.
+
+## RCS/SMS-Fallback & Zustell-Check (seit 28.08.2026)
+
+**Für Endanwender:** Schlägt die Beratungs-WhatsApp fehl oder kommt sie nicht
+an (z.B. kein WhatsApp auf dem Handy), bekommt der Kunde dieselbe Botschaft
+automatisch per SMS/RCS über Twilio — Absender „glattt". Der Fallback-Text
+wird je Standort im Admin gepflegt (Sektion „RCS/SMS-Fallback" der
+Beratungs-WhatsApp-Einstellungen, Platzhalter inkl. `{{gutschein_link}}`);
+ohne Text bleibt der Fallback für den Standort aus. Das Protokoll zeigt je
+Eintrag zwei neue Badges: **Zustellung** (Zugestellt/Gelesen/Nicht
+zugestellt) und **Fallback** (per SMS/RCS zugestellt, fehlgeschlagen,
+übersprungen).
+
+**Für Entwickler:**
+
+- Sofort-Fallback in `SendConsultationWhatsappJob` bei WhatsApp-spezifischen
+  Fehlschlägen (Superchat-Kontakt, Template, Versand-API) →
+  `ConsultationSmsFallbackService` (Twilio, inkl. Gutschein-Link-Erzeugung
+  nach demselben Muster wie der WhatsApp-Zweig).
+- Zustell-Check: `CheckConsultationWhatsappDeliveryJob` (Dispatch +60 Min
+  nach Versand; Queue `default`) fragt `SuperchatApiService::
+  getMessageAnalytics()` ab — failed/undelivered → Fallback; unklare Status
+  werden bis zu 3× stündlich nachgeprüft, danach `delivery_status=unknown`.
+- Felder: `consultation_whatsapp_settings.sms_fallback_body`,
+  `consultation_whatsapp_logs.delivery_status/delivery_checked_at/
+  fallback_channel/fallback_status/fallback_reason/fallback_message_sid/
+  fallback_sent_at` (Migration `2026_08_28_120000`). Max. ein
+  Fallback-Versuch je Termin.
+- Tests: `tests/Feature/ConsultationWhatsapp/ConsultationSmsFallbackTest.php`.

@@ -404,3 +404,33 @@ Die Treatment-Settings-Styles sind komplett inline im Partial (`<style>`-Block),
 - `resources/views/hub/clients/partials/treatment-settings.blade.php`
 - `app/Http/Controllers/AppointmentViewController.php`
 - `routes/web.php`
+
+## Tab „Nachrichten" (seit 28.08.2026, vorher „WhatsApp")
+
+**Für Endanwender:** Der Tab zeigt oben die **Timeline aller automatisch
+versendeten Nachrichten** an den Kunden — Beratungs-WhatsApp (inkl.
+SMS/RCS-Fallback), Terminerinnerungen, Bewertungslink,
+Zufriedenheitsbefragung und System-E-Mails — mit Datum, Kanal, Status und,
+wo verfügbar, **Zustell-/Lesebestätigung** („Gelesen 28.08. 10:05"). Klick
+auf eine Zeile klappt den Nachrichtentext auf. Darunter wie bisher die
+Superchat-Konversationen mit Composer.
+
+**Für Entwickler:**
+
+- Endpoint `GET /phorest/client/{clientId}/messages?email=…`
+  (`ClientMessagesController`, Recht `view_client_detail`): aggregiert
+  `consultation_whatsapp_logs`, `appointment_reminder_logs`,
+  `review_whatsapp_logs`, `satisfaction_surveys` (je `client_id`) und
+  `email_logs` (über die E-Mail-Adresse; deckt auch SEPA-/Gutschein-Mails
+  ab), sortiert absteigend, max. 200 Einträge.
+- Lese-/Zustellstatus: WhatsApp über `SuperchatMessageAnalyticsService`
+  (Message-Analytics, 15 Min Cache, Batch 50); Twilio-Nachrichten über die
+  Status-Callback-Spalten der Erinnerungs-Logs (`delivery_status`,
+  `delivered_at`, `read_at` — Lesebestätigung nur bei RCS).
+- UI: Timeline-Komponente am Kopf von
+  `resources/views/hub/clients/partials/whatsapp.blade.php` (eigener
+  Alpine-Scope, lädt beim ersten Öffnen des Tabs); Tab-Label in
+  `detail.blade.php` (`id` bleibt `whatsapp`).
+- Grenze: Für den SMS/RCS-Fallback der Beratungs-WhatsApp gibt es noch kein
+  Zustell-Tracking (nur Versandstatus).
+- Tests: `tests/Feature/ClientMessagesTimelineTest.php`.
