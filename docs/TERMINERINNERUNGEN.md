@@ -67,6 +67,13 @@ Erinnerungsstufen (z.B. 7 Tage und 1 Tag vorher).
       Vorbereitungs-Tipps nur in der Behandlungs-Regel aktivieren).
       **„Vorschau der E-Mail"** rendert den aktuellen, auch ungespeicherten
       Formularstand mit Beispieldaten im echten Versand-Template.
+      **Testversand je Stufe:** „Test-E-Mail senden" (aktueller Formularstand,
+      [TEST]-Betreff, inkl. Kalender-Anhang, Empfänger vorbelegt mit der
+      eigenen Adresse) und „Test-SMS/RCS senden" (SMS-Text mit Beispieldaten
+      an eine frei wählbare Nummer — echte SMS-Kosten; eine aktive RCS-Karte
+      wird im zuletzt gespeicherten Stand genutzt, da das Content-Template
+      erst beim Speichern synchronisiert). Technik:
+      `app/Services/Reminders/ReminderTestSender.php`.
 - **Instituts-Seite (Betrieb → Institute → Infos)** — Telefon, WhatsApp-Nummer
   und E-Mail je Standort werden dort in der Kontaktdaten-Karte gepflegt
   (Phorest kennt je Branch nur Name + Adresse; Schreibrecht wie
