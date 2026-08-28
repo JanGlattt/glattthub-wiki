@@ -79,7 +79,8 @@ Erinnerungsstufen (z.B. 7 Tage und 1 Tag vorher).
   (Phorest kennt je Branch nur Name + Adresse; Schreibrecht wie
   Farbe/Icon/Bild). Speist den Instituts-Footer inkl. der Buttons
   **„Anrufen"** (tel:) und **„WhatsApp schreiben"** (wa.me) und die
-  Platzhalter `{{institut_telefon}}`, `{{institut_whatsapp}}`,
+  Platzhalter `{{institut_telefon}}`, `{{institut_whatsapp}}` (löst als
+  direkter `wa.me/…`-Link mit normalisierter Nummer auf) und
   `{{institut_mail}}`; `{{institut_adresse}}` kommt automatisch aus Phorest.
     - **Terminerinnerungen: Kanäle** — je Standort der
       Superchat-WhatsApp-Absenderkanal („Standorte laden" legt die Zeilen an).
