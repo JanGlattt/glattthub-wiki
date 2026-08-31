@@ -32,6 +32,7 @@ weiterhin konzernweite Zahlen — direkt neben korrekt gefilterten KPIs.
 | **Beratungsgespräche-Analyse** | Diagramm mit Metrik-Umschalter: **Beratungen** (Balken + No-Show-Quote als Linie) oder **No-Shows** (gestapelt Stattgefunden/Nicht stattgefunden + Quote); **Standorte** = gruppierte Balken je Institut (bei „No-Shows" gestapelt: Stattgefunden voll, No-Show-Anteil schraffiert), Quoten als Linien (rechte %-Achse); Zoom-Leiste | die Ampel-Tabelle Monat × Institut (Anzahl oder No-Show %) mit Wochen-Drilldown und Klick auf jede Zelle → Termine-Liste |
 | **Wochentag & Uhrzeit** | Heatmap Wochentag × Stunde (Gesamt oder Mini-Heatmaps je Standort), Filter-Drawer (Status, Buchungstyp, Zeitraum) | dieselben Werte als Zahlen-Tabelle mit Summen |
 | **No-show-Matrix** („Analyse Gigi") | Verlaufs-Diagramm der gewählten Kennzahl je Institut | die bekannte Ampel-Matrix (Quote/Gebucht/Erschienen, Färbungs-Vergleichsmodus, „Frühere Zeiträume laden") |
+| **Vorlauf & Termin-Erfolg** (seit 08/2026) | Kurven-Stack: drei Panels über derselben Vorlauf-Achse (Show-Rate + Abschlussquote, Ø KPZ, Buchungsvolumen); darüber drei Zonen-Karten (Kurzfristig 0–2 / Mittelfristig 3–9 / Langfristig 10+ Tage) mit Online/Offline-Vergleich; Kanal-Umschalter Alle/Online/Offline (clientseitig), Karten-Zeitraum (Standard: letzte 12 Monate) | Kennzahlen je Vorlauf-Gruppe für den gewählten Kanal, mit Gesamt-Zeile |
 | **Buchungseingänge** | Kalender (Buchungszeitpunkt statt Termindatum); begründete Ausnahme ohne Register | — |
 
 **Zusammenlegung 07/2026:** Die früheren drei Karten „Monatliche
@@ -69,6 +70,46 @@ anstehenden Tagestermine als „nicht erschienen" gewertet würden (Bug 08/2026)
 | `consultation-noshow-monthly` | No-show-Statistik pro Monat & Institut (deckt die Beratungsgespräche-Analyse und die Matrix auf Monatsebene, inkl. Quartal/Jahr-Aggregation per Tabellenkalkulation) |
 | `consultation-weekday-time` | Termine/Erschienen/No-Shows/Quote je Wochentag & Stunde |
 | `consultation-booking-days` | Buchungseingänge pro Tag & Institut (beide Quellen, dedupliziert) |
+| `consultation-lead-success` | Vorlauf & Termin-Erfolg: Buchungen, Show-Rate, Ausfallquote (inkl. Stornos < 24 h), Abschlussquote & Ø KPZ je Vorlauf-Gruppe und Kanal (Alle/Online/Offline) — exakt die Zahlen der Karte |
+
+### Vorlauf & Termin-Erfolg — Definitionen
+
+Die Karte beantwortet drei Fragen: Ab welchem Buchungsvorlauf steigt die
+No-Show-Quote? Wo liegt der Sweet Spot? Unterscheiden sich Online- und
+Offline-Buchungen?
+
+- **Vorlauf** = Termindatum minus Buchungsdatum (Phorest `created_at_phorest`)
+  in Tagen; negative Werte (Datenartefakte) sind ausgeschlossen. Gruppen:
+  0, 1, 2, 3, 4, 5–6, 7–9, 10–13, 14–20, 21+ Tage.
+- **Erschienen** = Status COMPLETED/PAID; No-Show wie überall auf der Seite
+  (settled-Regel, heutige offene Termine bleiben außen vor).
+- **Ausfallquote statt reiner No-show-Quote** (Entscheidung 31.08.2026, weil
+  die reine No-show-Quote das Bauchgefühl unterschritt): No-Shows PLUS
+  **Stornierungen unter 24 Stunden** vor Terminbeginn (Zähler und Nenner) —
+  Kurzfrist-Stornos sind für das Institut nicht mehr besetzbar. Früher
+  stornierte Termine fließen gar nicht ein; Storno-Zeitpunkt =
+  `updated_at_phorest` (Muster des Storno-Reports), Storno-Erkennung über
+  `activation_state = 'CANCELED'` (state bleibt beim Phorest-Sync BOOKED!).
+  Damit liegt die Ausfallquote dieser Karte bewusst über der No-show-Quote
+  der übrigen Karten (~29 % vs. ~25 % über 12 Monate). Prod-Befund 08/2026:
+  Die Storno-Quote steigt massiv mit dem Vorlauf (0–2 Tage: 9 %, 3–9: 18 %,
+  10+: 32,5 %) — von 100 Langfrist-Buchungen findet nur knapp die Hälfte statt.
+- **Abschluss** = aktiver/abgeschlossener Vertrag derselben Kundin,
+  unterschrieben 0–30 Tage nach dem Beratungstermin. Die manuell erfassten
+  Gesprächsergebnisse (`consultation_records`) sind bewusst NICHT die Quelle —
+  sie werden kaum gepflegt (Stand 08/2026: 19 Einträge). **Abschlussquote
+  bezogen auf Erschienene**; Ø KPZ = `contracts.body_zone_count` der
+  zugeordneten Verträge. Die Quote der letzten ~30 Tage kann noch steigen
+  (Abschlussfenster offen).
+- **Online/Offline** = tatsächlicher Buchungskanal: Online, wenn die
+  Phorest-Quelle `THIRD_PARTY` ist ODER ein Buchungs-Tracking der
+  Online-Strecke existiert; sonst Offline. (Bewusst anders als der
+  Buchungstyp-Filter der übrigen Karten, der über den Service
+  `consultation_services.is_online` geht — Prod-Abgleich 08/2026:
+  Mitarbeiter-Buchungen (`INTERNAL`) haben 0 Trackings, die Kanal-Heuristik
+  ist belastbar.)
+- **Deduplizierung**: eine Buchung je Kundin und Tag (Kabinen-Doppelzeilen
+  zählen nicht doppelt).
 
 ---
 
@@ -88,7 +129,9 @@ ReportController (app/Http/Controllers/) — Ausschnitt dieser Seite
 ├── weekdayTimeAnalysis()           → JSON: Heatmap Wochentag × Stunde
 ├── consultationAppointments()      → JSON: Termine-Liste (Zellen-Modal)
 ├── consultationBookingCalendar()   → JSON: Buchungseingänge (booking_trackings + Phorest, dedupliziert)
-└── consultationBookingDay()        → JSON: Buchungen eines Tages (Modal)
+├── consultationBookingDay()        → JSON: Buchungen eines Tages (Modal)
+└── consultationLeadSuccess()       → JSON: Vorlauf & Termin-Erfolg (rechnet im ConsultationLeadSuccessService —
+                                      gemeinsame Datenbasis mit der CSV-Quelle consultation-lead-success)
 ```
 
 **Ein Datensatz für die ganze Analyse-Karte:** Vor der Zusammenlegung hielten
@@ -119,8 +162,11 @@ waren tot (kein Aufrufer) und wurden mitsamt Routen entfernt.
 | `public/js/weekday-time-analysis.js` | Heatmap-Karte (eigene App, Register Heatmap ⇄ Tabelle) |
 | `public/js/no-show-matrix.js` | Matrix-Karte (eigene App, neu mit Verlaufs-Diagramm + Branch-Filter) |
 | `app/Services/ReportExportService.php` | CSV-Quellen `consultation-*` |
+| `app/Services/ConsultationLeadSuccessService.php` | Rechenkern „Vorlauf & Termin-Erfolg" (Buckets, Zonen, Kanal-Heuristik, Vertrags-Matching) |
+| `resources/views/statistics/termine/lead-success.blade.php` + `public/js/statistics/termine.js` (`termine.lead-success`) | Statistik-Karte nach Registry-Konvention (auch als Dashboard-Kachel) |
 | `tests/Feature/PastConsultationsPageTest.php` | Seiten-Skelett, Branch-Filter (inkl. Cache), Export-Quellen |
 | `tests/Feature/NoShowMatrixTest.php` | Matrix-Zähllogik |
+| `tests/Feature/ConsultationLeadSuccessTest.php` | Vorlauf-Buckets, Kanal-Heuristik, 30-Tage-Fenster, Deduplizierung, Export-Parität |
 
 **Drei Alpine-Apps** unter einer Seiten-Wurzel: `pastConsultationStatsApp`
 (Root, gemergt mit `window.chart2Extensions`), `weekdayTimeAnalysis` und
