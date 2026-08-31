@@ -97,8 +97,34 @@ zugestellt) und **Fallback** (per SMS/RCS zugestellt, fehlgeschlagen,
   nach demselben Muster wie der WhatsApp-Zweig).
 - Zustell-Check: `CheckConsultationWhatsappDeliveryJob` (Dispatch +60 Min
   nach Versand; Queue `default`) fragt `SuperchatApiService::
-  getMessageAnalytics()` ab — failed/undelivered → Fallback; unklare Status
+  getMessageAnalytics()` ab — failed → Fallback; unklare Status
   werden bis zu 3× stündlich nachgeprüft, danach `delivery_status=unknown`.
+- **Bugfix 31.08.2026:** Der Check rief seit dem Rollout einen falschen
+  Superchat-Pfad auf (`GET /messages/analytics?ids=` → immer 404), wodurch
+  ALLE Checks auf `unknown` liefen und der SMS-Fallback nie feuerte. Korrekt
+  ist `GET /analytics/messages?message_ids=…` (wiederholte Parameter, max.
+  100 IDs; NUR bare Wiederholung — `message_ids[]=` lehnt die API mit 400 ab,
+  deshalb baut `getMessageAnalytics()` den Query-String selbst und
+  `makeRequest()` übergibt bei leeren `$params` kein query-Argument, sonst
+  verwirft Laravel den URL-Query). Die Antwort liefert `results[]` mit
+  verschachtelten Timestamps (`sending_attempted/delivered/read/failed` →
+  `{ timestamp }`), zentral geparst in
+  `SuperchatApiService::parseMessageAnalytics()` (genutzt vom Check-Job und
+  `SuperchatMessageAnalyticsService`/Nachrichten-Tab).
+- Backfill & täglicher Nachprüf-Lauf: `php artisan
+  consultation-whatsapp:backfill-delivery` (`--dry-run`, `--days=N`) trägt den
+  Zustell-Status für Logs mit leerem/`unknown` `delivery_status` nach und
+  prüft `delivered`-Zeilen auf späte Lesebestätigungen (nie Rückstufung auf
+  `unknown`, kein SMS-Fallback). Läuft täglich 03:30 mit `--days=30` über
+  Cloud Scheduler `recheck-whatsapp-delivery` →
+  `/api/cron/recheck-whatsapp-delivery` — so bleiben die Zustelldaten aktuell,
+  auch wenn der 60-Min-Check mal ausfällt. Einmaliger Prod-Backfill der 709
+  Altfälle am 31.08.2026: 573 zugestellt / 74 gelesen / 59 fehlgeschlagen /
+  3 unklar.
+- Prod-Analyse 31.08.2026 (709 versendete Beratungs-WhatsApps seit 13.07.):
+  **8,3 % scheitern bei der Zustellung** (Braunschweig 16,1 %, Bielefeld
+  4,6 %). Nicht zugestellte: Show-Rate 61,8 % / Abschlussquote 42,9 % —
+  Zugestellte: 72,5 % / 58,0 % (kleine Fallzahl der Failed-Gruppe beachten).
 - Felder: `consultation_whatsapp_settings.sms_fallback_body`,
   `consultation_whatsapp_logs.delivery_status/delivery_checked_at/
   fallback_channel/fallback_status/fallback_reason/fallback_message_sid/

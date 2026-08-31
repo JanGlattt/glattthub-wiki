@@ -570,6 +570,7 @@ gcloud logging read 'resource.type="cloud_run_revision" AND textPayload:"Cron:"'
 | `/api/cron/sync-client-statistics` | POST | Nightly Delta-Sync Client Statistics (täglich) |
 | `/api/cron/sync-superchat-consultation-dates` | POST | Setzt/löscht Superchat-Attribut "Beratungstermin" täglich um 03:15 |
 | `/api/cron/sync-knowledge-base` | POST | Nightly Delta-Sync der Wissensdatenbank Drive → OpenAI Vector Store (täglich um 03:00) |
+| `/api/cron/recheck-whatsapp-delivery` | POST | Beratungs-WhatsApp: Zustell-Status der letzten 30 Tage aus Superchat nachprüfen (täglich 03:30, Scheduler-Job `recheck-whatsapp-delivery`) |
 
 ## Sicherheit
 
