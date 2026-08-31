@@ -67,6 +67,10 @@ laufende Nummer, z. B. `MD000001`.
 
 - Die Nummer erscheint in der Tagesliste (klein hinter dem Kunden, `#MD000001`)
   und im Daten-Check des Verkaufs-Assistenten.
+- **Spätestens beim Öffnen des Termins** (Verkauf **oder** Kein Verkauf) wird
+  die Nummer direkt vergeben: Über dem Modal erscheint kurz ein Spinner
+  „Kundennummer wird vergeben …", danach steht die Nummer im Modal (Daten-Check
+  bzw. Kopfzeile) und sofort auch in der Tagesliste.
 - Spätestens beim Daten-Check bzw. beim Speichern eines Verkaufs wird die
   Nummer vergeben — die **Vertragsnummer** (`JJJJ.MM.TT-Kundennummer`) hat
   damit nie mehr den Client-ID-Fallback.
