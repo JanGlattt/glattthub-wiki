@@ -39,6 +39,11 @@ Instituts-Tablet). Kein Ablaufdatum.
   erscheinen nicht.
 - Jede Zeile zeigt Uhrzeit, Kundenname, Mitarbeiter, Services und den
   Erfassungsstatus: **Offen**, **Verkauf ✓** oder **Kein Verkauf**.
+- **Go-Live-Schnitt:** Beratungsgespräche vor dem **01.09.2026** (offizieller
+  Go-Live der Tageserfassung) erscheinen in **keinem** Zeitraum — auch nicht
+  unter „Gestern" oder „Diese Woche". Der Vormonat wurde noch über den
+  Google-Sheets-Import gepflegt; eine Erfassung für Alt-Termine lehnt auch der
+  Server ab.
 
 ### Kein Verkauf
 
@@ -90,8 +95,13 @@ Button **„Verkauf"** öffnet einen Assistenten in sechs Schritten:
    (OpenIBAN-Lookup); der **Kontoinhaber ist mit dem Kundennamen vorbelegt**.
    Wird „abweichender Zahler" angehakt, leert sich das Feld (plus Adresse +
    E-Mail des Zahlers); beim Abhaken kommt der Kundenname zurück. Eine
-   ungültige IBAN blockiert den Weiter-Knopf und wird auch serverseitig
-   abgelehnt (`ValidIban`-Rule im `storeSale`).
+   **ungültige IBAN** blockiert den Weiter-Knopf zunächst — hat der Kunde die
+   IBAN aber wirklich so mitgeteilt, kann das Institut das per Checkbox
+   bestätigen („trotzdem übernehmen"): Der Vertrag wird dann **mit der
+   ungültigen IBAN gespeichert**, das Institut sieht einen Warnhinweis und
+   **Janine bekommt automatisch eine Asana-Aufgabe** (Projekt „3. Office-Team",
+   Sektion „Janine - Finance"), die korrekte IBAN vor der Mandats-Anlage zu
+   klären. Ohne Bestätigung lehnt auch der Server ab.
 5. **Extras** — Gutschein per Seriennummer prüfen und anrechnen,
    „Freunde werben Freunde"-Werber suchen (Selbstwerbung ist gesperrt).
 6. **Abschluss** — Zusammenfassung, Pflichtkommentar + Gesprächsführer,
@@ -211,6 +221,21 @@ stellen (Hinweis steht auch auf der Seite).
 - **Preisprüfung serverseitig:** `verifyPricePayload()` rechnet Rate, Summe
   und Rabatt gegen die Preisliste nach — der Client wird nie geglaubt (422 bei
   Abweichung).
+- **Ungültige IBAN (seit 31.08.2026):** `storeSale` lehnt eine ungültige IBAN
+  nur noch ab, solange `bank.invalid_iban_confirmed` fehlt. Mit Bestätigung
+  wird sie im pending-Mandat gespeichert und
+  `CreateInvalidIbanAsanaTaskJob` (Queue, 3 Versuche) erstellt über den
+  minimalen `AsanaApiService` (PAT in `ASANA_ACCESS_TOKEN`, GIDs in
+  `config/services.php` → `asana.invalid_iban`) eine Aufgabe für Janine
+  Tasto im Projekt „3. Office-Team", Sektion „Janine - Finance". Ohne Token
+  ist der Job ein No-Op mit Log-Fehler — der Verkauf scheitert nie an Asana.
+- **Go-Live-Schnitt:**
+  `SharedInstitutePageController::CAPTURE_MIN_DATE` (`2026-09-01`) klemmt in
+  `consultations()` alle Zeiträume auf frühestens dieses Datum (Vor-Go-Live-
+  Termine sind unsichtbar) und lehnt in `storeRecord`/`storeSale` jede
+  Erfassung für frühere Termindaten mit 422 ab
+  (`rejectPreGoLiveAppointment()`). Upselling ohne Termin-Bezug ist bewusst
+  nicht gesperrt.
 - **Dubletten:** Kunde + `DATE(signed_at)` (deckt auch den Sheet-Import ab) ⇒
   HTTP 409 mit `duplicate: true`; erneutes Senden mit `confirm_duplicate`.
 - **Phorest-Notiz** bei Verkauf UND Nicht-Verkauf:
