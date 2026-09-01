@@ -245,6 +245,15 @@ stellen (Hinweis steht auch auf der Seite).
 - **Phorest-Notiz** bei Verkauf UND Nicht-Verkauf:
   `saveAppointmentNote()` mit `[d.m.Y – Name] Kommentar` (Fehler brechen das
   Speichern nicht, sie kommen als `warnings[]` zurück).
+- **Selbstheilung der Terminnotiz (01.09.2026):** Der Phorest-Notiz-Editor
+  speichert immer den kompletten Text — tippt eine Mitarbeiterin ihren
+  Kommentar kurz nach der Erfassung zusätzlich von Hand in Phorest,
+  überschreibt ihr Speichern die automatische Notiz (am ersten Go-Live-Tag
+  bei 3 von 8 Erfassungen passiert). `EnsurePhorestAppointmentNoteJob` läuft
+  deshalb 15 Minuten nach jedem Notiz-Push, prüft per `getAppointment()`, ob
+  die Notiz noch am Termin steht, und hängt sie sonst genau einmal erneut an
+  (Log-Warnung „Terminnotiz war überschrieben"). Zusätzlich steht unter beiden
+  Kommentarfeldern der Hinweis, nicht mehr von Hand in Phorest einzutragen.
 - **Upselling:** `ContractCancellation` (reason + reaction `upgrade`, Status
   `abgeschlossen`, ohne Zendesk-Ticket) + `RevocationOutcomeService::apply()`
   ⇒ Altvertrag `modified`, `successor_contract_id`, offene Raten aufgeräumt
