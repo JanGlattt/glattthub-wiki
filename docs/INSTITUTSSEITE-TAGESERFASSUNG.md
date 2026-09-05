@@ -91,7 +91,12 @@ Button **„Verkauf"** öffnet einen Assistenten in sechs Schritten:
    Zonen" mit Angabe der konkreten Zonen; ab der Maximal-Zonenzahl automatisch
    Ganzkörper).
 3. **Paket & Preis** — Laufzeit/Rate und Rabatt kommen aus der gültigen
-   Preisliste des Instituts.
+   Preisliste des Instituts. Zwei Meldungen sind hier zu unterscheiden:
+   **„Die Preise konnten gerade nicht geladen werden"** ist ein technischer
+   Fehler (Netz, Server) — „Erneut versuchen" klicken. **„Keine gültige
+   Preisliste gefunden"** heißt dagegen wirklich, dass im Hub keine aktive
+   Preisliste für das Institut hinterlegt ist — dann das Büro informieren.
+   Erscheint „Die Sitzung dieser Seite ist abgelaufen", die Seite neu laden.
 4. **Zahlung** — Ratenzahlung (SEPA) oder Direktzahlung vor Ort, dazu das
    Vertrags-/Unterschriftsdatum. Bei SEPA: erste Abbuchung, IBAN und
    Kontoinhaber — die **IBAN wird live geprüft** (mod-97 über
@@ -158,7 +163,7 @@ stellen (Hinweis steht auch auf der Seite).
 |---|---|
 | Zugangs-Tokens | `institute_access_tokens` + `App\Models\InstituteAccessToken` (widerrufbar/rotierbar, kein Ablauf; aktiv = `revoked_at IS NULL`) |
 | Token-Verwaltung (Hub) | `InstituteAccessTokenController` (`/phorest/institute/{branchId}/access-token`, Recht `manage_institute_access_tokens`), Tab `hub/institutes/tabs/access.blade.php` |
-| Externe Seite | `SharedInstitutePageController`, Route `GET /shared/institut/{token}` (`throttle:shared-page`), POSTs unter `/api/shared/institut/{token}/…` (`throttle:form-submit`) |
+| Externe Seite | `SharedInstitutePageController`, Route `GET /shared/institut/{token}` (`throttle:shared-page`), POSTs unter `/api/shared/institut/{token}/…` (`throttle:form-submit`, **ohne CSRF-Prüfung** — Ausnahme `api/shared/institut/*` in `bootstrap/app.php`, siehe „Betrieb") |
 | View | `resources/views/shared/institute-day.blade.php` + Partials `shared/institute/*` (Standalone-Blade, noindex, Theme-Bootstrap, Institut-Branding aus `InstituteColor`/`InstituteImage`) |
 | Frontend-Logik | `public/js/institute-page.js` (Alpine, `institutePage(cfg)`) |
 | Vertragserstellung | `ContractCreationService::createFromInstituteCapture()` |
@@ -293,6 +298,19 @@ Registry-Definitionen — nichts ist doppelt gebaut.
 
 - `/shared/*` und `/api/shared/*` laufen am Google-IAP vorbei (Load-Balancer-
   Path-Rule) — neue Endpoints müssen unter diesen Präfixen bleiben.
+- **Keine CSRF-Prüfung für `api/shared/institut/*`** (Ausnahme in
+  `bootstrap/app.php`, abgesichert durch
+  `test_institute_endpoints_are_exempt_from_csrf_validation`). Hintergrund
+  (Bug 09/2026, Hannover): Die Seite bleibt im Institut tagelang offen; über
+  Nacht (Mac im Ruhezustand) läuft die Laravel-Session nach 120 Min. Ruhe ab,
+  das CSRF-Token im Meta-Tag der Seite aber nicht. Lesezugriffe liefen weiter,
+  jeder Schreibzugriff bekam **419** — im Verkaufs-Modal fälschlich als „keine
+  gültige Preisliste" angezeigt, bis jemand die Seite neu lud (in den Cloud-Run-
+  Logs 156 × 419 in zehn Tagen, ausschließlich `calculate-price` und `record`).
+  CSRF schützt hier nichts: Das Geheimnis ist das Zugriffs-Token in der URL,
+  die Aufrufe sind JSON mit `X-Requested-With`. Das Frontend unterscheidet
+  seitdem technische Fehler (`sale.priceError`, Retry-Button; 419 → Hinweis
+  „Seite neu laden") von der fachlichen Warnung „keine Preisliste".
 - Abschaltung des Google-Sheets-Imports ist ein **separater Task** (Freigabe
   durch Jan); bis dahin Parallelbetrieb mit Dubletten-Warnung.
 - **Go-Live der Kundennummern-Automatik je Standort:** am Stichtag im
