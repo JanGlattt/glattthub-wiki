@@ -1,5 +1,5 @@
 /* Stufe 2: Formularliste → Kundeninformation öffnen → Formular teilen → ausfüllen → absenden */
-const L = require('./lib.cjs');
+const C = require('./common.cjs'); const L = C.L;
 const S = () => Alpine.$data(document.querySelector('.apt-detail'));
 // Hilfsfunktion im Browser: Rechteck des Feld-Containers zu einem Label-Text
 const rectOfLabel = (text) => { const els = [...document.querySelectorAll('label, h3, h2, h4, legend, .form-glattt-label, p, span, button')].filter(e => e.textContent.trim().startsWith(text) && e.offsetParent !== null); const el = els[0]; if (!el) return null; const box = el.closest('.form-glattt-group, .form-field-wrapper, .yes-no-glattt, .signature-pad-container, .form-glattt-section') || el; const b = box.getBoundingClientRect(); return { x: b.x, y: b.y, w: b.width, h: b.height }; };
@@ -19,7 +19,7 @@ async function openForm(page, name) {
   await L.wait(page, 1500);
 }
 const F = () => Alpine.$data(document.querySelector('[x-data^="formFill"]'));
-async function scrollTo(page, text) { await page.evaluate((t) => { const el = [...document.querySelectorAll('h3,h2,h4,label,legend,.form-glattt-label,p')].find(e => e.textContent.trim().startsWith(t) && e.offsetParent !== null); if (el) { const y = el.getBoundingClientRect().top + window.scrollY - 110; window.scrollTo(0, y); } }, text); await L.wait(page, 500); }
+const scrollTo = (page, text) => C.scrollTo(page, text, 24);
 
 (async () => {
   const { browser, ctx, page } = await L.launch();
@@ -62,6 +62,8 @@ async function scrollTo(page, text) { await page.evaluate((t) => { const el = [.
   await page.evaluate(() => F().closeShareModal()); await L.wait(page, 500);
   // Adresse ergänzen (Testkunde hat in Phorest keine Adresse) → löst später den Phorest-Abgleich aus
   await page.evaluate(() => { const d = F(); if (!d.values['text_1787663605012']) { d.values['text_1787663605012'] = 'Musterstraße 12'; d.values['text_1787663607304'] = '39104'; d.values['text_1787663608070'] = 'Magdeburg'; } });
+  // Telefonnummer der Testkundin ändern, damit der Phorest-Abgleich („Kundendaten geändert“) erscheint
+  await page.evaluate(() => { const d = F(); d.values['text_1787663567030'] = '0152 98765432'; });
   // ── D2 Ausfüllen: Ja/Nein-Block (Frage 1 = Ja mit Zusatz, Rest Nein), Hauptgründe, Unterschrift
   await page.evaluate(() => { const d = F(); if (!d.values['gender_1788789142944']) d.values['gender_1788789142944'] = 'FEMALE'; });
   await L.wait(page, 300);
@@ -87,21 +89,10 @@ async function scrollTo(page, text) { await page.evaluate((t) => { const el = [.
     { id: 'sig', kind: 'badge', n: 6, sel: 'canvas.signature-pad-canvas', at: 'tl', dx: 1, dy: 1 },
     { id: 'submit', kind: 'chip', label: 'Hier tippen', sel: 'form button[type=submit].btn-glattt-primary', at: 'l' },
   ]});
-  // ── D6 Absenden
-  const missing = await page.evaluate(() => { const d = F(); const ok = d.validate ? d.validate() : true; return { ok, errors: d.errors }; });
-  console.log('validate', JSON.stringify(missing).slice(0, 400));
-  await page.click('form button[type=submit].btn-glattt-primary');
-  await page.waitForFunction(() => { const d = F(); return d.showPhorestChangesModal === true || (d.showSubmissionModal === true && d.submissionStatus); }, null, { timeout: 60000 });
-  const ph = await page.evaluate(() => F().showPhorestChangesModal);
-  if (ph) {
-    await L.wait(page, 600);
-    await L.shot(page, 'd6-phorest-aenderungen', { noScroll: true, marks: [ { id: 'ok', kind: 'chip', label: 'Hier tippen', sel: '.modal-glattt-footer button.btn-glattt-primary', at: 'l' } ]});
-    await page.evaluate(() => F().submitWithPhorestUpdate());
-    await page.waitForFunction(() => F().showSubmissionModal === true && F().submissionStatus, null, { timeout: 60000 });
-  }
-  await page.waitForFunction(() => F().pdfReady === true || F().submissionStatus === 'error', null, { timeout: 60000 }).catch(() => {});
-  await L.wait(page, 800);
-  console.log('submission', await page.evaluate(() => ({ st: F().submissionStatus, id: F().lastSubmissionId, pdf: F().pdfReady })));
+  // ── D6 Absenden (inkl. Phorest-Abgleich)
+  console.log('validate', JSON.stringify(await page.evaluate(() => { const d = F(); const ok = d.validate(); const errors = { ...d.errors }; d.errors = {}; return { ok, errors }; })).slice(0, 400));
+  const res = await C.submitForm(page, { phorest: 'd6-phorest-aenderungen' });
+  if (res === 'errors' || res === 'stuck') { await browser.close(); process.exit(3); }
   await L.shot(page, 'd7-kundeninfo-erfolg', { noScroll: true, marks: [
     { id: 'pdf', kind: 'badge', n: 1, sel: 'a.btn-glattt-secondary[download]', at: 'l' },
     { id: 'mail', kind: 'badge', n: 2, sel: '.modal-glattt input[type=email]', at: 'l' },

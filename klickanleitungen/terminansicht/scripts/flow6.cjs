@@ -35,21 +35,22 @@ const T = () => Alpine.$data(document.querySelector('[x-data^="treatmentSettings
   // Historie-Ansicht
   await page.evaluate(() => Alpine.$data(document.querySelector('.apt-detail')).navigateTo('settings-history')); await L.wait(page, 2000);
   await L.shot(page, 'k6-zettel-historie', {});
-  // Termin beenden
-  await page.evaluate(() => Alpine.$data(document.querySelector('.apt-detail')).beginEndSessionFlow());
-  await page.waitForFunction(() => { const s = Alpine.$data(document.querySelector('.apt-detail')); return s.showBalanceScreen || s.showEndSessionModal || document.querySelector('.modal-glattt:not([style*="display: none"]) .slot-pill'); }, null, { timeout: 60000 });
-  await L.wait(page, 1500);
-  const flow = await page.evaluate(() => { const s = Alpine.$data(document.querySelector('.apt-detail')); return { bal: s.showBalanceScreen, end: s.showEndSessionModal, followup: !!document.querySelector('.slot-pill'), txt: [...document.querySelectorAll('.modal-glattt')].filter(e => e.offsetParent !== null).map(e => e.innerText.replace(/\n+/g, ' | ').slice(0, 300)) }; });
+  // Termin beenden (Folgetermin-Modal ist Livewire und braucht einen Moment)
+  await page.evaluate(() => S().beginEndSessionFlow());
+  await L.wait(page, 6000);
+  const flow = await page.evaluate(() => { const s = S(); return { bal: s.showBalanceScreen, end: s.showEndSessionModal, modals: [...document.querySelectorAll('.modal-glattt')].filter(e => e.offsetParent !== null).map(e => e.innerText.replace(/\n+/g, ' | ').slice(0, 120)) }; });
   console.log('endflow', JSON.stringify(flow));
-  if (flow.followup) {
+  if (flow.modals.some(m => m.includes('Folgetermin'))) {
     await L.shot(page, 'l1-folgetermin', { noScroll: true });
     await page.evaluate(() => { const c = [...document.querySelectorAll('.modal-glattt-header-close')].find(e => e.offsetParent !== null); c?.click(); });
-    await page.waitForFunction(() => Alpine.$data(document.querySelector('.apt-detail')).showEndSessionModal, null, { timeout: 30000 }); await L.wait(page, 800);
+    await page.waitForFunction(() => S().showEndSessionModal, null, { timeout: 30000 }).catch(() => {}); await L.wait(page, 800);
   }
-  if (await page.evaluate(() => Alpine.$data(document.querySelector('.apt-detail')).showEndSessionModal)) {
-    await page.fill('.modal-glattt textarea.input-glattt', 'Erste Behandlung Achseln durchgeführt, gut vertragen.');
+  if (await page.evaluate(() => S().showEndSessionModal)) {
+    await page.fill('.modal-glattt textarea.input-glattt', 'Erste Behandlung Achseln und Bikinizone durchgeführt, gut vertragen.');
     await L.shot(page, 'l2-behandlung-terminnotiz', { noScroll: true, marks: [ { id: 'end', kind: 'chip', label: 'Hier tippen', sel: '.modal-glattt-footer button.btn-glattt-danger', at: 'l' } ]});
-    if (!process.argv.includes('--dry')) { await page.click('.modal-glattt-footer button.btn-glattt-danger'); await page.waitForFunction(() => Alpine.$data(document.querySelector('.apt-detail')).endSessionStatus === 'success', null, { timeout: 60000 }); await L.wait(page, 3000); await L.shot(page, 'l3-behandlung-beendet', {}); }
+    await page.click('.modal-glattt-footer button.btn-glattt-danger');
+    await page.waitForFunction(() => S().endSessionStatus === 'success', null, { timeout: 60000 }); await L.wait(page, 3000);
+    await L.shot(page, 'l3-behandlung-beendet', {});
   }
   await browser.close();
 })().catch(e => { console.error('FEHLER', e); process.exit(1); });

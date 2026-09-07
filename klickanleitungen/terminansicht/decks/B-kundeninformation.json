@@ -10,15 +10,15 @@
   "pages": [
     {
       "h1": "Formular öffnen",
-      "sub": "In der Session-Ansicht die Kachel „Formulare“ antippen — dann das erste Formular wählen.",
+      "sub": "In der Session-Ansicht die Kachel „Formulare“ antippen. Die Reihenfolge ist fest: Kundeninformation → Behandlungsvertrag → SEPA-Mandat.",
       "card": { "title": "Formular öffnen", "text": "Kachel „Formulare“ → „Kundeninformation & Einverständniserklärung“" },
       "left": { "shot": "c1-formulare-liste", "marks": [ { "id": "f0", "n": 1 }, { "id": "f1", "n": 2 }, { "id": "f2", "n": 3 } ] }, "right": { "shot": "d1-kundeninfo-oben", "marks": [ { "id": "kontakt" } ] },
       "leftCaption": "Formularauswahl im laufenden Termin — jede Kachel ist ein Formular.",
       "rightCaption": "Das geöffnete Formular: Stammdaten sind aus Phorest vorbelegt.",
       "steps": [
         { "n": 1, "title": "„Kundeninformation & Einverständniserklärung“", "text": "Immer zuerst. Antippen öffnet das Formular direkt im Termin." },
-        { "n": 2, "title": "„SEPA Mandat“", "text": "Erst nach dem Behandlungsvertrag möglich — die Kachel ist bis dahin gesperrt („Zuerst den Behandlungsvertrag abschließen“)." },
-        { "n": 3, "title": "„Behandlungsvertrag“", "text": "Der Vertrag mit Körperzonen, Laufzeit und Preis (Teil C)." },
+        { "n": 2, "title": "„Behandlungsvertrag“", "text": "Der Vertrag mit Körperzonen, Laufzeit und Preis (Teil C). Gesperrt, bis die Kundeninformation ausgefüllt ist („Zuerst ausfüllen: …“)." },
+        { "n": 3, "title": "„SEPA Mandat“", "text": "Erst nach dem Behandlungsvertrag möglich — bis dahin gesperrt („Zuerst den Behandlungsvertrag abschließen“)." },
         { "n": 4, "title": "Vorbelegte Felder prüfen", "text": "Vorname, Nachname, Kundennummer, E-Mail und Telefon kommen aus Phorest. **Bitte mit der Kundin abgleichen** und bei Bedarf korrigieren." }
       ],
       "hint": { "kind": "info", "text": "**Grüner Haken** auf einer Kachel = für diesen Termin bereits ausgefüllt. Ein erneuter Klick bietet **„Ausgefülltes Formular ansehen“** oder **„Weiteres Formular ausfüllen“** an." }

@@ -15,7 +15,7 @@ async function openForm(page, name) {
   await page.waitForFunction(() => { const el = document.querySelector('[x-data^="formFill"]'); return el && Alpine.$data(el)?.form?.fields?.length > 0; }, null, { timeout: 30000 });
   await L.wait(page, 1500);
 }
-async function scrollTo(page, text, off = 110) { await page.evaluate(([t, o]) => { const el = [...document.querySelectorAll('h3,h2,h4,label,legend,.form-glattt-label,p,span')].find(e => e.textContent.trim().startsWith(t) && e.offsetParent !== null); if (el) window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - o); }, [text, off]); await L.wait(page, 500); }
+const scrollTo = (page, text, off = 24) => C.scrollTo(page, text, off);
 const sign = async (page) => { await page.evaluate(() => { const pad = Alpine.$data([...document.querySelectorAll('.signature-pad-container')].find(e => e.offsetParent !== null)); pad.strokes = [{ points: [{x:30,y:70},{x:60,y:30},{x:90,y:75},{x:120,y:35},{x:160,y:70},{x:200,y:40},{x:260,y:60},{x:330,y:45}] }, { points: [{x:340,y:40},{x:380,y:70},{x:420,y:35},{x:470,y:65}] }]; pad.redrawFromStrokes(); pad.saveSignature(); }); await L.wait(page, 400); };
 
 (async () => {
@@ -42,7 +42,7 @@ const sign = async (page) => { await page.evaluate(() => { const pad = Alpine.$d
   await page.waitForFunction(() => F().priceLoading === false && F().priceData, null, { timeout: 30000 }).catch(() => {});
   const pinfo = await page.evaluate(() => { const d = F(); return { multiple: d.multiplePriceLists, idx: d.selectedPriceListIndex, keys: Object.keys(d.priceData || {}), lists: (d.priceData?.price_lists || d.priceData?.lists || []).map(l => l.name || l.price_list_name), opts: (d.getCurrentPriceOptions?.() || []).map(o => `${o.months}M ${o.monthly_amount_cents}`), field: d.getPriceFieldName?.(), err: d.priceError }; });
   console.log('preis', JSON.stringify(pinfo));
-  await scrollTo(page, 'Vertragspreise', 90);
+  await C.scrollToSel(page, '.contract-price-field', 24);
   await L.shot(page, 'f4-vertrag-preisliste', { noScroll: true, marks: [ { id: 'liste', kind: 'badge', n: 1, sel: '.contract-price-content select', at: 'l' } ]});
   await page.evaluate(() => { const d = F(); const lists = d.priceData?.price_lists || d.priceData?.lists || []; const i = lists.findIndex(l => (l.name || l.price_list_name || '').includes('Magdeburg')); if (i >= 0) { d.selectedPriceListIndex = i; d.updateSelectedPriceList(); } });
   await L.wait(page, 800);
@@ -51,15 +51,17 @@ const sign = async (page) => { await page.evaluate(() => { const pad = Alpine.$d
   const summary = await page.evaluate(() => { const el = document.querySelector('.contract-price-summary, .contract-price-field'); return el ? el.innerText.replace(/\n+/g, ' | ').slice(0, 700) : null; });
   console.log('summary', summary);
   console.log('zahlung-span', await page.evaluate(() => { const el = [...document.querySelectorAll('span')].find(e => e.textContent.trim() === 'Zahlung:'); return el ? (el.offsetParent !== null) + ' ' + el.parentElement.textContent.trim().slice(0, 80) : 'FEHLT'; }));
-  await scrollTo(page, 'Vertragspreise', 90);
+  await C.scrollToSel(page, '.contract-price-field', 24);
   await L.shot(page, 'f5-vertrag-zahlungsoption', { noScroll: true, marks: [ { id: 'opt', kind: 'badge', n: 2, sel: 'label.contract-price-option', at: 'l' }, { id: 'rabatt', kind: 'badge', n: 3, sel: '.contract-price-discounts select', at: 'l' } ]});
-  await page.evaluate(() => { const el = [...document.querySelectorAll('body *')].find(e => e.offsetParent !== null && [...e.childNodes].some(n => n.nodeType === 3 && n.nodeValue.trim().startsWith('Zahlung:'))); if (el) window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 300); }); await L.wait(page, 400);
-  await L.shot(page, 'f6-vertrag-zusammenfassung', { noScroll: true, marks: [ { id: 'zahlung', kind: 'frame', fn: (t) => { const els = [...document.querySelectorAll('body *')].filter(e => e.offsetParent !== null && [...e.childNodes].some(n => n.nodeType === 3 && n.nodeValue.trim().startsWith(t))); const el = els[0]; const p = el?.parentElement?.getBoundingClientRect(); return p ? { x: p.x, y: p.y, w: p.width, h: p.height } : null; }, fnArg: 'Zahlung:' } ]});
+  await scrollTo(page, 'Gutscheine verrechnen');
+  await L.shot(page, 'f6b-vertrag-gutschein-werber', { noScroll: true, marks: [ { id: 'b6', kind: 'badge', n: 6, fn: C.rectOfLabel, fnArg: 'Gutscheine verrechnen', at: 'l' }, { id: 'b7', kind: 'badge', n: 7, fn: C.rectOfLabel, fnArg: 'Freunde werben', at: 'l' } ]});
   // Einwilligungen + Unterschrift
   await page.evaluate(() => { const d = F(); d.values['consent_1787658048286'] = true; d.values['consent_1787658048286_copy_1787658104715'] = true; });
   await L.wait(page, 300);
+  await scrollTo(page, 'Kundenunterschrift', 24);
+  await L.shot(page, 'f7b-vertrag-einwilligung', { noScroll: true, marks: [ { id: 'consent', kind: 'badge', n: 1, fn: () => { const e = [...document.querySelectorAll('.consent-glattt')].find(x => x.offsetParent !== null); const r = e?.getBoundingClientRect(); return r ? { x: r.x, y: r.y, w: r.width, h: r.height } : null; }, at: 'l' } ]});
   await sign(page);
-  await page.evaluate(() => { const b = [...document.querySelectorAll('button[type=submit]')].find(e => e.offsetParent !== null); b.scrollIntoView({ block: 'end' }); window.scrollBy(0, 40); }); await L.wait(page, 500);
+  await page.evaluate(() => { const b = [...document.querySelectorAll('button[type=submit]')].find(e => e.offsetParent !== null); b.scrollIntoView({ block: 'end' }); }); await L.wait(page, 500);
   await L.shot(page, 'f7-vertrag-unterschrift', { noScroll: true, marks: [ { id: 'consent', kind: 'badge', n: 1, sel: '.consent-glattt', at: 'l' }, { id: 'sig', kind: 'badge', n: 2, sel: 'canvas.signature-pad-canvas', at: 'tl', dx: 1, dy: 1 }, { id: 'submit', kind: 'chip', label: 'Hier tippen', sel: 'form button[type=submit].btn-glattt-primary', at: 'l' } ]});
   // Pflichtfelder prüfen (Telefon kommt aus client.phone und ist beim Testkunden leer)
   await page.evaluate(() => { const d = F(); if (!d.values['text_1772526144179']) d.values['text_1772526144179'] = '0151 23456789'; if (!d.values['text_1770672917814']) { d.values['text_1770672917814'] = 'Musterstraße 12'; d.values['text_1770673163809'] = '39104'; d.values['text_1770673195598'] = 'Magdeburg'; } });

@@ -2,7 +2,7 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 const BASE = 'https://glattthub-web-staging-cvznpz7gha-ey.a.run.app';
 const MD = 'KrzIg1nVrQ3kpKzkTgQlzA';
-const APT = '_jNixiKOXAWIN_pgSnAQMvnYVQwcfZ9GOXqyGMxZkNM';
+const APT = 'xgvLJ8ZPztgA7kAVNEQZ9fnYVQwcfZ9GOXqyGMxZkNM'; // BG 09.09. 09:00
 const CREDS = ['claude-dev@example.com', 'klick-anleitung-2026'];
 const HIDE_CSS = '.env-badge{display:none!important}';
 

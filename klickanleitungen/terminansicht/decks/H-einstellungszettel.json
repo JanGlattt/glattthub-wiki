@@ -1,0 +1,68 @@
+{
+  "out": "../pdf/H-Behandlungstermin-Einstellungszettel", "meta": "../meta.json", "shots": "../shots",
+  "title": ["Behandlungstermin &", "Einstellungszettel"],
+  "subtitle": "Klickanleitung für Bestandskundinnen — Behandlungstermin starten, Einstellungen je Körperzone erfassen, Termin beenden",
+  "eyebrow": "Terminansicht · Behandlungstermin · Teil H", "footerArea": "Terminansicht", "stand": "08.09.2026",
+  "notes": [
+    "Der Einstellungszettel wird **bei jeder Behandlung** gepflegt — je Zone Laserkopf, Hauttyp, Haar, empfohlene und genutzte Werte.",
+    "Frühere Werte der Kundin stehen im Formular als **Historie** — beim nächsten Termin sind sie sofort sichtbar."
+  ],
+  "pages": [
+    {
+      "h1": "Behandlungstermin starten",
+      "sub": "Wie beim Beratungsgespräch: Termin im Tagesplan öffnen, „Termin beginnen“, dann die Kachel „Einstellungszettel“.",
+      "card": { "title": "Termin starten", "text": "„Termin beginnen“, Kachel „Einstellungszettel“" },
+      "left": { "shot": "j1-behandlungstermin-session", "marks": [] }, "right": { "shot": "j2-behandlung-session" },
+      "leftCaption": "Nach „Direkt behandeln“ landet die Ansicht automatisch im neuen Behandlungstermin — Status „Eingecheckt“.",
+      "rightCaption": "Session-Ansicht des Behandlungstermins.",
+      "steps": [
+        { "n": 1, "title": "Termin beginnen", "text": "Bei einem regulären Behandlungstermin wie in Teil A: Tagesplan → „Termin öffnen“ → **„Termin beginnen“**. Nach „Direkt behandeln“ passiert das automatisch." },
+        { "n": 2, "title": "Kachel „Einstellungszettel“", "text": "Antippen öffnet die Körperzonen-Übersicht der Kundin." },
+        { "n": 3, "title": "Kachel „Formulare“", "text": "Zeigt die Formulare der Kundin — nach einem Verkauf sind sie bereits erledigt (grüner Haken)." }
+      ],
+      "hint": { "kind": "info", "text": "Die Sidebar-Einträge **„Formulare“** und **„Einstellungszettel“** zeigen die **Historie** der Kundin (frühere Einreichungen und Zettel) — zum Ausfüllen immer die Kacheln in der Session nutzen." }
+    },
+    {
+      "h1": "Zone wählen",
+      "sub": "Die Übersicht zeigt alle Körperzonen mit der Anzahl bisheriger Behandlungen. Eine Zone antippen öffnet ihren Zettel.",
+      "card": { "title": "Zone wählen", "text": "Figur oder Liste, Zähler „0x“ = noch nie behandelt" },
+      "left": { "shot": "k1-zettel-uebersicht", "marks": [ { "id": "figur" }, { "id": "zone" } ] }, "right": { "shot": "k5-zettel-gespeichert" },
+      "leftCaption": "Übersicht vor der ersten Behandlung — alle Zonen stehen auf „0x“.",
+      "rightCaption": "Nach dem Speichern: Die behandelte Zone ist eingefärbt und erscheint als Chip.",
+      "steps": [
+        { "n": 1, "title": "Zone auf der Figur oder in der Liste", "text": "Antippen öffnet den Zettel dieser Zone. Der Zähler zeigt, wie oft die Zone schon behandelt wurde." },
+        { "n": 2, "title": "Eigene Zone", "text": "Unten in der Liste lässt sich eine eigene Zone anlegen (z. B. „Nacken links“), wenn sie in der Standardliste fehlt." },
+        { "n": 3, "title": "Erfasste Zonen", "text": "Gespeicherte Zonen erscheinen oben als Chips — Antippen öffnet den Zettel erneut zum Nachbessern." }
+      ]
+    },
+    {
+      "h1": "Zettel ausfüllen & speichern",
+      "sub": "Fünf Gruppen: Laserkopf, Hauttyp, Haar, empfohlene Werte, genutzte Werte — dazu Notizen und Fotos.",
+      "card": { "title": "Zettel ausfüllen", "text": "Laserkopf, Hauttyp, Haar, Empfohlen, Genutzt, Notizen, „Speichern“" },
+      "left": { "shot": "k2-zettel-formular-laserkopf", "marks": [ { "id": "groups" }, { "id": "next" } ] }, "right": { "shot": "k3-zettel-genutzt", "marks": [ { "id": "used" }, { "id": "save" } ] },
+      "leftCaption": "Zettel der Zone „Achseln“, erste Gruppe „Laserkopf“ — „Weiter“ springt zur nächsten Gruppe.",
+      "rightCaption": "Gruppe „Genutzt“: die tatsächlich verwendeten Werte, darunter Notizen und „Speichern“.",
+      "steps": [
+        { "n": 1, "title": "Gruppen durchgehen", "text": "**Laserkopf** (Groß/Klein) → **Hauttyp** (Skintel-Wert oder Typ I–VI) → **Haar** (Farbe, Dicke, Dichte) → **Empfohlen** (ms, Joule min/max) → **Genutzt**. Mit **„Weiter“** oder Antippen der Gruppe wechseln." },
+        { "n": 2, "title": "Genutzte Werte", "text": "Die tatsächlich eingestellten ms und Joule. Liegen sie außerhalb der Empfehlung, warnt der Hub vor dem Speichern — bewusst bestätigen oder korrigieren." },
+        { "n": 3, "title": "Notizen & Foto", "text": "Optional: Besonderheiten der Behandlung und ein Foto der Zone." },
+        { "n": 4, "title": "„Speichern“", "text": "Alle Gruppen außer Notizen sind Pflicht — fehlt etwas, nennt der Hub das Feld. Nach dem Speichern erscheint die Zone als Chip in der Übersicht." }
+      ],
+      "hint": { "text": "Bei einer **Folgebehandlung** zeigt der Zettel die Werte der letzten Sitzung als Historie — so lässt sich direkt anknüpfen oder gezielt anpassen." }
+    },
+    {
+      "h1": "Behandlung beenden",
+      "sub": "„Termin beenden“ führt durch Folgetermin und Terminnotiz — die Kundin bekommt gleich ihren nächsten Termin.",
+      "card": { "title": "Beenden", "text": "Folgetermin planen, Terminnotiz, „Termin jetzt beenden“" },
+      "left": { "shot": "l1-folgetermin" }, "right": { "shot": "l2-behandlung-terminnotiz" },
+      "leftCaption": "„Folgetermin planen“: Terminabstand wählen, der Hub schlägt freie Slots vor.",
+      "rightCaption": "Terminnotiz zur Behandlung — Pflicht, wandert nach Phorest.",
+      "steps": [
+        { "n": 1, "title": "„Termin beenden“", "text": "Unten links. Bei offenem Kundenkonto zuerst der Kassen-Bildschirm (Teil F)." },
+        { "n": 2, "title": "Folgetermin planen", "text": "Abstand **in 6 / 8 / 10 Wochen** oder frei in Wochen wählen, Institut prüfen, freien Slot antippen → **„Fertig“**. Kein passender Slot? Späteres Datum oder mit **✕** überspringen und später buchen." },
+        { "n": 3, "title": "Terminnotiz", "text": "Was wurde behandelt, wie vertragen, Besonderheiten. **„Termin jetzt beenden“** schließt den Termin in Phorest ab." }
+      ],
+      "hint": { "kind": "info", "text": "Der Zettel bleibt auch nach dem Beenden über die Sidebar **„Einstellungszettel“** (Historie) einsehbar — dort stehen alle bisherigen Behandlungen der Kundin je Zone." }
+    }
+  ]
+}

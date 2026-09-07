@@ -114,7 +114,7 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | 6 | Formular an die Kundin weitergeben („Formular teilen", 48-h-Link) | Formular-Kopfzeile | **E – Formular an die Kundin weitergeben** (v0.9) | 🟡 Entwurf |
 | 7 | Direkt behandeln nach Vertragsabschluss + Termin beenden (Kasse, Folgetermin, Notiz) | Session-Kachel / Beenden-Ablauf | **F – Direkt behandeln & Termin beenden** (v0.9) | 🟡 Entwurf |
 | 8 | Probleme & Fehlermeldungen (Nachschlagewerk, 3 Tabellen) | alle | **G – Probleme & Fehlermeldungen** (v0.9) | 🟡 Entwurf |
-| 9 | Bestandskundin: Behandlungstermin starten, **Einstellungszettel pflegen**, Sitzungsbestätigung, beenden | Termin-Detailseite | **H** (Skript `flow6.cjs` fertig, wartet auf startbaren Behandlungstermin) | ⬜ offen |
+| 9 | Bestandskundin: Behandlungstermin starten, **Einstellungszettel pflegen**, Folgetermin, beenden | Termin-Detailseite | **H – Behandlungstermin & Einstellungszettel** (v1.0) | 🟡 Entwurf |
 | 10 | Zusatz-Service hinzubuchen, Kein-Verkauf erfassen (nach Umsetzung Asana 1218245871472844) | Termin-Detailseite | offen | ⬜ |
 | 11 | Folgetermin planen (ideale Slots), Termin verlegen | Termin-Detailseite / Buchungsseite | offen | ⬜ |
 | 12 | Google-Bewertung per WhatsApp anfragen | Termin-Detailseite Sidebar | offen | ⬜ |
@@ -125,9 +125,8 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 
 Die Liste wird mit jeder fertigen Anleitung fortgeschrieben. **Ablage:** PDFs in
 `~/Downloads/Klickanleitungen-Terminansicht/` (Übergabe an Jan), Quellen reproduzierbar im Wiki-Repo
-unter `klickanleitungen/terminansicht/` (README dort). „v0.9" = inhaltlich vollständig, Screenshots
-teilweise aus Nachaufnahmen nach Terminende (Status „Bezahlt" statt „Eingecheckt" sichtbar) — sauberer
-Neulauf braucht einen frischen Testtermin.
+unter `klickanleitungen/terminansicht/` (README dort). Stand 08.09.2026 abends: **v1.0** — alle Screenshots aus
+konsistenten Läufen (Testtermin 09.09. 09:00, Status „Eingecheckt"), fachliche Freigabe durch Jan offen.
 
 ---
 
@@ -215,6 +214,11 @@ Anleitung „Probleme & Fehlermeldungen" — liegt in den Quelldateien `public/j
 
 ## Erkenntnisse aus der Aufnahme (07./08.09.2026)
 
+**Testläufe:** 07.09. 20:00 (BG 08.09. 08:00 → Bug PAID), 08.09. 20:55 (BG 10:00 → PAID-Fix bestätigt, Vertrag-Scrolls
+falsch), 21:00 (BG 12:00 → Terminübersicht zeigte eine Sammelkarte, s. u.), 21:05 (BG 09.09. 09:00 → finaler Satz).
+Verträge 13067/13068/13069/13070 und vier Sandbox-Mandate der Testkundin liegen auf Staging; in Phorest Magdeburg
+stehen am 08./09.09. die Test-Termine (PAID, nicht stornierbar — Phorest-Cancel liefert 500).
+
 **Behoben (develop, Staging deployt — Prod-Merge offen):**
 
 - `7f12286a` Rechte: `view_forms`, `fill_forms`, `view_form_submissions` hatten nur admin und Büro. Institute MA
@@ -229,11 +233,24 @@ Anleitung „Probleme & Fehlermeldungen" — liegt in den Quelldateien `public/j
   (BOOKED/CONFIRMED) und **nach dem Ende** der angefragten Zeile beginnen, bleiben offen
   (`PhorestController::isLaterUnstartedRow()`). Achtung: Phorest liefert für getrennte Buchungen desselben
   Kunden am selben Tag **dieselbe `bookingId`** — sie taugt nicht zur Unterscheidung (erster Fix-Versuch verworfen).
-  Nachweis auf Staging im zweiten Testlauf 08.09.
+  Nachweis auf Staging im zweiten Testlauf 08.09. (Behandlungstermin startet automatisch mit `?start=1`, Status
+  CHECKED_IN). **Dritte Fassung `eee1497b`:** PAID nur noch für **eingecheckte** Zeilen — Phorest vergibt allen
+  Terminen der Kundin am selben Tag **dieselbe bookingId**, dadurch umfasst die Termingruppe den ganzen Tag (die
+  Terminübersicht zeigt dann eine Sammelkarte „08:00 – 13:15") und auch ein *früherer* noch offener Termin wurde
+  beim Beenden PAID. Ohne eingecheckte Zeile gibt es jetzt den Hinweis „bitte in Phorest auschecken".
 - Formular-Kette **Kundeninformation → Vertrag → SEPA gilt jetzt immer** (Entscheidung Jan 07.09.: Formulare
   sind keine Pflicht, weil nicht jede Kundin kauft — die Reihenfolge aber schon). Vertrag ist gesperrt, bis alle
   passenden Nicht-Vertrag/Nicht-SEPA-Formulare erfüllt sind; Kacheln werden in Ketten-Reihenfolge sortiert
   (`appointment-unified.js`: `missingPreContractForms`, `formChainRank`, `displayedForms`).
+
+**Neu gefunden 08.09. (Prod-relevant, offen):**
+
+- **Magdeburg im Folgetermin-Dialog:** „Kein Desinfektions-Service in diesem Institut gefunden." und „Keine buchbaren
+  Räume (z.B. BI 1, BI 2) in diesem Institut gefunden." (`BookingService.php:95/109`) — Folgetermin planen ist in
+  Magdeburg damit nicht möglich; „Direkt behandeln" bucht ohne Desinfektion. Ursache: Service-/Raum-Erkennung kennt
+  das neue Institut noch nicht (Räume heißen „MD 1"/„MD 2", kein Service „Desinfektion").
+- Beim Absenden der Kundeninformation mit geänderter **Telefonnummer** blieb der Ablauf nach „In Phorest übernehmen"
+  in Lauf 4 hängen (Phorest-Update vermutlich abgelehnt, kein Fehlerhinweis) — reproduzieren und Fehlerpfad prüfen.
 
 **Fachliche Befunde (Entscheidung Jan):**
 

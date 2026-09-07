@@ -46,9 +46,9 @@
       "h1": "Termin beginnen",
       "sub": "Mit „Termin beginnen“ wird die Kundin in Phorest eingecheckt und die Session-Ansicht mit den Kacheln erscheint.",
       "card": { "title": "Termin beginnen", "text": "Check-in in Phorest, Session-Kacheln „Formulare“ und „Einstellungszettel“" },
-      "left": { "shot": "b1-detail-uebersicht", "marks": [] },
+      "left": { "shot": "b1b-detail-start", "marks": [ { "id": "start" } ] },
       "right": { "shot": "b3-session-kacheln", "marks": [ { "id": "formulare", "kind": "badge", "n": 2, "at": "tl", "dx": 2, "dy": 2 }, { "id": "zettel", "n": 3 } ] },
-      "leftCaption": "Der Knopf **„Termin beginnen“** sitzt ganz unten in der linken Spalte, unter der Navigation (ggf. nach unten wischen).",
+      "leftCaption": "Der Knopf **„Termin beginnen“** sitzt ganz unten in der linken Spalte, unter der Navigation.",
       "rightCaption": "Session-Ansicht nach dem Start — Status wechselt auf „Eingecheckt“, oben links ist „Termine“ gesperrt.",
       "steps": [
         { "n": 1, "title": "„Termin beginnen“", "text": "Unten links antippen. Der Termin wird in Phorest **eingecheckt** und der angemeldeten Mitarbeiterin zugeordnet. Bestätigung: „Termin erfolgreich gestartet“." },

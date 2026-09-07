@@ -1,6 +1,6 @@
 /* Stufe 1: Terminübersicht → Termin öffnen → Termin beginnen → Session-Kacheln → Formularliste */
 const L = require('./lib.cjs');
-const DATE = '2026-09-08';
+const DATE = '2026-09-09';
 (async () => {
   const { browser, ctx, page } = await L.launch();
   await L.login(page, ctx);
@@ -19,7 +19,7 @@ const DATE = '2026-09-08';
   // ── A2 Filter Beratung
   await page.click('#filter-consultation');
   await L.wait(page, 800);
-  const cardSel = await page.evaluate(() => { const c = [...document.querySelectorAll('#appointments-list .apt-card')].find(c => c.textContent.includes('Tester Am Testen')); return c ? `#appointments-list .apt-card[data-idx="${c.dataset.idx}"]` : null; });
+  const cardSel = await page.evaluate(() => { const c = [...document.querySelectorAll('#appointments-list .apt-card')].find(c => c.textContent.includes('Tester Am Testen') && c.textContent.includes('09:00')); return c ? `#appointments-list .apt-card[data-idx="${c.dataset.idx}"]` : null; });
   console.log('cardSel', cardSel);
   await L.shot(page, 'a2-liste-beratung', { marks: [
     { id: 'filter', kind: 'frame', color: 'teal', sel: '#filter-consultation' },
@@ -45,6 +45,9 @@ const DATE = '2026-09-08';
     { id: 'notizen', kind: 'badge', n: 4, fn: () => { const h = [...document.querySelectorAll('h2, h3, .card-glattt-title')].find(e => e.textContent.trim().startsWith('Notizen')); const b = h?.getBoundingClientRect(); return b ? { x: b.x, y: b.y, w: b.width, h: b.height } : null; }, at: 'l' },
     { id: 'start', kind: 'chip', label: 'Hier tippen', sel: 'button.apt-detail-action-btn--start', at: 'r' },
   ]});
+  await page.evaluate(() => { const b = document.querySelector('button.apt-detail-action-btn--start'); const sb = b?.closest('.apt-detail-sidebar') || b?.parentElement; if (b) b.scrollIntoView({ block: 'end' }); });
+  await L.wait(page, 500);
+  await L.shot(page, 'b1b-detail-start', { noScroll: true, marks: [ { id: 'start', kind: 'chip', label: 'Hier tippen', sel: 'button.apt-detail-action-btn--start', at: 'r' } ]});
   const st = await page.evaluate(() => { const d = Alpine.$data(document.querySelector('.apt-detail')); return { state: d.appointment?.state, forms: d.matchingForms?.map(f => f.name), required: d.requiredForms?.map(f => f.name), canStart: d.canStartAppointment }; });
   console.log('Detail', JSON.stringify(st));
   // ── B2 Termin beginnen

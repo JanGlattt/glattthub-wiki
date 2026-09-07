@@ -39,7 +39,7 @@
       "card": { "title": "Termin beenden", "text": "Kasse prüfen, Folgetermin planen, Terminnotiz, „Termin jetzt beenden“" },
       "left": { "shot": "i3-terminnotiz", "marks": [ { "id": "note", "n": 3 }, { "id": "end", "kind": "badge", "n": 3, "at": "l" } ] }, "right": { "shot": "i4-termin-beendet" },
       "leftCaption": "Ausgefüllte Terminnotiz mit dem roten Knopf „Termin jetzt beenden“.",
-      "rightCaption": "„Terminnotiz gespeichert“ — der Termin ist in Phorest erledigt; nach einer Direktbuchung geht es automatisch im Behandlungstermin weiter.",
+      "rightCaption": "„Terminnotiz gespeichert“ — der Termin ist in Phorest erledigt. Nach einer Direktbuchung springt die Ansicht automatisch in den neuen Behandlungstermin und startet ihn (Teil H).",
       "steps": [
         { "n": 1, "title": "Kasse (nur bei offenem Betrag)", "text": "Steht ein Betrag auf dem Kundenkonto (z. B. **1. Rate vor Ort**), erscheint zuerst der Kassen-Bildschirm: **„Verstanden — Betrag wird jetzt kassiert“** und in Phorest kassieren. „Wird nicht bezahlt …“ verlangt eine Begründung und informiert das Büro." },
         { "n": 2, "title": "Folgetermin planen", "text": "Nach einem Verkauf ohne Direktbehandlung schlägt der Hub freie Termine im passenden Abstand vor. Slot antippen → **„Fertig“**. Mit dem **✕** überspringen." },
