@@ -119,8 +119,12 @@ Button **„Verkauf"** öffnet einen Assistenten in sechs Schritten:
    steht dann „abgelaufen — bestätigt"). Ohne diese Bestätigung lehnt auch
    das Speichern den Gutschein ab.
 6. **Abschluss** — Zusammenfassung, Pflichtkommentar + Gesprächsführer,
-   speichern. Ganz oben steht der Block **„Heute an der Kasse zu
-   kassieren"** mit der kompletten Rechnung: Ausgangsbetrag (bei
+   speichern. **Vorerst ausgeblendet (Jan, 07.09.2026):** Der Block
+   **„Heute an der Kasse zu kassieren"** ist fertig gebaut, aber über
+   `INSTITUTE_CASH_PREVIEW=false` abgeschaltet — der Braunschweig-Fall lag
+   vermutlich daran, dass in Phorest kein passender Rabatt (Startbonus)
+   angelegt war. Bei Bedarf per Env-Variable einschalten. Der Block zeigt
+   dann die komplette Rechnung: Ausgangsbetrag (bei
    Ratenzahlung die 1. Rate = Monatsrate, bei Direktzahlung der
    Vertragswert), abgezogen Rabatt, „Freunde werben Freunde" und jeder
    Gutschein einzeln, darunter fett **„Zu kassieren: … €"**. Reicht ein
@@ -250,7 +254,10 @@ stellen (Hinweis steht auch auf der Seite).
   `contracts.signing_instructions` — `Contract::signingInstructions()`
   bevorzugt sie vor der FormSubmission. Jeder Gutschein-Eintrag trägt
   `voucher_id`, `serial_number` und `accept_expired`.
-- **Kassenbetrag (seit 07.09.2026, Braunschweig-Bug vom 04.09.):**
+- **Kassenbetrag (seit 07.09.2026, Braunschweig-Bug vom 04.09.; Anzeige
+  vorerst aus — `config('consultations.institute_cash_preview')`,
+  Env `INSTITUTE_CASH_PREVIEW`, gilt für Blade-Block UND den Abruf in
+  `goToSummary()`; Endpoint und Tests bleiben aktiv):**
   Schritt 6 holt `POST …/cash-preview` (`cashPreview()`), sobald der
   Assistent aus Schritt 5 heraus geöffnet wird (`goToSummary()` →
   `loadCashPreview()`, Race-Guard `sale.cash.seq`). **Die Rechnung lebt nur
