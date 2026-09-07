@@ -247,8 +247,11 @@ stehen am 08./09.09. die Test-Termine (PAID, nicht stornierbar — Phorest-Cance
 
 - **Magdeburg im Folgetermin-Dialog:** „Kein Desinfektions-Service in diesem Institut gefunden." und „Keine buchbaren
   Räume (z.B. BI 1, BI 2) in diesem Institut gefunden." (`BookingService.php:95/109`) — Folgetermin planen ist in
-  Magdeburg damit nicht möglich; „Direkt behandeln" bucht ohne Desinfektion. Ursache: Service-/Raum-Erkennung kennt
-  das neue Institut noch nicht (Räume heißen „MD 1"/„MD 2", kein Service „Desinfektion").
+  Magdeburg damit nicht möglich; „Direkt behandeln" bucht ohne Desinfektion. Ursache liegt in der **Phorest-Konfiguration
+  Magdeburgs**, nicht im Code: Es gibt keinen Service „Desinfektion" (Erkennung über den Namen,
+  `BookingCalendarService::isDisinfection`), und die Kabinen „MD 1"/„MD 2" passen zwar zum Raum-Muster
+  (`config/booking.php: room_name_pattern`), haben in Phorest aber die Behandlungs-Services nicht zugewiesen
+  (`resolveRooms()` filtert nach angebotenen Services).
 - Beim Absenden der Kundeninformation mit geänderter **Telefonnummer** blieb der Ablauf nach „In Phorest übernehmen"
   in Lauf 4 hängen (Phorest-Update vermutlich abgelehnt, kein Fehlerhinweis) — reproduzieren und Fehlerpfad prüfen.
 
