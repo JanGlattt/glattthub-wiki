@@ -1,0 +1,1572 @@
+{
+ "probe-detail": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a1-liste": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "filter",
+    "kind": "badge",
+    "n": 1,
+    "sel": "#filter-consultation",
+    "at": "tl",
+    "pct": {
+     "x": 87.89724576271186,
+     "y": 7.1951219512195115,
+     "w": 9.390889830508474,
+     "h": 4.7560975609756095
+    }
+   },
+   {
+    "id": "date",
+    "kind": "badge",
+    "n": 2,
+    "sel": "#appointment-date + input, #appointment-date",
+    "at": "tr",
+    "pct": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    }
+   },
+   {
+    "id": "kpis",
+    "kind": "frame",
+    "sel": "#appointments-kpis",
+    "pct": {
+     "x": 25.76271186440678,
+     "y": 28.780487804878046,
+     "w": 71.52542372881356,
+     "h": 22.439024390243905
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "a2-liste-beratung": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "filter",
+    "kind": "frame",
+    "color": "teal",
+    "sel": "#filter-consultation",
+    "pct": {
+     "x": 87.89724576271186,
+     "y": 7.1951219512195115,
+     "w": 9.390889830508474,
+     "h": 4.7560975609756095
+    }
+   },
+   {
+    "id": "card",
+    "kind": "frame",
+    "sel": "#appointments-list .apt-card[data-idx=\"0\"]",
+    "pct": {
+     "x": 25.76271186440678,
+     "y": 54.146341463414636,
+     "w": 71.52542372881356,
+     "h": 12.5
+    }
+   },
+   {
+    "id": "badge",
+    "kind": "badge",
+    "n": 1,
+    "sel": "#appointments-list .apt-card[data-idx=\"0\"] .apt-card__consultation-badge",
+    "at": "l",
+    "pct": {
+     "x": 39.67690677966102,
+     "y": 59.390243902439025,
+     "w": 8.025688559322033,
+     "h": 2.7439024390243905
+    },
+    "dx": -1.3
+   },
+   {
+    "id": "status",
+    "kind": "badge",
+    "n": 2,
+    "sel": "#appointments-list .apt-card[data-idx=\"0\"] .apt-card__badge",
+    "at": "l",
+    "pct": {
+     "x": 74.88877118644068,
+     "y": 58.8109756097561,
+     "w": 5.589247881355932,
+     "h": 3.1707317073170733
+    },
+    "dx": -1.3
+   },
+   {
+    "id": "open",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "sel": "#appointments-list .apt-card[data-idx=\"0\"] .apt-card__btn--primary",
+    "at": "l",
+    "pct": {
+     "x": 81.49496822033898,
+     "y": 58.231707317073166,
+     "w": 10.962658898305085,
+     "h": 4.329268292682927
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "a3-liste-aufgeklappt": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "expand",
+    "kind": "badge",
+    "n": 3,
+    "sel": "#appointments-list .apt-card[data-idx=\"0\"] .apt-card__expand",
+    "at": "r",
+    "pct": {
+     "x": 93.13559322033899,
+     "y": 58.44512195121951,
+     "w": 2.711864406779661,
+     "h": 3.902439024390244
+    }
+   },
+   {
+    "id": "details",
+    "kind": "frame",
+    "sel": "#appointments-list .apt-card[data-idx=\"0\"] .apt-card__details",
+    "pct": {
+     "x": 25.847457627118644,
+     "y": 66.52439024390245,
+     "w": 71.35593220338983,
+     "h": 13.170731707317074
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "b1-detail-uebersicht": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "status",
+    "kind": "badge",
+    "n": 1,
+    "sel": ".apt-detail-topbar-right .badge-glattt",
+    "at": "l",
+    "pct": {
+     "x": 87.48940677966101,
+     "y": 2.2560975609756095,
+     "w": 6.7465572033898304,
+     "h": 4.2682926829268295
+    }
+   },
+   {
+    "id": "kunde",
+    "kind": "badge",
+    "n": 2,
+    "sel": ".apt-detail-sidebar .card-glattt:first-of-type, .apt-detail-sidebar > *:first-child",
+    "at": "tl",
+    "pct": {
+     "x": 2.1,
+     "y": 11.9,
+     "w": 26.9,
+     "h": 28.4
+    }
+   },
+   {
+    "id": "behandlungen",
+    "kind": "badge",
+    "n": 3,
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 14.878048780487804,
+     "w": 13.297139830508476,
+     "h": 3.6585365853658534
+    }
+   },
+   {
+    "id": "notizen",
+    "kind": "badge",
+    "n": 4,
+    "at": "l",
+    "pct": {
+     "x": 64.39883474576271,
+     "y": 14.878048780487804,
+     "w": 8.399099576271187,
+     "h": 3.6585365853658534
+    }
+   },
+   {
+    "id": "start",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "sel": "button.apt-detail-action-btn--start",
+    "at": "r",
+    "pct": {
+     "x": 2.0338983050847457,
+     "y": 98.92530487804878,
+     "w": 27.11864406779661,
+     "h": 7.317073170731707
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "b2-nach-start-session": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "running",
+    "kind": "badge",
+    "n": 1,
+    "sel": ".apt-detail-running",
+    "at": "l",
+    "pct": {
+     "x": 2.0338983050847457,
+     "y": 95.6326219512195,
+     "w": 27.11864406779661,
+     "h": 4.586509146341464
+    }
+   },
+   {
+    "id": "end",
+    "kind": "frame",
+    "sel": ".apt-detail-actions .btn-glattt-danger",
+    "pct": {
+     "x": 2.0338983050847457,
+     "y": 101.68254573170732,
+     "w": 27.11864406779661,
+     "h": 6.341463414634147
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "b3-session-kacheln": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "formulare",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "sel": ".unified-session-grid .session-card:nth-of-type(1)",
+    "at": "b",
+    "pct": {
+     "x": 31.186440677966104,
+     "y": 11.829268292682926,
+     "w": 32.41525423728814,
+     "h": 85.24390243902438
+    }
+   },
+   {
+    "id": "zettel",
+    "kind": "badge",
+    "n": 2,
+    "sel": ".unified-session-grid .session-card:nth-of-type(2)",
+    "at": "tl",
+    "pct": {
+     "x": 65.29661016949152,
+     "y": 11.829268292682926,
+     "w": 32.66949152542373,
+     "h": 85.24390243902438
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "c1-formulare-liste": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "f0",
+    "kind": "badge",
+    "n": 1,
+    "sel": ".session-forms-grid .session-card:nth-of-type(1)",
+    "at": "tl",
+    "dx": 1.5,
+    "dy": 1.5,
+    "pct": {
+     "x": 31.186440677966104,
+     "y": 19.291158536585364,
+     "w": 42.775423728813564,
+     "h": 50.73170731707317
+    }
+   },
+   {
+    "id": "f1",
+    "kind": "badge",
+    "n": 2,
+    "sel": ".session-forms-grid .session-card:nth-of-type(2)",
+    "at": "tl",
+    "dx": 1.5,
+    "dy": 1.5,
+    "pct": {
+     "x": 75.99576271186442,
+     "y": 19.291158536585364,
+     "w": 21.970338983050848,
+     "h": 50.73170731707317
+    }
+   },
+   {
+    "id": "f2",
+    "kind": "badge",
+    "n": 3,
+    "sel": ".session-forms-grid .session-card:nth-of-type(3)",
+    "at": "tl",
+    "dx": 1.5,
+    "dy": 1.5,
+    "pct": {
+     "x": 31.186440677966104,
+     "y": 72.94969512195122,
+     "w": 42.775423728813564,
+     "h": 50.73170731707317
+    }
+   },
+   {
+    "id": "open",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "sel": ".session-forms-grid .session-card:nth-of-type(1)",
+    "at": "b",
+    "pct": {
+     "x": 31.186440677966104,
+     "y": 19.291158536585364,
+     "w": 42.775423728813564,
+     "h": 50.73170731707317
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "d1-kundeninfo-oben": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "share",
+    "kind": "badge",
+    "n": 1,
+    "sel": "button[title=\"Formular teilen\"]",
+    "at": "l",
+    "pct": {
+     "x": 67.6946504237288,
+     "y": 22.339939024390244,
+     "w": 13.976430084745765,
+     "h": 8.4375
+    }
+   },
+   {
+    "id": "back",
+    "kind": "badge",
+    "n": 2,
+    "at": "r",
+    "pct": {
+     "x": 82.3490466101695,
+     "y": 22.339939024390244,
+     "w": 13.498411016949152,
+     "h": 8.4375
+    }
+   },
+   {
+    "id": "kontakt",
+    "kind": "frame",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 56.11661585365854,
+     "w": 62.54237288135593,
+     "h": 3.2926829268292686
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "e1-teilen-modal": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "name",
+    "kind": "badge",
+    "n": 1,
+    "sel": "#shareRecipientName",
+    "at": "l",
+    "pct": {
+     "x": 34.91525423728813,
+     "y": 54.462652439024396,
+     "w": 30.16949152542373,
+     "h": 6.097560975609756
+    }
+   },
+   {
+    "id": "email",
+    "kind": "badge",
+    "n": 2,
+    "sel": "#shareRecipientEmail",
+    "at": "l",
+    "pct": {
+     "x": 34.91525423728813,
+     "y": 64.95045731707317,
+     "w": 30.16949152542373,
+     "h": 6.097560975609756
+    }
+   },
+   {
+    "id": "perm",
+    "kind": "badge",
+    "n": 3,
+    "sel": ".share-field-permissions-toggle",
+    "at": "l",
+    "pct": {
+     "x": 33.220338983050844,
+     "y": 79.0967987804878,
+     "w": 33.559322033898304,
+     "h": 5.487804878048781
+    }
+   },
+   {
+    "id": "create",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "at": "l",
+    "pct": {
+     "x": 53.748675847457626,
+     "y": 87.05030487804878,
+     "w": 13.11573093220339,
+     "h": 5.266768292682927
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "d2-kundeninfo-medizin": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "q1",
+    "kind": "badge",
+    "n": 1,
+    "at": "l",
+    "pct": {
+     "x": 34.74576271186441,
+     "y": 58.921493902439025,
+     "w": 59.66101694915255,
+     "h": 2.5609756097560976
+    }
+   },
+   {
+    "id": "details",
+    "kind": "badge",
+    "n": 2,
+    "at": "l",
+    "pct": {
+     "x": 34.74576271186441,
+     "y": 62.94588414634147,
+     "w": 59.66101694915255,
+     "h": 18.658536585365855
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "d3-kundeninfo-behandlung": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "b3",
+    "kind": "badge",
+    "n": 3,
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 109.48170731707316,
+     "w": 62.54237288135593,
+     "h": 25.24390243902439
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "d4-kundeninfo-kontakt": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "b4",
+    "kind": "badge",
+    "n": 4,
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 18.060213414634145,
+     "w": 30.593220338983052,
+     "h": 11.097560975609756
+    }
+   },
+   {
+    "id": "b5",
+    "kind": "badge",
+    "n": 5,
+    "at": "l",
+    "pct": {
+     "x": 65.2542372881356,
+     "y": 18.060213414634145,
+     "w": 30.593220338983052,
+     "h": 11.097560975609756
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "d5-kundeninfo-unterschrift": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "sig",
+    "kind": "badge",
+    "n": 6,
+    "sel": "canvas.signature-pad-canvas",
+    "at": "tl",
+    "dx": 1,
+    "dy": 1,
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 54.10823170731708,
+     "w": 62.54237288135593,
+     "h": 30.48780487804878
+    }
+   },
+   {
+    "id": "submit",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "sel": "form button[type=submit].btn-glattt-primary",
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 94.4969512195122,
+     "w": 14.400158898305085,
+     "h": 5.510670731707317
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "d6-phorest-aenderungen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "ok",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "sel": ".modal-glattt-footer button.btn-glattt-primary",
+    "at": "l",
+    "pct": {
+     "x": 50.6,
+     "y": 82.0,
+     "w": 25.7,
+     "h": 5.0
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "d7-kundeninfo-erfolg": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "pdf",
+    "kind": "badge",
+    "n": 1,
+    "sel": "a.btn-glattt-secondary[download]",
+    "at": "l",
+    "pct": {
+     "x": 25,
+     "y": 46.7454268292683,
+     "w": 50,
+     "h": 5.510670731707317
+    }
+   },
+   {
+    "id": "mail",
+    "kind": "badge",
+    "n": 2,
+    "sel": ".modal-glattt input[type=email]",
+    "at": "l",
+    "pct": {
+     "x": 23.64406779661017,
+     "y": 60.0609756097561,
+     "w": 42.79661016949153,
+     "h": 6.097560975609756
+    }
+   },
+   {
+    "id": "back",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "sel": ".modal-glattt-footer button.btn-glattt-primary",
+    "at": "l",
+    "pct": {
+     "x": 62.6,
+     "y": 71.7,
+     "w": 13.7,
+     "h": 5.3
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "c2-formulare-nach-kundeninfo": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "done",
+    "kind": "badge",
+    "n": 1,
+    "sel": ".session-forms-grid .session-card:nth-of-type(1) .session-card-badge",
+    "at": "l",
+    "pct": {
+     "x": 68.45338983050847,
+     "y": 22.339939024390244,
+     "w": 3.389830508474576,
+     "h": 4.878048780487805
+    }
+   },
+   {
+    "id": "next",
+    "kind": "chip",
+    "label": "Weiter hier",
+    "sel": ".session-forms-grid .session-card:nth-of-type(2)",
+    "at": "b",
+    "pct": {
+     "x": 75.99576271186442,
+     "y": 19.291158536585364,
+     "w": 21.970338983050848,
+     "h": 50.73170731707317
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "f1-vertrag-oben": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "nehmer",
+    "kind": "frame",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 51.23856707317073,
+     "w": 62.54237288135593,
+     "h": 4.024390243902439
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "f2-vertrag-koerperzonen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "figur",
+    "kind": "badge",
+    "n": 1,
+    "at": "tl",
+    "dx": 1,
+    "dy": 1,
+    "pct": {
+     "x": 39.152542372881356,
+     "y": 44.4702743902439,
+     "w": 50.847457627118644,
+     "h": 73.17073170731707
+    }
+   },
+   {
+    "id": "liste",
+    "kind": "badge",
+    "n": 2,
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 133.12881097560975,
+     "w": 19.491525423728813,
+     "h": 5.2439024390243905
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "f3-vertrag-bezahlung": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "b1",
+    "kind": "badge",
+    "n": 1,
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 24.786585365853657,
+     "w": 62.54237288135593,
+     "h": 10.609756097560975
+    }
+   },
+   {
+    "id": "b2",
+    "kind": "badge",
+    "n": 2,
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 38.323170731707314,
+     "w": 62.54237288135593,
+     "h": 6.097560975609756
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "f4-vertrag-preisliste": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "liste",
+    "kind": "badge",
+    "n": 3,
+    "at": "l",
+    "pct": {
+     "x": 36.525423728813564,
+     "y": 24.54268292682927,
+     "w": 56.10169491525424,
+     "h": 6.097560975609756
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "f5-vertrag-zahlungsoption": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "opt",
+    "kind": "badge",
+    "n": 4,
+    "at": "l",
+    "pct": {
+     "x": 36.525423728813564,
+     "y": 36.1280487804878,
+     "w": 56.10169491525424,
+     "h": 10.182926829268292
+    }
+   },
+   {
+    "id": "rabatt",
+    "kind": "badge",
+    "n": 5,
+    "at": "l",
+    "pct": {
+     "x": 36.525423728813564,
+     "y": 53.38414634146341,
+     "w": 56.10169491525424,
+     "h": 6.097560975609756
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "f6-vertrag-zusammenfassung": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "f7-vertrag-unterschrift": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "consent",
+    "kind": "badge",
+    "n": 1,
+    "sel": ".consent-glattt",
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": -17.934451219512194,
+     "w": 62.54237288135593,
+     "h": 18.536585365853657
+    }
+   },
+   {
+    "id": "sig",
+    "kind": "badge",
+    "n": 2,
+    "sel": "canvas.signature-pad-canvas",
+    "at": "tl",
+    "dx": 1,
+    "dy": 1,
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 54.03963414634146,
+     "w": 62.54237288135593,
+     "h": 30.48780487804878
+    }
+   },
+   {
+    "id": "submit",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "sel": "form button[type=submit].btn-glattt-primary",
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 94.4283536585366,
+     "w": 14.400158898305085,
+     "h": 5.510670731707317
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "f8-vertrag-rechtsdokument": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "scroll",
+    "kind": "badge",
+    "n": 1,
+    "sel": ".legal-document-glattt-modal-body",
+    "at": "r",
+    "dx": -2,
+    "pct": {
+     "x": 12.11864406779661,
+     "y": 17.877286585365855,
+     "w": 75.76271186440678,
+     "h": 52.83155487804878
+    }
+   },
+   {
+    "id": "check",
+    "kind": "badge",
+    "n": 2,
+    "sel": ".legal-document-glattt-confirm-modal",
+    "at": "l",
+    "pct": {
+     "x": 14.152542372881355,
+     "y": 77.11128048780488,
+     "w": 71.69491525423729,
+     "h": 8.353658536585366
+    }
+   },
+   {
+    "id": "ok",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "sel": ".legal-document-glattt-modal-actions .btn-glattt-primary",
+    "at": "l",
+    "pct": {
+     "x": 69.27966101694916,
+     "y": 86.92835365853658,
+     "w": 16.56779661016949,
+     "h": 5.510670731707317
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "f9-phorest-aenderungen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "ok",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "sel": ".modal-glattt-footer button.btn-glattt-primary",
+    "at": "l",
+    "pct": {
+     "x": 50.6,
+     "y": 82.0,
+     "w": 25.7,
+     "h": 5.0
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "f10-vertrag-erfolg": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "pdf",
+    "kind": "badge",
+    "n": 1,
+    "sel": "a.btn-glattt-secondary[download]",
+    "at": "l",
+    "pct": {
+     "x": 25,
+     "y": 46.7454268292683,
+     "w": 50,
+     "h": 5.510670731707317
+    }
+   },
+   {
+    "id": "back",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "sel": ".modal-glattt-footer button.btn-glattt-primary",
+    "at": "l",
+    "pct": {
+     "x": 62.6,
+     "y": 71.7,
+     "w": 13.7,
+     "h": 5.3
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "c3-formulare-nach-vertrag": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "banner",
+    "kind": "frame",
+    "pct": {
+     "x": 31.186440677966104,
+     "y": 19.291158536585364,
+     "w": 66.77966101694915,
+     "h": 8.292682926829269
+    }
+   },
+   {
+    "id": "next",
+    "kind": "chip",
+    "label": "Weiter hier",
+    "sel": ".session-forms-grid .session-card:nth-of-type(3)",
+    "at": "b",
+    "pct": {
+     "x": 31.186440677966104,
+     "y": 77.82774390243902,
+     "w": 42.775423728813564,
+     "h": 45.85365853658537
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "g1-sepa-oben": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "ref",
+    "kind": "frame",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 33.948170731707314,
+     "w": 30.593220338983052,
+     "h": 6.097560975609756
+    }
+   },
+   {
+    "id": "b1",
+    "kind": "badge",
+    "n": 1,
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 42.97256097560976,
+     "w": 62.54237288135593,
+     "h": 10.609756097560975
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "g2-sepa-iban": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "b2",
+    "kind": "badge",
+    "n": 2,
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 21.753048780487806,
+     "w": 62.54237288135593,
+     "h": 9.75609756097561
+    }
+   },
+   {
+    "id": "iban",
+    "kind": "badge",
+    "n": 3,
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 34.4359756097561,
+     "w": 62.54237288135593,
+     "h": 6.097560975609756
+    }
+   },
+   {
+    "id": "b4",
+    "kind": "badge",
+    "n": 4,
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 55.411585365853654,
+     "w": 62.54237288135593,
+     "h": 6.097560975609756
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "g3-sepa-unterschrift": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "sig",
+    "kind": "badge",
+    "n": 5,
+    "sel": "canvas.signature-pad-canvas",
+    "at": "tl",
+    "dx": 1,
+    "dy": 1,
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 39.37881097560976,
+     "w": 62.54237288135593,
+     "h": 30.48780487804878
+    }
+   },
+   {
+    "id": "submit",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "sel": "form button[type=submit].btn-glattt-primary",
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 94.49314024390245,
+     "w": 14.400158898305085,
+     "h": 5.510670731707317
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "g6-sepa-erfolg": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "pdf",
+    "kind": "badge",
+    "n": 1,
+    "sel": "a.btn-glattt-secondary[download]",
+    "at": "l",
+    "pct": {
+     "x": 25,
+     "y": 35.64786585365854,
+     "w": 50,
+     "h": 5.510670731707317
+    }
+   },
+   {
+    "id": "back",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "sel": ".modal-glattt-footer button.btn-glattt-primary",
+    "at": "l",
+    "pct": {
+     "x": 62.6,
+     "y": 82.9,
+     "w": 13.7,
+     "h": 5.3
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "c4-formulare-alle-fertig": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "h1-session-direkt-behandeln": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "direct",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "sel": ".unified-session-grid .session-card:nth-of-type(3)",
+    "at": "b",
+    "pct": {
+     "x": 31.186440677966104,
+     "y": 54.87804878048781,
+     "w": 32.41525423728814,
+     "h": 42.19512195121951
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "h2-direkt-modal": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "list",
+    "kind": "badge",
+    "n": 1,
+    "sel": ".modal-glattt-section .checkbox-glattt-wrapper",
+    "at": "l",
+    "pct": {
+     "x": 15.932203389830507,
+     "y": 53.561356707317074,
+     "w": 68.13559322033899,
+     "h": 2.5609756097560976
+    }
+   },
+   {
+    "id": "book",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "at": "l",
+    "pct": {
+     "x": 66.31223516949153,
+     "y": 71.97599085365853,
+     "w": 19.535222457627118,
+     "h": 5.266768292682927
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "h3-direkt-gebucht": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "weiter",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "at": "l",
+    "pct": {
+     "x": 46.50026483050848,
+     "y": 60.81745426829268,
+     "w": 6.999470338983051,
+     "h": 5.266768292682927
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "i2-terminnotiz-leer": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "note",
+    "kind": "badge",
+    "n": 1,
+    "sel": ".modal-glattt textarea.input-glattt",
+    "at": "l",
+    "pct": {
+     "x": 23.64406779661017,
+     "y": 45.354420731707314,
+     "w": 52.71186440677966,
+     "h": 14.878048780487804
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "i3-terminnotiz": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "note",
+    "kind": "badge",
+    "n": 1,
+    "sel": ".modal-glattt textarea.input-glattt",
+    "at": "l",
+    "pct": {
+     "x": 23.64406779661017,
+     "y": 45.354420731707314,
+     "w": 52.71186440677966,
+     "h": 14.878048780487804
+    }
+   },
+   {
+    "id": "end",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "sel": ".modal-glattt-footer button.btn-glattt-danger",
+    "at": "l",
+    "pct": {
+     "x": 50.593220338983045,
+     "y": 66.45198170731707,
+     "w": 25.76271186440678,
+     "h": 5.510670731707317
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "i4-termin-beendet": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "j1-behandlungstermin-session": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "e2-teilen-link": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "url",
+    "kind": "frame",
+    "pct": {
+     "x": 34.91525423728813,
+     "y": 53.500381097560975,
+     "w": 19.14856991525424,
+     "h": 6.097560975609756
+    }
+   },
+   {
+    "id": "copy",
+    "kind": "chip",
+    "label": "Kopieren",
+    "at": "b",
+    "pct": {
+     "x": 54.74179025423729,
+     "y": 53.500381097560975,
+     "w": 10.342955508474576,
+     "h": 6.097560975609756
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "f6b-vertrag-gutschein-werber": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "b6",
+    "kind": "badge",
+    "n": 6,
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": -39.359756097560975,
+     "w": 62.54237288135593,
+     "h": 86.46341463414635
+    }
+   },
+   {
+    "id": "b7",
+    "kind": "badge",
+    "n": 7,
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": -39.359756097560975,
+     "w": 62.54237288135593,
+     "h": 86.46341463414635
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "f7b-vertrag-einwilligung": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "consent",
+    "kind": "badge",
+    "n": 1,
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": -23.910060975609756,
+     "w": 62.54237288135593,
+     "h": 18.536585365853657
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "m1-fehler-pflichtfelder": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "err",
+    "kind": "badge",
+    "n": 1,
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 25.628810975609756,
+     "w": 30.593220338983052,
+     "h": 2.195121951219512
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "m2-fehler-iban": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "iban",
+    "kind": "badge",
+    "n": 1,
+    "at": "l",
+    "pct": {
+     "x": 33.30508474576271,
+     "y": 34.4359756097561,
+     "w": 62.54237288135593,
+     "h": 6.097560975609756
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "n1-geteiltes-formular": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 820,
+   "height": 1180
+  },
+  "marks": [],
+  "ratio": 1.4390243902439024
+ }
+}

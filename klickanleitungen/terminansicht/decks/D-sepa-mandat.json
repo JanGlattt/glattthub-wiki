@@ -1,0 +1,54 @@
+{
+  "out": "../pdf/D-SEPA-Mandat", "meta": "../meta.json", "shots": "../shots",
+  "title": ["SEPA-Mandat", "einrichten"],
+  "subtitle": "Klickanleitung für das Lastschriftmandat nach dem Behandlungsvertrag — Kontoinhaber, IBAN, Unterschrift",
+  "eyebrow": "Terminansicht · Beratungsgespräch · Teil D", "footerArea": "Terminansicht", "stand": "08.09.2026",
+  "notes": [
+    "Nur bei **Ratenzahlung**. Ohne Mandat bleibt der Vertrag im Entwurf und es werden keine Raten eingezogen.",
+    "Die **IBAN wird live geprüft**, Bank und BIC ergänzt der Hub automatisch."
+  ],
+  "pages": [
+    {
+      "h1": "Mandat öffnen & Kontoinhaber",
+      "sub": "Die Kachel „SEPA Mandat“ ist nach dem Vertrag freigeschaltet. Mandatsreferenz und Gläubiger-ID sind vorbelegt.",
+      "card": { "title": "Kontoinhaber", "text": "Kachel „SEPA Mandat“, wer ist Kontoinhaber?" },
+      "left": { "shot": "c3-formulare-nach-vertrag", "marks": [ { "id": "next" } ] }, "right": { "shot": "g1-sepa-oben", "marks": [ { "id": "ref" }, { "id": "b1", "n": 1 } ] },
+      "leftCaption": "Formularauswahl nach dem Vertrag — das Banner erinnert an den Pflicht-Schritt.",
+      "rightCaption": "Kopf des SEPA-Mandats: Mandatsreferenz und Gläubiger-Identifikationsnummer sind fest vorgegeben.",
+      "steps": [
+        { "n": 1, "title": "„Wer ist Kontoinhaber?“", "text": "**„Vertragsnehmer ist Kontoinhaber“** — der Name wird übernommen. **„Jemand anders“** — dann Name, E-Mail, Telefon und Adresse des Kontoinhabers erfassen." },
+        { "n": 2, "title": "Kontoinhaber", "text": "Bei der Vertragsnehmerin vorbelegt; bei abweichendem Zahler den Namen genau wie auf der Bankkarte eintragen." }
+      ],
+      "hint": { "text": "**Mandatsreferenz** und **Gläubiger-ID** nicht ändern — sie stehen später auf jeder Vorabankündigung und dem Kontoauszug der Kundin." }
+    },
+    {
+      "h1": "IBAN eingeben",
+      "sub": "Die IBAN wird beim Tippen geprüft; Bank und BIC ergänzt der Hub automatisch.",
+      "card": { "title": "IBAN", "text": "IBAN eintippen, Prüfung abwarten, BIC wird ergänzt" },
+      "left": { "shot": "g2-sepa-iban", "marks": [ { "id": "b2", "n": 2 }, { "id": "iban", "n": 3 }, { "id": "b4", "n": 4 } ] }, "right": { "shot": "g3-sepa-unterschrift", "marks": [ { "id": "sig", "n": 5 }, { "id": "submit", "n": 6, "kind": "badge", "at": "l" } ] },
+      "leftCaption": "Gültige IBAN: grüner Rahmen, Bank und BIC wurden automatisch gefüllt.",
+      "rightCaption": "Unterschrift der Kontoinhaberin, darunter „Formular absenden“.",
+      "steps": [
+        { "n": 3, "title": "IBAN eintippen", "text": "Leerzeichen setzt der Hub selbst. **Grüner Haken** = gültig. Rot = Tippfehler („IBAN-Prüfziffer ist ungültig“ oder falsche Länge) — Ziffern nochmals mit der Kundin vergleichen." },
+        { "n": 4, "title": "Bank & BIC", "text": "Werden automatisch ermittelt und sind nicht editierbar. Erscheint „BIC konnte nicht ermittelt werden“: Internetverbindung prüfen und IBAN erneut eingeben." },
+        { "n": 5, "title": "Unterschrift", "text": "Die **Kontoinhaberin** unterschreibt (nicht die Mitarbeiterin). Ort und Datum sind vorbelegt." },
+        { "n": 6, "title": "„Formular absenden“", "text": "Übermittelt das Mandat an den Zahlungsdienst GoCardless." }
+      ]
+    },
+    {
+      "h1": "Mandat eingerichtet",
+      "sub": "Nach dem Absenden ist das Mandat übermittelt. Alle drei Formulare sind erledigt — der Termin kann beendet werden.",
+      "card": { "title": "Bestätigung", "text": "Mandat übermittelt, alle Formulare fertig, „Direkt behandeln“ erscheint" },
+      "left": { "shot": "g6-sepa-erfolg", "marks": [ { "id": "pdf", "n": 2 }, { "id": "back", "n": 3, "kind": "badge", "at": "l" } ] }, "right": { "shot": "h1-session-direkt-behandeln", "marks": [] },
+      "leftCaption": "„SEPA-Lastschriftmandat erfolgreich eingerichtet.“ — mit den Hinweisen für die Kundin.",
+      "rightCaption": "Session-Ansicht: Alle Formulare ausgefüllt, die Kachel „Direkt behandeln“ ist da.",
+      "steps": [
+        { "n": 1, "title": "Bestätigung lesen", "text": "Das Mandat wird „in Kürze aktiviert“. Abbuchungen erscheinen als **glattt** auf dem Kontoauszug, die Kundin wird **3 Werktage vorher** per E-Mail informiert." },
+        { "n": 2, "title": "PDF / E-Mail", "text": "Wie bei den anderen Formularen: **„PDF herunterladen“** oder per E-Mail senden." },
+        { "n": 3, "title": "„Zur Terminansicht“", "text": "Zurück in die Session. Die Formular-Kachel zeigt **„Alle Formulare ausgefüllt ✓“**." },
+        { "n": 4, "title": "Weiter", "text": "Soll die Kundin **sofort behandelt** werden → Kachel **„Direkt behandeln“** (Teil F). Sonst **„Termin beenden“** (Teil F)." }
+      ],
+      "hint": { "kind": "info", "text": "Mit dem Mandat bucht der Hub den Vertrag auch als Paket in **Phorest** — die Behandlungen stehen danach als Einheiten zur Verfügung." }
+    }
+  ]
+}

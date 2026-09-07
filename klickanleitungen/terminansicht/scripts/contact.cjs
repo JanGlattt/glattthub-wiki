@@ -1,0 +1,5 @@
+const { chromium } = require('playwright'); const fs = require('fs'); const path = require('path');
+const files = fs.readdirSync('shots').filter(f => f.endsWith('.png') && !f.startsWith('smoke') && !f.startsWith('probe') && !f.startsWith('contact')).sort();
+const html = `<html><body style="margin:0;background:#eee;font-family:sans-serif"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px">${files.map(f => `<div style="background:#fff;padding:4px"><div style="font-size:11px;font-weight:bold;margin-bottom:2px">${f.replace('.png','')}</div><img src="file://${path.resolve('shots', f)}" style="width:100%;display:block"></div>`).join('')}</div></body></html>`;
+fs.writeFileSync('contact.html', html);
+(async () => { const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1600, height: 1000 } }); await p.goto('file://' + path.resolve('contact.html')); await p.waitForTimeout(1500); await p.screenshot({ path: 'shots/contact.png', fullPage: true }); await b.close(); console.log(files.length, 'Bilder'); })();

@@ -1,0 +1,70 @@
+{
+  "out": "../pdf/B-Kundeninformation-Einverstaendnis", "meta": "../meta.json", "shots": "../shots",
+  "title": ["Kundeninformation &", "Einverständniserklärung"],
+  "subtitle": "Klickanleitung für das erste Formular im Beratungsgespräch — Stammdaten prüfen, Gesundheitsfragen, Einwilligungen, Unterschrift",
+  "eyebrow": "Terminansicht · Beratungsgespräch · Teil B", "footerArea": "Terminansicht", "stand": "08.09.2026",
+  "notes": [
+    "Voraussetzung: Der Termin **läuft** (Teil A). Die Formulare werden **gemeinsam mit der Kundin** am Tablet ausgefüllt.",
+    "Das Formular kann auch **an die Kundin weitergegeben** werden (Teil E) — sie füllt es dann selbst aus."
+  ],
+  "pages": [
+    {
+      "h1": "Formular öffnen",
+      "sub": "In der Session-Ansicht die Kachel „Formulare“ antippen — dann das erste Formular wählen.",
+      "card": { "title": "Formular öffnen", "text": "Kachel „Formulare“ → „Kundeninformation & Einverständniserklärung“" },
+      "left": { "shot": "c1-formulare-liste", "marks": [ { "id": "f0", "n": 1 }, { "id": "f1", "n": 2 }, { "id": "f2", "n": 3 } ] }, "right": { "shot": "d1-kundeninfo-oben", "marks": [ { "id": "kontakt" } ] },
+      "leftCaption": "Formularauswahl im laufenden Termin — jede Kachel ist ein Formular.",
+      "rightCaption": "Das geöffnete Formular: Stammdaten sind aus Phorest vorbelegt.",
+      "steps": [
+        { "n": 1, "title": "„Kundeninformation & Einverständniserklärung“", "text": "Immer zuerst. Antippen öffnet das Formular direkt im Termin." },
+        { "n": 2, "title": "„SEPA Mandat“", "text": "Erst nach dem Behandlungsvertrag möglich — die Kachel ist bis dahin gesperrt („Zuerst den Behandlungsvertrag abschließen“)." },
+        { "n": 3, "title": "„Behandlungsvertrag“", "text": "Der Vertrag mit Körperzonen, Laufzeit und Preis (Teil C)." },
+        { "n": 4, "title": "Vorbelegte Felder prüfen", "text": "Vorname, Nachname, Kundennummer, E-Mail und Telefon kommen aus Phorest. **Bitte mit der Kundin abgleichen** und bei Bedarf korrigieren." }
+      ],
+      "hint": { "kind": "info", "text": "**Grüner Haken** auf einer Kachel = für diesen Termin bereits ausgefüllt. Ein erneuter Klick bietet **„Ausgefülltes Formular ansehen“** oder **„Weiteres Formular ausfüllen“** an." }
+    },
+    {
+      "h1": "Gesundheitsfragen beantworten",
+      "sub": "Jede Frage wird mit „Ja“ oder „Nein“ beantwortet. Bei „Ja“ erscheint teilweise ein Zusatzfeld, das ausgefüllt werden muss.",
+      "card": { "title": "Fragen beantworten", "text": "Medizinische Vorgeschichte und Behandlungsinformationen mit Ja/Nein" },
+      "left": { "shot": "d2-kundeninfo-medizin" }, "right": { "shot": "d3-kundeninfo-behandlung", "marks": [] },
+      "leftCaption": "Abschnitt „Medizinische Vorgeschichte“ — Frage 1 mit „Ja“ und ausgefülltem Zusatzfeld.",
+      "rightCaption": "Abschnitt „Behandlungsinformationen“ mit den Hauptgründen für die Behandlung.",
+      "steps": [
+        { "n": 1, "title": "„Ja“ oder „Nein“ antippen", "text": "Jede Frage ist Pflicht. Ohne Antwort lässt sich das Formular nicht absenden („Bitte beantworte diese Frage mit Ja oder Nein.“)." },
+        { "n": 2, "title": "Zusatzfeld ausfüllen", "text": "Bei manchen Fragen erscheint nach „Ja“ ein Feld (z. B. „Welche Erkrankung?“). Es ist dann ebenfalls Pflicht." },
+        { "n": 3, "title": "Hauptgründe anhaken (weiter unten)", "text": "Unter den Fragen 7–10: mindestens einen Grund auswählen — Mehrfachauswahl ist möglich. „Sonstige Angaben“ ist freiwillig." }
+      ],
+      "hint": { "text": "Einige Fragen erscheinen **abhängig von vorherigen Antworten** oder vom Geschlecht — es ist normal, dass nicht bei jeder Kundin dieselben Fragen zu sehen sind." }
+    },
+    {
+      "h1": "Einwilligungen & Unterschrift",
+      "sub": "Kontaktwünsche der Kundin festhalten, Einverständniserklärung vorlesen lassen, unterschreiben.",
+      "card": { "title": "Einwilligungen & Unterschrift", "text": "Kontakt-Einwilligungen ankreuzen, Ort/Datum prüfen, unterschreiben" },
+      "left": { "shot": "d4-kundeninfo-kontakt", "marks": [ { "id": "b4", "n": 1 }, { "id": "b5", "n": 2 } ] }, "right": { "shot": "d5-kundeninfo-unterschrift", "marks": [ { "id": "sig", "n": 3 }, { "id": "submit", "n": 4, "kind": "badge", "at": "l" } ] },
+      "leftCaption": "„Dürfen wir in Kontakt bleiben?“ — die Häkchen werden nach Phorest übernommen.",
+      "rightCaption": "Unterschrift der Kundin mit dem Finger oder Stift, darunter „Formular absenden“.",
+      "steps": [
+        { "n": 1, "title": "Angebote & News", "text": "Häkchen für SMS/WhatsApp und E-Mail — nur, wenn die Kundin es ausdrücklich möchte." },
+        { "n": 2, "title": "Terminerinnerungen", "text": "Auf welchem Weg die Kundin an Termine erinnert werden möchte." },
+        { "n": 3, "title": "Unterschrift", "text": "Die Kundin unterschreibt im Feld. **Ort** und **Datum** sind vorbelegt. „Löschen“ setzt die Unterschrift zurück." },
+        { "n": 4, "title": "„Formular absenden“", "text": "Fehlt etwas, erscheint „Bitte fülle alle Pflichtfelder aus.“ und die betroffenen Felder werden rot markiert." }
+      ]
+    },
+    {
+      "h1": "Absenden & Phorest-Abgleich",
+      "sub": "Weichen Angaben vom Phorest-Kundenprofil ab, fragt der Hub nach — danach erscheint die Bestätigung mit PDF und E-Mail-Versand.",
+      "card": { "title": "Absenden", "text": "Phorest-Abgleich bestätigen, PDF oder E-Mail, zurück zur Terminansicht" },
+      "left": { "shot": "d6-phorest-aenderungen", "marks": [ { "id": "ok", "n": 1, "kind": "badge", "at": "l" } ] }, "right": { "shot": "d7-kundeninfo-erfolg", "marks": [ { "id": "pdf", "n": 2 }, { "id": "mail", "n": 3 }, { "id": "back", "n": 4, "kind": "badge", "at": "l" } ] },
+      "leftCaption": "„Kundendaten geändert“ — links der alte, rechts der neue Wert.",
+      "rightCaption": "Bestätigung: Das Formular ist eingereicht.",
+      "steps": [
+        { "n": 1, "title": "„In Phorest übernehmen“", "text": "Übernimmt die geänderten Daten (z. B. neue Adresse) dauerhaft ins Kundenprofil. **Empfohlen.** „Nur in diesem Formular“ speichert sie nur hier." },
+        { "n": 2, "title": "„PDF herunterladen“", "text": "Öffnet das ausgefüllte Formular als PDF — z. B. zum Ausdrucken." },
+        { "n": 3, "title": "Per E-Mail senden", "text": "Adresse prüfen (vorbelegt aus Phorest) und **„Senden“** — die Kundin erhält ihr Exemplar." },
+        { "n": 4, "title": "„Zur Terminansicht“", "text": "Zurück zur Formularauswahl. Die Kachel trägt jetzt einen grünen Haken — weiter mit dem **Behandlungsvertrag** (Teil C)." }
+      ],
+      "hint": { "kind": "info", "text": "Das Formular wird beim Ausfüllen automatisch als **Entwurf** gespeichert. Bricht die Verbindung ab, einfach den Termin erneut öffnen — die Eingaben sind noch da." }
+    }
+  ]
+}

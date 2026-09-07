@@ -1,0 +1,42 @@
+{
+  "out": "../pdf/E-Formular-an-Kundin-weitergeben", "meta": "../meta.json", "shots": "../shots",
+  "title": ["Formular an die", "Kundin weitergeben"],
+  "subtitle": "Klickanleitung für „Formular teilen“ — die Kundin füllt das Formular selbst auf ihrem Handy oder einem zweiten Tablet aus",
+  "eyebrow": "Terminansicht · Beratungsgespräch · Teil E", "footerArea": "Terminansicht", "stand": "08.09.2026",
+  "notes": [
+    "Der Link ist **48 Stunden gültig** und kann **nur einmal** verwendet werden. Bereits eingetragene Werte werden mitgegeben.",
+    "Funktioniert für jedes Formular — sinnvoll vor allem bei der **Kundeninformation**, während die Mitarbeiterin den Vertrag vorbereitet."
+  ],
+  "pages": [
+    {
+      "h1": "Link erstellen",
+      "sub": "Oben rechts im geöffneten Formular „Formular teilen“ antippen und den Link erzeugen.",
+      "card": { "title": "Link erstellen", "text": "„Formular teilen“, Name/E-Mail, Feldberechtigungen, „Link erstellen“" },
+      "left": { "shot": "d1-kundeninfo-oben", "marks": [ { "id": "share", "kind": "chip", "label": "Hier tippen", "at": "l" } ] }, "right": { "shot": "e1-teilen-modal" },
+      "leftCaption": "Der Knopf sitzt in der Kopfzeile jedes geöffneten Formulars.",
+      "rightCaption": "Dialog „Formular teilen“ — alles außer dem Link ist optional.",
+      "steps": [
+        { "n": 1, "title": "Empfänger Name (optional)", "text": "Erscheint der Kundin als Anrede." },
+        { "n": 2, "title": "Empfänger E-Mail (optional)", "text": "Mit dem Schalter **„Link per E-Mail senden“** bekommt die Kundin den Link direkt zugeschickt." },
+        { "n": 3, "title": "Feldberechtigungen", "text": "Aufklappen und einzelne Felder **sperren**, die die Kundin nicht ändern soll (z. B. Kundennummer). „Alle sperren“ / „Alle freigeben“ als Abkürzung." },
+        { "n": 4, "title": "„Link erstellen“", "text": "Erzeugt den Link. Vorher speichert der Hub den aktuellen Stand des Formulars als Entwurf." }
+      ],
+      "hint": { "kind": "warn", "text": "Ist **„Link erstellen“ ausgegraut**, fehlt der Kundenbezug: Das Formular muss **aus einem Termin heraus** geöffnet sein, sonst kann daraus kein Vertrag entstehen." }
+    },
+    {
+      "h1": "Link übergeben & Kundin füllt aus",
+      "sub": "Den Link kopieren oder per E-Mail schicken — die Kundin öffnet ihn ohne Anmeldung.",
+      "card": { "title": "Übergeben", "text": "Link kopieren oder mailen, Kundin füllt aus, Ergebnis landet im Termin" },
+      "left": { "shot": "e2-teilen-link", "marks": [ { "id": "url", "kind": "badge", "n": 2, "at": "l" }, { "id": "copy", "kind": "badge", "n": 1, "at": "l" } ] }, "right": { "shot": "n1-geteiltes-formular", "cls": "compact" },
+      "leftCaption": "Der erzeugte Link mit Gültigkeit — „Kopieren“ legt ihn in die Zwischenablage.",
+      "rightCaption": "So sieht die Kundin das Formular auf ihrem Handy: ohne Anmeldung, mit den vorbelegten Werten.",
+      "steps": [
+        { "n": 1, "title": "„Kopieren“", "text": "Link in die Zwischenablage — z. B. in WhatsApp oder eine Notiz einfügen. „Kopiert!“ bestätigt." },
+        { "n": 2, "title": "Gültig bis", "text": "Datum und Uhrzeit, bis wann der Link funktioniert (48 Stunden)." },
+        { "n": 3, "title": "Kundin füllt aus", "text": "Sie sieht dasselbe Formular, gesperrte Felder sind schreibgeschützt. Am Ende **„Formular absenden“**." },
+        { "n": 4, "title": "Ergebnis im Termin", "text": "Die Einreichung erscheint im Termin unter **„Formulare“** (Historie) mit Zeitpunkt. PDF und E-Mail gibt es hier nicht — bei Bedarf über die Historie öffnen." }
+      ],
+      "hint": { "text": "Meldet die Kundin **„Dieser Link ist ungültig“** oder **„…wurde bereits ausgefüllt“**: einfach im Formular einen **neuen Link erstellen**." }
+    }
+  ]
+}

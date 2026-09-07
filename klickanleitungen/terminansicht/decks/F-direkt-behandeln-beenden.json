@@ -1,0 +1,52 @@
+{
+  "out": "../pdf/F-Direkt-behandeln-Termin-beenden", "meta": "../meta.json", "shots": "../shots",
+  "title": ["Direkt behandeln &", "Termin beenden"],
+  "subtitle": "Klickanleitung für den Abschluss des Beratungsgesprächs — Behandlung sofort anschließen, Kasse, Folgetermin, Terminnotiz",
+  "eyebrow": "Terminansicht · Beratungsgespräch · Teil F", "footerArea": "Terminansicht", "stand": "08.09.2026",
+  "notes": [
+    "**Jeder** Beratungstermin wird über **„Termin beenden“** abgeschlossen — auch ohne Verkauf. Erst dann gilt er in Phorest als erledigt.",
+    "Die **Terminnotiz ist Pflicht** und wandert automatisch nach Phorest."
+  ],
+  "pages": [
+    {
+      "h1": "Direkt behandeln",
+      "sub": "Hat die Kundin einen Vertrag abgeschlossen, kann die erste Behandlung sofort in derselben Kabine gebucht und gestartet werden.",
+      "card": { "title": "Direkt behandeln", "text": "Kachel antippen, Behandlungen bestätigen, „Termin buchen & behandeln“" },
+      "left": { "shot": "h1-session-direkt-behandeln" }, "right": { "shot": "h2-direkt-modal", "marks": [ { "id": "list", "n": 1 }, { "id": "book", "n": 2, "kind": "badge", "at": "l" } ] },
+      "leftCaption": "Die dritte Kachel erscheint erst nach Vertrag (und SEPA-Mandat bei Ratenzahlung).",
+      "rightCaption": "Dialog „Direkt behandeln“: Startzeit, Kabine und die Behandlungen aus dem Paket.",
+      "steps": [
+        { "n": 1, "title": "Behandlungen", "text": "Alle Zonen des Vertrags sind vorausgewählt, mit Dauer und übrigen Einheiten. Nicht gewünschte **abhaken**." },
+        { "n": 2, "title": "„Termin buchen & behandeln“", "text": "Bucht den Behandlungstermin in Phorest **direkt im Anschluss** in dieser Kabine (Desinfektion inklusive)." }
+      ],
+      "hint": { "text": "**„Noch keine buchbaren Paket-Services gefunden“**: Phorest braucht nach dem Abschluss manchmal einen Moment — **„Neu laden“** drücken. Bleibt die Meldung, steht das SEPA-Mandat noch aus oder der Phorest-Kauf ist fehlgeschlagen (dann **„Kauf jetzt nachholen“**)." }
+    },
+    {
+      "h1": "Behandlungstermin gebucht",
+      "sub": "Nach der Buchung wird der Beratungstermin automatisch beendet — es folgt nur noch die Terminnotiz.",
+      "card": { "title": "Gebucht", "text": "„Weiter“ — der Beratungstermin wird beendet, Terminnotiz erfassen" },
+      "left": { "shot": "h3-direkt-gebucht", "marks": [ { "id": "weiter", "n": 1, "kind": "badge", "at": "l" } ] }, "right": { "shot": "i2-terminnotiz-leer", "marks": [ { "id": "note", "n": 2 } ] },
+      "leftCaption": "Bestätigung mit Uhrzeit des neuen Termins.",
+      "rightCaption": "Dialog „Termin beenden“ — die Terminnotiz ist Pflicht.",
+      "steps": [
+        { "n": 1, "title": "„Weiter“", "text": "Schließt den Dialog. Der Hub startet sofort den Abschluss des Beratungstermins — die Frage nach einem Folgetermin entfällt." },
+        { "n": 2, "title": "Terminnotiz", "text": "Kurz festhalten, was besprochen wurde: Zonen, Zahlungsart, Besonderheiten. Der Text wird als **Notiz in Phorest** gespeichert." }
+      ]
+    },
+    {
+      "h1": "Termin beenden",
+      "sub": "Ohne Direktbehandlung: „Termin beenden“ unten links. Der Hub führt durch Kasse, Folgetermin und Terminnotiz.",
+      "card": { "title": "Termin beenden", "text": "Kasse prüfen, Folgetermin planen, Terminnotiz, „Termin jetzt beenden“" },
+      "left": { "shot": "i3-terminnotiz", "marks": [ { "id": "note", "n": 3 }, { "id": "end", "kind": "badge", "n": 3, "at": "l" } ] }, "right": { "shot": "i4-termin-beendet" },
+      "leftCaption": "Ausgefüllte Terminnotiz mit dem roten Knopf „Termin jetzt beenden“.",
+      "rightCaption": "„Terminnotiz gespeichert“ — der Termin ist in Phorest erledigt; nach einer Direktbuchung geht es automatisch im Behandlungstermin weiter.",
+      "steps": [
+        { "n": 1, "title": "Kasse (nur bei offenem Betrag)", "text": "Steht ein Betrag auf dem Kundenkonto (z. B. **1. Rate vor Ort**), erscheint zuerst der Kassen-Bildschirm: **„Verstanden — Betrag wird jetzt kassiert“** und in Phorest kassieren. „Wird nicht bezahlt …“ verlangt eine Begründung und informiert das Büro." },
+        { "n": 2, "title": "Folgetermin planen", "text": "Nach einem Verkauf ohne Direktbehandlung schlägt der Hub freie Termine im passenden Abstand vor. Slot antippen → **„Fertig“**. Mit dem **✕** überspringen." },
+        { "n": 3, "title": "Terminnotiz & „Termin jetzt beenden“", "text": "Pflichtfeld ausfüllen und bestätigen. Ohne Text: „Bitte gib eine Terminnotiz ein.“" },
+        { "n": 4, "title": "Fertig", "text": "Der Termin steht in Phorest auf **Erledigt**. Zurück zum Tagesplan über **„Termine“** oben links." }
+      ],
+      "hint": { "kind": "warn", "text": "**„Termin konnte nicht als bezahlt markiert werden — bitte in Phorest auschecken.“** → Die Notiz ist gespeichert, der Termin muss aber in Phorest von Hand ausgecheckt werden." }
+    }
+  ]
+}

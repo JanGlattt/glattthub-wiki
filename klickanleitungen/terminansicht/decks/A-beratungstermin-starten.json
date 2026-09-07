@@ -1,0 +1,62 @@
+{
+  "out": "../pdf/A-Beratungstermin-starten",
+  "meta": "../meta.json", "shots": "../shots",
+  "title": ["Beratungstermin", "starten"],
+  "subtitle": "Klickanleitung für die Terminansicht im glatttHub — vom Tagesplan bis zum laufenden Termin",
+  "eyebrow": "Terminansicht · Beratungsgespräch · Teil A",
+  "footerArea": "Terminansicht",
+  "stand": "08.09.2026",
+  "notes": [
+    "Gilt für **jedes Beratungsgespräch**: Der Termin wird im Hub gestartet, alle Formulare laufen direkt im Termin.",
+    "Bei Problemen oder Fehlermeldungen: **Asana-Task ans Büro** — siehe Dokument „Probleme & Fehlermeldungen“."
+  ],
+  "pages": [
+    {
+      "h1": "Termin im Tagesplan finden",
+      "sub": "„Termine“ zeigt alle Termine des Instituts für einen Tag. Beratungsgespräche tragen ein goldenes Stern-Badge.",
+      "card": { "title": "Termin finden", "text": "Tagesplan öffnen, Beratungsgespräche filtern, Karte lesen" },
+      "left": { "shot": "a2-liste-beratung" },
+      "right": { "shot": "a3-liste-aufgeklappt" },
+      "leftCaption": "Tagesplan mit aktivem Filter „Beratung“ — die Karte zeigt Uhrzeit, Kundin, Kabine und Status.",
+      "rightCaption": "Aufgeklappte Karte: Terminnotiz aus Phorest und Details zur Kundin.",
+      "steps": [
+        { "n": 1, "title": "Stern-Badge „Beratung“", "text": "Nur Beratungsgespräche tragen dieses Badge. Mit dem Knopf **„Beratung“** oben rechts werden alle anderen Termine ausgeblendet." },
+        { "n": 2, "title": "Status lesen", "text": "**Gebucht** = noch nicht begonnen · **Im Gange** = Termin läuft · **Erledigt** = beendet · **No Show** = Kundin nicht erschienen." },
+        { "n": 3, "title": "Pfeil antippen", "text": "Klappt die Karte auf: Terminnotiz aus Phorest, E-Mail und Telefon der Kundin." },
+        { "n": 4, "title": "„Termin öffnen“", "text": "Öffnet die Termin-Detailseite, in der alles Weitere passiert." }
+      ],
+      "hint": { "text": "**Anderer Tag?** Mit den Pfeilen neben dem Datum blättern oder das Datum antippen. **„Heute“** springt zurück auf den aktuellen Tag." }
+    },
+    {
+      "h1": "Termin öffnen",
+      "sub": "Die Detailseite zeigt alles zur Kundin und zum Termin — links die Kundin, rechts Behandlungen und Notizen.",
+      "card": { "title": "Termin öffnen", "text": "Detailseite lesen: Kundin, Termin-Infos, Behandlungen, Notizen" },
+      "left": { "shot": "b1-detail-uebersicht", "marks": [ { "id": "status", "dx": -1.2 }, { "id": "kunde", "dx": 2.2, "dy": 2.8 }, { "id": "behandlungen", "dx": -1 }, { "id": "notizen", "dx": -1 } ] },
+      "leftCaption": "Detailseite eines Beratungsgesprächs vor dem Start — Status „Gebucht“.",
+      "steps": [
+        { "n": 1, "title": "Status oben rechts", "text": "Zeigt den aktuellen Zustand des Termins (hier **„Gebucht“**)." },
+        { "n": 2, "title": "Kundin & Kontakt", "text": "Name, **Kunden-ID** und die Knöpfe **„Anrufen“**, **„E-Mail“**, **„Bewertung“**. Der Name führt ins Kundenprofil." },
+        { "n": 3, "title": "Behandlungen", "text": "Die gebuchten Services des Termins — beim Beratungsgespräch der Beratungs-Service." },
+        { "n": 4, "title": "Notizen", "text": "Alle Terminnotizen aus Phorest, die neueste oben." }
+      ],
+      "rightHtml": "<div class='steps cols-1' style='margin-top:0'><div class='step'><div class='num'>i</div><div><div class='t'>Termin-Infos</div><div class='d'>Datum, Uhrzeit mit Dauer, Institut und Kabine (Mitarbeiterin) stehen in der Mitte der linken Spalte.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Navigation</div><div class='d'><b>„Übersicht“</b> ist diese Seite. <b>„Formulare“</b> und <b>„Einstellungszettel“</b> zeigen die Historie der Kundin — die aktuellen Formulare gibt es erst im laufenden Termin (nächste Seite).</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Rotes Banner</div><div class='d'>Erscheint, wenn die Kundin noch einen offenen Betrag auf dem Kundenkonto hat. Er muss beim Verlassen kassiert werden.</div></div></div></div>",
+      "hint": { "text": "**„Termine“** oben links führt zurück zum Tagesplan — aber nur, solange der Termin **noch nicht begonnen** wurde." }
+    },
+    {
+      "h1": "Termin beginnen",
+      "sub": "Mit „Termin beginnen“ wird die Kundin in Phorest eingecheckt und die Session-Ansicht mit den Kacheln erscheint.",
+      "card": { "title": "Termin beginnen", "text": "Check-in in Phorest, Session-Kacheln „Formulare“ und „Einstellungszettel“" },
+      "left": { "shot": "b1-detail-uebersicht", "marks": [] },
+      "right": { "shot": "b3-session-kacheln", "marks": [ { "id": "formulare", "kind": "badge", "n": 2, "at": "tl", "dx": 2, "dy": 2 }, { "id": "zettel", "n": 3 } ] },
+      "leftCaption": "Der Knopf **„Termin beginnen“** sitzt ganz unten in der linken Spalte, unter der Navigation (ggf. nach unten wischen).",
+      "rightCaption": "Session-Ansicht nach dem Start — Status wechselt auf „Eingecheckt“, oben links ist „Termine“ gesperrt.",
+      "steps": [
+        { "n": 1, "title": "„Termin beginnen“", "text": "Unten links antippen. Der Termin wird in Phorest **eingecheckt** und der angemeldeten Mitarbeiterin zugeordnet. Bestätigung: „Termin erfolgreich gestartet“." },
+        { "n": 2, "title": "Kachel „Formulare“", "text": "Hier werden Kundeninformation, Behandlungsvertrag und SEPA-Mandat mit der Kundin ausgefüllt — siehe Teile B bis D." },
+        { "n": 3, "title": "Kachel „Einstellungszettel“", "text": "Behandlungseinstellungen für Behandlungstermine (Teil H). Sie bleibt gesperrt, solange Pflichtformulare offen sind." },
+        { "n": 4, "title": "Termin läuft", "text": "Unten links steht jetzt **„Termin läuft“** und der rote Knopf **„Termin beenden“** (Teil F)." }
+      ],
+      "hint": { "kind": "warn", "text": "Solange der Termin läuft, ist **„Termine“ gesperrt**: „Die Ansicht kann erst verlassen werden, wenn der Termin beendet wurde.“ Das Tablet also nicht zwischendurch für einen anderen Termin nutzen." }
+    }
+  ]
+}

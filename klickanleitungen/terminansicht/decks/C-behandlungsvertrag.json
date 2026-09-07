@@ -1,0 +1,96 @@
+{
+  "out": "../pdf/C-Behandlungsvertrag", "meta": "../meta.json", "shots": "../shots",
+  "title": ["Behandlungsvertrag", "abschließen"],
+  "subtitle": "Klickanleitung für den Vertrag im Beratungsgespräch — Körperzonen, Zahlungsart, Preis, Rabatt, Gutschein, AGB und Unterschrift",
+  "eyebrow": "Terminansicht · Beratungsgespräch · Teil C", "footerArea": "Terminansicht", "stand": "08.09.2026",
+  "notes": [
+    "Der Preis kommt **automatisch aus der Preisliste** — nichts von Hand eintragen.",
+    "Bei **Ratenzahlung** folgt direkt danach das **SEPA-Mandat** (Teil D). Ohne Mandat bleibt der Vertrag unvollständig."
+  ],
+  "pages": [
+    {
+      "h1": "Vertrag öffnen & Kundin prüfen",
+      "sub": "Nach der Kundeninformation die Kachel „Behandlungsvertrag“ antippen. Die Vertragsnehmer-Daten sind vorbelegt.",
+      "card": { "title": "Vertrag öffnen", "text": "Kachel „Behandlungsvertrag“, Vertragsnehmer-Daten prüfen" },
+      "left": { "shot": "c2-formulare-nach-kundeninfo", "marks": [ { "id": "done" } ] }, "right": { "shot": "f1-vertrag-oben" },
+      "leftCaption": "Die Kundeninformation ist erledigt (grüner Haken), der Vertrag ist als Nächstes dran.",
+      "rightCaption": "Kopf des Behandlungsvertrags mit den Daten der Vertragsnehmerin.",
+      "steps": [
+        { "n": 1, "title": "Grüner Haken", "text": "Zeigt, dass die Kundeninformation für diesen Termin bereits eingereicht ist." },
+        { "n": 2, "title": "„Behandlungsvertrag“ antippen", "text": "Öffnet den Vertrag im Termin." },
+        { "n": 3, "title": "Vertragsnehmer prüfen", "text": "Name, Kundennummer, Adresse, E-Mail und Telefon **müssen vollständig** sein — fehlende Felder werden beim Absenden rot markiert." }
+      ],
+      "hint": { "text": "Fehlt die **Adresse** in Phorest, hier eintragen. Beim Absenden fragt der Hub, ob sie **in Phorest übernommen** werden soll — mit „Ja“ ist sie beim nächsten Formular schon da." }
+    },
+    {
+      "h1": "Körperzonen & Zahlungsart",
+      "sub": "Die zu behandelnden Zonen auf der Figur oder in der Liste antippen, dann Einmalzahlung oder Raten wählen.",
+      "card": { "title": "Zonen & Zahlungsart", "text": "Körperzonen antippen, Gesamtpreis oder monatliche Raten, Startdatum" },
+      "left": { "shot": "f2-vertrag-koerperzonen" }, "right": { "shot": "f3-vertrag-bezahlung", "marks": [ { "id": "b1", "n": 3 }, { "id": "b2", "n": 4 } ] },
+      "leftCaption": "Vier Zonen gewählt — die Figur färbt sie ein, die Liste zeigt die Häkchen.",
+      "rightCaption": "Abschnitt „Bezahlung“ mit Ratenzahlung und Startdatum der Abbuchung.",
+      "steps": [
+        { "n": 1, "title": "Zonen auf der Figur", "text": "Antippen wählt eine Zone, erneutes Antippen entfernt sie. **Gesicht** ist erst ab fünf anderen Zonen wählbar." },
+        { "n": 2, "title": "…oder in der Liste", "text": "Dieselbe Auswahl als Liste — praktisch für kleine Zonen. „2 kleine Zonen“ braucht eine Angabe, welche." },
+        { "n": 3, "title": "Zahlungsmethode", "text": "**„Zahlung des Gesamtpreises“** (Einmalzahlung vor Ort) oder **„Zahlung in monatlichen Raten“** (SEPA-Lastschrift)." },
+        { "n": 4, "title": "Startdatum Abbuchung", "text": "Nur bei Raten. Erlaubt sind der **3.** oder der **15.** eines Monats — andere Tage lehnt das Formular ab („Erlaubte Tage: 3, 15.“)." }
+      ]
+    },
+    {
+      "h1": "Preisliste, Laufzeit & Rabatt",
+      "sub": "Der Preis wird aus der gültigen Preisliste berechnet. Gibt es mehrere Listen, zuerst die richtige wählen.",
+      "card": { "title": "Preis wählen", "text": "Preisliste, Laufzeit (Raten), optionaler Rabatt" },
+      "left": { "shot": "f4-vertrag-preisliste", "marks": [ { "id": "liste", "n": 1 } ] }, "right": { "shot": "f5-vertrag-zahlungsoption", "marks": [ { "id": "opt", "n": 2 }, { "id": "rabatt", "n": 3 } ] },
+      "leftCaption": "„Preisliste wählen“ erscheint nur, wenn für das Institut mehrere Listen gültig sind.",
+      "rightCaption": "Zahlungsoption (Laufzeit × Monatsrate) und Rabatt-Auswahl.",
+      "steps": [
+        { "n": 1, "title": "Preisliste wählen", "text": "Die Liste bestimmt Preise **und Zahlungsmodus**: „alle Raten SEPA“ = jede Rate per Lastschrift, sonst wird die **1. Rate vor Ort** kassiert." },
+        { "n": 2, "title": "Zahlungsoption", "text": "Laufzeit antippen (z. B. **19 × 159,96 €**). Der Betrag richtet sich nach der Zahl der Zonen." },
+        { "n": 3, "title": "Rabatt (optional)", "text": "Nur, wenn eine Aktion gilt (z. B. „10 Jahre glattt“). Standard ist **„Kein Rabatt“**." }
+      ],
+      "hint": { "kind": "warn", "text": "**Keine Preise?** „Bitte wählen Sie zuerst Körperzonen aus“ heißt: oben noch Zonen antippen. „Keine gültige Preisliste gefunden“ → Asana-Task ans Büro." }
+    },
+    {
+      "h1": "Gutschein, Werber & Einwilligungen",
+      "sub": "Optional einen Gutschein verrechnen oder eine Werberin erfassen — dann die Einwilligungen bestätigen.",
+      "card": { "title": "Extras & Einwilligung", "text": "Gutschein-Seriennummer, „Freunde werben“, Einwilligungen" },
+      "left": { "shot": "f6b-vertrag-gutschein-werber", "marks": [ { "id": "b6", "n": 1 }, { "id": "b7", "n": 2 } ] }, "right": { "shot": "f7b-vertrag-einwilligung", "marks": [ { "id": "consent", "n": 3 } ] },
+      "leftCaption": "Gutscheine der Kundin werden automatisch angezeigt; andere per Seriennummer oder Kamera („Scannen“).",
+      "rightCaption": "Einwilligungen vor der Unterschrift — die erste ist Pflicht.",
+      "steps": [
+        { "n": 1, "title": "Gutscheine verrechnen", "text": "Seriennummer eintippen und **„Hinzufügen“** — oder **„Scannen“** und den Code mit der Tablet-Kamera lesen. Der Wert wird mit den ersten Raten bzw. der Zahlung vor Ort verrechnet." },
+        { "n": 2, "title": "Freunde werben", "text": "Name oder Kundennummer der Werberin suchen und antippen. Sie muss einen **aktiven Vertrag** haben. Die Kundin kann sich nicht selbst werben." },
+        { "n": 3, "title": "Einwilligung ankreuzen", "text": "Die Pflicht-Einwilligung (rot markiert) muss angehakt sein, sonst: „Bitte stimme dieser Einwilligung zu, um das Formular abzusenden.“" }
+      ]
+    },
+    {
+      "h1": "Unterschrift, AGB & Absenden",
+      "sub": "Die Kundin unterschreibt, dann werden beim Absenden die AGB angezeigt und bestätigt.",
+      "card": { "title": "Unterschrift & AGB", "text": "Unterschreiben, „Formular absenden“, AGB lesen und bestätigen" },
+      "left": { "shot": "f7-vertrag-unterschrift", "marks": [ { "id": "sig", "n": 1 }, { "id": "submit" } ] }, "right": { "shot": "f8-vertrag-rechtsdokument", "marks": [ { "id": "scroll", "n": 3 }, { "id": "check", "n": 4 }, { "id": "ok" } ] },
+      "leftCaption": "Ort und Datum sind vorbelegt, die Kundin unterschreibt im Feld.",
+      "rightCaption": "AGB-Dialog: erst bis zum Ende scrollen, dann Häkchen, dann bestätigen.",
+      "steps": [
+        { "n": 1, "title": "Unterschrift", "text": "Die Kundin unterschreibt mit Finger oder Stift. Vertippt? **„Löschen“** und neu." },
+        { "n": 2, "title": "„Formular absenden“", "text": "Startet die Prüfung. Fehlt etwas, werden die Felder rot markiert und ein Hinweis erscheint." },
+        { "n": 3, "title": "AGB bis zum Ende scrollen", "text": "Das Häkchen ist gesperrt, bis das Dokument ganz nach unten gescrollt wurde („Bitte bis zum Ende des Dokuments scrollen.“)." },
+        { "n": 4, "title": "Häkchen & „Bestätigen & absenden“", "text": "Die Kundin bestätigt die AGB. „Abbrechen“ bricht das Absenden ab — der Vertrag bleibt als Entwurf offen." }
+      ]
+    },
+    {
+      "h1": "Vertrag ist da — weiter zum SEPA-Mandat",
+      "sub": "Nach dem Absenden wird der Vertrag angelegt. Bei Ratenzahlung fordert der Hub sofort das SEPA-Mandat ein.",
+      "card": { "title": "Bestätigung", "text": "PDF/E-Mail, Vertragsnummer, Pflicht-Schritt SEPA-Mandat" },
+      "left": { "shot": "f10-vertrag-erfolg", "marks": [ { "id": "pdf", "n": 1 }, { "id": "back", "n": 2, "kind": "badge", "at": "l" } ] }, "right": { "shot": "c3-formulare-nach-vertrag", "marks": [ { "id": "banner" } ] },
+      "leftCaption": "Bestätigung mit PDF-Download und E-Mail-Versand.",
+      "rightCaption": "Zurück in der Formularauswahl: Das SEPA-Mandat ist jetzt der nächste Pflicht-Schritt.",
+      "steps": [
+        { "n": 1, "title": "„PDF herunterladen“", "text": "Der Vertrag als PDF mit allen Angaben und Unterschrift." },
+        { "n": 2, "title": "„Zur Terminansicht“", "text": "Zurück zur Formularauswahl." },
+        { "n": 3, "title": "Banner „Nächster Pflicht-Schritt“", "text": "Bei Ratenzahlung: **„SEPA-Mandat ausfüllen — der Vertrag ist eine Ratenzahlung und bleibt ohne Mandat im Entwurf.“**" },
+        { "n": 4, "title": "Kachel „SEPA Mandat“", "text": "Ist jetzt freigeschaltet — weiter mit Teil D." }
+      ],
+      "hint": { "kind": "info", "text": "Die **Vertragsnummer** hat das Muster **JJJJ.MM.TT-Kundennummer** (z. B. 2026.09.08-MD000002) und steht auf dem PDF." }
+    }
+  ]
+}
