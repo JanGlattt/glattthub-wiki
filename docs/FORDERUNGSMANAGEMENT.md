@@ -822,6 +822,13 @@ dafür ist `personalized_replies`. Offene Punkte dazu im Asana-Subtask
   geplatzter RZV-Rate zurück auf `area = judicial`/`stage = judicial`.
   Bestandsfälle wurden per Migration
   `2026_09_07_100000_return_rzv_cases_to_extrajudicial_area` nachgezogen.
+- **Abgabe aus dem Widerruf (07.09.2026, Fall H004319):** Neben Webhook
+  und SEPA-Storno-Modal eröffnet jetzt auch der Knopf „Ans
+  Forderungsmanagement abgeben" auf der Widerruf-Seite einen Fall mit
+  Einstieg `mandate_revoked` (`DebtCaseIntakeService::handoverFromCancellation()`,
+  gemeinsamer Kern `openOrUpgradeMandateRevokedCase()`); optional wird die
+  E-Mail-Anmahnung als extern erledigt nachgetragen. Details im Wiki
+  `WIDERRUFE-MODULE.md`.
 - **Anhängen vs. laufender Mahnprozess (07.09.2026, Fall OS003259):**
   `DebtCaseIntakeService::handleRateAppended()` überschreibt die Stufe nur
   noch, wenn am Vertrag keine weitere Rücklastschrift offen ist

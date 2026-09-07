@@ -274,6 +274,25 @@ erfassen und bearbeiten"):
   („SEPA im Widerruf storniert — kein SEPA anlegen"), damit niemand für den
   widerrufenen Vertrag ein neues Mandat oder einen Zahlungsplan anlegt
   (Test: `ContractCancellationBannerTest`).
+- **Ans Forderungsmanagement abgeben (07.09.2026, Fall H004319):** Ist das
+  Mandat bereits storniert (vom Kunden entzogen oder Storno ohne Häkchen), ist
+  das Storno-Modal gesperrt — der Fall über die Restsumme entsteht dann über
+  den eigenen Knopf **„Ans Forderungsmanagement abgeben …"** in den
+  Umsetzungs-Aktionen (sichtbar bei aktivem Vertrag mit offener Restsumme;
+  läuft schon ein Fall, steht dort stattdessen „Zum Forderungsfall #…"). Das
+  Modal fragt, ob die Restsumme **bereits außerhalb des Hubs mit Frist
+  angemahnt** wurde: dann wird die E-Mail-Anmahnung mit dem angegebenen Datum
+  als extern erledigt nachgetragen (Frist 7 Tage ab Versand) und der Fall
+  steht direkt vor der letzten Mahnung per Post; ohne Häkchen beginnt er mit
+  der E-Mail-Anmahnung. Nach dem Abgeben landet man direkt im Fall. Der
+  Widerruf bekommt den Verlaufseintrag „Ans Forderungsmanagement abgegeben"
+  und in den Verknüpfungen den Link zum Fall. Technik: `POST
+  /hub/cancellations/{id}/receivables` (`manage_revocations`) →
+  `DebtCaseIntakeService::handoverFromCancellation()` (gleicher Kern wie der
+  Mandatsentzug: `openOrUpgradeMandateRevokedCase()`, Einstieg
+  `mandate_revoked`, `full_balance_due`; laufender Fall wird hochgestuft) +
+  `DebtCaseActionService::markActionDoneExternally()`; Ereignis
+  `handed_to_receivables`. Test: `CancellationReceivablesHandoverTest`.
 - **Widerruf zurückgezogen?** Ein von uns storniertes Mandat lässt sich im
   **SEPA-Tab des Vertrags** per Knopfdruck reaktivieren („SEPA-Mandat reaktivieren"):
   GoCardless setzt das Mandat wieder ein und der beim Storno gesicherte Restplan wird
