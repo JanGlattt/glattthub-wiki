@@ -59,6 +59,7 @@ Das Preissystem basiert auf **Körperzonen (KPZ)**. Je mehr Körperzonen ein Kun
 | Gültig ab | Startdatum der Preisliste | ✓ |
 | Branch | Zuordnung zu einem oder mehreren Standorten | – |
 | Ganzkörper KPZ | Max. KPZ für Ganzkörper (Standard: 6) | – |
+| Ratenzahlung | „1. Rate vor Ort, weitere Raten per SEPA" (Standard) oder „Alle Raten per SEPA-Lastschrift" — siehe [Zahlungsmodus](#zahlungsmodus-der-ratenzahlung) | – |
 | Aktiv | Ob die Preisliste verwendet werden soll | – |
 | Notizen | Interne Bemerkungen | – |
 
@@ -104,6 +105,24 @@ bleiben sichtbar dokumentiert (in der Kartenansicht ausgegraut, mit Zeitraum),
 werden aber nicht angewendet. So entsteht eine Rabatt-Historie: Aktionen werden
 beendet statt gelöscht, Änderungen laufen über einen neuen Rabatt mit eigenem
 Zeitraum.
+
+### Zahlungsmodus der Ratenzahlung
+
+Seit 07.09.2026 legt jede Preisliste fest, wie Ratenverträge nach ihr bezahlt werden
+(Grundeinstellungen → **Ratenzahlung**):
+
+| Modus | Was passiert |
+|---|---|
+| **1. Rate vor Ort, weitere Raten per SEPA** (Standard) | Die 1. Rate wird bei der 1. Sitzung an der Kasse gezahlt (dort wird ein Rabatt verrechnet), Raten 2–N werden ab dem ersten Abbuchungsdatum per SEPA eingezogen. Bisheriges Verhalten, gilt für alle bestehenden Preislisten. |
+| **Alle Raten per SEPA-Lastschrift** | Keine Zahlung vor Ort. Alle N Raten laufen ab dem ersten Abbuchungsdatum per Lastschrift; ein Rabatt mindert die erste Lastschrift (Rest die zweite), auf jeder Rate bleibt das GoCardless-Minimum von 1 € stehen. Phorest bucht keine Kundenkonto-Schuld. |
+
+- Das Feld ist **preisrelevant**: Auf gesperrten Fassungen ist es schreibgeschützt,
+  eine Änderung läuft über „Duplizieren" mit neuem Gültig-ab. „Duplizieren" übernimmt den Modus.
+- Der Modus wird **bei der Vertragsanlage auf den Vertrag kopiert** — spätere
+  Preislisten-Änderungen betreffen nur neue Verträge.
+- Karten mit „Alle Raten per SEPA" tragen ein Badge; die Kartenzeile nennt den Modus.
+- Auswirkungen auf Zahlungsplan, PDF, Mails, Formular und Institutsseite:
+  Wiki `CONTRACTS-SEPA-MODULE.md`, Update 07.09.2026.
 
 ### Branch-Zuordnung
 
@@ -218,6 +237,7 @@ CREATE TABLE price_lists (
     name VARCHAR(255) NOT NULL,
     valid_from DATE NOT NULL,
     max_body_zones INT DEFAULT 6,
+    installment_mode VARCHAR(20) DEFAULT 'first_on_site',  -- first_on_site | all_sepa
     is_active BOOLEAN DEFAULT TRUE,
     notes TEXT NULL,
     created_by BIGINT NULL,
@@ -323,6 +343,15 @@ PriceDiscount::availableOn($date);      // Query-Scope, gleiche Logik, Default: 
 $discount->validity_label;              // "01.04.2026 – 30.04.2026" | "ab …" | "bis …" | null
 // Preisberechnung (calculatePrice, SharedFormController, activeDiscounts())
 // berücksichtigt das Fenster automatisch über appliesTo()/availableOn().
+
+// Zahlungsmodus der Ratenzahlung (seit 09/2026)
+PriceList::INSTALLMENT_MODE_FIRST_ON_SITE;   // '1. Rate vor Ort' (Standard)
+PriceList::INSTALLMENT_MODE_ALL_SEPA;        // 'alle Raten per SEPA'
+$priceList->firstInstallmentOnSite();        // bool
+$priceList->installment_mode_label;          // deutsche Bezeichnung
+// Wird bei der Vertragsanlage nach contracts.installment_mode kopiert;
+// Verträge lesen ihn über Contract::firstInstallmentOnSite() /
+// firstSepaInstallmentNumber() / sepaInstallmentCount().
 
 // Ist global (alle Branches)?
 $priceList->is_global; // bool (Accessor)
@@ -500,6 +529,8 @@ if ($priceList) {
 | `2026_02_09_180000_add_branch_id_to_price_lists_table.php` | Branch-Feld (deprecated) |
 | `2026_02_09_190000_create_price_list_branches_pivot_table.php` | Multi-Branch-Support |
 | `2026_08_08_094417_add_validity_window_to_price_discounts_table.php` | Gültigkeitsfenster (`valid_from`/`valid_until`) für Rabatte |
+| `2026_09_07_180000_add_installment_mode_to_price_lists_table.php` | Zahlungsmodus der Ratenzahlung (`installment_mode`: `first_on_site` / `all_sepa`) |
+| `2026_09_07_180100_add_installment_mode_to_contracts_table.php` | Kopie des Modus am Vertrag (`contracts.installment_mode`) |
 
 ---
 

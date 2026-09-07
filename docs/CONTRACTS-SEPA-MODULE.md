@@ -2,6 +2,61 @@
 
 > Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
 
+## Update 07.09.2026 — Zahlungsmodus je Preisliste: „1. Rate vor Ort" oder „alle Raten per SEPA"
+
+Bis dahin galt ausnahmslos: Die 1. Rate wird bei der 1. Sitzung vor Ort gezahlt,
+die weiteren Raten laufen per SEPA. Jetzt legt **die Preisliste** fest, welcher
+Modus für Verträge nach ihr gilt (Entscheidung Jan, 07.09.2026):
+
+| Modus | `installment_mode` | Bedeutung |
+|---|---|---|
+| **1. Rate vor Ort** (Standard) | `first_on_site` | Rate 1 wird bei der 1. Sitzung vor Ort gezahlt, Raten 2–N per SEPA ab dem ersten Abbuchungsdatum — bisheriges Verhalten |
+| **Alle Raten per SEPA** | `all_sepa` | Keine Vor-Ort-Rate: Alle N Raten werden ab dem ersten Abbuchungsdatum per Lastschrift eingezogen |
+
+**Für Anwender**
+
+- Einstellen unter *Verträge → Preise → Bearbeiten → Grundeinstellungen → Ratenzahlung*.
+  Das Feld ist **preisrelevant** und auf gesperrten Fassungen schreibgeschützt —
+  Änderung nur über „Duplizieren" mit neuem Gültig-ab. Karten mit „alle Raten per
+  SEPA" tragen ein Badge.
+- Der Modus wird **bei der Vertragsanlage auf den Vertrag kopiert**
+  (`contracts.installment_mode`). Spätere Preislisten-Änderungen deuten bestehende
+  Verträge nicht um; Bestandsverträge tragen den Standard.
+- Bei „alle Raten per SEPA": Der Zahlungsplan hat keinen Platzhalter „Zahlung vor Ort",
+  Rate 1 ist die erste Lastschrift zum ersten Abbuchungsdatum (GoCardless-Mindestvorlauf
+  gilt). Der **Preislisten-Rabatt mindert Rate 1** (Rest auf Rate 2), auf jeder SEPA-Rate
+  bleibt das GoCardless-Minimum von 1 € stehen. Freunde-werben und Gutscheine laufen in
+  derselben Kaskade über die Lastschriften. Phorest bucht **keine Kundenkonto-Schuld**,
+  die Kassen-Vorschau der Institutsseite zeigt 0 € zu kassieren. Vertrags-PDF (Anlage
+  Zahlungsplan), SEPA-Vorabankündigung („N SEPA" statt „N−1 SEPA + 1 vor Ort"),
+  Formular-Zusammenfassung („Zahlung: Alle Raten per SEPA-Lastschrift") und die
+  Vertragsdetailseite (keine Vor-Ort-Zeile, kein „Zahlung bestätigen") folgen dem Modus.
+
+**Für Entwickler**
+
+- `PriceList::INSTALLMENT_MODE_FIRST_ON_SITE` / `::INSTALLMENT_MODE_ALL_SEPA`,
+  `PriceList::firstInstallmentOnSite()`, `installmentModeLabel()`. Validierung, Sperre
+  (`hasPriceRelevantChanges`), Duplizieren und JSON in `ContractPriceController`.
+- **Alle „SEPA-Raten"-Filter hängen an drei Vertrags-Helfern:**
+  `Contract::firstInstallmentOnSite()`, `firstSepaInstallmentNumber()` (2 hinter einer
+  Vor-Ort-Rate, sonst 1) und `sepaInstallmentCount()` (Gesamtraten abzüglich Vor-Ort-Rate).
+  `installment_number > 1` ist **überall** durch `>= $contract->firstSepaInstallmentNumber()`
+  ersetzt (Plan-Service, Mandats-Service, Reconciler, Rebuild, Pause, Referral,
+  ContractController, Vorabankündigung, Blade/JS des Vertragsdetails über
+  `window.contractDetailConfig.firstSepaInstallment`). Wer neue Raten-Logik schreibt,
+  nutzt diese Helfer — nie wieder eine feste 1/2.
+- `Contract::firstInstallmentCents()` liefert 0 ohne Vor-Ort-Rate; `firstSessionDiscountCents()`
+  deckelt den Rabatt auf Rate 1 bei SEPA auf Monatsrate − 1 € (`secondInstallmentReductionCents()`
+  nimmt den Rest). `GoCardlessPaymentPlanService::createPaymentPlan()` überspringt
+  `createFirstPaymentRecord()`, `buildSigningCascade()` setzt den 1-€-Boden auch auf Rate 1
+  und nimmt eine reduzierte Rate 1 in die `rates`-Map auf.
+- `PhorestContractPurchaseService::calculateOnSiteDebtCents()` → 0 bei `all_sepa`;
+  `SharedInstitutePageController::cashPreview()` liefert `first_installment_on_site`.
+- Migrationen: `2026_09_07_180000_add_installment_mode_to_price_lists_table`,
+  `2026_09_07_180100_add_installment_mode_to_contracts_table` (Default `first_on_site`).
+- Tests: `tests/Feature/PriceListInstallmentModeTest.php`,
+  `tests/Feature/AllSepaInstallmentPlanTest.php`.
+
 ## Update 21.08.2026 — „Gezahlte Rate nachtragen" (fehlende Zeile dokumentieren)
 
 Asana-Bug „Zahlung pausierte Lastschrift" (Fall Roppel BS000955): Eine bei der
@@ -1914,7 +1969,8 @@ CREATE TABLE contracts (
     -- Zahlplan-Daten (auf Contract, nicht auf Mandat)
     first_payment_date DATE,                 -- Erste SEPA-Abbuchung
     monthly_amount_cents INT UNSIGNED,       -- z.B. 19995 = 199,95 €
-    installment_count SMALLINT,              -- z.B. 19 (1 vor Ort + 18 SEPA)
+    installment_count SMALLINT,              -- z.B. 19 (1 vor Ort + 18 SEPA; bei all_sepa 19 SEPA)
+    installment_mode VARCHAR(20),            -- first_on_site (Standard) | all_sepa — Kopie aus der Preisliste
     
     -- GoCardless Subscription (Dauerauftrag, pro Vertrag)
     gocardless_subscription_id VARCHAR(255),
@@ -1960,7 +2016,7 @@ CREATE TABLE contract_payments (
     -- Legacy (bleibt für alte Daten)
     mandate_id BIGINT FOREIGN KEY,           -- → contract_mandates.id (deprecated)
     
-    installment_number INT,                  -- 1 = vor Ort, 2+ = SEPA
+    installment_number INT,                  -- 1 = vor Ort, 2+ = SEPA (bei all_sepa: 1+ = SEPA, siehe Contract::firstSepaInstallmentNumber())
     due_date DATE,
     amount_cents INT,
     
