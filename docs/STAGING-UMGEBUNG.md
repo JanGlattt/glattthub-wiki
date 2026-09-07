@@ -275,6 +275,21 @@ Weitere Eigenheiten des Jobs:
 - **`timeout: 3600s`** — der Cloud-Build-Default von 10 Minuten reicht für Dump + Import nicht.
 - Die kopierte `migrations`-Tabelle bringt den Prod-Stand mit — nach dem Abgleich vom
   08.07.2026 ist das der saubere Stand (0 pending).
+- **Achtung bei Migrationen, die nur `develop` hat (07.09.2026):** Die Kopie ersetzt
+  Schema **und** `migrations`-Tabelle durch den Prod-Stand — Spalten aus noch nicht auf
+  `main` gemergten Migrationen sind danach auf Staging weg, die Migrationen gelten als
+  nicht gefahren. Sie laufen erst beim nächsten Kaltstart des Staging-Containers
+  (`php artisan migrate --force --isolated` im Entrypoint). Bis dahin liefert Staging
+  500er für alles, was die neuen Spalten liest. Wer nicht warten will, fährt die
+  Migrationen sofort lokal gegen Staging über den Cloud SQL Auth Proxy (Repo auf dem
+  Staging-Commit, `DB_SOCKET=` leer, `DB_DATABASE=glattthub_staging`,
+  `CACHE_STORE=array`, erst `--pretend`).
+- **Anstoßen ohne funktionierende CLI-Anmeldung:** `gcloud` akzeptiert das
+  ADC-Token per Umgebungsvariable —
+  `CLOUDSDK_AUTH_ACCESS_TOKEN=$(gcloud auth application-default print-access-token) gcloud builds submit …`.
+  Der Lauf dauert rund 20 Minuten (Dump ≈ 10 Min., Import ≈ 8 Min.).
+- **Letzte Läufe:** 07.08.2026 (erster erfolgreicher), 07.09.2026 (vor den Klick-Tests
+  zum Preislisten-Zahlungsmodus — Staging war davor einen Monat alt).
 
 ### GoCardless Sandbox
 
