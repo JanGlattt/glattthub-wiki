@@ -10,6 +10,13 @@ Der global gewählte Standort (Sidebar → Instituts-Kachel) filtert fast alle
 Ansichten des Hubs: Berichte, Termine, Mitteilungen, Hintergrundbild und
 Logo-Icon. „Alle Standorte" zeigt die Daten aller Institute zusammen.
 
+**Ausgeblendete Institute (seit 09/2026):** Im Institut-Modul kann ein Standort
+„aus Übersichten ausgeblendet" werden (z.B. Testbetrieb vor der Eröffnung). Er
+zählt dann nicht mehr in „Alle Standorte", bleibt aber in der Standortliste
+wählbar und trägt dort das Badge „Ausgeblendet". Details und Regelwerk
+(`App\Support\BranchVisibility`): `INSTITUTE-MODULE.md`, Abschnitt „Institute
+aus Übersichten ausblenden".
+
 Die Auswahl wird **im Browser gespeichert** (localStorage) und bleibt damit
 auch nach einem Ab- und Wiederanmelden erhalten — sie gehört aber seit
 08/2026 **dem angemeldeten User**: Meldet sich am selben Gerät jemand anderes

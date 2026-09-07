@@ -253,6 +253,65 @@ POST /phorest/institute/{branchId}/color
 **Cache:**
 Die Sort-Order-Map wird 5 Minuten gecacht (`institute_sort_order_map`). Der Cache wird automatisch geleert, wenn eine Farbe oder Reihenfolge gespeichert wird (`InstituteColor::clearColorCache()`).
 
+### Institute aus Übersichten ausblenden (seit 09/2026)
+
+#### Für Endanwender
+
+Auf der Detailseite eines Instituts (Info-Tab, Karte „Standort-Farbe, Reihenfolge &
+Sichtbarkeit") gibt es den Schalter **„Aus Übersichten ausblenden"**. Ist er gesetzt,
+zählen Termine und Zahlen dieses Instituts **nicht mehr in „Alle Standorte"** — in
+Berichten, der Terminübersicht, auf der Startseite und im CSV-Export. Das Institut
+bleibt in der Standortliste der Seitenleiste (und im Standort-Sheet auf dem Handy)
+wählbar und ist dort mit dem Badge **„Ausgeblendet"** gekennzeichnet; wählt man es
+ausdrücklich, erscheinen seine Daten wie gewohnt.
+
+Typischer Anwendungsfall: ein noch nicht eröffnetes Institut (z.B. Magdeburg vor der
+Eröffnung), in dem Testbuchungen laufen, die sonst Beratungszahlen und No-Show-Quoten
+aller Gesamtansichten verfälschen. Das Speichern des Schalters braucht das Recht
+`manage_branch_images` (wie Farbe und Reihenfolge) und leert den Application-Cache,
+damit die Gesamtansichten sofort den neuen Stand zeigen.
+
+**Bewusst nicht betroffen:** Report-Mails, Bonus-Board/Gamification, Mitteilungen und
+der glatttbert-Assistent (Entscheidung 07.09.2026) sowie Verwaltungslisten
+(Verträge, Widerrufe, Forderungen).
+
+#### Für Entwickler
+
+Regelwerk in **`app/Support/BranchVisibility`** — die einzige Stelle, an der
+„gewählter Standort" bzw. „Alle Standorte" in einen Filter übersetzt wird:
+
+- Standort gewählt (`branch_id` gesetzt) → exakt dieser, auch wenn ausgeblendet.
+- Kein Standort → alle außer `institute_colors.hidden_from_overview = 1`;
+  `NULL`-Werte in der Spalte bleiben erhalten (`col IS NULL OR col NOT IN (…)`).
+
+| Zweck | Aufruf |
+|---|---|
+| Eloquent-/Query-Builder (Makro, auch Relations) | `->visibleBranch($branchId, 'c.branch_id')` |
+| Raw-SQL | `[$where, $bindings] = BranchVisibility::sql($branchId, 'sha.branch_id')` |
+| Phorest-Schleifen | `BranchVisibility::visibleBranches($branchId)`, `filterBranches($arr, $branchId)`, `filterIds($ids, $branchId)` |
+| Instituts-Vergleiche (immer alle nebeneinander) | `BranchVisibility::filterIdsForComparison($ids, $branchId)` — alle sichtbaren plus das gewählte |
+| Legenden/Branch-Listen | `BranchVisibility::visibleBranchNames($branchId)` |
+| Reine ID→Name-Lookups gefilterter Zeilen | `BranchVisibility::allBranchNames()` / `allBranches()` |
+| In-Memory | `BranchVisibility::isHidden($id)`, `hiddenIds()` |
+
+`tests/Unit/BranchVisibilityConventionTest.php` verbietet in allen Statistik-Services,
+Report-Controllern und Export-Quellen nackte `where('…branch_id', …)`, Raw-`branch_id = ?`,
+`when($branchId, …)`, `forBranch()` sowie `getCachedBranches()`/`getCachedBranchNames()`
+(Zeilen mit `BranchVisibility` sind erlaubt). Eine neue Statistik nimmt den Helfer von
+Anfang an; die Antwort auf einen roten Lauf ist nie, die Datei aus der Liste zu nehmen.
+
+Weitere Bausteine:
+
+| Bereich | Datei |
+|---|---|
+| Migration | `database/migrations/2026_09_07_210000_add_hidden_from_overview_to_institute_colors_table.php` |
+| Model | `InstituteColor::getHiddenBranchIds()` (5-Min-Cache `institute_hidden_branch_ids`, geleert über `clearColorCache()`) |
+| Makro | `AppServiceProvider::boot()` registriert `visibleBranch` auf `Illuminate\Database\Query\Builder` |
+| Speichern/Laden | `InstituteController::saveInstituteColor()` / `getInstituteColor()` (`hidden_from_overview`, `Cache::flush()` bei Änderung) |
+| Standortliste | `PhorestController::branches()` liefert `hidden_from_overview` je Institut; Badge in `sidebar.blade.php`, `bottom-nav.blade.php`, `hub/institutes/index.blade.php` |
+| Phorest „alle Institute" | `PhorestApiService::getAllBranchesAppointments()` (Terminübersicht + Startseite), `ConsultationStatsService` |
+| Tests | `tests/Unit/BranchVisibilityTest.php`, `tests/Feature/HiddenBranchOverviewTest.php`, `tests/Feature/InstituteColorApiTest.php` |
+
 ## Terminologie
 - **Phorest:** "Branch"
 - **glatttHub UI:** "Institut"
