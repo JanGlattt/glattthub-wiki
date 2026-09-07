@@ -1343,7 +1343,7 @@ Dieses Tages-Update ergänzt den Vertragsbereich um Stabilität und Vollständig
   - [Datenmodell](#datenmodell)
   - [GoCardless Integration](#gocardless-integration)
   - [Services & Jobs](#services--jobs)
-  - [Phorest-Kauf bei Vertragserstellung](#phorest-kauf-purchase-bei-vertragserstellung)
+  - [Phorest-Kauf nach Vertragsabschluss](#phorest-kauf-purchase-nach-vertragsabschluss)
   - [Webhooks](#webhooks)
   - [Cloud Deployment](#cloud-deployment)
   - [API-Referenz](#api-referenz)
@@ -1757,64 +1757,82 @@ Kunde → Vertragsformular → FormSubmission
        → createScheduleForContract() → Neuer Schedule
 ```
 
-### Phorest-Kauf (Purchase) bei Vertragserstellung
+### Phorest-Kauf (Purchase) nach Vertragsabschluss
 
-Nach erfolgreicher Vertragserstellung wird automatisch ein **Phorest-Kauf** erzeugt, der die gewählten Abos dem Kunden zuordnet.
+Der **Phorest-Kauf** ordnet die gewählten Abos dem Kunden zu und bucht die
+Vor-Ort-Schuld aufs Kundenkonto. Ohne ihn hat der Kunde in Phorest keine
+Paket-Services — die Kasse sieht nichts, „Direkt behandeln" findet nichts.
 
 **Service:** `PhorestContractPurchaseService::createFromContract()`
 
+**Zeitpunkt (Vorgabe Jan, 07.09.2026):**
+
+| Weg | Zahlungsart | Kauf läuft … |
+|-----|-------------|--------------|
+| Hub-Flow (Formulare im Termin) | Direktzahler | mit der Unterschrift unter dem **Behandlungsvertrag** (`createFromSubmission`) |
+| Hub-Flow | Ratenzahler | erst mit der **SEPA-Unterschrift** — `purchaseContractsOfMandate()` hängt am SEPA-Formular (`processSepaFormSubmission`), am SEPA-Tab im Büro und am GoCardless-Webhook (`activateDraftContractsOfMandate`), immer `DB::afterCommit` |
+| Institutsseite Tageserfassung | beide | unverändert direkt bei der Erfassung (`createFromInstituteCapture`); dort werden Abos in der Praxis von Hand aufgebucht |
+
+`purchaseContractsOfMandate()` bucht nur Hub-Ratenverträge, deren Kauf noch
+aussteht (`phorestPurchasePending()`); Institutsseiten-Verträge und Bestand
+mit Status `unknown` fasst sie nie an.
+
 ```
-Contract erstellt (DB-Transaktion abgeschlossen)
+Vertrag fix (Direkt: Behandlungsvertrag · SEPA: Mandat vollständig)
        │
        ▼
-PhorestContractPurchaseService
-::createFromContract()
+PhorestContractPurchaseService::createFromContract()
        │
-       ├── Körperzonen mit phorest_course_id laden
-       ├── Kaufbetrag berechnen:
-       │     • Gesamtzahlung → total_value_cents
-       │     • Ratenzahlung  → monthly_amount_cents (1. Rate)
-       ├── Betrag gleichmäßig auf Zonen verteilen
-       ├── Staff-ID vom Verkäufer auflösen (resolveStaffId)
-       │     1. User.phorest_staff_ids (Array) prüfen:
-       │        a) Assoziativ {branchId: staffId} → direkt matchen
-       │        b) Plain Array [staffId1, staffId2, ...] →
-       │           DB-Lookup in phorest_staff-Tabelle (staff_id + branch_id)
-       │     2. Fallback: User.phorest_staff_id (einzelne ID)
-       ├── Phorest createPurchase API aufrufen
-       │     • number: Vertragsnummer
-       │     • clientId: Phorest Client ID
-       │     • items[]: je Körperzone ein Course-Item
-       │     • payments[]: glatttHub Custom Payment Type
-       └── Phorest createCreditAccountTransaction API aufrufen
-             • Schuld auf Kundenkonto buchen (outstandingBalance)
+       ├── bereits gebucht (phorest_purchase_status = success)? → sofort zurück, nie doppelt
+       ├── Staff-ID vom Verkäufer auflösen (User::phorestStaffIdForBranch)
+       │     1. Assoziativ {branchId: staffId} in phorest_staff_ids
+       │     2. LIVE: users.phorest_user_id → phorest_staff (branch_id)
+       │     3. Plain-Liste phorest_staff_ids → phorest_staff (branch_id)
+       │     4. Fallback: User.phorest_staff_id
+       │     → nichts gefunden: Status „skipped" mit Grund am Vertrag
+       ├── Körperzonen mit phorest_course_id laden (GK: ein GK-Abo)
+       ├── Kaufbetrag: Gesamtzahlung → total_value_cents · Rate → 1. Rate
+       ├── Phorest createPurchase (number, clientId, items[], Zahlart „Hub")
+       │     → Erfolg: Status „success", Transaktionsnummer, Zeitpunkt am Vertrag
+       │     → Fehler: Status „failed" mit API-Antwort am Vertrag
+       └── Phorest createCreditAccountTransaction (Vor-Ort-Schuld)
 ```
 
-**Aufruf-Kette in `ContractCreationService::createFromSubmission()`:**
+**Warum die Live-Auflösung (07.09.2026):** `users.phorest_staff_ids` ist nur
+eine Momentaufnahme vom letzten Speichern im Admin-Backend. Kommt ein Institut
+dazu (Magdeburg 08/2026), fehlt dessen Staff-ID dort — der Kauf wurde still
+übersprungen, der Kunde hatte keine Abos, das Modal riet zum Warten. Sechs
+Zuordnungen in Prod waren so veraltet.
 
-```php
-// 1. Contract wird in DB-Transaktion erstellt
-$contract = DB::transaction(function () { ... return $contract; });
+**Ergebnis am Vertrag** (`contracts`, seit 09/2026):
 
-// 2. DANACH: Phorest-Kauf außerhalb der Transaktion
-if ($contract) {
-    $this->purchaseService->createFromContract($contract);
-}
-```
+| Spalte | Inhalt |
+|--------|--------|
+| `phorest_purchase_status` | `success` / `failed` / `skipped` / `unknown` (Bestand vor der Migration) |
+| `phorest_purchase_error` | Grund bei `failed`/`skipped`, z.B. „Kein Phorest-Mitarbeiter für Jan Test im Institut glattt Magdeburg hinterlegt." |
+| `phorest_purchase_transaction_number` | Phorest-Transaktionsnummer |
+| `phorest_purchased_at` | Zeitpunkt des Kaufs |
 
-> **Wichtig:** Der Purchase-Call muss **nach** dem `DB::transaction()`-Block stehen, nicht innerhalb.
-> Das Ergebnis der Transaktion wird in `$contract` gespeichert (nicht direkt `return`), damit der nachfolgende Code erreichbar ist.
+**Sichtbar im Hub:** Das Modal „Direkt behandeln" (siehe `APPOINTMENT-VIEW.md`)
+zeigt bei fehlenden Paket-Services den Grund aus diesen Spalten und bietet
+**„Kauf jetzt nachholen"** (`DirectTreatmentModal::retryPurchase()`); steht das
+SEPA-Mandat noch aus, sagt es das statt „Neu laden".
 
 **Dateien:**
 
 | Datei | Zweck |
 |-------|-------|
-| `app/Services/PhorestContractPurchaseService.php` | Erstellt Phorest-Kauf + Kundenkonto-Buchung aus Vertrag |
-| `app/Services/ContractCreationService.php` | Ruft Purchase-Service nach Vertragsanlage auf |
+| `app/Services/PhorestContractPurchaseService.php` | Kauf + Kundenkonto-Buchung, Idempotenz, Ergebnis am Vertrag |
+| `app/Services/ContractCreationService.php` | Zeitpunkt: `purchaseInPhorest()`, `purchaseContractsOfMandate()` |
+| `app/Models/User.php` | `phorestStaffIdForBranch()` — Live-Auflösung je Institut |
+| `app/Livewire/Hub/Booking/DirectTreatmentModal.php` | Grund anzeigen, Kauf nachholen |
+| `tests/Feature/PhorestPurchaseAfterSepaTest.php` | Auflösung, Zeitpunkt, Idempotenz, afterCommit |
 
-**Wichtig:** Der Phorest-Kauf wird **außerhalb** der DB-Transaktion ausgeführt. Ein API-Fehler rollt den Vertrag nicht zurück — der Fehler wird geloggt und kann manuell nachgeholt werden.
+**Wichtig:** Der Phorest-Kauf läuft **außerhalb** der DB-Transaktion. Ein
+API-Fehler rollt den Vertrag nicht zurück — er steht als `failed` am Vertrag.
 
-**Manuell Phorest-Kauf nachholen:**
+**Manuell Phorest-Kauf nachholen** (idempotent, ein gebuchter Vertrag wird
+übersprungen):
 
 ```bash
 php artisan tinker --execute="
