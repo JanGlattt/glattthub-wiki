@@ -398,40 +398,69 @@ Die DomPDF-Konfiguration befindet sich in `config/dompdf.php`:
 
 ## Bedingte Anzeige (Conditional Fields)
 
-Felder können basierend auf dem Wert anderer Felder ein-/ausgeblendet werden.
+Felder können basierend auf den Werten **anderer Felder** ein-/ausgeblendet
+werden — seit 09/2026 mit **mehreren Bedingungen je Feld** und wählbarer
+Verknüpfung.
 
 ### Konfiguration im Editor
 
-1. Feld auswählen
-2. Bereich "Bedingte Anzeige" öffnen
-3. Abhängiges Feld auswählen — mögliche Quellen: Radio, Checkboxen, Dropdown und **Ja/Nein-Fragen** (`yes_no`, Werte „Ja"/„Nein")
-4. Operator wählen (ist gleich, ist nicht gleich, enthält, ist ausgefüllt)
-5. Wert auswählen
+1. Feld auswählen, Schalter „Bedingte Anzeige" einschalten
+2. Je Bedingung: **Feld** (Quelle), **Vergleich** (ist gleich, ist nicht gleich,
+   enthält, ist ausgefüllt) und **Wert** wählen — der Wert wird aus den Optionen
+   des Quellfelds angeboten
+3. Weitere Bedingungen mit „Bedingung hinzufügen", entfernen über den Papierkorb
+4. Ab zwei Bedingungen erscheint die Verknüpfung: **Alle Bedingungen** (UND)
+   oder **Mindestens eine** (ODER)
+5. Die Vorschau-Zeile fasst die Regel in Worten zusammen
 
-Typisches Anamnese-Muster: „Wenn Frage 3 = Ja, zeige Frage 4" — die Folgefrage
-bekommt als Bedingung die Ja/Nein-Frage mit Wert „Ja". (Für ein einfaches
-Freitextfeld direkt unter der Frage reicht die eingebaute „Zusatzangabe bei Ja"
-des `yes_no`-Felds, dafür braucht es kein eigenes bedingtes Feld.)
+Mögliche Quellen: Radio, Checkboxen, Dropdown, **Ja/Nein-Fragen** (Werte
+„Ja"/„Nein") und das **Geschlechtsfeld** (Weiblich/Männlich/Divers).
+
+Typische Anamnese-Muster:
+
+- „Wenn Frage 3 = Ja, zeige Frage 4" — eine Bedingung auf die Ja/Nein-Frage.
+  (Für ein Freitextfeld direkt unter der Frage reicht die eingebaute
+  „Zusatzangabe bei Ja" des `yes_no`-Felds.)
+- „Wenn **eine der** Fragen 1–5 mit Ja beantwortet wurde, zeige den Hinweis" —
+  fünf Bedingungen, Verknüpfung **Mindestens eine**.
+- „Frage nur für Kundinnen" — Bedingung auf das Geschlechtsfeld (Weiblich), das
+  der Kunde weiter oben im Fragebogen beantwortet; kombinierbar mit weiteren
+  Bedingungen über **Alle Bedingungen**.
 
 ### Technische Umsetzung
 
-- **Frontend**: `shouldShowField(field)` prüft die `show_condition` in den Feld-Settings
-- **Backend**: `isFieldVisible()` in `FormController.php` wiederholt die gleiche Logik
-- **Validierung**: Versteckte Pflichtfelder werden nicht validiert
-- **Speicherung**: Versteckte Felder werden nicht gespeichert
-- **Ja/Nein-Fragen als Quelle**: Der Wert kommt als `{answer, details}` (Objekt, im
-  FormData-Pfad als JSON-String) — alle vier Prüfstellen (`form-fill.js`,
-  `shared-form-fill.js`, beide Controller, PDF) normalisieren auf `answer`
-  (`yes`/`no`), bevor verglichen wird
+Die Auswertung existiert **genau zweimal** und muss identisch entscheiden:
+
+- **PHP**: `App\Services\Forms\FormFieldVisibility::isVisible($field, $values)` —
+  genutzt von `FormController` und `SharedFormController` (Validierung
+  versteckter Pflichtfelder überspringen, versteckte Felder nicht speichern)
+  sowie vom PDF (`hub/forms/pdf.blade.php`, inkl. `sourceFields()` für die
+  Preis-Quellfelder). Tests: `tests/Unit/FormFieldVisibilityTest.php`.
+- **JS**: `public/js/form-visibility.js` (`window.GlatttFormVisibility.isVisible`) —
+  `shouldShowField()` in `form-fill.js` und `shared-form-fill.js` delegieren nur
+  noch. Die Datei wird auf Ausfüll-Seite, Termin-Seite und geteiltem Formular
+  **vor** dem jeweiligen Fill-Skript eingebunden.
+- **Quellwerte**: Ja/Nein-Fragen liefern `{answer, details}` (im FormData-Pfad
+  als JSON-String) und werden auf `answer` reduziert; Checkboxen liefern Arrays
+  („ist gleich" = enthalten). Zahl und String gelten als gleich.
+- **Editor**: Regel-Liste mit `<x-dropdown-glattt>`; jede Regel trägt einen
+  Client-Schlüssel `_key` (stabiler `x-for`-Key), der beim Speichern entfernt
+  wird (`settingsForSave()`).
+- **Migration** `2026_09_07_120000_convert_form_field_show_condition_to_rules`
+  hat das alte Ein-Regel-Format `show_condition` einmalig in `show_conditions`
+  überführt; das Altformat wird **nicht** mehr gelesen. Test:
+  `tests/Feature/ShowConditionsMigrationTest.php`.
 
 ### Beispiel Settings
 ```json
 {
-  "show_condition": {
+  "show_conditions": {
     "enabled": true,
-    "field": "zahlungsart",
-    "operator": "equals",
-    "value": "sepa_lastschrift"
+    "match": "any",
+    "rules": [
+      { "field": "frage_1", "operator": "equals", "value": "yes" },
+      { "field": "frage_2", "operator": "equals", "value": "yes" }
+    ]
   }
 }
 ```
