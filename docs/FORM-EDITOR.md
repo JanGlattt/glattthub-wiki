@@ -379,6 +379,23 @@ Alle Styles nutzen das GLATTT Design System (`theme_glattt.css`):
 
 Die PDF-Generierung verwendet DomPDF mit folgender Konfiguration:
 
+### Download & Marker (Stand 09/2026)
+
+- **Download läuft immer durch die App**: `/hub/forms/submission/{id}/pdf` bzw.
+  `/shared/form/{token}/pdf` streamen die Datei auch aus dem privaten GCS-Bucket
+  (Rechteprüfung, sprechender Dateiname). Kein Redirect mehr auf eine signierte
+  `storage.googleapis.com`-URL — die JSON-Antworten liefern nur noch die Hub-URL.
+- **Kästchen-Marker** (Bestätigung, Zustimmung, Ja/Nein) nutzen `DejaVu Sans` mit
+  `font-weight: normal` für das ✓-Glyph — Lato/Dosis haben es nicht, dompdf zeigte
+  sonst ein leeres Kästchen oder ein Fragezeichen. Ja/Nein-Antworten stehen als Zeile
+  mit runden Markern direkt unter der Frage; die Unterschrift ist 360 × 120 px groß.
+- Änderungen an der Darstellung brauchen einen Bump von
+  `FormController::PDF_RENDERER_VERSION`, damit gespeicherte PDFs neu gerendert werden.
+- Der Erfolgs-Dialog nach dem Absenden belegt die Versand-E-Mail mit dem im Formular
+  ausgefüllten E-Mail-Feld, sonst mit der Phorest-Kundenadresse vor
+  (`getCustomerEmailForSubmission()` in `form-fill.js`); eine in den
+  Formular-Einstellungen hinterlegte Adresse hat Vorrang.
+
 ### Schriftart
 Die Dosis-Schriftart wird aus `storage/fonts/` geladen. Falls die Schriftart nicht funktioniert:
 ```bash
