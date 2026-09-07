@@ -222,23 +222,26 @@ Anleitung „Probleme & Fehlermeldungen" — liegt in den Quelldateien `public/j
   Migration vergibt die drei Rechte an alle Rollen mit `checkin_appointments`.
 - `9e04429d` „Formular teilen" (`POST /api/forms/{form}/share`) hing an `edit_forms` — jetzt in der
   `fill_forms`-Gruppe.
-- `7f9f449e` **Direkt behandeln + Termin beenden:** Der im Anschluss gebuchte Behandlungstermin hängt in
+- `7f9f449e` + Folge-Commit **Direkt behandeln + Termin beenden:** Der im Anschluss gebuchte Behandlungstermin hängt in
   Phorest lückenlos an der Beratung und landet in derselben Termingruppe (`deduplicateAppointments`). Beim
   Beenden ohne Kassenbetrag (z. B. `all_sepa`) wurden **alle** Zeilen per 0-€-Kauf auf PAID gesetzt — auch die
-  Behandlung, die sich danach nie mehr starten ließ. Fix: Zeilen einer **anderen Buchung**, die nach dem Ende
-  der angefragten Zeile beginnen und noch BOOKED/CONFIRMED sind, bleiben offen
-  (`PhorestController::isLaterSeparateBooking()`, Test `test_ending_leaves_directly_booked_treatment_open`).
-  Auf Staging noch **nicht nachgewiesen** (braucht neuen Testlauf).
+  Behandlung, die sich danach nie mehr starten ließ. Fix: Zeilen, die **noch nicht eingecheckt** sind
+  (BOOKED/CONFIRMED) und **nach dem Ende** der angefragten Zeile beginnen, bleiben offen
+  (`PhorestController::isLaterUnstartedRow()`). Achtung: Phorest liefert für getrennte Buchungen desselben
+  Kunden am selben Tag **dieselbe `bookingId`** — sie taugt nicht zur Unterscheidung (erster Fix-Versuch verworfen).
+  Nachweis auf Staging im zweiten Testlauf 08.09.
+- Formular-Kette **Kundeninformation → Vertrag → SEPA gilt jetzt immer** (Entscheidung Jan 07.09.: Formulare
+  sind keine Pflicht, weil nicht jede Kundin kauft — die Reihenfolge aber schon). Vertrag ist gesperrt, bis alle
+  passenden Nicht-Vertrag/Nicht-SEPA-Formulare erfüllt sind; Kacheln werden in Ketten-Reihenfolge sortiert
+  (`appointment-unified.js`: `missingPreContractForms`, `formChainRank`, `displayedForms`).
 
 **Fachliche Befunde (Entscheidung Jan):**
 
 - Kein Formular ist als **Pflichtformular vor Behandlung** markiert (`forms.is_required_for_treatment = 0`
-  für alle drei). Folge: keine „Pflicht"-Badges, keine Formular-Kette (Kundeninformation → Vertrag), der
-  Einstellungszettel ist nie gesperrt. Reihenfolge der Kacheln: Kundeninformation, SEPA Mandat, Behandlungsvertrag.
+  für alle drei) — bleibt so (Jan 07.09.), Kette siehe oben; der Einstellungszettel ist dadurch nie gesperrt.
 - Die Zusammenfassung mit der Zeile **„Zahlung: Alle Raten per SEPA-Lastschrift"** wird im Behandlungsvertrag
-  **nicht** angezeigt — das Preisfeld läuft im Modus `rates_only`, in dem die Zusammenfassung ausgeblendet ist
-  (`_field-renderer.blade.php:717`). Der Zahlungsmodus ist für die Mitarbeiterin nur am Namen der Preisliste
-  und in den Gutschein-/Werber-Hinweisen erkennbar.
+  **nicht** angezeigt (Preisfeld-Modus `rates_only` blendet die Zusammenfassung aus). Entscheidung Jan 07.09.:
+  **bleibt so**, für die Mitarbeiterin vor Ort nicht relevant.
 - Testkunde hat in Phorest keine Adresse → Pflichtfelder Straße/PLZ/Ort leer; Vertrag-Feld „Telefon" nutzt
   `client.phone` (leer), Kundeninformation `client.mobile` (gefüllt).
 - „Startdatum Abbuchung" erlaubt nur den **3. oder 15.** eines Monats („Erlaubte Tage: 3, 15.").
