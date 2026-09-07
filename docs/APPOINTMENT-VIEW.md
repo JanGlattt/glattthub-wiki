@@ -5,16 +5,11 @@
 Vier Ergänzungen aus der Go-Live-Prüfung (Asana „Readiness Verkauf"):
 
 - **Formular-Kette erzwungen:** Die Formular-Kacheln folgen der Reihenfolge
-  Kundeninformation → Behandlungsvertrag → SEPA-Mandat. Der Vertrag ist gesperrt,
-  solange Pflichtformulare (die weder Vertrag noch SEPA sind) unerfüllt sind;
-  das SEPA-Mandat ist gesperrt, bis der Vertrag dieses Termins eingereicht ist.
-  Gesperrte Kacheln sind ausgegraut mit Sperr-Grund; Klick zeigt einen
-  Warn-Toast. Nach einem **Ratenzahlungs**-Vertrag erscheint ein Pflicht-Banner
-  „Nächster Schritt: SEPA-Mandat" (Zahlungsart kommt per `form-submitted`-Event
-  aus dem Preis-Modul, `detectContractPaymentMethod()` in `form-fill.js`).
-  Erkennung: Vertrag = `settings.contract.enabled`, SEPA =
-  `settings.sepa_mandate.enabled` (`formBlockedReason()` in
-  `appointment-unified.js`). Bei Direktzahlung entfällt die SEPA-Pflicht.
+  **Kundeninformation → Behandlungsvertrag → SEPA-Mandat** und werden auch so sortiert. Der Vertrag ist gesperrt,
+  solange ein zum Termin passendes Formular, das weder Vertrag noch SEPA ist, unerfüllt ist („Zuerst ausfüllen: …");
+  das SEPA-Mandat, bis der Vertrag dieses Termins eingereicht ist. **Seit 07.09.2026 gilt die Kette unabhängig
+  vom Pflichtformular-Flag** — Formulare sind bewusst keine Pflicht (nicht jede Kundin kauft), wer kauft, füllt
+  sie aber in dieser Reihenfolge aus. Bei „einmalig pro Kunde" zählt eine frühere Einreichung der Kundin.
 - **Kundenkonto-Schuld: Signal-Banner + Kassen-Schritt (umgebaut 20.08.2026):**
   Die Terminansicht lädt beim Öffnen den offenen Phorest-Kundenkonto-Saldo im
   Termin-Kontext (`GET /phorest/appointment/{branch}/{apt}/outstanding-balance`,
