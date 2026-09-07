@@ -113,8 +113,30 @@ Button **„Verkauf"** öffnet einen Assistenten in sechs Schritten:
    klären. Ohne Bestätigung lehnt auch der Server ab.
 5. **Extras** — Gutschein per Seriennummer prüfen und anrechnen,
    „Freunde werben Freunde"-Werber suchen (Selbstwerbung ist gesperrt).
+   **Abgelaufene Gutscheine** werden nicht still übernommen: Die Seite zeigt
+   „Gutschein … ist am … abgelaufen — trotzdem anrechnen?" und rechnet ihn
+   erst nach dem Klick auf **„Ja, trotzdem anrechnen"** an (in der Liste
+   steht dann „abgelaufen — bestätigt"). Ohne diese Bestätigung lehnt auch
+   das Speichern den Gutschein ab.
 6. **Abschluss** — Zusammenfassung, Pflichtkommentar + Gesprächsführer,
-   speichern.
+   speichern. Ganz oben steht der Block **„Heute an der Kasse zu
+   kassieren"** mit der kompletten Rechnung: Ausgangsbetrag (bei
+   Ratenzahlung die 1. Rate = Monatsrate, bei Direktzahlung der
+   Vertragswert), abgezogen Rabatt, „Freunde werben Freunde" und jeder
+   Gutschein einzeln, darunter fett **„Zu kassieren: … €"**. Reicht ein
+   Gutschein über die 1. Rate hinaus, steht dabei „Restguthaben … € wird auf
+   die nächsten Raten angerechnet".
+
+   **Wichtig für die Kasse:** Der Hub löst die Gutscheine beim Speichern
+   **selbst** in Phorest ein und bucht die Vor-Ort-Schuld bereits reduziert
+   auf das Kundenkonto. An der Kasse ist deshalb **genau der angezeigte
+   Betrag** zu buchen — **keine Gutscheine mehr einsetzen** (sie haben kein
+   Guthaben mehr bzw. sind schon verrechnet) und **keinen Rabatt von Hand
+   abziehen**. Erscheint nach dem Speichern die Warnung „Achtung: Die
+   Gutscheine konnten nicht angerechnet werden — bitte den vollen Betrag von
+   … € kassieren und das Büro informieren", ist die Verrechnung technisch
+   fehlgeschlagen: dann den genannten vollen Betrag kassieren und das Büro
+   informieren (die Gutscheine bleiben in dem Fall unberührt).
 
 Ergebnis: Der Vertrag steht sofort im Hub (Herkunft **„Institut"**), das Büro
 bekommt die übliche Benachrichtigung und legt bei Ratenzahlung Mandat und
@@ -226,7 +248,56 @@ stellen (Hinweis steht auch auf der Seite).
   bei Hub-Verträgen (nur `legacy` ist stumm).
 - **Abschluss-Anweisungen** (Gutscheine/Werber) liegen in der neuen Spalte
   `contracts.signing_instructions` — `Contract::signingInstructions()`
-  bevorzugt sie vor der FormSubmission.
+  bevorzugt sie vor der FormSubmission. Jeder Gutschein-Eintrag trägt
+  `voucher_id`, `serial_number` und `accept_expired`.
+- **Kassenbetrag (seit 07.09.2026, Braunschweig-Bug vom 04.09.):**
+  Schritt 6 holt `POST …/cash-preview` (`cashPreview()`), sobald der
+  Assistent aus Schritt 5 heraus geöffnet wird (`goToSummary()` →
+  `loadCashPreview()`, Race-Guard `sale.cash.seq`). **Die Rechnung lebt nur
+  serverseitig** — der Endpoint baut einen *ungespeicherten* `Contract` mit
+  denselben Feldern wie `createFromInstituteCapture()` (Monatsrate,
+  Laufzeit, `discount_id`, `total_value_cents`, `signing_instructions`,
+  Werber per `setRelation`) und schickt ihn durch exakt die Logik der
+  späteren Anlage:
+    - **SEPA:** `GoCardlessPaymentPlanService::previewSigningCascade()`
+      (= `buildSigningCascade()` mit `throwOnVoucherError`) — Reihenfolge
+      Preislisten-Rabatt (`plannedFirstInstallmentCents()`) → Freunde-werben
+      50 € → Gutscheine in Antrags-Reihenfolge, jeweils zuerst auf Rate 1,
+      Rest auf Rate 2 ff. (GoCardless-Minimum 1 € je Folgerate).
+      `voucher_plan[].allocation` liefert den Anteil je Rate; `rate1_amount`
+      ist der Kassenbetrag und identisch mit dem, was
+      `computeAndStoreSigningCascade()` später in `signing_cascade`
+      hinterlegt und `PhorestContractPurchaseService::calculateOnSiteDebtCents()`
+      als Kundenkonto-Schuld bucht.
+    - **Direktzahlung:** `ContractCreationService::planDirectSigningVouchers()`
+      (aus `redeemSigningVouchersForDirectContract()` herausgelöst) —
+      Vertragswert − Freunde-werben − Gutscheine bis max. Restbetrag.
+  Antwort: `gross_cents`, `discount_cents`, `referral_cents`,
+  `vouchers[] {serial_number, applied_cents, carry_over_cents, unused_cents}`,
+  `carry_over_cents`, `due_cents`. Es wird nichts eingelöst und nichts
+  gespeichert; Preisdaten laufen vorher durch `verifyPricePayload()`.
+- **accept_expired (wie im Hub-Vertragsformular):** `voucherBySerial` liefert
+  `is_expired`/`expiry_date`; die Seite legt abgelaufene Gutscheine erst
+  nach Bestätigung mit `accept_expired: true` in `sale.vouchers`.
+  `storeSale` ruft **vor** der Vertragsanlage
+  `ContractVoucherService::validateForRedemption()` auf und antwortet bei
+  abgelaufen-ohne-Bestätigung, leerem Restguthaben oder Phorest-Fehler mit
+  422 (vorher entstand der Vertrag trotzdem, die Kaskade scheiterte still
+  und die volle Rate wurde als Schuld gebucht).
+- **Fehlgeschlagene Verrechnung ist nicht mehr stumm:**
+  `computeAndStoreSigningCascade()` und
+  `redeemSigningVouchersForDirectContract()` geben jetzt `bool` zurück
+  (false = Extras angefordert, aber nicht verrechnet). `storeSale` prüft
+  zusätzlich den Vertragszustand (`signingExtrasWarning()`: SEPA ohne
+  `signing_cascade`, Direktzahlung ohne `voucherRedemptions`) und hängt die
+  Warnung „Achtung: … bitte den vollen Betrag von X € kassieren und das Büro
+  informieren" an `warnings[]`; der Toast bleibt mit Warnungen 20 s statt 8 s
+  stehen.
+- **Kasse in der Terminansicht:** `PhorestController::computeOutstandingBalance()`
+  nimmt heute erzeugte Verträge mit `source = institute` (ohne
+  FormSubmission) genauso von der Alt-Schuld-Warnung aus wie Verträge mit
+  Submission zum Termin — sonst erschien die Vor-Ort-Rate der Tageserfassung
+  an der Kasse als sofort fällige Alt-Schuld.
 - **Preisprüfung serverseitig:** `verifyPricePayload()` rechnet Rate, Summe
   und Rabatt gegen die Preisliste nach — der Client wird nie geglaubt (422 bei
   Abweichung).
@@ -284,7 +355,14 @@ Registry-Definitionen — nichts ist doppelt gebaut.
   widerrufen), Tagesliste inkl. Absage-Filter, Nicht-Verkauf + Phorest-Notiz,
   Verkauf (source institute, pending-Mandat, **`shouldNotReceive('createPaymentPlan')`**),
   Preis-Manipulation, Dubletten-Bestätigung, Upselling, Statistik-Katalog,
-  Token-Verwaltung mit Recht.
+  Token-Verwaltung mit Recht, **Kassen-Vorschau** (SEPA mit echter Kaskade:
+  100 € − 40 € − 10 € = 50 €, Übertrag auf Folgeraten, Direktzahlung,
+  Preis-Manipulation), **abgelaufene Gutscheine** (422 ohne / OK mit
+  `accept_expired`, Flag landet in `signing_instructions`) und die
+  **Warnung bei nicht verrechneten Gutscheinen**.
+- `tests/Feature/AppointmentOutstandingBalanceTest.php` — heutiger
+  Institutsvertrag ohne Submission ist an der Kasse ausgenommen, gestriger
+  bleibt Alt-Schuld.
 - `tests/Unit/InstituteAccessTokenTest.php` — Token-Lebenszyklus +
   `signingInstructions()`-Spaltenvorrang.
 - `tests/Unit/ClientNumberServiceTest.php` — Nummernkreis (Padding,

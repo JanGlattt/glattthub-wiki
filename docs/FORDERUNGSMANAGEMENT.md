@@ -70,6 +70,13 @@ ab, zeigt der Hinweis oben auf der Fall-Detailseite beide Zahlen.
 - **Sanfter Weg**: 1. Zahlungserinnerung (E-Mail, 7 Tage) → 2. Zahlungserinnerung
   (+ Androhung Terminabsage, 7 Tage) → Monitoring (nächster Einzugstermin
   + 3 + 10 Tage) → letzte Mahnung per Post (10 Tage) → Rate ans Planende anhängen.
+  **Seit 07.09.2026:** Sind am Vertrag noch weitere Rücklastschriften offen,
+  legt das Anhängen einer Rate den Fall **nicht** in die Beobachtung — der
+  Mahnprozess für die übrigen RLS läuft weiter, der neue Einzug wird nur aus
+  den Schreiben herausgerechnet. Wird eine beobachtete angehängte Rate durch
+  eine Neuberechnung oder ein Neuladen des Zahlplans storniert, verlässt der
+  Fall die Beobachtung und liegt sofort wieder vor (Stufe „Neu"), statt bis
+  zum hinfälligen Einzugstermin zu warten.
   Die letzte Mahnung **kündigt das Anhängen an** („Zahlen Sie bis X, sonst
   hängen wir die geplatzte Lastschrift zzgl. der bereits angefallenen Gebühren
   ans Planende an" — Vorlage `letter_final_soft`, keine zusätzliche Gebühr
@@ -115,6 +122,17 @@ ab, zeigt der Hinweis oben auf der Fall-Detailseite beide Zahlen.
   inklusive), damit sichtbar ist, wann der nächste Schritt (VB beantragen bzw.
   Zwangsvollstreckung einleiten) möglich ist. Werden beide Zustelldaten in einem
   Rutsch geändert, zählt das spätere Verfahrensstadium.
+  **RZV nach dem Verfahren (07.09.2026, Fall BI005097):** Schließt ein Kunde,
+  der bereits im gerichtlichen Verfahren steht (z. B. nach PfÜB), eine
+  Ratenzahlungsvereinbarung ab, wird der Fall **wieder außergerichtlich
+  geführt** — er steht wie jeder Ratenzahler in der Spalte „RZV", seine Raten
+  liegen zur Prüfung vor, das Badge „Gerichtliches Verfahren dokumentiert"
+  zeigt die Vorgeschichte. Der Tab „Gerichtliches Verfahren" bleibt sichtbar
+  und pflegbar. **Platzt eine RZV-Rate, kehrt der Fall automatisch in den
+  gerichtlichen Bereich zurück** (die Vollstreckung wird fortgesetzt); eine
+  Plananpassung der geplatzten RZV holt ihn wieder in die Ratenzahlung.
+  Vorher blieb so ein Fall dauerhaft im Gerichts-Tab, tauchte in keiner
+  Arbeitsliste auf und seine Raten wurden nie zur Prüfung vorgelegt.
 
 ### RLS-Gründe
 
@@ -205,6 +223,17 @@ Vorlagen-Varianten hinterlegt werden.
   der Auswahl vorbelegt; ein Mehrbetrag ohne Zuordnung wird als freier
   Eingang am Fall verbucht. Vorher liefen beide Welten auseinander: Die
   Zahlung stand am Fall, die Rate im Zahlungsplan blieb offen.
+  **Zahlungseingang stornieren (07.09.2026, Fall BI006547):** Eine
+  Fehlbuchung (z. B. beim falschen Kunden verbucht) nimmt das Büro in der
+  Übersicht über „Stornieren" in der Tabelle „Zahlungseingänge" zurück —
+  mit Pflicht-Grund. Der Eingang verschwindet aus der Aufstellung, der
+  Nachweis bleibt als Verlaufseintrag („Zahlungseingang … storniert — Grund:
+  …"). War der Fall durch diese Zahlung geschlossen, öffnet er wieder und
+  liegt sofort zur Prüfung vor; eine dadurch abgeschlossene RZV läuft weiter.
+  **Nicht stornierbar** sind Spiegel-Buchungen einer am Vertrag beglichenen
+  Rate („am Vertrag verbucht" — dort im Zahlungen-Tab zurücknehmen, dann
+  verschwindet der Spiegel automatisch) und Online-Zahlungen der Bezahlseite
+  (Erstattung läuft über Mollie).
 - **Kostenposition erfassen**: Gerichtskosten Mahnbescheid/PfÜB, Gerichtsvollzieher,
   Melderegister-Auskunft, Sonstiges — mit Beleg-Upload. Fließt in den offenen Betrag ein.
 - **RZV festhalten**: Ratenzahlungsvereinbarung dokumentieren; der Fall
@@ -330,8 +359,9 @@ Vorlagen-Varianten hinterlegt werden.
 - **Fall-Detailseite mit Tabs** (Muster Vertragsseite, Deep-Links über den
   URL-Hash): **Übersicht** (`#uebersicht` — Forderungsaufstellung, angehängte
   Lastschriften), **Ratenzahlung** (`#ratenzahlung`, nur wenn eine RZV
-  existiert), **Gerichtliches Verfahren** (`#gericht`, nur im gerichtlichen
-  Bereich — dort landet der Fall auch als Start-Tab) und **Verlauf**
+  existiert), **Gerichtliches Verfahren** (`#gericht`, sobald ein Verfahren
+  dokumentiert ist — im gerichtlichen Bereich landet der Fall dort auch als
+  Start-Tab; nach einer RZV bleibt der Tab mit Hinweis erhalten) und **Verlauf**
   (`#verlauf` — Timeline mit Notizen und Schreiben-Snapshots). Die Sidebar
   (Fall-Informationen, Verknüpfungen, Aktionen) bleibt auf allen Tabs sichtbar.
 - **Kundenseite** → Tab „Forderungsmanagement": alle Fälle des Kunden,
@@ -780,6 +810,45 @@ dafür ist `personalized_replies`. Offene Punkte dazu im Asana-Subtask
   Aktionen samt aller Modals — auf jedem Tab sichtbar). Tab-Zustand mit
   Hash-Deep-Links in `caseDetail()` (Alpine, analog `contract-detail.js`);
   gerichtliche Fälle starten auf dem Tab „Gerichtliches Verfahren".
+  **`area` vs. `stage` (07.09.2026):** Board, Gerichts-Tab, Arbeitsliste
+  (`categoryFor()`), Fälligkeit (`isDueForAction()`/`scopeDueForAction()`)
+  und `nextAction()` hängen alle am Feld `area`; `stage` ist nur der
+  Prozess-Schritt. `createRzv()` und `updateRzv()` setzen deshalb neben
+  `stage = rzv` auch `area = extrajudicial` zurück (Verlaufseintrag
+  `returned_from_judicial`); der Gerichts-Tab hängt über `$showJudicialTab`
+  am Datensatz `debt_judicial_proceedings`, nicht mehr an `area`, und
+  `updateJudicial()` bleibt für dokumentierte Verfahren erlaubt.
+  `DebtCaseIntakeService` setzt einen ehemals gerichtlichen Fall bei
+  geplatzter RZV-Rate zurück auf `area = judicial`/`stage = judicial`.
+  Bestandsfälle wurden per Migration
+  `2026_09_07_100000_return_rzv_cases_to_extrajudicial_area` nachgezogen.
+- **Anhängen vs. laufender Mahnprozess (07.09.2026, Fall OS003259):**
+  `DebtCaseIntakeService::handleRateAppended()` überschreibt die Stufe nur
+  noch, wenn am Vertrag keine weitere Rücklastschrift offen ist
+  (`ContractPayment::bounced()`); sonst bleibt der Prozess (z. B. ein
+  frisch getroffener RLS-Entscheid „von vorne") stehen und die neue Rate
+  kommt nur in `appended_payment_ids` (Verlaufseintrag mit `kept_stage`).
+  Ein bereits beobachteter Einzug wandert beim nächsten Anhängen in die
+  Serie. **`reconcileAppendedMonitoring(Contract)`** läuft nach
+  `ContractController::updatePaymentPlan()` und
+  `ContractPaymentRebuildService::rebuild()`: stornierte Serien-Raten
+  werden aus `appended_payment_ids` entfernt; ist die beobachtete Rate
+  selbst weg (Status nicht mehr scheduled/pending/submitted/confirmed),
+  geht der Fall auf `stage = new`, `deadline_at = heute`,
+  `appended_payment_id = null` (Verlaufseintrag `dropped_payment_ids`).
+  Bestand per Migration `2026_09_07_110000_reconcile_appended_monitoring_cases`.
+  Tests: `AppendedMonitoringReconcileTest`, `ContractAppendBouncedTest`.
+- **Zahlungseingang stornieren:** `POST /hub/receivables/{case}/payments/{payment}/void`
+  (`manage_receivables`, Pflicht-`reason`) → `DebtCaseActionService::voidPayment()`:
+  Soft-Delete auf `debt_case_payments`, Verlaufseintrag
+  `DebtCaseEvent::TYPE_PAYMENT_VOIDED` (Payload: Betrag, Datum, Art,
+  Referenz, Grund), Wiedereröffnung eines durch die Zahlung geschlossenen
+  Falls (Ausgang `paid`/`rzv`; bei RZV wird die `completed`-Vereinbarung
+  wieder `active`, `monitoring_until = heute`), bei laufender RZV rückt die
+  Wiedervorlage für den jüngsten Eingang einen Monat zurück. Abgelehnt
+  (422): Spiegel-Buchungen mit `source_contract_payment_id` (sonst legt
+  `syncManualSettlement()` sie erneut an) und `method = online`.
+  UI-Muster wie „Schreiben verwerfen": Inline-Alpine in `tab-overview`.
   Achtung: Die `use`-Importe aus `show.blade.php` gelten NICHT in den
   Partials — jedes Partial bringt seinen eigenen `@php use …;`-Block mit.
 - **Ruhend-Bereich im Prozess-Flow**: Pseudo-Spalte `on_hold` in
@@ -940,8 +1009,11 @@ Monitoring, Entscheid), `DebtCaseHoldTest` (Ruhend-Status: Pflicht-Begründung,
 Arbeitslisten-Ausschluss, automatische Reaktivierung inkl. neu entschiedener
 Weiche), `ReceivablesProcessFlexibilityTest` (Umbau 08/2026: Wartend mit
 Wiedervorlage, extern erledigte Schritte, Fälligstellungs-Wahl, Zahlung mit
-Raten-Zuordnung), `RzvAgreementTest` (GC-Verknüpfung, geplatzte RZV-Rate ohne
-Auto-Eskalation, Plan-Anpassung beider Einzugsarten),
+Raten-Zuordnung), `AppendedMonitoringReconcileTest` (Anhängen bei weiteren
+offenen RLS, stornierte beobachtete Rate), `RzvAgreementTest` (GC-Verknüpfung, geplatzte RZV-Rate ohne
+Auto-Eskalation, Plan-Anpassung beider Einzugsarten, RZV nach PfÜB: Rückkehr
+in die außergerichtliche Bearbeitung und zurück), `DebtCasePaymentVoidTest`
+(Storno: Nachweis, Wiedereröffnung, RZV läuft weiter, Ausnahmen, Rechte),
 `RzvIndividualPlanTest` (individueller Ratenplan inkl. Summen-Prüfung,
 Mandats-Neuanlage aus dem Fall mit GC-Ratenanlage, Al-Kaki-Migration), `AppendedDebitsTest`
 (Mischfall: zahlbarer Rest in Schreiben und Bezahllinks, Brief-Ankündigung des
