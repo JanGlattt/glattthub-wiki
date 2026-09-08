@@ -1,5 +1,20 @@
 # 📅 Terminansicht (Split-View)
 
+## Update 08.09.2026 — Desktop-App-Versatz oben, Aktions-Slot immer sichtbar
+
+**Für Endanwender:** In der Desktop-App sitzt die Kopfzeile jetzt unter den macOS-Fensterknöpfen,
+„Termine" (zurück) ist nicht mehr verdeckt. „Termin beginnen" bzw. „Termin beenden" bleibt immer
+im Bild: auf dem iPad quer und kleinen Laptops klebt der Knopf unten in der linken Spalte, während
+die Karten darüber scrollen; im Hochformat (eine Spalte) liegt er als feste Leiste am unteren
+Bildschirmrand. Ist nichts zu tun (Termin nicht startbar, keine Session), verschwindet der Slot.
+
+**Für Entwickler:** `body.electron-app .apt-detail-topbar` bekommt `padding-top: calc(0.75rem + 38px)`
+— den Versatz für Hub-Layout/Filament setzt der Preload der App (`DESKTOP-APP.md`), Vollbild-
+Ansichten müssen ihn selbst mitbringen. `.apt-detail-actions` ist `position: sticky; bottom: 0`
+mit deckendem Hintergrund; unter 900 px `position: fixed` am unteren Rand (deckend, kein Glas —
+Projekt ohne `backdrop-filter`), `.apt-detail-body` bekommt dort `padding-bottom`. Leerer Slot
+über `:class` → `.apt-detail-actions--empty`. Test: `tests/Unit/AppointmentDetailLayoutTest.php`.
+
 ## Update 08.08.2026 — Verkaufsstrecke: Formular-Kette, Kundenkonto-Warnung, Überwachung, schnelle Navigation
 
 Vier Ergänzungen aus der Go-Live-Prüfung (Asana „Readiness Verkauf"):
