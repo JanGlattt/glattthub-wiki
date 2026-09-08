@@ -496,6 +496,9 @@ Logo links, rechts der Kunden-Kasten mit Anlass, Name und Kd.-Nr., darunter Anre
 und Monatsrate), **Detaillisten mit Linien** statt grauer Karten, farbig gekantete
 Hinweiskästen (Gold = Info/Vorabankündigung, Rot = Achtung), Grußformel „Dein glattt-Team",
 Kundenservice-Kontakt, Gläubiger-Zeile und GoCardless-Pflichttext. Anrede bleibt „Du".
+**Seit 08.09.2026 abends auf Prod.** Outlook-Hinweis: Der Kunden-Kasten im Kopf ist eine Zeile mit drei
+Zellen (Logo · Füllzelle · Kasten) — eine verschachtelte Tabelle mit `align="right"` behandelt Outlook
+wie ein Float und rückt sie vom rechten Rand ein (Gmail nicht). Gilt ebenso für die Terminerinnerung.
 
 **Test-Mails für Abnahmen:** `php artisan sepa:test-mail <Vertrags-ID|Vertragsnummer> --to=<Adresse> [--type=all|onboarding|activation|change|bank|cancelled] [--dry-run]`
 verschickt die SEPA-Mails eines echten Vertrags mit allen Anhängen an eine beliebige Adresse —
