@@ -23,6 +23,11 @@ Kundennamen (Link ins Profil), geplanten Start, geplantes Ende, die aktuelle Uhr
 überzogen"). Kunden-Karte, Termin-Infos und die Bereichs-Navigation kommen zurück, sobald der
 Termin beendet ist. Darunter wie gewohnt „Termin läuft" und „Termin beenden".
 
+**Formularliste:** Die Formulare des Termins sind jetzt flache Zeilen über die volle Breite
+(Symbol links, Titel und Untertitel, rechts Pflicht-Badge bzw. grüner Haken, Sperr-Grund als
+dritte Zeile) statt großer Kacheln. CSS-scoped auf `.session-forms-grid .session-card`
+(Grid mit `grid-template-areas`); die 2-Kachel-Session-Ansicht behält ihre großen Karten.
+
 **Für Entwickler:** `sidebar.blade.php` — `.apt-detail-session-card` mit `x-show="sessionActive"`,
 Kunden-Karte/Info-Karte/Nav mit `x-show="!sessionActive"`. `appointment-unified.js`: `now`
 tickt sekündlich (`_clockTimer` ab `init()`, gestoppt im Alpine-Hook `destroy()` — dort nur
