@@ -456,7 +456,7 @@ Shared-Link — Gate `supportsSigningExtras` in `form-fill.js`):
   bereits eingelöste Gutscheine/Referral-Reduktionen werden nicht erneut
   angewandt (Einlösung ist einmalig — wie im nachträglichen Flow).
 
-## Update 08.09.2026 — Willkommens-Mail: neuer Betreff, alle Dokumente der Formular-Kette, Anhang-Namen mit Kundennummer
+## Update 08.09.2026 — SEPA-Mails im gemeinsamen glattt-Design; Willkommens-Mail mit allen Dokumenten der Formular-Kette
 
 ### Für Endanwender (08.09.2026)
 
@@ -488,15 +488,36 @@ angehängt, wenn der Vertrag erst bei einem späteren Termin zustande kam. Formu
 „je Termin" (z.B. Sitzungsbestätigung) zählen nur, wenn sie beim Termin des Vertrags
 ausgefüllt wurden.
 
-**Test-Mail für Abnahmen:** `php artisan sepa:test-onboarding-mail <Vertrags-ID|Vertragsnummer> --to=<Adresse>`
-verschickt die Mail eines echten Vertrags mit allen Anhängen an eine beliebige Adresse —
+**Einheitliches Design aller SEPA-Mails (Entscheidung Jan 08.09.2026):** Willkommen,
+Aktivierung, Zahlungsplan-Änderung, Bankverbindung geändert und Mandat beendet sehen jetzt
+aus wie die Zahlungserinnerung des Forderungsmanagements und die Terminerinnerung —
+Logo links, rechts der Kunden-Kasten mit Anlass, Name und Kd.-Nr., darunter Anrede,
+Überschrift, kurzer Text, ein hell hinterlegter **Kennzahlen-Block** (z.B. erste Abbuchung
+und Monatsrate), **Detaillisten mit Linien** statt grauer Karten, farbig gekantete
+Hinweiskästen (Gold = Info/Vorabankündigung, Rot = Achtung), Grußformel „Dein glattt-Team",
+Kundenservice-Kontakt, Gläubiger-Zeile und GoCardless-Pflichttext. Anrede bleibt „Du".
+
+**Test-Mails für Abnahmen:** `php artisan sepa:test-mail <Vertrags-ID|Vertragsnummer> --to=<Adresse> [--type=all|onboarding|activation|change|bank|cancelled] [--dry-run]`
+verschickt die SEPA-Mails eines echten Vertrags mit allen Anhängen an eine beliebige Adresse —
 ohne Log-Eintrag, ohne Deduplication; `--dry-run` zeigt nur Betreff und Anhänge.
 
 ### Für Entwickler (08.09.2026)
 
-- `SepaEmailService::buildOnboardingMail()` (public) baut das Mailable inkl. aller Anhänge;
-  `sendOnboardingEmail()` und der Befehl `sepa:test-onboarding-mail`
-  (`app/Console/Commands/SendTestOnboardingMail.php`) nutzen es gemeinsam.
+- **Mail-Rahmen:** `resources/views/emails/sepa/layout.blade.php` (`@extends`, Sections
+  `title`/`eyebrow`/`body`) + Bausteine unter `emails/sepa/partials/` (`headline`, `paragraph`,
+  `hero` = Kennzahlen-Block, `details` = Linien-Liste, `hint` = Hinweiskasten mit `tone`
+  gold|alert|neutral, `button` = Goldkante). Tokens (Palette, Schrift aus `FontSettingsService`,
+  Zell-Reset) liefert `App\Mail\Sepa\MailTheme::tokens()` — jede Vorlage beginnt mit
+  `@php extract(MailTheme::tokens()); @endphp`, weil `@section`-Inhalte im Scope der
+  Kind-Vorlage gerendert werden und Includes nur Eltern-Variablen erben. Die Kd.-Nr. im
+  Kopf kommt aus `Contract::customerNumber()` (Hub-Format `YYYY.MM.DD-{Kdnr}[-n]`, Legacy-
+  Kundennummer) bzw. `ClientMandate::customerNumber()` (Mandatsreferenz). Der alte
+  GoCardless-Footer-Partial ist im Layout aufgegangen; `_greeting` und `_french-iban-hint`
+  bleiben als Includes.
+- `SepaEmailService::buildOnboardingMail()` / `buildMandateActivationMail()` (public) bauen
+  die Mailables inkl. aller Anhänge; `sendOnboardingEmail()`/`sendMandateActivationEmail()`
+  und der Befehl `sepa:test-mail` (`app/Console/Commands/SendTestSepaMail.php`) nutzen sie
+  gemeinsam; `recipientContext()` liefert Name/Geschlecht für die übrigen Typen.
 - `getPreContractPdfs()` — dieselbe Regel wie die Kachel-Sperre in der Terminansicht
   (`missingPreContractForms` in `appointment-unified.js`): alle aktiven Formulare, die weder
   `contract.enabled` noch SEPA sind (`ContractCreationService::shouldCreateContract()` /
@@ -512,9 +533,10 @@ ohne Log-Eintrag, ohne Deduplication; `--dry-run` zeigt nur Betreff und Anhänge
   `preContractDocumentNames`. `MandateActivationMail` bekommt ebenfalls `mandatePdfFilename`.
 - Ohne `contracts.form_submission_id` (z.B. Tageserfassung der Institutsseite) gibt es
   keine Vorvertrags-Anhänge.
-- Tests: `SepaMailablesTest` (Betreff, Anhang-Reihenfolge), `SepaEmailServiceTest`
-  (Termin-Zuordnung, Einmal-je-Kundin-Fallback, ohne Vertragsformular, Kundennummer aus
-  Vertragsnummer, Test-Befehl ohne Log).
+- Tests: `SepaMailablesTest` (Betreff, Anhang-Reihenfolge, alle fünf Mails im gemeinsamen
+  Rahmen: Anrede, Kd.-Nr., Grußformel, Gläubiger-ID, GoCardless-Pflichttext, keine alte
+  Karten-Optik), `SepaEmailServiceTest` (Termin-Zuordnung, Einmal-je-Kundin-Fallback, ohne
+  Vertragsformular, Kundennummer aus Vertragsnummer, Test-Befehl für alle Typen ohne Log).
 - **Staging-Hinweis:** `MAIL_MAILER=log` gilt dort nur nominell — `MailSettingsService::apply()`
   setzt den Mailer aus `email_settings` (IONOS-SMTP, Prod-Kopie), SEPA-Mails gehen aus Staging
   also **wirklich** raus. Testkunden nur mit eigenen Adressen anlegen.
