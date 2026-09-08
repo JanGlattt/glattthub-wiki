@@ -469,12 +469,16 @@ SEPA-Einzugsermächtigung – glatttHub"), begrüßt die Kundin freundlicher und
    vor dem Vertrag ausgefüllt wurden)
 2. Behandlungsvertrag
 3. SEPA Mandat (Hub-Formular, Einzugsermächtigung)
-4. SEPA-Lastschriftmandat (GoCardless-PDF)
+
+Das von GoCardless erzeugte Mandats-PDF wird **nicht mehr** mitgeschickt, sobald das eigene
+SEPA-Formular dabei ist (Entscheidung Jan 08.09.2026: zwei Mandats-Dokumente verwirren nur).
+Es dient nur noch als Ersatz (`MD000002-SEPA-Lastschriftmandat.pdf`), wenn zu einem Mandat kein
+Hub-Formular existiert; die Aktivierungs-Mail behält es wie bisher.
 
 **Anhänge heißen `Kundennummer-Dokumentname.pdf`**, normalisiert auf ASCII ohne Leerzeichen
 und Sonderzeichen (ä→ae, ß→ss, „&"/Leerzeichen→„-"), z.B.
 `MD000002-Kundeninformation-Einverstaendniserklaerung.pdf`, `MD000002-Behandlungsvertrag.pdf`,
-`MD000002-SEPA-Mandat.pdf`, `MD000002-SEPA-Lastschriftmandat.pdf` (vorher technische Namen
+`MD000002-SEPA-Mandat.pdf` (vorher technische Namen
 wie `formular-behandlunsgvertrag-XbAqdS-22.pdf`). Der Dokumentname ist der Formularname aus
 dem Formular-Editor. Dasselbe Muster gilt für das GoCardless-PDF der Aktivierungs-Mail.
 
