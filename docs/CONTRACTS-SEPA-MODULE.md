@@ -456,6 +456,64 @@ Shared-Link — Gate `supportsSigningExtras` in `form-fill.js`):
   bereits eingelöste Gutscheine/Referral-Reduktionen werden nicht erneut
   angewandt (Einlösung ist einmalig — wie im nachträglichen Flow).
 
+## Update 08.09.2026 — Willkommens-Mail: neuer Betreff, alle Dokumente der Formular-Kette, Anhang-Namen mit Kundennummer
+
+### Für Endanwender (08.09.2026)
+
+Die Mail nach einem erfolgreichen Vertragsabschluss (Vertrag + SEPA-Mandat) heißt jetzt
+**„Herzlich Willkommen bei glattt – Deine Vertragsinformationen"** (vorher „Deine
+SEPA-Einzugsermächtigung – glatttHub"), begrüßt die Kundin freundlicher und enthält
+**alle unterschriebenen Dokumente der Termin-Kette** in dieser Reihenfolge:
+
+1. Kundeninformation & Einverständniserklärung (und alle weiteren Formulare, die
+   vor dem Vertrag ausgefüllt wurden)
+2. Behandlungsvertrag
+3. SEPA Mandat (Hub-Formular, Einzugsermächtigung)
+4. SEPA-Lastschriftmandat (GoCardless-PDF)
+
+**Anhänge heißen `Kundennummer-Dokumentname.pdf`**, z.B.
+`MD000002-Kundeninformation & Einverständniserklärung.pdf`, `MD000002-Behandlungsvertrag.pdf`,
+`MD000002-SEPA Mandat.pdf`, `MD000002-SEPA-Lastschriftmandat.pdf` (vorher technische Namen
+wie `formular-behandlunsgvertrag-XbAqdS-22.pdf`). Der Dokumentname ist der Formularname aus
+dem Formular-Editor. Dasselbe Muster gilt für das GoCardless-PDF der Aktivierungs-Mail.
+
+Der Einleitungstext zählt die mitgeschickten Dokumente namentlich auf. Ein Formular,
+das einmal je Kundin gilt (z.B. beim Beratungstermin unterschrieben), wird auch dann
+angehängt, wenn der Vertrag erst bei einem späteren Termin zustande kam. Formulare
+„je Termin" (z.B. Sitzungsbestätigung) zählen nur, wenn sie beim Termin des Vertrags
+ausgefüllt wurden.
+
+**Test-Mail für Abnahmen:** `php artisan sepa:test-onboarding-mail <Vertrags-ID|Vertragsnummer> --to=<Adresse>`
+verschickt die Mail eines echten Vertrags mit allen Anhängen an eine beliebige Adresse —
+ohne Log-Eintrag, ohne Deduplication; `--dry-run` zeigt nur Betreff und Anhänge.
+
+### Für Entwickler (08.09.2026)
+
+- `SepaEmailService::buildOnboardingMail()` (public) baut das Mailable inkl. aller Anhänge;
+  `sendOnboardingEmail()` und der Befehl `sepa:test-onboarding-mail`
+  (`app/Console/Commands/SendTestOnboardingMail.php`) nutzen es gemeinsam.
+- `getPreContractPdfs()` — dieselbe Regel wie die Kachel-Sperre in der Terminansicht
+  (`missingPreContractForms` in `appointment-unified.js`): alle aktiven Formulare, die weder
+  `contract.enabled` noch SEPA sind (`ContractCreationService::shouldCreateContract()` /
+  `shouldProcessSepaMandate()`). Je Formular die neueste eingereichte Submission der Kundin am
+  Termin der Vertrags-Submission; Fallback auf die neueste Submission der Kundin, sofern das
+  Formular nicht `per_appointment` ist. Fehler lassen nur das einzelne Dokument aus, nie die Mail.
+- **Kundennummer** (`resolveCustomerNumber()`): aus der Hub-Vertragsnummer
+  (`YYYY.MM.DD-{Kundennummer}[-n]`, ohne API-Aufruf), sonst Phorest-`externalId`. Wird nur
+  ermittelt, wenn es Anhänge gibt (Tests mit `getClient()->never()` bleiben gültig).
+  `attachmentFilename()` ersetzt nur dateisystem-kritische Zeichen, Umlaute/Leerzeichen bleiben.
+- `OnboardingMail` bekommt `preContractPdfs` (Liste aus `disk`/`path`/`filename`/`name`) und
+  `mandatePdfFilename`; `attachments()` liefert in Ketten-Reihenfolge, die View erhält
+  `preContractDocumentNames`. `MandateActivationMail` bekommt ebenfalls `mandatePdfFilename`.
+- Ohne `contracts.form_submission_id` (z.B. Tageserfassung der Institutsseite) gibt es
+  keine Vorvertrags-Anhänge.
+- Tests: `SepaMailablesTest` (Betreff, Anhang-Reihenfolge), `SepaEmailServiceTest`
+  (Termin-Zuordnung, Einmal-je-Kundin-Fallback, ohne Vertragsformular, Kundennummer aus
+  Vertragsnummer, Test-Befehl ohne Log).
+- **Staging-Hinweis:** `MAIL_MAILER=log` gilt dort nur nominell — `MailSettingsService::apply()`
+  setzt den Mailer aus `email_settings` (IONOS-SMTP, Prod-Kopie), SEPA-Mails gehen aus Staging
+  also **wirklich** raus. Testkunden nur mit eigenen Adressen anlegen.
+
 ## Update 08.08.2026 — Readiness Verkauf: Rabatt auf die 1. Sitzung, GK-Abo-Buchung, Onboarding-Mail bei Bestandsmandat
 
 Drei Ergebnisse der Go-Live-Prüfung der Verkaufsstrecke (Asana `1217088816996378`):
