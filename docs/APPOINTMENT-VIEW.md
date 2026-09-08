@@ -23,6 +23,15 @@ Kundennamen (Link ins Profil), geplanten Start, geplantes Ende, die aktuelle Uhr
 überzogen"). Kunden-Karte, Termin-Infos und die Bereichs-Navigation kommen zurück, sobald der
 Termin beendet ist. Darunter wie gewohnt „Termin läuft" und „Termin beenden".
 
+**Gebuchte Behandlungen in der Sitzungs-Karte:** Unter den Zeiten stehen die gebuchten
+Services des Termins mit Zähler „n / m behandelt". Sobald der Einstellungszettel für eine Zone
+einen Eintrag hat, wird die Zeile grün mit Haken; zusätzlich eingetragene Zonen ohne gebuchten
+Service hängen als „zusätzlich" unten an. Technik: `GET /hub/appointment/{branch}/{appointment}/treated-zones`
+(`AppointmentViewController::getTreatedZones`, `can:view_appointment_detail`, reine DB-Abfrage auf
+`treatment_settings`), Zuordnung Service ↔ Zone über `body_zones.phorest_service_id`, ersatzweise
+Namensvergleich (`sessionServices`-Getter). Nachgeladen wird initial und bei jedem
+`update-configured-zones`-Event, das `treatment-settings.js` nach Laden/Speichern feuert.
+
 **Formularliste:** Die Formulare des Termins sind jetzt flache Zeilen über die volle Breite
 (Symbol links, Titel und Untertitel, rechts Pflicht-Badge bzw. grüner Haken, Sperr-Grund als
 dritte Zeile) statt großer Kacheln. CSS-scoped auf `.session-forms-grid .session-card`
