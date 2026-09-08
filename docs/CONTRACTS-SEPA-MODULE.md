@@ -471,9 +471,10 @@ SEPA-Einzugsermächtigung – glatttHub"), begrüßt die Kundin freundlicher und
 3. SEPA Mandat (Hub-Formular, Einzugsermächtigung)
 4. SEPA-Lastschriftmandat (GoCardless-PDF)
 
-**Anhänge heißen `Kundennummer-Dokumentname.pdf`**, z.B.
-`MD000002-Kundeninformation & Einverständniserklärung.pdf`, `MD000002-Behandlungsvertrag.pdf`,
-`MD000002-SEPA Mandat.pdf`, `MD000002-SEPA-Lastschriftmandat.pdf` (vorher technische Namen
+**Anhänge heißen `Kundennummer-Dokumentname.pdf`**, normalisiert auf ASCII ohne Leerzeichen
+und Sonderzeichen (ä→ae, ß→ss, „&"/Leerzeichen→„-"), z.B.
+`MD000002-Kundeninformation-Einverstaendniserklaerung.pdf`, `MD000002-Behandlungsvertrag.pdf`,
+`MD000002-SEPA-Mandat.pdf`, `MD000002-SEPA-Lastschriftmandat.pdf` (vorher technische Namen
 wie `formular-behandlunsgvertrag-XbAqdS-22.pdf`). Der Dokumentname ist der Formularname aus
 dem Formular-Editor. Dasselbe Muster gilt für das GoCardless-PDF der Aktivierungs-Mail.
 
@@ -501,7 +502,7 @@ ohne Log-Eintrag, ohne Deduplication; `--dry-run` zeigt nur Betreff und Anhänge
 - **Kundennummer** (`resolveCustomerNumber()`): aus der Hub-Vertragsnummer
   (`YYYY.MM.DD-{Kundennummer}[-n]`, ohne API-Aufruf), sonst Phorest-`externalId`. Wird nur
   ermittelt, wenn es Anhänge gibt (Tests mit `getClient()->never()` bleiben gültig).
-  `attachmentFilename()` ersetzt nur dateisystem-kritische Zeichen, Umlaute/Leerzeichen bleiben.
+  `attachmentFilename()` normalisiert per `Str::ascii($name, 'de')` + `[^A-Za-z0-9]+ → -`.
 - `OnboardingMail` bekommt `preContractPdfs` (Liste aus `disk`/`path`/`filename`/`name`) und
   `mandatePdfFilename`; `attachments()` liefert in Ketten-Reihenfolge, die View erhält
   `preContractDocumentNames`. `MandateActivationMail` bekommt ebenfalls `mandatePdfFilename`.
