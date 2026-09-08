@@ -18,15 +18,18 @@ Projekt ohne `backdrop-filter`), `.apt-detail-body` bekommt dort `padding-bottom
 ## Update 08.09.2026 — Kompakte Spalte während des Termins
 
 **Für Endanwender:** Läuft der Termin, zeigt die linke Spalte nur noch das Nötige: den
-Kundennamen (Link ins Profil), geplanten Start, geplantes Ende, die aktuelle Uhrzeit und groß die
-**verbleibende Zeit** bis zum geplanten Ende (grüne Kante; nach Überschreiten rot mit „… min
-überzogen"). Kunden-Karte, Termin-Infos und die Bereichs-Navigation kommen zurück, sobald der
-Termin beendet ist. Darunter wie gewohnt „Termin läuft" und „Termin beenden".
+Kundennamen (Link ins Profil) und einen **Zeit-Block** mit der verbleibenden Zeit groß, der
+aktuellen Uhrzeit klein daneben, einem Fortschrittsbalken zwischen geplantem Start und Ende und
+den beiden Zeiten darunter (grüne Kante; ab Überziehung rot mit „Überzogen“ und der Dauer).
+Kunden-Karte, Termin-Infos und die Bereichs-Navigation kommen zurück, sobald der Termin beendet
+ist. Darunter wie gewohnt „Termin läuft“ und „Termin beenden“.
 
-**Gebuchte Behandlungen in der Sitzungs-Karte:** Unter den Zeiten stehen die gebuchten
-Services des Termins mit Zähler „n / m behandelt". Sobald der Einstellungszettel für eine Zone
-einen Eintrag hat, wird die Zeile grün mit Haken; zusätzlich eingetragene Zonen ohne gebuchten
-Service hängen als „zusätzlich" unten an. Technik: `GET /hub/appointment/{branch}/{appointment}/treated-zones`
+**Behandlungen in der Sitzungs-Karte:** Unter dem Zeit-Block stehen die gebuchten Leistungen
+als Chips mit Zähler „n / m“ — Namen bereinigt (Phorest-Präfix wie „Abo.LS-39“ entfernt,
+VERSALIEN in Wortanfangs-Großschreibung; `displayServiceName()`), Phorest-Systemeinträge mit
+führendem Punkt („..Desinfektion“) ausgeblendet. Sobald der Einstellungszettel für eine Zone einen
+Eintrag hat, wird der Chip grün mit Haken; zusätzlich eingetragene Zonen ohne gebuchte Leistung
+stehen als eigene Gruppe „Zusätzlich behandelt“ darunter. Technik: `GET /hub/appointment/{branch}/{appointment}/treated-zones`
 (`AppointmentViewController::getTreatedZones`, `can:view_appointment_detail`, reine DB-Abfrage auf
 `treatment_settings`), Zuordnung Service ↔ Zone über `body_zones.phorest_service_id` (an den Zonen meist leer) oder
 Namensvergleich: beide Seiten normalisiert (Kleinschreibung, ä→ae …, Sonderzeichen → Leerzeichen),
