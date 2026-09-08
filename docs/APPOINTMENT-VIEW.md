@@ -15,6 +15,21 @@ mit deckendem Hintergrund; unter 900 px `position: fixed` am unteren Rand (decke
 Projekt ohne `backdrop-filter`), `.apt-detail-body` bekommt dort `padding-bottom`. Leerer Slot
 über `:class` → `.apt-detail-actions--empty`. Test: `tests/Unit/AppointmentDetailLayoutTest.php`.
 
+## Update 08.09.2026 — Kompakte Spalte während des Termins
+
+**Für Endanwender:** Läuft der Termin, zeigt die linke Spalte nur noch das Nötige: den
+Kundennamen (Link ins Profil), geplanten Start, geplantes Ende, die aktuelle Uhrzeit und groß die
+**verbleibende Zeit** bis zum geplanten Ende (grüne Kante; nach Überschreiten rot mit „… min
+überzogen"). Kunden-Karte, Termin-Infos und die Bereichs-Navigation kommen zurück, sobald der
+Termin beendet ist. Darunter wie gewohnt „Termin läuft" und „Termin beenden".
+
+**Für Entwickler:** `sidebar.blade.php` — `.apt-detail-session-card` mit `x-show="sessionActive"`,
+Kunden-Karte/Info-Karte/Nav mit `x-show="!sessionActive"`. `appointment-unified.js`: `now`
+tickt sekündlich (`_clockTimer` ab `init()`, gestoppt im Alpine-Hook `destroy()` — dort nur
+Aufräumen), Getter `plannedStartLabel`, `plannedEndLabel`, `currentTimeLabel`,
+`remainingMinutes`/`remainingIsOver`/`remainingTimeLabel`. Styles `.apt-detail-session-*`
+in `theme_glattt.css`. Test: `AppointmentDetailLayoutTest`.
+
 ## Update 08.08.2026 — Verkaufsstrecke: Formular-Kette, Kundenkonto-Warnung, Überwachung, schnelle Navigation
 
 Vier Ergänzungen aus der Go-Live-Prüfung (Asana „Readiness Verkauf"):
