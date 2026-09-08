@@ -93,6 +93,14 @@ Der effektive Terminstatus wird zentral in `getState(apt)` (`appointments.js`) b
 
 Die Standard-Ansicht zeigt Termine als Karten untereinander. Verfügbar bei allen Filialen oder "Alle Filialen".
 
+**Kundenname → Kundenprofil (seit 08.09.2026):** Der Name in der Terminkarte ist ein Link ins
+Kundenprofil (`/hub/clients/{clientId}`), erkennbar am kleinen „Öffnen"-Symbol dahinter; der
+Wechsel läuft per SPA-Navigation. Der Link erscheint nur mit dem Recht `view_client_detail` —
+ohne Recht bleibt der Name reiner Text. Technik: `appointments.blade.php` gibt das Recht als
+`data-can-view-client` am Listen-Container mit, `appointments.js` (`renderCard()`, `openClient()`)
+rendert den Link, Styles `.apt-card__client-link` in `theme_glattt.css`.
+Test: `tests/Feature/AppointmentsClientLinkTest.php`.
+
 ### Kalenderansicht (Tageskalender)
 
 Bei Auswahl einer **einzelnen Filiale** erscheint ein View-Toggle. Der Kalender zeigt:
