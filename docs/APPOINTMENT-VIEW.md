@@ -28,8 +28,10 @@ Services des Termins mit Zähler „n / m behandelt". Sobald der Einstellungszet
 einen Eintrag hat, wird die Zeile grün mit Haken; zusätzlich eingetragene Zonen ohne gebuchten
 Service hängen als „zusätzlich" unten an. Technik: `GET /hub/appointment/{branch}/{appointment}/treated-zones`
 (`AppointmentViewController::getTreatedZones`, `can:view_appointment_detail`, reine DB-Abfrage auf
-`treatment_settings`), Zuordnung Service ↔ Zone über `body_zones.phorest_service_id`, ersatzweise
-Namensvergleich (`sessionServices`-Getter). Nachgeladen wird initial und bei jedem
+`treatment_settings`), Zuordnung Service ↔ Zone über `body_zones.phorest_service_id` (an den Zonen meist leer) oder
+Namensvergleich: beide Seiten normalisiert (Kleinschreibung, ä→ae …, Sonderzeichen → Leerzeichen),
+Treffer bei Gleichheit oder Wortfolgen-Enthaltensein — „Abo.LS-39 SCHULTERN“ ↔ „Schultern“
+(`serviceMatchesZone()` / `normalizeZoneName()`). Nachgeladen wird initial und bei jedem
 `update-configured-zones`-Event, das `treatment-settings.js` nach Laden/Speichern feuert.
 
 **Formularliste:** Die Formulare des Termins sind jetzt flache Zeilen über die volle Breite
