@@ -97,7 +97,22 @@ Management-Sicht wechseln (Stand 09.09.2026):
   wenn alle drei Teams 100 % erreichen"), Prämie
   (fester Betrag, Betrag je Einheit mit Team-Split & Deckel, %-Aufschlag auf
   den Monatsbonus, Sachprämie, Team-Budget), optionalen Serien-Stufen und
-  Sichtbarkeit. Als Kennzahlen stehen die internen Bonus-Kennzahlen (verkaufte
+  Sichtbarkeit.
+    - **„Prozent des Minimalziels"** zeigt überall das **effektive Ziel**:
+      Bei 120 % von 160 steht im Board, im Export und im PDF „Ziel 192", der
+      Balken-Strich sitzt bei 192, und „Erreicht – unter Vorbehalt" bedeutet,
+      dass die 192 nur mit Vorbehalts-KPZ geschafft sind. Der Hinweis nennt
+      das Minimalziel dazu („Ziel = 120 % des Minimalziels (160)").
+    - **Zielwert für Leitungen** (Schritt 3, bei Bedingungen am Minimalziel):
+      Standard ist bei **Challenges das normale Standortziel**, bei regulären
+      Regeln das Leitungs-Minimalziel; beides lässt sich je Regel fest
+      erzwingen. Ohne eigenes Leitungs-Minimalziel gilt immer das Standortziel.
+    - **Basis des %-Aufschlags** (Schritt 4): „nur der reguläre Bonus" (zwei
+      Challenges mit je 25 % ergeben zusammen +50 %) oder „gesamter Monatsbonus
+      inkl. vorher berechneter Aufschläge" (25 % auf 125 % = +56,25 %; die
+      Reihenfolge ist die Anlage-Reihenfolge der Regeln). Regeln von vor dem
+      10.09.2026 ohne Angabe rechnen weiter auf den gesamten Monatsbonus; neue
+      Regeln starten mit „nur regulärer Bonus". Als Kennzahlen stehen die internen Bonus-Kennzahlen (verkaufte
   KPZ, KPZ je Beratungsgespräch, Google-Saldo) und **jede Kennzahl der
   KpiRegistry** zur Verfügung (Registry-Kennzahlen nur je Institut oder
   unternehmensweit — mitarbeiterscharf liefert die Registry nicht).
@@ -209,7 +224,14 @@ Das Standard-Bonussystem wird per Migration
   (`BonusRule::conditionBranchIds()`), Details je Team im Feld `teams`,
   Ranking/Gruppen-Duell, Hochrechnung = linearer Monats-Pace, Serien aus
   `bonus_rule_achievements` der Vormonate, Abwesenheitsfaktor, %-Aufschlag in
-  einer zweiten Runde). `freeze($month, $user, $final, $note)` persistiert
+  einer zweiten Runde). `conditionMetric()` liefert bei `percent_of_target`
+  bereits das effektive Ziel (`target` = x % des Minimalziels, Minimalziel in
+  `base_target`) — `wouldAchieve()`/`progressPct()` rechnen den Prozentsatz
+  nicht noch einmal ein. `targetFor()` fragt `BonusRule::usesLeadershipTarget()`
+  (`condition_config.target_basis` = `team`/`leadership`, fehlend → Challenge =
+  Team-Ziel, sonst Leitungs-Ziel). Für die %-Runde werden die Summen vor allen
+  Aufschlägen gesichert; `reward_config.base` = `base_bonus` rechnet darauf,
+  `month_bonus` (Standard für Altregeln) auf die laufende Summe. `freeze($month, $user, $final, $note)` persistiert
   Payload + Achievements; ein finaler Freeze sperrt den Monat (RuntimeException
   bei weiteren Versuchen; Controller sperren auch Korrekturen/Entscheidungen).
 
