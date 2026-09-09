@@ -85,10 +85,16 @@ Management-Sicht wechseln (Stand 09.09.2026):
 ### Bonus-Verwaltung (`/hub/bonus/verwaltung`)
 
 - **Regeln & Challenges**: Der Baukasten. Jede Regel besteht aus
-  Empfängerinnen (Bonus-Klassen oder einzelne Nutzerinnen), Kennzahl + Bezug
+  Empfängerinnen (Bonus-Klassen — optional **nur bestimmte Institute**, also
+  Klasse × Standort, z.B. eine Aktion für drei Standorte — oder einzelne
+  Nutzerinnen), Kennzahl + Bezug
   (persönlich / je Institut / alle Institute), Bedingung (Minimalziel erreicht,
   fester Schwellenwert, je Einheit über dem Ziel, Prozent des Ziels,
-  Wettbewerb/Ranking inkl. Gruppen-Duell mit Qualifikations-Minimum), Prämie
+  Wettbewerb/Ranking inkl. Gruppen-Duell mit Qualifikations-Minimum, **alle
+  relevanten Teams erreichen ihr Minimalziel** — relevant sind die in der
+  Bedingung gewählten Institute, sonst die Empfänger-Institute, sonst alle
+  Institute mit Minimalziel; optional in Prozent des Ziels, z.B. „25 % Boost,
+  wenn alle drei Teams 100 % erreichen"), Prämie
   (fester Betrag, Betrag je Einheit mit Team-Split & Deckel, %-Aufschlag auf
   den Monatsbonus, Sachprämie, Team-Budget), optionalen Serien-Stufen und
   Sichtbarkeit. Als Kennzahlen stehen die internen Bonus-Kennzahlen (verkaufte
@@ -196,7 +202,11 @@ Das Standard-Bonussystem wird per Migration
   bleibt die Zeile im Board, bekommt aber keine Regeln (auch kein Ranking, kein
   Team-Split-Anteil). Ohne Verknüpfung ist die Prüfung nicht möglich → berechtigt.
 - `app/Services/Bonus/BonusCalculationService.php` — `board($month)` berechnet
-  den kompletten Stand (Regeln je Empfängerin, Team-Split mit Deckel,
+  den kompletten Stand (Regeln je Empfängerin — `BonusRule::appliesToUser()`
+  prüft Klasse **und** `recipient_branch_ids` —, Team-Split mit Deckel,
+  Bedingung `all_branches_target` über `allBranchesMetric()`: Wert = Teams am
+  Ziel, gesichert = ohne Vorbehalts-KPZ, Ziel = Anzahl relevanter Teams
+  (`BonusRule::conditionBranchIds()`), Details je Team im Feld `teams`,
   Ranking/Gruppen-Duell, Hochrechnung = linearer Monats-Pace, Serien aus
   `bonus_rule_achievements` der Vormonate, Abwesenheitsfaktor, %-Aufschlag in
   einer zweiten Runde). `freeze($month, $user, $final, $note)` persistiert
