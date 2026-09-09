@@ -180,10 +180,24 @@ Vorlagen-Varianten hinterlegt werden.
   wo die Forderungsbasis fest ist: Mandatsentzug/Direktzahler (immer
   Restsumme) und Kundenkonto (Saldo). **Bestandsimport-Fälle haben die Wahl
   seit 21.08.2026 ebenfalls**: Bei gesetzter Fälligstellung gilt der
-  **dokumentierte Vertragsrest** (Vertragswert − Geldeingänge −
-  Alt-Einzüge über `Contract::legacyCollectedCents()`, manuell übersteuerbar
-  via `legacy_collected_cents`); die geprüfte Import-Summe + neue RLS bleibt
+  **dokumentierte Vertragsrest**; die geprüfte Import-Summe + neue RLS bleibt
   dabei die **Untergrenze** (`DebtCaseBalanceService::principalFor()`).
+- **Dokumentierter Vertragsrest — eine Definition für alle Restsummen
+  (09.09.2026, Fälle H004319 und BS000912):** `Contract::documentedRemainingCents()`
+  = Vertragswert − verbuchte Geldeingänge − **manuell gepflegte** Altsystem-
+  Einzüge (`legacy_collected_cents`, Vertragsseite → „Legacy-Wert") − die
+  **Vor-Ort-Rate 1**, sofern sie keine eigene Zeile im Zahlplan hat
+  (Bestandsverträge; gilt wie auf der Vertragsseite als bei der ersten
+  Sitzung kassiert). Gilt für Mandatsentzug, Direktzahler-Fälle, Abgabe aus
+  dem Widerruf (auch im Widerruf-Dialog angezeigt) und jede Fälligstellung —
+  Bestandsimport-Fälle behalten die Import-Untergrenze. Der **rechnerische**
+  Altsystem-Wert zählt bewusst nicht: Er unterstellt, alles Undokumentierte
+  sei per Star Money eingezogen worden, und würde bei einem stornierten Plan
+  die Forderung auf null setzen. Vorher fehlten Legacy-Wert und Rate 1: Der
+  Hub forderte bei H004319 2.799,30 € statt 1.799,46 € und zeigte bei
+  BS000912 nach dem Setzen des Legacy-Werts auf 0 plötzlich 2.159,46 € statt
+  2.039,49 €. **Für das Büro:** Stimmt die Restsumme nicht, den Legacy-Wert
+  am Vertrag pflegen (Summe der Star-Money-Einzüge ohne Rate 1).
 - **Vorlagen-Weiche der letzten Mahnung (24.08.2026)**: Die Vorlage folgt dem
   Forderungsumfang. Mit Fälligstellung der Gesamtsumme bleibt es bei
   `letter_postal_final` (Eskalations-Bogen, 14 Tage). **Ohne** Fälligstellung
