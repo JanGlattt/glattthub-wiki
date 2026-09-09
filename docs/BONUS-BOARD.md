@@ -212,6 +212,10 @@ Das Standard-Bonussystem wird per Migration
   „Lea-Sophie Schwab" trifft; nur eindeutige Treffer, jeder Mitarbeiter höchstens
   einmal). Vorher war die Spalte in Prod bei allen Benutzern leer — die
   Abwesenheitsregel rechnete deshalb überall mit 0 Tagen.
+- **Archivierte Nutzerinnen** (`users.archived_from`, siehe `USER-ARCHIVIERUNG.md`)
+  filtert `recipients()` per `activeForMonth($month)` heraus, bevor Team-Split,
+  Ranking oder namentliche Regeln greifen: Der Monat, dessen Beginn am oder nach
+  dem Archivierungsdatum liegt, ist der erste ohne die Person.
 - **Bonusberechtigung**: `board()` setzt je Nutzerin `hr_linked`, `worked_days`,
   `eligible` und `ineligible_reason` (`no_work_days`). Ohne Arbeitstag im Monat
   bleibt die Zeile im Board, bekommt aber keine Regeln (auch kein Ranking, kein

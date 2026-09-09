@@ -41,6 +41,10 @@ Die Übersichtsseite zeigt alle Mitarbeiter in einer sortierbaren Tabelle mit Ec
 
 ### Hub-Konto anlegen (Rückwärts-Link askDANTE → Hub)
 
+Archivierte Hub-Konten (Admin-Backend → Benutzer → „Archivieren", siehe
+`USER-ARCHIVIERUNG.md`) erscheinen in der Spalte als Badge „Archiviert" bzw.
+„Archiviert ab …" statt als grüner Haken.
+
 Die Spalte **Hub-Konto** zeigt je Person, ob sie schon ein Hub-Benutzerkonto
 hat (grüner Haken mit den Rollen, Tooltip mit E-Mail). Grundlage ist die
 Verknüpfung `users.hr_employee_id` ↔ `hr_employees.askdante_user_id`.
