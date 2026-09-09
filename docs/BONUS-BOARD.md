@@ -124,11 +124,19 @@ Management-Sicht wechseln (Stand 09.09.2026):
       und erscheint zusätzlich als Zeile in der Bonusliste jeder Teilnehmerin
       („Platz 2 von 5 · Preis …"). Im PDF gibt es einen Abschnitt
       „Ranking-Challenges", im CSV steht der Platz im Status.
-    - **Challenges brauchen eine Laufzeit** (Schritt 1, vorbelegt mit dem in
-      der Verwaltung gewählten Monat). Die Verwaltung zeigt seit 10.09.2026 zwei
+    - **Challenges sind monatsgebunden:** In Schritt 1 wird statt freier Daten
+      ein **Challenge-Monat** gewählt (vorbelegt mit dem in der Verwaltung
+      gewählten Monat, Auswahl Vormonat bis 12 Monate voraus); die Laufzeit ist
+      immer der 1. bis letzte Tag dieses Monats — der Server normalisiert auch
+      abweichend geschickte Daten. Die Verwaltung zeigt seit 10.09.2026 zwei
       Karten: **Bonus-Regeln** (dauerhaft) und **Challenges**, gruppiert nach
-      Jahr und Monat des Startdatums, der aktuelle Monat aufgeklappt; Challenges
-      ohne Laufzeit stehen unter „Laufend".
+      Jahr und Monat, der aktuelle Monat aufgeklappt; Challenges ohne Laufzeit
+      stehen unter „Laufend". Hintergrund: Bis 10.09.2026 schob der Wizard beim
+      Bearbeiten die Laufzeit um einen Tag nach vorn (Datum kam als
+      UTC-Zeitstempel an, `substring(0, 10)` ergab den Vortag); die Migration
+      `2026_09_10_120000_normalize_bonus_challenge_months` hat bestehende
+      Challenges auf den gemeinten Monat gezogen (Starttag ≥ 28. = Folgemonat),
+      `valid_from`/`valid_until` sind seither als `date:Y-m-d` gecastet.
     - **Basis des %-Aufschlags** (Schritt 4): „nur der reguläre Bonus" (zwei
       Challenges mit je 25 % ergeben zusammen +50 %) oder „gesamter Monatsbonus
       inkl. vorher berechneter Aufschläge" (25 % auf 125 % = +56,25 %; die
