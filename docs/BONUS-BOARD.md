@@ -24,8 +24,9 @@ konfigurierbare Regel aus dem **Boni-Baukasten** — nichts ist fest programmier
   Punkte und was beim nächsten Meilenstein extra winkt (z.B. 3 bzw. 6 Monate).
 - **Celebration**: Hast du seit deinem letzten Besuch zu einer Verbesserung
   beigetragen, gibt es Konfetti und eine persönliche Lob-Nachricht.
-- **Abwesenheitsregel**: mehr als 5 Abwesenheitstage im Monat → Bonus halbiert,
-  ab 10 Tagen → entfällt. Verkaufs- und Qualitäts-Boni sind ausgenommen.
+- **Abwesenheitsregel**: bis 5 Abwesenheitstage im Monat → voller Bonus, 6 bis 10
+  Tage → halbiert, ab 11 Tagen → entfällt (Regel gilt nur für Boni mit aktivierter
+  Abwesenheitsregel, Entscheidung Jan 09.09.2026). Verkaufs- und Qualitäts-Boni sind ausgenommen.
   Datenquelle ist der Dienstplan (askDANTE); die Verwaltung kann Tage mit
   Begründung korrigieren.
 - **Startseite**: Die Kachel „Mein Bonus" lässt sich über „Karte hinzufügen"
@@ -34,9 +35,34 @@ konfigurierbare Regel aus dem **Boni-Baukasten** — nichts ist fest programmier
 ### Management-Sicht
 
 Wer `manage_bonus_rules` hat, kann auf dem Board in die nüchterne
-Management-Sicht wechseln: alle Institute gegen ihre Minimalziele, alle
-Mitarbeiterinnen mit gesichertem/aktuellem/hochgerechnetem Bonus sowie die
-offenen Widerrufe mit Bonus-Relevanz.
+Management-Sicht wechseln (Stand 09.09.2026):
+
+- **Institute vs. Minimalziele**: jedes Institut mit seinem Icon und seiner
+  Farbe aus dem Institut-Modul, in der dort konfigurierten Reihenfolge. Eine
+  Zeile ist **grün hinterlegt**, sobald das Minimalziel erreicht ist (Status
+  „erreicht" bzw. „erreicht — unter Vorbehalt", wenn das nur mit Vorbehalts-KPZ
+  gelingt), und **leicht grün**, wenn die Hochrechnung das Ziel erreicht
+  („auf Kurs"). Im beendeten Monat entfällt die Spalte Hochrechnung.
+- **Boni je Mitarbeiterin**: nach Institut gruppiert (Reihenfolge wie oben,
+  Personen ohne Institut zuletzt), innerhalb des Instituts nach Klasse
+  (Leitung → Beratungsgesprächsspezialistin → glattt Spezialistin) und Name.
+  Die Instituts-Zeile trägt die Summen und lässt sich zuklappen; eine Person
+  lässt sich aufklappen und zeigt jedes Ziel mit Ist/Ziel, Status und Prämie.
+  Ganz unten steht die Gesamtzeile. **Im beendeten Monat** (Monatsende vorbei
+  oder final eingefroren) werden nur noch „Erreichte Ziele" und der
+  **Bonus**-Endbetrag gezeigt — Gesichert/Hochrechnung entfallen.
+- **Abwesenheit**: Tage aus dem Dienstplan plus Hinweis „Bonus halbiert" /
+  „Bonus entfällt". Unter dem Namen steht die Zahl der Arbeitstage im Monat.
+  **Wer im Monat keinen Arbeitstag hat, ist nicht bonusberechtigt** — die
+  Zeile ist durchgestrichen, es werden keine Ziele gewertet. Ist eine
+  Nutzerin nicht mit ihrem askDANTE-Mitarbeiter verknüpft, zeigt die Zeile
+  „nicht verknüpft" (und die Karte zählt die Fälle im Kopf): Dann sind weder
+  Abwesenheit noch Arbeitstage prüfbar, die Person zählt vorerst als
+  berechtigt mit 0 Abwesenheitstagen. Verknüpfung: Admin → Benutzer →
+  Feld „askDANTE-Mitarbeiter".
+- **Offene Widerrufe mit Bonus-Relevanz**: Vertragsnummer (Link zum Vertrag,
+  darunter die Widerrufsnummer), Kundenname, Verkäuferin, Institut mit Icon,
+  Eingang im deutschen Datumsformat, KPZ und Entscheidung.
 
 ### Bonus-Verwaltung (`/hub/bonus/verwaltung`)
 
@@ -135,7 +161,22 @@ Das Standard-Bonussystem wird per Migration
   `abgeschlossen` zu im Monat unterschriebenen, noch zählenden Verträgen);
   `BonusRevocationDecision` mit `exclude` zieht die KPZ ab, `count` löst den
   Vorbehalt. Korrekturen (`BonusValueOverride`) werden nach der Auflösung
-  angewandt (Schlüssel: Kennzahl + User bzw. Institut).
+  angewandt (Schlüssel: Kennzahl + User bzw. Institut). `workedDays($user)`
+  zählt Tage mit `worked_minutes > 0` (`null` ohne askDANTE-Verknüpfung);
+  `pendingRevocationCases()` liefert je Fall auch `contract_number`,
+  `client_id` und `seller_name`.
+- **Voraussetzung askDANTE-Verknüpfung**: Abwesenheit und Arbeitstage hängen an
+  `users.hr_employee_id`. Die Erstbefüllung übernahm die Migration
+  `2026_09_09_150000_backfill_users_hr_employee_id` über
+  `App\Services\HrUserLinkService` (E-Mail-Treffer vor Namens-Treffer; Namens-
+  Schlüssel aus `HrStaffLinkService::nameKeys()`, damit „Lea Schwab" auch
+  „Lea-Sophie Schwab" trifft; nur eindeutige Treffer, jeder Mitarbeiter höchstens
+  einmal). Vorher war die Spalte in Prod bei allen Benutzern leer — die
+  Abwesenheitsregel rechnete deshalb überall mit 0 Tagen.
+- **Bonusberechtigung**: `board()` setzt je Nutzerin `hr_linked`, `worked_days`,
+  `eligible` und `ineligible_reason` (`no_work_days`). Ohne Arbeitstag im Monat
+  bleibt die Zeile im Board, bekommt aber keine Regeln (auch kein Ranking, kein
+  Team-Split-Anteil). Ohne Verknüpfung ist die Prüfung nicht möglich → berechtigt.
 - `app/Services/Bonus/BonusCalculationService.php` — `board($month)` berechnet
   den kompletten Stand (Regeln je Empfängerin, Team-Split mit Deckel,
   Ranking/Gruppen-Duell, Hochrechnung = linearer Monats-Pace, Serien aus
@@ -148,7 +189,13 @@ Das Standard-Bonussystem wird per Migration
 
 - `BonusBoardController` — `/hub/bonus` (+ `/data`, `/tile`). `view=management`
   nur mit `manage_bonus_rules`. Final eingefrorene Monate werden aus dem
-  Freeze-Payload bedient. `/tile` ist der Startseiten-Endpoint **ohne**
+  Freeze-Payload bedient. Die Management-Antwort wird zur Laufzeit angereichert
+  (`decorateForManagement()`): `branch_meta` (Name, Farbe aus `InstituteColor`,
+  Icon aus `InstituteIcon`, `sort_order`), `class_order`, `is_closed`
+  (Monatsende vorbei oder finaler Freeze) und `client_name` je offenem
+  Widerruf (`ClientDataResolver::resolveBulk`). So bleiben Freeze-Payloads
+  schlank und Farben/Icons/Namen immer aktuell; Alt-Payloads ohne
+  `eligible`/`hr_linked` werden im JS als berechtigt behandelt. `/tile` ist der Startseiten-Endpoint **ohne**
   Besuchs-Snapshot (verbraucht die Celebration nicht).
 - `BonusAdminController` — Regeln-CRUD (Challenges auch mit
   `manage_challenges`, Standard-Regeln nur mit `manage_bonus_rules`),
@@ -167,7 +214,10 @@ Das Standard-Bonussystem wird per Migration
 ### Frontend
 
 - `public/js/bonus-board.js` — Board-Alpine (Sichten, Celebration mit
-  Konfetti + rotierenden Lob-Texten, `prefers-reduced-motion`-Ausstieg).
+  Konfetti + rotierenden Lob-Texten, `prefers-reduced-motion`-Ausstieg;
+  Management-Helfer `userGroups()`/`groupRows()` für die gruppierte
+  Personen-Tabelle, `branchStatus()`/`branchRowClass()` für die Instituts-Ampel,
+  `branchIcon()`/`branchColor()` aus `branch_meta`, `formatDate()` d.m.Y).
 - `public/js/bonus-admin.js` — Verwaltungs-Alpine (Regel-Wizard 4 Schritte,
   Ziele, Freeze, Korrekturen, Entscheidungen, Sichtbarkeit).
 - Views unter `resources/views/hub/bonus/` (+ `hub/start/_card-bonus.blade.php`).
@@ -179,8 +229,10 @@ Das Standard-Bonussystem wird per Migration
 ### Tests
 
 `tests/Feature/BonusEngineTest.php` (Formeln, Team-Split, Vorbehalt,
-Korrekturen, Serien, Freeze, %-Aufschlag), `tests/Feature/BonusBoardPageTest.php`
-(Rechte, Endpoints, Sichtbarkeit, finale Sperre),
+Korrekturen, Serien, Freeze, %-Aufschlag, Bonusberechtigung ohne Arbeitstag,
+Widerrufs-Felder), `tests/Feature/BonusBoardPageTest.php`
+(Rechte, Endpoints, Sichtbarkeit, finale Sperre, Management-Anreicherung,
+Kundennamen), `tests/Feature/HrUserLinkServiceTest.php` (askDANTE-Verknüpfung),
 `tests/Unit/UserBonusClassTest.php` (Stichtag Monatsende),
 `tests/Unit/GoogleReviewBalanceTest.php` (Zählweise).
 
