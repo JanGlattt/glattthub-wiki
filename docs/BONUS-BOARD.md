@@ -107,6 +107,28 @@ Management-Sicht wechseln (Stand 09.09.2026):
       Standard ist bei **Challenges das normale Standortziel**, bei regulären
       Regeln das Leitungs-Minimalziel; beides lässt sich je Regel fest
       erzwingen. Ohne eigenes Leitungs-Minimalziel gilt immer das Standortziel.
+    - **Ranking-Challenge** (Bedingung „Ranking-Challenge (Plätze mit
+      Preisen)", Prämie „Preise je Platz"): Teams (Institute aus Schritt 2, leer
+      = alle mit Minimalziel) oder einzelne Mitarbeiterinnen werden nach der
+      Kennzahl sortiert. Team-Ranking wahlweise **in Prozent des Minimalziels**
+      (fair bei unterschiedlich großen Teams). Gleichstand = gleicher Platz, der
+      nächste entfällt (1, 1, 3). Optionales Qualifikations-Minimum. Preise je
+      Platz als Betrag und/oder Sachprämie; beim Team-Ranking je Teammitglied
+      oder als Team-Budget (nicht in der €-Summe). **Gesichert** ist der Platz,
+      den die Teilnehmerin auch ohne die eigenen Vorbehalts-KPZ gegen die vollen
+      Werte der anderen hält — nie besser als der aktuelle Platz.
+      **Blind-Challenge** (Häkchen in Schritt 3): Teilnehmerinnen sehen im
+      laufenden Monat nur den eigenen Wert, keine Platzierung und keine Prämie;
+      die Management-Sicht sieht alles, nach Monatsende auch die Teilnehmerinnen.
+      Jedes Ranking bekommt eine eigene Karte oben auf dem Board (beide Sichten)
+      und erscheint zusätzlich als Zeile in der Bonusliste jeder Teilnehmerin
+      („Platz 2 von 5 · Preis …"). Im PDF gibt es einen Abschnitt
+      „Ranking-Challenges", im CSV steht der Platz im Status.
+    - **Challenges brauchen eine Laufzeit** (Schritt 1, vorbelegt mit dem in
+      der Verwaltung gewählten Monat). Die Verwaltung zeigt seit 10.09.2026 zwei
+      Karten: **Bonus-Regeln** (dauerhaft) und **Challenges**, gruppiert nach
+      Jahr und Monat des Startdatums, der aktuelle Monat aufgeklappt; Challenges
+      ohne Laufzeit stehen unter „Laufend".
     - **Basis des %-Aufschlags** (Schritt 4): „nur der reguläre Bonus" (zwei
       Challenges mit je 25 % ergeben zusammen +50 %) oder „gesamter Monatsbonus
       inkl. vorher berechneter Aufschläge" (25 % auf 125 % = +56,25 %; die
@@ -235,7 +257,18 @@ Das Standard-Bonussystem wird per Migration
   (`condition_config.target_basis` = `team`/`leadership`, fehlend → Challenge =
   Team-Ziel, sonst Leitungs-Ziel). Für die %-Runde werden die Summen vor allen
   Aufschlägen gesichert; `reward_config.base` = `base_bonus` rechnet darauf,
-  `month_bonus` (Standard für Altregeln) auf die laufende Summe. `freeze($month, $user, $final, $note)` persistiert
+  `month_bonus` (Standard für Altregeln) auf die laufende Summe.
+  **Ranking-Challenges** (`condition_type = ranking_places`, `reward_type =
+  ranking_prizes`, `condition_config.level/relative/blind/qualify_min`,
+  `reward_config.places[]/team_distribution`) laufen über
+  `applyRankingRule()`: Einträge je Team/Person, `assignRanks()` (Platz = 1 +
+  Anzahl höherer Werte; gesicherter Platz = eigener Wert ohne Vorbehalt gegen
+  volle Werte der anderen), Preise über `BonusRule::prizeForPlace()`. Das Board
+  liefert `challenges[]` mit allen Einträgen; die Personen-Zeile trägt
+  `ranking{rank, secured_rank, total, prize, …}`. Blind-Logik sitzt im
+  `BonusBoardController` (`challengesForUser()`, `blindfold()`): im laufenden
+  Monat bekommt die Teilnehmerin nur ihren Eintrag ohne Platz/Preis, die
+  Prämie ist bis zur Auflösung 0. `freeze($month, $user, $final, $note)` persistiert
   Payload + Achievements; ein finaler Freeze sperrt den Monat (RuntimeException
   bei weiteren Versuchen; Controller sperren auch Korrekturen/Entscheidungen).
 
