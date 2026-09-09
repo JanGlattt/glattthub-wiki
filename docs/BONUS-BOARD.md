@@ -51,9 +51,13 @@ Management-Sicht wechseln (Stand 09.09.2026):
   und Name. Spalten: Name, Klasse, Abwesenheit, Erreichte Ziele, Hochrechnung
   (nur laufender Monat), **Bonus ganz rechts**. Die Instituts-Zeile trägt die
   Summen und lässt sich zuklappen; eine Person lässt sich aufklappen und zeigt
-  jedes Ziel mit Ist/Ziel, Fortschrittsbalken, Überverkauf („+51 über Ziel,
-  davon 10 unter Vorbehalt") bzw. Rest bis zum Ziel, Status und Prämie. Ganz
-  unten steht die Gesamtzeile.
+  jedes Ziel: in der Spalte Klasse Ist/Ziel mit grauer Erklärung daneben
+  (Überverkauf „+51 über Ziel, davon 10 unter Vorbehalt (41 gesichert)" bzw.
+  Rest bis zum Ziel) und darunter der **Balken mit Zielmarke**: gesichert
+  voll, Vorbehalt schraffiert, senkrechter Strich am Ziel — was rechts darüber
+  hinausgeht, ist Überschuss; leichte Beschriftung mit Ist-Wert und „Ziel N".
+  Derselbe Balken steht in der Instituts-Tabelle unter dem Institutsnamen.
+  Arbeitstage stehen neben dem Namen. Ganz unten steht die Gesamtzeile.
   **Ziele und Bonus in der Übersicht zählen ohne KPZ unter Vorbehalt**:
   „Erreichte Ziele" = gesichert erreichte Ziele, „Bonus" = gesicherter Bonus;
   der Anteil unter Vorbehalt steht als grauer Hinweis daneben („+2 Vorbehalt",
