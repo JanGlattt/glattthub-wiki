@@ -463,6 +463,16 @@ gcloud scheduler jobs create http check-cancellation-follow-ups \
 > mit drei Wiederholungen läuft derselbe Job sauber durch. Jobs ohne
 > `retryCount` sind entsprechend einen Blick wert.
 
+### Office-Teammeeting (10.09.2026)
+
+Beide Jobs auf `hub.glattt.com`, Zeitzone Europe/Berlin, Retries 3 / Backoff 30 s
+(per REST-API angelegt, Token-Header vom bestehenden `sync-askdante` übernommen):
+
+| Job | Zeitplan | Endpoint | Deadline | Zweck |
+|---|---|---|---|---|
+| `sync-zendesk-tickets` | `45 4 * * *` | `/api/cron/sync-zendesk-tickets` | 1800 s | Zendesk-Ticket-Spiegel (Kundenservice-Kennzahlen) |
+| `snapshot-office-kpis` | `30 23 * * *` | `/api/cron/snapshot-office-kpis` | 600 s | Forderungsbestand je Institut einfrieren — der letzte Lauf eines Monats ist der Monatsend-Stand |
+
 ## 4. Jobs testen
 
 ### Manuell über gcloud:

@@ -170,6 +170,7 @@ nav:
     - Widerruf-Statistik: REVOCATION-STATISTICS.md
     - HR-Kennzahlen: HR-KENNZAHLEN.md
     - Gutschein-Aktion: GUTSCHEIN-AKTION.md
+    - Office-Teammeeting: OFFICE-TEAMMEETING.md
   - API-Integrationen:
     - WordPress-Plugins (Übersicht): WORDPRESS-PLUGINS.md
     - WordPress-Buchungswidget: WORDPRESS-BUCHUNGSWIDGET.md

@@ -87,7 +87,25 @@ nur für die Übergangszeit bestehen.
    mehr über das alte Token laufen, das Token deaktivieren und
    `ZENDESK_EMAIL`/`ZENDESK_TOKEN` entfernen.
 
+### Ticket-Spiegel für Kennzahlen (seit 10.09.2026)
+
+Für die Kundenservice-Kennzahlen des Office-Teammeetings hält der Hub einen
+lokalen Spiegel der Tickets (`zendesk_tickets`, nur Metadaten — keine
+Inhalte): `ZendeskApiService::incrementalTickets()` ruft den Incremental-Export
+(`/api/v2/incremental/tickets/cursor.json`, Sideloads `metric_sets,users`) ab,
+`App\Services\Zendesk\ZendeskTicketSyncService` upsertet je Ticket-ID.
+Befehl `zendesk:sync-tickets` (täglich 04:45, Cloud Scheduler
+`sync-zendesk-tickets`), Erstlauf mit `--from=2026-01-01`. Gruppen-IDs
+(`Support`, `Zahlungsmanagement`) stehen in `config/zendesk.php`. Details:
+`OFFICE-TEAMMEETING.md`.
+
 ### Stolperfallen
+
+- **`Http::get($url, [])` verwirft die Query-Parameter der URL** — die
+  `after_url` des Incremental-Cursors muss zerlegt und die Query explizit
+  übergeben werden, sonst liefert der Export endlos die erste Seite.
+- Der Incremental-Export hat ein eigenes Rate-Limit von **10 Anfragen je
+  Minute**; der Sync wartet bei 429 (`Retry-After`).
 
 - Access-Tokens **nicht dauerhaft speichern** — die Ablauf-Erzwingung für
   OAuth-Tokens läuft seit 30.06.2026; der Service holt Tokens bewusst über
