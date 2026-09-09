@@ -37,6 +37,14 @@ Admin erstellt Benutzer     → Admin klickt "Einladung senden"
 5. Bei Erfolg erscheint eine grüne Benachrichtigung: *"Einladung wurde an … gesendet."*
 6. Bei Fehler (z. B. SMTP-Problem) erscheint eine rote Fehlermeldung mit Details.
 
+### Einladung aus der Personalübersicht
+
+Seit 09/2026 kann ein Hub-Konto auch direkt aus der **Personalübersicht**
+(`/hub/staff/overview`, Spalte „Hub-Konto" → „Konto anlegen") angelegt werden.
+Der Wizard fragt im letzten Schritt, ob die Einladung sofort verschickt werden
+soll; technisch läuft derselbe Weg (`App\Services\UserInvitationService`).
+Details: [Personalverwaltung](./STAFF-MODULE.md), Abschnitt „Hub-Konto anlegen".
+
 ### Erneute Einladung
 
 - Eine neue Einladung kann jederzeit gesendet werden.

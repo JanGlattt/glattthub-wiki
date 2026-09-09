@@ -39,6 +39,35 @@ Die Übersichtsseite zeigt alle Mitarbeiter in einer sortierbaren Tabelle mit Ec
 
 ---
 
+### Hub-Konto anlegen (Rückwärts-Link askDANTE → Hub)
+
+Die Spalte **Hub-Konto** zeigt je Person, ob sie schon ein Hub-Benutzerkonto
+hat (grüner Haken mit den Rollen, Tooltip mit E-Mail). Grundlage ist die
+Verknüpfung `users.hr_employee_id` ↔ `hr_employees.askdante_user_id`.
+
+Wer das Recht **Benutzer erstellen** (`create_users`, wie im Admin-Backend) hat,
+sieht bei Personen ohne Konto den Button **Konto anlegen**. Er öffnet einen
+Wizard in fünf Schritten, alles vorbelegt und änderbar:
+
+1. **Stammdaten** — Name und E-Mail aus askDANTE, Stamm-Institut und erlaubte
+   Institute aus dem askDANTE-Standort (bzw. Team-Namen), Auto-Logout.
+   Passt ein vorhandenes Hub-Konto ohne Verknüpfung (gleiche E-Mail oder
+   gleicher Name), bietet der Wizard **„Dieses Konto verknüpfen"** an — dann
+   entsteht kein Duplikat, das Konto bekommt nur die askDANTE-Verknüpfung.
+2. **Rollen** — Vorschlag aus Team/E-Mail: „leitung" → Leitung, Office/
+   Management → Büro bzw. Admin, sonst Institutsrolle (bzw. Standardrolle).
+3. **Verknüpfungen** — Phorest-Mitarbeiter (Vorschlag per Namensabgleich, nur
+   eindeutige Treffer; bereits verknüpfte sind ausgeblendet), askDANTE fest auf
+   diese Person, Schalter „HR-Kennzahlen erfassen".
+4. **Bonus-Klasse** — Vorschlag passend zur Rolle, mit „Gültig ab" (Standard:
+   Monatsanfang). Ohne Klasse erscheint die Person nicht auf dem Bonus-Board.
+5. **Abschluss** — Zusammenfassung, **Einladung per E-Mail** ja/nein (Link 7 Tage
+   gültig, Person legt PIN und Passwort selbst fest), optional PIN direkt setzen.
+
+Nach dem Anlegen zeigt die Zeile sofort den Haken; Toast bestätigt Konto und
+Einladung. Spätere Änderungen (weitere Rollen, Klassenwechsel) laufen wie
+gewohnt im Admin-Backend.
+
 ### Mitarbeiter-Detail
 
 Die Detail-Seite zeigt alle Informationen zu einem Mitarbeiter in einem Sidebar-Tab-Layout, identisch zum [Kundenprofil](CLIENT-DETAIL-MODULE.md).
@@ -205,6 +234,31 @@ Liefert die Organisationseinheiten, denen ein Mitarbeiter zugeordnet ist.
 ```
 
 ---
+
+### Hub-Konto-Wizard (Entwickler)
+
+- **Endpunkte** (Gate `can:create_users`, `HubUserProvisioningController`):
+  `GET /hub/staff/hub-account/options` (Rollen, Institute in Institut-Reihenfolge,
+  Bonus-Klassen, Phorest-Mitarbeiter, Auto-Logout), `GET /hub/staff/hub-account/prefill/{askdanteUserId}`
+  (Stammdaten, `linked_user`, `existing_candidates`, `suggestions`),
+  `POST /hub/staff/hub-account` (anlegen, optional `send_invitation`),
+  `POST /hub/staff/hub-account/link` (bestehendes Konto verknüpfen).
+- **`App\Services\UserProvisioningService`** — eine Logik für Admin-Backend und
+  Wizard: `create()` (User, Rollen mit Standardrollen-Fallback, `phorest_staff_ids`
+  + `phorest_staff.glatthub_user_id`, `hr_employee_id` + `kpi_relevant`,
+  `user_bonus_classes`; ohne Passwort ein Zufallspasswort, Zugang über die
+  Einladung), `link()`, `prefill()` (Institut über `hr_employment_periods` →
+  `hr_locations.branch_id`, Rückfall Team-Name; Namens-Schlüssel aus
+  `HrStaffLinkService::nameKeys()`), `accountsByAskdanteId()` für die Spalte.
+- **`App\Services\UserInvitationService`** — Einladung (vorherige offene
+  ungültig, Token, Mail `emails.user-invitation`); die Filament-Aktion in
+  `UsersTable` nutzt denselben Service.
+- **Frontend**: `StaffController@index` liefert zusätzlich `hub_accounts`
+  (askDANTE-ID → Konto-Kurzform); `resources/views/components/hub-user-wizard.blade.php`
+  + `public/js/hub-user-wizard.js` (Muster Dashboard-Wizard, `window.openHubUserWizard(staff)`,
+  Event `hub-user-provisioned`), Spalte in `hub/staff/partials/table.blade.php`.
+- **Tests**: `tests/Feature/HubUserProvisioningTest.php` (Rechte, Vorbelegung,
+  Anlegen mit allen Verknüpfungen, Einladung, Duplikat-Abwehr, Verknüpfen).
 
 ### Alpine.js Components
 
