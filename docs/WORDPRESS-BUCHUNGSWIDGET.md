@@ -2,7 +2,7 @@
 
 Das Buchungswidget auf glattt.com (WordPress-Plugin `WPglatttBooking`) ist die zentrale Oberfläche, über die Kunden Beratungstermine buchen. Es gibt drei Startvarianten: fester Standort (Start-Hero), Standort-Auswahl (Kacheln) und seit 0.14.0 die **Schnellbuchung**, bei der jede Kachel ihren nächsten freien Termin zeigt und ein Klick direkt bucht. Dazu kommen serverseitige Slot-Ausdünnung und Verfügbarkeits-Prefetch.
 
-- **Plugin:** `WPglatttBooking`, Version 0.16.1
+- **Plugin:** `WPglatttBooking`, Version 0.16.2
 - **Repository:** `JanGlattt/WPglatttBooking` (privat)
 - **Ablage:** Google Drive `2. Operations/7. IT/Wordpress-Plugins/WPBooking/WPglatttBooking` (+ ZIP daneben)
 - **Deploy:** ZIP von Hand in WordPress hochladen — kein Automatismus
@@ -149,6 +149,8 @@ Es gibt keinen Weg am Tracking vorbei in den Kalender. Details zur Tracking-Kett
 
 Angezeigte Termine haben pro Tag mindestens **45 Minuten Abstand** zwischen den Startzeiten. Liegen mehrere freie Slots dichter beieinander, wird bevorzugt der Slot des Mitarbeiters mit „Beratung" im Namen („… Nur für Beratungen") angezeigt — so bleibt Behandler-Kapazität frei. Gemessen an Live-Daten (Juli 2026) reduziert das die angezeigten Slots um ~25 % und hebt den Beratungs-Staff-Anteil von 74 % auf ~81 %.
 
+**Seit 0.16.2 (09.09.2026, Hinweis aus Osnabrück):** Bietet Phorest am Anfang eines freien Blocks zwei Slots kurz hintereinander an (z. B. 12:00 und 12:15), zeigt das Widget den, von dem aus die **45-Minuten-Kette** weiterläuft (12:15 → 13:00 → 13:45 …) — nicht mehr stur den früheren. Vorher blieb nach einer 12:00-Buchung vor dem nächsten angebotenen Slot 13:00 eine unbrauchbare Viertelstunde, und die Beratungen lagen im Kalender um 15 Minuten versetzt.
+
 ---
 
 ## Für Entwickler
@@ -211,7 +213,7 @@ Beim Seitenaufruf werden Services + Verfügbarkeiten im Hintergrund vorgeladen, 
 
 `glattt_thin_availability_slots($slots, $branch_id)` in `frontend-booking.php`, angewendet in `glattt_get_availability` (gilt damit für alle Varianten; B+B-Slots sind bewusst ausgenommen):
 
-- **Fenster-Logik** (kein Ketten-Kollaps): pro Tag (Site-Zeitzone) sortiert; Fenster = alle Slots < 45 Min nach dem frühesten verbleibenden; im Fenster gewinnt der erste Slot eines „Beratungs"-Staff, sonst der früheste; danach wird alles < 45 Min nach dem **gewählten** Slot übersprungen. Invariante: angezeigte Slots ≥ 45 Min Abstand.
+- **Fenster-Logik** (kein Ketten-Kollaps): pro Tag (Site-Zeitzone) sortiert; Fenster = alle Slots < 45 Min nach dem frühesten verbleibenden; im Fenster gewinnt der Slot mit dem höchsten Rang `[Beratungs-Staff, Kettenlänge]` — Beratungs-Staff vor Behandler, bei Gleichstand der Slot mit der **längsten 45-Minuten-Kette** nach hinten (`glattt_slot_chain_length()`: Folge-Slots, die exakt gap, 2×gap, … später beginnen), zuletzt der früheste; danach wird alles < 45 Min nach dem **gewählten** Slot übersprungen. Invariante: angezeigte Slots ≥ 45 Min Abstand. Hintergrund (09.09.2026): Phorest liefert am Blockanfang oft Blockstart **und** Raster-Slot (12:00 + 12:15) und nach Pausen krumme Zeiten (13:55) — der frühere „immer der früheste" ließ Viertelstunden liegen.
 - Beratungs-Staff-Erkennung: `glattt_get_beratung_staff_ids()` — Phorest-Staff je Branch, Name enthält „beratung" (case-insensitive, matcht „BI Nur für Beratungen" etc.), 12h-Transient; bei API-Fehler kein Caching und Ausdünnung ohne Präferenz.
 - Konfigurierbar ohne Release: `add_filter('glattt_slot_gap_minutes', fn() => 30);` — `0` deaktiviert die Ausdünnung.
 - Verifikation (Juli 2026, 2 Wochen Live-Daten): 661 → 496 Slots (−25 %), Beratungs-Staff-Anteil 74 % → 81 %; PHP-Implementierung deckungsgleich mit Referenz-Simulation.

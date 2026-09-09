@@ -45,6 +45,8 @@ Auch **Direktzahler** (Einmalzahlung vor Ort) können jetzt geworben werden. Im 
 3. Nach der Auswahl werden **IBAN und Kontoinhaber** aus dem SEPA-Mandat des Werbers vorbefüllt (falls vorhanden) — beides kann überschrieben oder später ergänzt werden
 4. In der Raten-Vorschau erscheint der Rabatt als Badge an der ersten Rate; die Plansumme weist die −50,00 € aus
 
+**Werber aus dem Preis-Modul oder der Institutsseite (seit 09.09.2026, Fall OS004186):** Wurde der Werber schon beim Abschluss erfasst, steht er am Vertrag, der Rabatt ist aber noch mit keiner Rate verrechnet (im Zahlungen-Tab als Badge „wird beim Anlegen des Zahlungsplans mit dem 1. SEPA-Einzug verrechnet" zu sehen — die 50 € zählen bis dahin weder als bezahlt noch als offen). Beim Anlegen des Zahlungsplans im SEPA-Tab zeigt das Modal den hinterlegten Werber als Hinweis, bietet **keine zweite Werber-Wahl** an und zieht die 50 € **automatisch vom ersten SEPA-Einzug** ab (Vorschau je Rate + Summenzeile). Vorher ging der Plan ohne Rabatt raus, und eine erneute Werber-Wahl scheiterte mit „Für diesen Vertrag ist bereits ein Werber hinterlegt".
+
 **Nachträglich** lässt sich ein Werber über den Button **„Werber hinterlegen"** im Zahlungen-Tab des Vertrags erfassen. Der Rabatt wird mit der **nächsten noch offenen Rate** verrechnet — ist der erste Einzug bereits eingereicht oder eingezogen, wandert er automatisch auf die nächstmögliche. Nur wenn gar keine offene Rate mehr existiert, ist das Hinterlegen nicht möglich. Die Auszahlungs-Voraussetzung für den Werber (erfolgreicher **erster** Einzug + 7 Tage Karenz) bleibt davon unberührt.
 
 Hinweise:
@@ -136,6 +138,7 @@ Wer benachrichtigt wird, sobald eine Prämie auszahlbar ist, wird im **Filament-
 | Rabatt-Verteilung (erste Fälligkeit, 1-€-Minimum, Übertrag) | `ContractReferralService::distributeDiscount()` |
 | Verrechnung bei Plan-Anlage (vor der Gutschein-Verteilung) | `ContractController::createGoCardless()` |
 | Nachträglich: nächste offene Rate (GC-Einzug stornieren + reduziert neu anlegen) | `ContractController::addReferralToPlan()` → `ContractReferralService::applyDiscountToOpenRates()` |
+| Werber schon am Vertrag, Rabatt offen (`ContractReferral::discountPending()`): SEPA-Tab verrechnet beim Anlegen automatisch, schreibt `discount_allocation` + `ContractChange` `referral_discount_applied` | `ContractController::createGoCardless()` (`$pendingReferral`), Frontend `existingReferral`/`referralDiscountActive()` in `contract-detail.js`, `referral_block.discount_pending` |
 | Rabatt für bestehende Werbung nachverrechnen (`POST …/referrals/{referral}/apply-discount`, Guards: schon verrechnet/storniert/keine offene Rate, Audit `referral_discount_applied`) | `ContractReferralController::applyDiscount()` |
 | Werbung auf anderen Vertrag umhängen (`PUT …/referrals/{referral}/contract` + `GET …/contract-options`, Guards: Entwurf, fremde Werbung, Selbst-Werbung; setzt unbestätigtes `payout_ready_at` zurück; Audit `referral_contract_relinked`) | `ContractReferralController::updateContract()` |
 | Werber-Suche (client_statistics × qualifizierende contracts) | `ContractReferralService::searchReferrers()` |

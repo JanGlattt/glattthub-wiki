@@ -83,6 +83,14 @@ ab, zeigt der Hinweis oben auf der Fall-Detailseite beide Zahlen.
   beim Anhängen). Platzt die angehängte oder die nächste Lastschrift
   (**2. RLS in Folge**), liegt der Fall **zur Entscheidung** vor (siehe
   „Neue Rücklastschrift während laufender Bearbeitung").
+  **Seit 09.09.2026 (Fall OS003354):** Startet der Fall nach dieser
+  Entscheidung von vorne, folgt auf die 2. Zahlungserinnerung **kein
+  Monitoring mehr** — bei der zweiten Rücklastschrift gibt es keinen
+  nächsten Einzug abzuwarten. Stattdessen geht es in den **postalischen
+  Mahnweg**: 1. Mahnung (10 Tage) → letzte Mahnung (mit oder ohne
+  Fälligstellung per Checkbox) → anhängen bzw. 250-€-Entscheid. Das
+  Monitoring bleibt dem ersten Ausrutscher vorbehalten (genau eine RLS am
+  Fall).
   **Seit 28.08.2026:** Ist im sanften Weg die **Gesamtsumme fällig gestellt**
   oder ist es ein **Nicht-RLS-Einstieg** (Mandatsentzug/Direktzahler), führt
   „Rate anhängen" ins Leere — nach der letzten Mahnung steht dann wie im
@@ -153,6 +161,13 @@ Vorlagen-Varianten hinterlegt werden.
   Jedes Schreiben nennt automatisch die **Bankverbindung des Instituts, in dem
   der Vertrag geschlossen wurde** (Pflege: Institut öffnen → Tab „Bankverbindung").
 - Der versendete Text wird als **Snapshot am Fall** gespeichert (Nachweis).
+- **Fälligstellung nimmt angehängte Raten voll in die Forderung (09.09.2026,
+  Fall H003435)**: Sobald die Gesamtsumme fällig gestellt ist, entfällt im
+  Schreiben die Abzugszeile „Bereits im SEPA-Einzug (angehängte Raten)" —
+  die Ratenzahlung ist damit beendet, pausierte oder angehängte Raten werden
+  nicht mehr eingezogen und gehören in die Restforderung. Ohne
+  Fälligstellung (Einzel-Lastschrift-Schreiben) bleibt der Abzug, damit der
+  Kunde eine noch laufende angehängte Serie nicht doppelt zahlt.
 - **Fälligstellung ist eine sichtbare Wahl (08/2026)**: Bei postalischen
   Mahnungen an RLS-Fällen zeigt das Versand-Modal die Checkbox **„Gesamte
   Restsumme des Vertrags fällig stellen"** — vorbelegt nach der Standard-Regel

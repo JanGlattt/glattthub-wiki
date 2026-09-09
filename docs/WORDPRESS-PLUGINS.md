@@ -17,7 +17,7 @@ zusammen, und wo berühren sie den glatttHub.
 
 | Plugin | Was es tut | Wo es sichtbar ist | Version | Doku |
 |---|---|---|---|---|
-| **WPglatttBooking** | Terminbuchung in Phorest **und** die Stammdaten aller Institute | Startseite, alle Standortseiten, `#termin` | 0.16.1 | [Buchungswidget](WORDPRESS-BUCHUNGSWIDGET.md) |
+| **WPglatttBooking** | Terminbuchung in Phorest **und** die Stammdaten aller Institute | Startseite, alle Standortseiten, `#termin` | 0.16.2 | [Buchungswidget](WORDPRESS-BUCHUNGSWIDGET.md) |
 | **WPglatttAnfahrt** | Anfahrtsbereich „Du findest uns hier" | die fünf Standortseiten | 0.6.0 | [Anfahrt](WORDPRESS-ANFAHRT.md) |
 | **WPglatttFAQ** | häufige Fragen, zentral gepflegt | FAQ-Seite, Preise, Körperzonen, Standorte | 0.3.0 | [FAQ](WORDPRESS-FAQ.md) |
 | **WPglatttRechner** | Kostenrechner Rasieren/Waxing | Kampagnen- und Ratgeberseiten | 0.8.1 | [Rechner](WORDPRESS-RECHNER.md) |
