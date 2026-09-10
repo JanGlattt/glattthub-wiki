@@ -51,10 +51,11 @@ haben — der laufende Monat sinkt also typischerweise noch.
 Der Balkenstapel ist die Summe aller widerrufenen Körperzonen: akzeptierte
 (inkl. stornierte Verträge), **abgewimmelte** (Widerruf abgelehnt, Vertrag läuft
 unbelastet weiter) und offene bzw. umgewandelte (Upgrade, Downgrade, Korrektur,
-Laufzeit — die laufen weiter, aber verändert, und zählen deshalb bewusst nicht
-als abgewimmelt; Entscheidung Jan 10.09.2026). Abwimmelquote = abgewimmelte ÷
-alle widerrufenen KPZ. Diese Karte wird bewusst **immer live** gerechnet, weil
-Widerrufe zu einem Vertragsmonat später eintreffen können.
+Laufzeit). **Abwimmelquote = Anteil der widerrufenen KPZ, der nicht akzeptiert
+wurde** (100 % minus akzeptierte ÷ alle widerrufenen KPZ; August 2026: 79 von 96
+= 82,3 %) — Präzisierung Jan 10.09.2026 nach dem ersten Blick auf die Karte.
+Diese Karte wird bewusst **immer live** gerechnet, weil Widerrufe zu einem
+Vertragsmonat später eintreffen können.
 
 **SEPA.** „Rückläufer gesamt (Wert)" zählt endgültig geplatzte **und**
 nachgezahlte Raten — das ist die Zahl aus dem Kontoauszug (Janine: „wie bislang").
@@ -85,7 +86,9 @@ askDANTE fallen aus dem Durchschnitt und werden gezählt ausgewiesen.
 
 **Ads.** Leads = Ads-Buchungen aus dem Buchungstracking (Klick-ID oder bezahltes
 Medium), nicht die von Meta gemeldeten Leads. CPL = Meta- plus Google-Ausgaben ÷
-Ads-Buchungen. Die Beratungs-Karte zeigt je Stichtag die gebuchten Beratungen
+Ads-Buchungen. Die beiden Ads-Karten starten **erst im April 2026** (davor ist
+die Datenlage nicht belastbar — Jan 10.09.2026); technisch hängen sie in einem
+eigenen Rahmen mit späterem `date_from` (`adsStatFilters` in `office-meeting.js`). Die Beratungs-Karte zeigt je Stichtag die gebuchten Beratungen
 der kommenden 28 Tage, über 7 Tage geglättet; die Historie reicht bis 2023, der
 Start-Zoom liegt auf dem laufenden Jahr.
 
