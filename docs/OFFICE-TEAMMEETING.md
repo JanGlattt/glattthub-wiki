@@ -36,7 +36,7 @@ zweiseitigen Karten (Diagramm ⇄ Tabelle über das Register am Kartenrand).
 | 4 Forderungen | Forderungsbestand je Monatsende | Gesamtforderung nach Töpfen: geparkt, gerichtlich, Ratenzahlung, Rest | neu (Snapshots) |
 | 5 HR | Fluktuation & Betriebszugehörigkeit | seit Jahresbeginn fortgeschriebene Fluktuationsquote; Ø Zugehörigkeit in Jahren je Monatsende | neu (auf HR-Kennzahlen aufgesetzt) |
 | 6 Ads | Monatliche Ads-Entwicklung | Leads (Ads-Buchungen) und Verträge pro Monat | Ads-Analyse |
-| 6 Ads | Kostenverlauf & Kosten pro Lead | CPL gesamt und je Plattform, **ROAS** (Vertragswert der Ads-Kunden ÷ Werbekosten, dritte Achse) | Ads-Analyse, erweitert |
+| 6 Ads | Kostenverlauf & Kosten pro Lead | CPL gesamt und je Plattform, **ROAS** (Vertragswert aller Abschlüsse des Monats ÷ Werbekosten, dritte Achse) | Ads-Analyse, erweitert |
 | 6 Ads | Entwicklung geplanter Beratungsgespräche | Beratungen in den nächsten 28 Tagen je Stichtag, gleitender 7-Tage-Ø | Zukünftige Beratungen |
 
 ### Was die Zahlen genau bedeuten
@@ -93,9 +93,10 @@ askDANTE fallen aus dem Durchschnitt und werden gezählt ausgewiesen.
 
 **Ads.** Leads = Ads-Buchungen aus dem Buchungstracking (Klick-ID oder bezahltes
 Medium), nicht die von Meta gemeldeten Leads. CPL = Meta- plus Google-Ausgaben ÷
-Ads-Buchungen. ROAS = Gesamtvertragswert der Ads-Kunden, deren Buchung in den
-Monat fällt, ÷ Werbekosten des Monats (Faktor; junge Monate wachsen nach, weil
-Verträge dem Buchungsmonat zugeordnet werden). Die beiden Ads-Karten starten
+Ads-Buchungen. ROAS = Gesamtvertragswert **aller** im Monat abgeschlossenen
+Verträge ÷ Werbekosten des Monats (Faktor). Bewusst gegen alle Verträge und
+nicht nur gegen die der Ads-Leads (Jan 10.09.2026) — der Vertragswert der
+Ads-Kunden je Buchungsmonat bleibt als Zusatzinfo im Datensatz. Die beiden Ads-Karten starten
 **erst im April 2026** (davor ist
 die Datenlage nicht belastbar — Jan 10.09.2026); technisch hängen sie in einem
 eigenen Rahmen mit späterem `date_from` (`adsStatFilters` in `office-meeting.js`). Die Beratungs-Karte zeigt je Stichtag die gebuchten Beratungen

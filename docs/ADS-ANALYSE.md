@@ -206,7 +206,7 @@ Kombichart (ECharts) mit zwei Y-Achsen:
 - **Balken (linke Achse):** Werbekosten pro Monat, gestapelt nach Plattform (Meta blau, Google grün)
 - **Linie (rechte Achse, gold):** Kosten pro Lead = Gesamtkosten ÷ Ads-Buchungen des Monats
 - **Gestrichelte Linien (rechte Achse):** Kosten pro Lead je Plattform — Meta (blau, Ausgaben ÷ fbclid-Buchungen) und Google (grün, Ausgaben ÷ gclid/gbraid-Buchungen)
-- **ROAS (dritte Achse, seit 10.09.2026):** Gesamtvertragswert der Ads-Kunden des Buchungsmonats ÷ Gesamtkosten des Monats; auch als Tabellen-Spalte, im CSV-Export und als KPI „ROAS (gesamt)" (kombiniert Meta + Google)
+- **ROAS (dritte Achse, seit 10.09.2026):** Gesamtvertragswert **aller** im Monat abgeschlossenen Verträge ÷ Gesamtkosten des Monats (bewusst nicht nur die Verträge der Ads-Leads — Entscheidung Jan); auch als Tabellen-Spalten „Verträge (alle)"/„Vertragswert (alle)", im CSV-Export und als KPI „ROAS (alle Verträge)" (kombiniert Meta + Google). Die plattformbezogenen KPIs „ROAS"/„Google ROAS" rechnen weiterhin mit den Verträgen der Ads-Kunden
 
 So sieht man die Abhängigkeit zwischen Budget und Lead-Preis. In Monaten ohne
 Ads-Buchungen wird keine Linie gezeichnet. Achtung: Die Kosten kommen aus den
