@@ -25,6 +25,9 @@ zweiseitigen Karten (Diagramm ⇄ Tabelle über das Register am Kartenrand).
 
 | Bereich | Karte | Kennzahl | Herkunft |
 |---|---|---|---|
+| 0 Verkauf | Körperzonen pro Institut | verkaufte KPZ je Institut und Monat, Zoom-Regler ab Jahresbeginn | Verkaufsstatistik |
+| 0 Verkauf | Körperzonen pro Tag | KPZ je Tag und Institut mit Beratungen, Zoom-Regler | Verkaufsstatistik |
+| 0 Verkauf | Aktueller Buchungsstand | gebuchte Beratungen heute / 3 / 7 / 14 / 28 Tage je Institut | Zukünftige Beratungen |
 | 1 Kundenservice | Kundenservice-Tickets | Ø von Kunden eröffnete Tickets pro Woche; Median der ersten Reaktion (Kalenderstunden) — ohne Zahlungsmanagement | neu (Zendesk-Spiegel) |
 | 2 Widerrufe | Entwicklung über Zeit (KPZ-Ansicht) | alle widerrufenen KPZ je Vertragseingangsmonat, davon akzeptiert / abgewimmelt / offen; KPZ-Quote und **Abwimmelquote** | Widerruf-Statistik, erweitert |
 | 3 SEPA | Rücklastschriften pro Monat | RLS-Quote nach Anzahl und Wert plus **Rückläufer gesamt (Wert)** = Sicht des Kontoauszugs | Verkaufsstatistik, erweitert |
@@ -94,6 +97,7 @@ Start-Zoom liegt auf dem laufenden Jahr.
 
 ### KPI-Zeile
 
+Vier Kacheln ohne Ausklappen (die Auswahl richtet sich jeder selbst ein).
 Laufender Monat bis heute, Vergleich zum Vormonat: Tickets pro Woche, Median
 erste Reaktion, Abwimmelquote, Rückläufer-Quote (Wert), binnen 30 Tagen gezahlt,
 Gesamtforderung (plus die vier Töpfe), Fluktuation seit Jahresbeginn, Ø
