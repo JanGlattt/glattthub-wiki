@@ -19,7 +19,21 @@ konfigurierbare Regel aus dem **Boni-Baukasten** — nichts ist fest programmier
   Widerrufs-Vorbehalt** (ein Widerruf ist eingegangen, aber noch nicht
   entschieden — abgezogen wird nichts, solange die Verwaltung nicht entscheidet).
 - **Hochrechnung**: dein bisheriges Monatstempo linear bis zum Monatsende
-  fortgeschrieben — Orientierung, keine Garantie.
+  fortgeschrieben — Orientierung, keine Garantie. Gilt nur für **Summen**
+  (verkaufte KPZ, Bewertungs-Saldo). Ein **Schnitt oder eine Quote** (z.B.
+  KPZ je Beratungsgespräch) wird nicht hochgerechnet: Der aktuelle Wert ist
+  die Einordnung, und er kann bis zum Monatsende noch kippen.
+- **Status je Ziel**: „Erreicht" (ggf. „– unter Vorbehalt"), „Auf Kurs",
+  „Offen"; nach Monatsende nur noch „Erreicht"/„Nicht erreicht". Bei
+  Schnitten/Quoten gibt es im laufenden Monat **nie „Erreicht"**, höchstens
+  „Auf Kurs" — und das nur, wenn der Wert **jetzt schon am Ziel** liegt
+  (2,0 bei Ziel 2,6 ist „Offen", nicht „auf Kurs"). Der Bonus daraus zählt bis
+  zum Monatsende nur in der Hochrechnung, nicht in „Schon gesichert".
+- **Ranking-Challenges**: Die Tabelle zeigt im laufenden Monat einen
+  **Zwischenstand** — gewertet wird der Stand am Monatsende, jeder Platz kann
+  sich noch ändern. Der Status markiert nur, wenn KPZ unter Widerrufs-Vorbehalt
+  den Platz gerade halten („ohne Vorbehalt Platz 3"); nach Monatsende steht
+  dort „Endstand".
 - **Serien**: Regeln mit Serien-Bonus zeigen die erreichten Monate in Folge als
   Punkte und was beim nächsten Meilenstein extra winkt (z.B. 3 bzw. 6 Monate).
 - **Celebration**: Hast du seit deinem letzten Besuch zu einer Verbesserung
@@ -270,8 +284,10 @@ Das Standard-Bonussystem wird per Migration
   ranking_prizes`, `condition_config.level/relative/blind/qualify_min`,
   `reward_config.places[]/team_distribution`) laufen über
   `applyRankingRule()`: Einträge je Team/Person, `assignRanks()` (Platz = 1 +
-  Anzahl höherer Werte; gesicherter Platz = eigener Wert ohne Vorbehalt gegen
-  volle Werte der anderen), Preise über `BonusRule::prizeForPlace()`. Das Board
+  Anzahl höherer Werte; `secured_rank` = eigener Wert ohne Vorbehalt gegen
+  volle Werte der anderen — im UI als „ohne Vorbehalt Platz X" ausgewiesen,
+  nie als „gesichert", weil andere im laufenden Monat noch vorbeiziehen
+  können), Preise über `BonusRule::prizeForPlace()`. Das Board
   liefert `challenges[]` mit allen Einträgen; die Personen-Zeile trägt
   `ranking{rank, secured_rank, total, prize, …}`. Blind-Logik sitzt im
   `BonusBoardController` (`challengesForUser()`, `blindfold()`): im laufenden
@@ -341,7 +357,15 @@ Kundennamen, CSV-/PDF-Export), `tests/Feature/HrUserLinkServiceTest.php` (askDAN
   bis ein Widerruf entschieden oder der Monat eingefroren ist — nichts wird
   stillschweigend abgezogen.
 - **Hochrechnung linear** (Wert ÷ verstrichener Monatsanteil) — bewusst simpel
-  und erklärbar.
+  und erklärbar. **Nur für Summen**: `BonusMetricResolver::metricKind()`
+  unterscheidet `sum` und `ratio` (intern `kpz_per_bg`; Registry-Kennzahlen
+  mit Prozent-/Verhältnis-Format, Dezimalstellen oder IDs wie `avg`, `rate`,
+  `per`, `share`). Bei `ratio` ist die Hochrechnung der Wert selbst, und das
+  Regelergebnis trägt `provisional = true`, solange der Monat läuft:
+  `achieved`/`secured_achieved`/`payout_cents` bleiben false/0, nur
+  `projection.achieved` (+ `secured_achieved`) sagt „auf Kurs". Nach
+  Monatsende (`monthClosed`) wird normal bewertet. Tests:
+  `BonusMetricKindTest`, `BonusEngineTest::test_schnitt_*`.
 - **Abwesenheitstage** = Krankheit + Urlaub + Sonderurlaub (ohne Wochenende,
   Feiertag, Überstundenabbau); Korrektur über Override `absence_days`.
 - **Sachprämien/Team-Budgets** fließen nicht in die €-Summe ein — sie werden
