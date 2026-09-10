@@ -112,6 +112,40 @@ Gesamtforderung (plus die vier Töpfe), Fluktuation seit Jahresbeginn, Ø
 Unternehmenszugehörigkeit, Ads-Buchungen, Kosten pro Lead (gesamt), geplante
 Beratungen (28 Tage). Auswahl und Reihenfolge merkt sich der Browser.
 
+### Präsentationsmodus (seit 10.09.2026)
+
+Button **„Präsentieren"** im Seitenkopf oder Taste `P`: Der Browser geht in den
+Vollbildmodus, der Bildschirm bleibt wach, und es ist immer genau **eine Karte**
+formatfüllend zu sehen — mit größerer Schrift, Register Diagramm/Tabelle,
+Umschaltern, Zoom-Regler und Klick-Freistellung wie gewohnt. Drilldown-Modale und
+Info-Panels öffnen weiter darüber.
+
+| Aktion | Bedienung |
+|---|---|
+| Nächste / vorige Karte | `→` `←` `Leertaste`, Wischen auf dem Tablet, Pfeile in der Leiste |
+| Erste / letzte Karte | `Pos1` / `Ende` |
+| Agenda (Bereiche 0–6 mit ihren Karten, Fortschritt „5 / 13") | `A` oder Listensymbol |
+| Spotlight (heller Kreis um die Maus, Rest abgedunkelt) | `S` |
+| Stift (freihand in glattt-Gold, verschwindet beim Folienwechsel) | `M`, löschen mit `C` |
+| Tabellenzeile hervorheben (mehrere möglich) | Klick auf die Zeile in der Tabellen-Ansicht |
+| Serie freistellen | Klick auf Linie oder Balken (gab es schon) |
+| Tastenkürzel anzeigen | `?` |
+| Beenden | `Esc` oder ✕ |
+
+**Deep Link:** `/hub/reports/office-meeting?praesentation=widerrufe.trend` startet
+direkt im Modus auf dieser Karte; die URL folgt beim Blättern mit, ein Reload
+landet also wieder auf derselben Folie.
+
+Für Entwickler: wiederverwendbar über drei Zeilen je Seite —
+`js/presentation-mode.js` in den `@assets`, `<x-presentation-mode />` am Ende des
+Inhalts, `<x-presentation-toggle />` im Kopf. Die Karten bleiben im Dokument;
+der Modus legt einen Vorhang darüber (`body.presenting`, Ebenen 8000–8400,
+bewusst unter Modalen mit 9999) und hebt die aktive Karte per Klasse
+`is-present-active` nach vorn, danach ein `resize`-Event für ECharts. Bereiche
+der Agenda kommen aus den `.divider-with-text`-Trennlinien der Seite. Styles im
+Theme-Abschnitt „PRÄSENTATIONSMODUS". Bewusst (noch) nicht gebaut:
+Moderationsnotizen, „Seit letztem Meeting", PDF-Handout, Timer, Fernbedienung.
+
 ### CSV-Export
 
 Im Export-Modal stehen die vier Office-eigenen Quellen (Tickets, 30-Tage-Kohorte,
