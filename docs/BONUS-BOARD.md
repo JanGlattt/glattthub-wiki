@@ -167,9 +167,23 @@ Management-Sicht wechseln (Stand 09.09.2026):
   jüngsten früheren Monat (Hinweis „übernommen aus …" in der Verwaltung;
   Speichern legt eigene Monats-Werte an). Jede Speicherung wird per Toast
   bestätigt.
-- **Offene Widerrufe**: je Fall „zählt" / „zählt nicht" entscheiden (mit
-  optionaler Begründung). Ohne Entscheidung zählen die KPZ weiter, stehen aber
-  überall sichtbar „unter Vorbehalt".
+- **Offene Widerrufe**: je Fall **getrennt für Team-Bonus und persönlichen
+  Bonus** „zählt" / „zählt nicht" / „parken" entscheiden (mit optionaler
+  Begründung). Ohne Entscheidung zählen die KPZ weiter, stehen aber überall
+  sichtbar „unter Vorbehalt". **Parken** nimmt die KPZ aus diesem Monat heraus
+  (kein Vorbehalt mehr) und stellt sie im Folgemonat erneut zur Entscheidung —
+  nur für den Bonus, keine andere Statistik ändert sich. Team und persönlich
+  sind unabhängig: Das Team kann den Widerruf schon zugerechnet bekommen
+  („zählt"), während er persönlich geparkt bleibt. Parken ist beliebig oft
+  hintereinander möglich (Kette), solange der Folgemonat nicht final
+  eingefroren ist. Wird der Widerruf im Widerrufe-Modul entschieden, folgt der
+  Bonus automatisch: abgelehnt → zählt, akzeptiert → zählt nicht — der Fall
+  bleibt in der Liste sichtbar („Widerruf abgelehnt · zählt"), die Buttons
+  verschwinden. Hereingeparkte Fälle stehen mit Herkunft („aus August
+  geparkt"), auf den Zielen erscheint „davon 6 aus dem Vormonat geparkt" bzw.
+  „4 in den Folgemonat geparkt". Geparkte KPZ zählen im Folgemonat **nur für
+  Summen-Ziele** (verkaufte KPZ), nicht im Schnitt KPZ je Beratungsgespräch —
+  das Gespräch lag im Ursprungsmonat.
 - **Wert-Korrekturen**: jede Kennzahl (auch Abwesenheitstage) manuell
   korrigieren — **Begründung ist Pflicht**, alles landet im Audit-Trail und ist
   auf den betroffenen Board-Karten sichtbar.
@@ -222,7 +236,7 @@ ganzen Monat nach ihr bewertet.
 | `bonus_rule_achievements` | Beim Einfrieren persistierte Monatsergebnisse — Serien-Basis |
 | `bonus_board_freezes` | Versionierte Monatsstände (kompletter Board-Payload als JSON, `is_final`) |
 | `bonus_value_overrides` | Wert-Korrekturen mit Pflicht-Begründung (Audit-Trail) |
-| `bonus_revocation_decisions` | Zählen/Nicht-zählen je offenem Widerruf × Monat |
+| `bonus_revocation_decisions` | Entscheidung je offenem Widerruf × Monat, getrennt `team_decision` / `personal_decision` (count / exclude / park) |
 | `bonus_board_visits` | Letzter Besuch + Snapshot für die Celebration |
 | `bonus_visibility_overrides` | Per-User-Feinsteuerung der Regel-Sichtbarkeit |
 
@@ -356,6 +370,23 @@ Kundennamen, CSV-/PDF-Export), `tests/Feature/HrUserLinkServiceTest.php` (askDAN
 - **Live-Betrachtung + Vorbehalt** statt Punkt-in-Zeit-Snapshots: KPZ zählen,
   bis ein Widerruf entschieden oder der Monat eingefroren ist — nichts wird
   stillschweigend abgezogen.
+- **Parken (10.09.2026):** `BonusMetricResolver` lädt Entscheidungen über
+  12 Monate zurück (`mapForRange`) und alle je geparkten Widerrufe (auch
+  geschlossene, `parkedCancellationIds()`). `landingMonth()` läuft ab dem
+  Unterschriftsmonat über jeden Monat mit „park" hinweg; `revocationZonesFor()`
+  liefert je Kennzahl-Scope (`personal` → persönliche Entscheidung, sonst
+  Team) `at_risk`/`excluded`/`carried_in`/`carried_at_risk`/`parked_out`.
+  Im Ursprungsmonat werden geparkte KPZ aus der Summe genommen (nur wenn der
+  Vertrag noch in der Summe steckt), im Landemonat addiert (`carried_in`);
+  geschlossener Widerruf im Landemonat: abgelehnt → zählt ohne Vorbehalt,
+  akzeptiert (Reaktion oder Vertrag storniert) → nichts. Die Fall-Liste
+  (`pendingRevocationCases()`) trägt je Scope `state` (open / count / exclude /
+  park / auto_count / auto_exclude / decided_earlier) plus `landing_month`,
+  `origin_month`, `carried_in`. Endpoint `POST /hub/bonus/revocation-decisions`
+  braucht `scope` (team/personal) und `decision` (count/exclude/park); Parken
+  scheitert, wenn der Folgemonat final eingefroren ist. Tests:
+  `BonusEngineTest::test_geparkter_*`, `test_parken_wirkt_getrennt_*`,
+  `BonusBoardPageTest::test_widerruf_entscheidung_je_scope_und_parken`.
 - **Hochrechnung linear** (Wert ÷ verstrichener Monatsanteil) — bewusst simpel
   und erklärbar. **Nur für Summen**: `BonusMetricResolver::metricKind()`
   unterscheidet `sum` und `ratio` (intern `kpz_per_bg`; Registry-Kennzahlen
