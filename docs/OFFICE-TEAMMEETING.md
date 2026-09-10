@@ -36,7 +36,7 @@ zweiseitigen Karten (Diagramm ⇄ Tabelle über das Register am Kartenrand).
 | 4 Forderungen | Forderungsbestand je Monatsende | Gesamtforderung nach Töpfen: geparkt, gerichtlich, Ratenzahlung, Rest | neu (Snapshots) |
 | 5 HR | Fluktuation & Betriebszugehörigkeit | seit Jahresbeginn fortgeschriebene Fluktuationsquote; Ø Zugehörigkeit in Jahren je Monatsende | neu (auf HR-Kennzahlen aufgesetzt) |
 | 6 Ads | Monatliche Ads-Entwicklung | Leads (Ads-Buchungen) und Verträge pro Monat | Ads-Analyse |
-| 6 Ads | Kostenverlauf & Kosten pro Lead | CPL gesamt und je Plattform | Ads-Analyse |
+| 6 Ads | Kostenverlauf & Kosten pro Lead | CPL gesamt und je Plattform, **ROAS** (Vertragswert der Ads-Kunden ÷ Werbekosten, dritte Achse) | Ads-Analyse, erweitert |
 | 6 Ads | Entwicklung geplanter Beratungsgespräche | Beratungen in den nächsten 28 Tagen je Stichtag, gleitender 7-Tage-Ø | Zukünftige Beratungen |
 
 ### Was die Zahlen genau bedeuten
@@ -83,13 +83,20 @@ September, Entscheidung Jan 10.09.2026). Der laufende Monat wird live gerechnet.
 
 **HR.** Fluktuation seit Jahresbeginn = kumulierte Austritte seit 1. Januar ÷
 durchschnittliche Kopfzahl der bisherigen Monate, über alle Mitarbeitenden
-inklusive Büro und Geschäftsführung. Ø Betriebszugehörigkeit zum Monatsende in
+inklusive Büro und Geschäftsführung. Die Kopfzahl folgt derselben Bestandsregel
+wie die Struktur-Karte und die KPI „Mitarbeiter" der HR-Seite (`employeesOn`):
+Bis 10.09.2026 zählte die Fluktuations-Reihe 24 archivierte Mitarbeitende ohne
+Austrittsdatum mit (59 statt 34 Personen) — Jan fiel das im Office-Teammeeting
+auf, der Fehler steckte in der HR-Seite selbst und ist dort mitbehoben. Ø Betriebszugehörigkeit zum Monatsende in
 Jahren mit einer Nachkommastelle; Personen ohne gepflegtes Eintrittsdatum in
 askDANTE fallen aus dem Durchschnitt und werden gezählt ausgewiesen.
 
 **Ads.** Leads = Ads-Buchungen aus dem Buchungstracking (Klick-ID oder bezahltes
 Medium), nicht die von Meta gemeldeten Leads. CPL = Meta- plus Google-Ausgaben ÷
-Ads-Buchungen. Die beiden Ads-Karten starten **erst im April 2026** (davor ist
+Ads-Buchungen. ROAS = Gesamtvertragswert der Ads-Kunden, deren Buchung in den
+Monat fällt, ÷ Werbekosten des Monats (Faktor; junge Monate wachsen nach, weil
+Verträge dem Buchungsmonat zugeordnet werden). Die beiden Ads-Karten starten
+**erst im April 2026** (davor ist
 die Datenlage nicht belastbar — Jan 10.09.2026); technisch hängen sie in einem
 eigenen Rahmen mit späterem `date_from` (`adsStatFilters` in `office-meeting.js`). Die Beratungs-Karte zeigt je Stichtag die gebuchten Beratungen
 der kommenden 28 Tage, über 7 Tage geglättet; die Historie reicht bis 2023, der

@@ -31,7 +31,7 @@ Register am Kartenrand):
 | **Produktivität je Stunde** | Umsatz, Körperzonen und Behandlungen je gearbeiteter Stunde, dazu die Produktivstundenquote |
 | **Personalkosten und Kostenquote** | Brutto, Arbeitgeber-Gesamtkosten und Kostenquote — nur mit `view_hr_salaries` |
 | **Abwesenheiten und Krankenquote** | Kranktage nach Kurz- und Langzeit, alle Abwesenheitsgründe |
-| **Eintritte, Austritte und Fluktuation** | Personalbewegungen und Fluktuationsquote je Monat |
+| **Eintritte, Austritte und Fluktuation** | Personalbewegungen und Fluktuationsquote je Monat (Kopfzahl seit 10.09.2026 nach derselben Bestandsregel wie die Struktur-Karte — vorher zählten archivierte Mitarbeitende ohne Austrittsdatum mit) |
 | **Befristungs- und Probezeit-Radar** | Was in den nächsten 90 Tagen ausläuft (Einzelfallliste) |
 | **Personalstruktur** | Betriebszugehörigkeit, Beschäftigungsgrad, Alter, Geschlecht |
 | **Institutsvergleich** | Alle Kennzahlen je Standort |
