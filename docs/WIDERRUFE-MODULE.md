@@ -246,7 +246,10 @@ erfassen und bearbeiten"):
   zum Ursprungsvertrag wird dann automatisch hergestellt).
 - **Umsetzungs-Aktionen** (seit 15.08.2026 als Button-Block **in der Aktionen-Karte**,
   rechte Spalte — die frühere Umsetzungs-Karte in der linken Spalte ist entfallen):
-  Jeder Button öffnet ein eigenes Modal — „Downgrade-Formulare …" (solange der Fall
+  Jeder Button öffnet ein eigenes Modal — **„Vertragsänderung im Fernabsatz …"**
+  (seit 11.09.2026: Downgrade-Angebot per Kundenlink mit schwebendem Folgevertrag
+  und 14-tägiger Widerrufsfrist, siehe [VERTRAGSAENDERUNG-FERNABSATZ.md](VERTRAGSAENDERUNG-FERNABSATZ.md)),
+  „Downgrade vor Ort (Formulare) …" (solange der Fall
   läuft bzw. bei Ergebnis Downgrade), „Phorest-Pakete auf 0 setzen …" (nach dem
   Abschluss mit vertragsbeendendem Ergebnis) und „SEPA-Mandat stornieren …"
   (**ab dem Eintrag des Widerrufs**, Recht `manage_gocardless`; GoCardless wird
