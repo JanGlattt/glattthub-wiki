@@ -12,6 +12,12 @@ const here = __dirname;
 const b64 = (f, mime) => `data:${mime};base64,${fs.readFileSync(f).toString('base64')}`;
 const esc = (s) => String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const rich = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/„(.+?)“/g, '„<span class="ui">$1“</span>'.replace('“</span>', '</span>“'));
+/* Stand und Version der Fussnote: stand.txt (schreibt run-all.sh beim Aufnahmelauf) schlaegt
+   die Umgebungsvariable STAND, diese schlaegt den Wert im Deck. So traegt jedes PDF automatisch
+   den Tag, an dem seine Screenshots entstanden sind. */
+const standFile = path.resolve(path.dirname(deckFile), '../stand.txt');
+const STAND = (fs.existsSync(standFile) ? fs.readFileSync(standFile, 'utf8').trim() : '') || process.env.STAND || deck.stand;
+const VERSION = process.env.VERSION || deck.version || '';
 const logo = b64(path.join(here, 'logo.png'), 'image/png');
 const fontR = b64(path.join(here, 'Lato-Regular.woff2'), 'font/woff2');
 const fontB = b64(path.join(here, 'Lato-Bold.woff2'), 'font/woff2');
@@ -22,6 +28,14 @@ function img(name) {
   if (imgCache[name]) return imgCache[name];
   const png = path.join(shotsDir, name + '.png');
   const jpg = path.join(shotsDir, name + '.jpg');
+  if (!fs.existsSync(png) && !fs.existsSync(jpg)) {
+    // Fehlender Screenshot bricht den Bau nicht ab, sondern faellt als Platzhalter auf: So laesst sich
+    // ein Deck auch vor dem naechsten Aufnahmelauf bauen und der fehlende Shot springt im PDF ins Auge.
+    console.log('SCREENSHOT FEHLT:', name, '— Platzhalter eingesetzt (Aufnahmelauf noch nicht gelaufen?)');
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 820"><rect width="1180" height="820" fill="#f3f4f6"/><text x="590" y="400" text-anchor="middle" font-family="Helvetica" font-size="34" fill="#9ca3af">Screenshot fehlt: ${name}</text><text x="590" y="450" text-anchor="middle" font-family="Helvetica" font-size="22" fill="#b91c1c">Aufnahmelauf noch nicht gelaufen</text></svg>`;
+    imgCache[name] = 'data:image/svg+xml;base64,' + Buffer.from(svg).toString('base64');
+    return imgCache[name];
+  }
   if (!fs.existsSync(png)) { imgCache[name] = b64(jpg, 'image/jpeg'); return imgCache[name]; } // Wiki-Ablage: nur JPEG
   try {
     if (!fs.existsSync(jpg) || fs.statSync(jpg).mtimeMs < fs.statSync(png).mtimeMs) {
@@ -71,7 +85,7 @@ function stepsHtml(steps, cols = 2) {
 const hintHtml = (h) => h ? `<div class="hint ${h.kind || ''}"><span class="i">i</span><div>${rich(h.text)}</div></div>` : '';
 
 function pageShell(body, n, N, extraCls = '') {
-  return `<section class="page ${extraCls}">${body}<footer><span>glattt · Klickanleitung ${esc(deck.footerArea)}</span><span>Screenshots mit Beispieldaten · Stand ${esc(deck.stand)}</span><span>Seite ${n} von ${N}</span></footer></section>`;
+  return `<section class="page ${extraCls}">${body}<footer><span>glattt · Klickanleitung ${esc(deck.footerArea)}</span><span>Screenshots mit Beispieldaten · Stand ${esc(STAND)}${VERSION ? ' · v' + esc(VERSION) : ''}</span><span>Seite ${n} von ${N}</span></footer></section>`;
 }
 
 const N = deck.pages.length + 1;
@@ -110,7 +124,8 @@ fs.writeFileSync(outBase + '.html', doc);
 console.log('HTML', outBase + '.html', (doc.length / 1048576).toFixed(1), 'MB');
 if (process.argv.includes('--html-only')) process.exit(0);
 (async () => {
-  const browser = await chromium.launch();
+  // CHROME_PATH: fuer Umgebungen mit vorinstalliertem Chromium (z. B. Claude Code Cloud), lokal leer lassen
+  const browser = await chromium.launch(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {});
   const page = await browser.newPage();
   await page.goto('file://' + outBase + '.html', { waitUntil: 'load' });
   await page.waitForTimeout(500);

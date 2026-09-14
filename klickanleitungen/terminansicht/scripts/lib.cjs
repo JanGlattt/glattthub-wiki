@@ -1,9 +1,15 @@
 const { chromium } = require('playwright');
 const fs = require('fs');
-const BASE = 'https://glattthub-web-staging-cvznpz7gha-ey.a.run.app';
-const MD = 'KrzIg1nVrQ3kpKzkTgQlzA';
-const APT = 'xgvLJ8ZPztgA7kAVNEQZ9fnYVQwcfZ9GOXqyGMxZkNM'; // BG 09.09. 09:00
-const CREDS = ['claude-dev@example.com', 'klick-anleitung-2026'];
+// Zugang und Termin des Laufs kommen aus der Umgebung — nie Zugangsdaten in dieser Datei ablegen,
+// das Wiki-Repo ist oeffentlich. Vorlage: ../.env.example, Aufruf ueber run-all.sh.
+const BASE = process.env.KLICK_BASE || 'https://glattthub-web-staging-cvznpz7gha-ey.a.run.app';
+const MD = process.env.KLICK_BRANCH || 'KrzIg1nVrQ3kpKzkTgQlzA';        // Magdeburg (Phorest-Branch-ID)
+const APT = process.env.KLICK_APT || '';                                 // Phorest-ID des Beratungstermins des Laufs
+const DATE = process.env.KLICK_DATE || '';                               // Tag des Termins, Format JJJJ-MM-TT
+const CREDS = [process.env.KLICK_USER || 'claude-dev@example.com', process.env.KLICK_PW || ''];
+if (!CREDS[1]) { console.error('KLICK_PW fehlt — Passwort des Staging-Testusers als Umgebungsvariable setzen (siehe ../.env.example).'); process.exit(2); }
+if (!APT) { console.error('KLICK_APT fehlt — Phorest-ID des gebuchten Beratungstermins setzen (siehe ../README.md, Abschnitt „Screenshots neu aufnehmen").'); process.exit(2); }
+if (!DATE) { console.error('KLICK_DATE fehlt — Tag des Termins als JJJJ-MM-TT setzen.'); process.exit(2); }
 const HIDE_CSS = '.env-badge{display:none!important}';
 
 async function launch(opts = {}) {
@@ -67,4 +73,4 @@ async function shot(page, name, { clip = null, marks = [], noScroll = false } = 
 }
 async function clipOf(page, sel, pad = 0) { return page.evaluate(([s, p]) => { const el = document.querySelector(s); if (!el) return null; const b = el.getBoundingClientRect(); return { x: Math.max(0, b.x - p), y: Math.max(0, b.y - p), width: b.width + 2*p, height: b.height + 2*p }; }, [sel, pad]); }
 async function unified(page, fn) { return page.evaluate(fn, null); }
-module.exports = { launch, login, goto, wait, shot, clipOf, hideBadge, mask, BASE, MD, APT };
+module.exports = { launch, login, goto, wait, shot, clipOf, hideBadge, mask, BASE, MD, APT, DATE };

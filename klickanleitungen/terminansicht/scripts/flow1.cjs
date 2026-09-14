@@ -1,6 +1,6 @@
 /* Stufe 1: Terminübersicht → Termin öffnen → Termin beginnen → Session-Kacheln → Formularliste */
 const L = require('./lib.cjs');
-const DATE = '2026-09-09';
+const DATE = L.DATE; // Tag des Termins, kommt aus KLICK_DATE
 (async () => {
   const { browser, ctx, page } = await L.launch();
   await L.login(page, ctx);
@@ -40,7 +40,7 @@ const DATE = '2026-09-09';
   await L.wait(page, 2000);
   await L.shot(page, 'b1-detail-uebersicht', { marks: [
     { id: 'status', kind: 'badge', n: 1, sel: '.apt-detail-topbar-right .badge-glattt', at: 'l' },
-    { id: 'kunde', kind: 'badge', n: 2, sel: '.apt-detail-sidebar .card-glattt:first-of-type, .apt-detail-sidebar > *:first-child', at: 'tl' },
+    { id: 'kunde', kind: 'badge', n: 2, sel: '.apt-detail-client-card', at: 'tl' },
     { id: 'behandlungen', kind: 'badge', n: 3, fn: () => { const h = [...document.querySelectorAll('h2, h3, .card-glattt-title')].find(e => e.textContent.trim().startsWith('Behandlungen')); const b = h?.getBoundingClientRect(); return b ? { x: b.x, y: b.y, w: b.width, h: b.height } : null; }, at: 'l' },
     { id: 'notizen', kind: 'badge', n: 4, fn: () => { const h = [...document.querySelectorAll('h2, h3, .card-glattt-title')].find(e => e.textContent.trim().startsWith('Notizen')); const b = h?.getBoundingClientRect(); return b ? { x: b.x, y: b.y, w: b.width, h: b.height } : null; }, at: 'l' },
     { id: 'start', kind: 'chip', label: 'Hier tippen', sel: 'button.apt-detail-action-btn--start', at: 'r' },
@@ -56,7 +56,23 @@ const DATE = '2026-09-09';
   await L.wait(page, 3000);
   const st2 = await page.evaluate(() => { const d = Alpine.$data(document.querySelector('.apt-detail')); return { view: d.currentView, state: d.appointment?.state, missing: d.missingRequiredForms?.map(f => f.name), locked: d.treatmentLocked }; });
   console.log('nach Start', JSON.stringify(st2));
-  await L.shot(page, 'b2-nach-start-' + st2.view, { marks: [ { id: 'running', kind: 'badge', n: 1, sel: '.apt-detail-running', at: 'l' }, { id: 'end', kind: 'frame', sel: '.apt-detail-actions .btn-glattt-danger' } ]});
+  await L.shot(page, 'b2-nach-start-' + st2.view, { marks: [
+    { id: 'sitzungskarte', kind: 'frame', color: 'teal', sel: '.apt-detail-session-card' },
+    { id: 'running', kind: 'badge', n: 1, sel: '.apt-detail-running', at: 'l' },
+    { id: 'end', kind: 'frame', sel: '.apt-detail-actions .btn-glattt-danger' },
+  ]});
+  // Sitzungs-Karte im Detail (seit 08.09.2026: waehrend des Termins zeigt die linke Spalte nur noch diese Karte)
+  const sessionCardBox = await L.clipOf(page, '.apt-detail-session-card', 12);
+  if (sessionCardBox) {
+    await L.shot(page, 'b4-sitzungskarte', { clip: sessionCardBox, noScroll: true, marks: [
+      { id: 'name', kind: 'badge', n: 1, sel: '.apt-detail-session-card-name', at: 'r' },
+      { id: 'restzeit', kind: 'badge', n: 2, sel: '.apt-detail-session-remaining-value', at: 'r' },
+      { id: 'balken', kind: 'badge', n: 3, sel: '.apt-detail-session-bar', at: 'r' },
+      { id: 'zeiten', kind: 'badge', n: 4, sel: '.apt-detail-session-timer-ends', at: 'r' },
+      { id: 'chips', kind: 'badge', n: 5, sel: '.apt-detail-session-chips', at: 'r' },
+      { id: 'zaehler', kind: 'frame', sel: '.apt-detail-session-services-count' },
+    ]});
+  } else { console.log('MARK FEHLT: b4-sitzungskarte (.apt-detail-session-card nicht gefunden)'); }
   if (st2.view !== 'session') { await page.evaluate(() => Alpine.$data(document.querySelector('.apt-detail')).navigateTo('session')); await L.wait(page, 1200); }
   await L.shot(page, 'b3-session-kacheln', { marks: [
     { id: 'formulare', kind: 'chip', label: 'Hier tippen', sel: '.unified-session-grid .session-card:nth-of-type(1)', at: 'b' },
