@@ -206,6 +206,7 @@ nav:
     - Session-Ablauf & Modal: SESSION-ABLAUF.md
   - Technisches:
     - Setup-Anleitung: SETUP-ANLEITUNG.md
+    - Entwicklungsumgebung (portabel): ENTWICKLUNGSUMGEBUNG.md
     - Desktop-App (Electron): DESKTOP-APP.md
     - Cloud-Infrastruktur: CLOUD-INFRASTRUKTUR.md
     - Staging-Umgebung: STAGING-UMGEBUNG.md
