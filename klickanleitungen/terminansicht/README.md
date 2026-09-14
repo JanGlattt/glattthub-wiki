@@ -39,6 +39,15 @@ Am Ende prüft `run-all.sh`, ob jeder von den Decks genutzte Screenshot in `shot
 das Aufnahmedatum in `stand.txt` — `build.cjs` setzt es als „Stand“ in die Fußzeile aller PDFs
 (überschreibbar mit `STAND=…`, Version mit `VERSION=…`).
 
+### Zugangsdaten des Testusers
+
+Das Passwort des Staging-Testusers steht **nirgends im Repo** — bis 14.09.2026 lag es im Klartext in
+`scripts/lib.cjs`, und dieses Repo ist öffentlich. Es gehört ausschließlich in die lokale `.env`
+(gitignored) und wird vor einem Lauf ohnehin frisch vergeben, weil es driftet. Vergeben wird es lokal
+gegen die Staging-Datenbank (Cloud-SQL-Proxy mit ADC-Token, dann Laravel-Konsole); Runner, Env-Variablen
+und Fallstricke stehen im Projektwissen des Haupt-Repos unter
+`.github/knowledge/sepa-testmail-aus-staging.md` und `artisan-command-auf-prod-ausfuehren.md`.
+
 ### Fallstricke
 
 - **Termin allein an seinem Tag:** Phorest liefert alle Tagestermine einer Kundin mit derselben
