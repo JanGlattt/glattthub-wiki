@@ -54,7 +54,10 @@ const scrollTo = (page, text) => C.scrollTo(page, text, 24);
   await page.evaluate(() => { F().shareRecipientName = 'Tester Am Testen'; });
   await page.evaluate(() => F().createShareLink());
   const shareOk = await page.waitForFunction(() => F().shareResult && F().shareResult.share_url, null, { timeout: 15000 }).then(() => true).catch(() => false); await L.wait(page, 600);
-  console.log('share', shareOk ? await page.evaluate(() => F().shareResult.share_url) : 'FEHLGESCHLAGEN (Recht?)');
+  const shareUrl = shareOk ? await page.evaluate(() => F().shareResult.share_url) : '';
+  console.log('share', shareUrl || 'FEHLGESCHLAGEN (Recht?)');
+  // Link festhalten — shot-shared.cjs fotografiert damit die Kundenansicht (Link gilt nur 48 h)
+  if (shareUrl) require('fs').writeFileSync('shared-url.txt', shareUrl);
   if (shareOk) await L.shot(page, 'e2-teilen-link', { noScroll: true, marks: [
     { id: 'url', kind: 'frame', fn: () => { const i = [...document.querySelectorAll('.modal-glattt input[readonly]')].find(e => e.offsetParent !== null && e.value.includes('/shared/form/')); const r = i?.getBoundingClientRect(); return r ? { x: r.x, y: r.y, w: r.width, h: r.height } : null; } },
     { id: 'copy', kind: 'chip', label: 'Kopieren', fn: (t) => { const b = [...document.querySelectorAll('.modal-glattt button')].find(e => e.textContent.trim() === t && e.offsetParent !== null); const r = b?.getBoundingClientRect(); return r ? { x: r.x, y: r.y, w: r.width, h: r.height } : null; }, fnArg: 'Kopieren', at: 'b' },

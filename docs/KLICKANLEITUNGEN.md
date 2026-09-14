@@ -1,6 +1,6 @@
 # Klickanleitungen für die Institute
 
-> **Stand:** 08.09.2026 · Zentrale Referenz für alle Klickanleitungen, die den Mitarbeiterinnen
+> **Stand:** 14.09.2026 · Zentrale Referenz für alle Klickanleitungen, die den Mitarbeiterinnen
 > in den Instituten die Hub-Prozesse Schritt für Schritt zeigen. Jede neue Anleitung folgt
 > **exakt** diesem Standard, damit die Sammlung einheitlich bleibt.
 
@@ -107,14 +107,14 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | # | Prozess | Ort im Hub | Anleitung | Status |
 |---|---|---|---|---|
 | 1 | Tageserfassung Beratungsgespräche (Verkauf, Kein Verkauf, Upselling, Statistik) | Institutsseite `/shared/institut/{token}` | „Tageserfassung Beratungsgespräche" (25.08.2026) | ✅ fertig |
-| 2 | Beratungstermin finden, öffnen, Termin beginnen | `/hub/appointments` → Termin-Detailseite | **A – Beratungstermin starten** (v0.9, 08.09.2026) | 🟡 Entwurf |
-| 3 | Formular „Kundeninformation & Einverständniserklärung" | Session → Formulare | **B – Kundeninformation & Einverständniserklärung** (v0.9) | 🟡 Entwurf |
-| 4 | Formular „Behandlungsvertrag" (Zonen, Zahlungsart, Preisliste, Rabatt, Gutschein, Werber, AGB, Unterschrift) | dito | **C – Behandlungsvertrag abschließen** (v0.9) | 🟡 Entwurf |
-| 5 | Formular „SEPA-Mandat" | dito | **D – SEPA-Mandat einrichten** (v0.9) | 🟡 Entwurf |
-| 6 | Formular an die Kundin weitergeben („Formular teilen", 48-h-Link) | Formular-Kopfzeile | **E – Formular an die Kundin weitergeben** (v0.9) | 🟡 Entwurf |
-| 7 | Direkt behandeln nach Vertragsabschluss + Termin beenden (Kasse, Folgetermin, Notiz) | Session-Kachel / Beenden-Ablauf | **F – Direkt behandeln & Termin beenden** (v0.9) | 🟡 Entwurf |
-| 8 | Probleme & Fehlermeldungen (Nachschlagewerk, 3 Tabellen) | alle | **G – Probleme & Fehlermeldungen** (v0.9) | 🟡 Entwurf |
-| 9 | Bestandskundin: Behandlungstermin starten, **Einstellungszettel pflegen**, Folgetermin, beenden | Termin-Detailseite | **H – Behandlungstermin & Einstellungszettel** (v1.0) | 🟡 Entwurf |
+| 2 | Beratungstermin finden, öffnen, Termin beginnen | `/hub/appointments` → Termin-Detailseite | **A – Beratungstermin starten** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
+| 3 | Formular „Kundeninformation & Einverständniserklärung" | Session → Formulare | **B – Kundeninformation & Einverständniserklärung** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
+| 4 | Formular „Behandlungsvertrag" (Zonen, Zahlungsart, Preisliste, Rabatt, Gutschein, Werber, AGB, Unterschrift) | dito | **C – Behandlungsvertrag abschließen** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
+| 5 | Formular „SEPA-Mandat" | dito | **D – SEPA-Mandat einrichten** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
+| 6 | Formular an die Kundin weitergeben („Formular teilen", 48-h-Link) | Formular-Kopfzeile | **E – Formular an die Kundin weitergeben** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
+| 7 | Direkt behandeln nach Vertragsabschluss + Termin beenden (Kasse, Folgetermin, Notiz) | Session-Kachel / Beenden-Ablauf | **F – Direkt behandeln & Termin beenden** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
+| 8 | Probleme & Fehlermeldungen (Nachschlagewerk, 3 Tabellen) | alle | **G – Probleme & Fehlermeldungen** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
+| 9 | Bestandskundin: Behandlungstermin starten, **Einstellungszettel pflegen**, Folgetermin, beenden | Termin-Detailseite | **H – Behandlungstermin & Einstellungszettel** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
 | 10 | Zusatz-Service hinzubuchen, Kein-Verkauf erfassen (nach Umsetzung Asana 1218245871472844) | Termin-Detailseite | offen | ⬜ |
 | 11 | Folgetermin planen (ideale Slots), Termin verlegen | Termin-Detailseite / Buchungsseite | offen | ⬜ |
 | 12 | Google-Bewertung per WhatsApp anfragen | Termin-Detailseite Sidebar | offen | ⬜ |
@@ -125,8 +125,10 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 
 Die Liste wird mit jeder fertigen Anleitung fortgeschrieben. **Ablage:** PDFs in
 `~/Downloads/Klickanleitungen-Terminansicht/` (Übergabe an Jan), Quellen reproduzierbar im Wiki-Repo
-unter `klickanleitungen/terminansicht/` (README dort). Stand 08.09.2026 abends: **v1.0** — alle Screenshots aus
-konsistenten Läufen (Testtermin 09.09. 09:00, Status „Eingecheckt"), fachliche Freigabe durch Jan offen.
+unter `klickanleitungen/terminansicht/` (README dort). Stand 14.09.2026: **v1.1** — Texte, Skripte und
+zwei neue Seiten auf die überarbeitete Terminansicht umgestellt (siehe nächster Abschnitt);
+**die Screenshots stammen noch vom Stand davor**, der Aufnahmelauf steht aus. Fachliche Freigabe
+durch Jan ebenfalls offen.
 
 ---
 
@@ -142,11 +144,18 @@ navigation, Ansichten „Liste"/„Kalender", KPI-Karten „Beratungen", „Verk
 „No-Shows". Status-Badges: Gebucht, Bestätigt, **Im Gange** (CHECKED_IN), **Erledigt** (PAID),
 Storniert, No Show (abgeleitet: Endzeit > 30 Min. vorbei). Aktion je Karte: „Termin öffnen".
 
-**Termin-Detailseite** (iPad-Querformat, Vollbild-Layout). Sidebar: Kunde (Link ins Profil,
-„Kunden-ID"), Schnellkontakt „Anrufen"/„E-Mail"/„Bewertung"/„Verlegen", Termin-Infos,
+**Termin-Detailseite** (iPad-Querformat, Vollbild-Layout). Sidebar **vor dem Start**: Kunde (Link
+ins Profil, „Kunden-ID"), Schnellkontakt „Anrufen"/„E-Mail"/„Bewertung"/„Verlegen", Termin-Infos,
 Navigation „Übersicht"/„Session"/„Formulare"/„Einstellungszettel", unten **„Termin beginnen"**
-(bzw. „Termin fortsetzen"), im Betrieb „Termin läuft" + **„Termin beenden"**. Rechts Karten
-„Behandlungen" (+ „Service hinzubuchen") und „Notizen". Rotes Banner bei offenem Kundenkonto.
+(bzw. „Termin fortsetzen"). **Während des Termins** (seit 08.09.2026, `x-show="!sessionActive"`)
+ersetzt eine **Sitzungs-Karte** all das: Name der Kundin, „Verbleibende Zeit" (nach dem geplanten
+Ende rot „Überzogen"), „Jetzt"-Uhrzeit, Fortschrittsbalken zwischen geplantem Start und Ende sowie
+die gebuchten Behandlungen als Chips mit Zähler „n / m" — ein Chip wird grün, sobald die Zone im
+Einstellungszettel steht (`GET /hub/appointment/{branch}/{appointment}/treated-zones`); zusätzlich
+behandelte Zonen hängen als Gruppe „Zusätzlich behandelt" an. Navigiert wird dann **nur im
+Arbeitsbereich rechts** (Kacheln, „Zurück zur Session"). Unten „Termin läuft" + **„Termin beenden"**,
+die Aktionszeile klebt sticky am unteren Rand. Rechts Karten „Behandlungen" (+ „Service hinzubuchen")
+und „Notizen". Rotes Banner bei offenem Kundenkonto.
 Die Detailseite kennt **kein** Beratungs-Kennzeichen — der Unterschied zum Behandlungstermin
 entsteht nur über die Formular-Zuordnung je Service.
 
@@ -277,10 +286,45 @@ funktionieren auch **ohne** laufende Session (Termin PAID) — nur „Termin beg
 blockierte am 07.09. das zweite Buchen eines Phorest-Testtermins per Tinker und das Vergeben von Rechten
 auf Staging — dann Jan entscheiden lassen, nicht umgehen.
 
+## Aktualisierung 14.09.2026 — überarbeitete Terminansicht
+
+Am Abend des 08.09.2026, **nach** dem letzten Screenshot-Lauf, wurde die Terminansicht überarbeitet.
+Damit sind alle Bilder mit laufendem Termin veraltet (Dokumente B–H nahezu vollständig):
+
+| Commit | Wirkung auf die Anleitungen |
+|---|---|
+| `8b3fd3c` | Terminübersicht: Kundenname öffnet das Kundenprofil (Link mit ↗) — Hinweis in A, Seite 1 |
+| `afab84c` | Aktionszeile klebt unten und bleibt beim Scrollen sichtbar — Bildunterschrift in A, Seite 3 |
+| `c7c39df` | Linke Spalte im laufenden Termin = **nur Sitzungs-Karte** (Kunden-Karte, Termin-Infos, Navigation weg) |
+| `ef4d18c` | Behandlungen als Chips, grün sobald die Zone im Einstellungszettel steht |
+| `bf8bad8` | Restzeit, „Jetzt", Fortschrittsbalken, Zähler „n / m" |
+
+**Was v1.1 an den Quellen geändert hat** (alles im Wiki-Repo unter `klickanleitungen/terminansicht/`):
+
+- **Neue Seite in A: „Die Spalte während des Termins"** (Screenshot `b4-sitzungskarte`) — erklärt Restzeit,
+  Fortschrittsbalken, Chips und dass während des Termins nur rechts navigiert wird.
+- **Neue Seite in H: „Fortschritt im Blick"** (Screenshot `k7-sitzungskarte-behandelt`) — grüner Chip und
+  Zähler als Kontrolle vor dem Beenden.
+- Korrigierte Stellen: Navigation und Kunden-Karte gelten nur vor dem Start bzw. nach dem Beenden (A Seite 2,
+  H Seite 1 und Seite 5).
+- Aufnahmeskripte: Termin und Zugang kommen aus `.env` (`KLICK_APT`, `KLICK_DATE`, `KLICK_PW`) statt aus dem
+  Code, neue Screenshots in `flow1`/`flow6`, `run-all.sh` deckt jetzt auch die Fehlerbilder (`reshoot3`,
+  bisher fehlte `m2-fehler-iban`) und die Kundenansicht des geteilten Formulars ab und prüft am Ende die
+  Vollständigkeit; `build.cjs` nimmt den Stand aus `stand.txt` und setzt die Version in die Fußzeile.
+- **Sicherheit:** In `scripts/lib.cjs` stand bis 14.09.2026 das Staging-Passwort des Testusers im Klartext —
+  im **öffentlichen** Wiki-Repo, zusammen mit der `run.app`-Adresse, die IAP umgeht. Der Wert ist raus;
+  er steht weiterhin in der Git-Historie, das Passwort muss deshalb geändert werden.
+
+**Nächster Schritt:** Beratungstermin für eine Magdeburg-Testkundin buchen, `.env` füllen,
+`bash scripts/run-all.sh`, PDFs bauen, an Jan zur fachlichen Freigabe.
+
+---
+
 ## Testdaten (Staging / Magdeburg)
 
 - **Staging-Testuser** `claude-dev@example.com` (User 36, Rolle Institute MA, Stamm-Institut Magdeburg,
-  Phorest-User der Kabine „MD 1"), Passwort in `scripts/lib.cjs`; Einführungstouren als erledigt markiert.
+  Phorest-User der Kabine „MD 1"); Einführungstouren als erledigt markiert. Das Passwort steht **nirgends
+  im Repo** — es gehört in die lokale `.env` des Aufnahmeordners (`klickanleitungen/terminansicht/.env.example`).
 - **Preisliste 6** „glattt-Preise Magdeburg (alle Raten SEPA)" — Kopie von Liste 1, `all_sepa`, nur Magdeburg,
   aktiv ab 07.09.2026 (gesperrt). Im Vertragsformular erscheint dadurch das Dropdown „Preisliste wählen".
 - **Testlauf 07.09.2026:** BG-Termin 08.09. 08:00 (`_jNixiKOXAWIN_pgSnAQMvnYVQwcfZ9GOXqyGMxZkNM`, jetzt PAID),

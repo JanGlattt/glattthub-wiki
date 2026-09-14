@@ -32,6 +32,16 @@ const T = () => Alpine.$data(document.querySelector('[x-data^="treatmentSettings
   await page.waitForFunction(() => T().saveStatus === 'saved', null, { timeout: 20000 }).catch(() => console.log('nicht gespeichert:', 'x'));
   await L.wait(page, 1200);
   await L.shot(page, 'k5-zettel-gespeichert', { marks: [ { id: 'chip', kind: 'badge', n: 4, sel: '.configured-zones-summary .configured-zone-chip', at: 'l' } ]});
+  // Sitzungs-Karte links: die behandelte Zone ist jetzt ein gruener Chip, der Zaehler steigt (seit 08.09.2026)
+  await L.wait(page, 1500);
+  const treatedBox = await L.clipOf(page, '.apt-detail-session-card', 12);
+  if (treatedBox) {
+    console.log('Chips', JSON.stringify(await page.evaluate(() => { const s = S(); return { treated: s.sessionServicesTreatedCount, booked: s.sessionServicesBooked?.map(i => i.label + (i.treated ? ' ✓' : '')), extra: s.sessionServicesExtra?.map(i => i.label) }; })));
+    await L.shot(page, 'k7-sitzungskarte-behandelt', { clip: treatedBox, noScroll: true, marks: [
+      { id: 'zaehler', kind: 'badge', n: 1, sel: '.apt-detail-session-services-count', at: 'l' },
+      { id: 'chip', kind: 'badge', n: 2, sel: '.apt-detail-session-chip--treated', at: 'r' },
+    ]});
+  } else { console.log('MARK FEHLT: k7-sitzungskarte-behandelt (.apt-detail-session-card nicht gefunden)'); }
   // Historie-Ansicht
   await page.evaluate(() => Alpine.$data(document.querySelector('.apt-detail')).navigateTo('settings-history')); await L.wait(page, 2000);
   await L.shot(page, 'k6-zettel-historie', {});

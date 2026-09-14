@@ -80,4 +80,8 @@ table.err td:first-child{font-weight:700;width:38%}
 table.err td:nth-child(2){width:27%;color:var(--muted)}
 
 .shot.compact{width:84%}
+/* Hochformat-Ausschnitte (Sitzungs-Karte der Terminansicht): auf die Hoehe skalieren, sonst
+   sprengt die schmale, hohe Karte die Spalte. Marks bleiben prozentual korrekt. */
+.shot.portrait{width:auto;max-width:96%;margin:0 auto;display:table}
+.shot.portrait img{width:auto;height:78mm;max-width:100%}
 .step .num.i{background:var(--gold)}
