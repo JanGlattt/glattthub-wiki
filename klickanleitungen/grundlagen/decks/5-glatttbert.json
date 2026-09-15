@@ -1,0 +1,152 @@
+{
+ "out": "../pdf/Grundlagen-5-glatttBert-fragen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Grundlagen",
+ "nr": 5,
+ "of": 5,
+ "audience": "institut",
+ "title": [
+  "glatttBert",
+  "fragen"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — der Assistent unten rechts: was er beantwortet und was nicht",
+ "eyebrow": "Grundlagen · Assistent",
+ "footerArea": "Grundlagen",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "glatttBert sitzt auf **jeder Seite** unten rechts und beantwortet Fragen zu Kundinnen, Terminen und Zahlen.",
+  "Er **liest nur** — er bucht nichts, ändert nichts und verschickt nichts.",
+  "**Was er sagt, ist eine Auskunft, keine Entscheidung.** Vor einer Zusage an die Kundin immer die Seite selbst ansehen."
+ ],
+ "pages": [
+  {
+   "h1": "Fragen stellen",
+   "sub": "Der Knopf unten rechts öffnet das Gespräch. Gefragt wird in normalen Sätzen — keine Befehle, keine Stichworte nötig.",
+   "card": {
+    "title": "Fragen stellen",
+    "text": "Assistent öffnen und in normalen Sätzen fragen"
+   },
+   "left": {
+    "shot": "k1-bert"
+   },
+   "leftCaption": "glatttBert nach dem Öffnen — das Eingabefeld steht unten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Assistent öffnen",
+     "text": "Der Knopf unten rechts. Er ist auf jeder Seite da, auch mitten in einem Termin."
+    },
+    {
+     "n": 2,
+     "title": "Frage eintippen",
+     "text": "Ganze Sätze sind am besten: **„Wie viele Beratungen hatten wir letzte Woche in Bremen?“**"
+    },
+    {
+     "n": 3,
+     "title": "Nachfragen",
+     "text": "Das Gespräch bleibt im Zusammenhang — **„und im Monat davor?“** genügt als Folgefrage."
+    },
+    {
+     "n": 4,
+     "title": "Neues Thema",
+     "text": "**„Neue Konversation“** beginnt von vorn. Sinnvoll, wenn es um etwas ganz anderes geht."
+    }
+   ],
+   "hint": {
+    "text": "**Der Verlauf bleibt erhalten** und lässt sich durchsuchen — praktisch, wenn dieselbe Frage im Team öfter vorkommt."
+   }
+  },
+  {
+   "h1": "Was er weiß",
+   "sub": "glatttBert greift auf die Daten des Hubs zu — dieselben Zahlen, die auch auf den Seiten stehen.",
+   "card": {
+    "title": "Was er weiß",
+    "text": "Kundinnen, Termine, Zahlen, Zahlungsstand"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Frage",
+     "Woher die Antwort kommt"
+    ],
+    "rows": [
+     [
+      "„Finde mir die Kundin Müller“",
+      "Kundensuche wie in der Kundenübersicht — inklusive Kundennummer"
+     ],
+     [
+      "„Was steht bei der Kundin in den Notizen?“",
+      "Kundennotizen aus dem Kundenprofil"
+     ],
+     [
+      "„Wie ist der Zahlungsstand bei Vertrag X?“",
+      "Raten und offene Beträge aus dem Vertrag"
+     ],
+     [
+      "„Wie viele Termine haben wir morgen?“",
+      "Kommende Termine, wahlweise nur Beratungen"
+     ],
+     [
+      "„Wie viele Beratungen im August?“",
+      "Terminstatistik des gewählten Zeitraums"
+     ],
+     [
+      "„Wie stehen wir beim Umsatz?“",
+      "Umsatz- und Vertragszahlen je Standort"
+     ],
+     [
+      "„Wie viele Neukundinnen hatten wir?“",
+      "Neukunden im Zeitraum"
+     ],
+     [
+      "„Welche Kampagne läuft am besten?“",
+      "Werbekampagnen aus der Ads-Analyse"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Er sieht nur, was auch die Fragende sehen darf.** Wer keinen Zugriff auf Verträge hat, bekommt von glatttBert keine Vertragszahlen — die Berechtigungen gelten genauso wie auf den Seiten."
+   }
+  },
+  {
+   "h1": "Was er nicht kann",
+   "sub": "Der Assistent ist ein Nachschlagewerk, kein Mitarbeiter. Alles Schreibende passiert weiterhin von Hand.",
+   "card": {
+    "title": "Was er nicht kann",
+    "text": "Nichts buchen, nichts ändern, nichts verschicken"
+   },
+   "left": {
+    "shot": "k2-bert-antwort"
+   },
+   "leftCaption": "Eine Antwort mit Zahlen — nachvollziehbar, aber nicht verbindlich.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Keine Buchungen",
+     "text": "Termine legt er nicht an und verlegt er nicht. Das läuft über die Terminansicht („Terminansicht 1–8“)."
+    },
+    {
+     "n": 2,
+     "title": "Keine Änderungen",
+     "text": "Kundendaten, Verträge und Formulare fasst er nicht an."
+    },
+    {
+     "n": 3,
+     "title": "Keine Nachrichten",
+     "text": "WhatsApp und E-Mail verschickt er nicht — dafür ist der Reiter **Nachrichten** da („Kundenverwaltung 5“)."
+    },
+    {
+     "n": 4,
+     "title": "Rückmeldung geben",
+     "text": "Passt eine Antwort nicht, lässt sie sich mit einem kurzen Hinweis melden. Das hilft, den Assistenten zu verbessern."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Vor einer Zusage an die Kundin immer die Seite selbst öffnen.** Eine Auskunft des Assistenten kann veraltet oder missverstanden sein — bei Geld, Terminen und Widerrufen zählt, was auf der Seite steht."
+   }
+  }
+ ]
+}

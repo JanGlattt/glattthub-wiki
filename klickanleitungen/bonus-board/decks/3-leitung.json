@@ -1,5 +1,5 @@
 {
- "out": "../pdf/Q-Bonus-Board-fuer-die-Leitung",
+ "out": "../pdf/Bonus-Board-3-Bonus-Board-fuer-die-Leitung",
  "meta": "../meta.json",
  "shots": "../shots",
  "audience": "leitung",
@@ -8,14 +8,14 @@
   "für die Leitung"
  ],
  "subtitle": "Klickanleitung für das Bonus-Board im glatttHub — Institute gegen Minimalziele, Boni je Mitarbeiterin, Export",
- "eyebrow": "Bonus-Board · Management · Teil Q",
+ "eyebrow": "Bonus-Board · Management",
  "footerArea": "Bonus-Board",
  "stand": "15.09.2026",
  "version": "1.0",
  "notes": [
   "Die Management-Sicht zeigt **alle** Institute und alle Mitarbeiterinnen — sie ist an ein eigenes Recht gebunden.",
   "**Gesichert** ist die Zahl, auf die man sich verlassen kann; der aktuelle Stand enthält Körperzonen unter Widerrufs-Vorbehalt.",
-  "Entschieden und abgeschlossen wird nicht hier, sondern in der **Bonus-Verwaltung** (Dokumente R und S)."
+  "Entschieden und abgeschlossen wird nicht hier, sondern in der **Bonus-Verwaltung** („Bonus-Board 4“ und „Bonus-Board 5“)."
  ],
  "pages": [
   {
@@ -75,7 +75,7 @@
     {
      "n": 3,
      "title": "Minimalziel",
-     "text": "Was das Institut in diesem Monat schaffen soll. Gesetzt wird es in der **Verwaltung** (Dokument R)."
+     "text": "Was das Institut in diesem Monat schaffen soll. Gesetzt wird es in der **Verwaltung** („Bonus-Board 4“)."
     },
     {
      "n": 4,
@@ -149,7 +149,7 @@
     }
    ],
    "hint": {
-    "text": "**Zahl sieht falsch aus?** Erst prüfen, ob es an einem **offenen Widerruf** liegt (nächste Seite) oder an der **Abwesenheit**. Bleibt es unerklärlich, kann das Büro in der Verwaltung eine **Wert-Korrektur** setzen — siehe Dokument S."
+    "text": "**Zahl sieht falsch aus?** Erst prüfen, ob es an einem **offenen Widerruf** liegt (nächste Seite) oder an der **Abwesenheit**. Bleibt es unerklärlich, kann das Büro in der Verwaltung eine **Wert-Korrektur** setzen — siehe „Bonus-Board 5“."
    }
   },
   {
@@ -214,8 +214,11 @@
    ],
    "hint": {
     "kind": "warn",
-    "text": "**Ein Export aus einem laufenden Monat ist ein Zwischenstand** — er enthält Hochrechnungen und Körperzonen unter Vorbehalt. Für verbindliche Zahlen erst den **Monatsabschluss** abwarten (Dokument S) und danach exportieren."
+    "text": "**Ein Export aus einem laufenden Monat ist ein Zwischenstand** — er enthält Hochrechnungen und Körperzonen unter Vorbehalt. Für verbindliche Zahlen erst den **Monatsabschluss** abwarten („Bonus-Board 5“) und danach exportieren."
    }
   }
- ]
+ ],
+ "series": "Bonus-Board",
+ "nr": 3,
+ "of": 5
 }

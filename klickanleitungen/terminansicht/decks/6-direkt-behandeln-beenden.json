@@ -1,5 +1,5 @@
 {
- "out": "../pdf/F-Direkt-behandeln-Termin-beenden",
+ "out": "../pdf/Terminansicht-6-Direkt-behandeln-Termin-beenden",
  "meta": "../meta.json",
  "shots": "../shots",
  "title": [
@@ -7,7 +7,7 @@
   "Termin beenden"
  ],
  "subtitle": "Klickanleitung für den Abschluss des Beratungsgesprächs — Behandlung sofort anschließen, Kasse, Folgetermin, Terminnotiz",
- "eyebrow": "Terminansicht · Beratungsgespräch · Teil F",
+ "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
  "stand": "08.09.2026",
  "version": "1.1",
@@ -155,5 +155,8 @@
     "text": "**„Termin konnte nicht als bezahlt markiert werden — bitte in Phorest auschecken.“** → Die Notiz ist gespeichert, der Termin muss aber in Phorest von Hand ausgecheckt werden."
    }
   }
- ]
+ ],
+ "series": "Terminansicht",
+ "nr": 6,
+ "of": 8
 }

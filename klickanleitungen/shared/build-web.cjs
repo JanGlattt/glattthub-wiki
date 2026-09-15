@@ -20,7 +20,12 @@ const D = require('./lib/deck.cjs');
 const deckFiles = process.argv.slice(2).filter(a => !a.startsWith('--'));
 if (!deckFiles.length) { console.error('Aufruf: node build-web.cjs <deck.json> [...]'); process.exit(2); }
 
-const outRoot = path.resolve(path.dirname(deckFiles[0]), '../web');
+/* Ausgabeordner: standardmaessig `web/` neben den Decks der ersten Serie. Wer mehrere Serien
+   in EIN Wiki baut, setzt WEB_OUT — sonst landet alles im Ordner der ersten Serie.
+   Beispiel:  WEB_OUT=../klickanleitungen-web node shared/build-web.cjs */
+const outRoot = process.env.WEB_OUT
+  ? path.resolve(process.env.WEB_OUT)
+  : path.resolve(path.dirname(deckFiles[0]), '../web');
 const assetsOut = path.join(outRoot, 'assets');
 fs.mkdirSync(assetsOut, { recursive: true });
 fs.copyFileSync(path.join(__dirname, 'assets', 'web.css'), path.join(assetsOut, 'web.css'));
@@ -67,8 +72,9 @@ for (const deckFile of deckFiles) {
   });
 
   const head = `<header class="guide-head">
-  <div class="eyebrow">${D.esc(deck.eyebrow)}</div>
+  <div class="eyebrow">${D.esc(deck.eyebrowFull || deck.eyebrow)}</div>
   <h1>${deck.title.map(D.esc).join(' ')}</h1>
+  ${deck.audienceLabel ? `<div class="audience">${D.esc(deck.audienceLabel)}</div>` : ''}
   <p class="sub">${D.rich(deck.subtitle)}</p>
   ${(deck.notes || []).length ? `<ul class="guide-notes">${deck.notes.map(n => `<li>${D.rich(n)}</li>`).join('')}</ul>` : ''}
   <nav class="toc"><b>Auf dieser Seite</b><ol>${deck.pages.map((p, i) => `<li><a href="#v${i + 1}">${D.esc(p.h1)}</a></li>`).join('')}</ol></nav>
@@ -106,7 +112,11 @@ for (const deckFile of deckFiles) {
     subtitle: deck.subtitle,
     eyebrow: deck.eyebrow,
     area: deck.footerArea,
+    series: deck.series || null,
+    nr: deck.nr || null,
+    of: deck.of || null,
     audience: deck.audience || null,
+    audienceLabel: deck.audienceLabel || null,
     stand: deck.stand,
     version: deck.version,
     notes: deck.notes || [],
@@ -131,6 +141,24 @@ for (const deckFile of deckFiles) {
   console.log('WEB', path.join(dir, 'index.html'));
 }
 
+/** Uebersicht nach Serie gruppiert, Zielgruppe als Badge je Eintrag. */
+function groupedList(guides) {
+  const groups = new Map();
+  for (const g of [...guides].sort((a, b) => (a.nr || 0) - (b.nr || 0))) {
+    const key = g.series || g.area || 'Weitere';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(g);
+  }
+  return [...groups].map(([name, list]) =>
+    `<section class="guide-group"><h2>${D.esc(name)}</h2><ul class="guide-list">`
+    + list.map(g => `<li><a href="${g.slug}/">`
+      + `<b>${g.nr ? D.esc(g.nr + '. ') : ''}${D.esc(g.title)}</b>`
+      + `<span>${D.esc(g.subtitle)}</span>`
+      + (g.audienceLabel ? `<em class="audience">${D.esc(g.audienceLabel)}</em>` : '')
+      + `</a></li>`).join('')
+    + `</ul></section>`).join('');
+}
+
 // Platzhalterbild fuer fehlende Screenshots
 fs.writeFileSync(path.join(assetsOut, 'fehlt.svg'),
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 820"><rect width="1180" height="820" fill="#f3f4f6"/>`
@@ -143,8 +171,7 @@ fs.writeFileSync(path.join(outRoot, 'index.html'),
   + `<link rel="stylesheet" href="assets/web.css"></head><body><main class="guide">`
   + `<header class="guide-head"><img class="logo" src="assets/logo.png" alt="glattt" width="120">`
   + `<h1>Klickanleitungen</h1><p class="sub">Schritt für Schritt durch die Abläufe im glatttHub.</p></header>`
-  + `<ul class="guide-list">${manifest.guides.map(g =>
-      `<li><a href="${g.slug}/"><b>${D.esc(g.title)}</b><span>${D.esc(g.subtitle)}</span></a></li>`).join('')}</ul>`
+  + groupedList(manifest.guides)
   + `</main></body></html>`);
 
 fs.writeFileSync(path.join(outRoot, 'manifest.json'), JSON.stringify(manifest, null, 1));

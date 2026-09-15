@@ -1,0 +1,16 @@
+{
+  "_hinweis": [
+    "Kopie als mask.json anlegen (gitignored). Fuer die Grundlagen faellt wenig an:",
+    "der Name der angemeldeten Person (Nutzerkarte, Profil) und alles, was in den",
+    "Mitteilungen auftaucht (Kundennamen, Vertragsnummern).",
+    "Ohne mask.json startet kein Ablauf — auch dann nicht, wenn die Datei nur wenige",
+    "Eintraege hat."
+  ],
+  "replace": [
+    ["Vorname Nachname", "Anna Beispiel"],
+    ["vorname.nachname@labrado-schlueter.com", "anna.beispiel@glattt.com"],
+    ["Kundenname", "Musterfrau"]
+  ],
+  "blankText": [],
+  "sampleTexts": []
+}

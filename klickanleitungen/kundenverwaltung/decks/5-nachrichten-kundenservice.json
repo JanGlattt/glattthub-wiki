@@ -1,5 +1,5 @@
 {
- "out": "../pdf/M-Nachrichten-und-Kundenservice",
+ "out": "../pdf/Kundenverwaltung-5-Nachrichten-und-Kundenservice",
  "meta": "../meta.json",
  "shots": "../shots",
  "title": [
@@ -7,7 +7,7 @@
   "& Kundenservice"
  ],
  "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — WhatsApp lesen und schreiben, Tickets nachschlagen",
- "eyebrow": "Kundenverwaltung · Kommunikation · Teil M",
+ "eyebrow": "Kundenverwaltung · Kommunikation",
  "footerArea": "Kundenverwaltung",
  "stand": "15.09.2026",
  "version": "1.0",
@@ -51,7 +51,7 @@
    "notes": [
     {
      "title": "„Die Kundin hat nichts bekommen“",
-     "text": "Zuerst hier nachsehen. Steht die Nachricht mit Fehler, liegt es meist an einer **falschen Mobilnummer** oder daran, dass die Kundin WhatsApp nicht nutzt — Nummer im Reiter „Kundeninfos“ prüfen (Dokument J)."
+     "text": "Zuerst hier nachsehen. Steht die Nachricht mit Fehler, liegt es meist an einer **falschen Mobilnummer** oder daran, dass die Kundin WhatsApp nicht nutzt — Nummer im Reiter „Kundeninfos“ prüfen („Kundenverwaltung 2“)."
     },
     {
      "title": "Zeile aufklappen",
@@ -207,5 +207,8 @@
    }
   }
  ],
- "audience": "institut"
+ "audience": "institut",
+ "series": "Kundenverwaltung",
+ "nr": 5,
+ "of": 6
 }

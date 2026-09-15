@@ -1,5 +1,5 @@
 {
- "out": "../pdf/N-Unterlagen-und-Behandlungsverlauf",
+ "out": "../pdf/Kundenverwaltung-6-Unterlagen-und-Behandlungsverlauf",
  "meta": "../meta.json",
  "shots": "../shots",
  "title": [
@@ -7,12 +7,12 @@
   "Behandlungsverlauf"
  ],
  "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — eingereichte Formulare, Einstellungszettel und Fotos",
- "eyebrow": "Kundenverwaltung · Unterlagen · Teil N",
+ "eyebrow": "Kundenverwaltung · Unterlagen",
  "footerArea": "Kundenverwaltung",
  "stand": "15.09.2026",
  "version": "1.0",
  "notes": [
-  "Beide Reiter sind **reine Ansicht** — geschrieben wird im laufenden Termin (Dokumente B–D und H).",
+  "Beide Reiter sind **reine Ansicht** — geschrieben wird im laufenden Termin (Dokumente „Terminansicht 2–4“ und H).",
   "Der **Einstellungszettel** ist die wichtigste Vorbereitung auf eine Behandlung: Er zeigt, womit zuletzt gearbeitet wurde.",
   "**Fotos gehören der Kundin** — nicht weitergeben, nicht außerhalb des Hubs speichern."
  ],
@@ -51,7 +51,7 @@
     }
    ],
    "hint": {
-    "text": "**Formular fehlt?** Dann wurde es nie abgesendet. Neu ausgefüllt wird ausschließlich **im laufenden Termin** über die Kachel „Formulare“ (Dokument B) — nicht hier."
+    "text": "**Formular fehlt?** Dann wurde es nie abgesendet. Neu ausgefüllt wird ausschließlich **im laufenden Termin** über die Kachel „Formulare“ („Terminansicht 2“) — nicht hier."
    }
   },
   {
@@ -83,7 +83,7 @@
     }
    ],
    "hint": {
-    "text": "**„Ich habe meinen Vertrag nie bekommen.“** Formular öffnen, **PDF herunterladen** und an die hinterlegte E-Mail-Adresse senden — oder die Adresse zuerst im Reiter „Kundeninfos“ prüfen (Dokument J)."
+    "text": "**„Ich habe meinen Vertrag nie bekommen.“** Formular öffnen, **PDF herunterladen** und an die hinterlegte E-Mail-Adresse senden — oder die Adresse zuerst im Reiter „Kundeninfos“ prüfen („Kundenverwaltung 2“)."
    }
   },
   {
@@ -120,7 +120,7 @@
     }
    ],
    "hint": {
-    "text": "**Eingetragen wird im Termin:** Der Einstellungszettel wird über die Kachel **„Einstellungszettel“** im laufenden Termin gefüllt (Dokument H). Im Kundenprofil steht nur die Historie."
+    "text": "**Eingetragen wird im Termin:** Der Einstellungszettel wird über die Kachel **„Einstellungszettel“** im laufenden Termin gefüllt („Terminansicht 8“). Im Kundenprofil steht nur die Historie."
    }
   },
   {
@@ -157,5 +157,8 @@
    }
   }
  ],
- "audience": "institut"
+ "audience": "institut",
+ "series": "Kundenverwaltung",
+ "nr": 6,
+ "of": 6
 }

@@ -1,0 +1,158 @@
+{
+ "out": "../pdf/Grundlagen-4-Auf-dem-Handy",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Grundlagen",
+ "nr": 4,
+ "of": 5,
+ "audience": "institut",
+ "title": [
+  "Auf dem Handy",
+  "und Tablet"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Menüleiste unten, Mehr-Menü und Werkzeuge auf kleinen Bildschirmen",
+ "eyebrow": "Grundlagen · Mobil",
+ "footerArea": "Grundlagen",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Unter 1024 Pixeln gibt es **keine Seitenleiste** — die Navigation sitzt unten am Rand.",
+  "**Alles ist erreichbar**, nur anders angeordnet: Was in der Seitenleiste steht, steckt im **Mehr**-Menü.",
+  "Auf schmalen Bildschirmen zeigen Tabellen **weniger Spalten** — die wichtigste Angabe rutscht unter den Namen."
+ ],
+ "pages": [
+  {
+   "h1": "Die Leiste unten",
+   "sub": "Vier Ziele plus „Mehr“ — die täglich gebrauchten Seiten sind mit einem Daumen erreichbar.",
+   "card": {
+    "title": "Die Leiste unten",
+    "text": "Start, Termine, Kunden und das Mehr-Menü"
+   },
+   "left": {
+    "shot": "j1-bottom-nav"
+   },
+   "leftCaption": "Die Menüleiste am unteren Rand.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Tägliche Seiten",
+     "text": "**Start**, **Termine** und **Kunden** liegen direkt in der Leiste."
+    },
+    {
+     "n": 2,
+     "title": "Aktive Seite",
+     "text": "Das Symbol der geöffneten Seite ist hervorgehoben."
+    },
+    {
+     "n": 3,
+     "title": "„Mehr“",
+     "text": "Öffnet das vollständige Menü — alles, was am Rechner in der Seitenleiste steht."
+    }
+   ],
+   "hint": {
+    "text": "**Zurück-Pfeile fehlen mobil** — sie wären doppelt. Zurück geht es über die Leiste unten oder die Zurück-Geste des Geräts."
+   }
+  },
+  {
+   "h1": "Das Mehr-Menü",
+   "sub": "Hier steckt der Rest: alle Menüpunkte nach denselben Gruppen, dazu Standort, Suche, Mitteilungen und Rundgang.",
+   "card": {
+    "title": "Das Mehr-Menü",
+    "text": "Alle Seiten, Standort, Suche, Mitteilungen, Rundgang"
+   },
+   "left": {
+    "shot": "j2-mehr-sheet"
+   },
+   "leftCaption": "Das aufgezogene Mehr-Menü.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Menü“",
+     "text": "Alle Seiten, nach denselben Gruppen sortiert wie die Seitenleiste am Rechner."
+    },
+    {
+     "n": 2,
+     "title": "„Standort“",
+     "text": "Dieselbe Institutswahl wie am Rechner — sie wirkt auf alle Seiten („Grundlagen 2“)."
+    },
+    {
+     "n": 3,
+     "title": "„Mitteilungen“ und „Suche“",
+     "text": "Ebenfalls hier — auf dem Handy gibt es dafür keinen eigenen Platz am Rand."
+    },
+    {
+     "n": 4,
+     "title": "„Rundgang“ und „Theme“",
+     "text": "Die Einführung der aktuellen Seite starten und zwischen Hell und Dunkel wechseln."
+    }
+   ],
+   "hint": {
+    "text": "**Was mobil fehlt, fehlt nirgends:** Jeder Menüpunkt der Seitenleiste ist auch im Mehr-Menü. Wer etwas nicht findet, hat meist die Gruppe noch nicht aufgeklappt."
+   }
+  },
+  {
+   "h1": "Werkzeuge einer Seite",
+   "sub": "Filter, Monatsauswahl und Export haben mobil keinen Platz nebeneinander — sie klappen unter einer Zeile auf.",
+   "card": {
+    "title": "Werkzeuge einer Seite",
+    "text": "Zustandszeile antippen, Werkzeuge aufklappen"
+   },
+   "left": {
+    "shot": "j3-zustandszeile"
+   },
+   "leftCaption": "Die Zustandszeile zeigt die aktuelle Auswahl; darunter klappen die Werkzeuge auf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zustandszeile lesen",
+     "text": "Sie nennt, was gerade gilt — etwa **„Di, 15. Sep 2026 · Beratung“** oder **„September 2026 · Management“**."
+    },
+    {
+     "n": 2,
+     "title": "Antippen",
+     "text": "Klappt die Werkzeuge der Seite auf — Filter, Datum, Monat, Export."
+    },
+    {
+     "n": 3,
+     "title": "Volle Breite",
+     "text": "Die Werkzeuge stehen dann untereinander über die ganze Breite. Nichts wird kleiner, nichts scrollt seitlich."
+    }
+   ],
+   "hint": {
+    "text": "**Das Hilfe-Fragezeichen** ist mobil ausgeblendet — der Rundgang läuft über das **Mehr**-Menü."
+   }
+  },
+  {
+   "h1": "Listen und Tabellen",
+   "sub": "Große Tabellen zeigen auf dem Handy nur das Nötigste — der Rest steht unter der Hauptangabe.",
+   "card": {
+    "title": "Listen und Tabellen",
+    "text": "Weniger Spalten, wichtige Angaben unter dem Namen"
+   },
+   "left": {
+    "shot": "j4-tabelle-mobil"
+   },
+   "leftCaption": "Kundenliste auf dem Handy — Name und letzter Besuch, Kundennummer darunter.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Weniger Spalten",
+     "text": "Nebenspalten werden ausgeblendet, damit die Liste ohne Seitwärts-Scrollen passt."
+    },
+    {
+     "n": 2,
+     "title": "Angaben rutschen",
+     "text": "Die wichtigste ausgeblendete Angabe steht **unter** der Hauptspalte — etwa die Kundennummer unter dem Namen."
+    },
+    {
+     "n": 3,
+     "title": "Details auf der Seite",
+     "text": "Alles Übrige steht in der jeweiligen Detailseite — dort ist genug Platz."
+    }
+   ],
+   "hint": {
+    "text": "**Manche Tabellen scrollen doch** — dann bleibt die erste Spalte stehen, damit klar ist, zu wem eine Zeile gehört. Für einen vollständigen Überblick lohnt sich trotzdem der Rechner."
+   }
+  }
+ ]
+}

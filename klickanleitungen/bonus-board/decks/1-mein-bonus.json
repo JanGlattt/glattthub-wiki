@@ -1,5 +1,5 @@
 {
- "out": "../pdf/O-Mein-Bonus",
+ "out": "../pdf/Bonus-Board-1-Mein-Bonus",
  "meta": "../meta.json",
  "shots": "../shots",
  "audience": "institut",
@@ -8,7 +8,7 @@
   "im Bonus-Board"
  ],
  "subtitle": "Klickanleitung für das Bonus-Board im glatttHub — was gesichert ist, was noch fehlt und wie das Institut steht",
- "eyebrow": "Bonus-Board · Mein Board · Teil O",
+ "eyebrow": "Bonus-Board · Mein Board",
  "footerArea": "Bonus-Board",
  "stand": "15.09.2026",
  "version": "1.0",
@@ -43,7 +43,7 @@
     {
      "n": 3,
      "title": "„Mein Board“",
-     "text": "Die eigene Sicht. Wer zusätzlich **„Management“** sieht, hat das Recht für die Leitungs-Sicht (Dokument Q)."
+     "text": "Die eigene Sicht. Wer zusätzlich **„Management“** sieht, hat das Recht für die Leitungs-Sicht („Bonus-Board 3“)."
     }
    ],
    "notes": [
@@ -177,5 +177,8 @@
     "text": "**Warum das Team zählt:** Viele Regeln zahlen nur, wenn das Institut sein Minimalziel erreicht — bei manchen Challenges sogar erst, wenn **alle beteiligten Teams** ihr Ziel schaffen. Deshalb lohnt der Blick auf diese Karte, auch wenn die eigenen Ziele längst stehen."
    }
   }
- ]
+ ],
+ "series": "Bonus-Board",
+ "nr": 1,
+ "of": 5
 }

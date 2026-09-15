@@ -1,5 +1,5 @@
 {
- "out": "../pdf/C-Behandlungsvertrag",
+ "out": "../pdf/Terminansicht-3-Behandlungsvertrag",
  "meta": "../meta.json",
  "shots": "../shots",
  "title": [
@@ -7,7 +7,7 @@
   "abschließen"
  ],
  "subtitle": "Klickanleitung für den Vertrag im Beratungsgespräch — Körperzonen, Zahlungsart, Preis, Rabatt, Gutschein, AGB und Unterschrift",
- "eyebrow": "Terminansicht · Beratungsgespräch · Teil C",
+ "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
  "stand": "08.09.2026",
  "version": "1.1",
@@ -326,5 +326,8 @@
     "text": "Die **Vertragsnummer** hat das Muster **JJJJ.MM.TT-Kundennummer** (z. B. 2026.09.08-MD000002) und steht auf dem PDF."
    }
   }
- ]
+ ],
+ "series": "Terminansicht",
+ "nr": 3,
+ "of": 8
 }

@@ -109,31 +109,35 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | # | Prozess | Ort im Hub | Anleitung | Status |
 |---|---|---|---|---|
 | 1 | Tageserfassung Beratungsgespräche (Verkauf, Kein Verkauf, Upselling, Statistik) | Institutsseite `/shared/institut/{token}` | „Tageserfassung Beratungsgespräche" (25.08.2026) | ✅ fertig |
-| 2 | Beratungstermin finden, öffnen, Termin beginnen | `/hub/appointments` → Termin-Detailseite | **A – Beratungstermin starten** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
-| 3 | Formular „Kundeninformation & Einverständniserklärung" | Session → Formulare | **B – Kundeninformation & Einverständniserklärung** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
-| 4 | Formular „Behandlungsvertrag" (Zonen, Zahlungsart, Preisliste, Rabatt, Gutschein, Werber, AGB, Unterschrift) | dito | **C – Behandlungsvertrag abschließen** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
-| 5 | Formular „SEPA-Mandat" | dito | **D – SEPA-Mandat einrichten** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
-| 6 | Formular an die Kundin weitergeben („Formular teilen", 48-h-Link) | Formular-Kopfzeile | **E – Formular an die Kundin weitergeben** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
-| 7 | Direkt behandeln nach Vertragsabschluss + Termin beenden (Kasse, Folgetermin, Notiz) | Session-Kachel / Beenden-Ablauf | **F – Direkt behandeln & Termin beenden** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
-| 8 | Probleme & Fehlermeldungen (Nachschlagewerk, 3 Tabellen) | alle | **G – Probleme & Fehlermeldungen** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
-| 9 | Bestandskundin: Behandlungstermin starten, **Einstellungszettel pflegen**, Folgetermin, beenden | Termin-Detailseite | **H – Behandlungstermin & Einstellungszettel** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
+| 2 | Beratungstermin finden, öffnen, Termin beginnen | `/hub/appointments` → Termin-Detailseite | **Terminansicht 1 – Beratungstermin starten** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
+| 3 | Formular „Kundeninformation & Einverständniserklärung" | Session → Formulare | **Terminansicht 2 – Kundeninformation & Einverständniserklärung** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
+| 4 | Formular „Behandlungsvertrag" (Zonen, Zahlungsart, Preisliste, Rabatt, Gutschein, Werber, AGB, Unterschrift) | dito | **Terminansicht 3 – Behandlungsvertrag abschließen** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
+| 5 | Formular „SEPA-Mandat" | dito | **Terminansicht 4 – SEPA-Mandat einrichten** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
+| 6 | Formular an die Kundin weitergeben („Formular teilen", 48-h-Link) | Formular-Kopfzeile | **Terminansicht 5 – Formular an die Kundin weitergeben** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
+| 7 | Direkt behandeln nach Vertragsabschluss + Termin beenden (Kasse, Folgetermin, Notiz) | Session-Kachel / Beenden-Ablauf | **Terminansicht 6 – Direkt behandeln & Termin beenden** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
+| 8 | Probleme & Fehlermeldungen (Nachschlagewerk, 3 Tabellen) | alle | **Terminansicht 7 – Probleme & Fehlermeldungen** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
+| 9 | Bestandskundin: Behandlungstermin starten, **Einstellungszettel pflegen**, Folgetermin, beenden | Termin-Detailseite | **Terminansicht 8 – Behandlungstermin & Einstellungszettel** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
 | 10 | Zusatz-Service hinzubuchen, Kein-Verkauf erfassen (nach Umsetzung Asana 1218245871472844) | Termin-Detailseite | offen | ⬜ |
 | 11 | Folgetermin planen (ideale Slots), Termin verlegen | Termin-Detailseite / Buchungsseite | offen | ⬜ |
 | 12 | Google-Bewertung per WhatsApp anfragen | Termin-Detailseite Sidebar | offen | ⬜ |
-| 13 | Kundenprofil `/hub/clients/{id}`: Kundin suchen, Profil lesen, Reiter-Wegweiser | Kunden | **I – Kundin finden & Profil verstehen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 13a | Stammdaten bearbeiten (Feld-Schlösser, Adresse, Einwilligungen, Übernahme nach Phorest) | Kundenprofil › Kundeninfos | **J – Kundendaten bearbeiten** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 13b | Terminhistorie, Buchungslink, Verlegen, Extrazeit, gekaufte Pakete | Kundenprofil › Termine, glattt Pakete | **K – Termine & Pakete** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 13c | Vertrag, Rate, SEPA-Mandat, offene Forderungen, Zahlungsstand | Kundenprofil › Vertrag/Zahlungen, Forderungsmanagement | **L – Vertrag, Zahlung & offene Forderungen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 13d | Automatische Nachrichten, WhatsApp lesen & senden, Zendesk-Tickets | Kundenprofil › Nachrichten, Kundenservice | **M – Nachrichten & Kundenservice** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 13e | Eingereichte Formulare, Einstellungszettel, Behandlungsfotos | Kundenprofil › Dokumente, Behandlungseinstellungen | **N – Unterlagen & Behandlungsverlauf** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 13 | Kundenprofil `/hub/clients/{id}`: Kundin suchen, Profil lesen, Reiter-Wegweiser | Kunden | **Kundenverwaltung 1 – Kundin finden & Profil verstehen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 13a | Stammdaten bearbeiten (Feld-Schlösser, Adresse, Einwilligungen, Übernahme nach Phorest) | Kundenprofil › Kundeninfos | **Kundenverwaltung 2 – Kundendaten bearbeiten** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 13b | Terminhistorie, Buchungslink, Verlegen, Extrazeit, gekaufte Pakete | Kundenprofil › Termine, glattt Pakete | **Kundenverwaltung 3 – Termine & Pakete** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 13c | Vertrag, Rate, SEPA-Mandat, offene Forderungen, Zahlungsstand | Kundenprofil › Vertrag/Zahlungen, Forderungsmanagement | **Kundenverwaltung 4 – Vertrag, Zahlung & offene Forderungen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 13d | Automatische Nachrichten, WhatsApp lesen & senden, Zendesk-Tickets | Kundenprofil › Nachrichten, Kundenservice | **Kundenverwaltung 5 – Nachrichten & Kundenservice** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 13e | Eingereichte Formulare, Einstellungszettel, Behandlungsfotos | Kundenprofil › Dokumente, Behandlungseinstellungen | **Kundenverwaltung 6 – Unterlagen & Behandlungsverlauf** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 14 | Gutscheine (Verwaltung/Einlösung) | Gutscheine-Modul | offen | ⬜ |
 | 15 | Termin buchen (Neukunde/Bestandskunde) | Buchungsseite | offen | ⬜ |
-| 16 | Login, PIN, Standortwahl, Dark/Light, Mobil-Navigation | Hub allgemein | offen | ⬜ |
-| 17 | Bonus-Board: eigener Stand, Ziele, Hochrechnung, Team-Karte | `/hub/bonus` › Mein Board | **O – Mein Bonus** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 18 | Challenges: Monats-Challenge, Ranking, Blind, Serien | `/hub/bonus` › Mein Board | **P – Challenges verstehen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 19 | Management-Sicht: Institute vs. Minimalziele, Boni je Mitarbeiterin, Export | `/hub/bonus` › Management | **Q – Bonus-Board für die Leitung** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 20 | Bonus-Regeln und Challenges anlegen, Minimalziele, Sichtbarkeit | `/hub/bonus/verwaltung` | **R – Regeln & Challenges anlegen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 21 | Monatsabschluss: Widerrufe entscheiden, korrigieren, einfrieren, Google-Bewertungen | `/hub/bonus/verwaltung` | **S – Monatsabschluss** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 16 | Anmelden (PIN/E-Mail), Seitenleiste, Gruppen, Abmelden | Hub allgemein | **Grundlagen 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 16a | Standortwahl, globale Suche, Mitteilungen | Seitenleiste | **Grundlagen 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 16b | Profil: Name/Bild, Passwort, PIN, Geräte, Rundgänge | `/user/profile` | **Grundlagen 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 16c | Mobil: Menüleiste, Mehr-Menü, Zustandszeile, Tabellen | Hub auf Handy/Tablet | **Grundlagen 4** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 16d | glatttBert: fragen, was er weiß, was er nicht kann | Assistent auf jeder Seite | **Grundlagen 5** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 17 | Bonus-Board: eigener Stand, Ziele, Hochrechnung, Team-Karte | `/hub/bonus` › Mein Board | **Bonus-Board 1 – Mein Bonus** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 18 | Challenges: Monats-Challenge, Ranking, Blind, Serien | `/hub/bonus` › Mein Board | **Bonus-Board 2 – Challenges verstehen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 19 | Management-Sicht: Institute vs. Minimalziele, Boni je Mitarbeiterin, Export | `/hub/bonus` › Management | **Bonus-Board 3 – Bonus-Board für die Leitung** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 20 | Bonus-Regeln und Challenges anlegen, Minimalziele, Sichtbarkeit | `/hub/bonus/verwaltung` | **Bonus-Board 4 – Regeln & Challenges anlegen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 21 | Monatsabschluss: Widerrufe entscheiden, korrigieren, einfrieren, Google-Bewertungen | `/hub/bonus/verwaltung` | **Bonus-Board 5 – Monatsabschluss** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 
 Die Liste wird mit jeder fertigen Anleitung fortgeschrieben. **Ablage:** PDFs in
 `~/Downloads/Klickanleitungen-Terminansicht/` (Übergabe an Jan), Quellen reproduzierbar im Wiki-Repo
@@ -332,6 +336,50 @@ Damit sind alle Bilder mit laufendem Termin veraltet (Dokumente B–H nahezu vol
 
 ---
 
+## Benennung: Bereich + Nummer (ab 15.09.2026)
+
+Die Buchstaben A–S sind abgelöst. Ein Dokument heißt ab sofort nach **Serie und Nummer** —
+„Kundenverwaltung 4", „Bonus-Board 2", „Grundlagen 1". Grund: Allein die Berichte (16) und das
+Admin-Panel (~38) bringen über 50 weitere Dokumente; das Alphabet reichte nicht, und am Namen
+soll man sehen, wozu ein Dokument gehört.
+
+Rückwirkend gilt: **Terminansicht 1–8** (vormals A–H), **Kundenverwaltung 1–6** (I–N),
+**Bonus-Board 1–5** (O–S). Deck-Dateien, Ausgabedateien und alle Querverweise in den Texten
+sind umgestellt.
+
+Im Deck stehen dafür `series`, `nr`, `of` und `audience`. Daraus baut der Builder den Kicker
+über dem Titel, den Zusatz „Teil n von m" in jeder Kopfzeile und im Web die Gruppierung.
+**`audience`** (`institut`, `leitung`, `buero`, `admin`) erscheint als Plakette auf dem Cover
+und als Badge in der Web-Übersicht — jede Leserin sieht damit sofort, ob ein Dokument für sie
+gedacht ist.
+
+---
+
+## Serie „Grundlagen" 1–5 (15.09.2026)
+
+Die Bedienung des Hubs überhaupt — Voraussetzung für jede andere Serie und bis dahin nirgends
+beschrieben. Quellen unter `klickanleitungen/grundlagen/`.
+
+| Dokument | Kern |
+|---|---|
+| **Grundlagen 1 – Anmelden & zurechtfinden** | PIN- und E-Mail-Anmeldung, Einladung, Seitenleiste mit Schnellzugriff und fünf Gruppen, Nutzerkarte, Abmelden |
+| **Grundlagen 2 – Standort, Suche & Mitteilungen** | Institutswahl inkl. „Alle Standorte" und ausgeblendeter Institute, Suche mit Tastenkürzel, Mitteilungen |
+| **Grundlagen 3 – Mein Profil** | Name/Bild, Passwort, PIN, angemeldete Geräte, Rundgänge zurücksetzen |
+| **Grundlagen 4 – Auf dem Handy und Tablet** | Menüleiste unten, Mehr-Menü, Zustandszeile, Tabellen mit weniger Spalten |
+| **Grundlagen 5 – glatttBert fragen** | Assistent öffnen, was er beantwortet (Tabelle), was er nicht kann |
+
+**Besonderheiten der Aufnahme:** zwei Bildgrößen (iPad quer für 1–3 und 5, **Telefon 390 × 844**
+für 4); die Anmeldebilder entstehen **ohne Sitzung** (`fresh: true`); Zugang **ohne Sonderrechte**,
+sonst zeigt die Seitenleiste Gruppen, die im Institut niemand hat. Der Lauf verändert nichts —
+die Standortwahl wird nur geöffnet und wieder geschlossen (sie überlebt das Abmelden), im Profil
+wird nichts gespeichert und **kein** „Andere Sitzungen abmelden" gedrückt. glatttBert bekommt eine
+**Zahlen-Frage** aus der `.env`, damit keine Kundendaten ins Bild geraten.
+
+**Zwei-Faktor-Anmeldung ist nicht Teil der Serie** — sie ist in `config/fortify.php` auskommentiert
+und damit im Hub nicht aktiv.
+
+---
+
 ## Ein Inhalt, zwei Ausgaben — PDF und Endbenutzer-Wiki (15.09.2026)
 
 Jan: „Ich will am Ende das Ganze nicht nur in PDFs haben, sondern auch in einem
@@ -371,19 +419,19 @@ aus den Serien-READMEs unverändert.
 
 ---
 
-## Serie „Bonus-Board" O–S (15.09.2026)
+## Serie „Bonus-Board" 1–5 (15.09.2026)
 
-Dritte Serie, Quellen unter `klickanleitungen/bonus-board/` (README dort). Auftrag Jan
+Quellen unter `klickanleitungen/bonus-board/` (README dort). Auftrag Jan
 15.09.2026; Zuschnitt nach den **drei Sichten** des Moduls, weil sie an verschiedenen Rechten
 hängen und verschiedene Leute betreffen:
 
 | Dokument | Für wen | Kern |
 |---|---|---|
-| **O – Mein Bonus** | Mitarbeiterin | gesichert vs. aktueller Stand, Hochrechnung, Abwesenheitsregel, Ziel-Karten, Team-Karte |
-| **P – Challenges verstehen** | Mitarbeiterin | Monats-Challenge, Ranking (auch relativ), Blind-Challenge, Serien |
-| **Q – Bonus-Board für die Leitung** | Leitung | Institute vs. Minimalziele mit Ampel, Boni je Mitarbeiterin, offene Widerrufe, CSV/PDF |
-| **R – Regeln & Challenges anlegen** | Büro | vierstufiger Assistent, Monatsbindung der Challenges, Minimalziele, Sichtbarkeit |
-| **S – Monatsabschluss** | Büro | Widerrufe zählen/nicht zählen/parken, Wert-Korrekturen, einfrieren, Google-Bewertungen |
+| **Bonus-Board 1 – Mein Bonus** | Mitarbeiterin | gesichert vs. aktueller Stand, Hochrechnung, Abwesenheitsregel, Ziel-Karten, Team-Karte |
+| **Bonus-Board 2 – Challenges verstehen** | Mitarbeiterin | Monats-Challenge, Ranking (auch relativ), Blind-Challenge, Serien |
+| **Bonus-Board 3 – Bonus-Board für die Leitung** | Leitung | Institute vs. Minimalziele mit Ampel, Boni je Mitarbeiterin, offene Widerrufe, CSV/PDF |
+| **Bonus-Board 4 – Regeln & Challenges anlegen** | Büro | vierstufiger Assistent, Monatsbindung der Challenges, Minimalziele, Sichtbarkeit |
+| **Bonus-Board 5 – Monatsabschluss** | Büro | Widerrufe zählen/nicht zählen/parken, Wert-Korrekturen, einfrieren, Google-Bewertungen |
 
 **Aufnahme braucht zwei Läufe und zwei Monate.** Zwei Zugänge, weil O und P zeigen sollen, was
 eine Mitarbeiterin sieht (mit Verwaltungsrecht stünden dort Werkzeuge, die sie nie hat);
@@ -403,14 +451,14 @@ stehen dürfen; bis dahin die Screenshots nicht committen oder Beispielbeträge 
 
 ---
 
-## Serie „Kundenverwaltung" I–N (15.09.2026)
+## Serie „Kundenverwaltung" 1–6 (15.09.2026)
 
-Zweite Serie nach A–H, Quellen im Wiki-Repo unter `klickanleitungen/kundenverwaltung/`
+Quellen im Wiki-Repo unter `klickanleitungen/kundenverwaltung/`
 (README dort). Auftrag Jan 15.09.2026: „Kunde suchen, Kundenprofil ansehen und Dinge bearbeiten,
 alle Einzelpunkte" — also das komplette Kundenprofil `/hub/clients/{id}` mit seinen zehn Reitern.
 
 **Entscheidungen (Jan, 15.09.2026):** Zielgruppe **Institute**, Aufnahme im **iPad-Querformat**
-wie A–H · Zuschnitt in **sechs Dokumente I–N** (ein Dokument je Themenblock) · Inhalt bleibt
+wie A–H · Zuschnitt in **sechs Dokumente** (ein Dokument je Themenblock) · Inhalt bleibt
 beim **Kundenprofil**; Vertragsdetail, Forderungsfall-Akte und Widerruf sind nicht Teil der Serie ·
 Beispieldaten von einer **echten Kundin** mit maskierten Daten statt einer leeren Testkundin.
 

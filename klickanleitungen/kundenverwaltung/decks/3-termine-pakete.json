@@ -1,5 +1,5 @@
 {
- "out": "../pdf/K-Termine-und-Pakete",
+ "out": "../pdf/Kundenverwaltung-3-Termine-und-Pakete",
  "meta": "../meta.json",
  "shots": "../shots",
  "title": [
@@ -7,13 +7,13 @@
   "& Pakete"
  ],
  "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — Terminhistorie, Extrazeit und gekaufte Pakete",
- "eyebrow": "Kundenverwaltung · Termine & Pakete · Teil K",
+ "eyebrow": "Kundenverwaltung · Termine & Pakete",
  "footerArea": "Kundenverwaltung",
  "stand": "15.09.2026",
  "version": "1.0",
  "notes": [
   "Termine und Pakete kommen **live aus Phorest** — der Hub zeigt sie nur an, geführt wird der Kalender dort.",
-  "Behandelt wird immer über die **Terminansicht** (Dokumente A–H), nicht über das Kundenprofil.",
+  "Behandelt wird immer über die **Terminansicht** (Dokumente „Terminansicht 1–8“), nicht über das Kundenprofil.",
   "Die **Extrazeit** ist die einzige Angabe dieses Reiters, die im Hub gepflegt wird."
  ],
  "pages": [
@@ -188,7 +188,7 @@
     {
      "n": 3,
      "title": "Nicht verwechseln",
-     "text": "Das Paket ist die **Behandlungsberechtigung** in Phorest, der **Vertrag** (Dokument L) ist die Zahlungsseite. Beides gehört zusammen, ist aber nicht dasselbe."
+     "text": "Das Paket ist die **Behandlungsberechtigung** in Phorest, der **Vertrag** („Kundenverwaltung 4“) ist die Zahlungsseite. Beides gehört zusammen, ist aber nicht dasselbe."
     }
    ],
    "hint": {
@@ -196,5 +196,8 @@
    }
   }
  ],
- "audience": "institut"
+ "audience": "institut",
+ "series": "Kundenverwaltung",
+ "nr": 3,
+ "of": 6
 }

@@ -55,7 +55,9 @@ let html = pageShell(`
   <div class="cover-bar"></div>
   <div class="cover">
     <img class="cover-logo" src="${logo}" alt="glattt">
+    ${deck.kicker ? `<div class="cover-kicker">${D.esc(deck.kicker)}</div>` : ''}
     <h1>${deck.title.map(D.esc).join('<br>')}</h1>
+    ${deck.audienceLabel ? `<div class="cover-audience">${D.esc(deck.audienceLabel)}</div>` : ''}
     <p class="sub">${D.rich(deck.subtitle)}</p>
     <div class="cards n${cardPages.length}">${cardPages.map((p, i) =>
       `<div class="card"><div class="cnum ${p.accent || ''}">${i + 1}</div>`
@@ -66,7 +68,7 @@ let html = pageShell(`
 
 deck.pages.forEach((p, i) => {
   const header = `<header><img class="logo" src="${logo}" alt="">`
-    + `<div class="hd"><div class="eyebrow">${D.esc(deck.eyebrow)}</div><h1>${D.esc(p.h1)}</h1>`
+    + `<div class="hd"><div class="eyebrow">${D.esc(deck.eyebrowFull || deck.eyebrow)}</div><h1>${D.esc(p.h1)}</h1>`
     + `<div class="sub">${D.rich(p.sub || '')}</div></div>`
     + `<div class="vorgang"><div class="vl">Vorgang</div><div class="vn">${p.vorgang}`
     + `<span>/ ${p.vorgangOf || cardPages.length}</span></div></div></header><hr class="gold">`;

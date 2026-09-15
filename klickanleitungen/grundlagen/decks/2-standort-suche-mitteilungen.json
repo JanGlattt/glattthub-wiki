@@ -1,0 +1,160 @@
+{
+ "out": "../pdf/Grundlagen-2-Standort-Suche-Mitteilungen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Grundlagen",
+ "nr": 2,
+ "of": 5,
+ "audience": "institut",
+ "title": [
+  "Standort, Suche",
+  "& Mitteilungen"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — die drei Werkzeuge am Kopf der Seitenleiste",
+ "eyebrow": "Grundlagen · Werkzeuge",
+ "footerArea": "Grundlagen",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der **Standort wirkt auf fast jede Seite** — Termine, Berichte, Verträge richten sich danach.",
+  "Die **Suche findet nicht nur Seiten**, sondern auch Kundinnen, Verträge und Gutscheine.",
+  "Die Standortwahl bleibt gespeichert, bis sie geändert wird — auch nach dem Abmelden."
+ ],
+ "pages": [
+  {
+   "h1": "Standort wählen",
+   "sub": "Oben in der Seitenleiste steht, für welches Institut die Zahlen gelten. Diese Wahl zieht sich durch den ganzen Hub.",
+   "card": {
+    "title": "Standort wählen",
+    "text": "Institut einstellen — es wirkt auf fast jede Seite"
+   },
+   "left": {
+    "shot": "h1-standort"
+   },
+   "leftCaption": "Die Standortwahl mit den Instituts-Karten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Institute“ öffnen",
+     "text": "Der oberste der drei Knöpfe klappt die Auswahl auf."
+    },
+    {
+     "n": 2,
+     "title": "Institut antippen",
+     "text": "Jede Karte ist ein Standort. Der gewählte trägt ein Häkchen."
+    },
+    {
+     "n": 3,
+     "title": "„Alle Standorte“",
+     "text": "Die oberste Karte hebt die Einschränkung auf — dann zeigt jede Seite die Zahlen **aller** Institute zusammen."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Ausgeblendete Institute",
+     "text": "Ein Standort mit dem Badge **„Ausgeblendet“** zählt **nicht** in „Alle Standorte“ — etwa ein Institut im Testbetrieb vor der Eröffnung. Seine Zahlen erscheinen nur, wenn er ausdrücklich gewählt ist."
+    },
+    {
+     "title": "Bleibt eingestellt",
+     "text": "Die Wahl gilt weiter, auch nach dem Abmelden. Wer sich über Zahlen wundert, prüft zuerst, welcher Standort oben steht."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Die häufigste Verwirrung im Hub:** „Die Zahlen stimmen nicht.“ In den allermeisten Fällen steht oben ein anderer Standort als gedacht — oder **„Alle Standorte“**, wo ein einzelnes Institut gemeint war."
+   }
+  },
+  {
+   "h1": "Suchen",
+   "sub": "Ein Feld für alles: Seiten, Berichte, Kundinnen, Verträge und Gutscheine.",
+   "card": {
+    "title": "Suchen",
+    "text": "Seiten, Kundinnen, Verträge und Gutscheine finden"
+   },
+   "left": {
+    "shot": "h2-suche"
+   },
+   "right": {
+    "shot": "h3-suche-treffer"
+   },
+   "leftCaption": "Das Suchfeld unter den drei Knöpfen.",
+   "rightCaption": "Treffer nach Bereichen gruppiert.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Suche öffnen",
+     "text": "Der Knopf **„Suche“** oder das Tastenkürzel — es steht im Feld (**⇧⌘F** am Mac, **Strg⇧F** unter Windows)."
+    },
+    {
+     "n": 2,
+     "title": "Begriff eintippen",
+     "text": "Seitenname, Kundenname, Vertragsnummer oder Gutschein-Seriennummer — alles im selben Feld."
+    },
+    {
+     "n": 3,
+     "title": "Treffer lesen",
+     "text": "Die Ergebnisse sind nach **Bereichen gruppiert** (Seiten, Berichte, Kunden, Verträge …)."
+    },
+    {
+     "n": 4,
+     "title": "Öffnen",
+     "text": "Ein Tippen auf den Treffer führt direkt zur Seite oder zum Datensatz."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Phorest wird mitgesucht",
+     "text": "Bei Kundinnen sucht der Hub zusätzlich **live in Phorest**, wenn der lokale Bestand nichts hergibt. Das dauert etwas länger — ein Hinweis zeigt es an."
+    },
+    {
+     "title": "Nur Erlaubtes",
+     "text": "Die Suche zeigt ausschließlich Bereiche, für die die Berechtigung vorliegt. Was nicht erscheint, ist nicht weg — es ist gesperrt."
+    }
+   ],
+   "hint": {
+    "text": "**Schneller als jedes Menü:** Für Seiten, die selten gebraucht werden, ist die Suche der kürzeste Weg — Anfangsbuchstaben tippen statt die richtige Gruppe suchen."
+   }
+  },
+  {
+   "h1": "Mitteilungen",
+   "sub": "Der dritte Knopf sammelt, was der Hub meldet — von der geplatzten Lastschrift bis zum neuen Formular.",
+   "card": {
+    "title": "Mitteilungen",
+    "text": "Meldungen lesen, öffnen, als gelesen markieren"
+   },
+   "left": {
+    "shot": "h4-mitteilungen"
+   },
+   "right": {
+    "shot": "h5-mitteilung-detail"
+   },
+   "leftCaption": "Die Liste der Mitteilungen; die Zahl am Knopf zeigt die ungelesenen.",
+   "rightCaption": "Eine aufgeklappte Mitteilung mit vollem Text.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zähler beachten",
+     "text": "Die Zahl am Knopf sind die **ungelesenen** Mitteilungen. Ohne Zahl ist alles gelesen."
+    },
+    {
+     "n": 2,
+     "title": "Mitteilung öffnen",
+     "text": "Ein Tippen zeigt den ganzen Text — die Liste kürzt lange Meldungen ab."
+    },
+    {
+     "n": 3,
+     "title": "„Öffnen“",
+     "text": "Führt zu der Stelle, um die es geht — etwa zum betroffenen Vertrag oder Termin."
+    },
+    {
+     "n": 4,
+     "title": "Alle als gelesen",
+     "text": "Räumt die Liste auf. Die Mitteilungen bleiben lesbar, nur der Zähler verschwindet."
+    }
+   ],
+   "hint": {
+    "text": "**Mitteilungen ersetzen keine Absprache.** Was das Büro erledigen muss, gehört als **Asana-Task** dorthin — eine gelesene Mitteilung ist noch keine erledigte Aufgabe."
+   }
+  }
+ ]
+}

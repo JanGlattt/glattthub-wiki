@@ -24,6 +24,14 @@ const rich = (s) => esc(s)
   .replace(/\*\*(.+?)\*\*/g, '<b>$1</b>')
   .replace(/„(.+?)“/g, '„<span class="ui">$1</span>“');
 
+/** Zielgruppe → Beschriftung auf dem Cover und Gruppe im Wiki. */
+const AUDIENCE = {
+  institut: 'Für die Institute',
+  leitung: 'Für die Leitung',
+  buero: 'Fürs Büro',
+  admin: 'Für die Administration',
+};
+
 const slugify = (s) => String(s).toLowerCase()
   .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
   .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -36,6 +44,15 @@ function load(deckFile) {
   const shotsDir = path.resolve(dir, deck.shots || '../shots');
 
   deck.slug = deck.slug || slugify(path.basename(deckFile, '.json'));
+  // Benennung „Bereich + Nummer" (seit 15.09.2026): Die Serie und die Nummer stehen im Deck,
+  // die Builder setzen daraus Kicker, Eyebrow-Zusatz und Gruppierung im Web zusammen.
+  deck.of = deck.of || null;
+  deck.kicker = deck.series && deck.nr
+    ? deck.series + ' ' + deck.nr + (deck.of ? ' von ' + deck.of : '')
+    : '';
+  deck.eyebrowFull = [deck.eyebrow, deck.series && deck.nr ? 'Teil ' + deck.nr + (deck.of ? ' von ' + deck.of : '') : '']
+    .filter(Boolean).join(' · ');
+  deck.audienceLabel = AUDIENCE[deck.audience] || '';
   deck.pages.forEach((p, i) => {
     p.slug = p.slug || slugify(p.h1);
     p.vorgang = p.vorgang || (i + 1);
@@ -133,4 +150,4 @@ function bodyBlocks(p) {
   return out;
 }
 
-module.exports = { load, esc, rich, slugify, marksOf, shotHtml, stepsHtml, notesHtml, hintHtml, tableHtml, sectionsHtml, bodyBlocks };
+module.exports = { load, AUDIENCE, esc, rich, slugify, marksOf, shotHtml, stepsHtml, notesHtml, hintHtml, tableHtml, sectionsHtml, bodyBlocks };

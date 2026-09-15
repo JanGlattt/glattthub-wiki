@@ -1,5 +1,5 @@
 {
- "out": "../pdf/R-Regeln-und-Challenges-anlegen",
+ "out": "../pdf/Bonus-Board-4-Regeln-und-Challenges-anlegen",
  "meta": "../meta.json",
  "shots": "../shots",
  "audience": "buero",
@@ -8,7 +8,7 @@
   "anlegen"
  ],
  "subtitle": "Klickanleitung für die Bonus-Verwaltung im glatttHub — vom Assistenten über die Minimalziele bis zur Sichtbarkeit",
- "eyebrow": "Bonus-Board · Verwaltung · Teil R",
+ "eyebrow": "Bonus-Board · Verwaltung",
  "footerArea": "Bonus-Board",
  "stand": "15.09.2026",
  "version": "1.0",
@@ -48,7 +48,7 @@
     {
      "n": 4,
      "title": "Weiter unten",
-     "text": "**Widerrufe**, **Wert-Korrekturen**, **Monatsabschluss** und **Sichtbarkeit** — die ersten drei erklärt Dokument S."
+     "text": "**Widerrufe**, **Wert-Korrekturen**, **Monatsabschluss** und **Sichtbarkeit** — die ersten drei erklärt „Bonus-Board 5“."
     }
    ],
    "hint": {
@@ -263,5 +263,8 @@
     "text": "**Reihenfolge am Monatsanfang:** erst Minimalziele setzen, dann Challenges anlegen. Eine Challenge, die sich auf „Prozent des Minimalziels“ bezieht, steht sonst ohne Bezugsgröße da."
    }
   }
- ]
+ ],
+ "series": "Bonus-Board",
+ "nr": 4,
+ "of": 5
 }

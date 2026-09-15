@@ -1,5 +1,5 @@
 {
- "out": "../pdf/D-SEPA-Mandat",
+ "out": "../pdf/Terminansicht-4-SEPA-Mandat",
  "meta": "../meta.json",
  "shots": "../shots",
  "title": [
@@ -7,7 +7,7 @@
   "einrichten"
  ],
  "subtitle": "Klickanleitung für das Lastschriftmandat nach dem Behandlungsvertrag — Kontoinhaber, IBAN, Unterschrift",
- "eyebrow": "Terminansicht · Beratungsgespräch · Teil D",
+ "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
  "stand": "08.09.2026",
  "version": "1.1",
@@ -180,5 +180,8 @@
     "text": "Mit dem Mandat bucht der Hub den Vertrag auch als Paket in **Phorest** — die Behandlungen stehen danach als Einheiten zur Verfügung."
    }
   }
- ]
+ ],
+ "series": "Terminansicht",
+ "nr": 4,
+ "of": 8
 }

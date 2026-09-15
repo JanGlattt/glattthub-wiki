@@ -10,9 +10,28 @@ klickanleitungen/
 │   ├── build-pdf.cjs       → PDF, A4 quer
 │   ├── build-web.cjs       → Endbenutzer-Wiki (HTML, Markdown, manifest.json)
 │   └── assets/             pdf.css, web.css, Logo, Lato
-├── terminansicht/          Serie A–H (Beratungs- und Behandlungstermin)
-└── kundenverwaltung/       Serie I–N (Kundenprofil)
+├── grundlagen/             Serie „Grundlagen" (Anmeldung, Navigation, Profil, Mobil, glatttBert)
+├── terminansicht/          Serie „Terminansicht" (Beratungs- und Behandlungstermin)
+├── kundenverwaltung/       Serie „Kundenverwaltung" (Kundenprofil)
+└── bonus-board/            Serie „Bonus-Board" (Mitarbeiterin, Leitung, Verwaltung)
 ```
+
+## Benennung: Bereich + Nummer
+
+Jedes Dokument gehört zu einer **Serie** und trägt darin eine **Nummer** — „Kundenverwaltung 4",
+„Bonus-Board 2". Die Buchstaben A–S der ersten drei Serien sind seit 15.09.2026 abgelöst; sie
+reichten für die geplanten über 70 Dokumente nicht. Im Deck stehen dafür drei Felder:
+
+```json
+"series": "Kundenverwaltung", "nr": 4, "of": 6, "audience": "institut"
+```
+
+Daraus baut der Builder den Kicker über dem Titel („KUNDENVERWALTUNG 4 VON 6"), den Zusatz in
+der Kopfzeile jeder Seite („… · Teil 4 von 6") und im Web die Gruppierung der Übersicht.
+**Querverweise im Text** nennen Serie und Nummer in Anführungszeichen: „Kundenverwaltung 4".
+
+`audience` steuert die Kennzeichnung: `institut`, `leitung`, `buero` oder `admin` — sie
+erscheint als Plakette auf dem Cover und als Badge in der Web-Übersicht.
 
 Jede Serie enthält `decks/*.json` (Inhalt), `meta.json` (Markierungs-Koordinaten),
 `shots/` (Screenshots), `scripts/` (Playwright-Aufnahme) und ein eigenes README mit den
@@ -28,8 +47,9 @@ mit rohem HTML für das A4-Raster baut, muss sie fürs Web ein zweites Mal schre
 ```bash
 cd klickanleitungen
 npm --prefix kundenverwaltung install playwright        # einmalig, nur für den PDF-Schritt
-node shared/build-pdf.cjs kundenverwaltung/decks/I-kundin-finden.json      # ein PDF
+node shared/build-pdf.cjs kundenverwaltung/decks/1-kundin-finden.json      # ein PDF
 node shared/build-web.cjs kundenverwaltung/decks/*.json                    # alle Web-Seiten
+WEB_OUT=../klickanleitungen-web node shared/build-web.cjs */decks/*.json   # alle Serien in EIN Wiki
 ```
 
 `build-pdf.cjs` schreibt nach `<serie>/pdf/`, `build-web.cjs` nach `<serie>/web/` — beides ist
@@ -44,7 +64,7 @@ seinen Browser nicht findet.
 | `web/<slug>/index.html` | fertige Seite, läuft auf jedem statischen Host |
 | `web/<slug>.md` | dieselbe Seite als Markdown mit HTML-Blöcken — für MkDocs |
 | `web/index.html` | Übersicht aller Anleitungen |
-| `web/manifest.json` | alles strukturiert (Seiten, Schritte, Hinweise, Bilder, Markierungs-Koordinaten) — damit kann eine Hub-Seite die Anleitungen selbst rendern |
+| `web/manifest.json` | alles strukturiert (Serie, Nummer, Zielgruppe, Seiten, Schritte, Hinweise, Bilder, Markierungs-Koordinaten) — damit kann eine Hub-Seite die Anleitungen selbst rendern |
 | `web/assets/` | Screenshots, `web.css`, Logo |
 
 Wo das Endbenutzer-Wiki am Ende liegt (eigene Hub-Seite, eigenes MkDocs oder statisch),
@@ -54,8 +74,9 @@ sind in beiden Ausgaben dieselben HTML-Elemente über dem Bild — sie überlebe
 
 ## Deck-Format
 
-Pflicht: `title`, `subtitle`, `eyebrow`, `footerArea`, `stand`, `version`, `pages`.
-Optional: `notes` (Hinweiszeilen auf dem Cover), `audience`, `out`, `slug`.
+Pflicht: `title`, `subtitle`, `eyebrow`, `footerArea`, `stand`, `version`, `pages`,
+dazu `series`, `nr`, `of` und `audience` (siehe „Benennung").
+Optional: `notes` (Hinweiszeilen auf dem Cover), `out`, `slug`.
 
 Je Seite:
 

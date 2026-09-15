@@ -1,5 +1,5 @@
 {
- "out": "../pdf/L-Vertrag-Zahlungen-Forderungen",
+ "out": "../pdf/Kundenverwaltung-4-Vertrag-Zahlungen-Forderungen",
  "meta": "../meta.json",
  "shots": "../shots",
  "title": [
@@ -7,7 +7,7 @@
   "& offene Forderungen"
  ],
  "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — was die Kundin zahlt, was sie gezahlt hat und was offen ist",
- "eyebrow": "Kundenverwaltung · Geld · Teil L",
+ "eyebrow": "Kundenverwaltung · Geld",
  "footerArea": "Kundenverwaltung",
  "stand": "15.09.2026",
  "version": "1.0",
@@ -180,5 +180,8 @@
    }
   }
  ],
- "audience": "institut"
+ "audience": "institut",
+ "series": "Kundenverwaltung",
+ "nr": 4,
+ "of": 6
 }

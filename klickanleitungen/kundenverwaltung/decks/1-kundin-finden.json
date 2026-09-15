@@ -1,5 +1,5 @@
 {
- "out": "../pdf/I-Kundin-finden",
+ "out": "../pdf/Kundenverwaltung-1-Kundin-finden",
  "meta": "../meta.json",
  "shots": "../shots",
  "title": [
@@ -7,13 +7,13 @@
   "& Profil verstehen"
  ],
  "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — von der Suche bis zum richtigen Reiter",
- "eyebrow": "Kundenverwaltung · Suche & Profil · Teil I",
+ "eyebrow": "Kundenverwaltung · Suche & Profil",
  "footerArea": "Kundenverwaltung",
  "stand": "15.09.2026",
  "version": "1.0",
  "notes": [
   "Das Kundenprofil ist die **Akte der Kundin**: Daten, Termine, Pakete, Vertrag, Nachrichten und Unterlagen an einem Ort.",
-  "Diese Anleitung ist der **Einstieg der Reihe I–N** — die letzte Seite zeigt, welcher Reiter in welchem Dokument erklärt wird.",
+  "Diese Anleitung ist der **Einstieg der Reihe „Kundenverwaltung 1–6“** — die letzte Seite zeigt, welcher Reiter in welchem Dokument erklärt wird.",
   "Alle Bilder zeigen eine **Beispielkundin**; Name, Kontaktdaten und Nummern sind ersetzt."
  ],
  "pages": [
@@ -150,7 +150,7 @@
    "sub": "Welcher Reiter zeigt was — und in welchem Dokument dieser Reihe er erklärt wird.",
    "card": {
     "title": "Die zehn Reiter",
-    "text": "Wegweiser durch die Akte und durch die Anleitungen I–N"
+    "text": "Wegweiser durch die Akte und durch die Anleitungen „Kundenverwaltung 1–6“"
    },
    "layout": "text",
    "table": {
@@ -217,5 +217,8 @@
    }
   }
  ],
- "audience": "institut"
+ "audience": "institut",
+ "series": "Kundenverwaltung",
+ "nr": 1,
+ "of": 6
 }

@@ -1,5 +1,5 @@
 {
- "out": "../pdf/S-Monatsabschluss",
+ "out": "../pdf/Bonus-Board-5-Monatsabschluss",
  "meta": "../meta.json",
  "shots": "../shots",
  "audience": "buero",
@@ -8,7 +8,7 @@
   "im Bonus-Board"
  ],
  "subtitle": "Klickanleitung für die Bonus-Verwaltung im glatttHub — Widerrufe entscheiden, korrigieren, einfrieren, Bewertungen pflegen",
- "eyebrow": "Bonus-Board · Monatsabschluss · Teil S",
+ "eyebrow": "Bonus-Board · Monatsabschluss",
  "footerArea": "Bonus-Board",
  "stand": "15.09.2026",
  "version": "1.0",
@@ -187,5 +187,8 @@
     "text": "**Zum Monatsabschluss gehört die Pflege dazu:** Erst Bewertungen nachtragen, dann einfrieren. Sonst friert der Monat einen Google-Stand ein, der schon beim Einfrieren veraltet ist."
    }
   }
- ]
+ ],
+ "series": "Bonus-Board",
+ "nr": 5,
+ "of": 5
 }

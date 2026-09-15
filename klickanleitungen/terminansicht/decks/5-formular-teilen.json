@@ -1,5 +1,5 @@
 {
- "out": "../pdf/E-Formular-an-Kundin-weitergeben",
+ "out": "../pdf/Terminansicht-5-Formular-an-Kundin-weitergeben",
  "meta": "../meta.json",
  "shots": "../shots",
  "title": [
@@ -7,7 +7,7 @@
   "Kundin weitergeben"
  ],
  "subtitle": "Klickanleitung für „Formular teilen“ — die Kundin füllt das Formular selbst auf ihrem Handy oder einem zweiten Tablet aus",
- "eyebrow": "Terminansicht · Beratungsgespräch · Teil E",
+ "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
  "stand": "08.09.2026",
  "version": "1.1",
@@ -122,5 +122,8 @@
     "text": "Meldet die Kundin **„Dieser Link ist ungültig“** oder **„…wurde bereits ausgefüllt“**: einfach im Formular einen **neuen Link erstellen**."
    }
   }
- ]
+ ],
+ "series": "Terminansicht",
+ "nr": 5,
+ "of": 8
 }

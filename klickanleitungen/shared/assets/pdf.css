@@ -93,3 +93,8 @@ table.tbl th{text-align:left;background:var(--teal-soft);color:var(--teal);paddi
 table.tbl td{padding:1.6mm 2mm;border-bottom:1px solid var(--line);vertical-align:top}
 table.tbl td:first-child{font-weight:700;width:26%}
 table.tbl td:last-child{width:14%;color:var(--muted)}
+
+/* Cover: Serie + Nummer ueber dem Titel, Zielgruppe darunter (seit 15.09.2026) */
+.cover-kicker{color:var(--teal);font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:3mm}
+.cover-audience{display:inline-block;margin:4mm auto 0;padding:1.6mm 4mm;border:1.4px solid var(--gold);border-radius:20px;
+  color:#8a6d12;background:var(--gold-soft);font-size:10.5px;font-weight:700;letter-spacing:.4px}

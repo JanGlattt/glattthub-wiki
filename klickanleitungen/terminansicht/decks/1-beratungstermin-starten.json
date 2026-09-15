@@ -1,5 +1,5 @@
 {
- "out": "../pdf/A-Beratungstermin-starten",
+ "out": "../pdf/Terminansicht-1-Beratungstermin-starten",
  "meta": "../meta.json",
  "shots": "../shots",
  "title": [
@@ -7,7 +7,7 @@
   "starten"
  ],
  "subtitle": "Klickanleitung für die Terminansicht im glatttHub — vom Tagesplan bis zum laufenden Termin",
- "eyebrow": "Terminansicht · Beratungsgespräch · Teil A",
+ "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
  "stand": "08.09.2026",
  "version": "1.1",
@@ -234,5 +234,9 @@
     "text": "Zusätzlich behandelte Zonen, die nicht gebucht waren, hängen als eigene Gruppe **„Zusätzlich behandelt“** unten an der Karte."
    }
   }
- ]
+ ],
+ "series": "Terminansicht",
+ "nr": 1,
+ "of": 8,
+ "audience": "institut"
 }

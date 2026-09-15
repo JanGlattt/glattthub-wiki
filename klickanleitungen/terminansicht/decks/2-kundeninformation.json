@@ -1,5 +1,5 @@
 {
- "out": "../pdf/B-Kundeninformation-Einverstaendnis",
+ "out": "../pdf/Terminansicht-2-Kundeninformation-Einverstaendnis",
  "meta": "../meta.json",
  "shots": "../shots",
  "title": [
@@ -7,7 +7,7 @@
   "Einverständniserklärung"
  ],
  "subtitle": "Klickanleitung für das erste Formular im Beratungsgespräch — Stammdaten prüfen, Gesundheitsfragen, Einwilligungen, Unterschrift",
- "eyebrow": "Terminansicht · Beratungsgespräch · Teil B",
+ "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
  "stand": "08.09.2026",
  "version": "1.1",
@@ -240,5 +240,8 @@
     "text": "Das Formular wird beim Ausfüllen automatisch als **Entwurf** gespeichert. Bricht die Verbindung ab, einfach den Termin erneut öffnen — die Eingaben sind noch da."
    }
   }
- ]
+ ],
+ "series": "Terminansicht",
+ "nr": 2,
+ "of": 8
 }

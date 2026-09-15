@@ -1,0 +1,188 @@
+{
+ "out": "../pdf/Grundlagen-1-Anmelden-und-zurechtfinden",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Grundlagen",
+ "nr": 1,
+ "of": 5,
+ "audience": "institut",
+ "title": [
+  "Anmelden &",
+  "zurechtfinden"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — von der Anmeldung bis zum richtigen Menüpunkt",
+ "eyebrow": "Grundlagen · Anmeldung & Navigation",
+ "footerArea": "Grundlagen",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Zwei Wege hinein: **PIN** für den schnellen Wechsel im Institut, **E-Mail und Passwort** als vollständige Anmeldung.",
+  "Die Seitenleiste ist **nach Themen gruppiert** — was täglich gebraucht wird, steht oben ohne Gruppe.",
+  "**Jede sieht nur, was sie darf.** Fehlt ein Menüpunkt, fehlt die Berechtigung — nicht der Hub."
+ ],
+ "pages": [
+  {
+   "h1": "Mit PIN anmelden",
+   "sub": "Der schnelle Weg im Institut: vier Ziffern, fertig. Die PIN ist persönlich und wird bei der ersten Einrichtung vergeben.",
+   "card": {
+    "title": "Mit PIN anmelden",
+    "text": "Vier Ziffern für den schnellen Wechsel im Institut"
+   },
+   "left": {
+    "shot": "g1-login-pin"
+   },
+   "leftCaption": "Anmeldeseite mit der PIN-Eingabe — der voreingestellte Weg.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "PIN eingeben",
+     "text": "Die persönlichen **vier Ziffern**. Sie stehen für genau eine Person — alles, was danach passiert, wird ihr zugeordnet."
+    },
+    {
+     "n": 2,
+     "title": "„Mit PIN anmelden“",
+     "text": "Bestätigt die Eingabe. Danach steht der Hub mit den Rechten dieser Person offen."
+    },
+    {
+     "n": 3,
+     "title": "Weg wechseln",
+     "text": "Über den Umschalter oben lässt sich auf **E-Mail und Passwort** wechseln — nächste Seite."
+    }
+   ],
+   "notes": [
+    {
+     "title": "PIN vergessen",
+     "text": "Eine neue PIN vergibt jede selbst im **Profil** („Grundlagen 3“). Wer nicht mehr hineinkommt, meldet sich beim Büro — dort lässt sich der Zugang zurücksetzen."
+    },
+    {
+     "title": "Niemals teilen",
+     "text": "Die PIN ist **keine Team-PIN**. Wer unter fremder PIN arbeitet, schreibt Verkäufe, Beratungen und Bonus-Zahlen der falschen Person gut."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Am gemeinsamen iPad immer abmelden**, wenn die Schicht endet — sonst arbeitet die nächste Kollegin unter fremdem Namen weiter. Abmelden geht unten in der Seitenleiste (Seite 4)."
+   }
+  },
+  {
+   "h1": "Mit E-Mail anmelden",
+   "sub": "Der vollständige Weg — nötig auf neuen Geräten und immer dann, wenn die PIN nicht greift.",
+   "card": {
+    "title": "Mit E-Mail anmelden",
+    "text": "E-Mail und Passwort, Passwort zurücksetzen"
+   },
+   "left": {
+    "shot": "g2-login-email"
+   },
+   "leftCaption": "Anmeldung mit E-Mail-Adresse und Passwort.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Weg umschalten",
+     "text": "Oben von **PIN** auf **E-Mail** wechseln. Erst dann erscheinen die beiden Felder."
+    },
+    {
+     "n": 2,
+     "title": "Zugangsdaten",
+     "text": "Die dienstliche **E-Mail-Adresse** und das persönliche **Passwort**."
+    },
+    {
+     "n": 3,
+     "title": "Passwort vergessen",
+     "text": "Der Link darunter schickt eine E-Mail zum Zurücksetzen an die hinterlegte Adresse."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Erste Anmeldung",
+     "text": "Neue Kolleginnen bekommen eine **Einladung per E-Mail**. Über den Link werden Passwort **und** PIN einmalig festgelegt — danach gelten beide Wege."
+    },
+    {
+     "title": "Einladung abgelaufen",
+     "text": "Einladungslinks sind zeitlich begrenzt. Ist er abgelaufen, verschickt das Büro ihn neu; der alte Link lässt sich nicht wiederbeleben."
+    }
+   ],
+   "hint": {
+    "text": "**Kein Zugang mehr?** Erst prüfen, ob die richtige Adresse eingetippt ist (dienstlich, nicht privat). Hilft das nicht, meldet sich das Büro — Konten werden dort angelegt, geändert und wieder freigeschaltet."
+   }
+  },
+  {
+   "h1": "Die Seitenleiste",
+   "sub": "Links steht das Menü: oben die täglichen Seiten, darunter fünf Gruppen nach Themen.",
+   "card": {
+    "title": "Die Seitenleiste",
+    "text": "Schnellzugriff oben, fünf Themen-Gruppen darunter"
+   },
+   "left": {
+    "shot": "g3-sidebar"
+   },
+   "right": {
+    "shot": "g4-gruppe-offen"
+   },
+   "leftCaption": "Die Seitenleiste mit geschlossenen Gruppen.",
+   "rightCaption": "Eine geöffnete Gruppe — es ist immer höchstens eine offen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Schnellzugriff",
+     "text": "**Start**, **Termine**, **Kunden** und **Berichte** stehen ohne Gruppe ganz oben — sie werden täglich gebraucht."
+    },
+    {
+     "n": 2,
+     "title": "Fünf Gruppen",
+     "text": "**Verkauf**, **Finanzen**, **Team**, **Betrieb**, **System**. Ein Tippen klappt eine auf und die vorige zu."
+    },
+    {
+     "n": 3,
+     "title": "Aktive Seite",
+     "text": "Die Gruppe der geöffneten Seite geht von allein auf — so ist immer klar, wo man gerade ist."
+    },
+    {
+     "n": 4,
+     "title": "Drei Werkzeuge",
+     "text": "Ganz oben **Institute**, **Suche** und **Mitteilungen** — sie erklärt „Grundlagen 2“."
+    }
+   ],
+   "hint": {
+    "text": "**Menüpunkt nicht da?** Die Seitenleiste zeigt nur, wofür die Berechtigung vorliegt — eine leere Gruppe erscheint gar nicht erst. Wer etwas vermisst, das zur eigenen Arbeit gehört, meldet sich beim Büro."
+   }
+  },
+  {
+   "h1": "Konto und Abmelden",
+   "sub": "Ganz unten stehen die eigene Karte, der Umschalter für Hell und Dunkel und das Abmelden.",
+   "card": {
+    "title": "Konto und Abmelden",
+    "text": "Eigene Karte, Hell/Dunkel, Abmelden"
+   },
+   "left": {
+    "shot": "g5-nutzerkarte"
+   },
+   "leftCaption": "Fuß der Seitenleiste mit Nutzerkarte und Abmelden.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Eigene Karte",
+     "text": "Name und Bild der angemeldeten Person. **Vor jeder Schicht prüfen** — steht dort eine Kollegin, arbeitet man unter ihrem Namen."
+    },
+    {
+     "n": 2,
+     "title": "Zum Profil",
+     "text": "Ein Tippen auf den Namen öffnet das Profil: Passwort, PIN, Sitzungen („Grundlagen 3“)."
+    },
+    {
+     "n": 3,
+     "title": "Hell oder Dunkel",
+     "text": "Der Umschalter daneben wechselt die Darstellung. Die Wahl bleibt auf diesem Gerät gespeichert."
+    },
+    {
+     "n": 4,
+     "title": "Abmelden",
+     "text": "Das Symbol am Rand der Karte. Danach ist der Hub wieder gesperrt."
+    }
+   ],
+   "hint": {
+    "text": "**Rundgang:** Beim ersten Besuch einer Seite führt ein kurzer Rundgang durch ihre Bedienung. Er lässt sich jederzeit über das **Fragezeichen** in der Kopfzeile erneut starten — und im Profil komplett zurücksetzen."
+   }
+  }
+ ]
+}

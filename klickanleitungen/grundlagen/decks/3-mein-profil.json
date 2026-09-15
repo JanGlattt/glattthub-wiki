@@ -1,0 +1,174 @@
+{
+ "out": "../pdf/Grundlagen-3-Mein-Profil",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Grundlagen",
+ "nr": 3,
+ "of": 5,
+ "audience": "institut",
+ "title": [
+  "Mein Profil",
+  "im glatttHub"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Name und Bild, Passwort, PIN, angemeldete Geräte",
+ "eyebrow": "Grundlagen · Profil",
+ "footerArea": "Grundlagen",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Das Profil erreicht man über den **eigenen Namen** am Fuß der Seitenleiste.",
+  "**Passwort und PIN** sind zwei getrennte Schlüssel — beide gehören nur einer Person.",
+  "Wer ein Gerät verloren hat oder sich unsicher ist, meldet **alle anderen Sitzungen ab**."
+ ],
+ "pages": [
+  {
+   "h1": "Name und Bild",
+   "sub": "Oben im Profil stehen die eigenen Angaben — sie erscheinen überall dort, wo der Hub eine Person nennt.",
+   "card": {
+    "title": "Name und Bild",
+    "text": "Eigene Angaben und Profilbild pflegen"
+   },
+   "left": {
+    "shot": "i1-profil"
+   },
+   "leftCaption": "Die Profilseite mit ihren Abschnitten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Angaben prüfen",
+     "text": "Vor- und Nachname stehen später an Terminen, Verträgen und im Bonus-Board."
+    },
+    {
+     "n": 2,
+     "title": "Bild wählen",
+     "text": "Ein Profilbild macht die Zuordnung im Team leichter — Pflicht ist es nicht."
+    },
+    {
+     "n": 3,
+     "title": "Speichern",
+     "text": "Erst der Knopf am Ende des Abschnitts übernimmt die Änderung."
+    }
+   ],
+   "notes": [
+    {
+     "title": "E-Mail-Adresse",
+     "text": "Sie ist zugleich der Anmeldename. Ändern lässt sie sich nur über das **Büro** — sonst käme man nicht mehr hinein."
+    }
+   ],
+   "hint": {
+    "text": "**Der Name ist kein Spitzname.** Er steht auf Auswertungen, die andere lesen — Bonus-Board, Mitarbeiterperformance, Terminhistorie."
+   }
+  },
+  {
+   "h1": "Passwort ändern",
+   "sub": "Das Passwort gilt für die Anmeldung mit E-Mail — und sollte niemand sonst kennen.",
+   "card": {
+    "title": "Passwort ändern",
+    "text": "Neues Passwort setzen"
+   },
+   "left": {
+    "shot": "i2-passwort"
+   },
+   "leftCaption": "Abschnitt zum Ändern des Passworts.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Aktuelles Passwort",
+     "text": "Zur Sicherheit wird das bisherige abgefragt — sonst könnte jeder an einem offenen Gerät das Passwort tauschen."
+    },
+    {
+     "n": 2,
+     "title": "Neues Passwort",
+     "text": "Zweimal eingeben. Lang schlägt kompliziert: ein Satz ist sicherer als ein kurzes Kryptisches."
+    },
+    {
+     "n": 3,
+     "title": "Speichern",
+     "text": "Ab sofort gilt das neue Passwort. Die PIN bleibt davon unberührt."
+    }
+   ],
+   "hint": {
+    "text": "**Passwort vergessen** geht auch ohne Profil: Auf der Anmeldeseite den Link **„Passwort vergessen“** nutzen, die E-Mail kommt an die hinterlegte Adresse."
+   }
+  },
+  {
+   "h1": "PIN verwalten",
+   "sub": "Die vierstellige PIN ist der schnelle Weg hinein — vor allem am gemeinsamen Gerät im Institut.",
+   "card": {
+    "title": "PIN verwalten",
+    "text": "Vierstellige PIN neu vergeben"
+   },
+   "left": {
+    "shot": "i3-pin"
+   },
+   "leftCaption": "Abschnitt **„PIN-Code verwalten“**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Neue PIN",
+     "text": "Genau **vier Ziffern**. Keine Geburtstage, keine 1234 — sie ersetzt am iPad das Passwort."
+    },
+    {
+     "n": 2,
+     "title": "Bestätigen",
+     "text": "Zur Kontrolle ein zweites Mal eingeben."
+    },
+    {
+     "n": 3,
+     "title": "Speichern",
+     "text": "Ab dem nächsten Anmelden gilt die neue PIN."
+    }
+   ],
+   "notes": [
+    {
+     "title": "PIN schon vergeben",
+     "text": "Zwei Personen dürfen nicht dieselbe PIN haben — der Hub lehnt sie dann ab. In dem Fall einfach eine andere wählen."
+    },
+    {
+     "title": "PIN wechseln",
+     "text": "Nach einem Schichtwechsel, bei dem jemand zugesehen hat, kostet ein Wechsel zehn Sekunden — und verhindert Buchungen unter falschem Namen."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Alles, was unter einer PIN passiert, gilt als eigene Arbeit** — Verkäufe, Beratungen, Bonus-Zahlen, Änderungen an Kundendaten. Deshalb: nicht weitergeben, nicht auf einen Zettel am iPad schreiben."
+   }
+  },
+  {
+   "h1": "Geräte und Rundgänge",
+   "sub": "Zwei nützliche Kleinigkeiten am Ende des Profils: angemeldete Geräte und die Einführungs-Rundgänge.",
+   "card": {
+    "title": "Geräte & Rundgänge",
+    "text": "Fremde Sitzungen beenden, Rundgänge neu starten"
+   },
+   "left": {
+    "shot": "i4-sitzungen"
+   },
+   "right": {
+    "shot": "i5-rundgang"
+   },
+   "leftCaption": "Die aktiven Anmeldungen auf allen Geräten.",
+   "rightCaption": "Abschnitt **„Einführung in den Hub“**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Geräte ansehen",
+     "text": "Zeigt, wo überall angemeldet ist — Gerät, Ort und wann zuletzt aktiv."
+    },
+    {
+     "n": 2,
+     "title": "Andere abmelden",
+     "text": "Beendet **alle anderen** Sitzungen. Richtig nach einem verlorenen Gerät oder wenn etwas unbekannt aussieht."
+    },
+    {
+     "n": 3,
+     "title": "Rundgänge zurücksetzen",
+     "text": "Danach startet auf jeder Seite wieder die kurze Einführung — hilfreich für den ersten Tag nach einer langen Pause."
+    }
+   ],
+   "hint": {
+    "text": "**Einzelnen Rundgang starten:** Dafür braucht es das Profil nicht — das **Fragezeichen** in der Kopfzeile der jeweiligen Seite genügt. Auf dem Handy steckt der Rundgang im **Mehr-Menü** („Grundlagen 4“)."
+   }
+  }
+ ]
+}

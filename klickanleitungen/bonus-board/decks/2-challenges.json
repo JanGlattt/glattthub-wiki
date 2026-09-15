@@ -1,5 +1,5 @@
 {
- "out": "../pdf/P-Challenges",
+ "out": "../pdf/Bonus-Board-2-Challenges",
  "meta": "../meta.json",
  "shots": "../shots",
  "audience": "institut",
@@ -8,7 +8,7 @@
   "verstehen"
  ],
  "subtitle": "Klickanleitung für das Bonus-Board im glatttHub — Monats-Challenges, Rankings und wann ein Platz sicher ist",
- "eyebrow": "Bonus-Board · Challenges · Teil P",
+ "eyebrow": "Bonus-Board · Challenges",
  "footerArea": "Bonus-Board",
  "stand": "15.09.2026",
  "version": "1.0",
@@ -167,5 +167,8 @@
     "text": "**Serien zählen nur eingefrorene Monate.** Ein Monat wird erst Teil der Reihe, wenn das Büro ihn **abgeschlossen** hat — deshalb kann ein frisch beendeter Monat kurz fehlen, bis der Abschluss gelaufen ist."
    }
   }
- ]
+ ],
+ "series": "Bonus-Board",
+ "nr": 2,
+ "of": 5
 }
