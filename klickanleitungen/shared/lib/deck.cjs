@@ -53,6 +53,10 @@ function load(deckFile) {
   deck.eyebrowFull = [deck.eyebrow, deck.series && deck.nr ? 'Teil ' + deck.nr + (deck.of ? ' von ' + deck.of : '') : '']
     .filter(Boolean).join(' · ');
   deck.audienceLabel = AUDIENCE[deck.audience] || '';
+  /* `hinweis` markiert Anleitungen zu Funktionen, die es gibt, die aber noch nicht scharf
+     geschaltet sind (Gamification, Fernabsatz-Änderung …). Steht als roter Vermerk auf dem
+     Cover und als Badge im Wiki — beim Go-Live nur die Zeile entfernen. */
+  deck.hinweis = deck.hinweis || '';
   deck.pages.forEach((p, i) => {
     p.slug = p.slug || slugify(p.h1);
     p.vorgang = p.vorgang || (i + 1);

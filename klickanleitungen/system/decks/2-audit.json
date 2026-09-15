@@ -1,0 +1,133 @@
+{
+ "out": "../pdf/System-2-Audit",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "System",
+ "nr": 2,
+ "of": 2,
+ "audience": "leitung",
+ "title": [
+  "Audit",
+  "und Qualität"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Gesamtübersicht der Unternehmensqualität lesen und nutzen",
+ "eyebrow": "System · Audit",
+ "footerArea": "System",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Das Audit fasst zusammen, wie **vollständig und gepflegt** die Daten des Unternehmens sind.",
+  "Der Score ist **kein Urteil über Menschen**, sondern ein Hinweis auf Lücken in Abläufen.",
+  "Jede Lücke hat eine Ursache in einem Modul — der Weg führt von hier dorthin."
+ ],
+ "pages": [
+  {
+   "h1": "Der Gesamtscore",
+   "sub": "Eine Zahl für den Zustand — und darunter, woraus sie sich zusammensetzt.",
+   "card": {
+    "title": "Der Gesamtscore",
+    "text": "Woraus sich die Bewertung ergibt"
+   },
+   "left": {
+    "shot": "sy4-audit"
+   },
+   "leftCaption": "Die Audit-Seite mit Gesamtscore und Bereichen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Gesamter Audit-Score",
+     "text": "Der zusammengefasste Wert über alle geprüften Bereiche."
+    },
+    {
+     "n": 2,
+     "title": "Bereiche",
+     "text": "Je Bereich ein Teilergebnis — so sieht man, woher ein schlechter Wert kommt."
+    },
+    {
+     "n": 3,
+     "title": "Entwicklung",
+     "text": "Interessanter als der absolute Wert ist die Richtung: besser oder schlechter als im Vormonat."
+    }
+   ],
+   "hint": {
+    "text": "**Ein Score allein hilft niemandem.** Nützlich wird er, wenn man den schwächsten Bereich nimmt und dort **eine** Sache abstellt — und im Folgemonat nachsieht, ob es gewirkt hat."
+   }
+  },
+  {
+   "h1": "Lücken verstehen",
+   "sub": "Die häufigsten Abzüge kommen aus fehlender Pflege — nicht aus fehlender Arbeit.",
+   "card": {
+    "title": "Lücken verstehen",
+    "text": "Typische Ursachen und wo man sie behebt"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Typische Lücke",
+     "Wo sie behoben wird"
+    ],
+    "rows": [
+     [
+      "Services ohne Körperzone",
+      "Zuordnung pflegen („Betrieb 5“) — sonst fehlen die Zonen in jeder Auswertung"
+     ],
+     [
+      "Verträge ohne Verkäuferin",
+      "Verkäuferinnen-Zuordnung („Betrieb 5“) — sonst fehlt der Bonus"
+     ],
+     [
+      "Kundinnen ohne vollständige Adresse",
+      "Kundeninfos pflegen („Kundenverwaltung 2“) — sonst stoppt das Vertragsformular"
+     ],
+     [
+      "Offene Widerrufe ohne Entscheidung",
+      "Widerrufe abschließen („Verkauf 4“) — sie blockieren Bonus-Zahlen"
+     ],
+     [
+      "Institute ohne Bankverbindung",
+      "Institut pflegen („Betrieb 2“) — sonst fehlt sie in Schreiben"
+     ],
+     [
+      "Forderungsfälle ohne Bewegung",
+      "Forderungsmanagement durchgehen („Finanzen 1“)"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Die meisten Abzüge sind Zuordnungen**, die beim Anlegen vergessen wurden. Sie kosten je einzeln zwei Minuten — und verfälschen bis dahin jede Auswertung, in der sie vorkommen."
+   }
+  },
+  {
+   "h1": "Mit dem Audit arbeiten",
+   "sub": "Einmal im Monat, mit einem klaren Vorgehen.",
+   "card": {
+    "title": "Damit arbeiten",
+    "text": "Monatlicher Rhythmus statt Einmal-Aktion"
+   },
+   "left": {
+    "shot": "sy5-audit-bereich"
+   },
+   "leftCaption": "Ein einzelner Bereich mit seinen Punkten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Einmal im Monat",
+     "text": "Am besten zusammen mit dem Monatsabschluss des Bonus-Boards („Bonus-Board 5“)."
+    },
+    {
+     "n": 2,
+     "title": "Schwächsten Bereich nehmen",
+     "text": "Nicht alles auf einmal. Ein Bereich, eine Ursache, eine Korrektur."
+    },
+    {
+     "n": 3,
+     "title": "Ursache abstellen",
+     "text": "Wenn dieselbe Lücke jeden Monat auftaucht, liegt es am Ablauf — nicht an der Sorgfalt einzelner."
+    }
+   ],
+   "hint": {
+    "text": "**Nicht als Bewertung des Teams lesen.** Ein schlechter Wert zeigt fast immer einen Ablauf, der das Vergessen leicht macht — die Lösung liegt dann im Ablauf, nicht in einer Ermahnung."
+   }
+  }
+ ]
+}

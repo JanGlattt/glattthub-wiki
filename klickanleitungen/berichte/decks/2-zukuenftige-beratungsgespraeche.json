@@ -1,0 +1,158 @@
+{
+ "out": "../pdf/Berichte-2-zukuenftige-beratungsgespraeche",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 2,
+ "of": 16,
+ "audience": "leitung",
+ "title": [
+  "Zukünftige",
+  "Beratungsgespräche"
+ ],
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — geplante Beratungen für heute und die nächsten 3, 7, 14 und 28 Tage",
+ "eyebrow": "Berichte · Zukünftige Beratungen",
+ "footerArea": "Berichte",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der Blick nach vorn: **Wie voll sind die nächsten Wochen mit Beratungsgesprächen?**",
+  "Die Termine kommen **live aus Phorest** — Stornos schlagen mit Verzögerung durch.",
+  "Ein leerer Kalender in 14 Tagen ist ein **Marketing-Signal**, kein Terminproblem."
+ ],
+ "pages": [
+  {
+   "h1": "Den Bericht öffnen",
+   "sub": "Zeitraum-Stufen statt freiem Zeitraum: heute, 3, 7, 14 und 28 Tage.",
+   "card": {
+    "title": "Bericht öffnen",
+    "text": "Stufen wählen, Standort setzen"
+   },
+   "left": {
+    "shot": "r2-kopf"
+   },
+   "leftCaption": "Kopf mit den Zeitstufen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Stufen",
+     "text": "**Heute**, **3**, **7**, **14**, **28 Tage** — die Vorlaufzeiten, in denen man noch reagieren kann."
+    },
+    {
+     "n": 2,
+     "title": "Standort",
+     "text": "Für die Auslastung eines einzelnen Instituts dort filtern."
+    },
+    {
+     "n": 3,
+     "title": "Aktualität",
+     "text": "Die Zahlen kommen aus Phorest; ein gerade gebuchter Termin ist sofort dabei."
+    }
+   ],
+   "hint": {
+    "text": "**Die 14-Tage-Stufe ist die wichtigste:** Sie ist noch weit genug weg, um mit Werbung gegenzusteuern, und nah genug, um verlässlich zu sein."
+   }
+  },
+  {
+   "h1": "Die Termine lesen",
+   "sub": "Je Stufe die Zahl der Beratungen — und woher sie kommen.",
+   "card": {
+    "title": "Termine lesen",
+    "text": "Anzahl je Stufe, Verteilung je Institut"
+   },
+   "left": {
+    "shot": "r2-stufen"
+   },
+   "leftCaption": "Beratungen je Zeitstufe und Institut.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Anzahl je Stufe",
+     "text": "Wie viele Beratungen in diesem Fenster stehen."
+    },
+    {
+     "n": 2,
+     "title": "Je Institut",
+     "text": "Die Verteilung zeigt, wo Lücken entstehen."
+    },
+    {
+     "n": 3,
+     "title": "Vergleich",
+     "text": "Gegen dieselbe Stufe der Vorwoche gelesen wird daraus ein Trend."
+    }
+   ],
+   "hint": {
+    "text": "**Nur Beratungen, keine Behandlungen.** Ein Termin gilt als Beratung, wenn sein Service so gekennzeichnet ist („Betrieb 5“)."
+   }
+  },
+  {
+   "h1": "Stornos im Blick",
+   "sub": "Was gebucht ist, bleibt nicht zwingend gebucht.",
+   "card": {
+    "title": "Stornos",
+    "text": "Absagen und ihre Wirkung auf die Vorschau"
+   },
+   "left": {
+    "shot": "r2-stornos"
+   },
+   "leftCaption": "Stornierte Beratungen im Vorlauf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Storno-Anteil",
+     "text": "Wie viel des Vorlaufs erfahrungsgemäß wegfällt."
+    },
+    {
+     "n": 2,
+     "title": "Kurzfristig",
+     "text": "Absagen am Vortag lassen sich kaum noch füllen — sie sind der teuerste Verlust."
+    },
+    {
+     "n": 3,
+     "title": "Gegensteuern",
+     "text": "Freie Zeiten aktiv anbieten, statt auf Neubuchungen zu warten."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Die Vorschau ist eine Momentaufnahme.** Wer sie am Montag exportiert und am Freitag zitiert, redet über einen Stand, den es nicht mehr gibt."
+   }
+  },
+  {
+   "h1": "Was man daraus macht",
+   "sub": "Der Bericht ist eine Frühwarnung — er wirkt nur, wenn etwas folgt.",
+   "card": {
+    "title": "Konsequenzen",
+    "text": "Wann handeln, was tun"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Beobachtung",
+     "Was zu tun ist"
+    ],
+    "rows": [
+     [
+      "14-Tage-Fenster deutlich leerer als sonst",
+      "Werbung prüfen, Aktionen vorziehen, Bestandskundinnen ansprechen"
+     ],
+     [
+      "Ein Institut fällt ab",
+      "Öffnungszeiten, Personalbesetzung und Buchungsstrecke dieses Standorts prüfen"
+     ],
+     [
+      "Viele Stornos kurz vor dem Termin",
+      "Erinnerungen prüfen („Kundenverwaltung 5“) und Terminbestätigung nachschärfen"
+     ],
+     [
+      "Volles Fenster, wenig Abschlüsse",
+      "Kein Termin-, sondern ein Beratungsthema — „Berichte 9“ ansehen"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Zusammen mit der Ads-Analyse lesen** („Berichte 14“): Ein Einbruch im Vorlauf folgt meist zwei bis drei Wochen auf einen Einbruch bei den Buchungen."
+   }
+  }
+ ]
+}

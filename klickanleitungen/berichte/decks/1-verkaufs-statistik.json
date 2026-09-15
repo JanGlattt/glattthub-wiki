@@ -1,0 +1,174 @@
+{
+ "out": "../pdf/Berichte-1-verkaufs-statistik",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 1,
+ "of": 16,
+ "audience": "leitung",
+ "title": [
+  "Verkaufs-",
+  "statistik"
+ ],
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — Vertragsverkäufe je Institut und Mitarbeiterin mit Hochrechnung",
+ "eyebrow": "Berichte · Verkaufsstatistik",
+ "footerArea": "Berichte",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der meistgelesene Bericht: **Wie viel wurde verkauft — und reicht das bis Monatsende?**",
+  "Gezählt wird in **Körperzonen (KPZ)** und in Euro; beide Sichten stehen nebeneinander.",
+  "Die **Hochrechnung** ist eine Fortschreibung des bisherigen Tempos, keine Zusage."
+ ],
+ "pages": [
+  {
+   "h1": "Den Bericht öffnen",
+   "sub": "„Berichte“ in der Seitenleiste, dann Verkaufsstatistik. Oben stehen Zeitraum und Standort.",
+   "card": {
+    "title": "Bericht öffnen",
+    "text": "Zeitraum und Standort setzen"
+   },
+   "left": {
+    "shot": "r1-kopf"
+   },
+   "leftCaption": "Kopf der Verkaufsstatistik mit Zeitraum und Kennzahlen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum",
+     "text": "Voreingestellt der laufende Monat. Für Vergleiche immer **gleich lange** Zeiträume wählen."
+    },
+    {
+     "n": 2,
+     "title": "Standort",
+     "text": "Aus der Seitenleiste. Für den Vergleich der Institute auf **„Alle Standorte“** stellen."
+    },
+    {
+     "n": 3,
+     "title": "Kennzahlen-Zeile",
+     "text": "Verkaufte Zonen, Umsatz, Abschlüsse — die Auswahl ist persönlich („Berichte 0“)."
+    }
+   ],
+   "hint": {
+    "text": "**Der Monat ist noch nicht vorbei.** Ein Zwischenstand am 10. sagt wenig über das Ergebnis — dafür ist die Hochrechnung da."
+   }
+  },
+  {
+   "h1": "Verkäufe je Institut",
+   "sub": "Die Hauptkarte vergleicht die Standorte — als Diagramm oder Tabelle.",
+   "card": {
+    "title": "Verkäufe je Institut",
+    "text": "Standorte vergleichen, Hochrechnung lesen"
+   },
+   "left": {
+    "shot": "r1-institute"
+   },
+   "leftCaption": "Verkäufe je Institut mit Hochrechnung.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Ist-Wert",
+     "text": "Was bis heute verkauft wurde — in Körperzonen und Euro."
+    },
+    {
+     "n": 2,
+     "title": "Hochrechnung",
+     "text": "Der Stand am Monatsende **bei gleichem Tempo**. Der hohle Punkt steht senkrecht über dem Ist-Wert."
+    },
+    {
+     "n": 3,
+     "title": "Vergleichszeitraum",
+     "text": "Die gestrichelte Linie zeigt den Vormonat bzw. Vorjahreszeitraum."
+    },
+    {
+     "n": 4,
+     "title": "Reihenfolge",
+     "text": "Die Institute erscheinen überall in derselben Reihenfolge und Farbe."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Schraffierter Keil",
+     "text": "Die Fläche zwischen Ist- und Prognoselinie zeigt, was noch kommen müsste — sie ist eine Erwartung, kein Auftragsbestand."
+    }
+   ],
+   "hint": {
+    "text": "**Die Hochrechnung rechnet linear.** Sie weiß nichts von Feiertagen, Urlaub oder einer Aktion, die erst nächste Woche startet."
+   }
+  },
+  {
+   "h1": "Verkäufe je Mitarbeiterin",
+   "sub": "Dieselbe Frage, eine Ebene tiefer — wer hat welchen Anteil.",
+   "card": {
+    "title": "Je Mitarbeiterin",
+    "text": "Personen vergleichen, Ø KPZ lesen"
+   },
+   "left": {
+    "shot": "r1-personen"
+   },
+   "leftCaption": "Verkäufe je Mitarbeiterin.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Abschlüsse",
+     "text": "Zahl der Verträge im Zeitraum."
+    },
+    {
+     "n": 2,
+     "title": "Körperzonen",
+     "text": "Summe der verkauften Zonen — die eigentliche Verkaufsleistung."
+    },
+    {
+     "n": 3,
+     "title": "Ø KPZ",
+     "text": "Zonen je Beratungsgespräch. Aussagekräftiger als die reine Zahl der Abschlüsse."
+    },
+    {
+     "n": 4,
+     "title": "Fehlt jemand?",
+     "text": "Dann fehlt die **Verkäuferinnen-Zuordnung** („Betrieb 5“) — nicht der Verkauf."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Ø KPZ ist ein Durchschnitt.** Bei zwei Beratungen im Monat sagt er nichts. Erst ab einer zweistelligen Zahl von Gesprächen wird er belastbar."
+   }
+  },
+  {
+   "h1": "Fallstricke und Export",
+   "sub": "Was man wissen muss, bevor man die Zahlen weitergibt.",
+   "card": {
+    "title": "Fallstricke",
+    "text": "Was die Zahlen nicht sagen"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Frage",
+     "Antwort"
+    ],
+    "rows": [
+     [
+      "Warum weicht der Umsatz von der Buchhaltung ab?",
+      "Hier zählt der **Vertragswert bei Abschluss**, nicht der Zahlungseingang."
+     ],
+     [
+      "Warum fehlen Verkäufe eines Instituts?",
+      "Standortfilter prüfen — und ob das Institut **ausgeblendet** ist („Betrieb 1“)."
+     ],
+     [
+      "Warum sinkt die Zahl nachträglich?",
+      "Ein Vertrag wurde **widerrufen** — er fällt aus dem Zeitraum heraus („Verkauf 4“)."
+     ],
+     [
+      "Wie kommen die Zahlen in eine Tabelle?",
+      "Über den **CSV-Export** in der Kopfzeile, mit demselben Zeitraum."
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Für Bonus-Zahlen ist das Bonus-Board maßgeblich**, nicht dieser Bericht: Dort sind Widerrufe unter Vorbehalt und Abwesenheiten berücksichtigt („Bonus-Board 3“)."
+   }
+  }
+ ]
+}

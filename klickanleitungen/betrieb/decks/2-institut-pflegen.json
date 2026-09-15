@@ -1,0 +1,128 @@
+{
+ "out": "../pdf/Betrieb-2-Institut-pflegen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Betrieb",
+ "nr": 2,
+ "of": 6,
+ "audience": "buero",
+ "title": [
+  "Ein Institut",
+  "pflegen"
+ ],
+ "subtitle": "Klickanleitung für das Institut-Modul im glatttHub — Bild und Symbol, Kontakt, Bankverbindung, Zugangs-Link",
+ "eyebrow": "Betrieb · Institut pflegen",
+ "footerArea": "Betrieb",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "**Adresse und Name kommen aus Phorest** und lassen sich hier nicht ändern — dafür ist Phorest zuständig.",
+  "Was hier gepflegt wird, erscheint an vielen Stellen: in **Terminerinnerungen**, in **Schreiben** und in jeder Auswertung.",
+  "Die **Bankverbindung** taucht in Mahnungen und Schreiben auf — ein Zahlendreher hat teure Folgen."
+ ],
+ "pages": [
+  {
+   "h1": "Bild, Farbe und Symbol",
+   "sub": "Der Reiter „Infos“ bestimmt, wie das Institut im ganzen Hub aussieht.",
+   "card": {
+    "title": "Bild und Symbol",
+    "text": "Institut-Bild hochladen, Symbol und Farbe wählen"
+   },
+   "left": {
+    "shot": "b5-infos"
+   },
+   "leftCaption": "Reiter **„Infos“** mit Bild, Symbol und Kontaktangaben.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Institut-Bild",
+     "text": "Per **„Bild hierher ziehen oder auswählen“**. Es erscheint auf den Karten der Übersicht."
+    },
+    {
+     "n": 2,
+     "title": "Symbol auswählen",
+     "text": "Das Symbol steht dort, wo kein Platz für ein Bild ist — in Tabellen, Diagrammen und im Bonus-Board."
+    },
+    {
+     "n": 3,
+     "title": "Farbe",
+     "text": "Die Institutsfarbe zieht sich durch alle Diagramme. Sie sollte sich deutlich von den anderen unterscheiden."
+    },
+    {
+     "n": 4,
+     "title": "Adresse aus Phorest",
+     "text": "Nur Anzeige. **„In Google Maps öffnen“** hilft bei Rückfragen von Kundinnen."
+    }
+   ],
+   "hint": {
+    "text": "**Die E-Mail-Adresse dieses Reiters erscheint in den Terminerinnerungs-Mails** — sie ist also die Adresse, unter der Kundinnen antworten. Entsprechend sollte sie jemand lesen."
+   }
+  },
+  {
+   "h1": "Bankverbindung",
+   "sub": "Der Reiter „Bank“ hinterlegt das Konto, das in Schreiben an Kundinnen genannt wird.",
+   "card": {
+    "title": "Bankverbindung",
+    "text": "Konto für Schreiben und Mahnungen hinterlegen"
+   },
+   "left": {
+    "shot": "b6-bank"
+   },
+   "leftCaption": "Reiter **„Bank“** mit Kontoinhaber, IBAN und Schalter „Aktiv“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kontoinhaber und IBAN",
+     "text": "Genau wie auf dem Kontoauszug. **BIC** und **Bank** sind freiwillig."
+    },
+    {
+     "n": 2,
+     "title": "„Aktiv“",
+     "text": "Nur ein aktives Konto wird **in Schreiben verwendet**. Ohne diesen Schalter bleibt die Bankzeile leer."
+    },
+    {
+     "n": 3,
+     "title": "Speichern",
+     "text": "Danach gilt die Verbindung für alle neuen Schreiben dieses Standorts."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Zweimal prüfen.** Eine falsche IBAN in einer Mahnung führt dazu, dass Kundinnen an eine fremde Bankverbindung zahlen — mit allem, was daraus folgt. Nach dem Speichern die Zeile im nächsten erzeugten Schreiben gegenlesen."
+   }
+  },
+  {
+   "h1": "Zugangs-Link der Institutsseite",
+   "sub": "Der Reiter „Zugang“ enthält den Link, über den das Institut ohne Anmeldung die Tageserfassung öffnet.",
+   "card": {
+    "title": "Zugangs-Link",
+    "text": "Link zur Institutsseite (Tageserfassung)"
+   },
+   "left": {
+    "shot": "b7-zugang"
+   },
+   "leftCaption": "Reiter **„Zugang“** mit dem Link zur Institutsseite.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Was der Link ist",
+     "text": "Er öffnet die **Institutsseite — Tageserfassung**, auf der Beratungsgespräche erfasst werden. **Ohne Anmeldung.**"
+    },
+    {
+     "n": 2,
+     "title": "Je Standort eigener Link",
+     "text": "Jeder Standort hat seinen eigenen. Der Link eines Instituts zeigt nie die Daten eines anderen."
+    },
+    {
+     "n": 3,
+     "title": "Weitergeben",
+     "text": "Auf dem iPad des Instituts als Lesezeichen ablegen — dann ist die Seite mit einem Tippen da."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Der Link ist der Schlüssel.** Wer ihn hat, kommt ohne Passwort auf die Tageserfassung dieses Instituts. Also nicht per Aushang verteilen, nicht in offene Gruppen posten — und bei Verdacht beim Büro melden."
+   }
+  }
+ ]
+}

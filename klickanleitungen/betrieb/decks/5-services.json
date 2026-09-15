@@ -1,0 +1,122 @@
+{
+ "out": "../pdf/Betrieb-5-Services",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Betrieb",
+ "nr": 5,
+ "of": 6,
+ "audience": "buero",
+ "title": [
+  "Services",
+  "und Körperzonen"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — welche Behandlung zu welcher Körperzone gehört und warum das zählt",
+ "eyebrow": "Betrieb · Services",
+ "footerArea": "Betrieb",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Services kommen aus **Phorest** — angelegt, benannt und bepreist werden sie dort.",
+  "Der Hub ergänzt die **Zuordnung zu Körperzonen** — daraus entstehen fast alle Kennzahlen.",
+  "**Eine fehlende Zuordnung fällt spät auf:** Der Termin funktioniert, aber die Auswertung zählt daneben."
+ ],
+ "pages": [
+  {
+   "h1": "Die Service-Übersicht",
+   "sub": "Alle Behandlungen des Instituts, nach Kategorien gruppiert.",
+   "card": {
+    "title": "Service-Übersicht",
+    "text": "Behandlungen nach Kategorien, mit Zuordnung"
+   },
+   "left": {
+    "shot": "b15-services"
+   },
+   "leftCaption": "Die Service-Übersicht mit Kategorien und Körperzonen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kategorien",
+     "text": "Die Gliederung stammt aus Phorest — Beratung, Behandlung, Zusatzleistungen."
+    },
+    {
+     "n": 2,
+     "title": "Körperzone",
+     "text": "Zu jedem Behandlungs-Service gehört eine **Körperzone**. Sie ist die Einheit, in der der Hub rechnet."
+    },
+    {
+     "n": 3,
+     "title": "Ohne Zuordnung",
+     "text": "Services ohne Zone tauchen in keiner Zonen-Auswertung auf — sie fehlen still."
+    }
+   ],
+   "hint": {
+    "text": "**Warum Körperzonen so wichtig sind:** Verkaufszahlen, Ø KPZ je Beratung, Minimalziele und der ganze Bonus rechnen in Körperzonen. Ein falsch zugeordneter Service verfälscht all das auf einmal."
+   }
+  },
+  {
+   "h1": "Beratung oder Behandlung",
+   "sub": "Der Hub unterscheidet beides über eine Kennzeichnung am Service — daran hängt die halbe Terminlogik.",
+   "card": {
+    "title": "Beratung erkennen",
+    "text": "Woran der Hub ein Beratungsgespräch erkennt"
+   },
+   "left": {
+    "shot": "b16-beratungsservices"
+   },
+   "leftCaption": "Die als Beratung gekennzeichneten Services.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kennzeichnung",
+     "text": "Ein Service gilt als Beratung, wenn er im Hub so markiert ist — nicht wegen seines Namens."
+    },
+    {
+     "n": 2,
+     "title": "Folgen im Termin",
+     "text": "Nur so bekommt der Termin das Stern-Badge **„Beratung“** und erscheint im Filter („Terminansicht 1“)."
+    },
+    {
+     "n": 3,
+     "title": "Folgen in Auswertungen",
+     "text": "Beratungszahlen, Conversion und **Ø KPZ je Beratung** hängen alle an dieser Kennzeichnung."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Ein neuer Beratungs-Service ohne Kennzeichnung ist unsichtbar:** Die Termine laufen normal, aber sie zählen in keiner Beratungs-Statistik — und im Bonus fehlen sie ebenfalls. Nach jedem neuen Service in Phorest hier gegenprüfen."
+   }
+  },
+  {
+   "h1": "Zuordnungen pflegen",
+   "sub": "Zwei Zuordnungen hält der Hub selbst: Körperzonen und Verkäuferinnen.",
+   "card": {
+    "title": "Zuordnungen",
+    "text": "Körperzonen und Verkäuferinnen zuordnen"
+   },
+   "left": {
+    "shot": "b17-zuordnung"
+   },
+   "leftCaption": "Die Körperzonen-Zuordnung, erreichbar aus der Vertragsliste.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Körperzonen-Zuordnung",
+     "text": "Ordnet Service-Namen aus Phorest den Körperzonen des Hubs zu — auch Schreibweisen, die nicht ganz passen."
+    },
+    {
+     "n": 2,
+     "title": "Verkäuferinnen-Zuordnung",
+     "text": "Verbindet Phorest-Personal mit Hub-Konten. Ohne sie fehlt an Verträgen die **Verkäuferin** und damit ihr Bonus."
+    },
+    {
+     "n": 3,
+     "title": "Wo es liegt",
+     "text": "Beides erreicht man über die Kopfzeile der **Vertragsliste** („Verkauf 1“)."
+    }
+   ],
+   "hint": {
+    "text": "**Nach jeder Neueinstellung und jedem neuen Service prüfen.** Beide Zuordnungen sind Momentaufnahmen — sie wachsen nicht von allein mit, und ihr Fehlen fällt erst in der Monatsauswertung auf."
+   }
+  }
+ ]
+}

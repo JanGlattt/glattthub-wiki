@@ -1,0 +1,174 @@
+{
+ "out": "../pdf/Admin-8-protokolle-und-einstellungen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Admin",
+ "nr": 8,
+ "of": 8,
+ "audience": "admin",
+ "title": [
+  "Protokolle",
+  "und Einstellungen"
+ ],
+ "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Zustellungen nachsehen, Systemeinstellungen, Cache und Zugänge",
+ "eyebrow": "Admin · Protokolle & System",
+ "footerArea": "Admin-Panel",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Protokolle beantworten die häufigste Supportfrage: **„Ist das rausgegangen?“**",
+  "Die Einstellungen darunter betreffen den ganzen Hub — **Absender, PDF-Aussehen, Schriftart**.",
+  "**Cache leeren ist kein Allheilmittel**, aber der richtige erste Schritt, wenn Änderungen nicht ankommen."
+ ],
+ "pages": [
+  {
+   "h1": "Protokolle lesen",
+   "sub": "Was der Hub verschickt hat — E-Mails, SEPA-Mails, Nachrichten.",
+   "card": {
+    "title": "Protokolle",
+    "text": "E-Mails, SEPA-Mails, Nachrichten"
+   },
+   "left": {
+    "shot": "a8-protokolle"
+   },
+   "leftCaption": "Die Zustell-Protokolle.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "E-Mail-Protokoll",
+     "text": "Jede verschickte Mail mit Empfänger, Zeitpunkt und Ergebnis."
+    },
+    {
+     "n": 2,
+     "title": "SEPA-Mails",
+     "text": "Die Ankündigungen zu Lastschriften — der häufigste Rückfragegrund."
+    },
+    {
+     "n": 3,
+     "title": "Nachrichten",
+     "text": "Versand über WhatsApp samt Fehlergründen."
+    },
+    {
+     "n": 4,
+     "title": "Report-Mails",
+     "text": "Die Zustellungen der abonnierten Auswertungen („System 1“)."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Verschickt ist nicht angekommen.** Der Hub protokolliert den Versand, nicht die Zustellung im Postfach — es gibt keine Rückmeldung über abgelehnte E-Mails."
+   }
+  },
+  {
+   "h1": "Systemeinstellungen",
+   "sub": "Was überall wirkt.",
+   "card": {
+    "title": "Systemeinstellungen",
+    "text": "Absender, PDF, Schrift, Startseiten"
+   },
+   "left": {
+    "shot": "a8-einstellungen"
+   },
+   "leftCaption": "Die Systemeinstellungen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "E-Mail-Einstellungen",
+     "text": "Absendername und -adresse aller Hub-Mails."
+    },
+    {
+     "n": 2,
+     "title": "PDF-Einstellungen",
+     "text": "Aussehen der erzeugten Dokumente — Verträge, Mandate, Formulare."
+    },
+    {
+     "n": 3,
+     "title": "Schriftart",
+     "text": "Hausschrift ist **Lato**; eine Änderung wirkt im ganzen Hub und in allen PDFs."
+    },
+    {
+     "n": 4,
+     "title": "Startseiten-Vorgaben",
+     "text": "Was neue Nutzerinnen je Rolle auf der Startseite sehen („Grundlagen 6“)."
+    }
+   ],
+   "hint": {
+    "text": "**Vor jeder Änderung an PDF oder Schrift ein Testdokument erzeugen.** Ein Vertrag, der beim Kunden nicht lesbar ankommt, ist teurer als jede Umstellung."
+   }
+  },
+  {
+   "h1": "Cache und Zugänge",
+   "sub": "Wenn Änderungen nicht ankommen — und wer von außen zugreift.",
+   "card": {
+    "title": "Cache und Zugänge",
+    "text": "Cache leeren, API-Zugänge"
+   },
+   "left": {
+    "shot": "a8-cache"
+   },
+   "leftCaption": "Cache-Verwaltung und API-Zugänge.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Cache leeren",
+     "text": "Wenn eine Änderung sichtbar sein müsste, aber nicht ist. Gefahrlos, kurz spürbar langsamer."
+    },
+    {
+     "n": 2,
+     "title": "Wann nicht",
+     "text": "Bei Datenfehlern hilft es nicht — dann liegt es an den Daten, nicht an der Zwischenspeicherung."
+    },
+    {
+     "n": 3,
+     "title": "API-Zugänge",
+     "text": "Zugänge für andere Systeme. Jeder Zugang ist ein offenes Tor."
+    },
+    {
+     "n": 4,
+     "title": "Aufräumen",
+     "text": "Ungenutzte Zugänge entfernen, nicht „für später“ liegen lassen."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**API-Zugänge nie per Mail oder Chat weitergeben.** Wer einen hat, spricht mit dem Hub, ohne sich anzumelden — bei Verdacht sofort entfernen und neu vergeben."
+   }
+  },
+  {
+   "h1": "Fehlersuche",
+   "sub": "Ein Vorgehen, das sich bewährt hat.",
+   "card": {
+    "title": "Fehlersuche",
+    "text": "Erst Daten, dann Rechte, dann Cache"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Symptom",
+     "Reihenfolge der Prüfung"
+    ],
+    "rows": [
+     [
+      "Zahl sieht falsch aus",
+      "Zeitraum → Standort → Zuordnungen → erst dann tiefer"
+     ],
+     [
+      "Seite fehlt in der Seitenleiste",
+      "Recht der Rolle prüfen („Admin 1“)"
+     ],
+     [
+      "Änderung nicht sichtbar",
+      "Seite neu laden → Cache leeren → dann melden"
+     ],
+     [
+      "Kundin hat nichts bekommen",
+      "Protokoll prüfen → Adresse prüfen → erneut senden"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Die Reihenfolge spart Zeit:** Die meisten „Fehler“ sind Filter, Rechte oder fehlende Zuordnungen — technische Ursachen sind die Ausnahme."
+   }
+  }
+ ]
+}

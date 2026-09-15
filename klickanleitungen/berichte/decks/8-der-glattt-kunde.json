@@ -1,0 +1,168 @@
+{
+ "out": "../pdf/Berichte-8-der-glattt-kunde",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 8,
+ "of": 16,
+ "audience": "leitung",
+ "title": [
+  "Der glattt-",
+  "Kunde"
+ ],
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — Demografie, Einzugsgebiet, Akquisekanäle und Conversion",
+ "eyebrow": "Berichte · Kundenstruktur",
+ "footerArea": "Berichte",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der Bericht beantwortet: **Wer sind unsere Kundinnen — und woher kommen sie?**",
+  "Grundlage ist der ausgewertete Kundenbestand, nicht einzelne Kundendaten.",
+  "**Ältere Zeiträume sind unvollständig** — die Info-Panels nennen, ab wann eine Auswertung trägt."
+ ],
+ "pages": [
+  {
+   "h1": "Den Bericht öffnen",
+   "sub": "Zeitraum, Standort und Segment.",
+   "card": {
+    "title": "Bericht öffnen",
+    "text": "Zeitraum und Segment wählen"
+   },
+   "left": {
+    "shot": "r8-kopf"
+   },
+   "leftCaption": "Kopf des Kundenberichts.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum",
+     "text": "Für Strukturfragen längere Zeiträume nehmen — ein Monat ist zu klein."
+    },
+    {
+     "n": 2,
+     "title": "Standort",
+     "text": "Das Einzugsgebiet unterscheidet sich je Institut deutlich."
+    },
+    {
+     "n": 3,
+     "title": "Segmente",
+     "text": "Geschlecht und Altersgruppe als Personas."
+    }
+   ],
+   "hint": {
+    "text": "**Struktur ändert sich langsam.** Monatsvergleiche zeigen hier meist Rauschen; sinnvoll sind Quartale und Jahre."
+   }
+  },
+  {
+   "h1": "Demografie und Einzugsgebiet",
+   "sub": "Wer kommt — und von wo.",
+   "card": {
+    "title": "Demografie",
+    "text": "Alter, Geschlecht, Entfernung"
+   },
+   "left": {
+    "shot": "r8-demografie"
+   },
+   "leftCaption": "Altersverteilung und Einzugsgebiet.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Altersgruppen",
+     "text": "Wo der Schwerpunkt liegt — und wo eine Lücke ist."
+    },
+    {
+     "n": 2,
+     "title": "Geschlecht",
+     "text": "Zusammen mit dem Alter ergeben sich die Personas."
+    },
+    {
+     "n": 3,
+     "title": "Einzugsgebiet",
+     "text": "Aus den Postleitzahlen. Zeigt, wie weit Kundinnen fahren."
+    },
+    {
+     "n": 4,
+     "title": "Standortwahl",
+     "text": "Ein enges Einzugsgebiet ist ein Argument für einen weiteren Standort."
+    }
+   ],
+   "hint": {
+    "text": "**Das Einzugsgebiet ist ein Werbeargument.** Wer weiß, aus welchen Stadtteilen niemand kommt, kann dort gezielt werben — oder es bewusst lassen."
+   }
+  },
+  {
+   "h1": "Kanäle und Conversion",
+   "sub": "Woher die Kundinnen kommen und was daraus wird.",
+   "card": {
+    "title": "Kanäle",
+    "text": "Akquisekanäle und Conversion"
+   },
+   "left": {
+    "shot": "r8-kanaele"
+   },
+   "leftCaption": "Akquisekanäle und Conversion-Trichter.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kanäle",
+     "text": "Empfehlung, Werbung, Online-Suche — soweit erfasst."
+    },
+    {
+     "n": 2,
+     "title": "Conversion",
+     "text": "Von allen Kundinnen über Beratung und Folgetermin bis zum Vertrag."
+    },
+    {
+     "n": 3,
+     "title": "Engstelle finden",
+     "text": "Der größte Absprung im Trichter ist der lohnendste Ansatzpunkt."
+    },
+    {
+     "n": 4,
+     "title": "Mit Ads lesen",
+     "text": "Zusammen mit „Berichte 14“ wird daraus eine Aussage über Werbewirkung."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Kanaldaten gibt es erst ab Frühjahr 2026.** Wer weiter zurückschaut, sieht keine echte Verschiebung, sondern das Fehlen der Erfassung — dasselbe gilt für Conversion-Werte aus der Zeit davor."
+   }
+  },
+  {
+   "h1": "Personas nutzen",
+   "sub": "Segmente sind erst nützlich, wenn man etwas mit ihnen macht.",
+   "card": {
+    "title": "Personas",
+    "text": "Segmente in der Praxis"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Erkenntnis",
+     "Was man damit macht"
+    ],
+    "rows": [
+     [
+      "Eine Altersgruppe dominiert",
+      "Werbung und Bildsprache darauf ausrichten — oder bewusst gegensteuern"
+     ],
+     [
+      "Ein Stadtteil fehlt",
+      "Lokale Werbung testen, Ergebnis in „Berichte 14“ prüfen"
+     ],
+     [
+      "Conversion bricht nach der Beratung ein",
+      "Beratungsqualität und Preisgespräch ansehen („Berichte 9“)"
+     ],
+     [
+      "Empfehlungen sind stark",
+      "„Freunde werben“ ausbauen („Verkauf 6“)"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Keine Einzelpersonen ableiten.** Der Bericht arbeitet mit Gruppen; Rückschlüsse auf einzelne Kundinnen sind weder zulässig noch sinnvoll."
+   }
+  }
+ ]
+}

@@ -1,0 +1,173 @@
+{
+ "out": "../pdf/Admin-5-stammdaten",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Admin",
+ "nr": 5,
+ "of": 8,
+ "audience": "admin",
+ "title": [
+  "Stammdaten"
+ ],
+ "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Körperzonen, Beratungs-Services, Abwesenheitsarten, Kundennummern",
+ "eyebrow": "Admin · Stammdaten",
+ "footerArea": "Admin-Panel",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Stammdaten sind die **Begriffe, mit denen der Hub rechnet** — Körperzonen, Beratungs-Services, Abwesenheitsarten.",
+  "Sie ändern sich selten, wirken aber **überall auf einmal**.",
+  "**Ein neuer Service in Phorest braucht hier eine Entscheidung** — sonst zählt er nirgends mit."
+ ],
+ "pages": [
+  {
+   "h1": "Körperzonen",
+   "sub": "Die Einheit, in der fast alles gerechnet wird.",
+   "card": {
+    "title": "Körperzonen",
+    "text": "Zonen anlegen und pflegen"
+   },
+   "left": {
+    "shot": "a5-zonen"
+   },
+   "leftCaption": "Die Körperzonen im Admin-Panel.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zone anlegen",
+     "text": "Name und Reihenfolge — sie erscheint in Verträgen, Preislisten und Auswertungen."
+    },
+    {
+     "n": 2,
+     "title": "Reihenfolge",
+     "text": "Bestimmt, wie Zonen überall sortiert erscheinen."
+    },
+    {
+     "n": 3,
+     "title": "Nicht löschen",
+     "text": "Bestehende Verträge verweisen darauf; eine gelöschte Zone reißt Lücken."
+    },
+    {
+     "n": 4,
+     "title": "Zuordnung",
+     "text": "Welcher Service zu welcher Zone gehört, steht in der Zuordnung („Betrieb 5“)."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Körperzonen sind die Währung des Hubs.** Verkaufszahlen, Ø KPZ, Minimalziele und der gesamte Bonus rechnen darin — hier zu experimentieren, verändert jede Auswertung rückwirkend."
+   }
+  },
+  {
+   "h1": "Beratungs-Services",
+   "sub": "Woran der Hub eine Beratung erkennt.",
+   "card": {
+    "title": "Beratungs-Services",
+    "text": "Kennzeichnung pflegen"
+   },
+   "left": {
+    "shot": "a5-beratung"
+   },
+   "leftCaption": "Die als Beratung gekennzeichneten Services.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kennzeichnen",
+     "text": "Ein Service gilt als Beratung, weil er hier markiert ist — nicht wegen seines Namens."
+    },
+    {
+     "n": 2,
+     "title": "Neue Services",
+     "text": "Nach jeder Anlage in Phorest hier prüfen."
+    },
+    {
+     "n": 3,
+     "title": "Folgen",
+     "text": "Stern-Badge im Termin, Filter, Beratungszahlen, Ø KPZ, Bonus."
+    },
+    {
+     "n": 4,
+     "title": "Mehrere Varianten",
+     "text": "Auch „gratis Beratung“ und Kombinationen gehören gekennzeichnet."
+    }
+   ],
+   "hint": {
+    "text": "**Der häufigste stille Fehler im Hub:** Ein neuer Beratungs-Service ohne Kennzeichnung. Die Termine laufen normal — und fehlen in jeder Statistik."
+   }
+  },
+  {
+   "h1": "Abwesenheiten und Kundennummern",
+   "sub": "Zwei kleinere, aber wirksame Stammdaten.",
+   "card": {
+    "title": "Weitere Stammdaten",
+    "text": "Abwesenheitsarten, Kundennummern-Kreise"
+   },
+   "left": {
+    "shot": "a5-weitere"
+   },
+   "leftCaption": "Abwesenheitsarten und Nummernkreise.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Abwesenheitsarten",
+     "text": "Bestimmen, welche Reisekosten-Pauschalen greifen („Team 2“)."
+    },
+    {
+     "n": 2,
+     "title": "Kundennummern",
+     "text": "Je Institut ein Präfix und ein fortlaufender Kreis."
+    },
+    {
+     "n": 3,
+     "title": "Vergabe",
+     "text": "Nummern entstehen auf der Institutsseite bei der Tageserfassung."
+    },
+    {
+     "n": 4,
+     "title": "Nie zurücksetzen",
+     "text": "Ein zurückgesetzter Zähler erzeugt doppelte Kundennummern."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Nummernkreise nie manuell zurückdrehen.** Doppelte Kundennummern sind später kaum zu entwirren — sie stehen auf Verträgen, Formularen und in Phorest."
+   }
+  },
+  {
+   "h1": "Wann was zu tun ist",
+   "sub": "Stammdatenpflege ist selten, aber terminiert.",
+   "card": {
+    "title": "Rhythmus",
+    "text": "Wann Stammdaten geprüft werden"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Anlass",
+     "Was zu prüfen ist"
+    ],
+    "rows": [
+     [
+      "Neuer Service in Phorest",
+      "Beratungs-Kennzeichnung und Körperzonen-Zuordnung"
+     ],
+     [
+      "Neues Institut",
+      "Kundennummern-Kreis, Farbe, Symbol, Bankverbindung („Betrieb 2“)"
+     ],
+     [
+      "Neue Mitarbeiterin",
+      "Verkäuferinnen-Zuordnung („Betrieb 5“)"
+     ],
+     [
+      "Neue Abwesenheitsart",
+      "Pauschalen und Belegpflicht prüfen"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Nach jeder Änderung in Phorest hier gegenprüfen.** Phorest weiß nichts vom Hub — die Verbindung stellen diese Stammdaten her."
+   }
+  }
+ ]
+}

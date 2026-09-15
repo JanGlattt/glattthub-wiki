@@ -75,6 +75,7 @@ for (const deckFile of deckFiles) {
   <div class="eyebrow">${D.esc(deck.eyebrowFull || deck.eyebrow)}</div>
   <h1>${deck.title.map(D.esc).join(' ')}</h1>
   ${deck.audienceLabel ? `<div class="audience">${D.esc(deck.audienceLabel)}</div>` : ''}
+  ${deck.hinweis ? `<div class="audience warn">${D.esc(deck.hinweis)}</div>` : ''}
   <p class="sub">${D.rich(deck.subtitle)}</p>
   ${(deck.notes || []).length ? `<ul class="guide-notes">${deck.notes.map(n => `<li>${D.rich(n)}</li>`).join('')}</ul>` : ''}
   <nav class="toc"><b>Auf dieser Seite</b><ol>${deck.pages.map((p, i) => `<li><a href="#v${i + 1}">${D.esc(p.h1)}</a></li>`).join('')}</ol></nav>
@@ -117,6 +118,7 @@ for (const deckFile of deckFiles) {
     of: deck.of || null,
     audience: deck.audience || null,
     audienceLabel: deck.audienceLabel || null,
+    hinweis: deck.hinweis || null,
     stand: deck.stand,
     version: deck.version,
     notes: deck.notes || [],
@@ -141,6 +143,11 @@ for (const deckFile of deckFiles) {
   console.log('WEB', path.join(dir, 'index.html'));
 }
 
+/* Lesereihenfolge der Serien — erst die taegliche Arbeit, dann Buero, dann Verwaltung.
+   Was hier nicht steht, haengt alphabetisch hinten dran. */
+const SERIEN = ['Grundlagen', 'Terminansicht', 'Kundenverwaltung', 'Bonus-Board', 'Verkauf',
+  'Betrieb', 'Team', 'Finanzen', 'System', 'Berichte', 'Admin'];
+
 /** Uebersicht nach Serie gruppiert, Zielgruppe als Badge je Eintrag. */
 function groupedList(guides) {
   const groups = new Map();
@@ -149,12 +156,15 @@ function groupedList(guides) {
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(g);
   }
-  return [...groups].map(([name, list]) =>
+  const rang = (n) => { const i = SERIEN.indexOf(n); return i === -1 ? SERIEN.length : i; };
+  const sortiert = [...groups].sort((a, b) => rang(a[0]) - rang(b[0]) || a[0].localeCompare(b[0], 'de'));
+  return sortiert.map(([name, list]) =>
     `<section class="guide-group"><h2>${D.esc(name)}</h2><ul class="guide-list">`
     + list.map(g => `<li><a href="${g.slug}/">`
       + `<b>${g.nr ? D.esc(g.nr + '. ') : ''}${D.esc(g.title)}</b>`
       + `<span>${D.esc(g.subtitle)}</span>`
       + (g.audienceLabel ? `<em class="audience">${D.esc(g.audienceLabel)}</em>` : '')
+      + (g.hinweis ? `<em class="audience warn">${D.esc(g.hinweis)}</em>` : '')
       + `</a></li>`).join('')
     + `</ul></section>`).join('');
 }

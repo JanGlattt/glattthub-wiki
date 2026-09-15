@@ -1,5 +1,5 @@
 #!/bin/bash
-# Aufnahmelauf „Verkauf" (Dokumente 1–4: Vertragsliste, Vertragsdetail, Zahlungen & SEPA, Widerrufe).
+# Aufnahmelauf „Verkauf" (Dokumente 1–4 als eigene Abläufe, 5–8 als Tabellen-Lauf flow5).
 #
 # Diese Serie fotografiert Geld. Der Lauf loest KEINEN Einzug aus, traegt KEINE Zahlung nach,
 # pausiert nichts und legt KEINEN Widerruf an — alle Fenster werden geoeffnet und verworfen.
@@ -15,7 +15,7 @@ for v in KLICK_BASE KLICK_USER KLICK_PW KLICK_CONTRACT; do
 done
 [ -f mask.json ] || { echo "!!! mask.json fehlt — die Bilder zeigen Kundennamen und IBANs."; exit 2; }
 
-FLOWS=${*:-"flow1 flow2 flow3 flow4"}
+FLOWS=${*:-"flow1 flow2 flow3 flow4 flow5"}
 echo "### Lauf gegen $KLICK_BASE · Vertrag $KLICK_CONTRACT"
 for f in $FLOWS; do
   echo "### $f"

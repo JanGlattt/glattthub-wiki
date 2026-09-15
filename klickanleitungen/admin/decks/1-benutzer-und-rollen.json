@@ -1,0 +1,172 @@
+{
+ "out": "../pdf/Admin-1-benutzer-und-rollen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Admin",
+ "nr": 1,
+ "of": 8,
+ "audience": "admin",
+ "title": [
+  "Benutzer",
+  "und Rollen"
+ ],
+ "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Konten, Rollen und Rechte verwalten",
+ "eyebrow": "Admin · Benutzer & Rollen",
+ "footerArea": "Admin-Panel",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "**Rollen entscheiden über alles**, was jemand im Hub sieht und darf — sie sind die wichtigste Einstellung überhaupt.",
+  "Angelegt werden Konten über die **Personalübersicht** („Team 1“); hier werden sie verwaltet.",
+  "**Rechte werden nie einzeln vergeben**, sondern über Rollen — sonst weiß in einem Jahr niemand mehr, warum jemand etwas darf."
+ ],
+ "pages": [
+  {
+   "h1": "Das Admin-Panel öffnen",
+   "sub": "Der Zugang liegt am Fuß der Seitenleiste; er ist an ein eigenes Recht gebunden.",
+   "card": {
+    "title": "Panel öffnen",
+    "text": "Aufbau und Navigation"
+   },
+   "left": {
+    "shot": "a1-panel"
+   },
+   "leftCaption": "Das Admin-Panel mit seinen Gruppen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zugang",
+     "text": "**„Admin Panel“** in der Seitenleiste, ganz unten in der Gruppe System."
+    },
+    {
+     "n": 2,
+     "title": "Gruppen",
+     "text": "Die Bereiche sind thematisch gruppiert — Inhalte, Einstellungen, Protokolle."
+    },
+    {
+     "n": 3,
+     "title": "Anderes Werkzeug",
+     "text": "Das Panel sieht anders aus als der Hub. Das ist kein Fehler, es ist ein Verwaltungswerkzeug."
+    }
+   ],
+   "hint": {
+    "text": "**Hier wird nicht gearbeitet, hier wird eingerichtet.** Tagesgeschäft läuft im Hub; im Panel stehen die Schrauben dahinter."
+   }
+  },
+  {
+   "h1": "Benutzer verwalten",
+   "sub": "Konten ansehen, Rolle ändern, sperren.",
+   "card": {
+    "title": "Benutzer",
+    "text": "Konten, Rollen, Zustand"
+   },
+   "left": {
+    "shot": "a1-benutzer"
+   },
+   "leftCaption": "Die Benutzerliste im Admin-Panel.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Liste",
+     "text": "Alle Hub-Konten mit Rolle und Zustand."
+    },
+    {
+     "n": 2,
+     "title": "Rolle ändern",
+     "text": "Wirkt sofort. Wer angemeldet ist, merkt es beim nächsten Seitenwechsel."
+    },
+    {
+     "n": 3,
+     "title": "Stamm-Institut",
+     "text": "Bestimmt die Voreinstellung des Standortfilters."
+    },
+    {
+     "n": 4,
+     "title": "Archivieren",
+     "text": "Läuft über die Personalübersicht — dort ist der richtige Ablauf hinterlegt („Team 1“)."
+    }
+   ],
+   "hint": {
+    "text": "**Konten nicht löschen.** Verträge, Beratungen und Bonus-Historie hängen daran; archivieren erreicht dasselbe, ohne die Vergangenheit zu beschädigen."
+   }
+  },
+  {
+   "h1": "Rollen und Rechte",
+   "sub": "Was eine Rolle darf, steht in ihren Rechten.",
+   "card": {
+    "title": "Rollen",
+    "text": "Rechte je Rolle festlegen"
+   },
+   "left": {
+    "shot": "a1-rollen"
+   },
+   "leftCaption": "Eine Rolle mit ihren Rechten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Rolle wählen",
+     "text": "Die Rollen des Unternehmens — Verwaltung, Büro, Institutsleitung, Institutsmitarbeiterin."
+    },
+    {
+     "n": 2,
+     "title": "Rechte",
+     "text": "Je Recht ein Schalter. Sie steuern Seiten, Aktionen und sichtbare Zahlen."
+    },
+    {
+     "n": 3,
+     "title": "Sparsam vergeben",
+     "text": "Im Zweifel das engere Recht. Fehlendes fällt sofort auf, zu viel nie."
+    },
+    {
+     "n": 4,
+     "title": "Wirkung prüfen",
+     "text": "Nach einer Änderung mit einem Testkonto gegenprüfen, was sichtbar ist."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Eine Rolle ändern betrifft alle, die sie haben.** Ein zusätzliches Recht für eine Person gibt es damit für die ganze Gruppe — das ist gewollt, muss aber bewusst geschehen."
+   }
+  },
+  {
+   "h1": "Was Rechte bewirken",
+   "sub": "Ein paar Beispiele, die im Alltag vorkommen.",
+   "card": {
+    "title": "Wirkung",
+    "text": "Welches Recht was sichtbar macht"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Recht fehlt",
+     "Was die Nutzerin merkt"
+    ],
+    "rows": [
+     [
+      "Verträge",
+      "Reiter „Vertrag/Zahlungen“ im Kundenprofil bleibt leer"
+     ],
+     [
+      "Forderungen",
+      "Reiter meldet „Kein Zugriff auf das Forderungsmanagement“"
+     ],
+     [
+      "Nachrichten senden",
+      "WhatsApp lässt sich lesen, aber nicht schreiben"
+     ],
+     [
+      "Bonus-Management",
+      "Der Umschalter „Management“ im Bonus-Board fehlt"
+     ],
+     [
+      "Formular-Einreichungen",
+      "Reiter „Dokumente“ bleibt leer"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Wer etwas nicht sieht, hat fast nie einen Fehler vor sich.** Die Seitenleiste blendet aus, wofür das Recht fehlt — die Fehlersuche beginnt also hier."
+   }
+  }
+ ]
+}

@@ -1,0 +1,179 @@
+{
+ "out": "../pdf/Team-1-Personaluebersicht-und-Konten",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Team",
+ "nr": 1,
+ "of": 3,
+ "audience": "buero",
+ "title": [
+  "Personalübersicht",
+  "und Hub-Konten"
+ ],
+ "subtitle": "Klickanleitung für die Personalverwaltung im glatttHub — Mitarbeiterinnen finden, Konto anlegen, archivieren",
+ "eyebrow": "Team · Personal",
+ "footerArea": "Team",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Personalliste kommt aus **askDANTE** — eingestellt und ausgetragen wird dort, nicht im Hub.",
+  "Das **Hub-Konto** ist etwas anderes als der Personaldatensatz: Es entscheidet, wer sich anmelden darf.",
+  "**Archivieren immer zum 1. des Folgemonats** — so bleiben Auswertungen des laufenden Monats vollständig."
+ ],
+ "pages": [
+  {
+   "h1": "Die Personalübersicht",
+   "sub": "Alle Mitarbeiterinnen aus askDANTE, mit ihrem Stand im Hub.",
+   "card": {
+    "title": "Personalübersicht",
+    "text": "Alle Mitarbeiterinnen aus askDANTE finden"
+   },
+   "left": {
+    "shot": "p1-personal"
+   },
+   "leftCaption": "Die Personalübersicht mit Suche und Archiv-Schalter.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Suchen",
+     "text": "Über den Namen. Die Liste stammt aus **askDANTE** und wird von dort aktuell gehalten."
+    },
+    {
+     "n": 2,
+     "title": "Archivierte einbeziehen",
+     "text": "Der Schalter nimmt ausgeschiedene Personen dazu — nötig, wenn man alte Auswertungen nachvollzieht."
+    },
+    {
+     "n": 3,
+     "title": "Detailseite öffnen",
+     "text": "Zeigt Stammdaten, Institut, Hub-Konto und den Stand der Reisekosten."
+    }
+   ],
+   "hint": {
+    "text": "**Person fehlt?** Dann steht sie noch nicht in askDANTE — oder ist dort schon ausgetragen. Der Hub legt keine Mitarbeiterinnen an, er übernimmt sie."
+   }
+  },
+  {
+   "h1": "Die Detailseite",
+   "sub": "Alles zu einer Person: Stammdaten, Institut, Konto und Status.",
+   "card": {
+    "title": "Die Detailseite",
+    "text": "Stammdaten, Institut, Konto, Status"
+   },
+   "left": {
+    "shot": "p2-person"
+   },
+   "leftCaption": "Die Detailseite einer Mitarbeiterin.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Stammdaten",
+     "text": "Name, Eintritt und Stamm-Institut — aus askDANTE übernommen."
+    },
+    {
+     "n": 2,
+     "title": "Status",
+     "text": "**Aktiv** oder **Archiviert**. Archivierte können sich nicht mehr anmelden."
+    },
+    {
+     "n": 3,
+     "title": "Hub-Konto",
+     "text": "Ob es eines gibt, mit welcher Rolle und welchem Stamm-Institut."
+    },
+    {
+     "n": 4,
+     "title": "Reisekosten",
+     "text": "Verweis auf die Abrechnungen dieser Person („Team 2“ und „Team 3“)."
+    }
+   ],
+   "hint": {
+    "text": "**Personaldatensatz ≠ Hub-Konto.** Jemand kann in askDANTE stehen, ohne je den Hub zu öffnen. Erst das Konto macht daraus eine Nutzerin mit Rechten."
+   }
+  },
+  {
+   "h1": "Konto anlegen und einladen",
+   "sub": "Der Assistent legt das Konto an, schlägt eine Rolle vor und verschickt die Einladung.",
+   "card": {
+    "title": "Konto anlegen",
+    "text": "Assistent, Rolle, Institut, Einladung"
+   },
+   "left": {
+    "shot": "p3-konto-wizard"
+   },
+   "leftCaption": "Der Assistent zum Anlegen eines Hub-Kontos.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Person wählen",
+     "text": "Der Assistent startet von der Detailseite — Name und E-Mail kommen aus dem Personaldatensatz."
+    },
+    {
+     "n": 2,
+     "title": "Rolle",
+     "text": "Der Hub schlägt eine passende vor. Sie entscheidet, **was die Person sehen und tun darf** — im Zweifel die engere wählen."
+    },
+    {
+     "n": 3,
+     "title": "Stamm-Institut",
+     "text": "Bestimmt die Voreinstellung des Standortfilters und die Zuordnung im Bonus-Board."
+    },
+    {
+     "n": 4,
+     "title": "Einladung",
+     "text": "Die Person bekommt eine E-Mail und setzt darüber **Passwort und PIN** selbst („Grundlagen 1“)."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Einladung abgelaufen",
+     "text": "Einladungslinks sind zeitlich begrenzt. Ist er verfallen, wird er neu verschickt — der alte lässt sich nicht wiederbeleben."
+    },
+    {
+     "title": "Rolle später ändern",
+     "text": "Geht jederzeit. Die Rechte wirken sofort; wer gerade angemeldet ist, sieht die Änderung nach dem nächsten Seitenwechsel."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Die Rolle ist keine Formalie.** Sie entscheidet über Einblick in Verträge, Forderungen, Bonus-Zahlen und Kundendaten. Eine zu weite Rolle fällt nie auf — bis sie auffällt."
+   }
+  },
+  {
+   "h1": "Austritt: archivieren",
+   "sub": "Wer geht, wird archiviert — nicht gelöscht. Das schützt die Historie und sperrt zugleich den Zugang.",
+   "card": {
+    "title": "Archivieren",
+    "text": "Zugang sperren, Historie erhalten"
+   },
+   "left": {
+    "shot": "p4-archivieren"
+   },
+   "leftCaption": "Das Archivieren einer Mitarbeiterin.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zum 1. des Folgemonats",
+     "text": "So bleibt der laufende Monat in Bonus und Auswertungen vollständig — und ab dem Stichtag ist Schluss."
+    },
+    {
+     "n": 2,
+     "title": "Was passiert",
+     "text": "Die Anmeldung wird gesperrt; in allen Listen erscheint die Person nur noch mit Schalter **„Archivierte einbeziehen“**."
+    },
+    {
+     "n": 3,
+     "title": "Was bleibt",
+     "text": "Verträge, Beratungen und Bonus-Historie bleiben zugeordnet — sonst würden alte Auswertungen falsch."
+    },
+    {
+     "n": 4,
+     "title": "Rückgängig",
+     "text": "Kommt jemand zurück, lässt sich das Konto wieder aktivieren — ein neues ist nicht nötig."
+    }
+   ],
+   "hint": {
+    "text": "**Nicht löschen.** Ein gelöschtes Konto reißt Lücken in jede Auswertung, in der diese Person vorkommt. Archivieren erreicht dasselbe, ohne die Vergangenheit zu beschädigen."
+   }
+  }
+ ]
+}

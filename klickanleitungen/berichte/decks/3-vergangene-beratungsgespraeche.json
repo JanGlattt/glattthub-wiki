@@ -1,0 +1,163 @@
+{
+ "out": "../pdf/Berichte-3-vergangene-beratungsgespraeche",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 3,
+ "of": 16,
+ "audience": "leitung",
+ "title": [
+  "Vergangene",
+  "Beratungsgespräche"
+ ],
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — historische Analyse der geführten Beratungen",
+ "eyebrow": "Berichte · Vergangene Beratungen",
+ "footerArea": "Berichte",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der Rückblick: **Wie viele Beratungen wurden geführt — und was ist daraus geworden?**",
+  "Grundlage sind die **tatsächlich durchgeführten** Termine, nicht die gebuchten.",
+  "Für ältere Zeiträume ist die Datenlage dünner — die Info-Panels nennen den Beginn."
+ ],
+ "pages": [
+  {
+   "h1": "Den Bericht öffnen",
+   "sub": "Freier Zeitraum, Standort und die Kennzahlen-Zeile.",
+   "card": {
+    "title": "Bericht öffnen",
+    "text": "Zeitraum und Standort setzen"
+   },
+   "left": {
+    "shot": "r3-kopf"
+   },
+   "leftCaption": "Kopf des Berichts.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum",
+     "text": "Frei wählbar. Für Monatsvergleiche volle Monate nehmen."
+    },
+    {
+     "n": 2,
+     "title": "Standort",
+     "text": "Aus der Seitenleiste; für den Vergleich auf „Alle Standorte“."
+    },
+    {
+     "n": 3,
+     "title": "Kennzahlen",
+     "text": "Beratungen, Abschlüsse, Quote — je nach eigener Auswahl."
+    }
+   ],
+   "hint": {
+    "text": "**Durchgeführt heißt durchgeführt.** Gezählt werden nur Termine, die tatsächlich stattgefunden haben — gebuchte und dann abgesagte fehlen hier zu Recht."
+   }
+  },
+  {
+   "h1": "Beratungen im Verlauf",
+   "sub": "Die Hauptkarte zeigt die Entwicklung über die Zeit.",
+   "card": {
+    "title": "Verlauf",
+    "text": "Entwicklung über Wochen und Monate"
+   },
+   "left": {
+    "shot": "r3-verlauf"
+   },
+   "leftCaption": "Beratungen im Zeitverlauf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Verlauf lesen",
+     "text": "Saisonale Muster sind normal — Januar und September sind stark, der Hochsommer ist es nie."
+    },
+    {
+     "n": 2,
+     "title": "Je Institut",
+     "text": "Die Farben folgen der festen Institutsreihenfolge."
+    },
+    {
+     "n": 3,
+     "title": "Tabelle",
+     "text": "Für genaue Werte auf das Register am Kartenrand wechseln („Berichte 0“)."
+    }
+   ],
+   "hint": {
+    "text": "**Vergleiche brauchen gleiche Längen.** Ein Monat mit vier Samstagen bringt mehr Beratungen als einer mit fünf Feiertagen."
+   }
+  },
+  {
+   "h1": "Was daraus wurde",
+   "sub": "Beratung ist Mittel zum Zweck — die Karte zeigt, wie viele zum Abschluss führten.",
+   "card": {
+    "title": "Ergebnis",
+    "text": "Abschlussquote und Körperzonen"
+   },
+   "left": {
+    "shot": "r3-ergebnis"
+   },
+   "leftCaption": "Abschlüsse und Quote je Zeitraum.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Abschlussquote",
+     "text": "Anteil der Beratungen mit Vertrag. Die zentrale Zahl dieses Berichts."
+    },
+    {
+     "n": 2,
+     "title": "Ø KPZ",
+     "text": "Zonen je Beratung — misst nicht das Ob, sondern das Wie viel."
+    },
+    {
+     "n": 3,
+     "title": "Je Mitarbeiterin",
+     "text": "Für die personenbezogene Sicht „Berichte 9“ nutzen."
+    },
+    {
+     "n": 4,
+     "title": "Nicht abgeschlossen",
+     "text": "Kein Verlust: Viele Kundinnen entscheiden sich später."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Quote und Menge zusammen lesen.** Eine Quote von 80 % bei fünf Beratungen ist schwächer als 50 % bei fünfzig — die Prozentzahl allein führt in die Irre."
+   }
+  },
+  {
+   "h1": "Datenlage und Export",
+   "sub": "Woher die Zahlen kommen und wo ihre Grenzen liegen.",
+   "card": {
+    "title": "Datenlage",
+    "text": "Grenzen der Historie, Export"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Frage",
+     "Antwort"
+    ],
+    "rows": [
+     [
+      "Warum sind alte Zeiträume lückenhaft?",
+      "Die Termin-Historie beginnt nicht beliebig früh; das Info-Panel der Karte nennt den Beginn."
+     ],
+     [
+      "Warum weicht die Zahl vom Bonus-Board ab?",
+      "Dort zählen Körperzonen und Vorbehalte, hier Gespräche."
+     ],
+     [
+      "Zählen Kombinationstermine mit?",
+      "Ja — ein Termin mit Beratung **und** Behandlung zählt als Beratung („Berichte 6“)."
+     ],
+     [
+      "Wie exportieren?",
+      "CSV in der Kopfzeile, mit demselben Zeitraum wie die Seite."
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Für die Planung nach vorn** ist „Berichte 2“ zuständig — dieser Bericht erklärt, was war, nicht was kommt."
+   }
+  }
+ ]
+}

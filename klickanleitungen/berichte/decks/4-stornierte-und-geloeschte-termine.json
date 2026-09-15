@@ -1,0 +1,163 @@
+{
+ "out": "../pdf/Berichte-4-stornierte-und-geloeschte-termine",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 4,
+ "of": 16,
+ "audience": "leitung",
+ "title": [
+  "Stornierte",
+  "und gelöschte Termine"
+ ],
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — Verschiebungen, Absagen und Löschungen im Blick",
+ "eyebrow": "Berichte · Stornos",
+ "footerArea": "Berichte",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der Bericht zeigt, **was nicht stattgefunden hat** — und wie kurzfristig es abgesagt wurde.",
+  "**Verschoben ist nicht storniert:** Eine Verlegung hält die Kundin, eine Absage nicht.",
+  "Kurzfristige Absagen sind der teuerste Posten — sie lassen sich kaum nachbesetzen."
+ ],
+ "pages": [
+  {
+   "h1": "Den Bericht öffnen",
+   "sub": "Zeitraum, Standort und die Art des Ausfalls.",
+   "card": {
+    "title": "Bericht öffnen",
+    "text": "Zeitraum und Art wählen"
+   },
+   "left": {
+    "shot": "r4-kopf"
+   },
+   "leftCaption": "Kopf des Storno-Berichts.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum",
+     "text": "Frei wählbar; für Muster über mehrere Monate lesen."
+    },
+    {
+     "n": 2,
+     "title": "Art",
+     "text": "**Verschoben**, **storniert**, **gelöscht** — drei verschiedene Vorgänge."
+    },
+    {
+     "n": 3,
+     "title": "Standort",
+     "text": "Unterschiede zwischen Instituten sind oft aufschlussreich."
+    }
+   ],
+   "hint": {
+    "text": "**Gelöscht ist nicht abgesagt.** Gelöschte Termine sind meist Korrekturen in Phorest — sie sagen wenig über Kundenverhalten."
+   }
+  },
+  {
+   "h1": "Vorlauf der Absagen",
+   "sub": "Entscheidend ist nicht nur, wie viele absagen, sondern wann.",
+   "card": {
+    "title": "Vorlauf",
+    "text": "Wie kurzfristig abgesagt wird"
+   },
+   "left": {
+    "shot": "r4-vorlauf"
+   },
+   "leftCaption": "Absagen nach Vorlaufzeit.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Vorlauf lesen",
+     "text": "Absagen Wochen vorher sind Planung, Absagen am Vortag sind Ausfall."
+    },
+    {
+     "n": 2,
+     "title": "Same-Day",
+     "text": "Der teuerste Fall — die Zeit bleibt leer."
+    },
+    {
+     "n": 3,
+     "title": "No-Show",
+     "text": "Nicht erschienen ohne Absage; die härteste Form."
+    }
+   ],
+   "hint": {
+    "text": "**Eine Absage mit Vorlauf ist ein Erfolg** — sie macht die Zeit wieder buchbar. Dafür braucht es niedrige Hürden bei der Absage, nicht hohe."
+   }
+  },
+  {
+   "h1": "Muster erkennen",
+   "sub": "Wo und wann gehäuft abgesagt wird.",
+   "card": {
+    "title": "Muster",
+    "text": "Institut, Wochentag, Terminart"
+   },
+   "left": {
+    "shot": "r4-muster"
+   },
+   "leftCaption": "Absagen nach Institut und Wochentag.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Je Institut",
+     "text": "Ein Ausreißer hat fast immer eine örtliche Ursache."
+    },
+    {
+     "n": 2,
+     "title": "Wochentag",
+     "text": "Montags und nach Feiertagen wird mehr abgesagt."
+    },
+    {
+     "n": 3,
+     "title": "Terminart",
+     "text": "Beratungen werden häufiger abgesagt als Behandlungen."
+    },
+    {
+     "n": 4,
+     "title": "Erinnerungen",
+     "text": "Wirken messbar — ihre Einstellungen liegen im Admin-Bereich."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Nicht auf einzelne Kundinnen schließen.** Der Bericht zeigt Muster. Wer daraus Vorwürfe ableitet, verliert Kundinnen schneller als durch Absagen."
+   }
+  },
+  {
+   "h1": "Gegensteuern",
+   "sub": "Was aus den Zahlen folgt.",
+   "card": {
+    "title": "Gegensteuern",
+    "text": "Erinnerungen, Bestätigung, Nachbesetzung"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Beobachtung",
+     "Was zu tun ist"
+    ],
+    "rows": [
+     [
+      "Viele kurzfristige Absagen",
+      "Terminerinnerung prüfen und früher verschicken"
+     ],
+     [
+      "Viele No-Shows bei Erstberatungen",
+      "Bestätigung anfordern, Termin telefonisch absichern"
+     ],
+     [
+      "Ein Institut sticht heraus",
+      "Vor Ort nachfragen — oft steckt ein örtliches Thema dahinter"
+     ],
+     [
+      "Stornos häufen sich in einer Woche",
+      "Freie Zeiten aktiv anbieten („Terminansicht 9“)"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Zusammen mit „Berichte 2“ lesen:** Ein voller Vorlauf mit hoher Storno-Quote ist etwas anderes als ein leerer Vorlauf."
+   }
+  }
+ ]
+}

@@ -1,0 +1,173 @@
+{
+ "out": "../pdf/Admin-4-erinnerungen-und-whatsapp",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Admin",
+ "nr": 4,
+ "of": 8,
+ "audience": "admin",
+ "title": [
+  "Erinnerungen",
+  "und WhatsApp"
+ ],
+ "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Terminerinnerungen, Beratungs-WhatsApp und Bewertungsanfragen",
+ "eyebrow": "Admin · Nachrichten",
+ "footerArea": "Admin-Panel",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Hier wird eingestellt, **was der Hub von selbst verschickt** — an Kundinnen, ohne dass jemand tippt.",
+  "**Jede Änderung wirkt sofort** auf alle künftigen Nachrichten; es gibt keinen Testversand an alle.",
+  "Zustellfehler stehen in den Protokollen — ein Teil der WhatsApp-Nachrichten kommt nie an."
+ ],
+ "pages": [
+  {
+   "h1": "Terminerinnerungen",
+   "sub": "Regeln dafür, wann vor einem Termin erinnert wird.",
+   "card": {
+    "title": "Terminerinnerungen",
+    "text": "Regeln, Zeitpunkt, Kanal"
+   },
+   "left": {
+    "shot": "a4-erinnerungen"
+   },
+   "leftCaption": "Die Erinnerungs-Regeln.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Regel anlegen",
+     "text": "Vorlaufzeit, Kanal und Text — je Terminart eigene Regeln möglich."
+    },
+    {
+     "n": 2,
+     "title": "Kanal",
+     "text": "E-Mail oder Nachricht aufs Handy; beides setzt die Einwilligung voraus („Kundenverwaltung 2“)."
+    },
+    {
+     "n": 3,
+     "title": "Zeitpunkt",
+     "text": "Zu früh wird vergessen, zu spät kommt zu spät. Ein bis zwei Tage haben sich bewährt."
+    },
+    {
+     "n": 4,
+     "title": "Aktiv",
+     "text": "Nur aktive Regeln verschicken."
+    }
+   ],
+   "hint": {
+    "text": "**Erinnerungen wirken messbar** auf die Storno- und No-Show-Quote — ihre Wirkung lässt sich in „Berichte 4“ ablesen."
+   }
+  },
+  {
+   "h1": "Beratungs-WhatsApp",
+   "sub": "Die Nachricht zur ersten Beratungsbuchung.",
+   "card": {
+    "title": "Beratungs-WhatsApp",
+    "text": "Einstellungen und Gutschein-Link"
+   },
+   "left": {
+    "shot": "a4-bg-whatsapp"
+   },
+   "leftCaption": "Einstellungen der Beratungs-WhatsApp.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Auslöser",
+     "text": "Die **allererste** Beratungsbuchung einer Kundin — nicht jede weitere."
+    },
+    {
+     "n": 2,
+     "title": "Vorlage",
+     "text": "Der Text ist eine geprüfte Vorlage; frei formulieren geht nicht."
+    },
+    {
+     "n": 3,
+     "title": "Gutschein-Link",
+     "text": "Optional. Seine Wirkung misst „Berichte 12“."
+    },
+    {
+     "n": 4,
+     "title": "Protokoll",
+     "text": "Jeder Versand wird mitgeschrieben — samt Fehlern."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Ein Teil der Nachrichten kommt nicht an** — falsche Nummer, kein WhatsApp. Das ist normal; auffällig wird es erst, wenn die Fehlerquote deutlich steigt."
+   }
+  },
+  {
+   "h1": "Bewertungsanfragen",
+   "sub": "Die Bitte um eine Google-Bewertung nach der Behandlung.",
+   "card": {
+    "title": "Bewertungsanfragen",
+    "text": "Wann gefragt wird, an wen"
+   },
+   "left": {
+    "shot": "a4-bewertung"
+   },
+   "leftCaption": "Einstellungen der Bewertungsanfrage.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Auslöser",
+     "text": "Nach einem abgeschlossenen Termin, ausgelöst aus der Terminansicht."
+    },
+    {
+     "n": 2,
+     "title": "Text",
+     "text": "Kurz und ohne Druck — eine Bitte, keine Aufforderung."
+    },
+    {
+     "n": 3,
+     "title": "Häufigkeit",
+     "text": "Nicht nach jedem Termin. Wer zu oft fragt, bekommt schlechtere Bewertungen."
+    },
+    {
+     "n": 4,
+     "title": "Wirkung",
+     "text": "Der Google-Saldo je Institut steht im Bonus-Board („Bonus-Board 5“)."
+    }
+   ],
+   "hint": {
+    "text": "**Nicht nach einem schwierigen Termin fragen.** Die Bitte um eine Bewertung ist ein Verstärker — sie verstärkt auch Unzufriedenheit."
+   }
+  },
+  {
+   "h1": "Einwilligungen und Protokolle",
+   "sub": "Was rechtlich gilt und wo man nachsieht.",
+   "card": {
+    "title": "Einwilligungen",
+    "text": "Zustimmung, Protokolle, Fehlersuche"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Frage",
+     "Wo nachsehen"
+    ],
+    "rows": [
+     [
+      "Hat die Kundin etwas bekommen?",
+      "Kundenprofil, Reiter Nachrichten („Kundenverwaltung 5“)"
+     ],
+     [
+      "Warum kam nichts an?",
+      "Protokolle im Admin-Panel — dort steht der Fehlergrund"
+     ],
+     [
+      "Darf die Kundin angeschrieben werden?",
+      "Einwilligungen im Reiter Kundeninfos"
+     ],
+     [
+      "Wie wirkt die Aktion?",
+      "„Berichte 12“ für die Gutschein-Aktion"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Ohne Einwilligung kein Versand.** Die Schalter dafür stehen an der Kundin („Kundenverwaltung 2“); hier wird nur eingestellt, was verschickt würde."
+   }
+  }
+ ]
+}

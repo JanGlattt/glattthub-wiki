@@ -144,7 +144,7 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | 8 | Probleme & Fehlermeldungen (Nachschlagewerk, 3 Tabellen) | alle | **Terminansicht 7 – Probleme & Fehlermeldungen** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
 | 9 | Bestandskundin: Behandlungstermin starten, **Einstellungszettel pflegen**, Folgetermin, beenden | Termin-Detailseite | **Terminansicht 8 – Behandlungstermin & Einstellungszettel** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
 | 10 | Zusatz-Service hinzubuchen, Kein-Verkauf erfassen (nach Umsetzung Asana 1218245871472844) | Termin-Detailseite | offen | ⬜ |
-| 11 | Folgetermin planen (ideale Slots), Termin verlegen | Termin-Detailseite / Buchungsseite | offen | ⬜ |
+| 11 | Folgetermin planen (ideale Slots), Termin verlegen | Termin-Detailseite / Buchungsseite | teilweise **Terminansicht 9** (Buchen); Verlegen offen | 🟠 teilweise |
 | 12 | Google-Bewertung per WhatsApp anfragen | Termin-Detailseite Sidebar | offen | ⬜ |
 | 13 | Kundenprofil `/hub/clients/{id}`: Kundin suchen, Profil lesen, Reiter-Wegweiser | Kunden | **Kundenverwaltung 1 – Kundin finden & Profil verstehen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 13a | Stammdaten bearbeiten (Feld-Schlösser, Adresse, Einwilligungen, Übernahme nach Phorest) | Kundenprofil › Kundeninfos | **Kundenverwaltung 2 – Kundendaten bearbeiten** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
@@ -152,13 +152,14 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | 13c | Vertrag, Rate, SEPA-Mandat, offene Forderungen, Zahlungsstand | Kundenprofil › Vertrag/Zahlungen, Forderungsmanagement | **Kundenverwaltung 4 – Vertrag, Zahlung & offene Forderungen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 13d | Automatische Nachrichten, WhatsApp lesen & senden, Zendesk-Tickets | Kundenprofil › Nachrichten, Kundenservice | **Kundenverwaltung 5 – Nachrichten & Kundenservice** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 13e | Eingereichte Formulare, Einstellungszettel, Behandlungsfotos | Kundenprofil › Dokumente, Behandlungseinstellungen | **Kundenverwaltung 6 – Unterlagen & Behandlungsverlauf** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 14 | Gutscheine (Verwaltung/Einlösung) | Gutscheine-Modul | offen | ⬜ |
-| 15 | Termin buchen (Neukunde/Bestandskunde) | Buchungsseite | offen | ⬜ |
+| 14 | Gutscheine (Verwaltung/Einlösung/Online-Verkauf) | Gutscheine-Modul | **Verkauf 7** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 15 | Termin buchen (Neukunde/Bestandskunde) | Buchungsseite | **Terminansicht 9** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 16 | Anmelden (PIN/E-Mail), Seitenleiste, Gruppen, Abmelden | Hub allgemein | **Grundlagen 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 16a | Standortwahl, globale Suche, Mitteilungen | Seitenleiste | **Grundlagen 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 16b | Profil: Name/Bild, Passwort, PIN, Geräte, Rundgänge | `/user/profile` | **Grundlagen 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 16c | Mobil: Menüleiste, Mehr-Menü, Zustandszeile, Tabellen | Hub auf Handy/Tablet | **Grundlagen 4** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 16d | glatttBert: fragen, was er weiß, was er nicht kann | Assistent auf jeder Seite | **Grundlagen 5** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 16e | Die Startseite: was dort steht, eigene Kacheln, Schnellzugriffe | `/hub` | **Grundlagen 6** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 17 | Bonus-Board: eigener Stand, Ziele, Hochrechnung, Team-Karte | `/hub/bonus` › Mein Board | **Bonus-Board 1 – Mein Bonus** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 18 | Challenges: Monats-Challenge, Ranking, Blind, Serien | `/hub/bonus` › Mein Board | **Bonus-Board 2 – Challenges verstehen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 19 | Management-Sicht: Institute vs. Minimalziele, Boni je Mitarbeiterin, Export | `/hub/bonus` › Management | **Bonus-Board 3 – Bonus-Board für die Leitung** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
@@ -168,14 +169,36 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | 23 | Vertragsseite: Kopf, Reiter, Übersicht, Verlauf, E-Mails | `/hub/contracts/{id}` | **Verkauf 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 24 | Zahlungen & SEPA: Ratenplan, nachtragen, Mandat, Einzug, RLS | `/hub/contracts/{id}` › Zahlungen | **Verkauf 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 25 | Widerrufe: erfassen, Fall bearbeiten, abschließen | `/hub/cancellations` | **Verkauf 4** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 26 | Preislisten, Freunde werben, Gutscheine, Zufriedenheit | Verkauf | Verkauf 5–8 | ⬜ geplant |
+| 26 | Preislisten pflegen (Pakete, Rabattstufen, Zahlungsmodus) | `/hub/contracts` › Preislisten | **Verkauf 5** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 27 | Freunde werben: Empfehlung erfassen, Prämie, Auswertung | `/hub/contracts/referrals` | **Verkauf 6** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 28 | Zufriedenheitsbefragung auslösen und auswerten | `/hub/satisfaction` | **Verkauf 8** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 29 | Institute: Überblick, Steckbrief, Kennzahlen, Team | `/hub/branches` | **Betrieb 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 30 | Ein Institut pflegen: Infos, Bilder, Bank, Sichtbarkeit | `/hub/branches/{id}` | **Betrieb 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 31 | Formulare bauen: Editor, Feldtypen, Bedingungen | `/hub/forms` | **Betrieb 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 32 | Formular teilen und Einreichungen lesen | `/hub/forms` | **Betrieb 4** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 33 | Services und Körperzonen pflegen | `/hub/services` | **Betrieb 5** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 34 | Laser: Geräte, Reparaturen, Verbrauchsmaterial | `/hub/laser` | **Betrieb 6** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 35 | Personalübersicht und Hub-Konten (Anlage, Einladung, Archivieren) | `/hub/staff` | **Team 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 36 | Reisekosten erfassen und einreichen | `/hub/staff/reisekosten` | **Team 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 37 | Reisekosten prüfen und freigeben | `/hub/staff/reisekosten-freigabe` | **Team 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 38 | Forderungsmanagement: Fälle, Verlauf, Prozessschritte | `/hub/receivables` | **Finanzen 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 39 | Schulden im Überblick | `/hub/reports/schulden` | **Finanzen 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 40 | Unternehmensverträge erfassen und Fristen wahren | `/hub/company-contracts` | **Finanzen 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 41 | Report-Mails einrichten und Zustellungen prüfen | `/hub/report-mails` | **System 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 42 | Audit: Befunde lesen und abarbeiten | `/hub/audit` | **System 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 43 | Berichte allgemein: Zeitraum, Standort, Laschen, Export | `/hub/reports` | **Berichte 0** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 44 | Die 16 Berichtsseiten einzeln | `/hub/reports/*` | **Berichte 1–16** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 45 | Verwaltungspanel: Benutzer, Inhalte, Stammdaten, Protokolle | `/admin` | **Admin 1–8** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 
-Die Liste wird mit jeder fertigen Anleitung fortgeschrieben. **Ablage:** PDFs in
-`~/Downloads/Klickanleitungen-Terminansicht/` (Übergabe an Jan), Quellen reproduzierbar im Wiki-Repo
-unter `klickanleitungen/terminansicht/` (README dort). Stand 14.09.2026: **v1.1** — Texte, Skripte und
-zwei neue Seiten auf die überarbeitete Terminansicht umgestellt (siehe nächster Abschnitt);
-**die Screenshots stammen noch vom Stand davor**, der Aufnahmelauf steht aus. Fachliche Freigabe
-durch Jan ebenfalls offen.
+Die Liste wird mit jeder fertigen Anleitung fortgeschrieben. **Quellen** liegen reproduzierbar im
+Wiki-Repo unter `klickanleitungen/<serie>/` (je ein README dort), gebaut wird mit den Buildern aus
+`klickanleitungen/shared/`.
+
+**Stand 15.09.2026:** Alle 73 Dokumente aus 11 Serien sind **im Text fertig** und bauen als PDF
+durch (siehe „Gesamtübersicht" weiter unten). **Kein einziger Aufnahmelauf ist bisher gefahren** —
+die Screenshots fehlen überall, die Terminansicht hat welche vom Stand vor der Überarbeitung
+(v1.0). Offen bleiben außerdem die fachliche Freigabe durch Jan und die Entscheidung, wo das
+Endbenutzer-Wiki gehostet wird.
 
 ---
 
@@ -386,7 +409,41 @@ gedacht ist.
 
 ---
 
-## Serie „Grundlagen" 1–5 (15.09.2026)
+## Gesamtübersicht — 73 Dokumente in 11 Serien (Stand 15.09.2026)
+
+Alle Texte sind geschrieben, alle PDFs bauen durch. **Was überall fehlt, sind die Screenshots** —
+jede Serie bringt ihr Aufnahmeskript mit, aber kein Lauf ist bisher gefahren.
+
+| Serie | Dokumente | Zielgruppe | Inhalt |
+|---|---|---|---|
+| **Grundlagen** | 1–6 | Institute | Anmelden, Navigation, Standort/Suche/Mitteilungen, Profil, Mobil, glatttBert, Startseite |
+| **Terminansicht** | 1–9 | Institute | Beratungs- und Behandlungstermin von der Ankunft bis zum Abschluss, Termin buchen |
+| **Kundenverwaltung** | 1–6 | Institute | Das Kundenprofil mit seinen zehn Reitern |
+| **Bonus-Board** | 1–5 | Institute, Leitung, Büro | Eigener Bonus, Challenges, Leitungssicht, Regeln, Monatsabschluss |
+| **Verkauf** | 1–8 | Büro | Verträge, Zahlungen & SEPA, Widerrufe, Preislisten, Freunde werben, Gutscheine, Zufriedenheit |
+| **Betrieb** | 1–6 | Leitung, Büro, Institute | Institute, Formulare, Services & Körperzonen, Laser |
+| **Team** | 1–3 | Büro, Institute | Personalübersicht und Hub-Konten, Reisekosten erfassen und freigeben |
+| **Finanzen** | 1–3 | Büro | Forderungsmanagement, Schulden, Unternehmensverträge |
+| **System** | 1–2 | Leitung | Report-Mails, Audit |
+| **Berichte** | 0–16 | Leitung, Büro | Rahmendokument plus je eine Anleitung für die 16 Berichtsseiten |
+| **Admin** | 1–8 | Administration | Das Verwaltungspanel `/admin`, thematisch gebündelt |
+
+**Cover mit fünf oder sechs Karten:** Das Karten-Raster schaltet ab fünf Karten auf drei Spalten
+(`.cards.n5`/`.n6`) — die zweite Reihe passte bis 15.09.2026 nicht auf die Seite und wurde unten
+abgeschnitten. `pdf.css` zieht für diese Cover jetzt Logo, Untertitel und Kartenpolster enger
+(`:has(.cards.n5)`). Beim Bauen prüfen: Kein `.page` darf höher als sein sichtbarer Bereich sein.
+
+**Einheitliche Tiefe:** Jedes Dokument hat drei bis vier Inhaltsseiten plus Cover — auch dort, wo
+die Seite mehr hergäbe. Lieber überall dasselbe Maß als ein paar sehr ausführliche und viele
+dünne Anleitungen. Wo eine Seite später mehr braucht, wächst ihr Dokument; der Rahmen bleibt.
+
+**Noch nicht freigeschaltete Funktionen** sind trotzdem beschrieben und tragen eine rote Plakette
+auf dem Cover (Feld `hinweis` im Deck) — betrifft derzeit **Admin 6** (Gamification). Beim
+Freischalten fällt nur der Hinweis weg, am Text ändert sich nichts.
+
+---
+
+## Serie „Grundlagen" 1–6 (15.09.2026)
 
 Die Bedienung des Hubs überhaupt — Voraussetzung für jede andere Serie und bis dahin nirgends
 beschrieben. Quellen unter `klickanleitungen/grundlagen/`.
@@ -398,6 +455,7 @@ beschrieben. Quellen unter `klickanleitungen/grundlagen/`.
 | **Grundlagen 3 – Mein Profil** | Name/Bild, Passwort, PIN, angemeldete Geräte, Rundgänge zurücksetzen |
 | **Grundlagen 4 – Auf dem Handy und Tablet** | Menüleiste unten, Mehr-Menü, Zustandszeile, Tabellen mit weniger Spalten |
 | **Grundlagen 5 – glatttBert fragen** | Assistent öffnen, was er beantwortet (Tabelle), was er nicht kann |
+| **Grundlagen 6 – Die Startseite** | Was auf der Startseite steht, eigene Kacheln, Schnellzugriffe, Mitteilungen im Blick |
 
 **Besonderheiten der Aufnahme:** zwei Bildgrößen (iPad quer für 1–3 und 5, **Telefon 390 × 844**
 für 4); die Anmeldebilder entstehen **ohne Sitzung** (`fresh: true`); Zugang **ohne Sonderrechte**,
@@ -411,7 +469,7 @@ und damit im Hub nicht aktiv.
 
 ---
 
-## Serie „Verkauf" 1–8 (15.09.2026, 1–4 geschrieben)
+## Serie „Verkauf" 1–8 (15.09.2026)
 
 Das größte Büro-Thema, Fortsetzung von „Kundenverwaltung 4". Quellen unter
 `klickanleitungen/verkauf/`.
@@ -422,7 +480,10 @@ Das größte Büro-Thema, Fortsetzung von „Kundenverwaltung 4". Quellen unter
 | **Verkauf 2 – Der Vertrag im Detail** | Kopf mit Widerrufs- und Forderungs-Banner, die vier Reiter, Übersicht, Zusammenfassungs-Spalte, Verlauf, E-Mail-Historie |
 | **Verkauf 3 – Zahlungen & SEPA** | Ratenplan lesen, Zahlung nachtragen, Mandat, Einzug, RLS anhängen, pausieren, Gutschein verrechnen, Legacy-Einzug |
 | **Verkauf 4 – Widerrufe erfassen & bearbeiten** | Assistent (Vertrag → Eingang/Grund), Fallseite mit Fristen und Behandlungsstand, Verhandlung/RA/Abschluss |
-| Verkauf 5–8 | Preislisten, Freunde werben, Gutscheine, Zufriedenheit — **noch nicht geschrieben** |
+| **Verkauf 5 – Preislisten pflegen** | Pakete und Preise, Rabattstufen ab N KPZ, Zahlungsmodus der Liste (erste Rate vor Ort oder alles per SEPA) |
+| **Verkauf 6 – Freunde werben** | Empfehlung erfassen, Prämie, Auswertung |
+| **Verkauf 7 – Gutscheine** | Bestehende Phorest-Gutscheine verwalten, Online-Verkauf und Bonus-Guthaben |
+| **Verkauf 8 – Zufriedenheitsbefragung** | Befragung auslösen, Rückläufe lesen, Konsequenzen |
 
 **Der Aufnahmelauf fasst kein Geld an:** „Gezahlte Rate nachtragen" wird geöffnet und verworfen;
 „Betrag per SEPA einziehen", „RLS anhängen" und „Pausieren" werden nur markiert. Der
@@ -550,6 +611,143 @@ Ohne `mask.json` starten die Skripte nicht; `run-all.sh` prüft am Ende, dass ke
 
 **Nächster Schritt:** Rechte-Lage klären, Kundin auswählen, Aufnahmelauf — am besten zusammen
 mit der ausstehenden Neuaufnahme der Terminansicht (v1.1), dann PDFs an Jan zur Freigabe.
+
+---
+
+## Serie „Betrieb" 1–6 (15.09.2026)
+
+Alles, was ein Institut am Laufen hält, aber kein Kundenvorgang ist. Quellen unter
+`klickanleitungen/betrieb/`.
+
+| Dokument | Zielgruppe | Kern |
+|---|---|---|
+| **Betrieb 1 – Institute im Überblick** | Leitung | Kachelübersicht, Steckbrief-Spalte, Kennzahlen des Instituts, Team |
+| **Betrieb 2 – Ein Institut pflegen** | Büro | Infos und Bilder, Bankdaten, Sichtbarkeit („Ausgeblendet" zählt nicht in „Alle Standorte") |
+| **Betrieb 3 – Formulare erstellen** | Büro | Editor, Feldtypen, Bedingungen, Einstellungen (Vertrag/SEPA auslösen) |
+| **Betrieb 4 – Formulare teilen & Einreichungen** | Institute | Link erzeugen, ausfüllen lassen, Eingänge lesen und zuordnen |
+| **Betrieb 5 – Services und Körperzonen** | Büro | Servicekatalog, Beratungs-Flag, Zuordnung Service → Körperzone |
+| **Betrieb 6 – Laser und Wartung** | Leitung | Geräteliste, Gerät im Detail, Reparaturen, Verbrauchsmaterial |
+
+**Der Aufnahmelauf ändert nichts:** kein „Speichern" im Formular-Editor (ein geändertes Formular
+wirkt sofort auf alle offenen Links), kein „Formular teilen" (der Link ginge an echte Kundinnen),
+kein Wartungs- oder Reparatureintrag, keine Änderung an Bankdaten oder Sichtbarkeit.
+
+---
+
+## Serie „Team" 1–3 (15.09.2026)
+
+Quellen unter `klickanleitungen/team/`.
+
+| Dokument | Zielgruppe | Kern |
+|---|---|---|
+| **Team 1 – Personalübersicht und Hub-Konten** | Büro | Liste, Person im Detail, Konto-Assistent (Anlage und Einladung), Archivieren zum 1. des Folgemonats |
+| **Team 2 – Reisekosten erfassen** | Institute | Anspruchstage aus askDANTE, Fahrt, Verpflegung, Einreichen |
+| **Team 3 – Reisekosten freigeben** | Büro | Eingänge prüfen, Belege ansehen, freigeben oder ablehnen |
+
+**Der Lauf lädt niemanden ein und gibt nichts frei:** „Einladen" verschickt eine echte E-Mail,
+„Freigeben" löst die Auszahlung aus — beides wird nur gezeigt, nie gedrückt. Für Team 1 braucht es
+eine Person **ohne** Hub-Konto, sonst zeigt der Assistent seinen ersten Schritt nicht.
+
+---
+
+## Serie „Finanzen" 1–3 (15.09.2026)
+
+Quellen unter `klickanleitungen/finanzen/`. **Ansprechpartnerin fürs Forderungsmanagement ist
+Janine Tasto** — inhaltliche Rückfragen zu Finanzen 1 gehen an sie.
+
+| Dokument | Zielgruppe | Kern |
+|---|---|---|
+| **Finanzen 1 – Forderungsmanagement** | Büro | Fallliste, Fall im Detail mit Verlauf, Prozessschritte, Fall anlegen |
+| **Finanzen 2 – Schulden im Überblick** | Büro | Kennzahlen, Liste der Schuldnerinnen, woher die Zahlen kommen (geplatzte GoCardless-Lastschriften) |
+| **Finanzen 3 – Unternehmensverträge** | Büro | Vertrag erfassen, Fristen und Kündigung, Übersicht |
+
+**Der Lauf bewegt kein Geld:** kein Prozessschritt (jeder schreibt Historie und löst Schreiben
+aus), kein „Fall anlegen", keine Zahlung, keine Kündigung. **Datenlage beachten:** Die
+Staging-Datenbank hat zeitweise keine `debt_cases` — dann kommen die Bilder nur aus einer frischen
+Prod-Kopie, und die Maskierung wiegt entsprechend schwerer.
+
+---
+
+## Serie „System" 1–2 (15.09.2026)
+
+Quellen unter `klickanleitungen/system/`.
+
+| Dokument | Zielgruppe | Kern |
+|---|---|---|
+| **System 1 – Report-Mails einrichten** | Leitung | Welche Berichte, Empfänger und Rhythmus, Zustellungen prüfen |
+| **System 2 – Audit und Qualität** | Leitung | Was geprüft wird, einen Bereich lesen, Befunde abarbeiten |
+
+**Achtung beim Aufnehmen:** „Testmail senden" und „Jetzt senden" bleiben tabu — **Staging
+verschickt Mails wirklich**, die Einstellung in `email_settings` schlägt `MAIL_MAILER=log`.
+
+---
+
+## Serie „Berichte" 0–16 (15.09.2026)
+
+Ein Rahmendokument plus je eine Anleitung für jeden Bericht der `ReportRegistry`. Quellen unter
+`klickanleitungen/berichte/`.
+
+**Berichte 0 – So funktionieren die Berichte** erklärt einmal, was auf *jeder* Berichtsseite
+gleich ist: Zeitraum und Standortfilter, die personalisierbare Kennzahlen-Zeile, die Laschen am
+Kartenrand (Diagramm ⇄ Tabelle) und der CSV-Export. Die Dokumente 1–16 setzen das voraus und
+erklären nur noch, **was der jeweilige Bericht zeigt und wie er zu lesen ist**.
+
+| Nr. | Bericht | Zielgruppe |
+|---|---|---|
+| 1 | Verkaufsstatistik | Leitung |
+| 2 | Zukünftige Beratungsgespräche | Leitung |
+| 3 | Vergangene Beratungsgespräche | Leitung |
+| 4 | Stornierte und gelöschte Termine | Leitung |
+| 5 | Widerruf-Statistik | Büro |
+| 6 | Terminstatistik | Leitung |
+| 7 | glattt-KPIs | Leitung |
+| 8 | Der glattt-Kunde | Leitung |
+| 9 | Mitarbeiterperformance | Leitung |
+| 10 | Schuldenbericht | Büro |
+| 11 | Office-Teammeeting | Büro |
+| 12 | Gutschein-Aktion | Leitung |
+| 13 | HR-Kennzahlen | Leitung |
+| 14 | Ads-Analyse | Leitung |
+| 15 | Besucher & Buchungs-Funnel | Leitung |
+| 16 | glattt-Pakete Statistik | Leitung |
+
+**Neuer Bericht = neues Dokument.** Kommt in der `ReportRegistry` einer dazu, kommt hier eine
+Anleitung dazu — und ein Eintrag in `.github/klickanleitungen-abdeckung.json`, sonst bricht
+`KlickanleitungCoverageTest`.
+
+**Aufnahme:** ein Lauf über alle Berichte, **52 Screenshots**. `KLICK_RANGE` auf einen
+**abgeschlossenen Monat** setzen (etwa `2026-08`) — sonst zeigen die Bilder einen angebrochenen
+Zeitraum mit halben Kurven. Datenlücken kennen: Kanaldaten in „Der glattt-Kunde" gibt es erst ab
+30.03.2026, Ads- und Funnel-Daten fehlen auf Staging oft ganz.
+
+---
+
+## Serie „Admin" 1–8 (15.09.2026)
+
+Das Filament-Panel unter `/admin` hat rund 38 Resources — als 38 Dokumente wäre die Sammlung
+unbenutzbar. Sie sind deshalb **thematisch in acht Dokumente gebündelt**. Quellen unter
+`klickanleitungen/admin/`.
+
+| Dokument | Deckt ab |
+|---|---|
+| **Admin 1 – Benutzer und Rollen** | Panel-Aufbau, Benutzerliste, Rollen und Rechte |
+| **Admin 2 – Inhalte und Dokumente** | News, Wissensartikel, Rechtstexte |
+| **Admin 3 – Gutschein-Verkauf** | Produkte, Bestellungen, Sonderfälle und Erstattungen |
+| **Admin 4 – Erinnerungen und WhatsApp** | Terminerinnerungen, Beratungs-WhatsApp, Bewertungsanfragen |
+| **Admin 5 – Stammdaten** | Körperzonen, Beratungsservices, Abwesenheitsarten und weitere Listen |
+| **Admin 6 – Gamification und Abzeichen** | Abzeichen, Anlässe, Institutsziele — **noch nicht freigeschaltet**, Cover trägt den Hinweis |
+| **Admin 7 – Personal und Vergütung** | Gehälter, Bonuszahlungen, Phorest-Zuordnung |
+| **Admin 8 – Protokolle und Einstellungen** | E-Mail-Protokoll, PDF- und Schrifteinstellungen, Cache |
+
+**Filament speichert mit einem Klick, ohne Rückfrage.** Der Aufnahmelauf ruft deshalb
+ausschließlich Listenansichten auf; „Erstellen", „Speichern", „Erstatten" (echte
+Mollie-Rückzahlung), alles unter Erinnerungen/WhatsApp (Superchat kennt keine Sandbox — auch
+Staging verschickt) und „Cache leeren" bleiben ungedrückt. Ohne Admin-Recht landet der Lauf auf
+der Anmeldeseite; er erkennt das, schreibt **„KEIN ZUGANG"** und überspringt die Seite.
+
+**Offene Entscheidung:** Ob **Gehälter und Bonuszahlungen** (Admin 7) — auch maskiert — in ein
+öffentliches Repo dürfen, ist noch nicht geklärt. Bis dahin entweder Ausschnitt ohne Beträge oder
+Platzhalter.
 
 ---
 

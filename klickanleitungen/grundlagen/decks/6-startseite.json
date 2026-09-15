@@ -1,0 +1,184 @@
+{
+ "out": "../pdf/Grundlagen-6-Die-Startseite",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Grundlagen",
+ "nr": 6,
+ "of": 6,
+ "audience": "institut",
+ "title": [
+  "Die Startseite",
+  "einrichten"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — eigene Kacheln, Kennzahlen, Schnellzugriffe und Neuigkeiten",
+ "eyebrow": "Grundlagen · Startseite",
+ "footerArea": "Grundlagen",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Startseite ist **persönlich** — jede stellt sie sich so zusammen, wie sie sie braucht.",
+  "Was hier steht, sind **Verknüpfungen auf bestehende Auswertungen** — die Zahlen entstehen nicht hier.",
+  "Alles lässt sich jederzeit wieder ändern; **„Zurücksetzen“** stellt den Ausgangszustand her."
+ ],
+ "pages": [
+  {
+   "h1": "Die Startseite lesen",
+   "sub": "Nach dem Anmelden erscheint die Startseite mit den Kacheln, die für diese Person eingerichtet sind.",
+   "card": {
+    "title": "Startseite lesen",
+    "text": "Kacheln, Kennzahlen, Schnellzugriffe, Neuigkeiten"
+   },
+   "left": {
+    "shot": "s1-start"
+   },
+   "leftCaption": "Die Startseite mit Kennzahlen-Zeile, Statistik-Kacheln und Neuigkeiten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kennzahlen oben",
+     "text": "Eine Zeile mit den Werten, die man täglich im Blick haben will — etwa Beratungen, verkaufte Zonen, Umsatz."
+    },
+    {
+     "n": 2,
+     "title": "Statistik-Kacheln",
+     "text": "Darunter ausgewählte Auswertungen als Kachel. Sie zeigen dasselbe wie auf der jeweiligen Berichtsseite."
+    },
+    {
+     "n": 3,
+     "title": "Schnellzugriffe",
+     "text": "Verknüpfungen zu Seiten, die man oft braucht — spart den Weg über die Seitenleiste."
+    },
+    {
+     "n": 4,
+     "title": "Neuigkeiten",
+     "text": "Mitteilungen aus dem Unternehmen. Ein Tippen öffnet den vollständigen Text."
+    }
+   ],
+   "hint": {
+    "text": "**Die Kacheln folgen dem Standort** aus der Seitenleiste. Wer sich über Zahlen wundert, prüft zuerst, welches Institut oben eingestellt ist („Grundlagen 2“)."
+   }
+  },
+  {
+   "h1": "Kachel hinzufügen",
+   "sub": "Über „Karte hinzufügen“ kommen neue Kacheln dazu — Kennzahl, Statistik oder Schnellzugriff.",
+   "card": {
+    "title": "Kachel hinzufügen",
+    "text": "Kennzahl, Statistik oder Schnellzugriff wählen"
+   },
+   "left": {
+    "shot": "s2-karte-hinzufuegen"
+   },
+   "leftCaption": "Das Fenster **„Karte hinzufügen“** mit den verfügbaren Bausteinen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Karte hinzufügen“",
+     "text": "Der Knopf am Ende der Seite öffnet die Auswahl."
+    },
+    {
+     "n": 2,
+     "title": "Art wählen",
+     "text": "**Kennzahl** (eine Zahl), **Statistik** (eine Auswertung mit Diagramm) oder **Schnellzugriff** (ein Link)."
+    },
+    {
+     "n": 3,
+     "title": "Suchen statt scrollen",
+     "text": "Das Suchfeld filtert die Liste — bei über hundert Kennzahlen der schnellere Weg."
+    },
+    {
+     "n": 4,
+     "title": "Übernehmen",
+     "text": "Die Kachel erscheint sofort auf der Startseite und bleibt dort, bis sie entfernt wird."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Nur was erlaubt ist",
+     "text": "Die Auswahl zeigt ausschließlich Kennzahlen und Statistiken, für die die Berechtigung vorliegt. Wer eine bestimmte Zahl vermisst, braucht das passende Recht — nicht eine andere Kachel."
+    },
+    {
+     "title": "Keine doppelte Pflege",
+     "text": "Eine Kachel ist **dieselbe Auswertung** wie auf der Berichtsseite, nur kleiner. Ändert sich dort etwas, ändert es sich hier mit."
+    }
+   ],
+   "hint": {
+    "text": "**Weniger ist mehr.** Eine Startseite mit fünf Kacheln, die man wirklich liest, hilft mehr als zwanzig, über die man hinwegscrollt."
+   }
+  },
+  {
+   "h1": "Kacheln ordnen",
+   "sub": "Im Bearbeiten-Modus lassen sich Kacheln verschieben und entfernen.",
+   "card": {
+    "title": "Kacheln ordnen",
+    "text": "Verschieben, entfernen, Reihenfolge festlegen"
+   },
+   "left": {
+    "shot": "s3-bearbeiten"
+   },
+   "leftCaption": "Die Startseite im Bearbeiten-Modus.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bearbeiten starten",
+     "text": "Die Kacheln bekommen einen Griff und ein Entfernen-Symbol."
+    },
+    {
+     "n": 2,
+     "title": "Verschieben",
+     "text": "Kachel greifen und an die gewünschte Stelle ziehen. Was oben steht, sieht man zuerst."
+    },
+    {
+     "n": 3,
+     "title": "Entfernen",
+     "text": "Nimmt die Kachel von der Startseite — die Auswertung selbst bleibt unberührt."
+    },
+    {
+     "n": 4,
+     "title": "„Fertig“",
+     "text": "Beendet den Bearbeiten-Modus. Die Anordnung ist gespeichert."
+    }
+   ],
+   "hint": {
+    "text": "**„Zurücksetzen“** stellt die Startseite wieder so her, wie sie für die eigene Rolle vorgesehen ist — der Rettungsanker, wenn man sich verklickt hat."
+   }
+  },
+  {
+   "h1": "Kennzahlen-Zeile anpassen",
+   "sub": "Die Zeile ganz oben hat eine eigene Auswahl — sie ist auf allen Seiten dieselbe Komponente.",
+   "card": {
+    "title": "Kennzahlen anpassen",
+    "text": "Zahlen auswählen und anordnen"
+   },
+   "left": {
+    "shot": "s4-kennzahlen"
+   },
+   "leftCaption": "Das Fenster **„Kennzahlen wählen“**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Auswahl öffnen",
+     "text": "Über das Symbol am Ende der Kennzahlen-Zeile."
+    },
+    {
+     "n": 2,
+     "title": "Zahlen wählen",
+     "text": "Angehakt erscheint sie in der Zeile. Die Reihenfolge bestimmt, was zuerst steht."
+    },
+    {
+     "n": 3,
+     "title": "Gilt nur für dich",
+     "text": "Die Auswahl ist persönlich und wird auf diesem Gerät gespeichert — Kolleginnen sehen weiter ihre eigene."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Dieselbe Zeile überall",
+     "text": "Auch Berichtsseiten haben diese Zeile. Was dort angepasst wird, gilt für die jeweilige Seite — nicht für die Startseite."
+    }
+   ],
+   "hint": {
+    "text": "**Nach einem Gerätewechsel** ist die Zeile wieder im Ausgangszustand: Die Auswahl hängt am Browser, nicht am Konto. Einmal neu zusammenstellen, dann bleibt sie."
+   }
+  }
+ ]
+}

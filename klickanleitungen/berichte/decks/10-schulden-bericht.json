@@ -1,0 +1,168 @@
+{
+ "out": "../pdf/Berichte-10-schulden-bericht",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 10,
+ "of": 16,
+ "audience": "buero",
+ "title": [
+  "Schulden-",
+  "bericht"
+ ],
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — Rücklastschriften, Bestand, Zahlungseingänge und Fall-Ausgänge",
+ "eyebrow": "Berichte · Schulden",
+ "footerArea": "Berichte",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Auswertungssicht auf das Forderungsmanagement — **bearbeitet wird in „Finanzen 1“**.",
+  "Drei Fragen: **Wie viel kommt neu rein, wie viel ist Bestand, wie viel kommt zurück?**",
+  "Rücklastschriften sind der Zufluss; Zahlungseingänge und Abschlüsse sind der Abfluss."
+ ],
+ "pages": [
+  {
+   "h1": "Den Bericht öffnen",
+   "sub": "Zeitraum und Standort.",
+   "card": {
+    "title": "Bericht öffnen",
+    "text": "Zeitraum und Standort wählen"
+   },
+   "left": {
+    "shot": "r10-kopf"
+   },
+   "leftCaption": "Kopf des Schuldenberichts.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum",
+     "text": "Für Entwicklungen über mehrere Monate lesen."
+    },
+    {
+     "n": 2,
+     "title": "Standort",
+     "text": "Unterschiede zwischen Instituten sind ein Hinweis auf die Zahlungsart-Struktur."
+    },
+    {
+     "n": 3,
+     "title": "Kennzahlen",
+     "text": "Bestand, Zufluss, Rückfluss."
+    }
+   ],
+   "hint": {
+    "text": "**Der Bestand ist eine Stichtagsgröße**, Zu- und Abfluss sind Zeitraumgrößen. Wer sie vermischt, rechnet falsch."
+   }
+  },
+  {
+   "h1": "Rücklastschriften",
+   "sub": "Der Zufluss — und seine Ursachen.",
+   "card": {
+    "title": "Rücklastschriften",
+    "text": "Neue Fälle und ihre Gründe"
+   },
+   "left": {
+    "shot": "r10-rls"
+   },
+   "leftCaption": "Rücklastschriften im Zeitverlauf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Anzahl und Volumen",
+     "text": "Wie viele Lastschriften zurückkamen und über welchen Betrag."
+    },
+    {
+     "n": 2,
+     "title": "Einzugstage",
+     "text": "Die Einzüge laufen am **3.** und **15.** — die Spitzen liegen wenige Tage danach."
+    },
+    {
+     "n": 3,
+     "title": "Wiederholungsfälle",
+     "text": "Dieselbe Kundin mehrfach ist ein anderes Problem als viele Einzelfälle."
+    },
+    {
+     "n": 4,
+     "title": "Je Institut",
+     "text": "Hängt an der Kundenstruktur, nicht an der Arbeit vor Ort."
+    }
+   ],
+   "hint": {
+    "text": "**Eine Rücklastschrift ist nicht automatisch ein Zahlungsausfall.** Oft ist das Konto nur kurzzeitig nicht gedeckt — deshalb ist die Rückflussquote die wichtigere Zahl."
+   }
+  },
+  {
+   "h1": "Bestand und Rückfluss",
+   "sub": "Ob der Mahnprozess wirkt.",
+   "card": {
+    "title": "Bestand und Rückfluss",
+    "text": "Entwicklung des offenen Bestands"
+   },
+   "left": {
+    "shot": "r10-bestand"
+   },
+   "leftCaption": "Bestand, Zahlungseingänge und Fall-Ausgänge.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bestand",
+     "text": "Was insgesamt offen ist. Steigt er dauerhaft, wirkt der Prozess nicht."
+    },
+    {
+     "n": 2,
+     "title": "Zahlungseingänge",
+     "text": "Was zurückkam — der Erfolg des Mahnprozesses."
+    },
+    {
+     "n": 3,
+     "title": "Fall-Ausgänge",
+     "text": "Abgeschlossene Fälle, unterteilt in bezahlt und abgeschrieben."
+    },
+    {
+     "n": 4,
+     "title": "Quote",
+     "text": "Rückfluss im Verhältnis zum Zufluss — die Kennzahl des Prozesses."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Abschreiben senkt den Bestand, aber nicht das Problem.** Wer den Bestand nur über Abschreibungen sauber hält, verschiebt den Verlust in die Gewinn- und Verlustrechnung."
+   }
+  },
+  {
+   "h1": "Was folgt daraus",
+   "sub": "Der Bericht misst; gehandelt wird woanders.",
+   "card": {
+    "title": "Konsequenzen",
+    "text": "Wo die Arbeit passiert"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Beobachtung",
+     "Was zu tun ist"
+    ],
+    "rows": [
+     [
+      "Zufluss steigt",
+      "Ursachen prüfen: Zahlungsart-Mix, Bonität, Rateneinstieg"
+     ],
+     [
+      "Rückfluss sinkt",
+      "Mahnprozess stockt — offene Fälle in „Finanzen 1“ durchgehen"
+     ],
+     [
+      "Viele Fälle ohne Bewegung",
+      "Fristen prüfen; ruhende Fälle brauchen ein Wiedervorlagedatum"
+     ],
+     [
+      "Ein Institut fällt auf",
+      "Zahlungsarten und Beratungsgespräch dort ansehen"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Für einzelne Fälle** ist „Finanzen 1“ zuständig, für die Kundensicht „Kundenverwaltung 4“."
+   }
+  }
+ ]
+}

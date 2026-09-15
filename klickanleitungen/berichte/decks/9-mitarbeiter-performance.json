@@ -1,0 +1,168 @@
+{
+ "out": "../pdf/Berichte-9-mitarbeiter-performance",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 9,
+ "of": 16,
+ "audience": "leitung",
+ "title": [
+  "Mitarbeiter-",
+  "performance"
+ ],
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — Beratungen, Abschlüsse und Körperzonen je Mitarbeiterin",
+ "eyebrow": "Berichte · Mitarbeiterperformance",
+ "footerArea": "Berichte",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der Bericht zeigt Leistung **je Person** — Beratungen, Abschlüsse, Körperzonen und Ø KPZ.",
+  "Zielwerte und Ampel-Schwellen sind hinterlegt; sie machen aus Zahlen eine Einordnung.",
+  "**Für Bonus-Zahlen ist das Bonus-Board maßgeblich**, nicht dieser Bericht."
+ ],
+ "pages": [
+  {
+   "h1": "Den Bericht öffnen",
+   "sub": "Zeitraum, Standort, Person.",
+   "card": {
+    "title": "Bericht öffnen",
+    "text": "Zeitraum und Person wählen"
+   },
+   "left": {
+    "shot": "r9-kopf"
+   },
+   "leftCaption": "Kopf der Mitarbeiterperformance.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum",
+     "text": "Volle Monate nehmen — Teilmonate verzerren Durchschnitte."
+    },
+    {
+     "n": 2,
+     "title": "Standort",
+     "text": "Für den Vergleich innerhalb eines Teams."
+    },
+    {
+     "n": 3,
+     "title": "Person",
+     "text": "Einzelne Mitarbeiterin herausgreifen."
+    }
+   ],
+   "hint": {
+    "text": "**Kurze Zeiträume sind unfair.** Wer zwei Wochen Urlaub hatte, sieht in einem Monatsvergleich schwach aus, ohne schwächer gearbeitet zu haben."
+   }
+  },
+  {
+   "h1": "Die Kennzahlen je Person",
+   "sub": "Vier Zahlen, die zusammengehören.",
+   "card": {
+    "title": "Kennzahlen",
+    "text": "Beratungen, Abschlüsse, Zonen, Ø KPZ"
+   },
+   "left": {
+    "shot": "r9-personen"
+   },
+   "leftCaption": "Kennzahlen je Mitarbeiterin.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Beratungen",
+     "text": "Wie viele Gespräche geführt wurden — abhängig von der Einsatzplanung."
+    },
+    {
+     "n": 2,
+     "title": "Abschlüsse",
+     "text": "Wie viele davon zu einem Vertrag führten."
+    },
+    {
+     "n": 3,
+     "title": "Körperzonen",
+     "text": "Die verkaufte Menge — die eigentliche Verkaufsleistung."
+    },
+    {
+     "n": 4,
+     "title": "Ø KPZ",
+     "text": "Zonen je Beratung. Zielwert und Ampel sind hinterlegt."
+    }
+   ],
+   "hint": {
+    "text": "**Ø KPZ ist die fairste Zahl:** Sie ist unabhängig davon, wie viele Gespräche jemand zugeteilt bekommt."
+   }
+  },
+  {
+   "h1": "Ziele und Ampel",
+   "sub": "Die Einordnung macht aus Zahlen ein Gespräch.",
+   "card": {
+    "title": "Ziele",
+    "text": "Zielwert, grün, gelb"
+   },
+   "left": {
+    "shot": "r9-ampel"
+   },
+   "leftCaption": "Zielwerte und Ampelbewertung.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zielwert",
+     "text": "Der angestrebte Ø-KPZ-Wert."
+    },
+    {
+     "n": 2,
+     "title": "Grün",
+     "text": "Deutlich über dem Ziel."
+    },
+    {
+     "n": 3,
+     "title": "Gelb",
+     "text": "Merklich darunter — Anlass für ein Gespräch, nicht für eine Maßnahme."
+    },
+    {
+     "n": 4,
+     "title": "Abzeichen",
+     "text": "Erreichte Auszeichnungen stehen in der Vitrine dieses Berichts."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Nie allein auf die Ampel schauen.** Eine gelbe Ampel bei zwölf Beratungen bedeutet etwas anderes als bei zwei. Menge und Zeitraum gehören immer dazu."
+   }
+  },
+  {
+   "h1": "Fair vergleichen",
+   "sub": "Womit man rechnen muss, bevor man vergleicht.",
+   "card": {
+    "title": "Fair vergleichen",
+    "text": "Was Zahlen verzerrt"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Verzerrung",
+     "Warum"
+    ],
+    "rows": [
+     [
+      "Urlaub und Krankheit",
+      "Weniger Gespräche bei gleicher Qualität — Zeitraum anpassen"
+     ],
+     [
+      "Neu im Team",
+      "Einarbeitung braucht Monate; erste Werte sind kein Maßstab"
+     ],
+     [
+      "Fehlende Zuordnung",
+      "Ohne Verkäuferinnen-Zuordnung fehlen Abschlüsse ganz („Betrieb 5“)"
+     ],
+     [
+      "Unterschiedliche Institute",
+      "Andere Kundenstruktur, andere Preisliste, andere Zahlen"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Für die Bonus-Wirkung** ist „Bonus-Board 3“ zuständig: Dort sind Abwesenheiten, Vorbehalte und Minimalziele berücksichtigt."
+   }
+  }
+ ]
+}

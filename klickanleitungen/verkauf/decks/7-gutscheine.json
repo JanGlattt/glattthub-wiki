@@ -1,0 +1,143 @@
+{
+ "out": "../pdf/Verkauf-7-Gutscheine",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Verkauf",
+ "nr": 7,
+ "of": 8,
+ "audience": "institut",
+ "title": [
+  "Gutscheine",
+  "verwalten"
+ ],
+ "subtitle": "Klickanleitung für das Gutschein-Modul im glatttHub — Gutscheine finden, anlegen, Restwert prüfen, einlösen",
+ "eyebrow": "Verkauf · Gutscheine",
+ "footerArea": "Verkauf",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Gutscheine liegen in **Phorest** — der Hub zeigt sie an und legt neue dort an.",
+  "**Restwert ist nicht Originalwert:** Ein Gutschein kann teilweise eingelöst sein.",
+  "Verrechnet wird ein Gutschein mit offenen Raten **im Vertrag** („Verkauf 3“), nicht hier."
+ ],
+ "pages": [
+  {
+   "h1": "Gutschein finden",
+   "sub": "Die Übersicht zeigt alle Gutscheine mit Wert, Restwert und Gültigkeit.",
+   "card": {
+    "title": "Gutschein finden",
+    "text": "Suchen, Status lesen, Details öffnen"
+   },
+   "left": {
+    "shot": "v22-gutscheine"
+   },
+   "leftCaption": "Die Gutschein-Übersicht mit Kennzahlen und Liste.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Suchen",
+     "text": "Über die Seriennummer oder den Namen. Die Nummer steht auf dem Gutschein."
+    },
+    {
+     "n": 2,
+     "title": "Kennzahlen oben",
+     "text": "**Aktive Gutscheine**, **Gesamtwert** und **Bald ablaufend** — der schnelle Überblick."
+    },
+    {
+     "n": 3,
+     "title": "Status lesen",
+     "text": "**Aktiv**, **Aufgebraucht**, **Abgelaufen** oder **Unberührt** (seit Erstellung nie benutzt)."
+    },
+    {
+     "n": 4,
+     "title": "Details öffnen",
+     "text": "Zeigt Originalwert, Restwert, Gültigkeit und wann zuletzt gebucht wurde."
+    }
+   ],
+   "hint": {
+    "text": "**Kundin bringt einen Gutschein mit?** Erst hier prüfen: Gibt es ihn, ist er gültig, wie hoch ist der **Restwert**. Erst danach eine Zusage machen."
+   }
+  },
+  {
+   "h1": "Restwert und Gültigkeit",
+   "sub": "Die Detailansicht beantwortet die einzige Frage, die im Gespräch zählt: Wie viel ist noch drauf?",
+   "card": {
+    "title": "Restwert prüfen",
+    "text": "Originalwert, Restwert, Gültigkeit, Historie"
+   },
+   "left": {
+    "shot": "v23-gutschein-detail"
+   },
+   "leftCaption": "Die Details eines Gutscheins.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Originalwert",
+     "text": "Der Betrag, mit dem der Gutschein erstellt wurde."
+    },
+    {
+     "n": 2,
+     "title": "Restwert",
+     "text": "Was tatsächlich noch verfügbar ist. Nur diese Zahl darf man zusagen."
+    },
+    {
+     "n": 3,
+     "title": "Gültig bis",
+     "text": "**„Unbegrenzt“** oder ein Datum. Abgelaufene Gutscheine werden nicht stillschweigend verlängert."
+    },
+    {
+     "n": 4,
+     "title": "Zuletzt bebucht",
+     "text": "Wann zuletzt etwas abgebucht wurde — hilfreich bei Rückfragen."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Bonus-Guthaben",
+     "text": "Online gekaufte Gutscheine sind oft mehr wert als ihr Kaufpreis. Der Aufschlag hat eine **eigene Gültigkeit** und kann getrennt verfallen."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Nie den Originalwert zusagen.** Ein Gutschein über 200 € kann 40 € Restwert haben. Im Gespräch zählt ausschließlich der **Restwert** — und der steht hier."
+   }
+  },
+  {
+   "h1": "Gutschein anlegen",
+   "sub": "Neue Gutscheine legt der Hub direkt in Phorest an.",
+   "card": {
+    "title": "Gutschein anlegen",
+    "text": "Wert, Gültigkeit, Standort festlegen"
+   },
+   "left": {
+    "shot": "v24-gutschein-anlegen"
+   },
+   "leftCaption": "Das Fenster **„Gutschein in Phorest erstellen“**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Neuer Gutschein“",
+     "text": "Öffnet die Eingabe."
+    },
+    {
+     "n": 2,
+     "title": "Wert und Gültigkeit",
+     "text": "Betrag und Ablaufdatum, oder **unbegrenzt**."
+    },
+    {
+     "n": 3,
+     "title": "Standort",
+     "text": "**„Standort auswählen…“** — der Gutschein gehört zum ausstellenden Institut."
+    },
+    {
+     "n": 4,
+     "title": "Erstellen",
+     "text": "Der Gutschein entsteht **in Phorest** und ist sofort einlösbar."
+    }
+   ],
+   "hint": {
+    "text": "**Einlösen passiert nicht hier.** Auf eine Behandlung wird der Gutschein in Phorest angerechnet; auf offene **Vertragsraten** verrechnet man ihn im Vertrag („Verkauf 3“)."
+   }
+  }
+ ]
+}

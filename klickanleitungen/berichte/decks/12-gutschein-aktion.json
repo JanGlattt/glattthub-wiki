@@ -1,0 +1,168 @@
+{
+ "out": "../pdf/Berichte-12-gutschein-aktion",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 12,
+ "of": 16,
+ "audience": "leitung",
+ "title": [
+  "Gutschein-",
+  "Aktion"
+ ],
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — Auswertung der Beratungs-WhatsApp mit Gutschein",
+ "eyebrow": "Berichte · Gutschein-Aktion",
+ "footerArea": "Berichte",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der Bericht misst eine konkrete Aktion: **die WhatsApp mit Gutschein-Link zur ersten Beratungsbuchung**.",
+  "Verglichen werden **Kundinnen mit und ohne** Gutschein-Angebot — daraus entsteht die Aussage.",
+  "Gemessen wird die **Wirkung**, nicht die Zustellung: Wer den Link nie geöffnet hat, zählt trotzdem mit."
+ ],
+ "pages": [
+  {
+   "h1": "Den Bericht öffnen",
+   "sub": "Zeitraum und Vergleichsgruppen.",
+   "card": {
+    "title": "Bericht öffnen",
+    "text": "Zeitraum und Gruppen"
+   },
+   "left": {
+    "shot": "r12-kopf"
+   },
+   "leftCaption": "Kopf der Gutschein-Auswertung.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum",
+     "text": "Die Aktion braucht Vorlauf — zu kurze Zeiträume liefern keine belastbare Aussage."
+    },
+    {
+     "n": 2,
+     "title": "Gruppen",
+     "text": "Mit und ohne Gutschein-Angebot."
+    },
+    {
+     "n": 3,
+     "title": "Standort",
+     "text": "Für örtliche Unterschiede."
+    }
+   ],
+   "hint": {
+    "text": "**Nur die erste Beratungsbuchung** löst die WhatsApp aus. Eine zweite Beratung derselben Kundin gehört nicht zur Aktion."
+   }
+  },
+  {
+   "h1": "Annahme messen",
+   "sub": "Wie viele das Angebot überhaupt angenommen haben.",
+   "card": {
+    "title": "Annahme",
+    "text": "Zustellung, Öffnung, Einlösung"
+   },
+   "left": {
+    "shot": "r12-annahme"
+   },
+   "leftCaption": "Annahmequote der Aktion.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Versendet",
+     "text": "Wie viele Nachrichten rausgingen."
+    },
+    {
+     "n": 2,
+     "title": "Zugestellt",
+     "text": "Nicht jede kommt an — fehlerhafte Nummern sind der häufigste Grund („Kundenverwaltung 5“)."
+    },
+    {
+     "n": 3,
+     "title": "Eingelöst",
+     "text": "Wie viele den Gutschein tatsächlich genutzt haben."
+    },
+    {
+     "n": 4,
+     "title": "Trichter",
+     "text": "Von versendet bis eingelöst — jede Stufe verliert."
+    }
+   ],
+   "hint": {
+    "text": "**Eine niedrige Zustellquote ist ein Datenproblem, kein Aktionsproblem.** Zuerst die Mobilnummern prüfen, dann über die Aktion urteilen."
+   }
+  },
+  {
+   "h1": "Wirkung vergleichen",
+   "sub": "Der eigentliche Zweck: Bringt der Gutschein mehr Abschlüsse?",
+   "card": {
+    "title": "Wirkung",
+    "text": "Gruppen vergleichen"
+   },
+   "left": {
+    "shot": "r12-vergleich"
+   },
+   "leftCaption": "Vergleich der Kundengruppen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Erscheinungsquote",
+     "text": "Kommen Kundinnen mit Gutschein häufiger zur Beratung?"
+    },
+    {
+     "n": 2,
+     "title": "Abschlussquote",
+     "text": "Schließen sie häufiger ab?"
+    },
+    {
+     "n": 3,
+     "title": "Vertragswert",
+     "text": "Oder schließen sie kleiner ab, weil der Gutschein den Preis drückt?"
+    },
+    {
+     "n": 4,
+     "title": "Unterm Strich",
+     "text": "Erst der Vertragswert je versendeter Nachricht beantwortet die Frage."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Der Gutschein kostet Geld.** Eine höhere Abschlussquote bei niedrigerem Vertragswert kann unterm Strich ein Verlustgeschäft sein — deshalb immer beide Zahlen zusammen lesen."
+   }
+  },
+  {
+   "h1": "Entscheiden",
+   "sub": "Was aus dem Bericht folgt.",
+   "card": {
+    "title": "Entscheiden",
+    "text": "Fortführen, ändern, beenden"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Ergebnis",
+     "Konsequenz"
+    ],
+    "rows": [
+     [
+      "Mehr Erscheinen, gleicher Wert",
+      "Aktion fortführen — sie holt Kundinnen in die Beratung"
+     ],
+     [
+      "Gleiches Erscheinen, kleinerer Wert",
+      "Gutscheinwert senken oder Aktion beenden"
+     ],
+     [
+      "Niedrige Zustellquote",
+      "Datenpflege der Mobilnummern angehen, dann neu messen"
+     ],
+     [
+      "Kein Unterschied",
+      "Aktion pausieren und den Aufwand anders einsetzen"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Die Aktion lässt sich im Admin-Bereich ändern** — Text, Gutscheinwert und ob sie überhaupt läuft."
+   }
+  }
+ ]
+}

@@ -1,0 +1,163 @@
+{
+ "out": "../pdf/Betrieb-1-Institute",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Betrieb",
+ "nr": 1,
+ "of": 6,
+ "audience": "leitung",
+ "title": [
+  "Institute",
+  "im Überblick"
+ ],
+ "subtitle": "Klickanleitung für das Institut-Modul im glatttHub — Übersicht, Steckbrief und Kennzahlen je Standort",
+ "eyebrow": "Betrieb · Institute",
+ "footerArea": "Betrieb",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Institute kommen aus **Phorest** — angelegt und umbenannt werden sie dort, nicht im Hub.",
+  "Im Hub kommt dazu, was Phorest nicht kennt: **Bild, Farbe, Symbol, Bankverbindung, Zugangs-Link**.",
+  "**„Aus Übersichten ausgeblendet“** ist kein Fehler, sondern eine Einstellung — etwa für ein Institut im Testbetrieb."
+ ],
+ "pages": [
+  {
+   "h1": "Die Übersicht",
+   "sub": "Alle Standorte als Karten — mit Bild, Farbe und dem Hinweis, ob sie in Auswertungen mitzählen.",
+   "card": {
+    "title": "Die Übersicht",
+    "text": "Alle Standorte als Karten"
+   },
+   "left": {
+    "shot": "b1-institute"
+   },
+   "leftCaption": "Die Institut-Übersicht mit einer Karte je Standort.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Eine Karte je Institut",
+     "text": "Bild, Name und Adresse aus Phorest, dazu Farbe und Symbol aus dem Hub."
+    },
+    {
+     "n": 2,
+     "title": "„Aus Übersichten ausgeblendet“",
+     "text": "Dieser Standort zählt **nicht** in „Alle Standorte“ — nur bei ausdrücklicher Auswahl. Gedacht für Institute vor der Eröffnung."
+    },
+    {
+     "n": 3,
+     "title": "„Details ansehen“",
+     "text": "Öffnet den Steckbrief mit allen Angaben und Kennzahlen des Standorts."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Institut fehlt",
+     "text": "Steht dort **„Es wurden keine Institute in Phorest gefunden“**, antwortet Phorest gerade nicht — Seite neu laden. Fehlt nur ein einzelnes, ist es in Phorest nicht angelegt."
+    },
+    {
+     "title": "Reihenfolge",
+     "text": "Die Sortierung ist festgelegt und gilt **im ganzen Hub** — in Diagrammen, Ranglisten und Filtern erscheinen die Institute immer in derselben Ordnung."
+    }
+   ],
+   "hint": {
+    "text": "**Ausgeblendet ist folgenreich:** Ein so markiertes Institut fehlt in jeder Auswertung über „Alle Standorte“ — auch im Bonus-Board und in den Berichten. Vor dem Umlegen kurz überlegen, wer sich über fehlende Zahlen wundern könnte."
+   }
+  },
+  {
+   "h1": "Der Steckbrief",
+   "sub": "Die Detailseite fasst links zusammen, was das Institut ausmacht — rechts stehen die Reiter mit den Einzelheiten.",
+   "card": {
+    "title": "Der Steckbrief",
+    "text": "Zusammenfassung links, Reiter rechts"
+   },
+   "left": {
+    "shot": "b2-steckbrief"
+   },
+   "leftCaption": "Die Institut-Detailseite mit Steckbrief-Spalte und Menüband.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Steckbrief links",
+     "text": "Name, Adresse, Kontakt und die wichtigsten Kennzahlen auf einen Blick."
+    },
+    {
+     "n": 2,
+     "title": "Menüband",
+     "text": "**Infos**, **Zugang**, **Bank**, **Team** und **Kennzahlen** — jeder Reiter ein Thema."
+    },
+    {
+     "n": 3,
+     "title": "Zurück",
+     "text": "Über die Übersicht oder die Seitenleiste; die Standortwahl der Seitenleiste bleibt davon unberührt."
+    }
+   ],
+   "hint": {
+    "text": "**Nicht verwechseln:** Diese Seite beschreibt das Institut. Der **Standortfilter** in der Seitenleiste entscheidet dagegen, welche Zahlen überall sonst angezeigt werden — beides ist unabhängig voneinander."
+   }
+  },
+  {
+   "h1": "Kennzahlen des Standorts",
+   "sub": "Der Reiter „Kennzahlen“ zeigt dieselben Auswertungen wie die Berichte — nur fest auf dieses Institut bezogen.",
+   "card": {
+    "title": "Kennzahlen",
+    "text": "Auswertungen fest auf dieses Institut bezogen"
+   },
+   "left": {
+    "shot": "b3-kennzahlen"
+   },
+   "leftCaption": "Reiter **„Kennzahlen“** mit den eingebetteten Auswertungen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Fester Standort",
+     "text": "Die Karten zeigen **immer dieses Institut** — unabhängig davon, was in der Seitenleiste eingestellt ist."
+    },
+    {
+     "n": 2,
+     "title": "Dieselben Zahlen",
+     "text": "Es sind dieselben Auswertungen wie in den Berichten. Weicht etwas ab, liegt es am Zeitraum, nicht an der Rechnung."
+    },
+    {
+     "n": 3,
+     "title": "Zum vollen Bericht",
+     "text": "Für Zeitraum-Vergleiche und Export lohnt der Weg in den zugehörigen Bericht."
+    }
+   ],
+   "hint": {
+    "text": "**Für den Standort-Vergleich** ist diese Seite der falsche Ort — sie zeigt bewusst nur ein Institut. Vergleiche stehen in den Berichten, etwa in der Verkaufsstatistik."
+   }
+  },
+  {
+   "h1": "Das Team",
+   "sub": "Der Reiter „Team“ zeigt, wer an diesem Standort arbeitet — und seit wann.",
+   "card": {
+    "title": "Das Team",
+    "text": "Wer arbeitet hier, seit wann, mit welchem Nachweis"
+   },
+   "left": {
+    "shot": "b4-team"
+   },
+   "leftCaption": "Reiter **„Team“** mit den zugeordneten Personen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Personen",
+     "text": "Alle, die diesem Institut zugeordnet sind, mit **„Im Hub seit“**."
+    },
+    {
+     "n": 2,
+     "title": "NiSV",
+     "text": "Der Nachweis nach der Strahlenschutzverordnung — er gehört zu jeder Person, die am Laser arbeitet."
+    },
+    {
+     "n": 3,
+     "title": "Kein Team hinterlegt",
+     "text": "Dann ist noch niemand zugeordnet. Die Zuordnung passiert in der Personalverwaltung („Team 1“)."
+    }
+   ],
+   "hint": {
+    "text": "**Diese Liste ist keine Dienstplanung.** Wer wann arbeitet, steht in askDANTE — hier steht nur, wer zu diesem Standort gehört."
+   }
+  }
+ ]
+}

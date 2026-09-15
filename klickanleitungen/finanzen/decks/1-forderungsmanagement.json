@@ -1,0 +1,174 @@
+{
+ "out": "../pdf/Finanzen-1-Forderungsmanagement",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Finanzen",
+ "nr": 1,
+ "of": 3,
+ "audience": "buero",
+ "title": [
+  "Forderungs-",
+  "management"
+ ],
+ "subtitle": "Klickanleitung für den geführten Mahnprozess im glatttHub — von der Rücklastschrift bis zum gerichtlichen Verfahren",
+ "eyebrow": "Finanzen · Forderungen",
+ "footerArea": "Finanzen",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der Mahnprozess ist **geführt**: Der Hub schlägt vor, was als Nächstes dran ist — entschieden wird trotzdem von Hand.",
+  "Ein Fall entsteht aus einer **geplatzten Lastschrift**, einer unbezahlten Rechnung oder einem **offenen Kundenkonto**.",
+  "**Ansprechpartnerin ist Janine** — Rückfragen und Sonderfälle gehen an sie, nicht an die Institute."
+ ],
+ "pages": [
+  {
+   "h1": "Die Fall-Übersicht",
+   "sub": "Alle Forderungsfälle nach Prozessstufe — dazu die offenen Kundenkonten aus Phorest.",
+   "card": {
+    "title": "Die Übersicht",
+    "text": "Bestand nach Prozessstufe, offene Kundenkonten"
+   },
+   "left": {
+    "shot": "f1-forderungen"
+   },
+   "leftCaption": "Das Forderungsmanagement mit Bestand je Stufe.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bestand nach Stufe",
+     "text": "Wie viele Fälle in welcher Phase stehen — von der ersten Erinnerung bis zum Gericht."
+    },
+    {
+     "n": 2,
+     "title": "Offene Forderungen",
+     "text": "Die Summe, um die es geht. Sie ist die Zahl, nach der gefragt wird."
+    },
+    {
+     "n": 3,
+     "title": "Offene Kundenkonten",
+     "text": "Salden aus Phorest, zu denen es **noch keinen Fall** gibt — der Nachschub für neue Fälle."
+    },
+    {
+     "n": 4,
+     "title": "Fall öffnen",
+     "text": "Führt in die Akte mit Verlauf, Schreiben und nächster Aktion."
+    }
+   ],
+   "hint": {
+    "text": "**„Läuft — nichts zu tun“** ist ein vollwertiger Zustand: Der Fall wartet auf eine Frist. Nur was eine Entscheidung braucht, sollte täglich angefasst werden."
+   }
+  },
+  {
+   "h1": "Einen Fall lesen",
+   "sub": "Die Akte zeigt Herkunft, Betrag, Stufe und alles, was bisher passiert ist.",
+   "card": {
+    "title": "Einen Fall lesen",
+    "text": "Herkunft, Betrag, Stufe, Verlauf"
+   },
+   "left": {
+    "shot": "f2-fall"
+   },
+   "leftCaption": "Die Fallakte mit Übersicht und Verlauf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Herkunft",
+     "text": "**Rücklastschrift**, **Direktzahler**, **Mandat entzogen** — oder ein offenes **Kundenkonto** ohne Vertrag."
+    },
+    {
+     "n": 2,
+     "title": "Stufe",
+     "text": "Wo der Fall steht. Sie bestimmt, welches Schreiben als Nächstes vorgesehen ist."
+    },
+    {
+     "n": 3,
+     "title": "Verlauf",
+     "text": "Jeder Schritt mit Datum: Schreiben, Rückmeldungen, Zahlungen, Vermerke."
+    },
+    {
+     "n": 4,
+     "title": "Zustände",
+     "text": "**Ruhend** (wartet), **Widersprochen**, **Geparkt**, **RZV geplatzt** (Ratenzahlungsvereinbarung nicht gehalten)."
+    }
+   ],
+   "hint": {
+    "text": "**Jede Absprache gehört in den Verlauf.** Eine telefonische Zusage, die nur im Kopf existiert, ist in vier Wochen nicht mehr rekonstruierbar — und genau dann wird sie gebraucht."
+   }
+  },
+  {
+   "h1": "Den Prozess führen",
+   "sub": "Der Hub schlägt den nächsten Schritt vor — die Entscheidung bleibt beim Büro.",
+   "card": {
+    "title": "Den Prozess führen",
+    "text": "Nächster Schritt, Ratenzahlung, harter Weg"
+   },
+   "left": {
+    "shot": "f3-prozess"
+   },
+   "leftCaption": "Die möglichen nächsten Schritte eines Falls.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Schreiben erzeugen",
+     "text": "Aus den hinterlegten Vorlagen, mit Daten des Falls gefüllt. Die Bankverbindung stammt vom Institut („Betrieb 2“)."
+    },
+    {
+     "n": 2,
+     "title": "Ratenzahlung",
+     "text": "Eine Vereinbarung festhalten. Platzt sie, springt der Fall auf **RZV geplatzt**."
+    },
+    {
+     "n": 3,
+     "title": "Ruhend stellen",
+     "text": "Für Fälle, die aus gutem Grund warten — mit Datum, bis wann."
+    },
+    {
+     "n": 4,
+     "title": "Harter Weg",
+     "text": "Übergabe ins **gerichtliche Verfahren**. Der Fall bleibt sichtbar und wird dort dokumentiert."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Vor jedem Schreiben den Vertrag prüfen.** Läuft ein Widerruf oder wurde bereits gezahlt, ist eine Mahnung nicht nur peinlich, sondern schadet — die Banner auf der Vertragsseite zeigen es („Verkauf 2“)."
+   }
+  },
+  {
+   "h1": "Fall anlegen und abschließen",
+   "sub": "Nicht jeder Fall entsteht automatisch — und jeder endet irgendwann.",
+   "card": {
+    "title": "Anlegen & abschließen",
+    "text": "Fall ohne Vertrag anlegen, Fall beenden"
+   },
+   "left": {
+    "shot": "f4-fall-anlegen"
+   },
+   "leftCaption": "**„Forderungsfall ohne Vertrag anlegen“** — für offene Kundenkonten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Ohne Vertrag anlegen",
+     "text": "Für offene Kundenkonten — etwa eine nicht kassierte Behandlung. Kunde wählen, Betrag, Vermerk."
+    },
+    {
+     "n": 2,
+     "title": "Aus dem Kundenkonto",
+     "text": "Die Liste **„Offene Kundenkonten“** liefert die Kandidaten samt Saldo."
+    },
+    {
+     "n": 3,
+     "title": "Abschließen",
+     "text": "Bezahlt, abgeschrieben oder anders erledigt — mit Ergebnis, damit die Statistik stimmt."
+    },
+    {
+     "n": 4,
+     "title": "Folge im Bonus",
+     "text": "Abgeschlossene Fälle beeinflussen die Bonus-Zahlen nicht mehr — offene schon („Bonus-Board 3“)."
+    }
+   ],
+   "hint": {
+    "text": "**Abschreiben ist auch ein Ergebnis.** Ein Fall, der jahrelang „offen“ bleibt, verzerrt jede Auswertung. Lieber bewusst abschreiben und dokumentieren als ewig mitschleppen."
+   }
+  }
+ ]
+}

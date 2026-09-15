@@ -1,0 +1,168 @@
+{
+ "out": "../pdf/Berichte-16-glattt-pakete-statistik",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 16,
+ "of": 16,
+ "audience": "leitung",
+ "title": [
+  "glattt-Pakete",
+  "Statistik"
+ ],
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — verkaufte Pakete, ihre Nutzung und die offenen Resteinheiten",
+ "eyebrow": "Berichte · Pakete",
+ "footerArea": "Berichte",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der Bericht zeigt, **was verkauft wurde und wie viel davon schon behandelt ist**.",
+  "**Offene Resteinheiten sind eine Verpflichtung**: bezahlte Behandlungen, die noch erbracht werden müssen.",
+  "Die Daten stammen aus den Paketen in **Phorest**, nicht aus den Verträgen."
+ ],
+ "pages": [
+  {
+   "h1": "Den Bericht öffnen",
+   "sub": "Zeitraum, Standort und Pakettyp.",
+   "card": {
+    "title": "Bericht öffnen",
+    "text": "Zeitraum und Paket wählen"
+   },
+   "left": {
+    "shot": "r16-kopf"
+   },
+   "leftCaption": "Kopf der Paket-Statistik.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum",
+     "text": "Für Verkaufszahlen; die Bestände sind Stichtagsgrößen."
+    },
+    {
+     "n": 2,
+     "title": "Standort",
+     "text": "Pakete gehören zum verkaufenden Institut."
+    },
+    {
+     "n": 3,
+     "title": "Pakettyp",
+     "text": "Nach Umfang — von einzelnen Zonen bis Ganzkörper."
+    }
+   ],
+   "hint": {
+    "text": "**Paket ist nicht Vertrag.** Das Paket ist die Behandlungsberechtigung in Phorest, der Vertrag die Zahlungsseite („Kundenverwaltung 3“)."
+   }
+  },
+  {
+   "h1": "Verkaufte Pakete",
+   "sub": "Was in den Zeitraum hinein verkauft wurde.",
+   "card": {
+    "title": "Verkaufte Pakete",
+    "text": "Menge, Umfang, Verteilung"
+   },
+   "left": {
+    "shot": "r16-verkauft"
+   },
+   "leftCaption": "Verkaufte Pakete je Zeitraum.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Anzahl",
+     "text": "Wie viele Pakete verkauft wurden."
+    },
+    {
+     "n": 2,
+     "title": "Umfang",
+     "text": "Die Verteilung nach Körperzonen — mehr Zonen heißt mehr Wert und mehr Zeitbedarf."
+    },
+    {
+     "n": 3,
+     "title": "Je Institut",
+     "text": "Unterschiede sagen etwas über die Beratung, nicht nur über die Kundschaft."
+    },
+    {
+     "n": 4,
+     "title": "Ganzkörper",
+     "text": "Der Anteil dieser Pakete ist eine gute Ergänzung zu „Berichte 1“."
+    }
+   ],
+   "hint": {
+    "text": "**Mehr Zonen sind nicht automatisch besser.** Ein Ganzkörperpaket bindet über Monate Behandlungskapazität — das muss planbar sein („Berichte 13“)."
+   }
+  },
+  {
+   "h1": "Nutzung und Reste",
+   "sub": "Wie viel von dem Verkauften schon erbracht ist.",
+   "card": {
+    "title": "Nutzung",
+    "text": "Verbrauch und offene Einheiten"
+   },
+   "left": {
+    "shot": "r16-nutzung"
+   },
+   "leftCaption": "Nutzung der Pakete und Restbestände.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Verbrauchte Sitzungen",
+     "text": "Was bereits behandelt wurde."
+    },
+    {
+     "n": 2,
+     "title": "Offene Resteinheiten",
+     "text": "Was noch aussteht — die Verpflichtung."
+    },
+    {
+     "n": 3,
+     "title": "Ruhende Pakete",
+     "text": "Verkauft, aber lange nicht genutzt. Sie binden Kapazität, die niemand plant."
+    },
+    {
+     "n": 4,
+     "title": "Ablauf",
+     "text": "Pakete mit Gültigkeit laufen aus — rechtzeitig ansprechen."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Offene Resteinheiten sind kein Guthaben, sondern eine Schuld.** Wer viele verkauft und wenig behandelt, verschiebt Arbeit in die Zukunft — und bekommt sie geballt zurück."
+   }
+  },
+  {
+   "h1": "Damit arbeiten",
+   "sub": "Was aus den Zahlen folgt.",
+   "card": {
+    "title": "Damit arbeiten",
+    "text": "Kundinnen ansprechen, Kapazität planen"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Beobachtung",
+     "Was zu tun ist"
+    ],
+    "rows": [
+     [
+      "Viele ruhende Pakete",
+      "Kundinnen aktiv ansprechen — sonst laufen sie ab und es gibt Ärger"
+     ],
+     [
+      "Resteinheiten wachsen schneller als die Behandlungen",
+      "Kapazität prüfen („Berichte 13“), sonst entsteht ein Rückstau"
+     ],
+     [
+      "Pakete laufen bald ab",
+      "Rechtzeitig kontaktieren („Kundenverwaltung 5“)"
+     ],
+     [
+      "Viele kleine Pakete",
+      "Beratungsgespräch ansehen — Ø KPZ in „Berichte 9“"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Für eine einzelne Kundin** steht dasselbe im Kundenprofil unter „glattt Pakete“ („Kundenverwaltung 3“)."
+   }
+  }
+ ]
+}

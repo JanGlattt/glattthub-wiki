@@ -9,10 +9,10 @@ Deck-Format: `klickanleitungen/README.md` und Wiki `docs/KLICKANLEITUNGEN.md`.
 | **2 — Der Vertrag im Detail** | Kopf und Banner, vier Reiter, Übersicht, Zusammenfassung, Verlauf, E-Mail-Historie | v1.0, Screenshots offen |
 | **3 — Zahlungen & SEPA** | Ratenplan, Zahlung nachtragen, Mandat, Einzug, RLS anhängen, pausieren, Gutschein verrechnen | v1.0, Screenshots offen |
 | **4 — Widerrufe erfassen & bearbeiten** | Assistent, Fallseite, Fristen, Behandlungsstand, Entscheiden und Abschließen | v1.0, Screenshots offen |
-| **5 — Preislisten pflegen** | noch nicht geschrieben | geplant |
-| **6 — Freunde werben** | noch nicht geschrieben | geplant |
-| **7 — Gutscheine** | Verwaltung und Verkauf — noch nicht geschrieben | geplant |
-| **8 — Zufriedenheitsbefragung** | noch nicht geschrieben | geplant |
+| **5 — Preislisten pflegen** | Pakete und Preise, Rabattstufen ab N KPZ, Zahlungsmodus der Liste | v1.0, Screenshots offen |
+| **6 — Freunde werben** | Empfehlung erfassen, Prämie, Auswertung | v1.0, Screenshots offen |
+| **7 — Gutscheine** | Phorest-Gutscheine verwalten, Online-Verkauf, Bonus-Guthaben | v1.0, Screenshots offen |
+| **8 — Zufriedenheitsbefragung** | Befragung auslösen, Rückläufe lesen, Konsequenzen | v1.0, Screenshots offen |
 
 Alle acht richten sich ans **Büro**. Im Institut wird an Verträgen nicht gearbeitet — dort
 genügt „Kundenverwaltung 4“ (Vertrag lesen, offene Forderungen erkennen).

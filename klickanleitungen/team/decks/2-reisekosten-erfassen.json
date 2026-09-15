@@ -1,0 +1,164 @@
+{
+ "out": "../pdf/Team-2-Reisekosten-erfassen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Team",
+ "nr": 2,
+ "of": 3,
+ "audience": "institut",
+ "title": [
+  "Reisekosten",
+  "erfassen"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Fahrten und Verpflegung abrechnen, Belege anhängen, einreichen",
+ "eyebrow": "Team · Reisekosten",
+ "footerArea": "Team",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der Anspruch ergibt sich aus dem **Dienstplan in askDANTE** — der Hub weiß, an welchen Tagen eine Abrechnung möglich ist.",
+  "**Ohne Beleg keine Erstattung**, wo ein Beleg vorgeschrieben ist — der Hub weist darauf hin.",
+  "Eingereicht wird zur **Freigabe**; erst danach geht es in die Auszahlung („Team 3“)."
+ ],
+ "pages": [
+  {
+   "h1": "Eine Abrechnung beginnen",
+   "sub": "Der Hub kennt die Tage, an denen eine Abrechnung infrage kommt — erfasst wird pro Tag.",
+   "card": {
+    "title": "Abrechnung beginnen",
+    "text": "Tag wählen, Abwesenheitsart bestimmen"
+   },
+   "left": {
+    "shot": "p5-reisekosten"
+   },
+   "leftCaption": "Die Reisekosten-Seite mit den offenen Tagen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Tag wählen",
+     "text": "Die Auswahl richtet sich nach dem **Dienstplan** — Tage ohne Anspruch stehen nicht zur Verfügung."
+    },
+    {
+     "n": 2,
+     "title": "Abwesenheitsart",
+     "text": "Bestimmt, welche Pauschalen gelten — etwa Einsatz an einem anderen Standort oder Schulung."
+    },
+    {
+     "n": 3,
+     "title": "Arbeitsbeginn und -ende",
+     "text": "Zusammen mit der Abwesenheitsart ergibt sich daraus die Verpflegungspauschale."
+    }
+   ],
+   "hint": {
+    "text": "**Kein Tag wählbar?** Dann sieht der Dienstplan für diesen Zeitraum keinen Anspruch vor. Das klärt man mit der Leitung über askDANTE — nicht durch Eintragen eines anderen Tages."
+   }
+  },
+  {
+   "h1": "Fahrt und Ziel",
+   "sub": "Abfahrtsort, Ziel und Verkehrsmittel — daraus entsteht die Kilometerpauschale oder die Ticket-Erstattung.",
+   "card": {
+    "title": "Fahrt und Ziel",
+    "text": "Abfahrt, Ziel, Verkehrsmittel, Kilometer"
+   },
+   "left": {
+    "shot": "p6-fahrt"
+   },
+   "leftCaption": "Die Angaben zur Fahrt mit Adresssuche.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Abfahrtsort",
+     "text": "Über **„Adresse suchen“** — so stimmen die Kilometer und niemand muss schätzen."
+    },
+    {
+     "n": 2,
+     "title": "Ziel",
+     "text": "In der Regel das andere Institut. Auch hier über die Adresssuche."
+    },
+    {
+     "n": 3,
+     "title": "Verkehrsmittel",
+     "text": "Eigenes Auto (Kilometerpauschale) oder Bahn — dann gehört das **Bahnticket** als Beleg dazu."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**„Beleg erforderlich!“** ist kein Hinweis, sondern eine Bedingung: Ohne angehängten Beleg lässt sich die Position nicht einreichen — und ohne Original in der Buchhaltung wird sie später nicht erstattet."
+   }
+  },
+  {
+   "h1": "Verpflegung und Belege",
+   "sub": "Mahlzeiten mindern die Pauschale, Belege begründen die Kosten.",
+   "card": {
+    "title": "Verpflegung und Belege",
+    "text": "Mahlzeiten abziehen, Belege anhängen"
+   },
+   "left": {
+    "shot": "p7-verpflegung"
+   },
+   "leftCaption": "Verpflegungspauschale mit Abzügen und Beleg-Anhang.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Mahlzeiten angeben",
+     "text": "Frühstück, Mittag- und Abendessen, die gestellt wurden. Der Hub zieht sie von der Pauschale ab."
+    },
+    {
+     "n": 2,
+     "title": "„Abzug Mahlzeiten“",
+     "text": "Zeigt den Abzug offen an — so ist die Summe nachvollziehbar."
+    },
+    {
+     "n": 3,
+     "title": "Belege anhängen",
+     "text": "Foto oder PDF direkt an die Position. Ein lesbares Handyfoto genügt."
+    },
+    {
+     "n": 4,
+     "title": "Prüfen",
+     "text": "Die Summe steht unten. Stimmt sie nicht, liegt es fast immer an Zeiten oder Mahlzeiten."
+    }
+   ],
+   "hint": {
+    "text": "**Gestellte Mahlzeiten ehrlich angeben.** Der Abzug ist steuerlich vorgeschrieben — eine zu hohe Pauschale fällt spätestens in der Prüfung auf und fällt dann auf die Abrechnende zurück."
+   }
+  },
+  {
+   "h1": "Einreichen und verfolgen",
+   "sub": "Nach dem Einreichen geht die Abrechnung zur Freigabe — der Stand ist jederzeit sichtbar.",
+   "card": {
+    "title": "Einreichen",
+    "text": "Abgeben, Status verfolgen, Ablehnung verstehen"
+   },
+   "left": {
+    "shot": "p8-einreichen"
+   },
+   "leftCaption": "Eingereichte Abrechnungen mit ihrem Stand.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Einreichen",
+     "text": "Danach ist die Abrechnung gesperrt — sie liegt bei der Freigabe."
+    },
+    {
+     "n": 2,
+     "title": "Status lesen",
+     "text": "**Eingereicht**, **Freigegeben** oder **Abgelehnt**."
+    },
+    {
+     "n": 3,
+     "title": "Abgelehnt",
+     "text": "Dann steht der **Ablehnungsgrund** dabei. Die Abrechnung lässt sich korrigieren und erneut einreichen."
+    },
+    {
+     "n": 4,
+     "title": "Bearbeiten",
+     "text": "Solange nichts eingereicht ist, lässt sich jede Position ändern oder löschen."
+    }
+   ],
+   "hint": {
+    "text": "**Monatlich einreichen, nicht quartalsweise.** Je später, desto schwerer sind Belege und Zeiten zu rekonstruieren — und desto später kommt das Geld."
+   }
+  }
+ ]
+}

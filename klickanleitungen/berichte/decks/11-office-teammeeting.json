@@ -1,0 +1,167 @@
+{
+ "out": "../pdf/Berichte-11-office-teammeeting",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 11,
+ "of": 16,
+ "audience": "buero",
+ "title": [
+  "Office-",
+  "Teammeeting"
+ ],
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — die Kennzahlen für das wöchentliche Office-Teammeeting",
+ "eyebrow": "Berichte · Office-Teammeeting",
+ "footerArea": "Berichte",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Seite ist **für eine Besprechung gebaut**: alle Zahlen des Büros auf einer Seite, in fester Reihenfolge.",
+  "Die Definitionen sind **abgestimmt** — sie bedeuten hier genau das, was im Meeting gemeint ist.",
+  "Die Vergleichswerte werden **monatlich festgehalten**; frühere Monate sind deshalb nicht rückwirkend veränderbar."
+ ],
+ "pages": [
+  {
+   "h1": "Den Bericht öffnen",
+   "sub": "Eine Seite, ein Zeitraum — gedacht zum Durchgehen von oben nach unten.",
+   "card": {
+    "title": "Bericht öffnen",
+    "text": "Zeitraum wählen, Reihenfolge nutzen"
+   },
+   "left": {
+    "shot": "r11-kopf"
+   },
+   "leftCaption": "Kopf der Office-Teammeeting-Seite.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum",
+     "text": "Meist das laufende Jahr; für die Sitzung genügt der eingestellte Standard."
+    },
+    {
+     "n": 2,
+     "title": "Reihenfolge",
+     "text": "Die Abschnitte folgen dem Ablauf der Besprechung — nicht springen."
+    },
+    {
+     "n": 3,
+     "title": "Standort",
+     "text": "Die meisten Zahlen sind firmenweit gemeint."
+    }
+   ],
+   "hint": {
+    "text": "**Die Seite ersetzt die Vorbereitung nicht.** Wer die Auffälligkeiten vorher markiert, spart in der Sitzung die Hälfte der Zeit."
+   }
+  },
+  {
+   "h1": "Kundenservice und Widerrufe",
+   "sub": "Die ersten beiden Blöcke.",
+   "card": {
+    "title": "Service und Widerrufe",
+    "text": "Tickets, Rückläufer, Widerrufe"
+   },
+   "left": {
+    "shot": "r11-service"
+   },
+   "leftCaption": "Kundenservice- und Widerrufs-Kennzahlen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Tickets",
+     "text": "Aufkommen und Bearbeitungsstand aus Zendesk."
+    },
+    {
+     "n": 2,
+     "title": "Abwimmeln",
+     "text": "Anfragen, die ohne Vorgang erledigt wurden — die Definition ist abgestimmt."
+    },
+    {
+     "n": 3,
+     "title": "Rückläufer gesamt",
+     "text": "Alles, was zurückkommt, in einer Zahl."
+    },
+    {
+     "n": 4,
+     "title": "Widerrufe",
+     "text": "Kurzfassung von „Berichte 5“ — für Einzelheiten dorthin."
+    }
+   ],
+   "hint": {
+    "text": "**Die abgestimmten Definitionen sind der Wert dieser Seite.** Wer sie einzeln nachrechnet, kommt auf andere Zahlen — und diskutiert dann über Definitionen statt über Inhalte."
+   }
+  },
+  {
+   "h1": "SEPA, Forderungen, HR und Ads",
+   "sub": "Die übrigen Blöcke.",
+   "card": {
+    "title": "Weitere Blöcke",
+    "text": "SEPA, Forderungen, Personal, Werbung"
+   },
+   "left": {
+    "shot": "r11-bloecke"
+   },
+   "leftCaption": "SEPA-, Forderungs-, HR- und Ads-Block.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "SEPA",
+     "text": "Einzüge, Rücklastschriften, Mandatslage."
+    },
+    {
+     "n": 2,
+     "title": "Forderungen",
+     "text": "Töpfe und Bestand — Kurzfassung von „Berichte 10“."
+    },
+    {
+     "n": 3,
+     "title": "HR",
+     "text": "Kapazität und Verfügbarkeit — Kurzfassung von „Berichte 13“."
+    },
+    {
+     "n": 4,
+     "title": "Ads",
+     "text": "Werbeausgaben und Buchungen — Kurzfassung von „Berichte 14“."
+    }
+   ],
+   "hint": {
+    "text": "**Jeder Block hat einen ausführlichen Bericht dahinter.** Diese Seite ist die Tagesordnung, nicht die Tiefenanalyse."
+   }
+  },
+  {
+   "h1": "Mit der Seite arbeiten",
+   "sub": "Wie sie in der Besprechung wirkt.",
+   "card": {
+    "title": "In der Besprechung",
+    "text": "Vorbereitung, Ablauf, Nacharbeit"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Schritt",
+     "Vorgehen"
+    ],
+    "rows": [
+     [
+      "Vorbereitung",
+      "Seite durchgehen, Auffälligkeiten notieren, zugehörigen Bericht öffnen"
+     ],
+     [
+      "In der Sitzung",
+      "Von oben nach unten; Abweichungen benennen, nicht alle Zahlen vorlesen"
+     ],
+     [
+      "Bei Streit über eine Zahl",
+      "Definition im Info-Panel der Karte nachlesen statt zu schätzen"
+     ],
+     [
+      "Nacharbeit",
+      "Aufgaben als Asana-Task festhalten — die Seite merkt sich nichts"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Vergleichswerte werden monatlich festgehalten.** Ein nachträglich geänderter Vorgang ändert den alten Stand nicht mehr — das ist gewollt, damit Protokolle stimmig bleiben."
+   }
+  }
+ ]
+}

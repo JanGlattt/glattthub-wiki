@@ -1,0 +1,127 @@
+{
+ "out": "../pdf/System-1-Report-Mails",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "System",
+ "nr": 1,
+ "of": 2,
+ "audience": "leitung",
+ "title": [
+  "Report-Mails",
+  "einrichten"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Auswertungen automatisch per E-Mail erhalten, mit Zeitplan und Empfängern",
+ "eyebrow": "System · Report-Mails",
+ "footerArea": "System",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Report-Mails schicken **bestehende Auswertungen** regelmäßig ins Postfach — sie erzeugen keine neuen Zahlen.",
+  "Jede richtet sich ihre eigenen ein; **externe Empfänger** sind möglich, aber bewusst zu wählen.",
+  "**Nur was man auch im Hub sehen darf**, lässt sich verschicken."
+ ],
+ "pages": [
+  {
+   "h1": "Eine Report-Mail anlegen",
+   "sub": "Bezeichnung, Inhalt, Zeitplan — mehr braucht es nicht.",
+   "card": {
+    "title": "Anlegen",
+    "text": "Bezeichnung, Auswertung, Zeitplan"
+   },
+   "left": {
+    "shot": "sy1-report-mails"
+   },
+   "leftCaption": "Die Übersicht der eigenen Report-Mails.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bezeichnung",
+     "text": "Der Betreff, unter dem die Mail ankommt — sprechend wählen, nicht „Report 3“."
+    },
+    {
+     "n": 2,
+     "title": "Inhalt",
+     "text": "Welche Auswertung verschickt wird. Steht dort **„Keine Auswertung gefunden“**, fehlt die Berechtigung dafür."
+    },
+    {
+     "n": 3,
+     "title": "Zeitplan",
+     "text": "Wann und wie oft — täglich, wöchentlich, monatlich."
+    },
+    {
+     "n": 4,
+     "title": "„Aktiv“",
+     "text": "Nur aktive Report-Mails werden verschickt. Ohne Haken bleibt alles gespeichert, aber still."
+    }
+   ],
+   "hint": {
+    "text": "**Zeitpunkt mit Bedacht:** Eine Monatsauswertung am **1.** enthält den Vormonat, aber noch nicht alle Nachträge. Der **3.** oder **5.** liefert oft das belastbarere Bild."
+   }
+  },
+  {
+   "h1": "Empfänger und Formate",
+   "sub": "Wer bekommt sie — und in welcher Form.",
+   "card": {
+    "title": "Empfänger & Format",
+    "text": "Interne und externe Empfänger, PDF oder CSV"
+   },
+   "left": {
+    "shot": "sy2-empfaenger"
+   },
+   "leftCaption": "Empfänger und Ausgabeformate einer Report-Mail.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Eigenes Postfach",
+     "text": "Der Normalfall — die Mail geht an die eigene Adresse."
+    },
+    {
+     "n": 2,
+     "title": "Externe Empfänger",
+     "text": "Zusätzliche Adressen, etwa Steuerberatung oder Geschäftsführung."
+    },
+    {
+     "n": 3,
+     "title": "Ausgabeformate",
+     "text": "**PDF** zum Lesen, **CSV** zum Weiterrechnen — beides ist möglich."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Externe Empfänger bekommen echte Geschäftszahlen** — automatisch, jeden Monat, ohne dass jemand noch einmal draufschaut. Vor dem Eintragen überlegen, ob die Adresse das dauerhaft bekommen soll, und die Liste gelegentlich prüfen."
+   }
+  },
+  {
+   "h1": "Zustellung prüfen",
+   "sub": "Unten steht, was tatsächlich rausgegangen ist.",
+   "card": {
+    "title": "Zustellung prüfen",
+    "text": "Letzte Zustellungen und Fehler"
+   },
+   "left": {
+    "shot": "sy3-zustellungen"
+   },
+   "leftCaption": "**„Die letzten Zustellungen deiner Report-Mails“**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Letzte Zustellungen",
+     "text": "Wann welche Mail verschickt wurde."
+    },
+    {
+     "n": 2,
+     "title": "„Fehler“",
+     "text": "Der Versand ist gescheitert — meist wegen einer ungültigen Adresse."
+    },
+    {
+     "n": 3,
+     "title": "Nichts angekommen",
+     "text": "Erst hier nachsehen, dann in den Spam-Ordner. Steht nichts in der Liste, wurde auch nichts verschickt."
+    }
+   ],
+   "hint": {
+    "text": "**Der Hub weiß nicht, ob die Mail gelesen wurde** — nur, dass er sie verschickt hat. Für Wichtiges gilt: nachfragen, nicht annehmen."
+   }
+  }
+ ]
+}

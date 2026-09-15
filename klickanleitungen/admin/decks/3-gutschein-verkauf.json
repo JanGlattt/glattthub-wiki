@@ -1,0 +1,173 @@
+{
+ "out": "../pdf/Admin-3-gutschein-verkauf",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Admin",
+ "nr": 3,
+ "of": 8,
+ "audience": "admin",
+ "title": [
+  "Gutschein-",
+  "Verkauf"
+ ],
+ "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Gutschein-Produkte, Bestellungen und Zustellung",
+ "eyebrow": "Admin · Gutschein-Verkauf",
+ "footerArea": "Admin-Panel",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der Online-Verkauf von Gutscheinen: **Produkte festlegen, Bestellungen verfolgen, Zustellung prüfen.**",
+  "Bezahlt wird über den Zahlungsdienstleister; der Gutschein entsteht danach **automatisch in Phorest**.",
+  "Ein höherwertiger Gutschein hat ein **Bonus-Guthaben** mit eigener Gültigkeit — es kann getrennt verfallen."
+ ],
+ "pages": [
+  {
+   "h1": "Gutschein-Produkte",
+   "sub": "Was Kundinnen online kaufen können.",
+   "card": {
+    "title": "Produkte",
+    "text": "Werte, Bonus, Gültigkeit festlegen"
+   },
+   "left": {
+    "shot": "a3-produkte"
+   },
+   "leftCaption": "Die Gutschein-Produkte.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Produkt anlegen",
+     "text": "Kaufpreis und Gutscheinwert — der Unterschied ist das Bonus-Guthaben."
+    },
+    {
+     "n": 2,
+     "title": "Gültigkeit",
+     "text": "Für den Gutscheinwert und getrennt für den Bonus-Anteil."
+    },
+    {
+     "n": 3,
+     "title": "Aktiv",
+     "text": "Nur aktive Produkte erscheinen im Verkauf."
+    },
+    {
+     "n": 4,
+     "title": "Text",
+     "text": "Was die Käuferin sieht — kurz und eindeutig."
+    }
+   ],
+   "hint": {
+    "text": "**Der Bonus-Anteil ist ein Rabatt.** Wer 100 € zahlt und 120 € bekommt, kauft mit 20 % Nachlass — das muss kalkuliert sein."
+   }
+  },
+  {
+   "h1": "Bestellungen verfolgen",
+   "sub": "Was gekauft wurde und ob alles geklappt hat.",
+   "card": {
+    "title": "Bestellungen",
+    "text": "Zahlung, Erstellung, Zustellung"
+   },
+   "left": {
+    "shot": "a3-bestellungen"
+   },
+   "leftCaption": "Die Bestellliste mit Status.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zahlung",
+     "text": "Ob und wann bezahlt wurde."
+    },
+    {
+     "n": 2,
+     "title": "Gutschein erstellt",
+     "text": "Ob der Gutschein in Phorest angelegt wurde."
+    },
+    {
+     "n": 3,
+     "title": "Zustellung",
+     "text": "Ob die E-Mail mit dem PDF rausging."
+    },
+    {
+     "n": 4,
+     "title": "Fehlerfall",
+     "text": "Bricht die Kette ab, steht es hier — dann von Hand nachziehen."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Bezahlt, aber kein Gutschein** ist der eine Fall, der sofort bearbeitet werden muss: Die Kundin hat gezahlt und nichts bekommen. Erst prüfen, ob der Gutschein in Phorest existiert, dann handeln."
+   }
+  },
+  {
+   "h1": "Zustellung und Erstattung",
+   "sub": "Wenn etwas schiefgeht.",
+   "card": {
+    "title": "Sonderfälle",
+    "text": "Nachsenden, erstatten"
+   },
+   "left": {
+    "shot": "a3-sonderfaelle"
+   },
+   "leftCaption": "Eine einzelne Bestellung mit ihren Aktionen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Nachsenden",
+     "text": "Wenn die E-Mail nicht angekommen ist — Adresse prüfen, erneut senden."
+    },
+    {
+     "n": 2,
+     "title": "Erstattung",
+     "text": "Über den Zahlungsdienstleister; der Gutschein muss dann in Phorest entwertet werden."
+    },
+    {
+     "n": 3,
+     "title": "Beides dokumentieren",
+     "text": "Sonst steht später Aussage gegen Aussage."
+    },
+    {
+     "n": 4,
+     "title": "Kundin informieren",
+     "text": "Aktiv, nicht abwarten — sie hat bezahlt."
+    }
+   ],
+   "hint": {
+    "text": "**Der Hub erstattet kein Geld.** Rückzahlungen laufen über den Zahlungsdienstleister; hier wird nur festgehalten, dass es passiert ist."
+   }
+  },
+  {
+   "h1": "Rund um den Verkauf",
+   "sub": "Was zusammengehört.",
+   "card": {
+    "title": "Zusammenhänge",
+    "text": "Wo Gutscheine sonst noch vorkommen"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Frage",
+     "Wo sie beantwortet wird"
+    ],
+    "rows": [
+     [
+      "Wie viel ist noch auf dem Gutschein?",
+      "„Verkauf 7“ — Restwert im Gutschein-Modul"
+     ],
+     [
+      "Gutschein auf offene Raten anrechnen",
+      "„Verkauf 3“ — Verrechnung im Vertrag"
+     ],
+     [
+      "Gutschein als Teil einer Aktion",
+      "„Berichte 12“ — Auswertung der Gutschein-Aktion"
+     ],
+     [
+      "Kundin hat nichts bekommen",
+      "Bestellliste hier prüfen, dann nachsenden"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Im Institut** sind Gutscheine ein eigenes Thema — Suchen, Restwert prüfen, anlegen („Verkauf 7“)."
+   }
+  }
+ ]
+}

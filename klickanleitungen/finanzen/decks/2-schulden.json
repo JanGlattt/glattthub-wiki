@@ -1,0 +1,125 @@
+{
+ "out": "../pdf/Finanzen-2-Schulden",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Finanzen",
+ "nr": 2,
+ "of": 3,
+ "audience": "buero",
+ "title": [
+  "Schulden",
+  "im Überblick"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Kundenschulden aus geplatzten Lastschriften auf einen Blick",
+ "eyebrow": "Finanzen · Schulden",
+ "footerArea": "Finanzen",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Seite ist eine **Auswertung**, kein Arbeitsplatz — bearbeitet wird im Forderungsmanagement („Finanzen 1“).",
+  "Die Zahlen stammen überwiegend aus **geplatzten SEPA-Lastschriften**.",
+  "Für die Frage „was schuldet uns diese eine Kundin?“ ist das **Kundenprofil** der schnellere Weg."
+ ],
+ "pages": [
+  {
+   "h1": "Die Gesamtsicht",
+   "sub": "Wie viel offen ist und auf wie viele Kundinnen es sich verteilt.",
+   "card": {
+    "title": "Die Gesamtsicht",
+    "text": "Gesamtschulden und betroffene Kundinnen"
+   },
+   "left": {
+    "shot": "f5-schulden"
+   },
+   "leftCaption": "Die Schulden-Übersicht.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Gesamtschulden",
+     "text": "Die Summe aller offenen Beträge im gewählten Standort."
+    },
+    {
+     "n": 2,
+     "title": "Kunden mit Schulden",
+     "text": "Auf wie viele Personen sich das verteilt — eine hohe Summe bei wenigen Personen liest sich anders als bei vielen."
+    },
+    {
+     "n": 3,
+     "title": "Standort beachten",
+     "text": "Die Seite folgt dem Standortfilter der Seitenleiste („Grundlagen 2“)."
+    }
+   ],
+   "hint": {
+    "text": "**Nicht mit dem Forderungsmanagement verwechseln.** Dort stehen die **geführten Fälle**; hier steht, was insgesamt offen ist — beides kann auseinandergehen, wenn zu einer Schuld noch kein Fall angelegt wurde."
+   }
+  },
+  {
+   "h1": "Die Liste lesen",
+   "sub": "Je Kundin eine Zeile mit offenem Betrag und Herkunft.",
+   "card": {
+    "title": "Die Liste lesen",
+    "text": "Betrag, Herkunft, Weg zur Kundin"
+   },
+   "left": {
+    "shot": "f6-schulden-liste"
+   },
+   "leftCaption": "Die Liste der Kundinnen mit offenen Beträgen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Betrag",
+     "text": "Was bei dieser Kundin offen ist — Summe über alle Vorgänge."
+    },
+    {
+     "n": 2,
+     "title": "Herkunft",
+     "text": "In der Regel geplatzte Lastschriften; die Einzelheiten stehen im Vertrag („Verkauf 3“)."
+    },
+    {
+     "n": 3,
+     "title": "Weiterarbeiten",
+     "text": "Für die Bearbeitung ins **Forderungsmanagement** wechseln — dort gibt es Schreiben, Fristen und Verlauf."
+    }
+   ],
+   "hint": {
+    "text": "**Zahlen weichen ab?** Der häufigste Grund ist der Zeitpunkt: Eine Lastschrift, die gerade zurückgekommen ist, steht hier schon und im Fall noch nicht — oder umgekehrt."
+   }
+  },
+  {
+   "h1": "Was daraus folgt",
+   "sub": "Die Seite ist zum Beobachten da — die Arbeit passiert woanders.",
+   "card": {
+    "title": "Was daraus folgt",
+    "text": "Wann ein Fall angelegt wird, wer entscheidet"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Beobachtung",
+     "Nächster Schritt"
+    ],
+    "rows": [
+     [
+      "Schuld ohne Forderungsfall",
+      "Fall im Forderungsmanagement anlegen („Finanzen 1“) — sonst passiert nichts"
+     ],
+     [
+      "Summe steigt an einem Standort",
+      "Ursache prüfen: gehäufte Rücklastschriften oder ein einzelner großer Fall"
+     ],
+     [
+      "Kundin steht im Institut",
+      "Termin normal durchführen, nichts zusagen, Kontakt ans Büro melden („Kundenverwaltung 4“)"
+     ],
+     [
+      "Betrag ist beglichen",
+      "Im Vertrag nachtragen bzw. den Fall abschließen — die Liste rechnet nicht von allein nach"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Eine Zahl auf dieser Seite ändert sich nur, wenn jemand etwas tut.** Sie ist ein Spiegel der Vorgänge — kein eigener Vorgang."
+   }
+  }
+ ]
+}

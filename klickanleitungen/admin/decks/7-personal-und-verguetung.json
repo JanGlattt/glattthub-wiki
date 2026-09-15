@@ -1,0 +1,173 @@
+{
+ "out": "../pdf/Admin-7-personal-und-verguetung",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Admin",
+ "nr": 7,
+ "of": 8,
+ "audience": "admin",
+ "title": [
+  "Personal",
+  "und Vergütung"
+ ],
+ "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Gehälter, Bonus-Auszahlungen und Personalzuordnungen",
+ "eyebrow": "Admin · Personal & Vergütung",
+ "footerArea": "Admin-Panel",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Hier stehen die **sensibelsten Daten des Hubs** — Gehälter und Auszahlungen.",
+  "Zugang hat nur, wer ihn wirklich braucht; die Rechte dafür sind eng gefasst („Admin 1“).",
+  "**Der Hub zahlt nicht aus.** Er hält fest, was ausgezahlt wurde — überwiesen wird in der Buchhaltung."
+ ],
+ "pages": [
+  {
+   "h1": "Gehälter",
+   "sub": "Die hinterlegten Vergütungen je Person.",
+   "card": {
+    "title": "Gehälter",
+    "text": "Vergütungen führen"
+   },
+   "left": {
+    "shot": "a7-gehaelter"
+   },
+   "leftCaption": "Die Gehaltsverwaltung.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Eintrag je Person",
+     "text": "Vergütung mit Gültigkeitszeitraum — Änderungen werden nicht überschrieben, sondern fortgeschrieben."
+    },
+    {
+     "n": 2,
+     "title": "Gültig ab",
+     "text": "Damit Auswertungen für vergangene Monate korrekt bleiben."
+    },
+    {
+     "n": 3,
+     "title": "Grundlage für Kennzahlen",
+     "text": "Die Personalkosten in den HR-Kennzahlen stammen hier her („Berichte 13“)."
+    },
+    {
+     "n": 4,
+     "title": "Sorgfalt",
+     "text": "Ein Zahlendreher verfälscht jede Kostenrechnung des Monats."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Vertraulich im engsten Sinn.** Kein Screenshot, kein Export „zur Sicherheit“, keine Weitergabe an Dritte. Wer hier Zugang hat, trägt ihn persönlich."
+   }
+  },
+  {
+   "h1": "Bonus-Auszahlungen",
+   "sub": "Was aus dem Bonus-Board in die Lohnabrechnung geht.",
+   "card": {
+    "title": "Bonus-Auszahlungen",
+    "text": "Freigegebene Boni festhalten"
+   },
+   "left": {
+    "shot": "a7-bonus"
+   },
+   "leftCaption": "Die Bonus-Auszahlungen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Grundlage",
+     "text": "Der **eingefrorene** Monat aus dem Bonus-Board („Bonus-Board 5“)."
+    },
+    {
+     "n": 2,
+     "title": "Eintrag",
+     "text": "Person, Monat, Betrag — als Beleg für die Lohnabrechnung."
+    },
+    {
+     "n": 3,
+     "title": "Nur eingefrorene Monate",
+     "text": "Ein offener Monat ändert sich noch; daraus darf nichts ausgezahlt werden."
+    },
+    {
+     "n": 4,
+     "title": "Sachprämien",
+     "text": "Sie stehen im Board, zählen aber nicht in die Euro-Summe."
+    }
+   ],
+   "hint": {
+    "text": "**Reihenfolge einhalten:** erst Widerrufe entscheiden, dann einfrieren, dann auszahlen. Wer vorher auszahlt, zahlt auf einen Zwischenstand."
+   }
+  },
+  {
+   "h1": "Personalzuordnungen",
+   "sub": "Die Verbindungen zwischen den Systemen.",
+   "card": {
+    "title": "Zuordnungen",
+    "text": "Phorest-Personal und Hub-Konten"
+   },
+   "left": {
+    "shot": "a7-zuordnung"
+   },
+   "leftCaption": "Die Zuordnung des Phorest-Personals.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Phorest-Personal",
+     "text": "Die Kabinen und Personen aus Phorest."
+    },
+    {
+     "n": 2,
+     "title": "Verbindung zum Konto",
+     "text": "Erst damit landen Verkäufe bei der richtigen Person („Betrieb 5“)."
+    },
+    {
+     "n": 3,
+     "title": "Neue Institute",
+     "text": "Ihre Personen fehlen in alten Zuordnungen — nach jeder Eröffnung prüfen."
+    },
+    {
+     "n": 4,
+     "title": "Folge bei Lücken",
+     "text": "Verträge ohne Verkäuferin, fehlender Bonus, falsche Auswertungen."
+    }
+   ],
+   "hint": {
+    "text": "**Eine fehlende Zuordnung fällt erst im Monatsabschluss auf** — dann ist es für den Bonus dieses Monats zu spät. Deshalb bei jeder Neueinstellung sofort prüfen."
+   }
+  },
+  {
+   "h1": "Wer darf was",
+   "sub": "Rechte rund um Vergütungsdaten.",
+   "card": {
+    "title": "Rechte",
+    "text": "Wer Zugang haben sollte"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Bereich",
+     "Wer sollte Zugang haben"
+    ],
+    "rows": [
+     [
+      "Gehälter",
+      "Geschäftsführung und Lohnbuchhaltung — sonst niemand"
+     ],
+     [
+      "Bonus-Auszahlungen",
+      "Büro, das den Monatsabschluss macht"
+     ],
+     [
+      "Bonus-Board Management",
+      "Leitungen, für ihr Team"
+     ],
+     [
+      "Personalzuordnungen",
+      "Büro — sie enthalten keine Vergütungsdaten"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Im Zweifel kein Zugang.** Fehlender Zugriff fällt sofort auf und ist in einer Minute vergeben; zu weiter Zugriff fällt nie auf."
+   }
+  }
+ ]
+}

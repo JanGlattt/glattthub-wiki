@@ -58,6 +58,7 @@ let html = pageShell(`
     ${deck.kicker ? `<div class="cover-kicker">${D.esc(deck.kicker)}</div>` : ''}
     <h1>${deck.title.map(D.esc).join('<br>')}</h1>
     ${deck.audienceLabel ? `<div class="cover-audience">${D.esc(deck.audienceLabel)}</div>` : ''}
+    ${deck.hinweis ? `<div class="cover-hinweis">${D.esc(deck.hinweis)}</div>` : ''}
     <p class="sub">${D.rich(deck.subtitle)}</p>
     <div class="cards n${cardPages.length}">${cardPages.map((p, i) =>
       `<div class="card"><div class="cnum ${p.accent || ''}">${i + 1}</div>`

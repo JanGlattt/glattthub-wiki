@@ -1,0 +1,169 @@
+{
+ "out": "../pdf/Terminansicht-9-Termin-buchen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Terminansicht",
+ "nr": 9,
+ "of": 9,
+ "audience": "institut",
+ "title": [
+  "Termin",
+  "buchen"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Termin für eine Kundin buchen, ideale Zeiten finden, Link weitergeben",
+ "eyebrow": "Terminansicht · Buchung",
+ "footerArea": "Terminansicht",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Gebucht wird **direkt in Phorest** — der Termin steht sofort im Kalender des Instituts.",
+  "**„Ideale Slots finden“** schlägt Zeiten vor, die den Tag nicht zerreißen — es ist kein Zwang, aber meist die bessere Wahl.",
+  "Für Folgetermine im laufenden Termin gibt es den kürzeren Weg über die Terminansicht („Terminansicht 6“)."
+ ],
+ "pages": [
+  {
+   "h1": "Kundin und Institut",
+   "sub": "Die Buchungsseite fragt der Reihe nach: für wen, wo, was, wann.",
+   "card": {
+    "title": "Kundin und Institut",
+    "text": "Kundin suchen, Institut wählen"
+   },
+   "left": {
+    "shot": "t1-buchung-kunde"
+   },
+   "leftCaption": "Die Buchungsseite mit Kundensuche und Institutswahl.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kundin suchen",
+     "text": "Über Name, E-Mail oder Kundennummer — dieselbe Suche wie in der Kundenübersicht."
+    },
+    {
+     "n": 2,
+     "title": "Institut wählen",
+     "text": "**„Bitte zuerst ein Institut auswählen.“** erscheint, solange keines gesetzt ist — ohne Institut gibt es keine Zeiten."
+    },
+    {
+     "n": 3,
+     "title": "Behandlungen",
+     "text": "Die zu buchenden Services. Die Dauer ergibt sich daraus, dazu die **Extrazeit** der Kundin, falls hinterlegt („Kundenverwaltung 3“)."
+    }
+   ],
+   "hint": {
+    "text": "**Kundin nicht gefunden?** Dann gibt es sie in Phorest noch nicht. Neu angelegt wird sie über Phorest oder die Institutsseite — nicht hier."
+   }
+  },
+  {
+   "h1": "Zeit finden",
+   "sub": "Entweder man sucht selbst im Kalender — oder man lässt sich die günstigsten Zeiten vorschlagen.",
+   "card": {
+    "title": "Zeit finden",
+    "text": "Freie Zeiten suchen oder ideale Slots vorschlagen lassen"
+   },
+   "left": {
+    "shot": "t2-slots"
+   },
+   "leftCaption": "Vorgeschlagene Zeiten mit **„Ideale Slots finden“**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Frühestens ab“",
+     "text": "Grenzt ein, ab wann gesucht wird — etwa erst ab der übernächsten Woche."
+    },
+    {
+     "n": 2,
+     "title": "„Ideale Slots finden“",
+     "text": "Schlägt Zeiten vor, die möglichst wenig Lücken im Tag hinterlassen."
+    },
+    {
+     "n": 3,
+     "title": "Zeit wählen",
+     "text": "Ein Tippen übernimmt den Vorschlag. Steht dort **„Keine freien Termine an diesem Tag“**, hilft ein anderer Tag oder eine kürzere Behandlung."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Warum ideale Slots",
+     "text": "Ein Termin mitten in einem freien Vormittag zerschneidet ihn in zwei unbuchbare Hälften. Die Vorschläge legen Termine an bestehende an — das schafft über den Monat spürbar mehr Kapazität."
+    },
+    {
+     "title": "Kabine und Personal",
+     "text": "Der Hub bucht auf eine freie **Kabine**. Wer eine bestimmte Mitarbeiterin braucht, prüft das im Kalender von Phorest."
+    }
+   ],
+   "hint": {
+    "text": "**Magdeburg:** Dort fehlen in Phorest der Desinfektions-Service und die Zuordnung der Behandlungen zu den Kabinen — Folgetermine lassen sich deshalb aktuell nicht planen. Termine dort von Hand in Phorest legen."
+   }
+  },
+  {
+   "h1": "Buchen und bestätigen",
+   "sub": "Zum Schluss prüft man die Zusammenfassung und bucht — danach steht der Termin in Phorest.",
+   "card": {
+    "title": "Buchen",
+    "text": "Zusammenfassung prüfen, buchen, Bestätigung"
+   },
+   "left": {
+    "shot": "t3-buchen"
+   },
+   "leftCaption": "Die Zusammenfassung vor dem Buchen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zusammenfassung prüfen",
+     "text": "Kundin, Institut, Datum, Uhrzeit, Behandlungen. Danach ist die Änderung aufwendiger."
+    },
+    {
+     "n": 2,
+     "title": "Buchen",
+     "text": "Der Hub legt den Termin **in Phorest** an — während des Vorgangs steht **„Buche in Phorest …“**."
+    },
+    {
+     "n": 3,
+     "title": "Bestätigung",
+     "text": "Danach erscheint der Termin in der Terminübersicht des Tages („Terminansicht 1“)."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Nicht zweimal buchen.** Bleibt die Anzeige lange bei „Buche …“, zuerst die Terminübersicht prüfen — oft ist der Termin längst angelegt und ein zweiter Versuch erzeugt einen doppelten Eintrag."
+   }
+  },
+  {
+   "h1": "Link zur Selbstbuchung",
+   "sub": "Statt selbst zu buchen, lässt sich der Kundin ein Link schicken — sie sucht sich die Zeit selbst.",
+   "card": {
+    "title": "Link weitergeben",
+    "text": "Selbstbuchungs-Link erzeugen und senden"
+   },
+   "left": {
+    "shot": "t4-buchungslink"
+   },
+   "leftCaption": "Das Fenster mit dem Buchungslink.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Link erzeugen",
+     "text": "Über den Link-Knopf an der Terminkarte im Kundenprofil („Kundenverwaltung 3“) oder hier auf der Buchungsseite."
+    },
+    {
+     "n": 2,
+     "title": "„Kopieren“",
+     "text": "Legt den Link in die Zwischenablage — danach steht kurz **„Kopiert!“**."
+    },
+    {
+     "n": 3,
+     "title": "Weitergeben",
+     "text": "Per WhatsApp aus dem Kundenprofil („Kundenverwaltung 5“) oder per E-Mail."
+    },
+    {
+     "n": 4,
+     "title": "Kundin bucht selbst",
+     "text": "Sie sieht freie Zeiten, bestätigt und kann den Termin später auch absagen."
+    }
+   ],
+   "hint": {
+    "text": "**Der Link ist personalisiert.** Er gehört zu genau dieser Kundin und diesem Termin — nicht an mehrere Personen weitergeben."
+   }
+  }
+ ]
+}

@@ -1,0 +1,173 @@
+{
+ "out": "../pdf/Berichte-7-glattt-kpis",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 7,
+ "of": 16,
+ "audience": "leitung",
+ "title": [
+  "glattt-",
+  "KPIs"
+ ],
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — zentrale Kennzahlen brutto und netto",
+ "eyebrow": "Berichte · glattt-KPIs",
+ "footerArea": "Berichte",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Zahlen, nach denen die Geschäftsführung fragt — **Abschluss je Beratung, Wert einer Neukundin, aktive Pakete**.",
+  "**Brutto und netto stehen nebeneinander:** netto heißt nach Abzug der Widerrufe.",
+  "Bestandsgrößen wie „aktive Pakete“ dürfen **nie über Monate summiert** werden."
+ ],
+ "pages": [
+  {
+   "h1": "Den Bericht öffnen",
+   "sub": "Zeitraum, Standort und die Umschaltung brutto/netto.",
+   "card": {
+    "title": "Bericht öffnen",
+    "text": "Zeitraum und Sicht wählen"
+   },
+   "left": {
+    "shot": "r7-kopf"
+   },
+   "leftCaption": "Kopf der glattt-KPIs.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum",
+     "text": "Für Vergleiche volle Monate oder Jahre nehmen."
+    },
+    {
+     "n": 2,
+     "title": "Brutto",
+     "text": "Alle Abschlüsse, ohne Abzug."
+    },
+    {
+     "n": 3,
+     "title": "Netto",
+     "text": "Nach Abzug der Widerrufe — die belastbarere Zahl."
+    },
+    {
+     "n": 4,
+     "title": "Standort",
+     "text": "Je Institut oder über alle."
+    }
+   ],
+   "hint": {
+    "text": "**Immer dazusagen, welche Sicht gemeint ist.** Brutto und netto weichen deutlich voneinander ab — eine Zahl ohne diese Angabe ist wertlos."
+   }
+  },
+  {
+   "h1": "Abschluss je Beratung",
+   "sub": "Die wichtigste Effizienzzahl des Unternehmens.",
+   "card": {
+    "title": "Abschluss je Beratung",
+    "text": "Wie viel aus einem Gespräch wird"
+   },
+   "left": {
+    "shot": "r7-abschluss"
+   },
+   "leftCaption": "Abschlussquote und Wert je Beratung.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Quote",
+     "text": "Anteil der Beratungen, die zu einem Vertrag führen."
+    },
+    {
+     "n": 2,
+     "title": "Wert je Beratung",
+     "text": "Durchschnittlicher Vertragswert je geführtem Gespräch — verbindet Quote und Größe."
+    },
+    {
+     "n": 3,
+     "title": "Verlauf",
+     "text": "Einzelne Monate schwanken; der Trend zählt."
+    },
+    {
+     "n": 4,
+     "title": "Je Institut",
+     "text": "Unterschiede sind Gesprächsanlässe, keine Urteile."
+    }
+   ],
+   "hint": {
+    "text": "**Der Wert je Beratung ist aussagekräftiger als die Quote.** Wer selten, aber groß abschließt, kann wirtschaftlicher sein als umgekehrt."
+   }
+  },
+  {
+   "h1": "Wert einer Neukundin",
+   "sub": "Was eine gewonnene Kundin über die Zeit einbringt.",
+   "card": {
+    "title": "Wert einer Neukundin",
+    "text": "Vertragswert und Folgegeschäft"
+   },
+   "left": {
+    "shot": "r7-neukunde"
+   },
+   "leftCaption": "Wert einer Neukundin im Verlauf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Erstvertrag",
+     "text": "Der Wert des ersten Pakets."
+    },
+    {
+     "n": 2,
+     "title": "Folgegeschäft",
+     "text": "Erweiterungen und Folgeverträge — sie machen den Unterschied."
+    },
+    {
+     "n": 3,
+     "title": "Bezug zu Werbekosten",
+     "text": "Erst im Vergleich mit „Berichte 14“ wird daraus eine Aussage über Rentabilität."
+    },
+    {
+     "n": 4,
+     "title": "Netto rechnen",
+     "text": "Für Investitionsentscheidungen immer die Netto-Sicht."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Nicht mit dem Umsatz verwechseln.** Der Vertragswert entsteht beim Abschluss, das Geld fließt über Monate — und bei Widerruf gar nicht."
+   }
+  },
+  {
+   "h1": "Bestände richtig lesen",
+   "sub": "Aktive Pakete und ausstehende Behandlungen sind Bestände, keine Ereignisse.",
+   "card": {
+    "title": "Bestände",
+    "text": "Aktive Pakete, ausstehende Behandlungen"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Kennzahl",
+     "Wie sie zu lesen ist"
+    ],
+    "rows": [
+     [
+      "Aktive Pakete",
+      "**Bestand** zum Stichtag — niemals über Monate addieren"
+     ],
+     [
+      "Ausstehende Behandlungen",
+      "Verpflichtung gegenüber Kundinnen, keine Umsatzchance"
+     ],
+     [
+      "Abschluss je Beratung",
+      "Verhältniszahl — nur mit der Zahl der Beratungen zusammen aussagekräftig"
+     ],
+     [
+      "Wert einer Neukundin",
+      "Durchschnitt; einzelne große Verträge verzerren kleine Zeiträume"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Ausstehende Behandlungen sind eine Verpflichtung.** Sie sind bereits bezahlt und binden künftige Kapazität — zusammen mit „Berichte 6“ lesen."
+   }
+  }
+ ]
+}

@@ -1,0 +1,173 @@
+{
+ "out": "../pdf/Admin-2-inhalte-und-dokumente",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Admin",
+ "nr": 2,
+ "of": 8,
+ "audience": "admin",
+ "title": [
+  "Inhalte",
+  "und Dokumente"
+ ],
+ "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Neuigkeiten, Wissensartikel und Rechtsdokumente pflegen",
+ "eyebrow": "Admin · Inhalte",
+ "footerArea": "Admin-Panel",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Hier entsteht, was Mitarbeiterinnen und Kundinnen **lesen** — Neuigkeiten, Wissensartikel, Rechtstexte.",
+  "**Rechtsdokumente landen in Verträgen** — AGB und Widerrufsbelehrung werden beim Absenden bestätigt.",
+  "Eine Änderung an einem Rechtsdokument gilt **ab sofort für neue Abschlüsse**, nicht rückwirkend."
+ ],
+ "pages": [
+  {
+   "h1": "Neuigkeiten",
+   "sub": "Was auf der Startseite aller Mitarbeiterinnen erscheint.",
+   "card": {
+    "title": "Neuigkeiten",
+    "text": "Mitteilungen ans Team veröffentlichen"
+   },
+   "left": {
+    "shot": "a2-news"
+   },
+   "leftCaption": "Die Verwaltung der Neuigkeiten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Anlegen",
+     "text": "Titel und Text. Der Titel steht auf der Startseite, der Text erscheint beim Antippen."
+    },
+    {
+     "n": 2,
+     "title": "Veröffentlichen",
+     "text": "Erst dann ist die Nachricht sichtbar („Grundlagen 6“)."
+    },
+    {
+     "n": 3,
+     "title": "Kurz halten",
+     "text": "Auf der Startseite steht nur der Titel — er muss allein tragen."
+    },
+    {
+     "n": 4,
+     "title": "Aufräumen",
+     "text": "Alte Neuigkeiten entfernen; eine Liste mit Nachrichten von vor einem Jahr liest niemand."
+    }
+   ],
+   "hint": {
+    "text": "**Die Startseite ist kein Mitteilungsblatt.** Was jede sofort wissen muss, gehört dorthin; alles andere in eine Besprechung oder ins Wiki."
+   }
+  },
+  {
+   "h1": "Wissensartikel",
+   "sub": "Die Wissensbasis, auf die auch glatttBert zugreift.",
+   "card": {
+    "title": "Wissensartikel",
+    "text": "Wissen für Team und Assistent"
+   },
+   "left": {
+    "shot": "a2-wissen"
+   },
+   "leftCaption": "Die Wissensartikel im Admin-Panel.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Artikel anlegen",
+     "text": "Ein Thema je Artikel, mit klarer Überschrift."
+    },
+    {
+     "n": 2,
+     "title": "Konkret schreiben",
+     "text": "Was zu tun ist, nicht was gilt — Anleitungen schlagen Absichtserklärungen."
+    },
+    {
+     "n": 3,
+     "title": "Aktuell halten",
+     "text": "Ein falscher Artikel ist schlimmer als keiner."
+    },
+    {
+     "n": 4,
+     "title": "Bezug zum Assistenten",
+     "text": "Was hier steht, kann glatttBert beantworten („Grundlagen 5“)."
+    }
+   ],
+   "hint": {
+    "text": "**Nicht mit den Klickanleitungen verwechseln.** Wissensartikel beantworten fachliche Fragen; Klickanleitungen zeigen Bedienung."
+   }
+  },
+  {
+   "h1": "Rechtsdokumente",
+   "sub": "AGB, Widerrufsbelehrung und weitere Texte für Verträge.",
+   "card": {
+    "title": "Rechtsdokumente",
+    "text": "Texte für Verträge und Formulare"
+   },
+   "left": {
+    "shot": "a2-recht"
+   },
+   "leftCaption": "Die Rechtsdokumente.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Dokument anlegen",
+     "text": "Titel und Text — er erscheint im Formular zum Bestätigen („Betrieb 3“)."
+    },
+    {
+     "n": 2,
+     "title": "Einbinden",
+     "text": "Über den Baustein **Dokument** im Formular-Editor."
+    },
+    {
+     "n": 3,
+     "title": "Bestätigung",
+     "text": "Die Kundin bestätigt jedes Dokument einzeln beim Absenden."
+    },
+    {
+     "n": 4,
+     "title": "Fassung",
+     "text": "Was beim Abschluss galt, bleibt am Vertrag — spätere Änderungen wirken nicht rückwirkend."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Rechtstexte nie ohne Freigabe ändern.** AGB und Widerrufsbelehrung sind juristisch geprüft; eine gut gemeinte Umformulierung kann die Wirksamkeit kosten."
+   }
+  },
+  {
+   "h1": "Ordnung halten",
+   "sub": "Wenige Regeln, die viel sparen.",
+   "card": {
+    "title": "Ordnung",
+    "text": "Wer pflegt was, wie oft"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Inhalt",
+     "Rhythmus"
+    ],
+    "rows": [
+     [
+      "Neuigkeiten",
+      "Bei Bedarf; alte quartalsweise aufräumen"
+     ],
+     [
+      "Wissensartikel",
+      "Bei jeder Prozessänderung prüfen"
+     ],
+     [
+      "Rechtsdokumente",
+      "Nur nach anwaltlicher Freigabe"
+     ],
+     [
+      "Alles zusammen",
+      "Einmal im Jahr komplett durchsehen"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Alles hier ist sofort sichtbar.** Es gibt keine Vorschau für andere — was gespeichert ist, lesen alle."
+   }
+  }
+ ]
+}

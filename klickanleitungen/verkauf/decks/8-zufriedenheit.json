@@ -1,0 +1,127 @@
+{
+ "out": "../pdf/Verkauf-8-Zufriedenheit",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Verkauf",
+ "nr": 8,
+ "of": 8,
+ "audience": "buero",
+ "title": [
+  "Zufriedenheit",
+  "nach Paketende"
+ ],
+ "subtitle": "Klickanleitung für das Zufriedenheits-Modul im glatttHub — Kandidatinnen sichten, Befragung senden, Folgeaufgaben",
+ "eyebrow": "Verkauf · Zufriedenheit",
+ "footerArea": "Verkauf",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Befragt wird **nach Abschluss eines Pakets** — die Kandidatinnen schlägt der Hub vor.",
+  "**Der Versand ist manuell.** Nichts geht automatisch raus; jemand entscheidet je Kundin.",
+  "Aus einer unzufriedenen Antwort wird eine **Folgeaufgabe** — sie ist der eigentliche Zweck des Moduls."
+ ],
+ "pages": [
+  {
+   "h1": "Offene Kandidatinnen",
+   "sub": "Der Hub sammelt, wer für eine Befragung infrage kommt — und wartet auf eine Entscheidung.",
+   "card": {
+    "title": "Kandidatinnen sichten",
+    "text": "Wer kommt für eine Befragung infrage"
+   },
+   "left": {
+    "shot": "v25-zufriedenheit"
+   },
+   "leftCaption": "Die Seite **„Zufriedenheitsbefragung nach Paketende“**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Offene Kandidatinnen",
+     "text": "Kundinnen, deren Paket abgeschlossen ist und die noch nicht befragt wurden."
+    },
+    {
+     "n": 2,
+     "title": "Prüfen vor dem Senden",
+     "text": "Läuft ein Widerruf oder ein Forderungsfall, ist eine Zufriedenheitsfrage der falsche Schritt."
+    },
+    {
+     "n": 3,
+     "title": "„Liste auffrischen“",
+     "text": "Holt neue Kandidatinnen nach — die Liste wächst mit abgeschlossenen Paketen."
+    }
+   ],
+   "hint": {
+    "text": "**Zeitnah fragen.** Eine Befragung drei Monate nach der letzten Sitzung bekommt entweder keine Antwort oder eine, die sich an nichts mehr genau erinnert."
+   }
+  },
+  {
+   "h1": "Befragung senden",
+   "sub": "Der Versand ist eine bewusste Entscheidung — je Kundin.",
+   "card": {
+    "title": "Befragung senden",
+    "text": "Einzeln entscheiden und verschicken"
+   },
+   "left": {
+    "shot": "v26-versenden"
+   },
+   "leftCaption": "Der Versand an eine Kandidatin.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kandidatin wählen",
+     "text": "Prüfen, ob Kontaktdaten stimmen — ohne E-Mail keine Befragung („Kundenverwaltung 2“)."
+    },
+    {
+     "n": 2,
+     "title": "Senden",
+     "text": "Die Kundin bekommt den Link zur Befragung."
+    },
+    {
+     "n": 3,
+     "title": "„Versendet“",
+     "text": "Danach wandert der Eintrag in die versendeten Befragungen."
+    },
+    {
+     "n": 4,
+     "title": "„Beantwortet“",
+     "text": "Sobald die Kundin geantwortet hat, steht die Rückmeldung dort."
+    }
+   ],
+   "hint": {
+    "text": "**Nicht in Serie verschicken.** Das Modul ist bewusst manuell: Eine Befragung an eine Kundin mit offenem Ärger ist schlimmer als keine."
+   }
+  },
+  {
+   "h1": "Folgeaufgaben",
+   "sub": "Kritische Antworten erzeugen eine Aufgabe — sie ist der Grund, warum überhaupt gefragt wird.",
+   "card": {
+    "title": "Folgeaufgaben",
+    "text": "Kritische Antworten nachfassen"
+   },
+   "left": {
+    "shot": "v27-folgeaufgaben"
+   },
+   "leftCaption": "Die offenen Folgeaufgaben.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Offene Folgeaufgaben",
+     "text": "Antworten, die eine Reaktion verlangen — Unzufriedenheit, Beschwerde, offene Frage."
+    },
+    {
+     "n": 2,
+     "title": "Kundin kontaktieren",
+     "text": "Telefon oder WhatsApp aus dem Kundenprofil („Kundenverwaltung 5“) — nicht mit einer Serienmail antworten."
+    },
+    {
+     "n": 3,
+     "title": "Erledigen",
+     "text": "Nach der Klärung abhaken, damit die Liste die offenen Fälle zeigt und nicht die erledigten."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Eine unbeantwortete Folgeaufgabe ist schlimmer als keine Befragung.** Wer nach der Zufriedenheit fragt und dann auf Kritik nicht reagiert, bestätigt genau den Eindruck, den er heilen wollte."
+   }
+  }
+ ]
+}

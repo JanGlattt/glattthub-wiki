@@ -1,0 +1,174 @@
+{
+ "out": "../pdf/Admin-6-gamification-und-abzeichen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Admin",
+ "nr": 6,
+ "of": 8,
+ "audience": "admin",
+ "title": [
+  "Gamification",
+  "und Abzeichen"
+ ],
+ "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Abzeichen, Anlässe und Standortziele",
+ "eyebrow": "Admin · Gamification",
+ "footerArea": "Admin-Panel",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "hinweis": "Noch nicht freigeschaltet — diese Anleitung gilt ab dem Start",
+ "notes": [
+  "Abzeichen und Anlässe belohnen Leistungen sichtbar — als Ergänzung zum Bonus, nicht als Ersatz.",
+  "Die Abzeichen erscheinen in der **Mitarbeiterperformance** („Berichte 9“).",
+  "**Das Modul ist derzeit nicht freigeschaltet** — es wird eingerichtet, aber noch nicht angezeigt."
+ ],
+ "pages": [
+  {
+   "h1": "Abzeichen",
+   "sub": "Was es zu erreichen gibt.",
+   "card": {
+    "title": "Abzeichen",
+    "text": "Anlegen, Bedingung, Darstellung"
+   },
+   "left": {
+    "shot": "a6-badges"
+   },
+   "leftCaption": "Die Abzeichen im Admin-Panel.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Abzeichen anlegen",
+     "text": "Name, Symbol und eine kurze Beschreibung — sie soll motivieren, nicht erklären."
+    },
+    {
+     "n": 2,
+     "title": "Bedingung",
+     "text": "Woran es hängt: eine Zahl, eine Serie, ein einmaliges Ereignis."
+    },
+    {
+     "n": 3,
+     "title": "Stufen",
+     "text": "Abzeichen in Stufen wirken länger als einmalige."
+    },
+    {
+     "n": 4,
+     "title": "Vergabe",
+     "text": "Vergebene Abzeichen stehen in der Vitrine der Mitarbeiterperformance."
+    }
+   ],
+   "hint": {
+    "text": "**Wenige, erreichbare Abzeichen wirken besser** als viele unerreichbare. Was niemand schafft, motiviert niemanden."
+   }
+  },
+  {
+   "h1": "Anlässe",
+   "sub": "Was eine Auszeichnung auslöst.",
+   "card": {
+    "title": "Anlässe",
+    "text": "Auslöser einrichten"
+   },
+   "left": {
+    "shot": "a6-trigger"
+   },
+   "leftCaption": "Die Anlässe für Auszeichnungen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Anlass anlegen",
+     "text": "Das Ereignis, das ein Abzeichen auslöst."
+    },
+    {
+     "n": 2,
+     "title": "Aktivieren",
+     "text": "Ein Anlass wirkt erst aktiviert — bis dahin passiert nichts."
+    },
+    {
+     "n": 3,
+     "title": "Prüflauf",
+     "text": "Ein Hintergrundlauf prüft regelmäßig, wer etwas erreicht hat."
+    },
+    {
+     "n": 4,
+     "title": "Rückwirkend",
+     "text": "Beim Aktivieren entscheiden, ob Vergangenes zählt."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Rückwirkende Vergabe gut überlegen.** Werden auf einen Schlag hundert Abzeichen vergeben, ist die Auszeichnung entwertet, bevor sie begonnen hat."
+   }
+  },
+  {
+   "h1": "Standortziele",
+   "sub": "Ziele für ganze Teams.",
+   "card": {
+    "title": "Standortziele",
+    "text": "Team-Ziele hinterlegen"
+   },
+   "left": {
+    "shot": "a6-ziele"
+   },
+   "leftCaption": "Standortziele der Gamification.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Ziel je Institut",
+     "text": "Was das Team gemeinsam erreichen soll."
+    },
+    {
+     "n": 2,
+     "title": "Abgrenzung",
+     "text": "Nicht mit den **Minimalzielen** des Bonus-Boards verwechseln („Bonus-Board 4“) — das sind zwei Systeme."
+    },
+    {
+     "n": 3,
+     "title": "Zeitraum",
+     "text": "Monatlich oder über längere Zeiträume."
+    },
+    {
+     "n": 4,
+     "title": "Sichtbarkeit",
+     "text": "Erst mit der Freischaltung des Moduls sichtbar."
+    }
+   ],
+   "hint": {
+    "text": "**Zwei Zielsysteme brauchen klare Sprache.** Wenn im Team von „dem Ziel“ die Rede ist, muss jeder wissen, welches gemeint ist — sonst entsteht Frust."
+   }
+  },
+  {
+   "h1": "Vor dem Start",
+   "sub": "Was vor der Freischaltung zu klären ist.",
+   "card": {
+    "title": "Vor dem Start",
+    "text": "Checkliste für den Go-Live"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Vor dem Start klären",
+     "Warum"
+    ],
+    "rows": [
+     [
+      "Welche Abzeichen gibt es?",
+      "Wenige, klar benannte — sonst wirkt es beliebig"
+     ],
+     [
+      "Zählt Vergangenes?",
+      "Rückwirkende Massenvergabe entwertet die Auszeichnung"
+     ],
+     [
+      "Wer sieht was?",
+      "Nur die eigene Vitrine oder auch die der anderen"
+     ],
+     [
+      "Verhältnis zum Bonus",
+      "Abzeichen sind Anerkennung, kein Geld — das muss gesagt sein"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Diese Anleitung gilt ab dem Start.** Die Screenshots zeigen den eingerichteten Zustand — sichtbar wird für das Team nichts, bevor das Modul freigeschaltet ist."
+   }
+  }
+ ]
+}

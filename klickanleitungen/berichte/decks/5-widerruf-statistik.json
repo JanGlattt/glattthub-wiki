@@ -1,0 +1,168 @@
+{
+ "out": "../pdf/Berichte-5-widerruf-statistik",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 5,
+ "of": 16,
+ "audience": "buero",
+ "title": [
+  "Widerruf-",
+  "Statistik"
+ ],
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — Widerrufe absolut, als Quote, in Euro und im Zeitverlauf",
+ "eyebrow": "Berichte · Widerrufe",
+ "footerArea": "Berichte",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der Bericht beantwortet: **Wie viele Verträge werden widerrufen — und was kostet das?**",
+  "Gezählt wird nach **Eingangsdatum** des Widerrufs, nicht nach Vertragsdatum.",
+  "Die Quote gehört immer zur Zahl der Abschlüsse desselben Zeitraums."
+ ],
+ "pages": [
+  {
+   "h1": "Den Bericht öffnen",
+   "sub": "Zeitraum, Standort und Gründe.",
+   "card": {
+    "title": "Bericht öffnen",
+    "text": "Zeitraum, Standort, Gründe"
+   },
+   "left": {
+    "shot": "r5-kopf"
+   },
+   "leftCaption": "Kopf der Widerruf-Statistik.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum",
+     "text": "Nach Eingang des Widerrufs, nicht nach Vertragsdatum."
+    },
+    {
+     "n": 2,
+     "title": "Standort",
+     "text": "Unterschiede zwischen Instituten sind ein Hinweis auf Beratungsqualität."
+    },
+    {
+     "n": 3,
+     "title": "Kennzahlen",
+     "text": "Anzahl, Quote und Euro-Volumen."
+    }
+   ],
+   "hint": {
+    "text": "**Widerrufe hinken nach.** Ein Vertrag vom 28. kann erst im Folgemonat widerrufen werden — deshalb passt die Quote eines frischen Monats nie."
+   }
+  },
+  {
+   "h1": "Quote und Volumen",
+   "sub": "Die beiden Zahlen, die zählen.",
+   "card": {
+    "title": "Quote und Euro",
+    "text": "Anteil der Verkäufe und Geldwert"
+   },
+   "left": {
+    "shot": "r5-quote"
+   },
+   "leftCaption": "Widerrufsquote und Volumen im Verlauf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Quote",
+     "text": "Widerrufe im Verhältnis zu den Abschlüssen desselben Zeitraums."
+    },
+    {
+     "n": 2,
+     "title": "Euro-Volumen",
+     "text": "Der Vertragswert, der wegfällt — die betriebswirtschaftliche Größe."
+    },
+    {
+     "n": 3,
+     "title": "Verlauf",
+     "text": "Einzelmonate schwanken stark; erst der Verlauf zeigt eine Entwicklung."
+    },
+    {
+     "n": 4,
+     "title": "Je Institut",
+     "text": "Ein dauerhaft höherer Wert ist ein Gesprächsanlass, kein Vorwurf."
+    }
+   ],
+   "hint": {
+    "text": "**Eine Quote von null ist kein Ziel.** Widerrufe gehören zum Fernabsatz; auffällig ist erst eine deutliche Abweichung nach oben."
+   }
+  },
+  {
+   "h1": "Gründe verstehen",
+   "sub": "Die Gründe sind der eigentliche Erkenntnisgewinn.",
+   "card": {
+    "title": "Gründe",
+    "text": "Wofür die Kundinnen widerrufen"
+   },
+   "left": {
+    "shot": "r5-gruende"
+   },
+   "leftCaption": "Verteilung der Widerrufsgründe.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Finanzen",
+     "text": "Der häufigste Grund — er verweist auf die Ratenhöhe, nicht auf die Beratung."
+    },
+    {
+     "n": 2,
+     "title": "Gesundheit",
+     "text": "Meist nicht beeinflussbar."
+    },
+    {
+     "n": 3,
+     "title": "Beratungsqualität",
+     "text": "Der Grund, der wirklich etwas über uns aussagt."
+    },
+    {
+     "n": 4,
+     "title": "Zeitpunkt",
+     "text": "Widerrufe in den ersten Tagen folgen anderen Ursachen als späte."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Der Grund kommt aus der Erfassung.** Wer beim Anlegen pauschal „Sonstiges“ wählt, macht diese Auswertung wertlos („Verkauf 4“)."
+   }
+  },
+  {
+   "h1": "Verbindung zu anderen Zahlen",
+   "sub": "Widerrufe wirken an mehreren Stellen.",
+   "card": {
+    "title": "Zusammenhänge",
+    "text": "Bonus, Forderungen, Verkaufszahlen"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Wirkung",
+     "Wo sie sichtbar wird"
+    ],
+    "rows": [
+     [
+      "Verkaufszahlen sinken nachträglich",
+      "„Berichte 1“ — der Vertrag fällt aus dem Zeitraum"
+     ],
+     [
+      "Bonus unter Vorbehalt",
+      "„Bonus-Board 1“ und „Bonus-Board 5“"
+     ],
+     [
+      "SEPA-Einzüge müssen gestoppt werden",
+      "„Verkauf 3“ — sonst wird weiter abgebucht"
+     ],
+     [
+      "Forderungsfall entfällt",
+      "„Finanzen 1“ — Fall abschließen"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Für die Bearbeitung** eines einzelnen Falls ist „Verkauf 4“ zuständig — dieser Bericht ist die Vogelperspektive."
+   }
+  }
+ ]
+}

@@ -1,0 +1,174 @@
+{
+ "out": "../pdf/Berichte-0-So-funktionieren-Berichte",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 0,
+ "of": 16,
+ "audience": "leitung",
+ "title": [
+  "So funktionieren",
+  "die Berichte"
+ ],
+ "subtitle": "Klickanleitung für alle Statistikseiten im glatttHub — Filter, Kennzahlen, Diagramm und Tabelle, Export",
+ "eyebrow": "Berichte · Gemeinsames Gerüst",
+ "footerArea": "Berichte",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "**Alle Berichte sind gleich aufgebaut.** Wer eine Seite bedienen kann, kann alle.",
+  "Jede Karte zeigt ihre Zahlen als **Diagramm** und als **Tabelle** — umgeschaltet über das Register am Kartenrand.",
+  "**Was zu sehen ist, ist auch exportierbar** — jede Berichtsseite hat einen CSV-Export."
+ ],
+ "pages": [
+  {
+   "h1": "Zeitraum und Standort",
+   "sub": "Oben auf jeder Berichtsseite stehen dieselben Filter. Sie gelten für alle Karten darunter.",
+   "card": {
+    "title": "Filter setzen",
+    "text": "Zeitraum, Standort und weitere Filter"
+   },
+   "left": {
+    "shot": "r0-kopf"
+   },
+   "leftCaption": "Die Kopf-Karte einer Berichtsseite mit Zeitraum und Filtern.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum wählen",
+     "text": "Voreingestellt ist meist der laufende Monat. Vergleiche gelingen nur mit gleich langen Zeiträumen."
+    },
+    {
+     "n": 2,
+     "title": "Standort",
+     "text": "Kommt aus der Seitenleiste. **„Alle Standorte“** lässt ausgeblendete Institute weg („Grundlagen 2“)."
+    },
+    {
+     "n": 3,
+     "title": "Weitere Filter",
+     "text": "Je Bericht unterschiedlich — Mitarbeiterin, Kanal, Paket. Sie wirken auf **alle** Karten der Seite."
+    },
+    {
+     "n": 4,
+     "title": "Mobil",
+     "text": "Die Filter klappen hinter der Zustandszeile auf („Grundlagen 4“)."
+    }
+   ],
+   "hint": {
+    "text": "**Zahlen sehen falsch aus?** In neun von zehn Fällen ist es der Zeitraum oder der Standort. Erst oben nachsehen, dann die Zahl anzweifeln."
+   }
+  },
+  {
+   "h1": "Die Kennzahlen-Zeile",
+   "sub": "Unter den Filtern steht eine Zeile mit den wichtigsten Zahlen — jede stellt sie sich selbst zusammen.",
+   "card": {
+    "title": "Kennzahlen-Zeile",
+    "text": "Eigene Zahlen wählen und anordnen"
+   },
+   "left": {
+    "shot": "r0-kpis"
+   },
+   "leftCaption": "Die personalisierbare Kennzahlen-Zeile.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Auswahl öffnen",
+     "text": "Über das Symbol am Ende der Zeile."
+    },
+    {
+     "n": 2,
+     "title": "Zahlen wählen",
+     "text": "Nur die, die man wirklich liest. Die Reihenfolge lässt sich ziehen."
+    },
+    {
+     "n": 3,
+     "title": "Persönlich",
+     "text": "Die Auswahl gilt nur für dich und wird auf diesem Gerät gespeichert."
+    }
+   ],
+   "hint": {
+    "text": "**Dieselbe Zeile gibt es auf der Startseite** („Grundlagen 6“). Was dort steht, ist unabhängig von den Berichtsseiten."
+   }
+  },
+  {
+   "h1": "Diagramm oder Tabelle",
+   "sub": "Jede Analyse-Karte hat zwei Seiten — die Zahlen sind dieselben.",
+   "card": {
+    "title": "Diagramm oder Tabelle",
+    "text": "Register am Kartenrand umschalten"
+   },
+   "left": {
+    "shot": "r0-karte"
+   },
+   "leftCaption": "Eine Analyse-Karte mit Register am rechten Rand.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Diagramm",
+     "text": "Die Standardansicht — für den Verlauf und den schnellen Vergleich."
+    },
+    {
+     "n": 2,
+     "title": "Tabelle",
+     "text": "Für genaue Werte. Lange Reihen sind nach Jahr, Quartal, Monat und Tag zusammengefasst."
+    },
+    {
+     "n": 3,
+     "title": "Mehr laden",
+     "text": "Am Fuß der Tabelle, wenn mehr Zeilen vorhanden sind."
+    },
+    {
+     "n": 4,
+     "title": "Info-Fragezeichen",
+     "text": "Erklärt je Karte, was sie zeigt, was die Spalten bedeuten und woher die Daten kommen."
+    }
+   ],
+   "hint": {
+    "text": "**Auf dem Handy** wird aus dem Register ein Umschalter oben rechts in der Karte — dieselbe Funktion, weniger Platz."
+   }
+  },
+  {
+   "h1": "Export und Verlässlichkeit",
+   "sub": "Zum Weiterrechnen gibt es CSV — und ein paar Regeln, damit die Zahlen auch stimmen.",
+   "card": {
+    "title": "Export",
+    "text": "CSV ziehen, Zahlen richtig lesen"
+   },
+   "left": {
+    "shot": "r0-export"
+   },
+   "leftCaption": "Das Export-Fenster einer Berichtsseite.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Export öffnen",
+     "text": "Der Knopf in der Kopfzeile. Die Auswahl entspricht den Karten der Seite."
+    },
+    {
+     "n": 2,
+     "title": "Gleiche Zahlen",
+     "text": "Der Export nimmt **denselben Zeitraum und Filter** wie die Seite — was man sieht, bekommt man."
+    },
+    {
+     "n": 3,
+     "title": "Nur Aggregate",
+     "text": "Exportiert werden zusammengefasste Zahlen, keine Einzeldatensätze mit Kundennamen."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Bestände nicht summieren",
+     "text": "Zahlen wie „aktive Verträge“ sind **Bestände**: Sie über Monate zu addieren ergibt Unsinn. Quoten ebenfalls nie mitteln, sondern aus den Summen rechnen."
+    },
+    {
+     "title": "Datenlücken",
+     "text": "Manche Auswertungen reichen nicht beliebig weit zurück — die Info-Panels der Karten nennen den Beginn. Ältere Zeiträume zeigen dann scheinbare Einbrüche."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Vor jeder Weitergabe den Zeitraum in die Datei schreiben.** Eine CSV ohne Zeitraum ist in einer Woche wertlos — und in einer Besprechung gefährlich."
+   }
+  }
+ ]
+}

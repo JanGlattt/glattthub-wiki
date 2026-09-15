@@ -1,0 +1,168 @@
+{
+ "out": "../pdf/Berichte-15-besucher-buchungs-funnel",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 15,
+ "of": 16,
+ "audience": "leitung",
+ "title": [
+  "Besucher &",
+  "Buchungs-Funnel"
+ ],
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — Besucher der Website, Herkunft, Verweildauer und Abbrüche",
+ "eyebrow": "Berichte · Besucher-Funnel",
+ "footerArea": "Berichte",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der Bericht zeigt, **was auf der Website passiert, bevor jemand bucht** — und wo Menschen abspringen.",
+  "Grundlage ist die Web-Statistik; sie zählt Besuche, nicht Personen.",
+  "**Die größte Abbruchstufe ist der lohnendste Ansatzpunkt** — dort sitzt das meiste verschenkte Geschäft."
+ ],
+ "pages": [
+  {
+   "h1": "Den Bericht öffnen",
+   "sub": "Zeitraum und Herkunft.",
+   "card": {
+    "title": "Bericht öffnen",
+    "text": "Zeitraum und Herkunft wählen"
+   },
+   "left": {
+    "shot": "r15-kopf"
+   },
+   "leftCaption": "Kopf des Besucher-Funnels.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum",
+     "text": "Wochen und Monate; einzelne Tage schwanken zu stark."
+    },
+    {
+     "n": 2,
+     "title": "Herkunft",
+     "text": "Suchmaschine, Werbung, direkte Eingabe, Empfehlung."
+    },
+    {
+     "n": 3,
+     "title": "Kennzahlen",
+     "text": "Besuche, Verweildauer, Buchungen."
+    }
+   ],
+   "hint": {
+    "text": "**Besuche sind keine Personen.** Wer dreimal wiederkommt, zählt dreifach — für Trends genügt das, für Aussagen über Menschen nicht."
+   }
+  },
+  {
+   "h1": "Herkunft und Verhalten",
+   "sub": "Woher die Besucher kommen und was sie tun.",
+   "card": {
+    "title": "Herkunft",
+    "text": "Kanäle, Verweildauer, Seiten"
+   },
+   "left": {
+    "shot": "r15-herkunft"
+   },
+   "leftCaption": "Herkunft und Verweildauer.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kanäle",
+     "text": "Welcher Weg wie viele Besuche bringt."
+    },
+    {
+     "n": 2,
+     "title": "Verweildauer",
+     "text": "Kurze Verweildauer bei Werbe-Besuchen ist ein Zeichen für falsche Erwartungen."
+    },
+    {
+     "n": 3,
+     "title": "Einstiegsseiten",
+     "text": "Wo Besucher ankommen — oft nicht die Startseite."
+    },
+    {
+     "n": 4,
+     "title": "Mit Ads lesen",
+     "text": "Zusammen mit „Berichte 14“ ergibt sich, ob teure Klicks auch bleiben."
+    }
+   ],
+   "hint": {
+    "text": "**Eine sehr kurze Verweildauer aus einer Kampagne ist ein Warnzeichen:** Die Anzeige verspricht etwas anderes, als die Seite zeigt."
+   }
+  },
+  {
+   "h1": "Der Buchungs-Trichter",
+   "sub": "Von der Seite bis zum bestätigten Termin.",
+   "card": {
+    "title": "Der Trichter",
+    "text": "Stufen und Abbrüche"
+   },
+   "left": {
+    "shot": "r15-funnel"
+   },
+   "leftCaption": "Der Buchungs-Funnel mit Abbruchstufen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Stufen",
+     "text": "Seite geöffnet, Buchung begonnen, Daten eingegeben, Termin bestätigt."
+    },
+    {
+     "n": 2,
+     "title": "Abbrüche",
+     "text": "Je Stufe der Anteil, der aussteigt."
+    },
+    {
+     "n": 3,
+     "title": "Größte Stufe",
+     "text": "Dort ansetzen — eine Verbesserung wirkt hier am stärksten."
+    },
+    {
+     "n": 4,
+     "title": "Gerät",
+     "text": "Handy und Rechner verhalten sich unterschiedlich; getrennt lesen."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Ein Abbruch ist kein verlorener Kunde.** Viele buchen später oder rufen an. Der Trichter zeigt Reibung, nicht Verlust."
+   }
+  },
+  {
+   "h1": "Was daraus folgt",
+   "sub": "Verbesserungen an der Buchungsstrecke.",
+   "card": {
+    "title": "Konsequenzen",
+    "text": "Wo man ansetzt"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Beobachtung",
+     "Ansatz"
+    ],
+    "rows": [
+     [
+      "Viele Abbrüche bei der Terminwahl",
+      "Zu wenige freie Zeiten — Kapazität und Öffnungszeiten prüfen („Berichte 13“)"
+     ],
+     [
+      "Abbrüche bei der Dateneingabe",
+      "Zu viele Pflichtfelder oder unklare Hinweise"
+     ],
+     [
+      "Hohe Absprungrate auf dem Handy",
+      "Darstellung auf kleinen Bildschirmen prüfen"
+     ],
+     [
+      "Viele Besuche, wenige Buchungen",
+      "Erwartung und Angebot passen nicht zusammen — Anzeigen und Seitentexte ansehen"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Änderungen an der Buchungsstrecke wirken sofort** — deshalb den Vorher-Nachher-Vergleich über denselben Wochentag-Zeitraum legen, nicht über beliebige Wochen."
+   }
+  }
+ ]
+}

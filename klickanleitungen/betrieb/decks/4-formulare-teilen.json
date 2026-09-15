@@ -1,0 +1,132 @@
+{
+ "out": "../pdf/Betrieb-4-Formulare-teilen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Betrieb",
+ "nr": 4,
+ "of": 6,
+ "audience": "institut",
+ "title": [
+  "Formulare teilen",
+  "& Einreichungen"
+ ],
+ "subtitle": "Klickanleitung für die Formulare im glatttHub — Link an die Kundin, eingereichte Formulare lesen, PDF holen",
+ "eyebrow": "Betrieb · Formulare im Einsatz",
+ "footerArea": "Betrieb",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Ein geteiltes Formular füllt die Kundin **selbst auf ihrem Gerät** aus — der Link gilt **48 Stunden**.",
+  "Ausgefüllte Formulare landen im **Kundenprofil, Reiter Dokumente** („Kundenverwaltung 6“).",
+  "**Ein eingereichtes Formular wird nie geändert** — es ist der Beleg dessen, was unterschrieben wurde."
+ ],
+ "pages": [
+  {
+   "h1": "Formular teilen",
+   "sub": "Wenn die Kundin selbst ausfüllen soll — zu Hause, im Wartebereich oder auf dem eigenen Handy.",
+   "card": {
+    "title": "Formular teilen",
+    "text": "Link erzeugen, weitergeben, 48 Stunden Gültigkeit"
+   },
+   "left": {
+    "shot": "b12-teilen"
+   },
+   "leftCaption": "Das Fenster **„Formular teilen“** mit Link und E-Mail-Versand.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Formular teilen“",
+     "text": "Steht in der Kopfzeile des geöffneten Formulars im Termin."
+    },
+    {
+     "n": 2,
+     "title": "Link kopieren",
+     "text": "Für die Weitergabe per WhatsApp aus dem Kundenprofil („Kundenverwaltung 5“)."
+    },
+    {
+     "n": 3,
+     "title": "Oder per E-Mail",
+     "text": "Der Hub verschickt den Link an die hinterlegte Adresse."
+    },
+    {
+     "n": 4,
+     "title": "48 Stunden",
+     "text": "Danach ist der Link tot. Ein neuer lässt sich jederzeit erzeugen."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Der Link führt direkt ins Formular — ohne Anmeldung.** Er gehört nur der einen Kundin. Nicht in Gruppen posten, nicht an mehrere Personen schicken."
+   }
+  },
+  {
+   "h1": "Die Kundenansicht",
+   "sub": "So sieht die Kundin das Formular auf ihrem Gerät.",
+   "card": {
+    "title": "Die Kundenansicht",
+    "text": "Was die Kundin sieht und tut"
+   },
+   "left": {
+    "shot": "b13-geteiltes-formular"
+   },
+   "leftCaption": "Das geteilte Formular auf dem Gerät der Kundin.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Ausfüllen",
+     "text": "Dieselben Felder wie im Institut, auf das Telefon angepasst."
+    },
+    {
+     "n": 2,
+     "title": "Unterschreiben",
+     "text": "Mit dem Finger auf dem Bildschirm — rechtlich dieselbe Unterschrift wie vor Ort."
+    },
+    {
+     "n": 3,
+     "title": "Absenden",
+     "text": "Danach liegt das Formular sofort im Hub und die Kundin bekommt das PDF per E-Mail."
+    }
+   ],
+   "hint": {
+    "text": "**Im Termin nachsehen, nicht nachfragen:** Sobald die Kundin abgesendet hat, verschwindet die Aufgabe aus der Formularliste des Termins — ein Neuladen genügt."
+   }
+  },
+  {
+   "h1": "Eingereichtes lesen",
+   "sub": "Jedes ausgefüllte Formular bleibt nachlesbar — im Kundenprofil und in der Formular-Übersicht.",
+   "card": {
+    "title": "Eingereichtes lesen",
+    "text": "Antworten ansehen, PDF herunterladen"
+   },
+   "left": {
+    "shot": "b14-einreichung"
+   },
+   "leftCaption": "Eine eingereichte Kundeninformation mit allen Antworten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zwei Wege",
+     "text": "Über das **Kundenprofil, Reiter Dokumente** — oder über die Zahl **„Einreichungen“** in der Formular-Übersicht."
+    },
+    {
+     "n": 2,
+     "title": "Antworten lesen",
+     "text": "Alle Felder in der Reihenfolge des Formulars, mit Unterschrift."
+    },
+    {
+     "n": 3,
+     "title": "PDF herunterladen",
+     "text": "Dieselbe Fassung, die die Kundin bekommen hat — für Ausdruck oder Weiterleitung."
+    },
+    {
+     "n": 4,
+     "title": "Status",
+     "text": "**Eingereicht** oder **Geprüft**; geprüft setzt das Büro."
+    }
+   ],
+   "hint": {
+    "text": "**„Die Kundin sagt, sie hat nie unterschrieben.“** Dann hier nachsehen: Das eingereichte Formular zeigt Datum, Antworten und Unterschrift — und wer beim Ausfüllen dabei war."
+   }
+  }
+ ]
+}

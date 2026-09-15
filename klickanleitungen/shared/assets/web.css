@@ -90,6 +90,7 @@ table.tbl th,table.err th{text-align:left;background:var(--teal-soft);color:var(
 table.tbl td,table.err td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
 table.tbl td:first-child,table.err td:first-child{font-weight:700}
 
+.audience.warn{border-color:#c0392b;background:#fdecec;color:#c0392b}
 .audience{display:inline-block;padding:3px 10px;border:1.4px solid var(--gold);border-radius:20px;
   background:var(--gold-soft);color:#8a6d12;font-size:13px;font-weight:700;font-style:normal;margin-bottom:12px}
 

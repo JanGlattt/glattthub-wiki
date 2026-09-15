@@ -1,0 +1,173 @@
+{
+ "out": "../pdf/Berichte-14-ads-analyse",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 14,
+ "of": 16,
+ "audience": "leitung",
+ "title": [
+  "Ads-",
+  "Analyse"
+ ],
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — Google Ads und Meta Ads: Kosten, Buchungen, Verträge und KPZ",
+ "eyebrow": "Berichte · Werbung",
+ "footerArea": "Berichte",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der Bericht verbindet **Werbekosten** mit dem, was daraus wurde — Buchungen, Verträge, Körperzonen.",
+  "Möglich wird das durch die **Buchungs-Nachverfolgung**: Jede Online-Buchung trägt ihre Herkunft mit.",
+  "**Kosten je Buchung ist die schwache Zahl, Wert je Buchung die starke** — sie entscheidet über Rentabilität."
+ ],
+ "pages": [
+  {
+   "h1": "Den Bericht öffnen",
+   "sub": "Zeitraum, Kanal und Kampagne.",
+   "card": {
+    "title": "Bericht öffnen",
+    "text": "Zeitraum, Kanal, Kampagne"
+   },
+   "left": {
+    "shot": "r14-kopf"
+   },
+   "leftCaption": "Kopf der Ads-Analyse.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum",
+     "text": "Werbung wirkt verzögert — mindestens einen Monat betrachten."
+    },
+    {
+     "n": 2,
+     "title": "Kanal",
+     "text": "**Google Ads** und **Meta Ads** getrennt; sie verhalten sich unterschiedlich."
+    },
+    {
+     "n": 3,
+     "title": "Kampagne",
+     "text": "Für die Detailsicht einzelne Kampagnen."
+    },
+    {
+     "n": 4,
+     "title": "Standort",
+     "text": "Regionale Kampagnen lassen sich je Institut lesen."
+    }
+   ],
+   "hint": {
+    "text": "**Zwischen Klick und Vertrag liegen Wochen.** Eine Kampagne aus dieser Woche an den Verträgen dieser Woche zu messen, misst die Kampagne von vor einem Monat."
+   }
+  },
+  {
+   "h1": "Kosten und Klicks",
+   "sub": "Was die Werbung kostet und was sie an Aufmerksamkeit bringt.",
+   "card": {
+    "title": "Kosten",
+    "text": "Ausgaben, Klicks, Kosten je Klick"
+   },
+   "left": {
+    "shot": "r14-kosten"
+   },
+   "leftCaption": "Kosten und Klicks je Kanal.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Ausgaben",
+     "text": "Was im Zeitraum ausgegeben wurde."
+    },
+    {
+     "n": 2,
+     "title": "Klicks",
+     "text": "Wie viele Menschen reagiert haben."
+    },
+    {
+     "n": 3,
+     "title": "Kosten je Klick",
+     "text": "Nützlich für die Kampagnensteuerung, nicht für die Rentabilitätsfrage."
+    },
+    {
+     "n": 4,
+     "title": "Kanäle vergleichen",
+     "text": "Meta ist meist billiger je Klick, Google näher am Kaufinteresse."
+    }
+   ],
+   "hint": {
+    "text": "**Klicks sind kein Geschäft.** Die Zahl darüber sagt nur, dass Werbung ausgespielt wurde — nicht, dass jemand kommt."
+   }
+  },
+  {
+   "h1": "Buchungen und Verträge",
+   "sub": "Die Kette bis zum Abschluss — der eigentliche Zweck des Berichts.",
+   "card": {
+    "title": "Bis zum Vertrag",
+    "text": "Buchungen, Beratungen, Verträge, KPZ"
+   },
+   "left": {
+    "shot": "r14-kette"
+   },
+   "leftCaption": "Von der Buchung bis zum Vertrag.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Online-Buchungen",
+     "text": "Termine, die nachweislich aus Werbung kamen."
+    },
+    {
+     "n": 2,
+     "title": "Beratungen",
+     "text": "Wie viele davon tatsächlich erschienen sind."
+    },
+    {
+     "n": 3,
+     "title": "Verträge und KPZ",
+     "text": "Was am Ende verkauft wurde — die Zahl, die zählt."
+    },
+    {
+     "n": 4,
+     "title": "Wert je Buchung",
+     "text": "Vertragswert im Verhältnis zu den Buchungen — die Kennzahl für Rentabilität."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Nicht mit einem Pauschalwert rechnen.** Eine Online-Buchung ist im Schnitt deutlich mehr wert als früher angenommen — wer mit einem veralteten Festwert kalkuliert, steuert Werbebudgets in die falsche Richtung."
+   }
+  },
+  {
+   "h1": "Grenzen der Zuordnung",
+   "sub": "Was der Bericht nicht wissen kann.",
+   "card": {
+    "title": "Grenzen",
+    "text": "Was sich nicht zuordnen lässt"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Grenze",
+     "Warum"
+    ],
+    "rows": [
+     [
+      "Telefonbuchungen",
+      "Keine Nachverfolgung — sie fehlen in der Zuordnung, obwohl Werbung sie ausgelöst haben kann"
+     ],
+     [
+      "Empfehlungen",
+      "Wer über eine Freundin kommt, die Werbung gesehen hat, zählt nicht auf die Kampagne"
+     ],
+     [
+      "Lange Entscheidungswege",
+      "Wer heute klickt und in drei Monaten bucht, ist kaum noch zuzuordnen"
+     ],
+     [
+      "Einwilligung",
+      "Ohne Zustimmung zur Nachverfolgung fehlt die Herkunft ganz"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Für die Besucherseite** ist „Berichte 15“ zuständig: Dort steht, was auf der Website passiert, bevor gebucht wird."
+   }
+  }
+ ]
+}

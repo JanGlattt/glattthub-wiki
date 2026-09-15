@@ -1,0 +1,168 @@
+{
+ "out": "../pdf/Berichte-13-hr-kennzahlen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 13,
+ "of": 16,
+ "audience": "leitung",
+ "title": [
+  "HR-",
+  "Kennzahlen"
+ ],
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — Kapazität, Produktivität, Verfügbarkeit und Struktur des Personals",
+ "eyebrow": "Berichte · HR",
+ "footerArea": "Berichte",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der Bericht beantwortet: **Haben wir genug Leute — und sind sie da, wenn wir sie brauchen?**",
+  "Grundlage ist der Dienstplan aus **askDANTE** zusammen mit den Terminen aus Phorest.",
+  "**Produktivität ist kein Werturteil**, sondern das Verhältnis von verfügbarer zu genutzter Zeit."
+ ],
+ "pages": [
+  {
+   "h1": "Den Bericht öffnen",
+   "sub": "Zeitraum, Standort und Personengruppe.",
+   "card": {
+    "title": "Bericht öffnen",
+    "text": "Zeitraum und Standort wählen"
+   },
+   "left": {
+    "shot": "r13-kopf"
+   },
+   "leftCaption": "Kopf der HR-Kennzahlen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum",
+     "text": "Volle Monate — Teilmonate verzerren jede Quote."
+    },
+    {
+     "n": 2,
+     "title": "Standort",
+     "text": "Kapazität ist immer örtlich."
+    },
+    {
+     "n": 3,
+     "title": "Kennzahlen",
+     "text": "Stunden, Auslastung, Abwesenheit."
+    }
+   ],
+   "hint": {
+    "text": "**Die Zahlen stammen aus dem Dienstplan.** Wo dort nichts steht, kann der Bericht nichts rechnen — Lücken sind Pflegelücken, keine Leerstände."
+   }
+  },
+  {
+   "h1": "Kapazität und Auslastung",
+   "sub": "Wie viel Zeit da war und wie viel davon genutzt wurde.",
+   "card": {
+    "title": "Kapazität",
+    "text": "Verfügbare Stunden und Auslastung"
+   },
+   "left": {
+    "shot": "r13-kapazitaet"
+   },
+   "leftCaption": "Kapazität und Auslastung.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Verfügbare Stunden",
+     "text": "Was laut Dienstplan zur Verfügung stand."
+    },
+    {
+     "n": 2,
+     "title": "Genutzte Stunden",
+     "text": "Was durch Termine belegt war."
+    },
+    {
+     "n": 3,
+     "title": "Auslastung",
+     "text": "Das Verhältnis. 100 % sind weder erreichbar noch wünschenswert."
+    },
+    {
+     "n": 4,
+     "title": "Je Institut",
+     "text": "Der Vergleich zeigt, wo Personal fehlt und wo Termine fehlen."
+    }
+   ],
+   "hint": {
+    "text": "**Niedrige Auslastung hat zwei Ursachen** — zu viel Personal oder zu wenig Termine. Welche es ist, zeigt erst der Blick in „Berichte 2“."
+   }
+  },
+  {
+   "h1": "Verfügbarkeit",
+   "sub": "Abwesenheiten und ihre Wirkung auf die Planung.",
+   "card": {
+    "title": "Verfügbarkeit",
+    "text": "Abwesenheiten und Ausfallzeiten"
+   },
+   "left": {
+    "shot": "r13-abwesenheit"
+   },
+   "leftCaption": "Abwesenheiten im Verlauf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Abwesenheitsarten",
+     "text": "Urlaub, Krankheit, Sonderurlaub."
+    },
+    {
+     "n": 2,
+     "title": "Verlauf",
+     "text": "Häufungen in bestimmten Monaten sind planbar — Ferien, Grippezeit."
+    },
+    {
+     "n": 3,
+     "title": "Wirkung",
+     "text": "Dieselben Tage wirken im Bonus-Board auf die Bonusberechtigung („Bonus-Board 1“)."
+    },
+    {
+     "n": 4,
+     "title": "Planung",
+     "text": "Ein Institut ohne Puffer verliert bei jedem Ausfall Termine."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Keine Einzelfall-Auswertung.** Abwesenheiten sind sensible Daten; der Bericht ist für Kapazitätsplanung gedacht, nicht für Personalgespräche über einzelne Fehlzeiten."
+   }
+  },
+  {
+   "h1": "Struktur und Planung",
+   "sub": "Was die Zahlen für Einstellungen bedeuten.",
+   "card": {
+    "title": "Struktur",
+    "text": "Personalstruktur und Konsequenzen"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Beobachtung",
+     "Was zu prüfen ist"
+    ],
+    "rows": [
+     [
+      "Auslastung dauerhaft hoch",
+      "Einstellung prüfen — sonst gehen Folgetermine verloren"
+     ],
+     [
+      "Auslastung niedrig, Vorlauf leer",
+      "Kein Personalthema, sondern Marketing („Berichte 14“)"
+     ],
+     [
+      "Viele Abwesenheiten in einem Monat",
+      "Planung anpassen, Termine vorziehen"
+     ],
+     [
+      "Lücken im Dienstplan",
+      "Pflege in askDANTE nachholen — sonst rechnet der Bericht falsch"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Zusammen mit „Berichte 6“ lesen:** Eine hohe Auslastung bei wenig freien Terminen ist ein Einstellungsgrund — eine hohe Auslastung bei vielen freien Terminen nicht."
+   }
+  }
+ ]
+}

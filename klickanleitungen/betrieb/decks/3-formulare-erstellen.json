@@ -1,0 +1,180 @@
+{
+ "out": "../pdf/Betrieb-3-Formulare-erstellen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Betrieb",
+ "nr": 3,
+ "of": 6,
+ "audience": "buero",
+ "title": [
+  "Formulare",
+  "erstellen"
+ ],
+ "subtitle": "Klickanleitung für den Formular-Editor im glatttHub — Felder anordnen, Regeln setzen, Vertrag und SEPA einbauen",
+ "eyebrow": "Betrieb · Formular-Editor",
+ "footerArea": "Betrieb",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Formulare sind **Daten, kein Code** — Kundeninformation, Behandlungsvertrag und SEPA-Mandat entstehen alle hier.",
+  "Ein Formular mit **Vertrags- oder SEPA-Feld** löst echte Vorgänge aus: Vertrag anlegen, Mandat einrichten, Kauf in Phorest.",
+  "**Zuordnung über Dienstleistungen:** Welches Formular im Termin erscheint, entscheidet der gebuchte Service."
+ ],
+ "pages": [
+  {
+   "h1": "Formular anlegen",
+   "sub": "Die Übersicht zeigt alle Formulare mit ihren Feldern und Einreichungen.",
+   "card": {
+    "title": "Formular anlegen",
+    "text": "Übersicht, neues Formular, Einreichungen"
+   },
+   "left": {
+    "shot": "b8-formulare"
+   },
+   "leftCaption": "Die Formular-Übersicht.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Neues Formular“",
+     "text": "Legt ein leeres Formular an und öffnet den Editor."
+    },
+    {
+     "n": 2,
+     "title": "Felder und Einreichungen",
+     "text": "Je Formular steht dabei, wie viele **Felder** es hat und wie viele **Einreichungen** es schon gibt."
+    },
+    {
+     "n": 3,
+     "title": "Löschen",
+     "text": "Nur, solange keine Einreichungen dranhängen — sonst verschwände die Historie mit."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Ein Formular im Einsatz nie umbauen, sondern kopieren.** Wer Felder eines laufenden Formulars ändert, ändert nichts an den alten Einreichungen — aber deren Darstellung kann danach unvollständig aussehen."
+   }
+  },
+  {
+   "h1": "Felder anordnen",
+   "sub": "Links die Bausteine, in der Mitte das Formular, rechts die Einstellungen des gewählten Feldes.",
+   "card": {
+    "title": "Felder anordnen",
+    "text": "Bausteine ziehen, Beschriftung und Breite setzen"
+   },
+   "left": {
+    "shot": "b9-editor"
+   },
+   "leftCaption": "Der Formular-Editor mit Bausteinen, Arbeitsfläche und Einstellungsspalte.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Baustein ziehen",
+     "text": "**„Elemente hierher ziehen“** — Eingabefeld, Auswahl, Datum, Dokument, Unterschrift und weitere."
+    },
+    {
+     "n": 2,
+     "title": "Beschriftung",
+     "text": "Was die Kundin liest. Dazu **Beschreibung / Hilfetext**, wenn eine Erklärung nötig ist."
+    },
+    {
+     "n": 3,
+     "title": "Breite",
+     "text": "Bestimmt, ob Felder nebeneinander stehen. Zwei halbe Felder in einer Zeile lesen sich auf dem iPad besser als zwei ganze."
+    },
+    {
+     "n": 4,
+     "title": "Aus PDF ausschließen",
+     "text": "Für Felder, die nur der Steuerung dienen und im fertigen PDF nichts zu suchen haben."
+    }
+   ],
+   "hint": {
+    "text": "**Reihenfolge ist Gesprächsführung.** Das Formular wird im Beratungsgespräch gemeinsam ausgefüllt — die Reihenfolge der Felder gibt vor, worüber in welcher Reihenfolge gesprochen wird."
+   }
+  },
+  {
+   "h1": "Regeln und Bedingungen",
+   "sub": "Felder lassen sich abhängig von anderen Antworten ein- und ausblenden — und in ihrer Gültigkeit begrenzen.",
+   "card": {
+    "title": "Regeln setzen",
+    "text": "Bedingte Anzeige, Datum-Regeln, Pflichtangaben"
+   },
+   "left": {
+    "shot": "b10-bedingungen"
+   },
+   "leftCaption": "Die Einstellungen eines Feldes mit **„Bedingte Anzeige“**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bedingte Anzeige",
+     "text": "Das Feld erscheint nur, wenn eine andere Antwort passt — etwa eine Rückfrage nur bei „Ja“."
+    },
+    {
+     "n": 2,
+     "title": "Mehrere Bedingungen",
+     "text": "**„Alle Bedingungen“** heißt: Sie müssen zusammen zutreffen. Sonst genügt eine."
+    },
+    {
+     "n": 3,
+     "title": "Zusatzangabe",
+     "text": "Bei Ja/Nein-Fragen lässt sich eine **Pflicht-Zusatzangabe** verlangen — die Erklärung zum „Ja“."
+    },
+    {
+     "n": 4,
+     "title": "Datum-Regeln",
+     "text": "Grenzen ein, welche Daten wählbar sind — etwa nur die Vergangenheit beim Geburtsdatum."
+    }
+   ],
+   "hint": {
+    "text": "**Nach jeder Regel einmal selbst durchklicken.** Bedingte Felder sind der häufigste Grund dafür, dass ein Formular „nicht absendbar“ ist: Ein verstecktes Pflichtfeld blockiert unsichtbar."
+   }
+  },
+  {
+   "h1": "Vertrag, SEPA und Zuordnung",
+   "sub": "Die folgenreichsten Einstellungen: Was das Formular auslöst und wo es auftaucht.",
+   "card": {
+    "title": "Vertrag, SEPA, Zuordnung",
+    "text": "Was das Formular auslöst und wo es erscheint"
+   },
+   "left": {
+    "shot": "b11-einstellungen"
+   },
+   "leftCaption": "Die Formular-Einstellungen mit Dienstleistungen und Häufigkeit.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Dienstleistungen auswählen",
+     "text": "Entscheidet, bei welchen Services das Formular im Termin angeboten wird — die Zuordnung, nach der die Terminansicht sortiert."
+    },
+    {
+     "n": 2,
+     "title": "Häufigkeit",
+     "text": "**„Einmalig pro Kunde“** (z. B. Kundeninformation) oder **„Bei jedem Termin neu“**."
+    },
+    {
+     "n": 3,
+     "title": "Vertrags-Feld",
+     "text": "Macht aus dem Formular einen **Behandlungsvertrag** — mit Preisliste, Zonen, Rabatt und Gutschein („Terminansicht 3“)."
+    },
+    {
+     "n": 4,
+     "title": "SEPA-Feld",
+     "text": "Richtet das **Lastschriftmandat** ein. Es gehört immer hinter den Vertrag, nie davor („Terminansicht 4“)."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Rechtsdokumente",
+     "text": "Über den Baustein **Dokument** werden AGB und Widerrufsbelehrung eingebunden — die Kundin bestätigt sie einzeln beim Absenden."
+    },
+    {
+     "title": "E-Mail an die Kundin",
+     "text": "Zum Formular gehört ein **E-Mail-Text**, der beim Absenden mit dem PDF verschickt wird."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Die Reihenfolge der Formular-Kette ist erzwungen:** Kundeninformation → Behandlungsvertrag → SEPA-Mandat. Wer ein neues Vertrags- oder SEPA-Formular baut, ordnet es denselben Dienstleistungen zu — sonst erscheint es im Termin an der falschen Stelle oder gar nicht."
+   }
+  }
+ ]
+}

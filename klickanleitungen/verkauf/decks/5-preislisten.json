@@ -1,0 +1,148 @@
+{
+ "out": "../pdf/Verkauf-5-Preislisten",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Verkauf",
+ "nr": 5,
+ "of": 8,
+ "audience": "buero",
+ "title": [
+  "Preislisten",
+  "pflegen"
+ ],
+ "subtitle": "Klickanleitung für das Vertrags-Modul im glatttHub — Preise je Körperzone, Laufzeiten, Rabatte, Zahlungsmodus",
+ "eyebrow": "Verkauf · Preislisten",
+ "footerArea": "Verkauf",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Preisliste ist die **Grundlage jedes Vertrags** — sie bestimmt Preis, Laufzeit und Zahlungsmodus.",
+  "**Eine aktive Fassung ist gesperrt.** Geändert wird über eine neue Fassung, nie an der laufenden.",
+  "Der **Zahlungsmodus** hängt an der Liste, nicht am Formular: erste Rate vor Ort oder alle Raten per SEPA."
+ ],
+ "pages": [
+  {
+   "h1": "Die Preislisten-Übersicht",
+   "sub": "Alle Listen mit Gültigkeit, Zuordnung und Zustand.",
+   "card": {
+    "title": "Die Übersicht",
+    "text": "Listen, Gültigkeit, aktive Fassung"
+   },
+   "left": {
+    "shot": "v16-preislisten"
+   },
+   "leftCaption": "Die Preislisten-Übersicht.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Aktuell gültig“",
+     "text": "Die Liste, mit der neue Verträge gerechnet werden. Es kann je Institut eine eigene geben."
+    },
+    {
+     "n": 2,
+     "title": "„Fassung gesperrt“",
+     "text": "Sobald eine Liste aktiv ist, lässt sie sich nicht mehr ändern — sonst würden bestehende Verträge nachträglich anders."
+    },
+    {
+     "n": 3,
+     "title": "Institut-Zuordnung",
+     "text": "Eine Liste kann für **alle** Institute gelten oder nur für bestimmte."
+    },
+    {
+     "n": 4,
+     "title": "Duplizieren",
+     "text": "Der Weg zu einer neuen Fassung: kopieren, ändern, aktivieren."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Der Duplizierer kopiert nicht alles.** Filialzuordnung und Rabatt-Zeiträume müssen nach dem Kopieren **von Hand** gesetzt werden — sonst gilt die neue Liste plötzlich überall oder ohne Rabatte."
+   }
+  },
+  {
+   "h1": "Preise je Körperzone",
+   "sub": "Der Kern jeder Liste: Was kostet wie viel — gestaffelt nach Anzahl der Zonen und Laufzeit.",
+   "card": {
+    "title": "Preise je Zone",
+    "text": "Staffel nach Zonen und Laufzeit"
+   },
+   "left": {
+    "shot": "v17-preise"
+   },
+   "leftCaption": "Die Preistabelle einer Liste.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Ab KPZ“",
+     "text": "Die Staffel: ab welcher Zahl von Körperzonen ein Preis gilt."
+    },
+    {
+     "n": 2,
+     "title": "Laufzeiten",
+     "text": "Je Laufzeit eine Spalte — daraus entsteht im Formular die **Zahlungsoption**."
+    },
+    {
+     "n": 3,
+     "title": "Einmalzahlung",
+     "text": "Eine eigene Spalte. Im Formular wird daraus die **Preisoption**."
+    },
+    {
+     "n": 4,
+     "title": "Prüfen statt hoffen",
+     "text": "Nach dem Speichern eine Beispielrechnung im Vertragsformular gegenprüfen — mit sechs Zonen und der längsten Laufzeit."
+    }
+   ],
+   "hint": {
+    "text": "**Die Staffel wirkt sofort auf jeden neuen Vertrag.** Bestehende Verträge behalten ihre Liste — sie sind an die Fassung gebunden, die beim Abschluss galt."
+   }
+  },
+  {
+   "h1": "Rabatte und Zahlungsmodus",
+   "sub": "Zwei Einstellungen mit großer Wirkung: was nachgelassen wird und wie eingezogen wird.",
+   "card": {
+    "title": "Rabatte & Modus",
+    "text": "Rabatt-Zeiträume, erste Rate vor Ort oder alles per SEPA"
+   },
+   "left": {
+    "shot": "v18-rabatte"
+   },
+   "leftCaption": "Rabatt-Einstellungen und Zahlungsmodus der Liste.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Rabatt-Zeiträume",
+     "text": "Zeitlich begrenzte Nachlässe — sie gelten nur für Verträge, die in diesem Zeitraum abgeschlossen werden."
+    },
+    {
+     "n": 2,
+     "title": "Rabatt 1. Sitzung",
+     "text": "Mindert die **erste Rate**, nicht die Laufzeit."
+    },
+    {
+     "n": 3,
+     "title": "„Alle Raten per SEPA“",
+     "text": "Statt erste Rate vor Ort wird **alles** eingezogen; ein Rabatt mindert dann Rate 1 bis auf mindestens 1 €."
+    },
+    {
+     "n": 4,
+     "title": "Aktivieren",
+     "text": "Erst die Aktivierung macht die Fassung gültig — und sperrt sie zugleich."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Im Formular nicht wählbar",
+     "text": "Der Zahlungsmodus erscheint im Vertragsformular nur als **Anzeige**. Wer ihn ändern will, ändert die Preisliste — oder wählt eine andere."
+    },
+    {
+     "title": "Mehrere Listen im Dropdown",
+     "text": "Gibt es für ein Institut eine eigene **und** eine globale Liste, erscheinen **beide** zur Auswahl. Die eigene ersetzt die globale nicht."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Vor dem Aktivieren im Formular gegenprüfen.** Eine falsch gestaffelte oder falsch zugeordnete Liste erzeugt Verträge mit falschen Beträgen — und die stehen dann unterschrieben in der Welt."
+   }
+  }
+ ]
+}

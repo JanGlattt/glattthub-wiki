@@ -1,0 +1,132 @@
+{
+ "out": "../pdf/Finanzen-3-Unternehmensvertraege",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Finanzen",
+ "nr": 3,
+ "of": 3,
+ "audience": "buero",
+ "title": [
+  "Unternehmens-",
+  "verträge"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Miete, Software und Dienstleister mit Kosten, Laufzeit und Kündigungsfrist",
+ "eyebrow": "Finanzen · Unternehmensverträge",
+ "footerArea": "Finanzen",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Hier stehen die Verträge **der Firma** — nicht die der Kundinnen („Verkauf 1“).",
+  "Der wichtigste Zweck ist die **Kündigungsfrist**: Was niemand im Blick hat, verlängert sich von selbst.",
+  "Kosten lassen sich je **Standort** oder **firmenweit** führen — davon hängt die Auswertung ab."
+ ],
+ "pages": [
+  {
+   "h1": "Die Übersicht",
+   "sub": "Alle Firmenverträge mit Kosten, Intervall, Standort und Status.",
+   "card": {
+    "title": "Die Übersicht",
+    "text": "Verträge, Kosten, Intervalle, Standorte"
+   },
+   "left": {
+    "shot": "f7-unternehmensvertraege"
+   },
+   "leftCaption": "Die Übersicht der Unternehmensverträge mit Filtern.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bezeichnung",
+     "text": "Wofür der Vertrag ist — Miete, Software, Reinigung, Wartung."
+    },
+    {
+     "n": 2,
+     "title": "Intervall",
+     "text": "Monatlich, jährlich oder anders. **„Alle Intervalle“** hebt den Filter auf."
+    },
+    {
+     "n": 3,
+     "title": "Standort",
+     "text": "Einem Institut zugeordnet oder **„Firmenweit“** — wichtig für die Kostenzuordnung."
+    },
+    {
+     "n": 4,
+     "title": "Status",
+     "text": "Laufend oder gekündigt, mit **Kündigungsdatum**."
+    }
+   ],
+   "hint": {
+    "text": "**Für die Kostenfrage je Standort** sind Zuordnung und Intervall entscheidend: Ein firmenweiter Vertrag taucht in keiner Standort-Auswertung einzeln auf."
+   }
+  },
+  {
+   "h1": "Einen Vertrag erfassen",
+   "sub": "Neue Verträge gehören vollständig hinein — vor allem mit ihren Fristen.",
+   "card": {
+    "title": "Vertrag erfassen",
+    "text": "Bezeichnung, Kosten, Laufzeit, Fristen"
+   },
+   "left": {
+    "shot": "f8-vertrag-erfassen"
+   },
+   "leftCaption": "Die Eingabe eines Unternehmensvertrags.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bezeichnung und Partner",
+     "text": "So benennen, dass es in zwei Jahren noch jemand versteht — nicht nur der Firmenname."
+    },
+    {
+     "n": 2,
+     "title": "Kosten und Intervall",
+     "text": "Betrag und Rhythmus. Daraus entstehen die monatlichen Fixkosten."
+    },
+    {
+     "n": 3,
+     "title": "Laufzeit und Frist",
+     "text": "Beginn, Mindestlaufzeit und **Kündigungsfrist** — der eigentliche Grund für dieses Modul."
+    },
+    {
+     "n": 4,
+     "title": "Standort",
+     "text": "Einem Institut zuordnen oder firmenweit führen."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Die Kündigungsfrist ist der Punkt.** Ein Vertrag ohne hinterlegte Frist verlängert sich irgendwann stillschweigend — und niemand merkt es, bis die nächste Rechnung kommt."
+   }
+  },
+  {
+   "h1": "Fristen im Blick behalten",
+   "sub": "Der Nutzen entsteht erst durch regelmäßiges Draufschauen.",
+   "card": {
+    "title": "Fristen im Blick",
+    "text": "Wann prüfen, was kündigen, was dokumentieren"
+   },
+   "left": {
+    "shot": "f9-fristen"
+   },
+   "leftCaption": "Verträge mit anstehenden Fristen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Regelmäßig prüfen",
+     "text": "Einmal im Quartal die Liste durchgehen — Fristen liegen oft Monate vor dem Laufzeitende."
+    },
+    {
+     "n": 2,
+     "title": "Kündigung eintragen",
+     "text": "Mit **Kündigungsdatum** festhalten, sobald sie raus ist."
+    },
+    {
+     "n": 3,
+     "title": "Nachweis ablegen",
+     "text": "Bestätigung des Vertragspartners zum Vertrag legen — sonst steht Aussage gegen Aussage."
+    }
+   ],
+   "hint": {
+    "text": "**Gekündigt heißt nicht beendet.** Ein Vertrag läuft bis zum Ende der Laufzeit weiter und kostet weiter — er verschwindet deshalb erst mit dem Enddatum aus den laufenden Kosten."
+   }
+  }
+ ]
+}

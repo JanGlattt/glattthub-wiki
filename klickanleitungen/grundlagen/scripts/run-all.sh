@@ -1,5 +1,5 @@
 #!/bin/bash
-# Aufnahmelauf der Klickanleitungen „Grundlagen" (Dokumente 1–5).
+# Aufnahmelauf der Klickanleitungen „Grundlagen" (Dokumente 1–6).
 # Der Lauf veraendert nichts: Das Profil wird nur fotografiert, der Standort nicht umgestellt,
 # keine Sitzung beendet. Einzige Ausnahme: glatttBert bekommt in Dokument 5 eine Frage gestellt —
 # er kann ohnehin nur lesen.
@@ -15,7 +15,7 @@ for v in KLICK_BASE KLICK_USER KLICK_PW; do
 done
 [ -f mask.json ] || { echo "!!! mask.json fehlt — Kopie von mask.example.json anlegen."; exit 2; }
 
-FLOWS=${*:-"flow1 flow2 flow3 flow4 flow5"}
+FLOWS=${*:-"flow1 flow2 flow3 flow4 flow5 flow6"}
 echo "### Lauf gegen $KLICK_BASE"
 for f in $FLOWS; do
   echo "### $f"

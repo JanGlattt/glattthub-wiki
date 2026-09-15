@@ -13,7 +13,14 @@ klickanleitungen/
 ├── grundlagen/             Serie „Grundlagen" (Anmeldung, Navigation, Profil, Mobil, glatttBert)
 ├── terminansicht/          Serie „Terminansicht" (Beratungs- und Behandlungstermin)
 ├── kundenverwaltung/       Serie „Kundenverwaltung" (Kundenprofil)
-└── bonus-board/            Serie „Bonus-Board" (Mitarbeiterin, Leitung, Verwaltung)
+├── bonus-board/            Serie „Bonus-Board" (Mitarbeiterin, Leitung, Verwaltung)
+├── verkauf/                Serie „Verkauf" (Verträge, SEPA, Widerrufe, Preislisten, Gutscheine)
+├── betrieb/                Serie „Betrieb" (Institute, Formulare, Services, Laser)
+├── team/                   Serie „Team" (Personal, Hub-Konten, Reisekosten)
+├── finanzen/               Serie „Finanzen" (Forderungen, Schulden, Unternehmensverträge)
+├── system/                 Serie „System" (Report-Mails, Audit)
+├── berichte/               Serie „Berichte" (Rahmen + 16 Berichtsseiten)
+└── admin/                  Serie „Admin" (Verwaltungspanel, acht Themenblöcke)
 ```
 
 ## Benennung: Bereich + Nummer

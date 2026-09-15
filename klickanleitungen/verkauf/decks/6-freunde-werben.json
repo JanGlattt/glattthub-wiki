@@ -1,0 +1,127 @@
+{
+ "out": "../pdf/Verkauf-6-Freunde-werben",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Verkauf",
+ "nr": 6,
+ "of": 8,
+ "audience": "buero",
+ "title": [
+  "Freunde",
+  "werben"
+ ],
+ "subtitle": "Klickanleitung für das Vertrags-Modul im glatttHub — Werbungen prüfen, Bankdaten pflegen, Prämien auszahlen",
+ "eyebrow": "Verkauf · Freunde werben",
+ "footerArea": "Verkauf",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Werberin wird **beim Vertragsabschluss erfasst** — im Formular unter „Freunde werben“ („Terminansicht 3“).",
+  "Die Geworbene bekommt **Rabatt auf die erste Rate**, die Werberin eine **Prämie**.",
+  "**Ausgezahlt wird nur mit vollständiger Bankverbindung** — und erst, wenn die Sperre gefallen ist."
+ ],
+ "pages": [
+  {
+   "h1": "Die Übersicht",
+   "sub": "Alle Werbungen mit Werberin, geworbener Kundin, Zonen und Stand der Auszahlung.",
+   "card": {
+    "title": "Die Übersicht",
+    "text": "Werbungen, Werberinnen, Auszahlungsstand"
+   },
+   "left": {
+    "shot": "v19-referrals"
+   },
+   "leftCaption": "Die Liste **„Freunde werben“** mit Filtern.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Filter",
+     "text": "**Alle Werber** und **Alle Zonen** grenzen ein — nützlich bei der monatlichen Auszahlungsrunde."
+    },
+    {
+     "n": 2,
+     "title": "Status",
+     "text": "**Offen**, **Auszahlung blockiert** oder **Ausgezahlt**."
+    },
+    {
+     "n": 3,
+     "title": "Analyse",
+     "text": "Unten steht die Auswertung **Werbungen nach Standort und Monat** — sie zeigt, wo die Empfehlung wirklich läuft."
+    }
+   ],
+   "hint": {
+    "text": "**„Auszahlung blockiert“** heißt fast immer: Der geworbene Vertrag ist noch zu jung, widerrufen oder nicht bezahlt. Vor dem Nachfragen also erst den Vertrag ansehen („Verkauf 2“)."
+   }
+  },
+  {
+   "h1": "Werbung prüfen",
+   "sub": "Vor jeder Auszahlung wird geprüft, ob die Werbung wirklich zählt.",
+   "card": {
+    "title": "Werbung prüfen",
+    "text": "Werberin, Vertrag und Voraussetzungen prüfen"
+   },
+   "left": {
+    "shot": "v20-referral-pruefen"
+   },
+   "leftCaption": "Eine einzelne Werbung mit Vertrag und Werberin.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Werberin",
+     "text": "Lässt sich korrigieren, wenn beim Abschluss die falsche Person erfasst wurde."
+    },
+    {
+     "n": 2,
+     "title": "Vertrag",
+     "text": "Der geworbene Vertrag. Über **„Vertrag ändern“** lässt sich die Zuordnung richtigstellen."
+    },
+    {
+     "n": 3,
+     "title": "Rabatt anwenden",
+     "text": "Setzt den Nachlass auf die erste Rate der Geworbenen, falls das beim Abschluss nicht passiert ist."
+    },
+    {
+     "n": 4,
+     "title": "Betrag",
+     "text": "Die Prämie der Werberin — sie richtet sich nach der Vereinbarung, nicht nach dem Vertragswert."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Ein widerrufener Vertrag begründet keine Prämie.** Vor der Auszahlung prüfen, ob am geworbenen Vertrag ein Widerruf hängt — die Banner auf der Vertragsseite zeigen es."
+   }
+  },
+  {
+   "h1": "Bankdaten und Auszahlung",
+   "sub": "Zum Schluss: Konto der Werberin hinterlegen und die Auszahlung bestätigen.",
+   "card": {
+    "title": "Auszahlen",
+    "text": "Bankdaten speichern, Auszahlung bestätigen"
+   },
+   "left": {
+    "shot": "v21-auszahlung"
+   },
+   "leftCaption": "Bankdaten und Auszahlungs-Bestätigung.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bankdaten speichern",
+     "text": "Kontoinhaberin und IBAN der **Werberin** — nicht die der geworbenen Kundin."
+    },
+    {
+     "n": 2,
+     "title": "Auszahlung bestätigen",
+     "text": "Hält fest, dass überwiesen wurde. Der Hub überweist **nicht** selbst."
+    },
+    {
+     "n": 3,
+     "title": "Status „Ausgezahlt“",
+     "text": "Danach erscheint die Werbung nicht mehr in den offenen Fällen."
+    }
+   ],
+   "hint": {
+    "text": "**Der Hub bucht kein Geld.** „Auszahlung bestätigen“ ist eine Notiz, keine Überweisung — die Zahlung passiert in der Buchhaltung. Wer das verwechselt, hat eine saubere Liste und eine wartende Kundin."
+   }
+  }
+ ]
+}

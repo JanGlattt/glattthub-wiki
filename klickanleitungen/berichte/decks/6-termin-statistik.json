@@ -1,0 +1,168 @@
+{
+ "out": "../pdf/Berichte-6-termin-statistik",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 6,
+ "of": 16,
+ "audience": "leitung",
+ "title": [
+  "Termin-",
+  "statistik"
+ ],
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — alle Termine: Beratungen, Behandlungen und Kombinationen",
+ "eyebrow": "Berichte · Termine",
+ "footerArea": "Berichte",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der Bericht zeigt **alle Termine**, nicht nur Beratungen — und wie sie sich zusammensetzen.",
+  "Gezählt werden **durchgeführte** Termine; gebuchte und abgesagte gehören in „Berichte 4“.",
+  "Aus Auslastung und Terminarten liest man, ob Kapazität oder Nachfrage fehlt."
+ ],
+ "pages": [
+  {
+   "h1": "Den Bericht öffnen",
+   "sub": "Zeitraum, Standort und Terminart.",
+   "card": {
+    "title": "Bericht öffnen",
+    "text": "Zeitraum, Standort, Terminart"
+   },
+   "left": {
+    "shot": "r6-kopf"
+   },
+   "leftCaption": "Kopf der Terminstatistik.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum",
+     "text": "Frei wählbar."
+    },
+    {
+     "n": 2,
+     "title": "Terminart",
+     "text": "**Nur Beratung**, **nur Behandlung** oder **Beratung + Behandlung**."
+    },
+    {
+     "n": 3,
+     "title": "Standort",
+     "text": "Für die Auslastung eines Instituts dort filtern."
+    }
+   ],
+   "hint": {
+    "text": "**Drei Terminarten, drei Aussagen:** Beratungen messen Neugeschäft, Behandlungen Auslastung, Kombinationen Effizienz."
+   }
+  },
+  {
+   "h1": "Auslastung",
+   "sub": "Wie voll die Tage tatsächlich waren.",
+   "card": {
+    "title": "Auslastung",
+    "text": "Termine je Tag, Woche und Kabine"
+   },
+   "left": {
+    "shot": "r6-auslastung"
+   },
+   "leftCaption": "Auslastung im Zeitverlauf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Termine je Tag",
+     "text": "Der Grundwert. Gegen die Öffnungszeiten gelesen ergibt er die Auslastung."
+    },
+    {
+     "n": 2,
+     "title": "Wochentage",
+     "text": "Zeigt, an welchen Tagen Luft ist — und an welchen nicht."
+    },
+    {
+     "n": 3,
+     "title": "Kabinen",
+     "text": "Mehr Termine als Kabinen geht nicht; hier endet jede Planung."
+    },
+    {
+     "n": 4,
+     "title": "Saison",
+     "text": "Sommerloch und Jahresanfang sind normal."
+    }
+   ],
+   "hint": {
+    "text": "**Freie Kapazität ist kein Fehler.** Ein zu 100 % ausgelasteter Kalender lässt keine Folgetermine mehr zu und erzeugt Wartezeiten."
+   }
+  },
+  {
+   "h1": "Terminarten im Verhältnis",
+   "sub": "Das Verhältnis verrät mehr als die absolute Zahl.",
+   "card": {
+    "title": "Verhältnis",
+    "text": "Beratungen zu Behandlungen"
+   },
+   "left": {
+    "shot": "r6-arten"
+   },
+   "leftCaption": "Verteilung der Terminarten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Viele Beratungen",
+     "text": "Neugeschäft läuft — dann muss die Behandlungskapazität folgen."
+    },
+    {
+     "n": 2,
+     "title": "Viele Behandlungen",
+     "text": "Bestand wird abgearbeitet; ohne Beratungen wird es später leer."
+    },
+    {
+     "n": 3,
+     "title": "Kombinationen",
+     "text": "Beratung und erste Sitzung an einem Tag — der effizienteste Fall."
+    },
+    {
+     "n": 4,
+     "title": "Kennzeichnung",
+     "text": "Ob ein Termin als Beratung zählt, entscheidet der Service („Betrieb 5“)."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Ein Termin ohne Service-Zuordnung zählt falsch.** Neue Services in Phorest gehören sofort zugeordnet, sonst verschiebt sich das Verhältnis still."
+   }
+  },
+  {
+   "h1": "Grenzen des Berichts",
+   "sub": "Was er nicht zeigt.",
+   "card": {
+    "title": "Grenzen",
+    "text": "Was der Bericht nicht beantwortet"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Frage",
+     "Wo sie beantwortet wird"
+    ],
+    "rows": [
+     [
+      "Wer hat die Termine geführt?",
+      "„Berichte 9“ — Mitarbeiterperformance"
+     ],
+     [
+      "Wie viele wurden abgesagt?",
+      "„Berichte 4“ — Stornos"
+     ],
+     [
+      "Was wurde verkauft?",
+      "„Berichte 1“ — Verkaufsstatistik"
+     ],
+     [
+      "Wie viele Sitzungen stehen noch aus?",
+      "„Berichte 16“ — glattt-Pakete"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Für einzelne Termine** ist die Terminansicht zuständig („Terminansicht 1“) — dieser Bericht rechnet nur."
+   }
+  }
+ ]
+}

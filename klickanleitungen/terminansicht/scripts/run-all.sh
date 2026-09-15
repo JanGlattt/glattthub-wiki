@@ -15,7 +15,7 @@ for v in KLICK_PW KLICK_APT KLICK_DATE; do
 done
 
 echo "### Lauf gegen ${KLICK_BASE:-Staging} · Termin $KLICK_APT ($KLICK_DATE)"
-for f in flow1 flow2 flow3 flow4 flow5 flow6; do
+for f in flow1 flow2 flow3 flow4 flow5 flow6 flow7; do
   echo "### $f"
   node scripts/$f.cjs 2>&1 | grep -v "^CONSOLE\|^    at " | tail -12 || { echo "!!! $f fehlgeschlagen"; exit 1; }
 done

@@ -15,7 +15,14 @@ footer{position:absolute;left:13mm;right:13mm;bottom:6mm;display:flex;justify-co
 .cover h1{font-size:34px;line-height:1.15;font-weight:700;letter-spacing:-.3px}
 .cover .sub{color:var(--muted);font-size:14px;margin:6mm auto 12mm;max-width:190mm}
 .cards{display:grid;grid-template-columns:repeat(var(--cols,4),1fr);gap:7mm;margin:0 auto;max-width:250mm}
-.cards.n5,.cards.n6{--cols:3}
+.cards.n5,.cards.n6{--cols:3;gap:5mm}
+/* Fuenf oder sechs Karten brauchen zwei Reihen — sonst laeuft das Cover unten aus der Seite. */
+.cover:has(.cards.n5),.cover:has(.cards.n6){padding-top:10mm}
+.cover:has(.cards.n5) .cover-logo,.cover:has(.cards.n6) .cover-logo{height:17mm;margin:1mm auto 6mm}
+.cover:has(.cards.n5) .sub,.cover:has(.cards.n6) .sub{margin:4mm auto 7mm}
+.cover:has(.cards.n5) .card,.cover:has(.cards.n6) .card{padding:5mm 4mm 4.5mm}
+.cover:has(.cards.n5) .cnum,.cover:has(.cards.n6) .cnum{margin-bottom:2.5mm}
+.cover:has(.cards.n5) .notes,.cover:has(.cards.n6) .notes{margin-top:7mm}
 .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8mm 5mm 6mm;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .cnum{width:9mm;height:9mm;border-radius:50%;background:var(--teal);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 4mm}
 .cnum.gold{background:var(--gold)}
@@ -98,3 +105,5 @@ table.tbl td:last-child{width:14%;color:var(--muted)}
 .cover-kicker{color:var(--teal);font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:3mm}
 .cover-audience{display:inline-block;margin:4mm auto 0;padding:1.6mm 4mm;border:1.4px solid var(--gold);border-radius:20px;
   color:#8a6d12;background:var(--gold-soft);font-size:10.5px;font-weight:700;letter-spacing:.4px}
+.cover-hinweis{display:inline-block;margin:3mm auto 0;padding:1.6mm 4mm;border:1.4px solid #c0392b;border-radius:20px;
+  color:#c0392b;background:#fdecec;font-size:10.5px;font-weight:700;letter-spacing:.3px}
