@@ -1,0 +1,169 @@
+{
+ "out": "../pdf/J-Kundendaten-bearbeiten",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "title": [
+  "Kundendaten",
+  "bearbeiten"
+ ],
+ "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — Reiter „Kundeninfos“ von der Sperre bis zur Übernahme",
+ "eyebrow": "Kundenverwaltung · Kundeninfos · Teil J",
+ "footerArea": "Kundenverwaltung",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Alle Felder sind **absichtlich gesperrt** — versehentliches Überschreiben von Kundendaten soll nicht passieren.",
+  "Gespeicherte Änderungen gehen **direkt nach Phorest** und gelten damit überall, auch am Empfang und in der App.",
+  "**Ungespeichert ist verloren:** Wer den Reiter ohne **„Änderungen speichern“** verlässt, verwirft die Eingaben."
+ ],
+ "pages": [
+  {
+   "h1": "Felder entsperren",
+   "sub": "Im Reiter „Kundeninfos“ ist zunächst nichts änderbar. Entsperrt wird entweder ein einzelnes Feld oder alle auf einmal.",
+   "card": {
+    "title": "Felder entsperren",
+    "text": "Einzelnes Schloss halten oder alle Felder freigeben"
+   },
+   "left": {
+    "shot": "j1-info-gesperrt"
+   },
+   "right": {
+    "shot": "j2-schloss-halten"
+   },
+   "leftCaption": "Reiter „Kundeninfos“ im gesperrten Zustand — jedes Feld trägt ein **Schloss**.",
+   "rightCaption": "Schloss **gedrückt halten**: Der Ring füllt sich, dann ist genau dieses Feld frei.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Schloss am Feld",
+     "text": "Für eine einzelne Korrektur: das **Schloss** neben dem Feld **gedrückt halten**, bis der Ring voll ist. Nur dieses Feld wird frei."
+    },
+    {
+     "n": 2,
+     "title": "Notizen zuerst",
+     "text": "Die **Kundennotizen** stehen ganz oben. Sie sind der Platz für Hinweise, die beim nächsten Besuch zählen."
+    },
+    {
+     "n": 3,
+     "title": "„Alle Felder entsperren“",
+     "text": "Bei mehreren Änderungen der Knopf oben rechts. Danach stehen **Speichern** und **Abbrechen** an derselben Stelle."
+    }
+   ],
+   "hint": {
+    "text": "**Nichts lässt sich eintippen?** Dann ist das Feld noch gesperrt — der Hinweis **„Felder sind gesperrt“** erscheint kurz als Meldung. Das ist kein Fehler, sondern der Schutz vor versehentlichen Änderungen."
+   }
+  },
+  {
+   "h1": "Daten und Kontakt",
+   "sub": "Persönliche Angaben und Erreichbarkeit. Was hier steht, nutzt der Hub für Terminerinnerungen, Verträge und WhatsApp.",
+   "card": {
+    "title": "Daten und Kontakt",
+    "text": "Name, Geburtsdatum, E-Mail, Mobil und Festnetz pflegen"
+   },
+   "left": {
+    "shot": "j3-info-entsperrt"
+   },
+   "leftCaption": "Entsperrter Zustand — oben **Persönliche Daten**, darunter **Kontaktdaten**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Persönliche Daten",
+     "text": "**Vorname**, **Nachname**, **Geschlecht**, **Geburtsdatum**. Das Geburtsdatum wird über den Kalender gewählt und im Format **TT.MM.JJJJ** angezeigt."
+    },
+    {
+     "n": 2,
+     "title": "Kontaktdaten",
+     "text": "**E-Mail**, **Mobiltelefon**, **Festnetz**. Das **Mobiltelefon** ist die Nummer, an die WhatsApp geht — ohne sie bleibt der Reiter „Nachrichten“ leer."
+    },
+    {
+     "n": 3,
+     "title": "Nicht änderbar",
+     "text": "**Kunden-Nr.** und **„Kunde seit“** stehen fest. Die Kundennummer vergibt ausschließlich die Institutsseite bei der Tageserfassung."
+    }
+   ],
+   "rightHtml": "<div class='steps cols-1' style='margin-top:0'><div class='step'><div class='num'>i</div><div><div class='t'>Schreibweise zählt</div><div class='d'>Name und Adresse stehen später <b>wörtlich auf dem Vertrag und dem SEPA-Mandat</b>. Abkürzungen und Tippfehler wandern mit — deshalb genau so eintragen, wie es im Ausweis steht.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Telefonnummern</div><div class='d'>Mobilnummer mit Vorwahl, ohne Leerzeichen-Spielereien. Eine <b>geänderte Telefonnummer</b> kann bei der Übernahme nach Phorest hängen bleiben — kommt keine Erfolgsmeldung, die Änderung erneut speichern und im Zweifel ans Büro melden.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Abbrechen</div><div class='d'><b>„Abbrechen“</b> verwirft alle Eingaben und sperrt die Felder wieder. Es fragt nicht nach — also nur drücken, wenn die Änderungen wirklich weg sollen.</div></div></div></div>",
+   "hint": {
+    "text": "**E-Mail-Adresse doppelt vergeben?** Phorest lässt dieselbe Adresse nicht an zwei Kundenakten zu. Erscheint beim Speichern eine Fehlermeldung, gibt es die Kundin vermutlich zweimal — **Asana-Task ans Büro**, nicht selbst zusammenführen."
+   }
+  },
+  {
+   "h1": "Adresse und Einwilligungen",
+   "sub": "Anschrift für Vertrag und Post, darunter die vier Schalter für Werbung und Erinnerungen.",
+   "card": {
+    "title": "Adresse & Einwilligungen",
+    "text": "Anschrift pflegen, Werbe- und Erinnerungs-Schalter setzen"
+   },
+   "left": {
+    "shot": "j4-adresse"
+   },
+   "right": {
+    "shot": "j5-einwilligungen"
+   },
+   "leftCaption": "Abschnitt **Adresse** — Straße, Zusatz, PLZ, Stadt, Bundesland, Land.",
+   "rightCaption": "Abschnitt **Marketing & Einwilligungen** mit vier Schaltern.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Vollständige Anschrift",
+     "text": "**Straße und Hausnummer**, **PLZ** und **Stadt** sind Pflicht für jeden Vertrag. Fehlt etwas, stoppt später das Vertragsformular."
+    },
+    {
+     "n": 2,
+     "title": "Vier Schalter",
+     "text": "**SMS Marketing**, **E-Mail Marketing**, **SMS Erinnerungen**, **E-Mail Erinnerungen** — getrennt schaltbar."
+    },
+    {
+     "n": 3,
+     "title": "Werbung nur mit Ja",
+     "text": "Die beiden **Marketing**-Schalter dürfen nur an, wenn die Kundin zugestimmt hat. Im Zweifel aus lassen."
+    },
+    {
+     "n": 4,
+     "title": "Erinnerungen getrennt",
+     "text": "Die beiden **Erinnerungs**-Schalter steuern nur die Terminerinnerung — sie sind keine Werbe-Einwilligung."
+    }
+   ],
+   "hint": {
+    "text": "**Widerspruch der Kundin** („keine Werbung mehr“) wird sofort hier umgesetzt: beide Marketing-Schalter aus, speichern. Der Stand ist danach auch in der Übersichtskarte **Kontakt** zu sehen (graue statt grüner Badges)."
+   }
+  },
+  {
+   "h1": "Änderungen übernehmen",
+   "sub": "Gespeichert wird in zwei Schritten — der Hub zeigt vorher genau, was sich ändert.",
+   "card": {
+    "title": "Änderungen übernehmen",
+    "text": "Speichern, Liste prüfen, nach Phorest übernehmen"
+   },
+   "left": {
+    "shot": "j6-bestaetigen"
+   },
+   "leftCaption": "Nach **„Änderungen speichern“**: Das Fenster listet **jede** Änderung mit altem und neuem Wert.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Änderungen speichern“",
+     "text": "Der Knopf oben rechts. Er speichert noch nicht, sondern öffnet die Kontrolle."
+    },
+    {
+     "n": 2,
+     "title": "Liste prüfen",
+     "text": "Jede Zeile ist eine Änderung. Steht dort etwas Unerwartetes, wurde ein Feld versehentlich angefasst — Fenster schließen und korrigieren."
+    },
+    {
+     "n": 3,
+     "title": "„In Phorest übernehmen“",
+     "text": "Erst dieser Knopf schreibt die Daten. Danach erscheint unten rechts eine **grüne Meldung**."
+    },
+    {
+     "n": 4,
+     "title": "Kontrolle",
+     "text": "Der Reiter **„Übersicht“** zeigt die neuen Werte sofort. Kommt keine grüne Meldung, ist nichts gespeichert."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Rote Meldung nach dem Übernehmen?** Dann hat Phorest die Änderung abgelehnt — die Daten stehen weiterhin auf dem alten Stand. Einmal wiederholen; bleibt es dabei, **Asana-Task ans Büro** mit Kundennummer und geändertem Feld."
+   }
+  }
+ ]
+}

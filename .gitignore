@@ -31,3 +31,6 @@ klickanleitungen/**/pdf/
 klickanleitungen/**/shared-url.txt
 klickanleitungen/**/contact.html
 klickanleitungen/**/contact.png
+klickanleitungen/**/mask.json
+klickanleitungen/**/package.json
+klickanleitungen/**/package-lock.json

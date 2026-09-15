@@ -1,6 +1,6 @@
 # Klickanleitungen für die Institute
 
-> **Stand:** 14.09.2026 · Zentrale Referenz für alle Klickanleitungen, die den Mitarbeiterinnen
+> **Stand:** 15.09.2026 · Zentrale Referenz für alle Klickanleitungen, die den Mitarbeiterinnen
 > in den Instituten die Hub-Prozesse Schritt für Schritt zeigen. Jede neue Anleitung folgt
 > **exakt** diesem Standard, damit die Sammlung einheitlich bleibt.
 
@@ -118,7 +118,12 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | 10 | Zusatz-Service hinzubuchen, Kein-Verkauf erfassen (nach Umsetzung Asana 1218245871472844) | Termin-Detailseite | offen | ⬜ |
 | 11 | Folgetermin planen (ideale Slots), Termin verlegen | Termin-Detailseite / Buchungsseite | offen | ⬜ |
 | 12 | Google-Bewertung per WhatsApp anfragen | Termin-Detailseite Sidebar | offen | ⬜ |
-| 13 | Kundenprofil (`/hub/clients/{id}`): Daten, Verträge, Gutscheine einsehen | Kunden | offen | ⬜ |
+| 13 | Kundenprofil `/hub/clients/{id}`: Kundin suchen, Profil lesen, Reiter-Wegweiser | Kunden | **I – Kundin finden & Profil verstehen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 13a | Stammdaten bearbeiten (Feld-Schlösser, Adresse, Einwilligungen, Übernahme nach Phorest) | Kundenprofil › Kundeninfos | **J – Kundendaten bearbeiten** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 13b | Terminhistorie, Buchungslink, Verlegen, Extrazeit, gekaufte Pakete | Kundenprofil › Termine, glattt Pakete | **K – Termine & Pakete** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 13c | Vertrag, Rate, SEPA-Mandat, offene Forderungen, Zahlungsstand | Kundenprofil › Vertrag/Zahlungen, Forderungsmanagement | **L – Vertrag, Zahlung & offene Forderungen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 13d | Automatische Nachrichten, WhatsApp lesen & senden, Zendesk-Tickets | Kundenprofil › Nachrichten, Kundenservice | **M – Nachrichten & Kundenservice** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 13e | Eingereichte Formulare, Einstellungszettel, Behandlungsfotos | Kundenprofil › Dokumente, Behandlungseinstellungen | **N – Unterlagen & Behandlungsverlauf** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 14 | Gutscheine (Verwaltung/Einlösung) | Gutscheine-Modul | offen | ⬜ |
 | 15 | Termin buchen (Neukunde/Bestandskunde) | Buchungsseite | offen | ⬜ |
 | 16 | Login, PIN, Standortwahl, Dark/Light, Mobil-Navigation | Hub allgemein | offen | ⬜ |
@@ -317,6 +322,53 @@ Damit sind alle Bilder mit laufendem Termin veraltet (Dokumente B–H nahezu vol
 
 **Nächster Schritt:** Beratungstermin für eine Magdeburg-Testkundin buchen, `.env` füllen,
 `bash scripts/run-all.sh`, PDFs bauen, an Jan zur fachlichen Freigabe.
+
+---
+
+## Serie „Kundenverwaltung" I–N (15.09.2026)
+
+Zweite Serie nach A–H, Quellen im Wiki-Repo unter `klickanleitungen/kundenverwaltung/`
+(README dort). Auftrag Jan 15.09.2026: „Kunde suchen, Kundenprofil ansehen und Dinge bearbeiten,
+alle Einzelpunkte" — also das komplette Kundenprofil `/hub/clients/{id}` mit seinen zehn Reitern.
+
+**Entscheidungen (Jan, 15.09.2026):** Zielgruppe **Institute**, Aufnahme im **iPad-Querformat**
+wie A–H · Zuschnitt in **sechs Dokumente I–N** (ein Dokument je Themenblock) · Inhalt bleibt
+beim **Kundenprofil**; Vertragsdetail, Forderungsfall-Akte und Widerruf sind nicht Teil der Serie ·
+Beispieldaten von einer **echten Kundin** mit maskierten Daten statt einer leeren Testkundin.
+
+**Eine bewusste Ausnahme:** Der Zahlungsstand („wie viel hat die Kundin schon bezahlt?") steht
+**nicht** im Kundenprofil. Der Reiter „Vertrag/Zahlungen" zeigt nur den Vertrag selbst — Rate,
+Laufzeit, Gesamtwert, Mandat. Der Ratenplan liegt im Vertragsdetail `/hub/contracts/{id}`,
+Reiter „Zahlungen & SEPA". Dokument **L** bekommt dafür eine einzelne Seite, sonst beantwortet
+die Serie die häufigste Frage an der Rezeption nicht.
+
+**Befunde aus der Code-Analyse (15.09.2026):**
+
+- Die zehn Reiter (`Übersicht`, `Kundeninfos`, `Termine`, `glattt Pakete`, `Dokumente`,
+  `Behandlungseinstellungen`, `Vertrag/Zahlungen`, `Forderungsmanagement`, `Kundenservice`,
+  `Nachrichten`) sind **immer alle sichtbar** — die Rechteprüfung je Reiter ist in
+  `detail.blade.php` noch ein TODO. Gefiltert wird erst im Endpunkt, ein Reiter ohne Recht
+  bleibt also leer bzw. meldet „Kein Zugriff auf das Forderungsmanagement".
+- Rechte je Inhalt: `view_contracts`, `view_receivables`, `view_form_submissions`,
+  `send_client_messages` (nur Senden, Lesen genügt `view_client_detail`); Zendesk und Superchat
+  hängen komplett an `view_client_detail`. **Ob Institute MA/Leitung diese Rechte in Prod
+  haben, ist offen** (Prod-Rollen weichen vom Seeder ab) — vor der Aufnahme klären, sonst zeigen
+  L, M und N Dinge, die die Zielgruppe nie sieht.
+- **Geschrieben** wird im Kundenprofil nur an drei Stellen: Stammdaten (`Kundeninfos` →
+  Bestätigungs-Modal → Phorest), **Extrazeit** und **WhatsApp senden**. Alles andere ist Ansicht.
+- Es gibt im Profil **kein** Ticket-Anlegen (nur Ansicht + „In Zendesk öffnen"), **kein**
+  Neuanlegen einer Kundin, **keine** Kundennummern-Vergabe (die macht die Institutsseite) und
+  **kein** Stornieren von Terminen.
+- `saveClientInfo()` öffnet nur das Modal, erst `confirmSave()` schreibt nach Phorest — die
+  Aufnahmeskripte nutzen das, um die Bestätigungsseite ohne echte Änderung zu zeigen.
+
+**Aufnahme:** `klickanleitungen/kundenverwaltung/scripts/run-all.sh` (flow1…flow6, je ein
+Dokument). Der Lauf **verändert nichts** — anders als bei der Terminansicht wird nur gelesen.
+Ohne `mask.json` starten die Skripte nicht; `run-all.sh` prüft am Ende, dass kein echter Wert in
+`meta.json` steht. Die Screenshots zeigen eine echte Kundin — vor dem Committen durchsehen.
+
+**Nächster Schritt:** Rechte-Lage klären, Kundin auswählen, Aufnahmelauf — am besten zusammen
+mit der ausstehenden Neuaufnahme der Terminansicht (v1.1), dann PDFs an Jan zur Freigabe.
 
 ---
 

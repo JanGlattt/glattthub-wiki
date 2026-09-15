@@ -1,0 +1,32 @@
+{
+  "_hinweis": [
+    "Kopie als mask.json anlegen (gitignored) und mit den ECHTEN Werten der aufgenommenen",
+    "Kundin fuellen. Jeder Eintrag unter replace ersetzt vor jedem Screenshot alle Vorkommen",
+    "im DOM. Vollstaendig sein: Vor-/Nachname (auch einzeln), E-Mail, Mobil, Festnetz, Strasse,",
+    "PLZ, Ort, Geburtsdatum, Kundennummer, Vertragsnummer, IBAN, Mandatsreferenz, Phorest-ID.",
+    "blankText ersetzt ganze Freitext-Bloecke (WhatsApp-Blasen, Ticket-Kommentare) durch die",
+    "Beispielsaetze aus sampleTexts — Gespraechsinhalte lassen sich nicht mit einer Wortliste fangen."
+  ],
+  "replace": [
+    ["Nachname", "Musterfrau"],
+    ["Vorname", "Anna"],
+    ["echte@mail.de", "kundin@beispiel.de"],
+    ["01511234567", "0151 23456789"],
+    ["Echte Strasse 1", "Musterweg 12"],
+    ["12345", "30159"],
+    ["Echtstadt", "Hannover"],
+    ["DE00 1234 5678 9012 3456 78", "DE00 0000 0000 0000 0000 00"],
+    ["BI000123", "MD000002"],
+    ["2026.05.12-BI000123", "2026.05.12-MD000002"]
+  ],
+  "blankText": [
+    ".whatsapp-bubble-text",
+    ".modal-glattt-body .comment-body"
+  ],
+  "sampleTexts": [
+    "Guten Tag, ich wollte meinen Termin am Freitag bestaetigen.",
+    "Sehr gerne — der Termin steht, wir freuen uns auf Sie.",
+    "Kann ich die Behandlung auf die Woche danach schieben?",
+    "Das passt, ich habe den Termin verlegt. Bis dann!"
+  ]
+}

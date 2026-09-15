@@ -1,0 +1,170 @@
+{
+ "out": "../pdf/L-Vertrag-Zahlungen-Forderungen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "title": [
+  "Vertrag, Zahlung",
+  "& offene Forderungen"
+ ],
+ "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — was die Kundin zahlt, was sie gezahlt hat und was offen ist",
+ "eyebrow": "Kundenverwaltung · Geld · Teil L",
+ "footerArea": "Kundenverwaltung",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "**Nur Ansicht:** Verträge, Raten und Forderungen werden im Institut nicht bearbeitet — sie werden gelesen.",
+  "**Vor jeder Behandlung ein Blick:** Offene Forderungen erscheinen auch als **rotes Banner** in der Terminansicht.",
+  "Rückfragen zu Forderungsfällen gehen an das **Büro (Forderungsmanagement)**, nicht an die Kundin selbst."
+ ],
+ "pages": [
+  {
+   "h1": "Vertrag der Kundin",
+   "sub": "Der Reiter „Vertrag/Zahlungen“ listet jeden Vertrag als Karte — Paket, Status, Rate, Laufzeit und Mandat.",
+   "card": {
+    "title": "Vertrag der Kundin",
+    "text": "Vertragskarte lesen: Paket, Rate, Laufzeit, Zahlungsart"
+   },
+   "left": {
+    "shot": "l1-vertrag"
+   },
+   "right": {
+    "shot": "l2-vertrag-mandat"
+   },
+   "leftCaption": "Obere Hälfte der Vertragskarte — Paketname, Status und Kennzahlen.",
+   "rightCaption": "Untere Hälfte — **SEPA-Mandat**, behandelte Zonen und die Knöpfe.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Status-Badge",
+     "text": "**Aktiv**, **Abgeschlossen**, **Storniert** oder **Entwurf**. Ein Badge **„Legacy“** heißt: Altvertrag von vor der Hub-Zeit."
+    },
+    {
+     "n": 2,
+     "title": "Monatsbetrag",
+     "text": "Die **Rate**, die per SEPA eingezogen wird. Bei Einmalzahlung steht hier nichts — dann zählt der **Gesamtwert**."
+    },
+    {
+     "n": 3,
+     "title": "Laufzeit",
+     "text": "Zahl der **Monatsraten**. Zusammen mit dem Monatsbetrag ergibt sie den Gesamtwert des Vertrags."
+    },
+    {
+     "n": 4,
+     "title": "SEPA-Mandat",
+     "text": "**Mandatsreferenz** und **IBAN** der Zahlerin. Fehlt der Block, gibt es kein Mandat — dann ist es ein Direktzahler."
+    }
+   ],
+   "hint": {
+    "text": "**Mehrere Verträge** sind normal (Erweiterung um Zonen, zweites Paket). Die Zahl neben der Überschrift **„Verträge“** sagt, wie viele es sind — beim Nachfragen immer die **Vertragsnummer** nennen."
+   }
+  },
+  {
+   "h1": "Offene Forderungen",
+   "sub": "Der Reiter „Forderungsmanagement“ zeigt, ob und warum Geld offen ist — und wie weit der Mahnprozess ist.",
+   "card": {
+    "title": "Offene Forderungen",
+    "text": "Forderungsfälle lesen: Betrag, Stufe, Frist, Herkunft"
+   },
+   "left": {
+    "shot": "l3-forderungen"
+   },
+   "leftCaption": "Ein Forderungsfall je Karte — **Laufend** (rot) oder **Abgeschlossen** (grün).",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Offener Betrag",
+     "text": "Was aktuell aussteht. Steht dort **„Abgeschrieben“**, verfolgt das Büro die Forderung nicht weiter."
+    },
+    {
+     "n": 2,
+     "title": "Stufe",
+     "text": "Wie weit der Mahnprozess ist — von der ersten Erinnerung bis zum **gerichtlichen Verfahren**."
+    },
+    {
+     "n": 3,
+     "title": "Frist",
+     "text": "Bis wann die Kundin reagieren muss bzw. bis wann der Fall ruht."
+    },
+    {
+     "n": 4,
+     "title": "Herkunft",
+     "text": "**Vertragsnummer** = geplatzte Rate · **Kundenkonto** = offener Betrag aus dem Institut (z. B. nicht kassierte Behandlung)."
+    }
+   ],
+   "rightHtml": "<div class='steps cols-1' style='margin-top:0'><div class='step'><div class='num'>i</div><div><div class='t'>Badges am Fuß der Karte</div><div class='d'><b>„Rücklastschrift“</b> = die Lastschrift kam zurück · <b>„Direktzahler“</b> = unbezahlte Rechnung ohne Mandat · <b>„Mandat entzogen“</b> = die Kundin hat das SEPA-Mandat widerrufen · <b>„Widersprochen“</b> und <b>„Gerichtliches Verfahren“</b> = der Fall liegt beim Büro bzw. bei der Kanzlei.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Was im Institut zu tun ist</div><div class='d'><b>Nicht mit der Kundin verhandeln.</b> Keine Zahlungszusagen, keine Ratenversprechen, keine Stornos. Der Fall gehört dem Büro — im Gespräch genügt: „Dazu meldet sich unser Büro bei Ihnen.“</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>„Zum Fall“</div><div class='d'>Der Knopf führt in die Fall-Akte des Forderungsmanagements. Er ist für das <b>Büro</b> gedacht; im Institut fehlt dafür in der Regel die Berechtigung.</div></div></div></div>",
+   "hint": {
+    "kind": "warn",
+    "text": "**Kundin mit laufendem Fall steht im Laden?** Termin ganz normal durchführen, aber **nichts zusagen** und **nichts stornieren**. Den Kontakt im Anschluss dem Büro melden — dort wird entschieden, wie es weitergeht."
+   }
+  },
+  {
+   "h1": "Schulden auf einen Blick",
+   "sub": "Für die schnelle Frage „hat die Kundin etwas offen?“ reicht die Übersicht — der Reiter ist nur für die Einzelheiten nötig.",
+   "card": {
+    "title": "Schulden auf einen Blick",
+    "text": "Zeile „Offene Forderungen“ in der Übersicht lesen"
+   },
+   "left": {
+    "shot": "l4-uebersicht-forderungen"
+   },
+   "leftCaption": "Karte **Vertrag & Zahlungen** im Reiter **„Übersicht“** — die Zeile **„Offene Forderungen“**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeile lesen",
+     "text": "Steht dort ein **Betrag in Rot**, gibt es einen laufenden Forderungsfall. Ohne offenen Betrag bleibt die Zeile unauffällig."
+    },
+    {
+     "n": 2,
+     "title": "Drei Sekunden-Prüfung",
+     "text": "Übersicht → Karte **Vertrag & Zahlungen** → Zeile lesen. Das ist der schnellste Weg vor einem Termin."
+    },
+    {
+     "n": 3,
+     "title": "Zweiter Hinweis",
+     "text": "Auch die **Terminansicht** warnt: Bei offenem Kundenkonto steht dort ein **rotes Banner** über dem Termin."
+    }
+   ],
+   "hint": {
+    "text": "**Bleibt die Karte leer**, fehlt die Berechtigung für das Forderungsmanagement — nicht jede Rolle sieht diese Zahlen. Dann gilt die Auskunft des Büros."
+   }
+  },
+  {
+   "h1": "Zahlungsstand im Vertrag",
+   "sub": "Wie viel die Kundin bereits gezahlt hat, steht nicht im Kundenprofil, sondern im Vertrag selbst.",
+   "card": {
+    "title": "Zahlungsstand im Vertrag",
+    "text": "„Vertrag anzeigen“ → Reiter „Zahlungen & SEPA“"
+   },
+   "left": {
+    "shot": "l5-vertrag-zahlungen"
+   },
+   "leftCaption": "Vertragsseite, Reiter **„Zahlungen & SEPA“** — jede Rate mit Datum, Betrag und Zustand.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Vertrag anzeigen“",
+     "text": "Der Knopf am Fuß der Vertragskarte (vorherige Seiten) öffnet die **Vertragsseite**."
+    },
+    {
+     "n": 2,
+     "title": "„Zahlungen & SEPA“",
+     "text": "Der zweite Reiter der Vertragsseite. Dort steht der **vollständige Ratenplan**."
+    },
+    {
+     "n": 3,
+     "title": "Raten lesen",
+     "text": "Je Rate: **Fälligkeitsdatum**, **Betrag** und Zustand — **bezahlt**, **offen** oder **fehlgeschlagen** (geplatzte Lastschrift)."
+    },
+    {
+     "n": 4,
+     "title": "Antwort für die Kundin",
+     "text": "„Bezahlt sind **n von m** Raten“ — mehr Auskunft braucht es an der Rezeption nicht."
+    }
+   ],
+   "hint": {
+    "text": "**Diese Seite verlässt das Kundenprofil.** Der Zurück-Pfeil des Browsers bzw. der Weg über **„Kunden“** führt zurück. Bearbeitet wird auf der Vertragsseite **nichts** — Raten verbuchen, Mandate ändern und Zahlpläne neu bauen ist Sache des Büros."
+   }
+  }
+ ]
+}

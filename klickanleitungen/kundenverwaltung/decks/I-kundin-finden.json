@@ -1,0 +1,146 @@
+{
+ "out": "../pdf/I-Kundin-finden",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "title": [
+  "Kundin finden",
+  "& Profil verstehen"
+ ],
+ "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — von der Suche bis zum richtigen Reiter",
+ "eyebrow": "Kundenverwaltung · Suche & Profil · Teil I",
+ "footerArea": "Kundenverwaltung",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Das Kundenprofil ist die **Akte der Kundin**: Daten, Termine, Pakete, Vertrag, Nachrichten und Unterlagen an einem Ort.",
+  "Diese Anleitung ist der **Einstieg der Reihe I–N** — die letzte Seite zeigt, welcher Reiter in welchem Dokument erklärt wird.",
+  "Alle Bilder zeigen eine **Beispielkundin**; Name, Kontaktdaten und Nummern sind ersetzt."
+ ],
+ "pages": [
+  {
+   "h1": "Kundin suchen",
+   "sub": "„Kunden“ in der Seitenleiste öffnet die Kundenübersicht. Gesucht wird über ein einziges Feld.",
+   "card": {
+    "title": "Kundin suchen",
+    "text": "Kundenübersicht öffnen, Suchbegriff eingeben, Treffer lesen"
+   },
+   "left": {
+    "shot": "i1-kundenliste"
+   },
+   "right": {
+    "shot": "i2-suche-treffer"
+   },
+   "leftCaption": "Kundenübersicht ohne Suche — die Liste zeigt zunächst alle Kundinnen.",
+   "rightCaption": "Nach der Eingabe: Die Trefferzahl steht unter der Überschrift.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Suchfeld nutzen",
+     "text": "Ein Feld für alles: **Name**, **E-Mail**, **Telefonnummer** oder **Kunden-Nummer**. Die Liste aktualisiert sich von selbst, kurz nachdem die Eingabe stoppt."
+    },
+    {
+     "n": 2,
+     "title": "Archivierte einbeziehen",
+     "text": "Der Schalter **„Archivierte Kunden einbeziehen“** nimmt stillgelegte Kundenakten dazu. Auf Tablet und Handy ist es das **Archiv-Symbol** neben dem Suchfeld."
+    },
+    {
+     "n": 3,
+     "title": "Treffer prüfen",
+     "text": "Die Zeile unter der Überschrift nennt die Anzahl. Steht dort **„Live-Suche in Phorest“**, wurde direkt in Phorest gesucht — das dauert etwas länger."
+    }
+   ],
+   "hint": {
+    "text": "**Nichts gefunden?** Zuerst mit **weniger** Buchstaben suchen (nur Nachname), dann über die **Kunden-Nummer**. Führt beides nicht zum Ziel, ist die Kundin eventuell archiviert — Schalter einschalten."
+   }
+  },
+  {
+   "h1": "Profil öffnen",
+   "sub": "Ein Tippen auf die Zeile öffnet die Kundenakte. Links steht die Reiter-Leiste, rechts der Inhalt.",
+   "card": {
+    "title": "Profil öffnen",
+    "text": "Kundenakte öffnen, Kopfzeile und Reiter-Leiste lesen"
+   },
+   "left": {
+    "shot": "i3-profil-kopf"
+   },
+   "leftCaption": "Kundenakte direkt nach dem Öffnen — der Reiter **„Übersicht“** ist immer der Startpunkt.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Name der Kundin",
+     "text": "Steht oben. Ein Badge **„Archiviert“** dahinter bedeutet: Die Akte ist stillgelegt, Termine gibt es keine mehr."
+    },
+    {
+     "n": 2,
+     "title": "Kunden-Nummer",
+     "text": "Direkt darunter als **„Kunden-Nr.“**. Sie ist die eindeutige Nummer der Kundin und steht auch auf Vertrag und Formularen."
+    },
+    {
+     "n": 3,
+     "title": "Reiter-Leiste",
+     "text": "Zehn Reiter, jeder mit einem eigenen Thema. Der gewählte Reiter ist hervorgehoben, gewechselt wird durch Antippen."
+    },
+    {
+     "n": 4,
+     "title": "Zurück zur Liste",
+     "text": "Der **Pfeil** oben links führt zurück zur Kundenübersicht — die Suche bleibt dabei erhalten."
+    }
+   ],
+   "rightHtml": "<div class='steps cols-1' style='margin-top:0'><div class='step'><div class='num'>i</div><div><div class='t'>Aus dem Termin heraus</div><div class='d'>In der <b>Terminübersicht</b> und auf der Termin-Detailseite ist der <b>Name der Kundin ein Link</b> (Symbol ↗) — er öffnet genau dieses Profil. Das ist der kürzeste Weg, wenn die Kundin gerade im Haus ist.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Laden dauert kurz</div><div class='d'>Termine, Pakete und Nachrichten holt der Hub <b>live aus Phorest bzw. WhatsApp</b>. Ein Reiter kann deshalb einen Moment grau bleiben, bevor die Inhalte stehen.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Nichts geht verloren</div><div class='d'>Zwischen den Reitern kann beliebig gewechselt werden. Nur im Reiter <b>„Kundeninfos“</b> gilt: erst <b>„Änderungen speichern“</b>, sonst sind die Eingaben weg.</div></div></div></div>",
+   "hint": {
+    "text": "**Falsche Kundin erwischt?** Vor jeder Änderung **Name und Kunden-Nummer** oben abgleichen — gerade bei häufigen Nachnamen liegen zwei Akten schnell nebeneinander."
+   }
+  },
+  {
+   "h1": "Übersicht lesen",
+   "sub": "Der erste Reiter fasst alles zusammen: sechs Karten, je eine je Thema — mit einem Sprung in die Tiefe.",
+   "card": {
+    "title": "Übersicht lesen",
+    "text": "Sechs Karten als Kurzfassung der ganzen Akte"
+   },
+   "left": {
+    "shot": "i4-uebersicht-oben"
+   },
+   "right": {
+    "shot": "i5-uebersicht-unten"
+   },
+   "leftCaption": "Obere Hälfte: **Kontakt** und **Termine**.",
+   "rightCaption": "Untere Hälfte: **Vertrag & Zahlungen**, **Behandlung**, **Unterlagen & Kommunikation**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kontakt",
+     "text": "E-Mail, Mobil, Adresse, Geburtsdatum, **„Kunde seit“** und die erteilten **Einwilligungen** (grün = erteilt)."
+    },
+    {
+     "n": 2,
+     "title": "Termine",
+     "text": "**Nächster** und **letzter** Termin, dazu die Anzahl kommender und vergangener Termine."
+    },
+    {
+     "n": 3,
+     "title": "Vertrag & Zahlungen",
+     "text": "Paket, Status, **Monatsrate**, Zahlart, Gesamtwert — und die Zeile **„Offene Forderungen“**."
+    },
+    {
+     "n": 4,
+     "title": "„Alle ansehen“",
+     "text": "Der kleine Knopf am Kopf jeder Karte springt in den zugehörigen **Reiter** mit allen Einzelheiten."
+    }
+   ],
+   "hint": {
+    "text": "**Schnellprüfung vor dem Gespräch:** Übersicht öffnen und drei Dinge lesen — **nächster Termin**, **Status des Vertrags** und **offene Forderungen**. Mehr braucht es an der Rezeption meist nicht."
+   }
+  },
+  {
+   "h1": "Die zehn Reiter",
+   "sub": "Welcher Reiter zeigt was — und in welchem Dokument dieser Reihe er erklärt wird.",
+   "card": {
+    "title": "Die zehn Reiter",
+    "text": "Wegweiser durch die Akte und durch die Anleitungen I–N"
+   },
+   "layout": "text",
+   "html": "<table class='tbl'><thead><tr><th>Reiter</th><th>Zeigt</th><th>Anleitung</th></tr></thead><tbody><tr><td><b>Übersicht</b></td><td>Kurzfassung aller Themen, Sprung in die Reiter</td><td>I (dieses Dokument)</td></tr><tr><td><b>Kundeninfos</b></td><td>Stammdaten, Adresse, Notizen, Einwilligungen — hier wird bearbeitet</td><td>J</td></tr><tr><td><b>Termine</b></td><td>Zukünftige und vergangene Termine, Extrazeit, Buchungslink</td><td>K</td></tr><tr><td><b>glattt Pakete</b></td><td>Gekaufte Behandlungspakete aus Phorest und ihr Verbrauch</td><td>K</td></tr><tr><td><b>Dokumente</b></td><td>Eingereichte Formulare als PDF</td><td>N</td></tr><tr><td><b>Behandlungseinstellungen</b></td><td>Einstellungszettel je Körperzone, Behandlungsfotos</td><td>N</td></tr><tr><td><b>Vertrag/Zahlungen</b></td><td>Verträge, Raten, SEPA-Mandat</td><td>L</td></tr><tr><td><b>Forderungsmanagement</b></td><td>Offene Forderungen, Mahnstufe, Fristen</td><td>L</td></tr><tr><td><b>Kundenservice</b></td><td>Tickets aus Zendesk mit Verlauf</td><td>M</td></tr><tr><td><b>Nachrichten</b></td><td>Automatische Nachrichten und WhatsApp-Verläufe</td><td>M</td></tr></tbody></table><div class='hint' style='margin-top:14px'><span class='i'>i</span><div><b>Nur Lesen, nur an einer Stelle Schreiben:</b> Verändert wird im Kundenprofil ausschließlich im Reiter <b>„Kundeninfos“</b> (Stammdaten), in der <b>Extrazeit</b> und beim <b>Senden einer WhatsApp</b>. Alles andere ist Ansicht — Verträge, Forderungen, Tickets und Unterlagen bearbeitet das Büro.</div></div>"
+  }
+ ]
+}

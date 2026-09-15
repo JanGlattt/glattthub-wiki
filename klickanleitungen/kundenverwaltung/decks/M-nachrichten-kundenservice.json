@@ -1,0 +1,197 @@
+{
+ "out": "../pdf/M-Nachrichten-und-Kundenservice",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "title": [
+  "Nachrichten",
+  "& Kundenservice"
+ ],
+ "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — WhatsApp lesen und schreiben, Tickets nachschlagen",
+ "eyebrow": "Kundenverwaltung · Kommunikation · Teil M",
+ "footerArea": "Kundenverwaltung",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Alles, was die Kundin je vom Hub bekommen hat, steht im Reiter **„Nachrichten“** — automatisch versendetes und persönlich Geschriebenes.",
+  "**Jede gesendete Nachricht geht sofort an die Kundin.** Vorher Kundin und Nummer prüfen.",
+  "**Außerhalb von 24 Stunden** nach der letzten Kundennachricht ist nur eine **Vorlage** möglich — das ist eine Regel von WhatsApp, kein Fehler des Hubs."
+ ],
+ "pages": [
+  {
+   "h1": "Automatische Nachrichten",
+   "sub": "Die obere Karte zeigt, was der Hub von selbst verschickt hat — Terminerinnerung, Beratungs-WhatsApp, E-Mails.",
+   "card": {
+    "title": "Automatische Nachrichten",
+    "text": "Verlauf des Systems mit Status und Zustellung"
+   },
+   "left": {
+    "shot": "m1-auto-nachrichten"
+   },
+   "leftCaption": "Karte **„Automatisch versendete Nachrichten“** — eine Zeile je Versand.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Datum und Anlass",
+     "text": "Wann und **warum** verschickt wurde (z. B. Beratungs-WhatsApp, Terminerinnerung, Vertrags-E-Mail)."
+    },
+    {
+     "n": 2,
+     "title": "Status",
+     "text": "Ob der Versand geklappt hat. Bei einem Fehler steht der **Grund** in der aufgeklappten Zeile."
+    },
+    {
+     "n": 3,
+     "title": "Zustellung",
+     "text": "Bei WhatsApp zusätzlich, ob die Nachricht **zugestellt** und **gelesen** wurde."
+    }
+   ],
+   "rightHtml": "<div class='steps cols-1' style='margin-top:0'><div class='step'><div class='num'>i</div><div><div class='t'>„Die Kundin hat nichts bekommen“</div><div class='d'>Zuerst hier nachsehen. Steht die Nachricht mit Fehler, liegt es meist an einer <b>falschen Mobilnummer</b> oder daran, dass die Kundin WhatsApp nicht nutzt — Nummer im Reiter <b>„Kundeninfos“</b> prüfen (Dokument J).</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Zeile aufklappen</div><div class='d'>Die aufgeklappte Zeile zeigt den <b>tatsächlich gesendeten Text</b>. So lässt sich am Telefon beantworten, was genau bei der Kundin angekommen ist.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Nicht erneut senden</div><div class='d'>Automatische Nachrichten lassen sich hier <b>nicht wiederholen</b>. Wenn etwas erneut raus soll, wird es als <b>persönliche Nachricht</b> geschrieben (Seite 4).</div></div></div></div>",
+   "hint": {
+    "text": "**Beratungs-WhatsApp** geht nur bei der **allerersten** Beratungsbuchung einer Kundin raus — bei einer zweiten Beratung fehlt sie deshalb zu Recht."
+   }
+  },
+  {
+   "h1": "Verlauf lesen",
+   "sub": "Darunter stehen die echten WhatsApp-Verläufe: was die Kundin geschrieben hat und was ihr geantwortet wurde.",
+   "card": {
+    "title": "Verlauf lesen",
+    "text": "WhatsApp-Konversation mit Anhängen und Lesebestätigung"
+   },
+   "left": {
+    "shot": "m2-konversation"
+   },
+   "leftCaption": "WhatsApp-Konversation der Kundin — eigene Nachrichten rechts, Nachrichten der Kundin links.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Häkchen lesen",
+     "text": "Ein Haken = gesendet, zwei Haken = zugestellt, **blaue Haken** = gelesen."
+    },
+    {
+     "n": 2,
+     "title": "Anhänge",
+     "text": "Bilder und Dateien öffnen sich mit einem Tippen in voller Größe und lassen sich herunterladen."
+    },
+    {
+     "n": 3,
+     "title": "Mehrere Verläufe",
+     "text": "Hat die Kundin mit mehreren Instituten geschrieben, gibt es mehrere Konversationen — die Kopfzeile nennt jeweils die Nummer."
+    }
+   ],
+   "hint": {
+    "text": "**Aktualisieren** schiebt neue Nachrichten nach: Der Verlauf lädt beim Öffnen des Reiters, nicht laufend. Wer auf eine Antwort wartet, tippt den Knopf neben der Überschrift."
+   }
+  },
+  {
+   "h1": "Antworten im Zeitfenster",
+   "sub": "Auf eine Nachricht der Kundin darf 24 Stunden lang frei geantwortet werden. Danach schließt WhatsApp das Fenster.",
+   "card": {
+    "title": "Antworten im Zeitfenster",
+    "text": "Freitext, Anhänge — und was nach 24 Stunden gilt"
+   },
+   "left": {
+    "shot": "m3-eingabezeile"
+   },
+   "leftCaption": "Eingabezeile unter dem Verlauf — der Hinweis nennt, **bis wann** das Fenster offen ist.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Freitext schreiben",
+     "text": "Solange **„Antwortfenster offen bis …“** steht, ist jede Nachricht möglich — auch mit Anhang."
+    },
+    {
+     "n": 2,
+     "title": "Fenster geschlossen",
+     "text": "Steht im Feld **„Freitext außerhalb des 24-Stunden-Fensters nicht möglich“**, hat die Kundin seit über 24 Stunden nichts geschrieben."
+    },
+    {
+     "n": 3,
+     "title": "Dann: Vorlage",
+     "text": "In dem Fall über **„Vorlagen“** eine freigegebene Vorlage senden. Antwortet die Kundin, ist das Fenster wieder offen."
+    },
+    {
+     "n": 4,
+     "title": "Absenden",
+     "text": "Der Knopf rechts schickt die Nachricht **sofort** an die Kundin. Zurückholen ist nicht möglich."
+    }
+   ],
+   "hint": {
+    "text": "**Warum diese Regel?** WhatsApp erlaubt Unternehmen freien Text nur im Anschluss an eine Nachricht der Kundin. Alles andere muss eine von Meta geprüfte **Vorlage** sein — der Hub bildet das nur ab."
+   }
+  },
+  {
+   "h1": "Neue Nachricht senden",
+   "sub": "Ohne laufendes Gespräch beginnt jede WhatsApp mit einer Vorlage — Platzhalter ausfüllen, Vorschau prüfen, senden.",
+   "card": {
+    "title": "Neue Nachricht senden",
+    "text": "Konversation mit einer Vorlage beginnen"
+   },
+   "left": {
+    "shot": "m4-neue-konversation"
+   },
+   "leftCaption": "Fenster **„Neue WhatsApp-Konversation starten“** mit Vorlagen-Auswahl und Vorschau.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Vorlage wählen",
+     "text": "Die Auswahl zeigt alle freigegebenen Vorlagen. Der Text ist fest — frei formulieren geht hier nicht."
+    },
+    {
+     "n": 2,
+     "title": "Platzhalter füllen",
+     "text": "Felder wie Name oder Datum ausfüllen. Solange etwas fehlt, bleibt **„Senden“** gesperrt."
+    },
+    {
+     "n": 3,
+     "title": "Vorschau prüfen",
+     "text": "Die Blase zeigt die Nachricht **genau so**, wie die Kundin sie bekommt — einmal lesen, bevor gesendet wird."
+    },
+    {
+     "n": 4,
+     "title": "„Senden“",
+     "text": "Verschickt die Nachricht sofort. Danach steht der Verlauf im Reiter und kann fortgeführt werden."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Vor dem Senden prüfen:** Name der Kundin oben in der Akte **und** die Nummer im Fenster. Eine an die falsche Kundin gesendete WhatsApp lässt sich nicht zurückholen."
+   }
+  },
+  {
+   "h1": "Tickets des Kundenservice",
+   "sub": "Der Reiter „Kundenservice“ zeigt die Anfragen, die das Büro über Zendesk bearbeitet — mit vollem Verlauf.",
+   "card": {
+    "title": "Tickets des Kundenservice",
+    "text": "Anfragen der Kundin und ihren Stand nachschlagen"
+   },
+   "left": {
+    "shot": "m5-tickets"
+   },
+   "right": {
+    "shot": "m6-ticket"
+   },
+   "leftCaption": "Alle Tickets der Kundin mit Betreff und Status.",
+   "rightCaption": "Geöffnetes Ticket mit dem Schriftwechsel.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Ticket öffnen",
+     "text": "Ein Tippen auf die Karte zeigt den kompletten Verlauf — Anfrage der Kundin und Antworten des Büros."
+    },
+    {
+     "n": 2,
+     "title": "Interne Notizen",
+     "text": "Beiträge mit dem Badge **„Interne Notiz“** hat die Kundin **nie gesehen** — daraus nie zitieren."
+    },
+    {
+     "n": 3,
+     "title": "Nur Ansicht",
+     "text": "Antworten geht hier nicht. **„In Zendesk öffnen“** ist der Weg des Büros; im Institut wird nur nachgeschlagen."
+    }
+   ],
+   "hint": {
+    "text": "**Neues Anliegen?** Ein Ticket lässt sich im Hub **nicht** anlegen. Die Kundin schreibt an die Service-Adresse, oder das Anliegen geht als **Asana-Task ans Büro** — mit Kundennummer und kurzer Schilderung."
+   }
+  }
+ ]
+}

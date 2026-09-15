@@ -1,0 +1,160 @@
+{
+ "out": "../pdf/N-Unterlagen-und-Behandlungsverlauf",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "title": [
+  "Unterlagen &",
+  "Behandlungsverlauf"
+ ],
+ "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — eingereichte Formulare, Einstellungszettel und Fotos",
+ "eyebrow": "Kundenverwaltung · Unterlagen · Teil N",
+ "footerArea": "Kundenverwaltung",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Beide Reiter sind **reine Ansicht** — geschrieben wird im laufenden Termin (Dokumente B–D und H).",
+  "Der **Einstellungszettel** ist die wichtigste Vorbereitung auf eine Behandlung: Er zeigt, womit zuletzt gearbeitet wurde.",
+  "**Fotos gehören der Kundin** — nicht weitergeben, nicht außerhalb des Hubs speichern."
+ ],
+ "pages": [
+  {
+   "h1": "Eingereichte Formulare",
+   "sub": "Der Reiter „Dokumente“ sammelt jedes Formular, das die Kundin ausgefüllt hat — mit Datum und Status.",
+   "card": {
+    "title": "Eingereichte Formulare",
+    "text": "Kundeninformation, Vertrag, SEPA-Mandat nachschlagen"
+   },
+   "left": {
+    "shot": "n1-dokumente"
+   },
+   "leftCaption": "Ein Eintrag je eingereichtem Formular, das neueste zuerst.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Formularname",
+     "text": "Zum Beispiel **„Kundeninformation & Einverständniserklärung“**, **„Behandlungsvertrag“** oder **„SEPA-Mandat“**."
+    },
+    {
+     "n": 2,
+     "title": "Datum und Person",
+     "text": "Wann eingereicht wurde und **welche Mitarbeiterin** dabei war."
+    },
+    {
+     "n": 3,
+     "title": "Status",
+     "text": "**Eingereicht** oder **Geprüft** — geprüft setzt das Büro."
+    },
+    {
+     "n": 4,
+     "title": "Öffnen",
+     "text": "Das Symbol am rechten Rand zeigt das ausgefüllte Formular."
+    }
+   ],
+   "hint": {
+    "text": "**Formular fehlt?** Dann wurde es nie abgesendet. Neu ausgefüllt wird ausschließlich **im laufenden Termin** über die Kachel „Formulare“ (Dokument B) — nicht hier."
+   }
+  },
+  {
+   "h1": "Formular ansehen",
+   "sub": "Das geöffnete Formular zeigt alle Antworten der Kundin und lässt sich als PDF herunterladen.",
+   "card": {
+    "title": "Formular ansehen",
+    "text": "Antworten lesen, PDF für Kundin oder Akte holen"
+   },
+   "left": {
+    "shot": "n2-dokument"
+   },
+   "leftCaption": "Geöffnetes Formular mit den Antworten und der Unterschrift.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Antworten lesen",
+     "text": "Alle Felder in der Reihenfolge des Formulars, inklusive Unterschrift."
+    },
+    {
+     "n": 2,
+     "title": "PDF herunterladen",
+     "text": "Erzeugt die Fassung zum Ausdrucken oder Weiterleiten — identisch mit dem, was die Kundin per E-Mail bekommen hat."
+    },
+    {
+     "n": 3,
+     "title": "Schließen",
+     "text": "Zurück zur Liste. Verändert wird an einem eingereichten Formular nichts."
+    }
+   ],
+   "hint": {
+    "text": "**„Ich habe meinen Vertrag nie bekommen.“** Formular öffnen, **PDF herunterladen** und an die hinterlegte E-Mail-Adresse senden — oder die Adresse zuerst im Reiter „Kundeninfos“ prüfen (Dokument J)."
+   }
+  },
+  {
+   "h1": "Einstellungszettel",
+   "sub": "Der Reiter „Behandlungseinstellungen“ hält je Körperzone fest, mit welchen Werten behandelt wurde.",
+   "card": {
+    "title": "Einstellungszettel",
+    "text": "Werte der letzten Behandlungen je Zone nachschlagen"
+   },
+   "left": {
+    "shot": "n3-einstellungszettel"
+   },
+   "leftCaption": "Links die behandelten **Zonen**, rechts die Einträge der gewählten Zone.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zone wählen",
+     "text": "Links stehen nur Zonen, für die es Einträge gibt. Ohne Auswahl bleibt die rechte Seite leer."
+    },
+    {
+     "n": 2,
+     "title": "Eintrag lesen",
+     "text": "Je Behandlung: **Datum**, **Mitarbeiterin**, **Sitzung**, **Kopf**, **Hauttyp**, Haarfarbe, Dicke, Dichte."
+    },
+    {
+     "n": 3,
+     "title": "Genutzte Werte",
+     "text": "**Genutzte ms** und **Genutzte Joule** zeigen, womit tatsächlich gearbeitet wurde — die Grundlage für die nächste Sitzung."
+    },
+    {
+     "n": 4,
+     "title": "Notizen",
+     "text": "Auffälligkeiten der letzten Behandlung (Rötung, Schmerz, Pause). Vor jeder Behandlung lesen."
+    }
+   ],
+   "hint": {
+    "text": "**Eingetragen wird im Termin:** Der Einstellungszettel wird über die Kachel **„Einstellungszettel“** im laufenden Termin gefüllt (Dokument H). Im Kundenprofil steht nur die Historie."
+   }
+  },
+  {
+   "h1": "Behandlungsfotos",
+   "sub": "Zu einzelnen Behandlungen liegen Fotos — zum Vergleich des Fortschritts über die Sitzungen.",
+   "card": {
+    "title": "Behandlungsfotos",
+    "text": "Fotos einer Behandlung öffnen und vergleichen"
+   },
+   "left": {
+    "shot": "n4-fotos"
+   },
+   "leftCaption": "Fotoansicht einer Behandlung — mit den Pfeilen wird geblättert.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Fotos öffnen",
+     "text": "Das Symbol in der Spalte **„Fotos“** öffnet die Bilder der jeweiligen Behandlung."
+    },
+    {
+     "n": 2,
+     "title": "Blättern",
+     "text": "Die Pfeile links und rechts wechseln zwischen den Bildern einer Sitzung."
+    },
+    {
+     "n": 3,
+     "title": "Vergleichen",
+     "text": "Über mehrere Sitzungen hinweg zeigt sich der Fortschritt — hilfreich bei der Frage „wirkt das überhaupt?“."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Fotos sind Gesundheitsdaten.** Sie bleiben im Hub: nicht abfotografieren, nicht per WhatsApp verschicken, nicht auf dem iPad speichern. Zeigen ja — weitergeben nein."
+   }
+  }
+ ]
+}

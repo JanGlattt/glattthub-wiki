@@ -1,0 +1,186 @@
+{
+ "out": "../pdf/K-Termine-und-Pakete",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "title": [
+  "Termine",
+  "& Pakete"
+ ],
+ "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — Terminhistorie, Extrazeit und gekaufte Pakete",
+ "eyebrow": "Kundenverwaltung · Termine & Pakete · Teil K",
+ "footerArea": "Kundenverwaltung",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Termine und Pakete kommen **live aus Phorest** — der Hub zeigt sie nur an, geführt wird der Kalender dort.",
+  "Behandelt wird immer über die **Terminansicht** (Dokumente A–H), nicht über das Kundenprofil.",
+  "Die **Extrazeit** ist die einzige Angabe dieses Reiters, die im Hub gepflegt wird."
+ ],
+ "pages": [
+  {
+   "h1": "Termine der Kundin",
+   "sub": "Der Reiter „Termine“ zeigt oben die kommenden, darunter die vergangenen Termine — jeweils mit Institut, Uhrzeit und Services.",
+   "card": {
+    "title": "Termine der Kundin",
+    "text": "Kommende und vergangene Termine auf einen Blick"
+   },
+   "left": {
+    "shot": "k1-termine"
+   },
+   "leftCaption": "Reiter **„Termine“** — oben die Karten **Extrazeit** und **Selfservice-Terminbuchung**, darunter die Termine.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zukünftige Termine",
+     "text": "Alle gebuchten Termine, der nächste zuerst. Jede Karte nennt **Datum, Uhrzeit, Institut** und die gebuchten **Services**."
+    },
+    {
+     "n": 2,
+     "title": "Extrazeit",
+     "text": "Zusätzliche Minuten, die diese Kundin bei jeder Buchung bekommt — siehe Seite 4."
+    },
+    {
+     "n": 3,
+     "title": "Vergangene Termine",
+     "text": "Die Historie darunter, das Letzte zuerst. Storno und **No Show** sind am Badge erkennbar."
+    }
+   ],
+   "rightHtml": "<div class='steps cols-1' style='margin-top:0'><div class='step'><div class='num'>i</div><div><div class='t'>Laden dauert</div><div class='d'>Die Termine holt der Hub bei jedem Öffnen <b>frisch aus Phorest</b>. Bei Kundinnen mit langer Historie erscheint erst ein Ladebalken mit Zähler — das ist normal.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Termin buchen</div><div class='d'>Neue Termine entstehen <b>nicht</b> hier, sondern über die <b>Buchungsseite</b> oder direkt im laufenden Termin („Folgetermin planen“).</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Kein Storno im Hub</div><div class='d'>Termine <b>absagen</b> geht nur in Phorest. Im Kundenprofil lassen sich Termine ansehen, verlegen und als Link weitergeben — mehr nicht.</div></div></div></div>",
+   "hint": {
+    "text": "**Kundin fragt nach ihrem nächsten Termin?** Schneller als dieser Reiter ist die **Übersicht** — die Karte **Termine** nennt nächsten und letzten Termin direkt."
+   }
+  },
+  {
+   "h1": "Aktionen am Termin",
+   "sub": "Jede Terminkarte trägt bis zu drei Knöpfe: Buchungslink weitergeben, Termin verlegen, Details ansehen.",
+   "card": {
+    "title": "Aktionen am Termin",
+    "text": "„Link“, „Verlegen“ und „Details“ an der Terminkarte"
+   },
+   "left": {
+    "shot": "k2-termin-aktionen"
+   },
+   "right": {
+    "shot": "k4-buchungslink"
+   },
+   "leftCaption": "Knöpfe an einer Karte der **zukünftigen** Termine.",
+   "rightCaption": "Der Buchungslink für die Selfservice-Terminbuchung.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Link“",
+     "text": "Erzeugt den **Selfservice-Link** zu diesem Termin. Die Kundin kann darüber selbst umbuchen — praktisch für Anfragen per WhatsApp."
+    },
+    {
+     "n": 2,
+     "title": "„Verlegen“",
+     "text": "Öffnet die Terminverlegung mit freien Zeiten. Nach dem Verlegen aktualisiert sich die Liste von selbst."
+    },
+    {
+     "n": 3,
+     "title": "„Details“",
+     "text": "Zeigt alles, was Phorest zum Termin gespeichert hat — nächste Seite."
+    }
+   ],
+   "hint": {
+    "text": "**Nur bei zukünftigen Terminen** stehen „Link“ und „Verlegen“ zur Verfügung. An vergangenen Terminen gibt es allein **„Details“**."
+   }
+  },
+  {
+   "h1": "Termindetails lesen",
+   "sub": "Das Fenster zeigt den Termin so, wie Phorest ihn führt — inklusive Notizen und Status.",
+   "card": {
+    "title": "Termindetails lesen",
+    "text": "Grunddaten, Services, Status und Notizen im Detailfenster"
+   },
+   "left": {
+    "shot": "k3-termin-details"
+   },
+   "leftCaption": "Detailfenster eines Termins — nur Ansicht, hier wird nichts geändert.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Grunddaten",
+     "text": "**Datum**, **Uhrzeit**, **Filiale**, **Status** und die zugeordnete **Mitarbeiterin** bzw. Kabine."
+    },
+    {
+     "n": 2,
+     "title": "Services",
+     "text": "Jede gebuchte Leistung mit **Dauer**, **Preis** und **Personal** — so lässt sich prüfen, was tatsächlich gebucht ist."
+    },
+    {
+     "n": 3,
+     "title": "Notizen",
+     "text": "**Kundennotizen** (von der Kundin bei der Buchung) und **Systemnotizen** (aus dem Hub, z. B. beim Beenden des Termins)."
+    }
+   ],
+   "hint": {
+    "text": "**Für Rückfragen ans Büro** ist die **Termin-ID** aus den Grunddaten die sicherste Angabe — sie ist eindeutig, anders als „der Termin am Dienstag“."
+   }
+  },
+  {
+   "h1": "Extrazeit hinterlegen",
+   "sub": "Manche Kundinnen brauchen regelmäßig länger. Die Extrazeit hängt an der Kundin und wirkt bei jeder Buchung.",
+   "card": {
+    "title": "Extrazeit hinterlegen",
+    "text": "Zusätzliche Minuten je Behandlung dauerhaft speichern"
+   },
+   "left": {
+    "shot": "k5-extrazeit"
+   },
+   "leftCaption": "Karte **„Extrazeit“** im Bearbeiten-Modus.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Bearbeiten“",
+     "text": "Öffnet die Eingabe. Ohne diesen Schritt ist die Karte reine Anzeige."
+    },
+    {
+     "n": 2,
+     "title": "Minuten eintragen",
+     "text": "Die **zusätzlichen Minuten**, die diese Kundin über die normale Behandlungsdauer hinaus braucht."
+    },
+    {
+     "n": 3,
+     "title": "„Speichern“",
+     "text": "Übernimmt den Wert. Ab dann plant die Buchung automatisch länger."
+    }
+   ],
+   "hint": {
+    "text": "**Sparsam einsetzen:** Extrazeit blockiert bei **jedem** Termin Kabine und Zeit. Für einen einmaligen Sonderfall lieber den konkreten Termin verlängern, statt die Kundin dauerhaft umzustellen."
+   }
+  },
+  {
+   "h1": "glattt Pakete",
+   "sub": "Der Reiter „glattt Pakete“ zeigt die gekauften Behandlungspakete aus Phorest und wie viel davon verbraucht ist.",
+   "card": {
+    "title": "glattt Pakete",
+    "text": "Gekaufte Pakete, Restsitzungen und Gültigkeit"
+   },
+   "left": {
+    "shot": "k6-pakete"
+   },
+   "leftCaption": "Ein Paket je Karte — mit Status-Badge und verbrauchten Sitzungen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Status-Badge",
+     "text": "**Aktiv** = nutzbar · **Aufgebraucht** = alle Sitzungen verbraucht · **Abgelaufen** = Gültigkeit vorbei · **Archiviert** = in Phorest stillgelegt."
+    },
+    {
+     "n": 2,
+     "title": "Verbrauch lesen",
+     "text": "Die Karte zeigt, **wie viele Sitzungen** des Pakets bereits genutzt sind — die Grundlage für die Frage „wie viele habe ich noch?“."
+    },
+    {
+     "n": 3,
+     "title": "Nicht verwechseln",
+     "text": "Das Paket ist die **Behandlungsberechtigung** in Phorest, der **Vertrag** (Dokument L) ist die Zahlungsseite. Beides gehört zusammen, ist aber nicht dasselbe."
+    }
+   ],
+   "hint": {
+    "text": "**Paket fehlt nach dem Vertragsabschluss?** Bei Ratenzahlung wird der Kauf in Phorest erst mit der **SEPA-Unterschrift** gebucht. Kurz warten, dann die Seite neu laden — steht es dann immer noch nicht da, **Asana-Task ans Büro**."
+   }
+  }
+ ]
+}
