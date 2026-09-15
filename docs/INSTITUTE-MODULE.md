@@ -15,47 +15,73 @@ Das Institut-Modul zeigt alle Phorest Branches als "Institute" an und bietet det
   - Placeholder für Institut-Bild (später hinzufügbar)
 - Klickbare Karten führen zur Detail-Ansicht
 
-### Detail-Seite (`/hub/branches?branch={branchId}`)
-- **Tab-Navigation mit 4 Bereichen:**
+### Detail-Seite (`/hub/branches/{branchId}`) — seit 15.09.2026 „Steckbrief-Spalte"
 
-#### 1. Infos Tab
-- Kontaktdaten (Name, Adresse aus Phorest)
-- **Kontakt-Stammdaten (seit 29.08.2026):** Telefon, WhatsApp-Nummer und
-  E-Mail je Institut werden direkt in der Kontaktdaten-Karte gepflegt
-  (Tabelle `institute_contacts`, Endpoints `GET/POST
-  /phorest/institute/{branchId}/contact`, Schreibrecht wie Farbe/Icon/Bild:
-  `manage_branch_images`; ohne Recht Leseansicht). Phorest liefert je Branch
-  keine Kontaktdaten. Genutzt von den **Terminerinnerungs-Mails**:
-  Instituts-Footer, „Anrufen"-/„WhatsApp schreiben"-Buttons und die
-  Platzhalter `{{institut_telefon}}`/`{{institut_whatsapp}}`/`{{institut_mail}}`
-  (siehe `TERMINERINNERUNGEN.md`).
-- **Standort-Farbe:** Konfigurierbarer Farbpicker mit:
-  - 12 vordefinierten Farben als Schnellauswahl
-  - Freier Farbwähler (nativer Color-Picker)
-  - Hex-Code Eingabefeld
-  - Sofortige Vorschau der gewählten Farbe
-  - Die Farbe wird in allen Statistik-Seiten und auf der Übersichtsseite konsistent verwendet
-- **Reihenfolge:** Konfigurierbares Zahlenfeld (0–999) zur Steuerung der Sortierreihenfolge der Standorte in allen Listen, Tabellen und Statistik-Seiten
-- Weitere Informationen (Branch ID, Zeitzone, Währung)
-- Standort-Karte (Placeholder für zukünftige Integration)
+Die Seite folgt seit dem 15.09.2026 dem Layout der Vertragsseite V2 (Abnahme
+per Mockup, Variante B): **Kopfzeile** mit Zurück-Pfeil, Name, Adresse und drei
+**Schnellaktionen** aus den Kontakt-Stammdaten („Anrufen" = Festnetz,
+„Anrufen mobil" = WhatsApp-Nummer als `tel:`-Link, „WhatsApp schreiben" =
+`wa.me`-Link), darunter das **Menüband** (`.tab-band-glattt`, dieselbe Optik wie
+die Vertragsseite: aktiver Reiter im Teal-Gradient, Heroicons, Team-Zähler) und
+der **Zweispalter**: Reiter-Inhalt links, rechts der feststehende **Steckbrief**.
 
-#### 2. Mitarbeiter Tab
-- Liste aller glatttHub-User mit diesem Institut als Stamminstitut
-- Zeigt pro Mitarbeiter:
-  - Profilfoto
-  - Name und E-Mail
-  - Rollen/Berechtigungen
-  - Mitglied seit
-- Dynamisches Laden beim Tab-Wechsel
+**Mobil:** Titel mittig ohne Untertitel, Schnellaktionen über die volle Breite
+(Muster vom 15.09.2026), fünf Reiter als Symbol-Segmente mit Kurzbeschriftung
+(nichts scrollt), Steckbrief als zugeklappte Karte über dem Menüband. Auf dem
+iPad (unter 1280 px) steht der Steckbrief aufgeklappt über dem Menüband — das
+regelt allein das CSS-Grid (`grid-template-areas`), das Markup bleibt gleich.
 
-#### 3. Laser Tab
-- Placeholder für zukünftige Laser-Geräte Informationen
-- Geplant: Gerätetypen, Wartungsdaten, Nutzungsstatistik
+#### Steckbrief (auf jedem Reiter sichtbar)
+- Standort-Icon, Stadt
+- **Farbe, Reihenfolge, Sichtbarkeit** mit Badges und — bei `manage_branch_images` —
+  direkt bearbeitbar (12 Schnellfarben, nativer Farbwähler, Hex-Feld, Reihenfolge
+  0–999, Schalter „Aus Übersichten ausblenden", ein Speichern)
+- Branch-ID und Account-ID mit Kopier-Knopf, Zeitzone · Währung, Koordinaten
+  mit Google-Maps-Link, Team-Größe mit Sprung zum Reiter „Team"
 
-#### 4. Kennzahlen Tab
-- Placeholder für zukünftige Statistiken und KPIs
-- Geplant: Termine, Umsatz, Neue Kunden, Auslastung
-- Charts für Umsatzentwicklung und Terminauslastung
+#### 1. Infos
+- Kontaktdaten: Name, Adresse, Website aus Phorest; darunter die **Kontakt-
+  Stammdaten** Telefon, WhatsApp-Nummer, E-Mail (Tabelle `institute_contacts`,
+  Endpoints `GET/POST /phorest/institute/{branchId}/contact`, Schreibrecht
+  `manage_branch_images`; ohne Recht Leseansicht). Sie speisen die
+  Schnellaktionen der Kopfzeile und die **Terminerinnerungs-Mails** (Footer,
+  Buttons, Platzhalter `{{institut_telefon}}`/`{{institut_whatsapp}}`/
+  `{{institut_mail}}`, siehe `TERMINERINNERUNGEN.md`).
+- Standort-Icon (PNG/SVG, max. 2 MB) und Institut-Bild (max. 5 MB) — je eine
+  Karte; ein neues Icon erscheint sofort im Steckbrief
+- Standort auf der Karte (Google-Maps-Einbettung über die Phorest-Koordinaten)
+
+#### 2. Team
+- glatttHub-Konten mit diesem Institut als Stamminstitut: Avatar, Name,
+  NiSV-Status (grün/gelb/orange/rot), „im Hub seit"; Klick öffnet das Profil.
+- Wird beim Seitenaufruf geladen (Zähler im Reiter).
+
+#### 3. Kennzahlen (seit 15.09.2026 mit echten Zahlen)
+- **KPI-Zeile** (`components/kpi-dashboard`, Speicher-Schlüssel `institute-kpis`,
+  sechs sichtbar, Reihenfolge personalisierbar) — nur dieses Institut,
+  laufender Monat: Durchgeführte BGs (Monat, nur PAID-Termine) · Beratungen
+  heute · Beratungen morgen · Geplant (7 Tage) · Geplant bis Monatsende ·
+  Verträge · Verkaufte Körperzonen · Ø Körperzonen. Endpoint
+  `GET /phorest/institute/{branchId}/kpis` → `KpiValueService::values()` mit
+  den IDs aus `InstituteController::KPI_IDS`; welche Kacheln erscheinen,
+  entscheidet die Berechtigung je Kennzahl (`view_report_glattt_kpis`,
+  `view_report_upcoming_consultations`, `view_report_sales_statistics`).
+- Darunter zwei **Registry-Statistiken** mit festem Standort über das
+  `statFilters`-Objekt der Seiten-App (Standort = Institut, Zeitraum = Monat):
+  „Aktueller Buchungsstand" (`termine.booking-status`) und „Körperzonen pro
+  Tag" (`sales.body-zones-daily`). Nichts ist doppelt gebaut.
+- Neu in der KpiRegistry dafür: `termine.upcoming_tomorrow`,
+  `termine.upcoming_month_end` (Eimer `tomorrow`/`month_end` aus
+  `ReportController::buildUpcomingConsultationsKpi`) und
+  `sales.total_body_zones` (Summe `body_zone_count` der Abschlüsse).
+
+#### 4. Bank (nur `manage_branch_bank_details`)
+- Bankverbindung je Standort für Zahlungserinnerungen und Mahnungen des
+  Forderungsmanagements (Kontoinhaber, IBAN, BIC, Bank, Schalter „Aktiv").
+
+#### 5. Extern (nur `manage_institute_access_tokens`)
+- Zugangs-Link der Institutsseite (Tageserfassung Beratungsgespräche):
+  erstellen, kopieren, erneuern, widerrufen.
 
 ## Technische Implementierung
 
@@ -69,11 +95,13 @@ Das Institut-Modul zeigt alle Phorest Branches als "Institute" an und bietet det
 ### Routes
 ```php
 // Views
-GET /hub/branches -> InstituteController@index
+GET /hub/branches            -> InstituteController@index
+GET /hub/branches/{branchId} -> InstituteController@show
 
 // API
-GET /phorest/institute/{branchId} -> InstituteController@getInstituteDetails
+GET /phorest/institute/{branchId}       -> InstituteController@getInstituteDetails
 GET /phorest/institute/{branchId}/staff -> InstituteController@getInstituteStaff
+GET /phorest/institute/{branchId}/kpis  -> InstituteController@kpis (Kennzahlen-Zeile, seit 15.09.2026)
 
 // Standort-Farben API
 GET  /phorest/institute/colors/all      -> InstituteController@getAllInstituteColors
@@ -84,18 +112,28 @@ POST /phorest/institute/{branchId}/color -> InstituteController@saveInstituteCol
 ### Frontend
 - **Views:**
   - `resources/views/hub/institutes/index.blade.php` - Übersicht
-  - `resources/views/hub/institutes/show.blade.php` - Detail mit Tabs
+  - `resources/views/hub/institutes/show.blade.php` - Kopfzeile, Menüband, Zweispalter
+  - `resources/views/hub/institutes/partials/steckbrief.blade.php` - Steckbrief-Spalte
   - `resources/views/hub/institutes/tabs/info.blade.php`
   - `resources/views/hub/institutes/tabs/staff.blade.php`
-  - `resources/views/hub/institutes/tabs/lasers.blade.php`
-  - `resources/views/hub/institutes/tabs/metrics.blade.php`
+  - `resources/views/hub/institutes/tabs/metrics.blade.php` (KPI-Zeile + `<x-statistic>`)
+  - `resources/views/hub/institutes/tabs/bank.blade.php`
+  - `resources/views/hub/institutes/tabs/access.blade.php`
 
-- **Alpine.js Components:**
-  - `instituteDetail()` - Hauptkomponente für Detail-Seite
-  - `instituteColorPicker()` - Farbpicker-Komponente im Info-Tab
-  - Lädt Daten dynamisch
-  - Tab-Switching
-  - Staff-Daten lazy loading
+- **Alpine.js-Komponenten** (`public/js/institute-detail.js`, geladen per `@assets`
+  zusammen mit der Statistik-Laufzeit echarts → echarts-glattt → chart-table →
+  glattt-stats → `statistics/termine.js` + `statistics/sales.js`):
+  - `instituteDetail(branchId)` - Seiten-App: Stammdaten, Kontakt, Team,
+    Kennzahlen-Zeile, Reiter-Zustand, `statFilters`-Getter für die eingebetteten Karten
+  - `instituteColorPicker(branchId)` - Farbe/Reihenfolge/Sichtbarkeit im Steckbrief
+  - `instituteIconUploader(branchId)`, `instituteImageCard(branchId)`,
+    `instituteAccessToken(branchId)`
+
+- **Theme** (`theme_glattt.css`): `.tab-band-glattt` / `.tab-band-glattt-tab` sind
+  Aliasse des Vertrags-Menübands (`.contract-v2-tabs`, gleiche Regeln), mobil
+  `.tab-band-glattt-mobile-icons`; Zweispalter `.institute-detail-layout` mit
+  den Areas `band` / `main` / `steckbrief`; Steckbrief-Klassen `.institute-steckbrief-*`.
+  Abgesichert durch `tests/Feature/InstituteDetailPageTest.php`.
 
 ### Standort-Farben System
 
@@ -319,9 +357,9 @@ Weitere Bausteine:
 
 ## Zukünftige Erweiterungen
 1. ~~**Institut-Bilder:** Upload und Anzeige von Institut-Fotos~~ ✅ Implementiert
-2. **Google Maps Integration:** Standort-Karte im Info-Tab
+2. ~~**Google Maps Integration:** Standort-Karte im Info-Tab~~ ✅ Implementiert
 3. **Laser-Verwaltung:** Geräte-Datenbank mit Wartungsplan
-4. **Kennzahlen:** Echte Daten aus Phorest API
+4. ~~**Kennzahlen:** Echte Daten aus Phorest API~~ ✅ Implementiert (15.09.2026, KPI-Zeile + Registry-Karten)
 5. **Berichte:** Institut-spezifische Reports
 6. **Öffnungszeiten:** Anzeige und Verwaltung der Geschäftszeiten
 7. ~~**Standort-Farben:** Konfigurierbare Farben pro Institut~~ ✅ Implementiert
