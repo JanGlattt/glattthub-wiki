@@ -45,10 +45,23 @@
      "text": "Die Historie darunter, das Letzte zuerst. Storno und **No Show** sind am Badge erkennbar."
     }
    ],
-   "rightHtml": "<div class='steps cols-1' style='margin-top:0'><div class='step'><div class='num'>i</div><div><div class='t'>Laden dauert</div><div class='d'>Die Termine holt der Hub bei jedem Öffnen <b>frisch aus Phorest</b>. Bei Kundinnen mit langer Historie erscheint erst ein Ladebalken mit Zähler — das ist normal.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Termin buchen</div><div class='d'>Neue Termine entstehen <b>nicht</b> hier, sondern über die <b>Buchungsseite</b> oder direkt im laufenden Termin („Folgetermin planen“).</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Kein Storno im Hub</div><div class='d'>Termine <b>absagen</b> geht nur in Phorest. Im Kundenprofil lassen sich Termine ansehen, verlegen und als Link weitergeben — mehr nicht.</div></div></div></div>",
    "hint": {
     "text": "**Kundin fragt nach ihrem nächsten Termin?** Schneller als dieser Reiter ist die **Übersicht** — die Karte **Termine** nennt nächsten und letzten Termin direkt."
-   }
+   },
+   "notes": [
+    {
+     "title": "Laden dauert",
+     "text": "Die Termine holt der Hub bei jedem Öffnen **frisch aus Phorest**. Bei Kundinnen mit langer Historie erscheint erst ein Ladebalken mit Zähler — das ist normal."
+    },
+    {
+     "title": "Termin buchen",
+     "text": "Neue Termine entstehen **nicht** hier, sondern über die **Buchungsseite** oder direkt im laufenden Termin („Folgetermin planen“)."
+    },
+    {
+     "title": "Kein Storno im Hub",
+     "text": "Termine **absagen** geht nur in Phorest. Im Kundenprofil lassen sich Termine ansehen, verlegen und als Link weitergeben — mehr nicht."
+    }
+   ]
   },
   {
    "h1": "Aktionen am Termin",
@@ -182,5 +195,6 @@
     "text": "**Paket fehlt nach dem Vertragsabschluss?** Bei Ratenzahlung wird der Kauf in Phorest erst mit der **SEPA-Unterschrift** gebucht. Kurz warten, dann die Seite neu laden — steht es dann immer noch nicht da, **Asana-Task ans Büro**."
    }
   }
- ]
+ ],
+ "audience": "institut"
 }

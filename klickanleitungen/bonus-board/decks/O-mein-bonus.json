@@ -1,0 +1,181 @@
+{
+ "out": "../pdf/O-Mein-Bonus",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "audience": "institut",
+ "title": [
+  "Mein Bonus",
+  "im Bonus-Board"
+ ],
+ "subtitle": "Klickanleitung für das Bonus-Board im glatttHub — was gesichert ist, was noch fehlt und wie das Institut steht",
+ "eyebrow": "Bonus-Board · Mein Board · Teil O",
+ "footerArea": "Bonus-Board",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Das Board rechnet **live mit**: Jede verkaufte Körperzone ist am nächsten Tag zu sehen.",
+  "**Gesichert ist nicht dasselbe wie aktueller Stand** — der Unterschied sind Verträge, bei denen ein Widerruf offen ist.",
+  "Verbindlich wird ein Monat erst, wenn das Büro ihn **einfriert**; bis dahin ist alles Zwischenstand."
+ ],
+ "pages": [
+  {
+   "h1": "Board öffnen",
+   "sub": "„Bonus-Board“ in der Seitenleiste öffnet das eigene Board. Oben stehen Monat und Ansicht.",
+   "card": {
+    "title": "Board öffnen",
+    "text": "Bonus-Board aufrufen, Monat wählen, Ansicht prüfen"
+   },
+   "left": {
+    "shot": "o1-board-kopf"
+   },
+   "leftCaption": "Kopf des Bonus-Boards — Monatsauswahl und, wer beides sehen darf, der Umschalter zur Management-Sicht.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Monat wählen",
+     "text": "Standard ist der **laufende Monat**. Über die Auswahl lassen sich auch vergangene Monate ansehen."
+    },
+    {
+     "n": 2,
+     "title": "Zustandszeile lesen",
+     "text": "Auf Telefon und Tablet steht dort, was gerade gilt — etwa **„September 2026 · Mein Board“**. Ein Tippen klappt die Werkzeuge auf."
+    },
+    {
+     "n": 3,
+     "title": "„Mein Board“",
+     "text": "Die eigene Sicht. Wer zusätzlich **„Management“** sieht, hat das Recht für die Leitungs-Sicht (Dokument Q)."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Kein Board zu sehen?",
+     "text": "Steht dort **„Für dich sind in diesem Monat keine Bonus-Regeln hinterlegt“**, ist die Bonus-Klasse noch nicht zugeordnet. Das macht das Büro in der Verwaltung — kurz bei der Leitung melden."
+    },
+    {
+     "title": "Zahlen wirken verzögert",
+     "text": "Verkäufe und Behandlungen kommen über die **nächtlichen Abgleiche** ins Board. Ein Abschluss von heute Nachmittag steht also morgen drin, nicht sofort."
+    }
+   ],
+   "hint": {
+    "text": "**Vergangene Monate** bleiben abrufbar. Ist ein Monat **eingefroren**, zeigt das Board nur noch den Endstand — er ändert sich nicht mehr, auch wenn später noch etwas passiert."
+   }
+  },
+  {
+   "h1": "Dein Monat auf einen Blick",
+   "sub": "Vier Zahlen oben fassen den Monat zusammen. Der Unterschied zwischen den ersten beiden ist der wichtigste.",
+   "card": {
+    "title": "Dein Monat",
+    "text": "Gesichert, aktueller Stand, Hochrechnung, Abwesenheit"
+   },
+   "left": {
+    "shot": "o2-monat-ueberblick"
+   },
+   "leftCaption": "Die Kennzahlen-Zeile des eigenen Boards.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Schon gesichert",
+     "text": "Was **sicher** ist — gerechnet **ohne** die Körperzonen, zu denen ein Widerruf offen ist. Diese Zahl kann nicht mehr sinken."
+    },
+    {
+     "n": 2,
+     "title": "Aktueller Stand",
+     "text": "Derselbe Monat **inklusive** der Körperzonen unter Vorbehalt. Entscheidet das Büro den Widerruf zugunsten der Kundin, fällt dieser Teil wieder weg."
+    },
+    {
+     "n": 3,
+     "title": "Hochrechnung",
+     "text": "Was am Monatsende stünde, **wenn es im selben Tempo weitergeht**. Eine Schätzung, keine Zusage."
+    },
+    {
+     "n": 4,
+     "title": "Abwesenheitstage",
+     "text": "Aus dem **Dienstplan** (askDANTE). Sie entscheiden mit, ob der Bonus voll ausgezahlt wird — siehe Hinweis."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Abwesenheitsregel:** Ab **6 bis 10 Tagen** Abwesenheit im Monat wird der Bonus **halbiert**, ab **11 Tagen** entfällt er. Trifft das zu, steht oben rechts ein oranges Badge. Ohne **einen einzigen erfassten Arbeitstag** im Dienstplan zählt der Monat gar nicht — dann erscheint ein Hinweis, und die Ziele werden erst gewertet, wenn der erste Arbeitstag eingetragen ist."
+   }
+  },
+  {
+   "h1": "Ziel-Karten lesen",
+   "sub": "Für jedes Ziel gibt es eine Karte: Stand, Ziel, Fortschrittsbalken und was es am Ende bringt.",
+   "card": {
+    "title": "Ziel-Karten lesen",
+    "text": "Stand, Balken, Status-Badge und Prämie verstehen"
+   },
+   "left": {
+    "shot": "o3-zielkarte"
+   },
+   "leftCaption": "Eine Ziel-Karte — der dunkle Teil des Balkens ist **gesichert**, der helle steht unter Vorbehalt.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Status-Badge",
+     "text": "**Erreicht**, **Auf Kurs** oder **Noch offen**. Bei Durchschnitts-Zielen (etwa Ø KPZ) gibt es **vor** Monatsende nie „Erreicht“ — der Schnitt kann bis zum letzten Tag kippen."
+    },
+    {
+     "n": 2,
+     "title": "Wert und Ziel",
+     "text": "Links der eigene Stand, rechts das **Ziel**. Darunter steht, **wie viel noch fehlt**."
+    },
+    {
+     "n": 3,
+     "title": "Zwei Balken-Teile",
+     "text": "Der **dunkle** Teil ist gesichert, der **helle** hängt an offenen Widerrufen. Nur der dunkle zählt, wenn es knapp wird."
+    },
+    {
+     "n": 4,
+     "title": "Prämie",
+     "text": "Steht die Karte auf **Erreicht**, zeigt sie den Betrag — oder die **Sachprämie**, wenn es keine Auszahlung ist."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Serien",
+     "text": "Manche Ziele zählen **Monate in Folge**. Die Punktreihe zeigt, wie viele schon geschafft sind und wie viele bis zur nächsten Stufe fehlen."
+    },
+    {
+     "title": "Google-Ziele",
+     "text": "Karten mit Google-Bezug rechnen mit dem **Saldo** des Instituts — neue Bewertungen minus verlorene. Erfasst wird das im Modul **„Google-Bewertungen“**."
+    }
+   ],
+   "hint": {
+    "text": "**Die Hochrechnung auf der Karte** rechnet linear hoch — bei Durchschnitts-Zielen nicht. Dort ist die Hochrechnung schlicht der aktuelle Schnitt, weil ein Schnitt nicht mit den Tagen wächst."
+   }
+  },
+  {
+   "h1": "Dein Institut",
+   "sub": "Unten steht das Team-Ziel. Es entscheidet bei vielen Regeln mit, ob der persönliche Bonus überhaupt greift.",
+   "card": {
+    "title": "Dein Institut",
+    "text": "Team-Stand, Minimalziel und Vorbehalt lesen"
+   },
+   "left": {
+    "shot": "o4-dein-institut"
+   },
+   "leftCaption": "Die Team-Karte des eigenen Instituts mit Minimalziel und Fortschritt.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "KPZ des Teams",
+     "text": "Die **verkauften Körperzonen** des Instituts im gewählten Monat — die Summe aller Kolleginnen."
+    },
+    {
+     "n": 2,
+     "title": "Minimalziel",
+     "text": "Die Marke, die das Team schaffen soll. Steht dort **„Noch kein Minimalziel hinterlegt“**, hat das Büro für diesen Monat keines gesetzt."
+    },
+    {
+     "n": 3,
+     "title": "Unter Vorbehalt",
+     "text": "Zeigt, wie viele KPZ des Teams an offenen Widerrufen hängen — dieselbe Logik wie bei den eigenen Zielen."
+    }
+   ],
+   "hint": {
+    "text": "**Warum das Team zählt:** Viele Regeln zahlen nur, wenn das Institut sein Minimalziel erreicht — bei manchen Challenges sogar erst, wenn **alle beteiligten Teams** ihr Ziel schaffen. Deshalb lohnt der Blick auf diese Karte, auch wenn die eigenen Ziele längst stehen."
+   }
+  }
+ ]
+}

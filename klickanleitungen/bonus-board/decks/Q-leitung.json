@@ -1,0 +1,221 @@
+{
+ "out": "../pdf/Q-Bonus-Board-fuer-die-Leitung",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "audience": "leitung",
+ "title": [
+  "Bonus-Board",
+  "für die Leitung"
+ ],
+ "subtitle": "Klickanleitung für das Bonus-Board im glatttHub — Institute gegen Minimalziele, Boni je Mitarbeiterin, Export",
+ "eyebrow": "Bonus-Board · Management · Teil Q",
+ "footerArea": "Bonus-Board",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Management-Sicht zeigt **alle** Institute und alle Mitarbeiterinnen — sie ist an ein eigenes Recht gebunden.",
+  "**Gesichert** ist die Zahl, auf die man sich verlassen kann; der aktuelle Stand enthält Körperzonen unter Widerrufs-Vorbehalt.",
+  "Entschieden und abgeschlossen wird nicht hier, sondern in der **Bonus-Verwaltung** (Dokumente R und S)."
+ ],
+ "pages": [
+  {
+   "h1": "Management-Sicht öffnen",
+   "sub": "Derselbe Bildschirm, andere Ansicht: Der Umschalter im Seitenkopf wechselt zwischen eigenem Board und Management.",
+   "card": {
+    "title": "Sicht wechseln",
+    "text": "Umschalter, Monat und die Werkzeuge im Kopf"
+   },
+   "left": {
+    "shot": "q1-management-kopf"
+   },
+   "leftCaption": "Kopf des Boards in der Management-Sicht.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Management“ wählen",
+     "text": "Der Umschalter neben der Monatsauswahl. Fehlt er, fehlt das Recht für die Leitungs-Sicht."
+    },
+    {
+     "n": 2,
+     "title": "Monat wählen",
+     "text": "Standard ist der laufende Monat. Ein **beendeter** Monat zeigt nur noch Endstände — keine Hochrechnung mehr."
+    },
+    {
+     "n": 3,
+     "title": "Weitere Werkzeuge",
+     "text": "**„Verwaltung“** führt zu Regeln, Zielen und Monatsabschluss, **„Google-Bewertungen“** zur Erfassung der Bewertungen."
+    }
+   ],
+   "hint": {
+    "text": "**Mobil** stehen die Werkzeuge hinter der Zustandszeile (z. B. **„September 2026 · Management“**). Ein Tippen darauf klappt Monatsauswahl und Umschalter über die volle Breite auf."
+   }
+  },
+  {
+   "h1": "Institute vs. Minimalziele",
+   "sub": "Die obere Tabelle zeigt je Institut, wo es steht — mit Ampel für den Blick aus der Ferne.",
+   "card": {
+    "title": "Institute vs. Ziele",
+    "text": "KPZ, gesichert, Minimalziel, Hochrechnung, Google"
+   },
+   "left": {
+    "shot": "q2-institute-ziele"
+   },
+   "leftCaption": "Eine Zeile je Institut, in der konfigurierten Reihenfolge.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "KPZ Ist",
+     "text": "Verkaufte Körperzonen im Monat, alle Mitarbeiterinnen des Instituts zusammen."
+    },
+    {
+     "n": 2,
+     "title": "Gesichert",
+     "text": "Dieselbe Zahl **ohne** die Körperzonen mit offenem Widerruf. Nur diese Zahl ist belastbar."
+    },
+    {
+     "n": 3,
+     "title": "Minimalziel",
+     "text": "Was das Institut in diesem Monat schaffen soll. Gesetzt wird es in der **Verwaltung** (Dokument R)."
+    },
+    {
+     "n": 4,
+     "title": "Hochrechnung",
+     "text": "Nur im laufenden Monat: der Stand am Monatsende **bei gleichem Tempo**."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Ampel-Farben",
+     "text": "**Grün** = Minimalziel erreicht · **Hellgrün** = die Hochrechnung liegt auf Kurs · sonst offen. Die Farbe folgt dem gesicherten Wert, nicht dem optimistischen."
+    },
+    {
+     "title": "Google-Saldo",
+     "text": "Die vorletzte Spalte zeigt **neue minus verlorene** Bewertungen gegen das Google-Ziel des Instituts — Grundlage für alle Google-Regeln."
+    },
+    {
+     "title": "Beendeter Monat",
+     "text": "Ist der Monat eingefroren, steht am Kopf **„Monat beendet — Ist = Endstand“**, und die Spalte Hochrechnung verschwindet."
+    }
+   ],
+   "hint": {
+    "text": "**Ausgeblendete Institute** (z. B. ein Standort im Testbetrieb vor der Eröffnung) erscheinen hier nicht. Fehlt ein Institut, das erscheinen soll, liegt es an dieser Einstellung im Institut-Modul — nicht am Bonus-Board."
+   }
+  },
+  {
+   "h1": "Boni je Mitarbeiterin",
+   "sub": "Die untere Tabelle listet jede Mitarbeiterin mit Zielen und Bonus — gruppiert nach Institut.",
+   "card": {
+    "title": "Boni je Person",
+    "text": "Klasse, Abwesenheit, erreichte Ziele, Bonus"
+   },
+   "left": {
+    "shot": "q3-personen"
+   },
+   "leftCaption": "Personen-Tabelle, je Institut gruppiert und zuklappbar — der Bonus steht rechts außen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Gruppen zuklappen",
+     "text": "Je Institut eine Gruppe, sortiert **Leitung → BG-Spezialistin → glattt Spezialistin**. Der Kopf der Gruppe klappt sie zu."
+    },
+    {
+     "n": 2,
+     "title": "Klasse",
+     "text": "Die **Bonus-Klasse** bestimmt, welche Regeln für die Person gelten. Ohne Klasse gibt es kein Board — dann fehlt die Zuordnung in der Verwaltung."
+    },
+    {
+     "n": 3,
+     "title": "Abwesenheit",
+     "text": "Tage aus dem Dienstplan. **6 bis 10** halbieren den Bonus, **ab 11** entfällt er — die Zeile weist darauf hin."
+    },
+    {
+     "n": 4,
+     "title": "Erreichte Ziele",
+     "text": "Zum Aufklappen: Jede Zeile zeigt Ziel, Stand und ob es gesichert ist. Ganz unten steht die **Gesamtzeile** des Instituts."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Gesichert zählt",
+     "text": "Ziele und Bonus in der Übersicht rechnen **ohne Vorbehalt**. Was zusätzlich unter Vorbehalt möglich wäre, steht als grauer Hinweis daneben — so verspricht die Tabelle nie zu viel."
+    },
+    {
+     "title": "Ohne Arbeitstag kein Bonus",
+     "text": "Wer im Monat **keinen** Arbeitstag im Dienstplan hat, ist nicht bonusberechtigt. Fehlt eine Person unerwartet, lohnt der Blick in den Dienstplan."
+    },
+    {
+     "title": "Mobil",
+     "text": "Auf dem Telefon zeigt die Tabelle nur **Name, Ziele und Bonus**; Klasse, Arbeitstage und Hinweise stehen unter dem Namen."
+    }
+   ],
+   "hint": {
+    "text": "**Zahl sieht falsch aus?** Erst prüfen, ob es an einem **offenen Widerruf** liegt (nächste Seite) oder an der **Abwesenheit**. Bleibt es unerklärlich, kann das Büro in der Verwaltung eine **Wert-Korrektur** setzen — siehe Dokument S."
+   }
+  },
+  {
+   "h1": "Offene Widerrufe im Blick",
+   "sub": "Widerrufe, die noch nicht entschieden sind, hängen an den Zahlen. Die Leitung sieht sie, entscheiden tut das Büro.",
+   "card": {
+    "title": "Offene Widerrufe",
+    "text": "Welche Verträge die Zahlen noch verändern können"
+   },
+   "left": {
+    "shot": "q4-widerrufe"
+   },
+   "leftCaption": "Karte **„Offene Widerrufe mit Bonus-Relevanz“** unter der Personen-Tabelle.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Vertrag und Kundin",
+     "text": "Jede Zeile nennt **Vertragsnummer**, Kundin, **Verkäuferin**, Institut und Eingangsdatum des Widerrufs."
+    },
+    {
+     "n": 2,
+     "title": "Betroffene Körperzonen",
+     "text": "So viele KPZ stehen an diesem Fall unter Vorbehalt — genau die Differenz zwischen „gesichert“ und „aktueller Stand“."
+    },
+    {
+     "n": 3,
+     "title": "Weiter zur Entscheidung",
+     "text": "Der Verweis führt in die **Bonus-Verwaltung**, wo je Fall entschieden wird: zählt, zählt nicht oder geparkt."
+    }
+   ],
+   "hint": {
+    "text": "**Vor dem Monatsabschluss** sollte diese Karte leer sein. Jeder offene Fall bedeutet, dass sich die Zahlen noch bewegen können — und dass der Abschluss auf wackligem Stand stünde."
+   }
+  },
+  {
+   "h1": "Stand herausgeben",
+   "sub": "Für Besprechungen und Ablage lässt sich der ganze Monat als Datei ziehen.",
+   "card": {
+    "title": "Stand herausgeben",
+    "text": "CSV für Tabellen, PDF zum Weitergeben"
+   },
+   "left": {
+    "shot": "q5-export"
+   },
+   "leftCaption": "Die beiden Export-Knöpfe im Seitenkopf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "CSV",
+     "text": "Alle Zahlen des gewählten Monats zum Weiterrechnen in der Tabellenkalkulation."
+    },
+    {
+     "n": 2,
+     "title": "PDF",
+     "text": "Derselbe Stand als Dokument — zum Ausdrucken oder Versenden."
+    },
+    {
+     "n": 3,
+     "title": "Stand im Namen",
+     "text": "Beide Dateien gehören zum **gewählten Monat**. Vor dem Weitergeben also prüfen, welcher Monat oben eingestellt war."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Ein Export aus einem laufenden Monat ist ein Zwischenstand** — er enthält Hochrechnungen und Körperzonen unter Vorbehalt. Für verbindliche Zahlen erst den **Monatsabschluss** abwarten (Dokument S) und danach exportieren."
+   }
+  }
+ ]
+}

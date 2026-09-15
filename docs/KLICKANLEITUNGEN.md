@@ -77,6 +77,8 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
    Kontaktdaten der Testkunden vor dem Screenshot per Alpine/DOM maskieren.
 3. **HTML-Folien** aus Vorlage + `meta.json` bauen (Bilder als Base64-JPEG, Qualität ~82).
 4. **PDF** per Playwright `page.pdf({ format: 'A4', landscape: true, printBackground: true })`.
+   Gebaut wird seit 15.09.2026 mit den **gemeinsamen Buildern** unter `klickanleitungen/shared/`
+   (`build-pdf.cjs` und `build-web.cjs`) — je Serie gibt es keine Kopie der Vorlage mehr.
 5. Ablage: PDF an Jan; Quelldateien (Vorlage, Skripte, `meta.json`) **im Wiki-Repo unter
    `klickanleitungen/<slug>/`** ablegen, damit die Anleitung reproduzierbar bleibt
    (die Quellen der ersten Fassung lagen nur im Scratchpad und sind verloren — nur das PDF blieb).
@@ -127,6 +129,11 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | 14 | Gutscheine (Verwaltung/Einlösung) | Gutscheine-Modul | offen | ⬜ |
 | 15 | Termin buchen (Neukunde/Bestandskunde) | Buchungsseite | offen | ⬜ |
 | 16 | Login, PIN, Standortwahl, Dark/Light, Mobil-Navigation | Hub allgemein | offen | ⬜ |
+| 17 | Bonus-Board: eigener Stand, Ziele, Hochrechnung, Team-Karte | `/hub/bonus` › Mein Board | **O – Mein Bonus** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 18 | Challenges: Monats-Challenge, Ranking, Blind, Serien | `/hub/bonus` › Mein Board | **P – Challenges verstehen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 19 | Management-Sicht: Institute vs. Minimalziele, Boni je Mitarbeiterin, Export | `/hub/bonus` › Management | **Q – Bonus-Board für die Leitung** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 20 | Bonus-Regeln und Challenges anlegen, Minimalziele, Sichtbarkeit | `/hub/bonus/verwaltung` | **R – Regeln & Challenges anlegen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 21 | Monatsabschluss: Widerrufe entscheiden, korrigieren, einfrieren, Google-Bewertungen | `/hub/bonus/verwaltung` | **S – Monatsabschluss** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 
 Die Liste wird mit jeder fertigen Anleitung fortgeschrieben. **Ablage:** PDFs in
 `~/Downloads/Klickanleitungen-Terminansicht/` (Übergabe an Jan), Quellen reproduzierbar im Wiki-Repo
@@ -322,6 +329,77 @@ Damit sind alle Bilder mit laufendem Termin veraltet (Dokumente B–H nahezu vol
 
 **Nächster Schritt:** Beratungstermin für eine Magdeburg-Testkundin buchen, `.env` füllen,
 `bash scripts/run-all.sh`, PDFs bauen, an Jan zur fachlichen Freigabe.
+
+---
+
+## Ein Inhalt, zwei Ausgaben — PDF und Endbenutzer-Wiki (15.09.2026)
+
+Jan: „Ich will am Ende das Ganze nicht nur in PDFs haben, sondern auch in einem
+Endbenutzer-Wiki online." **Wo** dieses Wiki liegt, ist bewusst noch offen — die Quellen sind
+seit 15.09.2026 so gebaut, dass die Entscheidung später nichts kostet.
+
+**Aufteilung:** Der Inhalt steht ausschließlich im Deck (`decks/*.json`), das Layout
+ausschließlich im Builder. Beide Builder liegen einmal für alle Serien unter
+`klickanleitungen/shared/`:
+
+| Datei | Erzeugt |
+|---|---|
+| `shared/lib/deck.cjs` | Deck laden, Text auszeichnen, **Screenshot-Overlays** — gemeinsam für beide Ausgaben |
+| `shared/build-pdf.cjs` | PDF, A4 quer (wie bisher) |
+| `shared/build-web.cjs` | `web/<slug>/index.html` (statisch), `web/<slug>.md` (MkDocs), `web/manifest.json` (für eine Hub-Seite), `web/assets/` |
+| `shared/lib/shoot.cjs` | Aufnahme: Anmeldung, Maskierung, Screenshot mit Markierungen |
+
+**Warum das trägt:** Die nummerierten Badges, goldenen Chips und Rahmen sind in beiden
+Ausgaben **dieselben HTML-Elemente über dem Bild**, positioniert in Prozent aus `meta.json`.
+Sie überleben jeden Wechsel des Ziels — es gibt kein „ins Bild gebranntes" Overlay.
+
+**Damit kostet die Hosting-Entscheidung nur noch Anbindung, keine Inhalte:**
+
+- **Hub-Seite** (`/hub/anleitungen`): rendert aus `manifest.json`, bekommt Rechte, globale
+  Suche und Mobil-Design geschenkt. Die Screenshots müssten dann ins Hub-Repo wandern.
+- **Eigenes MkDocs**, privat und hinter IAP: `web/*.md` direkt einbinden.
+- **Statisch**: `web/` ausliefern, fertig.
+
+**Regel fürs Schreiben:** Kein rohes HTML mehr in Decks. Für Erläuterungen ohne Nummer gibt es
+`notes`, für Nachschlagewerke `table`, für Fließtext `sections`. Die Altfelder `rightHtml`
+und `html` funktionieren weiter (A–H), sollen aber nicht neu verwendet werden — was dort
+steht, muss jeder Ausgabeweg unbesehen schlucken. Format und Bau: `klickanleitungen/README.md`.
+
+**Offen:** die Hosting-Entscheidung selbst — und damit die Frage, wohin Decks und Screenshots
+am Ende gehören. Solange sie im **öffentlichen** Wiki-Repo liegen, gilt die Maskierungspflicht
+aus den Serien-READMEs unverändert.
+
+---
+
+## Serie „Bonus-Board" O–S (15.09.2026)
+
+Dritte Serie, Quellen unter `klickanleitungen/bonus-board/` (README dort). Auftrag Jan
+15.09.2026; Zuschnitt nach den **drei Sichten** des Moduls, weil sie an verschiedenen Rechten
+hängen und verschiedene Leute betreffen:
+
+| Dokument | Für wen | Kern |
+|---|---|---|
+| **O – Mein Bonus** | Mitarbeiterin | gesichert vs. aktueller Stand, Hochrechnung, Abwesenheitsregel, Ziel-Karten, Team-Karte |
+| **P – Challenges verstehen** | Mitarbeiterin | Monats-Challenge, Ranking (auch relativ), Blind-Challenge, Serien |
+| **Q – Bonus-Board für die Leitung** | Leitung | Institute vs. Minimalziele mit Ampel, Boni je Mitarbeiterin, offene Widerrufe, CSV/PDF |
+| **R – Regeln & Challenges anlegen** | Büro | vierstufiger Assistent, Monatsbindung der Challenges, Minimalziele, Sichtbarkeit |
+| **S – Monatsabschluss** | Büro | Widerrufe zählen/nicht zählen/parken, Wert-Korrekturen, einfrieren, Google-Bewertungen |
+
+**Aufnahme braucht zwei Läufe und zwei Monate.** Zwei Zugänge, weil O und P zeigen sollen, was
+eine Mitarbeiterin sieht (mit Verwaltungsrecht stünden dort Werkzeuge, die sie nie hat);
+zwei Monate, weil Hochrechnung, Zwischenstand und verdeckte Blind-Challenge nur im
+**laufenden** Monat entstehen, Endstand, Ranking-Endstand und Freeze-Historie nur im
+**abgeschlossenen**. Beides steuert die `.env` (`KLICK_MONTH`, `KLICK_MONTH_OPEN`).
+
+**Der Lauf verändert nichts** — anders als bei der Terminansicht: Der Regel-Assistent wird
+geöffnet und verworfen, die Entscheidungs-Knöpfe der Widerrufe und der Monatsabschluss werden
+nur fotografiert, der Export nicht ausgelöst. Ein versehentliches „Final einfrieren" wäre
+nicht rückgängig zu machen.
+
+**Maskierung:** Das Bonus-Board zeigt echte Kolleginnen mit echten Beträgen — auf Staging
+genauso, weil die Datenbank eine Prod-Kopie ist. `mask.json` muss **alle Personennamen**
+enthalten. **Offen und mit Jan zu klären:** ob die **Beträge** in einem öffentlichen Repo
+stehen dürfen; bis dahin die Screenshots nicht committen oder Beispielbeträge maskieren.
 
 ---
 

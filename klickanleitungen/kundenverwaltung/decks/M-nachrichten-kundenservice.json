@@ -45,10 +45,23 @@
      "text": "Bei WhatsApp zusätzlich, ob die Nachricht **zugestellt** und **gelesen** wurde."
     }
    ],
-   "rightHtml": "<div class='steps cols-1' style='margin-top:0'><div class='step'><div class='num'>i</div><div><div class='t'>„Die Kundin hat nichts bekommen“</div><div class='d'>Zuerst hier nachsehen. Steht die Nachricht mit Fehler, liegt es meist an einer <b>falschen Mobilnummer</b> oder daran, dass die Kundin WhatsApp nicht nutzt — Nummer im Reiter <b>„Kundeninfos“</b> prüfen (Dokument J).</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Zeile aufklappen</div><div class='d'>Die aufgeklappte Zeile zeigt den <b>tatsächlich gesendeten Text</b>. So lässt sich am Telefon beantworten, was genau bei der Kundin angekommen ist.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Nicht erneut senden</div><div class='d'>Automatische Nachrichten lassen sich hier <b>nicht wiederholen</b>. Wenn etwas erneut raus soll, wird es als <b>persönliche Nachricht</b> geschrieben (Seite 4).</div></div></div></div>",
    "hint": {
     "text": "**Beratungs-WhatsApp** geht nur bei der **allerersten** Beratungsbuchung einer Kundin raus — bei einer zweiten Beratung fehlt sie deshalb zu Recht."
-   }
+   },
+   "notes": [
+    {
+     "title": "„Die Kundin hat nichts bekommen“",
+     "text": "Zuerst hier nachsehen. Steht die Nachricht mit Fehler, liegt es meist an einer **falschen Mobilnummer** oder daran, dass die Kundin WhatsApp nicht nutzt — Nummer im Reiter „Kundeninfos“ prüfen (Dokument J)."
+    },
+    {
+     "title": "Zeile aufklappen",
+     "text": "Die aufgeklappte Zeile zeigt den **tatsächlich gesendeten Text**. So lässt sich am Telefon beantworten, was genau bei der Kundin angekommen ist."
+    },
+    {
+     "title": "Nicht erneut senden",
+     "text": "Automatische Nachrichten lassen sich hier **nicht wiederholen**. Wenn etwas erneut raus soll, wird es als **persönliche Nachricht** geschrieben (Seite 4)."
+    }
+   ]
   },
   {
    "h1": "Verlauf lesen",
@@ -193,5 +206,6 @@
     "text": "**Neues Anliegen?** Ein Ticket lässt sich im Hub **nicht** anlegen. Die Kundin schreibt an die Service-Adresse, oder das Anliegen geht als **Asana-Task ans Büro** — mit Kundennummer und kurzer Schilderung."
    }
   }
- ]
+ ],
+ "audience": "institut"
 }

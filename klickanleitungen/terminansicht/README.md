@@ -6,7 +6,6 @@ Standard siehe Wiki `docs/KLICKANLEITUNGEN.md`.
 - `decks/*.json` — Inhalt je Dokument (Cover, Seiten, Schritte, Hinweise, welche Screenshots mit welchen Markierungen)
 - `meta.json` — Markierungen (Prozentkoordinaten) je Screenshot, beim Aufnehmen erzeugt
 - `shots/*.jpg` — Screenshots (Staging, Testkundin „Tester Am Testen“ MD000002, Kontaktdaten maskiert)
-- `template/` — `build.cjs` (HTML → PDF), `style.css`, Logo, Lato
 - `scripts/` — Playwright-Aufnahmeskripte: `lib.cjs`/`common.cjs` (Login, Screenshot+Marks, Formular-Helfer),
   `flow1..6.cjs` (Ablauf Terminübersicht → Formulare → SEPA → Direkt behandeln → Einstellungszettel),
   `reshoot*.cjs` (Nachaufnahmen), `shot-shared.cjs`, `contact.cjs` (Kontaktbogen)
@@ -30,13 +29,13 @@ cd klickanleitungen/terminansicht
 cp .env.example .env && $EDITOR .env     # Passwort, KLICK_APT (Termin-ID aus der URL), KLICK_DATE
 npm init -y && npm install playwright && npx playwright install chromium   # einmalig
 bash scripts/run-all.sh                  # flow1 … flow6, Fehlerbilder, geteiltes Formular, Kontaktbogen
-cd template && for d in ../decks/*.json; do node build.cjs "$d"; done      # PDFs nach ../pdf/
+cd .. && for d in terminansicht/decks/*.json; do node shared/build-pdf.cjs "$d"; done   # PDFs nach terminansicht/pdf/
 ```
 
 Der Lauf **verändert Staging und Phorest wirklich** (Vertrag, Mandat, Buchung, Einstellungszettel) —
 Reihenfolge `flow1` → … → `flow6` einhalten, jeder Schritt baut auf dem Zustand des vorherigen auf.
 Am Ende prüft `run-all.sh`, ob jeder von den Decks genutzte Screenshot in `shots/` liegt, und schreibt
-das Aufnahmedatum in `stand.txt` — `build.cjs` setzt es als „Stand“ in die Fußzeile aller PDFs
+das Aufnahmedatum in `stand.txt` — `build-pdf.cjs` setzt es als „Stand“ in die Fußzeile aller PDFs
 (überschreibbar mit `STAND=…`, Version mit `VERSION=…`).
 
 ### Zugangsdaten des Testusers
@@ -55,7 +54,7 @@ und Fallstricke stehen im Projektwissen des Haupt-Repos unter
   Laufs also auf einen Tag legen, an dem die Testkundin sonst nichts hat.
 - **Scroll-Container** der Detailseite ist die sichtbare `.apt-detail-panel`, nicht das Fenster.
 - **Selektoren auf `offsetParent !== null` filtern** — es gibt mehrere versteckte, teleportierte Modale.
-- **Marks außerhalb des Bildausschnitts** verwirft `build.cjs` mit „Mark verworfen“ — Meldungen des
+- **Marks außerhalb des Bildausschnitts** verwirft `build-pdf.cjs` mit „Mark verworfen“ — Meldungen des
   Baus durchsehen, sie zeigen fehlende oder verrutschte Markierungen.
 - **`m2-fehler-iban`** entsteht nur in `reshoot3.cjs`. Läuft es am Ende nicht mehr (SEPA-Formular
   bereits eingereicht), den Schritt einmal vor `flow4` fahren — im Satz vom 08.09.2026 fehlte das Bild
@@ -65,6 +64,9 @@ und Fallstricke stehen im Projektwissen des Haupt-Repos unter
 - **Headless:** Chromium mit `--disable-renderer-backgrounding --disable-backgrounding-occluded-windows
   --disable-features=CalculateNativeWinOcclusion` (steckt in `lib.cjs`), `waitUntil: 'domcontentloaded'`,
   nie `networkidle`.
+- **Gebaut wird mit den Buildern aus `klickanleitungen/shared/`** (seit 15.09.2026, vorher lag
+  eine eigene Kopie unter `template/`). Dieselben Decks bauen mit `shared/build-web.cjs` auch
+  die Seiten fürs Endbenutzer-Wiki — Format siehe `klickanleitungen/README.md`.
 - **PDF-Bau in fremder Umgebung:** `CHROME_PATH=/pfad/zu/chromium` setzen, wenn Playwright seinen
   eigenen Browser nicht findet. `sips` (JPEG-Kompression) gibt es nur auf macOS; sonst landen die
   PNGs unkomprimiert im PDF.

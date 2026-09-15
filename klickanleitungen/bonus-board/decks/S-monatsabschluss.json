@@ -1,0 +1,191 @@
+{
+ "out": "../pdf/S-Monatsabschluss",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "audience": "buero",
+ "title": [
+  "Monatsabschluss",
+  "im Bonus-Board"
+ ],
+ "subtitle": "Klickanleitung für die Bonus-Verwaltung im glatttHub — Widerrufe entscheiden, korrigieren, einfrieren, Bewertungen pflegen",
+ "eyebrow": "Bonus-Board · Monatsabschluss · Teil S",
+ "footerArea": "Bonus-Board",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "**Reihenfolge:** erst Widerrufe entscheiden, dann korrigieren, dann einfrieren — danach ist der Monat zu.",
+  "Der Abschluss läuft **nicht automatisch**: Ohne diesen Ablauf bleibt der Monat ewig vorläufig.",
+  "**Serien und Auszahlungen** entstehen erst mit dem Einfrieren — ein nicht abgeschlossener Monat fehlt in jeder Reihe."
+ ],
+ "pages": [
+  {
+   "h1": "Widerrufe entscheiden",
+   "sub": "Jeder offene Widerruf hält Körperzonen in der Schwebe. Drei Antworten sind möglich — getrennt für Team und Person.",
+   "card": {
+    "title": "Widerrufe entscheiden",
+    "text": "Zählt, zählt nicht oder in den Folgemonat parken"
+   },
+   "left": {
+    "shot": "s1-widerrufe-entscheiden"
+   },
+   "leftCaption": "Karte **„Offene Widerrufe: zählen, nicht zählen oder parken?“** — je Fall zwei Entscheidungen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„zählt“",
+     "text": "Die Körperzonen bleiben im Monat. Richtig, wenn der Widerruf voraussichtlich **abgelehnt** wird."
+    },
+    {
+     "n": 2,
+     "title": "„zählt nicht“",
+     "text": "Die Körperzonen fallen heraus. Richtig, wenn der Widerruf **durchgeht**."
+    },
+    {
+     "n": 3,
+     "title": "„parken“",
+     "text": "Die Körperzonen fallen aus **diesem** Monat heraus und tauchen im **Folgemonat** wieder zur Entscheidung auf — für Fälle, die noch in der Prüfung sind."
+    },
+    {
+     "n": 4,
+     "title": "Team und Person",
+     "text": "Zwei Spalten, zwei Entscheidungen: **Team-Bonus** und **persönlicher Bonus** können unterschiedlich ausfallen."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Manches ist schon entschieden",
+     "text": "Statt der Knöpfe steht ein Badge, wenn der Fall im **Widerrufe-Modul** entschieden wurde: **abgelehnt · zählt** bzw. **akzeptiert · zählt nicht**. Diese Fälle folgen automatisch, bleiben aber sichtbar."
+    },
+    {
+     "title": "Hereingeparkte Fälle",
+     "text": "Fälle aus dem Vormonat stehen mit dem Hinweis **„aus … geparkt“** in der Liste. Sie zählen im aktuellen Monat mit den **Summen**, nicht im Schnitt KPZ je Beratung."
+    },
+    {
+     "title": "Kette erlaubt",
+     "text": "Ein geparkter Fall lässt sich im Folgemonat erneut parken. Das ist gewollt — irgendwann fällt die Entscheidung im Widerrufe-Modul und der Fall löst sich von selbst."
+    }
+   ],
+   "hint": {
+    "text": "**Vor dem Einfrieren muss diese Karte leer sein** — jeder offene Fall würde den Endstand nachträglich verändern können. Die Leitung sieht dieselben Fälle im Board und fragt erfahrungsgemäß danach."
+   }
+  },
+  {
+   "h1": "Wert-Korrekturen",
+   "sub": "Wenn eine Zahl trotz richtiger Regel nicht stimmt, lässt sie sich für einen Monat gezielt übersteuern.",
+   "card": {
+    "title": "Wert-Korrekturen",
+    "text": "Einzelne Werte begründet übersteuern"
+   },
+   "left": {
+    "shot": "s2-korrektur"
+   },
+   "leftCaption": "Karte **„Wert-Korrekturen“** mit den bereits gesetzten Korrekturen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Neue Korrektur“",
+     "text": "Öffnet das Fenster: Person, Regel, Monat und der Wert, der stattdessen gelten soll."
+    },
+    {
+     "n": 2,
+     "title": "Begründung",
+     "text": "Immer ausfüllen. Sie ist später die einzige Erklärung dafür, warum die Zahl von der Berechnung abweicht."
+    },
+    {
+     "n": 3,
+     "title": "Wirkt sofort",
+     "text": "Board und Export zeigen ab dann den korrigierten Wert — auch der Mitarbeiterin."
+    },
+    {
+     "n": 4,
+     "title": "Nach dem Einfrieren gesperrt",
+     "text": "Ist der Monat **final** eingefroren, lässt sich nichts mehr korrigieren. Deshalb vor dem Abschluss prüfen."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Eine Korrektur ist das letzte Mittel.** Liegt die Ursache in der Regel (falsche Kennzahl, falsche Bedingung), gehört sie in die Regel — sonst muss dieselbe Korrektur jeden Monat neu gesetzt werden und niemand versteht später die Zahlen."
+   }
+  },
+  {
+   "h1": "Monat einfrieren",
+   "sub": "Das Einfrieren macht den Stand verbindlich — als Zwischenstand oder endgültig.",
+   "card": {
+    "title": "Monat einfrieren",
+    "text": "Zwischenstand sichern oder final abschließen"
+   },
+   "left": {
+    "shot": "s3-einfrieren"
+   },
+   "leftCaption": "Karte **„Monatsabschluss“** mit Notizfeld, Schalter und der Liste bisheriger Freezes.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Notiz setzen",
+     "text": "Ein Satz, warum eingefroren wird („Stand für die Auszahlung September“). Er steht später in der Liste."
+    },
+    {
+     "n": 2,
+     "title": "Zwischenstand",
+     "text": "Ohne Haken: Der Stand wird festgehalten, der Monat bleibt **änderbar**. Gut für eine Zwischenabstimmung."
+    },
+    {
+     "n": 3,
+     "title": "„Final einfrieren“",
+     "text": "Mit Haken: Der Monat ist **unveränderlich**. Widerrufs-Entscheidungen und Korrekturen sind danach gesperrt."
+    },
+    {
+     "n": 4,
+     "title": "Liste prüfen",
+     "text": "Darunter steht, **wann**, **von wem** und **wie** eingefroren wurde — die Historie des Monats."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Erst danach zählt die Serie",
+     "text": "Serien und Meilensteine greifen auf **eingefrorene** Monate zu. Wer den Abschluss schleifen lässt, nimmt den Mitarbeiterinnen die Reihe."
+    },
+    {
+     "title": "Kein Automatismus",
+     "text": "Es gibt **keinen** automatischen Monatsende-Abschluss — bewusst. Der Abschluss ist eine Entscheidung, kein Termin."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Final ist final.** Vor dem Haken: offene Widerrufe erledigt? Korrekturen gesetzt? Minimalziele des Monats richtig? Ein final eingefrorener Monat lässt sich im Board nicht mehr geraderücken."
+   }
+  },
+  {
+   "h1": "Google-Bewertungen pflegen",
+   "sub": "Alle Google-Ziele rechnen mit dem Saldo je Institut. Der entsteht nur, wenn die Bewertungen erfasst werden.",
+   "card": {
+    "title": "Google-Bewertungen",
+    "text": "Neue Bewertungen erfassen, Saldo je Institut"
+   },
+   "left": {
+    "shot": "s4-google"
+   },
+   "leftCaption": "Das Modul **„Google-Bewertungen“**, erreichbar aus dem Kopf des Bonus-Boards.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bewertung erfassen",
+     "text": "Institut, Datum, Sterne und — wenn vorhanden — der **Text** der Bewertung."
+    },
+    {
+     "n": 2,
+     "title": "Saldo entsteht daraus",
+     "text": "Das Board rechnet **neue minus verlorene** Bewertungen je Institut gegen das Google-Ziel."
+    },
+    {
+     "n": 3,
+     "title": "Regelmäßig pflegen",
+     "text": "Wird nichts erfasst, steht der Saldo still — und jede Google-Regel sieht aus, als hätte niemand etwas erreicht."
+    }
+   ],
+   "hint": {
+    "text": "**Zum Monatsabschluss gehört die Pflege dazu:** Erst Bewertungen nachtragen, dann einfrieren. Sonst friert der Monat einen Google-Stand ein, der schon beim Einfrieren veraltet ist."
+   }
+  }
+ ]
+}

@@ -1,0 +1,267 @@
+{
+ "out": "../pdf/R-Regeln-und-Challenges-anlegen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "audience": "buero",
+ "title": [
+  "Regeln & Challenges",
+  "anlegen"
+ ],
+ "subtitle": "Klickanleitung für die Bonus-Verwaltung im glatttHub — vom Assistenten über die Minimalziele bis zur Sichtbarkeit",
+ "eyebrow": "Bonus-Board · Verwaltung · Teil R",
+ "footerArea": "Bonus-Board",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "**Das Bonussystem ist eine Einstellung, kein Programm** — jede Regel wird hier angelegt, nichts davon steht im Code.",
+  "Eine Regel wirkt **rückwirkend auf den laufenden Monat**: Wer heute etwas ändert, ändert die Zahlen von heute Nacht.",
+  "**Eingefrorene Monate bleiben unberührt** — Änderungen gelten nur für offene Monate."
+ ],
+ "pages": [
+  {
+   "h1": "Verwaltung öffnen",
+   "sub": "„Verwaltung“ im Kopf des Bonus-Boards führt zu allen Einstellungen — sechs Karten untereinander.",
+   "card": {
+    "title": "Verwaltung öffnen",
+    "text": "Die sechs Bereiche der Bonus-Verwaltung"
+   },
+   "left": {
+    "shot": "r1-verwaltung"
+   },
+   "leftCaption": "Die Bonus-Verwaltung mit ihren Karten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bonus-Regeln",
+     "text": "Die **dauerhaften** Ziele — sie gelten Monat für Monat, bis jemand sie ändert."
+    },
+    {
+     "n": 2,
+     "title": "Challenges",
+     "text": "Die **monatsgebundenen** Ziele, gruppiert nach Jahr und Monat."
+    },
+    {
+     "n": 3,
+     "title": "Minimalziele",
+     "text": "Je Institut und Monat — die Grundlage fast aller Team-Bedingungen."
+    },
+    {
+     "n": 4,
+     "title": "Weiter unten",
+     "text": "**Widerrufe**, **Wert-Korrekturen**, **Monatsabschluss** und **Sichtbarkeit** — die ersten drei erklärt Dokument S."
+    }
+   ],
+   "hint": {
+    "text": "**Zwei Rechte:** Regeln anlegen und ändern braucht das Verwaltungs-Recht; wer nur Challenges pflegen darf, sieht „Neue Challenge“, aber nicht „Neue Regel“."
+   }
+  },
+  {
+   "h1": "Assistent: Grundlagen & Empfänger",
+   "sub": "Jede Regel entsteht im selben Assistenten in vier Schritten. Die ersten beiden legen fest, was sie heißt und für wen sie gilt.",
+   "card": {
+    "title": "Grundlagen & Empfänger",
+    "text": "Name, Beschreibung, Klassen, Institute, Personen"
+   },
+   "left": {
+    "shot": "r2-assistent-grundlagen"
+   },
+   "right": {
+    "shot": "r3-assistent-empfaenger"
+   },
+   "leftCaption": "Schritt 1 **Grundlagen** — der Name steht später auf dem Board der Mitarbeiterin.",
+   "rightCaption": "Schritt 2 **Wer bekommt diesen Bonus?**",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Name und Beschreibung",
+     "text": "Beides erscheint auf der Ziel-Karte. Die Beschreibung erklärt in einem Satz, **wie** man das Ziel erreicht."
+    },
+    {
+     "n": 2,
+     "title": "Bonus-Klassen",
+     "text": "Für wen die Regel gilt — z. B. Leitung oder Spezialistin. **Ohne Klasse** bekommt niemand die Regel zu sehen."
+    },
+    {
+     "n": 3,
+     "title": "Nur diese Institute",
+     "text": "Leer = **alle** Institute. Gefüllt = nur die gewählten; das ist der Weg für standortbezogene Boni."
+    },
+    {
+     "n": 4,
+     "title": "Einzelne Nutzerinnen",
+     "text": "Für Sonderfälle lassen sich Personen direkt auswählen — sparsam einsetzen, sonst wird die Pflege unübersichtlich."
+    }
+   ],
+   "hint": {
+    "text": "**Gültig ab / bis** in Schritt 1 begrenzt eine **Regel** zeitlich. Für ein Ziel, das ohnehin nur einen Monat gilt, ist die **Challenge** der richtige Weg — sie bringt die Monatsbindung schon mit."
+   }
+  },
+  {
+   "h1": "Assistent: Kennzahl & Bedingung",
+   "sub": "Schritt 3 entscheidet, was gemessen wird und wann es als erreicht gilt. Hier steckt die eigentliche Arbeit.",
+   "card": {
+    "title": "Kennzahl & Bedingung",
+    "text": "Was gemessen wird und wann es erreicht ist"
+   },
+   "left": {
+    "shot": "r4-assistent-kennzahl"
+   },
+   "leftCaption": "Schritt 3 — die Bedingungsart bestimmt, welche Felder darunter erscheinen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kennzahl wählen",
+     "text": "Zum Beispiel verkaufte **Körperzonen**, **Ø KPZ je Beratung** oder der **Google-Saldo**."
+    },
+    {
+     "n": 2,
+     "title": "Fester Schwellenwert",
+     "text": "Die einfachste Bedingung: ein Wert, der erreicht werden muss (etwa **2,6** im Schnitt)."
+    },
+    {
+     "n": 3,
+     "title": "Prozent des Minimalziels",
+     "text": "Bindet die Bedingung an das **Institutsziel des Monats** — 125 % heißt: ein Viertel über dem Minimalziel."
+    },
+    {
+     "n": 4,
+     "title": "Alle Teams am Ziel",
+     "text": "Zahlt erst, wenn **alle relevanten Teams** ihr Minimalziel schaffen. Leer gelassen sind das die Empfänger-Institute aus Schritt 2."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Ranking statt Ziel",
+     "text": "Ein **Ranking** vergleicht Personen oder Teams miteinander — wahlweise **relativ zum Minimalziel**, damit unterschiedlich große Standorte vergleichbar bleiben. Dazu gehört meist ein **Qualifikations-Minimum**."
+    },
+    {
+     "title": "Maßstab der Leitung",
+     "text": "Bei Challenges misst sich die Leitung am **normalen Standortziel**. Das lässt sich hier erzwingen, wenn eine Regel es anders braucht."
+    },
+    {
+     "title": "Durchschnitte sind anders",
+     "text": "Bei Kennzahlen, die ein **Verhältnis** sind (Ø KPZ), gibt es im laufenden Monat nie „Erreicht“ und keine lineare Hochrechnung — ein Schnitt wächst nicht mit den Tagen."
+    }
+   ],
+   "hint": {
+    "text": "**Erst hier entsteht die Bedeutung des Bonus.** Nach dem Speichern immer im Board gegenprüfen: Zeigt eine Person, von der man den Stand kennt, den erwarteten Wert? Das findet Denkfehler schneller als jede Vorschau."
+   }
+  },
+  {
+   "h1": "Assistent: Prämie & Extras",
+   "sub": "Schritt 4 legt fest, was am Ende herauskommt — Betrag, Aufschlag oder Sachprämie.",
+   "card": {
+    "title": "Prämie & Extras",
+    "text": "Betrag, Prozent-Aufschlag, Sachprämie, Serien"
+   },
+   "left": {
+    "shot": "r5-assistent-praemie"
+   },
+   "leftCaption": "Schritt 4 — die Prämienart bestimmt die Felder darunter.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Fester Betrag",
+     "text": "Der geläufige Fall: ein Betrag, der bei Erreichen gutgeschrieben wird."
+    },
+    {
+     "n": 2,
+     "title": "Aufschlag in Prozent",
+     "text": "Erhöht den Bonus des Monats. Wichtig ist die **Basis** — siehe Hinweis unten."
+    },
+    {
+     "n": 3,
+     "title": "Sachprämie",
+     "text": "Freitext statt Betrag. Sachprämien erscheinen auf dem Board, zählen aber **nicht** in die Euro-Summe."
+    },
+    {
+     "n": 4,
+     "title": "Preise je Platz",
+     "text": "Beim Ranking je Platz ein Betrag oder eine Sachprämie; beim Team-Ranking zusätzlich **je Mitglied** oder als **Budget**."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Zwei Prozent-Regeln hintereinander:** Die **Basis** entscheidet, ob der Aufschlag auf den **regulären Bonus** oder auf den **Monatsbonus inklusive vorheriger Aufschläge** rechnet. Bei älteren Regeln ohne Angabe steht „gesamter Monatsbonus“ vorausgewählt — das ist selten gemeint. Beim Bearbeiten also bewusst setzen."
+   }
+  },
+  {
+   "h1": "Challenge für einen Monat",
+   "sub": "Challenges laufen über denselben Assistenten — nur der Zeitraum funktioniert anders.",
+   "card": {
+    "title": "Challenge anlegen",
+    "text": "Monat wählen, Blind-Challenge entscheiden"
+   },
+   "left": {
+    "shot": "r6-challenge-monat"
+   },
+   "leftCaption": "Challenge-Anlage — statt Datumsfeldern gibt es die Monatsauswahl.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Neue Challenge“",
+     "text": "Der Knopf an der Challenge-Karte. Der Assistent ist derselbe, die Challenge aber **monatsgebunden**."
+    },
+    {
+     "n": 2,
+     "title": "Monat wählen",
+     "text": "Ein Monat, kein Datumsbereich. Der Server setzt Anfang und Ende selbst — deshalb kann hier nichts um einen Tag verrutschen."
+    },
+    {
+     "n": 3,
+     "title": "Blind-Challenge",
+     "text": "Angehakt sehen die Teilnehmerinnen im laufenden Monat **nur den eigenen Wert**; die Leitung sieht alles, alle anderen nach Monatsende."
+    },
+    {
+     "n": 4,
+     "title": "Gruppierung",
+     "text": "Die Liste sortiert Challenges nach **Jahr und Monat** — vergangene bleiben nachvollziehbar stehen."
+    }
+   ],
+   "hint": {
+    "text": "**Eine Challenge bearbeiten** ändert sie für **alle** Teilnehmerinnen, auch rückwirkend im laufenden Monat. Läuft der Monat schon, lieber eine neue Challenge anlegen, statt die laufende umzudeuten."
+   }
+  },
+  {
+   "h1": "Minimalziele und Sichtbarkeit",
+   "sub": "Zwei kleinere, aber folgenreiche Einstellungen: das Monatsziel je Institut und wer welche Karte sieht.",
+   "card": {
+    "title": "Ziele & Sichtbarkeit",
+    "text": "Minimalziel je Institut, Karten ein- und ausblenden"
+   },
+   "left": {
+    "shot": "r7-minimalziele"
+   },
+   "right": {
+    "shot": "r8-sichtbarkeit"
+   },
+   "leftCaption": "Minimalziele — je Institut ein Wert für den gewählten Monat.",
+   "rightCaption": "Sichtbarkeit je Nutzerin — Standard, sichtbar oder ausgeblendet.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Ziel je Institut",
+     "text": "Für den oben gewählten **Monat**. Ohne Minimalziel greifen alle Bedingungen ins Leere, die sich darauf beziehen."
+    },
+    {
+     "n": 2,
+     "title": "In Folgemonate vererbt",
+     "text": "Ein gesetztes Ziel wird in die Folgemonate übernommen, solange dort nichts eigenes steht — trotzdem zum Monatsanfang prüfen."
+    },
+    {
+     "n": 3,
+     "title": "Sichtbarkeit",
+     "text": "Je Nutzerin und Regel: **Standard** (wie die Klasse es vorsieht), **sichtbar** erzwingen oder **ausblenden**."
+    },
+    {
+     "n": 4,
+     "title": "Sparsam nutzen",
+     "text": "Ausnahmen hier sind schwer zu überblicken. Wo es geht, lieber über **Klassen und Institute** in Schritt 2 steuern."
+    }
+   ],
+   "hint": {
+    "text": "**Reihenfolge am Monatsanfang:** erst Minimalziele setzen, dann Challenges anlegen. Eine Challenge, die sich auf „Prozent des Minimalziels“ bezieht, steht sonst ohne Bezugsgröße da."
+   }
+  }
+ ]
+}

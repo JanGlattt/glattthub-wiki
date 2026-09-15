@@ -91,11 +91,24 @@
      "text": "**Vertragsnummer** = geplatzte Rate · **Kundenkonto** = offener Betrag aus dem Institut (z. B. nicht kassierte Behandlung)."
     }
    ],
-   "rightHtml": "<div class='steps cols-1' style='margin-top:0'><div class='step'><div class='num'>i</div><div><div class='t'>Badges am Fuß der Karte</div><div class='d'><b>„Rücklastschrift“</b> = die Lastschrift kam zurück · <b>„Direktzahler“</b> = unbezahlte Rechnung ohne Mandat · <b>„Mandat entzogen“</b> = die Kundin hat das SEPA-Mandat widerrufen · <b>„Widersprochen“</b> und <b>„Gerichtliches Verfahren“</b> = der Fall liegt beim Büro bzw. bei der Kanzlei.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Was im Institut zu tun ist</div><div class='d'><b>Nicht mit der Kundin verhandeln.</b> Keine Zahlungszusagen, keine Ratenversprechen, keine Stornos. Der Fall gehört dem Büro — im Gespräch genügt: „Dazu meldet sich unser Büro bei Ihnen.“</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>„Zum Fall“</div><div class='d'>Der Knopf führt in die Fall-Akte des Forderungsmanagements. Er ist für das <b>Büro</b> gedacht; im Institut fehlt dafür in der Regel die Berechtigung.</div></div></div></div>",
    "hint": {
     "kind": "warn",
     "text": "**Kundin mit laufendem Fall steht im Laden?** Termin ganz normal durchführen, aber **nichts zusagen** und **nichts stornieren**. Den Kontakt im Anschluss dem Büro melden — dort wird entschieden, wie es weitergeht."
-   }
+   },
+   "notes": [
+    {
+     "title": "Badges am Fuß der Karte",
+     "text": "„Rücklastschrift“ = die Lastschrift kam zurück · „Direktzahler“ = unbezahlte Rechnung ohne Mandat · „Mandat entzogen“ = die Kundin hat das SEPA-Mandat widerrufen · „Widersprochen“ und „Gerichtliches Verfahren“ = der Fall liegt beim Büro bzw. bei der Kanzlei."
+    },
+    {
+     "title": "Was im Institut zu tun ist",
+     "text": "**Nicht mit der Kundin verhandeln.** Keine Zahlungszusagen, keine Ratenversprechen, keine Stornos. Der Fall gehört dem Büro — im Gespräch genügt: „Dazu meldet sich unser Büro bei Ihnen.“"
+    },
+    {
+     "title": "„Zum Fall“",
+     "text": "Der Knopf führt in die Fall-Akte des Forderungsmanagements. Er ist für das **Büro** gedacht; im Institut fehlt dafür in der Regel die Berechtigung."
+    }
+   ]
   },
   {
    "h1": "Schulden auf einen Blick",
@@ -166,5 +179,6 @@
     "text": "**Diese Seite verlässt das Kundenprofil.** Der Zurück-Pfeil des Browsers bzw. der Weg über **„Kunden“** führt zurück. Bearbeitet wird auf der Vertragsseite **nichts** — Raten verbuchen, Mandate ändern und Zahlpläne neu bauen ist Sache des Büros."
    }
   }
- ]
+ ],
+ "audience": "institut"
 }

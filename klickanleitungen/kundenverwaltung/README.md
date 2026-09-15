@@ -15,7 +15,6 @@ Standard siehe Wiki `docs/KLICKANLEITUNGEN.md`. Aufbau wie `klickanleitungen/ter
 - `decks/*.json` — Inhalt je Dokument (Cover, Seiten, Schritte, Hinweise, Screenshots mit Markierungen)
 - `meta.json` — Markierungen (Prozentkoordinaten) je Screenshot, entsteht beim Aufnahmelauf
 - `shots/*.png` — Screenshots (werden beim Lauf erzeugt)
-- `template/` — `build.cjs` (HTML → PDF), `style.css`, Logo, Lato
 - `scripts/` — Playwright-Aufnahmeskripte: `lib.cjs` (Anmeldung, Maskierung, Screenshot+Marks),
   `flow1…flow6.cjs` (je ein Dokument: I, J, K, L, M, N), `run-all.sh`
 - `.env.example` / `mask.example.json` — Vorlagen; `.env` und `mask.json` sind gitignored
@@ -37,10 +36,14 @@ Daten vor jedem Screenshot maskiert.
 Geht ohne Aufnahmelauf — fehlende Screenshots werden zu Platzhaltern:
 
 ```bash
-cd klickanleitungen/kundenverwaltung
-npm init -y && npm install playwright && npx playwright install chromium   # einmalig
-cd template && for d in ../decks/*.json; do node build.cjs "$d"; done       # PDFs nach ../pdf/
+cd klickanleitungen
+npm --prefix kundenverwaltung install playwright && npx playwright install chromium   # einmalig
+for d in kundenverwaltung/decks/*.json; do node shared/build-pdf.cjs "$d"; done       # PDFs nach kundenverwaltung/pdf/
+node shared/build-web.cjs kundenverwaltung/decks/*.json                                # Web-Seiten nach kundenverwaltung/web/
 ```
+
+Beide Ausgaben entstehen aus denselben Decks — Einzelheiten zum Format und zum
+Endbenutzer-Wiki in `klickanleitungen/README.md`.
 
 `STAND=15.09.2026` bzw. `VERSION=1.0` überschreiben die Fußzeile; liegt `stand.txt` vor
 (schreibt `run-all.sh`), gewinnt diese Datei. `CHROME_PATH=/pfad/zu/chromium` setzen, falls
@@ -54,7 +57,7 @@ cd klickanleitungen/kundenverwaltung
 cp .env.example .env                 && $EDITOR .env         # Zugang, Kundin, Vertrag
 cp mask.example.json mask.json       && $EDITOR mask.json    # echte Werte → Beispielwerte
 bash scripts/run-all.sh                                      # flow1 … flow6
-cd template && for d in ../decks/*.json; do node build.cjs "$d"; done
+cd .. && for d in kundenverwaltung/decks/*.json; do node shared/build-pdf.cjs "$d"; done
 ```
 
 Der Lauf **verändert nichts**: Es wird gelesen, Modale werden geöffnet und wieder geschlossen.

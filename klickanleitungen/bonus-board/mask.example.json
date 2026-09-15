@@ -1,0 +1,17 @@
+{
+  "_hinweis": [
+    "Kopie als mask.json anlegen (gitignored). Das Bonus-Board zeigt ECHTE Kolleginnen mit",
+    "echten Betraegen — jeder Personenname der Institute gehoert hier hinein, auch Kurzformen",
+    "und die Schreibweise 'Nachname, Vorname'. Dazu Kundennamen und Vertragsnummern aus der",
+    "Widerrufs-Liste. Betraege bleiben stehen (sonst waere die Anleitung wertlos); wenn Jan das",
+    "anders will, hier zusaetzlich Beispielbetraege eintragen."
+  ],
+  "replace": [
+    ["Vorname Nachname", "Anna Beispiel"],
+    ["Nachname, Vorname", "Beispiel, Anna"],
+    ["Kundenname", "Musterfrau"],
+    ["2026.05.12-BI000123", "2026.05.12-MD000002"]
+  ],
+  "blankText": [],
+  "sampleTexts": []
+}

@@ -1,0 +1,171 @@
+{
+ "out": "../pdf/P-Challenges",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "audience": "institut",
+ "title": [
+  "Challenges",
+  "verstehen"
+ ],
+ "subtitle": "Klickanleitung für das Bonus-Board im glatttHub — Monats-Challenges, Rankings und wann ein Platz sicher ist",
+ "eyebrow": "Bonus-Board · Challenges · Teil P",
+ "footerArea": "Bonus-Board",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Eine Challenge gilt **immer für genau einen Monat** — sie beginnt am Ersten und endet mit dem Monat.",
+  "Bei **Ranking-Challenges** zählt der Platz gegenüber den anderen, nicht ein fester Zielwert.",
+  "Ein Platz gilt erst als **gesichert**, wenn er auch ohne die Körperzonen unter Widerrufs-Vorbehalt hält."
+ ],
+ "pages": [
+  {
+   "h1": "Challenge erkennen",
+   "sub": "Challenges stehen zwischen den normalen Ziel-Karten — mit eigenem Untertitel und eigener Laufzeit.",
+   "card": {
+    "title": "Challenge erkennen",
+    "text": "Monats-Challenge von einem Dauerziel unterscheiden"
+   },
+   "left": {
+    "shot": "p1-challenge-karte"
+   },
+   "leftCaption": "Eine Challenge-Karte — am Untertitel **„Monats-Challenge“** zu erkennen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Untertitel beachten",
+     "text": "**„Monats-Challenge“** heißt: Dieses Ziel gilt **nur in diesem Monat**. Im nächsten Monat kann es weg sein oder anders aussehen."
+    },
+    {
+     "n": 2,
+     "title": "Bedingung lesen",
+     "text": "Manche Challenges verlangen einen **Schwellenwert**, andere einen **Prozentsatz des Minimalziels** — die Karte schreibt es aus."
+    },
+    {
+     "n": 3,
+     "title": "Prämie",
+     "text": "Ein **Betrag**, ein **Aufschlag in Prozent** auf den Monatsbonus oder eine **Sachprämie**."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Aufschläge bauen aufeinander auf",
+     "text": "Prozent-Challenges können sich **verketten**: Die eine rechnet auf den regulären Bonus, die nächste auf den Monatsbonus **inklusive** des ersten Aufschlags. Was gilt, legt das Büro je Challenge fest."
+    },
+    {
+     "title": "Leitung misst sich am Team",
+     "text": "Bei Challenges zählt für die **Leitung** das normale **Standortziel**, nicht das eigene Leitungs-Minimalziel — sonst wären die Aufgaben nicht vergleichbar."
+    }
+   ],
+   "hint": {
+    "text": "**Challenge weg?** Am Monatsersten verschwinden die Challenges des Vormonats aus „Mein Board“. Über die **Monatsauswahl** lässt sich der alte Monat jederzeit wieder ansehen."
+   }
+  },
+  {
+   "h1": "Ranking-Challenge lesen",
+   "sub": "Beim Ranking gibt es Plätze statt Ziele — mit einer Tabelle, die den Zwischenstand zeigt.",
+   "card": {
+    "title": "Ranking lesen",
+    "text": "Plätze, Preise und Qualifikations-Minimum"
+   },
+   "left": {
+    "shot": "p2-ranking"
+   },
+   "leftCaption": "Ranking-Challenge — je Zeile ein Platz mit Wert, Preis und Status.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Platz und Wert",
+     "text": "Die Reihenfolge richtet sich nach dem Wert. Bei einem **relativen** Ranking zählt nicht die reine Zahl, sondern **wie weit über dem eigenen Minimalziel**."
+    },
+    {
+     "n": 2,
+     "title": "Preis je Platz",
+     "text": "Was es für Platz 1, 2, 3 gibt. Bei **Team-Rankings** steht dabei, ob der Preis **je Mitglied** gilt oder als **Budget** fürs Team."
+    },
+    {
+     "n": 3,
+     "title": "Qualifikations-Minimum",
+     "text": "Manche Rankings verlangen einen Mindestwert. Wer darunter liegt, taucht zwar auf, gewinnt aber nicht."
+    },
+    {
+     "n": 4,
+     "title": "Status der Zeile",
+     "text": "**Zwischenstand** im laufenden Monat · **ohne Vorbehalt Platz X** = der Platz, der auch ohne strittige Körperzonen hält · **Endstand** nach Monatsende."
+    }
+   ],
+   "hint": {
+    "text": "**„Ohne Vorbehalt Platz X“ ist nie besser als der aktuelle Platz.** Der eigene gesicherte Wert wird gegen die **vollen** Werte der anderen gerechnet — das ist die vorsichtige Lesart und verhindert böse Überraschungen am Monatsende."
+   }
+  },
+  {
+   "h1": "Blind-Challenge",
+   "sub": "Bei manchen Challenges bleibt der Zwischenstand der anderen verborgen — bis der Monat vorbei ist.",
+   "card": {
+    "title": "Blind-Challenge",
+    "text": "Nur der eigene Wert, Platzierung erst am Ende"
+   },
+   "left": {
+    "shot": "p3-blind"
+   },
+   "leftCaption": "Blind-Challenge im laufenden Monat — sichtbar ist allein der eigene Wert.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Badge „Blind“",
+     "text": "Am Kopf der Karte. Es heißt: Im laufenden Monat zeigt das Board **nur den eigenen Wert**."
+    },
+    {
+     "n": 2,
+     "title": "Kein Zwischenstand",
+     "text": "Plätze und Werte der anderen erscheinen **erst nach Monatsende**. Wer vorne liegt, ist bis dahin offen."
+    },
+    {
+     "n": 3,
+     "title": "Danach vollständig",
+     "text": "Nach dem Monatsende zeigt dieselbe Karte die komplette Tabelle mit **Endstand** und Preisen."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Warum blind?",
+     "text": "Eine Blind-Challenge soll das eigene Tempo belohnen, nicht das Schielen auf die Tabelle. Die **Leitung** sieht während des Monats trotzdem alles — sie muss das Team steuern können."
+    }
+   ],
+   "hint": {
+    "text": "**Trotzdem planbar:** Auch in einer Blind-Challenge zeigt die Karte das **Qualifikations-Minimum** und die Preise. Der eigene Wert lässt sich also jederzeit gegen die Bedingung prüfen — nur eben nicht gegen die Kolleginnen."
+   }
+  },
+  {
+   "h1": "Serien und Meilensteine",
+   "sub": "Einige Ziele belohnen Beständigkeit: Wer sie mehrere Monate hintereinander schafft, bekommt mehr.",
+   "card": {
+    "title": "Serien",
+    "text": "Monate in Folge, Punktreihe, nächste Stufe"
+   },
+   "left": {
+    "shot": "p4-serie"
+   },
+   "leftCaption": "Ziel-Karte mit Serie — die gefüllten Punkte sind geschaffte Monate.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Punktreihe lesen",
+     "text": "Jeder Punkt ist ein Monat. **Gefüllt** = geschafft, **leer** = fehlt noch bis zur nächsten Stufe."
+    },
+    {
+     "n": 2,
+     "title": "Nächste Stufe",
+     "text": "Daneben steht, wie viele Monate bis zur nächsten Belohnung fehlen."
+    },
+    {
+     "n": 3,
+     "title": "Serie reißt",
+     "text": "Ein nicht erreichter Monat setzt die Reihe zurück. Was bereits ausgezahlt wurde, bleibt selbstverständlich."
+    }
+   ],
+   "hint": {
+    "text": "**Serien zählen nur eingefrorene Monate.** Ein Monat wird erst Teil der Reihe, wenn das Büro ihn **abgeschlossen** hat — deshalb kann ein frisch beendeter Monat kurz fehlen, bis der Abschluss gelaufen ist."
+   }
+  }
+ ]
+}

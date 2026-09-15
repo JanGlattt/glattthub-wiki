@@ -81,10 +81,23 @@
      "text": "**Kunden-Nr.** und **„Kunde seit“** stehen fest. Die Kundennummer vergibt ausschließlich die Institutsseite bei der Tageserfassung."
     }
    ],
-   "rightHtml": "<div class='steps cols-1' style='margin-top:0'><div class='step'><div class='num'>i</div><div><div class='t'>Schreibweise zählt</div><div class='d'>Name und Adresse stehen später <b>wörtlich auf dem Vertrag und dem SEPA-Mandat</b>. Abkürzungen und Tippfehler wandern mit — deshalb genau so eintragen, wie es im Ausweis steht.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Telefonnummern</div><div class='d'>Mobilnummer mit Vorwahl, ohne Leerzeichen-Spielereien. Eine <b>geänderte Telefonnummer</b> kann bei der Übernahme nach Phorest hängen bleiben — kommt keine Erfolgsmeldung, die Änderung erneut speichern und im Zweifel ans Büro melden.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Abbrechen</div><div class='d'><b>„Abbrechen“</b> verwirft alle Eingaben und sperrt die Felder wieder. Es fragt nicht nach — also nur drücken, wenn die Änderungen wirklich weg sollen.</div></div></div></div>",
    "hint": {
     "text": "**E-Mail-Adresse doppelt vergeben?** Phorest lässt dieselbe Adresse nicht an zwei Kundenakten zu. Erscheint beim Speichern eine Fehlermeldung, gibt es die Kundin vermutlich zweimal — **Asana-Task ans Büro**, nicht selbst zusammenführen."
-   }
+   },
+   "notes": [
+    {
+     "title": "Schreibweise zählt",
+     "text": "Name und Adresse stehen später **wörtlich auf dem Vertrag und dem SEPA-Mandat**. Abkürzungen und Tippfehler wandern mit — deshalb genau so eintragen, wie es im Ausweis steht."
+    },
+    {
+     "title": "Telefonnummern",
+     "text": "Mobilnummer mit Vorwahl, ohne Leerzeichen-Spielereien. Eine **geänderte Telefonnummer** kann bei der Übernahme nach Phorest hängen bleiben — kommt keine Erfolgsmeldung, die Änderung erneut speichern und im Zweifel ans Büro melden."
+    },
+    {
+     "title": "Abbrechen",
+     "text": "„Abbrechen“ verwirft alle Eingaben und sperrt die Felder wieder. Es fragt nicht nach — also nur drücken, wenn die Änderungen wirklich weg sollen."
+    }
+   ]
   },
   {
    "h1": "Adresse und Einwilligungen",
@@ -165,5 +178,6 @@
     "text": "**Rote Meldung nach dem Übernehmen?** Dann hat Phorest die Änderung abgelehnt — die Daten stehen weiterhin auf dem alten Stand. Einmal wiederholen; bleibt es dabei, **Asana-Task ans Büro** mit Kundennummer und geändertem Feld."
    }
   }
- ]
+ ],
+ "audience": "institut"
 }

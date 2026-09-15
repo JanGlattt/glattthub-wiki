@@ -86,10 +86,23 @@
      "text": "Der **Pfeil** oben links führt zurück zur Kundenübersicht — die Suche bleibt dabei erhalten."
     }
    ],
-   "rightHtml": "<div class='steps cols-1' style='margin-top:0'><div class='step'><div class='num'>i</div><div><div class='t'>Aus dem Termin heraus</div><div class='d'>In der <b>Terminübersicht</b> und auf der Termin-Detailseite ist der <b>Name der Kundin ein Link</b> (Symbol ↗) — er öffnet genau dieses Profil. Das ist der kürzeste Weg, wenn die Kundin gerade im Haus ist.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Laden dauert kurz</div><div class='d'>Termine, Pakete und Nachrichten holt der Hub <b>live aus Phorest bzw. WhatsApp</b>. Ein Reiter kann deshalb einen Moment grau bleiben, bevor die Inhalte stehen.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Nichts geht verloren</div><div class='d'>Zwischen den Reitern kann beliebig gewechselt werden. Nur im Reiter <b>„Kundeninfos“</b> gilt: erst <b>„Änderungen speichern“</b>, sonst sind die Eingaben weg.</div></div></div></div>",
    "hint": {
     "text": "**Falsche Kundin erwischt?** Vor jeder Änderung **Name und Kunden-Nummer** oben abgleichen — gerade bei häufigen Nachnamen liegen zwei Akten schnell nebeneinander."
-   }
+   },
+   "notes": [
+    {
+     "title": "Aus dem Termin heraus",
+     "text": "In der **Terminübersicht** und auf der Termin-Detailseite ist der **Name der Kundin ein Link** (Symbol ↗) — er öffnet genau dieses Profil. Das ist der kürzeste Weg, wenn die Kundin gerade im Haus ist."
+    },
+    {
+     "title": "Laden dauert kurz",
+     "text": "Termine, Pakete und Nachrichten holt der Hub **live aus Phorest bzw. WhatsApp**. Ein Reiter kann deshalb einen Moment grau bleiben, bevor die Inhalte stehen."
+    },
+    {
+     "title": "Nichts geht verloren",
+     "text": "Zwischen den Reitern kann beliebig gewechselt werden. Nur im Reiter „Kundeninfos“ gilt: erst „Änderungen speichern“, sonst sind die Eingaben weg."
+    }
+   ]
   },
   {
    "h1": "Übersicht lesen",
@@ -140,7 +153,69 @@
     "text": "Wegweiser durch die Akte und durch die Anleitungen I–N"
    },
    "layout": "text",
-   "html": "<table class='tbl'><thead><tr><th>Reiter</th><th>Zeigt</th><th>Anleitung</th></tr></thead><tbody><tr><td><b>Übersicht</b></td><td>Kurzfassung aller Themen, Sprung in die Reiter</td><td>I (dieses Dokument)</td></tr><tr><td><b>Kundeninfos</b></td><td>Stammdaten, Adresse, Notizen, Einwilligungen — hier wird bearbeitet</td><td>J</td></tr><tr><td><b>Termine</b></td><td>Zukünftige und vergangene Termine, Extrazeit, Buchungslink</td><td>K</td></tr><tr><td><b>glattt Pakete</b></td><td>Gekaufte Behandlungspakete aus Phorest und ihr Verbrauch</td><td>K</td></tr><tr><td><b>Dokumente</b></td><td>Eingereichte Formulare als PDF</td><td>N</td></tr><tr><td><b>Behandlungseinstellungen</b></td><td>Einstellungszettel je Körperzone, Behandlungsfotos</td><td>N</td></tr><tr><td><b>Vertrag/Zahlungen</b></td><td>Verträge, Raten, SEPA-Mandat</td><td>L</td></tr><tr><td><b>Forderungsmanagement</b></td><td>Offene Forderungen, Mahnstufe, Fristen</td><td>L</td></tr><tr><td><b>Kundenservice</b></td><td>Tickets aus Zendesk mit Verlauf</td><td>M</td></tr><tr><td><b>Nachrichten</b></td><td>Automatische Nachrichten und WhatsApp-Verläufe</td><td>M</td></tr></tbody></table><div class='hint' style='margin-top:14px'><span class='i'>i</span><div><b>Nur Lesen, nur an einer Stelle Schreiben:</b> Verändert wird im Kundenprofil ausschließlich im Reiter <b>„Kundeninfos“</b> (Stammdaten), in der <b>Extrazeit</b> und beim <b>Senden einer WhatsApp</b>. Alles andere ist Ansicht — Verträge, Forderungen, Tickets und Unterlagen bearbeitet das Büro.</div></div>"
+   "table": {
+    "head": [
+     "Reiter",
+     "Zeigt",
+     "Anleitung"
+    ],
+    "rows": [
+     [
+      "Übersicht",
+      "Kurzfassung aller Themen, Sprung in die Reiter",
+      "I (dieses Dokument)"
+     ],
+     [
+      "Kundeninfos",
+      "Stammdaten, Adresse, Notizen, Einwilligungen — hier wird bearbeitet",
+      "J"
+     ],
+     [
+      "Termine",
+      "Zukünftige und vergangene Termine, Extrazeit, Buchungslink",
+      "K"
+     ],
+     [
+      "glattt Pakete",
+      "Gekaufte Behandlungspakete aus Phorest und ihr Verbrauch",
+      "K"
+     ],
+     [
+      "Dokumente",
+      "Eingereichte Formulare als PDF",
+      "N"
+     ],
+     [
+      "Behandlungseinstellungen",
+      "Einstellungszettel je Körperzone, Behandlungsfotos",
+      "N"
+     ],
+     [
+      "Vertrag/Zahlungen",
+      "Verträge, Raten, SEPA-Mandat",
+      "L"
+     ],
+     [
+      "Forderungsmanagement",
+      "Offene Forderungen, Mahnstufe, Fristen",
+      "L"
+     ],
+     [
+      "Kundenservice",
+      "Tickets aus Zendesk mit Verlauf",
+      "M"
+     ],
+     [
+      "Nachrichten",
+      "Automatische Nachrichten und WhatsApp-Verläufe",
+      "M"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Nur Lesen, nur an einer Stelle Schreiben:** Verändert wird im Kundenprofil ausschließlich im Reiter „Kundeninfos“ (Stammdaten), in der **Extrazeit** und beim **Senden einer WhatsApp**. Alles andere ist Ansicht — Verträge, Forderungen, Tickets und Unterlagen bearbeitet das Büro."
+   }
   }
- ]
+ ],
+ "audience": "institut"
 }
