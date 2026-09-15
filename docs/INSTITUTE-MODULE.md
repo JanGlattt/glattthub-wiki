@@ -40,8 +40,9 @@ regelt allein das CSS-Grid (`grid-template-areas`), das Markup bleibt gleich.
   mit Google-Maps-Link, Team-Größe mit Sprung zum Reiter „Team"
 
 #### 1. Infos
-- Kontaktdaten: Name, Adresse, Website aus Phorest; darunter die **Kontakt-
-  Stammdaten** Telefon, WhatsApp-Nummer, E-Mail (Tabelle `institute_contacts`,
+- Kontaktdaten zweispaltig: links die Adresse aus Phorest (nur lesbar, mit
+  Karten-Link und Website), rechts die **Kontakt-Stammdaten** Telefon,
+  WhatsApp-Nummer, E-Mail untereinander (Tabelle `institute_contacts`,
   Endpoints `GET/POST /phorest/institute/{branchId}/contact`, Schreibrecht
   `manage_branch_images`; ohne Recht Leseansicht). Sie speisen die
   Schnellaktionen der Kopfzeile und die **Terminerinnerungs-Mails** (Footer,
