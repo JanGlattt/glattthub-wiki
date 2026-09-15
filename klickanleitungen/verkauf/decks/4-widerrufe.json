@@ -1,0 +1,151 @@
+{
+ "out": "../pdf/Verkauf-4-Widerrufe",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Verkauf",
+ "nr": 4,
+ "of": 8,
+ "audience": "buero",
+ "title": [
+  "Widerrufe",
+  "erfassen & bearbeiten"
+ ],
+ "subtitle": "Klickanleitung für das Widerrufs-Modul im glatttHub — vom Eingang bis zum Abschluss des Falls",
+ "eyebrow": "Verkauf · Widerrufe",
+ "footerArea": "Verkauf",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Ein Widerruf wird **immer im Hub erfasst** — auch wenn die Abstimmung per Zendesk oder Telefon läuft.",
+  "**Das Eingangsdatum entscheidet über die Frist** — deshalb steht es an erster Stelle, nicht das Datum der Bearbeitung.",
+  "Solange ein Widerruf offen ist, hängen die verkauften Körperzonen im **Bonus-Board unter Vorbehalt** („Bonus-Board 5“)."
+ ],
+ "pages": [
+  {
+   "h1": "Widerruf erfassen",
+   "sub": "Der Assistent führt in zwei Schritten durch die Anlage: erst der Vertrag, dann Eingang und Grund.",
+   "card": {
+    "title": "Widerruf erfassen",
+    "text": "Vertrag wählen, Eingang und Grund erfassen"
+   },
+   "left": {
+    "shot": "v12-widerruf-vertrag"
+   },
+   "right": {
+    "shot": "v13-widerruf-grund"
+   },
+   "leftCaption": "Schritt 1 — **„Für welchen Vertrag geht der Widerruf ein?“**",
+   "rightCaption": "Schritt 2 — **„Eingangsdatum, Zendesk-Ticket und Grund“**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Vertrag suchen",
+     "text": "Über Kundenname oder Vertragsnummer. Der Assistent zeigt Paket, Gesamtvolumen und Vertragsdatum zur Kontrolle."
+    },
+    {
+     "n": 2,
+     "title": "Warnung beachten",
+     "text": "Steht dort **„Bereits widerrufen“**, gibt es zu diesem Vertrag schon einen Fall — dann den bestehenden öffnen statt einen zweiten anzulegen."
+    },
+    {
+     "n": 3,
+     "title": "Datum Widerruf",
+     "text": "Das **Eingangsdatum** der Erklärung, nicht der Tag der Bearbeitung. Danach richtet sich die Frist."
+    },
+    {
+     "n": 4,
+     "title": "Grund und Ticket",
+     "text": "**Grund** aus der Liste, dazu das **Zendesk-Ticket** (Nummer, Name oder E-Mail) und interne **Anmerkungen**."
+    }
+   ],
+   "hint": {
+    "text": "**Zwei Wege zum selben Fenster:** aus der Widerrufs-Liste über **„Neuer Widerruf“** oder direkt an der Vertragskarte im Kundenprofil über **„Widerruf erfassen“** („Kundenverwaltung 4“) — dort ist der Vertrag schon gewählt."
+   }
+  },
+  {
+   "h1": "Der Fall im Detail",
+   "sub": "Die Fallseite sammelt alles: Fristen, Behandlungsstand, Verknüpfungen und den Schriftwechsel.",
+   "card": {
+    "title": "Der Fall im Detail",
+    "text": "Fristen, Behandlungsstand, Verknüpfungen, Verlauf"
+   },
+   "left": {
+    "shot": "v14-fall"
+   },
+   "leftCaption": "Die Fallseite eines offenen Widerrufs.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Fall-Informationen",
+     "text": "Datum, Grund, Standort, Paket und das verknüpfte Zendesk-Ticket."
+    },
+    {
+     "n": 2,
+     "title": "Behandlungsstand",
+     "text": "Was bereits behandelt wurde — inklusive **Tage zwischen Beratung und erster Sitzung** und der Angabe, ob **Achseln im Beratungsgespräch** behandelt wurden."
+    },
+    {
+     "n": 3,
+     "title": "Verknüpfungen",
+     "text": "Zeigt, ob ein **Folgevertrag** an die Stelle tritt — und ob **SEPA storniert** und **Phorest aktualisiert** wurden."
+    },
+    {
+     "n": 4,
+     "title": "Verlauf & Kommunikation",
+     "text": "Notizen und Schritte des Falls. **„Notiz speichern“** hält jede Absprache fest."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Fristbeginn abweichend",
+     "text": "Lässt sich setzen, wenn die Frist ausnahmsweise später beginnt — etwa weil die Belehrung nachgereicht wurde. Immer mit Anmerkung."
+    },
+    {
+     "title": "Liegezeit",
+     "text": "Wie lange der Fall schon offen ist. Ein alter offener Fall blockiert Bonus-Zahlen und sollte entschieden werden."
+    }
+   ],
+   "hint": {
+    "text": "**Der Behandlungsstand ist das Verhandlungsargument.** Er kommt aus Phorest und zeigt, was die Kundin bereits in Anspruch genommen hat — er entscheidet mit, was erstattet wird."
+   }
+  },
+  {
+   "h1": "Entscheiden und abschließen",
+   "sub": "Am Ende steht eine von drei Möglichkeiten: Verhandlung, Abgabe an den Anwalt oder Abschluss.",
+   "card": {
+    "title": "Entscheiden & abschließen",
+    "text": "Verhandeln, an RA abgeben oder abschließen"
+   },
+   "left": {
+    "shot": "v15-abschliessen"
+   },
+   "leftCaption": "Die Aktionen der Fallseite.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Verhandlung abgeschlossen",
+     "text": "Hält fest, dass eine Einigung erzielt wurde — etwa ein Folgevertrag oder ein Teilbetrag."
+    },
+    {
+     "n": 2,
+     "title": "An Rechtsanwalt abgeben",
+     "text": "Für Fälle, die intern nicht zu lösen sind. Der Fall bleibt sichtbar und wechselt in den anwaltlichen Bereich."
+    },
+    {
+     "n": 3,
+     "title": "Abschließen",
+     "text": "Beendet den Fall. Vorher prüfen: Ist der Vertrag storniert oder ersetzt? Wurde **SEPA storniert**? Ist **Phorest aktualisiert**?"
+    },
+    {
+     "n": 4,
+     "title": "Folgen im Bonus",
+     "text": "Erst mit der Entscheidung lösen sich die Körperzonen aus dem Vorbehalt — **abgelehnt → zählt**, **akzeptiert → zählt nicht**."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Abschließen ohne die Nebenwirkungen ist der häufigste Fehler.** Ein Widerruf ohne stornierte Lastschrift zieht weiter Geld ein, ohne Phorest-Pflege bleibt das Paket buchbar. Die Punkte unter **„Verknüpfungen“** sind genau dafür da — erst wenn sie stimmen, ist der Fall wirklich zu."
+   }
+  }
+ ]
+}

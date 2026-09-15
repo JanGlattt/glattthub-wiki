@@ -1,0 +1,196 @@
+{
+ "out": "../pdf/Verkauf-2-Vertrag-im-Detail",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Verkauf",
+ "nr": 2,
+ "of": 8,
+ "audience": "buero",
+ "title": [
+  "Der Vertrag",
+  "im Detail"
+ ],
+ "subtitle": "Klickanleitung für das Vertrags-Modul im glatttHub — Kopf, vier Reiter, Zusammenfassung und Verlauf",
+ "eyebrow": "Verkauf · Vertragsseite",
+ "footerArea": "Verkauf",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Vertragsseite ist die **Akte des Vertrags** — Daten, Raten, Verlauf und verschickte E-Mails an einem Ort.",
+  "**Rote Banner oben** melden, wenn ein Widerruf läuft oder ein Forderungsfall offen ist.",
+  "Die Spalte rechts fasst zusammen, was am häufigsten gefragt wird: Rate, Laufzeit, nächste Abbuchung."
+ ],
+ "pages": [
+  {
+   "h1": "Kopf und Banner",
+   "sub": "Oben stehen Vertragsnummer, Kundin und Status — und alles, was gerade dagegen läuft.",
+   "card": {
+    "title": "Kopf und Banner",
+    "text": "Nummer, Kundin, Status, Warnungen"
+   },
+   "left": {
+    "shot": "v4-vertrag-kopf"
+   },
+   "leftCaption": "Kopf der Vertragsseite, hier mit einem laufenden Widerruf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Vertragsnummer",
+     "text": "**JJJJ.MM.TT-Kundennummer**. Bei jeder Rückfrage die eindeutigste Angabe."
+    },
+    {
+     "n": 2,
+     "title": "Status",
+     "text": "**Aktiv**, **Abgeschlossen**, **Storniert** oder **Entwurf**."
+    },
+    {
+     "n": 3,
+     "title": "Banner „Widerruf“",
+     "text": "Läuft ein Widerruf, steht das hier — mit **„Zum Widerruf“** direkt in den Fall („Verkauf 4“)."
+    },
+    {
+     "n": 4,
+     "title": "Banner „Forderungsfall“",
+     "text": "Gibt es offene Beträge im Forderungsmanagement, führt **„Zum Fall“** dorthin."
+    }
+   ],
+   "hint": {
+    "text": "**Erst die Banner lesen, dann handeln.** Ein Vertrag mit laufendem Widerruf wird nicht nebenbei geändert — sonst arbeiten zwei Vorgänge gegeneinander."
+   }
+  },
+  {
+   "h1": "Die vier Reiter",
+   "sub": "Die Seite ist in vier Bereiche geteilt — jeder beantwortet eine andere Frage.",
+   "card": {
+    "title": "Die vier Reiter",
+    "text": "Übersicht, Zahlungen & SEPA, Verlauf, E-Mail-Historie"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Reiter",
+     "Beantwortet",
+     "Anleitung"
+    ],
+    "rows": [
+     [
+      "Übersicht",
+      "Was wurde verkauft? Paket, Körperzonen, Preisliste, Rabatte, Verkäuferin, Notizen",
+      "dieses Dokument"
+     ],
+     [
+      "Zahlungen & SEPA",
+      "Was ist bezahlt, was offen? Ratenplan, Mandat, Einzüge, Rücklastschriften",
+      "„Verkauf 3“"
+     ],
+     [
+      "Verlauf",
+      "Wer hat wann was geändert? Lückenlose Historie des Vertrags",
+      "dieses Dokument"
+     ],
+     [
+      "E-Mail-Historie",
+      "Was hat die Kundin bekommen? Vertrags-, Mandats- und Zahlungsmails",
+      "dieses Dokument"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Für die häufigsten Fragen reicht die Spalte rechts** — sie steht in jedem Reiter und nennt Monatsrate, Laufzeit, bezahlte Raten und die nächste Abbuchung."
+   }
+  },
+  {
+   "h1": "Übersicht und Zusammenfassung",
+   "sub": "Der erste Reiter zeigt den Vertragsinhalt, die Spalte rechts die Zahlen dazu.",
+   "card": {
+    "title": "Übersicht lesen",
+    "text": "Paket, Zonen, Preisliste, Rabatte, Zusammenfassung"
+   },
+   "left": {
+    "shot": "v5-uebersicht"
+   },
+   "right": {
+    "shot": "v6-zusammenfassung"
+   },
+   "leftCaption": "Reiter **„Übersicht“** mit Vertragsinhalt und Notizen.",
+   "rightCaption": "Die Zusammenfassung rechts — in jedem Reiter sichtbar.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Paket und Zonen",
+     "text": "Was gekauft wurde. Bei sechs Zonen steht **„Ganzkörper“**, sonst die einzelnen Körperzonen."
+    },
+    {
+     "n": 2,
+     "title": "Preisliste",
+     "text": "Welche Liste galt beim Abschluss — sie bestimmt auch, ob die **erste Rate vor Ort** kassiert wird oder alle Raten per SEPA laufen."
+    },
+    {
+     "n": 3,
+     "title": "Monatsrate und Laufzeit",
+     "text": "Rechts in der Zusammenfassung, dazu **„Raten (bezahlt / gesamt)“** und die **nächste Rate**."
+    },
+    {
+     "n": 4,
+     "title": "Notizen",
+     "text": "Interne Vermerke zum Vertrag — der richtige Platz für Absprachen, die sonst im Ticket verschwinden."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Rabatte",
+     "text": "**Rabatt 1. Sitzung** und der **Freunde-werben-Rabatt** stehen getrennt. Sie mindern die erste Rate, nicht die Laufzeit."
+    },
+    {
+     "title": "Ersetzt / ersetzt durch",
+     "text": "Wurde ein Vertrag durch einen neuen abgelöst, verweisen beide Seiten aufeinander — so bleibt die Kette nachvollziehbar."
+    }
+   ],
+   "hint": {
+    "text": "**„Kein Mandat hinterlegt“** in der Zusammenfassung heißt nicht automatisch „Problem“: Bei **Einmalzahlung** ist das der Normalfall. Nur bei Ratenzahlung gehört dort ein Mandat hin."
+   }
+  },
+  {
+   "h1": "Verlauf und E-Mails",
+   "sub": "Die beiden hinteren Reiter beantworten Rückfragen, ohne dass jemand raten muss.",
+   "card": {
+    "title": "Verlauf und E-Mails",
+    "text": "Wer hat was geändert, was hat die Kundin bekommen"
+   },
+   "left": {
+    "shot": "v7-verlauf"
+   },
+   "right": {
+    "shot": "v8-emails"
+   },
+   "leftCaption": "Reiter **„Verlauf“** — jede Änderung mit Person und Zeitpunkt.",
+   "rightCaption": "Reiter **„E-Mail-Historie“** mit den verschickten Nachrichten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Verlauf lesen",
+     "text": "Von unten nach oben: Abschluss, Mandat, Einzüge, Korrekturen. Jede Zeile nennt **wer** und **wann**."
+    },
+    {
+     "n": 2,
+     "title": "Bei Widerspruch",
+     "text": "Sagt die Kundin „das war nie so vereinbart“, steht hier, was tatsächlich passiert ist."
+    },
+    {
+     "n": 3,
+     "title": "E-Mail-Historie",
+     "text": "Welche Mails der Hub verschickt hat — Vertrag, SEPA-Mandat, Zahlungsankündigungen."
+    },
+    {
+     "n": 4,
+     "title": "„Ich habe nichts bekommen“",
+     "text": "Hier steht, ob und wann versendet wurde. Fehlt die Mail, stimmt meist die **Adresse** nicht."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Zustellung ist nicht protokolliert.** Der Hub weiß, dass er verschickt hat — nicht, ob die Mail angekommen oder gelesen wurde. Bei wichtigen Fällen zusätzlich telefonisch oder per WhatsApp absichern („Kundenverwaltung 5“)."
+   }
+  }
+ ]
+}

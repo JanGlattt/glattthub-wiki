@@ -17,6 +17,32 @@ Referenz-Dokument (erste Anleitung im Standard): **„Tageserfassung Beratungsge
 
 ---
 
+## Pflicht bei jeder Änderung (ab 15.09.2026)
+
+**Jede neue Seite, jedes neue Modul und jede spürbare Änderung an einer bestehenden Oberfläche
+braucht eine Klickanleitung** — im Stil dieser Sammlung und **im Endbenutzer-Wiki**, nicht nur
+als PDF. Eine Funktion, die niemand bedienen kann, ist nicht fertig; eine geänderte Funktion,
+deren Anleitung den alten Stand zeigt, ist schlimmer als keine Anleitung.
+
+„Spürbar" heißt: alles, was die Mitarbeiterin auf dem Bildschirm anders vorfindet — neue Seite,
+neuer Reiter, neuer Knopf, umbenannte Beschriftung, geänderter Ablauf, neue Pflichtangabe. Rein
+technische Änderungen ohne sichtbare Folge brauchen keine.
+
+**Bei Änderungen wird das bestehende Deck angefasst** — Texte korrigieren, Screenshot neu
+aufnehmen, `version` und `stand` hochziehen —, nicht ein zweites Dokument daneben gestellt.
+
+**Abgesichert im Haupt-Repo:** `tests/Unit/KlickanleitungCoverageTest.php` verlangt, dass jede
+Seite aus `GlobalSearchService::PAGES` und jeder Bericht aus `ReportRegistry` in
+`.github/klickanleitungen-abdeckung.json` mit einem Stand geführt ist (`fertig`, `texte`,
+`geplant`, `entfaellt`). Eine neue Seite ohne Eintrag bricht den Test. Der Test erzwingt nicht,
+dass die Anleitung schon geschrieben ist — die Quellen liegen in diesem Repo und sind dort nicht
+prüfbar —, aber er erzwingt, dass **entschieden** wurde, wer sie schreibt.
+
+Dieselbe Regel steht als Guideline in `.github/copilot-instructions.md` (Abschnitt
+„Klickanleitungen") und als Punkt 7 im Entwicklungs-Workflow.
+
+---
+
 ## Design-Standard (verbindlich)
 
 ### Format
@@ -138,6 +164,11 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | 19 | Management-Sicht: Institute vs. Minimalziele, Boni je Mitarbeiterin, Export | `/hub/bonus` › Management | **Bonus-Board 3 – Bonus-Board für die Leitung** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 20 | Bonus-Regeln und Challenges anlegen, Minimalziele, Sichtbarkeit | `/hub/bonus/verwaltung` | **Bonus-Board 4 – Regeln & Challenges anlegen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 21 | Monatsabschluss: Widerrufe entscheiden, korrigieren, einfrieren, Google-Bewertungen | `/hub/bonus/verwaltung` | **Bonus-Board 5 – Monatsabschluss** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 22 | Vertragsliste: suchen, filtern, sortieren | `/hub/contracts` | **Verkauf 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 23 | Vertragsseite: Kopf, Reiter, Übersicht, Verlauf, E-Mails | `/hub/contracts/{id}` | **Verkauf 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 24 | Zahlungen & SEPA: Ratenplan, nachtragen, Mandat, Einzug, RLS | `/hub/contracts/{id}` › Zahlungen | **Verkauf 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 25 | Widerrufe: erfassen, Fall bearbeiten, abschließen | `/hub/cancellations` | **Verkauf 4** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 26 | Preislisten, Freunde werben, Gutscheine, Zufriedenheit | Verkauf | Verkauf 5–8 | ⬜ geplant |
 
 Die Liste wird mit jeder fertigen Anleitung fortgeschrieben. **Ablage:** PDFs in
 `~/Downloads/Klickanleitungen-Terminansicht/` (Übergabe an Jan), Quellen reproduzierbar im Wiki-Repo
@@ -377,6 +408,30 @@ wird nichts gespeichert und **kein** „Andere Sitzungen abmelden" gedrückt. gl
 
 **Zwei-Faktor-Anmeldung ist nicht Teil der Serie** — sie ist in `config/fortify.php` auskommentiert
 und damit im Hub nicht aktiv.
+
+---
+
+## Serie „Verkauf" 1–8 (15.09.2026, 1–4 geschrieben)
+
+Das größte Büro-Thema, Fortsetzung von „Kundenverwaltung 4". Quellen unter
+`klickanleitungen/verkauf/`.
+
+| Dokument | Kern |
+|---|---|
+| **Verkauf 1 – Verträge finden in der Liste** | Suche, Filterpanel (Mandat, Zonen, Zahlungsart, Institut, Verkäuferin), Sortierung, Badges Legacy/Institut |
+| **Verkauf 2 – Der Vertrag im Detail** | Kopf mit Widerrufs- und Forderungs-Banner, die vier Reiter, Übersicht, Zusammenfassungs-Spalte, Verlauf, E-Mail-Historie |
+| **Verkauf 3 – Zahlungen & SEPA** | Ratenplan lesen, Zahlung nachtragen, Mandat, Einzug, RLS anhängen, pausieren, Gutschein verrechnen, Legacy-Einzug |
+| **Verkauf 4 – Widerrufe erfassen & bearbeiten** | Assistent (Vertrag → Eingang/Grund), Fallseite mit Fristen und Behandlungsstand, Verhandlung/RA/Abschluss |
+| Verkauf 5–8 | Preislisten, Freunde werben, Gutscheine, Zufriedenheit — **noch nicht geschrieben** |
+
+**Der Aufnahmelauf fasst kein Geld an:** „Gezahlte Rate nachtragen" wird geöffnet und verworfen;
+„Betrag per SEPA einziehen", „RLS anhängen" und „Pausieren" werden nur markiert. Der
+Widerrufs-Assistent wird abgebrochen, kein Fall abgeschlossen — ein angelegter Widerruf zöge
+Bonus- und SEPA-Folgen nach sich.
+
+**Braucht passende Datensätze:** einen **Ratenzahler mit Mandat** (`KLICK_CONTRACT`, einige Raten
+bezahlt, einige offen) und einen **offenen Widerruf** (`KLICK_CANCELLATION`). Die Bilder zeigen
+Kundennamen, Vertragsnummern und IBANs — Maskierung ist Pflicht.
 
 ---
 

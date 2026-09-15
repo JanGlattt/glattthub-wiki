@@ -1,0 +1,152 @@
+{
+ "out": "../pdf/Verkauf-1-Vertragsliste",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Verkauf",
+ "nr": 1,
+ "of": 8,
+ "audience": "buero",
+ "title": [
+  "Verträge finden",
+  "in der Liste"
+ ],
+ "subtitle": "Klickanleitung für das Vertrags-Modul im glatttHub — suchen, filtern, sortieren und den richtigen Vertrag öffnen",
+ "eyebrow": "Verkauf · Vertragsliste",
+ "footerArea": "Verkauf",
+ "stand": "15.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Liste zeigt **alle Kundenverträge** — gefiltert nach dem Standort, der oben in der Seitenleiste eingestellt ist.",
+  "**Legacy** heißt: Altvertrag von vor der Hub-Zeit. Solche Verträge haben oft keinen vollständigen Ratenplan.",
+  "Geändert wird hier nichts — die Liste führt nur zum richtigen Vertrag."
+ ],
+ "pages": [
+  {
+   "h1": "Vertrag suchen",
+   "sub": "Ein Feld für alles: Kundenname, Vertragsnummer oder Kundennummer.",
+   "card": {
+    "title": "Vertrag suchen",
+    "text": "Über Name, Vertrags- oder Kundennummer finden"
+   },
+   "left": {
+    "shot": "v1-liste"
+   },
+   "leftCaption": "Die Vertragsliste mit Suchfeld und Werkzeugen im Kopf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Suchfeld nutzen",
+     "text": "**„Name, Vertragsnr. oder Kunden-Nr.“** — die Liste filtert sich beim Tippen."
+    },
+    {
+     "n": 2,
+     "title": "Standort beachten",
+     "text": "Die Liste folgt dem Standort aus der Seitenleiste. Wer nichts findet, prüft zuerst dort („Grundlagen 2“)."
+    },
+    {
+     "n": 3,
+     "title": "Spalten sortieren",
+     "text": "Ein Tippen auf die Überschrift sortiert — **Vertragsnummer**, **Status**, **Zonen**, **Zahlungsart**, **Unterschrieben**."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Vertragsnummer lesen",
+     "text": "Sie hat die Form **JJJJ.MM.TT-Kundennummer** — Datum des Abschlusses plus Kundennummer. Damit lässt sich ein Vertrag auch ohne Suche einordnen."
+    },
+    {
+     "title": "Weitere Werkzeuge im Kopf",
+     "text": "**„Preislisten“**, **„Freunde werben“** sowie die Zuordnungen für **Körperzonen** und **Verkäuferinnen** — eigene Anleitungen dieser Serie."
+    }
+   ],
+   "hint": {
+    "text": "**Kunde statt Vertrag gesucht?** Wer die Kundin kennt, findet den Vertrag schneller über das **Kundenprofil**, Reiter „Vertrag/Zahlungen“ („Kundenverwaltung 4“) — dort stehen alle Verträge dieser Kundin zusammen."
+   }
+  },
+  {
+   "h1": "Filter setzen",
+   "sub": "Für Auswertungen und Rückfragen lässt sich die Liste eingrenzen — nach Mandat, Zonen, Zahlungsart, Institut und Verkäuferin.",
+   "card": {
+    "title": "Filter setzen",
+    "text": "Mandat, Zonen, Zahlungsart, Institut, Verkäuferin"
+   },
+   "left": {
+    "shot": "v2-filter"
+   },
+   "leftCaption": "Das aufgeklappte Filterpanel.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Panel öffnen",
+     "text": "Der Filter-Knopf neben der Suche klappt die Auswahl auf."
+    },
+    {
+     "n": 2,
+     "title": "Mandatsstatus",
+     "text": "Trennt Verträge **mit** und **ohne** gültiges SEPA-Mandat — der schnellste Weg zu den Fällen, bei denen noch etwas fehlt."
+    },
+    {
+     "n": 3,
+     "title": "Zahlungsart",
+     "text": "**SEPA-Lastschrift** oder **Einmalzahlung**. Direktzahler tauchen in der Rücklastschrift-Logik nie auf."
+    },
+    {
+     "n": 4,
+     "title": "Institut und Verkäuferin",
+     "text": "Für Auswertungen je Standort oder Person — unabhängig vom Standortfilter der Seitenleiste."
+    }
+   ],
+   "hint": {
+    "text": "**Filter bleiben gesetzt**, solange die Seite offen ist. Wer sich über eine kurze Liste wundert, schaut auf das Filterpanel, bevor er die Daten in Frage stellt."
+   }
+  },
+  {
+   "h1": "Die Zeile lesen",
+   "sub": "Jede Zeile sagt in einem Blick, wie es um den Vertrag steht.",
+   "card": {
+    "title": "Die Zeile lesen",
+    "text": "Status, Zonen, Zahlungsart, Mandat und Herkunft"
+   },
+   "left": {
+    "shot": "v3-zeile"
+   },
+   "leftCaption": "Eine Zeile der Liste mit ihren Badges.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Status",
+     "text": "**Aktiv**, **Abgeschlossen**, **Storniert** oder **Entwurf** — die Farbe des Badges sagt dasselbe."
+    },
+    {
+     "n": 2,
+     "title": "Körperzonen",
+     "text": "Anzahl der gekauften Zonen, bei sechs steht **„Ganzkörper“**."
+    },
+    {
+     "n": 3,
+     "title": "Zahlungsart",
+     "text": "**SEPA** mit Mandatszustand oder **Einmalzahlung**."
+    },
+    {
+     "n": 4,
+     "title": "Öffnen",
+     "text": "Die Zeile führt zur Vertragsseite mit allen Einzelheiten („Verkauf 2“)."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Badge „Legacy“",
+     "text": "Altvertrag aus der Zeit vor dem Hub. Solche Verträge haben oft **keinen vollständigen Ratenplan** — was dort an Zahlungen fehlt, fehlt nicht zwingend im echten Leben."
+    },
+    {
+     "title": "Badge „Institut“",
+     "text": "Der Vertrag entstand über die **Tageserfassung auf der Institutsseite**, nicht über ein Formular im Termin."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Ein stornierter Vertrag verschwindet nicht.** Er bleibt mit Status **„Storniert“** in der Liste, damit die Historie nachvollziehbar bleibt. Für die Frage „läuft der noch?“ zählt allein der Status, nicht die bloße Existenz."
+   }
+  }
+ ]
+}
