@@ -26,7 +26,7 @@ const L = require('./lib.cjs');
   // ── g3/g4/g5 Seitenleiste (angemeldet)
   const { browser, ctx, page } = await L.launch();
   await L.login(page, ctx);
-  await L.goto(page, '/hub/start', 2500);
+  await L.goto(page, '/hub', 2500);
   await L.shot(page, 'g3-sidebar', { marks: [
     { id: 'schnell', kind: 'frame', color: 'teal', ...L.byText('.menu-title', 'Start') },
     { id: 'gruppen', kind: 'badge', n: 2, ...L.byText('.sidebar-group-label, .menu-title', 'Verkauf'), at: 'l' },

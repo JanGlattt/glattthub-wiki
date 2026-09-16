@@ -7,7 +7,7 @@ const SEARCH = process.env.KLICK_SEARCH || 'Verträge';
 (async () => {
   const { browser, ctx, page } = await L.launch();
   await L.login(page, ctx);
-  await L.goto(page, '/hub/start', 2500);
+  await L.goto(page, '/hub', 2500);
 
   // ── h1 Standortwahl (nur öffnen)
   await L.tool(page, 'Institute', 1500);

@@ -7,7 +7,7 @@ const L = require('./lib.cjs');
   await L.login(page, ctx);
 
   // ── j1 Menüleiste unten
-  await L.goto(page, '/hub/start', 3000);
+  await L.goto(page, '/hub', 3000);
   await L.shot(page, 'j1-bottom-nav', { marks: [
     { id: 'leiste', kind: 'frame', color: 'teal', sel: '.mobile-bottom-nav' },
     { id: 'mehr', kind: 'chip', label: 'Alles Weitere', ...L.byText('.mobile-bottom-nav *', 'Mehr'), at: 't' },

@@ -40,19 +40,22 @@ function loadMask() {
 async function mask(page) {
   const cfg = loadMask();
   await page.evaluate(({ rules, blank, samples }) => {
+    // Alle Regeln zu EINEM Ausdruck kompilieren (längste zuerst, damit „Anna Musterfrau-Meier"
+    // vor „Anna Musterfrau" greift) — mit zehntausenden Regeln aus einer Datenbank-Kopie wäre
+    // die Wortliste je Textknoten sonst um Größenordnungen zu langsam.
+    const map = new Map(rules.filter(([from]) => from !== null && from !== undefined && String(from) !== '').map(([from, to]) => [String(from), String(to ?? '')]));
+    const froms = [...map.keys()].sort((a, b) => b.length - a.length);
+    const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const chunks = [];
+    for (let i = 0; i < froms.length; i += 4000) chunks.push(new RegExp(froms.slice(i, i + 4000).map(esc).join('|'), 'g'));
+    const apply = (s) => { let out = String(s); for (const re of chunks) out = out.replace(re, (m) => map.get(m) ?? m); return out; };
     const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let n;
-    while ((n = walk.nextNode())) {
-      for (const [from, to] of rules) if (n.nodeValue.includes(from)) n.nodeValue = n.nodeValue.split(from).join(to);
-    }
-    document.querySelectorAll('input, textarea').forEach(el => {
-      for (const [from, to] of rules) if (String(el.value).includes(from)) el.value = String(el.value).split(from).join(to);
-    });
+    while ((n = walk.nextNode())) { const v = apply(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; }
+    document.querySelectorAll('input, textarea').forEach(el => { const v = apply(el.value); if (v !== el.value) el.value = v; });
     document.querySelectorAll('[title], [alt], [aria-label]').forEach(el => {
-      for (const [from, to] of rules) {
-        if (el.title?.includes(from)) el.title = el.title.split(from).join(to);
-        if (el.alt?.includes(from)) el.alt = el.alt.split(from).join(to);
-      }
+      if (el.title) { const v = apply(el.title); if (v !== el.title) el.title = v; }
+      if (el.alt) { const v = apply(el.alt); if (v !== el.alt) el.alt = v; }
     });
     let i = 0;
     for (const sel of blank) {
@@ -137,9 +140,12 @@ const byText = (sel, text) => ({
 /** Sichtbares Element per Beschriftung anklicken (bei „element not stable" immer über evaluate). */
 async function clickText(page, sel, text, ms = 1200) {
   const ok = await page.evaluate((arg) => {
-    const el = [...document.querySelectorAll(arg.sel)]
-      .filter(e => e.offsetParent !== null)
-      .find(e => e.textContent.trim().startsWith(arg.text));
+    // Erst exakter Anfang, dann „enthält" — Knöpfe tragen oft ein Symbol oder einen Zusatz vor dem
+    // Text („Gezahlte Rate nachtragen"), und Livewire hängt gern Leerzeichen an.
+    const sichtbar = [...document.querySelectorAll(arg.sel)].filter(e => e.offsetParent !== null);
+    const norm = (s) => s.replace(/\s+/g, ' ').trim();
+    const el = sichtbar.find(e => norm(e.textContent).startsWith(arg.text))
+      || sichtbar.find(e => norm(e.textContent).includes(arg.text));
     if (!el) return false;
     el.click();
     return true;
@@ -178,6 +184,10 @@ async function shot(page, name, { clip = null, marks = [], noScroll = false } = 
   await hideBadge(page);
   await mask(page);
   if (!noScroll) { await page.evaluate(() => window.scrollTo(0, 0)); await page.waitForTimeout(150); }
+  // Zweiter Durchlauf: Zellen, die nach dem ersten Maskieren noch nachgeladen wurden
+  // (Kundennamen aus Phorest, Livewire-Nachrender), sonst stehen sie unmaskiert im Bild.
+  await page.waitForTimeout(400);
+  await mask(page);
   const vp = page.viewportSize();
   const box = clip || { x: 0, y: 0, width: vp.width, height: vp.height };
   const resolved = [];

@@ -7,22 +7,22 @@ Quellen der Serie **Berichte** — ein Rahmendokument plus je eine Anleitung fü
 | Dokument | Bericht | Zielgruppe |
 |---|---|---|
 | **0 — So funktionieren die Berichte** | Zeitraum und Standort, Kennzahlen-Zeile, Diagramm/Tabelle, Export | Leitung |
-| **1 — Verkaufsstatistik** | `/hub/reports/verkaufsstatistik` | Leitung |
-| **2 — Zukünftige Beratungsgespräche** | `/hub/reports/zukuenftige-beratungsgespraeche` | Leitung |
-| **3 — Vergangene Beratungsgespräche** | `/hub/reports/vergangene-beratungsgespraeche` | Leitung |
-| **4 — Stornierte und gelöschte Termine** | `/hub/reports/stornierte-termine` | Leitung |
-| **5 — Widerruf-Statistik** | `/hub/reports/widerruf-statistik` | Büro |
-| **6 — Terminstatistik** | `/hub/reports/terminstatistik` | Leitung |
+| **1 — Verkaufsstatistik** | `/hub/reports/sales-statistics` | Leitung |
+| **2 — Zukünftige Beratungsgespräche** | `/hub/reports/upcoming-consultations` | Leitung |
+| **3 — Vergangene Beratungsgespräche** | `/hub/reports/past-consultations` | Leitung |
+| **4 — Stornierte und gelöschte Termine** | `/hub/reports/rescheduled-cancelled` | Leitung |
+| **5 — Widerruf-Statistik** | `/hub/reports/revocation-statistics` | Büro |
+| **6 — Terminstatistik** | `/hub/reports/appointments-body-zones` | Leitung |
 | **7 — glattt-KPIs** | `/hub/reports/glattt-kpis` | Leitung |
-| **8 — Der glattt-Kunde** | `/hub/reports/kundenstatistik` | Leitung |
+| **8 — Der glattt-Kunde** | `/hub/reports/client-statistics` | Leitung |
 | **9 — Mitarbeiterperformance** | `/hub/reports/staff-performance` | Leitung |
 | **10 — Schuldenbericht** | `/hub/reports/schulden` | Büro |
-| **11 — Office-Teammeeting** | `/hub/reports/office-teammeeting` | Büro |
-| **12 — Gutschein-Aktion** | `/hub/reports/gutschein-aktion` | Leitung |
+| **11 — Office-Teammeeting** | `/hub/reports/office-meeting` | Büro |
+| **12 — Gutschein-Aktion** | `/hub/reports/gutscheinaktion` | Leitung |
 | **13 — HR-Kennzahlen** | `/hub/reports/hr-kennzahlen` | Leitung |
-| **14 — Ads-Analyse** | `/hub/reports/ads-analyse` | Leitung |
-| **15 — Besucher & Buchungs-Funnel** | `/hub/reports/besucher-funnel` | Leitung |
-| **16 — glattt-Pakete Statistik** | `/hub/reports/glattt-pakete` | Leitung |
+| **14 — Ads-Analyse** | `/hub/reports/ads-analysis` | Leitung |
+| **15 — Besucher & Buchungs-Funnel** | `/hub/reports/visitor-funnel` | Leitung |
+| **16 — glattt-Pakete Statistik** | `/hub/reports/client-courses` | Leitung |
 
 **Dokument 0 zuerst lesen.** Es erklärt einmal, was auf *jeder* Berichtsseite gleich
 funktioniert — Zeitraum, Standortfilter, die Laschen am Kartenrand (Diagramm ⇄ Tabelle), die

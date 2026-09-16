@@ -11,4 +11,4 @@ const CANCELLATION = process.env.KLICK_CANCELLATION || null;   // Offener Widerr
 const CANCELLATION_RA = process.env.KLICK_CANCELLATION_RA || null;   // Optional: Fall mit RA-Vorgang fuer wd5-ra
 const CONTRACT = process.env.KLICK_CONTRACT || null;   // Vertrag fuer den Assistenten (Schritt 1) — wird NICHT widerrufen
 
-module.exports = { ...S, CANCELLATION, CANCELLATION_RA, CONTRACT };
+module.exports = { ...S, CANCELLATION, CANCELLATION_RA, CONTRACT, CASE: CANCELLATION, CASE_RA: CANCELLATION_RA };

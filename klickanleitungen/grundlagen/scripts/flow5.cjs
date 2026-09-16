@@ -7,7 +7,7 @@ const FRAGE = process.env.KLICK_BERT_FRAGE || 'Wie viele Beratungsgespräche hat
 (async () => {
   const { browser, ctx, page } = await L.launch();
   await L.login(page, ctx);
-  await L.goto(page, '/hub/start', 2500);
+  await L.goto(page, '/hub', 2500);
 
   // ── k1 Assistent öffnen
   const opened = await page.evaluate(() => {

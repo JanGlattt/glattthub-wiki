@@ -9,7 +9,7 @@ const L = require('./lib.cjs');
   const will = (n) => !nur.length || nur.includes(n);
   const { browser, ctx, page } = await L.launch();
   await L.login(page, ctx);
-  await L.goto(page, '/hub/start', 3000);
+  await L.goto(page, '/hub', 3000);
 
   // ── s1 Die Startseite lesen
   if (will('s1-start')) {
