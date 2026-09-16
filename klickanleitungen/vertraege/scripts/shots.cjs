@@ -67,7 +67,13 @@ const PLAN = [
       if (p.reiter) { await L.clickText(page, 'button, a', p.reiter, 1500); }
       if (p.filter) { await L.clickText(page, '.table-filter-btn', '', 1200); }
       if (p.oeffne) {
-        const ok = await L.clickText(page, 'button, a', p.oeffne, 2000);
+        // Die Zahlungs-Aktionen stecken im Reiter „Zahlungen & SEPA" hinter dem Menü „Aktionen"
+        let ok = await L.clickText(page, 'button, a', p.oeffne, 2000);
+        if (!ok) {
+          if (!p.reiter) await L.clickText(page, 'button, a', 'Zahlungen & SEPA', 1500);
+          await L.clickText(page, 'button', 'Aktionen', 800);
+          ok = await L.clickText(page, 'button, a', p.oeffne, 2000);
+        }
         if (!ok) { console.log('NICHT GEFUNDEN:', p.oeffne, '— Beschriftung geaendert oder Recht fehlt'); }
         await L.wait(page, 1200);
       }

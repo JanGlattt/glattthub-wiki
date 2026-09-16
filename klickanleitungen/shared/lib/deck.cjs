@@ -98,7 +98,11 @@ function shotHtml(meta, name, marks, img, cls = '', warn = () => {}) {
       continue;
     }
     if (k.kind === 'frame') {
-      inner += `<div class="frame ${k.color || 'gold'}" style="left:${p.x - 0.6}%;top:${p.y - 0.8}%;width:${p.w + 1.2}%;height:${p.h + 1.6}%"></div>`;
+      // Auf die Bildkante deckeln: Ein vermessenes Element (lange Tabelle) kann höher sein als der
+      // Ausschnitt — der Rahmen ragte dann weit unter die Seite (Betrieb 5, Kundenverwaltung 1).
+      const fx = Math.max(0, p.x - 0.6), fy = Math.max(0, p.y - 0.8);
+      const fw = Math.min(100 - fx, p.w + 1.2 - (fx - (p.x - 0.6))), fh = Math.min(100 - fy, p.h + 1.6 - (fy - (p.y - 0.8)));
+      inner += `<div class="frame ${k.color || 'gold'}" style="left:${fx}%;top:${fy}%;width:${fw}%;height:${fh}%"></div>`;
     }
     if (k.kind === 'badge') {
       const at = k.at || 'l';
@@ -120,6 +124,9 @@ function shotHtml(meta, name, marks, img, cls = '', warn = () => {}) {
       inner += `<div class="chip chip-${side} ${arrow}" style="left:${x + dx}%;top:${y + dy}%">${esc(k.label)}</div>`;
     }
   }
+  // Hochformat-Bilder (Telefon-Aufnahmen, schmale Karten) automatisch auf die Höhe skalieren —
+  // in voller Spaltenbreite sprengen sie sonst die A4-Seite (Grundlagen 4, 17.09.2026).
+  if (ratio > 1 && !/\b(portrait|tall|tile-shot)\b/.test(cls)) cls = (cls + ' portrait').trim();
   return `<div class="shot ${cls}" style="--ratio:${ratio}">${inner}</div>`;
 }
 
