@@ -51,7 +51,14 @@ async function mask(page) {
     const apply = (s) => { let out = String(s); for (const re of chunks) out = out.replace(re, (m) => map.get(m) ?? m); return out; };
     const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let n;
-    while ((n = walk.nextNode())) { const v = apply(n.nodeValue); if (v !== n.nodeValue) n.nodeValue = v; }
+    while ((n = walk.nextNode())) {
+      // Leerraum zusammenziehen: Templates verbinden Vor- und Nachname gern mit Umbruch/Einzug —
+      // der Text „Nadin\n   Muster" träfe die Regel „Nadin Muster" sonst nie. Sichtbar ändert
+      // sich nichts, HTML fasst Leerraum ohnehin zusammen (außer in pre/textarea, dort lassen).
+      const pre = n.parentElement && /^(PRE|TEXTAREA|CODE)$/.test(n.parentElement.tagName);
+      const base = pre ? n.nodeValue : n.nodeValue.replace(/[ \t\r\n ]{2,}/g, ' ');
+      const v = apply(base); if (v !== base) n.nodeValue = v;
+    }
     document.querySelectorAll('input, textarea').forEach(el => { const v = apply(el.value); if (v !== el.value) el.value = v; });
     document.querySelectorAll('[title], [alt], [aria-label]').forEach(el => {
       if (el.title) { const v = apply(el.title); if (v !== el.title) el.title = v; }
