@@ -1,0 +1,360 @@
+{
+ "out": "../pdf/Forderungen-4-zahlungen-und-links",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Forderungen",
+ "nr": 4,
+ "of": 6,
+ "audience": "buero",
+ "title": [
+  "Zahlungen und",
+  "Bezahllinks"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Zahlungseingang erfassen, stornieren, Bezahllink, SEPA pausieren, Kosten",
+ "eyebrow": "Forderungen · Geld",
+ "footerArea": "Forderungen",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "**§ 367 BGB:** Jeder Eingang tilgt **erst Kosten**, dann die Hauptforderung.",
+  "Eine Zahlung gehört **an beide Stellen** — in den Fall und an die Rate des Vertrags.",
+  "**Kosten vor dem nächsten Schreiben erfassen** — sonst fehlen sie in der Forderungsaufstellung."
+ ],
+ "pages": [
+  {
+   "h1": "Modal „Zahlungseingang erfassen“",
+   "sub": "Geld ist eingegangen — hier wird es dem Fall zugeordnet.",
+   "card": {
+    "title": "Zahlung erfassen",
+    "text": "Eingang buchen und verrechnen"
+   },
+   "left": {
+    "shot": "fo4-zahlung"
+   },
+   "leftCaption": "Das Fenster „Zahlungseingang erfassen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Betrag und Datum",
+     "text": "Was kam wann herein."
+    },
+    {
+     "n": 2,
+     "title": "Zahlungsart",
+     "text": "Überweisung, bar, SEPA oder Bezahllink."
+    },
+    {
+     "n": 3,
+     "title": "Zuordnung",
+     "text": "**„Zahlung offenen Rücklastschriften zuordnen“** verrechnet gezielt auf einzelne geplatzte Raten."
+    },
+    {
+     "n": 4,
+     "title": "Erfassen",
+     "text": "Der Betrag wird nach **§ 367 BGB** verrechnet: erst Kosten, dann Hauptforderung."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Die Verrechnungsreihenfolge ist gesetzlich",
+     "text": "Kosten zuerst. Die Kundin sieht ihre Hauptforderung dadurch langsamer sinken, als sie erwartet — das gehört ihr am Telefon erklärt."
+    },
+    {
+     "title": "Deckt die Zahlung alles, schließt sich der Fall",
+     "text": "Bei vollständigem Ausgleich endet der Fall mit dem Ausgang **bezahlt**."
+    },
+    {
+     "title": "Am Vertrag ist es eine zweite Buchung",
+     "text": "Eine Zahlung auf eine Vertragsrate gehört auch dort verbucht („Verträge 4“) — sonst steht die Rate weiter offen."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Betrag",
+      "in €, mit Komma"
+     ],
+     [
+      "Eingangsdatum",
+      "Wann das Geld da war"
+     ],
+     [
+      "Referenz (optional)",
+      "Verwendungszweck"
+     ],
+     [
+      "Zahlungsart",
+      "Überweisung · Bar · SEPA · Bezahllink"
+     ],
+     [
+      "Zuordnung zu Rücklastschriften",
+      "Gezielte Verrechnung auf einzelne Raten"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Zahlung hier erfassen heißt nicht: Rate am Vertrag erledigt.** Beide Seiten wollen die Buchung. Wer nur hier bucht, wird vom Zahlungsplan des Vertrags eines Besseren belehrt."
+   }
+  },
+  {
+   "h1": "Zahlungen stornieren",
+   "sub": "Eine falsch erfasste Zahlung lässt sich zurücknehmen — solange sie nicht abgeschlossen ist.",
+   "card": {
+    "title": "Stornieren",
+    "text": "Fehlbuchung zurücknehmen"
+   },
+   "left": {
+    "shot": "fo4-storno"
+   },
+   "leftCaption": "Der Reiter Zahlungen mit der Storno-Möglichkeit.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zahlung finden",
+     "text": "Im Reiter **Zahlungen**, mit Datum und Referenz."
+    },
+    {
+     "n": 2,
+     "title": "Stornieren",
+     "text": "Der Knopf an der Zeile."
+    },
+    {
+     "n": 3,
+     "title": "Begründung",
+     "text": "Pflicht — sie steht danach im Verlauf."
+    },
+    {
+     "n": 4,
+     "title": "Nicht stornierbar",
+     "text": "Bereits verrechnete und abgeschlossene Zahlungen bleiben stehen."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Die Verrechnung wird rückgängig gemacht",
+     "text": "Kosten und Hauptforderung steigen wieder auf den Stand davor."
+    },
+    {
+     "title": "Der Fall kann wieder aufleben",
+     "text": "War er wegen dieser Zahlung geschlossen, ist er nach dem Storno wieder offen — mit der Stufe, die er hatte."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Begründung",
+      "Pflicht — warum die Buchung falsch war"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Modal „Sammel-Bezahllink“",
+   "sub": "Ein Link, über den die Kundin alles Offene auf einmal bezahlen kann.",
+   "card": {
+    "title": "Bezahllink",
+    "text": "Link erzeugen und weitergeben"
+   },
+   "left": {
+    "shot": "fo4-bezahllink"
+   },
+   "leftCaption": "Das Fenster „Sammel-Bezahllink“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Link erzeugen",
+     "text": "Der Hub bündelt die offenen Posten des Falls."
+    },
+    {
+     "n": 2,
+     "title": "Umfang prüfen",
+     "text": "Das Fenster nennt, **über welche Beträge** der Link läuft."
+    },
+    {
+     "n": 3,
+     "title": "Kopieren",
+     "text": "**„In Zwischenablage kopieren“** — der Link geht per Mail oder WhatsApp raus."
+    },
+    {
+     "n": 4,
+     "title": "Eingang",
+     "text": "Zahlt die Kundin, erscheint der Eingang als Zahlung am Fall."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Der Link ist personalisiert",
+     "text": "Er gehört zu diesem Fall. Weitergabe an Dritte ist keine gute Idee."
+    },
+    {
+     "title": "Die Zahlung landet automatisch im Fall",
+     "text": "Sie muss nicht von Hand erfasst werden — anders als eine Überweisung."
+    },
+    {
+     "title": "Ein Link ersetzt keine Mahnung",
+     "text": "Er macht das Zahlen leichter, setzt aber keine Frist und rückt den Fall keine Stufe weiter."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Umfang",
+      "Welche offenen Posten der Link abdeckt"
+     ],
+     [
+      "Gesamtbetrag",
+      "Die Summe, die die Kundin zahlt"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Der beste Zeitpunkt ist die zweite Zahlungserinnerung.** Wer bis dahin nicht gezahlt hat, scheitert oft an der Umständlichkeit — ein Link räumt genau diese Hürde weg."
+   }
+  },
+  {
+   "h1": "SEPA pausieren und fortsetzen",
+   "sub": "Solange ein Fall läuft, sollen die regulären Einzüge oft ruhen — und später wieder anlaufen.",
+   "card": {
+    "title": "SEPA pausieren",
+    "text": "Einzüge anhalten und fortsetzen"
+   },
+   "left": {
+    "shot": "fo4-sepa"
+   },
+   "leftCaption": "Die SEPA-Aktionen in der Seitenspalte.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Pausieren",
+     "text": "**„SEPA-Einzüge pausieren“** hält die regulären Vertragsraten an."
+    },
+    {
+     "n": 2,
+     "title": "Wann",
+     "text": "Wenn ohnehin klar ist, dass nichts eingezogen werden kann — jede weitere RLS kostet Gebühren."
+    },
+    {
+     "n": 3,
+     "title": "Fortsetzen",
+     "text": "**„SEPA-Einzüge fortsetzen“** mit einem **Startdatum**."
+    },
+    {
+     "n": 4,
+     "title": "Ergebnis",
+     "text": "Offene Raten werden ab diesem Datum wieder eingezogen."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Das wirkt auf den Vertrag, nicht nur auf den Fall",
+     "text": "Der Zahlungsplan des Vertrags ruht tatsächlich. Am Vertrag ist das sichtbar („Verträge 6“)."
+    },
+    {
+     "title": "Pausieren verkürzt nichts",
+     "text": "Die Raten kommen vollständig wieder. Es verhindert nur weitere geplatzte Lastschriften und deren Gebühren."
+    },
+    {
+     "title": "Fortsetzen braucht Vorlauf",
+     "text": "Ein Startdatum zu nah an heute reicht für die Einreichung nicht — lieber den übernächsten Termin."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Startdatum",
+      "Ab wann wieder eingezogen wird"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Modal „Kostenposition erfassen“",
+   "sub": "Gerichts-, Vollzieher- und Auskunftskosten gehören in den Fall — sie sind Teil der Forderung.",
+   "card": {
+    "title": "Kosten erfassen",
+    "text": "Verfahrenskosten mit Beleg"
+   },
+   "left": {
+    "shot": "fo4-kosten"
+   },
+   "leftCaption": "Das Fenster „Kostenposition erfassen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kostenart",
+     "text": "Gerichtskosten, Vollzieher, Auskunft und weitere."
+    },
+    {
+     "n": 2,
+     "title": "Betrag und Datum",
+     "text": "Wie auf dem Beleg."
+    },
+    {
+     "n": 3,
+     "title": "Beleg",
+     "text": "PDF, JPG oder PNG — optional, aber empfohlen."
+    },
+    {
+     "n": 4,
+     "title": "Erfassen",
+     "text": "Die Position erhöht die Forderung und erscheint in der Aufstellung."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Kosten werden zuerst getilgt",
+     "text": "Nach § 367 BGB. Jede Kostenposition verlängert damit den Weg bis zur Tilgung der Hauptforderung."
+    },
+    {
+     "title": "Sie stehen im nächsten Schreiben",
+     "text": "Die Forderungsaufstellung im Mahnschreiben nennt sie — deshalb vor dem Versand erfassen, nicht danach."
+    },
+    {
+     "title": "Ohne Beleg schwer durchzusetzen",
+     "text": "Im gerichtlichen Verfahren wird nach Nachweisen gefragt. Der Beleg gehört zum Zeitpunkt der Erfassung dazu, nicht ein halbes Jahr später."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Kostenart",
+      "Gerichts-, Vollzieher-, Auskunftskosten"
+     ],
+     [
+      "Betrag",
+      "in €, mit Komma"
+     ],
+     [
+      "Angefallen am",
+      "Belegdatum"
+     ],
+     [
+      "Beleg (optional)",
+      "PDF, JPG oder PNG"
+     ]
+    ]
+   }
+  }
+ ]
+}

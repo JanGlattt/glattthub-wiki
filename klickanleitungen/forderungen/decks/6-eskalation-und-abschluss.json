@@ -1,0 +1,337 @@
+{
+ "out": "../pdf/Forderungen-6-eskalation-und-abschluss",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Forderungen",
+ "nr": 6,
+ "of": 6,
+ "audience": "buero",
+ "title": [
+  "Eskalation und",
+  "Abschluss"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — 250-€-Weiche, gerichtliches Mahnverfahren, ruhend stellen, abschreiben",
+ "eyebrow": "Forderungen · Eskalation",
+ "footerArea": "Forderungen",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die **250-€-Weiche rechnet mit der offenen Summe inklusive Kosten** — vorher prüfen.",
+  "Im **gerichtlichen Verfahren schlägt der Hub nichts mehr vor** — dort wird dokumentiert.",
+  "**Ruhend ohne Wiedervorlage ist fast wie vergessen** — immer ein Datum setzen."
+ ],
+ "pages": [
+  {
+   "h1": "Die 250-€-Weiche",
+   "sub": "Nach der letzten Mahnung steht eine Entscheidung an — und die trifft eine feste Grenze, kein Bauchgefühl.",
+   "card": {
+    "title": "250-€-Weiche",
+    "text": "Gericht oder Abschreibung"
+   },
+   "left": {
+    "shot": "fo6-weiche"
+   },
+   "leftCaption": "Der Schritt „Entscheid ausführen (250-€-Weiche)“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Der Schritt",
+     "text": "Nach der letzten Mahnung schlägt der Hub **„Entscheid ausführen“** vor."
+    },
+    {
+     "n": 2,
+     "title": "Über 250 €",
+     "text": "Der Fall geht ins **gerichtliche Mahnverfahren** — ein Mahnbescheid wird angelegt."
+    },
+    {
+     "n": 3,
+     "title": "Bis 250 €",
+     "text": "Die Forderung wird **abgeschrieben (WNB)** — dafür braucht es das entsprechende Recht."
+    },
+    {
+     "n": 4,
+     "title": "Keine Ermessensfrage",
+     "text": "Der Hub rechnet mit der **offenen Summe** des Falls, inklusive Kosten."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Kosten heben den Fall über die Grenze",
+     "text": "Eine Hauptforderung von 230 € plus 40 € Auskunftskosten liegt über 250 €. Deshalb gehören Kosten **vor** dem Entscheid erfasst („Forderungen 4“)."
+    },
+    {
+     "title": "Der Entscheid ist unumkehrbar",
+     "text": "Das gerichtliche Verfahren lässt sich nicht einfach zurücknehmen, und ein abgeschriebener Fall ist geschlossen."
+    },
+    {
+     "title": "Ohne Recht keine Abschreibung",
+     "text": "Fehlt die Berechtigung, meldet der Hub das — dann führt jemand anderes den Entscheid aus."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Offen über 250 €",
+      "→ gerichtliches Mahnverfahren"
+     ],
+     [
+      "Offen bis 250 €",
+      "→ Abschreibung (WNB)"
+     ],
+     [
+      "Grundlage",
+      "Offene Summe inklusive erfasster Kosten"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Vor dem Entscheid die Forderungsaufstellung prüfen.** Sie entscheidet über Gericht oder Abschreibung. Eine vergessene Kostenposition oder eine nicht erfasste Zahlung kippt den Fall auf die falsche Seite."
+   }
+  },
+  {
+   "h1": "Das gerichtliche Mahnverfahren",
+   "sub": "Ab hier führt das Gericht. Der Hub dokumentiert nur noch — aber vollständig.",
+   "card": {
+    "title": "Gerichtliches Verfahren",
+    "text": "Stufen dokumentieren"
+   },
+   "left": {
+    "shot": "fo6-gerichtlich"
+   },
+   "leftCaption": "Der Reiter „Gerichtliches Verfahren“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Stufe festhalten",
+     "text": "**Mahnbescheid** → **Vollstreckungsbescheid** → **Zwangsvollstreckung** → **PfÜB / Gerichtsvollzieher** → **Überwachung**."
+    },
+    {
+     "n": 2,
+     "title": "Aktenzeichen",
+     "text": "Das Zeichen des Gerichts — ohne es findet später niemand den Vorgang."
+    },
+    {
+     "n": 3,
+     "title": "Zustelldatum",
+     "text": "Wann zugestellt wurde; daran hängen die weiteren Fristen."
+    },
+    {
+     "n": 4,
+     "title": "Notiz",
+     "text": "Was geschehen ist, in eigenen Worten."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Der Hub schlägt hier nichts mehr vor",
+     "text": "Es gibt keinen „nächsten Schritt“ — der Ablauf folgt Gericht und Anwalt. Der Fall verschwindet aus der normalen Arbeitsliste und steht im eigenen Block der Übersicht („Forderungen 1“)."
+    },
+    {
+     "title": "Widerspruch ändert den Weg",
+     "text": "Widerspricht die Kundin dem Mahnbescheid, erscheint der Fall als **Widersprochen** — dann geht es ins streitige Verfahren, und das führt der Anwalt."
+    },
+    {
+     "title": "Dokumentieren ist hier die ganze Arbeit",
+     "text": "Zustelldaten und Aktenzeichen sind später die einzige Quelle. Was nicht eingetragen ist, muss beim Gericht neu erfragt werden."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Mahnbescheid",
+      "Beantragt und zugestellt"
+     ],
+     [
+      "Vollstreckungsbescheid",
+      "Nach Ablauf der Widerspruchsfrist"
+     ],
+     [
+      "Zwangsvollstreckung",
+      "Vollstreckung eingeleitet"
+     ],
+     [
+      "PfÜB / Gerichtsvollzieher",
+      "Pfändungs- und Überweisungsbeschluss"
+     ],
+     [
+      "Überwachung der Vollstreckung",
+      "Laufende Beobachtung"
+     ],
+     [
+      "Aktenzeichen",
+      "Zeichen des Gerichts"
+     ],
+     [
+      "Zustelldatum",
+      "Datum der Zustellung"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Modal „Fall ruhend stellen“",
+   "sub": "Manchmal ist das Richtige, nichts zu tun — aber bewusst und begründet.",
+   "card": {
+    "title": "Ruhend stellen",
+    "text": "Parken, Anwalt, warten"
+   },
+   "left": {
+    "shot": "fo6-ruhend"
+   },
+   "leftCaption": "Das Fenster „Fall ruhend stellen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Grund wählen",
+     "text": "**Geparkt**, **Beim Anwalt** oder **Wartend**."
+    },
+    {
+     "n": 2,
+     "title": "Begründung",
+     "text": "**Pflichtfeld** — warum der Fall stillsteht."
+    },
+    {
+     "n": 3,
+     "title": "Wiedervorlage",
+     "text": "Optional, aber dringend empfohlen: Wann wird wieder hingeschaut?"
+    },
+    {
+     "n": 4,
+     "title": "Fortsetzen",
+     "text": "**„Fall fortsetzen“** holt ihn zurück in die Arbeitsliste."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Fristen und Arbeitsliste entfallen",
+     "text": "Ein ruhender Fall erzeugt keine Schritte mehr. Das ist der Zweck — und die Gefahr."
+    },
+    {
+     "title": "Eine neue Rücklastschrift weckt ihn",
+     "text": "Kommt eine weitere RLS, meldet sich der Fall trotzdem — über den RLS-Entscheid („Forderungen 3“)."
+    },
+    {
+     "title": "Ohne Wiedervorlage ist ruhend fast wie vergessen",
+     "text": "Deshalb: immer ein Datum setzen. Sonst findet den Fall nur, wer gezielt danach sucht."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Geparkt",
+      "Bewusst zurückgestellt — etwa bei erkennbarer Zahlungsunfähigkeit"
+     ],
+     [
+      "Beim Anwalt",
+      "Extern in Bearbeitung — für uns ist nichts zu tun"
+     ],
+     [
+      "Wartend",
+      "Auf eine Rückmeldung wartend"
+     ],
+     [
+      "Begründung (Pflicht)",
+      "Warum der Fall ruht"
+     ],
+     [
+      "Wiedervorlage am (optional)",
+      "Wann er wieder geprüft wird"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Abschreiben und abschließen",
+   "sub": "Das Ende eines Falls — auf eine von vier Arten.",
+   "card": {
+    "title": "Abschließen",
+    "text": "Die vier Ausgänge"
+   },
+   "left": {
+    "shot": "fo6-abschluss"
+   },
+   "leftCaption": "Das Fenster „Forderung abschreiben (WNB)“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Abschreiben (WNB)",
+     "text": "Wirtschaftlich nicht beitreibbar — der Fall wird geschlossen."
+    },
+    {
+     "n": 2,
+     "title": "Begründung",
+     "text": "Pflicht. Sie erklärt später, warum auf Geld verzichtet wurde."
+    },
+    {
+     "n": 3,
+     "title": "Phorest archivieren",
+     "text": "**„Kunde in Phorest archivieren“** — die Kundin bleibt dort, aber archiviert."
+    },
+    {
+     "n": 4,
+     "title": "Andere Ausgänge",
+     "text": "**bezahlt**, **RZV eingehalten** oder **angehängte Rate beglichen**."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Abschreiben verzichtet auf Geld",
+     "text": "Das ist eine wirtschaftliche Entscheidung, keine verwaltungstechnische. Sie gehört begründet — auch für die Auswertung im Schuldenbericht („Berichte 10“)."
+    },
+    {
+     "title": "Der Kunde bleibt in Phorest",
+     "text": "Archiviert, nicht gelöscht. Bucht sie später erneut, ist die Historie da — und der abgeschriebene Fall auch."
+    },
+    {
+     "title": "Geschlossen heißt geschlossen",
+     "text": "Nach dem Abschluss schaut niemand mehr hin. Offene Nebenbaustellen — SEPA, Vertrag, Phorest — gehören vorher erledigt."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "**bezahlt**",
+      "Die Forderung ist vollständig ausgeglichen"
+     ],
+     [
+      "**abgeschrieben (WNB)**",
+      "Wirtschaftlich nicht beitreibbar"
+     ],
+     [
+      "**RZV**",
+      "Die Ratenzahlungsvereinbarung wurde eingehalten"
+     ],
+     [
+      "**angehängte Rate beglichen**",
+      "Die ans Planende gehängte Rate ist gezahlt"
+     ],
+     [
+      "Begründung",
+      "Pflicht beim Abschreiben"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Vor dem Abschließen den Vertrag prüfen.** Läuft dort noch ein Zahlungsplan, zieht er weiter ein, obwohl der Fall geschlossen ist. Das gehört zusammen entschieden („Verträge 6“)."
+   }
+  }
+ ]
+}

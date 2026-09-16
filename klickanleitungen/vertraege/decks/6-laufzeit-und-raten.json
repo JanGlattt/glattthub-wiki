@@ -1,0 +1,430 @@
+{
+ "out": "../pdf/Vertraege-6-laufzeit-und-raten",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Verträge",
+ "nr": 6,
+ "of": 8,
+ "audience": "buero",
+ "title": [
+  "Laufzeit und",
+  "Raten ändern"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — offene Raten anpassen, Laufzeit verlängern, pausieren, fortsetzen, Gutschein verrechnen",
+ "eyebrow": "Verträge · Plan ändern",
+ "footerArea": "Verträge",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Änderbar sind **nur zukünftige, noch nicht eingereichte Raten**.",
+  "Weicht die **offene Gesamtsumme** ab, ist ein **Kommentar Pflicht** — er erklärt später die Differenz.",
+  "**Pausieren ist kein Erlass:** Die Raten kommen vollständig wieder, nur später."
+ ],
+ "pages": [
+  {
+   "h1": "Was sich ändern lässt — und was nicht",
+   "sub": "Die häufigste Bitte der Kundin: „Kann die Rate kleiner werden?“ Der Hub kann das — in Grenzen.",
+   "layout": "text",
+   "card": {
+    "title": "Was geht, was nicht",
+    "text": "Grenzen der Planänderung"
+   },
+   "sections": [
+    {
+     "h2": "Nur die Zukunft",
+     "text": "Bearbeitbar sind **ausschließlich zukünftige, noch nicht bei GoCardless eingereichte** Raten. Alles, was gelaufen oder unterwegs ist, bleibt stehen. Wer heute den Plan ändert, ändert frühestens die übernächste Rate."
+    },
+    {
+     "h2": "Die Summe darf sich ändern — aber nicht stillschweigend",
+     "text": "Der Hub akzeptiert eine andere offene Gesamtsumme als vorher, verlangt dann aber einen **Kommentar**. Ohne ihn wird die Änderung abgelehnt. Das ist die einzige Stelle, an der sich der Vertragswert faktisch verschiebt — deshalb die Hürde."
+    },
+    {
+     "h2": "Ohne Mandat geht nichts",
+     "text": "Fehlt ein gültiges GoCardless-Mandat oder gibt es keine zukünftigen Raten dort, meldet der Hub: **„Für diesen Vertrag ist kein bearbeitbarer GoCardless-Zahlungsplan vorhanden.“** Dann ist zuerst das Mandat zu klären („Verträge 7“)."
+    }
+   ],
+   "table": {
+    "head": [
+     "Wunsch der Kundin",
+     "Der richtige Weg"
+    ],
+    "rows": [
+     [
+      "„Die Rate ist zu hoch“",
+      "**Offene Raten anpassen** — Beträge senken, Laufzeit verlängern (Seite 2–3)"
+     ],
+     [
+      "„Ich brauche zwei Monate Pause“",
+      "**Ratenzahlung pausieren** (Seite 4)"
+     ],
+     [
+      "„Ich will alles auf einmal zahlen“",
+      "**Betrag per SEPA einziehen** — Ablösung („Verträge 5“)"
+     ],
+     [
+      "„Ich habe einen Gutschein“",
+      "**Gutschein verrechnen** (Seite 6)"
+     ],
+     [
+      "„Ich will ein kleineres Paket“",
+      "Kein Fall für den Plan — das ist ein **Downgrade** (Serie Widerrufe)"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Eine Ratenänderung ist eine Vertragsänderung.** Was mit der Kundin vereinbart wurde, gehört schriftlich festgehalten — im Kommentar der Änderung, und bei größeren Eingriffen als Vertragsänderung im Fernabsatz („Widerrufe 3“)."
+   }
+  },
+  {
+   "h1": "Modal „Offene Raten anpassen“",
+   "sub": "Die zentrale Stelle für Laufzeit und Beträge: Jede künftige Rate lässt sich einzeln bearbeiten.",
+   "card": {
+    "title": "Offene Raten anpassen",
+    "text": "Beträge, Termine, Laufzeit ändern"
+   },
+   "left": {
+    "shot": "vt6-raten-anpassen"
+   },
+   "leftCaption": "Das Fenster „Offene Raten anpassen“ mit der Ratenliste.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Liste prüfen",
+     "text": "Nur bearbeitbare Raten stehen drin. Fehlt eine, ist sie bereits eingereicht."
+    },
+    {
+     "n": 2,
+     "title": "Beträge und Termine ändern",
+     "text": "Je Zeile Betrag und Fälligkeit. Erlaubt sind der **3.** oder der **15.**"
+    },
+    {
+     "n": 3,
+     "title": "Rate hinzufügen",
+     "text": "**„Rate hinzufügen“** hängt eine weitere Rate an — so wird der Vertrag länger und die einzelne Rate kleiner."
+    },
+    {
+     "n": 4,
+     "title": "Aussetzen",
+     "text": "Eine einzelne Rate aussetzen verschiebt sie **ans Ende** des Plans."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Die Änderung geht an GoCardless",
+     "text": "Der Knopf heißt **„Änderungen an GoCardless senden“** — und genau das passiert: Bestehende Einzüge werden storniert und neu angelegt."
+    },
+    {
+     "title": "Abweichende Summe = Kommentarpflicht",
+     "text": "Wer die offene Summe senkt oder erhöht, muss begründen. Der Kommentar steht danach im Verlauf und erklärt die Differenz zum Vertragswert."
+    },
+    {
+     "title": "Der Vertragswert ändert sich nicht mit",
+     "text": "Das Feld **Gesamtwert** im Reiter Übersicht bleibt, wie es war. Wer den Wert wirklich ändern will, ändert ihn dort zusätzlich („Verträge 2“)."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Fällig am",
+      "3. oder 15. eines Monats"
+     ],
+     [
+      "Betrag",
+      "in €, mit Komma"
+     ],
+     [
+      "Notiz",
+      "Je Rate, optional — z.B. „Kulanz nach Reklamation“"
+     ],
+     [
+      "Ausgesetzt ab",
+      "Verschiebt diese Rate ans Planende"
+     ],
+     [
+      "Kommentar",
+      "**Pflicht**, sobald die offene Gesamtsumme von vorher abweicht"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Kein Plan ohne Absprache.** Eine gesenkte Rate, die die Kundin nicht vereinbart hat, fällt spätestens beim Jahresabgleich auf — und eine erhöhte Rate ist eine unangekündigte Abbuchung."
+   }
+  },
+  {
+   "h1": "Laufzeit verlängern in der Praxis",
+   "sub": "Der häufigste Fall Schritt für Schritt: Die Rate soll von 99 € auf 79 € sinken.",
+   "card": {
+    "title": "Laufzeit verlängern",
+    "text": "Rate senken, Monate anhängen"
+   },
+   "left": {
+    "shot": "vt6-laufzeit"
+   },
+   "leftCaption": "Die Ratenliste vor und nach der Anpassung.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Offene Summe merken",
+     "text": "Der Hub zeigt sie über der Liste. Sie ist die Zielgröße — sie soll gleich bleiben."
+    },
+    {
+     "n": 2,
+     "title": "Beträge senken",
+     "text": "Alle künftigen Raten auf den neuen Betrag setzen."
+    },
+    {
+     "n": 3,
+     "title": "Raten ergänzen",
+     "text": "**„Rate hinzufügen“**, bis die Summe wieder stimmt. Die neuen Raten laufen im Monatstakt weiter."
+    },
+    {
+     "n": 4,
+     "title": "Senden",
+     "text": "Stimmt die Summe, ist kein Kommentar nötig — die Forderung ist unverändert."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Die Kundin zahlt dasselbe, nur länger",
+     "text": "Das ist der Unterschied zur Kulanz: Es wird nichts erlassen, es wird gestreckt. Genau so gehört es der Kundin auch erklärt."
+    },
+    {
+     "title": "Rundungsreste auf die letzte Rate",
+     "text": "Die Summe geht selten glatt auf. Die Differenz kommt auf die letzte Rate, nicht auf alle verteilt."
+    },
+    {
+     "title": "Bonus und Statistik bleiben unberührt",
+     "text": "Der Abschluss ist längst gezählt. Eine Streckung ändert weder Verkaufsstatistik noch Bonus."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Vorher",
+      "12 offene Raten × 99,00 € = 1.188,00 €"
+     ],
+     [
+      "Nachher",
+      "15 Raten × 79,00 € = 1.185,00 € — Rest auf die letzte Rate"
+     ],
+     [
+      "Kommentar",
+      "nur nötig, wenn die Summe bewusst abweicht"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Vor dem Senden einmal gegenrechnen.** Neue Rate × Anzahl Raten muss der offenen Summe entsprechen. Der Hub prüft das mit — aber er weiß nicht, was vereinbart war."
+   }
+  },
+  {
+   "h1": "Modal „Ratenzahlung pausieren“",
+   "sub": "Eine Auszeit für die Kundin — die offenen Raten rutschen nach hinten.",
+   "card": {
+    "title": "Pausieren",
+    "text": "Einzüge zeitweise aussetzen"
+   },
+   "left": {
+    "shot": "vt6-pausieren"
+   },
+   "leftCaption": "Das Fenster „Ratenzahlung pausieren“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Art wählen",
+     "text": "**Fix** für eine bestimmte Anzahl Monate oder **Unbefristet (Schuldner)**."
+    },
+    {
+     "n": 2,
+     "title": "Dauer",
+     "text": "Bei einer festen Pause: die Anzahl Monate."
+    },
+    {
+     "n": 3,
+     "title": "Grund",
+     "text": "Optional, aber sinnvoll — er steht später im Verlauf."
+    },
+    {
+     "n": 4,
+     "title": "Pausieren",
+     "text": "Die Raten verschieben sich nach hinten, der Vertrag wird entsprechend länger."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Das Mandat bleibt aktiv",
+     "text": "Es wird nicht storniert — nach der Pause kann ohne neues Mandat weitergezogen werden."
+    },
+    {
+     "title": "Bereits eingereichte Raten laufen durch",
+     "text": "Was schon bei der Bank liegt, wird noch abgebucht. Die Pause wirkt ab der nächsten **nicht** eingereichten Rate."
+    },
+    {
+     "title": "Unbefristet ist ein Forderungs-Signal",
+     "text": "Die Variante **„Unbefristet (Schuldner)“** wird gewählt, wenn die Kundin nicht zahlen kann. Meist läuft dann parallel ein Forderungsfall — dort gibt es eine eigene Pause („Forderungen 4“)."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Art der Pause",
+      "Fix (Anzahl Monate) · Unbefristet (Schuldner)"
+     ],
+     [
+      "Dauer (Monate)",
+      "Nur bei fixer Pause"
+     ],
+     [
+      "Grund",
+      "Optional, Freitext"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Pausieren ist kein Erlass.** Die Raten kommen vollständig wieder, nur später. Wenn die Kundin etwas anderes verstanden hat, wird der Wiederanlauf zum Streitfall — deshalb den Grund eintragen und ihr das Enddatum nennen."
+   }
+  },
+  {
+   "h1": "Modal „Zahlungen fortsetzen“",
+   "sub": "Die Pause ist vorbei — ab wann soll wieder eingezogen werden?",
+   "card": {
+    "title": "Fortsetzen",
+    "text": "Pause beenden, Einzüge neu ansetzen"
+   },
+   "left": {
+    "shot": "vt6-fortsetzen"
+   },
+   "leftCaption": "Das Fenster „Zahlungen fortsetzen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Erster Einzug ab",
+     "text": "Das Datum, ab dem die Restraten wieder gezogen werden."
+    },
+    {
+     "n": 2,
+     "title": "Termin prüfen",
+     "text": "Wieder gilt: **3.** oder **15.** — und weit genug in der Zukunft für den Vorlauf."
+    },
+    {
+     "n": 3,
+     "title": "Fortsetzen",
+     "text": "Die offenen Raten werden ab diesem Datum neu terminiert."
+    },
+    {
+     "n": 4,
+     "title": "Kontrollieren",
+     "text": "Danach den Ratenplan durchsehen: Stimmen Anzahl und Beträge?"
+    }
+   ],
+   "notes": [
+    {
+     "title": "Die Raten werden neu terminiert",
+     "text": "Alle offenen Raten rücken geschlossen nach — die Reihenfolge und die Beträge bleiben."
+    },
+    {
+     "title": "Zu früh angesetzt geht schief",
+     "text": "Liegt das Datum zu nah, reicht der Vorlauf für die Einreichung nicht. Lieber den übernächsten Termin wählen."
+    },
+    {
+     "title": "Die Kundin sollte es wissen",
+     "text": "Nach einer Pause rechnet niemand mit einer Abbuchung. Eine kurze Nachricht vor dem ersten Einzug verhindert die nächste Rücklastschrift."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Erster Einzug ab",
+      "Datum der ersten wieder eingezogenen Rate"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Gutschein verrechnen",
+   "sub": "Guthaben aus einem Gutschein kann mit den offenen Raten verrechnet werden.",
+   "card": {
+    "title": "Gutschein verrechnen",
+    "text": "Guthaben auf offene Raten anrechnen"
+   },
+   "left": {
+    "shot": "vt6-gutschein"
+   },
+   "leftCaption": "Die Gutschein-Verrechnung im Zahlungsbereich.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Gutschein suchen",
+     "text": "Über die Seriennummer. Der Hub zeigt Wert und Restguthaben."
+    },
+    {
+     "n": 2,
+     "title": "Verrechnen",
+     "text": "Das Guthaben wird auf die offenen Raten angerechnet."
+    },
+    {
+     "n": 3,
+     "title": "Ergebnis prüfen",
+     "text": "Das Fenster **„Gutscheine verrechnet“** zeigt, welche Raten gekürzt wurden."
+    },
+    {
+     "n": 4,
+     "title": "Im Plan sichtbar",
+     "text": "Die betroffenen Raten tragen danach den Vermerk **„per Gutschein bezahlt“**."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Der Gutschein wird in Phorest belastet",
+     "text": "Die Verrechnung ist keine reine Hub-Buchung — das Guthaben ist danach auch dort verbraucht."
+    },
+    {
+     "title": "„Bezahlt“ steigt, „Offen“ sinkt",
+     "text": "Der verrechnete Betrag zählt als bezahlt und erscheint in der Zusammenfassung unter **„davon per Gutschein“**."
+    },
+    {
+     "title": "Bonus-Guthaben hat eine eigene Frist",
+     "text": "Beim Gutschein-Verkauf entsteht ein Bonus-Guthaben mit eigener Gültigkeit — abgelaufene Anteile lassen sich nicht mehr verrechnen („Verkauf 3“)."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Seriennummer",
+      "Die Nummer des Gutscheins"
+     ],
+     [
+      "Wert / Restguthaben",
+      "Was noch zur Verfügung steht"
+     ],
+     [
+      "Betroffene Raten",
+      "Die Raten, die gekürzt oder ausgeglichen werden"
+     ]
+    ]
+   }
+  }
+ ]
+}

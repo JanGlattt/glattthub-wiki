@@ -1,0 +1,336 @@
+{
+ "out": "../pdf/Vertraege-3-ratenplan-lesen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Verträge",
+ "nr": 3,
+ "of": 8,
+ "audience": "buero",
+ "title": [
+  "Den Ratenplan",
+  "lesen"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Aufbau des Reiters, die Ratenzeile, alle Zustände, Auskunft geben",
+ "eyebrow": "Verträge · Ratenplan",
+ "footerArea": "Verträge",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "**Abgelöste und stornierte Raten sind keine offenen Posten** — wer sie mitzählt, nennt eine zu hohe Forderung.",
+  "**„Eingereicht“ ist die Grenze:** danach lässt sich an einer Rate nichts mehr ändern.",
+  "Bei **Legacy-Verträgen** fehlt der frühe Teil des Plans — der Altsystem-Block trägt ihn nach."
+ ],
+ "pages": [
+  {
+   "h1": "Der Aufbau des Reiters",
+   "sub": "Der Reiter „Zahlungen & SEPA“ hat vier Blöcke. Wer sie kennt, findet jede Zahl auf Anhieb.",
+   "card": {
+    "title": "Der Aufbau",
+    "text": "Kopfzahlen, Ratenplan, Sonderblöcke, SEPA"
+   },
+   "left": {
+    "shot": "vt3-aufbau"
+   },
+   "leftCaption": "Der Reiter „Zahlungen & SEPA“ von oben.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kopfzahlen",
+     "text": "Über der Tabelle: **Bezahlt**, **davon per Gutschein**, **Altsystem** und die Gesamtsumme."
+    },
+    {
+     "n": 2,
+     "title": "Der Ratenplan",
+     "text": "Die Tabelle mit einer Zeile je Rate — der Kern dieses Dokuments."
+    },
+    {
+     "n": 3,
+     "title": "Sonderblöcke",
+     "text": "**Abgelöste Raten**, **Angehängte Raten**, **Altsystem** und **Werber-Rabatt** stehen getrennt darunter."
+    },
+    {
+     "n": 4,
+     "title": "SEPA-Bereich",
+     "text": "Mandat, Bankverbindung und die Einzugs-Knöpfe — „Verträge 5“ und „Verträge 7“."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Die Sonderblöcke sind keine offenen Posten",
+     "text": "Abgelöste Raten sind erledigt, sie stehen nur zur Nachvollziehbarkeit da. Wer sie mitrechnet, kommt auf eine viel zu hohe Forderung."
+    },
+    {
+     "title": "Stornierte Raten sind ausgeblendet",
+     "text": "Der Umschalter neben **„Aktionen“** holt sie in die Tabelle. Standardmäßig bleiben sie draußen, sonst liest sich kein Plan mehr."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Bezahlt",
+      "Summe aller verbuchten Zahlungen, gleich auf welchem Weg"
+     ],
+     [
+      "davon per Gutschein",
+      "Anteil, der über Gutschein-Guthaben beglichen wurde"
+     ],
+     [
+      "Altsystem",
+      "Was über Starmoney eingezogen wurde — nur bei Legacy-Verträgen"
+     ],
+     [
+      "Abgelöste Raten",
+      "Raten einer früheren Fassung des Plans, storniert und ersetzt"
+     ],
+     [
+      "Angehängte Raten",
+      "Geplatzte Lastschriften, die ans Planende gehängt wurden"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Eine Ratenzeile lesen",
+   "sub": "Jede Zeile ist eine Rate: wann, wie viel, in welchem Zustand — und was mit ihr geschehen kann.",
+   "card": {
+    "title": "Die Ratenzeile",
+    "text": "Datum, Betrag, Zustand, Aktionen"
+   },
+   "left": {
+    "shot": "vt3-ratenzeile"
+   },
+   "leftCaption": "Eine Zeile des Ratenplans.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Fällig am",
+     "text": "Das geplante Einzugsdatum. Erlaubt sind der **3.** oder der **15.** eines Monats."
+    },
+    {
+     "n": 2,
+     "title": "Betrag",
+     "text": "Die Rate. Abweichungen zur Stammrate sind möglich — etwa nach einer Anpassung."
+    },
+    {
+     "n": 3,
+     "title": "Zustand",
+     "text": "Das Abzeichen rechts. Die vollständige Liste steht auf der nächsten Seite."
+    },
+    {
+     "n": 4,
+     "title": "Aktionen",
+     "text": "Am rechten Rand der Zeile: nachtragen, korrigieren, einziehen, anhängen."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Die erste Rate ist ein Sonderfall",
+     "text": "Je nach Preisliste wird sie **im Institut kassiert** und erst ab der zweiten eingezogen. Steht am Vertrag „Alle Raten per SEPA“, läuft auch die erste über die Lastschrift."
+    },
+    {
+     "title": "Nicht jede Zeile ist einziehbar",
+     "text": "Was in der Vergangenheit liegt oder bereits bei GoCardless eingereicht ist, lässt sich nicht mehr ändern — die Aktionen fehlen dann."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Fällig am",
+      "3. oder 15. — andere Tage lässt GoCardless nicht zu"
+     ],
+     [
+      "Betrag",
+      "in € mit Komma; bei Abweichung vom Plan mit Begründung"
+     ],
+     [
+      "Zustand",
+      "siehe nächste Seite"
+     ],
+     [
+      "Grund des Fehlschlags",
+      "Bei geplatzten Lastschriften: Klartext der Bank, z.B. „Konto gesperrt“"
+     ],
+     [
+      "RLS-Gebühr",
+      "Erhoben ja/nein und ob sie bezahlt wurde"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Die Zustände einer Rate",
+   "sub": "Fünfzehn mögliche Zustände — die meisten davon sieht man nie. Diese Tabelle ist zum Nachschlagen.",
+   "layout": "text",
+   "card": {
+    "title": "Die Zustände",
+    "text": "Was jedes Abzeichen bedeutet"
+   },
+   "table": {
+    "head": [
+     "Zustand",
+     "Bedeutung",
+     "Zu tun"
+    ],
+    "rows": [
+     [
+      "**Geplant**",
+      "Rate steht im Plan, noch nichts passiert",
+      "nichts"
+     ],
+     [
+      "**Vorgemerkt**",
+      "Für den Einzug vorgemerkt, noch nicht bei GoCardless",
+      "nichts"
+     ],
+     [
+      "**Eingereicht**",
+      "Bei GoCardless eingereicht, Geld unterwegs",
+      "abwarten — nicht mehr änderbar"
+     ],
+     [
+      "**Bestätigt**",
+      "Von der Bank bestätigt",
+      "nichts"
+     ],
+     [
+      "**Gezahlt**",
+      "Verbucht — bar, Überweisung, Karte oder SEPA",
+      "nichts"
+     ],
+     [
+      "**Ausgezahlt**",
+      "Bei uns eingegangen und abgerechnet",
+      "nichts"
+     ],
+     [
+      "**Fehlgeschlagen**",
+      "Lastschrift geplatzt",
+      "**„Verträge 5“** — anhängen oder ausgleichen"
+     ],
+     [
+      "**Rückbuchung**",
+      "Kundin hat zurückgebucht",
+      "wie fehlgeschlagen, meist härterer Weg"
+     ],
+     [
+      "**Storniert**",
+      "Rate wurde aufgehoben, etwa bei einer Planänderung",
+      "nichts"
+     ],
+     [
+      "**Vor Ort**",
+      "Erste Rate wird im Institut kassiert",
+      "bestätigen, sobald bezahlt („Verträge 4“)"
+     ],
+     [
+      "**Zahlung nicht bestätigt**",
+      "Vor-Ort-Rate noch nicht bestätigt",
+      "im Institut nachfragen"
+     ],
+     [
+      "**Keine Zahlung geleistet**",
+      "Vor-Ort-Rate blieb aus",
+      "klären, dann nachtragen"
+     ],
+     [
+      "**Termin ausstehend**",
+      "Kundin war noch nicht da",
+      "abwarten"
+     ],
+     [
+      "**Warte auf Freigabe**",
+      "Planänderung wartet auf die Kundin",
+      "abwarten"
+     ],
+     [
+      "**Abgelehnt**",
+      "Kundin hat die Änderung abgelehnt",
+      "neu verhandeln"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**„Eingereicht“ ist die Grenze.** Alles davor lässt sich noch ändern, alles danach nicht mehr — GoCardless hat die Lastschrift dann bereits bei der Bank."
+   }
+  },
+  {
+   "h1": "Auskunft geben",
+   "sub": "Die häufigste Frage am Telefon: „Wie viel habe ich schon bezahlt?“ — hier steht die Antwort.",
+   "card": {
+    "title": "Auskunft geben",
+    "text": "Die drei Zahlen für das Telefonat"
+   },
+   "left": {
+    "shot": "vt3-summen"
+   },
+   "leftCaption": "Die Summenzeile über dem Ratenplan.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bezahlt",
+     "text": "Summe aller verbuchten Zahlungen — die erste Zahl für die Kundin."
+    },
+    {
+     "n": 2,
+     "title": "Offen",
+     "text": "Was noch aussteht. Achtung: nicht gleichbedeutend mit „überfällig“."
+    },
+    {
+     "n": 3,
+     "title": "Raten",
+     "text": "„7 von 24“ ist für die Kundin greifbarer als ein Betrag."
+    },
+    {
+     "n": 4,
+     "title": "Nächster Einzug",
+     "text": "Die erste Zeile mit Zustand **Geplant** — Datum und Betrag."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Legacy-Verträge rechnen anders",
+     "text": "Ohne vollständigen Ratenplan stimmt „bezahlt sind n von m Raten“ nicht. Dort ist der **Altsystem-Block** die Ergänzung — die Zahl der Raten lieber weglassen und den Betrag nennen."
+    },
+    {
+     "title": "Nie eine Summe schätzen",
+     "text": "Wenn die Zahlen nicht aufgehen, hilft **„Mit GoCardless abgleichen“** („Verträge 5“). Eine geschätzte Auskunft steht später in einer Beschwerde."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Bezahlt",
+      "inkl. Gutschein-Anteil und Altsystem-Block"
+     ],
+     [
+      "Offene Sollsumme",
+      "Summe der noch nicht bezahlten Raten"
+     ],
+     [
+      "Gesamtbetrag",
+      "Vertragswert — muss zu Bezahlt + Offen passen"
+     ],
+     [
+      "Nächster Einzug",
+      "Datum und Betrag der nächsten geplanten Rate"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Diese Seite ersetzt den Taschenrechner.** Der Hub rechnet die Summen selbst — wer nachrechnet und auf etwas anderes kommt, hat meist die abgelösten oder stornierten Raten mitgezählt."
+   }
+  }
+ ]
+}

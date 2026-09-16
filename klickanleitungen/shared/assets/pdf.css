@@ -16,19 +16,28 @@ footer{position:absolute;left:13mm;right:13mm;bottom:6mm;display:flex;justify-co
 .cover .sub{color:var(--muted);font-size:14px;margin:6mm auto 12mm;max-width:190mm}
 .cards{display:grid;grid-template-columns:repeat(var(--cols,4),1fr);gap:7mm;margin:0 auto;max-width:250mm}
 .cards.n5,.cards.n6{--cols:3;gap:5mm}
+/* Ab sieben Karten (Vorgangs-Dokumente der Geld-Serien): vier Spalten, engeres Raster. */
+.cards.n7,.cards.n8,.cards.n9,.cards.n10,.cards.n11,.cards.n12{--cols:4;gap:4mm;max-width:255mm}
 /* Fuenf oder sechs Karten brauchen zwei Reihen — sonst laeuft das Cover unten aus der Seite. */
-.cover:has(.cards.n5),.cover:has(.cards.n6){padding-top:10mm}
-.cover:has(.cards.n5) .cover-logo,.cover:has(.cards.n6) .cover-logo{height:17mm;margin:1mm auto 6mm}
-.cover:has(.cards.n5) .sub,.cover:has(.cards.n6) .sub{margin:4mm auto 7mm}
-.cover:has(.cards.n5) .card,.cover:has(.cards.n6) .card{padding:5mm 4mm 4.5mm}
-.cover:has(.cards.n5) .cnum,.cover:has(.cards.n6) .cnum{margin-bottom:2.5mm}
-.cover:has(.cards.n5) .notes,.cover:has(.cards.n6) .notes{margin-top:7mm}
+.cover:has(.cards.n5),.cover:has(.cards.n6),.cover:has(.cards.n7),.cover:has(.cards.n8),.cover:has(.cards.n9),.cover:has(.cards.n10),.cover:has(.cards.n11),.cover:has(.cards.n12){padding-top:10mm}
+.cover:has(.cards.n5) .cover-logo,.cover:has(.cards.n6) .cover-logo,.cover:has(.cards.n7) .cover-logo,.cover:has(.cards.n8) .cover-logo,.cover:has(.cards.n9) .cover-logo,.cover:has(.cards.n10) .cover-logo,.cover:has(.cards.n11) .cover-logo,.cover:has(.cards.n12) .cover-logo{height:17mm;margin:1mm auto 6mm}
+.cover:has(.cards.n5) .sub,.cover:has(.cards.n6) .sub,.cover:has(.cards.n7) .sub,.cover:has(.cards.n8) .sub,.cover:has(.cards.n9) .sub,.cover:has(.cards.n10) .sub,.cover:has(.cards.n11) .sub,.cover:has(.cards.n12) .sub{margin:4mm auto 7mm}
+.cover:has(.cards.n5) .card,.cover:has(.cards.n6) .card,.cover:has(.cards.n7) .card,.cover:has(.cards.n8) .card,.cover:has(.cards.n9) .card,.cover:has(.cards.n10) .card,.cover:has(.cards.n11) .card,.cover:has(.cards.n12) .card{padding:5mm 4mm 4.5mm}
+.cover:has(.cards.n5) .cnum,.cover:has(.cards.n6) .cnum,.cover:has(.cards.n7) .cnum,.cover:has(.cards.n8) .cnum,.cover:has(.cards.n9) .cnum,.cover:has(.cards.n10) .cnum,.cover:has(.cards.n11) .cnum,.cover:has(.cards.n12) .cnum{margin-bottom:2.5mm}
+.cover:has(.cards.n5) .notes,.cover:has(.cards.n6) .notes,.cover:has(.cards.n7) .notes,.cover:has(.cards.n8) .notes,.cover:has(.cards.n9) .notes,.cover:has(.cards.n10) .notes,.cover:has(.cards.n11) .notes,.cover:has(.cards.n12) .notes{margin-top:7mm}
 .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8mm 5mm 6mm;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .cnum{width:9mm;height:9mm;border-radius:50%;background:var(--teal);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 4mm}
 .cnum.gold{background:var(--gold)}
 .ct{font-weight:700;font-size:13px;margin-bottom:2mm}
 .cd{color:var(--muted);font-size:10.5px;line-height:1.4}
 .notes{margin:12mm auto 0;text-align:left;display:inline-block;font-size:11px;line-height:1.7;color:#374151}
+/* Sieben und mehr Karten: Titel kleiner, Karten flacher, Merksaetze enger. */
+.cover:has(.cards.n7) h1,.cover:has(.cards.n8) h1,.cover:has(.cards.n9) h1,.cover:has(.cards.n10) h1,.cover:has(.cards.n11) h1,.cover:has(.cards.n12) h1{font-size:30px}
+.cover:has(.cards.n7) .card,.cover:has(.cards.n8) .card,.cover:has(.cards.n9) .card,.cover:has(.cards.n10) .card,.cover:has(.cards.n11) .card,.cover:has(.cards.n12) .card{padding:4mm 3mm 3.5mm}
+.cards.n7 .ct,.cards.n8 .ct,.cards.n9 .ct,.cards.n10 .ct,.cards.n11 .ct,.cards.n12 .ct{font-size:12px;margin-bottom:1.5mm}
+.cards.n7 .cd,.cards.n8 .cd,.cards.n9 .cd,.cards.n10 .cd,.cards.n11 .cd,.cards.n12 .cd{font-size:9.5px;line-height:1.35}
+.cards.n7 .cnum,.cards.n8 .cnum,.cards.n9 .cnum,.cards.n10 .cnum,.cards.n11 .cnum,.cards.n12 .cnum{width:8mm;height:8mm;font-size:12.5px}
+.cover:has(.cards.n7) .notes,.cover:has(.cards.n8) .notes,.cover:has(.cards.n9) .notes,.cover:has(.cards.n10) .notes,.cover:has(.cards.n11) .notes,.cover:has(.cards.n12) .notes{font-size:10.5px;line-height:1.55;margin-top:5mm}
 /* Kopf */
 header{display:flex;align-items:flex-start;gap:6mm}
 header .logo{height:11mm;margin-top:1mm}

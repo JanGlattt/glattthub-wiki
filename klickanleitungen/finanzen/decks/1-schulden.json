@@ -1,10 +1,10 @@
 {
- "out": "../pdf/Finanzen-2-Schulden",
+ "out": "../pdf/Finanzen-1-schulden",
  "meta": "../meta.json",
  "shots": "../shots",
  "series": "Finanzen",
- "nr": 2,
- "of": 3,
+ "nr": 1,
+ "of": 2,
  "audience": "buero",
  "title": [
   "Schulden",
@@ -16,7 +16,7 @@
  "stand": "15.09.2026",
  "version": "1.0",
  "notes": [
-  "Die Seite ist eine **Auswertung**, kein Arbeitsplatz — bearbeitet wird im Forderungsmanagement („Finanzen 1“).",
+  "Die Seite ist eine **Auswertung**, kein Arbeitsplatz — bearbeitet wird im Forderungsmanagement („Forderungen 1“).",
   "Die Zahlen stammen überwiegend aus **geplatzten SEPA-Lastschriften**.",
   "Für die Frage „was schuldet uns diese eine Kundin?“ ist das **Kundenprofil** der schnellere Weg."
  ],
@@ -73,7 +73,7 @@
     {
      "n": 2,
      "title": "Herkunft",
-     "text": "In der Regel geplatzte Lastschriften; die Einzelheiten stehen im Vertrag („Verkauf 3“)."
+     "text": "In der Regel geplatzte Lastschriften; die Einzelheiten stehen im Vertrag („Verträge 5“)."
     },
     {
      "n": 3,
@@ -101,7 +101,7 @@
     "rows": [
      [
       "Schuld ohne Forderungsfall",
-      "Fall im Forderungsmanagement anlegen („Finanzen 1“) — sonst passiert nichts"
+      "Fall im Forderungsmanagement anlegen („Forderungen 1“) — sonst passiert nichts"
      ],
      [
       "Summe steigt an einem Standort",

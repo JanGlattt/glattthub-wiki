@@ -1,0 +1,317 @@
+{
+ "out": "../pdf/Vertraege-8-imports-und-werber",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Verträge",
+ "nr": 8,
+ "of": 8,
+ "audience": "buero",
+ "title": [
+  "Import-Probleme",
+  "und Werber"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — fehlgeschlagene Importe korrigieren, zuordnen, verwerfen, Werber hinterlegen",
+ "eyebrow": "Verträge · Sonderfälle",
+ "footerArea": "Verträge",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Ein **offener Import** heißt: Dieser Vertrag fehlt in **jeder** Auswertung.",
+  "**Verwerfen ist endgültig** — im Zweifel die Zeile lieber stehen lassen und nachfragen.",
+  "Der **Werber-Rabatt** wird beim Anlegen des Zahlungsplans verrechnet, nicht später."
+ ],
+ "pages": [
+  {
+   "h1": "Das Warnband „Fehlgeschlagene Imports“",
+   "sub": "Über der Vertragsliste kann ein rotes Band stehen: Verträge aus dem Altsystem, die nicht durchkamen.",
+   "card": {
+    "title": "Fehlgeschlagene Imports",
+    "text": "Das Warnband und was dahintersteckt"
+   },
+   "left": {
+    "shot": "vt8-imports"
+   },
+   "leftCaption": "Das Warnband über der Vertragsliste.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Band öffnen",
+     "text": "Der Knopf führt in die Liste der betroffenen Verträge."
+    },
+    {
+     "n": 2,
+     "title": "Liste lesen",
+     "text": "Je Zeile ein Vertrag, der **manuell ergänzt werden muss**, mit dem Grund des Fehlschlags."
+    },
+    {
+     "n": 3,
+     "title": "Drei Wege",
+     "text": "**Daten ergänzen & importieren**, **Vertrag zuordnen & widerrufen** oder **Verwerfen**."
+    },
+    {
+     "n": 4,
+     "title": "Nichts liegen lassen",
+     "text": "Solange ein Eintrag offen ist, fehlt der Vertrag in allen Auswertungen."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Fehlende Verträge verfälschen alles",
+     "text": "Solange ein Import offen ist, fehlt der Vertrag in Verkaufsstatistik, MRR-Prognose und Forderungsübersicht."
+    },
+    {
+     "title": "Der Grund steht dabei",
+     "text": "Meist ist es eine Kleinigkeit in der Ausgangsdatei. Der Grund sagt, welches Feld nachzutragen ist."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Kundennummer unlesbar",
+      "Spalten der Importdatei verschoben"
+     ],
+     [
+      "Betrag fehlt",
+      "Monatspreis oder Anzahlung nicht erkennbar"
+     ],
+     [
+      "Datum unlesbar",
+      "Vertrags- oder Mandatsdatum nicht auswertbar"
+     ],
+     [
+      "Exaktes Duplikat",
+      "Dieselbe Zeile war schon einmal da"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Modal „Import korrigieren“",
+   "sub": "Der häufigste Weg: die fehlenden Angaben ergänzen und den Vertrag anlegen lassen.",
+   "card": {
+    "title": "Import korrigieren",
+    "text": "Fehlende Angaben ergänzen"
+   },
+   "left": {
+    "shot": "vt8-import-korrigieren"
+   },
+   "leftCaption": "Das Fenster „Import korrigieren“ mit den Vertragsfeldern.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Angaben prüfen",
+     "text": "Was gelesen werden konnte, ist vorbelegt. Leere Felder sind die Lücken."
+    },
+    {
+     "n": 2,
+     "title": "Ergänzen",
+     "text": "Beträge mit **Komma**, Datum als **TT.MM.JJJJ**."
+    },
+    {
+     "n": 3,
+     "title": "Kommentar",
+     "text": "Was geändert wurde und warum — er bleibt am Vertrag."
+    },
+    {
+     "n": 4,
+     "title": "Importieren",
+     "text": "Legt den Vertrag an. Er erscheint danach normal in der Liste, mit Abzeichen **Legacy**."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Der Vertrag ist danach ein normaler Legacy-Vertrag",
+     "text": "Mit allem, was dazugehört: kein vollständiger Ratenplan, Altsystem-Block statt Zahlungshistorie („Verträge 3“)."
+    },
+    {
+     "title": "Kein Einzug durch den Import",
+     "text": "Ein importierter Vertrag zieht nichts ein. Ob und wie weitergezogen wird, entscheidet sich über Mandat und Plan („Verträge 7“)."
+    },
+    {
+     "title": "Falsche Angaben wirken lange nach",
+     "text": "Ein zu hoch eingetragener Monatspreis erzeugt eine Forderung, die es nie gab. Lieber einmal in der Ausgangsdatei nachsehen."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Vertragsnummer / Standort",
+      "Nummer und Institut, z.B. 01.BI"
+     ],
+     [
+      "Kunden-Nr. / Vor- und Nachname",
+      "Zuordnung zur Kundin"
+     ],
+     [
+      "Vertragsdatum",
+      "TT.MM.JJJJ"
+     ],
+     [
+      "Zonen / Anzahl Zonen",
+      "Behandelte Körperzonen, z.B. „US, Achseln, GK“"
+     ],
+     [
+      "Produktname",
+      "Bezeichnung des Pakets"
+     ],
+     [
+      "Monatspreis 12M / Anzahlung / Monatliche Rate",
+      "Beträge mit Komma"
+     ],
+     [
+      "Laufzeit / SEPA-Monate",
+      "z.B. „12 Monate“ oder „Direkt“"
+     ],
+     [
+      "IBAN / Mandatsdatum",
+      "Für das SEPA-Mandat des Altvertrags"
+     ],
+     [
+      "Kommentar",
+      "Was ergänzt wurde"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Zuordnen und Verwerfen",
+   "sub": "Zwei Sonderfälle: Der Vertrag existiert längst — oder er soll gar nicht entstehen.",
+   "card": {
+    "title": "Zuordnen & Verwerfen",
+    "text": "Widerruf zuordnen, Zeile verwerfen"
+   },
+   "left": {
+    "shot": "vt8-zuordnen"
+   },
+   "leftCaption": "Das Fenster „Widerruf zuordnen“ mit der Vertragssuche.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Widerruf zuordnen",
+     "text": "Für Zeilen, die zu einem **bereits widerrufenen** Vertrag gehören."
+    },
+    {
+     "n": 2,
+     "title": "Vertrag suchen",
+     "text": "Über Kunden-Nr., Name oder Vertragsnummer."
+    },
+    {
+     "n": 3,
+     "title": "Bestätigen",
+     "text": "Der Widerruf wird dem gefundenen Vertrag zugeordnet, es entsteht kein neuer."
+    },
+    {
+     "n": 4,
+     "title": "Verwerfen",
+     "text": "Für Duplikate und Zeilen, die nicht importiert werden sollen — mit Begründung."
+    }
+   ],
+   "right": {
+    "shot": "vt8-verwerfen"
+   },
+   "rightCaption": "Das Fenster „Import verwerfen“.",
+   "notes": [
+    {
+     "title": "Verwerfen ist endgültig für diese Zeile",
+     "text": "Sie verschwindet aus der Liste. Der Vertrag lässt sich danach nur noch von Hand anlegen."
+    },
+    {
+     "title": "Zuordnen verhindert Doppelverträge",
+     "text": "Ohne Zuordnung entstünde ein zweiter Vertrag für dieselbe Kundin — mit doppelter Forderung in jeder Auswertung."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Suche",
+      "Kunden-Nr., Name oder Vertragsnummer des bestehenden Vertrags"
+     ],
+     [
+      "Begründung (beim Verwerfen)",
+      "Optional, aber empfohlen — warum die Zeile wegfällt"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Im Zweifel nicht verwerfen.** Eine verworfene Zeile ist weg; eine offene Zeile stört niemanden außer im Warnband. Lieber nachfragen als wegklicken."
+   }
+  },
+  {
+   "h1": "Werber hinterlegen",
+   "sub": "Wenn eine Kundin geworben wurde, gehört der Werber an den Vertrag — er entscheidet über den Rabatt.",
+   "card": {
+    "title": "Werber hinterlegen",
+    "text": "Empfehlung am Vertrag erfassen"
+   },
+   "left": {
+    "shot": "vt8-werber"
+   },
+   "leftCaption": "Die Werber-Auswahl am Vertrag.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Werber suchen",
+     "text": "Über Name oder Kundennummer der werbenden Kundin."
+    },
+    {
+     "n": 2,
+     "title": "Hinterlegen",
+     "text": "Der Werber wird am Vertrag gespeichert."
+    },
+    {
+     "n": 3,
+     "title": "Rabatt",
+     "text": "**50 € Rabatt auf den ersten SEPA-Einzug** — der Hub verrechnet sie beim Anlegen des Zahlungsplans."
+    },
+    {
+     "n": 4,
+     "title": "Bereits erledigt?",
+     "text": "Ist der Werber schon hinterlegt und der Rabatt verrechnet, meldet das Fenster genau das."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Der Rabatt hängt am Zahlungsplan",
+     "text": "Er wird **beim Anlegen des Plans** vom ersten SEPA-Einzug abgezogen. Wer den Werber danach nachträgt, muss den Rabatt anders verrechnen."
+    },
+    {
+     "title": "Die Prämie ist eine eigene Sache",
+     "text": "Was der Werber selbst bekommt, läuft über **„Verkauf 2 — Freunde werben“**. Hier geht es nur um den Rabatt der geworbenen Kundin."
+    },
+    {
+     "title": "Die Zuordnung ist nachweispflichtig",
+     "text": "Wer wen geworben hat, entscheidet über bares Geld. Im Zweifel die Angabe der Kundin dokumentieren."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Werber",
+      "Die werbende Kundin, über Name oder Kundennummer"
+     ],
+     [
+      "Rabatt-Status",
+      "Ausstehend · Ausgeglichen · Angepasst"
+     ]
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,393 @@
+{
+ "out": "../pdf/Widerrufe-1-widerruf-erfassen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Widerrufe",
+ "nr": 1,
+ "of": 5,
+ "audience": "buero",
+ "title": [
+  "Widerruf",
+  "erfassen"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — die Liste, der Assistent in drei Schritten, Frist und Gründe",
+ "eyebrow": "Widerrufe · Erfassen",
+ "footerArea": "Widerrufe",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "**Ein Fall je Vertrag** — ein zweiter Widerruf zum selben Vertrag wird abgelehnt.",
+  "**Fristgerecht bis 14 Tage, Grenzfall bis 17** — danach verspätet. Der Hub rechnet, entschieden wird im Fall.",
+  "Das Erfassen **ändert nichts am Vertrag**: Raten laufen weiter, bis entschieden ist."
+ ],
+ "pages": [
+  {
+   "h1": "Die Widerrufsliste",
+   "sub": "Alle Fälle auf einen Blick — offen, beim Anwalt, abgeschlossen.",
+   "card": {
+    "title": "Die Liste",
+    "text": "Fälle finden und einordnen"
+   },
+   "left": {
+    "shot": "wd1-liste"
+   },
+   "leftCaption": "Die Übersicht der Widerrufe.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Töpfe",
+     "text": "Die Fälle sind nach Zustand gruppiert: **Offen**, **Abgabe RA**, **Abgeschlossen**."
+    },
+    {
+     "n": 2,
+     "title": "Suchen",
+     "text": "Über Kundenname, Vertragsnummer oder Zendesk-Ticket."
+    },
+    {
+     "n": 3,
+     "title": "Liegezeit",
+     "text": "Wie lange sich im Fall nichts bewegt hat — die wichtigste Spalte für die Arbeitsplanung."
+    },
+    {
+     "n": 4,
+     "title": "Neuer Widerruf",
+     "text": "Der Knopf oben startet den Assistenten (nächste Seite)."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Widerrufe haben Fristen",
+     "text": "Ein liegengebliebener Fall wird nicht besser. Die Liegezeit ist deshalb keine Statistik, sondern eine Arbeitsliste."
+    },
+    {
+     "title": "Ein Fall je Vertrag",
+     "text": "Der Hub lässt keinen zweiten Widerruf zum selben Vertrag zu — der Assistent meldet **„Für diesen Vertrag existiert bereits ein Widerruf“**."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Offen",
+      "Fall läuft, Entscheidung steht aus"
+     ],
+     [
+      "Abgabe RA",
+      "An den Rechtsanwalt übergeben — „Widerrufe 5“"
+     ],
+     [
+      "Abgeschlossen",
+      "Entschieden und abgewickelt"
+     ],
+     [
+      "Liegezeit",
+      "Tage seit der letzten Bewegung im Fall"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Assistent Schritt 1 — Vertrag wählen",
+   "sub": "Der Widerruf hängt immer an einem Vertrag. Erst wird er gesucht, dann geprüft.",
+   "card": {
+    "title": "Vertrag wählen",
+    "text": "Den richtigen Vertrag finden"
+   },
+   "left": {
+    "shot": "wd1-wizard-1"
+   },
+   "leftCaption": "Schritt 1 des Assistenten: Kunde und Vertrag.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Suchen",
+     "text": "Über Kundenname, Kundennummer oder Vertragsnummer."
+    },
+    {
+     "n": 2,
+     "title": "Vertrag prüfen",
+     "text": "Der Hub zeigt **Vertragsdatum**, **Gesamtvolumen** und **geplante Termine**."
+    },
+    {
+     "n": 3,
+     "title": "Bereits widerrufen?",
+     "text": "Ein Abzeichen **„Bereits widerrufen“** warnt vor dem Doppelfall."
+    },
+    {
+     "n": 4,
+     "title": "Anderen wählen",
+     "text": "**„Anderen Vertrag wählen“** springt zurück zur Suche."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Der Vertrag bestimmt die Frist",
+     "text": "Aus dem **Vertragsdatum** rechnet der Hub, ob der Widerruf fristgerecht ist (nächste Seite). Der falsche Vertrag ergibt die falsche Frist."
+    },
+    {
+     "title": "Geplante Termine sind ein Hinweis",
+     "text": "Stehen noch Sitzungen im Kalender, gehören sie abgesagt, sobald der Widerruf akzeptiert ist — das macht der Hub nicht von allein."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Kunde / Vertrag",
+      "Name, Kundennummer oder Vertragsnummer"
+     ],
+     [
+      "Vertragsdatum",
+      "Grundlage für die Fristberechnung"
+     ],
+     [
+      "Gesamtvolumen",
+      "Der Vertragswert — die Größe des Falls"
+     ],
+     [
+      "Geplante Termine",
+      "Was noch im Kalender steht"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Assistent Schritt 2 — Frist und Behandlungsstand",
+   "sub": "Der Hub rechnet die Frist aus und zeigt, was bereits behandelt wurde. Beides zusammen entscheidet den Fall.",
+   "card": {
+    "title": "Frist & Behandlung",
+    "text": "Die Entscheidungsgrundlage lesen"
+   },
+   "left": {
+    "shot": "wd1-wizard-2"
+   },
+   "leftCaption": "Schritt 2: Fristprüfung und Behandlungsstand aus Phorest.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Frist lesen",
+     "text": "**Fristgerecht** bis 14 Tage, **Grenzfall** bis 17 Tage, danach **Verspätet**."
+    },
+    {
+     "n": 2,
+     "title": "Behandlungsstand",
+     "text": "Beratungsgespräch, erster Behandlungstermin und ob die erste Sitzung durchgeführt wurde."
+    },
+    {
+     "n": 3,
+     "title": "Achseln-Schalter",
+     "text": "**„Achseln wurden im Beratungsgespräch behandelt“** — eine Probebehandlung zählt als erbrachte Leistung."
+    },
+    {
+     "n": 4,
+     "title": "Weiter",
+     "text": "Beide Angaben landen im Fall und stehen später auf der Fallseite."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Die Frist ist eine Entscheidungshilfe, keine Rechtsberatung",
+     "text": "Der Hub rechnet Tage. Ob der Widerruf wirksam ist, entscheidet der Fall — ein Grenzfall ist genau das: ein Fall zum Ansehen, nicht zum Abhaken."
+    },
+    {
+     "title": "Erbrachte Leistung zählt",
+     "text": "Wurde bereits behandelt, ist der Widerruf nicht mehr folgenlos. Deshalb steht der Behandlungsstand so prominent im Assistenten."
+    },
+    {
+     "title": "Fristbeginn lässt sich korrigieren",
+     "text": "Kam der Widerruf per Post, lässt sich auf der Fallseite ein **abweichender Fristbeginn** setzen („Widerrufe 2“)."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Fristgerecht",
+      "bis **14 Tage** nach Vertragsschluss"
+     ],
+     [
+      "Grenzfall",
+      "**15–17 Tage** — Postweg und Zugang können das erklären"
+     ],
+     [
+      "Verspätet",
+      "**ab 18 Tagen**"
+     ],
+     [
+      "Beratungsgespräch",
+      "Datum des BG aus Phorest"
+     ],
+     [
+      "1. Behandlungstermin",
+      "Datum der ersten Sitzung"
+     ],
+     [
+      "Tage zwischen BG und Sitzung",
+      "Wie schnell behandelt wurde"
+     ],
+     [
+      "1. Sitzung durchgeführt",
+      "Ja/Nein — die entscheidende Angabe"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Assistent Schritt 3 — Eingang und Grund",
+   "sub": "Die letzten Angaben: Wann kam der Widerruf, aus welchem Grund, mit welchem Ticket.",
+   "card": {
+    "title": "Eingang & Grund",
+    "text": "Datum, Ticket, Grund erfassen"
+   },
+   "left": {
+    "shot": "wd1-wizard-3"
+   },
+   "leftCaption": "Schritt 3: Eingangsdatum, Ticket und Grund.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Datum Widerruf",
+     "text": "**Pflichtfeld** — der Tag, an dem der Widerruf bei uns einging."
+    },
+    {
+     "n": 2,
+     "title": "Zendesk-Ticket",
+     "text": "Über Nummer, Name oder E-Mail. Der Hub zeigt die Tickets der Kundin an."
+    },
+    {
+     "n": 3,
+     "title": "Grund",
+     "text": "Aus der Liste (nächste Seite). **Pflichtfeld.**"
+    },
+    {
+     "n": 4,
+     "title": "Widerruf erfassen",
+     "text": "Der Fall startet im Topf **„Offen“**."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Abschluss und Ergebnis kommen später",
+     "text": "Der Assistent legt den Fall nur an. Entschieden wird auf der Fallseite — dort steht auch, was mit dem Vertrag geschieht („Widerrufe 5“)."
+    },
+    {
+     "title": "Das Ticket ist die Brücke",
+     "text": "Über die Zendesk-Nummer findet man später die gesamte Korrespondenz. Ohne sie sucht man in zwei Systemen."
+    },
+    {
+     "title": "Nichts passiert am Vertrag",
+     "text": "Der Vertrag bleibt **aktiv**, Raten laufen weiter. Am Vertrag erscheint nur das Banner „Widerruf in Bearbeitung“ („Verträge 2“)."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Datum Widerruf *",
+      "Eingangsdatum — Grundlage der Fristberechnung"
+     ],
+     [
+      "Zendesk-Ticket",
+      "Nummer, Name oder E-Mail; Tickets der Kundin werden vorgeschlagen"
+     ],
+     [
+      "Beschreibung",
+      "Was die Kundin geschrieben hat, in eigenen Worten"
+     ],
+     [
+      "Anmerkungen (intern)",
+      "Für das Team — nicht für die Kundin"
+     ],
+     [
+      "Grund *",
+      "Pflicht, aus der Liste"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Die neun Widerrufsgründe",
+   "sub": "Der Grund steuert die Auswertung — und verrät, ob es überhaupt ein Widerruf im engeren Sinn ist.",
+   "layout": "text",
+   "card": {
+    "title": "Die Gründe",
+    "text": "Wann welcher Grund passt"
+   },
+   "sections": [
+    {
+     "h2": "Nicht jeder „Widerruf“ ist ein Ausstieg",
+     "text": "Vier der neun Gründe — Klärung im Institut, Korrektur, Laufzeitanpassung, Upgrade — enden gerade **nicht** mit einer Rückabwicklung, sondern mit einem geänderten Vertrag. Für die ist die Vertragsänderung im Fernabsatz gedacht („Widerrufe 3“)."
+    }
+   ],
+   "table": {
+    "head": [
+     "Grund",
+     "Wann",
+     "Typischer Ausgang"
+    ],
+    "rows": [
+     [
+      "**Finanzen**",
+      "Kundin kann oder will nicht mehr zahlen",
+      "Widerruf akzeptiert oder Laufzeitanpassung"
+     ],
+     [
+      "**Gesundheit**",
+      "Medizinischer Grund, Behandlung nicht möglich",
+      "Widerruf akzeptiert"
+     ],
+     [
+      "**Qualität Beratungsgespräch**",
+      "Die Kundin fühlt sich falsch beraten",
+      "Widerruf akzeptiert — und ein Hinweis fürs Institut"
+     ],
+     [
+      "**Klärung im Institut**",
+      "Missverständnis, das sich vor Ort auflöst",
+      "oft Korrektur oder Rücknahme"
+     ],
+     [
+      "**Korrektur**",
+      "Im Vertrag steht etwas Falsches",
+      "Korrektur, kein echter Widerruf"
+     ],
+     [
+      "**Anpassung der Vertragslaufzeit**",
+      "Kundin will längere Laufzeit statt Ausstieg",
+      "Laufzeitanpassung"
+     ],
+     [
+      "**Upgrade**",
+      "Kundin will ein größeres Paket",
+      "Upgrade mit Folgevertrag"
+     ],
+     [
+      "**Keine Angabe**",
+      "Kundin nennt keinen Grund",
+      "offen"
+     ],
+     [
+      "**Sonstiges**",
+      "Alles andere — mit Beschreibung",
+      "offen"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Der Grund wirkt auf die Auswertung.** Die Widerruf-Statistik („Berichte 5“) gruppiert danach — wer alles unter „Sonstiges“ erfasst, macht den Bericht wertlos."
+   }
+  }
+ ]
+}

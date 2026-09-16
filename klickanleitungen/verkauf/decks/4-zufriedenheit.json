@@ -1,10 +1,10 @@
 {
- "out": "../pdf/Verkauf-8-Zufriedenheit",
+ "out": "../pdf/Verkauf-4-zufriedenheit",
  "meta": "../meta.json",
  "shots": "../shots",
  "series": "Verkauf",
- "nr": 8,
- "of": 8,
+ "nr": 4,
+ "of": 4,
  "audience": "buero",
  "title": [
   "Zufriedenheit",

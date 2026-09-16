@@ -1,0 +1,367 @@
+{
+ "out": "../pdf/Widerrufe-3-vertragsaenderung-fernabsatz",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Widerrufe",
+ "nr": 3,
+ "of": 5,
+ "audience": "buero",
+ "title": [
+  "Vertragsänderung",
+  "im Fernabsatz"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Downgrade per Kundenlink, schwebender Folgevertrag, Fristen und Guthaben",
+ "eyebrow": "Widerrufe · Vertragsänderung",
+ "footerArea": "Widerrufe",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der Folgevertrag entsteht **schwebend** und ersetzt den alten erst **einen Tag nach Fristende**.",
+  "Bis dahin **läuft der Altvertrag samt Einzügen weiter** — es gibt nichts rückabzuwickeln.",
+  "**Upgrades laufen nicht über diesen Weg** — neue Zonen dürften vor Fristende nicht behandelt werden."
+ ],
+ "pages": [
+  {
+   "h1": "Wozu die Vertragsänderung da ist",
+   "sub": "Nicht jeder Widerruf muss in einer Rückabwicklung enden. Oft will die Kundin ein kleineres Paket — dafür gibt es diesen Weg.",
+   "layout": "text",
+   "card": {
+    "title": "Wozu das gut ist",
+    "text": "Downgrade statt Rückabwicklung"
+   },
+   "sections": [
+    {
+     "h2": "Das Problem",
+     "text": "Eine Kundin widerruft, weil ihr das Paket zu teuer ist. Eine Rückabwicklung macht aus einer Kundin eine Ex-Kundin. Ein kleineres Paket behält sie — aber ein Vertrag, den sie am Telefon zusagt, wäre im Fernabsatz wieder mit einer neuen 14-Tage-Frist behaftet."
+    },
+    {
+     "h2": "Die Lösung: ein schwebender Folgevertrag",
+     "text": "Die Kundin bekommt einen Link und unterschreibt digital. Daraus entsteht ein **schwebender Vertrag** — angelegt, aber noch nicht wirksam. Der Altvertrag läuft unverändert weiter. Erst **einen Tag nach Ablauf der 14-Tage-Frist** ersetzt der Folgevertrag den alten, automatisch über einen nächtlichen Lauf."
+    },
+    {
+     "h2": "Warum das der saubere Weg ist",
+     "text": "Das Widerrufsrecht der Kundin bleibt vollständig erhalten — sie kann die Änderung innerhalb der Frist widerrufen, und dann bleibt einfach alles beim Alten. Es braucht keine Rückabwicklung und keine Rückzahlung."
+    }
+   ],
+   "table": {
+    "head": [
+     "Fall",
+     "Weg"
+    ],
+    "rows": [
+     [
+      "Kleineres Paket (**Downgrade**)",
+      "Vertragsänderung im Fernabsatz — dieses Dokument"
+     ],
+     [
+      "Größeres Paket (**Upgrade**)",
+      "**Nicht** über diesen Weg — neue Zonen dürften vor Fristende nicht behandelt werden"
+     ],
+     [
+      "Nur längere Laufzeit",
+      "Ratenplan ändern („Verträge 6“), kein neuer Vertrag"
+     ],
+     [
+      "Vollständiger Ausstieg",
+      "Widerruf akzeptieren und abwickeln („Widerrufe 4“)"
+     ],
+     [
+      "Downgrade **vor Ort** im Institut",
+      "**„Downgrade-Formulare“** — die Kundin unterschreibt im Institut („Widerrufe 4“)"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Upgrades sind hier bewusst ausgenommen.** Bei einem größeren Paket dürften die neuen Zonen vor Ablauf der Frist nicht behandelt werden — die Kundin müsste zwei Wochen warten. Das ist im Institut nicht vermittelbar und deshalb kein Fall für diesen Weg."
+   }
+  },
+  {
+   "h1": "Das Angebot zusammenstellen",
+   "sub": "Im Fenster wird das neue Paket gebaut und sofort durchgerechnet.",
+   "card": {
+    "title": "Angebot bauen",
+    "text": "Zonen, Laufzeit, Rabatt, Guthaben"
+   },
+   "left": {
+    "shot": "wd3-angebot"
+   },
+   "leftCaption": "Das Fenster „Vertragsänderung im Fernabsatz“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Körperzonen wählen",
+     "text": "Die Zonen des **neuen** Pakets. Aus ihnen ergibt sich der Preis."
+    },
+    {
+     "n": 2,
+     "title": "Laufzeit / Zahlung",
+     "text": "Ratenzahlung mit Laufzeit oder Direktzahlung."
+    },
+    {
+     "n": 3,
+     "title": "Rabatt",
+     "text": "Optional, falls etwas zugesagt wurde."
+    },
+    {
+     "n": 4,
+     "title": "Rechnung lesen",
+     "text": "Der Hub zeigt **Gesamtwert**, angerechnetes Guthaben und **„Verbleibend nach Guthaben“**."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Das Guthaben ist der Kern der Rechnung",
+     "text": "Angerechnet wird, was die Kundin am Altvertrag bereits bezahlt hat. Deshalb muss der Ratenplan des Altvertrags stimmen, bevor das Angebot rausgeht („Verträge 3“)."
+    },
+    {
+     "title": "Preise kommen aus der Preisliste des Standorts",
+     "text": "Fehlt dort eine gültige Liste, meldet das Fenster **„Für den Standort ist keine gültige Preisliste hinterlegt“** — dann zuerst „Verkauf 1“."
+    },
+    {
+     "title": "Nichts ist verbindlich, solange nicht unterschrieben ist",
+     "text": "Das Angebot lässt sich beliebig oft neu rechnen. Verbindlich wird es erst mit der Unterschrift der Kundin."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Körperzonen im neuen Paket",
+      "Auswahl aus dem Zonen-Katalog"
+     ],
+     [
+      "Laufzeit / Zahlung",
+      "Anzahl Raten oder Direktzahlung"
+     ],
+     [
+      "Rabatt",
+      "Nachlass in € oder Prozent, falls zugesagt"
+     ],
+     [
+      "Gesamtwert",
+      "Preis des neuen Pakets laut Preisliste des Standorts"
+     ],
+     [
+      "wird angerechnet",
+      "Bereits Gezahltes des Altvertrags als Guthaben"
+     ],
+     [
+      "Verbleibend nach Guthaben",
+      "Was die Kundin noch zahlt"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Formular und Versandweg",
+   "sub": "Die Kundin unterschreibt digital — per E-Mail oder über einen Link, den man ihr durchgibt.",
+   "card": {
+    "title": "Versenden",
+    "text": "Formular wählen, Weg wählen, abschicken"
+   },
+   "left": {
+    "shot": "wd3-versand"
+   },
+   "leftCaption": "Formularauswahl und Versandweg im Fenster.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Formular wählen",
+     "text": "Das Vertragsänderungs-Formular. Es enthält die Widerrufsbelehrung für den Fernabsatz."
+    },
+    {
+     "n": 2,
+     "title": "Versandweg",
+     "text": "**E-Mail** an die Kundin oder **Link** zum Weitergeben."
+    },
+    {
+     "n": 3,
+     "title": "Empfänger",
+     "text": "Bei E-Mail sind **Name und Adresse Pflicht**."
+    },
+    {
+     "n": 4,
+     "title": "Erstellen",
+     "text": "Danach steht der Link bereit — **„Link kopieren“** legt ihn in die Zwischenablage."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Mit dem Absenden beginnt nichts",
+     "text": "Der Vertrag entsteht erst, wenn die Kundin **unterschreibt**. Bis dahin ist es ein offenes Angebot."
+    },
+    {
+     "title": "Die Widerrufsbelehrung hängt am Formular",
+     "text": "Sie kommt aus den Rechtsdokumenten der Verwaltung („Admin 2“). Ist dort nichts freigegeben, geht das Angebot mit einem Entwurf raus — das gehört vorher geprüft."
+    },
+    {
+     "title": "Der Link ist personalisiert",
+     "text": "Er gehört zu diesem Fall und dieser Kundin. Er darf nicht weitergegeben oder wiederverwendet werden."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Formular",
+      "Das Fernabsatz-Formular mit Widerrufsbelehrung"
+     ],
+     [
+      "Versandweg",
+      "E-Mail · Link"
+     ],
+     [
+      "Name des Kunden",
+      "Pflicht bei Versandweg E-Mail"
+     ],
+     [
+      "E-Mail-Adresse",
+      "Pflicht bei Versandweg E-Mail"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Der schwebende Folgevertrag",
+   "sub": "Nach der Unterschrift existieren zwei Verträge: der alte, der läuft — und der neue, der wartet.",
+   "card": {
+    "title": "Schwebender Vertrag",
+    "text": "Was zwischen Unterschrift und Wirksamkeit gilt"
+   },
+   "left": {
+    "shot": "wd3-schwebend"
+   },
+   "leftCaption": "Der Fall mit schwebendem Folgevertrag.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zustand erkennen",
+     "text": "Der Fall zeigt **„schwebender Folgevertrag“** und verlinkt ihn."
+    },
+    {
+     "n": 2,
+     "title": "Altvertrag läuft weiter",
+     "text": "Unverändert — Raten werden weiter eingezogen."
+    },
+    {
+     "n": 3,
+     "title": "Wirksam werden",
+     "text": "**Einen Tag nach Ende der 14-Tage-Frist**, automatisch im nächtlichen Lauf um 06:30."
+    },
+    {
+     "n": 4,
+     "title": "Vorzeitig schalten",
+     "text": "**„Jetzt wirksam schalten“** geht erst nach Fristende — vorher lehnt der Hub ab."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Zwei Verträge, ein Zahlungsplan",
+     "text": "Solange der neue schwebt, zieht der **alte** ein. Nach der Ersetzung braucht der neue Vertrag einen eigenen Zahlungsplan — den legt das Büro von Hand an („Verträge 7“). Der Hub tut das bewusst nicht automatisch."
+    },
+    {
+     "title": "„Die Widerrufsfrist läuft noch“",
+     "text": "Genau diese Meldung erscheint, wenn zu früh geschaltet wird. Sie ist kein Fehler, sondern der Schutz des Widerrufsrechts."
+    },
+    {
+     "title": "Guthaben wandert mit",
+     "text": "Was am Altvertrag gezahlt wurde, ist im Folgevertrag als Guthaben angerechnet — es muss nicht zurückgezahlt werden."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Status des Folgevertrags",
+      "**Schwebend** — angelegt, aber nicht wirksam"
+     ],
+     [
+      "Wirksam ab",
+      "Ein Tag nach Ablauf der Widerrufsfrist"
+     ],
+     [
+      "Zum Folgevertrag",
+      "Link auf den neuen Vertrag"
+     ],
+     [
+      "Jetzt wirksam schalten",
+      "Manuell, erst nach Fristende möglich"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Nach der Ersetzung nicht den Zahlungsplan vergessen.** Der Folgevertrag ist wirksam, hat aber weder Mandat noch Plan, bis jemand beides anlegt. Ohne diesen Schritt zieht ab dem Wechsel gar nichts mehr ein."
+   }
+  },
+  {
+   "h1": "Modal „Widerruf des Folgevertrags“",
+   "sub": "Die Kundin überlegt es sich anders — dann wird der schwebende Vertrag beendet.",
+   "card": {
+    "title": "Folgevertrag widerrufen",
+    "text": "Schwebenden Vertrag zurücknehmen"
+   },
+   "left": {
+    "shot": "wd3-folgewiderruf"
+   },
+   "leftCaption": "Das Fenster „Widerruf des Folgevertrags“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Aufrufen",
+     "text": "Am Fall, solange der Folgevertrag noch schwebt."
+    },
+    {
+     "n": 2,
+     "title": "Vermerk",
+     "text": "Was die Kundin gesagt hat und wann — z.B. „Eingang des Widerrufs 18.09.“"
+    },
+    {
+     "n": 3,
+     "title": "Eintragen",
+     "text": "Der schwebende Vertrag wird **storniert**."
+    },
+    {
+     "n": 4,
+     "title": "Ergebnis",
+     "text": "Der **Altvertrag bleibt unverändert** — es ist nichts rückabzuwickeln."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Der Altvertrag war nie weg",
+     "text": "Genau deshalb der schwebende Aufbau: Es gibt nichts zurückzuzahlen und nichts zu reparieren."
+    },
+    {
+     "title": "Der ursprüngliche Widerruf lebt weiter",
+     "text": "Der Fall bleibt offen. Die Kundin wollte ja etwas — jetzt ist wieder offen, was. Entweder neues Angebot oder Rückabwicklung."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Vermerk",
+      "z.B. Eingang des Widerrufs, Datum und Kanal"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Das ist der gute Ausgang einer schlechten Nachricht.** Ein widerrufener Folgevertrag kostet nichts außer Arbeit — das ist der Preis dafür, dass die Kundin ihre Frist wirklich hatte."
+   }
+  }
+ ]
+}

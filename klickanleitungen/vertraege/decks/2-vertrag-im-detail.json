@@ -1,0 +1,593 @@
+{
+ "out": "../pdf/Vertraege-2-vertrag-im-detail",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Verträge",
+ "nr": 2,
+ "of": 8,
+ "audience": "buero",
+ "title": [
+  "Der Vertrag",
+  "im Detail"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Kopf, Banner, die vier Reiter, Vertragsdaten ändern, Verlauf",
+ "eyebrow": "Verträge · Detailseite",
+ "footerArea": "Verträge",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "**Jede Änderung braucht eine Begründung** von mindestens zehn Zeichen — sie steht danach im Verlauf.",
+  "Die **Banner oben** melden laufenden Widerruf und hartes Forderungsverfahren: dort nichts ohne Rücksprache.",
+  "Die **Stammangabe „Monatliche Rate“** ist nicht der Ratenplan — Einzüge ändert man in „Verträge 6“."
+ ],
+ "pages": [
+  {
+   "h1": "Der Kopf des Vertrags",
+   "sub": "Ganz oben stehen Nummer, Status und die Kundin — dazu die Knöpfe, die den ganzen Vertrag betreffen.",
+   "card": {
+    "title": "Der Kopf",
+    "text": "Nummer, Status, Kundin, Aktionen"
+   },
+   "left": {
+    "shot": "vt2-kopf"
+   },
+   "leftCaption": "Der Kopfbereich der Vertragsseite.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Vertragsnummer",
+     "text": "Sie lässt sich ändern — ein Klick macht daraus ein Eingabefeld. **Enter** öffnet die Bestätigung, **Esc** bricht ab."
+    },
+    {
+     "n": 2,
+     "title": "Status",
+     "text": "**Entwurf** · **Aktiv** · **Abgeschlossen** · **Storniert** · **Geändert**. Er ergibt sich aus dem Vertrag, nicht aus einem Knopf."
+    },
+    {
+     "n": 3,
+     "title": "Kundin",
+     "text": "Name und Kundennummer, verlinkt ins Kundenprofil („Kundenverwaltung 1“)."
+    },
+    {
+     "n": 4,
+     "title": "Herkunft",
+     "text": "Abzeichen **Legacy** (Altsystem) oder **Institut** (über die Institutsseite erfasst)."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Jede Änderung wird protokolliert",
+     "text": "Auch die Vertragsnummer. Sie taucht mit **Vorher/Nachher** im Verlauf auf, samt Begründung und Person."
+    },
+    {
+     "title": "Die Nummer steht auch woanders",
+     "text": "Sie ist in E-Mails an die Kundin, im SEPA-Mandat und in Phorest hinterlegt. Ändern heißt: Diese Stellen stimmen nicht mehr überein."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Vertragsnummer",
+      "**JJJJ.MM.TT-Kundennummer** — ändern nur bei einem echten Fehler"
+     ],
+     [
+      "Status",
+      "folgt dem Vertrag; „Geändert“ heißt: durch einen Folgevertrag abgelöst"
+     ],
+     [
+      "Kundin",
+      "Zuordnung lässt sich im Reiter Übersicht korrigieren (Seite 6)"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Die Vertragsnummer ist kein Ordnungsmerkmal zum Aufräumen.** Sie zu ändern, weil sie „unschön“ aussieht, macht Belege und Mandat unauffindbar. Nur bei echten Fehlern anfassen — und dann mit einer Begründung, die das erklärt."
+   }
+  },
+  {
+   "h1": "Die Banner verstehen",
+   "sub": "Über den Reitern können zwei Warnbänder stehen. Beide bedeuten: hier nicht ohne Rücksprache arbeiten.",
+   "card": {
+    "title": "Die Banner",
+    "text": "Widerruf und Forderungsfall erkennen"
+   },
+   "left": {
+    "shot": "vt2-banner"
+   },
+   "leftCaption": "Ein Vertrag mit Widerrufs-Banner.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Widerruf in Bearbeitung“",
+     "text": "Mit Eingangsdatum und Grund. Der Knopf **„Zum Widerruf“** führt direkt in den Fall."
+    },
+    {
+     "n": 2,
+     "title": "Vertrag bleibt aktiv",
+     "text": "Bis zur Entscheidung laufen **offene SEPA-Raten weiter**. Wird der Widerruf akzeptiert, werden Raten pausiert oder storniert."
+    },
+    {
+     "n": 3,
+     "title": "„Forderungsmanagement“",
+     "text": "Erscheint beim **harten Weg** und im **gerichtlichen Verfahren** — nicht bei jedem Fall."
+    },
+    {
+     "n": 4,
+     "title": "Zum Fall springen",
+     "text": "Beide Banner verlinken in den zugehörigen Vorgang."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Kein Banner heißt nicht „alles frei“",
+     "text": "Der sanfte Weg im Forderungsmanagement zeigt **kein** Band. Wer Raten ändern will, sieht trotzdem im Reiter Verlauf nach."
+    },
+    {
+     "title": "Warum das Band so deutlich ist",
+     "text": "Ohne Hinweis wirkt der Vertrag völlig normal — und ein Einzug mitten im Widerruf ist gegenüber der Kundin schwer zu erklären."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Widerruf in Bearbeitung",
+      "Eingangsdatum + Grund; Vertrag läuft weiter, bis entschieden ist"
+     ],
+     [
+      "Forderungsmanagement — harter Weg",
+      "Mahnkette läuft; Zahlungsplan nicht eigenmächtig ändern"
+     ],
+     [
+      "Forderungsmanagement — gerichtliches Verfahren",
+      "Mahnbescheid läuft; jede Änderung mit dem Forderungsmanagement abstimmen"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Bei laufendem Widerruf oder hartem Forderungsweg: keine Zahlungsplan-Änderung ohne Rücksprache.** Beide Vorgänge rechnen mit dem Stand, den sie kennen — eine stille Änderung am Plan bringt Mahnschreiben und Forderungsaufstellung durcheinander."
+   }
+  },
+  {
+   "h1": "Die vier Reiter",
+   "sub": "Der Vertrag ist in vier Bereiche geteilt. Wer weiß, wo was liegt, spart das Suchen.",
+   "layout": "text",
+   "card": {
+    "title": "Die vier Reiter",
+    "text": "Was in welchem Bereich steht"
+   },
+   "sections": [
+    {
+     "h2": "Rechte entscheiden über den Inhalt, nicht über die Reiter",
+     "text": "Die Reiter sind immer sichtbar. Wer kein Recht auf einen Inhalt hat, sieht den Reiter trotzdem — er bleibt dann leer oder meldet den fehlenden Zugriff. Ein leerer Reiter ist also kein Fehler und kein leerer Vertrag."
+    },
+    {
+     "h2": "Rechts steht immer dasselbe",
+     "text": "Die Zusammenfassungs-Spalte am rechten Rand bleibt auf allen Reitern stehen: Gesamtwert, Bezahlt, Offen, Raten und Status. Sie ist die schnellste Antwort auf „wie steht der Vertrag?“ — Seite 7."
+    }
+   ],
+   "table": {
+    "head": [
+     "Reiter",
+     "Inhalt",
+     "Ausführlich in"
+    ],
+    "rows": [
+     [
+      "**Übersicht**",
+      "Vertragsdaten, Kundin, Körperzonen, Preisliste, Verkäuferin, Notizen",
+      "diesem Dokument, Seite 5–7"
+     ],
+     [
+      "**Zahlungen & SEPA**",
+      "Ratenplan, Zahlungen, Mandat, Einzüge, Rücklastschriften",
+      "**Verträge 3–7**"
+     ],
+     [
+      "**Verlauf**",
+      "Jede Änderung mit Vorher/Nachher, Begründung, Person und Zeit",
+      "diesem Dokument, Seite 8"
+     ],
+     [
+      "**E-Mail-Historie**",
+      "Alle an die Kundin verschickten Mails, mit Vorschau",
+      "diesem Dokument, Seite 8"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Der Reiter „Zahlungen & SEPA“ ist der größte.** Ihm sind fünf eigene Dokumente gewidmet, weil dort alles passiert, was Geld bewegt."
+   }
+  },
+  {
+   "h1": "Vertragsdaten ändern",
+   "sub": "Im Reiter Übersicht stehen die kaufmännischen Angaben. Sie lassen sich ändern — aber nie stillschweigend.",
+   "card": {
+    "title": "Vertragsdaten ändern",
+    "text": "Wert, Rate, Laufzeit, Zahlungsart, Preisliste"
+   },
+   "left": {
+    "shot": "vt2-uebersicht"
+   },
+   "leftCaption": "Der Reiter Übersicht mit den Vertragsdaten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bearbeiten",
+     "text": "Der Abschnitt wird bearbeitbar; geänderte Felder werden hervorgehoben."
+    },
+    {
+     "n": 2,
+     "title": "Werte anpassen",
+     "text": "Beträge mit **Komma** (99,00), Datum im deutschen Format."
+    },
+    {
+     "n": 3,
+     "title": "Speichern",
+     "text": "Öffnet **nicht** direkt den Speichervorgang, sondern die Bestätigung mit Vorher/Nachher (nächste Seite)."
+    },
+    {
+     "n": 4,
+     "title": "Abbrechen",
+     "text": "Verwirft alles. Solange die Bestätigung nicht abgeschickt ist, ist nichts geändert."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Rate und Ratenplan sind zwei Dinge",
+     "text": "Das Feld **Monatliche Rate** ist die Stammangabe des Vertrags. Die tatsächlich eingezogenen Beträge stehen im **Ratenplan** und werden über **„Offene Raten anpassen“** geändert („Verträge 6“). Wer nur hier ändert, hat einen Vertrag, der etwas anderes sagt als der Einzug."
+    },
+    {
+     "title": "Verkäuferin wirkt auf den Bonus",
+     "text": "Die Zuordnung fließt in Mitarbeiterperformance und Bonus-Board. Eine Korrektur nach dem Monatsabschluss ändert eingefrorene Zahlen nicht mehr rückwirkend."
+    },
+    {
+     "title": "Zahlungsmodus kommt aus der Preisliste",
+     "text": "Ob die erste Rate vor Ort kassiert wird oder alles per SEPA läuft, entscheidet die Preisliste („Verkauf 1“) — nicht ein Schalter am Vertrag."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Gesamtwert (€)",
+      "Vertragswert brutto — Grundlage für „Offen“ in der Zusammenfassung"
+     ],
+     [
+      "Monatliche Rate (€)",
+      "Die reguläre Rate; ändert **nicht** automatisch den Ratenplan"
+     ],
+     [
+      "Anzahl Raten",
+      "Laufzeit in Monaten"
+     ],
+     [
+      "Erste Abbuchung",
+      "Datum der ersten SEPA-Rate — erlaubt sind der **3.** oder der **15.**"
+     ],
+     [
+      "Zahlungsart",
+      "Direktzahlung oder Ratenzahlung per SEPA"
+     ],
+     [
+      "Preisliste",
+      "Die Liste, aus der das Paket stammt — sie bestimmt den Zahlungsmodus"
+     ],
+     [
+      "Verkäufer",
+      "Wem der Abschluss zugerechnet wird — wirkt auf Statistik und Bonus"
+     ],
+     [
+      "Unterschrieben am",
+      "Abschlussdatum, Grundlage für Fristen"
+     ],
+     [
+      "Rabatt 1. Sitzung",
+      "Nachlass auf die erste Sitzung, falls gewährt"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Modal „Änderungen bestätigen“",
+   "sub": "Jede Änderung an den Vertragsdaten läuft über dieselbe Bestätigung. Sie zeigt, was sich ändert, und verlangt einen Grund.",
+   "card": {
+    "title": "Änderungen bestätigen",
+    "text": "Vorher/Nachher prüfen, Begründung schreiben"
+   },
+   "left": {
+    "shot": "vt2-bestaetigen"
+   },
+   "leftCaption": "Die Bestätigung mit Vorher/Nachher-Gegenüberstellung.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bereich prüfen",
+     "text": "Oben steht, welcher Abschnitt geändert wird."
+    },
+    {
+     "n": 2,
+     "title": "Vorher / Nachher",
+     "text": "Jedes geänderte Feld steht in zwei Spalten. Was hier nicht auftaucht, wird auch nicht geändert."
+    },
+    {
+     "n": 3,
+     "title": "Begründung",
+     "text": "**Pflichtfeld, mindestens 10 Zeichen.** Sie steht später im Verlauf — in einem Jahr liest das jemand anderes."
+    },
+    {
+     "n": 4,
+     "title": "Änderungen speichern",
+     "text": "Erst dieser Knopf schreibt. **„Abbrechen“** verwirft alles."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Die Begründung ist die halbe Miete",
+     "text": "Sie landet im Verlauf und ist das Einzige, was später erklärt, warum eine Rate 89 statt 99 € beträgt. „Korrektur“ erklärt nichts — „Rate laut Kulanz-Zusage vom 12.09. gesenkt“ schon."
+    },
+    {
+     "title": "Nichts wird an Phorest gesendet",
+     "text": "Diese Bestätigung ändert nur den Vertrag im Hub. Kundendaten gehen einen anderen Weg (nächste Seite)."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Vorher",
+      "Der gespeicherte Stand — Kontrolle, ob man das richtige Feld erwischt hat"
+     ],
+     [
+      "Nachher",
+      "Der neue Wert, genau so, wie er gespeichert wird"
+     ],
+     [
+      "Begründung",
+      "Mindestens 10 Zeichen; Pflicht für **alle** Änderungen"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Die Gegenüberstellung ist eine Kontrolle, kein Formalismus.** Wer einmal eine Null zu viel eingetippt hat, sieht es genau hier — danach nicht mehr."
+   }
+  },
+  {
+   "h1": "Kundin, Zonen und Notizen",
+   "sub": "Drei Angaben hängen nicht am Geld und werden getrennt gepflegt.",
+   "card": {
+    "title": "Kundin, Zonen, Notizen",
+    "text": "Zuordnung korrigieren, KPZ ändern, Notiz hinterlegen"
+   },
+   "left": {
+    "shot": "vt2-kundin"
+   },
+   "leftCaption": "Kundensuche und Körperzonen im Reiter Übersicht.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kundin ändern",
+     "text": "Suchfeld nach **Name, E-Mail oder Kundennummer**. Aus der Trefferliste wählen."
+    },
+    {
+     "n": 2,
+     "title": "Körperzonen",
+     "text": "Die behandelten Zonen und ihre Anzahl (KPZ) — Grundlage für „Ø KPZ“ in den Berichten."
+    },
+    {
+     "n": 3,
+     "title": "Notizen",
+     "text": "Interner Freitext am Vertrag. Die Kundin sieht ihn nicht."
+    },
+    {
+     "n": 4,
+     "title": "Jeweils bestätigen",
+     "text": "Auch diese drei laufen über die Bestätigung mit Begründung."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Die Zuordnung zur Kundin ist selten falsch — und teuer, wenn doch",
+     "text": "Am Vertrag hängen Mandat, Raten und E-Mails. Eine Umhängung auf die falsche Person bucht später bei der Falschen ab. Vor dem Speichern Kundennummer gegenlesen."
+    },
+    {
+     "title": "Zonen wirken auf Auswertungen",
+     "text": "Die KPZ-Zahl steckt in Verkaufsstatistik, Mitarbeiterperformance und Ads-Analyse („Berichte 1“, „Berichte 9“, „Berichte 14“). Eine Korrektur ändert vergangene Auswertungen mit."
+    },
+    {
+     "title": "Notizen sind kein Ticket",
+     "text": "Was das Büro erledigen muss, gehört in Zendesk oder Asana — eine Notiz am Vertrag liest niemand von allein."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Kunde suchen",
+      "Name, E-Mail oder Kundennummer — der Hub sucht auch in Phorest"
+     ],
+     [
+      "Körperzonen",
+      "Auswahl aus dem Zonen-Katalog („Betrieb 5“)"
+     ],
+     [
+      "Anzahl Zonen",
+      "Ergibt sich aus der Auswahl; die Zahl steht in Liste und Berichten"
+     ],
+     [
+      "Notizen",
+      "Interner Vermerk, nur für das Team"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Die Zusammenfassungs-Spalte",
+   "sub": "Rechts steht der Vertrag in fünf Zahlen. Sie bleiben auf jedem Reiter stehen.",
+   "card": {
+    "title": "Zusammenfassung",
+    "text": "Gesamtwert, Bezahlt, Offen, Raten, Status"
+   },
+   "left": {
+    "shot": "vt2-zusammenfassung"
+   },
+   "leftCaption": "Die Spalte am rechten Rand.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Gesamtwert",
+     "text": "Der Vertragswert — was insgesamt zu zahlen ist."
+    },
+    {
+     "n": 2,
+     "title": "Bezahlt",
+     "text": "Summe aller als bezahlt verbuchten Beträge, inklusive Gutschein-Anteil."
+    },
+    {
+     "n": 3,
+     "title": "Offen",
+     "text": "Gesamtwert minus Bezahlt. Das ist die Zahl für die Auskunft am Telefon."
+    },
+    {
+     "n": 4,
+     "title": "Raten (bezahlt / gesamt)",
+     "text": "„7 / 24“ — sieben von vierundzwanzig Raten sind durch."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Bei Legacy-Verträgen ist „Bezahlt“ unvollständig",
+     "text": "Was vor der Hub-Zeit über das Altsystem lief, steht nicht als Rate drin. Der Block **„Altsystem“** im Ratenplan trägt diesen Betrag nach („Verträge 3“)."
+    },
+    {
+     "title": "„Offen“ ist nicht „überfällig“",
+     "text": "Offen heißt: noch nicht bezahlt — die meisten dieser Raten sind schlicht noch nicht fällig. Überfälliges erkennt man am Zustand der einzelnen Rate."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Gesamtwert",
+      "Stammangabe aus dem Reiter Übersicht"
+     ],
+     [
+      "Bezahlt",
+      "Summe der verbuchten Zahlungen — SEPA, bar, Überweisung, Gutschein"
+     ],
+     [
+      "Offen",
+      "Rechnerische Differenz, keine eigene Eingabe"
+     ],
+     [
+      "Raten",
+      "Zähler über den Ratenplan, stornierte Raten zählen nicht mit"
+     ],
+     [
+      "Status",
+      "Derselbe Status wie im Kopf"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Für die Auskunft reicht diese Spalte.** „Bezahlt sind 7 von 24 Raten, offen sind 1.632 €“ — mehr will am Telefon selten jemand wissen."
+   }
+  },
+  {
+   "h1": "Verlauf und E-Mail-Historie",
+   "sub": "Zwei Reiter zum Nachschlagen: Was wurde geändert — und was hat die Kundin bekommen?",
+   "card": {
+    "title": "Verlauf & E-Mails",
+    "text": "Änderungen nachvollziehen, Mails nachlesen"
+   },
+   "left": {
+    "shot": "vt2-verlauf"
+   },
+   "leftCaption": "Der Reiter Verlauf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Verlauf lesen",
+     "text": "Jeder Eintrag nennt **Zeitpunkt**, **Person**, **Feld**, **Vorher/Nachher** und die **Begründung**."
+    },
+    {
+     "n": 2,
+     "title": "Rückwärts lesen",
+     "text": "Der neueste Eintrag steht oben. Bei Unstimmigkeiten von oben nach unten arbeiten."
+    },
+    {
+     "n": 3,
+     "title": "E-Mail-Historie",
+     "text": "Alle an die Kundin verschickten Mails mit Datum und Betreff."
+    },
+    {
+     "n": 4,
+     "title": "Vorschau öffnen",
+     "text": "Zeigt die Mail genau so, wie die Kundin sie bekommen hat."
+    }
+   ],
+   "right": {
+    "shot": "vt2-emails"
+   },
+   "rightCaption": "Die E-Mail-Historie mit Vorschau.",
+   "notes": [
+    {
+     "title": "Der Verlauf beantwortet Beschwerden",
+     "text": "„Ich habe nie 99 € vereinbart“ lässt sich hier in dreißig Sekunden prüfen — mit Datum, Person und Begründung."
+    },
+    {
+     "title": "Die E-Mail-Historie ist der Zustellnachweis",
+     "text": "Sie zeigt, dass eine Mail **verschickt** wurde. Ob sie ankam, weiß der Hub nicht — es gibt bewusst kein Bounce-Tracking."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Zeitpunkt / Person",
+      "Wer wann geändert hat"
+     ],
+     [
+      "Vorher / Nachher",
+      "Der genaue Wert vor und nach der Änderung"
+     ],
+     [
+      "Begründung",
+      "Der Pflichttext aus der Bestätigung"
+     ],
+     [
+      "E-Mail-Vorschau",
+      "Der tatsächlich versendete Inhalt, nicht die Vorlage"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Was hier fehlt, ist auch nicht passiert.** Wenn eine Änderung nicht im Verlauf steht, wurde sie nicht über den Hub gemacht — dann lohnt die Frage, wer direkt in Phorest oder GoCardless gearbeitet hat."
+   }
+  }
+ ]
+}

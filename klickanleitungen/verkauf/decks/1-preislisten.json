@@ -1,10 +1,10 @@
 {
- "out": "../pdf/Verkauf-5-Preislisten",
+ "out": "../pdf/Verkauf-1-preislisten",
  "meta": "../meta.json",
  "shots": "../shots",
  "series": "Verkauf",
- "nr": 5,
- "of": 8,
+ "nr": 1,
+ "of": 4,
  "audience": "buero",
  "title": [
   "Preislisten",

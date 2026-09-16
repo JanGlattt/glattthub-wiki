@@ -1,26 +1,23 @@
 #!/bin/bash
-# Aufnahmelauf „Verkauf" (Dokumente 1–4 als eigene Abläufe, 5–8 als Tabellen-Lauf flow5).
+# Aufnahmelauf „Verkauf" (Preislisten, Freunde werben, Gutscheine, Zufriedenheit).
 #
-# Diese Serie fotografiert Geld. Der Lauf loest KEINEN Einzug aus, traegt KEINE Zahlung nach,
-# pausiert nichts und legt KEINEN Widerruf an — alle Fenster werden geoeffnet und verworfen.
+# Der Lauf liest nur: kein Gutschein wird angelegt, keine Preisliste gespeichert, keine
+# Praemie ausgezahlt und keine Zufriedenheitsbefragung versendet.
 #
 # Vorher:  cp .env.example .env && $EDITOR .env
 #          cp mask.example.json mask.json && $EDITOR mask.json
-# Aufruf:  bash scripts/run-all.sh [flow1 …]
+# Aufruf:  bash scripts/run-all.sh [name …]
 set -u
 cd "$(dirname "$0")/.." || exit 1
 [ -f .env ] && set -a && . ./.env && set +a
-for v in KLICK_BASE KLICK_USER KLICK_PW KLICK_CONTRACT; do
+for v in KLICK_BASE KLICK_USER KLICK_PW; do
   if [ -z "${!v:-}" ]; then echo "!!! $v fehlt — siehe .env.example"; exit 2; fi
 done
 [ -f mask.json ] || { echo "!!! mask.json fehlt — die Bilder zeigen Kundennamen und IBANs."; exit 2; }
 
-FLOWS=${*:-"flow1 flow2 flow3 flow4 flow5"}
-echo "### Lauf gegen $KLICK_BASE · Vertrag $KLICK_CONTRACT"
-for f in $FLOWS; do
-  echo "### $f"
-  node scripts/$f.cjs 2>&1 | grep -v "^CONSOLE\|^    at " | tail -14 || { echo "!!! $f fehlgeschlagen"; exit 1; }
-done
+
+echo "### Lauf gegen $KLICK_BASE"
+node scripts/shots.cjs "$@" 2>&1 | grep -v "^CONSOLE\|^    at "
 
 node - <<'NODE'
 const fs = require('fs'), path = require('path');

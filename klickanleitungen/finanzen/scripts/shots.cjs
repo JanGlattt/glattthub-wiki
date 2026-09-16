@@ -6,14 +6,10 @@
    in dieser Serie wird nichts gespeichert, nichts verschickt und nichts ausgelöst.
 
    Aufruf:  node scripts/shots.cjs            (alle)
-            node scripts/shots.cjs f1-forderungen      (einzelner Screenshot)                        */
+            node scripts/shots.cjs f5-schulden      (einzelner Screenshot)                        */
 const L = require('./lib.cjs');
 
 const PLAN = [
-  { name: 'f1-forderungen', url: '/hub/receivables', marks: ['.card-glattt'] },
-  { name: 'f2-fall', url: L.CASE ? '/hub/receivables/' + L.CASE : '/hub/receivables' },
-  { name: 'f3-prozess', url: L.CASE ? '/hub/receivables/' + L.CASE : '/hub/receivables' },
-  { name: 'f4-fall-anlegen', url: '/hub/receivables' },
   { name: 'f5-schulden', url: '/hub/reports/schulden', marks: ['.card-glattt'] },
   { name: 'f6-schulden-liste', url: '/hub/reports/schulden' },
   { name: 'f7-unternehmensvertraege', url: '/hub/company-contracts', marks: ['.card-glattt'] },

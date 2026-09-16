@@ -1,0 +1,400 @@
+{
+ "out": "../pdf/Vertraege-4-zahlungen-nachtragen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Verträge",
+ "nr": 4,
+ "of": 8,
+ "audience": "buero",
+ "title": [
+  "Zahlungen nachtragen",
+  "und korrigieren"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Rate nachtragen, freie Zahlung verbuchen, erste Rate bestätigen, RLS ausgleichen",
+ "eyebrow": "Verträge · Zahlungen buchen",
+ "footerArea": "Verträge",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "**Nachtragen bewegt kein Geld** — es hält nur fest, dass etwas eingegangen ist.",
+  "**Zahlungsart ist immer Pflicht**, das Eingangsdatum immer der Tag, an dem das Geld bei uns war.",
+  "Jede Buchung ist **umkehrbar, aber nie unsichtbar**: Sie steht mit Begründung im Verlauf."
+ ],
+ "pages": [
+  {
+   "h1": "Welcher Weg ist der richtige?",
+   "sub": "Vier verschiedene Wege, eine Zahlung einzutragen. Der falsche kostet Geld oder Vertrauen.",
+   "card": {
+    "title": "Der richtige Weg",
+    "text": "Entscheidungshilfe vor dem Klick"
+   },
+   "left": {
+    "shot": "vt4-aktionen"
+   },
+   "leftCaption": "Die Aktionen am rechten Rand einer Ratenzeile.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Geld ist da, Rate ist offen",
+     "text": "**„Gezahlte Rate nachtragen“** — Seite 3."
+    },
+    {
+     "n": 2,
+     "title": "Geld ist da, gehört zu keiner Rate",
+     "text": "**„Manuelle Zahlung verbuchen“** — Seite 4."
+    },
+    {
+     "n": 3,
+     "title": "Erste Rate im Institut kassiert",
+     "text": "**„1. Rate als bezahlt bestätigen“** — Seite 5."
+    },
+    {
+     "n": 4,
+     "title": "Geld soll abgebucht werden",
+     "text": "**Nicht hier** — das ist ein Einzug, „Verträge 5“."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Der teuerste Fehler der Serie",
+     "text": "„Nachtragen“ und „Einziehen“ stehen dicht beieinander und klingen ähnlich. Nachtragen hält nur fest; Einziehen holt Geld vom Konto der Kundin. Wer das verwechselt, bucht doppelt ab."
+    },
+    {
+     "title": "Jede Buchung ist umkehrbar",
+     "text": "Aber sie steht im Verlauf. Ein Fehler wird zurückgesetzt, nicht überschrieben — mit Begründung."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Nachtragen",
+      "hält fest, dass Geld eingegangen ist — bucht nichts ab"
+     ],
+     [
+      "Verbuchen",
+      "freie Zahlung ohne Rate, etwa eine Teilzahlung"
+     ],
+     [
+      "Bestätigen",
+      "die im Institut kassierte erste Rate"
+     ],
+     [
+      "Einziehen",
+      "löst eine echte Lastschrift aus — anderes Dokument"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Vor jeder Buchung: die richtige Zeile treffen.** Der Betrag wird auf **die Rate** verbucht, an der die Aktion steht — nicht auf „die nächste offene“. In einem Plan mit zwölf ähnlichen Zeilen ist das schneller verwechselt, als man denkt."
+   }
+  },
+  {
+   "h1": "Modal „Gezahlte Rate nachtragen“",
+   "sub": "Die Kundin hat überwiesen oder bar bezahlt, die Rate steht noch offen — hier wird das festgehalten.",
+   "card": {
+    "title": "Rate nachtragen",
+    "text": "Eingegangene Zahlung auf eine Rate buchen"
+   },
+   "left": {
+    "shot": "vt4-nachtragen"
+   },
+   "leftCaption": "Das Fenster „Gezahlte Rate nachtragen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeile prüfen",
+     "text": "Oben steht, um welche Rate es geht. Stimmt das Datum?"
+    },
+    {
+     "n": 2,
+     "title": "Zahlungseingang bei uns",
+     "text": "Das Datum, an dem das Geld **bei uns** war — nicht das Fälligkeitsdatum."
+    },
+    {
+     "n": 3,
+     "title": "Zahlungsart wählen",
+     "text": "**Pflichtfeld**: Bar, Kartenzahlung, Überweisung oder Sonstige."
+    },
+    {
+     "n": 4,
+     "title": "Rate nachtragen",
+     "text": "Der Knopf verbucht. Die Zeile wechselt auf **Gezahlt**."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Kein Einzug, keine Mail",
+     "text": "Die Buchung bewegt kein Geld und verschickt nichts an die Kundin. Sie ändert nur den Zustand der Rate und die Summen."
+    },
+    {
+     "title": "Der Betrag wirkt sofort",
+     "text": "„Bezahlt“ und „Offen“ in der Zusammenfassung ändern sich mit dem Speichern — und damit auch die Auskunft am Telefon."
+    },
+    {
+     "title": "Rückgängig geht",
+     "text": "**„Begleichung zurücksetzen“** an derselben Zeile macht die Buchung rückgängig, mit Begründung und Eintrag im Verlauf."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Ursprünglich fällig am",
+      "Das geplante Datum der Rate — zur Kontrolle, nicht zum Ändern"
+     ],
+     [
+      "Zahlungseingang bei uns",
+      "Tatsächliches Eingangsdatum, deutsches Format"
+     ],
+     [
+      "Referenz / Verwendungszweck",
+      "Optional, aber hilfreich: Verwendungszweck der Überweisung"
+     ],
+     [
+      "Notiz, z.B. Grund der Lücke",
+      "Optional — warum diese Rate nicht per Lastschrift lief"
+     ],
+     [
+      "Zahlungsart",
+      "Pflicht: Bar · Kartenzahlung · Überweisung · Sonstige"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Das Eingangsdatum ist kein Formalismus.** Es entscheidet, ob eine Rate rechtzeitig kam — und damit, ob das Forderungsmanagement später zu Recht mahnt."
+   }
+  },
+  {
+   "h1": "Modal „Manuelle Zahlung verbuchen“",
+   "sub": "Geld, das zu keiner einzelnen Rate gehört: Teilzahlung, Restbetrag, Kulanz.",
+   "card": {
+    "title": "Zahlung verbuchen",
+    "text": "Freie Zahlung ohne feste Rate"
+   },
+   "left": {
+    "shot": "vt4-verbuchen"
+   },
+   "leftCaption": "Das Fenster „Manuelle Zahlung verbuchen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Betrag eingeben",
+     "text": "Mit **Komma** zwischen Euro und Cent, das €-Zeichen steht im Feld."
+    },
+    {
+     "n": 2,
+     "title": "Zahlungseingang",
+     "text": "Wann das Geld bei uns war."
+    },
+    {
+     "n": 3,
+     "title": "Zahlungsart",
+     "text": "Pflichtfeld wie beim Nachtragen."
+    },
+    {
+     "n": 4,
+     "title": "Verbuchen",
+     "text": "Der Betrag geht in die Summe „Bezahlt“ ein."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Verändert den Ratenplan nicht",
+     "text": "Die offenen Raten bleiben stehen, wie sie sind. Nur die Summe **Bezahlt** wächst — der Plan und die Summe können danach auseinanderlaufen."
+    },
+    {
+     "title": "Für Teilzahlungen gedacht",
+     "text": "Wer damit eine ganze Rate abdeckt, sollte stattdessen nachtragen (Seite 3) — sonst bleibt die Rate optisch offen und wird gemahnt."
+    },
+    {
+     "title": "Korrigierbar",
+     "text": "**„Manuelle Zahlung korrigieren“** an derselben Stelle ändert Betrag und Datum nachträglich, mit Begründung."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Betrag",
+      "in €, mit Komma — z.B. 149,50"
+     ],
+     [
+      "Zahlungseingang bei uns",
+      "Eingangsdatum"
+     ],
+     [
+      "Referenz / Verwendungszweck",
+      "Optional, hilft beim späteren Zuordnen"
+     ],
+     [
+      "Zahlungsart",
+      "Pflicht: Bar · Kartenzahlung · Überweisung · Sonstige"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Eine verbuchte Zahlung stoppt keine Lastschrift.** Wenn die Kundin überwiesen hat, weil die Abbuchung nicht klappte, muss die betreffende Rate zusätzlich behandelt werden — sonst zieht der nächste Lauf trotzdem ein."
+   }
+  },
+  {
+   "h1": "Die erste Rate bestätigen",
+   "sub": "Bei Preislisten mit Vor-Ort-Rate zahlt die Kundin die erste Rate im Institut. Der Hub wartet auf die Bestätigung.",
+   "card": {
+    "title": "Erste Rate",
+    "text": "Vor-Ort-Zahlung bestätigen und korrigieren"
+   },
+   "left": {
+    "shot": "vt4-erste-rate"
+   },
+   "leftCaption": "Die Vor-Ort-Rate mit ihrem Bestätigungsknopf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zustand erkennen",
+     "text": "Die Rate steht auf **Vor Ort** oder **Zahlung nicht bestätigt**."
+    },
+    {
+     "n": 2,
+     "title": "Bestätigen",
+     "text": "**„1. Rate als bezahlt bestätigen“** — mit Eingangsdatum und Zahlungsart."
+    },
+    {
+     "n": 3,
+     "title": "Korrigieren",
+     "text": "Wurde falsch bestätigt, öffnet derselbe Knopf **„Bestätigung der 1. Rate korrigieren“**."
+    },
+    {
+     "n": 4,
+     "title": "Zurücknehmen",
+     "text": "**„Bestätigung zurücknehmen“** setzt die Rate wieder auf offen — mit Rückfrage."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Ohne Bestätigung fehlt Geld in der Statistik",
+     "text": "Die Rate zählt erst als bezahlt, wenn sie bestätigt ist. Bis dahin wirkt der Vertrag rückständig, obwohl die Kundin bezahlt hat."
+    },
+    {
+     "title": "Nur bei der passenden Preisliste",
+     "text": "Steht am Vertrag **„Alle Raten per SEPA — keine Vor-Ort-Rate“**, gibt es diesen Vorgang nicht. Welcher Modus gilt, kommt aus der Preisliste („Verkauf 1“)."
+    },
+    {
+     "title": "Institut meldet, Büro bestätigt",
+     "text": "Kassiert wird im Institut, bestätigt wird hier. Fehlt die Meldung, steht die Rate wochenlang auf „nicht bestätigt“."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Zahlungseingang bei uns",
+      "Der Tag, an dem im Institut kassiert wurde"
+     ],
+     [
+      "Referenz / Verwendungszweck",
+      "Optional"
+     ],
+     [
+      "Zahlungsart",
+      "Pflicht — im Institut meist Bar oder Kartenzahlung"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Eine geplatzte Lastschrift ausgleichen",
+   "sub": "Die Lastschrift platzte, die Kundin hat danach überwiesen — dann wird die Rücklastschrift ausgeglichen, nicht neu eingezogen.",
+   "card": {
+    "title": "RLS ausgleichen",
+    "text": "Geplatzte Rate per Überweisung erledigen"
+   },
+   "left": {
+    "shot": "vt4-rls-ausgleich"
+   },
+   "leftCaption": "Der Ausgleich einer geplatzten Rate.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Geplatzte Rate finden",
+     "text": "Zustand **Fehlgeschlagen** oder **Rückbuchung**, mit dem Grund der Bank darunter."
+    },
+    {
+     "n": 2,
+     "title": "Ausgleich buchen",
+     "text": "Eingangsdatum, Referenz und Zahlungsart wie beim Nachtragen."
+    },
+    {
+     "n": 3,
+     "title": "Gebühr",
+     "text": "Wurde eine **RLS-Gebühr** erhoben, lässt sich hier festhalten, dass auch sie bezahlt ist."
+    },
+    {
+     "n": 4,
+     "title": "Speichern",
+     "text": "Die Rate gilt als erledigt — **ohne** neuen Einzug."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Es wird ausdrücklich **kein** neuer GoCardless-Einzug ausgelöst",
+     "text": "Genau dafür ist dieser Weg da. Wer stattdessen erneut einzieht, holt Geld, das schon da ist."
+    },
+    {
+     "title": "Das Forderungsmanagement liest mit",
+     "text": "Läuft zu diesem Vertrag ein Fall, ändert der Ausgleich den offenen Saldo. Bei laufender Mahnkette gehört die Zahlung zusätzlich dort erfasst („Forderungen 4“)."
+    },
+    {
+     "title": "Alternative: anhängen",
+     "text": "Wenn die Kundin **nicht** überwiesen hat, wird die Rate stattdessen ans Planende gehängt — „Verträge 5“."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Zahlungseingang bei uns",
+      "Wann die Überweisung ankam"
+     ],
+     [
+      "Referenz / Verwendungszweck",
+      "Optional"
+     ],
+     [
+      "Zahlungsart",
+      "Pflicht"
+     ],
+     [
+      "Gebühr wurde bereits bezahlt",
+      "Schalter — setzt die RLS-Gebühr auf bezahlt"
+     ],
+     [
+      "Gebühr bezahlt am",
+      "Optional, das Datum dazu"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Zwei Wege, ein Ergebnis — aber nur einer stimmt.** Ausgleichen heißt: Das Geld ist da. Anhängen heißt: Es kommt später. Wer anhängt, obwohl bezahlt wurde, verlängert den Vertrag ohne Grund."
+   }
+  }
+ ]
+}

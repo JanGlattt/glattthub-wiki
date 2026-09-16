@@ -17,6 +17,9 @@ const fs = require('fs');
 const path = require('path');
 const D = require('./lib/deck.cjs');
 
+// Slug-Wachhund: zwei Decks mit demselben Dateinamen ueberschrieben sich frueher still.
+const belegteSlugs = new Map();
+
 const deckFiles = process.argv.slice(2).filter(a => !a.startsWith('--'));
 if (!deckFiles.length) { console.error('Aufruf: node build-web.cjs <deck.json> [...]'); process.exit(2); }
 
@@ -63,8 +66,8 @@ for (const deckFile of deckFiles) {
     }
     if (p.steps) blocks.push(D.stepsHtml(p.steps, 1));
     if (p.rightSteps) blocks.push(D.stepsHtml(p.rightSteps, 1));
-    if (p.notes) blocks.push(D.notesHtml(p.notes));
     blocks.push(...D.bodyBlocks(p));
+    if (p.notes) blocks.push(D.notesHtml(p.notes));
     if (p.rightHtml) blocks.push(p.rightHtml);
     if (p.hint) blocks.push(D.hintHtml(p.hint));
     if (p.rightHint) blocks.push(D.hintHtml(p.rightHint));
@@ -83,6 +86,16 @@ for (const deckFile of deckFiles) {
 
   const body = head + pagesHtml.join('\n');
   const foot = `<footer class="guide-foot">glattt · Klickanleitung ${D.esc(deck.footerArea)} · Stand ${D.esc(deck.stand)}${deck.version ? ' · v' + D.esc(deck.version) : ''}</footer>`;
+
+  // Zwei Decks mit demselben Dateinamen ergaeben denselben Slug — die zweite
+  // Anleitung wuerde die erste still ueberschreiben (16.09.2026: „2-fall-im-detail"
+  // in widerrufe/ und forderungen/). Lieber laut abbrechen.
+  if (belegteSlugs.has(deck.slug)) {
+    console.error(`FEHLER: Slug „${deck.slug}" doppelt — ${belegteSlugs.get(deck.slug)} und ${deck.series} ${deck.nr}.`);
+    console.error('        Eine der beiden Deck-Dateien umbenennen, sonst faellt eine Anleitung weg.');
+    process.exit(1);
+  }
+  belegteSlugs.set(deck.slug, `${deck.series} ${deck.nr}`);
 
   const dir = path.join(outRoot, deck.slug);
   fs.mkdirSync(dir, { recursive: true });
@@ -146,7 +159,7 @@ for (const deckFile of deckFiles) {
 /* Lesereihenfolge der Serien — erst die taegliche Arbeit, dann Buero, dann Verwaltung.
    Was hier nicht steht, haengt alphabetisch hinten dran. */
 const SERIEN = ['Grundlagen', 'Terminansicht', 'Kundenverwaltung', 'Bonus-Board', 'Verkauf',
-  'Betrieb', 'Team', 'Finanzen', 'System', 'Berichte', 'Admin'];
+  'Verträge', 'Widerrufe', 'Forderungen', 'Betrieb', 'Team', 'Finanzen', 'System', 'Berichte', 'Admin'];
 
 /** Uebersicht nach Serie gruppiert, Zielgruppe als Badge je Eintrag. */
 function groupedList(guides) {

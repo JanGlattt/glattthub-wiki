@@ -149,11 +149,11 @@
     "rows": [
      [
       "Wie viel ist noch auf dem Gutschein?",
-      "„Verkauf 7“ — Restwert im Gutschein-Modul"
+      "„Verkauf 3“ — Restwert im Gutschein-Modul"
      ],
      [
       "Gutschein auf offene Raten anrechnen",
-      "„Verkauf 3“ — Verrechnung im Vertrag"
+      "„Verträge 6“ — Verrechnung im Vertrag"
      ],
      [
       "Gutschein als Teil einer Aktion",
@@ -166,7 +166,7 @@
     ]
    },
    "hint": {
-    "text": "**Im Institut** sind Gutscheine ein eigenes Thema — Suchen, Restwert prüfen, anlegen („Verkauf 7“)."
+    "text": "**Im Institut** sind Gutscheine ein eigenes Thema — Suchen, Restwert prüfen, anlegen („Verkauf 3“)."
    }
   }
  ]

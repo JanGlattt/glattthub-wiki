@@ -1,10 +1,10 @@
 {
- "out": "../pdf/Verkauf-6-Freunde-werben",
+ "out": "../pdf/Verkauf-2-freunde-werben",
  "meta": "../meta.json",
  "shots": "../shots",
  "series": "Verkauf",
- "nr": 6,
- "of": 8,
+ "nr": 2,
+ "of": 4,
  "audience": "buero",
  "title": [
   "Freunde",
@@ -50,7 +50,7 @@
     }
    ],
    "hint": {
-    "text": "**„Auszahlung blockiert“** heißt fast immer: Der geworbene Vertrag ist noch zu jung, widerrufen oder nicht bezahlt. Vor dem Nachfragen also erst den Vertrag ansehen („Verkauf 2“)."
+    "text": "**„Auszahlung blockiert“** heißt fast immer: Der geworbene Vertrag ist noch zu jung, widerrufen oder nicht bezahlt. Vor dem Nachfragen also erst den Vertrag ansehen („Verträge 2“)."
    }
   },
   {

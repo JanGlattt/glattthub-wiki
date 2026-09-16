@@ -1,0 +1,384 @@
+{
+ "out": "../pdf/Vertraege-5-sepa-einzug",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Verträge",
+ "nr": 5,
+ "of": 8,
+ "audience": "buero",
+ "title": [
+  "SEPA-Einzug und",
+  "Rücklastschrift"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — einziehen, ablösen, Rücklastschrift anhängen, abgleichen",
+ "eyebrow": "Verträge · Einzüge",
+ "footerArea": "Verträge",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "**Jede Rate ist eine eigene Lastschrift** — es gibt keine Abos und keinen Automatismus.",
+  "**„Betrag per SEPA einziehen“ holt sofort Geld.** Vorschau lesen, Betrag prüfen, dann klicken.",
+  "**Anhängen heißt: Geld kommt später.** Ist es schon da, wird stattdessen ausgeglichen."
+ ],
+ "pages": [
+  {
+   "h1": "Wie der Einzug funktioniert",
+   "sub": "Jede Rate ist eine eigene Lastschrift. Es gibt keine Abos und keinen Automatismus, der von allein zieht.",
+   "layout": "text",
+   "card": {
+    "title": "Wie der Einzug läuft",
+    "text": "Einzelzahlungen statt Dauerauftrag"
+   },
+   "sections": [
+    {
+     "h2": "Jede Rate eine eigene Zahlung",
+     "text": "Seit 07/2026 legt der Hub keine GoCardless-Abos mehr an. Jede Rate ist eine **einzelne Zahlung** mit eigenem Einzugsdatum. Das macht Änderungen möglich — und bedeutet zugleich, dass jede Rate einzeln schiefgehen kann."
+    },
+    {
+     "h2": "Drei Tage Vorlauf",
+     "text": "Eine Lastschrift wird einige Tage vor dem Fälligkeitsdatum bei GoCardless **eingereicht**. Ab diesem Moment ist sie unterwegs und lässt sich nicht mehr ändern — der Zustand der Rate steht dann auf **Eingereicht**."
+    },
+    {
+     "h2": "Der Hub zieht nie von allein",
+     "text": "Kein Automatismus legt ein Mandat an, startet einen Plan oder zieht einen Betrag ein. Alles Schreibende Richtung GoCardless passiert über einen Knopf auf dieser Seite — bewusst, damit niemand unbemerkt Geld bewegt."
+    }
+   ],
+   "table": {
+    "head": [
+     "Vorgang",
+     "Wann",
+     "Wo"
+    ],
+    "rows": [
+     [
+      "Reguläre Rate",
+      "läuft von selbst nach Plan",
+      "nichts zu tun"
+     ],
+     [
+      "**Betrag per SEPA einziehen**",
+      "Ablösung, Wunschbetrag, Restsumme",
+      "Seite 3"
+     ],
+     [
+      "**Rücklastschrift anhängen**",
+      "Lastschrift geplatzt, Kundin zahlt später",
+      "Seite 4"
+     ],
+     [
+      "**Mit GoCardless abgleichen**",
+      "Hub und GoCardless sagen Verschiedenes",
+      "Seite 5"
+     ],
+     [
+      "**Legacy-Einzug anpassen**",
+      "Altvertrag aus Starmoney",
+      "Seite 6"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Nie „auf Verdacht“ einziehen.** Eine ausgelöste Abbuchung ist auf dem Kontoauszug der Kundin sichtbar und im Fehlerfall teuer: Rückbuchung, Gebühr, Beschwerde. Vorher prüfen — richtige Rate, richtiger Betrag, gültiges Mandat, kein laufender Widerruf (Banner oben)."
+   }
+  },
+  {
+   "h1": "Wann eingezogen wird — und wann nicht",
+   "sub": "Vier Bedingungen müssen stimmen, sonst wird aus dem Einzug ein Problem.",
+   "card": {
+    "title": "Vor dem Einzug",
+    "text": "Die vier Kontrollen"
+   },
+   "left": {
+    "shot": "vt5-vorpruefung"
+   },
+   "leftCaption": "Der SEPA-Bereich mit Mandat und Einzugsknopf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Mandat gültig?",
+     "text": "Im SEPA-Bereich steht der **Mandats-Status**. Ohne aktives Mandat gibt es keinen Einzug."
+    },
+    {
+     "n": 2,
+     "title": "Kein Widerruf offen?",
+     "text": "Das Banner oben. Bei laufendem Widerruf erst klären, dann einziehen."
+    },
+    {
+     "n": 3,
+     "title": "Kein hartes Forderungsverfahren?",
+     "text": "Auch das steht im Banner. Dort zieht das Forderungsmanagement ein, nicht das Büro."
+    },
+    {
+     "n": 4,
+     "title": "Betrag geprüft?",
+     "text": "Höchstens der **offene Restbetrag** — der Hub zeigt ihn unter dem Feld an."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Ein abgelaufenes Mandat merkt man erst hinterher",
+     "text": "GoCardless nimmt den Auftrag an und lässt ihn platzen. Ergebnis: Rücklastschrift, Gebühr und eine Kundin, die sich zu Recht wundert."
+    },
+    {
+     "title": "Bei laufendem Widerruf gilt: erst entscheiden",
+     "text": "Der Vertrag bleibt zwar aktiv und die Raten laufen weiter — aber ein **zusätzlicher** Einzug mitten im Widerruf ist gegenüber der Kundin nicht zu erklären."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Mandats-Status",
+      "Aktiv · Ausstehend · Abgelaufen · Storniert"
+     ],
+     [
+      "Offener Restbetrag",
+      "Die Obergrenze für jeden Einzug"
+     ],
+     [
+      "Banner „Widerruf“",
+      "Vertrag läuft, aber die Entscheidung steht aus"
+     ],
+     [
+      "Banner „Forderungsmanagement“",
+      "Harter Weg oder gerichtliches Verfahren"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Modal „Betrag per SEPA einziehen“",
+   "sub": "Ein einmaliger Einzug zum Wunschdatum — für Ablösungen, Restsummen und Sonderfälle.",
+   "card": {
+    "title": "SEPA einziehen",
+    "text": "Wunsch- oder Restbetrag abbuchen"
+   },
+   "left": {
+    "shot": "vt5-einziehen"
+   },
+   "leftCaption": "Das Fenster „Betrag per SEPA einziehen“ mit Ablöse-Vorschau.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Betrag eingeben",
+     "text": "Mit Komma. Höchstens der offene Restbetrag — der Hub nennt ihn unter dem Feld."
+    },
+    {
+     "n": 2,
+     "title": "Einzugsdatum",
+     "text": "Wann abgebucht werden soll."
+    },
+    {
+     "n": 3,
+     "title": "Vorschau lesen",
+     "text": "Der Hub zeigt, **welche Raten ersetzt oder reduziert** werden. Diese Vorschau ist der wichtigste Teil des Fensters."
+    },
+    {
+     "n": 4,
+     "title": "Einziehen",
+     "text": "Erst dieser Knopf legt die Lastschrift bei GoCardless an."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Voll abgedeckte Raten werden storniert",
+     "text": "Sie werden durch **eine neue Ablöse-Rate** mit eigenem Einzug ersetzt. Eine nur teilweise abgedeckte Rate wird **reduziert**."
+    },
+    {
+     "title": "Der Vertrag schließt sich selbst",
+     "text": "Geht die Zahlung ein und ist damit alles beglichen, setzt der Hub den Vertrag automatisch auf **Abgeschlossen**."
+    },
+    {
+     "title": "Platzt der Einzug, ist es eine normale RLS",
+     "text": "Die Ablöse-Rate erscheint dann als geplatzte Rate und läuft den üblichen Weg (Seite 4)."
+    },
+    {
+     "title": "Bereits eingereichte Einzüge bleiben",
+     "text": "Was schon bei der Bank liegt, läuft durch. Der Betrag kann also **zusätzlich** abgebucht werden — bei der Höhe mitdenken."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Betrag",
+      "in €, höchstens der offene Restbetrag des Vertrags"
+     ],
+     [
+      "Einzugsdatum",
+      "Wunschdatum der Abbuchung"
+     ],
+     [
+      "Ablöse-Vorschau",
+      "Liste der Raten, die storniert oder gekürzt werden"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Das ist der einzige Knopf der Serie, der sofort Geld holt.** Kein zweiter Bestätigungsschritt, keine Rückfrage danach. Vorschau lesen, Betrag gegenprüfen, dann klicken."
+   }
+  },
+  {
+   "h1": "Modal „Rücklastschrift anhängen“",
+   "sub": "Die Lastschrift ist geplatzt und die Kundin zahlt nicht nach — dann wandert die Rate ans Ende des Plans.",
+   "card": {
+    "title": "RLS anhängen",
+    "text": "Geplatzte Rate ans Planende schieben"
+   },
+   "left": {
+    "shot": "vt5-anhaengen"
+   },
+   "leftCaption": "Das Fenster „Rücklastschrift anhängen“ mit Vorschau.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Geplatzte Rate wählen",
+     "text": "Die Aktion steht an der Zeile mit Zustand **Fehlgeschlagen**."
+    },
+    {
+     "n": 2,
+     "title": "Vorschau lesen",
+     "text": "Der Hub zeigt, welche Ratennummer entsteht und wann sie fällig wird."
+    },
+    {
+     "n": 3,
+     "title": "RLS-Gebühr",
+     "text": "Der Schalter **„RLS-Gebühr mit einziehen“** schlägt die Gebühr auf die angehängte Rate."
+    },
+    {
+     "n": 4,
+     "title": "Rate anhängen",
+     "text": "Der Plan verlängert sich um **einen Monat**."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Der Vertrag wird länger",
+     "text": "Aus 24 Raten werden 25. Das ist gewollt: Die Kundin zahlt dieselbe Summe, nur einen Monat länger."
+    },
+    {
+     "title": "Kein Einzug jetzt",
+     "text": "Die angehängte Rate wird erst zu ihrem Fälligkeitsdatum eingezogen, wie jede andere auch."
+    },
+    {
+     "title": "Das Forderungsmanagement kennt diesen Schritt",
+     "text": "Im Prozess heißt er **„Geplatzte Rate ans Planende anhängen“** und steht dort nach der letzten Mahnung („Forderungen 3“). Wer hier vorgreift, nimmt dem Fall seinen nächsten Schritt."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Ursprüngliche Rate",
+      "Nummer und Betrag der geplatzten Rate"
+     ],
+     [
+      "Neue Rate",
+      "Nummer und Fälligkeit der angehängten Rate"
+     ],
+     [
+      "RLS-Gebühr mit einziehen",
+      "Schalter — Gebühr wird auf die neue Rate aufgeschlagen"
+     ],
+     [
+      "Gesamtbetrag",
+      "Rate plus Gebühr, falls gewählt"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Anhängen oder ausgleichen?** Angehängt wird, wenn das Geld **nicht** gekommen ist. Ist es gekommen, wird ausgeglichen („Verträge 4“, Seite 6) — sonst verlängert sich der Vertrag ohne Grund."
+   }
+  },
+  {
+   "h1": "Abgleichen und Legacy-Einzüge",
+   "sub": "Zwei Werkzeuge für den Fall, dass die Zahlen nicht zusammenpassen.",
+   "card": {
+    "title": "Abgleichen & Legacy",
+    "text": "Stand nachziehen, Altsystem-Betrag korrigieren"
+   },
+   "left": {
+    "shot": "vt5-abgleich"
+   },
+   "leftCaption": "Der Abgleich-Knopf im SEPA-Bereich.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Mit GoCardless abgleichen",
+     "text": "Holt den aktuellen Stand aller Zahlungen nach — Zustände, Fehlschläge, Gutschriften."
+    },
+    {
+     "n": 2,
+     "title": "Wann das nötig ist",
+     "text": "Wenn eine Rate im Hub anders aussieht als auf dem Kontoauszug."
+    },
+    {
+     "n": 3,
+     "title": "Legacy-Einzug anpassen",
+     "text": "Nur bei Altverträgen: der Betrag, der über **Starmoney** eingezogen wurde."
+    },
+    {
+     "n": 4,
+     "title": "Leer lassen",
+     "text": "Ohne Eingabe rechnet der Hub den Altsystem-Betrag selbst aus — das Abzeichen zeigt dann **„rechnerisch“**."
+    }
+   ],
+   "right": {
+    "shot": "vt5-legacy"
+   },
+   "rightCaption": "Der Altsystem-Block eines Legacy-Vertrags.",
+   "notes": [
+    {
+     "title": "Der Abgleich ist gefahrlos",
+     "text": "Er liest nur bei GoCardless nach und schreibt den Stand in den Hub. Er löst keinen Einzug aus und storniert nichts."
+    },
+    {
+     "title": "Legacy-Beträge wirken auf die Auskunft",
+     "text": "Der Altsystem-Block geht in „Bezahlt“ ein. Ein falscher Wert macht die Restsumme falsch — und damit auch jede Mahnung."
+    },
+    {
+     "title": "Im Altsystem wird nicht eingezogen",
+     "text": "Dort wird nur nachgehalten, was früher lief. Neue Einzüge laufen immer über GoCardless."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Betrag in € (leer = automatisch)",
+      "Der tatsächlich über das Altsystem eingezogene Betrag"
+     ],
+     [
+      "Begründung",
+      "Warum von der Berechnung abgewichen wird"
+     ],
+     [
+      "Abzeichen „rechnerisch“",
+      "Wert stammt aus der Hub-Berechnung"
+     ],
+     [
+      "Abzeichen „manuell angepasst“",
+      "Wert wurde von Hand gesetzt"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Erst abgleichen, dann handeln.** Wenn Hub und Kontoauszug auseinandergehen, ist der Abgleich der erste Griff — oft erledigt sich die Frage danach von selbst."
+   }
+  }
+ ]
+}

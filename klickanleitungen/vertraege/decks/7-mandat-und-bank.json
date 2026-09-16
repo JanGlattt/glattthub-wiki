@@ -1,0 +1,412 @@
+{
+ "out": "../pdf/Vertraege-7-mandat-und-bank",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Verträge",
+ "nr": 7,
+ "of": 8,
+ "audience": "buero",
+ "title": [
+  "Mandat und",
+  "Bankverbindung"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Mandats-Zustände, Mandat anlegen, Bankverbindung ändern, Stammdaten korrigieren",
+ "eyebrow": "Verträge · Mandat",
+ "footerArea": "Verträge",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "**Nichts davon passiert automatisch** — Mandat und Zahlungsplan legt immer ein Mensch an.",
+  "Eine neue **Bankverbindung tauscht das Mandat aus**: altes storniert, neues angelegt, offene Raten umgebucht.",
+  "**„SEPA im Widerruf storniert“ heißt: nichts anlegen** — das Mandat wurde bewusst beendet."
+ ],
+ "pages": [
+  {
+   "h1": "Die Zustände des Mandats",
+   "sub": "Der SEPA-Bereich sagt in einem Satz, woran man ist. Diese Tabelle übersetzt ihn.",
+   "layout": "text",
+   "card": {
+    "title": "Mandats-Zustände",
+    "text": "Was der Bereich meldet und was zu tun ist"
+   },
+   "table": {
+    "head": [
+     "Meldung",
+     "Bedeutung",
+     "Nächster Schritt"
+    ],
+    "rows": [
+     [
+      "**Keine SEPA-Zahlung**",
+      "Direktzahler-Vertrag",
+      "nichts — hier gibt es kein Mandat"
+     ],
+     [
+      "**Der Kunde muss noch das SEPA-Formular ausfüllen**",
+      "Bankdaten fehlen noch",
+      "Formular teilen („Betrieb 4“)"
+     ],
+     [
+      "**Bankdaten liegen vor**",
+      "Mandat kann angelegt werden",
+      "„Mandat und Zahlungsplan anlegen“ (Seite 3)"
+     ],
+     [
+      "**SEPA-Mandat ausstehend**",
+      "Bei GoCardless angelegt, noch nicht bestätigt",
+      "abwarten"
+     ],
+     [
+      "**Zahlungsplan aktiv (Einzelzahlungen)**",
+      "Alles läuft",
+      "nichts"
+     ],
+     [
+      "**Kein aktiver Zahlungsplan**",
+      "Mandat da, aber keine Raten angelegt",
+      "Plan anlegen"
+     ],
+     [
+      "**SEPA-Mandat abgelaufen**",
+      "Mandat ungültig geworden",
+      "neu anlegen (Seite 3)"
+     ],
+     [
+      "**Storniert**",
+      "Mandat wurde beendet",
+      "reaktivieren oder neu anlegen"
+     ],
+     [
+      "**Mandatserstellung fehlgeschlagen**",
+      "GoCardless hat abgelehnt",
+      "Bankdaten prüfen, erneut versuchen"
+     ],
+     [
+      "**SEPA im Widerruf storniert**",
+      "Im Widerruf beendet — bewusst",
+      "**nichts anlegen** ohne Rücksprache"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**„SEPA im Widerruf storniert — kein SEPA anlegen“ ist eine Anweisung, kein Hinweis.** Das Mandat wurde im Widerrufsverfahren beendet. Wer hier ein neues anlegt, zieht bei einer Kundin ein, die widerrufen hat."
+   }
+  },
+  {
+   "h1": "Der SEPA-Bereich",
+   "sub": "Was dort steht — und welche Angabe für welche Rückfrage taugt.",
+   "card": {
+    "title": "Der SEPA-Bereich",
+    "text": "Mandat, Bankkonto, GoCardless-Daten"
+   },
+   "left": {
+    "shot": "vt7-sepa-bereich"
+   },
+   "leftCaption": "Der SEPA-Bereich mit Mandat und Bankverbindung.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Mandats-Status",
+     "text": "Der Zustand aus der Tabelle auf Seite 1."
+    },
+    {
+     "n": 2,
+     "title": "Bankkonto",
+     "text": "Kontoinhaber, Bank und IBAN — verkürzt dargestellt."
+    },
+    {
+     "n": 3,
+     "title": "Mandatsreferenz",
+     "text": "Die Referenz, die auf dem Kontoauszug der Kundin steht."
+    },
+    {
+     "n": 4,
+     "title": "Mandats-PDF",
+     "text": "**„Mandats-PDF herunterladen“** liefert den unterschriebenen Beleg."
+    }
+   ],
+   "notes": [
+    {
+     "title": "„Die Abbuchung kenne ich nicht“",
+     "text": "Dann ist die **Mandatsreferenz** die Antwort: Sie steht auf dem Kontoauszug und führt eindeutig zu diesem Vertrag."
+    },
+    {
+     "title": "Abweichender Zahler ist normal",
+     "text": "Eltern, Partner, Firma. Wichtig nur: Das Mandat gehört dem Kontoinhaber, nicht der Vertragsnehmerin — Rückfragen zur Bankverbindung gehen an ihn."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Kontoinhaber",
+      "Wer zahlt — muss nicht die Vertragsnehmerin sein"
+     ],
+     [
+      "Abweichender Zahler",
+      "Kennzeichnet genau diesen Fall"
+     ],
+     [
+      "IBAN",
+      "Verkürzt angezeigt; vollständig steht sie im Mandats-PDF"
+     ],
+     [
+      "Mandatsreferenz",
+      "Erscheint auf dem Kontoauszug — bei Rückfragen die entscheidende Angabe"
+     ],
+     [
+      "Unterschrieben am",
+      "Datum der Mandatserteilung"
+     ],
+     [
+      "GC Mandate ID / Customer ID",
+      "Technische Kennungen für den Abgleich mit GoCardless"
+     ],
+     [
+      "Synchronisiert am",
+      "Wann der Hub zuletzt mit GoCardless abgeglichen hat"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Mandat anlegen",
+   "sub": "Zwei Wege: über GoCardless mit den vorliegenden Bankdaten — oder von Hand, wenn das Mandat außerhalb entstand.",
+   "card": {
+    "title": "Mandat anlegen",
+    "text": "Über GoCardless oder von Hand"
+   },
+   "left": {
+    "shot": "vt7-mandat-anlegen"
+   },
+   "leftCaption": "Das Fenster „SEPA-Mandat manuell anlegen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Der Regelweg",
+     "text": "Liegen Bankdaten vor, legt **„Mandat und Zahlungsplan anlegen“** beides bei GoCardless an."
+    },
+    {
+     "n": 2,
+     "title": "Bestätigung",
+     "text": "Danach meldet der Hub **„Alle Daten wurden erfolgreich an GoCardless übermittelt“** und lädt die Seite neu."
+    },
+    {
+     "n": 3,
+     "title": "Von Hand",
+     "text": "**„SEPA-Mandat manuell anlegen“** ist für Mandate, die außerhalb entstanden sind — etwa bei einem Altvertrag."
+    },
+    {
+     "n": 4,
+     "title": "Bestehendes verknüpfen",
+     "text": "Existiert in GoCardless schon ein Mandat, lässt es sich über die Suche verknüpfen statt neu anzulegen."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Anlegen zieht sofort Raten nach",
+     "text": "Mit dem Mandat entsteht der **Zahlungsplan** — die Raten werden bei GoCardless als Einzelzahlungen angelegt. Ab dann läuft der Einzug."
+    },
+    {
+     "title": "Ein Werber-Rabatt wird verrechnet",
+     "text": "Ist ein Werber hinterlegt, zieht der Hub die **50 € Rabatt vom ersten SEPA-Einzug** ab — automatisch beim Anlegen des Plans."
+    },
+    {
+     "title": "Von Hand angelegt heißt: kein Einzug",
+     "text": "Ein manuell hinterlegtes Mandat dokumentiert nur. Eingezogen wird erst, wenn es in GoCardless existiert und verknüpft ist."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Vorname / Nachname",
+      "Der Kontoinhaber"
+     ],
+     [
+      "IBAN",
+      "Vollständig, mit Leerzeichen oder ohne"
+     ],
+     [
+      "BIC",
+      "Optional, wird meist automatisch ermittelt"
+     ],
+     [
+      "Bankname",
+      "Wird automatisch befüllt"
+     ],
+     [
+      "Mandatsreferenz",
+      "Die Referenz des bestehenden Mandats"
+     ],
+     [
+      "Unterschrieben am",
+      "Datum der Mandatserteilung"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Nie automatisch, nie „zur Sicherheit“.** Weder Mandat noch Zahlungsplan werden aus einem Automatismus heraus angelegt — das ist eine bewusste Entscheidung. Angelegt wird hier, von Hand, wenn der Vorgang geklärt ist."
+   }
+  },
+  {
+   "h1": "Modal „Bankverbindung ändern“",
+   "sub": "Die Kundin hat ein neues Konto. Das ist mehr als ein Feldwechsel — das Mandat wird ausgetauscht.",
+   "card": {
+    "title": "Bankverbindung ändern",
+    "text": "Neues Konto, neues Mandat"
+   },
+   "left": {
+    "shot": "vt7-bankverbindung"
+   },
+   "leftCaption": "Das Fenster „Bankverbindung ändern“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Neue Bankdaten",
+     "text": "IBAN und Kontoinhaber sind Pflicht; BIC und Bank ergänzt der Hub."
+    },
+    {
+     "n": 2,
+     "title": "Übertragung lesen",
+     "text": "Der Abschnitt **„Das wird auf die neue Bankverbindung übertragen“** zeigt, welche Raten mitwandern."
+    },
+    {
+     "n": 3,
+     "title": "Anschrift",
+     "text": "Straße, PLZ und Ort des Kontoinhabers, soweit nötig."
+    },
+    {
+     "n": 4,
+     "title": "Speichern",
+     "text": "Das alte Mandat wird storniert, ein neues angelegt."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Altes Mandat wird storniert",
+     "text": "Das bestehende GoCardless-Mandat wird beendet und ein neues mit der neuen Bankverbindung erstellt."
+    },
+    {
+     "title": "Ausstehende Zahlungen werden umgebucht",
+     "text": "Offene Raten wandern auf das neue Konto. Was bereits eingereicht ist, läuft noch über das alte — das lässt sich nicht mehr umleiten."
+    },
+    {
+     "title": "Der Kundin sagen, wann es wirkt",
+     "text": "Die nächste Abbuchung kann noch vom alten Konto kommen. Wer das nicht ansagt, produziert eine Rücklastschrift."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "IBAN *",
+      "Pflicht — die neue Kontonummer"
+     ],
+     [
+      "BIC",
+      "Wird meist automatisch ermittelt"
+     ],
+     [
+      "Bank",
+      "Automatisch aus der IBAN"
+     ],
+     [
+      "Kontoinhaber *",
+      "Pflicht"
+     ],
+     [
+      "E-Mail",
+      "Für die Mandatsbestätigung"
+     ],
+     [
+      "Strasse & Nr. / PLZ / Ort",
+      "Anschrift des Kontoinhabers"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Reihenfolge beachten:** Läuft ein GoCardless-Ratenzahlungsplan alter Art, meldet der Hub, dass er **zuerst storniert** werden muss. Dann erst lassen sich Mandatsdaten ändern."
+   }
+  },
+  {
+   "h1": "Mandat-Informationen ändern",
+   "sub": "Korrekturen an Referenz und Datum — ohne die Bankverbindung anzufassen.",
+   "card": {
+    "title": "Mandat-Infos ändern",
+    "text": "Referenz und Datum korrigieren"
+   },
+   "left": {
+    "shot": "vt7-mandat-info"
+   },
+   "leftCaption": "Das Fenster „Mandat-Informationen ändern“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Was hier geht",
+     "text": "Mandatsreferenz und Unterschriftsdatum — reine Stammdaten."
+    },
+    {
+     "n": 2,
+     "title": "Begründung",
+     "text": "Pflichtfeld. Die Änderung wird im Bearbeitungsverlauf protokolliert."
+    },
+    {
+     "n": 3,
+     "title": "Was hier nicht geht",
+     "text": "Die IBAN. Für ein anderes Konto ist es eine Bankverbindungs-Änderung (vorige Seite)."
+    },
+    {
+     "n": 4,
+     "title": "Speichern",
+     "text": "Ändert nur die Angaben im Hub."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Ändert nichts bei GoCardless",
+     "text": "Diese Korrektur bleibt im Hub. Stimmt die Referenz dort nicht mit GoCardless überein, hilft nur der Abgleich („Verträge 5“)."
+    },
+    {
+     "title": "Reaktivieren und Verknüpfung zurücksetzen",
+     "text": "Daneben stehen **„SEPA-Mandat reaktivieren“** (nach einer Stornierung) und **„GoCardless-Verknüpfung zurücksetzen“** — letzteres nur, wenn die Verknüpfung nachweislich falsch ist."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Mandatsreferenz",
+      "Die Referenz, wie sie auf dem Kontoauszug erscheint"
+     ],
+     [
+      "Unterschrieben am",
+      "Datum der Mandatserteilung"
+     ],
+     [
+      "Begründung",
+      "Pflicht — steht im Bearbeitungsverlauf"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**„Verknüpfung zurücksetzen“ ist kein Aufräum-Knopf.** Er trennt Vertrag und GoCardless-Mandat. Danach zieht nichts mehr ein, und die Zuordnung muss von Hand wiederhergestellt werden."
+   }
+  }
+ ]
+}

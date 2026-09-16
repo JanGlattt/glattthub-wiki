@@ -1,0 +1,288 @@
+{
+ "out": "../pdf/Forderungen-1-uebersicht-und-anlegen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Forderungen",
+ "nr": 1,
+ "of": 6,
+ "audience": "buero",
+ "title": [
+  "Übersicht und",
+  "Fall anlegen"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — die Arbeitsliste, woher die Fälle kommen, Fall ohne Vertrag anlegen",
+ "eyebrow": "Forderungen · Übersicht",
+ "footerArea": "Forderungen",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Startseite ist eine **Arbeitsliste**: „Zu erledigen“ ist der einzige Topf, der Arbeit bedeutet.",
+  "Der **Einstieg bestimmt den Weg** — sanft, hart oder ohne Vertrag.",
+  "Ein Fall ohne Vertrag **friert den Betrag beim Anlegen ein** — spätere Kontobewegungen ändern ihn nicht."
+ ],
+ "pages": [
+  {
+   "h1": "Die Arbeitsliste",
+   "sub": "Die Startseite des Moduls ist keine Liste, sondern eine Arbeitsliste: Was ist heute zu tun?",
+   "card": {
+    "title": "Die Arbeitsliste",
+    "text": "Zu erledigen, läuft, ruhend"
+   },
+   "left": {
+    "shot": "fo1-uebersicht"
+   },
+   "leftCaption": "Die Übersicht des Forderungsmanagements.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Zu erledigen“",
+     "text": "Fälle, die einen Schritt brauchen — Frist abgelaufen, Wiedervorlage erreicht, Entscheidung offen."
+    },
+    {
+     "n": 2,
+     "title": "„Läuft — nichts zu tun“",
+     "text": "Die Frist läuft noch. Hier wird gewartet, nicht gearbeitet."
+    },
+    {
+     "n": 3,
+     "title": "„Ruhend“",
+     "text": "Geparkt, beim Anwalt oder wartend — bewusst stillgelegt."
+    },
+    {
+     "n": 4,
+     "title": "„Bestand nach Prozessstufe“",
+     "text": "Wie viele Fälle in welcher Stufe stecken — die Gesundheitsprüfung des Moduls."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Der Hub entscheidet nicht, er sortiert",
+     "text": "Was zu tun ist, schlägt er vor. **Ob** es getan wird, entscheidet das Büro — und jeder Schritt wird von Hand ausgelöst."
+    },
+    {
+     "title": "Ein leerer Topf „Zu erledigen“ ist das Ziel",
+     "text": "Nicht „keine Fälle“, sondern „kein Fall wartet auf uns“. Alles andere läuft in seinen Fristen."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Zu erledigen",
+      "Die tägliche Arbeitsliste"
+     ],
+     [
+      "Wiedervorlage erreicht",
+      "Ein Fall wartet auf seine erneute Befassung"
+     ],
+     [
+      "Neue RLS — Entscheidung offen",
+      "Eine weitere Rücklastschrift kam herein („Forderungen 3“)"
+     ],
+     [
+      "Zahlung prüfen",
+      "Ein Eingang ist zuzuordnen"
+     ],
+     [
+      "RZV geplatzt",
+      "Eine Ratenzahlungsvereinbarung wurde nicht eingehalten"
+     ],
+     [
+      "Widersprochen",
+      "Im gerichtlichen Verfahren wurde Widerspruch eingelegt"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Woher die Fälle kommen",
+   "sub": "Vier Einstiege — sie bestimmen, wie hart der Fall geführt wird.",
+   "layout": "text",
+   "card": {
+    "title": "Woher die Fälle kommen",
+    "text": "Die vier Einstiege"
+   },
+   "sections": [
+    {
+     "h2": "Sanfter und harter Weg",
+     "text": "Der **sanfte Weg** gibt der Kundin Zeit: zwei Zahlungserinnerungen, ein Wartefenster auf die nächste Lastschrift, dann die letzte Mahnung. Der **harte Weg** ist kompakter — eine Erinnerung, dann direkt der postalische Mahnweg, und die Schreiben fordern **alle offenen Schulden** statt nur die eine Rate. Welcher Weg gilt, steht am Fall („Hart“ / „Sanft“)."
+    },
+    {
+     "h2": "Abgabe aus dem Widerruf",
+     "text": "Fälle können auch aus einem Widerruf kommen — dort über **„Ans Forderungsmanagement abgeben“** („Widerrufe 4“). Die dort bereits erfolgte Anmahnung wird angerechnet, der Fall startet also nicht wieder bei der ersten Erinnerung."
+    }
+   ],
+   "table": {
+    "head": [
+     "Einstieg",
+     "Auslöser",
+     "Weg"
+    ],
+    "rows": [
+     [
+      "**Rücklastschrift**",
+      "Eine SEPA-Lastschrift ist geplatzt",
+      "sanft — zwei Erinnerungen, dann Postweg"
+     ],
+     [
+      "**Direktzahler**",
+      "Ein Direktzahler hat nicht bezahlt",
+      "beginnt mit **Kontaktaufnahme**"
+     ],
+     [
+      "**Mandat entzogen**",
+      "Die Kundin hat das SEPA-Mandat widerrufen",
+      "eigener Einstieg: Restsumme per E-Mail anmahnen"
+     ],
+     [
+      "**Kundenkonto**",
+      "Offenes Konto ohne Vertrag, z.B. aus dem Institut",
+      "ohne Vertrag — nach der 2. Erinnerung direkt Postweg"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Der Einstieg ist keine Einstellung, sondern eine Feststellung.** Er ergibt sich daraus, wie der Fall entstanden ist — und er entscheidet über die gesamte Kette der nächsten Schritte."
+   }
+  },
+  {
+   "h1": "Modal „Forderungsfall ohne Vertrag anlegen“",
+   "sub": "Für offene Kundenkonten, hinter denen kein Vertrag steht.",
+   "card": {
+    "title": "Fall anlegen",
+    "text": "Kundenkonto oder freie Forderung"
+   },
+   "left": {
+    "shot": "fo1-anlegen"
+   },
+   "leftCaption": "Das Fenster „Forderungsfall ohne Vertrag anlegen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Offenes Konto übernehmen",
+     "text": "Der Hub listet Kundinnen mit offenem Konto aus Phorest samt Betrag."
+    },
+    {
+     "n": 2,
+     "title": "Oder frei wählen",
+     "text": "**„Kunde frei wählen“** für Forderungen, die nicht aus einem Kontostand stammen."
+    },
+    {
+     "n": 3,
+     "title": "Standort",
+     "text": "Bestimmt die **Bankverbindung**, die in den Schreiben steht."
+    },
+    {
+     "n": 4,
+     "title": "Anlegen",
+     "text": "Der Betrag wird beim Anlegen **eingefroren**."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Eingefroren heißt: der Betrag wandert nicht mehr",
+     "text": "Der Kontostand in Phorest kann sich weiter ändern — die Forderung bleibt, wie sie beim Anlegen war. Sonst würde jedes Mahnschreiben eine andere Summe nennen."
+    },
+    {
+     "title": "Ohne Vertrag gibt es kein Anhängen",
+     "text": "Der Prozess überspringt Wartefenster und „Rate anhängen“ — nach der zweiten Erinnerung geht es direkt in den Postweg."
+    },
+    {
+     "title": "Der Standort ist keine Kosmetik",
+     "text": "Die Bankverbindung im Schreiben muss zum Institut passen, sonst zahlt die Kundin auf ein Konto, auf dem niemand die Zahlung erwartet."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Kunde",
+      "aus der Liste offener Konten oder frei gesucht"
+     ],
+     [
+      "Forderungsbetrag",
+      "Der offene Betrag; bei freier Wahl selbst eingetragen"
+     ],
+     [
+      "Standort",
+      "Bestimmt die Bankverbindung in den Schreiben"
+     ],
+     [
+      "Vermerk (optional)",
+      "Woher die Forderung stammt"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Vorher prüfen, ob es wirklich keinen Vertrag gibt.** Ein Fall ohne Vertrag kann Raten nicht anhängen und nicht über SEPA einziehen. Wer ihn fälschlich so anlegt, nimmt dem Fall die halben Möglichkeiten."
+   }
+  },
+  {
+   "h1": "Fälle im gerichtlichen Verfahren",
+   "sub": "Ein eigener Bereich der Übersicht — dort läuft der Fall nach anderen Regeln.",
+   "card": {
+    "title": "Gerichtliche Fälle",
+    "text": "Der separate Bereich der Übersicht"
+   },
+   "left": {
+    "shot": "fo1-gerichtlich"
+   },
+   "leftCaption": "Der Bereich „Fälle im gerichtlichen Mahnverfahren“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Eigener Block",
+     "text": "Gerichtliche Fälle stehen getrennt — sie folgen keinem Prozessschritt mehr."
+    },
+    {
+     "n": 2,
+     "title": "Zustand",
+     "text": "Etwa **Widersprochen**, wenn die Kundin dem Mahnbescheid widersprochen hat."
+    },
+    {
+     "n": 3,
+     "title": "Zum Fall",
+     "text": "Führt in den Fall, Reiter **Gerichtliches Verfahren** („Forderungen 6“)."
+    },
+    {
+     "n": 4,
+     "title": "Leer ist gut",
+     "text": "Steht dort **„Aktuell befindet sich kein Fall im gerichtlichen Verfahren“**, ist nichts eskaliert."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Gerichtliche Fälle haben keinen nächsten Schritt",
+     "text": "Der Hub schlägt nichts mehr vor — der Ablauf folgt dem Gericht und dem Anwalt. Dokumentiert wird trotzdem („Forderungen 6“)."
+    },
+    {
+     "title": "Die 250-€-Weiche führt hierher",
+     "text": "Über 250 € offen geht der Fall ins gerichtliche Mahnverfahren, darunter wird abgeschrieben. Das ist eine feste Grenze, keine Einzelfallentscheidung („Forderungen 6“)."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Widersprochen",
+      "Die Kundin hat dem Mahnbescheid widersprochen"
+     ],
+     [
+      "Beobachtet seit",
+      "Wie lange der Fall bereits gerichtlich läuft"
+     ]
+    ]
+   }
+  }
+ ]
+}

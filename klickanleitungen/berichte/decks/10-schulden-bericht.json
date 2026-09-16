@@ -16,7 +16,7 @@
  "stand": "15.09.2026",
  "version": "1.0",
  "notes": [
-  "Die Auswertungssicht auf das Forderungsmanagement — **bearbeitet wird in „Finanzen 1“**.",
+  "Die Auswertungssicht auf das Forderungsmanagement — **bearbeitet wird in „Forderungen 1“**.",
   "Drei Fragen: **Wie viel kommt neu rein, wie viel ist Bestand, wie viel kommt zurück?**",
   "Rücklastschriften sind der Zufluss; Zahlungseingänge und Abschlüsse sind der Abfluss."
  ],
@@ -148,7 +148,7 @@
      ],
      [
       "Rückfluss sinkt",
-      "Mahnprozess stockt — offene Fälle in „Finanzen 1“ durchgehen"
+      "Mahnprozess stockt — offene Fälle in „Forderungen 1“ durchgehen"
      ],
      [
       "Viele Fälle ohne Bewegung",
@@ -161,7 +161,7 @@
     ]
    },
    "hint": {
-    "text": "**Für einzelne Fälle** ist „Finanzen 1“ zuständig, für die Kundensicht „Kundenverwaltung 4“."
+    "text": "**Für einzelne Fälle** ist „Forderungen 1“ zuständig, für die Kundensicht „Kundenverwaltung 4“."
    }
   }
  ]

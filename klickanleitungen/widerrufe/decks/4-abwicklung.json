@@ -1,0 +1,333 @@
+{
+ "out": "../pdf/Widerrufe-4-abwicklung",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Widerrufe",
+ "nr": 4,
+ "of": 5,
+ "audience": "buero",
+ "title": [
+  "Die",
+  "Abwicklung"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — SEPA stornieren, Phorest bereinigen, Downgrade vor Ort, Abgabe ans Forderungsmanagement",
+ "eyebrow": "Widerrufe · Abwicklung",
+ "footerArea": "Widerrufe",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "**Erst SEPA stornieren, dann alles andere** — jeder Tag Verzug ist ein möglicher Einzug.",
+  "**Phorest-Pakete auf 0 setzen**, sonst bucht die Kundin Termine, die ihr nicht mehr zustehen.",
+  "Die **Haken auf der Fallseite halten nur fest** — erledigt wird es über diese Aktionen."
+ ],
+ "pages": [
+  {
+   "h1": "Die vier Abwicklungsschritte",
+   "sub": "Ein akzeptierter Widerruf hinterlässt vier Baustellen. Keine davon erledigt sich von selbst.",
+   "layout": "text",
+   "card": {
+    "title": "Die vier Schritte",
+    "text": "Was nach der Entscheidung zu tun ist"
+   },
+   "sections": [
+    {
+     "h2": "Die Haken sind Buchhaltung, nicht Ausführung",
+     "text": "Auf der Fallseite gibt es die Haken **„SEPA storniert“** und **„Phorest aktualisiert“**. Sie halten nur fest, dass es erledigt ist. Ausgeführt wird über die Aktionen dieses Dokuments — ein Haken storniert kein Mandat."
+    }
+   ],
+   "table": {
+    "head": [
+     "Schritt",
+     "Was passiert",
+     "Wenn es unterbleibt"
+    ],
+    "rows": [
+     [
+      "**SEPA-Mandat stornieren**",
+      "Das Mandat wird bei GoCardless beendet",
+      "Es wird weiter abgebucht — bei einer Kundin, die widerrufen hat"
+     ],
+     [
+      "**Phorest-Pakete auf 0 setzen**",
+      "Rest-Einheiten entfernt, Paket archiviert",
+      "Die Kundin kann Termine buchen, die ihr nicht mehr zustehen"
+     ],
+     [
+      "**Downgrade-Formulare**",
+      "Neuer Vertrag und Mandat beim Kunden anstoßen",
+      "Der neue Vertrag entsteht nie"
+     ],
+     [
+      "**Ans Forderungsmanagement abgeben**",
+      "Offene Restsumme wird zum Forderungsfall",
+      "Die Forderung verjährt still vor sich hin"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Reihenfolge: erst SEPA, dann alles andere.** Jeder Tag zwischen Entscheidung und Mandatsstornierung ist ein möglicher Einzug. Der ärgert die Kundin mehr als der ganze Widerruf."
+   }
+  },
+  {
+   "h1": "Modal „SEPA-Mandat stornieren“",
+   "sub": "Der wichtigste Schritt nach einem akzeptierten Widerruf — und der eiligste.",
+   "card": {
+    "title": "SEPA stornieren",
+    "text": "Mandat beenden, Einzüge stoppen"
+   },
+   "left": {
+    "shot": "wd4-sepa"
+   },
+   "leftCaption": "Das Fenster „SEPA-Mandat stornieren“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Mandate prüfen",
+     "text": "Das Fenster listet die Mandate am Vertrag. Meist ist es eines."
+    },
+    {
+     "n": 2,
+     "title": "Auswählen",
+     "text": "Das zu stornierende Mandat ankreuzen."
+    },
+    {
+     "n": 3,
+     "title": "Stornieren",
+     "text": "Das Mandat wird bei GoCardless beendet."
+    },
+    {
+     "n": 4,
+     "title": "Kein Mandat da?",
+     "text": "Dann **„SEPA als erledigt vermerken (kein Mandat vorhanden)“** — der Haken wird gesetzt, ohne etwas zu stornieren."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Am Vertrag steht danach „SEPA im Widerruf storniert“",
+     "text": "Der SEPA-Bereich zeigt zusätzlich **„kein neues Mandat und keinen Zahlungsplan anlegen“** — eine Anweisung an alle, die den Vertrag später öffnen („Verträge 7“)."
+    },
+    {
+     "title": "Bereits eingereichte Einzüge laufen noch",
+     "text": "Was bei der Bank liegt, wird noch abgebucht. Diese Rate muss ggf. erstattet werden — das geht nicht über den Hub."
+    },
+    {
+     "title": "Reaktivieren ist möglich, aber eine Entscheidung",
+     "text": "Wird der Widerruf doch abgelehnt oder zieht die Kundin ihn zurück, lässt sich das Mandat reaktivieren („Verträge 7“)."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Mandat",
+      "Auswahl der vorhandenen Mandate am Vertrag"
+     ],
+     [
+      "SEPA als erledigt vermerken",
+      "Für Verträge ohne Mandat, etwa Direktzahler"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Diesen Schritt nie aufschieben.** Solange das Mandat lebt, zieht der Plan weiter ein. Eine Abbuchung nach akzeptiertem Widerruf ist der häufigste Anlass für eine Beschwerde, die dann keine über den Vertrag mehr ist, sondern über uns."
+   }
+  },
+  {
+   "h1": "Modal „Phorest-Pakete auf 0 setzen“",
+   "sub": "Der Vertrag ist weg — die gekauften Behandlungseinheiten in Phorest sind es nicht.",
+   "card": {
+    "title": "Phorest bereinigen",
+    "text": "Rest-Einheiten entfernen, Paket archivieren"
+   },
+   "left": {
+    "shot": "wd4-phorest"
+   },
+   "leftCaption": "Das Fenster „Phorest-Pakete auf 0 setzen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Pakete laden",
+     "text": "Der Hub zeigt die Pakete der Kundin aus Phorest."
+    },
+    {
+     "n": 2,
+     "title": "Auswählen",
+     "text": "Die Pakete ankreuzen, die zum widerrufenen Vertrag gehören."
+    },
+    {
+     "n": 3,
+     "title": "Auf 0 setzen",
+     "text": "Rest-Einheiten werden entfernt und das Paket **archiviert**."
+    },
+    {
+     "n": 4,
+     "title": "Keine gefunden?",
+     "text": "Dann meldet das Fenster **„Keine Phorest-Pakete beim Kunden gefunden“** — dann ist hier nichts zu tun."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Phorest ist die Buchungsgrundlage",
+     "text": "Solange Einheiten übrig sind, kann die Kundin Termine buchen und das Institut behandelt sie — ohne dass jemand merkt, dass der Vertrag widerrufen ist."
+    },
+    {
+     "title": "Archivieren, nicht löschen",
+     "text": "Das Paket bleibt in der Historie sichtbar. Nachvollziehbar bleibt, was gekauft und was storniert wurde."
+    },
+    {
+     "title": "Nur die Pakete dieses Vertrags",
+     "text": "Eine Kundin kann mehrere Pakete haben. Wer alle auf 0 setzt, nimmt ihr auch das, was sie noch bezahlt hat."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Paket",
+      "Bezeichnung und Rest-Einheiten aus Phorest"
+     ],
+     [
+      "Auswahl",
+      "Mehrere Pakete gleichzeitig möglich"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Downgrade-Formulare vor Ort",
+   "sub": "Wenn die Kundin ins Institut kommt, statt digital zu unterschreiben.",
+   "card": {
+    "title": "Downgrade vor Ort",
+    "text": "Vertrag und Mandat im Institut anstoßen"
+   },
+   "left": {
+    "shot": "wd4-downgrade"
+   },
+   "leftCaption": "Das Fenster „Downgrade-Formulare“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Formulare wählen",
+     "text": "**Vertragsformular** und **SEPA-Mandatsformular**."
+    },
+    {
+     "n": 2,
+     "title": "Öffnen",
+     "text": "Das Formular wird für die Kundin bereitgestellt."
+    },
+    {
+     "n": 3,
+     "title": "Vor Ort ausfüllen",
+     "text": "Die Kundin unterschreibt im Institut auf dem iPad."
+    },
+    {
+     "n": 4,
+     "title": "Danach",
+     "text": "Aus der Einreichung entsteht der neue Vertrag samt Mandat."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Vor Ort gilt kein Fernabsatz",
+     "text": "Unterschreibt die Kundin im Institut, greift die 14-Tage-Frist des Fernabsatzes nicht — der Vertrag wird sofort wirksam. Deshalb gibt es hier keinen schwebenden Vertrag."
+    },
+    {
+     "title": "Der Zahlungsplan bleibt Handarbeit",
+     "text": "Auch hier legt das Büro Mandat und Plan an — kein Automatismus („Verträge 7“)."
+    },
+    {
+     "title": "Der Unterschied zum Fernabsatz",
+     "text": "Digital = schwebend, mit Frist („Widerrufe 3“). Vor Ort = sofort wirksam. Wer das verwechselt, verspricht der Kundin die falsche Frist."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Vertragsformular",
+      "Das Formular für den neuen, kleineren Vertrag"
+     ],
+     [
+      "SEPA-Mandatsformular",
+      "Das Mandat zum neuen Vertrag"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Modal „Ans Forderungsmanagement abgeben“",
+   "sub": "Der Widerruf ist abgelehnt oder es bleibt eine Restsumme — dann übernimmt das Forderungsmanagement.",
+   "card": {
+    "title": "Abgabe",
+    "text": "Restsumme als Forderungsfall übergeben"
+   },
+   "left": {
+    "shot": "wd4-abgabe"
+   },
+   "leftCaption": "Das Fenster „Ans Forderungsmanagement abgeben“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Anmahnung",
+     "text": "**„Datum der Anmahnung“** ist Pflicht — ab wann wurde mit Frist gemahnt?"
+    },
+    {
+     "n": 2,
+     "title": "Bereits gemahnt",
+     "text": "Der Schalter **„Restsumme wurde bereits mit Frist angemahnt (außerhalb des Hubs)“**, wenn die Mahnung per Hand rausging."
+    },
+    {
+     "n": 3,
+     "title": "Abgeben",
+     "text": "Es entsteht ein Forderungsfall, verknüpft mit diesem Widerruf."
+    },
+    {
+     "n": 4,
+     "title": "Weiter dort",
+     "text": "Der Fall läuft ab jetzt in der Serie **Forderungen**."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Der Fall startet nicht bei null",
+     "text": "Die bereits erfolgte Anmahnung wird angerechnet — der Forderungsfall setzt danach an, statt die Kundin erneut zu erinnern („Forderungen 3“)."
+    },
+    {
+     "title": "Am Vertrag erscheint ein Banner",
+     "text": "Ab jetzt steht dort **„Forderungsmanagement“** — und niemand ändert den Zahlungsplan ohne Rücksprache („Verträge 2“)."
+    },
+    {
+     "title": "Widerruf und Forderung laufen parallel",
+     "text": "Der Widerrufsfall bleibt bestehen, bis er abgeschlossen ist. Beide Vorgänge verweisen aufeinander."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Datum der Anmahnung *",
+      "Pflicht — Startpunkt der Mahnkette"
+     ],
+     [
+      "Restsumme wurde bereits angemahnt",
+      "Schalter für Mahnungen außerhalb des Hubs"
+     ]
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,283 @@
+{
+ "out": "../pdf/Vertraege-1-vertragsliste",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Verträge",
+ "nr": 1,
+ "of": 8,
+ "audience": "buero",
+ "title": [
+  "Die",
+  "Vertragsliste"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Verträge suchen, filtern und die Zeile lesen",
+ "eyebrow": "Verträge · Liste",
+ "footerArea": "Verträge",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Ein Suchfeld für alles: **Nummer, Name, Kundennummer**.",
+  "Der **Standortfilter der Seitenleiste wirkt mit** — er ist die häufigste Ursache für „nicht gefunden“.",
+  "Jede Spalte hat ihren **eigenen Filter**; der Zähler in der Kopfzeile sagt, wie viele aktiv sind."
+ ],
+ "pages": [
+  {
+   "h1": "Einen Vertrag finden",
+   "sub": "Die Liste zeigt alle Verträge des gewählten Standorts. Gesucht wird über ein Feld — es nimmt alles.",
+   "card": {
+    "title": "Vertrag finden",
+    "text": "Suche über Nummer, Name und Kundennummer"
+   },
+   "left": {
+    "shot": "vt1-liste"
+   },
+   "leftCaption": "Die Vertragsliste mit Suchfeld und Werkzeugen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Suchfeld",
+     "text": "Nimmt **Vertragsnummer**, **Nachname**, **Vorname** und **Kundennummer** — alles im selben Feld."
+    },
+    {
+     "n": 2,
+     "title": "Teilbegriffe genügen",
+     "text": "„MD0000“ findet alle Magdeburger Kundennummern, „2026.09“ alle Verträge des Monats."
+    },
+    {
+     "n": 3,
+     "title": "Standort beachten",
+     "text": "Oben in der Seitenleiste steht das Institut. Es filtert die Liste mit — wer nichts findet, prüft das zuerst."
+    },
+    {
+     "n": 4,
+     "title": "Zeile öffnen",
+     "text": "Ein Klick auf die Zeile öffnet den Vertrag. Zurück führt der Browser oder die Menüleiste."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Die Suche liest nur",
+     "text": "Sie ändert nichts und protokolliert nichts. Suchen kostet nichts — probieren ist billiger als raten."
+    },
+    {
+     "title": "Nichts gefunden?",
+     "text": "Drei Gründe in dieser Reihenfolge: falscher **Standort** oben, **Filter** noch aktiv (Zähler in der Kopfzeile), Vertrag gehört zu einer anderen Kundin als gedacht."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Vertragsnummer",
+      "Aufbau **JJJJ.MM.TT-Kundennummer**, z.B. 2026.09.07-MD000002"
+     ],
+     [
+      "Kundennummer",
+      "Kürzel des Instituts plus laufende Nummer, z.B. BI000123"
+     ],
+     [
+      "Name",
+      "Vor- oder Nachname der Kundin, Teilbegriff reicht"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Schneller als die Liste:** Die globale Suche in der Seitenleiste (**⇧⌘F** bzw. **Strg⇧F**) findet Verträge ebenso — von jeder Seite aus."
+   }
+  },
+  {
+   "h1": "Filter setzen",
+   "sub": "Jede Spalte hat ihren eigenen Filter. Der Knopf sitzt in der Spaltenüberschrift und färbt sich, sobald er wirkt.",
+   "card": {
+    "title": "Filter setzen",
+    "text": "Status, Zonen, Zahlungsart, Standort, Datum"
+   },
+   "left": {
+    "shot": "vt1-filter"
+   },
+   "leftCaption": "Ein geöffneter Spaltenfilter über der Tabelle.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Filter öffnen",
+     "text": "Der kleine Knopf **in der Spaltenüberschrift**. Er ist hervorgehoben, solange der Filter etwas ausblendet."
+    },
+    {
+     "n": 2,
+     "title": "Auswahl treffen",
+     "text": "Mehrfachauswahl ist möglich — etwa zwei Status gleichzeitig."
+    },
+    {
+     "n": 3,
+     "title": "Kombinieren",
+     "text": "Filter wirken **zusammen**: Status **und** Zahlungsart **und** Zeitraum."
+    },
+    {
+     "n": 4,
+     "title": "Zurücksetzen",
+     "text": "**„Filter zurücksetzen“** in der Kopfzeile räumt alles auf einmal ab."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Der Zähler verrät alles",
+     "text": "In der Kopfzeile steht **„n Filter aktiv“**. Steht dort eine Zahl und die Liste wirkt leer, ist nicht die Datenbank schuld."
+    },
+    {
+     "title": "Filter überleben den Seitenwechsel nicht",
+     "text": "Wer den Vertrag öffnet und zurückgeht, findet die Liste wieder gefiltert vor — das ist Absicht und spart das erneute Einstellen."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Status / SEPA-Mandat",
+      "Vertragsstatus und ob ein gültiges Mandat hinterlegt ist"
+     ],
+     [
+      "Zonen",
+      "Anzahl der Körperzonen (KPZ) des Pakets"
+     ],
+     [
+      "Zahlungsart",
+      "Direktzahlung oder Ratenzahlung per SEPA"
+     ],
+     [
+      "Standort / Verkäuferin",
+      "Institut und die Person, die abgeschlossen hat"
+     ],
+     [
+      "Datum",
+      "Zeitraum des Vertragsabschlusses, von/bis"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Die Zeile lesen",
+   "sub": "Eine Zeile beantwortet die häufigsten Fragen schon ohne Öffnen.",
+   "card": {
+    "title": "Die Zeile lesen",
+    "text": "Status, Zonen, Zahlungsart, Abschlussdatum"
+   },
+   "left": {
+    "shot": "vt1-zeile"
+   },
+   "leftCaption": "Eine Tabellenzeile mit ihren Abzeichen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Vertragsnummer",
+     "text": "Enthält Datum und Kundennummer — daran erkennt man Alter und Institut ohne Klick."
+    },
+    {
+     "n": 2,
+     "title": "Status",
+     "text": "**Entwurf**, **Aktiv**, **Abgeschlossen**, **Storniert** oder **Geändert**."
+    },
+    {
+     "n": 3,
+     "title": "Zonen und Zahlungsart",
+     "text": "Anzahl KPZ und ob direkt bezahlt oder in Raten per SEPA."
+    },
+    {
+     "n": 4,
+     "title": "Sortieren",
+     "text": "Ein Klick auf eine Überschrift sortiert — nochmal klicken dreht die Richtung um."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Legacy heißt: Lücken sind normal",
+     "text": "Altverträge bringen keinen vollständigen Ratenplan mit. Was vor der Hub-Zeit gezahlt wurde, steht nicht zeilenweise drin („Verträge 3“)."
+    },
+    {
+     "title": "Status „Geändert“",
+     "text": "Der Vertrag wurde durch einen Folgevertrag abgelöst — etwa nach einem Downgrade. Der alte bleibt zur Nachvollziehbarkeit stehen."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Abzeichen **Legacy**",
+      "Vertrag aus dem Altsystem, vor dem 01.06.2026 abgeschlossen"
+     ],
+     [
+      "Abzeichen **Institut**",
+      "Über die Institutsseite erfasst, nicht im Hub angelegt"
+     ],
+     [
+      "Kein Mandat",
+      "Ratenzahlung ohne hinterlegtes SEPA-Mandat — hier wird nichts eingezogen"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Ein Warnband über der Liste** meldet fehlgeschlagene Importe: Verträge, die aus dem Altsystem nicht durchkamen und von Hand ergänzt werden müssen. Was dort zu tun ist, steht in **„Verträge 8“**."
+   }
+  },
+  {
+   "h1": "Wo was passiert",
+   "sub": "Der Wegweiser durch die Serie: welche Frage in welchem Dokument beantwortet wird.",
+   "layout": "text",
+   "card": {
+    "title": "Wo was passiert",
+    "text": "Wegweiser durch die acht Dokumente"
+   },
+   "table": {
+    "head": [
+     "Frage",
+     "Dokument"
+    ],
+    "rows": [
+     [
+      "„Wie viel hat die Kundin bezahlt?“",
+      "**Verträge 3** — Den Ratenplan lesen"
+     ],
+     [
+      "„Sie hat bar bezahlt, wie trage ich das ein?“",
+      "**Verträge 4** — Zahlungen nachtragen und korrigieren"
+     ],
+     [
+      "„Die Lastschrift ist geplatzt.“",
+      "**Verträge 5** — SEPA-Einzug und Rücklastschrift"
+     ],
+     [
+      "„Sie will die Rate senken / pausieren.“",
+      "**Verträge 6** — Laufzeit und Raten ändern"
+     ],
+     [
+      "„Sie hat eine neue Bankverbindung.“",
+      "**Verträge 7** — Mandat und Bankverbindung"
+     ],
+     [
+      "„Der Import ist schiefgegangen.“",
+      "**Verträge 8** — Import-Probleme und Werber"
+     ],
+     [
+      "„Sie widerruft.“",
+      "Serie **Widerrufe**"
+     ],
+     [
+      "„Sie zahlt gar nicht mehr.“",
+      "Serie **Forderungen**"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Nichts davon gehört ins Institut.** Dort wird der Vertrag nur gelesen — „Kundenverwaltung 4“ zeigt, was die Kollegin an der Rezeption sieht und wann sie ans Büro abgibt."
+   }
+  }
+ ]
+}

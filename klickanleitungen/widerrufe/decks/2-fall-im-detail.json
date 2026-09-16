@@ -1,0 +1,316 @@
+{
+ "out": "../pdf/Widerrufe-2-fall-im-detail",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Widerrufe",
+ "nr": 2,
+ "of": 5,
+ "audience": "buero",
+ "title": [
+  "Der Fall",
+  "im Detail"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Aufbau der Fallseite, Stammdaten und Fristbeginn, Dokumente, Wiedervorlage",
+ "eyebrow": "Widerrufe · Fallseite",
+ "footerArea": "Widerrufe",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Haken **„SEPA storniert“** und **„Phorest aktualisiert“** halten nur fest — sie **tun** nichts.",
+  "Ein **abweichender Fristbeginn** verschiebt das Urteil über den Fall: immer mit Begründung.",
+  "Ein **offener Widerruf legt den Vertrag still** — Wiedervorlage setzen statt liegen lassen."
+ ],
+ "pages": [
+  {
+   "h1": "Der Aufbau der Fallseite",
+   "sub": "Fünf Blöcke, in denen alles steht, was der Fall braucht.",
+   "card": {
+    "title": "Der Aufbau",
+    "text": "Die fünf Blöcke der Fallseite"
+   },
+   "left": {
+    "shot": "wd2-fallseite"
+   },
+   "leftCaption": "Die Fallseite eines offenen Widerrufs.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Fall-Informationen",
+     "text": "Eingangsdatum, Ticket, Frist, Wiedervorlage."
+    },
+    {
+     "n": 2,
+     "title": "Widerrufsgrund",
+     "text": "Grund, Beschreibung und interne Anmerkungen."
+    },
+    {
+     "n": 3,
+     "title": "Behandlungsstand",
+     "text": "BG, erste Sitzung, Tage dazwischen — aus Phorest."
+    },
+    {
+     "n": 4,
+     "title": "Verknüpfungen",
+     "text": "Vertrag, Kundin, Folgevertrag und der Forderungsfall, falls es einen gibt."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Die Fallseite ist die Akte",
+     "text": "Alles, was zum Fall gehört, steht hier — auch das, was in Zendesk besprochen wurde, sofern es als Schriftwechsel festgehalten wurde („Widerrufe 5“)."
+    },
+    {
+     "title": "Der Verlauf ist der Nachweis",
+     "text": "Bei einem Rechtsstreit zählt, was wann getan wurde. Ein Fall ohne Verlaufseinträge sieht aus, als sei nichts passiert."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Fall-Informationen",
+      "Die Stammdaten des Falls"
+     ],
+     [
+      "Widerrufsgrund",
+      "Grund plus Freitext"
+     ],
+     [
+      "Behandlungsstand",
+      "Was bereits erbracht wurde"
+     ],
+     [
+      "Verknüpfungen",
+      "Alles, was am Fall hängt"
+     ],
+     [
+      "Verlauf & Kommunikation",
+      "Jede Bewegung im Fall, Schriftwechsel inklusive"
+     ],
+     [
+      "Aktionen",
+      "Die Abwicklungsschritte — „Widerrufe 4“"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Modal „Fall bearbeiten“",
+   "sub": "Die Stammdaten des Falls korrigieren — inklusive Fristbeginn und Wiedervorlage.",
+   "card": {
+    "title": "Fall bearbeiten",
+    "text": "Stammdaten und Fristbeginn korrigieren"
+   },
+   "left": {
+    "shot": "wd2-bearbeiten"
+   },
+   "leftCaption": "Das Fenster „Fall bearbeiten“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Datum und Ticket",
+     "text": "Eingangsdatum und Zendesk-Nummer nachtragen oder korrigieren."
+    },
+    {
+     "n": 2,
+     "title": "Fristbeginn",
+     "text": "**„Fristbeginn (abweichend)“** überschreibt das Vertragsdatum als Startpunkt."
+    },
+    {
+     "n": 3,
+     "title": "Wiedervorlage",
+     "text": "Ein Datum, an dem der Fall wieder auf den Tisch soll."
+    },
+    {
+     "n": 4,
+     "title": "Haken setzen",
+     "text": "**„SEPA storniert“** und **„Phorest aktualisiert“** halten den Abwicklungsstand fest."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Ein abweichender Fristbeginn verschiebt das Urteil",
+     "text": "Aus „verspätet“ kann „fristgerecht“ werden. Deshalb gehört der Grund in die Anmerkungen — sonst sieht es später nach Schönrechnen aus."
+    },
+    {
+     "title": "Die beiden Haken sind Buchhaltung, keine Aktion",
+     "text": "Sie halten fest, dass SEPA und Phorest erledigt sind. **Erledigt wird es über die Aktionen** („Widerrufe 4“) — der Haken allein storniert kein Mandat."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Datum Widerruf",
+      "Eingangsdatum"
+     ],
+     [
+      "Zendesk-Ticketnummer",
+      "Verknüpfung zur Korrespondenz"
+     ],
+     [
+      "Fristbeginn (abweichend)",
+      "Nur setzen, wenn es einen Grund gibt — etwa späterer Zugang der Belehrung"
+     ],
+     [
+      "Wiedervorlage am",
+      "Datum für die Nachfassung"
+     ],
+     [
+      "Beschreibung / Anmerkungen",
+      "Sachverhalt und interne Notizen"
+     ],
+     [
+      "Folgevertrag",
+      "Verknüpfung, wenn ein neuer Vertrag entstanden ist"
+     ],
+     [
+      "Grund",
+      "Der Widerrufsgrund, falls er sich klärt"
+     ],
+     [
+      "SEPA storniert",
+      "Haken — das Mandat ist beendet"
+     ],
+     [
+      "Phorest aktualisiert",
+      "Haken — die Pakete sind bereinigt"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Haken setzen, ohne es getan zu haben, ist die gefährlichste Abkürzung im Modul.** Der Fall sieht danach sauber aus, das Mandat zieht aber weiter ein — und die Kundin bekommt eine Abbuchung nach ihrem Widerruf."
+   }
+  },
+  {
+   "h1": "Dokumente und Notizen",
+   "sub": "Alles, was zum Fall gehört, gehört an den Fall.",
+   "card": {
+    "title": "Dokumente & Notizen",
+    "text": "Belege anhängen, Vermerke schreiben"
+   },
+   "left": {
+    "shot": "wd2-dokumente"
+   },
+   "leftCaption": "Der Dokumentenbereich des Falls.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Hochladen",
+     "text": "Bis zu fünf Dateien je Vorgang — Widerrufsschreiben, Atteste, Korrespondenz."
+    },
+    {
+     "n": 2,
+     "title": "Ansehen",
+     "text": "Ein Klick öffnet das Dokument."
+    },
+    {
+     "n": 3,
+     "title": "Löschen",
+     "text": "Möglich, aber im Verlauf sichtbar."
+    },
+    {
+     "n": 4,
+     "title": "Notiz",
+     "text": "Freitext-Vermerke landen im Verlauf, mit Person und Zeit."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Das Widerrufsschreiben ist der wichtigste Beleg",
+     "text": "Es entscheidet über den Eingangstag — und damit über die Frist. Ohne es steht im Streitfall Aussage gegen Aussage."
+    },
+    {
+     "title": "Keine Kundendaten in Dateinamen",
+     "text": "Dokumente werden in Auswertungen und beim Anwalt weitergereicht. Ein sprechender Dateiname reicht: „Widerrufsschreiben 12.09.2026“."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Dokumente",
+      "max. 5 je Upload"
+     ],
+     [
+      "Notiz",
+      "Freitext, erscheint im Verlauf"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Die Wiedervorlage nutzen",
+   "sub": "Widerrufe sterben nicht, sie bleiben liegen. Die Wiedervorlage ist das Gegenmittel.",
+   "card": {
+    "title": "Wiedervorlage",
+    "text": "Fälle nicht liegenlassen"
+   },
+   "left": {
+    "shot": "wd2-wiedervorlage"
+   },
+   "leftCaption": "Ein Fall mit gesetzter Wiedervorlage.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Datum setzen",
+     "text": "Im Fenster „Fall bearbeiten“, Feld **„Wiedervorlage am“**."
+    },
+    {
+     "n": 2,
+     "title": "Liegezeit beobachten",
+     "text": "Die Liste zeigt, wie lange sich nichts bewegt hat."
+    },
+    {
+     "n": 3,
+     "title": "Nachfassen",
+     "text": "Bei jeder Nachfrage einen Verlaufseintrag hinterlassen — sonst sieht es nach Stillstand aus."
+    },
+    {
+     "n": 4,
+     "title": "Abschließen",
+     "text": "Ist der Fall entschieden, gehört er geschlossen („Widerrufe 5“)."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Ein offener Widerruf blockiert den Vertrag",
+     "text": "Am Vertrag steht das Banner, und niemand ändert dort etwas ohne Rücksprache. Ein vergessener Fall legt also auch den Vertrag still."
+    },
+    {
+     "title": "Fristen laufen weiter",
+     "text": "Bei einer Rückabwicklung hängen Rückzahlungsfristen am Eingangsdatum, nicht am Tag der Bearbeitung."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Wiedervorlage am",
+      "Datum der nächsten Befassung"
+     ],
+     [
+      "Liegezeit",
+      "Tage seit der letzten Bewegung"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Ein Fall ohne Bewegung ist eine Entscheidung — nur keine bewusste.** Wer nicht weiterkommt, setzt eine Wiedervorlage und schreibt den Grund dazu."
+   }
+  }
+ ]
+}

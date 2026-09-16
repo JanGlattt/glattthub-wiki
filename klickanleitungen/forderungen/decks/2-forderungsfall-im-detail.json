@@ -1,0 +1,316 @@
+{
+ "out": "../pdf/Forderungen-2-forderungsfall-im-detail",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Forderungen",
+ "nr": 2,
+ "of": 6,
+ "audience": "buero",
+ "title": [
+  "Der Fall",
+  "im Detail"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Forderungsaufstellung, § 367-Verrechnung, Seitenspalte, Anschrift, Verlauf",
+ "eyebrow": "Forderungen · Fallseite",
+ "footerArea": "Forderungen",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "**§ 367 BGB:** Eingänge tilgen **erst Kosten**, dann die Hauptforderung — nicht umgekehrt.",
+  "**Ohne Anschrift kein Postweg** — das ist der häufigste Stopper im Modul.",
+  "Die **Zahlungsfrist steuert die Arbeitsliste**: Solange sie läuft, ist nichts zu tun."
+ ],
+ "pages": [
+  {
+   "h1": "Die Forderungsaufstellung",
+   "sub": "Der Kern des Falls: woraus sich die Forderung zusammensetzt und was davon noch offen ist.",
+   "card": {
+    "title": "Forderungsaufstellung",
+    "text": "Hauptforderung, Kosten, offen"
+   },
+   "left": {
+    "shot": "fo2-aufstellung"
+   },
+   "leftCaption": "Der Reiter Übersicht mit der Forderungsaufstellung.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Hauptforderung",
+     "text": "Die eigentliche Schuld — geplatzte Raten oder eingefrorener Kontostand."
+    },
+    {
+     "n": 2,
+     "title": "Kosten",
+     "text": "Erfasste Kostenpositionen: Gerichts-, Vollzieher- und Auskunftskosten."
+    },
+    {
+     "n": 3,
+     "title": "Offen gesamt",
+     "text": "Hauptforderung plus Kosten minus Zahlungen."
+    },
+    {
+     "n": 4,
+     "title": "Nach § 367 verrechnet",
+     "text": "Eingänge werden **erst auf Kosten, dann auf die Hauptforderung** verrechnet."
+    }
+   ],
+   "notes": [
+    {
+     "title": "§ 367 BGB ist keine Einstellung",
+     "text": "Die Reihenfolge **Kosten → Zinsen → Hauptforderung** ist gesetzlich. Der Hub rechnet sie automatisch — deshalb tilgt eine Teilzahlung zuerst die Kosten und die Hauptforderung sinkt langsamer, als die Kundin erwartet."
+    },
+    {
+     "title": "„Fällig gestellt“ ändert alles",
+     "text": "Solange nur einzelne Raten offen sind, geht es um kleine Beträge. Ist die **Gesamtsumme fällig gestellt**, steht die ganze restliche Vertragsforderung im Raum — und die Schreiben lauten anders."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Hauptforderung",
+      "Die Schuld ohne Kosten"
+     ],
+     [
+      "Kosten",
+      "Summe der erfassten Kostenpositionen"
+     ],
+     [
+      "Offen gesamt",
+      "Was insgesamt noch aussteht"
+     ],
+     [
+      "Davon noch offen (nach § 367-Verrechnung)",
+      "Die Restsumme nach gesetzlicher Verrechnungsreihenfolge"
+     ],
+     [
+      "Gesamtsumme fällig gestellt",
+      "Ob die **gesamte** Restforderung des Vertrags fällig ist"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Die Seitenspalte des Falls",
+   "sub": "Rechts stehen die Stammdaten — und alle Aktionen, die den Fall bewegen.",
+   "card": {
+    "title": "Die Seitenspalte",
+    "text": "Stammdaten, Verknüpfungen, Aktionen"
+   },
+   "left": {
+    "shot": "fo2-sidebar"
+   },
+   "leftCaption": "Die Seitenspalte eines Falls.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Fall-Informationen",
+     "text": "Einstieg, Weg (**Hart** / **Sanft**), Stufe, Frist und Wiedervorlage."
+    },
+    {
+     "n": 2,
+     "title": "Phorest-Stammdaten",
+     "text": "Anschrift für den Postversand — direkt aus Phorest."
+    },
+    {
+     "n": 3,
+     "title": "Verknüpfungen",
+     "text": "Vertrag, Kundin, Zendesk-Ticket, Widerrufsfall."
+    },
+    {
+     "n": 4,
+     "title": "Aktionen",
+     "text": "Alle Schritte des Falls — die folgenden Dokumente dieser Serie."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Ohne Anschrift kein Postweg",
+     "text": "Steht dort **„keine Anschrift in Phorest hinterlegt“**, lässt sich keine Mahnung erzeugen. Das ist der häufigste Stopper im ganzen Modul."
+    },
+    {
+     "title": "Die Frist steuert die Arbeitsliste",
+     "text": "Solange sie läuft, steht der Fall unter „Läuft — nichts zu tun“. Erst danach taucht er wieder auf."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Einstieg",
+      "Rücklastschrift · Direktzahler · Mandat entzogen · Kundenkonto"
+     ],
+     [
+      "Weg",
+      "Hart oder Sanft"
+     ],
+     [
+      "Stufe",
+      "Die aktuelle Prozessstufe („Forderungen 3“)"
+     ],
+     [
+      "Zahlungsfrist",
+      "Bis wann die Kundin zahlen soll"
+     ],
+     [
+      "Wiedervorlage",
+      "Wann der Fall wieder auf den Tisch kommt"
+     ],
+     [
+      "Anschrift",
+      "Aus Phorest — Grundlage jedes Briefs"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Modal „Anschrift korrigieren“",
+   "sub": "Die Anschrift kommt aus Phorest. Stimmt sie nicht, wird sie hier korrigiert — und zwar dort gleich mit.",
+   "card": {
+    "title": "Anschrift korrigieren",
+    "text": "Adresse für den Postversand richtigstellen"
+   },
+   "left": {
+    "shot": "fo2-anschrift"
+   },
+   "leftCaption": "Das Fenster zur Anschriftskorrektur.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Öffnen",
+     "text": "**„Anschrift korrigieren …“** in der Seitenspalte."
+    },
+    {
+     "n": 2,
+     "title": "Felder füllen",
+     "text": "Straße und Hausnummer, Adresszusatz, PLZ, Ort."
+    },
+    {
+     "n": 3,
+     "title": "Übernehmen",
+     "text": "**„Übernehmen (auch nach Phorest)“** schreibt die Korrektur in beide Systeme."
+    },
+    {
+     "n": 4,
+     "title": "Zurücksetzen",
+     "text": "**„Vorlage wiederherstellen“** holt den Phorest-Stand zurück."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Die Korrektur geht nach Phorest",
+     "text": "Sie wirkt also auch auf Termine, Rechnungen und Mails — das ist gewollt, denn eine falsche Anschrift ist überall falsch."
+    },
+    {
+     "title": "Ein Brief an die falsche Adresse setzt keine Frist in Gang",
+     "text": "Zumindest nicht belastbar. Wer mahnt, muss zustellen können — sonst steht die ganze Kette auf wackligem Grund."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Straße und Hausnummer",
+      "Vollständig, mit Hausnummer"
+     ],
+     [
+      "Adresszusatz (optional)",
+      "c/o, Wohnung, Stockwerk"
+     ],
+     [
+      "PLZ / Ort",
+      "Deutsches Format"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Unzustellbar zurück? Erst Anschrift klären, dann erneut versenden.** Eine zweite Mahnung an dieselbe falsche Adresse bringt den Fall keinen Tag weiter."
+   }
+  },
+  {
+   "h1": "Verlauf und Zahlungen lesen",
+   "sub": "Zwei Reiter zum Nachvollziehen: Was ist passiert — und was ist eingegangen?",
+   "card": {
+    "title": "Verlauf & Zahlungen",
+    "text": "Die Historie des Falls"
+   },
+   "left": {
+    "shot": "fo2-verlauf"
+   },
+   "leftCaption": "Der Reiter Verlauf eines Falls.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Verlauf",
+     "text": "Jede Stufe, jedes Schreiben, jede Entscheidung — mit Datum und Person."
+    },
+    {
+     "n": 2,
+     "title": "Zahlungen",
+     "text": "Alle Eingänge mit Datum, Betrag, Art und Referenz."
+    },
+    {
+     "n": 3,
+     "title": "Stornieren",
+     "text": "Ein falsch erfasster Eingang lässt sich stornieren — mit Begründung."
+    },
+    {
+     "n": 4,
+     "title": "Nicht stornierbar",
+     "text": "Zahlungen, die bereits verrechnet und abgeschlossen sind, bleiben stehen."
+    }
+   ],
+   "right": {
+    "shot": "fo2-zahlungen"
+   },
+   "rightCaption": "Der Reiter Zahlungen mit den Eingängen.",
+   "notes": [
+    {
+     "title": "Der Verlauf ist im Streitfall die Akte",
+     "text": "Wer wann was geschickt hat, entscheidet über Fristen. Ein Fall ohne Verlauf ist ein Fall ohne Beweis."
+    },
+    {
+     "title": "Zahlungen können doppelt auftauchen",
+     "text": "Eine am Vertrag verbuchte Rate erscheint auch hier — der Vermerk **„am Vertrag verbucht“** unterscheidet sie von einer direkt hier erfassten Zahlung."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Eingang",
+      "Datum des Zahlungseingangs"
+     ],
+     [
+      "Betrag",
+      "Die eingegangene Summe"
+     ],
+     [
+      "Art",
+      "Überweisung, bar, SEPA, Bezahllink"
+     ],
+     [
+      "Referenz",
+      "Verwendungszweck oder Beleg-Nummer"
+     ],
+     [
+      "am Vertrag verbucht",
+      "Kennzeichnet Zahlungen, die auch am Vertrag stehen"
+     ]
+    ]
+   }
+  }
+ ]
+}

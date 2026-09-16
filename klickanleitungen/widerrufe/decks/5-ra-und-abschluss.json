@@ -1,0 +1,368 @@
+{
+ "out": "../pdf/Widerrufe-5-ra-und-abschluss",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Widerrufe",
+ "nr": 5,
+ "of": 5,
+ "audience": "buero",
+ "title": [
+  "RA-Vorgang",
+  "und Abschluss"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Kosten und Schriftwechsel erfassen, Wirtschaftlichkeit, Fall abschließen",
+ "eyebrow": "Widerrufe · Anwalt & Abschluss",
+ "footerArea": "Widerrufe",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "**Kosten erfassen**, sonst sieht der Fall wirtschaftlicher aus, als er war.",
+  "Das **RA-Ergebnis** beschreibt das Verfahren, das **Abschluss-Ergebnis** wirkt auf den Vertrag.",
+  "**Vor dem Abschluss prüfen:** SEPA storniert, Phorest bereinigt — danach sieht niemand mehr hin."
+ ],
+ "pages": [
+  {
+   "h1": "Der RA-Vorgang",
+   "sub": "Wenn der Fall an den Rechtsanwalt geht, bekommt er einen eigenen Block — mit Kosten, Schriftwechsel und Ergebnis.",
+   "card": {
+    "title": "Der RA-Vorgang",
+    "text": "Wirtschaftlichkeit im Blick behalten"
+   },
+   "left": {
+    "shot": "wd5-ra"
+   },
+   "leftCaption": "Der Block „RA-Vorgang“ auf der Fallseite.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kosten gesamt",
+     "text": "Summe aller erfassten Kostenpositionen."
+    },
+    {
+     "n": 2,
+     "title": "Vereinnahmt",
+     "text": "Was tatsächlich hereingekommen ist."
+    },
+    {
+     "n": 3,
+     "title": "Wirtschaftlichkeit",
+     "text": "Die Differenz — steht sie im Minus, hat der Vorgang Geld gekostet."
+    },
+    {
+     "n": 4,
+     "title": "Ergebnis",
+     "text": "Der Ausgang des Verfahrens, aus einer festen Liste (nächste Seite)."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Die Zahl ist die Grundlage der nächsten Entscheidung",
+     "text": "Wenn Fälle dieser Größe regelmäßig im Minus enden, ist der Anwaltsweg für diese Größenordnung der falsche. Dafür müssen die Kosten aber erfasst sein."
+    },
+    {
+     "title": "Der RA-Vorgang ersetzt das Forderungsmanagement nicht",
+     "text": "Beides kann parallel laufen. Beim reinen Zahlungsausfall ist der Weg über die Serie **Forderungen** der übliche — hier geht es um bestrittene Widerrufe."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Kosten gesamt",
+      "Summe der Kostenpositionen"
+     ],
+     [
+      "Vereinnahmte Summe",
+      "Was von der Kundin tatsächlich kam"
+     ],
+     [
+      "Wirtschaftlichkeit",
+      "Vereinnahmt minus Kosten"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Modal „Kostenposition erfassen“",
+   "sub": "Jede Rechnung, die im Verfahren anfällt, gehört erfasst — sonst sieht der Fall besser aus, als er war.",
+   "card": {
+    "title": "Kosten erfassen",
+    "text": "Anwalts- und Verfahrenskosten festhalten"
+   },
+   "left": {
+    "shot": "wd5-kosten"
+   },
+   "leftCaption": "Das Fenster „Kostenposition erfassen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kostenart",
+     "text": "**Eigener Anwalt** oder **Gegenseite**."
+    },
+    {
+     "n": 2,
+     "title": "Betrag",
+     "text": "Mit Komma, brutto wie auf der Rechnung."
+    },
+    {
+     "n": 3,
+     "title": "Angefallen am",
+     "text": "Rechnungsdatum."
+    },
+    {
+     "n": 4,
+     "title": "Anmerkung",
+     "text": "Wofür — Gebührentatbestand oder Aktenzeichen."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Kosten mindern die Wirtschaftlichkeit",
+     "text": "Jede Position zieht direkt von der vereinnahmten Summe ab. Das ist der Zweck: zu sehen, was ein Fall wirklich gebracht hat."
+    },
+    {
+     "title": "Kosten der Gegenseite zählen auch",
+     "text": "Wenn wir sie tragen müssen, gehören sie in dieselbe Rechnung — sonst stimmt das Bild nicht."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Kostenart",
+      "Eigener Anwalt · Gegenseite"
+     ],
+     [
+      "Betrag",
+      "in €, mit Komma"
+     ],
+     [
+      "Angefallen am",
+      "Datum der Rechnung"
+     ],
+     [
+      "Anmerkung",
+      "Wofür die Kosten entstanden sind"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Modal „Schriftwechsel festhalten“",
+   "sub": "Jedes Schreiben in einem strittigen Fall gehört dokumentiert — mit Richtung und Beteiligtem.",
+   "card": {
+    "title": "Schriftwechsel",
+    "text": "Korrespondenz nachvollziehbar machen"
+   },
+   "left": {
+    "shot": "wd5-schriftwechsel"
+   },
+   "leftCaption": "Das Fenster „Schriftwechsel festhalten“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Beteiligter",
+     "text": "Wer geschrieben hat: **Eigener Anwalt** oder **Gegenseite**."
+    },
+    {
+     "n": 2,
+     "title": "Richtung",
+     "text": "**Gesendet** oder **Eingegangen**."
+    },
+    {
+     "n": 3,
+     "title": "Datum",
+     "text": "Das Datum des Schreibens — nicht das der Erfassung."
+    },
+    {
+     "n": 4,
+     "title": "Inhalt",
+     "text": "Eine Zusammenfassung in eigenen Worten; Dokumente lassen sich anhängen (max. 5)."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Der Eintrag erscheint im Verlauf",
+     "text": "Nach Beteiligten unterscheidbar — man sieht auf einen Blick, wer zuletzt geschrieben hat und wer am Zug ist."
+    },
+    {
+     "title": "Lückenloser Schriftwechsel ist der Kern der Akte",
+     "text": "Bei einer Auseinandersetzung ist die Frage „wann haben wir was gesagt?“ entscheidend. Eine Zusammenfassung von drei Zeilen ist besser als gar nichts."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Beteiligter",
+      "Eigener Anwalt · Gegenseite"
+     ],
+     [
+      "Richtung",
+      "Gesendet · Eingegangen"
+     ],
+     [
+      "Datum des Schreibens",
+      "Optional, aber empfohlen"
+     ],
+     [
+      "Inhalt / Zusammenfassung",
+      "Worum es ging"
+     ],
+     [
+      "Dokumente",
+      "Optional, bis zu fünf Dateien"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Die Zusammenfassung ist für Menschen, die den Fall nicht kennen.** In sechs Monaten liest das jemand anderes — „Antwort auf Schreiben vom 12.09., Vergleich über 800 € angeboten“ hilft, „siehe Anhang“ nicht."
+   }
+  },
+  {
+   "h1": "Die Ergebnisse des RA-Vorgangs",
+   "sub": "Fünf mögliche Ausgänge — sie beschreiben das Verfahren, nicht den Widerruf selbst.",
+   "layout": "text",
+   "card": {
+    "title": "RA-Ergebnisse",
+    "text": "Die fünf Ausgänge"
+   },
+   "sections": [
+    {
+     "h2": "Ergebnis speichern ist nicht Abschließen",
+     "text": "Das Ergebnis des RA-Vorgangs beschreibt, wie das Verfahren ausging. Der **Widerrufsfall** wird davon unabhängig abgeschlossen — mit einem eigenen Ergebnis, das auf den Vertrag wirkt (nächste Seite)."
+    }
+   ],
+   "table": {
+    "head": [
+     "Ergebnis",
+     "Bedeutung",
+     "Danach"
+    ],
+    "rows": [
+     [
+      "**Vergleich**",
+      "Einigung mit der Gegenseite",
+      "Vereinnahmte Summe eintragen, Fall abschließen"
+     ],
+     [
+      "**Urteil pro uns**",
+      "Gericht hat uns recht gegeben",
+      "Forderung durchsetzen — ggf. über die Serie Forderungen"
+     ],
+     [
+      "**Urteil pro Kunde**",
+      "Gericht hat der Kundin recht gegeben",
+      "Widerruf akzeptieren und abwickeln („Widerrufe 4“)"
+     ],
+     [
+      "**Eingestellt / zurückgenommen**",
+      "Verfahren beendet ohne Entscheidung",
+      "Fall abschließen, Ergebnis begründen"
+     ],
+     [
+      "**Kunde zahlt nach Mahnung**",
+      "Die Sache erledigt sich durch Zahlung",
+      "Vereinnahmte Summe eintragen, Fall abschließen"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Die vereinnahmte Summe nicht vergessen.** Ohne sie steht der Fall dauerhaft im Minus, obwohl Geld geflossen ist — und die Auswertung über die Wirtschaftlichkeit wird unbrauchbar."
+   }
+  },
+  {
+   "h1": "Modal „Widerruf abschließen“",
+   "sub": "Der letzte Schritt: Das Ergebnis wird auf den Ursprungsvertrag angewendet.",
+   "card": {
+    "title": "Abschließen",
+    "text": "Ergebnis wählen und auf den Vertrag anwenden"
+   },
+   "left": {
+    "shot": "wd5-abschliessen"
+   },
+   "leftCaption": "Das Fenster „Widerruf abschließen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Ergebnis wählen",
+     "text": "Sechs Möglichkeiten — siehe Tabelle rechts."
+    },
+    {
+     "n": 2,
+     "title": "Folgevertrag",
+     "text": "Bei **Downgrade** und **Upgrade** wird der neue Vertrag verknüpft."
+    },
+    {
+     "n": 3,
+     "title": "Abschließen",
+     "text": "Der Fall wandert in den Topf **Abgeschlossen**."
+    },
+    {
+     "n": 4,
+     "title": "Vorher prüfen",
+     "text": "Sind SEPA und Phorest erledigt? Die Haken auf der Fallseite sagen es."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Das Ergebnis wirkt auf den Vertrag",
+     "text": "Der Vertragsstatus richtet sich danach — etwa **Storniert** bei akzeptiertem Widerruf oder **Geändert** bei Downgrade."
+    },
+    {
+     "title": "Das Banner am Vertrag verschwindet",
+     "text": "Danach ist der Vertrag wieder normal bearbeitbar. Genau deshalb sollte vorher alles erledigt sein."
+    },
+    {
+     "title": "Die Widerruf-Statistik zählt mit",
+     "text": "Grund und Ergebnis gehen in den Bericht **„Berichte 5“** ein — Quote, Volumen und Gründe je Institut."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "**Widerruf akzeptiert**",
+      "Vertrag wird rückabgewickelt"
+     ],
+     [
+      "**Widerruf abgelehnt**",
+      "Vertrag bleibt, ggf. Abgabe ans Forderungsmanagement"
+     ],
+     [
+      "**Downgrade**",
+      "Kleineres Paket, Folgevertrag verknüpfen"
+     ],
+     [
+      "**Upgrade**",
+      "Größeres Paket, Folgevertrag verknüpfen"
+     ],
+     [
+      "**Korrektur**",
+      "Vertragsfehler behoben, kein echter Widerruf"
+     ],
+     [
+      "**Laufzeitanpassung**",
+      "Laufzeit geändert, Vertrag läuft weiter"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Nicht abschließen, solange SEPA lebt oder Phorest-Einheiten offen sind.** Nach dem Abschluss schaut niemand mehr in den Fall — und die Abbuchung läuft trotzdem weiter."
+   }
+  }
+ ]
+}

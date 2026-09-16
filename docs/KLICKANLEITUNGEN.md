@@ -62,7 +62,7 @@ Dieselbe Regel steht als Guideline in `.github/copilot-instructions.md` (Abschni
 (z. B. „Tageserfassung / Beratungsgespräche"), grauer Untertitel („Klickanleitung für … — …"),
 darunter **eine Karte je Vorgang** (nummerierter Kreis teal, Titel fett, 1–2 Zeilen Beschreibung),
 darunter 1–3 Hinweiszeilen mit Pfeil-Bullet „▸" und fett gesetzten Kernaussagen
-(z. B. „**kein Login nötig**", „**Korrekturen als Asana-Task an Janine**").
+(z. B. „**kein Login nötig**", „**Korrekturen als Asana-Task ans Büro**").
 
 **Vorgangsseite:** Kopfzeile links Logo, daneben Eyebrow in Teal-Versalien
 („INSTITUTSSEITE · TAGESERFASSUNG BERATUNGSGESPRÄCHE"), darunter H1 („Verkauf erfassen") und
@@ -152,7 +152,7 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | 13c | Vertrag, Rate, SEPA-Mandat, offene Forderungen, Zahlungsstand | Kundenprofil › Vertrag/Zahlungen, Forderungsmanagement | **Kundenverwaltung 4 – Vertrag, Zahlung & offene Forderungen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 13d | Automatische Nachrichten, WhatsApp lesen & senden, Zendesk-Tickets | Kundenprofil › Nachrichten, Kundenservice | **Kundenverwaltung 5 – Nachrichten & Kundenservice** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 13e | Eingereichte Formulare, Einstellungszettel, Behandlungsfotos | Kundenprofil › Dokumente, Behandlungseinstellungen | **Kundenverwaltung 6 – Unterlagen & Behandlungsverlauf** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 14 | Gutscheine (Verwaltung/Einlösung/Online-Verkauf) | Gutscheine-Modul | **Verkauf 7** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 14 | Gutscheine (Verwaltung/Einlösung/Online-Verkauf) | Gutscheine-Modul | **Verkauf 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 15 | Termin buchen (Neukunde/Bestandskunde) | Buchungsseite | **Terminansicht 9** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 16 | Anmelden (PIN/E-Mail), Seitenleiste, Gruppen, Abmelden | Hub allgemein | **Grundlagen 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 16a | Standortwahl, globale Suche, Mitteilungen | Seitenleiste | **Grundlagen 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
@@ -165,13 +165,22 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | 19 | Management-Sicht: Institute vs. Minimalziele, Boni je Mitarbeiterin, Export | `/hub/bonus` › Management | **Bonus-Board 3 – Bonus-Board für die Leitung** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 20 | Bonus-Regeln und Challenges anlegen, Minimalziele, Sichtbarkeit | `/hub/bonus/verwaltung` | **Bonus-Board 4 – Regeln & Challenges anlegen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 21 | Monatsabschluss: Widerrufe entscheiden, korrigieren, einfrieren, Google-Bewertungen | `/hub/bonus/verwaltung` | **Bonus-Board 5 – Monatsabschluss** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 22 | Vertragsliste: suchen, filtern, sortieren | `/hub/contracts` | **Verkauf 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 23 | Vertragsseite: Kopf, Reiter, Übersicht, Verlauf, E-Mails | `/hub/contracts/{id}` | **Verkauf 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 24 | Zahlungen & SEPA: Ratenplan, nachtragen, Mandat, Einzug, RLS | `/hub/contracts/{id}` › Zahlungen | **Verkauf 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 25 | Widerrufe: erfassen, Fall bearbeiten, abschließen | `/hub/cancellations` | **Verkauf 4** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 26 | Preislisten pflegen (Pakete, Rabattstufen, Zahlungsmodus) | `/hub/contracts` › Preislisten | **Verkauf 5** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 27 | Freunde werben: Empfehlung erfassen, Prämie, Auswertung | `/hub/contracts/referrals` | **Verkauf 6** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 28 | Zufriedenheitsbefragung auslösen und auswerten | `/hub/satisfaction` | **Verkauf 8** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 22 | Vertragsliste: suchen, filtern, sortieren | `/hub/contracts` | **Verträge 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 23 | Vertragsseite: Kopf, Banner, Reiter, Vertragsdaten ändern | `/hub/contracts/{id}` | **Verträge 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 24 | Ratenplan lesen, alle Zustände, Auskunft geben | `/hub/contracts/{id}` › Zahlungen | **Verträge 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 24a | Zahlung nachtragen, verbuchen, erste Rate, RLS ausgleichen | dito | **Verträge 4** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 24b | SEPA einziehen, ablösen, RLS anhängen, abgleichen | dito | **Verträge 5** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 24c | **Laufzeit und Raten ändern**, pausieren, Gutschein verrechnen | dito | **Verträge 6** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 24d | Mandat anlegen, Bankverbindung ändern, Stammdaten | dito › SEPA | **Verträge 7** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 24e | Fehlgeschlagene Importe, Werber hinterlegen | `/hub/contracts` | **Verträge 8** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 25 | Widerruf erfassen (Assistent, Frist, Gründe) | `/hub/cancellations` | **Widerrufe 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 25a | Fallseite, Fristbeginn, Dokumente, Wiedervorlage | `/hub/cancellations/{id}` | **Widerrufe 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 25b | **Vertragsänderung im Fernabsatz** (Downgrade per Link) | dito | **Widerrufe 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 25c | Abwicklung: SEPA stornieren, Phorest, Abgabe | dito | **Widerrufe 4** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 25d | RA-Vorgang, Kosten, Schriftwechsel, Abschluss | dito | **Widerrufe 5** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 26 | Preislisten pflegen (Pakete, Rabattstufen, Zahlungsmodus) | `/hub/contracts` › Preislisten | **Verkauf 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 27 | Freunde werben: Empfehlung erfassen, Prämie, Auswertung | `/hub/contracts/referrals` | **Verkauf 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 28 | Zufriedenheitsbefragung auslösen und auswerten | `/hub/satisfaction` | **Verkauf 4** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 29 | Institute: Überblick, Steckbrief, Kennzahlen, Team | `/hub/branches` | **Betrieb 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 30 | Ein Institut pflegen: Infos, Bilder, Bank, Sichtbarkeit | `/hub/branches/{id}` | **Betrieb 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 31 | Formulare bauen: Editor, Feldtypen, Bedingungen | `/hub/forms` | **Betrieb 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
@@ -181,9 +190,14 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | 35 | Personalübersicht und Hub-Konten (Anlage, Einladung, Archivieren) | `/hub/staff` | **Team 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 36 | Reisekosten erfassen und einreichen | `/hub/staff/reisekosten` | **Team 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 37 | Reisekosten prüfen und freigeben | `/hub/staff/reisekosten-freigabe` | **Team 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 38 | Forderungsmanagement: Fälle, Verlauf, Prozessschritte | `/hub/receivables` | **Finanzen 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 39 | Schulden im Überblick | `/hub/reports/schulden` | **Finanzen 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 40 | Unternehmensverträge erfassen und Fristen wahren | `/hub/company-contracts` | **Finanzen 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 38 | Forderungsmanagement: Arbeitsliste, Fall anlegen | `/hub/receivables` | **Forderungen 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 38a | Fallseite, § 367-Verrechnung, Anschrift, Verlauf | `/hub/receivables/{id}` | **Forderungen 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 38b | **Mahnprozess führen**, fällig stellen, RLS-Entscheid | dito | **Forderungen 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 38c | Zahlungen, Bezahllink, SEPA pausieren, Kosten | dito | **Forderungen 4** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 38d | Ratenzahlungsvereinbarung abschließen und führen | dito | **Forderungen 5** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 38e | 250-€-Weiche, Mahnverfahren, ruhend, abschreiben | dito | **Forderungen 6** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 39 | Schulden im Überblick | `/hub/reports/schulden` | **Finanzen 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 40 | Unternehmensverträge erfassen und Fristen wahren | `/hub/company-contracts` | **Finanzen 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 41 | Report-Mails einrichten und Zustellungen prüfen | `/hub/report-mails` | **System 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 42 | Audit: Befunde lesen und abarbeiten | `/hub/audit` | **System 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 43 | Berichte allgemein: Zeitraum, Standort, Laschen, Export | `/hub/reports` | **Berichte 0** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
@@ -194,7 +208,7 @@ Die Liste wird mit jeder fertigen Anleitung fortgeschrieben. **Quellen** liegen 
 Wiki-Repo unter `klickanleitungen/<serie>/` (je ein README dort), gebaut wird mit den Buildern aus
 `klickanleitungen/shared/`.
 
-**Stand 15.09.2026:** Alle 73 Dokumente aus 11 Serien sind **im Text fertig** und bauen als PDF
+**Stand 16.09.2026:** Alle 87 Dokumente aus 14 Serien sind **im Text fertig** und bauen als PDF
 durch (siehe „Gesamtübersicht" weiter unten). **Kein einziger Aufnahmelauf ist bisher gefahren** —
 die Screenshots fehlen überall, die Terminansicht hat welche vom Stand vor der Überarbeitung
 (v1.0). Offen bleiben außerdem die fachliche Freigabe durch Jan und die Entscheidung, wo das
@@ -409,7 +423,7 @@ gedacht ist.
 
 ---
 
-## Gesamtübersicht — 73 Dokumente in 11 Serien (Stand 15.09.2026)
+## Gesamtübersicht — 87 Dokumente in 14 Serien (Stand 16.09.2026)
 
 Alle Texte sind geschrieben, alle PDFs bauen durch. **Was überall fehlt, sind die Screenshots** —
 jede Serie bringt ihr Aufnahmeskript mit, aber kein Lauf ist bisher gefahren.
@@ -420,10 +434,13 @@ jede Serie bringt ihr Aufnahmeskript mit, aber kein Lauf ist bisher gefahren.
 | **Terminansicht** | 1–9 | Institute | Beratungs- und Behandlungstermin von der Ankunft bis zum Abschluss, Termin buchen |
 | **Kundenverwaltung** | 1–6 | Institute | Das Kundenprofil mit seinen zehn Reitern |
 | **Bonus-Board** | 1–5 | Institute, Leitung, Büro | Eigener Bonus, Challenges, Leitungssicht, Regeln, Monatsabschluss |
-| **Verkauf** | 1–8 | Büro | Verträge, Zahlungen & SEPA, Widerrufe, Preislisten, Freunde werben, Gutscheine, Zufriedenheit |
+| **Verkauf** | 1–4 | Büro | Preislisten, Freunde werben, Gutscheine, Zufriedenheitsbefragung |
+| **Verträge** | 1–8 | Büro | Liste, Detailseite, Ratenplan, Zahlungen buchen, SEPA-Einzug, Laufzeit ändern, Mandat, Importe |
+| **Widerrufe** | 1–5 | Büro | Erfassen, Fallseite, Vertragsänderung im Fernabsatz, Abwicklung, Anwalt und Abschluss |
+| **Forderungen** | 1–6 | Büro | Arbeitsliste, Fallseite, Mahnprozess, Zahlungen, RZV, Eskalation |
 | **Betrieb** | 1–6 | Leitung, Büro, Institute | Institute, Formulare, Services & Körperzonen, Laser |
 | **Team** | 1–3 | Büro, Institute | Personalübersicht und Hub-Konten, Reisekosten erfassen und freigeben |
-| **Finanzen** | 1–3 | Büro | Forderungsmanagement, Schulden, Unternehmensverträge |
+| **Finanzen** | 1–2 | Büro | Schulden, Unternehmensverträge |
 | **System** | 1–2 | Leitung | Report-Mails, Audit |
 | **Berichte** | 0–16 | Leitung, Büro | Rahmendokument plus je eine Anleitung für die 16 Berichtsseiten |
 | **Admin** | 1–8 | Administration | Das Verwaltungspanel `/admin`, thematisch gebündelt |
@@ -433,9 +450,12 @@ jede Serie bringt ihr Aufnahmeskript mit, aber kein Lauf ist bisher gefahren.
 abgeschnitten. `pdf.css` zieht für diese Cover jetzt Logo, Untertitel und Kartenpolster enger
 (`:has(.cards.n5)`). Beim Bauen prüfen: Kein `.page` darf höher als sein sichtbarer Bereich sein.
 
-**Einheitliche Tiefe:** Jedes Dokument hat drei bis vier Inhaltsseiten plus Cover — auch dort, wo
-die Seite mehr hergäbe. Lieber überall dasselbe Maß als ein paar sehr ausführliche und viele
-dünne Anleitungen. Wo eine Seite später mehr braucht, wächst ihr Dokument; der Rahmen bleibt.
+**Einheitliche Tiefe — mit einer begründeten Ausnahme:** Die meisten Dokumente haben drei bis
+vier Inhaltsseiten plus Cover. **Verträge, Widerrufe und Forderungen** folgen seit 16.09.2026 einer
+anderen Regel: dort bekommt **jedes Fenster seine eigene Seite** (4–8 Seiten je Dokument). Jan am
+16.09.2026: „Meine Erwartungshaltung ist, dass jede Unterseite und jedes Modal erklärt ist, das
+muss sehr umfangreich sein!“ — Begründung: In diesen drei Bereichen kostet ein falscher Klick
+Geld oder Vertrauen, und die 42 Modale sind nicht selbsterklärend.
 
 **Noch nicht freigeschaltete Funktionen** sind trotzdem beschrieben und tragen eine rote Plakette
 auf dem Cover (Feld `hinweis` im Deck) — betrifft derzeit **Admin 6** (Gamification). Beim
@@ -469,30 +489,74 @@ und damit im Hub nicht aktiv.
 
 ---
 
-## Serie „Verkauf" 1–8 (15.09.2026)
+## Die Geld-Serien: Verträge, Widerrufe, Forderungen (16.09.2026)
 
-Das größte Büro-Thema, Fortsetzung von „Kundenverwaltung 4". Quellen unter
-`klickanleitungen/verkauf/`.
+Auftrag von Jan am 16.09.2026: **jede Unterseite und jedes Modal erklärt, sehr umfangreich.**
+Eine Auszählung der Views ergab **42 Modale** in den drei Bereichen — die vorherigen fünf
+Dokumente mit zusammen 17 Seiten deckten davon sieben ab, die meisten nur als Halbsatz.
+
+Deshalb der Umbau: Aus „Verkauf 1–4" und „Finanzen 1" wurden **drei eigene Serien mit
+19 Dokumenten und 91 Inhaltsseiten**. Entscheidungen von Jan (16.09.2026): Zuschnitt **nach
+Vorgang** (ein Dokument je Arbeitsvorgang statt weniger dicker Handbücher), Tiefe **mit
+Folgewirkung** (jede schreibende Aktion nennt, was sie auslöst — GoCardless, Phorest, Bonus,
+Mahnfrist, E-Mail), Zielgruppe **Büro, ohne Namen zu nennen** (das Repo ist öffentlich).
+
+### Serie „Verträge" 1–8
 
 | Dokument | Kern |
 |---|---|
-| **Verkauf 1 – Verträge finden in der Liste** | Suche, Filterpanel (Mandat, Zonen, Zahlungsart, Institut, Verkäuferin), Sortierung, Badges Legacy/Institut |
-| **Verkauf 2 – Der Vertrag im Detail** | Kopf mit Widerrufs- und Forderungs-Banner, die vier Reiter, Übersicht, Zusammenfassungs-Spalte, Verlauf, E-Mail-Historie |
-| **Verkauf 3 – Zahlungen & SEPA** | Ratenplan lesen, Zahlung nachtragen, Mandat, Einzug, RLS anhängen, pausieren, Gutschein verrechnen, Legacy-Einzug |
-| **Verkauf 4 – Widerrufe erfassen & bearbeiten** | Assistent (Vertrag → Eingang/Grund), Fallseite mit Fristen und Behandlungsstand, Verhandlung/RA/Abschluss |
-| **Verkauf 5 – Preislisten pflegen** | Pakete und Preise, Rabattstufen ab N KPZ, Zahlungsmodus der Liste (erste Rate vor Ort oder alles per SEPA) |
-| **Verkauf 6 – Freunde werben** | Empfehlung erfassen, Prämie, Auswertung |
-| **Verkauf 7 – Gutscheine** | Bestehende Phorest-Gutscheine verwalten, Online-Verkauf und Bonus-Guthaben |
-| **Verkauf 8 – Zufriedenheitsbefragung** | Befragung auslösen, Rückläufe lesen, Konsequenzen |
+| **Verträge 1 – Die Vertragsliste** | Suche, Spaltenfilter, Zeile lesen, Wegweiser durch die Serie |
+| **Verträge 2 – Der Vertrag im Detail** | Kopf, die beiden Banner, vier Reiter, Vertragsdaten ändern, Bestätigung mit Vorher/Nachher und Pflichtbegründung, Zusammenfassung, Verlauf und E-Mails |
+| **Verträge 3 – Den Ratenplan lesen** | Aufbau des Reiters, die Ratenzeile, **alle 15 Zustände** als Nachschlagetabelle, Auskunft am Telefon |
+| **Verträge 4 – Zahlungen nachtragen und korrigieren** | Entscheidungshilfe „welcher Weg?“, Rate nachtragen, freie Zahlung verbuchen, erste Rate bestätigen/korrigieren, RLS ausgleichen |
+| **Verträge 5 – SEPA-Einzug und Rücklastschrift** | Wie der Einzug läuft, die vier Kontrollen vorher, Betrag einziehen (Ablösung), RLS anhängen, abgleichen, Legacy-Einzug |
+| **Verträge 6 – Laufzeit und Raten ändern** | Grenzen der Änderung, offene Raten anpassen, Laufzeit verlängern als Rechenbeispiel, pausieren, fortsetzen, Gutschein verrechnen |
+| **Verträge 7 – Mandat und Bankverbindung** | Die zehn Mandats-Zustände, SEPA-Bereich, Mandat anlegen, Bankverbindung ändern, Stammdaten korrigieren |
+| **Verträge 8 – Import-Probleme und Werber** | Warnband, Import korrigieren, Widerruf zuordnen, verwerfen, Werber hinterlegen |
 
-**Der Aufnahmelauf fasst kein Geld an:** „Gezahlte Rate nachtragen" wird geöffnet und verworfen;
-„Betrag per SEPA einziehen", „RLS anhängen" und „Pausieren" werden nur markiert. Der
-Widerrufs-Assistent wird abgebrochen, kein Fall abgeschlossen — ein angelegter Widerruf zöge
-Bonus- und SEPA-Folgen nach sich.
+### Serie „Widerrufe" 1–5
 
-**Braucht passende Datensätze:** einen **Ratenzahler mit Mandat** (`KLICK_CONTRACT`, einige Raten
-bezahlt, einige offen) und einen **offenen Widerruf** (`KLICK_CANCELLATION`). Die Bilder zeigen
-Kundennamen, Vertragsnummern und IBANs — Maskierung ist Pflicht.
+| Dokument | Kern |
+|---|---|
+| **Widerrufe 1 – Widerruf erfassen** | Liste, Assistent in drei Schritten, Fristprüfung (14 / 17 Tage), Behandlungsstand aus Phorest, die neun Gründe |
+| **Widerrufe 2 – Der Fall im Detail** | Fünf Blöcke der Fallseite, „Fall bearbeiten“ inkl. abweichendem Fristbeginn, Dokumente, Wiedervorlage |
+| **Widerrufe 3 – Vertragsänderung im Fernabsatz** | Angebot bauen mit Guthaben-Anrechnung, Formular und Versandweg, schwebender Folgevertrag, Widerruf des Folgevertrags |
+| **Widerrufe 4 – Die Abwicklung** | SEPA-Mandat stornieren, Phorest-Pakete auf 0, Downgrade vor Ort, Abgabe ans Forderungsmanagement |
+| **Widerrufe 5 – RA-Vorgang und Abschluss** | Wirtschaftlichkeit, Kostenposition, Schriftwechsel, die fünf RA-Ergebnisse, „Widerruf abschließen“ mit sechs Ergebnissen |
+
+### Serie „Forderungen" 1–6
+
+| Dokument | Kern |
+|---|---|
+| **Forderungen 1 – Übersicht und Fall anlegen** | Arbeitsliste, die vier Einstiege, Fall ohne Vertrag anlegen, gerichtliche Fälle |
+| **Forderungen 2 – Der Fall im Detail** | Forderungsaufstellung, § 367-Verrechnung, Seitenspalte, Anschrift korrigieren, Verlauf und Zahlungen |
+| **Forderungen 3 – Den Prozess führen** | Die zwölf Stufen mit ihren Fristen, Schreiben erzeugen und versenden, Gesamtsumme fällig stellen, RLS-Entscheid, extern erledigt nachtragen |
+| **Forderungen 4 – Zahlungen und Bezahllinks** | Zahlungseingang erfassen, stornieren, Sammel-Bezahllink, SEPA pausieren und fortsetzen, Kosten erfassen |
+| **Forderungen 5 – Ratenzahlungsvereinbarung** | Wann eine RZV, festhalten (drei Einzugsarten), Plan ändern, laufende Vereinbarung verfolgen |
+| **Forderungen 6 – Eskalation und Abschluss** | 250-€-Weiche, gerichtliches Mahnverfahren, ruhend stellen, abschreiben (WNB) und abschließen |
+
+### Was diese Serien anders machen
+
+**Ein Vorgang, eine Seite.** Links der Screenshot mit nummerierten Schritten, rechts eine
+**Feldtabelle** („Was gehört hinein?“) und darunter die **Folgewirkung** („Was passiert beim
+Speichern?“). Der Builder rendert dafür seit 16.09.2026 die Tabelle **vor** den Erläuterungen.
+
+**Der gefährlichste Knopf steht immer im Warnkasten.** „Betrag per SEPA einziehen“ holt sofort
+Geld ohne zweite Rückfrage; „Ausführen“ im Forderungsmanagement verschickt eine echte Mahnung;
+die Haken „SEPA storniert“ und „Phorest aktualisiert“ auf der Widerrufs-Fallseite halten nur
+fest und **tun nichts**. Das steht jeweils als roter Kasten auf der Seite, nicht im Fließtext.
+
+**Der Aufnahmelauf drückt diese Knöpfe nie.** Jede der drei Serien hat in `scripts/shots.cjs`
+und im README eine Tabelle, welcher Knopf warum tabu ist. Fenster werden geöffnet und mit
+Escape verworfen.
+
+### Serie „Verkauf" 1–4 (umnummeriert am 16.09.2026)
+
+Was vom alten Verkaufs-Block übrig blieb: **1 Preislisten**, **2 Freunde werben**,
+**3 Gutscheine**, **4 Zufriedenheitsbefragung**. Die früheren Nummern 1–4 (Vertragsliste,
+Vertragsdetail, Zahlungen & SEPA, Widerrufe) sind in den neuen Serien aufgegangen; „Finanzen 1“
+(Forderungsmanagement) wurde zur Serie **Forderungen**, Finanzen behält **1 Schulden** und
+**2 Unternehmensverträge**. Alle Querverweise in den übrigen Decks sind umgeschrieben.
 
 ---
 
@@ -650,21 +714,19 @@ eine Person **ohne** Hub-Konto, sonst zeigt der Assistent seinen ersten Schritt 
 
 ---
 
-## Serie „Finanzen" 1–3 (15.09.2026)
+## Serie „Finanzen" 1–2 (15.09.2026, umnummeriert 16.09.2026)
 
-Quellen unter `klickanleitungen/finanzen/`. **Ansprechpartnerin fürs Forderungsmanagement ist
-Janine Tasto** — inhaltliche Rückfragen zu Finanzen 1 gehen an sie.
+Quellen unter `klickanleitungen/finanzen/`. Das **Forderungsmanagement** ist seit 16.09.2026 eine
+eigene Serie mit sechs Dokumenten — siehe oben.
 
 | Dokument | Zielgruppe | Kern |
 |---|---|---|
-| **Finanzen 1 – Forderungsmanagement** | Büro | Fallliste, Fall im Detail mit Verlauf, Prozessschritte, Fall anlegen |
-| **Finanzen 2 – Schulden im Überblick** | Büro | Kennzahlen, Liste der Schuldnerinnen, woher die Zahlen kommen (geplatzte GoCardless-Lastschriften) |
-| **Finanzen 3 – Unternehmensverträge** | Büro | Vertrag erfassen, Fristen und Kündigung, Übersicht |
+| **Finanzen 1 – Schulden im Überblick** | Büro | Kennzahlen, Liste der Schuldnerinnen, woher die Zahlen kommen (geplatzte GoCardless-Lastschriften) |
+| **Finanzen 2 – Unternehmensverträge** | Büro | Vertrag erfassen, Fristen und Kündigung, Übersicht |
 
-**Der Lauf bewegt kein Geld:** kein Prozessschritt (jeder schreibt Historie und löst Schreiben
-aus), kein „Fall anlegen", keine Zahlung, keine Kündigung. **Datenlage beachten:** Die
-Staging-Datenbank hat zeitweise keine `debt_cases` — dann kommen die Bilder nur aus einer frischen
-Prod-Kopie, und die Maskierung wiegt entsprechend schwerer.
+**Der Lauf bewegt kein Geld:** keine Zahlung wird nachgetragen, kein Unternehmensvertrag
+gekündigt. **Datenlage beachten:** Der Schuldenbericht braucht einen Zeitraum mit echten
+Rücklastschriften — auf Staging ist die Liste oft leer.
 
 ---
 

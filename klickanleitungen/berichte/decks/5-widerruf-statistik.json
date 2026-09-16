@@ -125,7 +125,7 @@
    ],
    "hint": {
     "kind": "warn",
-    "text": "**Der Grund kommt aus der Erfassung.** Wer beim Anlegen pauschal „Sonstiges“ wählt, macht diese Auswertung wertlos („Verkauf 4“)."
+    "text": "**Der Grund kommt aus der Erfassung.** Wer beim Anlegen pauschal „Sonstiges“ wählt, macht diese Auswertung wertlos („Widerrufe 1–5“)."
    }
   },
   {
@@ -152,16 +152,16 @@
      ],
      [
       "SEPA-Einzüge müssen gestoppt werden",
-      "„Verkauf 3“ — sonst wird weiter abgebucht"
+      "„Verträge 5“ — sonst wird weiter abgebucht"
      ],
      [
       "Forderungsfall entfällt",
-      "„Finanzen 1“ — Fall abschließen"
+      "„Forderungen 6“ — Fall abschließen"
      ]
     ]
    },
    "hint": {
-    "text": "**Für die Bearbeitung** eines einzelnen Falls ist „Verkauf 4“ zuständig — dieser Bericht ist die Vogelperspektive."
+    "text": "**Für die Bearbeitung** eines einzelnen Falls ist „Widerrufe 1–5“ zuständig — dieser Bericht ist die Vogelperspektive."
    }
   }
  ]

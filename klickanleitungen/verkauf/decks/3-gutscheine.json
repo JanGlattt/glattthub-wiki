@@ -1,10 +1,10 @@
 {
- "out": "../pdf/Verkauf-7-Gutscheine",
+ "out": "../pdf/Verkauf-3-gutscheine",
  "meta": "../meta.json",
  "shots": "../shots",
  "series": "Verkauf",
- "nr": 7,
- "of": 8,
+ "nr": 3,
+ "of": 4,
  "audience": "institut",
  "title": [
   "Gutscheine",
@@ -18,7 +18,7 @@
  "notes": [
   "Die Gutscheine liegen in **Phorest** — der Hub zeigt sie an und legt neue dort an.",
   "**Restwert ist nicht Originalwert:** Ein Gutschein kann teilweise eingelöst sein.",
-  "Verrechnet wird ein Gutschein mit offenen Raten **im Vertrag** („Verkauf 3“), nicht hier."
+  "Verrechnet wird ein Gutschein mit offenen Raten **im Vertrag** („Verträge 6“), nicht hier."
  ],
  "pages": [
   {
@@ -136,7 +136,7 @@
     }
    ],
    "hint": {
-    "text": "**Einlösen passiert nicht hier.** Auf eine Behandlung wird der Gutschein in Phorest angerechnet; auf offene **Vertragsraten** verrechnet man ihn im Vertrag („Verkauf 3“)."
+    "text": "**Einlösen passiert nicht hier.** Auf eine Behandlung wird der Gutschein in Phorest angerechnet; auf offene **Vertragsraten** verrechnet man ihn im Vertrag („Verträge 6“)."
    }
   }
  ]

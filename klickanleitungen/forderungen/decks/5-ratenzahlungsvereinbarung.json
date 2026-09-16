@@ -1,0 +1,307 @@
+{
+ "out": "../pdf/Forderungen-5-ratenzahlungsvereinbarung",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Forderungen",
+ "nr": 5,
+ "of": 6,
+ "audience": "buero",
+ "title": [
+  "Ratenzahlungs-",
+  "vereinbarung"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — RZV abschließen, Plan ändern, laufende Vereinbarung verfolgen",
+ "eyebrow": "Forderungen · RZV",
+ "footerArea": "Forderungen",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Eine RZV ist **immer eine Einzelfallentscheidung** — es gibt keine Regel und keinen Automatismus.",
+  "Solange sie läuft, **mahnt der Hub nicht** — er beobachtet nur die Raten.",
+  "Bei **Überweisung muss jede Rate von Hand erfasst werden**, sonst mahnt der Fall eine bezahlte Rate."
+ ],
+ "pages": [
+  {
+   "h1": "Wann eine RZV sinnvoll ist",
+   "sub": "Die Kundin kann zahlen, nur nicht auf einmal. Eine Ratenzahlungsvereinbarung ist dann die bessere Lösung als jede Mahnung.",
+   "layout": "text",
+   "card": {
+    "title": "Wann eine RZV",
+    "text": "Die Einzelfallentscheidung"
+   },
+   "sections": [
+    {
+     "h2": "Eine RZV ist immer eine Einzelfallentscheidung",
+     "text": "Es gibt keinen Automatismus und keine Regel, ab welcher Summe. Wer eine RZV abschließt, entscheidet: Diese Kundin zahlt lieber in kleinen Schritten als gar nicht. Der Fall bleibt bis zur **letzten Rate** offen."
+    },
+    {
+     "h2": "Drei Einzugsarten",
+     "text": "Die Raten können **per Überweisung** kommen (die Kundin zahlt selbst), über ein **bestehendes GoCardless-Mandat** eingezogen werden, oder es wird dafür ein **neues Mandat** angelegt. Die letzte Variante braucht die Bankdaten der Kundin — deshalb stehen IBAN und Kontoinhaber im Fenster."
+    },
+    {
+     "h2": "Der Fall bleibt in Arbeit",
+     "text": "Anders als nach einer Zahlung schließt sich nichts. Die Stufe wechselt auf **„RZV — Ratenzahlung läuft“**, und jede Rate wird als Zahlungseingang erfasst. Bleibt eine aus, erscheint der Fall unter **„RZV geplatzt“**."
+    }
+   ],
+   "table": {
+    "head": [
+     "Situation",
+     "Einzugsart"
+    ],
+    "rows": [
+     [
+      "Mandat ist noch aktiv",
+      "**Raten neu per GoCardless einziehen** — bequem für beide Seiten"
+     ],
+     [
+      "Mandat wurde entzogen, Kundin ist einverstanden",
+      "**Neues SEPA-Mandat anlegen** — Bankdaten im Fenster"
+     ],
+     [
+      "Kundin will selbst überweisen",
+      "keine der beiden Optionen ankreuzen"
+     ],
+     [
+      "Bestandsfall mit laufenden Raten",
+      "**Bereits laufende GoCardless-Raten verknüpfen**"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Eine RZV ist ein Versprechen in beide Richtungen.** Solange sie eingehalten wird, wird nicht gemahnt und nicht eskaliert. Deshalb: nur abschließen, was realistisch ist — eine geplatzte RZV kostet mehr Vertrauen als eine abgelehnte Bitte."
+   }
+  },
+  {
+   "h1": "Modal „Ratenzahlungsvereinbarung festhalten“",
+   "sub": "Die Vereinbarung wird eingetragen — Raten, Startdatum und der Weg des Einzugs.",
+   "card": {
+    "title": "RZV festhalten",
+    "text": "Vereinbarung anlegen"
+   },
+   "left": {
+    "shot": "fo5-rzv-anlegen"
+   },
+   "leftCaption": "Das Fenster „Ratenzahlungsvereinbarung festhalten“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Anzahl Raten",
+     "text": "In wie vielen Schritten getilgt wird. Der Hub rechnet die Monatsrate."
+    },
+    {
+     "n": 2,
+     "title": "Erste Rate am",
+     "text": "Startdatum der Vereinbarung."
+    },
+    {
+     "n": 3,
+     "title": "Einzugsart",
+     "text": "Keine, bestehendes Mandat oder neues Mandat (dann Bankdaten)."
+    },
+    {
+     "n": 4,
+     "title": "RZV festhalten",
+     "text": "Die Stufe wechselt auf **„RZV — Ratenzahlung läuft“**."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Die IBAN wird geprüft",
+     "text": "Der Hub meldet **„IBAN-Prüfziffer ist ungültig“** oder eine falsche Länge, bevor irgendetwas angelegt wird."
+    },
+    {
+     "title": "Mit GoCardless entstehen echte Einzüge",
+     "text": "Bei beiden Schalter-Varianten werden Lastschriften angelegt — die Raten werden also wirklich abgebucht."
+    },
+    {
+     "title": "Der Fall verlässt die Mahnkette",
+     "text": "Solange die RZV läuft, schlägt der Hub keine Mahnschritte mehr vor. Er beobachtet nur die Raten."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Anzahl Raten",
+      "Ganze Zahl"
+     ],
+     [
+      "Erste Rate am",
+      "Datum der ersten Rate"
+     ],
+     [
+      "Monatsrate",
+      "Rechnet der Hub aus Restsumme und Ratenzahl"
+     ],
+     [
+      "Raten neu per GoCardless einziehen",
+      "Schalter — nur bei aktivem Mandat"
+     ],
+     [
+      "Neues SEPA-Mandat anlegen",
+      "Schalter — dann sind die folgenden Felder Pflicht"
+     ],
+     [
+      "Kontoinhaber Vorname / Nachname *",
+      "Pflicht beim neuen Mandat"
+     ],
+     [
+      "IBAN *",
+      "Pflicht beim neuen Mandat; der Hub prüft die Prüfziffer"
+     ],
+     [
+      "BIC / Bank",
+      "Ergänzt der Hub meist selbst"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Modal „RZV-Zahlungsplan ändern“",
+   "sub": "Die Vereinbarung passt nicht mehr — dann wird der Plan angepasst statt gekündigt.",
+   "card": {
+    "title": "RZV-Plan ändern",
+    "text": "Raten und Termine anpassen"
+   },
+   "left": {
+    "shot": "fo5-rzv-aendern"
+   },
+   "leftCaption": "Das Fenster „RZV-Zahlungsplan ändern“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Anzahl Raten",
+     "text": "Die neue Ratenzahl für den **verbleibenden** Rest."
+    },
+    {
+     "n": 2,
+     "title": "Erste (neue) Rate am",
+     "text": "Ab wann der neue Plan gilt."
+    },
+    {
+     "n": 3,
+     "title": "Plan ändern",
+     "text": "Die offenen Raten werden neu berechnet und terminiert."
+    },
+    {
+     "n": 4,
+     "title": "Bereits gezahlt bleibt",
+     "text": "Was getilgt ist, bleibt getilgt — geändert wird nur die Zukunft."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Laufende GoCardless-Raten werden neu angelegt",
+     "text": "Bei einer per Lastschrift eingezogenen RZV werden die offenen Einzüge storniert und ersetzt."
+    },
+    {
+     "title": "Einmal ändern ist Entgegenkommen, dreimal ist ein Muster",
+     "text": "Wer den Plan wiederholt strecken muss, sollte den Fall grundsätzlich neu bewerten — vielleicht ist die RZV nicht der richtige Weg."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Anzahl Raten",
+      "Für den verbleibenden Rest"
+     ],
+     [
+      "Erste (neue) Rate am",
+      "Startdatum des geänderten Plans"
+     ],
+     [
+      "Restsumme der Vereinbarung",
+      "Was noch offen ist — die Grundlage der Rechnung"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Ändern ist besser als platzen lassen.** Eine angepasste Vereinbarung, die gehalten wird, bringt mehr als eine gerissene, die wieder in der Mahnkette landet."
+   }
+  },
+  {
+   "h1": "Die laufende RZV verfolgen",
+   "sub": "Der Reiter zeigt den Plan, den Stand und was als Nächstes fällig ist.",
+   "card": {
+    "title": "RZV verfolgen",
+    "text": "Raten prüfen und verbuchen"
+   },
+   "left": {
+    "shot": "fo5-rzv-verfolgen"
+   },
+   "leftCaption": "Der Reiter „Ratenzahlung“ mit dem Plan.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Vereinbarte Raten",
+     "text": "Jede Rate mit Fälligkeit und Zustand."
+    },
+    {
+     "n": 2,
+     "title": "Zahlung verbuchen",
+     "text": "Bei Überweisung wird jede Rate von Hand erfasst."
+    },
+    {
+     "n": 3,
+     "title": "GoCardless-Status",
+     "text": "Bei Lastschrift steht der Einzugsstand je Rate."
+    },
+    {
+     "n": 4,
+     "title": "Wiedervorlage",
+     "text": "Wann der Fall wieder geprüft wird."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Bei Überweisung passiert nichts von allein",
+     "text": "Jede eingehende Rate muss erfasst werden („Forderungen 4“). Wer das versäumt, mahnt eine bezahlte Rate."
+    },
+    {
+     "title": "„RZV geplatzt“ ist ein eigener Topf",
+     "text": "Bleibt eine Rate aus, erscheint der Fall in der Arbeitsliste. Dann ist zu entscheiden: Plan ändern oder zurück in die Mahnkette."
+    },
+    {
+     "title": "Der Fall schließt sich mit der letzten Rate",
+     "text": "Ausgang **RZV** — die Vereinbarung wurde eingehalten."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Fällig am",
+      "Termin der Rate"
+     ],
+     [
+      "Monatsrate",
+      "Betrag je Rate"
+     ],
+     [
+      "GoCardless-Status",
+      "Bei Lastschrift: Stand des Einzugs"
+     ],
+     [
+      "Restsumme der Vereinbarung",
+      "Was noch aussteht"
+     ],
+     [
+      "Kombinierter Zahlungsplan",
+      "Bei Bestandsfällen: RZV-Raten plus reguläre Vertragsraten"
+     ]
+    ]
+   }
+  }
+ ]
+}

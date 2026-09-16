@@ -1,0 +1,387 @@
+{
+ "out": "../pdf/Forderungen-3-prozess-fuehren",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Forderungen",
+ "nr": 3,
+ "of": 6,
+ "audience": "buero",
+ "title": [
+  "Den Prozess",
+  "führen"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — die Stufen, Schreiben erzeugen und versenden, Gesamtsumme fällig stellen, RLS-Entscheid",
+ "eyebrow": "Forderungen · Prozess",
+ "footerArea": "Forderungen",
+ "stand": "16.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der Hub schlägt **genau einen** nächsten Schritt vor — ausgelöst wird er von Hand.",
+  "**Fällig stellen ist folgenreich:** Danach geht es um die ganze Restsumme, nicht um eine Rate.",
+  "Bei einer **neuen Rücklastschrift hält der Fall an**, bis entschieden ist — sonst mahnt er zu wenig."
+ ],
+ "pages": [
+  {
+   "h1": "Die Stufen des Prozesses",
+   "sub": "Der Hub kennt zwölf Stufen und schlägt immer genau einen nächsten Schritt vor.",
+   "layout": "text",
+   "card": {
+    "title": "Die Stufen",
+    "text": "Der Weg vom Eingang bis zur Entscheidung"
+   },
+   "sections": [
+    {
+     "h2": "Drei Wege durch dieselben Stufen",
+     "text": "**Sanft:** 1. Erinnerung → 2. Erinnerung → Wartefenster → letzte Mahnung. **Hart:** eine Erinnerung über **alle** offenen Schulden → 1. Mahnung → letzte Mahnung. **Ohne Vertrag:** zwei Erinnerungen → direkt Postweg, weil es weder Lastschrift noch Ratenplan zum Abwarten gibt."
+    },
+    {
+     "h2": "Beim zweiten Mal wird nicht mehr gewartet",
+     "text": "Ist es bereits die **zweite** Rücklastschrift, entfällt das Wartefenster — der Fall geht direkt in den postalischen Mahnweg. Der Hub zählt das selbst mit."
+    }
+   ],
+   "table": {
+    "head": [
+     "Stufe",
+     "Was sie bedeutet",
+     "Zahlungsfrist"
+    ],
+    "rows": [
+     [
+      "**Neu — zu bearbeiten**",
+      "Fall ist angelegt, nichts ist passiert",
+      "—"
+     ],
+     [
+      "**Kontaktaufnahme**",
+      "Direktzahler: erst anrufen, nicht mahnen",
+      "7 Tage"
+     ],
+     [
+      "**1. Zahlungserinnerung**",
+      "Freundliche E-Mail",
+      "7 Tage"
+     ],
+     [
+      "**2. Zahlungserinnerung**",
+      "E-Mail mit Androhung der Terminabsage",
+      "7 Tage"
+     ],
+     [
+      "**Wartefenster nächste Lastschrift**",
+      "Erster Ausrutscher: nächsten Einzug abwarten",
+      "—"
+     ],
+     [
+      "**Rate angehängt — Beobachtung**",
+      "Rate ans Planende gehängt, Fall ruht",
+      "—"
+     ],
+     [
+      "**Restsumme angemahnt**",
+      "Nach Mandatsentzug, per E-Mail",
+      "7 Tage"
+     ],
+     [
+      "**1. postalische Mahnung**",
+      "Erster Brief",
+      "10 Tage"
+     ],
+     [
+      "**Letzte postalische Mahnung**",
+      "Letzter Brief vor der Eskalation",
+      "14 Tage"
+     ],
+     [
+      "**Entscheid (250-€-Weiche)**",
+      "Gericht oder Abschreibung („Forderungen 6“)",
+      "—"
+     ],
+     [
+      "**RZV — Ratenzahlung läuft**",
+      "Vereinbarung läuft („Forderungen 5“)",
+      "—"
+     ],
+     [
+      "**Gerichtliches Mahnverfahren**",
+      "Beim Gericht („Forderungen 6“)",
+      "—"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Die Frist steht im Schreiben, nicht im Kopf.** Der Hub übernimmt die Frist aus der verwendeten Vorlage — deshalb ist die letzte Mahnung sanft 10 und hart 14 Tage."
+   }
+  },
+  {
+   "h1": "Den nächsten Schritt ausführen",
+   "sub": "Der Fall schlägt genau einen Schritt vor. Ausgeführt wird er von Hand — mit Vorschau.",
+   "card": {
+    "title": "Nächster Schritt",
+    "text": "Schreiben erzeugen und versenden"
+   },
+   "left": {
+    "shot": "fo3-naechster-schritt"
+   },
+   "leftCaption": "Der vorgeschlagene nächste Schritt auf der Fallseite.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Vorschlag lesen",
+     "text": "Er nennt Kanal (**E-Mail** oder **Brief**) und Stufe."
+    },
+    {
+     "n": 2,
+     "title": "Vorschau öffnen",
+     "text": "Das echte Schreiben erscheint — kein Muster, sondern der Text, der rausgeht."
+    },
+    {
+     "n": 3,
+     "title": "Text anpassen",
+     "text": "Der Fließtext ist **direkt im Schreiben bearbeitbar**. Was im Blatt steht, geht raus."
+    },
+    {
+     "n": 4,
+     "title": "Ausführen",
+     "text": "E-Mail wird versendet, ein Brief als **PDF erzeugt** und zur Post gegeben."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Ausführen setzt die Stufe und die Frist",
+     "text": "Mit dem Versand rückt der Fall eine Stufe weiter, und die Zahlungsfrist der Stufe beginnt. Er verschwindet damit aus „Zu erledigen“."
+    },
+    {
+     "title": "Eine E-Mail geht wirklich raus",
+     "text": "An die hinterlegte Adresse der Kundin. Es gibt keinen Testmodus und kein Zurückholen."
+    },
+    {
+     "title": "Ein Brief muss noch zur Post",
+     "text": "Der Hub erzeugt das PDF. Drucken, kuvertieren und einwerfen passiert außerhalb — die Frist läuft trotzdem ab dem Erzeugen."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Kanal",
+      "E-Mail oder Brief — ergibt sich aus der Stufe"
+     ],
+     [
+      "Vorschau",
+      "Der gerenderte Brief bzw. die Mail"
+     ],
+     [
+      "Fließtext",
+      "Bearbeitbar, fließt als Klartext ins Schreiben"
+     ],
+     [
+      "Gesamte Restsumme fällig stellen",
+      "Schalter, wo er angeboten wird — siehe nächste Seite"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Der Fließtext ist frei — die Wirkung nicht.** Was im Schreiben steht, ist die Grundlage für alles Weitere. Formulierungen, die eine Frist verlängern oder eine Forderung relativieren, gehören nicht hinein."
+   }
+  },
+  {
+   "h1": "Die Gesamtsumme fällig stellen",
+   "sub": "An bestimmten Stufen bietet der Hub an, statt der einzelnen Rate die **gesamte** Restforderung fällig zu stellen.",
+   "card": {
+    "title": "Fällig stellen",
+    "text": "Einzelne Rate oder ganze Restsumme"
+   },
+   "left": {
+    "shot": "fo3-faellig"
+   },
+   "leftCaption": "Der Schalter „Gesamte Restsumme des Vertrags fällig stellen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Der Schalter",
+     "text": "Steht im Versand-Fenster, wo er angeboten wird."
+    },
+    {
+     "n": 2,
+     "title": "Einzelne Rate",
+     "text": "Die Mahnung fordert nur die geplatzte Rate — der Vertrag läuft normal weiter."
+    },
+    {
+     "n": 3,
+     "title": "Gesamte Restsumme",
+     "text": "Die Mahnung fordert alles, was aus dem Vertrag noch aussteht."
+    },
+    {
+     "n": 4,
+     "title": "Die Vorlage wechselt mit",
+     "text": "Der Hub wählt automatisch den passenden Text — die Gesamtsummen-Vorlage sagt inhaltlich etwas anderes."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Fällig stellen beendet den Ratenplan faktisch",
+     "text": "Danach geht es nicht mehr um 99 €, sondern um die Restsumme. Der Fall wird damit groß genug für die 250-€-Weiche und das gerichtliche Verfahren."
+    },
+    {
+     "title": "Es ändert den weiteren Weg",
+     "text": "Nach der letzten Mahnung **mit** fällig gestellter Gesamtsumme folgt der Entscheid — **ohne** sie wird stattdessen die Rate ans Planende gehängt und der Fall beruhigt sich."
+    },
+    {
+     "title": "Die falsche Vorlage wäre inhaltlich falsch",
+     "text": "Deshalb wählt der Hub sie selbst: Eine Mahnung über eine einzelne Rate darf nicht im Text die gesamte Vertragssumme fällig stellen."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Aus",
+      "Nur die offene Rate wird angemahnt"
+     ],
+     [
+      "An",
+      "Die gesamte restliche Vertragsforderung wird fällig gestellt"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Das ist die folgenreichste Entscheidung im Modul.** Eine fällig gestellte Gesamtsumme lässt sich nicht einfach zurücknehmen. Bei Unsicherheit: erst die Rate mahnen, dann weitersehen."
+   }
+  },
+  {
+   "h1": "Neue Rücklastschrift — der Entscheid",
+   "sub": "Kommt mitten im Verfahren eine weitere Rücklastschrift, hält der Hub an und fragt.",
+   "card": {
+    "title": "RLS-Entscheid",
+    "text": "Neu starten oder weiterlaufen"
+   },
+   "left": {
+    "shot": "fo3-rls-entscheid"
+   },
+   "leftCaption": "Der Hinweis „Neue Rücklastschrift eingegangen“ mit den zwei Optionen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Der Fall hält an",
+     "text": "Solange die Entscheidung aussteht, wird **kein Schreiben** erzeugt."
+    },
+    {
+     "n": 2,
+     "title": "„Prozess von vorne starten“",
+     "text": "Der Fall geht zurück auf **Neu** — die nächste Erinnerung erfasst die neue Forderung mit."
+    },
+    {
+     "n": 3,
+     "title": "„Im aktuellen Schritt weiter“",
+     "text": "Der Fall bleibt stehen; die neue Forderung läuft im Saldo mit."
+    },
+    {
+     "n": 4,
+     "title": "Entscheiden",
+     "text": "Erst danach schlägt der Hub wieder einen Schritt vor."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Warum der Hub anhält",
+     "text": "Sonst ginge ein Schreiben mit **veralteter Forderungsaufstellung** raus — die Kundin bekäme eine Mahnung über weniger, als sie schuldet."
+    },
+    {
+     "title": "Im harten Weg fordert das nächste Schreiben alles",
+     "text": "Wird dort neu gestartet, erfasst die Zahlungserinnerung **alle offenen Schulden** — alte und neue zusammen."
+    },
+    {
+     "title": "Eine angehängte Serie läuft weiter",
+     "text": "Beim Neustart im sanften Weg werden nur die **nicht angehängten** Forderungen angemahnt; eine bereits ans Planende gehängte Rate bleibt unberührt."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Prozess von vorne starten",
+      "Sanfter Weg: beide Erinnerungen erneut, nur die nicht angehängten Forderungen"
+     ],
+     [
+      "Im aktuellen Schritt weiter",
+      "Die neue Forderung wird vom nächsten regulären Schreiben erfasst"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Modal „Schritt extern erledigt nachtragen“",
+   "sub": "Die Mahnung ging von Hand raus — dann wird der Schritt nachgetragen, ohne ein Schreiben zu erzeugen.",
+   "card": {
+    "title": "Extern erledigt",
+    "text": "Schritt ohne Schreiben nachziehen"
+   },
+   "left": {
+    "shot": "fo3-extern"
+   },
+   "leftCaption": "Das Fenster „Schritt extern erledigt nachtragen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Erledigt am",
+     "text": "Das **tatsächliche Versanddatum** — die Frist zählt ab diesem Tag."
+    },
+    {
+     "n": 2,
+     "title": "Notiz",
+     "text": "Was genau rausging und auf welchem Weg."
+    },
+    {
+     "n": 3,
+     "title": "Nachtragen",
+     "text": "Stufe und Frist rücken nach, es wird **kein** Schreiben erzeugt."
+    },
+    {
+     "n": 4,
+     "title": "Wann das passt",
+     "text": "Mahnung von Hand geschrieben, aus einem anderen System versendet, persönlich übergeben."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Die Frist zählt ab dem echten Versand",
+     "text": "Nicht ab heute. Wer das Datum falsch setzt, mahnt zu früh oder wartet zu lange."
+    },
+    {
+     "title": "Kein Schreiben heißt: kein Nachweis im Hub",
+     "text": "Das versendete Dokument gehört dann an anderer Stelle abgelegt. Die Notiz sollte sagen, wo."
+    }
+   ],
+   "table": {
+    "head": [
+     "Feld",
+     "Was hineingehört"
+    ],
+    "rows": [
+     [
+      "Erledigt am",
+      "Versanddatum — Startpunkt der Frist"
+     ],
+     [
+      "Notiz",
+      "Was versendet wurde und wie"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Ein erzeugtes Schreiben lässt sich auch verwerfen.** Wurde versehentlich das falsche erstellt, nimmt der Hub es zurück und setzt die Stufe auf den Stand davor — mit Begründung im Verlauf."
+   }
+  }
+ ]
+}

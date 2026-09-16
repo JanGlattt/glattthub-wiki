@@ -89,9 +89,9 @@ deck.pages.forEach((p, i) => {
       + `<div class="col">${right}`
       + `${p.rightCaption ? `<div class="cap">${D.rich(p.rightCaption)}</div>` : ''}`
       + `${p.rightSteps ? D.stepsHtml(p.rightSteps, 1) : ''}`
+      + `${D.bodyBlocks(p).join('')}`
       + `${p.notes ? D.notesHtml(p.notes) : ''}`
       + `${p.rightHint ? D.hintHtml(p.rightHint) : ''}`
-      + `${D.bodyBlocks(p).join('')}`
       + `${p.rightHtml || ''}</div></div>`;
   }
   html += pageShell(body, i + 2, N);

@@ -1,10 +1,10 @@
 {
- "out": "../pdf/Finanzen-3-Unternehmensvertraege",
+ "out": "../pdf/Finanzen-2-unternehmensvertraege",
  "meta": "../meta.json",
  "shots": "../shots",
  "series": "Finanzen",
- "nr": 3,
- "of": 3,
+ "nr": 2,
+ "of": 2,
  "audience": "buero",
  "title": [
   "Unternehmens-",
@@ -16,7 +16,7 @@
  "stand": "15.09.2026",
  "version": "1.0",
  "notes": [
-  "Hier stehen die Verträge **der Firma** — nicht die der Kundinnen („Verkauf 1“).",
+  "Hier stehen die Verträge **der Firma** — nicht die der Kundinnen („Verträge 1“).",
   "Der wichtigste Zweck ist die **Kündigungsfrist**: Was niemand im Blick hat, verlängert sich von selbst.",
   "Kosten lassen sich je **Standort** oder **firmenweit** führen — davon hängt die Auswertung ab."
  ],
