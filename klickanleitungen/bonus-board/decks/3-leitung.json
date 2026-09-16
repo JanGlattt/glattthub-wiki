@@ -7,20 +7,20 @@
   "Bonus-Board",
   "für die Leitung"
  ],
- "subtitle": "Klickanleitung für das Bonus-Board im glatttHub — Institute gegen Minimalziele, Boni je Mitarbeiterin, Export",
+ "subtitle": "Klickanleitung für das Bonus-Board im glatttHub — Institut(e) gegen Minimalziele, Boni je Mitarbeiterin, Export",
  "eyebrow": "Bonus-Board · Management",
  "footerArea": "Bonus-Board",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "17.09.2026",
+ "version": "1.1",
  "notes": [
-  "Die Management-Sicht zeigt **alle** Institute und alle Mitarbeiterinnen — sie ist an ein eigenes Recht gebunden.",
+  "Die Management-Sicht gibt es in **zwei Stufen**: Die **Standortleitung** sieht nur ihr eigenes Institut (Umschalter **„Mein Institut“**), das **Büro** alle Institute (Umschalter **„Management“**). Beides sind eigene Rechte.",
   "**Gesichert** ist die Zahl, auf die man sich verlassen kann; der aktuelle Stand enthält Körperzonen unter Widerrufs-Vorbehalt.",
   "Entschieden und abgeschlossen wird nicht hier, sondern in der **Bonus-Verwaltung** („Bonus-Board 4“ und „Bonus-Board 5“)."
  ],
  "pages": [
   {
    "h1": "Management-Sicht öffnen",
-   "sub": "Derselbe Bildschirm, andere Ansicht: Der Umschalter im Seitenkopf wechselt zwischen eigenem Board und Management.",
+   "sub": "Derselbe Bildschirm, andere Ansicht: Der Umschalter im Seitenkopf wechselt zwischen eigenem Board und der Sicht auf das Institut bzw. alle Institute.",
    "card": {
     "title": "Sicht wechseln",
     "text": "Umschalter, Monat und die Werkzeuge im Kopf"
@@ -32,8 +32,8 @@
    "steps": [
     {
      "n": 1,
-     "title": "„Management“ wählen",
-     "text": "Der Umschalter neben der Monatsauswahl. Fehlt er, fehlt das Recht für die Leitungs-Sicht."
+     "title": "„Mein Institut“ oder „Management“ wählen",
+     "text": "Der Umschalter neben der Monatsauswahl. Als **Standortleitung** heißt er **„Mein Institut“** und zeigt nur das eigene Institut; das **Büro** sieht **„Management“** mit allen Instituten. Fehlt er, fehlt das Recht für die Leitungs-Sicht."
     },
     {
      "n": 2,
@@ -43,16 +43,16 @@
     {
      "n": 3,
      "title": "Weitere Werkzeuge",
-     "text": "**„Verwaltung“** führt zu Regeln, Zielen und Monatsabschluss, **„Google-Bewertungen“** zur Erfassung der Bewertungen."
+     "text": "**„Verwaltung“** (nur Büro) führt zu Regeln, Zielen und Monatsabschluss, **„Google-Bewertungen“** zur Erfassung der Bewertungen."
     }
    ],
    "hint": {
-    "text": "**Mobil** stehen die Werkzeuge hinter der Zustandszeile (z. B. **„September 2026 · Management“**). Ein Tippen darauf klappt Monatsauswahl und Umschalter über die volle Breite auf."
+    "text": "**Mobil** stehen die Werkzeuge hinter der Zustandszeile (z. B. **„September 2026 · Mein Institut“**). Ein Tippen darauf klappt Monatsauswahl und Umschalter über die volle Breite auf."
    }
   },
   {
    "h1": "Institute vs. Minimalziele",
-   "sub": "Die obere Tabelle zeigt je Institut, wo es steht — mit Ampel für den Blick aus der Ferne.",
+   "sub": "Die obere Tabelle zeigt je Institut, wo es steht — mit Ampel für den Blick aus der Ferne. Die Standortleitung sieht hier nur ihre eigene Zeile.",
    "card": {
     "title": "Institute vs. Ziele",
     "text": "KPZ, gesichert, Minimalziel, Hochrechnung, Google"
@@ -95,6 +95,10 @@
     {
      "title": "Beendeter Monat",
      "text": "Ist der Monat eingefroren, steht am Kopf **„Monat beendet — Ist = Endstand“**, und die Spalte Hochrechnung verschwindet."
+    },
+    {
+     "title": "Nur mein Institut",
+     "text": "Als Standortleitung trägt die Karte das Badge **„Nur mein Institut“** und heißt „Mein Institut vs. Minimalziel“ — die anderen Standorte gehören nicht zur eigenen Sicht. Die vollständige Liste hat nur das Büro."
     }
    ],
    "hint": {
@@ -116,7 +120,7 @@
     {
      "n": 1,
      "title": "Gruppen zuklappen",
-     "text": "Je Institut eine Gruppe, sortiert **Leitung → BG-Spezialistin → glattt Spezialistin**. Der Kopf der Gruppe klappt sie zu."
+     "text": "Je Institut eine Gruppe, sortiert **Leitung → BG-Spezialistin → glattt Spezialistin**. Der Kopf der Gruppe klappt sie zu. Die Standortleitung sieht nur die Gruppe ihres Instituts."
     },
     {
      "n": 2,
@@ -177,7 +181,7 @@
     {
      "n": 3,
      "title": "Weiter zur Entscheidung",
-     "text": "Der Verweis führt in die **Bonus-Verwaltung**, wo je Fall entschieden wird: zählt, zählt nicht oder geparkt."
+     "text": "Der Verweis führt in die **Bonus-Verwaltung**, wo je Fall entschieden wird: zählt, zählt nicht oder geparkt. Die Standortleitung sieht nur die Fälle ihres Instituts und hat keinen Verweis — entscheiden tut das Büro."
     }
    ],
    "hint": {
@@ -199,7 +203,7 @@
     {
      "n": 1,
      "title": "CSV",
-     "text": "Alle Zahlen des gewählten Monats zum Weiterrechnen in der Tabellenkalkulation."
+     "text": "Alle Zahlen des gewählten Monats zum Weiterrechnen in der Tabellenkalkulation — in derselben Reichweite wie die Sicht: die Standortleitung bekommt nur ihr Institut, das Büro alle."
     },
     {
      "n": 2,

@@ -14,6 +14,8 @@ Quellen der Klickanleitungen **O–S** (Bonus-Board im glatttHub). Standard und 
 ## Stand
 
 **v1.0 (15.09.2026):** Texte, Decks und Aufnahmeskripte fertig, **Screenshots stehen aus**.
+**v1.1 (17.09.2026, Dokumente 1 und 3):** drei Sichtstufen — Standortleitung sieht nur ihr Institut
+(Umschalter „Mein Institut“), Büro alle („Management“); Screenshots weiter offen.
 PDFs und Web-Seiten bauen schon jetzt — fehlende Bilder erscheinen als Platzhalter.
 
 Fachliche Grundlage ist der Stand des Moduls nach Runde 8 (15.09.2026); die Feinheiten

@@ -48,7 +48,24 @@ konfigurierbare Regel aus dem **Boni-Baukasten** — nichts ist fest programmier
 
 ### Management-Sicht
 
-Wer `manage_bonus_rules` hat, kann auf dem Board in die nüchterne
+Das Board kennt seit 17.09.2026 **drei Sichtstufen**, jede an ein eigenes Recht
+gebunden (Rechteverwaltung → Zweig „Bonus-Board"):
+
+| Stufe | Recht | Wer sieht was |
+|---|---|---|
+| Eigene Zahlen | `view_bonus_board` | nur die eigene Zeile plus Team-Stand des Instituts (Grundrecht, Voraussetzung für die beiden anderen) |
+| Mein Institut | `view_bonus_board_branch` | Umschalter **„Mein Institut"**: Management-Sicht nur mit dem eigenen Institut (Heimat-Institut der Nutzerin) — Standortleitung |
+| Alle Institute | `view_bonus_board_all` | Umschalter **„Management"**: alle Institute und Mitarbeiterinnen — Büro. `manage_bonus_rules` schließt diese Stufe ein |
+
+In der Stufe „Mein Institut" enthält die Sicht (und der Export) nur Personen,
+Instituts-Zeile und offene Widerrufe des eigenen Instituts; Personen ohne
+Institut (Office/Management) fehlen. Ranking-Challenges bleiben vollständig —
+ein Ranking ohne die anderen Teams sagt nichts, und jede Teilnehmerin sieht es
+in der eigenen Sicht ohnehin komplett. Ohne Heimat-Institut greift die
+Instituts-Stufe nicht (die Nutzerin bleibt bei den eigenen Zahlen). Der Knopf
+„Verwaltung" erscheint weiterhin nur mit `manage_bonus_rules`.
+
+Wer eine Management-Stufe hat, kann auf dem Board in die nüchterne
 Management-Sicht wechseln (Stand 09.09.2026):
 
 - **Institute vs. Minimalziele**: jedes Institut mit farbigem Standort-Symbol
@@ -86,7 +103,8 @@ Management-Sicht wechseln (Stand 09.09.2026):
   sind weder Abwesenheit noch Arbeitstage prüfbar, die Person zählt vorerst als
   berechtigt mit 0 Abwesenheitstagen. Verknüpfung: Admin → Benutzer → Feld
   „askDANTE-Mitarbeiter".
-- **Export** (Buttons CSV / PDF im Kartenkopf, Recht `manage_bonus_rules`):
+- **Export** (Buttons CSV / PDF im Kartenkopf, jede Management-Stufe; enthält
+  exakt das, was die Sicht zeigt — die Standortleitung exportiert nur ihr Institut):
   CSV = eine Zeile je Person × Ziel (Institut, Klasse, Arbeits-/Abwesenheitstage,
   Faktor, Ziel, Bezug, Ist, Vorbehalt, Zielwert, Status, Prämie gesichert / inkl.
   Vorbehalt / Hochrechnung, Monatsbonus), Excel-DE-tauglich (BOM, Semikolon,
@@ -330,13 +348,18 @@ Das Standard-Bonussystem wird per Migration
   `manage_challenges`, Standard-Regeln nur mit `manage_bonus_rules`),
   Minimalziele, Freezes, Korrekturen, Widerruf-Entscheidungen, Sichtbarkeit.
 - `GoogleReviewController` — Erfassung/Liste/Löschen, Recht `manage_google_reviews`.
+- `App\Services\Bonus\BonusBoardScope` — löst die Sichtstufe (`own`/`branch`/`all`)
+  aus den Rechten auf und schneidet den fertigen Board-Stand (auch eingefrorene
+  Payloads) auf das Institut zu; Controller und Export nutzen dieselbe Stelle.
 
 ### Rechte (Migration + `PermissionCatalog` + Gates)
 
 | Recht | Referenzrecht | Zweck |
 |---|---|---|
-| `view_bonus_board` | `access_hub` | Board sehen |
-| `manage_bonus_rules` | `manage_settings` | Regeln, Ziele, Freeze, Korrekturen, Entscheidungen, Sichtbarkeit |
+| `view_bonus_board` | `access_hub` | Board sehen — nur eigene Zahlen (Grundrecht) |
+| `view_bonus_board_branch` | — (von Hand an die Standortleitung) | Management-Sicht auf das eigene Institut |
+| `view_bonus_board_all` | `manage_bonus_rules` | Management-Sicht auf alle Institute (ohne Verwaltung) |
+| `manage_bonus_rules` | `manage_settings` | Regeln, Ziele, Freeze, Korrekturen, Entscheidungen, Sichtbarkeit — schließt `view_bonus_board_all` ein |
 | `manage_challenges` | `manage_settings` | Nur Challenges pflegen |
 | `manage_google_reviews` | `manage_settings` | Google-Bewertungen erfassen |
 

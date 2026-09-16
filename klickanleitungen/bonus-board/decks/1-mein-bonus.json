@@ -10,8 +10,8 @@
  "subtitle": "Klickanleitung für das Bonus-Board im glatttHub — was gesichert ist, was noch fehlt und wie das Institut steht",
  "eyebrow": "Bonus-Board · Mein Board",
  "footerArea": "Bonus-Board",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "17.09.2026",
+ "version": "1.1",
  "notes": [
   "Das Board rechnet **live mit**: Jede verkaufte Körperzone ist am nächsten Tag zu sehen.",
   "**Gesichert ist nicht dasselbe wie aktueller Stand** — der Unterschied sind Verträge, bei denen ein Widerruf offen ist.",
@@ -43,7 +43,7 @@
     {
      "n": 3,
      "title": "„Mein Board“",
-     "text": "Die eigene Sicht. Wer zusätzlich **„Management“** sieht, hat das Recht für die Leitungs-Sicht („Bonus-Board 3“)."
+     "text": "Die eigene Sicht. Wer zusätzlich **„Mein Institut“** (Standortleitung) oder **„Management“** (Büro) sieht, hat ein Recht für die Leitungs-Sicht („Bonus-Board 3“)."
     }
    ],
    "notes": [
