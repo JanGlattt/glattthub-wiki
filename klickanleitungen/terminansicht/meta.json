@@ -2315,5 +2315,105 @@
    }
   ],
   "ratio": 0.6949152542372882
+ },
+ "k4a-zettel-warnung": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "wert",
+    "kind": "badge",
+    "n": 1,
+    "sel": ".treatment-input-warning",
+    "at": "l",
+    "pct": {
+     "x": 0,
+     "y": 0,
+     "w": 0,
+     "h": 0
+    }
+   },
+   {
+    "id": "hinweis",
+    "kind": "badge",
+    "n": 2,
+    "sel": ".treatment-warning-banner",
+    "at": "l",
+    "pct": {
+     "x": 3.050847457627119,
+     "y": 74.1158536585366,
+     "w": 93.89830508474576,
+     "h": 5.853658536585367
+    }
+   },
+   {
+    "id": "speichern",
+    "kind": "chip",
+    "label": "Speichern",
+    "sel": ".treatment-form-footer button.btn-glattt-primary",
+    "at": "l",
+    "pct": {
+     "x": 84.07574152542374,
+     "y": 84.96951219512195,
+     "w": 11.85646186440678,
+     "h": 6.7682926829268295
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "k4b-zettel-warnung-popup": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "titel",
+    "kind": "badge",
+    "n": 3,
+    "sel": ".treatment-warning-modal-container h3",
+    "at": "l",
+    "pct": {
+     "x": 31.694915254237287,
+     "y": 41.08612804878049,
+     "w": 36.610169491525426,
+     "h": 3.6585365853658534
+    }
+   },
+   {
+    "id": "korrigieren",
+    "kind": "badge",
+    "n": 4,
+    "sel": ".treatment-warning-modal-actions .btn-glattt-secondary",
+    "at": "l",
+    "pct": {
+     "x": 37.188824152542374,
+     "y": 60.7202743902439,
+     "w": 9.888771186440678,
+     "h": 5.510670731707317
+    }
+   },
+   {
+    "id": "trotzdem",
+    "kind": "badge",
+    "n": 5,
+    "sel": ".treatment-warning-modal-actions .btn-glattt-danger",
+    "at": "r",
+    "pct": {
+     "x": 48.094544491525426,
+     "y": 60.7202743902439,
+     "w": 14.716631355932202,
+     "h": 5.510670731707317
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
  }
 }

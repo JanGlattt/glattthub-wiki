@@ -10,7 +10,7 @@
  "eyebrow": "Terminansicht · Behandlungstermin",
  "footerArea": "Terminansicht",
  "stand": "18.09.2026",
- "version": "1.2",
+ "version": "1.3",
  "notes": [
   "Der Einstellungszettel wird **bei jeder Behandlung** gepflegt — je Zone Laserkopf, Hauttyp, Haar, empfohlene und genutzte Werte.",
   "Frühere Werte der Kundin stehen im Formular als **Historie** — beim nächsten Termin sind sie sofort sichtbar."
@@ -135,7 +135,7 @@
     {
      "n": 2,
      "title": "Genutzte Werte",
-     "text": "Die tatsächlich eingestellten ms und Joule. Liegen sie außerhalb der Empfehlung, warnt der Hub vor dem Speichern — bewusst bestätigen oder korrigieren."
+     "text": "Die tatsächlich eingestellten ms und Joule. Liegen sie außerhalb der Empfehlung oder unter dem Wert der letzten Sitzung, warnt der Hub — siehe nächster Vorgang."
     },
     {
      "n": 3,
@@ -150,6 +150,53 @@
    ],
    "hint": {
     "text": "Bei einer **Folgebehandlung** zeigt der Zettel die Werte der letzten Sitzung als Historie — so lässt sich direkt anknüpfen oder gezielt anpassen."
+   }
+  },
+  {
+   "h1": "Wenn die Werte nicht steigen",
+   "sub": "Der Hub vergleicht die genutzten Joule mit der J-Range und mit der letzten Sitzung. Passt etwas nicht: Hinweis im Zettel, Popup vor dem Speichern.",
+   "card": {
+    "title": "Joule-Warnung",
+    "text": "Hinweis im Zettel, Popup vor dem Speichern"
+   },
+   "left": {
+    "shot": "k4a-zettel-warnung"
+   },
+   "right": {
+    "shot": "k4b-zettel-warnung-popup"
+   },
+   "leftCaption": "Genutzte Joule unter dem Wert der letzten Sitzung: Das Feld ist markiert, darunter steht der Hinweis.",
+   "rightCaption": "Beim Speichern: das Popup „Joule-Werte prüfen“ mit den Gründen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Markierte Gruppe",
+     "text": "Die Gruppe **Genutzt** bekommt einen roten Rahmen und ⚠️, wenn der Wert **unter oder über der J-Range** liegt oder **niedriger als in der letzten Sitzung** ist."
+    },
+    {
+     "n": 2,
+     "title": "Hinweis im Zettel",
+     "text": "Nennt den Grund mit Zahlen — „Genutzte Joule (12 J) sind niedriger als bei der letzten Sitzung (14 J)“ — sofort beim Tippen."
+    },
+    {
+     "n": 3,
+     "title": "Popup vor dem Speichern",
+     "text": "„Speichern“ zeigt erst **„Joule-Werte prüfen“** mit den Gründen: Nach 3–4 Sitzungen sollten die Einstellungen steigen."
+    },
+    {
+     "n": 4,
+     "title": "„Korrigieren“",
+     "text": "Zurück in den Zettel, Wert anpassen — der Normalfall bei Tippfehlern oder einem vergessenen Sprung nach oben."
+    },
+    {
+     "n": 5,
+     "title": "„Trotzdem speichern“",
+     "text": "Nur wenn der niedrigere Wert Absicht ist (Hautreaktion, Pause). Den Grund in die **Notizen** schreiben."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Gleiche Werte lösen keine Warnung aus.** Der Hub meldet sich nur, wenn die Joule sinken oder außerhalb der Empfehlung liegen — ob sie steigen, entscheidet die Behandlerin anhand der Historie."
    }
   },
   {
