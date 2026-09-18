@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — Fahrten und Verpflegung abrechnen, Belege anhängen, einreichen",
  "eyebrow": "Team · Reisekosten",
  "footerArea": "Team",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "18.09.2026",
+ "version": "1.1",
  "notes": [
   "Der Anspruch ergibt sich aus dem **Dienstplan in askDANTE** — der Hub weiß, an welchen Tagen eine Abrechnung möglich ist.",
   "**Ohne Beleg keine Erstattung**, wo ein Beleg vorgeschrieben ist — der Hub weist darauf hin.",
@@ -31,7 +31,7 @@
    "left": {
     "shot": "p5-reisekosten"
    },
-   "leftCaption": "Die Reisekosten-Seite mit den offenen Tagen.",
+   "leftCaption": "Die Reisekosten-Seite mit den Tagen aus dem Dienstplan — offen, Entwurf, eingereicht, genehmigt, abgelehnt.",
    "steps": [
     {
      "n": 1,
@@ -45,8 +45,8 @@
     },
     {
      "n": 3,
-     "title": "Arbeitsbeginn und -ende",
-     "text": "Zusammen mit der Abwesenheitsart ergibt sich daraus die Verpflegungspauschale."
+     "title": "Erfassen",
+     "text": "Öffnet das Fenster zum Tag. **Arbeitsbeginn und -ende** stehen dort ganz oben — zusammen mit der Abwesenheitsart ergibt sich daraus die Verpflegungspauschale."
     }
    ],
    "hint": {
@@ -138,7 +138,7 @@
     {
      "n": 1,
      "title": "Einreichen",
-     "text": "Danach ist die Abrechnung gesperrt — sie liegt bei der Freigabe."
+     "text": "Der Knopf sitzt unten im Fenster. Danach ist die Abrechnung gesperrt — sie liegt bei der Freigabe. Bis dahin steht sie als **Entwurf** in der Liste."
     },
     {
      "n": 2,
