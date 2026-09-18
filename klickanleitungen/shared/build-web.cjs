@@ -42,9 +42,12 @@ else console.log('Hinweis: minisearch fehlt (npm install) — die Suche im Porta
 /* Lesereihenfolge der Serien — erst die tägliche Arbeit, dann Büro, dann Verwaltung.
    Was hier nicht steht, hängt alphabetisch hinten dran. */
 const SERIEN = ['Grundlagen', 'Terminansicht', 'Kundenverwaltung', 'Bonus-Board', 'Verkauf',
-  'Verträge', 'Widerrufe', 'Forderungen', 'Betrieb', 'Team', 'Finanzen', 'System', 'Berichte', 'Admin'];
+  'Verträge', 'Widerrufe', 'Forderungen', 'Betrieb', 'Laser', 'Team', 'Finanzen', 'System', 'Berichte', 'Admin'];
 const rang = (n) => { const i = SERIEN.indexOf(n); return i === -1 ? SERIEN.length : i; };
 const serieSlug = (s) => D.slugify(s || 'weitere');
+// Erklärtexte und Suchbegriffe je Serie (shared/serien.json) — Übersichtsseite, Startseite, Manifest, Suche
+const SERIEN_INFO = JSON.parse(fs.readFileSync(path.join(__dirname, 'serien.json'), 'utf8')).serien || {};
+const serieInfo = (name) => SERIEN_INFO[name] || {};
 const AUDIENCES = [['institut', 'Institut'], ['buero', 'Büro'], ['leitung', 'Leitung'], ['admin', 'Admin']];
 
 const ICON = {
@@ -217,8 +220,10 @@ function guideBody(g, meta, img) {
 function seriesCards(guides) {
   return groupBySeries(guides).map(([name, list]) => {
     const auds = [...new Set(list.map(g => g.audience).filter(Boolean))].join(',');
+    const info = serieInfo(name);
     return `<section class="card serie-card" data-aud="${D.esc(auds)}">
   <h2><a href="/${serieSlug(name)}/">${D.esc(name)}</a><small>${list.length} ${list.length === 1 ? 'Anleitung' : 'Anleitungen'}</small></h2>
+  ${info.beschreibung ? `<p class="serie-desc">${D.esc(info.beschreibung)}</p>` : ''}
   <ol class="serie-list">${list.map(g => `<li data-aud="${D.esc(g.audience || '')}"><a href="${g.url}"><b>${g.nr}</b><span>${D.esc(g.title)}</span></a></li>`).join('')}</ol>
 </section>`;
   }).join('');
@@ -237,10 +242,13 @@ function indexBody(guides) {
 <p class="serien-leer" data-filter-leer hidden>Für diese Auswahl gibt es noch keine Anleitung.</p>`;
 }
 function seriesBody(name, list) {
+  const info = serieInfo(name);
+  if (!info.beschreibung) console.log('SERIEN-TEXT FEHLT:', name, '— shared/serien.json ergänzen');
   return `<header class="guide-head">
   <div class="eyebrow"><a href="/">Alle Anleitungen</a></div>
   <h1>${D.esc(name)}</h1>
-  <p class="sub">${list.length} ${list.length === 1 ? 'Anleitung' : 'Anleitungen'} in dieser Serie.</p>
+  ${info.beschreibung ? `<p class="sub serie-intro">${D.esc(info.beschreibung)}</p>` : ''}
+  <p class="sub serie-meta">${info.fuer ? D.esc(info.fuer) + ' · ' : ''}${list.length} ${list.length === 1 ? 'Anleitung' : 'Anleitungen'} in dieser Serie.</p>
 </header>
 <ol class="guide-list">${list.map(g => `<li data-aud="${D.esc(g.audience || '')}"><a href="${g.url}">
   <b>${g.nr}. ${D.esc(g.title)}</b><span>${D.rich(g.subtitle)}</span>${audienceChip(g)}
@@ -283,7 +291,13 @@ function seriesBody(name, list) {
     g.next = folgende ? { url: folgende.url, series: folgende.series, nr: folgende.nr, title: folgende.title } : null;
   }
 
-  const manifest = { generated: new Date().toISOString().slice(0, 10), guides: [] };
+  const manifest = { generated: new Date().toISOString().slice(0, 10), guides: [], serien: [] };
+  for (const [name, list] of groupBySeries(loaded)) {
+    const info = serieInfo(name);
+    manifest.serien.push({ name, slug: serieSlug(name), url: `/${serieSlug(name)}/`, anzahl: list.length,
+      beschreibung: info.beschreibung || '', fuer: info.fuer || '', stichworte: info.stichworte || [],
+      anleitungen: list.map(g => ({ nr: g.nr, title: g.title, url: g.url })) });
+  }
   for (const g of loaded) {
     const dir = path.join(outRoot, g.url);
     fs.mkdirSync(dir, { recursive: true });

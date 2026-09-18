@@ -5,7 +5,7 @@ Wiki unter `docs/KLICKANLEITUNGEN.md`; hier liegen die Quellen und die beiden Bu
 
 ```
 klickanleitungen/
-├── shared/                 Builder und Gestaltung — einmal für alle Serien
+├── shared/                 Builder und Gestaltung — einmal für alle Serien (serien.json: Erklärtext + Stichworte je Serie)
 │   ├── lib/deck.cjs        Deck laden, Text auszeichnen, Screenshot-Overlays (PDF UND Web)
 │   ├── build-pdf.cjs       → PDF, A4 quer
 │   ├── build-web.cjs       → Portal hilfe.hub.glattt.com (Viewer-Seiten, WebP, manifest.json)

@@ -133,6 +133,9 @@ kbd{font:inherit;font-size:11px;border:1px solid var(--line-2);border-bottom-wid
 .serie-card h2 a{color:var(--text);text-decoration:none}
 .serie-card h2 a:hover{color:var(--primary)}
 .serie-card h2 small{color:var(--text-3);font-weight:400;font-size:13px;white-space:nowrap}
+.serie-card .serie-desc{margin:0 0 10px;color:var(--text-2);font-size:14px;line-height:1.45}
+.guide-head .serie-intro{font-size:17px;line-height:1.5;max-width:70ch}
+.guide-head .serie-meta{font-size:14px;color:var(--text-3)}
 .serie-list{list-style:none;margin:0;padding:0}
 .serie-list li a{display:flex;gap:10px;padding:6px 8px;margin:0 -8px;border-radius:8px;text-decoration:none;color:var(--text-2);font-size:15px;line-height:1.35}
 .serie-list li a b{color:var(--text-3);min-width:18px}

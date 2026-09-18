@@ -31,6 +31,13 @@ const eintraege = [];
 let id = 0;
 const add = (e) => eintraege.push({ id: id++, ...e });
 
+// Die Serien selbst: Übersichtsseite mit Erklärtext, Stichworten und den Titeln ihrer Anleitungen
+for (const s of (manifest.serien || [])) {
+  add({ serie: s.name, nr: '', anleitung: s.name, audience: '', art: 'serie', url: s.url, seite: '',
+    titel: s.name, text: strip([s.beschreibung, s.fuer, ...s.anleitungen.map(a => a.title)].join(' ')),
+    ui: [...(s.stichworte || []), ...s.anleitungen.map(a => a.title)], anzahl: s.anzahl });
+}
+
 for (const g of manifest.guides) {
   const base = { serie: g.series, nr: g.nr, anleitung: g.title, audience: g.audience || '' };
   add({ ...base, art: 'anleitung', url: g.url, seite: '', titel: g.title,

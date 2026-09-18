@@ -1,0 +1,85 @@
+{
+  "_hinweis": [
+    "Erklärtext je Serie für die Übersichtsseiten des Portals (hilfe.hub.glattt.com/<serie>/), die",
+    "Startseite und die Suche. Schlüssel = Serienname wie im Deck (Feld series). beschreibung: zwei bis",
+    "drei Sätze, was die Serie abdeckt und wann man sie braucht. fuer: für wen. stichworte: andere",
+    "Wörter, mit denen jemand nach diesem Themengebiet sucht — landen im Suchindex der Serie."
+  ],
+  "serien": {
+    "Grundlagen": {
+      "beschreibung": "Der Einstieg in den glatttHub: anmelden, sich zurechtfinden, Standort und Suche nutzen, das eigene Profil pflegen und den Hub auf Handy und Tablet bedienen. Dazu glatttBert, der Assistent, der Fragen zum Hub beantwortet.",
+      "fuer": "Für alle, die neu im Hub sind oder etwas Grundsätzliches nachschlagen wollen.",
+      "stichworte": ["einstieg", "anfang", "login", "anmelden", "pin", "passwort", "menü", "navigation", "seitenleiste", "profil", "handy", "tablet", "mobil", "glatttbert", "ki", "startseite", "hilfe"]
+    },
+    "Terminansicht": {
+      "beschreibung": "Der Termin im Institut von der Ankunft bis zum Abschluss: Beratungstermin starten, Kundeninformation und Behandlungsvertrag ausfüllen lassen, Behandlung dokumentieren, Termin abschließen und neue Termine buchen. Alles, was am Tablet während eines Termins passiert.",
+      "fuer": "Für die Institute — jeden Tag am Termin.",
+      "stichworte": ["termin", "beratung", "beratungsgespräch", "behandlung", "sitzung", "kundin", "formular", "unterschrift", "vertrag abschließen", "tablet", "buchen", "phorest", "ankunft", "abschluss"]
+    },
+    "Kundenverwaltung": {
+      "beschreibung": "Das Kundenprofil mit seinen Reitern: Stammdaten, Verträge, Termine, Zahlungen, Dokumente, Fotos, Verlauf und Nachrichten. Wie man eine Kundin findet, ihre Daten pflegt und nachvollzieht, was mit ihr passiert ist.",
+      "fuer": "Für die Institute und das Büro.",
+      "stichworte": ["kundin", "kunde", "kundenakte", "kundenprofil", "kundendaten", "adresse", "telefon", "suche", "verlauf", "whatsapp", "dokumente", "fotos", "termine", "notizen"]
+    },
+    "Bonus-Board": {
+      "beschreibung": "Ziele und Boni für Mitarbeiterinnen und Institute: das eigene Board lesen, Challenges verstehen, die Leitungssicht, Regeln und Challenges anlegen und den Monat abschließen. Was gesichert ist, was unter Vorbehalt steht und wie Widerrufe hineinspielen.",
+      "fuer": "Für Mitarbeiterinnen (Board), Leitung und Büro (Verwaltung).",
+      "stichworte": ["bonus", "boni", "prämie", "ziel", "ziele", "kpz", "challenge", "ranking", "ibiza", "minimalziel", "monatsabschluss", "einfrieren", "verkaufsbonus", "leistung", "provision"]
+    },
+    "Verkauf": {
+      "beschreibung": "Die Werkzeuge rund um den Verkauf: Preislisten anlegen und pflegen, Freunde-werben-Prämien prüfen und auszahlen, Gutscheine verwalten und verkaufen, die Zufriedenheitsbefragung versenden.",
+      "fuer": "Für das Büro.",
+      "stichworte": ["preis", "preisliste", "preise", "rabatt", "gutschein", "gutscheine", "voucher", "freunde werben", "empfehlung", "werber", "prämie", "zufriedenheit", "bewertung", "umfrage", "google bewertung"]
+    },
+    "Verträge": {
+      "beschreibung": "Behandlungsverträge im Büro: Liste und Detailseite, Ratenplan, Zahlungen buchen, SEPA-Einzug und Mandat, Laufzeit ändern, Importe. Alles, was mit einem laufenden Vertrag und seinen Raten zu tun hat.",
+      "fuer": "Für das Büro.",
+      "stichworte": ["vertrag", "verträge", "abo", "paket", "rate", "raten", "ratenplan", "zahlung", "sepa", "lastschrift", "mandat", "gocardless", "einzug", "laufzeit", "pausieren", "import", "rücklastschrift"]
+    },
+    "Widerrufe": {
+      "beschreibung": "Wenn eine Kundin vom Vertrag zurücktritt: Widerruf erfassen, die Fallseite, Vertragsänderung im Fernabsatz, Abwicklung mit SEPA-Storno und Downgrade, Anwalt und Abschluss.",
+      "fuer": "Für das Büro.",
+      "stichworte": ["widerruf", "widerrufen", "storno", "kündigung", "rücktritt", "fernabsatz", "downgrade", "anwalt", "ra", "zendesk", "ticket", "abgabe", "forderung"]
+    },
+    "Forderungen": {
+      "beschreibung": "Offene Forderungen und der Mahnprozess: Arbeitsliste, Fallseite, Mahnstufen, Zahlungen verbuchen, Ratenzahlungsvereinbarung, Eskalation an Inkasso oder Anwalt.",
+      "fuer": "Für das Büro (Forderungsmanagement).",
+      "stichworte": ["forderung", "forderungen", "mahnung", "mahnen", "mahnprozess", "inkasso", "schulden", "rzv", "ratenzahlungsvereinbarung", "eskalation", "anwalt", "offener betrag", "zahlungserinnerung"]
+    },
+    "Betrieb": {
+      "beschreibung": "Die Institute und ihre Werkzeuge: Standorte im Überblick und pflegen, Formulare bauen und teilen, Services und Körperzonen zuordnen.",
+      "fuer": "Für Leitung, Büro und Institute.",
+      "stichworte": ["institut", "institute", "standort", "filiale", "formular", "formulare", "editor", "einreichung", "services", "körperzonen", "kpz", "zuordnung", "team", "bank", "iban"]
+    },
+    "Laser": {
+      "beschreibung": "Alles rund um die Cynosure-Vectus-Laser: Dashboard und Geräte, das Gerät im Detail, die wöchentliche Wartung in vier Schritten (Flow Maintenance, Laser-Fotos, Anbauteile, Abschluss), Fehler melden, Reparaturen abwickeln, STK und Behördenanzeige, die Teile, Inventarisieren, Stammdaten und Reports.",
+      "fuer": "Für die Institute (Wartung, Fehler) und die Leitung (Reparaturen, STK, Inventar).",
+      "stichworte": ["laser", "lasergerät", "vectus", "cynosure", "wartung", "wöchentliche wartung", "flow maintenance", "countdown", "handstück", "laserkopf", "skintel", "pulses", "impulse", "fotos", "fehler", "fehlercode", "reparatur", "defekt", "stk", "sicherheitstechnische kontrolle", "behörde", "gesundheitsamt", "inventar", "seriennummer", "chiller", "verbrauchsmaterial", "reports"]
+    },
+    "Team": {
+      "beschreibung": "Personal und Hub-Konten anlegen und pflegen, Reisekosten erfassen und freigeben. Wer im Hub arbeitet, was sie darf und wie Fahrten und Verpflegung abgerechnet werden.",
+      "fuer": "Für Büro und Institute.",
+      "stichworte": ["personal", "mitarbeiterin", "mitarbeiter", "konto", "hub-konto", "einladung", "rolle", "rechte", "archivieren", "reisekosten", "fahrt", "verpflegung", "spesen", "freigabe", "abrechnung", "askdante"]
+    },
+    "Finanzen": {
+      "beschreibung": "Schulden aus geplatzten Lastschriften und die Unternehmensverträge des Hauses (Miete, Software, Dienstleister) mit Laufzeiten und Kündigungsfristen.",
+      "fuer": "Für das Büro.",
+      "stichworte": ["schulden", "geplatzt", "rücklastschrift", "unternehmensvertrag", "unternehmensverträge", "miete", "software", "kündigungsfrist", "laufzeit", "kosten", "lieferant"]
+    },
+    "System": {
+      "beschreibung": "Automatische Report-Mails einrichten und ihre Zustellung prüfen sowie der Audit, der die Datenqualität des Hubs bewertet.",
+      "fuer": "Für die Leitung.",
+      "stichworte": ["report-mail", "report mails", "e-mail", "versand", "empfänger", "zustellung", "audit", "datenqualität", "prüfung", "score", "automatisch"]
+    },
+    "Berichte": {
+      "beschreibung": "Die Berichtsseiten des Hubs: wie Zeitraum, Standortfilter, Diagramm und Tabelle zusammenspielen, der CSV-Export, das eigene Dashboard — und je eine Anleitung für jede der sechzehn Auswertungen von der Verkaufsstatistik bis zur Ads-Analyse.",
+      "fuer": "Für Leitung und Büro.",
+      "stichworte": ["bericht", "berichte", "statistik", "statistiken", "auswertung", "report", "kennzahl", "kpi", "diagramm", "chart", "tabelle", "export", "csv", "dashboard", "verkaufsstatistik", "umsatz", "ads", "funnel", "termine", "storno", "widerrufsquote"]
+    },
+    "Admin": {
+      "beschreibung": "Das Verwaltungspanel unter /admin: Benutzer und Rollen, Inhalte und Dokumente, Gutschein-Verkauf, Stammdaten, Einstellungen und Protokolle — thematisch gebündelt.",
+      "fuer": "Für die Administration.",
+      "stichworte": ["admin", "verwaltung", "verwaltungspanel", "benutzer", "rollen", "rechte", "berechtigung", "inhalte", "news", "dokumente", "einstellungen", "protokoll", "log", "filament"]
+    }
+  }
+}

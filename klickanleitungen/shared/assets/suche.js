@@ -21,7 +21,7 @@
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* privates Fenster */ } },
   };
   const VORSCHLAEGE = ['Kundin finden', 'Rate pausieren', 'Widerruf erfassen', 'Termin abschließen', 'Passwort ändern', 'Standort wechseln', 'Bonus-Board', 'Dunkler Modus'];
-  const ART = { anleitung: 'Anleitung', vorgang: 'Vorgang', schritt: 'Schritt', hinweis: 'Hinweis', tabelle: 'Nachschlagen', abschnitt: 'Erklärung' };
+  const ART = { serie: 'Themengebiet', anleitung: 'Anleitung', vorgang: 'Vorgang', schritt: 'Schritt', hinweis: 'Hinweis', tabelle: 'Nachschlagen', abschnitt: 'Erklärung' };
 
   let ms = null, docs = null, vocab = null, syn = null, vek = null, vekMeta = null, ladePromise = null;
   let hits = [], active = 0, lastQ = '', seq = 0, semantikAus = false;
@@ -154,7 +154,9 @@
   function zeichnen(q) {
     list.innerHTML = hits.map(({ e, nurSinn }, i) => {
       const titel = e.art === 'schritt' ? `Schritt ${e.n}: ${e.titel}` : e.titel;
-      const pfad = [`<b>${esc(e.serie)} ${esc(e.nr)}</b>`, esc(e.anleitung), e.seite && e.seite !== e.titel ? esc(e.seite) : ''].filter(Boolean).join(' › ');
+      const pfad = e.art === 'serie'
+        ? `<b>Serie</b> › ${e.anzahl || ''} Anleitungen`
+        : [`<b>${esc(e.serie)} ${esc(e.nr)}</b>`, esc(e.anleitung), e.seite && e.seite !== e.titel ? esc(e.seite) : ''].filter(Boolean).join(' › ');
       return `<li class="${i === active ? 'is-active' : ''}"><a href="${esc(e.url)}" data-i="${i}">
   <div class="hit-eyebrow">${pfad}<span class="hit-art${nurSinn ? ' semantisch' : ''}">${nurSinn ? 'ähnliches Thema' : ART[e.art] || e.art}</span></div>
   <div class="hit-titel">${markieren(titel, q)}</div>
