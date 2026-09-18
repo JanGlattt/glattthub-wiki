@@ -31,7 +31,8 @@ steps:
         echo "Screenshots: $(find klickanleitungen -path '*/shots/*' -type f | wc -l)"
 
   # 2) Bauen: Web-Seiten (sharp → WebP), Suchindex (Embeddings), PDFs (Playwright-Chromium im Image)
-  - name: "mcr.microsoft.com/playwright:v1.55.0-noble"
+  #    Image-Version und "playwright" in package.json müssen exakt übereinstimmen (Browser-Build im Image)
+  - name: "mcr.microsoft.com/playwright:v1.55.1-noble"
     id: build
     dir: klickanleitungen
     entrypoint: bash

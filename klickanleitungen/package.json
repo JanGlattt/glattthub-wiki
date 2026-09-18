@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "minisearch": "7.1.2",
-    "playwright": "1.55",
+    "playwright": "1.55.1",
     "sharp": "0.34.3"
   }
 }
