@@ -1,1 +1,242 @@
-{}
+{
+ "a1-panel": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a1-benutzer": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a1-rollen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a2-news": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a2-wissen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a2-recht": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a3-produkte": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a3-bestellungen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a3-sonderfaelle": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a4-erinnerungen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a4-bg-whatsapp": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a4-bewertung": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a5-zonen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a5-beratung": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a5-weitere": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a6-badges": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a6-trigger": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a6-ziele": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a7-gehaelter": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a7-bonus": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a7-zuordnung": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a8-protokolle": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a8-einstellungen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "a8-cache": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ }
+}

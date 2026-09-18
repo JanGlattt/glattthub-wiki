@@ -31,11 +31,22 @@ function img(name) {
     return imgCache[name];
   }
   if (!fs.existsSync(png)) { imgCache[name] = b64(jpg, 'image/jpeg'); return imgCache[name]; }
+  // Auf Linux (Cloud Build) gibt es kein sips — dann komprimiert sharp, sonst bliebe das PNG
+  // unkomprimiert im HTML (2360 px breit, mehrere MB je Bild).
+  const jpgOut = process.env.PDF_JPG_DIR ? path.join(process.env.PDF_JPG_DIR, name + '.jpg') : jpg;
   try {
-    if (!fs.existsSync(jpg) || fs.statSync(jpg).mtimeMs < fs.statSync(png).mtimeMs) {
-      require('child_process').execSync(`sips -s format jpeg -s formatOptions 84 "${png}" --out "${jpg}"`, { stdio: 'ignore' });
+    if (!fs.existsSync(jpgOut) || fs.statSync(jpgOut).mtimeMs < fs.statSync(png).mtimeMs) {
+      fs.mkdirSync(path.dirname(jpgOut), { recursive: true });
+      try {
+        require('child_process').execSync(`sips -s format jpeg -s formatOptions 84 "${png}" --out "${jpgOut}"`, { stdio: 'ignore' });
+      } catch (e) {
+        const sharp = require('sharp');
+        const buf = require('child_process').execFileSync(process.execPath, ['-e',
+          `require('sharp')(process.argv[1]).jpeg({quality:84}).toFile(process.argv[2]).then(()=>{})`, png, jpgOut], { stdio: 'ignore' });
+        void sharp; void buf;
+      }
     }
-    imgCache[name] = b64(jpg, 'image/jpeg');
+    imgCache[name] = b64(jpgOut, 'image/jpeg');
   } catch (e) { imgCache[name] = b64(png, 'image/png'); }
   return imgCache[name];
 }

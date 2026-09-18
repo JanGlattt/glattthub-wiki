@@ -33,5 +33,10 @@ klickanleitungen/**/shared-url.txt
 klickanleitungen/**/contact.html
 klickanleitungen/**/contact.png
 klickanleitungen/**/mask.json
-klickanleitungen/**/package.json
-klickanleitungen/**/package-lock.json
+klickanleitungen/*/package.json
+klickanleitungen/*/package-lock.json
+# Screenshots liegen seit 18.09.2026 im GCS-Bucket (Repo ist öffentlich) — nie committen
+klickanleitungen/*/shots/
+# Portal-Build (hilfe.hub.glattt.com) — entsteht aus den Decks
+klickanleitungen/portal/dist/
+klickanleitungen-web/

@@ -1,0 +1,15 @@
+{
+  "name": "klickanleitungen",
+  "private": true,
+  "description": "Kleinschrittige Anleitungen für die Abläufe im glatttHub — Quellen, Builder und das Portal hilfe.hub.glattt.com.",
+  "type": "commonjs",
+  "scripts": {
+    "build": "bash portal/build.sh",
+    "serve": "node portal/server.js"
+  },
+  "dependencies": {
+    "minisearch": "7.1.2",
+    "playwright": "1.55",
+    "sharp": "0.34.3"
+  }
+}

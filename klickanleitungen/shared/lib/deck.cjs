@@ -90,7 +90,11 @@ function marksOf(meta, name, marks) {
 function shotHtml(meta, name, marks, img, cls = '', warn = () => {}) {
   const list = marksOf(meta, name, marks);
   const ratio = meta[name] ? meta[name].ratio : 820 / 1180;
-  let inner = `<img src="${img(name)}" alt="${esc(name)}" loading="lazy">`;
+  // img() liefert die Quelle als String (PDF: Base64) oder als { src, w, h } (Web: Datei mit
+  // Maßen, damit der Browser den Platz vor dem Laden reserviert).
+  const src = img(name);
+  const attrs = typeof src === 'object' ? `src="${src.src}" width="${src.w}" height="${src.h}"` : `src="${src}"`;
+  let inner = `<img ${attrs} alt="${esc(name)}" loading="lazy">`;
   for (const k of list) {
     const p = k.pct, dx = k.dx || 0, dy = k.dy || 0;
     if (!p || p.w <= 0 || p.h <= 0 || p.y + p.h < 0 || p.y > 100 || p.x + p.w < 0 || p.x > 100) {
@@ -102,7 +106,7 @@ function shotHtml(meta, name, marks, img, cls = '', warn = () => {}) {
       // Ausschnitt — der Rahmen ragte dann weit unter die Seite (Betrieb 5, Kundenverwaltung 1).
       const fx = Math.max(0, p.x - 0.6), fy = Math.max(0, p.y - 0.8);
       const fw = Math.min(100 - fx, p.w + 1.2 - (fx - (p.x - 0.6))), fh = Math.min(100 - fy, p.h + 1.6 - (fy - (p.y - 0.8)));
-      inner += `<div class="frame ${k.color || 'gold'}" style="left:${fx}%;top:${fy}%;width:${fw}%;height:${fh}%"></div>`;
+      inner += `<div class="frame ${k.color || 'gold'}"${k.id ? ` data-id="${esc(k.id)}"` : ''} style="left:${fx}%;top:${fy}%;width:${fw}%;height:${fh}%"></div>`;
     }
     if (k.kind === 'badge') {
       const at = k.at || 'l';
@@ -112,7 +116,8 @@ function shotHtml(meta, name, marks, img, cls = '', warn = () => {}) {
       if (at === 'tr') { x = p.x + p.w; y = p.y; }
       if (at === 't') { x = p.x + p.w / 2; y = p.y; }
       if (at === 'b') { x = p.x + p.w / 2; y = p.y + p.h; }
-      inner += `<div class="badge" style="left:${x + dx}%;top:${y + dy}%">${k.n}</div>`;
+      // data-n verknüpft die Plakette mit dem Schritt gleicher Nummer (Portal: Hervorheben)
+      inner += `<div class="badge" data-n="${k.n}" style="left:${x + dx}%;top:${y + dy}%">${k.n}</div>`;
     }
     if (k.kind === 'chip') {
       const side = k.at || 'l';
@@ -131,7 +136,7 @@ function shotHtml(meta, name, marks, img, cls = '', warn = () => {}) {
 }
 
 const stepsHtml = (steps, cols = 2) => `<div class="steps cols-${cols}">` + steps.map(s =>
-  `<div class="step"><div class="num">${s.n}</div><div><div class="t">${rich(s.title)}</div><div class="d">${rich(s.text)}</div></div></div>`
+  `<div class="step" data-n="${s.n}"><div class="num">${s.n}</div><div><div class="t">${rich(s.title)}</div><div class="d">${rich(s.text)}</div></div></div>`
 ).join('') + '</div>';
 
 /** Erlaeuterungen ohne Nummer — dieselbe Optik wie Schritte, aber mit „i" statt Ziffer.

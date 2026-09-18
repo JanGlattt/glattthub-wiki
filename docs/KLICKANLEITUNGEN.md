@@ -842,3 +842,17 @@ Platzhalter.
 - Preislisten-Duplikat für den Test „alle Raten per SEPA": Kopie der aktiven Liste mit
   `installment_mode = all_sepa`, per `syncBranches([Magdeburg])` zugeordnet, danach aktivieren
   (ab dann gesperrt). Der UI-Duplizierer kopiert weder Filialzuordnung noch Rabatt-Zeiträume.
+
+## Portal für die Mitarbeiterinnen — hilfe.hub.glattt.com (18.09.2026)
+
+Die Entscheidung, wo das Endbenutzer-Wiki lebt, ist gefallen: ein **eigener statischer Dienst
+hinter Google IAP** (gleiche Anmeldung wie der Hub), im Hub-Look, mit Viewer (Vorgang für
+Vorgang, Schritt ↔ Markierung) und einer Suche, die Tippfehler, Synonyme, Komposita und
+Umschreibungen (Embeddings) versteht. Der Hub verlinkt je Seite über die Abdeckungsliste
+dorthin. Alles dazu — Bedienung, Bausteine, Suche, Infrastruktur, Pflege — steht in
+[KLICKANLEITUNGEN-PORTAL.md](KLICKANLEITUNGEN-PORTAL.md).
+
+Folgen für die Quellen: `build-web.cjs` erzeugt jetzt das Portal (Adressen `/<serie>/<nr>/`,
+WebP-Bilder, `manifest.json`), `build-search.cjs` den Suchindex; die Markdown-Ausgabe für MkDocs
+gibt es nur noch mit `WEB_MD=1`. Die `shots/`-Ordner sind seit 18.09.2026 **gitignored** — das
+Repo ist öffentlich, die Bilder liegen im Bucket `gs://glattthub-klickanleitungen`.

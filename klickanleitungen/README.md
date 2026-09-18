@@ -8,8 +8,11 @@ klickanleitungen/
 ├── shared/                 Builder und Gestaltung — einmal für alle Serien
 │   ├── lib/deck.cjs        Deck laden, Text auszeichnen, Screenshot-Overlays (PDF UND Web)
 │   ├── build-pdf.cjs       → PDF, A4 quer
-│   ├── build-web.cjs       → Endbenutzer-Wiki (HTML, Markdown, manifest.json)
-│   └── assets/             pdf.css, web.css, Logo, Lato
+│   ├── build-web.cjs       → Portal hilfe.hub.glattt.com (Viewer-Seiten, WebP, manifest.json)
+│   ├── build-search.cjs    → Suchindex des Portals (Einträge, Wortschatz, Synonyme, Embeddings)
+│   ├── synonyme.json       Synonym-Gruppen der Suche
+│   └── assets/             pdf.css, portal.css/js, suche.js, suche-kern.js, Logo, Lato
+├── portal/                 Server, Dockerfile, build.sh, cloudbuild.yaml des Portals (dist/ gitignored)
 ├── grundlagen/             Serie „Grundlagen" (Anmeldung, Navigation, Profil, Mobil, glatttBert)
 ├── terminansicht/          Serie „Terminansicht" (Beratungs- und Behandlungstermin)
 ├── kundenverwaltung/       Serie „Kundenverwaltung" (Kundenprofil)
@@ -109,3 +112,21 @@ Im Text: `**fett**` für Kernbegriffe, `„UI-Beschriftung“` **mit typografisc
 `rightHtml` und `html` nehmen rohes HTML. Sie stammen aus der ersten Serie und funktionieren
 weiter, sollen aber **nicht** neu verwendet werden: Was dort steht, muss jeder Ausgabeweg so
 schlucken, wie es ist.
+
+## Das Portal — hilfe.hub.glattt.com
+
+Seit 18.09.2026 werden die Web-Seiten als eigenes Portal ausgeliefert (Cloud Run hinter IAP,
+Hub-Look, Viewer, Suche mit Tippfehler-Toleranz, Synonymen und Bedeutungsvergleich). Bauen:
+
+```bash
+npm install                      # einmalig: sharp, minisearch, playwright
+bash portal/build.sh web         # Seiten + WebP-Screenshots nach portal/dist
+bash portal/build.sh search      # Suchindex (OPENAI_API_KEY gesetzt → auch Embeddings)
+bash portal/build.sh pdf         # PDFs aller Decks nach portal/dist/pdf
+PORT=8791 node portal/server.js  # lokal ansehen: http://localhost:8791
+```
+
+Deploy: Push auf `main` (Trigger `deploy-hilfe`, `portal/cloudbuild.yaml`). **Screenshots liegen
+nicht im Repo** (öffentlich), sondern im Bucket `gs://glattthub-klickanleitungen/<serie>/shots/` —
+nach einem Aufnahmelauf per `gcloud storage rsync` hochladen. Alles Weitere:
+Wiki `KLICKANLEITUNGEN-PORTAL.md`.

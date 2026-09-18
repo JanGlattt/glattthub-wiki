@@ -1,1 +1,522 @@
-{}
+{
+ "r0-kopf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r0-kpis": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r0-karte": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r0-export": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r1-kopf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r1-institute": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r1-personen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r2-kopf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r2-stufen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r2-stornos": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r3-kopf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r3-verlauf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r3-ergebnis": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r4-kopf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r4-vorlauf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r4-muster": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r5-kopf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r5-quote": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r5-gruende": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r6-kopf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r6-auslastung": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r6-arten": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r7-kopf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r7-abschluss": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r7-neukunde": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r8-kopf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r8-demografie": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r8-kanaele": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r9-kopf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r9-personen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r9-ampel": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r10-kopf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r10-rls": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r10-bestand": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r11-kopf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r11-service": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r11-bloecke": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r12-kopf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r12-annahme": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r12-vergleich": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r13-kopf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r13-kapazitaet": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r13-abwesenheit": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r14-kopf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r14-kosten": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r14-kette": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r15-kopf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r15-herkunft": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r15-funnel": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r16-kopf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r16-verkauft": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "r16-nutzung": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ }
+}

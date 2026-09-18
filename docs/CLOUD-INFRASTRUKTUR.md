@@ -12,6 +12,7 @@ Dokumentation der Google Cloud-Infrastruktur für GlattHub: Custom Domains, Load
 |----------|-----|
 | **Produktion** | `https://hub.glattt.com` |
 | **Staging** | `https://staging.hub.glattt.com` |
+| **Klickanleitungen-Portal** | `https://hilfe.hub.glattt.com` — eigener Cloud-Run-Dienst `glattthub-hilfe`, siehe [KLICKANLEITUNGEN-PORTAL.md](KLICKANLEITUNGEN-PORTAL.md) |
 
 ### Zugangsschutz
 
@@ -59,6 +60,7 @@ Da Cloud Run in `europe-west3` keine Domain Mappings unterstützt, werden Custom
 | **Backend API (Staging)** | `backend-glattthub-staging-api` | REST-API ohne IAP |
 | **Backend Public (Prod)** | `backend-glattthub-prod-public` | Token-Seiten (`/shared/*`) ohne IAP |
 | **Backend Public (Staging)** | `backend-glattthub-staging-public` | Token-Seiten (`/shared/*`) ohne IAP |
+| **Backend Hilfe** | `backend-glattthub-hilfe` | Klickanleitungen-Portal (NEG `neg-glattthub-hilfe` → `glattthub-hilfe`) mit IAP, seit 18.09.2026 |
 | **URL Map** | `urlmap-glattthub` | Host- und Pfad-basiertes Routing |
 | **HTTPS Proxy** | `proxy-glattthub` | Terminiert SSL |
 | **HTTP Proxy** | `proxy-glattthub-http` | Redirect HTTP → HTTPS |
@@ -76,6 +78,7 @@ hub.glattt.com/*                                        → backend-glattthub-pr
 staging.hub.glattt.com/api/*                                    → backend-glattthub-staging-api    → glattthub-web-staging (ohne IAP)
 staging.hub.glattt.com/{shared,livewire,build,css,js,fonts,images}/* → backend-glattthub-staging-public → glattthub-web-staging (ohne IAP)
 staging.hub.glattt.com/*                                        → backend-glattthub-staging        → glattthub-web-staging (mit IAP)
+hilfe.hub.glattt.com/*                                          → backend-glattthub-hilfe          → glattthub-hilfe       (mit IAP, Ingress nur LB)
 ```
 
 #### Bekanntes Problem: Fehlendes CSS/JS auf Public-Seiten
@@ -96,6 +99,7 @@ Google-managed SSL-Zertifikate werden automatisch erstellt und erneuert. Pro Dom
 |------------|--------|
 | `cert-glattthub-prod` | `hub.glattt.com` |
 | `cert-glattthub-staging` | `staging.hub.glattt.com` |
+| `cert-glattthub-hilfe` | `hilfe.hub.glattt.com` (seit 18.09.2026) |
 
 **Status prüfen:**
 
@@ -121,6 +125,7 @@ gcloud compute ssl-certificates describe cert-glattthub-staging --global --forma
 |------|-----|------|
 | `hub` | A | `34.49.25.78` |
 | `staging.hub` | A | `34.49.25.78` |
+| `hilfe.hub` | A | `34.49.25.78` |
 
 **DNS prüfen:**
 

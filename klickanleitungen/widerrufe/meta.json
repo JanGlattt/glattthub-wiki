@@ -1,1 +1,202 @@
-{}
+{
+ "wd1-liste": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd1-wizard-1": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd1-wizard-2": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd1-wizard-3": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd2-fallseite": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd2-bearbeiten": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd2-dokumente": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd2-wiedervorlage": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd3-angebot": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd3-versand": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd3-schwebend": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd3-folgewiderruf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd4-sepa": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd4-phorest": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd4-downgrade": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd4-abgabe": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd5-ra": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd5-kosten": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd5-schriftwechsel": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "wd5-abschliessen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ }
+}

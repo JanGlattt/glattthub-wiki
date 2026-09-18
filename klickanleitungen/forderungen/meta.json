@@ -1,1 +1,242 @@
-{}
+{
+ "fo1-uebersicht": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo1-anlegen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo1-gerichtlich": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo2-aufstellung": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo2-sidebar": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo2-anschrift": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo2-verlauf": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo2-zahlungen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo3-naechster-schritt": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo3-faellig": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo3-rls-entscheid": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo3-extern": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo4-zahlung": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo4-storno": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo4-bezahllink": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo4-sepa": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo4-kosten": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo5-rzv-anlegen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo5-rzv-aendern": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo5-rzv-verfolgen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo6-weiche": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo6-gerichtlich": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo6-ruhend": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ },
+ "fo6-abschluss": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [],
+  "ratio": 0.6949152542372882
+ }
+}
