@@ -3,7 +3,7 @@
 FROM node:20-alpine
 WORKDIR /app
 ENV NODE_ENV=production PORT=8080
-COPY server.js ./
+COPY server.js vertex.cjs ./
 COPY dist ./dist
 USER node
 EXPOSE 8080

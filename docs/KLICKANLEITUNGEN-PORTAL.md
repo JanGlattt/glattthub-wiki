@@ -55,7 +55,7 @@ Treffer, die nur die Bedeutungssuche gefunden hat, tragen die Marke „ähnliche
 ```
 glattthub-wiki/klickanleitungen/
 ├── shared/build-web.cjs          Decks → Portal-Seiten (Viewer), WebP-Screenshots, manifest.json
-├── shared/build-search.cjs       manifest.json → search/docs.json (+ vektoren.bin mit OPENAI_API_KEY)
+├── shared/build-search.cjs       manifest.json → search/docs.json + vektoren.bin (Vertex AI)
 ├── shared/synonyme.json          Synonym-Gruppen der Suche — hier ergänzen, nächster Build übernimmt
 ├── shared/assets/portal.css      Gestaltung im Hub-Look (Token aus theme_glattt.css gespiegelt)
 ├── shared/assets/portal.js       Stepper, Schritt↔Markierung, Lightbox, Filter, Theme
@@ -63,6 +63,7 @@ glattthub-wiki/klickanleitungen/
 ├── shared/assets/suche-kern.js   Wort-Faltung, Stoppwörter, Komposita-Zerlegung — Browser UND Node
 ├── portal/build.sh               web | search | pdf | all — lokal und in Cloud Build derselbe Weg
 ├── portal/server.js              Node-Server: statisch aus dist/, POST /api/embed, /healthz
+├── portal/vertex.cjs             Embeddings über Vertex AI (Dienstkonto, kein Schlüssel) — Build UND Server
 ├── portal/Dockerfile             node:20-alpine, nur server.js + dist/
 ├── portal/cloudbuild.yaml        Bucket-Sync → Build → Image → Cloud Run
 └── portal/dist/                  Build-Ausgabe (gitignored)
@@ -78,9 +79,10 @@ leitet daraus seine Verweise ab (`App\Services\Onboarding\KlickanleitungLinks`, 
 cd glattthub-wiki/klickanleitungen
 npm install                                   # sharp, minisearch, playwright
 bash portal/build.sh web                      # Seiten + WebP nach portal/dist
-OPENAI_API_KEY=… bash portal/build.sh search  # Suchindex; ohne Schlüssel nur Wörter/Synonyme
+bash portal/build.sh search                   # Suchindex; Embeddings über Vertex AI mit deinem gcloud-ADC-Login
+PORTAL_EMBEDDINGS=0 bash portal/build.sh search   # … oder ohne Bedeutungssuche (kein gcloud nötig)
 bash portal/build.sh pdf                      # PDFs (braucht Chromium via Playwright)
-PORT=8791 OPENAI_API_KEY=… node portal/server.js   # http://localhost:8791
+PORT=8791 node portal/server.js               # http://localhost:8791
 ```
 
 Im Hub lokal: `KLICKANLEITUNGEN_URL=http://localhost:8791` in `.env`, dann zeigen Buch-Symbol,
@@ -99,14 +101,17 @@ Seitenleiste und Suche dorthin. Leer lassen = keine Verweise.
    Anfrage als ODER-Alternativen.
 3. **Synonyme** (`shared/synonyme.json`): jedes Anfrage-Wort wird um seine Gruppe erweitert,
    Zwei-Wort-Begriffe („nicht erschienen") werden vorher erkannt.
-4. **Bedeutung**: `build-search.cjs` bettet jeden Eintrag mit `text-embedding-3-small`
-   (256 Dimensionen, Int8-quantisiert → 690 KB) ein. Die Anfrage bettet `server.js` über
-   `POST /api/embed` ein (Schlüssel aus Secret Manager, 90 Anfragen/Minute je Client, Cache).
-   Der Browser rechnet den Kosinus über alle Vektoren (Schwelle 0,3) und mischt beide Listen per
-   Reciprocal Rank Fusion; je Vorgang bleibt nur der beste Eintrag.
+4. **Bedeutung**: `build-search.cjs` bettet jeden Eintrag über **Vertex AI**
+   (`gemini-embedding-001`, Region europe-west3, 256 Dimensionen, Int8-quantisiert → 690 KB) ein,
+   Aufgabe `RETRIEVAL_DOCUMENT`. Die Anfrage bettet `server.js` über `POST /api/embed` ein
+   (`RETRIEVAL_QUERY`, 90 Anfragen/Minute je Client, Cache). Anmeldung läuft über das Dienstkonto
+   der Umgebung (Metadaten-Server in Cloud Run/Cloud Build, lokal gcloud-ADC) — **kein API-Schlüssel,
+   kein Secret**. Entscheidung 18.09.2026: Anthropic bietet keine Embeddings, Vertex bleibt im
+   GCP-Projekt. Der Browser rechnet den Kosinus über alle Vektoren (Schwelle 0,3) und mischt beide
+   Listen per Reciprocal Rank Fusion; je Vorgang bleibt nur der beste Eintrag.
 
-Ohne Schlüssel läuft alles außer Schicht 4 — der Server antwortet 503, das Portal schaltet die
-Bedeutungssuche still ab.
+Wurde der Index ohne Vektoren gebaut (`PORTAL_EMBEDDINGS=0`), antwortet der Server auf
+`/api/embed` mit 503 und das Portal schaltet die Bedeutungssuche still ab.
 
 ### Infrastruktur
 
@@ -118,7 +123,7 @@ Bedeutungssuche still ab.
 | Zertifikat | `cert-glattthub-hilfe` (Google-managed), am `proxy-glattthub` neben Prod und Staging |
 | IAP | `domain:labrado-schlueter.com` als `iap.httpsResourceAccessor`; IAP-Service-Agent hat `run.invoker` |
 | Screenshots | Bucket `gs://glattthub-klickanleitungen/<serie>/shots/` (Repo ist öffentlich, Bilder nicht darin) |
-| Secret | `openai-api-key` (Secret Manager) für Build und Laufzeit |
+| Embeddings | Vertex AI `gemini-embedding-001` in europe-west3; Compute-Dienstkonto (Build und Cloud Run) braucht `aiplatform.endpoints.predict` (in `roles/editor` enthalten) — kein Secret |
 | Build | `klickanleitungen/portal/cloudbuild.yaml`; Trigger `deploy-hilfe` (Region europe-west3) auf `main` des Wiki-Repos, nur bei Änderungen unter `klickanleitungen/`; läuft über die Cloud-Build-Verbindung `glattthub-github` (2. Generation, GitHub-App von Jan am 18.09.2026 freigegeben) |
 
 Manuell bauen und deployen (aus dem Wiki-Repo):

@@ -1,24 +1,25 @@
 /* Portal-Server für hilfe.hub.glattt.com — liefert den statischen Build aus dist/ und bettet
-   Suchanfragen für die Bedeutungssuche ein (POST /api/embed → OpenAI Embeddings).
+   Suchanfragen für die Bedeutungssuche ein (POST /api/embed → Vertex AI, gemini-embedding-001,
+   Anmeldung über das Dienstkonto von Cloud Run — kein Schlüssel).
    Keine Abhängigkeiten, nur Node. Zugriffsschutz kommt vom Load Balancer (Google IAP) davor;
    der Dienst selbst ist nur über den Load Balancer erreichbar (Ingress internal-and-cloud-load-balancing).
 
-   Umgebung:  PORT (Cloud Run setzt 8080), OPENAI_API_KEY (Secret; fehlt er, antwortet /api/embed 503
-              und das Portal sucht nur nach Wörtern), BUILD_COMMIT (nur zur Anzeige in /healthz).   */
+   Umgebung:  PORT (Cloud Run setzt 8080), VERTEX_PROJECT/VERTEX_LOCATION (siehe vertex.cjs),
+              BUILD_COMMIT (nur zur Anzeige in /healthz). Ohne Vektoren im Build (search/docs.json
+              ohne `vektoren`) antwortet /api/embed 503 und das Portal sucht nur nach Wörtern.      */
 'use strict';
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const zlib = require('zlib');
+const V = require('./vertex.cjs');
 
 const ROOT = path.join(__dirname, 'dist');
 const PORT = parseInt(process.env.PORT || '8080', 10);
-const KEY = process.env.OPENAI_API_KEY || '';
-const MODELL = 'text-embedding-3-small';
-let DIMS = 256;
+let DIMS = V.DIMS, VEKTOREN = false;
 try {
   const docs = JSON.parse(fs.readFileSync(path.join(ROOT, 'search', 'docs.json'), 'utf8'));
-  if (docs.vektoren && docs.vektoren.dims) DIMS = docs.vektoren.dims;
+  if (docs.vektoren && docs.vektoren.dims) { DIMS = docs.vektoren.dims; VEKTOREN = true; }
 } catch (e) { /* ohne Suchindex läuft das Portal trotzdem */ }
 
 const MIME = {
@@ -50,13 +51,7 @@ function limitiert(req) {
 }
 async function einbetten(q) {
   if (cache.has(q)) return cache.get(q);
-  const r = await fetch('https://api.openai.com/v1/embeddings', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + KEY },
-    body: JSON.stringify({ model: MODELL, input: q, dimensions: DIMS }),
-  });
-  if (!r.ok) throw new Error('OpenAI ' + r.status);
-  const v = (await r.json()).data[0].embedding.map(x => Number(x.toFixed(5)));
+  const v = (await V.embedOne(q, 'RETRIEVAL_QUERY')).map(x => Number(x.toFixed(5)));
   if (cache.size >= 2000) cache.delete(cache.keys().next().value);
   cache.set(q, v);
   return v;
@@ -66,7 +61,7 @@ function json(res, status, body) {
   res.end(JSON.stringify(body));
 }
 function embedRoute(req, res) {
-  if (!KEY) return json(res, 503, { fehler: 'Bedeutungssuche nicht konfiguriert' });
+  if (!VEKTOREN) return json(res, 503, { fehler: 'Bedeutungssuche nicht gebaut' });
   if (limitiert(req)) return json(res, 429, { fehler: 'Zu viele Anfragen — bitte kurz warten' });
   let body = '';
   req.on('data', (c) => { body += c; if (body.length > 4096) req.destroy(); });
@@ -75,7 +70,7 @@ function embedRoute(req, res) {
     try { q = String(JSON.parse(body).q || ''); } catch (e) { return json(res, 400, { fehler: 'Ungültige Anfrage' }); }
     q = q.replace(/\s+/g, ' ').trim().slice(0, 200);
     if (q.length < 2) return json(res, 400, { fehler: 'Anfrage zu kurz' });
-    try { json(res, 200, { v: await einbetten(q), dims: DIMS }); } catch (e) { json(res, 502, { fehler: 'Einbettung fehlgeschlagen' }); }
+    try { json(res, 200, { v: await einbetten(q), dims: DIMS }); } catch (e) { console.error('Einbettung fehlgeschlagen:', e.message); json(res, 502, { fehler: 'Einbettung fehlgeschlagen' }); }
   });
 }
 
@@ -104,7 +99,7 @@ function nichtGefunden(req, res) {
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, 'http://x');
-  if (url.pathname === '/healthz') return json(res, 200, { ok: true, build: process.env.BUILD_COMMIT || null, bedeutungssuche: !!KEY });
+  if (url.pathname === '/healthz') return json(res, 200, { ok: true, build: process.env.BUILD_COMMIT || null, bedeutungssuche: VEKTOREN, modell: V.MODEL, region: V.LOCATION });
   if (url.pathname === '/api/embed') {
     if (req.method !== 'POST') return json(res, 405, { fehler: 'Nur POST' });
     return embedRoute(req, res);
@@ -126,4 +121,4 @@ const server = http.createServer((req, res) => {
   if (!fs.existsSync(file) || !fs.statSync(file).isFile()) return nichtGefunden(req, res);
   senden(req, res, file);
 });
-server.listen(PORT, () => console.log(`Portal auf :${PORT} · dist=${ROOT} · Bedeutungssuche ${KEY ? 'an' : 'aus'} (${DIMS} Dimensionen)`));
+server.listen(PORT, () => console.log(`Portal auf :${PORT} · dist=${ROOT} · Bedeutungssuche ${VEKTOREN ? 'an' : 'aus'} (${V.MODEL}, ${V.LOCATION}, ${DIMS} Dimensionen)`));

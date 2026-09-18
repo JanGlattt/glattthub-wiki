@@ -121,7 +121,7 @@ Hub-Look, Viewer, Suche mit Tippfehler-Toleranz, Synonymen und Bedeutungsverglei
 ```bash
 npm install                      # einmalig: sharp, minisearch, playwright
 bash portal/build.sh web         # Seiten + WebP-Screenshots nach portal/dist
-bash portal/build.sh search      # Suchindex (OPENAI_API_KEY gesetzt → auch Embeddings)
+bash portal/build.sh search      # Suchindex, Embeddings über Vertex AI (gcloud-ADC; PORTAL_EMBEDDINGS=0 = ohne)
 bash portal/build.sh pdf         # PDFs aller Decks nach portal/dist/pdf
 PORT=8791 node portal/server.js  # lokal ansehen: http://localhost:8791
 ```

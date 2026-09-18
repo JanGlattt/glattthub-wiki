@@ -2,14 +2,17 @@
    Aufruf:  node shared/build-search.cjs <dist>        (dist = WEB_OUT des Web-Builds)
    Ausgabe: <dist>/search/docs.json      Einträge (Anleitung, Vorgang, Schritt, Hinweis, Tabellenzeile,
                                          Abschnitt), Wortschatz für die Komposita-Zerlegung, Synonyme
-            <dist>/search/vektoren.bin   Embeddings (Int8, je Eintrag `dims` Werte) — nur mit OPENAI_API_KEY
+            <dist>/search/vektoren.bin   Embeddings (Int8, je Eintrag `dims` Werte) über Vertex AI
+                                         (gemini-embedding-001, Dienstkonto, kein Schlüssel);
+                                         PORTAL_EMBEDDINGS=0 überspringt sie (lokal, ohne gcloud)
 
-   Der Index selbst entsteht im Browser (MiniSearch, ~700 Einträge in wenigen Millisekunden);
+   Der Index selbst entsteht im Browser (MiniSearch, ~2.700 Einträge in wenigen Millisekunden);
    hier werden nur die Einträge vorbereitet. Die Bedeutungssuche vergleicht die Anfrage per
    Kosinus mit den Vektoren; die Anfrage bettet der Portal-Server ein (POST /api/embed).           */
 const fs = require('fs');
 const path = require('path');
 const K = require('./assets/suche-kern.js');
+const V = require('../portal/vertex.cjs');
 
 const dist = path.resolve(process.argv[2] || 'portal/dist');
 const manifest = JSON.parse(fs.readFileSync(path.join(dist, 'manifest.json'), 'utf8'));
@@ -17,8 +20,8 @@ const synonyme = JSON.parse(fs.readFileSync(path.join(__dirname, 'synonyme.json'
 const outDir = path.join(dist, 'search');
 fs.mkdirSync(outDir, { recursive: true });
 
-const MODELL = 'text-embedding-3-small';
-const DIMS = 256;
+const MODELL = V.MODEL;
+const DIMS = V.DIMS;
 
 const strip = (s) => String(s ?? '').replace(/\*\*/g, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 const uiOf = (...texte) => [...new Set(texte.flatMap(t => [...String(t ?? '').matchAll(/„(.+?)“/g)].map(m => m[1])))];
@@ -68,36 +71,27 @@ for (const g of synonyme) for (const w of g) for (const t of K.tokens(w)) if (t.
 const docs = { generiert: new Date().toISOString().slice(0, 10), modell: null, vocab: [...vocab].sort(), synonyme, eintraege, vektoren: null };
 
 (async () => {
-  const key = process.env.OPENAI_API_KEY;
-  if (!key) {
-    console.log('Hinweis: OPENAI_API_KEY fehlt — Suche ohne Bedeutungsvergleich (nur Wörter, Tippfehler, Synonyme).');
+  if (process.env.PORTAL_EMBEDDINGS === '0') {
+    console.log('Hinweis: PORTAL_EMBEDDINGS=0 — Suche ohne Bedeutungsvergleich (nur Wörter, Tippfehler, Synonyme).');
   } else {
+    // Ein Aufruf je Eintrag (gemini-embedding-001 nimmt keinen Stapel), parallel; scheitert die
+    // Anmeldung, bricht der Bau laut ab — ein Portal ohne Bedeutungssuche soll nicht still entstehen.
     const texte = eintraege.map(e => kurz(`${e.serie} ${e.nr} – ${e.anleitung}${e.seite ? ' › ' + e.seite : ''}: ${e.titel}. ${e.text}`, 1500));
+    const vektoren = await V.embedAll(texte, 'RETRIEVAL_DOCUMENT', {
+      parallel: 8, onProgress: (d, n) => { if (d % 100 === 0 || d === n) process.stdout.write(`Embeddings ${d}/${n}\r`); },
+    });
     const vecs = new Int8Array(texte.length * DIMS);
     const skalen = new Array(texte.length).fill(0);
-    for (let i = 0; i < texte.length; i += 128) {
-      const batch = texte.slice(i, i + 128);
-      const r = await fetch('https://api.openai.com/v1/embeddings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key },
-        body: JSON.stringify({ model: MODELL, input: batch, dimensions: DIMS }),
-      });
-      if (!r.ok) { console.error('Embeddings fehlgeschlagen:', r.status, (await r.text()).slice(0, 300)); process.exit(1); }
-      const data = (await r.json()).data;
-      for (const d of data) {
-        const idx = i + d.index;
-        const v = d.embedding;
-        let max = 0;
-        for (const x of v) max = Math.max(max, Math.abs(x));
-        skalen[idx] = max;
-        for (let j = 0; j < DIMS; j++) vecs[idx * DIMS + j] = Math.round(v[j] / max * 127);
-      }
-      process.stdout.write(`Embeddings ${Math.min(i + 128, texte.length)}/${texte.length}\r`);
-    }
+    vektoren.forEach((v, idx) => {
+      let max = 0;
+      for (const x of v) max = Math.max(max, Math.abs(x));
+      skalen[idx] = max;
+      for (let j = 0; j < DIMS; j++) vecs[idx * DIMS + j] = Math.round(v[j] / max * 127);
+    });
     fs.writeFileSync(path.join(outDir, 'vektoren.bin'), Buffer.from(vecs.buffer));
     docs.modell = MODELL;
     docs.vektoren = { dims: DIMS, n: texte.length, skalen: skalen.map(s => Number(s.toFixed(5))) };
-    console.log(`\nEmbeddings: ${texte.length} × ${DIMS} (Int8, ${(vecs.byteLength / 1024).toFixed(0)} KB)`);
+    console.log(`\nEmbeddings (${MODELL}, ${V.LOCATION}): ${texte.length} × ${DIMS} (Int8, ${(vecs.byteLength / 1024).toFixed(0)} KB)`);
   }
   fs.writeFileSync(path.join(outDir, 'docs.json'), JSON.stringify(docs));
   const arten = {};
