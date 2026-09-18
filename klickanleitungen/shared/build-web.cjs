@@ -231,7 +231,7 @@ function seriesCards(guides) {
 function indexBody(guides) {
   return `<section class="hero">
   <h1>glatttHub Nutzerhandbuch</h1>
-  <p>Alle Anleitungen für den glatttHub — Schritt für Schritt, mit Bildern aus dem echten Hub. Suche nach einer Aufgabe, einer Beschriftung oder einem Fenster; Tippfehler sind erlaubt.</p>
+  <p>Das Handbuch für den glatttHub: alle Abläufe von der Anmeldung bis zur Laser-Wartung, nach Themengebieten sortiert und durchsuchbar.</p>
   <button type="button" class="hero-search" data-search-open>${ICON.search}<span>Zum Beispiel „Rate pausieren", „Kundin finden" oder „Termin abschließen"</span></button>
   <div class="chips" data-audience-filter role="group" aria-label="Für wen">
     <button type="button" class="chip-btn" data-aud="">Alle</button>
