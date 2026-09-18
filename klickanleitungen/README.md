@@ -128,9 +128,11 @@ schlucken, wie es ist.
 - **Lade-Platzhalter:** `L.waitLoaded(page)` wartet, bis Skelette und Spinner weg sind
   (Berichte zeigten sonst graue Kacheln).
 - **Prod nur lesend, als Institute-Konto:** `KLICK_PIN=1234` statt E-Mail/Passwort meldet
-  das Institute-Konto an (`state.<host>.json` je Umgebung). So entstehen Grundlagen,
-  Kundenverwaltung und Bonus-Board 1–2 auf Prod mit echten Daten (maskiert); alles, was
-  schreibt (Terminansicht), bleibt auf Staging mit Magdeburg-Testdaten.
+  das Institute-Konto an (`state.<host>.json` je Umgebung — vor einem Wechsel des Kontos
+  löschen, sonst läuft die alte Sitzung weiter). So entstehen Grundlagen, Kundenverwaltung
+  und Bonus-Board 1–2 auf Prod mit echten Daten (maskiert); Bonus-Board 3–5 brauchen dort
+  ein Konto mit Leitungs-Recht (Jan). Alles, was schreibt (Terminansicht), bleibt auf
+  Staging mit Magdeburg-Testdaten.
 - **Sehr Persönliches wird geleert:** `mask.json` → `blankText` enthält jetzt auch die
   Verlaufs-Einträge (`.timeline-glattt-content p`, Zendesk-Korrespondenz).
 - **Nach dem Lauf:** Bilder in den Bucket (`gcloud storage rsync`), `meta.json` committen,

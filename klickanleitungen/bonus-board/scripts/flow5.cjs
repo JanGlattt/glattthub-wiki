@@ -45,7 +45,7 @@ const L = require('./lib.cjs');
     await L.shot(page, 's3-einfrieren', { clip, noScroll: true, marks: [
       { id: 'notiz', kind: 'badge', n: 1, ...L.byText('[data-klick="freeze"] .input-glattt-floating-label', 'Notiz'), at: 'l' },
       { id: 'final', kind: 'badge', n: 2, ...L.byText('[data-klick="freeze"] .checkbox-glattt-label', 'Final einfrieren'), at: 'l' },
-      { id: 'liste', kind: 'frame', sel: '[data-klick="freeze"] table' },
+      { id: 'knopf', kind: 'frame', color: 'teal', ...L.byText('[data-klick="freeze"] .btn-glattt-primary', 'Stand jetzt einfrieren') },
     ]});
     console.log('Hinweis: Monatsabschluss nur fotografiert — nicht eingefroren.');
   }

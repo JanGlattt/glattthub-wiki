@@ -67,9 +67,13 @@ const OPEN = process.env.KLICK_MONTH_OPEN || L.MONTH;
   }
 
   // ── q5 Export-Knöpfe (nur markieren, nicht auslösen)
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await L.wait(page, 500);
-  await L.shot(page, 'q5-export', { marks: [
+  // Die Knöpfe sitzen im Kopf der Karte „Boni je Mitarbeiterin" — dorthin scrollen, sonst zeigt das Bild nur die Ranking-Tabelle
+  await page.evaluate(() => {
+    const h = [...document.querySelectorAll('.card-glattt-title')].find(e => e.textContent.startsWith('Boni je'));
+    h?.closest('.card-glattt')?.scrollIntoView({ block: 'start' });
+  });
+  await L.wait(page, 600);
+  await L.shot(page, 'q5-export', { noScroll: true, marks: [
     { id: 'csv', kind: 'badge', n: 1, ...L.byText('a, button', 'CSV'), at: 'l' },
     { id: 'pdf', kind: 'badge', n: 2, ...L.byText('a, button', 'PDF'), at: 'l' },
   ]});
