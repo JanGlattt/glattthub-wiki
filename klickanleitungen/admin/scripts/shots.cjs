@@ -1,55 +1,50 @@
-/* Aufnahmelauf „Admin-Panel".
-   ACHTUNG: Hier stehen Gehälter, Protokolle und Zugänge. Der Lauf **öffnet nur Listen** —
-   er legt nichts an, ändert nichts und leert keinen Cache. Die Screenshots der Gehalts- und
-   Protokollseiten zeigen echte Personen: mask.json muss alle Namen enthalten, und die Bilder
-   gehören vor dem Committen durchgesehen.
+/* Aufnahmelauf „Admin-Panel" (Filament) — der Lauf **liest nur**.
+   Listen werden fotografiert; wo die Anleitung ein Einzel-Formular erklärt (Rolle, Bestellung),
+   wird der erste Eintrag geöffnet und nichts gespeichert.
 
-   Die Pfade unten sind die Filament-Adressen; weicht eine ab, meldet der Lauf es und macht weiter.
-   Aufruf:  node scripts/shots.cjs [name …]                                                   */
+   Aufruf:  node scripts/shots.cjs            (alle)
+            node scripts/shots.cjs a1-rollen       (einzeln)                                         */
 const L = require('./lib.cjs');
+const P = require('../../shared/lib/plan.cjs');
+
+// Filament-Tabellen: erste Zeile öffnen (Zeilen-Link oder „Bearbeiten"/„Ansehen")
+const ersterEintrag = ['fn', async (page, L) => {
+  await page.evaluate(() => {
+    const a = [...document.querySelectorAll('.fi-ta-row a[href], .fi-ta-record a[href], table tbody tr a[href]')].find(e => e.offsetParent !== null && /\/(edit|view)|\/\d+/.test(e.getAttribute('href') || ''));
+    if (a) a.click();
+  });
+  await L.wait(page, 3500);
+}];
+const seite = (name, url, marks = []) => ({ name, url, wait: 3500, steps: [['wait', 800]], marks });
 
 const PLAN = [
-  { name: 'a1-panel', url: '/admin' },
-  { name: 'a1-benutzer', url: '/admin/users' },
-  { name: 'a1-rollen', url: '/admin/roles' },
-  { name: 'a2-news', url: '/admin/news' },
-  { name: 'a2-wissen', url: '/admin/knowledge-articles' },
-  { name: 'a2-recht', url: '/admin/legal-documents' },
-  { name: 'a3-produkte', url: '/admin/voucher-products' },
-  { name: 'a3-bestellungen', url: '/admin/voucher-orders' },
-  { name: 'a3-sonderfaelle', url: '/admin/voucher-orders' },
-  { name: 'a4-erinnerungen', url: '/admin/appointment-reminder-rules' },
-  { name: 'a4-bg-whatsapp', url: '/admin/consultation-whatsapp-settings' },
-  { name: 'a4-bewertung', url: '/admin/review-whatsapp-settings' },
-  { name: 'a5-zonen', url: '/admin/body-zones' },
-  { name: 'a5-beratung', url: '/admin/consultation-services' },
-  { name: 'a5-weitere', url: '/admin/absence-types' },
-  { name: 'a6-badges', url: '/admin/badges' },
-  { name: 'a6-trigger', url: '/admin/gamification-triggers' },
-  { name: 'a6-ziele', url: '/admin/gamification-branch-goals' },
-  { name: 'a7-gehaelter', url: '/admin/hr-salaries' },
-  { name: 'a7-bonus', url: '/admin/hr-bonus-payments' },
-  { name: 'a7-zuordnung', url: '/admin/phorest-staff' },
-  { name: 'a8-protokolle', url: '/admin/email-logs' },
-  { name: 'a8-einstellungen', url: '/admin/pdf-settings' },
-  { name: 'a8-cache', url: '/hub/settings/cache' },
+  seite('a1-panel', '/admin'),
+  seite('a1-benutzer', '/admin/users', ['.fi-ta-content, .fi-ta']),
+  { name: 'a1-rollen', url: '/admin/roles', wait: 3500, steps: [ersterEintrag, ['wait', 1500]] },
+  seite('a2-news', '/admin/news'),
+  seite('a2-wissen', '/admin/knowledge-articles'),
+  seite('a2-recht', '/admin/legal-documents'),
+  seite('a3-produkte', '/admin/voucher-products'),
+  seite('a3-bestellungen', '/admin/voucher-orders'),
+  { name: 'a3-sonderfaelle', url: '/admin/voucher-orders', wait: 3500, steps: [ersterEintrag, ['wait', 1500]] },
+  seite('a4-erinnerungen', '/admin/appointment-reminder-rules'),
+  seite('a4-bg-whatsapp', '/admin/consultation-whatsapp-settings'),
+  seite('a4-bewertung', '/admin/review-whatsapp-settings'),
+  seite('a5-zonen', '/admin/body-zones'),
+  seite('a5-beratung', '/admin/consultation-services'),
+  seite('a5-weitere', '/admin/customer-number-settings'),
+  seite('a6-badges', '/admin/badges'),
+  seite('a6-trigger', '/admin/gamification-triggers'),
+  seite('a6-ziele', '/admin/gamification-branch-goals'),
+  seite('a7-gehaelter', '/admin/hr-salaries'),
+  seite('a7-bonus', '/admin/hr-bonus-payments'),
+  seite('a7-zuordnung', '/admin/phorest-staff'),
+  seite('a8-protokolle', '/admin/email-logs'),
+  seite('a8-einstellungen', '/admin/email-settings'),
+  seite('a8-cache', '/hub/settings/cache'),
 ];
 
-(async () => {
-  const nur = process.argv.slice(2);
-  const { browser, ctx, page } = await L.launch();
-  await L.login(page, ctx);
-
-  for (const p of PLAN) {
-    if (nur.length && !nur.includes(p.name)) continue;
-    try {
-      await L.goto(page, p.url, 3500);
-      const url = page.url();
-      if (url.includes('/login') || url.includes('403')) { console.log('KEIN ZUGANG:', p.url); continue; }
-      await L.shot(page, p.name, {});
-    } catch (e) {
-      console.log('FEHLER bei', p.name, '—', e.message.split('\n')[0]);
-    }
-  }
-  await browser.close();
-})();
+P.run(PLAN, L, { nur: process.argv.slice(2), before: async (page) => {
+  const url = page.url();
+  if (url.includes('/login')) console.log('KEIN ZUGANG zum Admin-Panel — Konto braucht das Admin-Recht');
+} });

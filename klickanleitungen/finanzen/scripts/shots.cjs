@@ -1,38 +1,27 @@
-/* Aufnahmelauf „Finanzen".
-   Die Tabelle unten ist die Quelle: je Screenshot eine Seite, optional eine Vorbereitung
-   (scrollen, Reiter wählen, Fenster öffnen) und die Markierungen.
-
-   Der Lauf **liest nur**. Wo ein Fenster geöffnet wird, wird es danach verworfen —
-   in dieser Serie wird nichts gespeichert, nichts verschickt und nichts ausgelöst.
+/* Aufnahmelauf „Finanzen" — Schulden und Unternehmensverträge.
+   Der Lauf **liest nur**: Das Fenster „Neuen Vertrag anlegen" wird geöffnet und verworfen.
 
    Aufruf:  node scripts/shots.cjs            (alle)
-            node scripts/shots.cjs f5-schulden      (einzelner Screenshot)                        */
+            node scripts/shots.cjs f8-vertrag-erfassen   (einzeln)                                   */
 const L = require('./lib.cjs');
+const P = require('../../shared/lib/plan.cjs');
 
 const PLAN = [
-  { name: 'f5-schulden', url: '/hub/reports/schulden', marks: ['.card-glattt'] },
-  { name: 'f6-schulden-liste', url: '/hub/reports/schulden' },
-  { name: 'f7-unternehmensvertraege', url: '/hub/company-contracts', marks: ['.card-glattt'] },
-  { name: 'f8-vertrag-erfassen', url: '/hub/company-contracts' },
-  { name: 'f9-fristen', url: '/hub/company-contracts' },
+  // ── Finanzen 1: Schulden (Modul, nicht der Bericht)
+  { name: 'f5-schulden', url: '/hub/debts', steps: [['loaded'], ['wait', 2000]], marks: [
+    { id: 'kennzahlen', kind: 'frame', color: 'teal', sel: '.stat-strip-glattt, .kpi-row-glattt, .card-glattt' },
+    { id: 'geplatzt', kind: 'badge', n: 1, ...L.byText('a.btn-glattt-secondary', 'Geplatzte Lastschriften'), at: 'l' },
+  ] },
+  { name: 'f6-schulden-liste', url: '/hub/debts', steps: [['loaded'], ['wait', 2000], ['scrollSel', '.table-glattt', 'start']], marks: [
+    { id: 'tabelle', kind: 'frame', color: 'teal', sel: '.table-glattt' },
+  ] },
+  // ── Finanzen 2: Unternehmensverträge
+  { name: 'f7-unternehmensvertraege', url: '/hub/company-contracts', steps: [['loaded'], ['wait', 1500]], marks: [
+    { id: 'kennzahlen', kind: 'frame', color: 'teal', sel: '.card-glattt' },
+    { id: 'neu', kind: 'badge', n: 1, sel: '.btn-glattt-primary', at: 'l' },
+  ] },
+  { name: 'f8-vertrag-erfassen', url: '/hub/company-contracts', steps: [['loaded'], ['click', 'button.btn-glattt-primary', 'Neuen Vertrag anlegen', 2000]], clip: '.modal-glattt' },
+  { name: 'f9-fristen', url: '/hub/company-contracts', steps: [['loaded'], ['scroll', '.card-glattt-title', 'Verträge', 120]], clip: 'card:Verträge' },
 ];
 
-(async () => {
-  const nur = process.argv.slice(2);
-  const { browser, ctx, page } = await L.launch();
-  await L.login(page, ctx);
-
-  for (const p of PLAN) {
-    if (nur.length && !nur.includes(p.name)) continue;
-    try {
-      await L.goto(page, p.url, p.wait || 3000);
-      if (p.vor) await p.vor(page, L);
-      const clip = p.clip ? await L.clipOf(page, p.clip, 20) : null;
-      await L.shot(page, p.name, { clip, noScroll: !!p.clip, marks: (p.marks || []).map(m =>
-        typeof m === 'string' ? { kind: 'frame', color: 'teal', sel: m } : m) });
-    } catch (e) {
-      console.log('FEHLER bei', p.name, '—', e.message.split('\n')[0]);
-    }
-  }
-  await browser.close();
-})();
+P.run(PLAN, L, { nur: process.argv.slice(2) });

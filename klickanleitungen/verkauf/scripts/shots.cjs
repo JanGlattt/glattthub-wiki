@@ -1,47 +1,48 @@
-/* Aufnahmelauf „Verkauf" Teil 2 — Dokumente 5–8 (Preislisten, Freunde werben, Gutscheine,
-   Zufriedenheit). Anders als flow1–flow4 ist das ein Tabellen-Lauf: je Zeile ein Screenshot
-   mit seiner Seite.
+/* Aufnahmelauf „Verkauf" — Preislisten, Freunde werben, Gutscheine, Zufriedenheit.
+   Der Lauf **liest nur**: Fenster werden geöffnet und verworfen, es wird nichts gesendet,
+   kein Gutschein erstellt, keine Prämie ausgezahlt.
 
-   Der Lauf **liest nur**. Ausdrücklich NICHT gedrückt werden: „Speichern" in einer Preisliste
-   (sie hängt an laufenden Verträgen), „Prämie auszahlen" bei den Empfehlungen, „Gutschein
-   anlegen" (der Gutschein entstünde in Phorest) und „Senden" bei der Zufriedenheitsbefragung
-   (die Nachricht ginge an eine echte Kundin).
-
-   Aufruf:  node scripts/flow5.cjs                (alle)
-            node scripts/flow5.cjs v22-gutscheine (einzeln)                                   */
+   Aufruf:  node scripts/shots.cjs            (alle)
+            node scripts/shots.cjs v17-preise      (einzeln)                                         */
 const L = require('./lib.cjs');
+const P = require('../../shared/lib/plan.cjs');
+
+const ersteZeile = ['fn', async (page, L) => {
+  await page.evaluate(() => { const r = [...document.querySelectorAll('tbody tr')].find(e => e.offsetParent !== null); if (r) (r.querySelector('a, button') || r).click(); });
+  await L.wait(page, 2500);
+}];
 
 const PLAN = [
-  { name: 'v16-preislisten', url: '/hub/contracts/prices', marks: ['.card-glattt'] },
-  { name: 'v17-preise', url: '/hub/contracts/prices' },
-  { name: 'v18-rabatte', url: '/hub/contracts/prices' },
-  { name: 'v19-referrals', url: '/hub/contracts/referrals', marks: ['.card-glattt'] },
-  { name: 'v20-referral-pruefen', url: '/hub/contracts/referrals' },
-  { name: 'v21-auszahlung', url: '/hub/contracts/referrals' },
-  { name: 'v22-gutscheine', url: '/hub/vouchers', marks: ['.card-glattt'] },
-  { name: 'v23-gutschein-detail', url: '/hub/vouchers' },
-  { name: 'v24-gutschein-anlegen', url: '/hub/vouchers' },
-  { name: 'v25-zufriedenheit', url: '/hub/zufriedenheit', marks: ['.card-glattt'] },
-  { name: 'v26-versenden', url: '/hub/zufriedenheit' },
-  { name: 'v27-folgeaufgaben', url: '/hub/zufriedenheit' },
+  // ── Verkauf 1: Preislisten
+  { name: 'v16-preislisten', url: '/hub/contracts/prices', steps: [['loaded']], marks: [
+    { id: 'aktuell', kind: 'frame', color: 'teal', sel: '.card-glattt' },
+    { id: 'neu', kind: 'badge', n: 1, sel: '.btn-glattt-primary', at: 'l' },
+  ] },
+  { name: 'v17-preise', url: '/hub/contracts/prices', steps: [['loaded'], ['click', '.card-glattt-header', 'glattt-Preise', 2500],
+    ['scroll', 'h4, h5, th, .card-glattt-title, label', 'Preis', 140]] },
+  { name: 'v18-rabatte', url: '/hub/contracts/prices', steps: [['loaded'], ['click', '.card-glattt-header', 'glattt-Preise', 2500],
+    ['scroll', 'h4, h5, th, .card-glattt-title, label, span', 'Rabatt', 140]] },
+  // ── Verkauf 2: Freunde werben
+  { name: 'v19-referrals', url: '/hub/contracts/referrals', steps: [['loaded'], ['scroll', '.card-glattt-title, th', 'Geworbener', 200]] },
+  { name: 'v20-referral-pruefen', url: '/hub/contracts/referrals', steps: [['loaded'], ['click', 'button.btn-glattt-secondary', 'Details', 2000]], clip: '.modal-glattt' },
+  { name: 'v21-auszahlung', url: '/hub/contracts/referrals', steps: [['loaded'], ['click', 'button.btn-glattt-secondary', 'Details', 2000],
+    ['fn', async (page, L) => { await page.evaluate(() => { const box = document.querySelector('.modal-glattt-body, .modal-glattt'); const el = box && [...box.querySelectorAll('h3, h4, label, legend, span')].find(e => /Bank|Auszahlung/.test(e.textContent)); if (el) el.scrollIntoView({ block: 'start' }); }); await L.wait(page, 800); }]], clip: '.modal-glattt' },
+  // ── Verkauf 3: Gutscheine
+  { name: 'v22-gutscheine', url: '/hub/vouchers', steps: [['loaded'], ['wait', 1500]], marks: [
+    { id: 'suche', kind: 'badge', n: 1, sel: '.search-glattt, input[type=search], input[placeholder*="Serien"]', at: 'l' },
+  ] },
+  { name: 'v23-gutschein-detail', url: '/hub/vouchers', steps: [['loaded'], ['wait', 1500], ersteZeile], clip: '?.modal-glattt' },
+  { name: 'v24-gutschein-anlegen', url: '/hub/vouchers', steps: [['loaded'], ['click', 'button', 'Neuer Gutschein', 2000]], clip: '.modal-glattt' },
+  // ── Verkauf 4: Zufriedenheit
+  { name: 'v25-zufriedenheit', url: '/hub/zufriedenheit', steps: [['loaded'], ['wait', 2500]], marks: [
+    { id: 'auffrischen', kind: 'badge', n: 1, ...L.byText('button', 'Liste auffrischen'), at: 'l' },
+    { id: 'kandidatinnen', kind: 'frame', color: 'teal', ...L.byText('.card-glattt-title', 'Kandidatinnen') },
+  ] },
+  { name: 'v26-versenden', url: '/hub/zufriedenheit', steps: [['loaded'], ['wait', 2500], ['scroll', '.card-glattt-title', 'Kandidatinnen', 120]], marks: [
+    { id: 'senden', kind: 'badge', n: 1, ...L.byText('button.btn-glattt-primary', 'Senden'), at: 'l' },
+    { id: 'ueberspringen', kind: 'badge', n: 2, ...L.byText('button.btn-glattt-secondary', 'Überspringen'), at: 'r' },
+  ] },
+  { name: 'v27-folgeaufgaben', url: '/hub/zufriedenheit', steps: [['loaded'], ['wait', 2500], ['scroll', '.card-glattt-title', 'Verlauf', 120]], clip: 'card:Verlauf' },
 ];
 
-(async () => {
-  const nur = process.argv.slice(2);
-  const { browser, ctx, page } = await L.launch();
-  await L.login(page, ctx);
-  let letzte = null;
-
-  for (const p of PLAN) {
-    if (nur.length && !nur.includes(p.name)) continue;
-    try {
-      if (p.url !== letzte) { await L.goto(page, p.url, 3500); letzte = p.url; }
-      await L.wait(page, 1200);
-      await L.shot(page, p.name, { marks: (p.marks || []).map(m =>
-        typeof m === 'string' ? { kind: 'frame', color: 'teal', sel: m } : m) });
-    } catch (e) {
-      console.log('FEHLER bei', p.name, '—', e.message.split('\n')[0]);
-    }
-  }
-  await browser.close();
-})();
+P.run(PLAN, L, { nur: process.argv.slice(2) });

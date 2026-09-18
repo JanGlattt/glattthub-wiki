@@ -17,7 +17,8 @@ const L = require('./lib.cjs');
     const ok = await page.evaluate(([s, k]) => {
       const h = [...document.querySelectorAll('h2, h3, .card-glattt-title')]
         .find(e => e.textContent.trim().startsWith(s));
-      const c = h?.closest('.card-glattt, section, div.mt-10, div');
+      // Erst die Karte, dann der Abschnitt — closest() mit Liste träfe sonst den nächsten div (nur den Kopf)
+      const c = h && (h.closest('.card-glattt') || h.closest('section') || h.parentElement?.parentElement);
       if (!c) return false;
       c.dataset.klick = k; c.scrollIntoView({ block: 'center' });
       return true;

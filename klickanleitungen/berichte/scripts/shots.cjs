@@ -1,86 +1,108 @@
 /* Aufnahmelauf „Berichte" — alle Statistikseiten in einem Durchlauf.
-   Der Lauf **liest nur**: Berichte ändern nichts, es wird kein Export ausgelöst.
+   Der Lauf **liest nur**: Berichte ändern nichts, das Export-Fenster wird geöffnet und verworfen.
 
-   Der Plan unten entstand aus den Decks; jede Zeile ist ein Screenshot mit seiner Seite.
-   Weil jede Berichtsseite anders aufgebaut ist, sind die Ausschnitte bewusst NICHT
-   vorgegeben — der Lauf fotografiert die ganze Seite und schneidet beim Nacharbeiten.
+   Jede Zeile ist ein Screenshot. „kopf" zeigt den Seitenanfang mit Kopf-Karte und Kennzahlen-
+   Zeile; die Abschnitts-Bilder scrollen zur jeweiligen Analyse-Karte und schneiden sie aus —
+   so zeigt jedes Bild genau den Abschnitt, den die Anleitung erklärt (seit 18.09.2026, vorher
+   war jedes Bild der Seitenanfang).
 
    Aufruf:  node scripts/shots.cjs             (alle)
-            node scripts/shots.cjs r1-kopf     (einzeln)
-            KLICK_RANGE=2026-08 node scripts/shots.cjs   (fester Monat, empfohlen)          */
+            node scripts/shots.cjs r1-kopf     (einzeln)                                              */
 const L = require('./lib.cjs');
+const P = require('../../shared/lib/plan.cjs');
+
+const KOPF = [
+  { id: 'kopf', kind: 'frame', color: 'teal', sel: '.stats-page-header-glattt, .page-header-glattt' },
+  { id: 'kpis', kind: 'frame', sel: '.kpi-dashboard' },
+];
+const kopf = (name, url, marks = KOPF) => ({ name, url, wait: 5000, steps: [['loaded'], ['wait', 1500]], marks });
+const karte = (name, url, titel, extra = {}) => ({ name, url, wait: 5000,
+  steps: [['loaded'], ['scroll', '.card-glattt-title, h2, h3', titel], ['wait', 1200], ...(extra.steps || [])],
+  clip: 'card:' + titel, marks: extra.marks || [] });
 
 const PLAN = [
-  { name: 'r0-kopf', url: '/hub/reports' },   // Zeitraum und Standort
-  { name: 'r0-kpis', url: '/hub/reports' },   // Die Kennzahlen-Zeile
-  { name: 'r0-karte', url: '/hub/reports' },   // Diagramm oder Tabelle
-  { name: 'r0-export', url: '/hub/reports' },   // Export und Verlässlichkeit
-  { name: 'r1-kopf', url: '/hub/reports/sales-statistics' },   // Den Bericht öffnen
-  { name: 'r1-institute', url: '/hub/reports/sales-statistics' },   // Verkäufe je Institut
-  { name: 'r1-personen', url: '/hub/reports/sales-statistics' },   // Verkäufe je Mitarbeiterin
-  { name: 'r2-kopf', url: '/hub/reports/upcoming-consultations' },   // Den Bericht öffnen
-  { name: 'r2-stufen', url: '/hub/reports/upcoming-consultations' },   // Die Termine lesen
-  { name: 'r2-stornos', url: '/hub/reports/upcoming-consultations' },   // Stornos im Blick
-  { name: 'r3-kopf', url: '/hub/reports/past-consultations' },   // Den Bericht öffnen
-  { name: 'r3-verlauf', url: '/hub/reports/past-consultations' },   // Beratungen im Verlauf
-  { name: 'r3-ergebnis', url: '/hub/reports/past-consultations' },   // Was daraus wurde
-  { name: 'r4-kopf', url: '/hub/reports/rescheduled-cancelled' },   // Den Bericht öffnen
-  { name: 'r4-vorlauf', url: '/hub/reports/rescheduled-cancelled' },   // Vorlauf der Absagen
-  { name: 'r4-muster', url: '/hub/reports/rescheduled-cancelled' },   // Muster erkennen
-  { name: 'r5-kopf', url: '/hub/reports/revocation-statistics' },   // Den Bericht öffnen
-  { name: 'r5-quote', url: '/hub/reports/revocation-statistics' },   // Quote und Volumen
-  { name: 'r5-gruende', url: '/hub/reports/revocation-statistics' },   // Gründe verstehen
-  { name: 'r6-kopf', url: '/hub/reports/appointments-body-zones' },   // Den Bericht öffnen
-  { name: 'r6-auslastung', url: '/hub/reports/appointments-body-zones' },   // Auslastung
-  { name: 'r6-arten', url: '/hub/reports/appointments-body-zones' },   // Terminarten im Verhältnis
-  { name: 'r7-kopf', url: '/hub/reports/glattt-kpis' },   // Den Bericht öffnen
-  { name: 'r7-abschluss', url: '/hub/reports/glattt-kpis' },   // Abschluss je Beratung
-  { name: 'r7-neukunde', url: '/hub/reports/glattt-kpis' },   // Wert einer Neukundin
-  { name: 'r8-kopf', url: '/hub/reports/client-statistics' },   // Den Bericht öffnen
-  { name: 'r8-demografie', url: '/hub/reports/client-statistics' },   // Demografie und Einzugsgebiet
-  { name: 'r8-kanaele', url: '/hub/reports/client-statistics' },   // Kanäle und Conversion
-  { name: 'r9-kopf', url: '/hub/reports/staff-performance' },   // Den Bericht öffnen
-  { name: 'r9-personen', url: '/hub/reports/staff-performance' },   // Die Kennzahlen je Person
-  { name: 'r9-ampel', url: '/hub/reports/staff-performance' },   // Ziele und Ampel
-  { name: 'r10-kopf', url: '/hub/reports/schulden' },   // Den Bericht öffnen
-  { name: 'r10-rls', url: '/hub/reports/schulden' },   // Rücklastschriften
-  { name: 'r10-bestand', url: '/hub/reports/schulden' },   // Bestand und Rückfluss
-  { name: 'r11-kopf', url: '/hub/reports/office-meeting' },   // Den Bericht öffnen
-  { name: 'r11-service', url: '/hub/reports/office-meeting' },   // Kundenservice und Widerrufe
-  { name: 'r11-bloecke', url: '/hub/reports/office-meeting' },   // SEPA, Forderungen, HR und Ads
-  { name: 'r12-kopf', url: '/hub/reports/gutscheinaktion' },   // Den Bericht öffnen
-  { name: 'r12-annahme', url: '/hub/reports/gutscheinaktion' },   // Annahme messen
-  { name: 'r12-vergleich', url: '/hub/reports/gutscheinaktion' },   // Wirkung vergleichen
-  { name: 'r13-kopf', url: '/hub/reports/hr-kennzahlen' },   // Den Bericht öffnen
-  { name: 'r13-kapazitaet', url: '/hub/reports/hr-kennzahlen' },   // Kapazität und Auslastung
-  { name: 'r13-abwesenheit', url: '/hub/reports/hr-kennzahlen' },   // Verfügbarkeit
-  { name: 'r14-kopf', url: '/hub/reports/ads-analysis' },   // Den Bericht öffnen
-  { name: 'r14-kosten', url: '/hub/reports/ads-analysis' },   // Kosten und Klicks
-  { name: 'r14-kette', url: '/hub/reports/ads-analysis' },   // Buchungen und Verträge
-  { name: 'r15-kopf', url: '/hub/reports/visitor-funnel' },   // Den Bericht öffnen
-  { name: 'r15-herkunft', url: '/hub/reports/visitor-funnel' },   // Herkunft und Verhalten
-  { name: 'r15-funnel', url: '/hub/reports/visitor-funnel' },   // Der Buchungs-Trichter
-  { name: 'r16-kopf', url: '/hub/reports/client-courses' },   // Den Bericht öffnen
-  { name: 'r16-verkauft', url: '/hub/reports/client-courses' },   // Verkaufte Pakete
-  { name: 'r16-nutzung', url: '/hub/reports/client-courses' },   // Nutzung und Reste
+  // ── Berichte 0: So funktionieren die Berichte (Beispiel Verkaufsstatistik)
+  kopf('r0-kopf', '/hub/reports/sales-statistics', [
+    { id: 'zeitraum', kind: 'frame', color: 'teal', sel: '.stats-page-header-glattt' },
+    { id: 'export', kind: 'badge', n: 1, sel: '.btn-glattt-export', at: 'l' },
+  ]),
+  { name: 'r0-kpis', url: '/hub/reports/sales-statistics', wait: 5000, steps: [['loaded'], ['scrollSel', '.kpi-dashboard', 'start'], ['wait', 800]],
+    clip: '.kpi-dashboard', marks: [{ id: 'anpassen', kind: 'badge', n: 1, sel: '.kpi-dashboard-edit-btn', at: 'l' }] },
+  karte('r0-karte', '/hub/reports/sales-statistics', 'Körperzonen pro Institut', { marks: [
+    { id: 'register', kind: 'badge', n: 1, sel: '.chart-view-toggle-glattt, .chart-register-glattt', at: 'l' },
+    { id: 'info', kind: 'badge', n: 2, sel: '.btn-glattt-info-trigger', at: 'r' },
+  ] }),
+  { name: 'r0-export', url: '/hub/reports/sales-statistics', wait: 5000, steps: [['loaded'], ['click', '.btn-glattt-export', 'Export', 1800]],
+    clip: '.modal-glattt', marks: [] },
+
+  // ── 1 Verkaufsstatistik
+  kopf('r1-kopf', '/hub/reports/sales-statistics'),
+  karte('r1-institute', '/hub/reports/sales-statistics', 'Körperzonen pro Institut'),
+  karte('r1-personen', '/hub/reports/sales-statistics', 'Monatliche Übersicht'),
+  // ── 2 Zukünftige Beratungsgespräche
+  kopf('r2-kopf', '/hub/reports/upcoming-consultations'),
+  karte('r2-stufen', '/hub/reports/upcoming-consultations', 'Aktueller Buchungsstand'),
+  karte('r2-stornos', '/hub/reports/upcoming-consultations', 'Buchungsvorlauf-Analyse'),
+  // ── 3 Vergangene Beratungsgespräche
+  kopf('r3-kopf', '/hub/reports/past-consultations'),
+  karte('r3-verlauf', '/hub/reports/past-consultations', 'Beratungsgespräche-Analyse'),
+  karte('r3-ergebnis', '/hub/reports/past-consultations', 'Vorlauf & Termin-Erfolg'),
+  // ── 4 Stornierte und gelöschte Termine
+  kopf('r4-kopf', '/hub/reports/rescheduled-cancelled'),
+  karte('r4-vorlauf', '/hub/reports/rescheduled-cancelled', 'Stornierte Termine pro Monat'),
+  karte('r4-muster', '/hub/reports/rescheduled-cancelled', 'Gelöschte Termine pro Monat'),
+  // ── 5 Widerruf-Statistik
+  kopf('r5-kopf', '/hub/reports/revocation-statistics'),
+  karte('r5-quote', '/hub/reports/revocation-statistics', 'Entwicklung über Zeit'),
+  karte('r5-gruende', '/hub/reports/revocation-statistics', 'Struktur der Widerrufe'),
+  // ── 6 Terminstatistik
+  kopf('r6-kopf', '/hub/reports/appointments-body-zones'),
+  karte('r6-auslastung', '/hub/reports/appointments-body-zones', 'Monatliche Übersicht'),
+  karte('r6-arten', '/hub/reports/appointments-body-zones', 'Service-Kombinationen pro Monat'),
+  // ── 7 glattt-KPIs
+  kopf('r7-kopf', '/hub/reports/glattt-kpis'),
+  karte('r7-abschluss', '/hub/reports/glattt-kpis', 'Zeitraum-Übersicht'),
+  karte('r7-neukunde', '/hub/reports/glattt-kpis', 'Institut-Vergleich'),
+  // ── 8 Der glattt-Kunde
+  kopf('r8-kopf', '/hub/reports/client-statistics'),
+  karte('r8-demografie', '/hub/reports/client-statistics', 'Altersverteilung'),
+  karte('r8-kanaele', '/hub/reports/client-statistics', 'Conversion Funnel'),
+  // ── 9 Mitarbeiterperformance
+  kopf('r9-kopf', '/hub/reports/staff-performance'),
+  karte('r9-personen', '/hub/reports/staff-performance', 'Beratungs-Ranking'),
+  karte('r9-ampel', '/hub/reports/staff-performance', 'Tagesmessung'),
+  // ── 10 Schulden
+  kopf('r10-kopf', '/hub/reports/schulden'),
+  karte('r10-rls', '/hub/reports/schulden', 'Rücklastschriften nach Grund'),
+  karte('r10-bestand', '/hub/reports/schulden', 'Bestand nach Prozessstufe'),
+  // ── 11 Office-Teammeeting
+  kopf('r11-kopf', '/hub/reports/office-meeting'),
+  karte('r11-service', '/hub/reports/office-meeting', 'Kundenservice-Tickets'),
+  karte('r11-bloecke', '/hub/reports/office-meeting', 'SEPA: innerhalb 30 Tagen gezahlt'),
+  // ── 12 Gutschein-Aktion
+  kopf('r12-kopf', '/hub/reports/gutscheinaktion'),
+  karte('r12-annahme', '/hub/reports/gutscheinaktion', 'Annahme der Gutschein-Aktion'),
+  karte('r12-vergleich', '/hub/reports/gutscheinaktion', 'Gutscheinkäufer im Vergleich'),
+  // ── 13 HR-Kennzahlen
+  kopf('r13-kopf', '/hub/reports/hr-kennzahlen'),
+  karte('r13-kapazitaet', '/hub/reports/hr-kennzahlen', 'Kapazität: Soll gegen Ist'),
+  karte('r13-abwesenheit', '/hub/reports/hr-kennzahlen', 'Abwesenheiten und Krankenquote'),
+  // ── 14 Ads-Analyse
+  kopf('r14-kopf', '/hub/reports/ads-analysis'),
+  karte('r14-kosten', '/hub/reports/ads-analysis', 'Kostenverlauf & Kosten pro Lead'),
+  karte('r14-kette', '/hub/reports/ads-analysis', 'Buchungen pro Quelle & Monat'),
+  // ── 15 Besucher & Buchungs-Funnel
+  kopf('r15-kopf', '/hub/reports/visitor-funnel'),
+  karte('r15-herkunft', '/hub/reports/visitor-funnel', 'Herkunft der Besucher'),
+  karte('r15-funnel', '/hub/reports/visitor-funnel', 'Buchungs-Funnel'),
+  // ── 16 glattt-Pakete
+  kopf('r16-kopf', '/hub/reports/client-courses'),
+  karte('r16-verkauft', '/hub/reports/client-courses', 'Monatliche Übersicht'),
+  { name: 'r16-nutzung', url: '/hub/reports/client-courses', wait: 5000, steps: [['loaded'], ['scrollSel', '.kpi-dashboard', 'start'], ['wait', 800]], clip: '.kpi-dashboard', marks: [] },
 ];
 
-(async () => {
-  const nur = process.argv.slice(2);
-  const { browser, ctx, page } = await L.launch();
-  await L.login(page, ctx);
-  let letzte = null;
+// Kartentitel je Bericht nachschärfen: Wer eine Karte umbenennt, trägt hier den neuen Titel ein.
+const TITEL = JSON.parse(process.env.KLICK_TITEL || '{}');
+for (const p of PLAN) if (TITEL[p.name]) { p.clip = 'card:' + TITEL[p.name]; p.steps[1] = ['scroll', '.card-glattt-title, h2, h3', TITEL[p.name]]; }
 
-  for (const p of PLAN) {
-    if (nur.length && !nur.includes(p.name)) continue;
-    try {
-      if (p.url !== letzte) { await L.goto(page, p.url, 5000); letzte = p.url; }
-      // Karten laden nach; ohne diese Pause sind Diagramme im Bild noch leer
-      await L.wait(page, 1500);
-      await L.shot(page, p.name, {});
-    } catch (e) {
-      console.log('FEHLER bei', p.name, '—', e.message.split('\n')[0]);
-    }
-  }
-  await browser.close();
-})();
+P.run(PLAN, L, { nur: process.argv.slice(2) });

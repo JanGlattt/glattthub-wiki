@@ -24,6 +24,7 @@ Thumbs.db
 
 # Klickanleitungen: Lauf-Artefakte
 klickanleitungen/**/state.json
+klickanleitungen/**/state.*.json
 klickanleitungen/**/treatment-url.txt
 klickanleitungen/**/stand.txt
 klickanleitungen/**/node_modules/
@@ -37,6 +38,11 @@ klickanleitungen/*/package.json
 klickanleitungen/*/package-lock.json
 # Screenshots liegen seit 18.09.2026 im GCS-Bucket (Repo ist öffentlich) — nie committen
 klickanleitungen/*/shots/
+# Zwischengespeicherte Zugänge der Prod-Läufe (lane-prod.sh tauscht .env zeitweise)
+klickanleitungen/*/.env.staging
+klickanleitungen/*/.env.prod
 # Portal-Build (hilfe.hub.glattt.com) — entsteht aus den Decks
 klickanleitungen/portal/dist/
 klickanleitungen-web/
+# Vorherige Aufnahmen (lokale Sicherung beim Neu-Aufnehmen)
+klickanleitungen/_alt/

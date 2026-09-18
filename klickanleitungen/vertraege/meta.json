@@ -3,380 +3,380 @@
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt1-filter": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt1-zeile": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt2-kopf": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt2-banner": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt2-uebersicht": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt2-bestaetigen": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt2-kundin": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt2-zusammenfassung": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt2-verlauf": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt2-emails": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt3-aufbau": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt3-ratenzeile": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt3-summen": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt4-aktionen": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt4-nachtragen": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt4-verbuchen": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt4-erste-rate": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt4-rls-ausgleich": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt5-vorpruefung": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt5-einziehen": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt5-anhaengen": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt5-abgleich": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt5-legacy": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt6-raten-anpassen": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt6-laufzeit": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt6-pausieren": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt6-fortsetzen": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt6-gutschein": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt7-sepa-bereich": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt7-mandat-anlegen": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt7-bankverbindung": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt7-mandat-info": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt8-imports": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt8-import-korrigieren": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt8-zuordnen": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt8-verwerfen": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  },
  "vt8-werber": {
   "box": {
    "x": 0,
    "y": 0,
-   "width": 1180,
-   "height": 820
+   "width": 1440,
+   "height": 900
   },
   "marks": [],
-  "ratio": 0.6949152542372882
+  "ratio": 0.625
  }
 }

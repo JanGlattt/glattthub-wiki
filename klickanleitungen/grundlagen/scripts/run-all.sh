@@ -10,9 +10,11 @@
 set -u
 cd "$(dirname "$0")/.." || exit 1
 [ -f .env ] && set -a && . ./.env && set +a
-for v in KLICK_BASE KLICK_USER KLICK_PW; do
+# Zugang: E-Mail/Passwort — oder KLICK_PIN (Institute-Konto, z. B. Prod nur lesend)
+for v in KLICK_BASE; do
   if [ -z "${!v:-}" ]; then echo "!!! $v fehlt — siehe .env.example"; exit 2; fi
 done
+if [ -z "${KLICK_PIN:-}" ] && { [ -z "${KLICK_USER:-}" ] || [ -z "${KLICK_PW:-}" ]; }; then echo "!!! KLICK_USER/KLICK_PW oder KLICK_PIN fehlen — siehe .env.example"; exit 2; fi
 [ -f mask.json ] || { echo "!!! mask.json fehlt — Kopie von mask.example.json anlegen."; exit 2; }
 
 FLOWS=${*:-"flow1 flow2 flow3 flow4 flow5 flow6"}

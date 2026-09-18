@@ -21,8 +21,10 @@ const L = require('./lib.cjs');
 
   // ── s2 Kachel hinzufügen (Auswahl öffnen, nicht speichern)
   if (will('s2-karte-hinzufuegen')) {
-    const ok = await L.clickText(page, 'button', 'Kachel', 1500)
-      || await L.clickText(page, 'button', 'Hinzufügen', 1500);
+    // Bearbeiten-Modus über „Anpassen" im Seitenkopf; darin liegt das Hinzufügen der Kacheln
+    await L.clickText(page, '.page-header-glattt-actions button, button.btn-glattt-tertiary', 'Anpassen', 1500);
+    // Die Platzhalter-Kachel „Karte hinzufügen" ist kein Knopf — per Text klicken
+    const ok = await L.clickText(page, 'span, div, button', 'Karte hinzufügen', 1500);
     if (!ok) console.log('Knopf zum Hinzufügen nicht gefunden — Beschriftung geändert?');
     await L.wait(page, 1200);
     await L.shot(page, 's2-karte-hinzufuegen', { marks: [
@@ -34,20 +36,27 @@ const L = require('./lib.cjs');
 
   // ── s3 Kacheln ordnen (Bearbeiten-Modus, nicht speichern)
   if (will('s3-bearbeiten')) {
-    const ok = await L.clickText(page, 'button', 'Bearbeiten', 1500);
-    if (!ok) console.log('„Bearbeiten" nicht gefunden — Recht fehlt oder Beschriftung geändert?');
+    await L.goto(page, '/hub', 3000);
+    const ok = await L.clickText(page, '.page-header-glattt-actions button, button.btn-glattt-tertiary', 'Anpassen', 1500);
+    if (!ok) console.log('„Anpassen" nicht gefunden — Recht fehlt oder Beschriftung geändert?');
     await L.wait(page, 1200);
     await L.shot(page, 's3-bearbeiten', { marks: [
-      { id: 'griff', kind: 'chip', label: 'Zum Verschieben ziehen', sel: '.drag-handle, [draggable="true"]', at: 'r' },
+      { id: 'griff', kind: 'chip', label: 'Verschieben, Entfernen', sel: '.start-card-control-btn', at: 'r' },
+      { id: 'fertig', kind: 'badge', n: 1, ...L.byText('button.btn-glattt-primary', 'Fertig'), at: 'l' },
     ]});
-    await L.clickText(page, 'button', 'Abbrechen', 1200);
-    await L.wait(page, 800);
+    await L.goto(page, '/hub', 3000);   // Bearbeiten-Modus ohne Speichern verlassen
   }
 
   // ── s4 Kennzahlen-Zeile anpassen (Auswahl öffnen, nicht speichern)
   if (will('s4-kennzahlen')) {
-    await L.scrollTo(page, '.kpi-dashboard-glattt, .kpi-dashboard', 'center');
-    const ok = await L.clickText(page, 'button', 'Kennzahlen', 1500);
+    // Im Bearbeiten-Modus hat jede Kachel Steuerknöpfe — der erste an „Kennzahlen" öffnet die Auswahl
+    await L.clickText(page, '.page-header-glattt-actions button, button.btn-glattt-tertiary', 'Anpassen', 1500);
+    await L.scrollToText(page, '.start-card-title, .card-glattt-title', 'Kennzahlen', 120);
+    const ok = await page.evaluate(() => {
+      const h = [...document.querySelectorAll('.start-card-title')].find(e => e.textContent.trim().startsWith('Kennzahlen'));
+      const b = h?.closest('.start-card, .card-glattt, [class*="start-card"]')?.querySelector('.start-card-control-btn:not(.start-card-control-btn-danger)');
+      if (!b) return false; b.click(); return true;
+    });
     if (!ok) console.log('Kennzahlen-Auswahl nicht gefunden — Beschriftung geändert?');
     await L.wait(page, 1200);
     await L.shot(page, 's4-kennzahlen', { noScroll: true, marks: [

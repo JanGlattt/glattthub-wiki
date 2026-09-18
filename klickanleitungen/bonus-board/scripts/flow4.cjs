@@ -26,7 +26,25 @@ const L = require('./lib.cjs');
     { id: 'beschreibung', kind: 'badge', n: 2, ...L.byText('.input-glattt-floating-label', 'Beschreibung'), at: 'l' },
   ]});
 
-  const next = async () => { await L.clickText(page, '.modal-glattt-footer .btn-glattt-primary', 'Weiter', 1200); };
+  // „Weiter" ist erst mit Namen aktiv — Beispielname eintragen (wird nie gespeichert)
+  await page.evaluate(() => {
+    const inp = [...document.querySelectorAll('.modal-glattt input')].find(i => i.offsetParent !== null && /Name/.test((i.closest('.input-glattt-floating-wrapper, .form-glattt-group')?.textContent) || ''));
+    if (inp) { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(inp, 'Beispiel-Bonus KPZ'); inp.dispatchEvent(new Event('input', { bubbles: true })); }
+  });
+  await L.wait(page, 600);
+  // „Weiter" ist je Schritt erst mit einer Auswahl aktiv — dann die erste Option ankreuzen
+  // (Bonus-Klasse, Kennzahl, Prämienart). Es wird nichts gespeichert, der Assistent wird verworfen.
+  const next = async () => {
+    await page.evaluate(() => {
+      const modal = document.querySelector('.modal-glattt');
+      const weiter = modal && [...modal.querySelectorAll('button')].find(b => b.textContent.trim().startsWith('Weiter'));
+      if (!weiter || !weiter.disabled) return;
+      const opt = [...modal.querySelectorAll('input[type=checkbox], input[type=radio]')].find(i => i.offsetParent !== null && !i.checked);
+      if (opt) opt.click();
+    });
+    await L.wait(page, 600);
+    await L.clickText(page, '.modal-glattt-footer .btn-glattt-primary, .modal-glattt button', 'Weiter', 1400);
+  };
   await next();
   await L.shot(page, 'r3-assistent-empfaenger', { clip: await modal(), noScroll: true, marks: [
     { id: 'klassen', kind: 'badge', n: 1, ...L.byText('.form-glattt-label', 'Bonus-Klassen'), at: 'l' },

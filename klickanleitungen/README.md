@@ -113,6 +113,29 @@ Im Text: `**fett**` für Kernbegriffe, `„UI-Beschriftung“` **mit typografisc
 weiter, sollen aber **nicht** neu verwendet werden: Was dort steht, muss jeder Ausgabeweg so
 schlucken, wie es ist.
 
+## Aufnahme seit 18.09.2026: Laptop-Format, Pläne, Prod als Institute-Konto
+
+- **Format:** `shared/lib/shoot.cjs` nimmt in 1440 × 900 auf (Retina, `KLICK_VIEWPORT=BxH`
+  übersteuert). Nur die Terminansicht bleibt bewusst im iPad-Format (eigene lib), Grundlagen 4
+  im Telefon-Format.
+- **Pläne statt Kopien:** Tabellen-Serien (Berichte, Betrieb, Team, System, Verkauf, Widerrufe,
+  Admin, Finanzen) beschreiben jeden Screenshot als Zeile für `shared/lib/plan.cjs` — Seite,
+  Schritte (`click`, `tab`, `scroll`, `type`, `fn` …), Ausschnitt (`card:Titel`, Selektor,
+  `?`-optional) und Markierungen. Der Runner lädt die Seite neu, sobald eine Zeile
+  weiternavigiert hat oder ein Fenster offen blieb — vorher zeigten viele Bilder dieselbe Seite.
+- **Seitenstruktur nachschlagen:** `node ../shared/lib/explore.cjs /hub/pfad [--find "Text"]`
+  listet Überschriften, Karten, Reiter und Knöpfe mit Position — die Grundlage jedes Plans.
+- **Lade-Platzhalter:** `L.waitLoaded(page)` wartet, bis Skelette und Spinner weg sind
+  (Berichte zeigten sonst graue Kacheln).
+- **Prod nur lesend, als Institute-Konto:** `KLICK_PIN=1234` statt E-Mail/Passwort meldet
+  das Institute-Konto an (`state.<host>.json` je Umgebung). So entstehen Grundlagen,
+  Kundenverwaltung und Bonus-Board 1–2 auf Prod mit echten Daten (maskiert); alles, was
+  schreibt (Terminansicht), bleibt auf Staging mit Magdeburg-Testdaten.
+- **Sehr Persönliches wird geleert:** `mask.json` → `blankText` enthält jetzt auch die
+  Verlaufs-Einträge (`.timeline-glattt-content p`, Zendesk-Korrespondenz).
+- **Nach dem Lauf:** Bilder in den Bucket (`gcloud storage rsync`), `meta.json` committen,
+  Push auf `main` baut das Portal.
+
 ## Das Portal — hilfe.hub.glattt.com
 
 Seit 18.09.2026 werden die Web-Seiten als eigenes Portal ausgeliefert (Cloud Run hinter IAP,

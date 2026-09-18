@@ -10,15 +10,28 @@ const fs = require('fs');
 
 const BASE = process.env.KLICK_BASE || '';
 const CREDS = [process.env.KLICK_USER || '', process.env.KLICK_PW || ''];
+// Anmeldung per PIN (Institute-Konto, z. B. auf Prod nur lesend) statt E-Mail/Passwort
+const PIN = process.env.KLICK_PIN || '';
+// Aufnahmeformat: Laptop 1440 × 900 (seit 18.09.2026; vorher iPad quer 1180 × 820).
+// Die Terminansicht bleibt bewusst im iPad-Format — sie hat ihre eigene lib.
+const VIEWPORT = (() => {
+  const m = /^(\d+)x(\d+)$/.exec(process.env.KLICK_VIEWPORT || '');
+  return m ? { width: +m[1], height: +m[2] } : { width: 1440, height: 900 };
+})();
+// Sitzung je Umgebung zwischenspeichern — Staging und Prod nebeneinander ohne Verwechslung
+const STATE = 'state.' + (BASE.replace(/^https?:\/\//, '').split(/[./]/)[0] || 'lokal') + '.json';
 
 function requireEnv(extra = []) {
   if (!BASE) fail('KLICK_BASE fehlt — Adresse der Umgebung setzen (siehe ../.env.example).');
-  if (!CREDS[0] || !CREDS[1]) fail('KLICK_USER/KLICK_PW fehlen — Zugang als Umgebungsvariable setzen (siehe ../.env.example).');
+  if (!PIN && (!CREDS[0] || !CREDS[1])) fail('KLICK_USER/KLICK_PW (oder KLICK_PIN) fehlen — Zugang als Umgebungsvariable setzen (siehe ../.env.example).');
   for (const [name, hint] of extra) if (!process.env[name]) fail(name + ' fehlt — ' + hint);
 }
 function fail(msg) { console.error(msg); process.exit(2); }
 
-const HIDE_CSS = '.env-badge{display:none!important}';
+// Umgebungs-Plakette und den Auto-Logout-Balken ausblenden: beides lenkt in einer Anleitung ab
+// Auch den Rundgang (driver.js) ausblenden: Auf Prod hat das Institute-Konto die Touren noch nicht
+// gesehen, sonst läge „Die Kundenakte, Schritt 1 von 4" über jedem Bild.
+const HIDE_CSS = '.env-badge{display:none!important}#auto-logout-progress,.countdown-bar-container{display:none!important}.driver-popover,.driver-overlay{display:none!important}.driver-active-element{box-shadow:none!important}';
 
 /* ── Maskierung ──────────────────────────────────────────────────────────────────────────
    Aufgenommen wird auf einer Kopie der Produktivdaten: echte Kundinnen, echte Kolleginnen.
@@ -82,12 +95,12 @@ async function launch(opts = {}) {
     args: ['--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows', '--disable-features=CalculateNativeWinOcclusion'],
   });
   const ctx = await browser.newContext({
-    viewport: opts.viewport || { width: 1180, height: 820 },   // iPad quer
+    viewport: opts.viewport || VIEWPORT,
     deviceScaleFactor: 2,
     colorScheme: 'light',
     locale: 'de-DE',
     timezoneId: 'Europe/Berlin',
-    storageState: fs.existsSync('state.json') && !opts.fresh ? 'state.json' : undefined,
+    storageState: fs.existsSync(STATE) && !opts.fresh ? STATE : undefined,
   });
   const page = await ctx.newPage();
   await page.addInitScript(() => {
@@ -107,20 +120,75 @@ async function hideBadge(page) { try { await page.addStyleTag({ content: HIDE_CS
 async function login(page, ctx) {
   await page.goto(BASE + '/hub', { waitUntil: 'domcontentloaded' });
   if (page.url().includes('/login')) {
-    // Die Login-Seite hat ZWEI Formulare (#form-pin zuerst) — immer über das E-Mail-Feld greifen
-    await page.evaluate(([email, pw]) => {
-      const set = (el, v) => {
-        Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(el, v);
-        el.dispatchEvent(new Event('input', { bubbles: true }));
-      };
-      const e = document.querySelector('input[name="email"]');
-      set(e, email);
-      set(e.closest('form').querySelector('input[name="password"]'), pw);
-      e.closest('form').requestSubmit();
-    }, CREDS);
+    if (PIN) {
+      // PIN-Anmeldung (#form-pin): Wert setzen und das Formular abschicken — onsubmit zeigt
+      // den Lade-Schleier und ruft form.submit() selbst.
+      await page.evaluate((pin) => {
+        const set = (el, v) => {
+          Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(el, v);
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+        };
+        const p = document.querySelector('#form-pin input[name="pin"]');
+        set(p, pin);
+        p.closest('form').requestSubmit();
+      }, PIN);
+    } else {
+      // Die Login-Seite hat ZWEI Formulare (#form-pin zuerst) — immer über das E-Mail-Feld greifen
+      await page.evaluate(([email, pw]) => {
+        const set = (el, v) => {
+          Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(el, v);
+          el.dispatchEvent(new Event('input', { bubbles: true }));
+        };
+        const e = document.querySelector('input[name="email"]');
+        set(e, email);
+        set(e.closest('form').querySelector('input[name="password"]'), pw);
+        e.closest('form').requestSubmit();
+      }, CREDS);
+    }
     await page.waitForURL(u => !u.toString().includes('/login'), { timeout: 20000 });
-    await ctx.storageState({ path: 'state.json' });
+    await ctx.storageState({ path: STATE });
   }
+}
+
+/** Warten, bis Lade-Platzhalter und Spinner verschwunden sind (Kennzahlen-Zeile, Karten). */
+async function waitLoaded(page, ms = 20000) {
+  await page.waitForFunction(() => {
+    const sichtbar = (el) => el.offsetParent !== null;
+    return ![...document.querySelectorAll('.skeleton-glattt, .card-skeleton-glattt-plot, .stat-skeleton-glattt, .notifications-loading-spinner, .spinner-glattt, .loading-glattt')].some(sichtbar);
+  }, null, { timeout: ms }).catch(() => console.log('Hinweis: Lade-Platzhalter blieben sichtbar'));
+  await wait(page, 600);
+}
+
+/** Zum Element mit dieser Beschriftung scrollen, so dass es knapp unter dem Seitenkopf steht.
+    `sel` grenzt ein (z. B. '.card-glattt-title, h2'); ohne Treffer bleibt die Seite, wo sie ist. */
+async function scrollToText(page, sel, text, offset = 96) {
+  const ok = await page.evaluate(({ sel, text, offset }) => {
+    const norm = (s) => s.replace(/\s+/g, ' ').trim();
+    const els = [...document.querySelectorAll(sel)].filter(e => e.offsetParent !== null);
+    const el = els.find(e => norm(e.textContent).startsWith(text)) || els.find(e => norm(e.textContent).includes(text));
+    if (!el) return false;
+    const y = el.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top: Math.max(0, y), behavior: 'instant' });
+    return true;
+  }, { sel, text, offset });
+  if (!ok) console.log('ABSCHNITT FEHLT:', text);
+  await wait(page, 700);
+  return ok;
+}
+
+/** Bildausschnitt der Karte, die eine Beschriftung enthält (Kartenkopf → .card-glattt). */
+async function cardClip(page, text, pad = 12) {
+  return page.evaluate(({ text, pad }) => {
+    const norm = (s) => s.replace(/\s+/g, ' ').trim();
+    const els = [...document.querySelectorAll('.card-glattt-title, .card-glattt-header, h2, h3')].filter(e => e.offsetParent !== null);
+    const el = els.find(e => norm(e.textContent).startsWith(text)) || els.find(e => norm(e.textContent).includes(text));
+    const card = el && (el.closest('.card-glattt, .card-glattt-compact, .statistic-card-glattt, section') || el.parentElement);
+    if (!card) return null;
+    card.scrollIntoView({ block: 'center', behavior: 'instant' });
+    const b = card.getBoundingClientRect();
+    const vw = window.innerWidth, vh = window.innerHeight;
+    return { x: Math.max(0, b.x - pad), y: Math.max(0, b.y - pad), width: Math.min(vw, b.width + 2 * pad), height: Math.min(vh - Math.max(0, b.y - pad), b.height + 2 * pad) };
+  }, { text, pad });
 }
 
 const wait = (page, ms) => page.waitForTimeout(ms);
@@ -221,4 +289,4 @@ async function shot(page, name, { clip = null, marks = [], noScroll = false } = 
   console.log('shot', name, JSON.stringify(box));
 }
 
-module.exports = { requireEnv, fail, launch, login, goto, wait, shot, clipOf, scrollTo, byText, clickText, hideBadge, mask, BASE };
+module.exports = { requireEnv, fail, launch, login, goto, wait, waitLoaded, shot, clipOf, cardClip, scrollTo, scrollToText, byText, clickText, hideBadge, mask, BASE, VIEWPORT, STATE };
