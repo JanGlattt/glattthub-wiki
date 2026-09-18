@@ -88,11 +88,17 @@
       const first = index === 0, last = index === N - 1;
       $$('[data-prev]', guide).forEach(b => { b.disabled = first; });
       $$('[data-prev-label]', guide).forEach(el => { el.textContent = first ? 'Zurück' : 'Zurück: ' + titleOf(index - 1); });
+      // Am Ende: gibt es in dieser Serie eine weitere Anleitung, führt „Weiter" dorthin — sonst zur Übersicht
+      const nextUrl = guide.dataset.nextUrl || '';
       $$('[data-next]', guide).forEach(b => {
         b.disabled = false;
-        if (last) { b.classList.remove('btn-primary'); } else { b.classList.add('btn-primary'); }
+        if (last && !nextUrl) { b.classList.remove('btn-primary'); } else { b.classList.add('btn-primary'); }
       });
-      $$('[data-next-label]', guide).forEach(el => { el.textContent = last ? 'Fertig · zur Übersicht' : 'Weiter: ' + titleOf(index + 1); });
+      $$('[data-next-label]', guide).forEach(el => {
+        el.textContent = !last ? 'Weiter: ' + titleOf(index + 1)
+          : nextUrl ? 'Weiter: ' + (guide.dataset.nextTitle || 'nächste Anleitung')
+          : 'Fertig · zur Übersicht';
+      });
       const toggle = $('[data-mode-toggle]', guide);
       if (toggle) {
         toggle.setAttribute('aria-pressed', mode === 'alles' ? 'true' : 'false');
@@ -106,7 +112,7 @@
     }
     function go(i, scroll = true) {
       if (i < 0) return;
-      if (i >= N) { location.href = '/'; return; }
+      if (i >= N) { location.href = guide.dataset.nextUrl || '/'; return; }
       index = i;
       history.replaceState(null, '', location.pathname + location.search + '#v' + (i + 1));
       render(scroll);

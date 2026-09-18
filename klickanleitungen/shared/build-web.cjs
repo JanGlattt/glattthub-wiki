@@ -209,7 +209,8 @@ function guideBody(g, meta, img) {
   <button type="button" class="btn btn-nav btn-primary" data-next><span data-next-label>Weiter</span>${ICON.right}</button>
 </nav>
 <footer class="guide-foot"><span>Screenshots mit Beispieldaten · Stand ${D.esc(deck.stand)}${deck.version ? ' · v' + D.esc(deck.version) : ''}</span><a href="/${serieSlug(deck.series)}/">Alle Anleitungen „${D.esc(deck.series)}"</a></footer>`;
-  return `<article class="guide" data-guide="${D.esc(deck.series)} ${deck.nr}" data-vorgaenge="${N}">${head}${stepper}${sections}${foot}</article>`;
+  const nextAttr = g.next ? ` data-next-url="${D.esc(g.next.url)}" data-next-title="${D.esc(g.next.series + ' ' + g.next.nr + ' · ' + g.next.title)}"` : '';
+  return `<article class="guide" data-guide="${D.esc(deck.series)} ${deck.nr}" data-vorgaenge="${N}"${nextAttr}>${head}${stepper}${sections}${foot}</article>`;
 }
 
 /* ---------- Übersichten ---------- */
@@ -276,6 +277,12 @@ function seriesBody(name, list) {
     return info;
   };
 
+  // Nächste Anleitung derselben Serie (nach Nummer): Ziel des letzten „Weiter" statt der Startseite
+  for (const g of loaded) {
+    const folgende = loaded.filter(o => o.series === g.series && o.nr > g.nr).sort((a, b) => a.nr - b.nr)[0];
+    g.next = folgende ? { url: folgende.url, series: folgende.series, nr: folgende.nr, title: folgende.title } : null;
+  }
+
   const manifest = { generated: new Date().toISOString().slice(0, 10), guides: [] };
   for (const g of loaded) {
     const dir = path.join(outRoot, g.url);
@@ -291,7 +298,7 @@ function seriesBody(name, list) {
         `---\ntitle: ${g.title}\ndescription: ${g.subtitle}\n---\n\n<div class="guide">\n${guideBody(g, g.meta, img)}\n</div>\n`);
     }
     manifest.guides.push({
-      slug: g.deck.slug, url: g.url, pdf: g.pdf,
+      slug: g.deck.slug, url: g.url, pdf: g.pdf, next: g.next ? g.next.url : null,
       title: g.title, subtitle: g.subtitle, eyebrow: g.deck.eyebrow, area: g.area,
       series: g.series || null, seriesSlug: serieSlug(g.series), nr: g.nr || null, of: g.of || null,
       audience: g.audience, audienceLabel: g.audienceLabel, hinweis: g.hinweis,

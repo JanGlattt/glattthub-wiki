@@ -1,7 +1,7 @@
 # Klickanleitungen-Portal (hilfe.hub.glattt.com)
 
 Das Portal ist die Anlaufstelle für Mitarbeiterinnen, die nochmal nachsehen wollen, wie etwas
-im glatttHub geht: 87 Anleitungen in 14 Serien, Vorgang für Vorgang, mit Bildern aus dem echten
+im glatttHub geht: 99 Anleitungen in 15 Serien, Vorgang für Vorgang, mit Bildern aus dem echten
 Hub und einer Suche, die Tippfehler und andere Beschreibungen verzeiht. Es lebt bewusst
 **außerhalb des Hubs** (eigener Dienst, eigener Deploy), sieht aber aus wie der Hub und nutzt
 dieselbe Anmeldung (Google IAP, Firmen-Konto). Entscheidung 18.09.2026, Option „A":
@@ -23,6 +23,7 @@ statische Seite hinter IAP plus Viewer plus Kontexthilfe im Hub.
 - **Startseite**: Suchfeld, Zielgruppen-Filter (Alle · Institut · Büro · Leitung · Admin, wird gemerkt) und alle Serien als Karten.
 - **Seitenleiste links**: alle Serien, aufklappbar; auf dem Handy als Schublade über das Menü-Symbol.
 - **Eine Anleitung** zeigt standardmäßig **einen Vorgang zur Zeit**: oben „Vorgang 2 von 5", Knöpfe *Zurück* / *Weiter*, Pfeiltasten ← → oder Wischen auf dem Handy. „Vorgänge in dieser Anleitung" springt direkt.
+- **Am Ende einer Anleitung** führt *Weiter* zur **nächsten Anleitung derselben Serie** („Weiter: Laser 4 · Wartung 2: Laser prüfen"), bei der letzten der Serie zur Übersicht. Der Bau schreibt das Ziel als `data-next-url` an die Anleitung und als `next` ins Manifest (seit 18.09.2026).
   „Alle Vorgänge untereinander" schaltet auf eine lange Seite um (wird gemerkt).
 - **Schritt ↔ Bild**: Wer mit der Maus über Schritt 3 fährt, sieht Plakette 3 im Screenshot aufleuchten; ein Klick pinnt sie. Ein Klick auf eine Plakette springt zum Schritt.
 - **Bild vergrößern**: Klick auf den Screenshot zeigt ihn bildschirmfüllend, Markierungen inklusive. Esc oder Klick schließt.
