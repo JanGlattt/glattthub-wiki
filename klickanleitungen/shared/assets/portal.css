@@ -58,6 +58,7 @@ kbd{font:inherit;font-size:11px;border:1px solid var(--line-2);border-bottom-wid
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);font-weight:700;white-space:nowrap}
 .brand img{display:block;width:32px;height:32px;border-radius:50%}
 .brand span{font-size:17px;letter-spacing:-.01em}
+.brand small{font-size:14px;font-weight:400;color:var(--text-2);padding-left:10px;border-left:1px solid var(--line)}
 .top-btn{width:40px;height:40px;border:0;background:transparent;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-2);flex:0 0 auto}
 .top-btn:hover{background:var(--hover);color:var(--text)}
 .top-btn svg{width:22px;height:22px}
@@ -285,7 +286,7 @@ body.search-open{overflow:hidden}
   body.nav-open .side{transform:none}
   body.nav-open .side-backdrop{display:block;position:fixed;inset:var(--top-h) 0 0;background:rgba(17,24,39,.4);z-index:44}
   .content{padding:20px 16px 90px}
-  .brand span{display:none}
+  .brand span,.brand small{display:none}
   .top-search kbd{display:none}
 }
 @media (max-width:640px){

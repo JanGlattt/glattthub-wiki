@@ -110,7 +110,7 @@ function shell({ title, body, nav, bodyClass = '' }) {
 <a class="skip" href="#inhalt">Zum Inhalt springen</a>
 <header class="top">
   <button type="button" class="top-btn top-menu" data-nav-toggle aria-label="Navigation öffnen" aria-controls="nav" aria-expanded="false">${ICON.menu}</button>
-  <a class="brand" href="/" aria-label="glatttHub Nutzerhandbuch — Startseite"><img src="/assets/icon.png" alt="" width="32" height="32"><span>glatttHub</span></a>
+  <a class="brand" href="/" aria-label="glatttHub Nutzerhandbuch — Startseite"><img src="/assets/icon.png" alt="" width="32" height="32"><span>glatttHub</span><small>Nutzerhandbuch</small></a>
   <button type="button" class="top-search" data-search-open>${ICON.search}<span>Wonach suchst du?</span><kbd>⌘K</kbd></button>
   <button type="button" class="top-btn" data-theme-toggle aria-label="Hell oder dunkel" title="Hell oder dunkel">${ICON.sun}${ICON.moon}</button>
 </header>
