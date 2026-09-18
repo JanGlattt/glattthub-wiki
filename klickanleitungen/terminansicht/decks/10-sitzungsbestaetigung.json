@@ -1,0 +1,196 @@
+{
+ "out": "../pdf/Terminansicht-10-Sitzungsbestaetigung",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Terminansicht",
+ "nr": 10,
+ "of": 10,
+ "audience": "institut",
+ "title": [
+  "Sitzungsbestätigung —",
+  "das Pflichtformular"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — vor jeder Behandlung die Sitzungsbestätigung mit der Kundin ausfüllen: Kontaktdaten prüfen, Einwilligungen, aktuelle AGB, Unterschrift",
+ "eyebrow": "Terminansicht · Behandlungstermin",
+ "footerArea": "Terminansicht",
+ "stand": "18.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die **Sitzungsbestätigung** ist ein **Pflichtformular bei jedem Behandlungstermin** — der Hub sperrt den Einstellungszettel, bis sie ausgefüllt ist.",
+  "Sie bestätigt die Kontaktdaten der Kundin, die Einwilligungen zu Terminerinnerung und Kontaktaufnahme, dass sich nichts an der Vorgeschichte geändert hat, die aktuellen AGB — mit Ort, Datum und Unterschrift.",
+  "Das Formular gilt **nur für diesen Termin**; beim nächsten Behandlungstermin wird es erneut ausgefüllt."
+ ],
+ "pages": [
+  {
+   "h1": "Der gesperrte Einstellungszettel",
+   "sub": "Nach „Termin beginnen“ zeigt die Session-Ansicht zwei Kacheln. Solange ein Pflichtformular fehlt, ist der Einstellungszettel gesperrt.",
+   "card": {
+    "title": "Session mit Pflichtformular",
+    "text": "Sperre, Hinweis, Weg zu den Formularen"
+   },
+   "left": {
+    "shot": "u1-session-gesperrt"
+   },
+   "leftCaption": "Session-Ansicht eines Behandlungstermins: „1 Pflichtformular offen“, Einstellungszettel mit Schloss.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„1 Pflichtformular offen“",
+     "text": "Der gelbe Hinweis auf der Kachel **Formulare** zählt, was vor der Behandlung noch fehlt."
+    },
+    {
+     "n": 2,
+     "title": "Schloss am Einstellungszettel",
+     "text": "Die Kachel ist gesperrt: „Erst Pflichtformulare ausfüllen“. Ein Tipp darauf führt direkt zu den Formularen."
+    },
+    {
+     "n": 3,
+     "title": "Kachel „Formulare“ antippen",
+     "text": "Öffnet die Formularliste des Termins."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Ohne Sitzungsbestätigung keine Behandlung.** Die Sperre lässt sich nicht umgehen — das Formular ist in zwei Minuten ausgefüllt, am besten gleich bei der Ankunft der Kundin."
+   }
+  },
+  {
+   "h1": "Das Formular öffnen",
+   "sub": "In der Formularliste trägt die Sitzungsbestätigung das Abzeichen „Pflicht“. Antippen öffnet sie.",
+   "card": {
+    "title": "Formular öffnen",
+    "text": "Abzeichen „Pflicht“, Kachel antippen"
+   },
+   "left": {
+    "shot": "u2-formulare-pflicht"
+   },
+   "leftCaption": "Die Formularliste des Behandlungstermins mit der Sitzungsbestätigung.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Abzeichen „Pflicht“",
+     "text": "Steht nur an Formularen, die vor der Behandlung ausgefüllt sein müssen — und verschwindet, sobald sie eingereicht sind."
+    },
+    {
+     "n": 2,
+     "title": "Kachel antippen",
+     "text": "Öffnet das Formular im Arbeitsbereich. Die Kundin füllt es am Tablet aus, wie beim Beratungsgespräch."
+    },
+    {
+     "n": 3,
+     "title": "Weitere Formulare",
+     "text": "Kundeninformation, Behandlungsvertrag und SEPA-Mandat bleiben sichtbar — bei Bestandskundinnen sind sie meist schon erledigt (grüner Haken)."
+    }
+   ],
+   "hint": {
+    "text": "Ist das Formular schon einmal in **diesem Termin** eingereicht, fragt der Hub beim erneuten Antippen, ob es angesehen oder neu ausgefüllt werden soll."
+   }
+  },
+  {
+   "h1": "Kontaktdaten und Einwilligungen",
+   "sub": "Der obere Teil: Vorname, Nachname, Kundennummer, E-Mail und Telefon sind vorausgefüllt — die Kundin prüft und korrigiert.",
+   "card": {
+    "title": "Daten prüfen",
+    "text": "Vorausgefüllte Kontaktdaten, Einwilligungen"
+   },
+   "left": {
+    "shot": "u3-formular-oben"
+   },
+   "leftCaption": "Die Sitzungsbestätigung: Kundendetails und die beiden Einwilligungen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kundendetails",
+     "text": "Vorname, Nachname, Kundennummer, E-Mail und Telefon kommen aus Phorest. Stimmt etwas nicht, direkt im Formular ändern — der Hub gleicht beim Absenden mit Phorest ab."
+    },
+    {
+     "n": 2,
+     "title": "Einwilligungen",
+     "text": "**Terminerinnerung** und **Kontaktaufnahme zu Marketingzwecken**, jeweils **via E-Mail** und **via SMS/WhatsApp**. Freiwillig — die Kundin entscheidet, nicht die Mitarbeiterin. Die Häkchen landen als Einwilligungen in Phorest."
+    },
+    {
+     "n": 3,
+     "title": "Adresse noch aktuell?",
+     "text": "Die Frage nennt die gespeicherte Adresse. Bei **Nein** erscheinen Adresssuche und die Felder Straße, PLZ, Stadt — bei **Ja** geht es direkt weiter."
+    }
+   ],
+   "hint": {
+    "text": "Pflichtfelder sind mit **\\*** markiert. Fehlt eines, nennt der Hub es beim Absenden und springt dorthin."
+   }
+  },
+  {
+   "h1": "Bestätigung, AGB und Unterschrift",
+   "sub": "Der untere Teil: die Bestätigung der Kundin, die aktuellen AGB, dann Ort, Datum und Unterschrift — und absenden.",
+   "card": {
+    "title": "Unterschrift & Absenden",
+    "text": "Einwilligung, AGB, Ort, Datum, Unterschrift"
+   },
+   "left": {
+    "shot": "u4-formular-unten"
+   },
+   "leftCaption": "Unterer Teil des Formulars mit Einwilligung, AGB, Ort, Datum und Unterschriftsfeld.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Einwilligung",
+     "text": "Die Kundin bestätigt, dass sich ihre **medizinische Vorgeschichte** seit dem letzten Termin nicht verändert hat und sie die Informationen gelesen hat. Pflicht — und ihr Häkchen, nicht unseres."
+    },
+    {
+     "n": 2,
+     "title": "Aktuelle AGB",
+     "text": "Der Text lässt sich aufklappen. Bestätigt wird der **Stand der AGB**, der mit der Einreichung gespeichert wird — so ist später belegbar, welche Fassung galt."
+    },
+    {
+     "n": 3,
+     "title": "Ort, Datum, Unterschrift",
+     "text": "Ort und Datum eintragen, dann unterschreibt die Kundin mit dem Finger oder Stift. „Löschen“ setzt das Feld zurück."
+    },
+    {
+     "n": 4,
+     "title": "Absenden",
+     "text": "Speichert die Einreichung am Termin und an der Kundin; das PDF geht per E-Mail an die Kundin. Geänderte Kontaktdaten und Einwilligungen werden nach Rückfrage an Phorest übergeben."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Erst die Kundin, dann das Tablet zurück.** Einwilligung, AGB und Unterschrift gibt die Kundin selbst am Tablet — nichts wird für sie angetippt."
+   }
+  },
+  {
+   "h1": "Erledigt — die Behandlung kann beginnen",
+   "sub": "Nach dem Absenden ist die Sperre weg: Die Kachel „Formulare“ zeigt den Haken, der Einstellungszettel ist frei.",
+   "card": {
+    "title": "Sperre gelöst",
+    "text": "Haken an Formulare, Einstellungszettel frei"
+   },
+   "left": {
+    "shot": "u5-eingereicht"
+   },
+   "right": {
+    "shot": "u6-session-frei"
+   },
+   "leftCaption": "Bestätigung nach dem Absenden — PDF und E-Mail an die Kundin.",
+   "rightCaption": "Die Session-Ansicht danach: Formulare erledigt, Einstellungszettel ohne Schloss.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bestätigung",
+     "text": "„Erfolgreich eingereicht“ mit Hinweis auf PDF und E-Mail. **„Zurück zur Session“** führt zu den Kacheln."
+    },
+    {
+     "n": 2,
+     "title": "Formulare abgehakt",
+     "text": "Grüner Haken, das gelbe Abzeichen ist verschwunden."
+    },
+    {
+     "n": 3,
+     "title": "Einstellungszettel frei",
+     "text": "Jetzt weiter wie in „Terminansicht 8“: Zone wählen, Zettel ausfüllen, Behandlung beenden."
+    }
+   ],
+   "hint": {
+    "text": "Die eingereichte Sitzungsbestätigung steht danach im Kundenprofil unter **Dokumente** und in der Formular-Historie der linken Spalte — mit Datum und Termin."
+   }
+  }
+ ]
+}

@@ -143,6 +143,7 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | 7 | Direkt behandeln nach Vertragsabschluss + Termin beenden (Kasse, Folgetermin, Notiz) | Session-Kachel / Beenden-Ablauf | **Terminansicht 6 – Direkt behandeln & Termin beenden** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
 | 8 | Probleme & Fehlermeldungen (Nachschlagewerk, 3 Tabellen) | alle | **Terminansicht 7 – Probleme & Fehlermeldungen** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
 | 9 | Bestandskundin: Behandlungstermin starten, **Einstellungszettel pflegen**, Folgetermin, beenden | Termin-Detailseite | **Terminansicht 8 – Behandlungstermin & Einstellungszettel** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
+| 9a | Behandlungstermin: Sitzungsbestätigung als Pflichtformular vor jeder Behandlung (sperrt den Einstellungszettel) | Termin-Detailseite › Session › Formulare | **Terminansicht 10 – Sitzungsbestätigung** (v1.0) | 🟠 Texte v1.0, Screenshots folgen (Staging-Behandlungstermin nötig) |
 | 10 | Zusatz-Service hinzubuchen, Kein-Verkauf erfassen (nach Umsetzung Asana 1218245871472844) | Termin-Detailseite | offen | ⬜ |
 | 11 | Folgetermin planen (ideale Slots), Termin verlegen | Termin-Detailseite / Buchungsseite | teilweise **Terminansicht 9** (Buchen); Verlegen offen | 🟠 teilweise |
 | 12 | Google-Bewertung per WhatsApp anfragen | Termin-Detailseite Sidebar | offen | ⬜ |
@@ -423,7 +424,7 @@ gedacht ist.
 
 ---
 
-## Gesamtübersicht — 99 Dokumente in 15 Serien (Stand 18.09.2026)
+## Gesamtübersicht — 100 Dokumente in 15 Serien (Stand 18.09.2026)
 
 **18.09.2026:** Der Laser wurde aus Betrieb 6 herausgelöst und zur eigenen Serie **Laser 1–13** —
 kleinteilig, mit dem Wartungs-Assistenten in vier Dokumenten (Flow Maintenance mit 5-Minuten-
@@ -435,7 +436,7 @@ jede Serie bringt ihr Aufnahmeskript mit, aber kein Lauf ist bisher gefahren.
 | Serie | Dokumente | Zielgruppe | Inhalt |
 |---|---|---|---|
 | **Grundlagen** | 1–6 | Institute | Anmelden, Navigation, Standort/Suche/Mitteilungen, Profil, Mobil, glatttBert, Startseite |
-| **Terminansicht** | 1–9 | Institute | Beratungs- und Behandlungstermin von der Ankunft bis zum Abschluss, Termin buchen |
+| **Terminansicht** | 1–10 | Institute | Beratungs- und Behandlungstermin von der Ankunft bis zum Abschluss, Termin buchen, Sitzungsbestätigung (Pflichtformular vor jeder Behandlung) |
 | **Kundenverwaltung** | 1–6 | Institute | Das Kundenprofil mit seinen zehn Reitern |
 | **Bonus-Board** | 1–5 | Institute, Leitung, Büro | Eigener Bonus, Challenges, Leitungssicht, Regeln, Monatsabschluss |
 | **Verkauf** | 1–4 | Büro | Preislisten, Freunde werben, Gutscheine, Zufriedenheitsbefragung |

@@ -9,8 +9,8 @@
  "subtitle": "Klickanleitung für Bestandskundinnen — Behandlungstermin starten, Einstellungen je Körperzone erfassen, Termin beenden",
  "eyebrow": "Terminansicht · Behandlungstermin",
  "footerArea": "Terminansicht",
- "stand": "08.09.2026",
- "version": "1.1",
+ "stand": "18.09.2026",
+ "version": "1.2",
  "notes": [
   "Der Einstellungszettel wird **bei jeder Behandlung** gepflegt — je Zone Laserkopf, Hauttyp, Haar, empfohlene und genutzte Werte.",
   "Frühere Werte der Kundin stehen im Formular als **Historie** — beim nächsten Termin sind sie sofort sichtbar."
@@ -46,7 +46,7 @@
     {
      "n": 3,
      "title": "Kachel „Formulare“",
-     "text": "Zeigt die Formulare der Kundin — nach einem Verkauf sind sie bereits erledigt (grüner Haken)."
+     "text": "Zeigt die Formulare der Kundin. Vor jeder Behandlung steht hier die **Sitzungsbestätigung** als Pflichtformular — solange sie fehlt, bleibt der Einstellungszettel gesperrt („Terminansicht 10“)."
     }
    ],
    "hint": {
@@ -226,5 +226,5 @@
  ],
  "series": "Terminansicht",
  "nr": 8,
- "of": 9
+ "of": 10
 }
