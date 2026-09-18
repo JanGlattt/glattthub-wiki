@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den Formular-Editor im glatttHub — Felder anordnen, Regeln setzen, Vertrag und SEPA einbauen",
  "eyebrow": "Betrieb · Formular-Editor",
  "footerArea": "Betrieb",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "18.09.2026",
+ "version": "1.1",
  "notes": [
   "Die Formulare sind **Daten, kein Code** — Kundeninformation, Behandlungsvertrag und SEPA-Mandat entstehen alle hier.",
   "Ein Formular mit **Vertrags- oder SEPA-Feld** löst echte Vorgänge aus: Vertrag anlegen, Mandat einrichten, Kauf in Phorest.",

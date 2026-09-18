@@ -53,8 +53,29 @@ const PLAN = [
       // Erstes Feld auf der Arbeitsfläche anklicken, damit die Einstellungsspalte es zeigt
       await page.evaluate(() => { const f = [...document.querySelectorAll('.form-editor-field')].find(e => e.offsetParent !== null); if (f) f.click(); });
       await L.wait(page, 1200);
-      await L.scrollToText(page, 'label, h3, h4, summary, .form-glattt-label, span', 'Bedingte Anzeige', 200);
-    }]] },
+      // „Bedingte Anzeige" steckt in der feststehenden Einstellungsspalte (eigener Scrollbereich):
+      // die Spalte selbst rollen, das Fenster bleibt am Kopf des Editors — window.scrollTo würde
+      // stattdessen die Formular-Einstellungen unter der Arbeitsfläche ins Bild holen.
+      const ok = await page.evaluate(() => {
+        const el = [...document.querySelectorAll('.form-editor-settings .toggle-glattt-label')].find(e => e.offsetParent !== null && e.textContent.trim().startsWith('Bedingte Anzeige'));
+        if (!el) return false;
+        // Schalter einschalten (nur in der Ansicht, nichts wird gespeichert), damit die Regel-Karte zu sehen ist
+        const input = el.closest('.toggle-glattt-wrapper')?.querySelector('input[type="checkbox"]');
+        if (input && !input.checked) input.click();
+        const panel = el.closest('.form-editor-settings');
+        const layout = document.querySelector('.form-editor-layout');
+        window.scrollTo({ top: Math.max(0, layout.getBoundingClientRect().top + window.scrollY - 24), behavior: 'instant' });
+        return true;
+      });
+      await L.wait(page, 800);
+      await page.evaluate(() => {
+        const el = [...document.querySelectorAll('.form-editor-settings .toggle-glattt-label')].find(e => e.offsetParent !== null && e.textContent.trim().startsWith('Bedingte Anzeige'));
+        const panel = el.closest('.form-editor-settings');
+        panel.scrollTop += el.getBoundingClientRect().top - panel.getBoundingClientRect().top - 140;
+      });
+      if (!ok) console.log('ABSCHNITT FEHLT: Bedingte Anzeige');
+      await L.wait(page, 700);
+    }]], noScroll: true },
   { name: 'b11-einstellungen', url: '/hub/forms', steps: [['loaded'], editor, ['wait', 2500],
     ['scroll', 'h3', 'Dienstleistungen', 160]] },
   // ── Betrieb 4: Formular teilen
