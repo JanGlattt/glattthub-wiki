@@ -8,25 +8,26 @@ const OPEN = process.env.KLICK_MONTH_OPEN || L.MONTH;
 const challengeClip = async (page, needle) => page.evaluate((n) => {
   const c = [...document.querySelectorAll('.card-glattt')]
     .filter(e => e.offsetParent !== null)
-    .find(e => e.textContent.includes(n));
+    .find(e => e.innerText.includes(n));   // innerText: versteckte Untertitel zählen nicht
   if (!c) return null;
   c.dataset.klick = 'ch';
+  c.scrollIntoView({ block: 'center' });   // Karte kann unterhalb des Sichtfensters liegen
   const b = c.getBoundingClientRect();
   return { x: Math.max(0, b.x - 16), y: Math.max(0, b.y - 16), width: b.width + 32, height: b.height + 32 };
-}, needle);
+}, needle).then(async (clip) => { await page.waitForTimeout(500); if (!clip) return clip; return page.evaluate(() => { const b = document.querySelector('[data-klick="ch"]').getBoundingClientRect(); return { x: Math.max(0, b.x - 16), y: Math.max(0, b.y - 16), width: b.width + 32, height: b.height + 32 }; }); });
 
 (async () => {
   const { browser, ctx, page } = await L.launch();
   await L.login(page, ctx);
 
   // ── p1 Challenge-Karte (laufender Monat)
-  await L.openBoard(page, { view: 'employee', month: OPEN }, 3000);
+  await L.openBoard(page, { view: 'own', month: OPEN }, 3000);
   let clip = await challengeClip(page, 'Monats-Challenge');
   if (clip) {
     await L.shot(page, 'p1-challenge-karte', { clip, noScroll: true, marks: [
       { id: 'untertitel', kind: 'badge', n: 1, sel: '[data-klick="ch"] .card-glattt-subtitle', at: 'l' },
-      { id: 'bedingung', kind: 'badge', n: 2, sel: '[data-klick="ch"] .bonus-goal-target', at: 'l' },
-      { id: 'praemie', kind: 'badge', n: 3, sel: '[data-klick="ch"] .bonus-goal-value', at: 'l' },
+      { id: 'bedingung', kind: 'badge', n: 2, sel: '[data-klick="ch"] .bonus-goal-notes', at: 'l' },
+      { id: 'praemie', kind: 'badge', n: 3, sel: '[data-klick="ch"] .badge-glattt', at: 'r' },   // Status-Badge, dort erscheint die Prämie/Platzierung
     ]});
   } else { console.log('Keine Challenge im Monat ' + OPEN + ' — p1 fehlt.'); }
 
@@ -56,7 +57,7 @@ const challengeClip = async (page, needle) => page.evaluate((n) => {
   } else { console.log('Keine Serie sichtbar — p4 fehlt.'); }
 
   // ── p2 Ranking (abgeschlossener Monat: Endstand statt Zwischenstand)
-  await L.openBoard(page, { view: 'employee', month: L.MONTH }, 3000);
+  await L.openBoard(page, { view: 'own', month: L.MONTH }, 3000);
   clip = await challengeClip(page, 'Ranking-Challenge');
   if (clip) {
     await L.shot(page, 'p2-ranking', { clip, noScroll: true, marks: [

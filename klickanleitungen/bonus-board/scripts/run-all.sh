@@ -42,7 +42,7 @@ node - <<'NODE'
 const fs = require('fs');
 const cfg = JSON.parse(fs.readFileSync('mask.json', 'utf8'));
 const meta = fs.readFileSync('meta.json', 'utf8');
-const leaks = (cfg.replace || []).map(([from]) => from).filter(v => v && meta.includes(v));
+const leaks = (cfg.replace || []).map(([from]) => from).filter(v => v && !/^0+$/.test(v) && meta.includes(v));   // reine Null-Platzhalter treffen sonst Koordinaten wie 27.7500000
 console.log(leaks.length ? '!!! ECHTE WERTE IN meta.json: ' + leaks.join(', ') + ' — nicht committen!' : '### meta.json ist frei von den maskierten Werten');
 NODE
 

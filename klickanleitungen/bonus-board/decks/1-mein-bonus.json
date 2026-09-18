@@ -10,8 +10,8 @@
  "subtitle": "Klickanleitung für das Bonus-Board im glatttHub — was gesichert ist, was noch fehlt und wie das Institut steht",
  "eyebrow": "Bonus-Board · Mein Board",
  "footerArea": "Bonus-Board",
- "stand": "17.09.2026",
- "version": "1.1",
+ "stand": "18.09.2026",
+ "version": "1.2",
  "notes": [
   "Das Board rechnet **live mit**: Jede verkaufte Körperzone ist am nächsten Tag zu sehen.",
   "**Gesichert ist nicht dasselbe wie aktueller Stand** — der Unterschied sind Verträge, bei denen ein Widerruf offen ist.",
@@ -32,18 +32,18 @@
    "steps": [
     {
      "n": 1,
-     "title": "Monat wählen",
-     "text": "Standard ist der **laufende Monat**. Über die Auswahl lassen sich auch vergangene Monate ansehen."
+     "title": "Laufender Monat",
+     "text": "Das Board zeigt immer den **laufenden Monat** — er steht im Untertitel. Vergangene Monate sieht nur, wer die Leitungs-Sicht hat („Bonus-Board 3“)."
     },
     {
      "n": 2,
-     "title": "Zustandszeile lesen",
-     "text": "Auf Telefon und Tablet steht dort, was gerade gilt — etwa **„September 2026 · Mein Board“**. Ein Tippen klappt die Werkzeuge auf."
+     "title": "Erklärung öffnen",
+     "text": "Das **Info-Symbol** rechts oben öffnet die Erklärung zu Begriffen wie *gesichert*, *unter Vorbehalt* und *Hochrechnung*."
     },
     {
      "n": 3,
      "title": "„Mein Board“",
-     "text": "Die eigene Sicht. Wer zusätzlich **„Mein Institut“** (Standortleitung) oder **„Management“** (Büro) sieht, hat ein Recht für die Leitungs-Sicht („Bonus-Board 3“)."
+     "text": "Die eigene Sicht. Wer zusätzlich **„Mein Institut“** (Standortleitung) oder **„Management“** (Büro) sieht, hat ein Recht für die Leitungs-Sicht — erst dann erscheinen oben Monatsauswahl und Umschalter."
     }
    ],
    "notes": [

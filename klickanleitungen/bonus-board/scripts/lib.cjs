@@ -22,7 +22,7 @@ const launch = (opts = {}) => S.launch({
 });
 
 /** Bonus-Board öffnen, Monat setzen und auf die geladenen Daten warten. */
-async function openBoard(page, { view = 'employee', month = MONTH } = {}, ms = 2500) {
+async function openBoard(page, { view = 'own', month = MONTH } = {}, ms = 2500) {
   await S.goto(page, '/hub/bonus', 1200);
   await page.waitForFunction(() => window.B && window.B(), null, { timeout: 30000 });
   await page.evaluate(([m, v]) => { const b = window.B(); b.month = m; b.view = v; }, [month, view]);

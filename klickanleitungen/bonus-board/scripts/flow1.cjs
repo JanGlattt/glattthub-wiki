@@ -9,11 +9,11 @@ const OPEN = process.env.KLICK_MONTH_OPEN || L.MONTH;   // laufender Monat: Hoch
   await L.login(page, ctx);
 
   // ── o1 Kopf des Boards (laufender Monat, damit Hochrechnung und Zustandszeile stimmen)
-  await L.openBoard(page, { view: 'employee', month: OPEN }, 3000);
+  await L.openBoard(page, { view: 'own', month: OPEN }, 3000);
+  // Ohne Leitungs-Recht gibt es weder Monatsauswahl noch Umschalter — das Board zeigt den laufenden Monat.
   await L.shot(page, 'o1-board-kopf', { marks: [
-    { id: 'monat', kind: 'badge', n: 1, sel: '.dropdown-glattt', at: 'l' },
-    { id: 'zustand', kind: 'badge', n: 2, sel: '.page-header-glattt-state', at: 'l' },
-    { id: 'umschalter', kind: 'chip', label: 'Ansicht wechseln', sel: '.segmented-control-glattt', at: 'l' },
+    { id: 'monat', kind: 'badge', n: 1, sel: '.page-header-glattt .site-second-line, .page-header-glattt p', at: 'l' },
+    { id: 'info', kind: 'badge', n: 2, sel: '.btn-glattt-info-trigger', at: 'l' },
   ]});
 
   // ── o2 Kennzahlen-Zeile
@@ -29,9 +29,10 @@ const OPEN = process.env.KLICK_MONTH_OPEN || L.MONTH;   // laufender Monat: Hoch
   // ── o3 Eine Ziel-Karte (die erste Karte des Rasters, ohne Challenge-Untertitel)
   await L.scrollTo(page, '.bonus-board-grid', 'start');
   const card = await page.evaluate(() => {
+    // innerText statt textContent: der Challenge-Untertitel steckt versteckt in jeder Karte
     const c = [...document.querySelectorAll('.bonus-board-grid > .card-glattt')]
       .filter(e => e.offsetParent !== null)
-      .find(e => !e.textContent.includes('Monats-Challenge'));
+      .find(e => !e.innerText.includes('Monats-Challenge'));
     if (!c) return null;
     c.dataset.klick = 'ziel';
     const b = c.getBoundingClientRect();
@@ -41,9 +42,9 @@ const OPEN = process.env.KLICK_MONTH_OPEN || L.MONTH;   // laufender Monat: Hoch
     await L.shot(page, 'o3-zielkarte', { clip: card, noScroll: true, marks: [
       { id: 'status', kind: 'badge', n: 1, sel: '[data-klick="ziel"] .badge-glattt', at: 'r' },
       { id: 'wert', kind: 'badge', n: 2, sel: '[data-klick="ziel"] .bonus-goal-value', at: 'l' },
-      { id: 'balken', kind: 'badge', n: 3, sel: '[data-klick="ziel"] .bonus-progress-glattt', at: 'l' },
-      { id: 'praemie', kind: 'badge', n: 4, sel: '[data-klick="ziel"] .bonus-praise-glattt', at: 'l' },
-      { id: 'rahmen', kind: 'frame', color: 'teal', sel: '[data-klick="ziel"] .bonus-progress-glattt' },
+      { id: 'balken', kind: 'badge', n: 3, sel: '[data-klick="ziel"] .bonus-bar-glattt', at: 'l' },
+      { id: 'praemie', kind: 'badge', n: 4, sel: '[data-klick="ziel"] .bonus-goal-notes', at: 'l' },   // Hinweiszeile: hier steht die Prämie, sobald „Erreicht"
+      { id: 'rahmen', kind: 'frame', color: 'teal', sel: '[data-klick="ziel"] .bonus-bar-glattt' },
     ]});
   } else {
     console.log('KARTE FEHLT: keine Ziel-Karte ohne Challenge — anderen Monat oder Zugang wählen.');
@@ -59,8 +60,8 @@ const OPEN = process.env.KLICK_MONTH_OPEN || L.MONTH;   // laufender Monat: Hoch
   const team = await L.clipOf(page, '[data-klick="team"]', 16);
   await L.shot(page, 'o4-dein-institut', { clip: team, noScroll: true, marks: [
     { id: 'kpz', kind: 'badge', n: 1, sel: '[data-klick="team"] .bonus-goal-value', at: 'l' },
-    { id: 'ziel', kind: 'badge', n: 2, sel: '[data-klick="team"] .bonus-goal-target', at: 'l' },
-    { id: 'balken', kind: 'frame', color: 'teal', sel: '[data-klick="team"] .bonus-progress-glattt' },
+    { id: 'ziel', kind: 'badge', n: 2, sel: '[data-klick="team"] .bonus-bar-label-target', at: 'l' },
+    { id: 'balken', kind: 'frame', color: 'teal', sel: '[data-klick="team"] .bonus-bar-glattt' },
   ]});
 
   await browser.close();
