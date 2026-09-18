@@ -56,8 +56,8 @@ kbd{font:inherit;font-size:11px;border:1px solid var(--line-2);border-bottom-wid
 .top{position:sticky;top:0;z-index:40;height:var(--top-h);display:flex;align-items:center;gap:10px;padding:0 16px;
   background:var(--bg);border-bottom:1px solid var(--line);box-shadow:var(--shadow-sm)}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);font-weight:700;white-space:nowrap}
-.brand img{display:block;height:28px;width:auto}
-.brand span{font-size:15px}
+.brand img{display:block;width:32px;height:32px;border-radius:50%}
+.brand span{font-size:17px;letter-spacing:-.01em}
 .top-btn{width:40px;height:40px;border:0;background:transparent;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-2);flex:0 0 auto}
 .top-btn:hover{background:var(--hover);color:var(--text)}
 .top-btn svg{width:22px;height:22px}

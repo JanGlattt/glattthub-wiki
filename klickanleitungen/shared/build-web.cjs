@@ -32,7 +32,7 @@ fs.mkdirSync(assetsOut, { recursive: true });
 fs.mkdirSync(shotsOut, { recursive: true });
 
 // Gestaltung und Skripte des Portals — eine Kopie je Build, keine Abhängigkeit zur Laufzeit
-for (const f of ['portal.css', 'portal.js', 'suche.js', 'suche-kern.js', 'logo.png', 'Lato-Regular.woff2', 'Lato-Bold.woff2']) {
+for (const f of ['portal.css', 'portal.js', 'suche.js', 'suche-kern.js', 'logo.png', 'icon.png', 'Lato-Regular.woff2', 'Lato-Bold.woff2']) {
   fs.copyFileSync(path.join(__dirname, 'assets', f), path.join(assetsOut, f));
 }
 const miniSearch = path.join(__dirname, '..', 'node_modules', 'minisearch', 'dist', 'umd', 'index.js');
@@ -103,14 +103,14 @@ function shell({ title, body, nav, bodyClass = '' }) {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${D.esc(title)} · glatttHub Nutzerhandbuch</title>
 <meta name="robots" content="noindex,nofollow">
-<link rel="icon" href="/assets/logo.png">
+<link rel="icon" href="/assets/icon.png">
 <link rel="stylesheet" href="/assets/portal.css">
 <script>try{var t=localStorage.getItem('portal-theme');if(t==='dark'||t==='light'){document.documentElement.dataset.theme=t;}}catch(e){}</script>
 </head><body class="portal ${bodyClass}">
 <a class="skip" href="#inhalt">Zum Inhalt springen</a>
 <header class="top">
   <button type="button" class="top-btn top-menu" data-nav-toggle aria-label="Navigation öffnen" aria-controls="nav" aria-expanded="false">${ICON.menu}</button>
-  <a class="brand" href="/"><img src="/assets/logo.png" alt="glattt" width="84"><span>Nutzerhandbuch</span></a>
+  <a class="brand" href="/" aria-label="glatttHub Nutzerhandbuch — Startseite"><img src="/assets/icon.png" alt="" width="32" height="32"><span>glatttHub</span></a>
   <button type="button" class="top-search" data-search-open>${ICON.search}<span>Wonach suchst du?</span><kbd>⌘K</kbd></button>
   <button type="button" class="top-btn" data-theme-toggle aria-label="Hell oder dunkel" title="Hell oder dunkel">${ICON.sun}${ICON.moon}</button>
 </header>
