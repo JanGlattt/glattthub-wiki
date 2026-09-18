@@ -101,7 +101,7 @@ const shotNames = (deck) => {
 function shell({ title, body, nav, bodyClass = '' }) {
   return `<!DOCTYPE html><html lang="de"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${D.esc(title)} · Klickanleitungen glatttHub</title>
+<title>${D.esc(title)} · glatttHub Nutzerhandbuch</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" href="/assets/logo.png">
 <link rel="stylesheet" href="/assets/portal.css">
@@ -110,7 +110,7 @@ function shell({ title, body, nav, bodyClass = '' }) {
 <a class="skip" href="#inhalt">Zum Inhalt springen</a>
 <header class="top">
   <button type="button" class="top-btn top-menu" data-nav-toggle aria-label="Navigation öffnen" aria-controls="nav" aria-expanded="false">${ICON.menu}</button>
-  <a class="brand" href="/"><img src="/assets/logo.png" alt="glattt" width="84"><span>Klickanleitungen</span></a>
+  <a class="brand" href="/"><img src="/assets/logo.png" alt="glattt" width="84"><span>Nutzerhandbuch</span></a>
   <button type="button" class="top-search" data-search-open>${ICON.search}<span>Wonach suchst du?</span><kbd>⌘K</kbd></button>
   <button type="button" class="top-btn" data-theme-toggle aria-label="Hell oder dunkel" title="Hell oder dunkel">${ICON.sun}${ICON.moon}</button>
 </header>
@@ -230,8 +230,8 @@ function seriesCards(guides) {
 }
 function indexBody(guides) {
   return `<section class="hero">
-  <h1>Wie ging das nochmal?</h1>
-  <p>Schritt für Schritt durch den glatttHub — mit Bildern aus dem echten Hub. Suche nach einer Aufgabe, einer Beschriftung oder einem Fenster; Tippfehler sind erlaubt.</p>
+  <h1>glatttHub Nutzerhandbuch</h1>
+  <p>Alle Anleitungen für den glatttHub — Schritt für Schritt, mit Bildern aus dem echten Hub. Suche nach einer Aufgabe, einer Beschriftung oder einem Fenster; Tippfehler sind erlaubt.</p>
   <button type="button" class="hero-search" data-search-open>${ICON.search}<span>Zum Beispiel „Rate pausieren", „Kundin finden" oder „Termin abschließen"</span></button>
   <div class="chips" data-audience-filter role="group" aria-label="Für wen">
     <button type="button" class="chip-btn" data-aud="">Alle</button>
@@ -349,7 +349,7 @@ function seriesBody(name, list) {
 
   // Startseite, Fehlerseite, Manifest
   fs.writeFileSync(path.join(outRoot, 'index.html'), shell({
-    title: 'Übersicht', bodyClass: 'is-home', nav: navHtml(loaded, '/'), body: indexBody(loaded),
+    title: 'Alle Anleitungen', bodyClass: 'is-home', nav: navHtml(loaded, '/'), body: indexBody(loaded),
   }));
   fs.writeFileSync(path.join(outRoot, '404.html'), shell({
     title: 'Nicht gefunden', nav: navHtml(loaded, ''),

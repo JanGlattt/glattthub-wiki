@@ -1,4 +1,4 @@
-# Klickanleitungen-Portal (hilfe.hub.glattt.com)
+# Nutzerhandbuch — das Klickanleitungen-Portal (hilfe.hub.glattt.com)
 
 Das Portal ist die Anlaufstelle für Mitarbeiterinnen, die nochmal nachsehen wollen, wie etwas
 im glatttHub geht: 99 Anleitungen in 15 Serien, Vorgang für Vorgang, mit Bildern aus dem echten
@@ -11,7 +11,7 @@ statische Seite hinter IAP plus Viewer plus Kontexthilfe im Hub.
 
 ### Rein kommen
 
-- Adresse: **https://hilfe.hub.glattt.com** — Anmeldung mit dem Firmen-Google-Konto, wie beim Hub.
+- Adresse: **https://hilfe.hub.glattt.com** — Anmeldung mit dem Firmen-Google-Konto, wie beim Hub. Das Portal heißt für die Nutzerinnen **glatttHub Nutzerhandbuch** (Seitentitel, Kopfzeile, Startseite; seit 18.09.2026).
 - Aus dem Hub heraus:
   - **Buch-Symbol** im Seitenkopf (neben dem Fragezeichen) öffnet die Anleitung zur aktuellen Seite.
   - **Seitenleiste unten** (neben glatttBert und dem Theme-Umschalter): Buch-Symbol → Portal-Startseite.
