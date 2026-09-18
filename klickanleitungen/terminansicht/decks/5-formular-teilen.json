@@ -9,10 +9,10 @@
  "subtitle": "Klickanleitung für „Formular teilen“ — die Kundin füllt das Formular selbst auf ihrem Handy oder einem zweiten Tablet aus",
  "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
- "stand": "08.09.2026",
- "version": "1.1",
+ "stand": "19.09.2026",
+ "version": "1.2",
  "notes": [
-  "Der Link ist **48 Stunden gültig** und kann **nur einmal** verwendet werden. Bereits eingetragene Werte werden mitgegeben.",
+  "Der Link ist **48 Stunden gültig** und kann **nur einmal** verwendet werden. Bereits eingetragene Werte werden mitgegeben. Versand **per E-Mail, WhatsApp oder SMS** — oder nur kopieren.",
   "Funktioniert für jedes Formular — sinnvoll vor allem bei der **Kundeninformation**, während die Mitarbeiterin den Vertrag vorbereitet."
  ],
  "pages": [
@@ -43,27 +43,26 @@
     {
      "n": 1,
      "title": "Empfänger Name (optional)",
-     "text": "Erscheint der Kundin als Anrede."
+     "text": "Für die Anrede in der Nachricht. Name, E-Mail und Handynummer der Kundin sind aus Phorest vorgeschlagen."
     },
     {
      "n": 2,
-     "title": "Empfänger E-Mail (optional)",
-     "text": "Mit dem Schalter **„Link per E-Mail senden“** bekommt die Kundin den Link direkt zugeschickt."
+     "title": "„Link senden per“",
+     "text": "**Nur Link** (zum Kopieren), **E-Mail**, **WhatsApp** oder **SMS**. Je nach Wahl erscheint das Feld für die E-Mail-Adresse oder die Handynummer."
     },
     {
      "n": 3,
      "title": "Feldberechtigungen",
-     "text": "Aufklappen und einzelne Felder **sperren**, die die Kundin nicht ändern soll (z. B. Kundennummer). „Alle sperren“ / „Alle freigeben“ als Abkürzung."
+     "text": "Aufklappen und Felder sperren, die die Kundin nur lesen, aber nicht ändern soll — z. B. Name und Kundennummer."
     },
     {
      "n": 4,
      "title": "„Link erstellen“",
-     "text": "Erzeugt den Link. Vorher speichert der Hub den aktuellen Stand des Formulars als Entwurf."
+     "text": "Erzeugt den Link und verschickt ihn sofort auf dem gewählten Weg. Klappt WhatsApp nicht (keine Vorlage für den Standort), weicht der Hub auf E-Mail bzw. SMS aus und sagt das."
     }
    ],
    "hint": {
-    "kind": "warn",
-    "text": "Ist **„Link erstellen“ ausgegraut**, fehlt der Kundenbezug: Das Formular muss **aus einem Termin heraus** geöffnet sein, sonst kann daraus kein Vertrag entstehen."
+    "text": "**WhatsApp** braucht je Standort einen Superchat-Kanal und eine von Meta genehmigte Vorlage (Admin → Formular-Links). Die E-Mail kommt im gewohnten glattt-Design wie die Terminerinnerung."
    }
   },
   {
@@ -125,5 +124,5 @@
  ],
  "series": "Terminansicht",
  "nr": 5,
- "of": 10
+ "of": 11
 }

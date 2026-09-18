@@ -1,0 +1,259 @@
+{
+ "out": "../pdf/Terminansicht-11-Erlaubnis-Minderjaehrige",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Terminansicht",
+ "nr": 11,
+ "of": 11,
+ "audience": "institut",
+ "title": [
+  "Erlaubnis Minderjährige —",
+  "Eltern unterschreiben"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — wenn eine Kundin unter 18 ist: die Erlaubnis der Sorgeberechtigten einholen, vor Ort oder per Link an den zweiten Elternteil",
+ "eyebrow": "Terminansicht · Minderjährige Kundin",
+ "footerArea": "Terminansicht",
+ "stand": "19.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Ist die Kundin **am Termintag unter 18**, hängt der Hub das Formular **„Erlaubnis Minderjährige“** automatisch an den Termin — bei jeder Dienstleistung. Ohne diese Erlaubnis bleibt der **Einstellungszettel gesperrt**.",
+  "Bei **gemeinsamer Sorge** müssen **beide** Elternteile unterschreiben. Ist nur einer da, bekommt der andere einen **Link per E-Mail** und unterschreibt seinen Teil dort — erst dann ist das Formular vollständig.",
+  "Die Erlaubnis gilt **einmalig je Kundin**: Beim nächsten Termin fragt der Hub nicht erneut."
+ ],
+ "pages": [
+  {
+   "h1": "Minderjährige Kundin erkennen",
+   "sub": "Der Hub prüft das Geburtsdatum aus Phorest und zeigt es in der Kundenkarte an. Fehlt es, kann er nicht prüfen — und sagt das.",
+   "card": {
+    "title": "Erkennen",
+    "text": "Abzeichen in der Kundenkarte, Pflicht-Kachel, fehlendes Geburtsdatum"
+   },
+   "left": {
+    "shot": "v1-kundin-minderjaehrig"
+   },
+   "leftCaption": "Termin einer 16-jährigen Kundin: Abzeichen „Minderjährig (16)“ in der Kundenkarte, in der Formularliste die Kachel „Erlaubnis Minderjährige“ mit „Pflicht · minderjährig“.",
+   "right": {
+    "shot": "v0-geburtsdatum-fehlt",
+    "cls": "compact"
+   },
+   "rightCaption": "Ohne Geburtsdatum in Phorest steht dort „Geburtsdatum fehlt“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Minderjährig (16)“",
+     "text": "Steht in der Kundenkarte, sobald die Kundin am Termintag unter 18 ist. Das Alter kommt aus dem Geburtsdatum in Phorest."
+    },
+    {
+     "n": 2,
+     "title": "Kachel „Erlaubnis Minderjährige“",
+     "text": "Erscheint in der Formularliste **bei jeder Dienstleistung** mit dem gelben Abzeichen **„Pflicht · minderjährig“** — und sperrt den Einstellungszettel, bis sie ausgefüllt ist."
+    },
+    {
+     "n": 3,
+     "title": "„Geburtsdatum fehlt“",
+     "text": "Kennt Phorest kein Geburtsdatum, kann der Hub das Alter nicht prüfen. Dann zuerst die **Kundeninformation** ausfüllen: Sie trägt das Geburtsdatum in Phorest nach, danach erscheint die Erlaubnis von selbst."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Ein fehlendes Geburtsdatum gilt nie als „volljährig“.** Wer eine junge Kundin vor sich hat und den Hinweis „Geburtsdatum fehlt“ sieht, trägt das Datum nach — sonst fehlt am Ende die Erlaubnis."
+   }
+  },
+  {
+   "h1": "Kind und erste Person eintragen",
+   "sub": "Abschnitt 1 ist aus Phorest vorbefüllt. In Abschnitt 2 trägt sich der anwesende Elternteil ein und sagt, wem die Sorge zusteht.",
+   "card": {
+    "title": "Ausfüllen",
+    "text": "Abschnitt 1 prüfen, Verhältnis, Sorge, Wahl für die zweite Person"
+   },
+   "left": {
+    "shot": "v2-formular-oben"
+   },
+   "leftCaption": "Oben: die Angaben zum Kind, aus Phorest vorbefüllt.",
+   "right": {
+    "shot": "v3-sorge-wahl"
+   },
+   "rightCaption": "Unten: „beiden Elternteilen gemeinsam“ blendet die Wahl für die zweite Person ein.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Abschnitt 1 prüfen",
+     "text": "Vorname, Nachname, Kundennummer und Geburtsdatum des Kindes kommen aus Phorest — nur kontrollieren."
+    },
+    {
+     "n": 2,
+     "title": "Verhältnis wählen",
+     "text": "**Mutter**, **Vater**, **Vormund/Pfleger** oder **Sonstiges** (mit Erläuterung)."
+    },
+    {
+     "n": 3,
+     "title": "Wem steht die Sorge zu?",
+     "text": "**„mir allein“**: eine Unterschrift genügt, die Erklärung reicht. **„beiden Elternteilen gemeinsam“**: die zweite Person muss ebenfalls unterschreiben."
+    },
+    {
+     "n": 4,
+     "title": "Die zweite Person …",
+     "text": "**„ist anwesend und unterschreibt jetzt“** oder **„bekommt einen Link“**. Vorausgewählt ist der Link — meist ist nur ein Elternteil da. Darunter der Weg: **E-Mail, WhatsApp oder SMS**."
+    },
+    {
+     "n": 5,
+     "title": "E-Mail oder Handynummer",
+     "text": "Für E-Mail die Adresse, für WhatsApp und SMS die Handynummer der zweiten Person. Mit dem Elternteil gemeinsam prüfen — ein Tippfehler, und der Link kommt nie an."
+    }
+   ],
+   "hint": {
+    "text": "WhatsApp funktioniert erst, wenn der Standort im Admin einen Kanal und eine genehmigte Vorlage hat. Klappt ein Weg nicht, weicht der Hub von selbst auf E-Mail bzw. SMS aus — die Meldung nach dem Absenden nennt den tatsächlichen Weg."
+   }
+  },
+  {
+   "h1": "Beide Elternteile sind da",
+   "sub": "Sind beide anwesend, unterschreiben beide direkt am Tablet — dann ist das Formular sofort vollständig.",
+   "card": {
+    "title": "Beide anwesend",
+    "text": "Zweiter Block wird eingeblendet, zwei Unterschriften, fertig"
+   },
+   "left": {
+    "shot": "v4-beide-anwesend"
+   },
+   "leftCaption": "„ist anwesend und unterschreibt jetzt“: Der Block „Information der 2. sorgeberechtigten Person“ wird eingeblendet, unten stehen beide Unterschriftsfelder.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„ist anwesend und unterschreibt jetzt“",
+     "text": "Blendet den Block der zweiten Person ein: Verhältnis, Vorname, Nachname, Geburtsdatum."
+    },
+    {
+     "n": 2,
+     "title": "Beide unterschreiben",
+     "text": "Erst die erste Person, dann die zweite — jede in ihrem Feld. Datum ist vorbelegt."
+    },
+    {
+     "n": 3,
+     "title": "Absenden",
+     "text": "Das Formular ist sofort vollständig, die Kachel bekommt den grünen Haken, der Einstellungszettel ist frei."
+    }
+   ],
+   "hint": {
+    "text": "Die Wahl lässt sich jederzeit umstellen: Wer zuerst „Link“ gewählt hat und die zweite Person kommt doch noch dazu, tippt auf „ist anwesend“ — der Block erscheint, nichts geht verloren."
+   }
+  },
+  {
+   "h1": "Nur ein Elternteil da: Link an den zweiten",
+   "sub": "Der anwesende Elternteil unterschreibt, der Hub schickt dem anderen seinen Teil per E-Mail, WhatsApp oder SMS. Bis er unterschrieben hat, wartet das Formular.",
+   "card": {
+    "title": "Per Link",
+    "text": "Absenden, Meldung, Kachel „1 von 2 Unterschriften“, Link erneut senden"
+   },
+   "left": {
+    "shot": "v5-eingereicht"
+   },
+   "leftCaption": "Nach dem Absenden: „der Link für die zweite Person wurde per E-Mail an … gesendet“.",
+   "right": {
+    "shot": "v6-kachel-wartet"
+   },
+   "rightCaption": "Die Kachel trägt „1 von 2 Unterschriften“; ein Tipp darauf zeigt Empfängerin und Datum und bietet „Link erneut senden“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Absenden",
+     "text": "Wie gewohnt unten **„Formular absenden“** — die Felder der zweiten Person sind dabei ausgeblendet."
+    },
+    {
+     "n": 2,
+     "title": "Meldung lesen",
+     "text": "Der Hub bestätigt, **auf welchem Weg und wohin** der Link ging. Stimmt Adresse oder Nummer nicht: Formular erneut ausfüllen — der alte Link verfällt beim nächsten Senden."
+    },
+    {
+     "n": 3,
+     "title": "„1 von 2 Unterschriften“",
+     "text": "Die Kachel bleibt gelb und der **Einstellungszettel gesperrt**, bis die zweite Person über ihren Link unterschrieben hat."
+    },
+    {
+     "n": 4,
+     "title": "„Link erneut senden“",
+     "text": "Kommt nichts an (Spam-Ordner, Tippfehler behoben), schickt dieser Knopf einen neuen Link auf demselben Weg — der alte wird ungültig. Der Link gilt **7 Tage**."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Behandeln ist erst möglich, wenn beide unterschrieben haben.** Den Link deshalb am besten noch im Institut mit dem anwesenden Elternteil verschicken lassen — viele Partner antworten in Minuten."
+   }
+  },
+  {
+   "h1": "So sieht es die zweite Person",
+   "sub": "Der Link öffnet das Formular ohne Anmeldung. Alles, was die erste Person eingetragen hat, ist sichtbar, aber gesperrt — frei ist nur der eigene Teil.",
+   "card": {
+    "title": "Zweite Person",
+    "text": "E-Mail, gesperrte Felder, eigener Teil, Unterschrift"
+   },
+   "left": {
+    "shot": "v7-link-elternteil",
+    "cls": "compact"
+   },
+   "leftCaption": "Der Link auf dem Handy: Hinweis „Ihre Unterschrift wird benötigt“, gesperrte Angaben grau, der eigene Teil gold hervorgehoben.",
+   "right": {
+    "shot": "v8-link-fertig",
+    "cls": "compact"
+   },
+   "rightCaption": "Nach dem Absenden: „vollständig unterschrieben“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Nachricht öffnen",
+     "text": "Per E-Mail: Betreff **„Ihre Unterschrift wird benötigt“**, Knopf **„Formular öffnen & unterschreiben“**. Per WhatsApp oder SMS: der Link steht direkt in der Nachricht. Keine Anmeldung nötig."
+    },
+    {
+     "n": 2,
+     "title": "Angaben prüfen",
+     "text": "Kind, erster Elternteil und Aufklärung sind grau und gesperrt — so wie sie im Institut eingetragen wurden."
+    },
+    {
+     "n": 3,
+     "title": "Eigenen Teil ausfüllen",
+     "text": "**Gold markiert** („Von Ihnen auszufüllen“): Verhältnis, Vorname, Nachname, Geburtsdatum — und die **Unterschrift** mit dem Finger. Am Handy führt der Knopf „Zu meinem Teil“ direkt dorthin."
+    },
+    {
+     "n": 4,
+     "title": "Absenden",
+     "text": "Danach ist das Formular vollständig; im Hub verschwindet das Gelb von selbst. Der Link funktioniert nur **einmal**."
+    }
+   ]
+  },
+  {
+   "h1": "Danach: die Erlaubnis liegt vor",
+   "sub": "Sobald beide unterschrieben haben, ist der Einstellungszettel frei. Die Erlaubnis bleibt im Kundenprofil sichtbar und gilt für alle weiteren Termine.",
+   "card": {
+    "title": "Abschluss",
+    "text": "Schloss weg, Kundenprofil, Gültigkeit"
+   },
+   "left": {
+    "shot": "v9-session-frei"
+   },
+   "leftCaption": "Session-Ansicht nach der zweiten Unterschrift: kein Schloss mehr am Einstellungszettel.",
+   "right": {
+    "shot": "v10-kundenprofil"
+   },
+   "rightCaption": "Kundenprofil: neben dem Geburtsdatum „Minderjährig (16)“, darunter „Erlaubnis Minderjährige — Liegt vor“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Einstellungszettel frei",
+     "text": "Die Kachel hat kein Schloss mehr — die Behandlung kann beginnen. Steht dort noch „1 Pflichtformular offen“, fehlt die zweite Unterschrift noch: Seite neu laden oder die Kachel antippen."
+    },
+    {
+     "n": 2,
+     "title": "Kundenprofil",
+     "text": "Unter **Kunden → Übersicht** zeigt die Zeile „Erlaubnis Minderjährige“, ob sie **vorliegt**, **auf die zweite Unterschrift wartet** oder **fehlt**. Das PDF liegt unter **Dokumente**."
+    },
+    {
+     "n": 3,
+     "title": "Gilt einmalig",
+     "text": "Beim nächsten Termin fragt der Hub nicht erneut. Ab dem 18. Geburtstag verschwindet das Abzeichen und die Erlaubnis wird nicht mehr verlangt."
+    }
+   ],
+   "hint": {
+    "text": "**Kein PDF-Versand an die Eltern:** Die unterschriebene Erlaubnis liegt im Hub. Möchte ein Elternteil eine Kopie, über **Dokumente** im Kundenprofil das PDF öffnen und weitergeben."
+   }
+  }
+ ]
+}

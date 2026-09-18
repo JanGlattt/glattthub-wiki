@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für die Formulare im glatttHub — Link an die Kundin, eingereichte Formulare lesen, PDF holen",
  "eyebrow": "Betrieb · Formulare im Einsatz",
  "footerArea": "Betrieb",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "19.09.2026",
+ "version": "1.1",
  "notes": [
   "Ein geteiltes Formular füllt die Kundin **selbst auf ihrem Gerät** aus — der Link gilt **48 Stunden**.",
   "Ausgefüllte Formulare landen im **Kundenprofil, Reiter Dokumente** („Kundenverwaltung 6“).",
@@ -45,8 +45,8 @@
     },
     {
      "n": 3,
-     "title": "Oder per E-Mail",
-     "text": "Der Hub verschickt den Link an die hinterlegte Adresse."
+     "title": "Per E-Mail, WhatsApp, SMS",
+     "text": "**„Link senden per“**: Nur Link, E-Mail, WhatsApp oder SMS — dann E-Mail-Adresse bzw. Handynummer eintragen. Der Versand passiert beim „Link erstellen“; die Mail kommt im glattt-Design."
     },
     {
      "n": 4,

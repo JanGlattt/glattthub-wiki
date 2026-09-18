@@ -13,12 +13,13 @@
  "subtitle": "Klickanleitung für den Formular-Editor im glatttHub — Felder anordnen, Regeln setzen, Vertrag und SEPA einbauen",
  "eyebrow": "Betrieb · Formular-Editor",
  "footerArea": "Betrieb",
- "stand": "18.09.2026",
- "version": "1.1",
+ "stand": "19.09.2026",
+ "version": "1.2",
  "notes": [
   "Die Formulare sind **Daten, kein Code** — Kundeninformation, Behandlungsvertrag und SEPA-Mandat entstehen alle hier.",
   "Ein Formular mit **Vertrags- oder SEPA-Feld** löst echte Vorgänge aus: Vertrag anlegen, Mandat einrichten, Kauf in Phorest.",
-  "**Zuordnung über Dienstleistungen:** Welches Formular im Termin erscheint, entscheidet der gebuchte Service."
+  "**Zuordnung über Dienstleistungen:** Welches Formular im Termin erscheint, entscheidet der gebuchte Service.",
+  "**Zwei neue Schalter seit 19.09.2026:** „Nur bei minderjährigen Kundinnen“ und die Card „Mitunterzeichner“ für Formulare mit zwei Unterschriften."
  ],
  "pages": [
   {
@@ -147,8 +148,8 @@
     },
     {
      "n": 2,
-     "title": "Häufigkeit",
-     "text": "**„Einmalig pro Kunde“** (z. B. Kundeninformation) oder **„Bei jedem Termin neu“**."
+     "title": "Pflicht und Häufigkeit",
+     "text": "**„Pflichtformular vor Behandlung“** sperrt den Einstellungszettel. Gültigkeit **„Einmalig pro Kunde“** (z. B. Kundeninformation) oder **„Bei jedem Termin neu“**."
     },
     {
      "n": 3,
@@ -175,6 +176,62 @@
     "kind": "warn",
     "text": "**Die Reihenfolge der Formular-Kette ist erzwungen:** Kundeninformation → Behandlungsvertrag → SEPA-Mandat. Wer ein neues Vertrags- oder SEPA-Formular baut, ordnet es denselben Dienstleistungen zu — sonst erscheint es im Termin an der falschen Stelle oder gar nicht."
    }
+  },
+  {
+   "h1": "Minderjährige und Mitunterzeichner",
+   "sub": "Formulare, die nur bei Kundinnen unter 18 erscheinen — und Formulare, die eine zweite Person mitunterschreibt.",
+   "card": {
+    "title": "Minderjährige, zweite Person",
+    "text": "Schalter „Nur bei minderjährigen Kundinnen“, Card „Mitunterzeichner“, Feld-Schalter"
+   },
+   "left": {
+    "shot": "b17-minderjaehrig-schalter"
+   },
+   "leftCaption": "Dienstleistungen-Card mit dem Schalter „Nur bei minderjährigen Kundinnen“ — keine Dienstleistung nötig.",
+   "right": {
+    "shot": "b18-mitunterzeichner"
+   },
+   "rightCaption": "Card „Mitunterzeichner“: Auslöser-Frage, Auslöser-Antwort, E-Mail- und Handy-Feld der zweiten Person.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Nur bei minderjährigen Kundinnen“",
+     "text": "Das Formular erscheint bei **jedem** Termin, sobald die Kundin am Termintag unter 18 ist — unabhängig von der Dienstleistung — und muss vor dem Einstellungszettel ausgefüllt sein. Das Alter kommt aus Phorest."
+    },
+    {
+     "n": 2,
+     "title": "Mitunterzeichner aktivieren",
+     "text": "Für Formulare mit **zwei Unterschriften** (beide Elternteile). Der Schalter schaltet die Card frei."
+    },
+    {
+     "n": 3,
+     "title": "Auslöser-Frage und -Antwort",
+     "text": "Die Frage, deren Antwort den zweiten Teil nötig macht — z. B. „Die elterliche Sorge steht zu“ → „beiden Elternteilen gemeinsam“."
+    },
+    {
+     "n": 4,
+     "title": "E-Mail- und Handy-Feld",
+     "text": "An die E-Mail-Adresse geht der Link per Mail, an die Handynummer per **WhatsApp oder SMS**. Beide Felder gehören zum **Hauptteil** und müssen bei der Auslöser-Antwort sichtbar sein (Bedingte Anzeige). Mindestens eines der beiden ist Pflicht."
+    },
+    {
+     "n": 5,
+     "title": "Felder der zweiten Person markieren",
+     "text": "Jedes Feld, das die zweite Person ausfüllt — Überschrift, Angaben, ihre Unterschrift — bekommt im Feld-Panel den Schalter **„Gehört zur zweiten Person“** („Betrieb 3“, Bild rechts unten)."
+    }
+   ],
+   "rightHint": {
+    "text": "Beim Ausfüllen erscheint unter der Auslöser-Frage die Wahl **„ist anwesend und unterschreibt jetzt“ / „bekommt einen Link per E-Mail“**. Wie das im Termin aussieht: „Terminansicht 11“."
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Das E-Mail-Feld nie als „zweite Person“ markieren** — es muss die erste Person ausfüllen, sonst weiß der Hub nicht, wohin der Link soll. Und die Auslöser-Frage muss im Hauptteil liegen."
+   },
+   "notes": [
+    {
+     "title": "WhatsApp einrichten",
+     "text": "Unter **Admin → Formular-Links (WhatsApp/SMS)** je Standort den Superchat-Kanal und die von Meta genehmigte Vorlage wählen; dort stehen auch die SMS-Texte. Ohne Vorlage weicht der Hub auf E-Mail/SMS aus."
+    }
+   ]
   }
  ]
 }

@@ -24,6 +24,13 @@ const formKnopf = (title) => ['fn', async (page, L) => {
   await L.waitLoaded(page);
 }];
 const editor = formKnopf('Formular bearbeiten');
+// Editor eines bestimmten Formulars (Karte über den Namen finden)
+const editorVon = (name) => ['fn', async (page, L) => {
+  const ok = await page.evaluate((n) => { const card = [...document.querySelectorAll('.card-glattt')].find(c => c.offsetParent !== null && c.textContent.includes(n)); const b = card && [...card.querySelectorAll('button')].find(b => b.getAttribute('title') === 'Formular bearbeiten'); if (!b) return false; b.click(); return true; }, name);
+  if (!ok) console.log('FORMULAR NICHT GEFUNDEN:', name);
+  await L.wait(page, 3500);
+  await L.waitLoaded(page);
+}];
 const vorschau = formKnopf('Formular testen');
 
 const PLAN = [
@@ -78,9 +85,32 @@ const PLAN = [
     }]], noScroll: true },
   { name: 'b11-einstellungen', url: '/hub/forms', steps: [['loaded'], editor, ['wait', 2500],
     ['scroll', 'h3', 'Dienstleistungen', 160]] },
+  // Betrieb 3, Seite 5: Editor des Formulars „Erlaubnis Minderjährige" (Schalter + Mitunterzeichner-Card + Feld-Schalter)
+  { name: 'b17-minderjaehrig-schalter', url: '/hub/forms', steps: [['loaded'], editorVon('Erlaubnis Minderjährige'), ['wait', 2500],
+    ['scroll', 'h3', 'Dienstleistungen', 120]], marks: [
+    { id: 'minor', kind: 'badge', n: 1, sel: '[data-editor-minor-toggle]', at: 'l' },
+  ] },
+  { name: 'b18-mitunterzeichner', url: '/hub/forms', steps: [['loaded'], editorVon('Erlaubnis Minderjährige'), ['wait', 2500],
+    ['scroll', 'h3', 'Mitunterzeichner', 120]], clip: '[data-editor-cosigner-card]', marks: [
+    { id: 'aktiv', kind: 'badge', n: 2, sel: '[data-editor-cosigner-card] .toggle-glattt-wrapper', at: 'l' },
+    { id: 'frage', kind: 'badge', n: 3, ...L.byText('[data-editor-cosigner-card] .form-glattt-hint', 'Die Frage'), at: 'l' },
+    { id: 'mail', kind: 'badge', n: 4, ...L.byText('[data-editor-cosigner-card] .form-glattt-hint', 'An diese Adresse'), at: 'l' },
+  ] },
+  { name: 'b19-zweite-person', url: '/hub/forms', steps: [['loaded'], editorVon('Erlaubnis Minderjährige'), ['wait', 2500],
+    ['fn', async (page, L) => {
+      // Feld „Unterschrift" der zweiten Person wählen und das Panel zum Schalter scrollen
+      await page.evaluate(() => { const f = [...document.querySelectorAll('.form-editor-field')].filter(e => e.offsetParent !== null); const sig = f.filter(e => /Unterschrift/.test(e.textContent)); (sig[sig.length - 1] || f[0])?.click(); });
+      await L.wait(page, 1200);
+      await page.evaluate(() => { const el = [...document.querySelectorAll('.form-editor-settings .toggle-glattt-label')].find(e => e.offsetParent !== null && e.textContent.trim().startsWith('Gehört zur zweiten Person')); const panel = el?.closest('.form-editor-settings'); if (el && panel) { panel.scrollTop += el.getBoundingClientRect().top - panel.getBoundingClientRect().top - 160; } el?.closest('.form-editor-layout')?.scrollIntoView({ block: 'start' }); });
+      await L.wait(page, 800);
+    }]], marks: [
+    { id: 'schalter', kind: 'badge', n: 5, ...L.byText('.form-editor-settings .toggle-glattt-label', 'Gehört zur zweiten Person'), at: 'l' },
+  ] },
   // ── Betrieb 4: Formular teilen
-  { name: 'b12-teilen', url: '/hub/forms', steps: [['loaded'], vorschau, ['wait', 2000], ['click', 'button, a', 'Formular teilen', 1800]], clip: '.modal-glattt' },
-  { name: 'b13-geteiltes-formular', url: '/hub/forms', steps: [['loaded'], vorschau, ['wait', 2000], ['click', 'button, a', 'Formular teilen', 1800],
+  // Der Teilen-Knopf der Vorschau ist ein Symbol-Knopf mit title (kein Text)
+  { name: 'b12-teilen', url: '/hub/forms', steps: [['loaded'], vorschau, ['wait', 2500],
+    ['fn', async (page, L) => { await page.click('button[title="Formular teilen"]'); await L.wait(page, 1800); await page.evaluate(() => { const el = document.querySelector('[x-data^="formFill"]'); if (el) Alpine.$data(el).shareChannel = 'whatsapp'; }); await L.wait(page, 500); }]], clip: '.modal-glattt' },
+  { name: 'b13-geteiltes-formular', url: '/hub/forms', steps: [['loaded'], vorschau, ['wait', 2000], ['fn', async (page, L) => { await page.click('button[title="Formular teilen"]'); await L.wait(page, 1800); }],
     ['click', '.modal-glattt button', 'Link erstellen', 2500],
     ['fn', async (page, L) => {
       const url = await page.evaluate(() => { const i = [...document.querySelectorAll('.modal-glattt input')].find(i => /^https?:/.test(i.value)); return i ? i.value : null; });

@@ -106,6 +106,89 @@ clientseitig in `public/js/appointment-unified.js` (Getter `requiredForms`,
 gegen die Client-Submissions aus `GET /api/forms/submissions/client/{clientId}`, die dafür
 `appointment_id` mitliefern).
 
+### 🧒 Nur bei minderjährigen Kundinnen
+
+**Für Endanwender:** Der zweite Schalter in der Dienstleistungen-Card, **„Nur bei
+minderjährigen Kundinnen"**, hängt ein Formular unabhängig von der Dienstleistung an
+**jeden Termin**, bei dem die Kundin am Termintag **unter 18** ist (z.B. die „Erlaubnis
+Minderjährige" der Sorgeberechtigten). Es zählt dann wie ein Pflichtformular: Der
+Einstellungszettel bleibt gesperrt, bis es vorliegt — der Behandlungsvertrag ist davon
+nicht betroffen (Entscheidung 19.09.2026). Die Gültigkeit (einmalig pro Kunde / bei
+jedem Termin neu) gilt auch hier; für die Erlaubnis ist „einmalig pro Kunde" richtig.
+
+Maßgeblich ist das **Geburtsdatum in Phorest**. Die Terminansicht zeigt in der Kunden-
+Karte **„Minderjährig (16)"** bzw. **„Geburtsdatum fehlt"**, wenn Phorest keines kennt —
+ein fehlendes Datum gilt nie still als volljährig. Trägt die Kundeninformation das Datum
+nach (Phorest-Rückschreibung), lädt die Terminansicht die Kundendaten neu und das Formular
+erscheint sofort. Im Kundenprofil steht neben dem Geburtsdatum dasselbe Abzeichen und je
+Minderjährigen-Formular, ob es **vorliegt**, **auf die zweite Unterschrift wartet** oder
+**fehlt**.
+
+**Für Entwickler:** Spalte `forms.requires_minor` (bool). Die Zuordnung rechnet der
+Getter `matchingForms` in `public/js/appointment-unified.js` (Service-Überschneidung ODER
+`requires_minor && clientIsMinor`), das Alter `clientAgeAtAppointment` aus
+`client.birthDate` am `appointmentDate`. `PhorestController::updateClientData()` verwirft
+seit 19.09.2026 den 10-Minuten-Cache `phorest_client_{id}`, damit ein nachgetragenes
+Geburtsdatum sofort ankommt (`refreshClient()` nach `form-submitted`).
+
+### 👥 Mitunterzeichner — eine zweite Person füllt ihren Teil aus
+
+**Für Endanwender:** Manche Formulare brauchen zwei Unterschriften, z.B. beide
+Elternteile bei gemeinsamer Sorge. In der Editor-Card **„Mitunterzeichner"** wird dafür
+festgelegt:
+
+- die **Auslöser-Frage** und die **Auslöser-Antwort** (z.B. „Die elterliche Sorge steht zu"
+  → „beiden Elternteilen gemeinsam"),
+- das **E-Mail-Feld der zweiten Person** (liegt im Hauptteil, dorthin geht der Link),
+- optional ein **Namensfeld** für die Anrede in der E-Mail.
+
+Jedes Feld, das die zweite Person ausfüllt (ihre Angaben, ihre Unterschrift, die
+Überschrift ihres Abschnitts), bekommt im Feld-Panel den Schalter **„Gehört zur zweiten
+Person"**.
+
+Optional gibt es ein **Handy-Feld der zweiten Person** — dann kann der Link auch per
+**WhatsApp** oder **SMS** gehen (siehe `SHARED-FORM-SYSTEM.md` → „Versandwege").
+
+Beim Ausfüllen erscheint direkt unter der Auslöser-Frage die Wahl **„Die zweite Person …
+ist anwesend und unterschreibt jetzt / bekommt einen Link"**, darunter **„Link senden per
+E-Mail / WhatsApp / SMS"** (nur die Wege, für die es ein Feld gibt; Standard: Link per
+E-Mail, weil oft nur ein Elternteil da ist):
+
+- **Anwesend:** Ihr Teil wird eingeblendet und mit ausgefüllt — eine Einreichung, fertig.
+- **Link:** Ihr Teil bleibt ausgeblendet, der Hauptteil wird eingereicht und die Einreichung
+  **wartet** („Wartet auf zweite Unterschrift"). Die zweite Person bekommt einen Link
+  (**7 Tage** gültig, einmal verwendbar), sieht das komplette Formular — die gesperrten
+  Felder grau, **ihr eigener Teil gold markiert** („Von Ihnen auszufüllen", am Handy mit
+  Sprungknopf „Zu meinem Teil") — füllt nur ihren Teil aus und unterschreibt. Erst dann
+  gilt das Formular als eingereicht, das PDF entsteht mit beiden Unterschriften neu.
+  Schlägt der gewählte Versandweg fehl (z.B. WhatsApp ohne Vorlage), weicht der Hub auf
+  E-Mail bzw. SMS aus; die Meldung nach dem Absenden nennt den tatsächlichen Weg.
+
+In der Terminansicht trägt die Kachel solange **„1 von 2 Unterschriften"**, der
+Einstellungszettel bleibt gesperrt; ein Tipp auf die Kachel zeigt Empfängerin und Datum
+und bietet **„Link erneut senden"** (alter Link verfällt). Beide Eltern bekommen kein PDF
+per Mail (Entscheidung 19.09.2026); die Erklärung „mir allein" reicht ohne Nachweis.
+
+**Für Entwickler:** Formular-Settings `settings.cosigner = {enabled, trigger_field,
+trigger_value, email_field, phone_field, name_field}` (E-Mail- oder Handy-Feld muss es
+geben), Feld-Settings `settings.cosigner_part = true`. Die Wahl reist als Pseudo-Felder
+`fields[_cosigner_mode]` (`now`|`link`) und `fields[_cosigner_channel]`
+(`email`|`whatsapp`|`sms`) mit und landet in `metadata.cosigner_mode` /
+`metadata.cosigner_channel`; der Versand läuft über `FormLinkMessenger`
+(`SHARED-FORM-SYSTEM.md`). Logik in `App\Services\Forms\CosignerService` (`config`,
+`triggered`, `pending`, `initiate`, `remind`, `markCompleted`), JS-Spiegel in
+`form-fill.js`/`shared-form-fill.js` (`cosignerTriggered`, `cosignerPartHidden`,
+`cosignerChooserAfter`). Wartende Einreichung: `form_submissions.status =
+awaiting_cosigner` + `metadata.cosigner {email, token_id, requested_at, reminders}`;
+Teil-Link: `form_share_tokens.part = 'cosigner'`, `target_submission_id`, Kontext mit
+`cosigner_part`, `locked_fields` (alle Nicht-Teil-Felder) und `prefilled_values`
+(inkl. `_cosigner_mode = now`). `SharedFormController::submitCosignerPart()` validiert nur
+sichtbare Teil-Felder, schreibt per `updateOrCreate` in die Ziel-Einreichung und baut das
+PDF neu. Erinnerung: `POST /api/forms/submissions/{id}/cosigner/remind` (Recht
+`fill_forms`, nutzt den zuletzt erfolgreichen Kanal). Mail
+`App\Mail\Forms\CosignerRequestMail` (Vorlage `emails.forms.form-link`, Sie-Anrede,
+gemeinsames Layout `emails.sepa.layout`). Tests: `tests/Feature/CosignerFormTest.php`.
+
 ### 📄 PDF-Export
 - Ausgefüllte Formulare als PDF exportieren
 - Automatische PDF-Generierung nach Formular-Einreichung

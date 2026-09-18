@@ -8,6 +8,9 @@ Standard siehe Wiki `docs/KLICKANLEITUNGEN.md`.
 - `shots/*.jpg` — Screenshots (Staging, Testkundin „Tester Am Testen“ MD000002, Kontaktdaten maskiert)
 - `scripts/` — Playwright-Aufnahmeskripte: `lib.cjs`/`common.cjs` (Login, Screenshot+Marks, Formular-Helfer),
   `flow1..6.cjs` (Ablauf Terminübersicht → Formulare → SEPA → Direkt behandeln → Einstellungszettel),
+  `flow10.cjs` + `flow10b.cjs` + `flow10c.cjs` (Dokument 11: Erlaubnis Minderjährige — trägt der Testkundin
+  ein Geburtsdatum ein, reicht den Hauptteil ein, füllt den Link der zweiten Person aus; braucht
+  `KLICK_MINOR_*`, `KLICK_PARENT_MAIL`, `KLICK_COSIGN_URL`, siehe `.env.example`),
   `flow8.cjs` (Dokument 10: Sitzungsbestätigung — Pflichtformular vor der Behandlung; braucht `KLICK_TREAT` =
   Phorest-ID eines gebuchten Behandlungstermins und auf Staging das veröffentlichte Formular „Sitzungsbestätigung“),
   `reshoot*.cjs` (Nachaufnahmen), `shot-shared.cjs`, `contact.cjs` (Kontaktbogen)

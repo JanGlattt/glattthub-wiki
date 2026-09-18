@@ -132,6 +132,68 @@ Beim Erstellen des Links werden die aktuellen Kontextdaten (Kunde, Termin, Filia
 - `{{client.firstName}}` Platzhalter in Texten ersetzt werden
 - Die Einreichung dem richtigen Kunden/Termin zugeordnet werden
 
+## Versandwege: E-Mail, WhatsApp, SMS (seit 19.09.2026)
+
+Ein Teilen-Link wird im Modal „Formular teilen" wahlweise **nur erzeugt**, **per E-Mail**,
+**per WhatsApp** oder **per SMS** verschickt (Segment „Link senden per", Felder für
+E-Mail bzw. Handynummer; Kontaktdaten der Kundin sind vorgeschlagen). Derselbe Weg gilt
+für den Link an die zweite Person (Mitunterzeichner). Technik:
+
+| Kanal | Baustein | Voraussetzung |
+|---|---|---|
+| E-Mail | `App\Mail\Forms\SharedFormLinkMail` / `CosignerRequestMail`, Vorlage `emails.forms.form-link` auf `emails.sepa.layout` (Gold-Palette, Logo, Hausschrift — wie Termin- und Mahn-Mails) | E-Mail-Adresse; Absender aus `email_settings` (`MailSettingsService`) |
+| SMS | `TwilioSmsService::send()` mit Text aus `form_link_settings.sms_body` / `sms_body_cosigner` (Platzhalter `{name}`, `{kundin}`, `{formular}`, `{link}`, `{gueltig_bis}`) | Handynummer, Twilio konfiguriert (`TWILIO_FAKE` loggt nur) |
+| WhatsApp | Superchat-Kontakt per Telefonnummer (ohne Phorest-Verknüpfung — Empfängerin ist nicht die Kundin), `WhatsappTemplateSender::send()` mit dem Meta-Template des Standorts | Handynummer, **Admin → Formular-Links (WhatsApp/SMS)**: Kanal + genehmigte Vorlage + Variablen (`recipient_name`, `client_name`, `form_name`, `branch_name`, `link`, `token`, `valid_until`, `static`) |
+
+Zentrale Klasse: `App\Services\Forms\FormLinkMessenger::send($token, $channel, $ctx)`.
+Sie prüft je Kanal die Voraussetzungen (Blocker), versucht den gewünschten Kanal und
+fällt sonst in der Reihenfolge E-Mail → SMS → WhatsApp zurück — höchstens **eine**
+Zustellung. Ergebnis am Token: `channel` (tatsächlich genutzt), `channel_error`
+(Blocker/Fehler der Versuche), `sent_at`, `recipient_phone`. Die API-Antwort von
+`POST /api/forms/{form}/share` liefert `sent_channel`, `sent_to` („per SMS an …"),
+`channel_error` (plus `email_sent`/`email_error` für alte Aufrufer). Keine
+Einwilligungsprüfung — es ist Vertragsanbahnung, keine Werbung.
+
+**Meta-Template für WhatsApp** (in Superchat anlegen, von Meta genehmigen lassen, dann im
+Admin wählen): Text z.B. „Hallo {{1}}, bitte füllen Sie das Formular „{{2}}" für glattt aus.
+Der Link ist bis {{3}} gültig." mit URL-Button `https://hub.glattt.com/shared/form/{{1}}`
+(Variable `token`). Ohne genehmigte Vorlage bleibt WhatsApp gesperrt und der Hub
+weicht aus. Tests: `tests/Feature/SharedFormLinkChannelTest.php`.
+
+## Mitunterzeichner-Links (Teil-Links)
+
+Seit 19.09.2026 kann ein Token statt einer neuen Einreichung den **offenen Teil einer
+bestehenden Einreichung** vervollständigen (zweiter Elternteil bei der Erlaubnis für
+Minderjährige, siehe `FORM-EDITOR.md` → „Mitunterzeichner").
+
+| Spalte / Feld | Bedeutung |
+|---|---|
+| `form_share_tokens.part` | `cosigner` — Teil-Link (sonst `null`) |
+| `form_share_tokens.target_submission_id` | Einreichung, in die geschrieben wird |
+| `context_data.cosigner_part` | `true` — die Ausfüllseite zeigt den Hinweis „Ihre Unterschrift wird benötigt" |
+| `context_data.locked_fields` | alle Felder außer denen der zweiten Person |
+| `context_data.prefilled_values` | gespeicherte Werte des Hauptteils (ohne Unterschriften/Dateien) + `_cosigner_mode = now` |
+| `recipient_phone`, `channel`, `channel_error`, `sent_at` | Handynummer, genutzter Versandweg, Fehler, Zeitpunkt |
+| `expires_at` | 7 Tage statt 48 Stunden |
+
+Ablauf: `CosignerService::initiate()` setzt die Einreichung auf `awaiting_cosigner`, legt
+den Token an und stellt ihn über `FormLinkMessenger` zu (Kanal aus `_cosigner_channel`,
+Fallback wie oben; Ergebnis in `metadata.cosigner.channel` / `channel_error`). `SharedFormController::show()` lehnt den
+Link ab, sobald die Ziel-Einreichung nicht mehr wartet. `submit()` zweigt bei
+`isCosignerPart()` nach `submitCosignerPart()` ab: nur die sichtbaren Teil-Felder werden
+validiert und per `updateOrCreate` gespeichert, `markCompleted()` setzt `submitted`,
+verwirft das PDF (`pdf_path = null`) und `ensureSubmissionPdf()` baut es mit beiden
+Unterschriften neu; der Token wird verbraucht. Gesperrte Unterschriften der ersten Person
+werden auf der Teil-Seite nicht gezeigt (nicht vorbefüllbar). Die Teil-Seite hebt die
+eigenen Felder gold hervor (`.form-fill-cosigner-own`, Marke „Von Ihnen auszufüllen"),
+dimmt gesperrte Felder stärker und bietet am Handy einen schwebenden Sprungknopf
+(`.form-fill-cosigner-jump`, IntersectionObserver); die Kundenkarte ist ein Theme-Alert
+(im Dark Mode lesbar).
+
+Auch ein normaler Teilen-Link kann den Hauptteil liefern: Wählt die Empfängerin dort
+„bekommt einen Link", entsteht der Teil-Link genauso (Ersteller = Ersteller des
+Ursprungs-Links).
+
 ## Verwandte Dokumentation
 
 - [Formular-Editor](FORM-EDITOR.md)
