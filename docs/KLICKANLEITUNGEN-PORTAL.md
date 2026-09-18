@@ -119,7 +119,7 @@ Bedeutungssuche still ab.
 | IAP | `domain:labrado-schlueter.com` als `iap.httpsResourceAccessor`; IAP-Service-Agent hat `run.invoker` |
 | Screenshots | Bucket `gs://glattthub-klickanleitungen/<serie>/shots/` (Repo ist öffentlich, Bilder nicht darin) |
 | Secret | `openai-api-key` (Secret Manager) für Build und Laufzeit |
-| Build | `klickanleitungen/portal/cloudbuild.yaml`; Trigger `deploy-hilfe` auf `main` des Wiki-Repos |
+| Build | `klickanleitungen/portal/cloudbuild.yaml`; Trigger `deploy-hilfe` (Region europe-west3) auf `main` des Wiki-Repos, nur bei Änderungen unter `klickanleitungen/`; läuft über die Cloud-Build-Verbindung `glattthub-github` (2. Generation, GitHub-App von Jan am 18.09.2026 freigegeben) |
 
 Manuell bauen und deployen (aus dem Wiki-Repo):
 
