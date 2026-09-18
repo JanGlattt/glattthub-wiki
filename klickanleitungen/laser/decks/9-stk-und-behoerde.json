@@ -1,0 +1,120 @@
+{
+ "out": "../pdf/Laser-9-STK-und-Behoerde",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Laser",
+ "nr": 9,
+ "of": 13,
+ "audience": "leitung",
+ "title": [
+  "STK und",
+  "Behördenanzeige"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — sicherheitstechnische Kontrolle und Behördenanzeige je Laser erfassen",
+ "eyebrow": "Laser · STK & Behörde",
+ "footerArea": "Laser",
+ "stand": "18.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die **STK** ist jährlich Pflicht. Der Hub erinnert **60 und 30 Tage** vor Fälligkeit per Push und zeigt fällige Prüfungen im Dashboard.",
+  "Die **Behördenanzeige** (in der Regel beim Gesundheitsamt) wird einmal je Gerät mit Datum und Aktenzeichen hinterlegt."
+ ],
+ "pages": [
+  {
+   "h1": "Der Reiter STK & Behörde",
+   "sub": "Zwei Listen: durchgeführte Kontrollen mit nächster Fälligkeit, darunter die Anzeigen bei der Behörde.",
+   "card": {
+    "title": "Der Reiter STK & Behörde",
+    "text": "Kontrollen und Anzeigen"
+   },
+   "left": {
+    "shot": "l29-stk-reiter"
+   },
+   "leftCaption": "Der Reiter „STK & Behörde“ mit beiden Listen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "STK erfassen",
+     "text": "Neue Kontrolle eintragen — direkt nach dem Termin mit dem Prüfer."
+    },
+    {
+     "n": 2,
+     "title": "Nächste Fälligkeit",
+     "text": "Standard ist ein Jahr nach der Prüfung. Danach richten sich Erinnerung und Dashboard."
+    },
+    {
+     "n": 3,
+     "title": "Anzeige erfassen",
+     "text": "Behördenanzeige mit Aktenzeichen hinterlegen."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Ohne gültige STK kein Betrieb.** Eine abgelaufene Prüfung ist kein Formfehler — das Gerät darf dann nicht behandeln."
+   }
+  },
+  {
+   "h1": "STK erfassen",
+   "sub": "Datum, Prüfer, Ergebnis und das Prüfprotokoll als Datei.",
+   "card": {
+    "title": "STK erfassen",
+    "text": "Datum, Prüfer, Ergebnis, Protokoll"
+   },
+   "left": {
+    "shot": "l30-stk-erfassen"
+   },
+   "leftCaption": "Das Fenster „STK erfassen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Durchgeführt am",
+     "text": "Das Datum der Prüfung."
+    },
+    {
+     "n": 2,
+     "title": "Nächste Fälligkeit",
+     "text": "Füllt sich automatisch mit +1 Jahr, lässt sich anpassen, wenn der Prüfer etwas anderes vorgibt."
+    },
+    {
+     "n": 3,
+     "title": "Ergebnis",
+     "text": "Bestanden oder mit Auflagen — so wie es im Protokoll steht."
+    },
+    {
+     "n": 4,
+     "title": "Prüfprotokoll",
+     "text": "Das PDF des Prüfers. Optional, aber der Ort, an dem es später gesucht wird."
+    }
+   ]
+  },
+  {
+   "h1": "Behördenanzeige erfassen",
+   "sub": "Behörde, Datum, Aktenzeichen, Status und der Nachweis.",
+   "card": {
+    "title": "Behördenanzeige erfassen",
+    "text": "Behörde, Aktenzeichen, Nachweis"
+   },
+   "left": {
+    "shot": "l31-behoerde"
+   },
+   "leftCaption": "Das Fenster „Behördenanzeige erfassen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Behörde",
+     "text": "Name der Stelle, meist das Gesundheitsamt des Standorts."
+    },
+    {
+     "n": 2,
+     "title": "Aktenzeichen",
+     "text": "Die Nummer aus dem Bescheid — danach fragt die Behörde bei jedem Kontakt."
+    },
+    {
+     "n": 3,
+     "title": "Nachweis",
+     "text": "Bescheid oder Eingangsbestätigung als Datei."
+    }
+   ]
+  }
+ ]
+}

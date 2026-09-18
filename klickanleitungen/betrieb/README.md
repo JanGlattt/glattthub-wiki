@@ -1,6 +1,6 @@
 # Klickanleitungen Betrieb — Quellen
 
-Quellen der Serie **Betrieb** (Institute, Formulare, Services, Laser). Standard und
+Quellen der Serie **Betrieb** (Institute, Formulare, Services). Der Laser hat seit 18.09.2026 eine eigene Serie (`../laser`). Standard und
 Deck-Format: `klickanleitungen/README.md` und Wiki `docs/KLICKANLEITUNGEN.md`.
 
 | Dokument | Inhalt | Zielgruppe | Stand |
@@ -10,7 +10,6 @@ Deck-Format: `klickanleitungen/README.md` und Wiki `docs/KLICKANLEITUNGEN.md`.
 | **3 — Formulare erstellen** | Editor, Feldtypen, Bedingungen, Einstellungen | Büro | v1.0, Screenshots offen |
 | **4 — Formulare teilen & Einreichungen** | Link erzeugen, ausfüllen lassen, Eingänge lesen | Institute | v1.0, Screenshots offen |
 | **5 — Services und Körperzonen** | Servicekatalog, Beratungs-Flag, Zuordnung zu Körperzonen | Büro | v1.0, Screenshots offen |
-| **6 — Laser und Wartung** | Geräteliste, Gerät im Detail, Reparaturen, Verbrauchsmaterial | Leitung | v1.0, Screenshots offen |
 
 Dokument 4 ist das einzige der Serie, das im Institut gebraucht wird — dort wird ein Formular
 geteilt und der Eingang gelesen, aber keines gebaut.

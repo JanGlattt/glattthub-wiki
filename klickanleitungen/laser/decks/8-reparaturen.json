@@ -1,0 +1,140 @@
+{
+ "out": "../pdf/Laser-8-Reparaturen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Laser",
+ "nr": 8,
+ "of": 13,
+ "audience": "leitung",
+ "title": [
+  "Reparaturen",
+  "abwickeln"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — einen Reparatur-Vorgang anlegen, versenden und die Rückkehr mit Rechnung erfassen",
+ "eyebrow": "Laser · Reparaturen",
+ "footerArea": "Laser",
+ "stand": "18.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Ein Reparatur-Vorgang entsteht **von Hand** oder **automatisch**, wenn ein Teil in der Wartung als Defekt bewertet wird.",
+  "Drei Stationen: **Anlegen** → **Versenden** → **Rückkehr**. Beim Versand eines Lasers wechselt sein Status auf „In Reparatur“, bei der Rückkehr ist die Rechnung Pflicht.",
+  "Braucht das Recht **Reparaturen verwalten**."
+ ],
+ "pages": [
+  {
+   "h1": "Der Reparaturen-Reiter",
+   "sub": "Alle Vorgänge des Geräts mit Auslöser, Status, Dienstleister und Kosten — und dem jeweils nächsten Schritt rechts.",
+   "card": {
+    "title": "Der Reparaturen-Reiter",
+    "text": "Vorgänge und ihr nächster Schritt"
+   },
+   "left": {
+    "shot": "l25-reparaturen-reiter"
+   },
+   "leftCaption": "Der Reiter „Reparaturen“ mit Liste und Aktionsknöpfen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Reparatur anlegen",
+     "text": "Neuer Vorgang von Hand — für Defekte, die nicht aus der Wartung kommen."
+    },
+    {
+     "n": 2,
+     "title": "Status",
+     "text": "**Offen** → **Versendet** → **In Reparatur** → **Zurück** → **Abgeschlossen**."
+    },
+    {
+     "n": 3,
+     "title": "Aktion",
+     "text": "Zeigt immer den nächsten Schritt: **Versenden** bei offenen, **Rückkehr** bei versendeten Vorgängen."
+    }
+   ]
+  },
+  {
+   "h1": "Anlegen",
+   "sub": "Betroffenes Teil oder Gerät wählen und den Defekt beschreiben.",
+   "card": {
+    "title": "Anlegen",
+    "text": "Asset und Defektbeschreibung"
+   },
+   "left": {
+    "shot": "l26-reparatur-anlegen"
+   },
+   "leftCaption": "Das Fenster „Reparatur anlegen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Betroffenes Asset",
+     "text": "Der Laser selbst, eine Komponente oder ein Anbauteil — die Liste zeigt alles, was zu diesem Gerät gehört."
+    },
+    {
+     "n": 2,
+     "title": "Defektbeschreibung",
+     "text": "Was ist kaputt, seit wann, was wurde schon versucht. Der Text geht später mit an den Dienstleister."
+    }
+   ]
+  },
+  {
+   "h1": "Versenden",
+   "sub": "Sobald das Teil rausgeht: Versanddatum, Dienstleister, Zieladresse, Tracking und Kostenvoranschlag.",
+   "card": {
+    "title": "Versenden",
+    "text": "Versand und Kostenvoranschlag"
+   },
+   "left": {
+    "shot": "l27-versenden"
+   },
+   "leftCaption": "Das Fenster „Zur Reparatur versenden“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Versandt am",
+     "text": "Das Datum, an dem das Paket das Institut verlassen hat."
+    },
+    {
+     "n": 2,
+     "title": "Dienstleister",
+     "text": "Aus den Stammdaten („Laser 12“). Die Zieladresse füllt sich daraus."
+    },
+    {
+     "n": 3,
+     "title": "Kostenvoranschlag",
+     "text": "Falls vorhanden — die Summe erscheint im Report „Geräte in Reparatur“."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Ein versendeter Laser ist „In Reparatur“.** Der Status wechselt automatisch; das Institut plant ohne dieses Gerät, bis die Rückkehr erfasst ist."
+   }
+  },
+  {
+   "h1": "Rückkehr",
+   "sub": "Kommt das Teil zurück: Datum, Ergebnis, Kosten — und die Rechnung als Datei, ohne sie lässt sich nichts speichern.",
+   "card": {
+    "title": "Rückkehr",
+    "text": "Ergebnis, Kosten, Pflicht-Rechnung"
+   },
+   "left": {
+    "shot": "l28-rueckkehr"
+   },
+   "leftCaption": "Das Fenster „Rückkehr erfassen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Ergebnis",
+     "text": "**Repariert**, **Ausgetauscht** oder **Nicht reparabel**. Bei Austausch die **neue Seriennummer** eintragen — die alte wird ausgemustert."
+    },
+    {
+     "n": 2,
+     "title": "Kosten",
+     "text": "Der Rechnungsbetrag. Er fließt in die Reparaturhistorie und die Kosten je Dienstleister."
+    },
+    {
+     "n": 3,
+     "title": "Rechnung",
+     "text": "PDF oder Foto — Pflicht. Ohne Datei bleibt „Speichern“ gesperrt."
+    }
+   ]
+  }
+ ]
+}

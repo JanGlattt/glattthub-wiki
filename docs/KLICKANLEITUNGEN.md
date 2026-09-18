@@ -186,7 +186,7 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | 31 | Formulare bauen: Editor, Feldtypen, Bedingungen | `/hub/forms` | **Betrieb 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 32 | Formular teilen und Einreichungen lesen | `/hub/forms` | **Betrieb 4** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 33 | Services und Körperzonen pflegen | `/hub/services` | **Betrieb 5** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 34 | Laser: Geräte, Reparaturen, Verbrauchsmaterial | `/hub/laser` | **Betrieb 6** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 34 | Laser: Dashboard, Gerät, Wartung (4 Schritte), Fehler, Reparaturen, STK, Teile, Inventar, Stammdaten, Reports | `/hub/laser` | **Laser 1–13** (v1.0, 18.09.2026) | ✅ Screenshots Staging, im Portal |
 | 35 | Personalübersicht und Hub-Konten (Anlage, Einladung, Archivieren) | `/hub/staff` | **Team 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 36 | Reisekosten erfassen und einreichen | `/hub/staff/reisekosten` | **Team 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
 | 37 | Reisekosten prüfen und freigeben | `/hub/staff/reisekosten-freigabe` | **Team 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
@@ -423,7 +423,11 @@ gedacht ist.
 
 ---
 
-## Gesamtübersicht — 87 Dokumente in 14 Serien (Stand 16.09.2026)
+## Gesamtübersicht — 99 Dokumente in 15 Serien (Stand 18.09.2026)
+
+**18.09.2026:** Der Laser wurde aus Betrieb 6 herausgelöst und zur eigenen Serie **Laser 1–13** —
+kleinteilig, mit dem Wartungs-Assistenten in vier Dokumenten (Flow Maintenance mit 5-Minuten-
+Countdown, Pflicht-Fotos je Kachel, Anbauteile, Abschluss). Damit 99 Dokumente in 15 Serien.
 
 Alle Texte sind geschrieben, alle PDFs bauen durch. **Was überall fehlt, sind die Screenshots** —
 jede Serie bringt ihr Aufnahmeskript mit, aber kein Lauf ist bisher gefahren.
@@ -438,7 +442,8 @@ jede Serie bringt ihr Aufnahmeskript mit, aber kein Lauf ist bisher gefahren.
 | **Verträge** | 1–8 | Büro | Liste, Detailseite, Ratenplan, Zahlungen buchen, SEPA-Einzug, Laufzeit ändern, Mandat, Importe |
 | **Widerrufe** | 1–5 | Büro | Erfassen, Fallseite, Vertragsänderung im Fernabsatz, Abwicklung, Anwalt und Abschluss |
 | **Forderungen** | 1–6 | Büro | Arbeitsliste, Fallseite, Mahnprozess, Zahlungen, RZV, Eskalation |
-| **Betrieb** | 1–6 | Leitung, Büro, Institute | Institute, Formulare, Services & Körperzonen, Laser |
+| **Betrieb** | 1–5 | Leitung, Büro, Institute | Institute, Formulare, Services & Körperzonen (Laser seit 18.09.2026 eigene Serie) |
+| **Laser** | 1–13 | Institute, Leitung, Büro | Dashboard, Gerät, Wartung in vier Schritten, Fehler, Reparaturen, STK, Teile, Inventar, Stammdaten, Reports |
 | **Team** | 1–3 | Büro, Institute | Personalübersicht und Hub-Konten, Reisekosten erfassen und freigeben |
 | **Finanzen** | 1–2 | Büro | Schulden, Unternehmensverträge |
 | **System** | 1–2 | Leitung | Report-Mails, Audit |

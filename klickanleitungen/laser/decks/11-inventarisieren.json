@@ -1,0 +1,140 @@
+{
+ "out": "../pdf/Laser-11-Inventarisieren",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Laser",
+ "nr": 11,
+ "of": 13,
+ "audience": "leitung",
+ "title": [
+  "Laser und Teile",
+  "inventarisieren"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — einen neuen Laser mit Komponenten, Anbauteilen und Anschaffung anlegen; ein einzelnes Ersatzteil erfassen",
+ "eyebrow": "Laser · Inventar",
+ "footerArea": "Laser",
+ "stand": "18.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Zwei Assistenten auf der Geräteliste: **Laser inventarisieren** (drei Schritte) und **Einzelne Komponente inventarisieren** (zwei Schritte).",
+  "Die **Top-Unit-Seriennummer** wird zur Kennung des Geräts. Bei Anschaffungsdaten ist die **Rechnung** als Datei Pflicht.",
+  "Braucht das Recht **Laser-Inventar verwalten**."
+ ],
+ "pages": [
+  {
+   "h1": "Schritt 1: Gerät und Komponenten",
+   "sub": "Seriennummer, Modell, Betriebsstatus, Standort — und die fest verbauten Komponenten.",
+   "card": {
+    "title": "Schritt 1: Gerät und Komponenten",
+    "text": "Seriennummer, Status, Standort, Komponenten"
+   },
+   "left": {
+    "shot": "l35-inventar-geraet"
+   },
+   "leftCaption": "Schritt 1 des Assistenten „Laser inventarisieren“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Top-Unit-Seriennummer",
+     "text": "Vom Typenschild der Top-Unit. Sie ist die Geräte-ID im ganzen Hub."
+    },
+    {
+     "n": 2,
+     "title": "Betriebsstatus",
+     "text": "**Im Lager**, bis das Gerät im Behandlungsraum steht — dann **Aktiv**, und die Wartungspflicht beginnt."
+    },
+    {
+     "n": 3,
+     "title": "Standort",
+     "text": "Aus den Stammdaten („Laser 12“)."
+    },
+    {
+     "n": 4,
+     "title": "Komponenten",
+     "text": "Center-Unit, Bottom-Unit, Netzteil, Pumpe: **Neu** mit eigener Seriennummer oder **Vorhanden** aus dem Ersatzteil-Bestand."
+    }
+   ]
+  },
+  {
+   "h1": "Schritt 2: Anbauteile",
+   "sub": "Handstück, Laserköpfe und Skintel, die mit dem Gerät kommen — neu oder aus dem Bestand.",
+   "card": {
+    "title": "Schritt 2: Anbauteile",
+    "text": "Was am Gerät montiert wird"
+   },
+   "left": {
+    "shot": "l36-inventar-anbauteile"
+   },
+   "leftCaption": "Schritt 2 mit den Anbauteil-Feldern.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Neu oder Vorhanden",
+     "text": "Wie bei den Komponenten. Ein vorhandenes Teil wird damit an dieses Gerät montiert."
+    },
+    {
+     "n": 2,
+     "title": "Zustand",
+     "text": "Bei neuen Teilen in der Regel **Gut**."
+    }
+   ]
+  },
+  {
+   "h1": "Schritt 3: Anschaffung",
+   "sub": "Kaufdatum, Wert, Lieferant, Rechnungsnummer, Garantie — und die Rechnung als Datei.",
+   "card": {
+    "title": "Schritt 3: Anschaffung",
+    "text": "Kaufdaten und Pflicht-Rechnung"
+   },
+   "left": {
+    "shot": "l37-inventar-anschaffung"
+   },
+   "leftCaption": "Schritt 3 mit den Anschaffungsdaten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Anschaffungsdaten",
+     "text": "Optional — wer sie erfasst, muss die Rechnung anhängen."
+    },
+    {
+     "n": 2,
+     "title": "Rechnung",
+     "text": "PDF oder Foto. Sie erscheint danach im Reiter „Anschaffung“ des Geräts."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Der Wert zählt für den Inventar-Report.** Ohne Anschaffungswert fehlt das Gerät in der Asset-Wert-Übersicht."
+   }
+  },
+  {
+   "h1": "Ein Ersatzteil erfassen",
+   "sub": "Ein einzelnes Handstück, ein Kopf oder eine Komponente ohne Gerät: Typ, Seriennummer, Zustand, Lagerstandort.",
+   "card": {
+    "title": "Ein Ersatzteil erfassen",
+    "text": "Ersatzteil ohne Gerät"
+   },
+   "left": {
+    "shot": "l38-ersatzteil"
+   },
+   "leftCaption": "Der Assistent „Ersatzteil inventarisieren“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Typ",
+     "text": "Kategorie und Typ des Teils."
+    },
+    {
+     "n": 2,
+     "title": "Seriennummer",
+     "text": "Vom Teil. Doppelte Seriennummern lehnt der Hub ab."
+    },
+    {
+     "n": 3,
+     "title": "Lagerstandort",
+     "text": "Wo das Teil liegt, bis es montiert wird. Es erscheint danach in der Bauteil-Ansicht als „nicht verbaut“."
+    }
+   ]
+  }
+ ]
+}

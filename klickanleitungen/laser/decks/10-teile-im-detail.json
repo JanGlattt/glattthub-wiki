@@ -1,0 +1,99 @@
+{
+ "out": "../pdf/Laser-10-Teile-im-Detail",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Laser",
+ "nr": 10,
+ "of": 13,
+ "audience": "institut",
+ "title": [
+  "Anbauteile",
+  "im Detail"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — die eigene Seite jedes Handstücks, Laserkopfs und Skintels: Stammdaten, Wartungen, Reparaturen, Verlauf",
+ "eyebrow": "Laser · Teile",
+ "footerArea": "Laser",
+ "stand": "18.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Jedes Anbauteil und jede Komponente hat eine **eigene Seite** — erreichbar über die Seriennummer in der Bauteil-Ansicht („Laser 1“) oder am Gerät („Laser 2“).",
+  "Die Seite bleibt beim Teil, auch wenn es das Gerät oder den Standort wechselt."
+ ],
+ "pages": [
+  {
+   "h1": "Stammdaten des Teils",
+   "sub": "Seriennummer, Typ, Zustand, Puls-Zähler und ob es gerade montiert ist — und wo.",
+   "card": {
+    "title": "Stammdaten des Teils",
+    "text": "Typ, Zustand, Zähler, Status"
+   },
+   "left": {
+    "shot": "l32-anbauteil"
+   },
+   "leftCaption": "Die Seite eines Handstücks mit Stammdaten und Reiterleiste.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Reiter",
+     "text": "Übersicht · Wartungen · Reparaturen · Verlauf · Anschaffung — mit der Anzahl der Einträge."
+    },
+    {
+     "n": 2,
+     "title": "Zustand",
+     "text": "Die Bewertung aus der letzten Wartung."
+    },
+    {
+     "n": 3,
+     "title": "Puls-Zähler",
+     "text": "Der zuletzt erfasste Stand — die Basis, wenn Verschleißteile fällig werden."
+    }
+   ]
+  },
+  {
+   "h1": "Wartungen des Teils",
+   "sub": "Alle Protokolle, in denen dieses Teil erfasst wurde — mit Laser, Standort, Person und den Werten von damals.",
+   "card": {
+    "title": "Wartungen des Teils",
+    "text": "Die Wartungshistorie wandert mit"
+   },
+   "left": {
+    "shot": "l33-anbauteil-wartungen"
+   },
+   "leftCaption": "Der Reiter „Wartungen“ eines Handstücks.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Laser und Standort",
+     "text": "Wo das Teil zum Zeitpunkt der Wartung montiert war."
+    },
+    {
+     "n": 2,
+     "title": "Zustand und Pulses",
+     "text": "So lässt sich nachvollziehen, wann ein Riss zum ersten Mal notiert wurde."
+    }
+   ]
+  },
+  {
+   "h1": "Verlauf",
+   "sub": "Bewegungen und Ereignisse des Teils: montiert, abgenommen, versendet, zurück, ausgemustert.",
+   "card": {
+    "title": "Verlauf",
+    "text": "Bewegungen und Ereignisse"
+   },
+   "left": {
+    "shot": "l34-anbauteil-verlauf"
+   },
+   "leftCaption": "Der Reiter „Verlauf“ mit den Ereignissen des Teils.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Ereignis",
+     "text": "Jede Bewegung und jede Reparatur-Station — automatisch geschrieben."
+    }
+   ],
+   "hint": {
+    "text": "Bei einem **Austausch** in der Reparatur endet der Verlauf des alten Teils mit „Verschrottung“, das neue Teil beginnt mit seiner ersten Montage."
+   }
+  }
+ ]
+}

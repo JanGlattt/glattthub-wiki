@@ -1,4 +1,4 @@
-/* Aufnahmelauf „Betrieb" — Institute, Formulare, Services, Laser.
+/* Aufnahmelauf „Betrieb" — Institute, Formulare, Services.
    Der Lauf **liest nur**: Detailseiten werden geöffnet, Reiter gewechselt, Fenster geöffnet und
    mit Escape verworfen. Nichts wird gespeichert. Einzige Ausnahme: „Formular teilen" erzeugt
    einen 48-Stunden-Link (kein Versand) — so wie es die Terminansicht-Serie auch tut.
@@ -73,12 +73,7 @@ const PLAN = [
   { name: 'b15-services', url: '/hub/services', steps: [['loaded'], ['wait', 1500]] },
   { name: 'b16-beratungsservices', url: '/hub/services', steps: [['loaded'], ['click', 'button', 'Liste', 2000]] },
   { name: 'b17-zuordnung', url: '/hub/contracts/body-zone-mapping', steps: [['loaded']], marks: ['.card-glattt'] },
-  // ── Betrieb 6: Laser
-  { name: 'b18-laser', url: '/hub/laser', steps: [['loaded'], ['wait', 1500]] },
-  { name: 'b19-geraet', url: '/hub/laser/devices', steps: [['loaded'], ['click', 'a.btn-glattt-secondary', 'Details', 3500], ['loaded']] },
-  { name: 'b20-reparatur', url: '/hub/laser/devices', steps: [['loaded'], ['click', 'a.btn-glattt-secondary', 'Details', 3500], ['loaded'],
-    ['click', 'button', 'Reparaturen', 2500], ['loaded']] },   // Reiter der Geräteseite
-  { name: 'b21-material', url: '/hub/laser/consumables', steps: [['loaded']], marks: ['.card-glattt'] },
+  // Laser hat seit 18.09.2026 eine eigene Serie (klickanleitungen/laser)
 ];
 
 P.run(PLAN, L, { nur: process.argv.slice(2) });

@@ -1,0 +1,142 @@
+{
+ "out": "../pdf/Laser-12-Stammdaten-und-Material",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Laser",
+ "nr": 12,
+ "of": 13,
+ "audience": "buero",
+ "title": [
+  "Stammdaten und",
+  "Verbrauchsmaterial"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Standorte, Reparaturdienstleister und Materialtypen pflegen; Bestände je Standort mit Mindestbestand führen",
+ "eyebrow": "Laser · Stammdaten",
+ "footerArea": "Laser",
+ "stand": "18.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Stammdaten liegen unter **Laser → Stammdaten** in drei Bereichen: Standorte, Dienstleister, Verbrauchsmaterial. Die **Bestände** haben eine eigene Seite.",
+  "Braucht das Recht **Laser-Stammdaten verwalten**."
+ ],
+ "pages": [
+  {
+   "h1": "Standorte",
+   "sub": "Jeder Behandlungsraum und jedes Lager bekommt einen Code — er erscheint überall dort, wo ein Standort genannt wird.",
+   "card": {
+    "title": "Standorte",
+    "text": "Behandlungsräume und Lager"
+   },
+   "left": {
+    "shot": "l39-standorte"
+   },
+   "leftCaption": "Die Stammdaten mit dem Bereich „Standorte“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bereich wählen",
+     "text": "Standorte · Dienstleister · Verbrauchsmaterial."
+    },
+    {
+     "n": 2,
+     "title": "Neuer Standort",
+     "text": "Öffnet das Anlage-Fenster."
+    },
+    {
+     "n": 3,
+     "title": "Typ",
+     "text": "**Behandlungsraum**, **Institutslager** oder **Zentrallager**."
+    }
+   ]
+  },
+  {
+   "h1": "Standort anlegen",
+   "sub": "Code, Typ, Institut, Bezeichnung, Adresse — und ob der Standort aktiv ist.",
+   "card": {
+    "title": "Standort anlegen",
+    "text": "Code, Typ, Institut"
+   },
+   "left": {
+    "shot": "l40-standort-anlegen"
+   },
+   "leftCaption": "Das Fenster „Neu anlegen · Standort“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Code",
+     "text": "Kurz und eindeutig, etwa **H.02** für Raum 2 in Hannover."
+    },
+    {
+     "n": 2,
+     "title": "Typ",
+     "text": "Bestimmt, ob hier behandelt oder gelagert wird."
+    },
+    {
+     "n": 3,
+     "title": "Institut",
+     "text": "Für Räume und Institutslager; das Zentrallager bleibt ohne."
+    },
+    {
+     "n": 4,
+     "title": "Aktiv",
+     "text": "Inaktive Standorte bleiben in der Historie, tauchen aber in keiner Auswahl mehr auf."
+    }
+   ]
+  },
+  {
+   "h1": "Dienstleister",
+   "sub": "Die Werkstätten und der Hersteller, an die Teile zur Reparatur gehen — mit Adresse für den Versand.",
+   "card": {
+    "title": "Dienstleister",
+    "text": "Wer repariert"
+   },
+   "left": {
+    "shot": "l41-dienstleister"
+   },
+   "leftCaption": "Der Bereich „Dienstleister“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Dienstleister",
+     "text": "Wird beim Versand einer Reparatur gewählt („Laser 8“); die Kosten je Dienstleister stehen in den Reports."
+    }
+   ]
+  },
+  {
+   "h1": "Verbrauchsmaterial und Bestände",
+   "sub": "Materialtypen (etwa Chiller-Fluid, Wasserfilter) und die Bestände je Standort mit Mindestbestand.",
+   "card": {
+    "title": "Verbrauchsmaterial und Bestände",
+    "text": "Typen und Bestände mit Warnung"
+   },
+   "left": {
+    "shot": "l42-materialtypen"
+   },
+   "leftCaption": "Der Bereich „Verbrauchsmaterial“ mit den Materialtypen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Materialtyp",
+     "text": "Was überhaupt geführt wird — mit Einheit und Wechselintervall."
+    },
+    {
+     "n": 2,
+     "title": "Material-Bestände",
+     "text": "Der Knopf oben rechts führt zur Bestandsseite."
+    },
+    {
+     "n": 3,
+     "title": "Bestand anlegen",
+     "text": "Material, Standort, aktuelle Menge und **Mindestbestand**. Unterschreitet der Bestand ihn, meldet das Dashboard und die tägliche Push-Nachricht."
+    }
+   ],
+   "right": {
+    "shot": "l43-bestand-anlegen"
+   },
+   "rightCaption": "Das Fenster „Bestand anlegen“ auf der Bestandsseite: Material, Standort, Bestand, Mindestbestand.",
+   "hint": {
+    "text": "Die Wartung zieht verbrauchtes **Chiller-Fluid** automatisch vom Bestand ab („Laser 6“) — der Rest wird hier von Hand gebucht."
+   }
+  }
+ ]
+}

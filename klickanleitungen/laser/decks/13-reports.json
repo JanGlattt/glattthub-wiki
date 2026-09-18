@@ -1,0 +1,124 @@
+{
+ "out": "../pdf/Laser-13-Reports",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Laser",
+ "nr": 13,
+ "of": 13,
+ "audience": "leitung",
+ "title": [
+  "Reports",
+  "zum Laser-Park"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — die sechs Auswertungen des Laser-Moduls: Wartungen, STKs, Reparaturen, Fehlerquote, Inventarwert, Reparaturkosten",
+ "eyebrow": "Laser · Reports",
+ "footerArea": "Laser",
+ "stand": "18.09.2026",
+ "version": "1.0",
+ "notes": [
+  "**Laser → Reports** bündelt sechs Auswertungen über alle Geräte. Sie lesen dieselben Daten wie das Dashboard — nur vollständig statt als Warnzeichen."
+ ],
+ "pages": [
+  {
+   "h1": "Die Reports",
+   "sub": "Sechs Kacheln, je eine Auswertung.",
+   "card": {
+    "title": "Die Reports",
+    "text": "Sechs Auswertungen"
+   },
+   "left": {
+    "shot": "l44-reports"
+   },
+   "leftCaption": "Die Report-Übersicht.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Überfällige Wartungen",
+     "text": "Alle aktiven Laser ohne Protokoll in der laufenden Woche."
+    },
+    {
+     "n": 2,
+     "title": "Anstehende STKs",
+     "text": "Fälligkeiten der nächsten Monate."
+    },
+    {
+     "n": 3,
+     "title": "Geräte in Reparatur",
+     "text": "Offene Vorgänge mit Kostenvoranschlag."
+    },
+    {
+     "n": 4,
+     "title": "Defekt- & Fehlerquote",
+     "text": "Defekte je Teiletyp und die häufigsten Fehlercodes."
+    },
+    {
+     "n": 5,
+     "title": "Asset-Wert / Inventar",
+     "text": "Anschaffungswerte je Laser und je Standort."
+    },
+    {
+     "n": 6,
+     "title": "Reparaturhistorie & -kosten",
+     "text": "Kosten je Dienstleister, letzte Reparaturen."
+    }
+   ]
+  },
+  {
+   "h1": "Überfällige Wartungen",
+   "sub": "Die Liste der Geräte, die diese Woche noch gewartet werden müssen — mit Standort und direktem Sprung zum Gerät.",
+   "card": {
+    "title": "Überfällige Wartungen",
+    "text": "Was diese Woche noch fehlt"
+   },
+   "left": {
+    "shot": "l45-ueberfaellige"
+   },
+   "leftCaption": "Der Report „Überfällige Wartungen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Anzahl",
+     "text": "Wie viele aktive Laser ohne Protokoll in dieser Kalenderwoche."
+    },
+    {
+     "n": 2,
+     "title": "Öffnen",
+     "text": "Führt zur Geräteseite — von dort startet die Wartung („Laser 3“)."
+    }
+   ]
+  },
+  {
+   "h1": "Asset-Wert und Reparaturkosten",
+   "sub": "Was der Laser-Park wert ist und was Reparaturen kosten.",
+   "card": {
+    "title": "Asset-Wert und Reparaturkosten",
+    "text": "Werte und Kosten"
+   },
+   "left": {
+    "shot": "l46-assetwert"
+   },
+   "leftCaption": "Der Report „Asset-Wert / Inventarübersicht“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Wert je Laser",
+     "text": "Gerät plus Teile, aus den Anschaffungsdaten."
+    },
+    {
+     "n": 2,
+     "title": "Gesamtwert je Standort",
+     "text": "Für Versicherung und Inventur."
+    },
+    {
+     "n": 3,
+     "title": "Kosten je Dienstleister",
+     "text": "Anzahl und Summe aller Reparaturen je Werkstatt — die Grundlage für Verhandlungen und Garantiefragen."
+    }
+   ],
+   "right": {
+    "shot": "l47-reparaturhistorie"
+   },
+   "rightCaption": "Der Report „Reparaturhistorie & -kosten“ mit Kosten je Dienstleister."
+  }
+ ]
+}

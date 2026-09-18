@@ -1,0 +1,132 @@
+{
+ "out": "../pdf/Laser-1-Dashboard-und-Geraete",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Laser",
+ "nr": 1,
+ "of": 13,
+ "audience": "institut",
+ "title": [
+  "Dashboard",
+  "und Geräteliste"
+ ],
+ "subtitle": "Klickanleitung für das Laser-Modul im glatttHub — was das Dashboard meldet, wo die Geräte stehen und wie die Bauteil-Ansicht funktioniert",
+ "eyebrow": "Laser · Dashboard und Geräte",
+ "footerArea": "Laser",
+ "stand": "18.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Das Modul führt alle **Cynosure-Vectus-Laser** mit Standort, Zustand, Wartungen und Teilen — es ersetzt die Excel-Listen und den Foto-Versand per WhatsApp.",
+  "Die **Top-Unit-Seriennummer** (z. B. 35-1982) ist überall die Kennung des Geräts.",
+  "Wer das Modul sieht, hat das Recht **Laser ansehen**; Wartungen durchführen ist ein eigenes Recht."
+ ],
+ "pages": [
+  {
+   "h1": "Das Dashboard",
+   "sub": "Hub → Laser öffnet das Dashboard. Vier Kennzahlen zeigen, was Aufmerksamkeit braucht — darunter die passenden Listen.",
+   "card": {
+    "title": "Das Dashboard",
+    "text": "Überfällige Wartungen, STKs, Reparaturen, Lager"
+   },
+   "left": {
+    "shot": "l1-dashboard"
+   },
+   "leftCaption": "Das Laser-Dashboard mit den vier Warn-Kennzahlen und den Listen darunter.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Überfällige Wartungen",
+     "text": "Jeder **aktive** Laser braucht in jeder Kalenderwoche ein Wartungsprotokoll. Fehlt es, steht das Gerät hier."
+    },
+    {
+     "n": 2,
+     "title": "Anstehende STKs",
+     "text": "Sicherheitstechnische Kontrollen, die in den nächsten Wochen fällig werden. Ohne gültige STK darf ein Gerät nicht betrieben werden."
+    },
+    {
+     "n": 3,
+     "title": "Geräte in Reparatur",
+     "text": "Was gerade nicht einsatzbereit ist — wichtig für die Terminplanung im Institut."
+    },
+    {
+     "n": 4,
+     "title": "Lager-Unterschreitungen",
+     "text": "Verbrauchsmaterial unter dem Mindestbestand. Rechtzeitig nachbestellen, bevor eine Behandlung ausfällt."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Überfällig heißt: diese Woche noch machen.** Die Wartung ist wöchentliche Pflicht — das Dashboard zeigt es an, erledigen muss es das Institut."
+   }
+  },
+  {
+   "h1": "Die Geräteliste",
+   "sub": "Der Knopf **Geräte** führt zur Tabelle aller Laser mit Status, Standort und der Zahl der montierten Teile.",
+   "card": {
+    "title": "Die Geräteliste",
+    "text": "Alle Laser mit Status und Standort"
+   },
+   "left": {
+    "shot": "l2-geraeteliste"
+   },
+   "leftCaption": "Die Geräte-Tabelle — jede Zeile ein Laser, rechts der Weg zur Detailseite.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Status",
+     "text": "**Aktiv** wird behandelt und gewartet, **Im Lager** wartet auf den Einsatz, **In Reparatur** ist unterwegs."
+    },
+    {
+     "n": 2,
+     "title": "Standort",
+     "text": "Der Code des Behandlungsraums oder Lagers, z. B. **OS.02** — gepflegt in den Stammdaten."
+    },
+    {
+     "n": 3,
+     "title": "Anbauteile",
+     "text": "Wie viele Handstücke, Laserköpfe und Skintels gerade an diesem Gerät montiert sind."
+    },
+    {
+     "n": 4,
+     "title": "Details",
+     "text": "Öffnet die Detailseite des Geräts mit allen Reitern („Laser 2“)."
+    }
+   ],
+   "hint": {
+    "text": "Zwei Knöpfe oben rechts — **Laser inventarisieren** und **Einzelne Komponente inventarisieren** — legen neue Geräte und Ersatzteile an („Laser 11“)."
+   }
+  },
+  {
+   "h1": "Die Bauteil-Ansicht",
+   "sub": "Unter der Tabelle liegt ein Foto des Vectus mit klickbaren Bereichen. Ein Klick zeigt rechts alle Teile dieses Typs — über alle Geräte hinweg.",
+   "card": {
+    "title": "Die Bauteil-Ansicht",
+    "text": "Alle Handstücke, Köpfe und Skintels auf einen Blick"
+   },
+   "left": {
+    "shot": "l3-bauteilansicht"
+   },
+   "leftCaption": "Die interaktive Ansicht mit gewähltem Bereich „Handstück“ und der Teiletabelle daneben.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bereich wählen",
+     "text": "Auf das Bild oder auf einen Knopf der Legende tippen: Top-Unit, Center-Unit, Bottom-Unit, Handstück, Laserkopf, Skintel."
+    },
+    {
+     "n": 2,
+     "title": "Teiletabelle",
+     "text": "Seriennummer, Laser, Standort und Zustand jedes Teils dieses Typs — auch die, die nicht montiert sind."
+    },
+    {
+     "n": 3,
+     "title": "Seriennummer öffnen",
+     "text": "Die Seriennummer ist ein Link zur Detailseite des Teils („Laser 10“)."
+    }
+   ],
+   "hint": {
+    "text": "Zustand **Große Risse** oder **Kleine Risse** in dieser Liste heißt: Das Teil wurde bei einer Wartung so bewertet. Es läuft weiter, gehört aber im Blick behalten."
+   }
+  }
+ ]
+}

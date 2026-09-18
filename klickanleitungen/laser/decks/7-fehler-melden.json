@@ -1,0 +1,105 @@
+{
+ "out": "../pdf/Laser-7-Fehler-melden",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Laser",
+ "nr": 7,
+ "of": 13,
+ "audience": "institut",
+ "title": [
+  "Fehler",
+  "melden"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — einen Laser-Fehler erfassen: Fehlercode, Beschreibung, Foto oder Video",
+ "eyebrow": "Laser · Fehler",
+ "footerArea": "Laser",
+ "stand": "18.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Fehler werden **sofort** gemeldet, nicht erst bei der Wartung. Jeder Eintrag steht am Gerät und fließt in die Fehlerquote der Reports.",
+  "Bekannte **Fehlercodes 005–110**, Sanduhr blau/weiß und „ohne Fehler abgestürzt“ stehen zur Auswahl; alles andere als Freitext."
+ ],
+ "pages": [
+  {
+   "h1": "Der Fehler-Reiter",
+   "sub": "Auf der Geräteseite listet **Fehler** alle Meldungen mit Code, Beschreibung und Status.",
+   "card": {
+    "title": "Der Fehler-Reiter",
+    "text": "Gemeldete Fehler des Geräts"
+   },
+   "left": {
+    "shot": "l22-fehler-reiter"
+   },
+   "leftCaption": "Der Reiter „Fehler“ mit der Liste und dem roten Erfassen-Knopf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Fehler erfassen",
+     "text": "Öffnet das Meldefenster."
+    },
+    {
+     "n": 2,
+     "title": "Liste",
+     "text": "Wann aufgetreten, welcher Code, wer gemeldet hat und ob der Fehler noch offen ist."
+    }
+   ]
+  },
+  {
+   "h1": "Fehler erfassen",
+   "sub": "Code wählen, Zeitpunkt setzen, beschreiben, Foto oder Video anhängen — speichern.",
+   "card": {
+    "title": "Fehler erfassen",
+    "text": "Code, Zeitpunkt, Beschreibung, Medien"
+   },
+   "left": {
+    "shot": "l23-fehler-erfassen"
+   },
+   "leftCaption": "Das Fenster „Fehler erfassen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Fehlercode",
+     "text": "Aus der Liste wählen. Steht der Code nicht drin, den Freitext nehmen und den Code aus dem Display abschreiben."
+    },
+    {
+     "n": 2,
+     "title": "Aufgetreten am",
+     "text": "Datum und Uhrzeit des Fehlers — nicht der Meldung."
+    },
+    {
+     "n": 3,
+     "title": "Beschreibung",
+     "text": "Wann und wie es passiert ist: welche Behandlung, welches Handstück, was davor geschah."
+    },
+    {
+     "n": 4,
+     "title": "Medien",
+     "text": "Foto **und/oder Video** vom Display. Das Video ist hier erlaubt — in der Wartung nicht."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Ein Foto vom Display sagt mehr als der Code.** Der Hersteller fragt fast immer danach — aufnehmen, bevor das Gerät neu gestartet wird."
+   }
+  },
+  {
+   "h1": "Die Fehlercodes",
+   "sub": "Die Auswahlliste enthält die bekannten Codes des Vectus mit Kurzbeschreibung.",
+   "card": {
+    "title": "Die Fehlercodes",
+    "text": "Bekannte Codes des Vectus"
+   },
+   "left": {
+    "shot": "l24-fehlercodes"
+   },
+   "leftCaption": "Die geöffnete Codeliste im Meldefenster.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Code wählen",
+     "text": "Antippen übernimmt Code und Bezeichnung."
+    }
+   ]
+  }
+ ]
+}

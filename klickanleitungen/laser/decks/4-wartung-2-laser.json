@@ -1,0 +1,108 @@
+{
+ "out": "../pdf/Laser-4-Wartung-2-Laser",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Laser",
+ "nr": 4,
+ "of": 13,
+ "audience": "institut",
+ "title": [
+  "Wartung 2:",
+  "Laser prüfen"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Schritt 2 der Wartung: Impulse und FLOW erfassen, die acht Pflicht-Fotos des Geräts aufnehmen",
+ "eyebrow": "Laser · Wöchentliche Wartung",
+ "footerArea": "Laser",
+ "stand": "18.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Schritt 2 gehört zum Gerät selbst: **Pulses Maschine**, **FLOW (LMP)** und **acht Fotos** — Systeminfo, drei Filter, Handstückhalterung, Gummiband, Kalibrierungsport, allgemeine Sauberkeit.",
+  "**Jedes Foto ist Pflicht.** Ohne alle acht bleibt „Weiter“ verwehrt."
+ ],
+ "pages": [
+  {
+   "h1": "Impulse, FLOW und Fotos",
+   "sub": "Die beiden Werte vom Display abschreiben, dann die acht Kacheln füllen.",
+   "card": {
+    "title": "Impulse, FLOW und Fotos",
+    "text": "Zwei Werte, acht Kacheln"
+   },
+   "left": {
+    "shot": "l13-laser-schritt"
+   },
+   "leftCaption": "Schritt 2 mit leeren Feldern und den acht Foto-Kacheln.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Pulses Maschine",
+     "text": "Der Impulszähler des Geräts. Der Hub zeigt den **letzten Wert** darunter — der neue darf nicht kleiner sein."
+    },
+    {
+     "n": 2,
+     "title": "FLOW (LMP)",
+     "text": "Der Durchflusswert aus der Flow Maintenance, so wie das Display ihn zeigt."
+    },
+    {
+     "n": 3,
+     "title": "Foto-Kacheln",
+     "text": "Jede Kachel zeigt schwach, was drauf soll. Tippen öffnet die Kamera oder die Dateiauswahl."
+    }
+   ],
+   "hint": {
+    "text": "Auf dem Tablet öffnet jede Kachel direkt die **Rückkamera**. Ein scharfes Foto aus der Nähe reicht — keine Kunst, aber lesbar."
+   }
+  },
+  {
+   "h1": "Ohne Fotos geht es nicht weiter",
+   "sub": "Wer „Weiter“ tippt, bevor alle Kacheln gefüllt sind, sieht rote Rahmen und den Hinweis, welches Foto fehlt.",
+   "card": {
+    "title": "Ohne Fotos geht es nicht weiter",
+    "text": "Pflicht-Fotos fehlen"
+   },
+   "left": {
+    "shot": "l14-fotos-fehlen"
+   },
+   "leftCaption": "Schritt 2 nach „Weiter“ ohne Fotos: rote Rahmen an den leeren Kacheln, Hinweis darunter.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Roter Rahmen",
+     "text": "Diese Kachel ist noch leer."
+    },
+    {
+     "n": 2,
+     "title": "Hinweis",
+     "text": "Nennt das erste fehlende Foto beim Namen — der Rest steht an den Rahmen."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Die Fotos sind der Nachweis.** Sie ersetzen den Foto-Versand per WhatsApp und liegen dauerhaft am Protokoll — für Hersteller, Prüfstelle und Gewährleistung."
+   }
+  },
+  {
+   "h1": "Alle Fotos da",
+   "sub": "Gefüllte Kacheln bekommen einen grünen Rahmen und ein Häkchen. Dann ist „Weiter“ frei.",
+   "card": {
+    "title": "Alle Fotos da",
+    "text": "Weiter zu den Anbauteilen"
+   },
+   "left": {
+    "shot": "l15-fotos-komplett"
+   },
+   "leftCaption": "Schritt 2 mit acht aufgenommenen Fotos — grüne Rahmen, „Weiter“ aktiv.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Häkchen",
+     "text": "Das Foto ist hochgeladen. Erneut tippen tauscht es aus."
+    },
+    {
+     "n": 2,
+     "title": "Weiter",
+     "text": "Führt zu Schritt 3, den Anbauteilen („Laser 5“)."
+    }
+   ]
+  }
+ ]
+}

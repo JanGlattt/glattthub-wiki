@@ -1,0 +1,142 @@
+{
+ "out": "../pdf/Laser-5-Wartung-3-Anbauteile",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Laser",
+ "nr": 5,
+ "of": 13,
+ "audience": "institut",
+ "title": [
+  "Wartung 3:",
+  "Anbauteile"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Schritt 3 der Wartung: Handstück, Laserkopf groß, Laserkopf klein und Skintel bewerten und fotografieren",
+ "eyebrow": "Laser · Wöchentliche Wartung",
+ "footerArea": "Laser",
+ "stand": "18.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Schritt 3 geht die vier Anbauteile **nacheinander** durch. Je Teil: Zustand wählen, beim Handstück die Impulse, beim Skintel die Tests — und die Fotos.",
+  "Fotos je Teil: Handstück **4**, Laserkopf groß **2**, Laserkopf klein **2**, Skintel **3**. Jede Kachel ist Pflicht, solange das Teil montiert ist."
+ ],
+ "pages": [
+  {
+   "h1": "Handstück",
+   "sub": "Das erste Anbauteil. Zustand, Impulszähler und vier Fotos.",
+   "card": {
+    "title": "Handstück",
+    "text": "Zustand, Pulses, vier Fotos"
+   },
+   "left": {
+    "shot": "l16-handstueck"
+   },
+   "leftCaption": "Teilschritt „Handstück“ mit gewähltem Zustand, Pulses und den vier Kacheln.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Fortschrittsbalken",
+     "text": "Vier Striche für die vier Teile — der aktuelle ist hervorgehoben."
+    },
+    {
+     "n": 2,
+     "title": "Zustand",
+     "text": "**Gut**, **Kleine Risse**, **Große Risse** oder **Defekt**. Ehrlich bewerten — der Wert steht danach am Teil."
+    },
+    {
+     "n": 3,
+     "title": "Pulses Handstück",
+     "text": "Der Zähler des Handstücks. Auch hier: nicht kleiner als der letzte Wert."
+    },
+    {
+     "n": 4,
+     "title": "Fotos",
+     "text": "Display-Infos, links, rechts und die Dioden."
+    }
+   ]
+  },
+  {
+   "h1": "Defekt gefunden",
+   "sub": "Wird ein Teil als **Defekt** bewertet, weist der Hub sofort darauf hin, was das auslöst.",
+   "card": {
+    "title": "Defekt gefunden",
+    "text": "Reparatur wird automatisch angelegt"
+   },
+   "left": {
+    "shot": "l17-defekt"
+   },
+   "leftCaption": "Zustand „Defekt“ gewählt — der Hinweis auf den automatischen Reparatur-Vorgang.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Hinweis",
+     "text": "Beim Abschluss der Wartung entsteht für dieses Teil ein Reparatur-Vorgang („Laser 8“). Nichts weiter zu tun — außer das Institut zu informieren."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Defekt betrifft die Termine.** Ein Handstück oder Kopf, der ausfällt, verändert die Behandlungsplanung — die Leitung erfährt es nur, wenn es jemand sagt."
+   }
+  },
+  {
+   "h1": "Laserkopf groß und klein",
+   "sub": "Die beiden Köpfe: Zustand und je zwei Fotos, innen und außen.",
+   "card": {
+    "title": "Laserkopf groß und klein",
+    "text": "Je zwei Fotos, innen und außen"
+   },
+   "left": {
+    "shot": "l18-laserkopf-gross"
+   },
+   "leftCaption": "Teilschritt „Laserkopf groß“ mit den Kacheln Innen und Außen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zustand",
+     "text": "Wie beim Handstück. Risse in der Optik sind hier der häufigste Befund."
+    },
+    {
+     "n": 2,
+     "title": "Innen / Außen",
+     "text": "Innen die Optik, außen das Gehäuse mit Anschluss."
+    }
+   ],
+   "hint": {
+    "text": "Der Knopf unten rechts nennt immer das **nächste** Teil („Weiter: Laserkopf klein“), links geht es zum vorigen zurück."
+   }
+  },
+  {
+   "h1": "Skintel",
+   "sub": "Das Messgerät für den Hauttyp bekommt zusätzlich zwei Testwerte und den Schalter für Probleme.",
+   "card": {
+    "title": "Skintel",
+    "text": "Testwerte, Probleme, drei Fotos"
+   },
+   "left": {
+    "shot": "l19-skintel"
+   },
+   "leftCaption": "Teilschritt „Skintel“ mit Testfeldern, Problem-Schalter und drei Kacheln.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Test Handfläche",
+     "text": "Messwert 0–50 an der eigenen Handfläche."
+    },
+    {
+     "n": 2,
+     "title": "Test Unterarm",
+     "text": "Messwert 0–50 am Unterarm. Beide Werte zeigen, ob das Skintel plausibel misst."
+    },
+    {
+     "n": 3,
+     "title": "Skintel-Probleme",
+     "text": "Einschalten, wenn etwas auffällt — dann ist eine **Beschreibung** Pflicht."
+    },
+    {
+     "n": 4,
+     "title": "Fotos",
+     "text": "Referenz auf der Rückseite, Messstelle, Display."
+    }
+   ]
+  }
+ ]
+}

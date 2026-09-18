@@ -1,0 +1,142 @@
+{
+ "out": "../pdf/Laser-2-Geraet-im-Detail",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Laser",
+ "nr": 2,
+ "of": 13,
+ "audience": "institut",
+ "title": [
+  "Ein Gerät",
+  "im Detail"
+ ],
+ "subtitle": "Klickanleitung für das Laser-Modul im glatttHub — die Detailseite eines Lasers: Gerätedaten, montierte Teile, Historie und Anschaffung",
+ "eyebrow": "Laser · Gerätedetail",
+ "footerArea": "Laser",
+ "stand": "18.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Detailseite hat **acht Reiter**. Diese Anleitung zeigt Übersicht, Komponenten & Anbauteile, Historie und Anschaffung — Wartungen, Reparaturen, Fehler und STK haben eigene Anleitungen.",
+  "Alles auf dieser Seite gehört zu **einem** Gerät; die Teile haben zusätzlich eigene Seiten („Laser 10“)."
+ ],
+ "pages": [
+  {
+   "h1": "Übersicht und Reiter",
+   "sub": "Die Kopfzeile nennt Seriennummer und Status, darunter liegt die Reiterleiste, dann die Gerätedaten.",
+   "card": {
+    "title": "Übersicht und Reiter",
+    "text": "Seriennummer, Status, Reiterleiste"
+   },
+   "left": {
+    "shot": "l4-geraet-uebersicht"
+   },
+   "leftCaption": "Die Detailseite eines aktiven Lasers mit geöffnetem Reiter „Übersicht“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Reiterleiste",
+     "text": "Übersicht · Komponenten & Anbauteile · Wartungen · Reparaturen · Fehler · Historie · Anschaffung · STK & Behörde."
+    },
+    {
+     "n": 2,
+     "title": "Status",
+     "text": "Der Betriebsstatus des Geräts. Er wechselt automatisch auf **In Reparatur**, sobald der Laser versendet wird."
+    },
+    {
+     "n": 3,
+     "title": "Gerätedaten",
+     "text": "Modell, Standort, Anschaffung und Kennungen — die Angaben, nach denen Hersteller und Prüfstelle fragen."
+    }
+   ]
+  },
+  {
+   "h1": "Komponenten und Anbauteile",
+   "sub": "Fest verbaute Komponenten (Center-Unit, Bottom-Unit, Netzteil, Pumpe) und die montierten Anbauteile mit ihrem Zustand.",
+   "card": {
+    "title": "Komponenten und Anbauteile",
+    "text": "Was in und an diesem Gerät steckt"
+   },
+   "left": {
+    "shot": "l5-komponenten"
+   },
+   "leftCaption": "Der Reiter „Komponenten & Anbauteile“ — oben die verbauten Komponenten, unten die montierten Teile.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Fest verbaute Komponenten",
+     "text": "Teile mit eigener Seriennummer, die nur bei einer Reparatur getauscht werden."
+    },
+    {
+     "n": 2,
+     "title": "Montierte Anbauteile",
+     "text": "Handstück, Laserkopf groß und klein, Skintel — sie wandern zwischen Geräten und Standorten."
+    },
+    {
+     "n": 3,
+     "title": "Zustand",
+     "text": "Die letzte Bewertung aus der Wartung: **Gut**, **Kleine Risse**, **Große Risse** oder **Defekt**."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Defekt heißt Reparatur.** Sobald ein Teil in der Wartung als Defekt bewertet wird, legt der Hub automatisch einen Reparatur-Vorgang an („Laser 8“)."
+   }
+  },
+  {
+   "h1": "Historie",
+   "sub": "Jedes Ereignis am Gerät — Wartung, Fehler, Versand, Rückkehr, Standortwechsel — landet automatisch in der Historie.",
+   "card": {
+    "title": "Historie",
+    "text": "Die lückenlose Chronik des Geräts"
+   },
+   "left": {
+    "shot": "l6-historie"
+   },
+   "leftCaption": "Der Reiter „Historie“ mit Zeitpunkt, Ereignis, Details und auslösender Person.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Ereignis",
+     "text": "Der Typ des Eintrags, etwa Wartung, Reparatur-Versand oder Standortwechsel."
+    },
+    {
+     "n": 2,
+     "title": "Details",
+     "text": "Was genau passiert ist — bei einer Rückkehr zum Beispiel das Ergebnis und die neue Seriennummer."
+    },
+    {
+     "n": 3,
+     "title": "Ausgelöst von",
+     "text": "Wer den Eintrag verursacht hat. Niemand trägt hier von Hand ein."
+    }
+   ],
+   "hint": {
+    "text": "Die Historie ist die Grundlage für **Gewährleistungsfragen**: Wann kam das Gerät, wann war es beim Hersteller, was wurde getauscht."
+   }
+  },
+  {
+   "h1": "Anschaffung",
+   "sub": "Kaufdatum, Wert, Lieferant, Rechnungsnummer und Garantie — plus die hochgeladenen Rechnungen.",
+   "card": {
+    "title": "Anschaffung",
+    "text": "Kaufdaten und Rechnungen"
+   },
+   "left": {
+    "shot": "l7-anschaffung"
+   },
+   "leftCaption": "Der Reiter „Anschaffung“ mit den Kaufdaten und der Rechnungsliste.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kaufdaten",
+     "text": "Datum, Wert, Lieferant, Garantie und Inbetriebnahme — erfasst beim Inventarisieren („Laser 11“)."
+    },
+    {
+     "n": 2,
+     "title": "Rechnungen",
+     "text": "Jede Anschaffung braucht eine Rechnung als Datei. **Öffnen** zeigt sie an."
+    }
+   ]
+  }
+ ]
+}

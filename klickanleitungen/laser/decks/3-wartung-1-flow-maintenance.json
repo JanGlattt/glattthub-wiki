@@ -1,0 +1,165 @@
+{
+ "out": "../pdf/Laser-3-Wartung-1-Flow-Maintenance",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Laser",
+ "nr": 3,
+ "of": 13,
+ "audience": "institut",
+ "title": [
+  "Wartung 1:",
+  "Flow Maintenance"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — die wöchentliche Laser-Wartung starten: Wartungs-Reiter, Assistent öffnen, der 5-Minuten-Countdown",
+ "eyebrow": "Laser · Wöchentliche Wartung",
+ "footerArea": "Laser",
+ "stand": "18.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Wartung ist für jeden **aktiven** Laser **einmal pro Kalenderwoche** Pflicht. Ohne Protokoll in der laufenden Woche meldet das Dashboard „überfällig“.",
+  "Der Assistent hat **vier Schritte**: Flow Maintenance & Reinigung (diese Anleitung), Laser („Laser 4“), Anbauteile („Laser 5“), Lager-Check & Abschluss („Laser 6“).",
+  "Zum Durchführen braucht es das Recht **Wartungen durchführen**."
+ ],
+ "pages": [
+  {
+   "h1": "Der Wartungs-Reiter",
+   "sub": "Auf der Geräteseite zeigt der Reiter **Wartungen** alle Protokolle und ob die Wartung dieser Woche noch fehlt.",
+   "card": {
+    "title": "Der Wartungs-Reiter",
+    "text": "Protokolle, Überfällig-Hinweis, Start"
+   },
+   "left": {
+    "shot": "l8-wartungen"
+   },
+   "leftCaption": "Der Reiter „Wartungen“ — oben der Hinweis für die laufende Woche, rechts der Startknopf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Überfällig-Hinweis",
+     "text": "Erscheint, solange in der laufenden Kalenderwoche kein Protokoll vorliegt."
+    },
+    {
+     "n": 2,
+     "title": "Wartung durchführen",
+     "text": "Öffnet den Assistenten. Er beginnt immer bei Schritt 1."
+    },
+    {
+     "n": 3,
+     "title": "Protokoll-Liste",
+     "text": "Datum, Kalenderwoche, wer gewartet hat, Pulses und FLOW-Wert jeder bisherigen Wartung."
+    }
+   ]
+  },
+  {
+   "h1": "Schritt 1: Countdown starten",
+   "sub": "Schritt 1 ist die Flow Maintenance am Gerät. Der Hub begleitet sie mit einem **5-Minuten-Countdown** — erst danach geht es weiter.",
+   "card": {
+    "title": "Schritt 1: Countdown starten",
+    "text": "Flow Maintenance am Gerät, 5 Minuten"
+   },
+   "left": {
+    "shot": "l9-countdown-start"
+   },
+   "leftCaption": "Schritt 1 des Assistenten vor dem Start: 05:00 und der Startknopf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Schritte links",
+     "text": "Die vier Schritte des Assistenten. Erledigte Schritte bekommen ein Häkchen und lassen sich zurück anspringen."
+    },
+    {
+     "n": 2,
+     "title": "05:00",
+     "text": "Die volle Dauer. Sie läuft erst, wenn du **Countdown starten** tippst — dann parallel zur Flow Maintenance am Gerät."
+    },
+    {
+     "n": 3,
+     "title": "Countdown starten",
+     "text": "Am Laser die Flow Maintenance auslösen, hier starten. Während der fünf Minuten das Gerät reinigen, nichts am Display bedienen."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Der Countdown lässt sich nicht abkürzen.** Er wird auf dem Server gezählt — Neuladen, Schließen oder ein anderes Gerät ändern nichts an der Zeit."
+   }
+  },
+  {
+   "h1": "Während der Countdown läuft",
+   "sub": "Fünf Minuten für die Flow Maintenance und die Reinigung. „Weiter“ bleibt gesperrt.",
+   "card": {
+    "title": "Während der Countdown läuft",
+    "text": "Warten und reinigen"
+   },
+   "left": {
+    "shot": "l10-countdown-laeuft"
+   },
+   "leftCaption": "Der laufende Countdown — „Weiter“ ist ausgegraut.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Läuft… bitte warten",
+     "text": "Kein Pausieren, kein Überspringen. Die Zeit ist Teil der Wartung."
+    },
+    {
+     "n": 2,
+     "title": "Weiter gesperrt",
+     "text": "Erst bei 00:00 wird der Knopf frei."
+    }
+   ],
+   "hint": {
+    "text": "Das Fenster darf zwischendurch **geschlossen** werden, etwa um an ein anderes Gerät zu gehen: Die Zeit läuft weiter, beim Wiederöffnen steht der Countdown dort, wo er wirklich ist."
+   }
+  },
+  {
+   "h1": "Countdown abgeschlossen",
+   "sub": "Nach fünf Minuten meldet der Hub die Flow Maintenance als abgeschlossen und gibt Schritt 2 frei.",
+   "card": {
+    "title": "Countdown abgeschlossen",
+    "text": "Weiter zu Schritt 2"
+   },
+   "left": {
+    "shot": "l11-countdown-fertig"
+   },
+   "leftCaption": "Schritt 1 nach Ablauf: grüner Hinweis, „Weiter“ ist frei.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Hinweis",
+     "text": "„Flow Maintenance abgeschlossen“ — Flow Maintenance und Reinigung gelten damit als durchgeführt."
+    },
+    {
+     "n": 2,
+     "title": "Weiter",
+     "text": "Führt zu Schritt 2, der Laser-Zustandsprüfung („Laser 4“)."
+    }
+   ]
+  },
+  {
+   "h1": "Unterbrochen? Der Entwurf",
+   "sub": "Wird der Assistent geschlossen, bleibt der Fortschritt als **Entwurf** erhalten — je Gerät und Person.",
+   "card": {
+    "title": "Unterbrochen? Der Entwurf",
+    "text": "Fortsetzen oder verwerfen"
+   },
+   "left": {
+    "shot": "l12-entwurf"
+   },
+   "leftCaption": "Wiedergeöffneter Assistent mit dem Hinweis auf den vorhandenen Entwurf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Entwurf-Hinweis",
+     "text": "Der Assistent steht wieder auf dem Schritt, bei dem er geschlossen wurde; der Countdown-Stand ist gesichert."
+    },
+    {
+     "n": 2,
+     "title": "Wartung verwerfen",
+     "text": "Löscht den Entwurf und beginnt beim nächsten Mal von vorn — inklusive neuem Countdown."
+    }
+   ],
+   "hint": {
+    "text": "**Auch die Fotos bleiben im Entwurf.** Jedes hochgeladene Foto ist sofort gesichert — wer nach Schritt 2 oder 3 schließt, findet beim Fortsetzen alle Kacheln gefüllt vor."
+   }
+  }
+ ]
+}

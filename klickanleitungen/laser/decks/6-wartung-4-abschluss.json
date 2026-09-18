@@ -1,0 +1,81 @@
+{
+ "out": "../pdf/Laser-6-Wartung-4-Abschluss",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Laser",
+ "nr": 6,
+ "of": 13,
+ "audience": "institut",
+ "title": [
+  "Wartung 4:",
+  "Lager und Abschluss"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Schritt 4 der Wartung: Verbrauch erfassen, Kommentar, Wartung abschließen und das Protokoll wiederfinden",
+ "eyebrow": "Laser · Wöchentliche Wartung",
+ "footerArea": "Laser",
+ "stand": "18.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Der letzte Schritt schreibt das **Protokoll**: verbrauchtes Chiller-Fluid, Kommentar, dann **Wartung abschließen**.",
+  "Beim Abschluss passiert automatisch: Protokoll mit allen Fotos, Historien-Eintrag, Zustände an den Teilen, Bestand am Standort reduziert — und bei „Defekt“ ein Reparatur-Vorgang."
+ ],
+ "pages": [
+  {
+   "h1": "Lager-Check und Abschluss",
+   "sub": "Verbrauch und Kommentar eintragen, dann abschließen.",
+   "card": {
+    "title": "Lager-Check und Abschluss",
+    "text": "Chiller-Fluid, Kommentar, abschließen"
+   },
+   "left": {
+    "shot": "l20-lager-check"
+   },
+   "leftCaption": "Schritt 4 mit Verbrauchsfeld, Kommentar und dem Abschluss-Knopf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Chiller-Fluid",
+     "text": "Anzahl der in dieser Woche verbrauchten Flaschen. Der Hub zieht sie vom Bestand des Standorts ab."
+    },
+    {
+     "n": 2,
+     "title": "Kommentare",
+     "text": "Alles, was ins Protokoll gehört: Auffälligkeiten, Geräusche, Hinweise für die nächste Wartung."
+    },
+    {
+     "n": 3,
+     "title": "Wartung abschließen",
+     "text": "Speichert das Protokoll. Der Assistent prüft dabei noch einmal alle Pflichtangaben — fehlt etwas, springt er zum betroffenen Schritt."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Einmal abgeschlossen, bleibt es so.** Ein Protokoll wird nicht nachträglich bearbeitet. Wer sich vertippt hat, meldet es der Leitung."
+   }
+  },
+  {
+   "h1": "Das Protokoll wiederfinden",
+   "sub": "Jedes Protokoll steht am Gerät und an jedem erfassten Teil — mit Datum, Kalenderwoche, Person und den Werten.",
+   "card": {
+    "title": "Das Protokoll wiederfinden",
+    "text": "Am Gerät und am Teil"
+   },
+   "left": {
+    "shot": "l21-protokolle-teil"
+   },
+   "leftCaption": "Der Reiter „Wartungen“ auf der Seite eines Handstücks — alle Protokolle, in denen es erfasst wurde.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Wartungen am Teil",
+     "text": "Auch wenn das Handstück das Gerät wechselt: Seine Wartungshistorie wandert mit."
+    },
+    {
+     "n": 2,
+     "title": "Werte",
+     "text": "Pulses und Zustand zum Zeitpunkt der Wartung — so sieht man, wann Risse zum ersten Mal auftraten."
+    }
+   ]
+  }
+ ]
+}

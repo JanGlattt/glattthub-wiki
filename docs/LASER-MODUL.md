@@ -105,15 +105,15 @@ Das erfasste Teil erscheint danach in der jeweiligen Spalte der interaktiven Ger
 Die wöchentliche Wartung ist für **aktive** Laser Pflicht. Der Wizard hat drei Schritte:
 
 **Schritt 1 – Flow Maintenance & Reinigung**
-Ein **5-Minuten-Countdown** mit harter Sperre: „Weiter" ist erst nach vollständigem Ablauf möglich, der Countdown kann nicht pausiert oder übersprungen werden. Während dieser Zeit keine Arbeiten am Display – die Reinigung des Geräts erfolgt parallel.
+Ein **5-Minuten-Countdown** mit harter Sperre: „Weiter" ist erst nach vollständigem Ablauf möglich, der Countdown kann nicht pausiert oder übersprungen werden. Während dieser Zeit keine Arbeiten am Display – die Reinigung des Geräts erfolgt parallel. Seit 18.09.2026 zählt der **Server** die Zeit: Der Startzeitpunkt liegt im Entwurf, „abgeschlossen" gilt erst, wenn seit dem Start wirklich fünf Minuten vergangen sind. Wird das Fenster zwischendurch geschlossen, läuft die Zeit weiter und der Countdown steht beim Wiederöffnen dort, wo er tatsächlich ist.
 
 **Schritt 2 – Zustandsprüfung je Anbauteil**
-Der Wizard hat 4 Substeps für die 4 Anbauteil-Typen (Handstück, Laserkopf groß, Laserkopf klein, Skintel). Je Substep: Zustand (4 Stufen), Puls-Zähler (nur Handstück), **Skintel-Tests** (Handflächenwert 0–50, Unterarmwert 0–50, Skintel-Probleme mit Beschreibung), bis zu **4 Foto-Slots** (Handstück: 4, Laserkopf groß: 2, Laserkopf klein: 2, Skintel: 3). Wird ein Teil als **Defekt** markiert, wird automatisch ein Reparatur-Vorgang erstellt.
+Der Wizard hat 4 Substeps für die 4 Anbauteil-Typen (Handstück, Laserkopf groß, Laserkopf klein, Skintel). Je Substep: Zustand (4 Stufen), Puls-Zähler (nur Handstück), **Skintel-Tests** (Handflächenwert 0–50, Unterarmwert 0–50, Skintel-Probleme mit Beschreibung), **Foto-Slots** (Handstück: 4, Laserkopf groß: 2, Laserkopf klein: 2, Skintel: 3) — **jede Kachel ist Pflicht** (seit 18.09.2026), solange das Teil am Laser montiert ist; ohne alle Fotos geht es nicht zum nächsten Teil. Gleiches gilt für die acht Laser-Fotos in Schritt 2. Wird ein Teil als **Defekt** markiert, wird automatisch ein Reparatur-Vorgang erstellt.
 
 **Schritt 3 – Lager-Check & Abschluss**
 Zubehör-Checks, Wasserfilter-Wechsel und Anzahl verbrauchter Chiller-Fluid-Flaschen (reduziert den Bestand am Standort). Speichern schreibt das Protokoll und einen Historien-Eintrag.
 
-> **Entwurf:** Wird der Wizard zwischendurch geschlossen, bleibt der Fortschritt (inkl. Countdown-Status) als Entwurf erhalten und kann fortgesetzt werden.
+> **Entwurf:** Wird der Wizard zwischendurch geschlossen, bleibt der Fortschritt (inkl. Countdown-Status) als Entwurf erhalten und kann fortgesetzt werden. **Auch die Fotos bleiben erhalten:** Jedes Foto wandert beim Hochladen sofort in die Entwurfs-Ablage (`laser/drafts/<laser>-<user>/` auf der Medien-Platte, `draftPhotos` im Entwurf) und beim Abschluss von dort ans Protokoll (`LaserMediaService::adoptStored()`); „Wartung verwerfen" löscht die Ablage.
 
 ### Fehler erfassen
 
@@ -220,6 +220,7 @@ Alle Tabellen mit Prefix `laser_` (bzw. `lasers`). Migrationen: `database/migrat
 
 1. Top-Unit-SN ist die führende Geräte-ID.
 2. Wöchentliche Wartungspflicht je **AKTIV**-Laser; „überfällig", wenn in laufender KW kein Protokoll (`Laser::isMaintenanceOverdue()`).
+   Flow-Maintenance-Countdown: 300 s (`MaintenanceWizard::COUNTDOWN_SECONDS`), Start in `laser_maintenance_drafts.countdown_started_at`, Abschluss nur serverseitig (`markCountdownCompleted()` prüft die Zeit, Toleranz 2 s).
 3. STK jährlich; Reminder 60 + 30 Tage vorher.
 4. **DEFEKT** (Komponente/Anbauteil) → automatischer Reparatur-Vorgang (`AUTO_DEFEKT`, idempotent).
 5. Versand → Laser `IN_REPARATUR` + `AssetHistory(REPARATUR_VERSAND)`.
@@ -227,7 +228,7 @@ Alle Tabellen mit Prefix `laser_` (bzw. `lasers`). Migrationen: `database/migrat
 7. Pulses werden nur protokolliert (keine Warnung).
 8. Verbrauchsmaterial: Warnung bei Unterschreitung Mindestbestand.
 9. Rechnung Pflicht-Upload bei Anschaffung **und** Reparatur-Rückkehr.
-10. Mind. 1 Foto pro Wartung; Video nur im Fehler-Modal.
+10. **Alle Foto-Kacheln sind Pflicht** (Laser: 8, je montiertes Anbauteil seine 2–4; `MaintenanceWizard::photoRules()`); Video nur im Fehler-Modal.
 11. Jedes relevante Ereignis schreibt automatisch einen `AssetHistory`-Eintrag.
 
 ### Scheduler & Push
