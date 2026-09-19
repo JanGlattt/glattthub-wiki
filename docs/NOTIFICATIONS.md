@@ -9,7 +9,7 @@ Hub gelesen werden und was das Team im Admin-Panel einstellt, steht im Nutzerhan
 
 !!! nutzerhandbuch "Bedienung: Grundlagen 2 und Admin 4 im Nutzerhandbuch"
     [Grundlagen 2 – Standort, Suche & Mitteilungen](https://hilfe.hub.glattt.com/grundlagen/2/) —
-    Mitteilungen im Hub lesen und abarbeiten ·
+    Mitteilungen im Hub lesen und abarbeiten, eigene Kanäle je Anlass einstellen ·
     [Admin 4 – Erinnerungen und WhatsApp](https://hilfe.hub.glattt.com/admin/4/) —
     automatische Nachrichten, Einwilligungen und Protokolle im Admin-Panel.
 
@@ -17,20 +17,26 @@ Hub gelesen werden und was das Team im Admin-Panel einstellt, steht im Nutzerhan
 
 ## Für Anwender — Überblick
 
-Der Hub meldet sich von selbst, wenn etwas passiert, das jemand wissen muss — eine geplatzte
-Lastschrift, ein abgelaufenes Mandat, eine fällige Aufgabe oder eine Mitteilung, die jemand aus
-dem Büro von Hand verfasst hat. Jede Benachrichtigung erscheint **im Hub** (Glocke in der
-Kopfzeile) und zusätzlich als **Push-Mitteilung** auf den Geräten, auf denen der Empfänger Push
-erlaubt hat; wer sie bekommt, steuert die Zielgruppe (alle, Rollen, Institute oder einzelne
-Personen). Angelegt und eingestellt wird das ausschließlich im Admin-Panel unter
-*Kommunikation → Benachrichtigungen*.
+Der Hub meldet sich von selbst, wenn etwas passiert, das jemand wissen muss — ein verkaufter
+Gutschein, eine Online-Zahlung auf eine Forderung, eine geplatzte Lastschrift, ein fälliger
+Widerruf oder eine Mitteilung, die jemand aus dem Büro von Hand verfasst hat. Jede Benachrichtigung
+kann **im Hub** (Glocke in der Kopfzeile) und/oder als **Push-Mitteilung** auf den Geräten
+erscheinen, auf denen der Empfänger Push erlaubt hat.
 
-**Wo was erledigt wird:**
+**Seit 19.09.2026 ist jeder Anlass an einer Stelle sichtbar und einstellbar:** Im Admin-Panel
+unter *Kommunikation → Benachrichtigungen → Anlässe & Regeln* steht der vollständige Katalog —
+je Anlass ein Schalter „Aktiv", die Kanäle „Im Hub" und „Push", die Zielgruppe (Recht, Institut des
+Ereignisses, betroffene Person, Rollen, Institute, einzelne Personen), die Frequenz (sofort oder
+Tages-Zusammenfassung), wann er zuletzt ausgelöst hat und wie oft in den letzten 30 Tagen. Der
+Reiter *Versendet* zeigt die tatsächlich erzeugten Meldungen mit ihrer Herkunft.
 
-| Vorgang | Anleitung |
-|---|---|
-| Mitteilungen im Hub lesen und abarbeiten | Grundlagen 2 |
-| Automatische Nachrichten und Protokolle im Admin-Panel | Admin 4 |
+Jede Mitarbeiterin entscheidet zusätzlich **für sich**, welche Anlässe sie erreichen: Unten auf
+der Mitteilungsseite („Meine Benachrichtigungen") gibt es je Anlass die Schalter „Im Hub" und
+„Push" — sofern der Admin den Anlass zur Stummschaltung freigegeben hat (Pflichtmeldungen wie
+eine fehlgeschlagene Gutschein-Anlage bleiben immer an).
+
+Bedienung (Mitteilungen lesen, eigene Kanäle je Anlass einstellen) siehe den
+Nutzerhandbuch-Verweis am Seitenanfang, Grundlagen 2, Seite „Meine Benachrichtigungen".
 
 ---
 
@@ -61,11 +67,23 @@ Das System unterstützt vier Arten von Benachrichtigungen:
 | Modus | Trigger | InApp | Push |
 |-------|---------|-------|------|
 | ✍️ Manuell | Sofort beim Erstellen | ✅ | ✅ |
-| 🔄 Webhook/Ereignis | GoCardless Event **oder internes Hub-Ereignis** | ✅ | ✅ |
-| ⏰ Zeitbasiert | Cron (Cloud Scheduler) | ✅ | ✅ |
-| ⚡ Aktionsbasiert | Datenbank-Event | ✅ | ✅ |
+| 🏠 Hub-Anlass (Katalog) | Internes Hub-Ereignis (`HubEventRegistry`) | je Regel | je Regel |
+| 💳 GoCardless-Ereignis | GoCardless-Webhook | je Regel | je Regel |
+| ⏰ Zeitbasiert | Cron (Cloud Scheduler) | je Regel | je Regel |
+| ⚡ Aktionsbasiert | Datenbank-Event | je Regel | je Regel |
 
-**Wichtig:** Jede Benachrichtigung löst automatisch **sowohl** eine InApp-Benachrichtigung **als auch** eine Push-Notification aus!
+**Seit 19.09.2026 entscheidet die Regel über die Kanäle:** Jede Regel (alles außer manuellen
+Einzelmeldungen) trägt `is_active`, `channel_in_app`, `channel_push` und `user_can_mute`. Eine
+abgeschaltete Regel erzeugt nichts; ohne Kanal „Im Hub" entsteht keine `notifications`-Zeile,
+ohne „Push" kein Versand an Geräte. Persönliche Kanal-Wahl der Nutzer
+(`notification_rule_preferences`) greift, sobald `user_can_mute` erlaubt ist.
+
+**Der Katalog ist Pflicht (`NotificationDispatchConventionTest`):** Kein Modul verschickt mehr
+direkt über `NotificationService` oder `PushNotificationService::sendByType()`. Jede Meldung des
+Hubs ist ein Anlass in `HubEventRegistry::events()` und wird über eine Methode des
+`HubNotificationDispatcher` ausgelöst — nur so ist sie im Admin sichtbar, einstellbar und
+stummschaltbar. Bis 09/2026 gab es ~22 Code-Stellen, die am Admin vorbei nur In-App (ohne Push)
+mit hart verdrahteter Zielgruppe verschickten, plus drei Push-only-Typen des Laser-Moduls.
 
 ---
 
@@ -118,11 +136,42 @@ Provider ist ein anderer:
    Zielgruppe ab und schaltet Push komplett aus
 5. Titel/Nachricht mit Platzhaltern, Zielgruppe wie gewohnt
 
-| Ressource | Aktion | Bedeutung |
-|-----------|--------|-----------|
-| Verträge | `created` | Neuer Vertrag / Verkauf — zählt ab Anlage, auch als Entwurf (Legacy-Importe lösen nichts aus) |
-| Widerrufe | `created` | Widerruf zu einem Vertrag wurde erfasst |
-| Beratungsgespräche | `completed_without_contract` | Beratungsgespräch beendet, ohne dass ein Vertrag zustande kam |
+**Der Katalog (Stand 19.09.2026, verbindlich ist `HubEventRegistry::events()`):**
+
+| Modul | Anlass (`resource_type.action`) | Standard-Zielgruppe | Standard |
+|---|---|---|---|
+| Verkauf & Verträge | `contracts.created` — Neuer Vertrag / Verkauf | Recht `view_contracts` | aus, Tages-Digest |
+| Widerrufe | `contract_cancellations.created` — Widerruf eingegangen | Recht `view_revocations` | aus |
+| Widerrufe | `contract_cancellations.follow_ups_due` — Wiedervorlagen fällig (Sammelmeldung) | Recht `manage_revocations` | an |
+| Widerrufe | `contract_changes.signed` / `.effective` — Vertragsänderung unterschrieben / Folgevertrag wirksam | Recht `manage_revocations` | an |
+| Gutschein-Verkauf | `voucher_sales.sold` — Gutschein online verkauft | Institut des Ereignisses | an |
+| Gutschein-Verkauf | `voucher_sales.creation_failed` / `.email_failed` | Recht `manage_voucher_sales` | an, Pflicht |
+| Forderungen | `receivables.online_payment_received` — Online-Zahlung eingegangen | Recht `manage_receivables` | an |
+| Forderungen | `receivables.appointment_amount_waived` — Offener Betrag nicht kassiert | Recht `view_debts` | an |
+| Termine | `appointments.self_service_booked` / `.self_service_cancelled` | Institut des Ereignisses | an |
+| Termine | `appointment_reminders.delivery_failed` / `.send_failed` | Institut des Ereignisses | an |
+| Beratung | `satisfaction_surveys.callback_requested` / `.refresh_requested` | Institut des Ereignisses | an |
+| Beratung | `consultation_records.completed_without_contract` | Recht `manage_consultation_records` | aus, Tages-Digest |
+| SEPA | `sepa.payment_plan_manual_required`, `.onsite_payments_overdue`, `.reconciliation_anomalies`, `.webhook_failed`, `.webhook_exhausted` | Recht `manage_gocardless` | an (Fehler: Pflicht) |
+| Laser | `laser.low_stock`, `.stk_due` | Recht `manage_laser_inventory` | an |
+| Laser | `laser.maintenance_overdue` | Recht `perform_laser_maintenance` | an |
+| Betrieb | `company_contracts.cancellation_deadline` — Kündigungsfrist läuft ab | Recht `manage_company_contracts` + betroffene Person | an, Pflicht |
+| Betrieb | `legal_documents.changed` / `.sync_failed` | Recht `manage_legal_documents` | an, Pflicht |
+| Kommunikation | `news.published` — Nachricht veröffentlicht | Institut(e) der Nachricht bzw. alle | an |
+| Kommunikation | `custom_dashboards.shared` — Dashboard geteilt | betroffene Person | an |
+
+„Pflicht" = `user_can_mute = false`, die persönliche Kanal-Wahl greift nicht. Die
+Standardwerte gelten nur beim **Anlegen** der Regel (`HubEventRuleSync`) — was der Admin
+danach einstellt, bleibt. Wird eine Katalog-Regel gelöscht, entsteht sie beim nächsten
+Auslösen bzw. beim Öffnen der Admin-Liste mit den Standardwerten neu (persönliche
+Kanal-Wahlen dazu gehen dabei verloren).
+
+**Zielgruppen-Arten einer Regel (Vereinigung):** alle (`is_global`), Rollen, einzelne
+Nutzer, feste Institute, **Rechte** (`target_permissions`), **Institut des Ereignisses**
+(`target_event_branch` — Heimatfiliale = Institut des Datensatzes, `home_branch_id = all`
+zählt überall mit) und **betroffene Person(en)** (`target_event_owners` — z.B. Verkäuferin,
+Empfängerin einer Freigabe, zuständige Person eines Unternehmensvertrags). Nur die beiden
+Ereignis-Bezüge sind Hub-Anlässen vorbehalten.
 
 **Besonderheiten des Hub-Providers:**
 
@@ -134,7 +183,10 @@ Provider ist ein anderer:
   sichtbaren Ereignisse in der Liste.
 - **Idempotenz:** Ein Ereignis erzeugt genau eine Benachrichtigung, auch wenn
   der auslösende Datensatz mehrfach gespeichert wird (Ereignis-Log
-  `hub_notification_events` mit Unique-Index je Anlass + Datensatz).
+  `hub_notification_events` mit Unique-Index je Anlass + Datensatz). Anlässe
+  ohne Datensatz (tägliche Sammelprüfungen, Reconcile) geben statt eines Models
+  einen Text-Schlüssel mit (`subject_type = key`, z.B. `onsite-overdue:2026-09-19`);
+  Anlässe, die bewusst mehrfach melden dürfen, hängen einen Zeitstempel an.
 - **Datenschutz:** Verkaufs- und Widerrufsmeldungen enthalten Kundennamen und
   Beträge; die Meldung zu einem BG ohne Abschluss zusätzlich eine
   personenbezogene Leistungsinformation über die Mitarbeiterin. Zielgruppe je
@@ -312,13 +364,18 @@ app/
 │   └── NotificationAutomationObserver.php  # Aktionsbasierte Triggers
 ├── Services/
 │   ├── NotificationAutomationService.php   # Observer-Registrierung
-│   ├── NotificationService.php             # Manuelle Benachrichtigungen
+│   ├── NotificationService.php             # Roh-Builder — nur noch von der Engine genutzt
 │   ├── PushNotificationService.php         # Push-Versand
-│   └── Notifications/                      # Hub-Provider (interne Ereignisse)
-│       ├── HubEventRegistry.php            # Ereignis-Katalog + Platzhalter
-│       ├── HubNotificationDispatcher.php   # Regel-Matching, Idempotenz, Versand
-│       ├── HubDigestService.php            # Tages-Zusammenfassungen
-│       └── NotificationRecipientResolver.php  # Zielgruppe + Datensichtbarkeit
+│   └── Notifications/                      # Katalog + Regel-Engine (Hub-Anlässe)
+│       ├── HubEventRegistry.php            # Katalog: Modul, Label, Platzhalter, Standardwerte je Anlass
+│       ├── HubEventRuleSync.php            # legt je Katalog-Anlass die Regel-Zeile an (ensureRule/ensureAll)
+│       ├── HubNotificationDispatcher.php   # je Anlass eine Methode; Aktiv, Idempotenz, Kanäle, Versand
+│       ├── HubDigestService.php            # Tages-Zusammenfassungen (Empfänger je Ereignis-Institut)
+│       └── NotificationRecipientResolver.php  # Zielgruppe (inkl. Recht/Ereignis-Bezug), Sichtbarkeit, Kanal-Split
+├── Http/Controllers/
+│   └── NotificationPreferenceController.php  # „Meine Benachrichtigungen" (GET/PUT hub/notifications/preferences)
+├── Models/
+│   └── NotificationRulePreference.php      # persönliche Kanal-Wahl je Regel und Nutzer
 ├── Jobs/
 │   ├── SendNotificationAutomationJob.php   # Automatisierte Benachrichtigungen
 │   └── ProcessGoCardlessWebhookJob.php     # Webhook-Verarbeitung
@@ -337,18 +394,36 @@ public/
 └── js/push-notifications.js  # Frontend Push-Manager
 ```
 
-### Neuen Hub-Anlass ergänzen (ohne Frontend-Änderung)
+### Neuen Anlass ergänzen (ohne Frontend-Änderung)
 
-1. Ereignis in `app/Services/Notifications/HubEventRegistry.php` definieren
-   (Resource-Type, Aktion, Label, Platzhalter)
-2. Convenience-Methode im `HubNotificationDispatcher` ergänzen (Payload mit
-   exakt den Platzhalter-Keys bauen; `branchId` + `ownerUserIds` für die
-   Sichtbarkeitsprüfung, `summary` für die Digest-Zeile mitgeben)
-3. Aufruf an der auslösenden Stelle (Observer/Service) — Fehler fängt der
-   Dispatcher selbst, der Geschäftsvorgang bricht nie
+1. Anlass in `app/Services/Notifications/HubEventRegistry.php` definieren:
+   Resource-Type (mit `module`), Aktion, Label, Beschreibung, Platzhalter und
+   `defaults` (Titel/Nachricht mit den Platzhaltern des Anlasses — bei
+   `frequency: daily_digest` die Digest-Platzhalter —, `type`, `icon` aus
+   `HubEventRegistry::ICONS`, `link`, `target`, `channels`, `active`,
+   `user_can_mute`)
+2. Methode im `HubNotificationDispatcher` ergänzen (Payload mit exakt den
+   Platzhalter-Keys; `branchId` + `ownerUserIds` für Zielgruppe und
+   Sichtbarkeit, `summary` für die Digest-Zeile; `link` überschreibt den
+   Regel-Link je Ereignis; ohne Datensatz einen Text-Schlüssel als Subject)
+3. Aufruf an der auslösenden Stelle (Observer/Service/Command) — Fehler fängt
+   der Dispatcher selbst, der Geschäftsvorgang bricht nie
 
-Das Admin-Formular, die Platzhalter-Hilfe, Digest und Sichtbarkeitsfilter
-greifen danach automatisch. Konsistenz sichert `tests/Unit/HubEventRegistryTest.php`.
+Die Regel-Zeile entsteht beim ersten Auslösen bzw. beim Öffnen der Admin-Liste
+von selbst; Admin-Formular, Schnell-Schalter, Platzhalter-Hilfe, Digest,
+Sichtbarkeitsfilter und „Meine Benachrichtigungen" greifen automatisch.
+Konsistenz sichern `tests/Unit/HubEventRegistryTest.php` (Standardwerte,
+Platzhalter, Symbole) und `tests/Unit/NotificationDispatchConventionTest.php`
+(jeder Katalog-Anlass wird ausgelöst, kein Versand am Katalog vorbei).
+
+**Links:** In-App-Links sind entweder absolute URLs, absolute Pfade (`/hub/…`,
+`/admin/…`) oder hub-relative Kurzformen (`news-archiv`, `?news=5`); die
+Klick-Handler (Glocke, Mitteilungsseite, Startseite) hängen `/hub/` nur an
+relative Links. Für Push normalisiert `HubNotificationDispatcher::pushUrl()`.
+
+**Symbole:** `icon_type` ist in MySQL ein ENUM — ein fremder Wert
+(`document-check`) ließ die Meldung bis 09/2026 still scheitern (SQLite in
+Tests merkt das nicht). Erlaubt ist nur `HubEventRegistry::ICONS`.
 
 ### Datenbank-Tabellen
 
@@ -362,8 +437,21 @@ greifen danach automatisch. Konsistenz sichert `tests/Unit/HubEventRegistryTest.
 - schedule_days, schedule_time, schedule_timezone
 - trigger_model, trigger_event, trigger_conditions
 - last_automation_sent_at, automation_sent_count
+- is_active, channel_in_app, channel_push, user_can_mute   -- Katalog-Schalter (seit 19.09.2026)
+- target_permissions, target_event_branch, target_event_owners  -- erweiterte Zielgruppe
+- last_triggered_at        -- letzte Auslösung der Regel (Anzeige „Zuletzt ausgelöst")
+- source_rule_id           -- Herkunfts-Regel einer versendeten Meldung (NULL = manuell)
 - created_at, updated_at
 ```
+
+**hub_notification_events:** Ereignis-Log je Anlass + Datensatz (`subject_type`,
+`subject_id` als String — Model-ID oder Text-Schlüssel), `branch_id`/`branch_ids`,
+`owner_user_ids`, `payload`, `summary`, `notification_id`, `digested_at`; Unique-Index
+über Anlass + Subject sichert die Idempotenz.
+
+**notification_rule_preferences:** `user_id`, `notification_rule_id`, `in_app`, `push`
+— persönliche Kanal-Wahl; fehlt die Zeile, gelten die Kanäle der Regel. Unique je
+Nutzer + Regel, Cascade beim Löschen von Nutzer oder Regel.
 
 **push_subscriptions:**
 ```sql
@@ -502,3 +590,17 @@ tail -f storage/logs/laravel.log | grep -i "notification\|push"
 
 - [GoCardless API](GOCARDLESS-API.md) - Webhook-Integration für Zahlungen
 - [Cloud Scheduler Setup](CLOUD-SCHEDULER-SETUP.md) - Cron-Jobs in der Cloud
+
+---
+
+## Changelog
+
+- **19.09.2026 — Benachrichtigungs-Katalog:** Alle ~22 Code-Stellen mit direktem
+  `NotificationService` und die drei Push-only-Laser-Typen sind Katalog-Anlässe
+  (`HubEventRegistry`, 30 Anlässe in 10 Modulen). Regeln tragen Aktiv/Kanäle/
+  `user_can_mute`, Zielgruppe zusätzlich per Recht, Institut des Ereignisses und
+  betroffene Person; Admin-Liste mit Reitern „Anlässe & Regeln" (Schnell-Schalter,
+  Modul-Gruppierung, zuletzt ausgelöst, 30 Tage) und „Versendet" (Herkunft).
+  Nutzer wählen je Anlass „Im Hub"/„Push" (Karte „Meine Benachrichtigungen").
+  Zeit-/Aktions-Automatisierungen und GoCardless-Regeln respektieren dieselben
+  Schalter und Kanal-Wahlen. Konventions-Test `NotificationDispatchConventionTest`.

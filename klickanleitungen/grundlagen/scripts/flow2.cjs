@@ -1,6 +1,7 @@
-/* Grundlagen 2 — Standort, Suche & Mitteilungen
+/* Grundlagen 2 — Standort, Suche & Mitteilungen (+ Meine Benachrichtigungen)
    Nur Lesen: Der Standort wird zwar geöffnet, aber nicht umgestellt (er bliebe sonst
-   für die nächste Person gesetzt — die Wahl überlebt das Abmelden).                       */
+   für die nächste Person gesetzt — die Wahl überlebt das Abmelden). Die Kanal-Schalter
+   der Karte „Meine Benachrichtigungen“ werden nur fotografiert, nicht umgelegt.          */
 const L = require('./lib.cjs');
 const SEARCH = process.env.KLICK_SEARCH || 'Verträge';
 
@@ -54,6 +55,29 @@ const SEARCH = process.env.KLICK_SEARCH || 'Verträge';
   } else {
     console.log('Keine Mitteilung vorhanden — h5 fehlt. Konto mit Mitteilungen wählen.');
   }
+
+  // ── h6 Meine Benachrichtigungen (Mitteilungsseite, Karte unter der Liste)
+  await L.goto(page, '/hub/notifications', 2500);
+  await page.waitForFunction(() => {
+    const card = document.querySelector('#notification-preferences');
+    return card && !Alpine.$data(card).loading;
+  }, null, { timeout: 15000 }).catch(() => console.log('Hinweis: Karte „Meine Benachrichtigungen“ lud nicht'));
+  // Die Karte ist höher als der Bildschirm: Kartenkopf an den oberen Rand, Ausschnitt bis unten
+  await L.scrollTo(page, '#notification-preferences', 'start');
+  await L.shot(page, 'h6-meine-benachrichtigungen', {
+    clip: await page.evaluate(() => {
+      const b = document.querySelector('#notification-preferences').getBoundingClientRect();
+      return { x: Math.max(0, b.x - 12), y: Math.max(0, b.y - 12), width: Math.min(window.innerWidth - Math.max(0, b.x - 12), b.width + 24), height: window.innerHeight - Math.max(0, b.y - 12) };
+    }),
+    noScroll: true,
+    marks: [
+      { id: 'titel', kind: 'badge', n: 2, sel: '#notification-preferences .card-glattt-title', at: 'r' },
+      { id: 'hub', kind: 'badge', n: 3, fn: () => { const l = [...document.querySelectorAll('#notification-preferences .toggle-glattt-label')].find(e => e.textContent.trim() === 'Im Hub' && e.offsetParent !== null); if (!l) return null; const b = l.closest('.toggle-glattt-wrapper').getBoundingClientRect(); return { x: b.x, y: b.y, w: b.width, h: b.height }; }, at: 'l' },
+      { id: 'push', kind: 'badge', n: 4, fn: () => { const l = [...document.querySelectorAll('#notification-preferences .toggle-glattt-label')].find(e => e.textContent.trim() === 'Push' && e.offsetParent !== null); if (!l) return null; const b = l.closest('.toggle-glattt-wrapper').getBoundingClientRect(); return { x: b.x, y: b.y, w: b.width, h: b.height }; }, at: 'r' },
+      // Der Bereichstitel ist ein Blockelement über die ganze Breite — nur den Text vermessen
+      { id: 'bereich', kind: 'chip', label: 'Nach Bereichen', fn: () => { const t = [...document.querySelectorAll('#notification-preferences .notif-pref-glattt-group-title')].find(e => e.offsetParent !== null); if (!t) return null; const r = document.createRange(); r.selectNodeContents(t); const b = r.getBoundingClientRect(); return { x: b.x, y: b.y, w: b.width, h: b.height }; }, at: 'r' },
+    ],
+  });
 
   await browser.close();
 })();
