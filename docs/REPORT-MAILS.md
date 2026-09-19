@@ -1,52 +1,61 @@
 # Report-Mails — Berichte & Kennzahlen automatisch per E-Mail
 
-Berichte einmal einrichten und danach automatisch per Mail erhalten, ohne sich
-im Hub anzumelden. Jedes Abo hat einen frei wählbaren Zeitplan, einen
-Berichtszeitraum, einen optionalen Standortfilter und kombinierbare
-Ausgabeformate.
+Berichte einmal einrichten und danach automatisch per Mail erhalten, ohne sich im Hub anzumelden.
+Jedes Abo hat einen frei wählbaren Zeitplan, einen Berichtszeitraum, einen optionalen Standortfilter
+und kombinierbare Ausgabeformate. Diese Seite beschreibt **Rechte-Regeln, Bausteine, Rendering-Kette,
+Zeitplanung, Tabellen und bewusste Annahmen**; die Bedienung Schritt für Schritt steht im
+Nutzerhandbuch.
 
-## Für Endanwender
+!!! nutzerhandbuch "Bedienung: System 1 – Report-Mails einrichten"
+    [hilfe.hub.glattt.com/system/1/](https://hilfe.hub.glattt.com/system/1/) — eine Report-Mail
+    anlegen, Empfänger und Formate, Zustellung prüfen.
 
-### Eigene Report-Mails (Selfservice im Hub)
+    Angrenzend: [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/)
+    (woher die Inhalte stammen), [Admin 8 – Protokolle und Einstellungen](https://hilfe.hub.glattt.com/admin/8/),
+    [Admin 1 – Benutzer und Rollen](https://hilfe.hub.glattt.com/admin/1/).
 
-Unter **Report-Mails** in der Sidebar (Recht `manage_own_report_mails`, an
-`view_reports`-Rollen vergeben) richtet sich jede Nutzerin eigene Report-Mails
-ein — Empfänger ist dabei immer die eigene Hub-Adresse:
+---
 
-- **Inhalt**: Ein mehrstufiger Wizard (Muster des Dashboard-Wizards) stellt
-  einzelne Statistiken/Tabellen aus allen Berichten frei zusammen, bringt sie
-  per Drag & Drop in eine persönliche Reihenfolge und gibt **je Position einen
-  eigenen Datenhorizont** (leer = Standard-Zeitraum des Abos). Dazu optional
-  eine Kennzahlen-Zeile aus dem KPI-Katalog. Wählbar ist nur, was die Nutzerin
-  auch im Hub sehen darf.
-- **Zeitplan**: täglich, wöchentlich (Wochentag) oder monatlich (1.–28.),
-  Uhrzeit in 30-Minuten-Schritten.
-- **Berichtszeitraum**: frei je Abo (gestern, letzte Woche, letzter Monat,
-  letztes Quartal, laufender Monat, …) — wird bei jedem Versand neu aufgelöst.
-- **Formate** (kombinierbar): Kernzahlen im Mailtext, PDF im Anhang (mit
-  Charts), Excel/CSV im Anhang (ab 4 Dateien automatisch als ZIP), Link in den
-  passenden Hub-Bericht mit vorbelegtem Zeitraum.
-- **Testversand** schickt das Abo sofort an die eigene Adresse; das Ergebnis
-  landet im Versandprotokoll auf derselben Seite.
+## Für Anwender — Überblick
 
-Jede Mail trägt im Fuß einen **Abmelde-Link** (mit Bestätigungs-Schritt, damit
-Mail-Scanner nicht versehentlich abmelden). Ein gelöschtes Abo versendet nichts
-mehr, das Protokoll bleibt erhalten.
+**Wozu das Modul da ist.** Wer regelmäßig dieselben Zahlen braucht, soll sie bekommen, ohne sie sich
+zu holen. Ein Abo bündelt vier Entscheidungen: **was** drinsteht (einzelne Statistiken und Tabellen
+aus allen Berichten, in eigener Reihenfolge, dazu optional eine Kennzahlen-Zeile), **wann** es
+kommt (täglich, wöchentlich, monatlich, zu einer festen Uhrzeit), **für welchen Zeitraum** gerechnet
+wird (wird bei jedem Versand neu aufgelöst) und **in welcher Form** (Kernzahlen im Mailtext, PDF mit
+Diagrammen, Excel/CSV im Anhang, Link in den passenden Hub-Bericht mit vorbelegtem Zeitraum —
+kombinierbar).
 
-### Admin-Verwaltung (Filament, Gruppe „Report-Mails")
+**Zwei Wege, ein Modul.** Im Hub richtet sich jede Nutzerin unter **Report-Mails** eigene Abos ein;
+Empfängerin ist dabei immer die eigene Hub-Adresse (Recht `manage_own_report_mails`). Abos für andere
+Personen, für Empfängerlisten oder für **externe** Adressen (etwa die Steuerberatung) gibt es nur im
+Admin-Backend (Recht `manage_report_mails`), zusammen mit der Liste freigegebener externer Adressen
+und dem Versandprotokoll.
 
-Mit dem Recht `manage_report_mails` (an `manage_settings`-Rollen vergeben)
-stehen im Admin-Backend drei Bereiche bereit:
+**Die Rechte-Regeln sind der Kern des Moduls** und gelten ohne Ausnahme: Niemand versendet, was er
+selbst im Hub nicht sehen dürfte; zusätzlich zählen die Rechte der Empfängerin; personenbezogene
+Mitarbeiterdaten gehen **nie** nach extern. Die vollständigen Regeln stehen unten unter
+[Rechte-Regeln](#rechte-regeln) — sie sind auch für die Entwicklung
+verbindlich. Jede Mail trägt im Fuß einen Abmelde-Link mit Bestätigungsschritt (damit
+Mail-Scanner nicht versehentlich abmelden); ein gelöschtes Abo versendet nichts mehr, das Protokoll
+bleibt erhalten.
 
-- **Report-Mail-Abos**: Abos für beliebige Besitzer und Empfängerlisten
-  (mehrere Hub-Nutzer, externe Adressen), inkl. „Jetzt senden".
-- **Externe Empfänger**: einzeln freigegebene Adressen (z.B. Steuerberatung) —
-  regelmäßig überprüfen, Kennzahlen liegen nach dem Versand dauerhaft in
-  fremden Postfächern.
-- **Versandprotokoll**: jede Zustellung mit Status, Zeitraum, Inhalt und
-  Fehlergrund; fehlgeschlagene Zustellungen lassen sich erneut anstoßen.
+**Wo was erledigt wird:**
 
-### Rechte-Regeln (Entscheidung 11.08./16.08.2026)
+| Vorgang | Anleitung |
+|---|---|
+| Report-Mail anlegen, Empfänger und Formate, Zustellung prüfen | System 1 |
+| Verstehen, woher die Inhalte kommen (Berichte, Kennzahlen, Export) | Berichte 0 |
+| Rechte und Rollen der Empfänger | Admin 1 |
+| Protokolle und E-Mail-Einstellungen | Admin 8 |
+
+---
+
+## Für Entwickler
+
+### Rechte-Regeln
+
+Entscheidung Jan, 11.08. und 16.08.2026:
 
 1. Der Inhalt ist **immer durch die Rechte des Abo-Besitzers begrenzt** —
    niemand versendet, was er selbst im Hub nicht sehen dürfte.
@@ -62,7 +71,23 @@ stehen im Admin-Backend drei Bereiche bereit:
    Inhalte, die deshalb oder wegen fehlender Rechte entfallen, werden in der
    Mail unter „Nicht enthalten" ausgewiesen.
 
-## Für Entwickler
+**Rechte-Zuschnitt:** `manage_own_report_mails` (Selfservice, an `view_reports`-Rollen vergeben),
+`manage_report_mails` (Admin-Verwaltung, an `manage_settings`-Rollen vergeben). Im Admin-Backend
+(Filament-Gruppe „Report-Mails") liegen drei Bereiche: **Report-Mail-Abos** (beliebige Besitzer und
+Empfängerlisten, inkl. „Jetzt senden"), **Externe Empfänger** (einzeln freigegebene Adressen —
+regelmäßig überprüfen, Kennzahlen liegen nach dem Versand dauerhaft in fremden Postfächern) und das
+**Versandprotokoll** (Status, Zeitraum, Inhalt, Fehlergrund; fehlgeschlagene Zustellungen lassen sich
+erneut anstoßen).
+
+### Umfang des Selfservice
+
+Mehrstufiger Wizard nach dem Muster des Dashboard-Wizards: einzelne Statistiken/Tabellen aus allen
+Berichten frei zusammenstellen, per Drag & Drop ordnen, **je Position ein eigener Datenhorizont**
+(leer = Standard-Zeitraum des Abos), dazu optional eine Kennzahlen-Zeile aus dem KPI-Katalog.
+Wählbar ist nur, was die Nutzerin auch im Hub sehen darf. Zeitplan: täglich, wöchentlich (Wochentag)
+oder monatlich (1.–28.), Uhrzeit in 30-Minuten-Schritten. Berichtszeitraum frei je Abo (gestern,
+letzte Woche, letzter Monat, letztes Quartal, laufender Monat, …). Der **Testversand** schickt das
+Abo sofort an die eigene Adresse; das Ergebnis landet im Versandprotokoll derselben Seite.
 
 ### Bausteine
 

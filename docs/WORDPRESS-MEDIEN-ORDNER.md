@@ -1,5 +1,8 @@
 # 📁 Medien-Ordner auf glattt.com (WPglatttMedien)
 
+!!! info "Bedienung bleibt in diesem Wiki"
+    Die Pflege der Website glattt.com gehört nicht ins Nutzerhandbuch — das beschreibt ausschließlich den glatttHub. Die Abschnitte „Für Endanwender" auf dieser Seite sind deshalb die verbindliche Anleitung für Marketing und Website-Pflege (Entscheidung Jan, 19.09.2026).
+
 Das WordPress-Plugin **glattt Medien** bringt eine Ordnerstruktur in die
 Mediathek von glattt.com — in der Übersicht **und** im Auswahldialog, also auch
 beim Einfügen von Bildern in WPBakery.

@@ -1,16 +1,51 @@
-# Stornierte Beratungstermine — Dokumentation
+# Stornierte Beratungstermine
 
-## Übersicht (Endanwender)
+Die Belegliste **Stornierte Beratungstermine** erscheint auf der Berichtsseite „Stornierte und
+gelöschte Termine", sobald der Filter **Beratungsservices** aktiviert ist. Diese Seite beschreibt
+**Datenquellen, Endpunkte, Lazy-Loading-Kette, JS-Komponente und Fallstricke**; die Bedienung
+Schritt für Schritt steht im Nutzerhandbuch. Die Rahmen-Seite ist unter
+[Stornierte und gelöschte Termine](CANCELLED-APPOINTMENTS-ANALYSIS.md) dokumentiert.
 
-Die Sektion **Stornierte Beratungstermine** erscheint auf der „Stornierte und gelöschte Termine"-Seite, sobald der Filter **Beratungsservices** aktiviert wird. Sie zeigt alle stornierten oder gelöschten Beratungstermine der nächsten 14 Tage sowie die letzten 3 Monate aus der Datenbank.
+!!! nutzerhandbuch "Bedienung: Berichte 4 – Stornierte und gelöschte Termine"
+    [hilfe.hub.glattt.com/berichte/4/](https://hilfe.hub.glattt.com/berichte/4/) — Bericht öffnen,
+    Vorlauf der Absagen, Muster erkennen, gegensteuern.
 
-Ziel: Erkennen, welche Kunden einen Beratungstermin abgesagt haben und ob bereits ein Folgetermin gebucht wurde.
+    Rahmen aller Berichtsseiten: [Berichte 0](https://hilfe.hub.glattt.com/berichte/0/).
+    Angrenzend: [Kundenverwaltung 3 – Termine & Pakete](https://hilfe.hub.glattt.com/kundenverwaltung/3/)
+    (Termin der Kundin öffnen, Folgetermin buchen),
+    [Terminansicht 9 – Termin buchen](https://hilfe.hub.glattt.com/terminansicht/9/).
 
-### Wo zu finden
+---
 
-Hub → Reports → **Stornierte und gelöschte Termine** → Filter „Beratungsservices" aktivieren
+## Für Anwender — Überblick
 
-### Tabellenspalten
+**Wozu die Liste da ist.** Sie beantwortet eine operative Frage: **Welche Kundin hat ihren
+Beratungstermin abgesagt — und hat sie schon einen neuen?** Genau die Fälle ohne Folgetermin sind
+die, bei denen sich ein Anruf lohnt.
+
+**Welche Fälle drinstehen:** alle stornierten oder gelöschten Beratungstermine der **letzten drei
+Monate** (aus der synchronisierten Historie) und der **nächsten 14 Tage** (live aus Phorest geholt,
+damit auch eine Absage von heute Morgen sofort auftaucht). Je Zeile: Termin, Kundin, frühester
+bekannter Folgetermin, Standort, Art des Ausfalls und Zeitpunkt der Absage; ein Klick öffnet Termin-,
+Kunden- und Folgetermin-Details.
+
+**Warum die Liste nachlädt.** Kundennamen, Folgetermine und Termindetails werden **nachträglich im
+Hintergrund** geholt, damit die Liste sofort steht. Ein `…` bedeutet „wird noch geprüft", ein `—`
+bedeutet „kein Folgetermin gefunden" — beides ist kein Fehler.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Bericht öffnen, Absagen und Muster, gegensteuern | Berichte 4 |
+| Termine einer Kundin ansehen, Folgetermin anlegen | Kundenverwaltung 3 |
+| Einen neuen Termin buchen | Terminansicht 9 |
+
+---
+
+## Für Entwickler
+
+### Spalten der Belegliste
 
 | Spalte | Bedeutung |
 |--------|-----------|
@@ -23,17 +58,14 @@ Hub → Reports → **Stornierte und gelöschte Termine** → Filter „Beratung
 
 ### Termin-Detail-Modal
 
-Ein Klick auf eine Tabellenzeile öffnet ein Modal mit drei Sektionen:
+Drei Sektionen:
 
 1. **Termin** — Datum/Uhrzeit, Standort, Status-Badge, Aktion am, Notizen aus Phorest (werden separat nachgeladen)
 2. **Kunde** — Name als Link zum Kundenprofil, E-Mail und Telefonnummer (werden separat nachgeladen)
-3. **Folgetermin** — Zeigt den bereits ermittelten Folgetermin (oder Ladeindikator / „kein Folgetermin")
+3. **Folgetermin** — der bereits ermittelte Folgetermin (oder Ladeindikator / „kein Folgetermin")
 
-Die Termindetails und Kundendaten werden nach dem Öffnen des Modals parallel im Hintergrund geladen, um die initiale Antwortzeit zu minimieren.
-
----
-
-## Technische Details (Entwickler)
+Termindetails und Kundendaten werden nach dem Öffnen des Modals parallel im Hintergrund geladen, um
+die initiale Antwortzeit zu minimieren.
 
 ### Architektur-Überblick
 

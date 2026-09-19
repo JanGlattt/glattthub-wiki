@@ -4,14 +4,77 @@ Personalkennzahlen für die Unternehmenssteuerung: Kapazität, Produktivität,
 Verfügbarkeit und Struktur — auf Ebene glattt gesamt und je Institut.
 Zielgruppe sind Geschäftsführung und kaufmännische Leitung, nicht die
 Standortsteuerung (dafür gibt es die [Mitarbeiterperformance](STAFF-PERFORMANCE.md)).
+Diese Seite beschreibt **Datenquellen, Fachregeln, Rechte, Tabellen, Sync und die
+Eigenheiten der askDANTE-API**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
 **Seite:** `/hub/reports/hr-kennzahlen`
 
+!!! nutzerhandbuch "Bedienung: Berichte 13 – HR-Kennzahlen"
+    [hilfe.hub.glattt.com/berichte/13/](https://hilfe.hub.glattt.com/berichte/13/) — den Bericht
+    öffnen, Kapazität und Auslastung, Verfügbarkeit, Struktur und Planung.
+
+    Angrenzend: [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/)
+    (Zeitraum, Standort, Diagramm/Tabelle, Export),
+    [Admin 7 – Personal und Vergütung](https://hilfe.hub.glattt.com/admin/7/) (Gehälter,
+    Bonus-Auszahlungen, Personalzuordnungen), [Team 1 – Personalübersicht und Hub-Konten](https://hilfe.hub.glattt.com/team/1/),
+    [Berichte 9 – Mitarbeiterperformance](https://hilfe.hub.glattt.com/berichte/9/).
+
+## Inhaltsverzeichnis
+
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Datenquellen und Aktualität](#datenquellen-und-aktualitat)
+    - [Karten der Seite](#karten-der-seite)
+    - [Fachregeln, die Zahlen erklären](#fachregeln-die-zahlen-erklaren)
+    - [Pflegestand in askDANTE](#pflegestand-in-askdante)
+    - [Mitarbeiter-Verknüpfung & Kennzahlen-Schalter](#mitarbeiter-verknupfung-kennzahlen-schalter-seit-082026)
+    - [Gehälter und Personalkosten](#gehalter-und-personalkosten)
+    - [Rechte](#rechte)
+    - [Tabellen](#tabellen)
+    - [Sync](#sync)
+    - [Eigenheiten der askDANTE-API](#eigenheiten-der-askdante-api)
+    - [Standort-Brücke askDANTE → Phorest](#standort-brucke-askdante-phorest)
+    - [Zuordnung zu Phorest](#zuordnung-zu-phorest)
+    - [Aufbau der Seite](#aufbau-der-seite)
+    - [Fallen bei den Kennzahlen](#fallen-bei-den-kennzahlen)
+    - [CSV-Export](#csv-export)
+    - [Relevante Dateien](#relevante-dateien)
+
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
 
-### Woher die Daten kommen
+**Was der Bericht leistet.** Die HR-Kennzahlen zeigen, ob die Personalkapazität zum Geschäft
+passt: Vertragsstunden gegen geleistete Stunden, Umsatz und Körperzonen je gearbeiteter Stunde,
+Personalkosten und Kostenquote, Kranken- und Abwesenheitsquoten, Ein- und Austritte, auslaufende
+Befristungen und Probezeiten, die Personalstruktur und ein Institutsvergleich. Stammdaten und
+Arbeitszeiten kommen nächtlich aus askDANTE, Leistungsdaten aus Phorest, Gehälter und Boni werden
+im Hub gepflegt.
+
+**Grundsätze, die Zahlen erklären:** Personen ohne Zeiterfassung (Geschäftsführung) zählen in
+Kopfzahl, VZÄ und Personalkosten, aber nicht in Stundensaldo und Produktivität. Kurz- und
+Langzeitkrankheit werden getrennt ausgewiesen (Langzeit = Episode über 6 Wochen), weil nur die
+Kurzzeitquote die Einsatzplanung beschreibt. Über den Schalter „HR-Kennzahlen erfassen" bleiben
+Büro und Management aus Leistungs- und Fehlzeiten-Kennzahlen heraus, gehören aber zu Struktur,
+Kopfzahl und Kosten. Fehlende Stammdaten (Eintritts-, Geburtsdatum) werden offen ausgewiesen, nie
+geschätzt. Gehaltsdaten sieht nur, wer das Recht `view_hr_salaries` hat.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Bericht öffnen, Kapazität und Auslastung, Verfügbarkeit, Struktur und Planung lesen | Berichte 13 |
+| Zeitraum und Standort setzen, Diagramm/Tabelle umschalten, CSV-Export | Berichte 0 |
+| Gehälter und Boni pflegen, Personalzuordnungen (Phorest/askDANTE) und Kennzahlen-Schalter | Admin 7 |
+| Personalübersicht, Hub-Konten, Austritt archivieren | Team 1 |
+| Rechte vergeben (`view_report_hr_kpis`, `view_hr_salaries`, `manage_hr_salaries`) | Admin 1 |
+| Leistung je Mitarbeiterin (Beratungen, Conversion, Behandlungen) | Berichte 9 |
+
+---
+
+## Für Entwickler
+
+### Datenquellen und Aktualität
 
 | Bereich | Quelle | Aktualität |
 |---|---|---|
@@ -20,10 +83,10 @@ Standortsteuerung (dafür gibt es die [Mitarbeiterperformance](STAFF-PERFORMANCE
 | Behandlungen, Beratungsgespräche, Körperzonen | Phorest (über den Hub) | nächtlich 03:00 |
 | Gehälter und Boni | im Hub gepflegt | manuell |
 
-### Was die Seite zeigt
+### Karten der Seite
 
-Vier Blöcke, jeder als zweiseitige Karte (Diagramm als Standard, Tabelle über das
-Register am Kartenrand):
+Jede Auswertung ist eine zweiseitige Karte (Diagramm als Standard, Tabelle über das
+Register am Kartenrand); Ausnahmen siehe [Aufbau der Seite](#aufbau-der-seite):
 
 | Karte | Inhalt |
 |---|---|
@@ -38,7 +101,7 @@ Register am Kartenrand):
 | **Mitarbeiter im Detail** | Eine Zeile je Person, sortierbar |
 | **Datenqualität** | Offene Pflegepunkte, die Kennzahlen verzerren |
 
-### Zwei Dinge, die Zahlen erklären
+### Fachregeln, die Zahlen erklären
 
 **Mitarbeiter ohne Zeiterfassung.** Die Geschäftsführung stempelt nicht. Solche
 Personen fließen in Kopfzahl, VZÄ und Personalkosten ein, aber **nicht** in
@@ -55,7 +118,7 @@ Kalendertage, analog zum Ende der Entgeltfortzahlung; Wochenenden und Lücken bi
 einen Vorzeichen-Fehler alle Kranktage eines Mitarbeiters zu einer Episode — die
 Langzeitquote war dadurch massiv überzeichnet (95 % statt real ~40 %).
 
-### Was gepflegt sein muss
+### Pflegestand in askDANTE
 
 Die Auswertung ist nur so gut wie der Pflegestand in askDANTE. Zwei Felder
 brauchen Aufmerksamkeit:
@@ -111,7 +174,7 @@ gültig war.
 zugeordnet und fließen in die Personalkosten ein. Korrekturen sind als negativer
 Betrag möglich, etwa wenn eine Provision nach einem Widerruf zurückgenommen wird.
 
-### Wer was sehen darf
+### Rechte
 
 | Recht | Bedeutung |
 |---|---|
@@ -120,10 +183,6 @@ Betrag möglich, etwa wenn eine Provision nach einem Widerruf zurückgenommen wi
 | `manage_hr_salaries` | Gehälter und Boni pflegen |
 
 Zusätzlich greifen die Rechte aus der [Datensichtbarkeit](DATA-VISIBILITY.md).
-
----
-
-## Für Entwickler
 
 ### Tabellen
 

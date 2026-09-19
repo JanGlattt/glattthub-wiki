@@ -357,15 +357,15 @@ dompdf unterstützt `position: fixed` nur mit negativen Offsets innerhalb der `@
 
 ### Dateien und Einstiegspunkte
 
-- [app/Models/PdfSetting.php](../app/Models/PdfSetting.php) — Model mit `current()`, `logo_full_path`, `footer_lines`
-- [app/Filament/Pages/PdfSettings.php](../app/Filament/Pages/PdfSettings.php) — Admin-Seite
-- [resources/views/filament/pages/pdf-settings.blade.php](../resources/views/filament/pages/pdf-settings.blade.php) — Admin-View
-- [resources/views/hub/forms/pdf.blade.php](../resources/views/hub/forms/pdf.blade.php) — PDF-Template
-- [app/Http/Controllers/FormController.php](../app/Http/Controllers/FormController.php) — `ensureSubmissionPdf()`
-- [app/Models/FormSubmission.php](../app/Models/FormSubmission.php) — `pdf_path`, `pdf_disk`, `hasPdf()`
-- [database/migrations/2026_02_24_100000_create_pdf_settings_table.php](../database/migrations/2026_02_24_100000_create_pdf_settings_table.php) — Migration
-- [config/dompdf.php](../config/dompdf.php) — dompdf-Grundkonfiguration
-- [storage/fonts/Dosis-VariableFont_wght.ttf](../storage/fonts/Dosis-VariableFont_wght.ttf) — Schriftart
+- `app/Models/PdfSetting.php` — Model mit `current()`, `logo_full_path`, `footer_lines`
+- `app/Filament/Pages/PdfSettings.php` — Admin-Seite
+- `resources/views/filament/pages/pdf-settings.blade.php` — Admin-View
+- `resources/views/hub/forms/pdf.blade.php` — PDF-Template
+- `app/Http/Controllers/FormController.php` — `ensureSubmissionPdf()`
+- `app/Models/FormSubmission.php` — `pdf_path`, `pdf_disk`, `hasPdf()`
+- `database/migrations/2026_02_24_100000_create_pdf_settings_table.php` — Migration
+- `config/dompdf.php` — dompdf-Grundkonfiguration
+- `storage/fonts/Dosis-VariableFont_wght.ttf` — Schriftart
 
 ### Debugging
 

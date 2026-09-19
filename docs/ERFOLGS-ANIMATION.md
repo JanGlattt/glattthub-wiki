@@ -1,51 +1,48 @@
 # Erfolgsanimation (Kasse → Umschlag → Haken)
 
-Animierte Erfolgs-Sequenz auf der Gutschein-Return-Seite: Während die Zahlung
-bestätigt wird, druckt eine Kasse einen Bon; sobald die Bestätigung eintrifft,
-wird der Gutschein in einen goldenen Umschlag verpackt, mit dem glattt-Siegel
-verschlossen, fliegt davon und ein grüner Haken mit Konfetti bestätigt den Kauf —
-anschließend blenden sich die Textzeilen gestaffelt ein.
+Animierte Erfolgs-Sequenz auf der Gutschein-Return-Seite: Während die Zahlung bestätigt wird,
+druckt eine Kasse einen Bon; sobald die Bestätigung eintrifft, wird der Gutschein in einen
+goldenen Umschlag verpackt, mit dem glattt-Siegel verschlossen, fliegt davon und ein grüner
+Haken mit Konfetti bestätigt den Kauf. Die Animation ist bewusst als **wiederverwendbarer
+Baustein** gebaut (z.B. für zukünftige Termin-Anzahlungen oder andere Bestätigungsseiten).
+Diese Seite beschreibt **Verhalten, Aufbau, Timing und Wiederverwendung**; sie richtet sich an
+Entwickler — für Mitarbeiterinnen gibt es hier nichts zu bedienen.
 
-Die Animation ist bewusst als **wiederverwendbarer Baustein** gebaut (z.B. für
-zukünftige Termin-Anzahlungen oder andere Bestätigungsseiten) — dieses Dokument
-beschreibt Verhalten, Architektur und die Schritte zur Wiederverwendung.
+!!! nutzerhandbuch "Bedienung: kein eigener Vorgang im Nutzerhandbuch"
+    Die Animation läuft auf der **Kundenseite** nach der Gutschein-Zahlung ab — sie wird von
+    niemandem im Hub bedient und hat deshalb keine eigene Klickanleitung. Serien-Übersicht der
+    angrenzenden Abläufe: [Terminansicht](https://hilfe.hub.glattt.com/terminansicht/).
+
+    Angrenzend: [Admin 3 – Gutschein-Verkauf](https://hilfe.hub.glattt.com/admin/3/) — Bestellungen
+    verfolgen, Zustellung und Erstattung.
 
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
 
-### Was der Kunde sieht
-
-1. **Zahlung wird verarbeitet:** Eine türkise Kasse druckt in Schleife einen
-   Kassenbon, darunter pulsiert „Deine Zahlung wird verarbeitet …". Das läuft,
-   solange die Seite auf die Mollie-Bestätigung wartet (die Seite prüft alle
-   3 Sekunden automatisch).
-2. **Bestätigung trifft ein:** Die Kasse verschwindet, ein goldener Umschlag
-   erscheint („Dein Gutschein wird verpackt …"). Eine Gutschein-Karte mit dem
-   **echten Kaufwert** (z.B. „50,00 €") gleitet hinein, die Lasche klappt zu
-   und trägt das glattt-Siegel.
-3. **Abflug & Bestätigung:** Der Umschlag fliegt nach oben rechts davon
-   („Und ab die Post …"), ein grüner Haken ploppt auf, Konfetti in den
-   Markenfarben, dann erscheinen nacheinander „Vielen Dank!" und die
-   Bestätigungszeilen mit Wert und E-Mail-Adresse.
-
-Gesamtdauer der Erfolgs-Sequenz: ca. **5–6 Sekunden**.
-
-### Verhaltensregeln
-
-- **Nur einmal pro Bestellung:** Lädt der Kunde die Seite neu, erscheint sofort
-  der fertige Erfolgs-Zustand (Merker im Browser, `sessionStorage`).
-- **„Bewegung reduzieren":** Hat der Kunde die Systemeinstellung für reduzierte
-  Bewegung aktiv, wird ohne Animation direkt der Endzustand gezeigt.
-- **Lange Wartezeit:** Bestätigt Mollie nach ~2 Minuten noch nicht, erscheint
-  zusätzlich ein Hinweis („… erhältst Du Deinen Gutschein automatisch per
-  E-Mail …") mit „Status aktualisieren"-Button. Die Kasse druckt weiter.
-- **Fehlgeschlagene Zahlung:** Keine Animation — die normale Fehlerkarte mit
-  „Erneut versuchen" erscheint.
+Nach einer erfolgreichen Gutschein-Zahlung sieht die Kundin auf der Rückkehr-Seite eine rund
+fünf- bis sechssekündige Sequenz: Kasse druckt den Bon, Umschlag verpackt den Gutschein, Haken
+und Konfetti bestätigen den Kauf, danach erscheinen Dank- und Bestätigungszeilen mit Wert und
+E-Mail-Adresse. Im Hub selbst gibt es dazu nichts einzustellen — was das Team bei Bestellungen,
+Zustellung und Erstattung tut, steht in der Anleitung *Admin 3 – Gutschein-Verkauf*.
 
 ---
 
 ## Für Entwickler
+
+### Verhalten der Seite
+
+- **Wartezustand:** Solange die Seite auf die Mollie-Bestätigung wartet (Polling alle 3 Sekunden),
+  druckt die Kasse in Schleife, darunter pulsiert „Deine Zahlung wird verarbeitet …".
+- **Nur einmal pro Bestellung:** Beim Neuladen erscheint sofort der fertige Erfolgs-Zustand
+  (Merker im `sessionStorage`, siehe [Livewire-Integration](#livewire-integration-trigger)).
+- **„Bewegung reduzieren":** Bei aktiver Systemeinstellung wird ohne Animation direkt der
+  Endzustand gezeigt.
+- **Lange Wartezeit:** Bestätigt Mollie nach ~2 Minuten noch nicht, erscheint zusätzlich ein
+  Hinweis („… erhältst Du Deinen Gutschein automatisch per E-Mail …") mit
+  „Status aktualisieren"-Button. Die Kasse druckt weiter.
+- **Fehlgeschlagene Zahlung:** Keine Animation — die normale Fehlerkarte mit „Erneut versuchen"
+  erscheint.
 
 ### Beteiligte Dateien
 

@@ -674,5 +674,5 @@ php artisan tinker
 ## 🔗 Weiterführende Links
 
 - [Phorest API Dokumentation](https://api-docs.phorest.com/)
-- [config/phorest.php](../config/phorest.php) - Endpoint-Konfiguration
-- [PhorestApiService.php](../app/Services/PhorestApiService.php) - Service-Implementierung
+- `config/phorest.php` - Endpoint-Konfiguration
+- `app/Services/PhorestApiService.php` - Service-Implementierung

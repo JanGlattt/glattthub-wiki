@@ -1,111 +1,90 @@
 # Superchat / WhatsApp-Integration
 
+Die Superchat-Integration verbindet WhatsApp-Konversationen aus dem
+[Superchat](https://www.superchat.de) Posteingang mit den Phorest-Kunden in glatttHub. Im
+Kundenprofil steht dafür der Tab **Nachrichten** (bis 28.08.2026 „WhatsApp") zur Verfügung,
+der die komplette Chathistorie chronologisch im Messenger-Layout zeigt, Antworten im
+24-h-Fenster und Vorlagen-Nachrichten erlaubt und neue Konversationen je Standort-Kanal
+starten kann. Diese Seite beschreibt **Datenfluss, Webhook-Verarbeitung, Media-Proxy,
+Composer-Endpunkte und Fallstricke**; die Bedienung steht im Nutzerhandbuch.
+
+!!! nutzerhandbuch "Bedienung: Kundenverwaltung 5 – Nachrichten & Kundenservice · Admin 4 – Erinnerungen und WhatsApp"
+    [hilfe.hub.glattt.com/kundenverwaltung/5/](https://hilfe.hub.glattt.com/kundenverwaltung/5/) — Verlauf lesen, im Zeitfenster antworten, neue Nachricht (Vorlage) senden.
+    [hilfe.hub.glattt.com/admin/4/](https://hilfe.hub.glattt.com/admin/4/) — Terminerinnerungen, Beratungs-WhatsApp, Bewertungsanfragen, Einwilligungen und Protokolle.
+
+    Angrenzend: Serie [Kundenverwaltung](https://hilfe.hub.glattt.com/kundenverwaltung/) (Kundenprofil).
+
 !!! info "Verwandte Seite"
     Die Verwaltung der Superchat-Kontakte, der automatische Sync und die
     Webhook-basierte Verknüpfung sind in einer eigenen Seite dokumentiert:
     [**Superchat-Kontakte & Sync →**](SUPERCHAT-KONTAKTE.md)
 
-Die Superchat-Integration verbindet WhatsApp-Konversationen aus dem
-[Superchat](https://www.superchat.de) Posteingang mit den Phorest-Kunden in
-glatttHub. Im Kundendetail steht ein eigener Tab **WhatsApp** zur Verfügung,
-der die komplette Chathistorie chronologisch im klassischen Messenger-Layout
-darstellt.
+## Für Anwender — Überblick
 
-## Für Endanwender
+**Was das Modul leistet.** Jede WhatsApp-Konversation, die im Superchat-Posteingang mit einer
+Kundin läuft, ist im Kundenprofil sichtbar — chronologisch, nach Tag gruppiert, mit
+Status-Häkchen (gesendet / zugestellt / gelesen / fehlgeschlagen), Bildern und Dateianhängen.
+Das Team kann direkt aus dem Hub antworten und über einen Standort-Kanal eine neue
+Konversation beginnen; die Zuordnung Kundin ↔ Superchat-Kontakt läuft über die Mobilnummer.
 
-### Wo finde ich die WhatsApp-Konversationen?
+**Grundsätze, die überall gelten:**
 
-1. Im Hub → **Kunden** den Kunden öffnen
-2. Tab **WhatsApp** anklicken
-3. Es werden alle Konversationen mit diesem Kunden angezeigt – chronologisch
-   sortiert, gruppiert nach Tag (Heute / Gestern / Datum)
+- **Das 24-Stunden-Fenster von Meta entscheidet, was gesendet werden darf.** Innerhalb von
+  24 h nach der letzten *eingehenden* Kundennachricht sind Freitext und Anhänge erlaubt
+  (Restlaufzeit wird angezeigt); danach ist nur eine von Meta genehmigte **WhatsApp-Vorlage**
+  möglich.
+- **Eine Konversation je Kanal.** Jeder Standort hat einen eigenen WhatsApp-Kanal; eine
+  Kundin kann deshalb mehrere Konversationen haben. „Neue Konversation" ist immer verfügbar,
+  damit ein zweiter Standort seinen eigenen Faden aufmachen kann.
+- **Ohne Superchat-Kontakt keine Historie.** Fehlt der Kontakt (andere Mobilnummer als in
+  Phorest) oder gab es nie eine Konversation, ist der Tab leer — eine neue Vorlagen-Nachricht
+  legt den Kontakt an und verknüpft ihn. Fehlt die Phorest-Client-ID, muss die Kundin zuerst
+  in Phorest angelegt werden.
+- **Gesendetes erscheint sofort** als „in Zustellung" und bekommt seinen endgültigen Status
+  über den Webhook nachgereicht.
 
-### Was wird angezeigt?
-
-- **Konversations-Header**: Kundenname links, Zeitstempel der letzten Aktivität
-  rechts
-- **Eingehende Nachrichten** (vom Kunden): weiße Bubble links mit
-  Bubble-Tail
-- **Ausgehende Nachrichten** (vom Team): grüne Bubble rechts mit
-  Bubble-Tail + Status-Häkchen
-  - `✓` gesendet
-  - `✓✓` zugestellt
-  - `✓✓` (blau) gelesen
-  - `!` (rot) fehlgeschlagen
-- **Datums-Trenner**: kleine Pille mittig im Chat
-- **Bilder**: werden direkt in der Bubble angezeigt, Klick öffnet das
-  Original in neuem Tab
-- **Andere Dateien**: Link „Datei herunterladen" mit Büroklammer-Icon
-- **Medien in Verarbeitung**: wenn Superchat den Datei-Link noch nicht
-  geliefert hat, erscheint „Anhang wird verarbeitet…"
-
-### Aktualisieren
-
-Oben rechts gibt es den Button **Aktualisieren**. Beim Öffnen des Tabs werden
-die Nachrichten ohnehin automatisch geladen – der Button hilft, wenn während
-des Gesprächs neue Nachrichten reinkommen.
-
-### Nachrichten senden
-
-Unterhalb des Chat-Verlaufs liegt ein **Composer**:
-
-- **Innerhalb 24 h** nach der letzten eingehenden Kundennachricht ist das
-  *Customer Service Window* offen — Freitext und Anhänge (Bilder
-  JPG/PNG/WEBP, PDF, MP4) dürfen versendet werden. Die Restlaufzeit wird
-  als Hinweis angezeigt.
-- **Außerhalb** ist der Freitext gesperrt. Es darf dann nur eine von
-  Meta genehmigte **WhatsApp-Vorlage** verschickt werden. Über den
-  Button *Vorlage* öffnet sich ein Dialog mit allen approved Templates,
-  Platzhaltern (`{{1}}`, `{{2}}` …) und einer Live-Vorschau.
-
-Gesendete Nachrichten erscheinen sofort als „in Zustellung" und werden
-über den Webhook-Echo automatisch in den finalen Status (`sent`,
-`delivered`, `read`, `failed`) gehoben.
-
-### Neue Konversation starten
-
-Oben rechts im WhatsApp-Tab gibt es neben **Aktualisieren** auch den Button
-**Neue Konversation**. Dieser öffnet ein Modal mit zwei Schritten:
-
-1. **Kanal (Standort) wählen** — Dropdown zeigt alle verknüpften WhatsApp-Kanäle
-   mit dem Standortnamen (z. B. „Hannover", „Bielefeld", „Osnabrück") statt
-   der rohen Telefonnummer.
-2. **Vorlage wählen** — nach Kanalwahl lädt das Modal alle genehmigten
-   WhatsApp-Templates für diesen Kanal. Platzhalter (`{{1}}`, `{{2}}` …)
-   werden als Eingabefelder dargestellt; eine Live-Vorschau zeigt den
-   ausgefüllten Text.
-
-Nach dem Absenden:
-- Gibt es noch keinen Superchat-Kontakt für den Kunden, wird er anhand der
-  Phorest-Mobilnummer gesucht (E.164-normalisiert) oder neu angelegt.
-- Die erste Nachricht erscheint sofort im Chat (kein Warten auf Webhook).
-- Der Button ist **immer** sichtbar — auch wenn bereits Konversationen
-  existieren — damit eine zweite Konversation über einen anderen Kanal
-  (anderen Standort) gestartet werden kann.
-
-### Was wird im Konversations-Header angezeigt?
-
-- **Bei mehreren Konversationen**: ein Dropdown zum Wechsel zwischen den
-  Konversationen. Jede Option zeigt Standortname + Datum.
-- **Bei genau einer Konversation**: ein Info-Badge (z. B. `Hannover · 08.06.2026`)
-  direkt neben dem Kundennamen, damit immer erkennbar ist, über welchen Kanal
-  der Chat läuft.
-
-### Was ist, wenn nichts angezeigt wird?
-
-Möglich sind drei Gründe:
-
-1. **„Kein Superchat-Kontakt verknüpft"** → Für den Kunden gibt es in Superchat
-   keinen Kontakt mit passender Telefonnummer. Über **Neue Konversation**
-   kann direkt eine erste Nachricht gesendet werden — dabei wird der Kontakt
-   automatisch angelegt und verknüpft.
-2. **„Keine Konversationen vorhanden"** → Es gab noch nie eine
-   WhatsApp-Konversation mit diesem Kunden. Über **Neue Konversation**
-   lässt sich direkt eine starten.
-3. **Phorest Client ID fehlt** → Der Kunde wurde nicht über Phorest
-   importiert; bitte zuerst den Kunden in Phorest anlegen und neu syncen.
+| Vorgang | Anleitung |
+|---|---|
+| Verlauf lesen, Bilder/Dateien öffnen, aktualisieren | Kundenverwaltung 5 |
+| Im 24-h-Fenster antworten (Text, Anhang) | Kundenverwaltung 5 |
+| Neue Nachricht per Vorlage senden, Kanal (Standort) wählen | Kundenverwaltung 5 |
+| Automatische Nachrichten (Beratungs-WhatsApp, Erinnerungen, Bewertungen) konfigurieren | Admin 4 |
+| Superchat-Kontakte zuordnen und synchronisieren | [SUPERCHAT-KONTAKTE.md](SUPERCHAT-KONTAKTE.md) |
 
 ## Für Entwickler
+
+### Fachregeln und UI-Zustände
+
+Diese Regeln setzt der Code durch; sie sind hier gebündelt, weil jede Änderung am Composer
+oder am Chat-View sie berücksichtigen muss:
+
+- **Anzeige:** Konversationen chronologisch, gruppiert nach Tag (Heute / Gestern / Datum,
+  Datums-Trenner als Pille). Eingehende Nachrichten links (weiße Bubble), ausgehende rechts
+  (grüne Bubble) mit Status-Ticks: `✓` gesendet, `✓✓` zugestellt, `✓✓` blau gelesen, `!` rot
+  fehlgeschlagen. Bilder direkt in der Bubble (Klick → Lightbox), andere Dateien als Link
+  „Datei herunterladen"; solange Superchat den Datei-Link noch nicht geliefert hat, steht
+  „Anhang wird verarbeitet…".
+- **Konversations-Header:** Kundenname links, Zeitstempel der letzten Aktivität rechts. Bei
+  mehreren Konversationen ein Dropdown (Standortname + Datum je Option), bei genau einer ein
+  Info-Badge (z. B. `Hannover · 08.06.2026`), damit der Kanal immer erkennbar ist.
+- **Aktualisieren:** Beim Öffnen des Tabs werden Nachrichten automatisch geladen; der Button
+  *Aktualisieren* holt neue Nachrichten während des Gesprächs.
+- **Composer:** Innerhalb 24 h nach der letzten eingehenden Kundennachricht (*Customer Service
+  Window*) sind Freitext und Anhänge (JPG/PNG/WEBP, PDF, MP4) erlaubt, die Restlaufzeit wird
+  angezeigt. Außerhalb ist Freitext gesperrt; über *Vorlage* öffnet sich ein Dialog mit allen
+  approved Templates, Platzhaltern (`{{1}}`, `{{2}}` …) und Live-Vorschau.
+- **Neue Konversation** (Button immer sichtbar, auch bei bestehenden Konversationen): Schritt 1
+  Kanal (Standort) wählen — Dropdown zeigt die verknüpften WhatsApp-Kanäle mit Standortnamen
+  statt Telefonnummer; Schritt 2 Vorlage wählen, Platzhalter als Eingabefelder, Live-Vorschau.
+  Nach dem Absenden wird ein fehlender Superchat-Kontakt über die Phorest-Mobilnummer
+  (E.164) gesucht oder angelegt, die erste Nachricht erscheint sofort im Chat.
+- **Leerer Tab, drei Ursachen:** „Kein Superchat-Kontakt verknüpft" (keine passende
+  Telefonnummer — *Neue Konversation* legt Kontakt + Link an), „Keine Konversationen
+  vorhanden" (nie geschrieben), Phorest Client ID fehlt (Kundin nicht über Phorest importiert
+  → zuerst in Phorest anlegen und syncen).
+- **Optimistischer Status:** Gesendete Nachrichten erscheinen sofort als „in Zustellung"
+  (`status=sending`) und werden über den Webhook-Echo in `sent`/`delivered`/`read`/`failed`
+  gehoben.
 
 ### Architektur-Überblick
 
@@ -122,7 +101,7 @@ WhatsApp-Nachricht        ←──── Webhook (synchron) ────→  su
                                                             für Media
 
 Kundendetail-Tab          ←─── GET /superchat/client-conversations ──┐
-"WhatsApp"                                                            │
+"Nachrichten"                                                         │
                                                                       ▼
                           ← SuperchatContactLink → SuperchatMessage[]
 ```
@@ -138,7 +117,7 @@ Kundendetail-Tab          ←─── GET /superchat/client-conversations ─�
 | `app/Http/Controllers/SuperchatController.php` | JSON-API `/superchat/client-conversations` für den Kundendetail-Tab |
 | `app/Models/SuperchatContactLink.php`, `app/Models/SuperchatMessage.php` | Eloquent-Models |
 | `app/Models/SuperchatWebhookEvent.php` | Audit-Log aller eingehenden Webhook-Events (status: pending/processed/failed) |
-| `resources/views/hub/clients/partials/whatsapp.blade.php` | Alpine.js Chat-View |
+| `resources/views/hub/clients/partials/whatsapp.blade.php` | Alpine.js Chat-View (seit 28.08.2026 zusätzlich mit der Nachrichten-Timeline am Kopf, siehe [CLIENT-DETAIL-MODULE.md](CLIENT-DETAIL-MODULE.md#nachrichten-tab-timeline-superchat)) |
 | `public/css/theme_glattt.css` (Abschnitt `WHATSAPP-THREAD`) | Styling für Bubbles, Tails, Tag-Trenner, Status-Ticks |
 | `config/superchat.php` | API-Key, Webhook-Secret (optional), Custom-Attribute-IDs (`phorest_client_id`, `external_id`) |
 | `database/migrations/2026_05_31_*` und `2026_06_01_*` | Tabellen `superchat_contact_links`, `superchat_messages`, `superchat_webhook_events` |
@@ -216,7 +195,7 @@ Nicht-Bild-Anhänge (PDF, Audio, Video).
 
 ### Frontend-Darstellung (Lightbox)
 
-Bilder im WhatsApp-Tab öffnen beim Klick eine Lightbox-Vorschau
+Bilder im Nachrichten-Tab öffnen beim Klick eine Lightbox-Vorschau
 (`x-teleport="body"`) mit zwei Aktionen:
 
 - **Herunterladen** — verlinkt auf `/superchat/media/{id}?download=1`
@@ -318,7 +297,7 @@ wird ebenfalls unterstützt).
 
 ### Phorest-ID-Resolution im Frontend
 
-Der WhatsApp-Tab liest die `clientId` aus dem **Parent-Alpine-Scope**
+Der Nachrichten-Tab liest die `clientId` aus dem **Parent-Alpine-Scope**
 (`alpineData.client.clientId`). Da der Tab teilweise vor dem
 Parent-Mount initialisiert wird, gibt es ein 100 ms-Polling mit max.
 20 Versuchen (~2 s). Initial-Load wird durch
@@ -341,7 +320,7 @@ Dark-Mode-Switcher `.dark`:
 
 ### Console-Debugging
 
-Im WhatsApp-Tab werden Debug-Logs mit Prefix `💬 WhatsApp:` ausgegeben:
+Im Nachrichten-Tab werden Debug-Logs mit Prefix `💬 WhatsApp:` ausgegeben:
 
 - `loadConversations { phorestClientId, force, attempts }`
 - `GET /superchat/client-conversations?…`
@@ -360,3 +339,9 @@ Im WhatsApp-Tab werden Debug-Logs mit Prefix `💬 WhatsApp:` ausgegeben:
 Bei Schema-Änderungen an `superchat_*`-Tabellen erst lokal migrieren,
 dann ein SQL-Skript für die Produktiv-DB erstellen (nie direkt
 `php artisan migrate` auf Production).
+
+!!! note "Stand seit 08.07.2026"
+    Migrationen laufen inzwischen automatisch beim Deploy
+    (`php artisan migrate --force --isolated` im Docker-Entrypoint); der Hinweis oben
+    beschreibt den früheren Stand, das Prod-SQL-Skript zur Zeitzonen-Korrektur stammt aus
+    dieser Zeit. Details: `CONTRACTS-SEPA-MODULE.md` bzw. `STAGING-UMGEBUNG.md`.

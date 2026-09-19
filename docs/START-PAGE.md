@@ -1,105 +1,62 @@
-# 🏠 Startseite (Start Page)
+# Startseite (Start Page)
 
 **Version:** 2.0
-**Letzte Aktualisierung:** August 2026
+**Letzte Aktualisierung:** September 2026
 
 Die Startseite ist der erste Bildschirm nach dem Login: oben Begrüßung und
-Tagesüberblick, darunter frei zusammenstellbare Kacheln.
+Tagesüberblick, darunter frei zusammenstellbare Kacheln aus News, Quicklinks,
+Mitteilungen, Kennzahlen und beliebigen Statistiken der Registry. Diese Seite
+beschreibt **Absicht, Aufbau, Alpine-Komponenten, Endpunkte, Datenquellen des
+Tagesüberblicks und die Fallstricke** der serverseitig gerenderten Fassung
+(seit 08/2026); die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
-Seit **08/2026** wird sie **serverseitig gerendert**: Das vollständige
-Kachelraster steht schon im ersten HTML, jede Kachel holt ihre Daten danach
-einzeln nach. Vorher baute der Browser das Raster erst, nachdem die
-Konfiguration per fetch eingetroffen war — bis dahin lag ein Ganzseiten-Spinner
-über der Seite, und ein Reload war oft nötig.
+!!! nutzerhandbuch "Bedienung: Grundlagen 6 – Die Startseite einrichten"
+    [hilfe.hub.glattt.com/grundlagen/6/](https://hilfe.hub.glattt.com/grundlagen/6/) — die Startseite lesen, Kacheln hinzufügen und ordnen, Kennzahlen-Zeile anpassen.
+
+    Angrenzend: [Grundlagen 2 – Standort, Suche & Mitteilungen](https://hilfe.hub.glattt.com/grundlagen/2/) (der Standortfilter, dem die Statistik-Kacheln folgen).
 
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
 
-### Was zeigt die Startseite?
+**Was die Startseite leistet.** Sie macht nach dem Login sofort arbeitsfähig: Der
+**Tagesüberblick** („Heute") zeigt die Beratungsgespräche des Tages (stattgefunden /
+laufend / offen / No-Show), die heute verkauften Körperzonen und die Prognose bis
+Monatsende — er ist fest und lässt sich nicht entfernen. Darunter liegt das
+**Kachelraster**, das jede Nutzerin selbst zusammenstellt: News, Quicklinks,
+Mitteilungen, eine Kennzahlen-Kachel mit bis zu acht Kennzahlen aus dem gesamten Hub
+und beliebig viele **Statistik-Kacheln** — dieselbe Karte wie auf der Berichtsseite,
+inklusive Diagramm, Tabellen-Register und Info-Panel. Es gibt keine gesonderten
+„Startseiten-Diagramme".
 
-| Bereich | Inhalt |
+**Grundsätze:**
+
+- **Die Zahlen aktualisieren sich von selbst** — beim Zurückkehren auf den Tab und
+  alle fünf Minuten, solange der Tab sichtbar ist. Alte Werte bleiben dabei stehen und
+  werden nur kurz gedimmt; nichts springt, keine Kachel kollabiert.
+- **Angeboten wird nur, was man sehen darf.** Kennzahlen und Statistiken ohne
+  Berechtigung tauchen weder zur Auswahl auf noch bleiben sie als leerer Rahmen
+  stehen.
+- **Statistik-Kacheln folgen dem Standortfilter der Seitenleiste.** Einen
+  Zeitraum-Filter hat die Startseite bewusst nicht; jede Statistik zeigt ihren
+  Standardzeitraum.
+- **Einrichten ist ein eigenes Recht** („KPIs und Charts konfigurieren"). Ohne
+  eigene Fassung gilt die Voreinstellung der Rolle, danach die Standard-Belegung;
+  „Zurücksetzen" löscht die eigene Fassung wieder.
+- **„Stattgefunden" ist tagsüber eher zu niedrig:** Phorest setzt den Status oft erst
+  beim Abrechnen, teils am Folgetag. Der tatsächliche Stand der Zahlen steht rechts
+  oben in der „Heute"-Karte.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
 |---|---|
-| **Begrüßung** | Tageszeit-abhängiger Gruß, Datum, aktuelles Institut |
-| **Heute** (Tagesüberblick) | Beratungsgespräche heute (stattgefunden / laufend / offen / No-Show), verkaufte KPZ heute, Prognose KPZ bis Monatsende |
-| **Kacheln** | News, Quicklinks, Mitteilungen, Kennzahlen und beliebig viele **Statistiken** |
-
-Der Tagesüberblick ist fest und lässt sich nicht entfernen — er ist das, was
-nach dem Login sofort arbeitsfähig macht. Termine und Mitteilungen sind
-anklickbar und führen in den jeweiligen Bereich.
-
-### Aktualisieren sich die Zahlen von selbst?
-
-Ja. Ein manueller Reload ist nicht mehr nötig:
-
-- beim **Zurückkehren auf den Tab** (wenn die Zahlen älter als eine Minute sind)
-- zusätzlich **alle 5 Minuten**, solange der Tab sichtbar ist
-
-Beim Auffrischen bleiben die alten Werte stehen und werden nur kurz gedimmt —
-die Seite springt nicht und Kacheln kollabieren nicht.
-
-> **Stand der Zahlen:** Termine und Beratungen kommen aus der lokalen
-> Auswertungstabelle, die alle 15 Minuten mit Phorest abgeglichen wird. Der
-> tatsächliche Stand steht rechts oben in der „Heute"-Karte. „Durchgeführt"
-> wird in Phorest oft erst beim Abrechnen gesetzt, teils am Folgetag — die Zahl
-> ist tagsüber daher eher zu niedrig.
-
-### Startseite anpassen
-
-Mit dem Recht **„KPIs und Charts konfigurieren"** (`configure_dashboard`)
-erscheint oben rechts der Knopf **Anpassen**:
-
-Alle Aktionen einer Kachel sitzen im Bearbeitungsmodus in **einer** Leiste oben
-rechts an der Kachel:
-
-| Aktion | Wie |
-|---|---|
-| Reihenfolge ändern | Kachel greifen und verschieben |
-| Breite umschalten | Pfeil-Symbol an der Kachel (100 % ⇄ 50 %) |
-| Kachel entfernen | X-Symbol an der Kachel |
-| Inhalt wählen | Zahnrad an der Kachel — dasselbe Symbol für Statistik, Kennzahlen und Quicklinks |
-| Kachel hinzufügen | Feld „Karte hinzufügen" am Ende des Rasters |
-| Zurücksetzen | „Zurücksetzen" in der Bearbeitungsleiste |
-
-**Kachel hinzufügen läuft in zwei Schritten:** erst der Kartentyp, dann sein
-Inhalt (welche Statistik, welche Kennzahlen). News, Quicklinks und Mitteilungen
-haben keinen zweiten Schritt und werden direkt angelegt.
-
-Änderungen werden sofort gespeichert; **die Seite lädt dabei nicht neu** — auch
-nicht beim Hinzufügen einer Kachel oder beim Wechsel einer Statistik. Nur
-„Zurücksetzen" lädt neu, weil es das ganze Raster austauscht.
-
-**Zurücksetzen** löscht die eigene Fassung. Danach gilt wieder die
-Voreinstellung der Rolle (siehe unten) bzw. die Standard-Belegung.
-
-### Kennzahlen-Kachel
-
-Zur Wahl stehen **alle Kennzahlen des Hubs**, die man sehen darf — aktuell 129
-aus 13 Quellen (Verkauf, Ads, Kunden, Personal, glattt-KPIs, HR, Widerrufe,
-Besucher, Termine, Pakete, Schulden …). Bis 08/2026 waren es nur vier Quellen
-rund um Termine und Pakete.
-
-Wegen der Menge hat der Dialog ein **Suchfeld**. Bereits Gewähltes bleibt beim
-Filtern sichtbar, damit die Auswahl nicht aus dem Blick gerät und der Zähler
-„x / 8" zur Liste passt. Pro Kachel sind 8 Kennzahlen möglich, bei halber
-Breite 4.
-
-Beträge, Prozentwerte und Nachkommastellen werden korrekt dargestellt
-(„1.234,50 €" statt „1234.5").
-
-### Statistik-Kacheln
-
-Jede Statistik des Hubs kann als Kachel auf der Startseite stehen — dieselbe
-Karte wie auf der Berichtsseite, inklusive Diagramm, Tabellen-Register und
-Info-Panel. Es gibt keine gesonderten „Startseiten-Diagramme" mehr.
-
-Angeboten wird nur, was man auch sehen darf. Eine Statistik, für die die
-Berechtigung fehlt (oder später entzogen wird), verschwindet still aus dem
-Raster statt als leerer Rahmen stehen zu bleiben.
-
-Statistiken folgen dem **Standortfilter der Seitenleiste**. Einen Zeitraum-
-Filter hat die Startseite bewusst nicht — jede Statistik zeigt ihren
-Standardzeitraum; Statistiken mit festem Zeitraum weisen ihn als Hinweis aus.
+| Begrüßung, Tagesüberblick und Kacheln lesen | Grundlagen 6 |
+| Kachel hinzufügen (Kartentyp, dann Inhalt wählen) | Grundlagen 6 |
+| Kacheln verschieben, Breite umschalten, entfernen, zurücksetzen | Grundlagen 6 |
+| Kennzahlen-Kachel belegen (Suchfeld, bis zu 8 Kennzahlen) | Grundlagen 6 |
+| Standort wählen, dem die Statistik-Kacheln folgen | Grundlagen 2 |
+| Voreinstellung je Rolle pflegen (Admin-Backend) | Admin 8 |
 
 ---
 
@@ -124,6 +81,12 @@ Standardzeitraum; Statistiken mit festem Zeitraum weisen ihn als Hinweis aus.
 
 ### Aufbau
 
+Seit **08/2026** wird die Seite **serverseitig gerendert**: Das vollständige
+Kachelraster steht schon im ersten HTML, jede Kachel holt ihre Daten danach
+einzeln nach. Vorher baute der Browser das Raster erst, nachdem die
+Konfiguration per fetch eingetroffen war — bis dahin lag ein Ganzseiten-Spinner
+über der Seite, und ein Reload war oft nötig.
+
 ```
 Erster Request                          Danach, je Kachel
 ┌──────────────────────────────┐        ┌────────────────────────────┐
@@ -146,6 +109,9 @@ Erster Request                          Danach, je Kachel
 2. **`<x-statistic>` ist eine Blade-Komponente.** Sie lässt sich nur
    serverseitig rendern — ohne diesen Umbau könnte die Startseite die
    StatisticRegistry gar nicht nutzen.
+
+Der Tagesüberblick ist fest und lässt sich nicht entfernen; Termine und
+Mitteilungen darin sind anklickbar und führen in den jeweiligen Bereich.
 
 ### Alpine-Komponenten
 
@@ -175,6 +141,11 @@ Events, keine Listener, gilt auch für nachträglich eingefügte Kacheln.
 > die Scope-Kette und verwerfen sich gegenseitig die Race-Guards.
 
 ### Auto-Aktualisierung
+
+Ein manueller Reload ist nicht nötig: Die Zahlen aktualisieren sich beim
+**Zurückkehren auf den Tab** (wenn sie älter als eine Minute sind) und zusätzlich
+**alle 5 Minuten**, solange der Tab sichtbar ist. Beim Auffrischen bleiben die alten
+Werte stehen und werden nur kurz gedimmt.
 
 `startPage()` erhöht `refreshTick` und ruft zusätzlich `load()` auf jeder
 `.statistic-glattt`-Instanz:
@@ -234,6 +205,26 @@ Mitteilungen). Beide in `components/stat-skeleton.blade.php`.
 > verlöre beim Verschieben seine gewählte Statistik. Deshalb lädt der
 > Bearbeitungsmodus beim Betreten die verbindliche Belegung nach.
 > Abgesichert durch `StartPageTest::test_verschieben_erhaelt_die_gewaehlte_statistik`.
+
+### Bearbeitungsmodus — Fachregeln
+
+Mit dem Recht `configure_dashboard` erscheint oben rechts der Knopf **Anpassen**.
+Alle Aktionen einer Kachel sitzen im Bearbeitungsmodus in **einer** Leiste oben
+rechts an der Kachel: Reihenfolge ändern (greifen und verschieben), Breite
+umschalten (Pfeil-Symbol, 100 % ⇄ 50 %), Kachel entfernen (X), Inhalt wählen
+(Zahnrad — dasselbe Symbol für Statistik, Kennzahlen und Quicklinks); „Karte
+hinzufügen" steht als Feld am Ende des Rasters, „Zurücksetzen" in der
+Bearbeitungsleiste.
+
+- **Kachel hinzufügen läuft in zwei Schritten:** erst der Kartentyp, dann sein
+  Inhalt (welche Statistik, welche Kennzahlen). News, Quicklinks und Mitteilungen
+  haben keinen zweiten Schritt und werden direkt angelegt.
+- **Änderungen werden sofort gespeichert; die Seite lädt dabei nicht neu** — auch
+  nicht beim Hinzufügen einer Kachel oder beim Wechsel einer Statistik. Nur
+  „Zurücksetzen" lädt neu, weil es das ganze Raster austauscht.
+- **Zurücksetzen** löscht die eigene Fassung. Danach gilt wieder die Voreinstellung
+  der Rolle (siehe [Rollen-Voreinstellung](#rollen-voreinstellung)) bzw. die
+  Standard-Belegung.
 
 ### Karten einsetzen statt Seite neu laden
 
@@ -320,6 +311,16 @@ Diagramme messen ihren Container nur beim Zeichnen und hängen sonst am
 
 ### Kennzahlen: volle Registry-IDs
 
+**Fachregeln der Kennzahlen-Kachel:** Zur Wahl stehen **alle Kennzahlen des Hubs**,
+die man sehen darf — aktuell 129 aus 13 Quellen (Verkauf, Ads, Kunden, Personal,
+glattt-KPIs, HR, Widerrufe, Besucher, Termine, Pakete, Schulden …). Bis 08/2026
+waren es nur vier Quellen rund um Termine und Pakete. Wegen der Menge hat der
+Dialog ein **Suchfeld**; bereits Gewähltes bleibt beim Filtern sichtbar, damit die
+Auswahl nicht aus dem Blick gerät und der Zähler „x / 8" zur Liste passt. Pro
+Kachel sind **8 Kennzahlen** möglich, bei halber Breite **4**. Beträge,
+Prozentwerte und Nachkommastellen werden formatiert dargestellt („1.234,50 €"
+statt „1234.5").
+
 Die Kachel speichert seit 08/2026 die **volle Registry-ID** (`sales.total_revenue`)
 statt der Kurzform (`total_revenue`). Die Kurzform ist nur **innerhalb einer
 Quelle** eindeutig — sie funktionierte, solange nur vier Quellen angeboten
@@ -345,6 +346,15 @@ wurden, und wäre quellenübergreifend mehrdeutig geworden.
 > wird, ist das der Ansatzpunkt.
 
 ### Statistik-Kacheln
+
+**Fachregeln:** Jede Statistik des Hubs kann als Kachel auf der Startseite stehen —
+dieselbe Karte wie auf der Berichtsseite, inklusive Diagramm, Tabellen-Register
+und Info-Panel. Angeboten wird nur, was man auch sehen darf; eine Statistik, für
+die die Berechtigung fehlt (oder später entzogen wird), verschwindet still aus dem
+Raster statt als leerer Rahmen stehen zu bleiben. Statistiken folgen dem
+**Standortfilter der Seitenleiste**; einen Zeitraum-Filter hat die Startseite
+bewusst nicht — jede Statistik zeigt ihren Standardzeitraum, Statistiken mit
+festem Zeitraum weisen ihn im Auswahl-Dialog aus.
 
 Der frühere Kartentyp `charts` mit sechs fest verdrahteten Diagrammen
 (`CHART_PORTFOLIO` im Controller, fünf Builder-Methoden, eigenes ECharts-Setup
@@ -482,7 +492,10 @@ Kennzahlen (Festlegung Jan, 11.08.2026):
   korrigiert, damit die Kachel dieselbe Zahl zeigt wie die Verkaufsstatistik
   und die Terminübersicht.
 - **„Stattgefunden" ist tagsüber zu niedrig.** `COMPLETED`/`PAID` wird in
-  Phorest oft erst beim Abrechnen gesetzt, teils am Folgetag.
+  Phorest oft erst beim Abrechnen gesetzt, teils am Folgetag. Der tatsächliche
+  Stand der Zahlen steht rechts oben in der „Heute"-Karte; Termine und
+  Beratungen der Auswertungstabelle werden alle 15 Minuten mit Phorest
+  abgeglichen.
 
 KPZ sind je Institut und Tag **60 Sekunden gecacht**, die Beratungen ebenfalls
 (ein Phorest-Abruf je Minute und Institut), die Prognose folgt dem

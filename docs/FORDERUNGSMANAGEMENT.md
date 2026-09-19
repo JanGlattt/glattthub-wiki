@@ -1,24 +1,136 @@
 # Forderungsmanagement
 
-Geführter Mahnprozess vom ersten Zahlungsausfall bis zur Zwangsvollstreckung.
-Ersetzt perspektivisch das [Schulden-Modul](SCHULDEN-MODULE.md) als Arbeitsoberfläche —
-die Schulden-Listen bleiben vorerst als reine Datenansicht bestehen.
+Geführter Mahnprozess vom ersten Zahlungsausfall bis zur Zwangsvollstreckung: Jeder säumige
+Zahler wird als **Fall** geführt, der durch feste Stufen wandert — mit automatischen Einstiegen
+(Rücklastschrift, Direktzahler, Mandatsentzug, offenes Kundenkonto), Schreiben per Zendesk und
+als Brief-PDF, Online-Bezahlseite, Ratenzahlungsvereinbarungen und gerichtlichem Verfahren.
+Ersetzt perspektivisch das [Schulden-Modul](SCHULDEN-MODULE.md) als Arbeitsoberfläche — die
+Schulden-Listen bleiben vorerst als reine Datenansicht bestehen. Diese Seite beschreibt
+**Absicht, Fachregeln (Einstiege, Wege, Mahnstufen, Fälligstellung, Salden), Datenmodell,
+Services, Briefbogen, Mail-Rahmen, UI, Cron, Tests und Importe**; die Bedienung Schritt für
+Schritt steht im Nutzerhandbuch. Spezifikation: Asana-Task „Forderungsmanagement" (User Story
+mit Prozess-Visualisierung).
 
-Spezifikation: Asana-Task „Forderungsmanagement" (User Story mit Prozess-Visualisierung).
+!!! nutzerhandbuch "Bedienung: Serie „Forderungen" 1–6 im Nutzerhandbuch"
+    [Forderungen 1 – Übersicht und Fall anlegen](https://hilfe.hub.glattt.com/forderungen/1/) ·
+    [2 – Der Fall im Detail](https://hilfe.hub.glattt.com/forderungen/2/) ·
+    [3 – Den Prozess führen](https://hilfe.hub.glattt.com/forderungen/3/) ·
+    [4 – Zahlungen und Bezahllinks](https://hilfe.hub.glattt.com/forderungen/4/) ·
+    [5 – Ratenzahlungsvereinbarung](https://hilfe.hub.glattt.com/forderungen/5/) ·
+    [6 – Eskalation und Abschluss](https://hilfe.hub.glattt.com/forderungen/6/)
+
+    Angrenzend: [Verträge 4 – Zahlungen nachtragen und korrigieren](https://hilfe.hub.glattt.com/vertraege/4/)
+    (geplatzte Lastschrift ausgleichen), [Verträge 5 – SEPA-Einzug und Rücklastschrift](https://hilfe.hub.glattt.com/vertraege/5/)
+    (Rücklastschrift anhängen), [Kundenverwaltung 4 – Vertrag, Zahlung & offene Forderungen](https://hilfe.hub.glattt.com/kundenverwaltung/4/)
+    (Fälle im Kundenprofil), [Widerrufe 4 – Die Abwicklung](https://hilfe.hub.glattt.com/widerrufe/4/)
+    (Abgabe ans Forderungsmanagement), [Betrieb 2 – Ein Institut pflegen](https://hilfe.hub.glattt.com/betrieb/2/)
+    (Bankverbindung des Standorts), [Finanzen 1 – Schulden im Überblick](https://hilfe.hub.glattt.com/finanzen/1/)
+    und [Berichte 10 – Schuldenbericht](https://hilfe.hub.glattt.com/berichte/10/).
+
+## Inhaltsverzeichnis
+
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Fachregeln](#fachregeln)
+        - [Einstiege und Weiche](#einstiege-und-weiche)
+        - [Mahnstufen je Weg](#mahnstufen-je-weg)
+        - [RLS-Gründe](#rls-grunde)
+        - [Versand, Schreiben und Fälligstellung](#versand-schreiben-und-falligstellung)
+        - [Zahlungen, Kosten und Ratenzahlungsvereinbarung](#zahlungen-kosten-und-ratenzahlungsvereinbarung)
+        - [Ruhend, RLS-Entscheid, Abschreiben, Notizen](#ruhend-rls-entscheid-abschreiben-notizen)
+        - [Seiten und Einstiegspunkte](#seiten-und-einstiegspunkte)
+        - [Rechte](#rechte)
+    - [Online-Bezahlseite](#online-bezahlseite-sharedpaytoken)
+    - [Datenmodell](#datenmodell-migration-2026_08_09_100000_create_receivables_tables)
+    - [Services](#services-appservicesreceivables)
+    - [E-Mail-Rahmen](#e-mail-rahmen-emailsdunning-message)
+    - [UI](#ui)
+    - [Cron](#cron)
+    - [Statistik](#statistik)
+    - [Tests](#tests)
+    - [Import der Bestandsliste](#import-der-bestandsliste-excelcsv)
+    - [Prüfliste](#prufliste-excel-raus-korrigierte-excel-wieder-rein)
+    - [Import der Bestands-RZV-Liste](#import-der-bestands-rzv-liste-ratenzahlungen-sheet)
+    - [Offen / Nachgang](#offen-nachgang)
 
 ---
 
-## Für Endanwender (Büro)
+## Für Anwender — Überblick
 
-### Was macht das Modul?
+**Was das Modul leistet und warum.** Vor dem Modul lebte das Mahnwesen in einer über Jahre
+gewachsenen Excel-Liste; Beträge, Stufen und Fristen waren nicht verlässlich, Fälle blieben
+liegen. Im Hub ist jeder säumige Zahler ein **Fall**, der in der Regel an einem Vertrag hängt
+(Ausnahme: offenes Phorest-Kundenkonto) und durch feste Stufen wandert — je Stufe gibt es genau
+**eine nächste Aktion**, die der Hub vorschlägt und mit fertigen Schreiben unterlegt. Nichts
+bleibt liegen: Ist eine Frist abgelaufen, erscheint der Fall in der Arbeitsliste **„Zu
+erledigen"**; Fälle, bei denen nur ein Zahlungseingang zu prüfen ist, stehen getrennt davon.
+Fälle entstehen **von selbst** — aus einer Rücklastschrift, einem unbezahlten Direktzahler-
+Vertrag, einem entzogenen SEPA-Mandat oder einem seit zwei Wochen offenen Kundenkonto — oder
+werden von Hand angelegt.
 
-Jeder säumige Zahler wird als **Fall** geführt. Ein Fall hängt in der Regel an
-einem Vertrag (Ausnahme: offenes Kundenkonto, siehe Einstieg 4) und wandert
-durch feste Stufen — je Stufe gibt es genau **eine nächste Aktion**, die der Hub
-vorschlägt. Nichts bleibt liegen: Ist eine Zahlungsfrist abgelaufen, erscheint
-der Fall in der Arbeitsliste **„Heute fällig"**.
+**Grundsätze, die überall gelten:**
 
-### Vier Einstiege (automatisch)
+- **Ein Kunde, ein Fall.** Läuft für einen Kunden bereits ein Fall, wird kein zweiter eröffnet;
+  neue Forderungen fließen in den bestehenden ein — sonst bekäme der Kunde zwei Schreiben über
+  teils dasselbe Geld.
+- **Zwei Wege nach der ersten Rücklastschrift:** der **sanfte Weg** (Erinnerungen per E-Mail,
+  Beobachtung des nächsten Einzugs, zuletzt Anhängen der geplatzten Rate ans Planende) und der
+  **harte Weg** ab über 50 € Altschulden (Erinnerung über alle Schulden, SEPA pausiert,
+  postalische Mahnungen, Fälligstellung der Restsumme). Am Ende des harten Wegs steht die
+  **250-€-Weiche**: darunter abschreiben, darüber gerichtliches Mahnverfahren.
+- **Der Hub schreibt, das Büro entscheidet.** Automatisch sind nur Fall-Eröffnung, die
+  10-€-RLS-Gebühr und Fristen. Jedes Schreiben wird vor dem Versand in echter Optik geprüft
+  und kann bearbeitet werden; Fälligstellung, Neustart nach einer weiteren Rücklastschrift,
+  Ruhendstellen und Abschreiben sind bewusste Entscheidungen — eine neue Rücklastschrift
+  mitten im Prozess eskaliert nie von allein.
+- **Jedes Schreiben ist ein Nachweis.** Der versendete Text hängt als Snapshot am
+  Verlaufseintrag; Absenderin ist immer die Labrado & Schlüter GmbH, das Institut ist nur der
+  Bezug, seine Bankverbindung steht auf jedem Schreiben. E-Mails gehen als Zendesk-Ticket
+  raus, Briefe als PDF zum Ausdrucken; beide tragen einen Bezahl-Button bzw. QR-Code zur
+  Online-Bezahlseite (Betrag fixiert, kein SEPA).
+- **Beträge werden nie doppelt gefordert.** Salden werden an genau einer Stelle gerechnet;
+  angehängte, noch im Einzug laufende Raten werden aus Schreiben und Bezahllinks
+  herausgerechnet, bis die Restsumme fällig gestellt ist. Zahlungen verrechnen sich nach
+  § 367 BGB: erst Kosten, dann Zinsen, zuletzt Hauptforderung.
+- **GoCardless wird nur manuell angefasst** — auch beim Anlegen von RZV-Raten oder eines
+  Mandats aus dem Fall heraus ist es ein bewusster Klick, nie ein Automatismus.
+
+**Zustände eines Falls in Prosa:** Ein Fall ist *aktiv* und liegt entweder **zur Erledigung**
+vor (Schreiben oder Entscheid steht an), **zur Zahlungsprüfung** (RZV-Rate, angehängte
+Lastschrift), **wartet** (Frist läuft) oder **ruht** (geparkt, beim Anwalt, wartend — mit
+optionaler Wiedervorlage). Mit einer Ratenzahlungsvereinbarung steht er in **„RZV läuft"**; im
+**gerichtlichen Bereich** trackt der Hub Mahnbescheid, Vollstreckungsbescheid und
+Zwangsvollstreckung. Geschlossen wird ein Fall als *bezahlt*, *RZV erfüllt*, *angehängte Serie
+eingezogen* oder *abgeschrieben (WNB)*.
+
+**Wo was erledigt wird** — die Anleitung nennt Felder, Modale und Folgewirkungen:
+
+| Vorgang | Anleitung |
+|---|---|
+| Arbeitsliste und Prozess-Board lesen, woher Fälle kommen, Fall ohne Vertrag anlegen, gerichtliche Fälle | Forderungen 1 |
+| Forderungsaufstellung, Seitenspalte, Anschrift korrigieren, Verlauf und Zahlungen lesen | Forderungen 2 |
+| Stufen des Prozesses, nächsten Schritt ausführen, Gesamtsumme fällig stellen, RLS-Entscheid, Schritt extern erledigt nachtragen | Forderungen 3 |
+| Zahlungseingang erfassen und stornieren, Sammel-Bezahllink, SEPA pausieren/fortsetzen, Kostenposition | Forderungen 4 |
+| Ratenzahlungsvereinbarung festhalten, Zahlungsplan ändern, laufende RZV verfolgen | Forderungen 5 |
+| 250-€-Weiche, gerichtliches Mahnverfahren, Fall ruhend stellen, abschreiben und abschließen | Forderungen 6 |
+| Geplatzte Rate am Vertrag ausgleichen, Rücklastschrift anhängen | Verträge 4, Verträge 5 |
+| Fälle einer Kundin im Profil | Kundenverwaltung 4 |
+| Abgabe aus dem Widerruf ans Forderungsmanagement | Widerrufe 4 |
+| Bankverbindung des Instituts pflegen | Betrieb 2 |
+| Schulden-Listen und Schuldenbericht | Finanzen 1, Berichte 10 |
+
+---
+
+## Für Entwickler
+
+### Fachregeln
+
+Die Regeln, nach denen Fälle entstehen, wandern und enden — die Bedienung dazu steht in der
+Serie „Forderungen". Beträge sind in Cents, Fristen in Kalendertagen.
+
+#### Einstiege und Weiche
+
+Vier Einstiege eröffnen Fälle **automatisch** (`DebtCaseIntakeService`):
 
 1. **Rücklastschrift (RLS)**: Platzt eine GoCardless-Lastschrift, entsteht der
    Fall von selbst. Automatisch werden **10 € RLS-Gebühr** gebucht. Hatte der
@@ -32,7 +144,9 @@ der Fall in der Arbeitsliste **„Heute fällig"**.
    ausgelöst werden: Beim manuellen Mandats-Storno auf der Widerruf-Detailseite
    entscheidet das Büro per Häkchen, ob zugleich ein Fall über die Restsumme
    entsteht (Stornos über unsere eigene API eröffnen weiterhin **nie**
-   automatisch einen Fall).
+   automatisch einen Fall); seit 07.09.2026 zusätzlich über den Knopf „Ans
+   Forderungsmanagement abgeben" der Widerruf-Seite (siehe [UI](#ui) und
+   [WIDERRUFE-MODULE.md](WIDERRUFE-MODULE.md)).
 4. **Offenes Kundenkonto (Flex-Zahler)**: Kunden ohne Vertrag — sie buchen
    einzelne Flex-Behandlungen — hinterlassen ihre Schuld auf dem
    **Phorest-Kundenkonto**. Der Hub spiegelt diese Kontostände täglich und
@@ -43,29 +157,48 @@ der Fall in der Arbeitsliste **„Heute fällig"**.
     Läuft für den Kunden bereits ein Fall (z. B. aus einer Rücklastschrift),
     wird **kein zweiter** eröffnet. Der Kontostand erscheint stattdessen als
     Hinweis oben auf der Fall-Detailseite — sonst bekäme der Kunde zwei
-    Schreiben über teils dasselbe Geld.
+    Schreiben über teils dasselbe Geld. Ein Mandatsentzug bei laufendem Fall
+    stuft den bestehenden Fall auf die Restsumme hoch (Verlaufseintrag
+    „Gesamte Restsumme fällig gestellt").
 
-### Kundenkonto-Fall von Hand anlegen
-
-Die 20-€/14-Tage-Regel greift bewusst nicht sofort. Für alles darunter oder für
-eilige Fälle gibt es auf der Übersichtsseite den Button **„Kundenkonto-Fall"**
-(Recht `manage_receivables`). Das Modal hat seit 28.08.2026 **zwei Modi**:
+**Kundenkonto-Fall von Hand:** Die 20-€/14-Tage-Regel greift bewusst nicht sofort. Für alles
+darunter oder für eilige Fälle gibt es auf der Übersichtsseite den Button
+**„Kundenkonto-Fall"** (Recht `manage_receivables`). Das Modal hat seit 28.08.2026 **zwei
+Modi**:
 
 - **Offene Kundenkonten:** zeigt **alle** Kunden mit offenem Phorest-Kundenkonto
-  mit Betrag, Standort und Beobachtungsdauer. Ein Klick auf die Zeile übernimmt
-  den Betrag, der sich vor dem Anlegen noch korrigieren lässt.
+  mit Betrag, Standort und Beobachtungsdauer; die Zeile übernimmt den Betrag, der
+  sich vor dem Anlegen noch korrigieren lässt.
 - **Kunde frei wählen:** beliebigen Kunden über die Kundensuche wählen und
   Betrag + Vermerk **frei erfassen** — für Forderungen, die außerhalb von
   Verträgen und Kundenkonto entstehen (z.B. ein in Rechnung gestellter,
   nicht wahrgenommener Termin; Anlass war Fall OS001031). Der Verlauf
   dokumentiert solche Fälle als „Forderung von Hand eingebucht".
 
-Der Betrag wird beim Anlegen **eingefroren** — eine Behandlung, die der Kunde
-danach bucht, erhöht die laufende Mahnung nicht mehr (sonst stimmte der Betrag
-im bereits versendeten Schreiben nicht). Weicht der aktuelle Kontostand später
-ab, zeigt der Hinweis oben auf der Fall-Detailseite beide Zahlen.
+Der Betrag wird beim Anlegen **eingefroren** (`account_principal_cents`) — eine Behandlung,
+die der Kunde danach bucht, erhöht die laufende Mahnung nicht mehr (sonst stimmte der Betrag
+im bereits versendeten Schreiben nicht). Weicht der aktuelle Kontostand später ab, zeigt der
+Hinweis oben auf der Fall-Detailseite beide Zahlen.
 
-### Die Wege
+#### Mahnstufen je Weg
+
+Übersicht der Wege — Kanal und Frist je Stufe (Fristen kommen aus der Vorlage,
+`DunningMessageService::TEMPLATE_DEADLINE_DAYS`; Aktions-Katalog in
+`DebtCaseActionService::nextAction()`):
+
+| Weg | Einstieg / Bedingung | Stufen (Kanal, Frist) | Nach der letzten Mahnung |
+|---|---|---|---|
+| **Sanft** | RLS, Altschulden ≤ 50 € | 1. Zahlungserinnerung (E-Mail, 7 T) → 2. Zahlungserinnerung + Androhung Terminabsage (E-Mail, 7 T) → Monitoring (nächster Einzugstermin + 3 + 10 T; nur beim ersten Ausrutscher) → letzte Mahnung per Post `letter_final_soft` (10 T, kündigt das Anhängen an) | Rate ans Planende anhängen (keine Gebühr); Gesamtsumme fällig gestellt oder Nicht-RLS-Einstieg → 250-€-Entscheid |
+| **Sanft, Neustart nach 2. RLS** (seit 09.09.2026) | RLS-Entscheid „von vorne" | 1. + 2. Zahlungserinnerung (E-Mail, je 7 T; nur nicht angehängte Forderungen) → **kein** Monitoring → 1. Mahnung (Post, 10 T) → letzte Mahnung (Post, mit/ohne Fälligstellung) | anhängen bzw. 250-€-Entscheid |
+| **Hart** | RLS, Altschulden > 50 € (oder harter Neustart) | Zahlungserinnerung über alle offenen Schulden + SEPA pausieren (E-Mail, 7 T) → 1. postalische Mahnung (10 T) → letzte Mahnung `letter_postal_final` über die gesamte Restsumme (Post, 14 T; Fälligstellung Standard ab 2 RLS) | 250-€-Entscheid: ≤ 250 € abschreiben (WNB), > 250 € gerichtliches Mahnverfahren. Ohne Fälligstellung stattdessen `letter_final_soft` (10 T) → Rate anhängen |
+| **Mandatsentzug** | Webhook (`origin` bank/customer), Widerruf-Storno mit Häkchen, Abgabe aus dem Widerruf | E-Mail-Anmahnung der Restsumme (7 T; i. d. R. extern durch den Kundenservice → als „extern erledigt" nachtragen) → **direkt** letzte Mahnung per Post über die Restsumme (keine 1. Mahnung dazwischen) | 250-€-Entscheid |
+| **Direktzahler** | Direktzahlung, ≥ 28 Tage nach Abschluss unbezahlt | Start in Stufe „Kontaktaufnahme"; Forderungsbasis ist der Vertragsrest, „Rate anhängen" entfällt | 250-€-Entscheid |
+| **Kundenkonto (ohne Vertrag)** | Saldo ≥ 20 € seit 14 Tagen, oder manuell | 1. Zahlungserinnerung (E-Mail) → 2. Zahlungserinnerung (E-Mail) → **direkt** 1. postalische Mahnung → letzte Mahnung; kein Monitoring, kein Anhängen (kein Zahlungsplan) | 250-€-Entscheid |
+| **Gerichtlich** (eigener Bereich `area = judicial`) | 250-€-Entscheid > 250 € | Mahnbescheid → Widerspruch? → Vollstreckungsbescheid → Einspruch? → Zwangsvollstreckung → PfÜB/Gerichtsvollzieher; Zustelldatum je Bescheid setzt die 14-Tage-Frist als Wiedervorlage | RZV holt den Fall zurück in die außergerichtliche Bearbeitung; geplatzte RZV-Rate zurück ins Verfahren |
+| **RZV läuft** | Ratenzahlungsvereinbarung festgehalten | Wiedervorlage je Rate (`monitoring_until`; Karenz GoCardless +13 T, Überweisung +5 T) | alles bezahlt → Ausgang `rzv`; geplatzte GC-Rate → Vorlage „RZV geplatzt", keine Auto-Eskalation |
+
+Beim Eintritt in den postalischen Mahnweg wird der Kunde **in Phorest archiviert** (Button,
+Pflicht laut Prozess). Die Regeln im Detail:
 
 - **Sanfter Weg**: 1. Zahlungserinnerung (E-Mail, 7 Tage) → 2. Zahlungserinnerung
   (+ Androhung Terminabsage, 7 Tage) → Monitoring (nächster Einzugstermin
@@ -110,8 +243,9 @@ ab, zeigt der Hinweis oben auf der Fall-Detailseite beide Zahlen.
   pausieren (7 Tage) → 1. postalische Mahnung (10 Tage) → letzte Mahnung über die
   **gesamte Restsumme** (14 Tage; Fälligstellung standardmäßig ab 2 RLS) →
   **250-€-Entscheid**: darunter abschreiben (WNB), darüber gerichtliches
-  Mahnverfahren. Ob die Gesamtsumme fällig gestellt wird, ist seit 08/2026
-  eine **sichtbare Checkbox im Versand-Modal** (siehe „Versand").
+  Mahnverfahren (`decide()`: **genau** 250,00 € wird abgeschrieben, erst darüber
+  geht es gerichtlich weiter). Ob die Gesamtsumme fällig gestellt wird, ist seit
+  08/2026 eine **sichtbare Checkbox im Versand-Modal** (siehe „Versand").
   **Ohne Fälligstellung (seit 24.08.2026):** Wird die letzte Mahnung bewusst
   nur über die einzelne Lastschrift verschickt (Checkbox abgewählt, z. B. eine
   RLS bei sonst laufendem Plan), zieht der Hub die
@@ -142,14 +276,14 @@ ab, zeigt der Hinweis oben auf der Fall-Detailseite beide Zahlen.
   Vorher blieb so ein Fall dauerhaft im Gerichts-Tab, tauchte in keiner
   Arbeitsliste auf und seine Raten wurden nie zur Prüfung vorgelegt.
 
-### RLS-Gründe
+#### RLS-Gründe
 
-Der GoCardless-Grund jeder RLS wird gespeichert und in zwei Cluster übersetzt:
-**„aktiv widersprochen"** (Chargeback bzw. Bankcodes MD01/MS02) und **„sonstige"**
-(keine Deckung, Konto gesperrt …). Für „aktiv widersprochen" können eigene
-Vorlagen-Varianten hinterlegt werden.
+Der GoCardless-Grund jeder RLS wird gespeichert und in zwei Cluster übersetzt
+(`DebtCaseIntakeService::clusterFor()`): **„aktiv widersprochen"** (Chargeback bzw. Bankcodes
+MD01/MS02) und **„sonstige"** (keine Deckung, Konto gesperrt …). Für „aktiv widersprochen"
+können eigene Vorlagen-Varianten hinterlegt werden (`dunning_templates`, Cluster vor allgemein).
 
-### Versand
+#### Versand, Schreiben und Fälligstellung
 
 - **E-Mails** werden aus Vorlagen gerendert, im Modal geprüft (Vorschau +
   optionaler Freitext) und per Klick als **Zendesk-Ticket** versendet —
@@ -160,6 +294,7 @@ Vorlagen-Varianten hinterlegt werden.
 - **Postalische Mahnungen** erzeugt der Hub als **PDF** (Druck & Versand manuell).
   Jedes Schreiben nennt automatisch die **Bankverbindung des Instituts, in dem
   der Vertrag geschlossen wurde** (Pflege: Institut öffnen → Tab „Bankverbindung").
+  Ohne Bankverbindung des Standorts bricht jeder Versand ab — Brief wie E-Mail.
 - Der versendete Text wird als **Snapshot am Fall** gespeichert (Nachweis).
 - **Fälligstellung nimmt angehängte Raten voll in die Forderung (09.09.2026,
   Fall H003435)**: Sobald die Gesamtsumme fällig gestellt ist, entfällt im
@@ -205,8 +340,8 @@ Vorlagen-Varianten hinterlegt werden.
   automatisch `letter_final_soft` — der Text fordert dann nur die offenen
   Positionen an, Frist 10 Tage, normaler Bogen. Vorher zog auch die
   Einzel-Lastschrift-Mahnung die Gesamtsummen-Vorlage, deren Text die gesamte
-  restliche Vertragsforderung fällig stellte (Bug, Janine 24.08.2026).
-  Umsetzung: `DebtCaseActionService::effectiveTemplateKey()`, greift in
+  restliche Vertragsforderung fällig stellte (Bug, Rückmeldung des Büros
+  24.08.2026). Umsetzung: `DebtCaseActionService::effectiveTemplateKey()`, greift in
   `generateLetter()`, `markActionDoneExternally()` und der Modal-Vorschau.
 - **Anschrift korrigieren (24.08.2026)**: Im Versand-Modal postalischer
   Mahnungen steht neben der Anschrift **„Anschrift korrigieren …"** — Straße,
@@ -236,9 +371,9 @@ Vorlagen-Varianten hinterlegt werden.
   Zahlungsfrist werden ab dem tatsächlichen Versanddatum nachgezogen, es wird
   **kein** Schreiben erzeugt (Message-Eintrag mit Status „extern", ohne PDF).
 - Beim Eintritt in den postalischen Mahnweg wird der Kunde **in Phorest
-  archiviert** (Button, Pflicht laut Prozess).
+  archiviert** (Button, Pflicht laut Prozess; `archiveInPhorest()`).
 
-### Weitere Aktionen am Fall
+#### Zahlungen, Kosten und Ratenzahlungsvereinbarung
 
 - **Zahlungseingang erfassen** (Überweisung/vor Ort) — bei vollem Ausgleich
   schließt der Fall automatisch. Verrechnung nach **§ 367 BGB**: erst Kosten,
@@ -285,7 +420,7 @@ Vorlagen-Varianten hinterlegt werden.
   (`GoCardlessPaymentPlanService::createRzvInstallmentsFromRows` — exakt die
   Zeilen des Plans; bestehende Einzüge werden bewusst nicht storniert — bei
   parallelen offenen GC-Zahlungen kommt ein Prüfhinweis für den SEPA-Tab).
-  **SEPA-Mandat direkt aus dem Fall anlegen (21.08.2026, Fall Al-Kaki):** Hat
+  **SEPA-Mandat direkt aus dem Fall anlegen (21.08.2026):** Hat
   der Vertrag kein aktiv verknüpftes Mandat (Mandatsentzug, fehlgeschlagene
   Anlage), bietet der RZV-Dialog „Raten per GoCardless einziehen — neues
   SEPA-Mandat anlegen": Kontoinhaber (Vor-/Nachname) + IBAN erfassen, beim
@@ -327,6 +462,9 @@ Vorlagen-Varianten hinterlegt werden.
   gemahnt oder der Plan angepasst wird, entscheidet das Büro. Die geplatzte
   RZV-Rate erhöht die Hauptforderung dabei nicht (die Schuld bestand schon —
   `DebtCaseBalanceService::rlsPrincipals()` schließt RZV-Raten aus).
+
+#### Ruhend, RLS-Entscheid, Abschreiben, Notizen
+
 - **Fall ruhend stellen (Geparkt / Beim Anwalt / Wartend)**: manuelle
   Einzelfallentscheidung mit Pflicht-Grund und Pflicht-Begründung (landet im
   Verlauf). Der Fall bleibt aktiv, verliert aber Fristen und Arbeitsliste und
@@ -350,7 +488,7 @@ Vorlagen-Varianten hinterlegt werden.
   Hinweis „Neue Rücklastschrift — Entscheidung treffen", und die
   Aktionen-Karte bietet zwei Wege:
   **Neustart** setzt den Fall auf „Neu" zurück — **der Fall behält dabei
-  seinen Weg** (präzisiert 21.08.2026, Fall Karknawi): Im **sanften Weg**
+  seinen Weg** (präzisiert 21.08.2026): Im **sanften Weg**
   (z.B. Fall mit angehängter Serie) heißt der Button „Prozess von vorne
   starten (nur neue Forderung)" — es folgen wieder 1. und
   2. Zahlungserinnerung und die Mahnung, jeweils **nur über die offenen,
@@ -360,7 +498,7 @@ Vorlagen-Varianten hinterlegt werden.
   Weg** heißt er „Zurück zur Zahlungserinnerung (alle offenen Schulden)" —
   die 1. Zahlungserinnerung fordert alte **und** neue Forderung zusammen an,
   danach geht es direkt in den postalischen Mahnweg (der Weg für Fälle wie
-  „2. RLS während der 1. Mahnung", z.B. Özata).
+  „2. RLS während der 1. Mahnung").
   **„Im aktuellen Schritt weiter"** lässt Stufe und Frist unverändert — die
   neue Forderung läuft im Saldo mit und wird vom nächsten regulären Schreiben
   erfasst. Solange die Entscheidung offen ist, wird bewusst **kein Schreiben
@@ -369,7 +507,8 @@ Vorlagen-Varianten hinterlegt werden.
   dort deckt das erste Schreiben die neue Forderung ohnehin mit ab; die
   RZV behält ihre eigene Vorlage-Logik (Vereinbarung „geplatzt", Büro
   entscheidet), ruhende Fälle werden wie bisher automatisch reaktiviert.
-- **WNB (abschreiben)**: eigenes Recht; der Kunde bleibt in Phorest archiviert.
+- **WNB (abschreiben)**: eigenes Recht (`write_off_receivables`); der Kunde bleibt
+  in Phorest archiviert.
 - **Notiz hinzufügen**: Freitext-Kommentar direkt in der Verlauf-Card der
   Fall-Seite (Recht `manage_receivables`) — mit Autor und Zeitstempel in der
   Timeline, mehrzeilig möglich. Ersetzt die Kommentar-Spalten der alten
@@ -380,7 +519,7 @@ Vorlagen-Varianten hinterlegt werden.
   den Tickets der versendeten Mahn-E-Mails). Gilt für importierte
   Alt-Kommentare genauso wie für neue Notizen (`ZendeskTicketRefs`).
 
-### Wo sehe ich was?
+#### Seiten und Einstiegspunkte
 
 - **Hauptseite** `/hub/receivables` (Sidebar „Forderungen"): Kennzahlen
   (inkl. „Ruhend"), Arbeitsliste, Pipeline-Board (Spalten je Stufe, bewusst
@@ -397,6 +536,16 @@ Vorlagen-Varianten hinterlegt werden.
   auch abgeschlossene.
 - **Vertragsseite**: rotes Banner, solange ein Fall im harten Weg/gerichtlich
   läuft; die Verlinkung zum Fall bleibt **dauerhaft** in der Sidebar.
+
+#### Rechte
+
+| Recht | Wirkung |
+|---|---|
+| `view_receivables` | Modul sehen (geerbt von `view_debts`) |
+| `manage_receivables` | Aktionen ausführen, Versand, Zahlungen erfassen |
+| `write_off_receivables` | Forderungen abschreiben (WNB) |
+| `manage_receivable_templates` | Mahnvorlagen pflegen |
+| `manage_branch_bank_details` | Instituts-Bankverbindungen pflegen |
 
 ### Online-Bezahlseite (`/shared/pay/{token}`)
 
@@ -464,20 +613,6 @@ Cron: `receivables:reconcile-payment-links` (stündlich).
     (`voucher-field-stack`), sonst kleben sie aneinander — `.form-glattt-group`
     bringt keinen eigenen Abstand mit. Sieht nach Alpine aus, ist CSS.
     Abgesichert durch `tests/Unit/FloatingLabelStackConventionTest.php`.
-
-### Rechte
-
-| Recht | Wirkung |
-|---|---|
-| `view_receivables` | Modul sehen (geerbt von `view_debts`) |
-| `manage_receivables` | Aktionen ausführen, Versand, Zahlungen erfassen |
-| `write_off_receivables` | Forderungen abschreiben (WNB) |
-| `manage_receivable_templates` | Mahnvorlagen pflegen |
-| `manage_branch_bank_details` | Instituts-Bankverbindungen pflegen |
-
----
-
-## Für Entwickler
 
 ### Datenmodell (Migration `2026_08_09_100000_create_receivables_tables`)
 
@@ -648,7 +783,7 @@ Eskalations-Leiste **immer erst bei ~97–100 mm** beginnen — sicher unterhalb
 des Kuvertfensters, das bis 90 mm Blattoberkante reicht. Vorher hing der
 Inhaltsbeginn von der Zeilenzahl im Kopf ab, und bei der letzten Mahnung
 ragte die Leiste „Letzte Mahnung vor dem gerichtlichen Mahnverfahren" ins
-Fenster (Janine, 24.08.2026). dompdf-Eigenheit: `height` auf einer
+Fenster (Rückmeldung des Büros, 24.08.2026). dompdf-Eigenheit: `height` auf einer
 Tabellenzelle ist die **Content**-Höhe, das Padding kommt obendrauf. Der Bezugsblock rechts ist 64 mm schmal und 6 mm unters Logo
 abgesetzt; Forderungsaufstellung + Fälligkeit teilen sich **einen** Kasten in
 exakter Banner-Breite, der direkt an die schwarze Eskalations-Leiste andockt.
@@ -1189,7 +1324,7 @@ Excel steht, wird angelegt. Weiter gilt:
 - **Hinweise** (widersprüchliche Schritt-Daten, Saldo-Abweichungen) landen als
   `pruefliste-hinweise.csv` im Report-Ordner.
 
-#### Konventionen der geprüften Liste (Janine, 08/2026)
+#### Konventionen der geprüften Liste (Büro, 08/2026)
 
 Die vom Büro durchgearbeitete Prüfliste nutzt Konventionen, die der Import
 versteht (abgestimmte Entscheidungen vom 14.08.2026):

@@ -1,5 +1,8 @@
 # ⭐ Google-Bewertungen auf glattt.com (WPglatttReviews)
 
+!!! info "Bedienung bleibt in diesem Wiki"
+    Die Pflege der Website glattt.com gehört nicht ins Nutzerhandbuch — das beschreibt ausschließlich den glatttHub. Die Abschnitte „Für Endanwender" auf dieser Seite sind deshalb die verbindliche Anleitung für Marketing und Website-Pflege (Entscheidung Jan, 19.09.2026).
+
 Das WordPress-Plugin **glattt Reviews** zeigt Google-Bewertungen auf glattt.com —
 als Karussell im Google-Look und als Trust-Leiste („4,9 Sterne bei über 1.000
 Google-Bewertungen“). Die Bewertungen werden **selbst gepflegt** und je Standort
@@ -263,7 +266,6 @@ das Theme.
 
 - [WordPress-Buchungswidget](WORDPRESS-BUCHUNGSWIDGET.md) — zweites eigenes
   Plugin auf glattt.com, gleiche Ablage- und Deploy-Konventionen
-
 
 ## Elemente im WPBakery-Editor (seit 18.08.2026, Bewertungen 0.5.1)
 

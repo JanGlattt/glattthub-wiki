@@ -4,6 +4,9 @@
 > **Datum:** 04.03.2026  
 > **Artisan-Commands:** `contracts:import-legacy`, `contracts:resolve-legacy-client-ids`
 
+!!! nutzerhandbuch "Bedienung: Verträge 8 – Import-Probleme und Werber"
+    [hilfe.hub.glattt.com/vertraege/8/](https://hilfe.hub.glattt.com/vertraege/8/) — das Warnband „Fehlgeschlagene Imports", Import korrigieren, zuordnen, verwerfen. Hier: Datenfluss, Spalten-Mapping und Idempotenz des Imports.
+
 ## Übersicht
 
 Import von ~13.000 Altverträgen aus einer CSV-Datei (Google Sheets Export) in die Hub-Vertragstabelle. Die CSV enthält alle historischen SEPA-Lastschriftverträge seit November 2016.
@@ -230,7 +233,7 @@ Contract::legacy()->active()->forBranch('urLYs9iAs3RUBrYaDZY9ew')->count();
 
 ## Hinweise
 
-- **Legacy `ContractMandate`:** Der Import erstellt weiterhin `ContractMandate`-Einträge (alte 1:1-Struktur). Neue Verträge nutzen stattdessen `ClientMandate` (1:n pro Kunde). Siehe [Verträge & SEPA-Lastschriften → Migration](CONTRACTS-SEPA-MODULE.md#migration-von-contractmandate--clientmandate).
+- **Legacy `ContractMandate`:** Der Import erstellt weiterhin `ContractMandate`-Einträge (alte 1:1-Struktur). Neue Verträge nutzen stattdessen `ClientMandate` (1:n pro Kunde). Siehe [Verträge & SEPA-Lastschriften → Migration](CONTRACTS-SEPA-MODULE.md#migration-von-contractmandate-clientmandate).
 - **GoCardless:** Wird separat befüllt, kein Sync durch diesen Import
 - **Zahlungen:** Werden nicht generiert — nur Vertrags- und Mandatsdaten
 - **Spezialist-Mapping:** Kürzel werden als Freitext gespeichert, Zuordnung zu Hub-Usern erfolgt später

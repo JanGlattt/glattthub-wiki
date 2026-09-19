@@ -5,11 +5,61 @@ Meta-Template), **SMS** (Twilio, Absender „glattt" statt Telefonnummer) oder
 **E-Mail**, mit persönlichem Link zum **Bestätigen, Verlegen oder Absagen**.
 Die Kanal-Reihenfolge ist je Erinnerungsstufe frei wählbar (z.B. WhatsApp →
 SMS → E-Mail). Konfigurierbar je Terminart × Standort mit beliebig vielen
-Erinnerungsstufen (z.B. 7 Tage und 1 Tag vorher).
+Erinnerungsstufen (z.B. 7 Tage und 1 Tag vorher). Diese Seite beschreibt
+**Fachregeln, Datenfluss, Klassen, Entscheidungen und Betrieb**; die Bedienung
+im Admin-Panel steht im Nutzerhandbuch.
 
-## Für Endanwender
+!!! nutzerhandbuch "Bedienung: Admin 4 – Erinnerungen und WhatsApp"
+    [hilfe.hub.glattt.com/admin/4/](https://hilfe.hub.glattt.com/admin/4/) — Erinnerungsregeln und
+    -stufen anlegen, Kanäle und Vorlagen wählen, Protokolle und Einwilligungen prüfen.
 
-### Was passiert automatisch?
+    Angrenzend: [Betrieb 2 – Ein Institut pflegen](https://hilfe.hub.glattt.com/betrieb/2/)
+    (Kontaktdaten des Standorts für Fuß und Platzhalter) und
+    [Kundenverwaltung 5 – Nachrichten & Kundenservice](https://hilfe.hub.glattt.com/kundenverwaltung/5/)
+    (was bei der Kundin ankam).
+
+---
+
+## Für Anwender — Überblick
+
+**Was die Automatisierung leistet.** Vor jedem gebuchten Termin schickt der Hub der Kundin von
+selbst eine Erinnerung — über den ersten Kanal, der für sie möglich ist, mit einem persönlichen
+Link, über den sie den Termin bestätigen, verlegen oder absagen kann. Welche Termine welche
+Nachricht bekommen, steuern **Regeln** je Standort und Terminart mit beliebig vielen **Stufen**
+(Vorlauf in Tagen); jede Stufe bringt ihre eigene Kanal-Reihenfolge, ihre WhatsApp-Vorlage, ihren
+SMS-Text und ihre E-Mail aus Bausteinen mit. Ein Protokoll hält für jeden Termin fest, was
+gesendet, übersprungen oder fehlgeschlagen ist.
+
+**Grundsätze, die überall gelten:**
+
+- **Eine Nachricht je Termin und Stufe, über genau einen Kanal** — der erste mögliche aus der
+  eingestellten Reihenfolge; nicht aufgeführte Kanäle werden nie verwendet.
+- **Ohne Einwilligung kein Versand.** Quelle ist immer das Phorest-Kundenprofil
+  („SMS-Terminerinnerung" für WhatsApp und SMS, „E-Mail-Terminerinnerung" für Mail).
+- **Je Termin greift genau eine Regel** — die spezifischste (Standort + Terminart vor Standort vor
+  Terminart vor „alle").
+- **Der Link ist persönlich und frisch:** Jede Stufe erzeugt einen neuen Link und entwertet den
+  alten; er gilt bis zum Terminbeginn.
+- **Nichts scheitert still.** Kein möglicher Kanal, Fehlversand oder eine später von Twilio als
+  unzustellbar gemeldete SMS erzeugt einen Protokolleintrag mit Grund — und bei Zustellfehlern
+  eine Hub-Benachrichtigung ans Institut.
+- **Der Testmodus probt den ganzen Ablauf,** ohne zu versenden.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Erinnerungsregeln und -stufen anlegen, Kanäle und Vorlagen wählen | Admin 4 |
+| Protokoll lesen, Zustellung prüfen, Fehlversuch wiederholen | Admin 4 |
+| Einwilligungen und Opt-in-Vormerke prüfen | Admin 4 |
+| Kontaktdaten des Instituts pflegen (Fuß, Anrufen, WhatsApp) | Betrieb 2 |
+| Was bei der Kundin ankam, im Kundenprofil nachsehen | Kundenverwaltung 5 |
+
+---
+
+## Für Entwickler
+
+### Fachregeln: Auslöser, Kanäle, Voraussetzungen
 
 - Vor jedem gebuchten Termin prüft der Hub alle 15 Minuten, ob eine
   Erinnerung fällig ist (Regeln siehe unten). Je Termin und Stufe wird
@@ -43,7 +93,15 @@ Erinnerungsstufen (z.B. 7 Tage und 1 Tag vorher).
 - Wird ein Termin storniert oder verlegt, verfallen ausstehende Erinnerungen
   automatisch; der neue Termin bekommt eigene.
 
-### Wo sehe ich das im Hub?
+### Welche Regel greift?
+
+Je Termin greift **genau eine** Regel — die spezifischste:
+Standort + Terminart schlägt Standort, Standort schlägt Terminart,
+Terminart schlägt „alle". Wird ein Termin kurzfristig gebucht, sodass
+mehrere Stufen gleichzeitig fällig wären, wird nur die Stufe mit dem
+kleinsten Vorlauf gesendet (die anderen erscheinen als „übersprungen").
+
+### Konfiguration und Sichtbarkeit im Hub
 
 - **Terminübersicht** (`/hub/appointments`): Terminkarten zeigen Badges
   „Vom Kunden bestätigt", „Vom Kunden abgesagt" bzw. „Erinnert".
@@ -104,14 +162,6 @@ Erinnerungsstufen (z.B. 7 Tage und 1 Tag vorher).
   werden kann. Die Zustellfehler-Benachrichtigung feuert genau einmal je
   Protokoll-Eintrag.
 
-### Welche Regel greift?
-
-Je Termin greift **genau eine** Regel — die spezifischste:
-Standort + Terminart schlägt Standort, Standort schlägt Terminart,
-Terminart schlägt „alle". Wird ein Termin kurzfristig gebucht, sodass
-mehrere Stufen gleichzeitig fällig wären, wird nur die Stufe mit dem
-kleinsten Vorlauf gesendet (die anderen erscheinen als „übersprungen").
-
 ### Opt-in & Opt-out (Selfservice)
 
 Kunden können ihre Erinnerungs-Einwilligungen jederzeit selbst verwalten —
@@ -152,8 +202,6 @@ wie beim Superchat-Kontaktabgleich, Phorest-Update mit `version`-Locking).
 Regel auf „Testmodus" stellen: Der komplette Ablauf inkl. Kanalwahl läuft
 und wird protokolliert (Status „Testmodus", inkl. aufgelöstem Nachrichtentext) —
 es wird nichts versendet und kein Link erzeugt.
-
-## Für Entwickler
 
 ### Datenfluss
 

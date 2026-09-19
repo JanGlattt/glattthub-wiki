@@ -1,25 +1,63 @@
 # CSV-Export der Berichts-Datenquellen
 
-Wiederverwendbares Export-System: Auf jeder Berichtsseite gibt es im Seiten-Header
-einen **Export-Button**, der ein Modal öffnet. Dort wählt man eine Datenquelle und
-optional einen Zeitraum — der Download startet direkt als CSV-Datei.
+Wiederverwendbares Export-System: Auf jeder Berichtsseite gibt es im Seiten-Header einen
+**Export-Button**, der ein Modal öffnet. Dort wählt man eine Datenquelle und optional einen
+Zeitraum — der Download startet direkt als CSV-Datei. Diese Seite beschreibt **Grundsätze,
+Dateiformat, Registry, Resolver und Filter-Verhalten** des Exports; die Bedienung Schritt für
+Schritt steht im Nutzerhandbuch.
+
+!!! nutzerhandbuch "Bedienung: Berichte 0 – So funktionieren die Berichte"
+    [hilfe.hub.glattt.com/berichte/0/](https://hilfe.hub.glattt.com/berichte/0/) — Vorgang
+    „Export und Verlässlichkeit": Export-Modal, Datenquelle und Zeitraum wählen, CSV in Excel öffnen.
+
+    Angrenzend: die Anleitung des jeweiligen Berichts in der Serie
+    [Berichte](https://hilfe.hub.glattt.com/berichte/) (Berichte 1–16) nennt die Export-Quellen der Seite.
+
+## Inhaltsverzeichnis
+
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Grundsätze](#grundsatze)
+    - [Dateiformat](#dateiformat)
+    - [Verfügbare Datenquellen je Seite](#verfugbare-datenquellen-je-seite)
+    - [Architektur](#architektur)
+    - [Neue Export-Quelle anlegen](#neue-export-quelle-anlegen)
+    - [Filter-Verhalten](#filter-verhalten)
+    - [Besonderheiten](#besonderheiten)
 
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
 
-### Bedienung
+**Was der Export leistet.** Jede Auswertung einer Berichtsseite lässt sich als CSV mitnehmen —
+mit genau den Zahlen, die die Seite zeigt, für Excel (deutsch) aufbereitet und per Doppelklick zu
+öffnen. Angeboten werden je Seite nur die Datenquellen, für die man berechtigt ist; ein aktiver
+Standort-Filter wird für Quellen mit Standort-Bezug übernommen, ein Zeitraum kann gesetzt werden
+(sonst gilt der Standard-Zeitraum der Quelle, z.B. letzte 12 Monate).
 
-1. Auf einer Berichtsseite (z.B. Verkaufsstatistik) oben rechts auf **Export** klicken.
-2. Im Modal die **Datenquelle** wählen — angeboten werden nur die Auswertungen der
-   jeweiligen Seite, für die man berechtigt ist.
-3. Optional **Von/Bis** setzen. Ohne Angabe wird der Standard-Zeitraum der
-   Datenquelle exportiert (z.B. letzte 12 Monate).
-4. **CSV herunterladen** — eine Pack-Animation bestätigt den Start, danach schließt
-   sich das Modal automatisch.
+**Grundsatz Datenschutz:** Exportiert werden **ausschließlich Aggregate** (Monats-/Tages-/
+Standort-Summen, Quoten, Rankings) — nie personenbezogene Daten wie Kundennamen oder einzelne
+Termine. Zahlen im Export entsprechen exakt den Werten im UI.
 
-Ist auf der Seite ein **Standort-Filter** aktiv, wird er für Quellen mit
-Standort-Bezug automatisch übernommen.
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Export öffnen, Datenquelle und Zeitraum wählen, Datei in Excel öffnen | Berichte 0 („Export und Verlässlichkeit") |
+| Welche Quellen ein bestimmter Bericht anbietet | Anleitung des Berichts (Berichte 1–16) |
+| Zeitraum und Standort der Seite setzen | Berichte 0 |
+
+---
+
+## Für Entwickler
+
+### Grundsätze
+
+- **Nur Aggregate**, keine personenbezogenen Daten (Kundennamen, einzelne Termine).
+- **Zahlen exakt wie im UI** — wo möglich dieselben Service-Methoden wie die Seite.
+- Angeboten werden nur Quellen der jeweiligen Seite, für die der Nutzer die Permission des
+  Routen-Gates besitzt; ohne Zeitraum gilt der Standard-Zeitraum der Quelle; der Standort-Filter
+  der Seite (`localStorage.selectedBranch`) wird für Quellen mit `branch`-Filter übernommen.
 
 ### Dateiformat
 
@@ -30,12 +68,6 @@ Die CSVs sind für **Excel (deutsch)** optimiert und lassen sich per Doppelklick
 - **Dezimal-Komma** (z.B. `1234,56`)
 - Datumswerte als `TT.MM.JJJJ`
 - Geldbeträge in Euro (nicht Cents), Spalten mit `(€)` gekennzeichnet
-
-### Datenschutz
-
-Es werden **ausschließlich Aggregate** exportiert (Monats-/Tages-/Standort-Summen,
-Quoten, Rankings) — **keine personenbezogenen Daten** wie Kundennamen oder einzelne
-Termine.
 
 ### Verfügbare Datenquellen je Seite
 
@@ -53,8 +85,6 @@ Termine.
 | Kundenstatistik | Conversion-Funnel, Demografie, Kundensegmente (Personas), Herkunftsverteilung, Entfernungsverteilung, Körperzonen-Verteilung (inkl. Details), Widerrufs-Analyse, Einzugsgebiet: Kunden pro Postleitzahl |
 
 ---
-
-## Für Entwickler
 
 ### Architektur
 

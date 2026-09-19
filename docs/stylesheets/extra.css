@@ -1,343 +1,764 @@
 /*
  * ===================================================
- * glatttHub Docs – Custom Theme
- * Basierend auf dem GLATTT Design System (theme_glattt.css)
+ * glatttHub Dokumentation — Theme (seit 19.09.2026)
+ * Spiegelt die Token aus public/css/theme_glattt.css
+ * des Hubs und die Optik des Nutzerhandbuchs
+ * (hilfe.hub.glattt.com): Lato, Primär-Türkis #3b9b9f,
+ * glattt-Gold #d2aa39, dieselben Grau-Stufen hell/dunkel.
+ * Kopfzeile und Reiter sind bewusst hell (wie im Hub),
+ * Türkis bleibt Akzent für Links, aktive Reiter, Knöpfe.
  * ===================================================
- *
- * Primary:    #3b9b9f (Teal Blue)
- * Gold:       #d2aa39 (GLATTT Gold)
- * Turquoise:  #5dbea3 (GLATTT Turquoise)
- * Success:    #10b981
- * Warning:    #f59e0b
- * Danger:     #ef4444
- * Info:       #3b82f6
  */
 
-/* ===== GOOGLE FONTS: Dosis ===== */
-@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@300;400;500;600;700;800&display=swap');
-
-/* ===== LIGHT MODE ===== */
+/* ===== HELL ===== */
 [data-md-color-scheme="default"] {
-    /* Primary palette */
     --md-primary-fg-color:        #3b9b9f;
     --md-primary-fg-color--light: #5dbec2;
     --md-primary-fg-color--dark:  #2d7a7d;
     --md-primary-bg-color:        #ffffff;
     --md-primary-bg-color--light: rgba(255, 255, 255, 0.7);
 
-    /* Accent / links */
     --md-accent-fg-color:         #2d7a7d;
     --md-accent-fg-color--transparent: rgba(59, 155, 159, 0.12);
     --md-accent-bg-color:         #ffffff;
     --md-accent-bg-color--light:  rgba(255, 255, 255, 0.7);
 
-    /* Default (body) backgrounds */
     --md-default-fg-color:               #111827;
     --md-default-fg-color--light:        #6b7280;
     --md-default-fg-color--lighter:      #9ca3af;
-    --md-default-fg-color--lightest:     rgba(0, 0, 0, 0.06);
+    --md-default-fg-color--lightest:     rgba(17, 24, 39, 0.06);
     --md-default-bg-color:               #ffffff;
     --md-default-bg-color--light:        #f9fafb;
     --md-default-bg-color--lighter:      #f3f4f6;
     --md-default-bg-color--lightest:     #e5e7eb;
 
-    /* Code blocks */
     --md-code-fg-color:         #2d7a7d;
-    --md-code-bg-color:         #f5f3ee;
+    --md-code-bg-color:         #f3f4f6;
     --md-code-hl-color:         rgba(210, 170, 57, 0.18);
 
-    /* Footer */
-    --md-footer-fg-color:               rgba(255, 255, 255, 0.9);
-    --md-footer-fg-color--light:        rgba(255, 255, 255, 0.65);
-    --md-footer-fg-color--lighter:      rgba(255, 255, 255, 0.4);
-    --md-footer-bg-color:               #1f2937;
-    --md-footer-bg-color--dark:         #111827;
+    --md-typeset-a-color:       #2d7a7d;
+    --md-typeset-mark-color:    rgba(210, 170, 57, 0.35);
 
-    /* Typeset link color */
-    --md-typeset-a-color:       #3b9b9f;
+    --md-footer-fg-color:               #111827;
+    --md-footer-fg-color--light:        #6b7280;
+    --md-footer-fg-color--lighter:      #9ca3af;
+    --md-footer-bg-color:               #f9fafb;
+    --md-footer-bg-color--dark:         #f3f4f6;
 
-    /* Admonition custom colors */
     --md-admonition-fg-color:   #111827;
     --md-admonition-bg-color:   #ffffff;
+
+    /* eigene Token */
+    --gh-line:        #e5e7eb;
+    --gh-line-2:      #d1d5db;
+    --gh-gold:        #d2aa39;
+    --gh-gold-dark:   #b88f1f;
+    --gh-gold-soft:   rgba(210, 170, 57, 0.12);
+    --gh-teal-soft:   rgba(59, 155, 159, 0.10);
+    --gh-shadow-sm:   0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --gh-shadow-md:   0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --gh-shadow-lg:   0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* ===== DARK MODE ===== */
+/* ===== DUNKEL ===== */
 [data-md-color-scheme="slate"] {
-    /* Primary palette */
+    --md-hue: 220;
     --md-primary-fg-color:        #3b9b9f;
     --md-primary-fg-color--light: #5dbec2;
     --md-primary-fg-color--dark:  #2d7a7d;
     --md-primary-bg-color:        #111827;
     --md-primary-bg-color--light: rgba(17, 24, 39, 0.7);
 
-    /* Accent */
     --md-accent-fg-color:         #5dbec2;
-    --md-accent-fg-color--transparent: rgba(93, 190, 194, 0.12);
+    --md-accent-fg-color--transparent: rgba(93, 190, 194, 0.14);
 
-    /* Default (body) */
     --md-default-fg-color:               #f9fafb;
     --md-default-fg-color--light:        #d1d5db;
     --md-default-fg-color--lighter:      #9ca3af;
-    --md-default-fg-color--lightest:     rgba(255, 255, 255, 0.06);
+    --md-default-fg-color--lightest:     rgba(255, 255, 255, 0.07);
     --md-default-bg-color:               #111827;
     --md-default-bg-color--light:        #1f2937;
     --md-default-bg-color--lighter:      #374151;
     --md-default-bg-color--lightest:     #4b5563;
 
-    /* Code blocks */
-    --md-code-fg-color:         #5dbec2;
+    --md-code-fg-color:         #7dd4d7;
     --md-code-bg-color:         #1f2937;
-    --md-code-hl-color:         rgba(210, 170, 57, 0.15);
+    --md-code-hl-color:         rgba(210, 170, 57, 0.18);
 
-    /* Footer */
+    --md-typeset-a-color:       #5dbec2;
+    --md-typeset-mark-color:    rgba(210, 170, 57, 0.35);
+
+    --md-footer-fg-color:               #f9fafb;
+    --md-footer-fg-color--light:        #d1d5db;
+    --md-footer-fg-color--lighter:      #9ca3af;
     --md-footer-bg-color:               #0f1623;
     --md-footer-bg-color--dark:         #0a0f18;
 
-    /* Links */
-    --md-typeset-a-color:       #5dbec2;
+    --md-admonition-fg-color:   #f9fafb;
+    --md-admonition-bg-color:   #1f2937;
+
+    --gh-line:        #374151;
+    --gh-line-2:      #4b5563;
+    --gh-gold:        #e0c266;
+    --gh-gold-dark:   #d2aa39;
+    --gh-gold-soft:   rgba(210, 170, 57, 0.16);
+    --gh-teal-soft:   rgba(93, 190, 194, 0.14);
+    --gh-shadow-sm:   0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --gh-shadow-md:   0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    --gh-shadow-lg:   0 10px 15px -3px rgba(0, 0, 0, 0.6);
 }
 
-/* ===== TYPOGRAPHY: Dosis ===== */
+/* ===== TYPOGRAFIE ===== */
+/* Lato und JetBrains Mono kommen über mkdocs.yml (theme.font) von Google Fonts. */
 :root {
-    --md-text-font: "Dosis", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --md-code-font: "JetBrains Mono", "Courier New", Consolas, monospace;
+    --md-text-font: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --md-code-font: "JetBrains Mono", "SFMono-Regular", Consolas, "Courier New", monospace;
 }
 
-/* ===== HEADER ===== */
-.md-header {
-    background: linear-gradient(135deg, #3b9b9f 0%, #5dbec2 100%);
-    box-shadow: 0 2px 8px rgba(59, 155, 159, 0.25);
+.md-typeset {
+    font-size: 0.8rem;
+    line-height: 1.65;
 }
 
-[data-md-color-scheme="slate"] .md-header {
-    background: linear-gradient(135deg, #2d7a7d 0%, #3b9b9f 100%);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-}
-
-/* ===== LOGO / SITE TITLE ===== */
-.md-header__title {
-    font-weight: 700;
-    letter-spacing: -0.3px;
-}
-
-/* ===== NAVIGATION SIDEBAR ===== */
-.md-nav__link--active,
-.md-nav__link:hover {
-    color: var(--md-primary-fg-color) !important;
-}
-
-.md-nav__item--active > .md-nav__link {
-    color: var(--md-primary-fg-color);
-    font-weight: 600;
-}
-
-/* Sidebar section labels */
-.md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__link,
-.md-nav--primary > .md-nav__list > .md-nav__item > label {
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    font-size: 0.7rem;
-    color: var(--md-default-fg-color--light);
-}
-
-/* ===== SEARCH ===== */
-.md-search__input {
-    border-radius: 10px;
-}
-
-[data-md-color-scheme="default"] .md-search__input {
-    background-color: rgba(255, 255, 255, 0.15);
-}
-
-[data-md-color-scheme="default"] .md-search__input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-}
-
-/* ===== CONTENT ===== */
-
-/* Headings */
 .md-typeset h1 {
     font-weight: 800;
     color: var(--md-default-fg-color);
-    letter-spacing: -0.5px;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    margin-bottom: 1rem;
 }
 
 .md-typeset h2 {
     font-weight: 700;
     color: var(--md-default-fg-color);
-    border-bottom: 2px solid var(--md-primary-fg-color--light);
-    padding-bottom: 0.4rem;
+    letter-spacing: -0.01em;
+    border-bottom: 1px solid var(--gh-line);
+    padding-bottom: 0.35rem;
+    margin-top: 2.2em;
 }
 
 .md-typeset h3 {
-    font-weight: 600;
-    color: var(--md-primary-fg-color--dark);
+    font-weight: 700;
+    color: var(--md-default-fg-color);
 }
 
-/* Links */
+.md-typeset h4 {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.7rem;
+    color: var(--md-default-fg-color--light);
+}
+
 .md-typeset a {
-    transition: color 0.15s ease, border-color 0.15s ease;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.15em;
+    transition: color 0.15s ease, text-decoration-color 0.15s ease;
 }
 
 .md-typeset a:hover {
-    color: var(--md-primary-fg-color--dark);
+    color: var(--md-accent-fg-color);
+    text-decoration-color: currentColor;
 }
 
-/* Inline code */
 .md-typeset code {
     border-radius: 6px;
-    padding: 0.15em 0.4em;
-    font-size: 0.82em;
+    padding: 0.1em 0.4em;
+    font-size: 0.8em;
+    border: 1px solid var(--gh-line);
 }
 
-/* Code blocks */
 .md-typeset pre > code {
     border-radius: 10px;
+    border: 1px solid var(--gh-line);
+    font-size: 0.72rem;
 }
 
-/* ===== TABLES ===== */
-.md-typeset table:not([class]) {
+.md-typeset kbd {
+    border-radius: 6px;
+    box-shadow: 0 1px 0 var(--gh-line-2);
+}
+
+.md-typeset blockquote {
+    border-left: 3px solid var(--gh-gold);
+    color: var(--md-default-fg-color--light);
+}
+
+/* ===== KOPFZEILE (hell, wie Hub & Nutzerhandbuch) ===== */
+.md-header {
+    background-color: var(--md-default-bg-color);
+    color: var(--md-default-fg-color);
+    box-shadow: none;
+    border-bottom: 1px solid var(--gh-line);
+}
+
+.md-header--shadow {
+    box-shadow: var(--gh-shadow-sm);
+}
+
+.md-header__button.md-logo img {
+    height: 1.7rem;
+    width: auto;
+}
+
+.md-header__title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: -0.01em;
+}
+
+.md-header__topic:first-child {
+    font-weight: 700;
+}
+
+.md-header__button {
+    color: var(--md-default-fg-color--light);
+}
+
+.md-header__button:hover {
+    color: var(--md-primary-fg-color);
+}
+
+/* Suche: Rahmen-Pille statt weißes Feld auf Farbfläche */
+.md-search__form {
+    background-color: var(--md-default-bg-color--light);
+    border: 1px solid var(--gh-line-2);
     border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid var(--md-default-bg-color--lightest);
+    box-shadow: none;
 }
 
-.md-typeset table:not([class]) th {
-    background: var(--md-primary-fg-color);
-    color: #ffffff;
-    font-weight: 600;
-    letter-spacing: 0.02em;
+.md-search__form:hover {
+    background-color: var(--md-default-bg-color--lighter);
 }
 
-[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
-    background: var(--md-primary-fg-color--dark);
+[data-md-toggle="search"]:checked ~ .md-header .md-search__form {
+    background-color: var(--md-default-bg-color);
+    border-color: var(--md-primary-fg-color);
+    box-shadow: 0 0 0 3px var(--gh-teal-soft);
+    border-radius: 10px 10px 0 0;
 }
 
-.md-typeset table:not([class]) td {
-    border-color: var(--md-default-bg-color--lightest);
+.md-search__input {
+    color: var(--md-default-fg-color);
 }
 
-/* ===== ADMONITIONS ===== */
-
-/* Note / Info → glattt Info Blue */
-.md-typeset .admonition.note,
-.md-typeset details.note {
-    border-color: #3b82f6;
-}
-.md-typeset .note > .admonition-title,
-.md-typeset .note > summary {
-    background-color: rgba(59, 130, 246, 0.1);
+.md-search__input::placeholder,
+.md-search__icon,
+.md-search__input + .md-search__icon {
+    color: var(--md-default-fg-color--lighter);
 }
 
-/* Tip → glattt Primary Teal */
-.md-typeset .admonition.tip,
-.md-typeset details.tip {
-    border-color: #3b9b9f;
-}
-.md-typeset .tip > .admonition-title,
-.md-typeset .tip > summary {
-    background-color: rgba(59, 155, 159, 0.1);
+.md-search__output {
+    border-radius: 0 0 10px 10px;
+    box-shadow: var(--gh-shadow-lg);
+    border: 1px solid var(--gh-line);
 }
 
-/* Warning → glattt Warning */
-.md-typeset .admonition.warning,
-.md-typeset details.warning {
-    border-color: #f59e0b;
-}
-.md-typeset .warning > .admonition-title,
-.md-typeset .warning > summary {
-    background-color: rgba(245, 158, 11, 0.1);
+.md-search-result__meta {
+    background-color: var(--md-default-bg-color--light);
 }
 
-/* Danger → glattt Danger */
-.md-typeset .admonition.danger,
-.md-typeset details.danger {
-    border-color: #ef4444;
-}
-.md-typeset .danger > .admonition-title,
-.md-typeset .danger > summary {
-    background-color: rgba(239, 68, 68, 0.1);
-}
-
-/* Success → glattt Success */
-.md-typeset .admonition.success,
-.md-typeset details.success {
-    border-color: #10b981;
-}
-.md-typeset .success > .admonition-title,
-.md-typeset .success > summary {
-    background-color: rgba(16, 185, 129, 0.1);
-}
-
-/* ===== FOOTER ===== */
-.md-footer {
-    border-top: 3px solid var(--md-primary-fg-color);
-}
-
-/* ===== GLATTT GOLD ACCENT TOUCHES ===== */
-
-/* TOC active item indicator → Gold */
-.md-nav__link--passed,
-.md-nav--secondary .md-nav__link--active {
-    border-left-color: #d2aa39 !important;
-}
-
-/* Selection highlight → Gold tint */
-::selection {
-    background: rgba(210, 170, 57, 0.25);
+.md-search-result .md-typeset mark {
+    background-color: var(--gh-gold-soft);
     color: inherit;
 }
 
-/* Scrollbar (WebKit) */
-::-webkit-scrollbar {
-    width: 8px;
+/* ===== REITER (Bereiche) ===== */
+.md-tabs {
+    background-color: var(--md-default-bg-color);
+    color: var(--md-default-fg-color);
+    border-bottom: 1px solid var(--gh-line);
 }
 
-::-webkit-scrollbar-track {
-    background: transparent;
+.md-tabs__link {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--md-default-fg-color--light);
+    opacity: 1;
+    margin-top: 0.7rem;
+    padding-bottom: 0.55rem;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s ease, border-color 0.15s ease;
 }
 
-::-webkit-scrollbar-thumb {
-    background: var(--md-default-fg-color--lightest);
+.md-tabs__link:hover {
+    color: var(--md-default-fg-color);
+}
+
+.md-tabs__link--active,
+.md-tabs__item--active .md-tabs__link {
+    color: var(--md-primary-fg-color);
+    border-bottom-color: var(--md-primary-fg-color);
+}
+
+/* ===== SEITENLEISTE ===== */
+.md-nav--primary .md-nav__title {
+    font-weight: 700;
+    color: var(--md-default-fg-color);
+}
+
+.md-nav__item--section > .md-nav__link,
+.md-nav--primary > .md-nav__list > .md-nav__item--section > label {
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.62rem;
+    color: var(--md-default-fg-color--light);
+}
+
+.md-nav__link {
+    border-radius: 6px;
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.md-nav__link:hover {
+    color: var(--md-primary-fg-color);
+}
+
+.md-nav__link--active,
+.md-nav__item--active > .md-nav__link {
+    color: var(--md-primary-fg-color);
+    font-weight: 700;
+}
+
+/* Inhaltsverzeichnis rechts: goldene Marke am aktiven Eintrag */
+.md-nav--secondary .md-nav__link--active {
+    color: var(--md-primary-fg-color);
+    font-weight: 700;
+}
+
+.md-sidebar--secondary .md-nav__list {
+    border-left: 2px solid var(--gh-line);
+    padding-left: 0.6rem;
+}
+
+.md-sidebar--secondary .md-nav__link--active {
+    position: relative;
+}
+
+.md-sidebar--secondary .md-nav__link--active::before {
+    content: "";
+    position: absolute;
+    left: -0.7rem;
+    top: 0.35rem;
+    bottom: 0.35rem;
+    width: 2px;
+    background: var(--gh-gold);
+    border-radius: 2px;
+}
+
+/* ===== HINWEISLEISTE (Nutzerhandbuch) ===== */
+.md-banner {
+    background-color: var(--gh-gold-soft);
+    color: var(--md-default-fg-color);
+    border-bottom: 1px solid var(--gh-line);
+}
+
+.md-banner__inner {
+    font-size: 0.68rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.md-banner a {
+    color: var(--md-default-fg-color);
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: var(--gh-gold-dark);
+    text-underline-offset: 0.15em;
+}
+
+.md-banner a:hover {
+    color: var(--gh-gold-dark);
+}
+
+.md-banner__button {
+    color: var(--md-default-fg-color--light);
+}
+
+/* ===== TABELLEN (wie .table-glattt: ruhiger Kopf, Zebra, Hover hebt an) ===== */
+.md-typeset table:not([class]) {
     border-radius: 10px;
+    border: 1px solid var(--gh-line);
+    box-shadow: var(--gh-shadow-sm);
+    font-size: 0.7rem;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: var(--md-default-fg-color--lighter);
+.md-typeset table:not([class]) th {
+    background: var(--md-default-bg-color--light);
+    color: var(--md-default-fg-color--light);
+    font-weight: 700;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--gh-line);
 }
 
-/* ===== TABS (pymdownx) ===== */
+.md-typeset table:not([class]) td {
+    border-top: 1px solid var(--gh-line);
+    vertical-align: top;
+}
+
+.md-typeset table:not([class]) tbody tr:nth-child(even) {
+    background: var(--md-default-bg-color--light);
+}
+
+.md-typeset table:not([class]) tbody tr:hover {
+    background: var(--gh-teal-soft);
+    box-shadow: none;
+}
+
+/* ===== ADMONITIONS ===== */
+.md-typeset .admonition,
+.md-typeset details {
+    border-radius: 10px;
+    border-width: 0 0 0 4px;
+    box-shadow: var(--gh-shadow-sm);
+    font-size: 0.72rem;
+}
+
+.md-typeset .admonition-title,
+.md-typeset summary {
+    font-weight: 700;
+    border-radius: 0 10px 0 0;
+}
+
+.md-typeset .admonition.note,   .md-typeset details.note   { border-color: #3b82f6; }
+.md-typeset .admonition.info,   .md-typeset details.info   { border-color: #3b9b9f; }
+.md-typeset .admonition.tip,    .md-typeset details.tip    { border-color: #3b9b9f; }
+.md-typeset .admonition.success,.md-typeset details.success{ border-color: #10b981; }
+.md-typeset .admonition.warning,.md-typeset details.warning{ border-color: #f59e0b; }
+.md-typeset .admonition.danger, .md-typeset details.danger { border-color: #ef4444; }
+.md-typeset .admonition.example,.md-typeset details.example{ border-color: #7c3aed; }
+
+.md-typeset .note    > .admonition-title, .md-typeset .note    > summary { background-color: rgba(59, 130, 246, 0.10); }
+.md-typeset .info    > .admonition-title, .md-typeset .info    > summary,
+.md-typeset .tip     > .admonition-title, .md-typeset .tip     > summary { background-color: rgba(59, 155, 159, 0.10); }
+.md-typeset .success > .admonition-title, .md-typeset .success > summary { background-color: rgba(16, 185, 129, 0.10); }
+.md-typeset .warning > .admonition-title, .md-typeset .warning > summary { background-color: rgba(245, 158, 11, 0.10); }
+.md-typeset .danger  > .admonition-title, .md-typeset .danger  > summary { background-color: rgba(239, 68, 68, 0.10); }
+.md-typeset .example > .admonition-title, .md-typeset .example > summary { background-color: rgba(124, 58, 237, 0.10); }
+
+/* Eigener Typ „nutzerhandbuch": Verweis auf die Klickanleitung im Portal.
+   Aufruf:  !!! nutzerhandbuch "Bedienung: Verträge 3 – Den Ratenplan lesen"
+                [hilfe.hub.glattt.com/vertraege/3/](https://hilfe.hub.glattt.com/vertraege/3/) */
+:root {
+    --md-admonition-icon--nutzerhandbuch: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>');
+}
+
+.md-typeset .admonition.nutzerhandbuch,
+.md-typeset details.nutzerhandbuch {
+    border-color: var(--gh-gold);
+}
+
+.md-typeset .nutzerhandbuch > .admonition-title,
+.md-typeset .nutzerhandbuch > summary {
+    background-color: var(--gh-gold-soft);
+}
+
+.md-typeset .nutzerhandbuch > .admonition-title::before,
+.md-typeset .nutzerhandbuch > summary::before {
+    background-color: var(--gh-gold-dark);
+    -webkit-mask-image: var(--md-admonition-icon--nutzerhandbuch);
+            mask-image: var(--md-admonition-icon--nutzerhandbuch);
+}
+
+/* ===== KARTEN-RASTER (grid cards) — wie .card-glattt ===== */
+.md-typeset .grid.cards > ol > li,
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid > .card {
+    border: 1px solid var(--gh-line);
+    border-radius: 12px;
+    box-shadow: var(--gh-shadow-sm);
+    background: var(--md-default-bg-color);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.md-typeset .grid.cards > ol > li:hover,
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid > .card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--gh-shadow-md);
+    border-color: var(--gh-line-2);
+}
+
+.md-typeset .grid.cards > ul > li > hr {
+    border-color: var(--gh-line);
+    margin: 0.6em 0;
+}
+
+.md-typeset .grid.cards > ul > li > p > .twemoji,
+.md-typeset .grid.cards > ul > li > p > svg {
+    color: var(--md-primary-fg-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .md-typeset .grid.cards > ul > li,
+    .md-typeset .grid > .card {
+        transition: none;
+    }
+    .md-typeset .grid.cards > ul > li:hover,
+    .md-typeset .grid > .card:hover {
+        transform: none;
+    }
+}
+
+/* ===== STARTSEITE ===== */
+.gh-home {
+    max-width: 62rem;
+}
+
+.gh-home .gh-eyebrow {
+    display: inline-block;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--md-primary-fg-color);
+    margin-bottom: 0.4rem;
+}
+
+.md-typeset .gh-home h1 {
+    font-size: 2rem;
+    line-height: 1.15;
+    margin: 0 0 0.6rem;
+}
+
+.gh-home .gh-lead {
+    font-size: 0.9rem;
+    color: var(--md-default-fg-color--light);
+    max-width: 38rem;
+    margin: 0 0 1.6rem;
+}
+
+/* Zwei Wege: Nutzerhandbuch (Gold) ↔ Technische Doku (Türkis) */
+.gh-split {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: 1rem;
+    margin: 0 0 2rem;
+}
+
+.gh-split__card {
+    border: 1px solid var(--gh-line);
+    border-radius: 12px;
+    padding: 1.1rem 1.2rem 1.2rem;
+    background: var(--md-default-bg-color);
+    box-shadow: var(--gh-shadow-sm);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.gh-split__card--gold {
+    border-color: var(--gh-gold);
+    background: linear-gradient(180deg, var(--gh-gold-soft), transparent 60%);
+}
+
+.gh-split__card--teal {
+    border-color: var(--md-primary-fg-color);
+    background: linear-gradient(180deg, var(--gh-teal-soft), transparent 60%);
+}
+
+.gh-split__label {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--md-default-fg-color--light);
+}
+
+.gh-split__card--gold .gh-split__label { color: var(--gh-gold-dark); }
+.gh-split__card--teal .gh-split__label { color: var(--md-primary-fg-color); }
+
+.md-typeset .gh-split__card h2 {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 1.1rem;
+}
+
+.md-typeset .gh-split__card p {
+    margin: 0;
+    color: var(--md-default-fg-color--light);
+}
+
+.md-typeset .gh-split__card ul {
+    margin: 0.2rem 0 0;
+    padding-left: 1.1rem;
+    color: var(--md-default-fg-color--light);
+}
+
+.md-typeset .gh-split__card .md-button {
+    align-self: flex-start;
+    margin-top: 0.4rem;
+}
+
+.md-typeset .md-button {
+    border-radius: 10px;
+    border-width: 1px;
+    font-weight: 700;
+    padding: 0.5em 1.1em;
+}
+
+.md-typeset .md-button--primary {
+    background-color: var(--md-primary-fg-color);
+    border-color: var(--md-primary-fg-color);
+    color: #ffffff;
+}
+
+.md-typeset .md-button--primary:hover {
+    background-color: var(--md-primary-fg-color--dark);
+    border-color: var(--md-primary-fg-color--dark);
+}
+
+.md-typeset .md-button--gold {
+    background-color: var(--gh-gold);
+    border-color: var(--gh-gold);
+    color: #ffffff;
+}
+
+.md-typeset .md-button--gold:hover {
+    background-color: var(--gh-gold-dark);
+    border-color: var(--gh-gold-dark);
+    color: #ffffff;
+}
+
+/* Kennzahlen-Zeile (Anzahl Seiten je Bereich) — wie .stat-strip-glattt */
+.gh-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    border: 1px solid var(--gh-line);
+    border-radius: 12px;
+    background: var(--md-default-bg-color);
+    margin: 0 0 2rem;
+    overflow: hidden;
+}
+
+.gh-strip__item {
+    flex: 1 1 8rem;
+    padding: 0.8rem 1rem;
+    border-right: 1px solid var(--gh-line);
+    text-decoration: none !important;
+    color: inherit !important;
+    transition: background-color 0.15s ease;
+}
+
+.gh-strip__item:last-child {
+    border-right: 0;
+}
+
+.gh-strip__item:hover {
+    background: var(--md-default-bg-color--light);
+}
+
+.gh-strip__value {
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--md-default-fg-color);
+    line-height: 1.1;
+}
+
+.gh-strip__label {
+    display: block;
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--md-default-fg-color--light);
+    margin-top: 0.2rem;
+}
+
+/* Bereichs-Startseiten: Untertitel unter der Überschrift */
+.md-typeset .gh-sub {
+    font-size: 0.9rem;
+    color: var(--md-default-fg-color--light);
+    margin-top: -0.6rem;
+    max-width: 40rem;
+}
+
+/* ===== FUSSZEILE ===== */
+.md-footer {
+    border-top: 1px solid var(--gh-line);
+}
+
+.md-footer-meta {
+    border-top: 1px solid var(--gh-line);
+}
+
+.md-footer__link {
+    color: var(--md-footer-fg-color);
+}
+
+.md-footer__title {
+    color: var(--md-footer-fg-color);
+}
+
+.md-footer__direction {
+    color: var(--md-footer-fg-color--light);
+}
+
+.md-source-file {
+    font-size: 0.62rem;
+}
+
+/* ===== KLEINIGKEITEN ===== */
+::selection {
+    background: rgba(210, 170, 57, 0.28);
+    color: inherit;
+}
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gh-line-2); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--md-default-fg-color--lighter); }
+
+.md-typeset .tabbed-labels > label {
+    font-weight: 700;
+}
+
 .md-typeset .tabbed-labels > label.tabbed-control--active,
 .md-typeset .tabbed-labels > label:hover {
     color: var(--md-primary-fg-color);
 }
 
-.md-typeset .tabbed-labels > label.tabbed-control--active {
-    border-color: var(--md-primary-fg-color);
-}
-
-/* ===== BACK TO TOP BUTTON ===== */
 .md-top {
-    background-color: var(--md-primary-fg-color);
-    color: #ffffff;
+    background-color: var(--md-default-bg-color);
+    color: var(--md-primary-fg-color);
+    border: 1px solid var(--gh-line);
     border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(59, 155, 159, 0.3);
+    box-shadow: var(--gh-shadow-md);
 }
 
 .md-top:hover {
-    background-color: var(--md-primary-fg-color--dark);
+    background-color: var(--md-primary-fg-color);
+    color: #ffffff;
 }
 
-/* ===== TAG CHIPS (if used) ===== */
 .md-typeset .md-tag {
-    background: rgba(59, 155, 159, 0.1);
+    background: var(--gh-teal-soft);
     color: var(--md-primary-fg-color--dark);
     border-radius: 6px;
-    font-weight: 600;
+    font-weight: 700;
 }
 
-/* ===== API ENDPOINT METHOD BADGES ===== */
+.md-content__button {
+    color: var(--md-default-fg-color--lighter);
+}
+
+.md-content__button:hover {
+    color: var(--md-primary-fg-color);
+}
+
+/* ===== API-METHODEN-PLAKETTEN (REST-API-Referenz) ===== */
 .md-typeset h3.endpoint-get::before,
 .md-typeset h3.endpoint-post::before,
 .md-typeset h3.endpoint-put::before,
@@ -346,53 +767,29 @@
     display: inline-block;
     padding: 2px 10px;
     margin-right: 10px;
-    border-radius: 4px;
-    font-size: 0.65em;
+    border-radius: 6px;
+    font-size: 0.6em;
     font-weight: 700;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     vertical-align: middle;
-    font-family: var(--md-code-font-family, 'Roboto Mono', monospace);
+    font-family: var(--md-code-font);
+    color: #ffffff;
 }
 
-.md-typeset h3.endpoint-get::before {
-    content: "GET";
-    background: #10b981;
-    color: #fff;
-}
+.md-typeset h3.endpoint-get::before    { content: "GET";    background: #10b981; }
+.md-typeset h3.endpoint-post::before   { content: "POST";   background: #3b82f6; }
+.md-typeset h3.endpoint-put::before    { content: "PUT";    background: #f59e0b; }
+.md-typeset h3.endpoint-patch::before  { content: "PATCH";  background: #8b5cf6; }
+.md-typeset h3.endpoint-delete::before { content: "DELETE"; background: #ef4444; }
 
-.md-typeset h3.endpoint-post::before {
-    content: "POST";
-    background: #3b82f6;
-    color: #fff;
-}
-
-.md-typeset h3.endpoint-put::before {
-    content: "PUT";
-    background: #f59e0b;
-    color: #fff;
-}
-
-.md-typeset h3.endpoint-patch::before {
-    content: "PATCH";
-    background: #8b5cf6;
-    color: #fff;
-}
-
-.md-typeset h3.endpoint-delete::before {
-    content: "DELETE";
-    background: #ef4444;
-    color: #fff;
-}
-
-/* Method badges in tables */
 .md-typeset .method-badge {
     display: inline-block;
     padding: 1px 8px;
-    border-radius: 3px;
-    font-size: 0.75em;
+    border-radius: 6px;
+    font-size: 0.7em;
     font-weight: 700;
-    font-family: var(--md-code-font-family, 'Roboto Mono', monospace);
-    color: #fff;
+    font-family: var(--md-code-font);
+    color: #ffffff;
 }
 
 .md-typeset .method-badge.get    { background: #10b981; }
@@ -401,10 +798,17 @@
 .md-typeset .method-badge.patch  { background: #8b5cf6; }
 .md-typeset .method-badge.delete { background: #ef4444; }
 
-/* --------------------------------------------------
- * Swagger UI Iframe – volle Höhe ohne Abschneiden
- * -------------------------------------------------- */
+/* Swagger UI Iframe – volle Höhe ohne Abschneiden */
 .swagger-ui-iframe {
     min-height: 800px;
     overflow: visible !important;
+}
+
+/* Nutzerhandbuch-Hinweis in Karten: eigene Zeile, gedämpft */
+.md-typeset .grid.cards > ul > li > p > small,
+.md-typeset .grid.cards > ul > li > small {
+    display: block;
+    color: var(--md-default-fg-color--light);
+    font-size: 0.62rem;
+    line-height: 1.4;
 }

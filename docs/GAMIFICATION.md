@@ -4,13 +4,65 @@ Motivations-System der Institutsseite: Nach jeder Erfassung (Verkauf, Kein
 Verkauf, Upselling) feiert die Seite mit einem Vollbild-Moment, Meilensteine
 und Siege laufen als dezente Feed-Banner durch, und Mitarbeiterinnen sammeln
 **Badges** mit optionalen **Prämien**. Alle Anlässe, Texte, Schwellen und
-Badges sind im Admin-Backend verwaltbar.
+Badges sind im Admin-Backend verwaltbar. Diese Seite beschreibt **Absicht,
+Fachregeln (Anlässe, Ziele, Badges, Prämien), die drei Schichten der
+Architektur, den nächtlichen Lauf, Tabellen und Tests**; die Bedienung der
+Verwaltung steht im Nutzerhandbuch.
+
+!!! nutzerhandbuch "Bedienung: Admin 6 – Gamification und Abzeichen"
+    [hilfe.hub.glattt.com/admin/6/](https://hilfe.hub.glattt.com/admin/6/) — Abzeichen
+    anlegen, Anlässe aktivieren und einstellen, Standortziele pflegen, Checkliste vor dem Start.
+
+    Angrenzend: Serie [Bonus-Board](https://hilfe.hub.glattt.com/bonus-board/)
+    (Bonus-Klassen, Minimalziele — Voraussetzung für die Bonus-Momente),
+    [Berichte 9 – Mitarbeiterperformance](https://hilfe.hub.glattt.com/berichte/9/)
+    (Badge-Vitrine). Die Feiern und der Live-Feed auf der Institutsseite haben keine eigene
+    Anleitung — sie laufen ohne Bedienung.
 
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
 
-### Was passiert im Institut?
+**Was das System leistet.** Die Institutsseite (Tageserfassung) soll den Abschluss nicht nur
+speichern, sondern **sichtbar würdigen** — sofort, am Gerät, im Moment der Erfassung. Ein
+Verkauf lässt den Instituts-Balken mit den echten Monats-KPZ wachsen (mit Konfetti, Kanonen
+oder Feuerwerk je nach Größe), ein „Kein Verkauf" bekommt eine ehrliche Aufmunterung statt
+eines Frustmoments, und besondere Momente (Platz-1-Übernahme, Tagesrekord, Instituts-Marken,
+Hattrick, Serie, Comeback) werden automatisch erkannt. Liegt die Seite offen, laufen die
+Erfolge aller Kolleginnen als Live-Feed durch. Für Mitarbeiterinnen gibt es dazu keine
+Bedienung — die Feiern passieren; wer wissen will, wie Bonus-Stand und Minimalziel
+zustande kommen, liest die Serie [Bonus-Board](https://hilfe.hub.glattt.com/bonus-board/).
+
+**Grundsätze:**
+
+- **Bewusst neutral bei kleinen Abschlüssen:** 1–2 verkaufte KPZ werden nur ruhig bestätigt
+  („Erfasst"); gefeiert wird ab der Party-Schwelle (Standard: 3 Zonen).
+- **Bonus-Momente sind diskret:** BG-Spezialistinnen sehen ihren Bonus-Stand nur direkt nach
+  der eigenen Erfassung, nie im Live-Feed.
+- **Das Feature ist standardmäßig dunkel:** Ohne aktivierte Anlass-Zeile im Admin feuert nichts.
+- **Ziele sind eigene Werte** (Entscheidung Jan 24.08.2026): Instituts-Marken, Bonus-Minimalziel
+  und €/KPZ werden in der Anlass-Verwaltung gepflegt und kommen bewusst nicht aus dem
+  Bonus-Board oder den Performance-Zielen — nur *wer* BG-Spezialistin ist, kommt aus der
+  Bonus-Klasse.
+- **Prämien werden bei Verleihung eingefroren:** Spätere Änderungen an einem Badge wirken nie
+  rückwirkend.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Anlässe aktivieren, Schwellen, Text-Varianten und Animationen einstellen | Admin 6 |
+| Badges (Abzeichen) mit Stufen und Prämien anlegen, Verleihungen und Auszahlungen verwalten | Admin 6 |
+| Wochen-/Monatsziel und Instituts-Marken je Standort pflegen | Admin 6 |
+| Checkliste vor dem Start (Go-Live) | Admin 6 |
+| Bonus-Klassen, Minimalziele (Voraussetzung für Bonus-Momente) | Serie Bonus-Board |
+| Gesammelte Badges einer Mitarbeiterin ansehen (Badge-Vitrine) | Berichte 9 |
+
+---
+
+## Für Entwickler
+
+### Fachregeln: Anlässe und Feiern
 
 - **Nach einem Verkauf** erscheint direkt ein Feier-Overlay: Der
   Instituts-Balken wächst sichtbar mit den echten Monats-KPZ, je nach Größe
@@ -34,12 +86,13 @@ Badges sind im Admin-Backend verwaltbar.
   gefeiert; die gesammelten Badges stehen im Hub auf der Seite
   **Mitarbeiterperformance** (Badge-Vitrine).
 
-### Verwaltung im Admin-Backend (Gruppe „Gamification")
+### Fachregeln: Verwaltung (Admin-Gruppe „Gamification")
 
 - **Anlässe:** Jeder Feier-Anlass einzeln an-/abschaltbar, mit eigenen
   Schwellen (z.B. „Party ab 3 KPZ"), Text-Varianten (rotieren automatisch)
   und Animations-Pool. Anlässe „in Vorbereitung" brauchen noch Zusatzlogik
-  und lassen sich nicht aktivieren.
+  und lassen sich nicht aktivieren. Die Liste legt beim ersten Öffnen alle
+  Registry-Anlässe inaktiv an.
 - **Ziele je Institut:** Unter Gamification → **Ziele je Institut** bekommt
   jeder Standort ein eigenes **Wochenziel** und **Monatsziel** (KPZ) sowie
   optional **eigene Instituts-Marken** (überschreiben die globale
@@ -66,7 +119,9 @@ Badges sind im Admin-Backend verwaltbar.
 
 ### Go-Live (Feature ist standardmäßig dunkel)
 
-Ohne aktive Anlass-Zeile feuert nichts — deshalb ist der Rollout gefahrlos:
+Ohne aktive Anlass-Zeile feuert nichts — deshalb ist der Rollout gefahrlos.
+Stand 24.08.2026 ist das Modul auf Prod ausgerollt (dunkel), der Scheduler-Job
+läuft; es fehlt nur noch die Aktivierung der Anlässe im Admin:
 
 1. Admin → Gamification → **Anlässe**: gewünschte Anlässe aktivieren
    (die Liste legt beim ersten Öffnen alle Registry-Anlässe inaktiv an).
@@ -77,10 +132,6 @@ Ohne aktive Anlass-Zeile feuert nichts — deshalb ist der Rollout gefahrlos:
    mit `--max-retry-attempts=3` (Cold-Start-Schutz). Ohne den Job fehlen
    Wochen-/Monatssiegerin, Behandlungs-/Bewertungs-Momente und die
    nächtliche Badge-Vollprüfung — die Sofort-Feiern laufen auch ohne ihn.
-
----
-
-## Für Entwickler
 
 ### Architektur (drei Schichten)
 

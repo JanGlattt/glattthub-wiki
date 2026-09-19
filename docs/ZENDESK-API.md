@@ -1,19 +1,35 @@
 # 🎫 Zendesk API
 
-Anbindung des Hub an Zendesk (Support-Tickets). Genutzt wird sie an zwei Stellen:
-im **Kunden-Detail** (Reiter Service: Tickets des Kunden inkl. Kommentar-Verlauf)
-und im **Widerrufs-Modal** (Ticket-Suche/-Verknüpfung, Feld `zendesk_ticket_number`
-an `ContractCancellation`).
+Anbindung des Hub an Zendesk (Support-Tickets). Genutzt wird sie an drei Stellen:
+im **Kundenprofil** (Reiter Kundenservice: Tickets der Kundin inkl. Kommentar-Verlauf),
+im **Widerrufs-Modal** (Ticket-Suche/-Verknüpfung, Feld `zendesk_ticket_number`
+an `ContractCancellation`) und im **Forderungsmanagement** (Mahn-Mails werden als
+Zendesk-Tickets erstellt). Diese Seite beschreibt **Authentifizierung, Konfiguration,
+Runbook, Ticket-Spiegel und Stolperfallen**; die Bedienung steht im Nutzerhandbuch.
 
-## Für Endanwender
+!!! nutzerhandbuch "Bedienung: Kundenverwaltung 5 – Nachrichten & Kundenservice · Widerrufe 2 – Der Fall im Detail"
+    [hilfe.hub.glattt.com/kundenverwaltung/5/](https://hilfe.hub.glattt.com/kundenverwaltung/5/) — Abschnitt „Tickets des Kundenservice": Zendesk-Tickets der Kundin im Reiter Kundenservice lesen.
+    [hilfe.hub.glattt.com/widerrufe/2/](https://hilfe.hub.glattt.com/widerrufe/2/) — Ticket im Widerrufsfall verknüpfen und bearbeiten.
 
-- Auf der Kundenseite werden Zendesk-Tickets des Kunden automatisch angezeigt
-  (Zuordnung über die Phorest-Kundennummer im Notiz-Feld des Zendesk-Users).
-- Beim Erfassen eines Widerrufs kann das zugehörige Zendesk-Ticket gesucht und
-  verknüpft werden; die Ticketnummer erscheint später u.a. im roten
-  Widerrufs-Banner auf der Vertragsseite.
-- Ist Zendesk nicht erreichbar, zeigen die betroffenen Bereiche einen
-  Fehlerhinweis; der Rest des Hub arbeitet normal weiter.
+    Angrenzend: [Widerrufe 1 – Widerruf erfassen](https://hilfe.hub.glattt.com/widerrufe/1/) (Ticket-Suche im Assistenten),
+    Serie [Forderungen](https://hilfe.hub.glattt.com/forderungen/) (Mahn-Mails als Tickets).
+
+## Für Anwender — Überblick
+
+**Was die Anbindung leistet.** Der Kundenservice arbeitet in Zendesk; der Hub holt sich von
+dort, was er im Kontext braucht: Im Kundenprofil erscheinen die Tickets der Kundin
+automatisch (Zuordnung über die Phorest-Kundennummer im Notiz-Feld des Zendesk-Users), beim
+Erfassen eines Widerrufs wird das zugehörige Ticket gesucht und verknüpft — die Ticketnummer
+erscheint danach u.a. im roten Widerrufs-Banner auf der Vertragsseite. Das
+Forderungsmanagement verschickt seine Mahn-Mails als Zendesk-Tickets, damit Antworten der
+Kundin dort landen. Ist Zendesk nicht erreichbar, zeigen die betroffenen Bereiche einen
+Fehlerhinweis; der Rest des Hub arbeitet normal weiter.
+
+| Vorgang | Anleitung |
+|---|---|
+| Tickets einer Kundin lesen (Reiter Kundenservice) | Kundenverwaltung 5 |
+| Ticket beim Widerruf suchen und verknüpfen | Widerrufe 1–2 |
+| Mahn-Mails (als Zendesk-Ticket) auslösen | Serie Forderungen |
 
 ## Für Entwickler
 
@@ -79,7 +95,7 @@ nur für die Übergangszeit bestehen.
    Env-Vars an `glattthub-web-staging` + `glattthub-worker-staging` setzen,
    Revision neu ausrollen. Achtung: Zendesk selbst bleibt auf Staging **live**
    (kein Umgebungsschalter) — Lesezugriffe sind unkritisch.
-3. Prüfen: Kundenseite → Reiter Service (Tickets laden), Widerrufs-Modal →
+3. Prüfen: Kundenseite → Reiter Kundenservice (Tickets laden), Widerrufs-Modal →
    Ticket-Suche. Im Log muss `auth: oauth` bzw. kein Warning erscheinen.
 4. **Prod:** gleiche Env-Vars an `glattthub-web` + `glattthub-worker`.
 5. **Nachlauf:** Im Zendesk Admin Center den 7-Tage-Nutzungsbericht der
@@ -106,7 +122,6 @@ Befehl `zendesk:sync-tickets` (täglich 04:45, Cloud Scheduler
   übergeben werden, sonst liefert der Export endlos die erste Seite.
 - Der Incremental-Export hat ein eigenes Rate-Limit von **10 Anfragen je
   Minute**; der Sync wartet bei 429 (`Retry-After`).
-
 - Access-Tokens **nicht dauerhaft speichern** — die Ablauf-Erzwingung für
   OAuth-Tokens läuft seit 30.06.2026; der Service holt Tokens bewusst über
   den Cache mit TTL.

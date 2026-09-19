@@ -1,21 +1,79 @@
 # Formular-Teilung (Shared Form System)
 
-## Übersicht
+Das Shared Form System gibt ein Formular über einen Link an eine Person außerhalb des Hubs
+weiter — an die Kundin auf ihrem eigenen Handy oder an eine zweite unterschriftsberechtigte
+Person. Der Link ist ein Token ohne Login, läuft ab und ist nach der Einreichung verbraucht;
+seit 19.09.2026 wird er wahlweise per E-Mail, WhatsApp oder SMS zugestellt und kann statt
+einer neuen Einreichung auch den offenen **Teil** einer bestehenden Einreichung
+vervollständigen (Mitunterzeichner). Diese Seite beschreibt **Datenmodell, Routen, Versandwege,
+Sicherheit und Fallstricke**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
-Das Shared Form System ermöglicht es, Formulare über einen Link mit externen Personen zu teilen, die keinen glatttHub-Account benötigen. Der Empfänger erhält einen einmalig verwendbaren Link, über den er das Formular ausfüllen kann.
+!!! nutzerhandbuch "Bedienung: Terminansicht 5, Terminansicht 11 und Betrieb 4 im Nutzerhandbuch"
+    [Terminansicht 5 – Formular an die Kundin weitergeben](https://hilfe.hub.glattt.com/terminansicht/5/) ·
+    [Terminansicht 11 – Erlaubnis Minderjährige — Eltern unterschreiben](https://hilfe.hub.glattt.com/terminansicht/11/) ·
+    [Betrieb 4 – Formulare teilen & Einreichungen](https://hilfe.hub.glattt.com/betrieb/4/)
 
-> **Infrastruktur-Hinweis:** `/shared/*`-Routen sind vom IAP-Google-Login ausgenommen (eigener Backend-Service `backend-glattthub-{env}-public` ohne IAP am Load Balancer, siehe [CLOUD-INFRASTRUKTUR.md](CLOUD-INFRASTRUKTUR.md#pfade-vom-iap-ausschließen-api--token-seiten)), da externe Empfänger keinen Google Workspace-Account der Firma haben. Schutz erfolgt stattdessen über den Token selbst sowie `throttle:shared-page` (30 Anfragen/Min. pro IP).
+    Angrenzend: [Betrieb 3 – Formulare erstellen](https://hilfe.hub.glattt.com/betrieb/3/) (Einstellungen
+    für Minderjährige und Mitunterzeichner) und
+    [Kundenverwaltung 6 – Unterlagen & Behandlungsverlauf](https://hilfe.hub.glattt.com/kundenverwaltung/6/)
+    (eingereichte Formulare wiederfinden).
 
-## Funktionsweise
+---
 
-1. **Mitarbeiter** öffnet ein Formular in der Ausfüll-Ansicht
-2. Klick auf den **Teilen-Button** (Share-Icon im Header)
-3. Optional: Name und E-Mail des Empfängers eingeben → E-Mail mit Link senden
-4. **Link kopieren** oder per E-Mail versenden
-5. **Empfänger** öffnet den Link → sieht eine isolierte Formular-Seite
-6. Nach dem Ausfüllen wird das Formular eingereicht → Link ist verbraucht
+## Für Anwender — Überblick
 
-## Technische Details
+**Was das System leistet.** Ein Formular muss nicht am Tablet des Instituts ausgefüllt werden:
+Die Mitarbeiterin erzeugt aus der Ausfüll-Ansicht heraus einen Link und gibt ihn weiter — als
+QR-Code bzw. kopierten Link am Tresen oder direkt per E-Mail, WhatsApp oder SMS an die Kundin.
+Die Empfängerin sieht eine eigenständige Seite ohne Hub-Anmeldung, füllt aus, unterschreibt und
+reicht ein; die Einreichung landet beim richtigen Kunden und Termin, weil die Kontextdaten am
+Link hängen. Braucht ein Formular eine zweite Unterschrift (Erlaubnis für Minderjährige), geht
+ein **Teil-Link** an die zweite Person, die nur ihre eigenen Felder sieht und die bestehende
+Einreichung abschließt.
+
+**Grundsätze, die überall gelten:**
+
+- **Ein Link, eine Einreichung.** Nach dem Einreichen ist der Token verbraucht; für einen neuen
+  Versuch wird ein neuer Link erzeugt.
+- **Links verfallen:** 48 Stunden beim normalen Teilen-Link, 7 Tage beim Mitunterzeichner-Link.
+- **Höchstens eine Zustellung.** Der Hub versucht den gewählten Kanal und weicht sonst in der
+  Reihenfolge E-Mail → SMS → WhatsApp aus — die Empfängerin bekommt den Link nie doppelt.
+- **Kein Login, aber kein offener Zugang:** Der Link zeigt ausschließlich dieses eine Formular,
+  der Token ist 64 Zeichen lang und die Seite ist für Suchmaschinen gesperrt.
+- **Der Kontext hängt am Link,** nicht an der Person: Vorausgefüllte Felder und die Zuordnung zu
+  Kundin, Termin und Institut stehen fest, sobald der Link erzeugt wurde.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Link im Termin erzeugen und an die Kundin übergeben | Terminansicht 5 |
+| Erlaubnis für Minderjährige, zweite Person vor Ort oder per Link | Terminansicht 11 |
+| Formular teilen, Kundenansicht, Eingereichtes lesen | Betrieb 4 |
+| Formular so bauen, dass Mitunterzeichner/Minderjährige greifen | Betrieb 3 |
+| Eingereichte Formulare bei der Kundin wiederfinden | Kundenverwaltung 6 |
+
+---
+
+## Für Entwickler
+
+### Infrastruktur & Zugriff
+
+`/shared/*`-Routen sind vom IAP-Google-Login ausgenommen (eigener Backend-Service
+`backend-glattthub-{env}-public` ohne IAP am Load Balancer, siehe
+[CLOUD-INFRASTRUKTUR.md](CLOUD-INFRASTRUKTUR.md#pfade-vom-iap-ausschlieen-api-token-seiten)),
+da externe Empfänger keinen Google Workspace-Account der Firma haben. Schutz erfolgt stattdessen
+über den Token selbst sowie `throttle:shared-page` (30 Anfragen/Min. pro IP).
+
+### Ablauf einer Teilung
+
+1. Mitarbeiterin öffnet ein Formular in der Ausfüll-Ansicht und klickt den Teilen-Knopf.
+2. `POST /api/forms/{form}/share` legt einen `FormShareToken` samt Kontextdaten an und stellt ihn
+   auf Wunsch über `FormLinkMessenger` zu (E-Mail/WhatsApp/SMS) — sonst wird nur der Link zurückgegeben.
+3. Die Empfängerin öffnet `GET /shared/form/{token}` (`markAccessed()`), füllt aus und reicht über
+   `POST /api/shared/form/{token}/submit` ein.
+4. Die Einreichung wird als reguläre `FormSubmission` gespeichert, der Token per `markSubmitted()`
+   verbraucht; Folgeverarbeitung (Vertrag, SEPA) läuft wie bei einer Ausfüllung im Hub.
 
 ### Datenbank
 
@@ -104,7 +162,7 @@ Integriert in `fill.blade.php`. Features:
 | E-Mail | `resources/views/emails/shared-form.blade.php` | E-Mail an Empfänger mit Link |
 | Share-Modal | `resources/views/partials/form-share-modal.blade.php` | Modal im Formular-Ausfüllen |
 
-## Sicherheit
+### Sicherheit
 
 - **Token:** 64 Zeichen, kryptographisch sicher (`Str::random()`)
 - **Ablauf:** 48 Stunden nach Erstellung
@@ -113,7 +171,7 @@ Integriert in `fill.blade.php`. Features:
 - **CSRF:** Token wird in der Seite mitgegeben
 - **noindex:** Meta-Tag verhindert Suchmaschinen-Indexierung
 
-## Einreichung (Submission)
+### Einreichung (Submission)
 
 Die Einreichung über geteilte Formulare wird als reguläre `FormSubmission` gespeichert mit:
 - `user_id` = null (kein angemeldeter Benutzer)
@@ -125,14 +183,14 @@ Nach der Einreichung werden automatisch ausgeführt:
 - **ContractCreationService** (falls Vertragsdaten vorhanden)
 - **SEPA-Mandatsverarbeitung** (falls SEPA-Felder vorhanden)
 
-## Kontextdaten
+### Kontextdaten
 
 Beim Erstellen des Links werden die aktuellen Kontextdaten (Kunde, Termin, Filiale) mit dem Token gespeichert. Damit können:
 - Felder mit `prefill_key` vorausgefüllt werden
 - `{{client.firstName}}` Platzhalter in Texten ersetzt werden
 - Die Einreichung dem richtigen Kunden/Termin zugeordnet werden
 
-## Versandwege: E-Mail, WhatsApp, SMS (seit 19.09.2026)
+### Versandwege: E-Mail, WhatsApp, SMS (seit 19.09.2026)
 
 Ein Teilen-Link wird im Modal „Formular teilen" wahlweise **nur erzeugt**, **per E-Mail**,
 **per WhatsApp** oder **per SMS** verschickt (Segment „Link senden per", Felder für
@@ -160,7 +218,7 @@ Der Link ist bis {{3}} gültig." mit URL-Button `https://hub.glattt.com/shared/f
 (Variable `token`). Ohne genehmigte Vorlage bleibt WhatsApp gesperrt und der Hub
 weicht aus. Tests: `tests/Feature/SharedFormLinkChannelTest.php`.
 
-## Mitunterzeichner-Links (Teil-Links)
+### Mitunterzeichner-Links (Teil-Links)
 
 Seit 19.09.2026 kann ein Token statt einer neuen Einreichung den **offenen Teil einer
 bestehenden Einreichung** vervollständigen (zweiter Elternteil bei der Erlaubnis für

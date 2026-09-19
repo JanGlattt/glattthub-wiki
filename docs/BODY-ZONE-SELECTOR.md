@@ -1,6 +1,25 @@
 # Body Zone Selector
 
-Interaktive Körperzonen-Auswahl für GLATTT Behandlungen.
+Interaktive Körperzonen-Auswahl für GLATTT Behandlungen: eine wiederverwendbare
+Blade-Komponente mit Grafik, Zonenliste und Datenbank-Anbindung. Diese Seite ist eine
+**Komponenten-Referenz für Entwickler** (Parameter, Events, Model, Phorest-Zuordnung,
+Grafiken, Styling); die Bedienung der Körperzonen-Verwaltung steht im Nutzerhandbuch.
+
+!!! nutzerhandbuch "Bedienung: Betrieb 5 – Services und Körperzonen"
+    [hilfe.hub.glattt.com/betrieb/5/](https://hilfe.hub.glattt.com/betrieb/5/) — Service-Übersicht,
+    Beratung oder Behandlung, Zuordnungen pflegen.
+
+    Angrenzend: [Admin 5 – Stammdaten](https://hilfe.hub.glattt.com/admin/5/) (Körperzonen im
+    Admin-Panel).
+
+## Für Anwender — Überblick
+
+Die Körperzonen sind die Preis- und Buchungseinheit der glattt-Pakete; welche Zone es gibt und
+welche Phorest-Services dazugehören, wird zentral gepflegt und wirkt danach überall gleich — im
+Behandlungsvertrag, im Einstellungszettel und in jeder Auswertung. Die hier beschriebene
+Auswahl-Komponente hat selbst keine Verwaltungsoberfläche; die Pflege der Zonen und ihrer
+Zuordnungen ist in [Betrieb 5](https://hilfe.hub.glattt.com/betrieb/5/) und
+[Admin 5](https://hilfe.hub.glattt.com/admin/5/) beschrieben.
 
 ## Übersicht
 

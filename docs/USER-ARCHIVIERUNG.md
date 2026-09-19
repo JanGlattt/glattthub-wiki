@@ -3,57 +3,76 @@
 Seit 10.09.2026 lassen sich Hub-Benutzerkonten **archivieren** statt löschen —
 sofort oder vorgemerkt zu einem Datum in der Zukunft. Ab diesem Tag ist der
 Zugang zu, die Person fällt aus der Bonusberechnung und aus Auswahllisten,
-alle Daten bleiben erhalten.
+alle Daten bleiben erhalten. Diese Seite beschreibt **Absicht, Fachregeln
+(Stichtag, Wirkung), Datenmodell, Middleware und Tests**; die Bedienung Schritt
+für Schritt steht im Nutzerhandbuch.
 
-## Für Endanwender
+!!! nutzerhandbuch "Bedienung: Team 1 – Personalübersicht und Hub-Konten"
+    [hilfe.hub.glattt.com/team/1/](https://hilfe.hub.glattt.com/team/1/) — Abschnitt
+    „Austritt: archivieren": Datum wählen, Vormerkung, Archivierung aufheben.
 
-### Wo
+    Angrenzend: [Admin 1 – Benutzer und Rollen](https://hilfe.hub.glattt.com/admin/1/)
+    (Benutzerliste im Admin-Backend, Filter „Archivierte"),
+    [Bonus-Board 3 – Bonus-Board für die Leitung](https://hilfe.hub.glattt.com/bonus-board/3/)
+    (Wirkung auf die Bonus-Übersicht).
 
-**Admin-Backend → Benutzer.** Zwei Wege:
+---
 
-1. **Aktion „Archivieren"** in der Zeile: Datum wählen (vorbelegt mit dem
-   1. des Folgemonats bzw. dem askDANTE-Austritt, siehe unten), bestätigen.
-2. **Formular „Bearbeiten" → Zugang & Sicherheit → „Archivieren ab"**: Datum
-   setzen oder leeren. Leeren hebt die Archivierung auf; die Aktion
-   „Archivierung aufheben" in der Liste tut dasselbe.
+## Für Anwender — Überblick
 
-Die Spalte **Status** zeigt „Aktiv", „Archiviert ab 01.10.2026" (Vormerkung,
-gelb) oder „Archiviert" (grau). Der Filter **Archivierte** blendet archivierte
-Konten standardmäßig aus; „Alle anzeigen" oder „Nur archivierte" holt sie zurück.
+**Warum archivieren statt löschen.** Ein gelöschtes Konto reißt Lücken: Verkäuferin an alten
+Verträgen, Erfasserin von Beratungsgesprächen, Empfängerin eingefrorener Boni — all das
+verweist auf die Person. Die Archivierung sperrt deshalb nur den **Zugang** und nimmt die
+Person aus **Berechnungen und Auswahllisten**, lässt aber jede bestehende Zuordnung stehen.
+Sie ist eine bewusste Entscheidung im Admin-Backend (Aktion „Archivieren" oder Feld
+„Archivieren ab" im Bearbeiten-Formular); automatisch archiviert der Hub nie, auch wenn
+askDANTE ein Austrittsdatum kennt — das Formular schlägt es nur vor.
 
-### Konvention: immer der 1. des Folgemonats
+**Konvention: immer der 1. des Folgemonats.** Archiviert wird zum Monatsersten nach dem
+letzten Arbeitstag. Der Monat davor ist damit der letzte Bonus-Monat (mit Arbeitstage- und
+Abwesenheitsregel wie gewohnt), ab dem Archivierungsmonat zählt die Person nicht mehr. Wer
+ausnahmsweise ein Datum mitten im Monat setzt: Der angebrochene Monat zählt noch, der
+Ausschluss beginnt mit dem Folgemonat. Bis zum Datum ändert eine Vormerkung nichts — die
+Person arbeitet ganz normal weiter; Leeren des Datums (oder „Archivierung aufheben") nimmt
+die Vormerkung bzw. Archivierung zurück.
 
-Archiviert wird **zum Monatsersten nach dem letzten Arbeitstag**. Der Monat
-davor ist damit der letzte Bonus-Monat (mit Arbeitstage- und Abwesenheitsregel
-wie gewohnt), ab dem Archivierungsmonat zählt die Person nicht mehr. Wer
-ausnahmsweise ein Datum mitten im Monat setzt: Der angebrochene Monat zählt
-noch, der Ausschluss beginnt mit dem Folgemonat.
+**Wo was erledigt wird:**
 
-Liegt in askDANTE ein Austrittsdatum oder ein Ende der Beschäftigungsperiode
-vor, schlägt das Formular den passenden Monatsersten vor („askDANTE-Austritt
-übernehmen"). Automatisch passiert nichts — die Archivierung bleibt eine
-bewusste Entscheidung.
+| Vorgang | Anleitung |
+|---|---|
+| Austritt: Konto archivieren (sofort oder vorgemerkt), askDANTE-Austritt übernehmen | Team 1 |
+| Archivierung aufheben, archivierte Konten in der Benutzerliste einblenden | Admin 1 |
+| Wirkung auf Bonus-Board und Monatsabschluss nachvollziehen | Bonus-Board 3, Bonus-Board 5 |
 
-### Was ab dem Datum passiert
+---
+
+## Für Entwickler
+
+### Fachregeln: Wirkung ab dem Archivierungsdatum
 
 - **Kein Login** mehr — weder E-Mail/Passwort, PIN noch Admin-Backend. Eine
   laufende Sitzung endet beim nächsten Klick mit dem Hinweis „Dein Zugang wurde
   archiviert".
 - **Bonus-Board:** Die Person erscheint ab dem Archivierungsmonat nicht mehr —
   auch nicht als namentliche Empfängerin, im Team-Split oder im Ranking.
-  Eingefrorene Vormonate bleiben unverändert.
+  Eingefrorene Vormonate bleiben unverändert. Der Monat, dessen Beginn am oder
+  nach dem Archivierungsdatum liegt, ist der erste ohne die Person.
 - **Personalübersicht:** Die Spalte Hub-Konto zeigt statt des grünen Hakens
   „Archiviert" bzw. „Archiviert ab …".
 - **Auswahllisten** (Verkäuferin beim Vertrag, Beratungsgespräch-Erfassung,
   Ansprechpartner bei Unternehmensverträgen, Bonus-Regel-Empfängerinnen,
   Mitteilungs-/Berichtsmail-Empfänger, Push-Kampagnen, Phorest-Zuordnung)
-  blenden die Person aus. Bestehende Zuordnungen (z.B. Verkäuferin an alten
-  Verträgen) bleiben.
+  blenden die Person aus (`User::active()`). Bestehende Zuordnungen (z.B.
+  Verkäuferin an alten Verträgen) bleiben.
+- **Admin-Status:** Die Spalte **Status** in der Benutzerliste zeigt „Aktiv",
+  „Archiviert ab 01.10.2026" (Vormerkung, gelb) oder „Archiviert" (grau). Der
+  Filter **Archivierte** blendet archivierte Konten standardmäßig aus; „Alle
+  anzeigen" oder „Nur archivierte" holt sie zurück.
+- **Vorschlag aus askDANTE:** Liegt ein Austrittsdatum oder ein Ende der
+  Beschäftigungsperiode vor, schlägt das Formular den passenden Monatsersten vor
+  („askDANTE-Austritt übernehmen"). Automatisch passiert nichts.
 
-Bis zum Datum ändert eine Vormerkung nichts — die Person arbeitet ganz normal
-weiter.
-
-## Für Entwickler
+### Umsetzung
 
 - **Spalte** `users.archived_from` (DATE, nullable, Index; Migration
   `2026_09_10_100000_add_archived_from_to_users`).
@@ -70,14 +89,19 @@ weiter.
   Anmelden mit derselben Meldung.
 - **Bonus:** `BonusCalculationService::recipients()` filtert mit
   `activeForMonth($month)` — vor Team-Split, Ranking und namentlichen Regeln.
-- **Admin:** `UserForm` (DatePicker mit Hint-Action „askDANTE-Austritt
-  übernehmen", `UserForm::suggestedArchiveDate()` = 1. des Monats nach
-  `HrEmployee::contractEndsOn()`), `UsersTable` (Status-Badge, `TernaryFilter`
-  mit Standard „ausblenden", Aktionen `archive`/`unarchive`, archivierte Zeilen
-  gedimmt).
+- **Admin:** `UserForm` (DatePicker „Archivieren ab" unter *Zugang & Sicherheit*
+  mit Hint-Action „askDANTE-Austritt übernehmen",
+  `UserForm::suggestedArchiveDate()` = 1. des Monats nach
+  `HrEmployee::contractEndsOn()`; leeren hebt die Archivierung auf),
+  `UsersTable` (Status-Badge, `TernaryFilter` mit Standard „ausblenden",
+  Aktionen `archive` — Datum vorbelegt mit dem 1. des Folgemonats bzw. dem
+  askDANTE-Austritt — und `unarchive`, archivierte Zeilen gedimmt).
 - **Personalübersicht:** `UserProvisioningService::userSummary()` liefert
   `archived` + `archive_label`; `hub/staff/partials/table.blade.php` zeigt das
   Badge. Verknüpfungs-Kandidaten (`existingCandidates`) sind nur aktive Konten.
 - **Tests:** `tests/Feature/UserArchivingTest.php` (Login-Sperre auf allen drei
   Wegen, Vormerkung, Sitzungsende, Scope, Personalübersicht, Monatslogik) und
   `BonusEngineTest::test_archivierte_nutzerin_faellt_ab_dem_archivierungsmonat_aus_dem_board`.
+
+Verwandt: [Personalverwaltung](STAFF-MODULE.md), [Einladungssystem](USER-INVITATION-SYSTEM.md),
+[Bonus-Board](BONUS-BOARD.md).

@@ -1,97 +1,109 @@
 # Personalverwaltung (Staff Module)
 
-## Nutzerdokumentation
+Die Personalverwaltung zeigt alle Mitarbeiter aus dem Personalmanagement-System **askDANTE**
+(Übersicht `/hub/staff`, Detailseite `/hub/staff/{staffId}`), bezogen über die
+[askDANTE API](ASKDANTE-API.md) und serverseitig fünf Minuten gecacht, und verbindet die
+askDANTE-Person mit ihrem Hub-Benutzerkonto (Spalte „Hub-Konto", Wizard „Konto anlegen").
+Diese Seite beschreibt **Absicht, Architektur, Endpunkte, Alpine-Komponenten und die Fachregeln
+des Hub-Konto-Wizards**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
-### Übersicht
+!!! nutzerhandbuch "Bedienung: Team 1 – Personalübersicht und Hub-Konten"
+    [hilfe.hub.glattt.com/team/1/](https://hilfe.hub.glattt.com/team/1/) — Personalübersicht lesen,
+    Detailseite, Hub-Konto anlegen und einladen, Austritt archivieren.
 
-Die Personalverwaltung zeigt alle Mitarbeiter aus dem Personalmanagement-System **askDANTE**. Die Daten werden über die [askDANTE API](ASKDANTE-API.md) bezogen und serverseitig für 5 Minuten gecacht.
-
-**URL:** `/hub/staff`
-
----
-
-### Personalübersicht
-
-Die Übersichtsseite zeigt alle Mitarbeiter in einer sortierbaren Tabelle mit Echtzeit-Suche.
-
-**Funktionen:**
-
-| Funktion | Beschreibung |
-|----------|-------------|
-| **Suche** | Echtzeit-Suche (debounced, 300ms) über Name, Personalnummer, E-Mail, Kostenstelle und externe ID |
-| **Sortierung** | Klick auf Spaltenheader sortiert auf-/absteigend (Standard: Nachname aufsteigend) |
-| **Archiv-Toggle** | Schalter um archivierte Mitarbeiter ein-/auszublenden (Standard: ausgeblendet) |
-| **Pagination** | 25 Einträge pro Seite mit Vor-/Zurück-Navigation |
-
-**Tabellen-Spalten:**
-
-| Spalte | Beschreibung |
-|--------|-------------|
-| Nr. | Personalnummer (sortierbar) |
-| Name | Vorname + Nachname mit Avatar-Initialen und Geschlecht |
-| Kostenstelle | Kostenstellen-Badge |
-| Kontakt | E-Mail und/oder Mobilnummer |
-| Eintritt | Eintrittsdatum (sortierbar) |
-| Status | Aktiv (grün) / Archiviert (gelb) |
-| Aktion | Pfeil-Button → Detail-Seite |
-
-**Klick auf eine Tabellenzeile** öffnet die Detail-Seite des Mitarbeiters.
+    Angrenzend: [Admin 1 – Benutzer und Rollen](https://hilfe.hub.glattt.com/admin/1/) (Rollen,
+    Rechte, weitere Änderungen am Konto), [Admin 7 – Personal und Vergütung](https://hilfe.hub.glattt.com/admin/7/)
+    (Personalzuordnungen, Gehälter), [Team 2 – Reisekosten erfassen](https://hilfe.hub.glattt.com/team/2/).
 
 ---
 
-### Hub-Konto anlegen (Rückwärts-Link askDANTE → Hub)
+## Für Anwender — Überblick
 
-Archivierte Hub-Konten (Admin-Backend → Benutzer → „Archivieren", siehe
-`USER-ARCHIVIERUNG.md`) erscheinen in der Spalte als Badge „Archiviert" bzw.
-„Archiviert ab …" statt als grüner Haken.
+**Was das Modul leistet.** askDANTE ist die führende Quelle für Personalstammdaten (Name,
+Personalnummer, Kostenstelle, Kontakt, Ein-/Austritt, Organisationseinheiten). Der Hub
+bearbeitet diese Daten nicht, sondern zeigt sie — durchsuchbar, sortierbar, mit und ohne
+archivierte Personen — und ergänzt die eine Information, die askDANTE nicht kennt: **ob die
+Person ein Hub-Benutzerkonto hat** und mit welchen Rollen. Grundlage ist die Verknüpfung
+`users.hr_employee_id` ↔ `hr_employees.askdante_user_id`.
 
-Die Spalte **Hub-Konto** zeigt je Person, ob sie schon ein Hub-Benutzerkonto
-hat (grüner Haken mit den Rollen, Tooltip mit E-Mail). Grundlage ist die
-Verknüpfung `users.hr_employee_id` ↔ `hr_employees.askdante_user_id`.
+**Warum der Hub-Konto-Wizard.** Bis 09/2026 wurden Hub-Konten im Admin-Backend von Hand angelegt
+und danach separat mit askDANTE, Phorest und einer Bonus-Klasse verknüpft — vier Stellen, an
+denen etwas vergessen werden konnte (eine Person ohne Bonus-Klasse fehlt auf dem Bonus-Board,
+ohne askDANTE-Verknüpfung rechnet die Abwesenheitsregel mit 0 Tagen). Der Wizard aus der
+Personalübersicht legt das Konto **mit allen Verknüpfungen in einem Durchgang** an, schlägt
+Institute, Rollen, Phorest-Mitarbeiter und Bonus-Klasse vor, verknüpft ein bereits vorhandenes
+Konto statt ein Duplikat zu erzeugen und verschickt auf Wunsch sofort die Einladung
+(siehe [Einladungssystem](USER-INVITATION-SYSTEM.md)). Spätere Änderungen laufen wie gewohnt im
+Admin-Backend. Der Austritt einer Person wird über die
+[Archivierung](USER-ARCHIVIERUNG.md) abgebildet — die Übersicht zeigt dann „Archiviert" bzw.
+„Archiviert ab …" statt des grünen Hakens.
 
-Wer das Recht **Benutzer erstellen** (`create_users`, wie im Admin-Backend) hat,
-sieht bei Personen ohne Konto den Button **Konto anlegen**. Er öffnet einen
-Wizard in fünf Schritten, alles vorbelegt und änderbar:
+**Wo was erledigt wird:**
 
-1. **Stammdaten** — Name und E-Mail aus askDANTE, Stamm-Institut und erlaubte
-   Institute aus dem askDANTE-Standort (bzw. Team-Namen), Auto-Logout.
-   Passt ein vorhandenes Hub-Konto ohne Verknüpfung (gleiche E-Mail oder
-   gleicher Name), bietet der Wizard **„Dieses Konto verknüpfen"** an — dann
-   entsteht kein Duplikat, das Konto bekommt nur die askDANTE-Verknüpfung.
-2. **Rollen** — Vorschlag aus Team/E-Mail: „leitung" → Leitung, Office/
-   Management → Büro bzw. Admin, sonst Institutsrolle (bzw. Standardrolle).
-3. **Verknüpfungen** — Phorest-Mitarbeiter (Vorschlag per Namensabgleich, nur
-   eindeutige Treffer; bereits verknüpfte sind ausgeblendet), askDANTE fest auf
-   diese Person, Schalter „HR-Kennzahlen erfassen".
-4. **Bonus-Klasse** — Vorschlag passend zur Rolle, mit „Gültig ab" (Standard:
-   Monatsanfang). Ohne Klasse erscheint die Person nicht auf dem Bonus-Board.
-5. **Abschluss** — Zusammenfassung, **Einladung per E-Mail** ja/nein (Link 7 Tage
-   gültig, Person legt PIN und Passwort selbst fest), optional PIN direkt setzen.
+| Vorgang | Anleitung |
+|---|---|
+| Personalübersicht lesen, suchen, sortieren, Archivierte einblenden | Team 1 |
+| Detailseite einer Person (Stammdaten, Kontakt, Beschäftigung, Organisationseinheiten) | Team 1 |
+| Hub-Konto anlegen, vorhandenes Konto verknüpfen, Einladung senden | Team 1 |
+| Austritt: Konto archivieren | Team 1 |
+| Rollen und Rechte ändern, Konto im Admin-Backend pflegen | Admin 1 |
+| Gehälter, Bonus-Auszahlungen, Personalzuordnungen | Admin 7 |
+| Reisekosten erfassen und freigeben | Team 2, Team 3 |
 
-Nach dem Anlegen zeigt die Zeile sofort den Haken; Toast bestätigt Konto und
-Einladung. Spätere Änderungen (weitere Rollen, Klassenwechsel) laufen wie
-gewohnt im Admin-Backend.
+---
 
-### Mitarbeiter-Detail
+## Für Entwickler
 
-Die Detail-Seite zeigt alle Informationen zu einem Mitarbeiter in einem Sidebar-Tab-Layout, identisch zum [Kundenprofil](CLIENT-DETAIL-MODULE.md).
+### Fachregeln der Übersicht und Detailseite
 
-**URL:** `/hub/staff/{staffId}`
+- **Datenquelle askDANTE, kein Schreiben.** Alle Personendaten kommen aus der askDANTE REST
+  API (siehe [Datenquelle](#datenquelle)); der Hub cacht sie 5 Minuten und ändert sie nicht.
+- **Suche** läuft clientseitig (debounced, 300 ms) über Name, Personalnummer, E-Mail,
+  Kostenstelle und externe ID. **Sortierung** per Klick auf den Spaltenkopf, Standard Nachname
+  aufsteigend. **Archiv-Toggle** blendet archivierte Mitarbeiter ein (Standard: ausgeblendet,
+  eigener Cache-Key). **Pagination** 25 Einträge je Seite. Klick auf eine Zeile öffnet die
+  Detailseite.
+- **Spalten der Übersicht:** Nr. (Personalnummer, sortierbar) · Name (Vor-/Nachname mit
+  Avatar-Initialen und Geschlecht) · Kostenstelle (Badge) · Kontakt (E-Mail und/oder Mobil) ·
+  Eintritt (sortierbar) · Status (Aktiv grün / Archiviert gelb) · **Hub-Konto** (grüner Haken
+  mit Rollen und E-Mail-Tooltip, „Konto anlegen"-Button, oder Badge „Archiviert" / „Archiviert
+  ab …" für archivierte Hub-Konten) · Aktion (Pfeil zur Detailseite).
+- **Detailseite** im Sidebar-Tab-Layout wie das [Kundenprofil](CLIENT-DETAIL-MODULE.md), Header
+  mit Zurück-Button, Name, Aktiv/Archiviert-Badge, Personalnummer und Kostenstelle als Subtitle:
 
-#### Tabs
-
-| Tab | Beschreibung |
+| Tab | Inhalt |
 |-----|-------------|
 | **Übersicht** | Stammdaten: Avatar, Name, Personalnummer, Externe ID, Geburtsdatum, Geschlecht, Ein-/Austrittsdatum, Status, Kommentar |
 | **Kontakt** | Kontaktdaten (E-Mail, Mobil, Festnetz, Sprache) und Adresse (Straße, PLZ, Stadt, Land) |
 | **Beschäftigung** | Kostenstelle, Externe ID, Ein-/Austrittsdatum, Probezeit-Ende, Status + Online-Zugang (E-Mail, Sprache, Rollen-ID) |
 | **Organisationseinheiten** | Zugeordnete Organisationseinheiten aus askDANTE (Lazy-Loading bei Tab-Aktivierung) |
 
-**Header:** Zurück-Button, Mitarbeitername, Aktiv/Archiviert-Badge, Personalnummer und Kostenstelle als Subtitle.
+### Fachregeln des Hub-Konto-Wizards
 
----
+Der Button **Konto anlegen** erscheint bei Personen ohne Konto für Nutzer mit dem Recht
+**Benutzer erstellen** (`create_users`, dasselbe Recht wie im Admin-Backend). Der Wizard hat
+fünf Schritte, alles vorbelegt und änderbar:
 
-## Entwicklerdokumentation
+1. **Stammdaten** — Name und E-Mail aus askDANTE, Stamm-Institut und erlaubte Institute aus dem
+   askDANTE-Standort (bzw. Team-Namen), Auto-Logout. Passt ein vorhandenes Hub-Konto ohne
+   Verknüpfung (gleiche E-Mail oder gleicher Name), bietet der Wizard **„Dieses Konto
+   verknüpfen"** an — dann entsteht kein Duplikat, das Konto bekommt nur die
+   askDANTE-Verknüpfung. Kandidaten sind nur **aktive** (nicht archivierte) Konten.
+2. **Rollen** — Vorschlag aus Team/E-Mail: „leitung" → Leitung, Office/Management → Büro bzw.
+   Admin, sonst Institutsrolle (bzw. Standardrolle). Der Vorschlag setzt die Prod-Rollen voraus
+   (siehe Projektwissen „Prod-Rollen ≠ Seeder-Rollen").
+3. **Verknüpfungen** — Phorest-Mitarbeiter (Vorschlag per Namensabgleich, nur eindeutige
+   Treffer; bereits verknüpfte sind ausgeblendet), askDANTE fest auf diese Person, Schalter
+   „HR-Kennzahlen erfassen" (`kpi_relevant`).
+4. **Bonus-Klasse** — Vorschlag passend zur Rolle, mit „Gültig ab" (Standard: Monatsanfang).
+   **Ohne Klasse erscheint die Person nicht auf dem Bonus-Board.**
+5. **Abschluss** — Zusammenfassung, **Einladung per E-Mail** ja/nein (Link 7 Tage gültig, Person
+   legt PIN und Passwort selbst fest), optional PIN direkt setzen. Ohne Passwort bekommt das
+   Konto ein Zufallspasswort — der Zugang läuft dann über die Einladung.
+
+Nach dem Anlegen zeigt die Zeile sofort den Haken; ein Toast bestätigt Konto und Einladung.
+Anlage und Einladung laufen **ausschließlich** über `UserProvisioningService` bzw.
+`UserInvitationService` — dieselben Klassen, die auch das Admin-Backend nutzt.
 
 ### Dateistruktur
 
@@ -101,18 +113,27 @@ resources/views/hub/
 └── staff/
     ├── detail.blade.php                      # Detailseite (Alpine.js staffDetailPage)
     └── partials/
-        ├── table.blade.php                   # Tabellen-Partial (Übersicht)
+        ├── table.blade.php                   # Tabellen-Partial (Übersicht, inkl. Spalte Hub-Konto)
         ├── pagination.blade.php              # Pagination-Partial (Übersicht)
         ├── detail-overview.blade.php         # Tab: Stammdaten
         ├── detail-contact.blade.php          # Tab: Kontakt + Adresse
         ├── detail-employment.blade.php       # Tab: Beschäftigung + Online-Zugang
         └── detail-org-units.blade.php        # Tab: Organisationseinheiten
 
+resources/views/components/
+└── hub-user-wizard.blade.php                 # Hub-Konto-Wizard (Muster Dashboard-Wizard)
+
+public/js/
+└── hub-user-wizard.js                        # Wizard-Alpine (window.openHubUserWizard(staff))
+
 app/Http/Controllers/
-└── StaffController.php                       # API-Controller (index, show, units)
+├── StaffController.php                       # API-Controller (index, show, units)
+└── HubUserProvisioningController.php         # Wizard-Endpunkte (options, prefill, store, link)
 
 app/Services/
-└── AskDanteApiService.php                    # askDANTE API-Service (getUsers, getUser, etc.)
+├── AskDanteApiService.php                    # askDANTE API-Service (getUsers, getUser, etc.)
+├── UserProvisioningService.php               # Konto anlegen / verknüpfen / vorbelegen
+└── UserInvitationService.php                 # Einladung (Token, Mail)
 
 config/
 └── askdante.php                              # Endpoint-Konfiguration
@@ -180,6 +201,9 @@ Cache::remember('askdante_staff_archived', 300, fn () => $this->askDante->getUse
 #### `index(Request $request): JsonResponse`
 
 Liefert alle Mitarbeiter als JSON. Unterstützt den Query-Parameter `includeArchived=true`.
+Zusätzlich enthält die Antwort `hub_accounts` (askDANTE-ID → Konto-Kurzform aus
+`UserProvisioningService::accountsByAskdanteId()`, inkl. `archived` + `archive_label`) für die
+Spalte „Hub-Konto".
 
 ```json
 {
@@ -239,7 +263,7 @@ Liefert die Organisationseinheiten, denen ein Mitarbeiter zugeordnet ist.
 
 ---
 
-### Hub-Konto-Wizard (Entwickler)
+### Hub-Konto-Wizard (Umsetzung)
 
 - **Endpunkte** (Gate `can:create_users`, `HubUserProvisioningController`):
   `GET /hub/staff/hub-account/options` (Rollen, Institute in Institut-Reihenfolge,
@@ -253,12 +277,13 @@ Liefert die Organisationseinheiten, denen ein Mitarbeiter zugeordnet ist.
   `user_bonus_classes`; ohne Passwort ein Zufallspasswort, Zugang über die
   Einladung), `link()`, `prefill()` (Institut über `hr_employment_periods` →
   `hr_locations.branch_id`, Rückfall Team-Name; Namens-Schlüssel aus
-  `HrStaffLinkService::nameKeys()`), `accountsByAskdanteId()` für die Spalte.
+  `HrStaffLinkService::nameKeys()`), `accountsByAskdanteId()` für die Spalte,
+  `userSummary()` mit `archived` + `archive_label`. Verknüpfungs-Kandidaten
+  (`existingCandidates`) sind nur aktive Konten (`User::active()`).
 - **`App\Services\UserInvitationService`** — Einladung (vorherige offene
   ungültig, Token, Mail `emails.user-invitation`); die Filament-Aktion in
-  `UsersTable` nutzt denselben Service.
-- **Frontend**: `StaffController@index` liefert zusätzlich `hub_accounts`
-  (askDANTE-ID → Konto-Kurzform); `resources/views/components/hub-user-wizard.blade.php`
+  `UsersTable` nutzt denselben Service. Details: [Einladungssystem](USER-INVITATION-SYSTEM.md).
+- **Frontend**: `resources/views/components/hub-user-wizard.blade.php`
   + `public/js/hub-user-wizard.js` (Muster Dashboard-Wizard, `window.openHubUserWizard(staff)`,
   Event `hub-user-provisioned`), Spalte in `hub/staff/partials/table.blade.php`.
 - **Tests**: `tests/Feature/HubUserProvisioningTest.php` (Rechte, Vorbelegung,

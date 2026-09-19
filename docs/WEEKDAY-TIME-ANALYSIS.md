@@ -1,40 +1,56 @@
-# Wochentag & Uhrzeit Analyse - Dokumentation
+# Wochentag & Uhrzeit Analyse
 
-> **Update 07/2026 (Statistik-Bauplan):** Die Karte hat jetzt ein Karten-Register
-> (Heatmap ⇄ Zahlen-Tabelle), ein Info-Panel, Skeleton statt Spinner und einen
-> Fehlerzustand mit „Erneut laden". Die Werte sind zusätzlich als CSV-Quelle
-> `consultation-weekday-time` exportierbar. Gesamtübersicht der Seite:
-> [PAST-CONSULTATIONS.md](PAST-CONSULTATIONS.md).
+Heatmap-Karte auf der Berichtsseite [Vergangene Beratungsgespräche](PAST-CONSULTATIONS.md):
+**wann** die meisten Beratungsgespräche stattfinden, je Wochentag und Uhrzeit. Diese Seite beschreibt
+**Endpunkt, Parameter, Response-Format, Dateien und Farbskala**; die Bedienung Schritt für Schritt
+steht im Nutzerhandbuch.
 
-## Übersicht
+!!! nutzerhandbuch "Bedienung: Berichte 3 – Vergangene Beratungsgespräche"
+    [hilfe.hub.glattt.com/berichte/3/](https://hilfe.hub.glattt.com/berichte/3/) — die Seite, auf der
+    diese Karte sitzt. Rahmen aller Berichtsseiten (Zeitraum und Standort, Kennzahlen-Zeile, Diagramm
+    oder Tabelle, Export): [Berichte 0](https://hilfe.hub.glattt.com/berichte/0/).
 
-Die **Wochentag & Uhrzeit Analyse** ist eine Heatmap-Visualisierung, die zeigt, wann die meisten Beratungsgespräche stattfinden. Sie hilft dabei, "Sweetspots" zu identifizieren - die beliebtesten Tage und Uhrzeiten für Beratungen.
+    **Für diese Einzelkarte gibt es noch keine eigene Klickanleitung — Anleitung folgt.** Bis dahin:
+    Serien-Übersicht [hilfe.hub.glattt.com/berichte/](https://hilfe.hub.glattt.com/berichte/).
 
-## Features
+---
 
-### Heatmap-Visualisierung
-- **Y-Achse**: Wochentage (Montag - Sonntag)
-- **X-Achse**: Uhrzeiten (7:00 - 20:00)
+## Für Anwender — Überblick
+
+**Was die Karte beantwortet.** Zu welchen Zeiten laufen die Beratungsgespräche — die „Sweetspots".
+Die Heatmap zeigt je Wochentag (Mo–So) und Stunde (7–20 Uhr), wie viele Termine dort stattgefunden
+haben; je dunkler die Zelle, desto mehr. Filterbar nach Zeitraum (3 / 6 / 12 Monate oder alle Daten,
+Standard: 6 Monate), der globale Standortfilter wirkt mit. Seit 07/2026 liegt hinter dem
+Karten-Register zusätzlich die Zahlen-Tabelle, und die Werte sind über den CSV-Export abrufbar.
+
+Automatisch abgeleitet werden vier Befunde: beliebtester Tag, beliebteste Uhrzeit, bester Slot
+(Tag + Uhrzeit) und ruhigster Tag.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Die Seite öffnen, auf der die Karte sitzt | Berichte 3 |
+| Zeitraum und Standort, Diagramm/Tabelle, Export | Berichte 0 |
+| Diese Einzelkarte Schritt für Schritt | Anleitung folgt (Serie Berichte) |
+
+---
+
+## Für Entwickler
+
+### Aufbau der Karte
+
+- **Y-Achse**: Wochentage (Montag – Sonntag)
+- **X-Achse**: Uhrzeiten (7:00 – 20:00)
 - **Farbintensität**: Je dunkler die Zelle, desto mehr Termine
-
-### Zeitraum-Filter
-- Letzte 3 Monate
-- Letzte 6 Monate (Standard)
-- Letzte 12 Monate
-- Alle Daten
-
-### Automatische Sweetspot-Erkennung
-Das System analysiert automatisch:
-- **Beliebtester Tag**: Der Wochentag mit den meisten Terminen
-- **Beliebteste Uhrzeit**: Die Stunde mit den meisten Terminen
-- **Bester Slot**: Die Kombination aus Tag + Uhrzeit mit den meisten Terminen
-- **Ruhigster Tag**: Der Wochentag mit den wenigsten Terminen
-
-### Integration mit Branch-Auswahl
+- **Zeitraum-Filter**: Letzte 3 / 6 / 12 Monate, Alle Daten (Standard: 6 Monate)
+- **Sweetspot-Erkennung**: beliebtester Tag, beliebteste Uhrzeit, bester Slot, ruhigster Tag
 - Reagiert auf die globale Branch-Auswahl im Header
-- Zeigt Daten für alle Standorte oder einzelne Standorte
 
-## Technische Details
+Seit dem Statistik-Bauplan-Umbau 07/2026 hat die Karte ein **Karten-Register** (Heatmap ⇄
+Zahlen-Tabelle), ein **Info-Panel**, **Skeleton statt Spinner** und einen **Fehlerzustand** mit
+„Erneut laden"; die Werte sind zusätzlich als CSV-Quelle `consultation-weekday-time` exportierbar.
+Gesamtübersicht der Seite: [PAST-CONSULTATIONS.md](PAST-CONSULTATIONS.md).
 
 ### Backend
 - **Route**: `GET /phorest/reports/historic-appointments/weekday-time-analysis`
@@ -84,25 +100,19 @@ Das System analysiert automatisch:
 - **JavaScript-Datei**: `/public/js/weekday-time-analysis.js`
 - **Integration**: Eingebettet in `past-consultations.blade.php`
 
-## Verwendung
 
-Die Komponente wird automatisch auf der Seite "Vergangene Beratungsgespräche" angezeigt, sobald monatliche Statistiken geladen sind.
-
-### Interaktion
-1. **Zeitraum ändern**: Dropdown oben rechts
-2. **Slot-Details**: Klick auf eine Heatmap-Zelle (zeigt Details im Console-Log)
-3. **Standort filtern**: Über globales Header-Dropdown
-
-## Dateien
+### Dateien
 
 - `app/Http/Controllers/ReportController.php` - Backend-Logik (Methode: `weekdayTimeAnalysis`)
 - `routes/web.php` - Route-Definition
 - `public/js/weekday-time-analysis.js` - Alpine.js Frontend-Komponente
 - `resources/views/hub/reports/past-consultations.blade.php` - Blade-Integration
 
-## Design
+### Design
 
 Die Heatmap verwendet die CSS-Variable `--color-primary-rgb` für die Farbskala, wodurch sie automatisch mit dem Theme (Light/Dark Mode) kompatibel ist.
+
+---
 
 ## Verwandte Analysen
 

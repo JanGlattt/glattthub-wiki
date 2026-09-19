@@ -1,37 +1,49 @@
 # Globaler Standortfilter & mobile Navigation
 
-Stand: 13.08.2026
+Stand: 19.09.2026
 
-## Für Endanwender
+Der global gewählte Standort (Sidebar → Instituts-Kachel, mobil im Mehr-Sheet)
+filtert fast alle Ansichten des Hubs; die Auswahl liegt im localStorage und ist
+seit 08/2026 an den angemeldeten User gekoppelt. Diese Seite beschreibt
+**Speicherung, User-Kopplung, Validierung, die Kommunikation der Komponenten
+über `branchChanged` und die mobile Bottom-Nav**; die Bedienung Schritt für
+Schritt steht im Nutzerhandbuch.
 
-### Was macht der Standortfilter?
+!!! nutzerhandbuch "Bedienung: Grundlagen 2 – Standort, Suche & Mitteilungen"
+    [hilfe.hub.glattt.com/grundlagen/2/](https://hilfe.hub.glattt.com/grundlagen/2/) — Standort wählen und was der Filter bewirkt.
 
-Der global gewählte Standort (Sidebar → Instituts-Kachel) filtert fast alle
-Ansichten des Hubs: Berichte, Termine, Mitteilungen, Hintergrundbild und
-Logo-Icon. „Alle Standorte" zeigt die Daten aller Institute zusammen.
+    Angrenzend: [Grundlagen 4 – Auf dem Handy und Tablet](https://hilfe.hub.glattt.com/grundlagen/4/) (Standortwechsel und Abmelden im Mehr-Menü), [Betrieb 2 – Ein Institut pflegen](https://hilfe.hub.glattt.com/betrieb/2/) (Institut aus Übersichten ausblenden).
 
-**Ausgeblendete Institute (seit 09/2026):** Im Institut-Modul kann ein Standort
-„aus Übersichten ausgeblendet" werden (z.B. Testbetrieb vor der Eröffnung). Er
-zählt dann nicht mehr in „Alle Standorte", bleibt aber in der Standortliste
-wählbar und trägt dort das Badge „Ausgeblendet". Details und Regelwerk
-(`App\Support\BranchVisibility`): `INSTITUTE-MODULE.md`, Abschnitt „Institute
-aus Übersichten ausblenden".
+---
 
-Die Auswahl wird **im Browser gespeichert** (localStorage) und bleibt damit
-auch nach einem Ab- und Wiederanmelden erhalten — sie gehört aber seit
-08/2026 **dem angemeldeten User**: Meldet sich am selben Gerät jemand anderes
-an, startet er mit seinem eigenen Standard (Stamm-Institut bzw.
-„Alle Standorte") und erbt nicht mehr die Auswahl des Vorgängers.
+## Für Anwender — Überblick
 
-### Standortwechsel und Abmelden auf dem Smartphone
+**Was der Standortfilter leistet.** Der einmal gewählte Standort gilt für fast alle
+Ansichten des Hubs — Berichte, Termine, Mitteilungen, Hintergrundbild und
+Logo-Icon. „Alle Standorte" zeigt die Daten aller Institute zusammen. Die Auswahl
+bleibt im Browser gespeichert, auch über ein Ab- und Wiederanmelden hinweg.
 
-Im Mehr-Sheet der Bottom-Navigation (siehe `MOBILE-DESIGN.md`) gibt es dafür
-zwei Stellen:
+**Grundsätze:**
 
-- **Standort** (Utilities-Zeile) — öffnet ein Auswahl-Sheet mit
-  „Alle Standorte" und allen Instituten (identisch zur Instituts-Kachel der
-  Sidebar). Das Icon des Eintrags zeigt immer den aktuell gewählten Standort.
-- **Abmelden** (Profil-Zeile) — meldet ab und setzt den Standortfilter zurück.
+- **Die Auswahl gehört dem angemeldeten User** (seit 08/2026). Meldet sich am
+  selben Gerät jemand anderes an, startet er mit seinem eigenen Standard
+  (Stamm-Institut bzw. „Alle Standorte") und erbt nicht die Auswahl des Vorgängers.
+- **Ausgeblendete Institute** (seit 09/2026) zählen nicht in „Alle Standorte",
+  bleiben aber in der Standortliste wählbar und tragen dort das Badge
+  „Ausgeblendet" — gedacht für den Testbetrieb vor einer Eröffnung. Regelwerk
+  (`App\Support\BranchVisibility`): `INSTITUTE-MODULE.md`, Abschnitt „Institute
+  aus Übersichten ausblenden".
+- **Abmelden setzt den Standortfilter zurück** — am Desktop wie am Smartphone.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Standort wählen (Instituts-Kachel der Seitenleiste) | Grundlagen 2 |
+| Standort und Abmelden am Smartphone (Mehr-Menü) | Grundlagen 4 |
+| Institut aus Übersichten ausblenden | Betrieb 2 |
+
+---
 
 ## Für Entwickler
 
@@ -72,6 +84,12 @@ als Kompatibilitäts-Bridge für Alt-JS gepflegt. Report-Karten hören ebenfalls
 auf `branchChanged`.
 
 ### Mobile Bottom-Nav
+
+Im Mehr-Sheet der Bottom-Navigation (siehe `MOBILE-DESIGN.md`) gibt es zwei
+Stellen: **Standort** (Utilities-Zeile) öffnet eine Auswahl mit „Alle Standorte"
+und allen Instituten (identisch zur Instituts-Kachel der Sidebar); das Icon des
+Eintrags zeigt immer den aktuell gewählten Standort. **Abmelden** (Profil-Zeile)
+meldet ab und setzt den Standortfilter zurück.
 
 - Standort-Sheet: Markup im Bottom-Nav-Partial (per `x-teleport` ans `<body>`),
   Styles unter „STANDORT-AUSWAHL ALS BOTTOM-SHEET" in

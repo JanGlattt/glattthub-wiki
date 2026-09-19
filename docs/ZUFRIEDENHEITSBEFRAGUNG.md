@@ -1,59 +1,118 @@
 # Zufriedenheitsbefragung
 
-Zufriedenheitsbefragung nach Paketende: Kundinnen mit abgeschlossenem Behandlungspaket
-werden — **manuell ausgelöst** — per WhatsApp oder E-Mail um eine Sternebewertung gebeten.
-Je nach Bewertung folgt der Google-Bewertungslink (4–5 ★) oder ein Rückruf-Angebot (≤3 ★),
-dazu immer eine Auffrisch-Anfrage und der Freunde-werben-Hinweis.
+Zufriedenheitsbefragung nach Paketende: Kundinnen mit abgeschlossenem Behandlungspaket werden —
+**manuell ausgelöst** — per WhatsApp oder E-Mail um eine Sternebewertung gebeten. Je nach Bewertung
+folgt der Google-Bewertungslink (4–5 ★) oder ein Rückruf-Angebot (≤3 ★), dazu immer eine
+Auffrisch-Anfrage und der Freunde-werben-Hinweis. Diese Seite beschreibt **Fachregeln,
+Kandidaten-Erkennung, Versand, Datenmodell und Gotchas**; die Bedienung Schritt für Schritt steht
+im Nutzerhandbuch.
 
-> **Kern-Entscheidung (Jan, 16.08.2026):** KEIN automatischer Versand. Der 4-Wochen-Trigger
-> baut nur eine Kandidatenliste; das Team entscheidet je Kundin — unzufriedene Kundinnen
-> sollen bewusst keine Befragung erhalten.
+!!! nutzerhandbuch "Bedienung: Verkauf 4 – Zufriedenheit nach Paketende"
+    [hilfe.hub.glattt.com/verkauf/4/](https://hilfe.hub.glattt.com/verkauf/4/) — offene
+    Kandidatinnen sichten, Befragung senden oder überspringen, Folgeaufgaben abarbeiten.
 
-## Für Endanwender
+    Angrenzend: [Berichte 8 – Der glattt-Kunde](https://hilfe.hub.glattt.com/berichte/8/)
+    (Statistik-Karte „Zufriedenheit nach Paketende"),
+    [Admin 4 – Erinnerungen und WhatsApp](https://hilfe.hub.glattt.com/admin/4/) (Bewertungsanfragen —
+    dort wird der Google-Bewertungslink je Standort gepflegt),
+    [Verkauf 2 – Freunde werben](https://hilfe.hub.glattt.com/verkauf/2/). Die Admin-Konfiguration der
+    Befragung (Kanal, Template, E-Mail-Vorlage) hat noch keine eigene Anleitung — Serie
+    [Admin](https://hilfe.hub.glattt.com/admin/).
 
-### Hub-Seite „Zufriedenheit" (`/hub/zufriedenheit`)
+## Inhaltsverzeichnis
 
-Sichtbar mit dem Recht **Zufriedenheitsbefragung verwalten** (Institute + Büro); die
-Datensichtbarkeit begrenzt auf die eigenen Standorte, der Sidebar-Standortfilter wirkt zusätzlich.
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Fachregeln](#fachregeln)
+    - [Admin-Konfiguration & Meta-Template](#admin-konfiguration-meta-template)
+    - [Dateien](#dateien)
+    - [Datenmodell & Ablauf](#datenmodell-ablauf)
+    - [Gotchas](#gotchas)
+    - [Verweise](#verweise)
 
-- **Kandidatinnen**: Kundinnen, deren Paket vor mindestens 4 Wochen **durchbehandelt** war
-  (alle Einheiten verbraucht), ohne Folgetermin und ohne weiteres aktives Paket. Kundinnen
-  mit einem Widerruf in der Historie werden **markiert, nicht versteckt** — die Entscheidung
-  liegt beim Team. Weil Kundinnen fast immer mehrere Abos haben (im Schnitt 2,5 Körperzonen),
-  bündelt **eine Zeile alle gemeinsam beendeten Pakete** — die Paket-Spalte zeigt z.B.
-  „Abo.SEPA CRM 2x9er — Beine, Bikinizone, Intim (3)".
-  - **Senden**: löst den Versand sofort aus (Bestätigungs-Dialog). WhatsApp wird bevorzugt,
-    sonst E-Mail — je nach Marketing-Einwilligung im Phorest-Kundenprofil. Je Kundin nur einmal.
-  - **Überspringen**: mit Pflicht-Begründung, im Verlauf nachvollziehbar; „Zurückholen" ist möglich.
-- **Offene Folgeaufgaben**: Rückrufwünsche (mit Nummer) und Auffrisch-Anfragen aus den
-  Antworten — mit „Erledigt"-Haken. Zusätzlich wird das Institut sofort benachrichtigt
-  (In-App/Push; über die Benachrichtigungs-Regeln auch konfigurierbar).
-- **Verlauf**: alles Versendete (mit Antwort), Übersprungene und Fehlversuche (mit Grund,
-  z.B. fehlende Einwilligung — erneut auslösbar).
+---
 
-### Befragungs-Seite (Kundin)
+## Für Anwender — Überblick
+
+**Was das Modul leistet.** Der Hub erkennt Kundinnen, deren Paket seit mindestens vier Wochen
+durchbehandelt ist, und stellt sie auf der Seite **Zufriedenheit** (`/hub/zufriedenheit`) als
+Kandidatinnen bereit. Das Team entscheidet je Kundin, ob eine Befragung rausgeht oder — mit
+Begründung — übersprungen wird; versendet wird sofort, bevorzugt per WhatsApp, sonst per E-Mail,
+je nach Marketing-Einwilligung im Phorest-Profil. Antworten mit Rückrufwunsch oder Auffrisch-Anfrage
+erscheinen als offene Folgeaufgaben und lösen zusätzlich eine Benachrichtigung ans Institut aus.
+
+> **Kern-Entscheidung (Jan, 16.08.2026):** KEIN automatischer Versand. Der 4-Wochen-Trigger baut nur
+> eine Kandidatenliste; das Team entscheidet je Kundin — unzufriedene Kundinnen sollen bewusst keine
+> Befragung erhalten.
+
+**Grundsätze:**
+
+- **Je Kundin genau eine Befragung**, und eine Zeile bündelt alle gemeinsam beendeten Pakete (im
+  Schnitt hat eine Kundin 2,5 Körperzonen).
+- **Kandidatin ist nur, wer durchbehandelt ist** (alle Einheiten verbraucht), ohne Folgetermin und
+  ohne weiteres aktives Paket; verfallene Pakete zählen bewusst nicht.
+- **Widerruf in der Historie wird markiert, nicht versteckt** — die Entscheidung liegt beim Team.
+- **Der persönliche Link gilt 30 Tage**, die abgegebene Bewertung ist unveränderlich; bei 4–5 ★
+  folgt der Google-Link, bei ≤3 ★ das Rückruf-Angebot.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Kandidatinnen sichten, Widerruf-Markierung, Paket-Spalte lesen | Verkauf 4 |
+| Befragung senden, überspringen (mit Begründung), zurückholen, Fehlversuche erneut auslösen | Verkauf 4 |
+| Rückrufwünsche und Auffrisch-Anfragen erledigen, Verlauf lesen | Verkauf 4 |
+| Auswertung (Sterne je Monat, Instituts-Vergleich, Kennzahlen, CSV-Export) | Berichte 8 |
+| Google-Bewertungslink je Standort pflegen (Bewertungs-WhatsApp) | Admin 4 |
+| Kanal, Meta-Template, Variablen und E-Mail-Vorlage je Standort konfigurieren | Serie Admin (noch ohne eigene Anleitung) |
+
+---
+
+## Für Entwickler
+
+### Fachregeln
+
+**Hub-Seite „Zufriedenheit" (`/hub/zufriedenheit`)**
+
+- Sichtbar mit dem Recht **Zufriedenheitsbefragung verwalten** (`manage_satisfaction_surveys`; Institute
+  + Büro); die Datensichtbarkeit begrenzt auf die eigenen Standorte, der Sidebar-Standortfilter wirkt
+  zusätzlich.
+- **Kandidatinnen**: Kundinnen, deren Paket vor mindestens 4 Wochen **durchbehandelt** war (alle
+  Einheiten verbraucht), ohne Folgetermin und ohne weiteres aktives Paket. Kundinnen mit einem Widerruf
+  in der Historie werden **markiert, nicht versteckt**. Eine Zeile bündelt **alle gemeinsam beendeten
+  Pakete** — die Paket-Spalte zeigt z.B. „Abo.SEPA CRM 2x9er — Beine, Bikinizone, Intim (3)".
+- **Senden** löst den Versand sofort aus (Bestätigungs-Dialog). WhatsApp wird bevorzugt, sonst E-Mail —
+  je nach Marketing-Einwilligung im Phorest-Kundenprofil. Je Kundin nur einmal.
+- **Überspringen** nur mit Pflicht-Begründung, im Verlauf nachvollziehbar; „Zurückholen" ist möglich.
+- **Offene Folgeaufgaben**: Rückrufwünsche (mit Nummer) und Auffrisch-Anfragen aus den Antworten — mit
+  „Erledigt"-Haken. Zusätzlich wird das Institut sofort benachrichtigt (In-App/Push; über die
+  Benachrichtigungs-Regeln auch konfigurierbar).
+- **Verlauf**: alles Versendete (mit Antwort), Übersprungene und Fehlversuche (mit Grund, z.B. fehlende
+  Einwilligung — erneut auslösbar).
+
+**Befragungs-Seite (Kundin)**
 
 Persönlicher Link (30 Tage gültig), mobil optimiert, nicht indexierbar: Sternebewertung 1–5 +
-Freitext. Danach je nach Bewertung Google-Link bzw. Rückruf-Angebot, Auffrisch-Anfrage
-(das Institut meldet sich — bewusst kein Direktkauf) und der Freunde-werben-Hinweis (50 €/50 €).
-Beantwortete Befragungen bleiben über den Link erreichbar, die Bewertung ist unveränderlich.
+Freitext. Danach je nach Bewertung Google-Link bzw. Rückruf-Angebot, Auffrisch-Anfrage (das Institut
+meldet sich — bewusst kein Direktkauf) und der Freunde-werben-Hinweis (50 €/50 €). Beantwortete
+Befragungen bleiben über den Link erreichbar, die Bewertung ist unveränderlich.
 
-### Auswertung & Export
+**Auswertung & Export**
 
-Statistik-Karte **„Zufriedenheit nach Paketende"** auf „Der glattt-Kunde" (und im Eigenen
-Dashboard wählbar): Sterne-Verteilung je Monat + Ø-Linie, Instituts-Vergleich als
-Tabellen-Lasche, Kennzahlen Ø Sterne / Antworten / Antwortquote / Rückrufwünsche.
-CSV-Export-Quelle: „Zufriedenheit nach Paketende (Bewertungen je Institut)".
+Statistik-Karte **„Zufriedenheit nach Paketende"** auf „Der glattt-Kunde" (und im Eigenen Dashboard
+wählbar): Sterne-Verteilung je Monat + Ø-Linie, Instituts-Vergleich als Tabellen-Lasche, Kennzahlen
+Ø Sterne / Antworten / Antwortquote / Rückrufwünsche. CSV-Export-Quelle: „Zufriedenheit nach
+Paketende (Bewertungen je Institut)".
 
-### Admin-Konfiguration (Filament → Integrationen → Zufriedenheitsbefragung)
+### Admin-Konfiguration & Meta-Template
 
-Je Standort: WhatsApp aktivieren, Superchat-Kanal + Meta-Template wählen, Template-Variablen
-zuordnen, optional eigene E-Mail-Vorlage (sonst Standard-Text). Der Google-Bewertungslink
-kommt aus der **Bewertungs-WhatsApp-Konfiguration** (`review_whatsapp_settings.review_url`) —
-eine Pflege-Stelle für beide Features.
+**Filament → Integrationen → Zufriedenheitsbefragung**, je Standort: WhatsApp aktivieren,
+Superchat-Kanal + Meta-Template wählen, Template-Variablen zuordnen, optional eigene E-Mail-Vorlage
+(sonst Standard-Text). Der Google-Bewertungslink kommt aus der **Bewertungs-WhatsApp-Konfiguration**
+(`review_whatsapp_settings.review_url`) — eine Pflege-Stelle für beide Features.
 
-**Meta-Template-Entwurf** (über Superchat einreichen, Kategorie Utility, URL-Button mit
-dynamischem Suffix):
+**Meta-Template-Entwurf** (über Superchat einreichen, Kategorie Utility, URL-Button mit dynamischem
+Suffix):
 
 > Hallo {{1}}, dein Behandlungspaket bei glattt ist abgeschlossen — wie zufrieden bist du
 > mit deinen Behandlungen? Über den Button kannst du uns in einer Minute Feedback geben.
@@ -62,8 +121,6 @@ dynamischem Suffix):
 > Button „Feedback geben" → `https://hub.glattt.com/shared/zufriedenheit/{{1}}` (Button-Variable = Token)
 
 Variablen-Zuordnung im Admin: Position 1 = Vorname; Button-Variable = „Nur der Link-Token".
-
-## Für Entwickler
 
 ### Dateien
 

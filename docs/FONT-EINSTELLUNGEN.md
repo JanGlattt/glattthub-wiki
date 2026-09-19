@@ -1,26 +1,46 @@
 # Schriftart-Einstellungen (Font-Switcher)
 
-Die App-Schriftart lässt sich im Admin-Backend zentral wechseln — zwischen **allen Google Fonts** (~1.900 Familien). Standard ist **Lato** (Hausschrift, seit 08/2026 — vorher Dosis). Die gewählte Schrift gilt für die gesamte Web-App (inkl. öffentlicher `/shared/*`-Seiten), alle Diagramme und alle neu erzeugten PDFs.
+Die App-Schriftart lässt sich im Admin-Backend zentral wechseln — zwischen
+**allen Google Fonts** (~1.900 Familien). Standard ist **Lato** (Hausschrift,
+seit 08/2026 — vorher Dosis). Die gewählte Schrift gilt für die gesamte Web-App
+(inkl. öffentlicher `/shared/*`-Seiten), alle Diagramme und alle neu erzeugten
+PDFs. Diese Seite beschreibt **Architektur, Design-Entscheidungen (DSGVO-konforme
+Auslieferung, dompdf auf Cloud Run), Stolperfallen bei neuen Seiten und den
+Betrieb**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
+
+!!! nutzerhandbuch "Bedienung: Admin 8 – Protokolle und Einstellungen"
+    [hilfe.hub.glattt.com/admin/8/](https://hilfe.hub.glattt.com/admin/8/) — Systemeinstellungen im Admin-Panel, darunter die Schriftart.
 
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
 
-### Schriftart wechseln
+**Was der Font-Switcher leistet.** Ein Admin wählt im Admin-Panel unter
+Einstellungen → Schriftart (Recht `manage_font_settings`) eine Google-Font-Familie
+aus, prüft sie in der Live-Vorschau und optional als Test-PDF und aktiviert sie
+mit einem Klick. Die Schrift wird einmalig heruntergeladen und ab dann vom Hub
+selbst ausgeliefert — Endanwender-Browser kontaktieren nie das Google-CDN.
+„Auf Lato zurücksetzen" stellt jederzeit die Hausschrift wieder her.
 
-1. Admin-Panel öffnen → Gruppe **Einstellungen** → **Schriftart** (benötigt die Berechtigung `manage_font_settings`).
-2. Im Auswahlfeld **Schriftfamilie** suchen — alle Google Fonts sind durchsuchbar, sortiert nach Beliebtheit. Die Live-Vorschau darunter zeigt Beispieltext (Überschrift, Zwischentitel, Fließtext mit Umlauten und Zahlen) in der gewählten Schrift.
-3. **Speichern & aktivieren** — die Schrift wird einmalig von Google Fonts heruntergeladen und ab dann von GlatttHub selbst ausgeliefert. Endanwender-Browser kontaktieren nie das Google-CDN (DSGVO).
-4. Mit **Test-PDF herunterladen** lässt sich prüfen, wie die Schrift in PDFs wirkt — es verwendet die **aktuell ausgewählte** Schrift, auch wenn sie noch nicht gespeichert wurde (die Schrift wird dafür temporär heruntergeladen, ohne etwas zu aktivieren).
-5. **Auf Lato zurücksetzen** stellt jederzeit die Hausschrift wieder her.
+**Grundsätze, die man vor einem Wechsel kennen sollte:**
 
-### Was man wissen sollte
+- **Offene Browser-Tabs** zeigen die neue Schrift erst nach dem nächsten Laden.
+- **Bereits erzeugte PDFs** bleiben unverändert — die Schrift gilt nur für neue
+  Dokumente. Das Test-PDF nutzt die **aktuell ausgewählte** Schrift, auch wenn sie
+  noch nicht gespeichert ist.
+- **E-Mails** laden in der Regel keine Webfonts; dort greift meist die
+  Ersatzschrift (Segoe UI/Arial), die gewählte Schrift steht aber im Font-Stack.
+- **Fehlende Schnitte:** Hat eine Familie kein Semibold (600), wird automatisch der
+  nächstliegende Schnitt verwendet (z. B. Medium 500).
+- **Jeder Wechsel ist eine Design-Entscheidung:** Schriften laufen unterschiedlich
+  breit — danach dichte Ansichten (Terminübersicht, Statistik-Tabellen, Buttons)
+  kurz visuell prüfen.
 
-- **Offene Browser-Tabs** zeigen die neue Schrift erst nach dem nächsten Laden der Seite.
-- **Bereits erzeugte PDFs** bleiben unverändert — die Schrift gilt nur für neue Dokumente.
-- **E-Mails**: Mail-Programme laden in der Regel keine Webfonts; dort greift meist die Ersatzschrift (Segoe UI/Arial). Die gewählte Schrift ist aber im Font-Stack hinterlegt.
-- **Fehlende Schriftschnitte**: Hat eine Familie kein Semibold (600), wird automatisch der nächstliegende Schnitt verwendet (z. B. Medium 500).
-- **Jeder Wechsel ist eine Design-Entscheidung**: Schriften laufen unterschiedlich breit — nach einem Wechsel dichte Ansichten (Terminübersicht, Statistik-Tabellen, Buttons) kurz visuell prüfen.
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Schriftart wählen, Vorschau, Test-PDF, aktivieren, zurücksetzen | Admin 8 |
 
 ---
 
@@ -30,7 +50,7 @@ Die App-Schriftart lässt sich im Admin-Backend zentral wechseln — zwischen **
 
 | Baustein | Datei | Zweck |
 |---|---|---|
-| Filament-Seite | `app/Filament/Pages/FontSettings.php` + `resources/views/filament/pages/font-settings.blade.php` | Auswahl, Live-Vorschau, Test-PDF; Gate über Permission `manage_font_settings` |
+| Filament-Seite | `app/Filament/Pages/FontSettings.php` + `resources/views/filament/pages/font-settings.blade.php` | Auswahl (durchsuchbar, nach Beliebtheit sortiert), Live-Vorschau (Überschrift, Zwischentitel, Fließtext mit Umlauten und Zahlen), Test-PDF, „Speichern & aktivieren", „Auf Lato zurücksetzen"; Gate über Permission `manage_font_settings` |
 | Katalog & Download | `app/Services/GoogleFontsService.php` | Google-Fonts-Katalog (24 h gecacht) + TTF-Download — beides **ohne API-Key** |
 | Zentrale Logik | `app/Services/FontSettingsService.php` | aktive Schrift, Web-/PDF-Einbindung, `/tmp`-Materialisierung, Cache |
 | Models | `FontSetting` (aktive Familie, neueste Zeile gewinnt), `FontFile` (TTF-Blobs in der DB) | Persistenz — DB statt Dateisystem, weil Cloud-Run-Dateisystem flüchtig ist |
@@ -38,15 +58,21 @@ Die App-Schriftart lässt sich im Admin-Backend zentral wechseln — zwischen **
 | Web-Einbindung | `resources/views/partials/app-font.blade.php` | `@font-face` + Überschreiben von `--font-primary/-heading/-body` + Font-Preload (Lato bzw. Custom); in allen Layouts, Standalone-Seiten, Fehlerseiten und via Render-Hook im **Filament-Panel** (`AdminPanelProvider`) — immer nach dem Theme-CSS |
 | PDF-Einbindung | `resources/views/pdf/partials/app-font-face.blade.php` + `FontSettingsService::pdfOptions()` | `@font-face` für dompdf + `defaultFont`/`fontDir`/`fontCache`/`chroot` |
 
+**Test-PDF:** verwendet die **aktuell ausgewählte** Schrift, auch wenn sie noch
+nicht gespeichert wurde — die Schrift wird dafür temporär heruntergeladen, ohne
+etwas zu aktivieren.
+
 ### Wichtige Design-Entscheidungen
 
 - **Route unter `/api/*`**: Der IAP-Bypass am Load Balancer gilt nur für `/api/*` und `/shared/*`. Läge die Font-Route woanders, würde Google IAP die Schrift auf den öffentlichen Shared-Seiten (Gutschein-Shop, Formulare) blockieren.
 - **Google-Endpunkte ohne API-Key**: Katalog via `fonts.google.com/metadata/fonts` (JSON mit `)]}'`-Prefix), TTF-URLs via css2-API mit Nicht-Browser-User-Agent (liefert dann `truetype` statt `woff2`).
+- **DSGVO:** Die Schrift wird einmalig von Google Fonts heruntergeladen und ab dann von GlatttHub selbst ausgeliefert — Endanwender-Browser kontaktieren nie das Google-CDN.
 - **Gewichte 400/600/700** (normal/semibold/bold). Fehlende Gewichte werden auf den nächstliegenden verfügbaren Schnitt gemappt — **Lato hat keinen 600er**, halbfett bekommt deshalb den Bold-Schnitt.
 - **dompdf & Cloud Run**: Standard- **und** Custom-Schrift werden nach `/tmp/glattthub-fonts` materialisiert; `fontDir`/`fontCache` zeigen dorthin, `chroot` wird um das Verzeichnis erweitert. Der früher committete Font-Cache in `storage/fonts` spielt keine Rolle mehr — seine Hashes hingen an absoluten Pfaden der erzeugenden Maschine, was auf Cloud Run ein Cache-Miss mit Schreibversuch ins Repo war (500er). Die Standard-Schnitte liegen als `storage/fonts/Lato-Regular.ttf` / `Lato-Bold.ttf` im Repo und werden von dort kopiert.
 - **Ein Weg für alle**: Seit 08/2026 behandeln `pdfOptions()`, `pdfFaces()` und `pdf.partials.app-font-face` Standard- und Custom-Schrift gleich. Die PDF-Templates kennen deshalb keine hart verdrahtete Schriftfamilie mehr.
 - **Fallback**: Existiert eine `font_settings`-Zeile ohne zugehörige `font_files` (Download fehlgeschlagen), fällt die App automatisch auf Lato zurück — die liegt lokal und kann nicht fehlen.
 - **Einstellungs-Cache**: `Cache::rememberForever('font-settings:active')`, wird bei jedem Wechsel invalidiert. Die Font-URLs tragen den Datei-Hash, Browser/Service-Worker holen neue Schriften daher automatisch.
+- **E-Mails:** Mail-Programme laden in der Regel keine Webfonts; die gewählte Schrift steht im Font-Stack, meist greift die Ersatzschrift (Segoe UI/Arial).
 
 ### Stolperfallen bei neuen Seiten
 
@@ -77,3 +103,4 @@ function appFontFamily() {
 - Migrationen: `2026_07_22_100000_create_font_settings_tables` (inkl. `MEDIUMBLOB`-Upgrade unter MySQL), `2026_07_22_100001_add_manage_font_settings_permission` (Permission wird Rollen mit `manage_pdf_settings` zugewiesen).
 - Staging erhält durch die nächtliche Prod-Kopie automatisch dieselbe Schrift; auf Staging lässt sich eine andere Schrift unabhängig testen (bis zur nächsten Kopie).
 - Die Live-Vorschau im Admin lädt die Schrift direkt vom Google-CDN — bewusst nur im Admin-Browser (hinter IAP), nie bei Endanwendern.
+- Offene Browser-Tabs zeigen die neue Schrift erst nach dem nächsten Laden; bereits erzeugte PDFs bleiben unverändert.

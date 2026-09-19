@@ -1,5 +1,8 @@
 # WordPress: Anfahrt auf den Standortseiten
 
+!!! info "Bedienung bleibt in diesem Wiki"
+    Die Pflege der Website glattt.com gehört nicht ins Nutzerhandbuch — das beschreibt ausschließlich den glatttHub. Die Abschnitte „Für Endanwender" auf dieser Seite sind deshalb die verbindliche Anleitung für Marketing und Website-Pflege (Entscheidung Jan, 19.09.2026).
+
 - **Plugin:** `WPglatttAnfahrt`, Version 0.6.0 (seit 18.08.2026)
 - **Repository:** `JanGlattt/WPglatttAnfahrt` (privat)
 - **Ablage:** Google Drive `2. Operations/7. IT/Wordpress-Plugins/WPAnfahrt/WPglatttAnfahrt` (+ ZIP daneben)

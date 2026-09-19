@@ -1,14 +1,61 @@
 # Zukünftige Beratungsgespräche
 
-Berichtsseite `/hub/reports/upcoming-consultations` — Übersicht über die geplanten Beratungsgespräche für heute und die nächsten 3/7/14/28 Tage inkl. Auslastung, historischen Vergleichen, freien Slots und Buchungsvorlauf.
+Berichtsseite `/hub/reports/upcoming-consultations` — Übersicht über die geplanten Beratungsgespräche
+für heute und die nächsten 3/7/14/28 Tage inkl. Auslastung, historischen Vergleichen, freien Slots
+und Buchungsvorlauf. Diese Seite beschreibt **Karten, Kennzahl-Definitionen, Datenquellen, Dateien
+und Fallstricke**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
-> **Stand 30.07.2026:** Die Seite wurde vollständig auf den verbindlichen Statistik-Bauplan (Schema Verkaufsstatistik) umgebaut — Details im Abschnitt „Bauplan-Umbau".
+!!! nutzerhandbuch "Bedienung: Berichte 2 – Zukünftige Beratungsgespräche"
+    [hilfe.hub.glattt.com/berichte/2/](https://hilfe.hub.glattt.com/berichte/2/) — Bericht öffnen,
+    die Termine lesen, Stornos im Blick, was man daraus macht.
 
-## Für Endanwender
+    Rahmen aller Berichtsseiten (Zeitraum und Standort, Kennzahlen-Zeile, Diagramm oder Tabelle,
+    Export): [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/).
+    Angrenzend: [Berichte 3 – Vergangene Beratungsgespräche](https://hilfe.hub.glattt.com/berichte/3/),
+    [Berichte 4 – Stornierte und gelöschte Termine](https://hilfe.hub.glattt.com/berichte/4/),
+    [Terminansicht 9 – Termin buchen](https://hilfe.hub.glattt.com/terminansicht/9/).
 
-### KPI-Zeile
+---
 
-Oben auf der Seite steht die personalisierbare KPI-Zeile (Drag & Drop, Zahnrad-Symbol): Heute, Nächste 3/7/14/28 Tage, Bis Monatsende, Ø Auslastung (28 Tage) und Freie Slots (28 Tage). Die Auswahl wird pro Nutzer im Browser gespeichert.
+## Für Anwender — Überblick
+
+**Was der Bericht beantwortet.** Wie voll sind die kommenden Tage? Die Seite zeigt den aktuellen
+Buchungsstand je Institut für heute und die nächsten 3, 7, 14 und 28 Tage sowie bis Monatsende,
+daneben den Kalender der nächsten Wochen mit freien Slots und Auslastungs-Ampel, die Entwicklung der
+Vorausbuchungen seit Juni 2023, einen frei wählbaren historischen Vergleichsstichtag, die freien
+Slots der nächsten drei Wochen (mit Prime-Time-Fokus), den typischen Buchungsvorlauf und die
+Uhrzeiten, zu denen überhaupt gebucht wird.
+
+**Der wichtigste Vergleich ist wochentagsgenau.** Hinter „Heute" und „3 Tage" steht jeweils direkt
+der Durchschnitt derselben Wochentage der letzten zwölf Wochen. Liegt der Ist-Wert deutlich
+darunter, fehlen Buchungen gegenüber den Vorwochen — ein flacher Kalenderschnitt wäre hier irreführend,
+weil Montag und Samstag sich stark unterscheiden. Die Rechenregel steht unten unter
+[Zeitfenster „Heute" und „3 Tage"](#zeitfenster-heute-und-3-tage-06082026).
+
+**Zwei Dinge zur Datenlage.** Die Vorschau auf freie Slots kommt **live** aus Phorest, nicht aus dem
+nächtlichen Archiv; Sonntage und regionale Feiertage sind als geschlossen markiert. Und die
+Buchungseingangsmatrix (wann gebucht wird) beruht auf dem Online-Buchungs-Tracking — sie ist erst ab
+**April 2026** belastbar und kennt keine telefonisch oder vor Ort angelegten Termine.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Bericht öffnen, Termine lesen, Stornos, Schlüsse ziehen | Berichte 2 |
+| Zeitraum und Standort, Kennzahlen-Zeile, Diagramm/Tabelle, Export | Berichte 0 |
+| Beratungen rückblickend auswerten | Berichte 3 |
+| Abgesagte Beratungstermine im Detail | Berichte 4 |
+| Einen Termin buchen | Terminansicht 9 |
+
+---
+
+## Für Entwickler
+
+### Kennzahlen-Zeile
+
+Personalisierbar über `components/kpi-dashboard` (Drag & Drop, storageKey `upcoming-consultations-kpis`,
+Auswahl im Browser gespeichert): Heute, Nächste 3/7/14/28 Tage, Bis Monatsende, Ø Auslastung
+(28 Tage) und Freie Slots (28 Tage).
 
 ### Karten der Seite
 
@@ -44,8 +91,6 @@ Jede Karte hat ein Info-Panel (ℹ️) mit Erklärung, Spaltenbeschreibung, Auff
 - Buchungseingangsmatrix (Buchungszeitpunkt je Wochentag & 3-Stunden-Block)
 
 Der frühere CSV-Direktlink an der Verlaufs-Karte wurde entfernt — er ignorierte den Standortfilter (der Endpoint `historic-booking-timeline/export` akzeptiert jetzt zusätzlich `branch_id`).
-
-## Für Entwickler
 
 ### Dateien
 

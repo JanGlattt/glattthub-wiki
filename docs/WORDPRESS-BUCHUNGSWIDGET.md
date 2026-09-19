@@ -1,5 +1,8 @@
 # 📅 WordPress-Buchungswidget (WPglatttBooking)
 
+!!! info "Bedienung bleibt in diesem Wiki"
+    Die Pflege der Website glattt.com gehört nicht ins Nutzerhandbuch — das beschreibt ausschließlich den glatttHub. Die Abschnitte „Für Endanwender" auf dieser Seite sind deshalb die verbindliche Anleitung für Marketing und Website-Pflege (Entscheidung Jan, 19.09.2026).
+
 Das Buchungswidget auf glattt.com (WordPress-Plugin `WPglatttBooking`) ist die zentrale Oberfläche, über die Kunden Beratungstermine buchen. Es gibt drei Startvarianten: fester Standort (Start-Hero), Standort-Auswahl (Kacheln) und seit 0.14.0 die **Schnellbuchung**, bei der jede Kachel ihren nächsten freien Termin zeigt und ein Klick direkt bucht. Dazu kommen serverseitige Slot-Ausdünnung und Verfügbarkeits-Prefetch.
 
 - **Plugin:** `WPglatttBooking`, Version 0.16.2
@@ -223,7 +226,6 @@ Beim Seitenaufruf werden Services + Verfügbarkeiten im Hintergrund vorgeladen, 
 - **Deploy**: Version in `wpglattt-booking.php` an **beiden** Stellen erhöhen (Header + `WPGLATTT_VER`) → ZIP hochladen. Die Version hängt als `?ver=` an CSS/JS (Cache-Busting, wichtig wegen WP Fastest Cache).
 - **Klickbare Vorschau ohne Upload**: Die Widget-Flows lassen sich lokal mit echtem Plugin-CSS/JS und gemockten AJAX-Endpunkten testen (Muster: Preview-Harness aus der Entwicklung — jQuery + Plugin-Assets inline, `jQuery.post` gemockt, Matomo/gtag/fbq-Stubs mit Event-Protokoll).
 - Matomo-seitige Verarbeitung der `Buchung/Start|Schritt 2|abgeschlossen`-Events: [MATOMO-BESUCHER-TRACKING](MATOMO-BESUCHER-TRACKING.md).
-
 
 ## Elemente im WPBakery-Editor (seit 18.08.2026, Buchungswidget 0.16.1)
 

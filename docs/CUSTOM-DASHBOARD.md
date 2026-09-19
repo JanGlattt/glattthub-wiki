@@ -4,6 +4,21 @@ Das Eigene Dashboard stellt sich jede:r Nutzer:in selbst aus den **78
 Statistiken des Hubs** zusammen — frei geordnet, in halber oder voller Breite.
 Es sind exakt dieselben Auswertungen wie auf den Report-Seiten: eine Statistik
 ist genau einmal definiert und wird an beiden Stellen identisch gerendert.
+Diese Seite beschreibt **Fachregeln, Berechtigungen, den Statistik-Katalog, die drei
+Registries, Datenmodell, Wizard, Filter-Durchreichung und den öffentlichen Link**; die
+Bedienung Schritt für Schritt gehört ins Nutzerhandbuch.
+
+!!! nutzerhandbuch "Bedienung: Serie „Berichte" — eigene Anleitung folgt (Berichte 17 geplant)"
+    [hilfe.hub.glattt.com/berichte/](https://hilfe.hub.glattt.com/berichte/) — Serien-Übersicht;
+    eine Klickanleitung zum Eigenen Dashboard (Wizard, Teilen, Link) ist als **Berichte 17 geplant**.
+    Bis dahin gilt für den Rahmen jeder Kachel
+    [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/)
+    (Zeitraum, Standort, Diagramm/Tabelle); die Kacheln selbst sind in den Anleitungen der
+    jeweiligen Berichte (Berichte 1–16) erklärt.
+
+    Angrenzend: [Grundlagen 6 – Die Startseite einrichten](https://hilfe.hub.glattt.com/grundlagen/6/)
+    (Kacheln der Startseite — ein anderes System), [Admin 1 – Benutzer und Rollen](https://hilfe.hub.glattt.com/admin/1/)
+    (Rechte `create_custom_dashboard`, `share_custom_dashboard`).
 
 !!! danger "Für Entwickler — die eine Regel"
     **Jede Statistik steht ab dem Tag ihrer Entstehung im Eigenen Dashboard.**
@@ -16,131 +31,124 @@ ist genau einmal definiert und wird an beiden Stellen identisch gerendert.
     der Dashboard-Seite. Anlegen und Ändern laufen über einen Setup-Wizard in
     vier Schritten, der als Modal auf der Berichte-Übersicht öffnet.
 
+## Inhaltsverzeichnis
+
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Fachregeln](#fachregeln)
+    - [Berechtigungen](#berechtigungen)
+    - [Verfügbare Statistiken (Katalog)](#verfugbare-statistiken-katalog)
+    - [Architektur-Überblick](#architektur-uberblick)
+    - [KpiRegistry](#kpiregistry-kennzahlen-an-einer-stelle)
+    - [ReportRegistry](#reportregistry-die-festen-berichte)
+    - [Datenbank-Schema](#datenbank-schema)
+    - [Der Setup-Wizard](#der-setup-wizard)
+    - [Filter-Durchreichung](#filter-durchreichung)
+    - [Öffentlicher Link](#offentlicher-link-wie-er-abgesichert-ist)
+    - [StatisticRegistry](#statisticregistry)
+    - [Model: CustomDashboard](#model-customdashboard)
+    - [Relevante Dateien](#relevante-dateien)
+- [Was bewusst NICHT geht](#was-bewusst-nicht-geht)
+
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
 
-### Was ist das Eigene Dashboard?
+**Was das Modul leistet.** Statt einer festen Berichtsseite baut sich jede:r eine eigene
+zusammen: welche Statistiken (aus 78 in acht Kategorien), in welcher Reihenfolge und Breite,
+und welche Kennzahlen auf der Karte des Dashboards in der Berichte-Übersicht stehen. Beliebig
+viele Dashboards je Person sind möglich — etwa eines für den Tagesbetrieb und eines für den
+Monatsabschluss. Eigene Dashboards stehen auf der Berichte-Übersicht ganz oben, als
+durchblätterbare Karten in zwei Tabs („Meine Dashboards", „Mit mir geteilt").
 
-Statt einer festen Berichtsseite baust du dir deine eigene zusammen. Du wählst:
+**Grundsätze:** Gebaut und geändert wird **ausschließlich über den Setup-Wizard** in vier
+Schritten (Name · Statistiken · Anordnen · Kurzanzeige); gespeichert wird erst am Ende, Abbrechen
+hinterlässt nichts. Der **Zeitraum** im Kopf wirkt auf alle Kacheln, die ihn anwenden können
+(Kacheln mit festem Zeitraum zeigen das sichtbar an); der **Standort** kommt wie überall aus der
+Seitenleiste. **Teilen** geht an Kolleg:innen (die es als Kopie übernehmen können) oder als Link
+ohne Anmeldung — in beiden Fällen sieht ein Empfänger nie Daten, für die ihm die Berechtigung fehlt.
+Bauen (`create_custom_dashboard`) und Teilen (`share_custom_dashboard`) sind getrennte Rechte;
+ein geteiltes Dashboard anzusehen braucht keines der beiden. Gelöschte Dashboards lassen sich
+nicht wiederherstellen.
 
-- **Welche Statistiken** angezeigt werden (aus 78 in acht Kategorien)
-- **In welcher Reihenfolge** und **in welcher Breite** (halb oder ganz)
-- **Welche Kennzahlen** auf der Übersichtskarte deines Dashboards stehen
+**Wo was erledigt wird:**
 
-Du kannst **beliebig viele Dashboards** anlegen und benennen — etwa eines für
-den Tagesbetrieb und eines für den Monatsabschluss.
-
----
-
-### Dashboard anlegen — der Wizard in vier Schritten
-
-Auf **Berichte** (`/hub/reports`) steht oben rechts der Knopf
-**„Neues Dashboard bauen"**. Er öffnet den Wizard als Fenster — du bleibst
-dabei auf der Übersicht.
-
-| Schritt | Was du machst |
+| Vorgang | Anleitung |
 |---|---|
-| **1 · Name** | Name (Pflicht) und eine Kurzbeschreibung in einem Satz. Beides steht später im Kopf des Dashboards und auf seiner Karte in der Übersicht. |
-| **2 · Statistiken** | Alle Statistiken, für die du berechtigt bist — nach Kategorie gefiltert und durchsuchbar. **Beim Überfahren einer Statistik siehst du sie rechts mit echten Zahlen**, bevor du sie wählst. |
-| **3 · Anordnen** | Die gewählten Kacheln per Drag & Drop sortieren und je Kachel halbe oder volle Breite festlegen. Gezeigt werden Platzhalter — das bleibt auch bei vielen Kacheln flüssig. |
-| **4 · Kurzanzeige** | Die Kennzahlen auswählen, die auf der Karte deines Dashboards in der Berichte-Übersicht stehen (vier sind ein guter Richtwert). Zur Wahl stehen nur Kennzahlen der in Schritt 2 gewählten Statistiken. |
-
-**Gespeichert wird erst am Ende**, in einem Rutsch. **Abbrechen verwirft alles** —
-es gibt keine halbfertigen Dashboards und keinen Entwurfsstatus. Zwischen den
-Schritten kannst du jederzeit vor und zurück.
-
-!!! tip "Ändern geht genauso"
-    **„Bearbeiten"** auf der Dashboard-Seite öffnet denselben Wizard mit dem
-    gespeicherten Stand. Einen anderen Weg gibt es bewusst nicht — so ist immer
-    klar, wo ein Dashboard geändert wird.
+| Dashboard anlegen (Wizard), bearbeiten, löschen | Anleitung folgt — Berichte 17 (geplant) |
+| Dashboard teilen: an Nutzer, per Link, Freigabe widerrufen, Kopie übernehmen | Anleitung folgt — Berichte 17 (geplant) |
+| Zeitraum und Standort einer Kachel, Diagramm/Tabelle umschalten | Berichte 0 |
+| Was eine einzelne Kachel zeigt und wie sie zu lesen ist | Anleitung des jeweiligen Berichts (Berichte 1–16) |
+| Rechte vergeben | Admin 1 |
+| Kacheln der Startseite (anderes System) | Grundlagen 6 |
 
 ---
 
-### Dashboard öffnen und nutzen
+## Für Entwickler
 
-Eigene Dashboards stehen auf `/hub/reports` **ganz oben**, vor allen festen
-Berichten. Die Karten sind genauso breit und genauso aufgebaut wie die der
-festen Berichte — Symbol, Titel, Kurzbeschreibung, Fusszeile „Klicken für
-Details" — und heben sich nur durch den goldenen Rahmen links und das
-Kennzeichen „Eigenes Dashboard" ab. Ein Klick auf die Karte öffnet das
-Dashboard.
+### Fachregeln
 
-**Durchgeblättert statt untereinander:** Zu sehen ist immer **eine** Karte.
-Weitergeblättert wird durch **Wischen** (Touch und Trackpad), über die
-**Pfeile** oder durch Klick auf einen der **Punkte**; rechts daneben steht die
-Position („2 / 5"). Damit wächst die Übersicht auch bei vielen Dashboards
-nicht zu. Eigene und geteilte Dashboards haben je ein eigenes Karussell —
-die Tabs bleiben also die Trennung. Bei nur einem Dashboard entfällt die
-Steuerung.
+**Der Wizard — vier Schritte, ein Speichervorgang.** Schritt 1 Name (Pflicht) und Kurzbeschreibung
+(beides im Kopf des Dashboards und auf seiner Übersichtskarte); Schritt 2 Auswahl der Statistiken,
+für die der Nutzer berechtigt ist (nach Kategorie gefiltert, durchsuchbar, Hover-Vorschau mit echten
+Zahlen); Schritt 3 Reihenfolge per Drag & Drop und Breite (halb/voll) je Kachel — gezeigt werden
+Platzhalter; Schritt 4 die Kennzahlen der Kurzanzeige (nur KPIs der in Schritt 2 gewählten
+Statistiken, vier als Richtwert). **Gespeichert wird erst am Ende**, in einem Rutsch; Abbrechen
+verwirft alles — es gibt keinen Entwurfsstatus. „Bearbeiten" öffnet denselben Wizard mit dem
+gespeicherten Stand; einen anderen Änderungsweg gibt es bewusst nicht.
 
-Der Kopf ist eine einzige Zeile, wie auf allen Berichtsseiten — links Zurück-Pfeil,
-Name und Kurzbeschreibung, rechts die Bedienelemente:
+**Übersicht und Kopf.** Eigene Dashboards stehen auf `/hub/reports` vor allen festen Berichten,
+mit Karten im Aufbau der festen Berichte (goldener Rahmen links, Kennzeichen „Eigenes Dashboard");
+es ist immer **eine** Karte sichtbar, geblättert wird per Wischen, Pfeilen oder Punkten, eigene und
+geteilte Dashboards haben je ein eigenes Karussell (Umsetzung: [Das Karussell der Übersicht](#das-karussell-der-ubersicht)).
+Der Kopf der Dashboard-Seite ist eine Zeile wie auf allen Berichtsseiten: Zurück-Pfeil, Name,
+Kurzbeschreibung, Kennzeichen, Zeitraum-Auswahl (Schnellauswahl gesamter Zeitraum / letzter Monat /
+3 / 6 / 12 / 24 Monate plus freie Von-Bis-Auswahl — die Datumsfelder erscheinen erst bei „Freier
+Zeitraum"), Teilen, Bearbeiten, Löschen. Der Standort-Hinweis steht als Kurzinfo am Zeitraum-Feld.
 
-- Den Namen mit dem Kennzeichen **„Eigenes Dashboard"**
-- Die **Zeitraum-Auswahl**: Schnellauswahl (gesamter Zeitraum, letzter Monat,
-  3 / 6 / 12 / 24 Monate) **plus freie Von-Bis-Auswahl** — die beiden
-  Datumsfelder erscheinen erst bei „Freier Zeitraum"
-- **Teilen**, **Bearbeiten** und **Löschen**
+**Filter.** Der Zeitraum wirkt auf alle Kacheln, die `range` deklarieren; Statistiken mit festem
+eigenem Zeitraum (`fixed_range`, z.B. „laufender Monat") zeigen ihn sichtbar als Hinweis an der
+Kachel — die Zahl darin ist dann bewusst eine andere als die Zeitraum-Auswahl oben. Der Standort
+kommt aus dem Standortfilter der Seitenleiste; einen eigenen Standortfilter je Dashboard gibt es
+nicht. Der gewählte Zeitraum wird **je Dashboard im Browser** des Nutzers gemerkt (localStorage).
 
-Dass der Standort aus der Seitenleiste kommt, steht als Kurzinfo am
-Zeitraum-Feld (Maus darüber halten) statt als Satz im Kopf.
+**Löschen braucht zwei Klicks.** Der erste Klick auf „Löschen" macht daraus „Wirklich löschen?",
+erst der zweite führt aus; daneben klicken oder kurz warten setzt den Knopf zurück. Ein gelöschtes
+Dashboard lässt sich nicht wiederherstellen (kein Soft-Delete).
 
-Der gewählte Zeitraum wird je Dashboard gemerkt — auf deinem Gerät, für dich.
+**Teilen — zwei Wege, beide jederzeit widerrufbar** (Recht `share_custom_dashboard`):
 
-!!! warning "Löschen braucht zwei Klicks"
-    Der erste Klick auf **Löschen** macht daraus **„Wirklich löschen?"**, erst
-    der zweite führt aus. Klickst du daneben oder wartest kurz, fällt der Knopf
-    von selbst zurück. Ein gelöschtes Dashboard lässt sich nicht wiederherstellen.
+1. **Freigabe an Nutzer:** Die Person bekommt eine Benachrichtigung und findet das Dashboard auf
+   der Berichte-Übersicht im Tab „Mit mir geteilt" mit dem Hinweis, wer es geteilt hat. Ansehen
+   braucht kein Dashboard-Recht; mit `create_custom_dashboard` lässt es sich als **eigene Kopie
+   übernehmen** und unabhängig weiterbearbeiten.
+2. **Link zum Weitergeben:** Der Link funktioniert **ohne Anmeldung** — wer ihn hat, sieht die
+   Zahlen, auch außerhalb des Unternehmens. Widerrufen geht jederzeit; danach führt der Link ins
+   Leere (404). Die Link-Ansicht ist schreibgeschützt: keine Filter, keine Bearbeitung; gezeigt
+   wird ausschließlich, was der Besitzer selbst sehen darf.
 
----
+Bei beiden Wegen gilt: **Ein geteiltes Dashboard zeigt nie Daten, die der Empfänger sonst nicht
+sehen dürfte.** Kacheln ohne Berechtigung werden still weggelassen — auch beim Übernehmen als
+Kopie (`visibleTiles()`, siehe [Model](#model-customdashboard)).
 
-### Globale Filter
+### Berechtigungen
 
-- **Zeitraum**: im Kopf des Dashboards, wirkt auf alle Kacheln, die ihn anwenden können
-- **Standort**: kommt wie überall aus dem Standortfilter in der Seitenleiste
+Drei Ebenen, bewusst getrennt:
 
-Statistiken, die einen festen eigenen Zeitraum haben (z.B. „laufender Monat"),
-zeigen diesen sichtbar als Hinweis an der Kachel — die Zahl darin ist dann
-bewusst eine andere als die Zeitraum-Auswahl oben.
+| Recht | Erlaubt |
+|---|---|
+| *(Recht der jeweiligen Statistik)* | Eine Kachel überhaupt zu sehen — auf der Report-Seite wie im Dashboard |
+| `create_custom_dashboard` | Eigene Dashboards bauen, bearbeiten, löschen und geteilte übernehmen |
+| `share_custom_dashboard` | Eigene Dashboards teilen (an Nutzer und per Link) |
 
----
-
-### Dashboard teilen
-
-Zwei Wege, beide jederzeit widerrufbar. Der Teilen-Knopf sitzt im Kopf des
-Dashboards und braucht das Recht **„Eigenes Dashboard teilen"**.
-
-**1. An Kolleginnen und Kollegen freigeben**
-
-Nutzer auswählen und freigeben — die Person bekommt eine Benachrichtigung und
-findet das Dashboard danach auf der Berichte-Übersicht im Tab
-**„Mit mir geteilt"**, mit dem Hinweis, wer es geteilt hat.
-
-Wer ein geteiltes Dashboard nur ansieht, braucht kein eigenes Dashboard-Recht.
-Mit dem Recht „Eigene Dashboards bauen" lässt es sich zusätzlich als
-**eigene Kopie übernehmen** und danach unabhängig weiterbearbeiten.
-
-**2. Link zum Weitergeben**
-
-!!! danger "Der Link funktioniert ohne Anmeldung"
-    Wer den Link hat, sieht die Zahlen dieses Dashboards — ohne Login, auch
-    ausserhalb des Unternehmens. Nur weitergeben, wenn das gewollt ist.
-    **Widerrufen geht jederzeit**; danach führt der Link ins Leere (404).
-
-Die Link-Ansicht ist schreibgeschützt: keine Filter, keine Bearbeitung. Gezeigt
-wird ausschliesslich das, was der Besitzer des Dashboards selbst sehen darf.
+Bauen und Weitergeben sind zwei verschiedene Befugnisse: Wer sich Dashboards
+zusammenstellen darf, darf sie nicht automatisch im Haus verteilen. Ein
+geteiltes Dashboard **anzusehen** braucht keines der beiden Rechte — nur die
+Rechte der enthaltenen Statistiken.
 
 ---
 
-### Was ein Empfänger sieht
-
-Bei beiden Wegen gilt dieselbe Regel: **Ein geteiltes Dashboard zeigt nie Daten,
-die der Empfänger sonst nicht sehen dürfte.** Kacheln, für die ihm die
-Berechtigung fehlt, werden still weggelassen — auch beim Übernehmen als Kopie.
-
----
-### Verfügbare Statistiken
+### Verfügbare Statistiken (Katalog)
 
 Jede Statistik des Hubs ist genau einmal definiert und steht damit auf ihrer
 Report-Seite **und** als Dashboard-Kachel bereit — beide rendern dieselbe
@@ -269,25 +277,6 @@ der Kachel selbst).
 | **Widerrufsquote im Vergleich** | Widerrufsquote nach Standort, Verkäufer:in, Vertragswert-Klasse und Paket-Umfang | Voll | folgt dem Rahmen |
 
 ---
-
-### Berechtigungen
-
-Drei Ebenen, bewusst getrennt:
-
-| Recht | Erlaubt |
-|---|---|
-| *(Recht der jeweiligen Statistik)* | Eine Kachel überhaupt zu sehen — auf der Report-Seite wie im Dashboard |
-| `create_custom_dashboard` | Eigene Dashboards bauen, bearbeiten, löschen und geteilte übernehmen |
-| `share_custom_dashboard` | Eigene Dashboards teilen (an Nutzer und per Link) |
-
-Bauen und Weitergeben sind zwei verschiedene Befugnisse: Wer sich Dashboards
-zusammenstellen darf, darf sie nicht automatisch im Haus verteilen. Ein
-geteiltes Dashboard **anzusehen** braucht keines der beiden Rechte — nur die
-Rechte der enthaltenen Statistiken.
-
----
-
-## Für Entwickler
 
 ### Architektur-Überblick
 
@@ -561,7 +550,6 @@ selbst mit; im Dashboard gilt dasselbe wie auf der Report-Seite:
 - Das Register muss **direktes Kind** der Karte sein — sonst bezieht es sich
   auf einen zwischenliegenden `position: relative`-Vorfahren und rutscht in
   die Karte hinein.
-
 
 ### StatisticRegistry
 

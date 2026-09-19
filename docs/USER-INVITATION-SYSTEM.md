@@ -1,8 +1,58 @@
 # glatttHub Benutzer-Einladungssystem
 
-## Übersicht
+Das Einladungssystem verschickt an ein neu angelegtes Hub-Konto eine E-Mail mit einem
+Setup-Link, über den die Person sich **selbst** eine 4-stellige PIN und ein Passwort vergibt —
+ohne dass der Administrator Zugangsdaten weitergeben muss. Ausgelöst wird die Einladung aus
+dem Filament-Admin-Panel (Aktion „Einladung senden") oder aus dem Hub-Konto-Wizard der
+Personalübersicht; beide Wege nutzen `App\Services\UserInvitationService`. Diese Seite
+beschreibt **Fachregeln, Architektur, Datenmodell, Routen, Sicherheit und Fehlerbehebung**;
+die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
-Das Benutzer-Einladungssystem ermöglicht es Administratoren, neue Benutzer aus dem Filament-Admin-Panel heraus per E-Mail einzuladen. Der eingeladene Benutzer erhält einen Link, über den er sich selbst eine 4-stellige PIN und ein Passwort vergeben kann – ohne Zutun des Administrators.
+!!! nutzerhandbuch "Bedienung: Team 1 – Personalübersicht und Hub-Konten · Admin 1 – Benutzer und Rollen"
+    [hilfe.hub.glattt.com/team/1/](https://hilfe.hub.glattt.com/team/1/) — Konto aus der
+    Personalübersicht anlegen und die Einladung gleich mitschicken ·
+    [hilfe.hub.glattt.com/admin/1/](https://hilfe.hub.glattt.com/admin/1/) — Benutzer im
+    Admin-Panel verwalten und Einladung (erneut) senden.
+
+    Angrenzend: [Grundlagen 1 – Anmelden & zurechtfinden](https://hilfe.hub.glattt.com/grundlagen/1/)
+    (PIN- und E-Mail-Login nach der Einrichtung), [Grundlagen 3 – Mein Profil](https://hilfe.hub.glattt.com/grundlagen/3/)
+    (Passwort ändern, PIN verwalten).
+
+---
+
+## Für Anwender — Überblick
+
+**Was das System leistet.** Ein Hub-Konto wird vom Administrator angelegt — Name, E-Mail,
+Filiale, Rollen — aber die **Zugangsdaten vergibt die Person selbst**: Sie erhält eine
+E-Mail mit dem Button „Zugang einrichten", legt auf einer Setup-Seite im Login-Design PIN und
+Passwort fest und kann sich danach per PIN oder E-Mail/Passwort anmelden. Niemand außer der
+Person kennt ihre PIN oder ihr Passwort; der Administrator muss nichts diktieren oder
+weitergeben.
+
+**Grundsätze:**
+
+- **Eine Einladung ist 7 Tage gültig und einmal verwendbar.** Danach (oder nach der Annahme)
+  ist der Link ungültig; der Administrator schickt einfach eine neue Einladung.
+- **Die neueste Einladung zählt.** Beim Versand werden alle vorherigen offenen Einladungen
+  derselben Person automatisch ungültig — ein alter, verlorener Link kann also nicht mehr
+  benutzt werden.
+- **Voraussetzung ist eine E-Mail-Adresse am Konto** (ohne sie erscheint die Aktion nicht) und
+  ein funktionierender SMTP-Versand (siehe [E-Mail Versand](./EMAIL-VERSAND.md)).
+- **Die PIN ist hubweit eindeutig** (vier Ziffern, keine Doppelvergabe); das Passwort hat
+  mindestens 8 Zeichen.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Hub-Konto aus der Personalübersicht anlegen, Einladung sofort mitschicken | Team 1 |
+| Einladung im Admin-Panel senden oder erneut senden, Konto bearbeiten | Admin 1 |
+| Nach der Einrichtung anmelden (PIN oder E-Mail) | Grundlagen 1 |
+| Passwort ändern, PIN verwalten | Grundlagen 3 |
+
+---
+
+## Für Entwickler
 
 ### Ablauf im Überblick
 
@@ -18,75 +68,31 @@ Admin erstellt Benutzer     → Admin klickt "Einladung senden"
                               Weiterleitung zum Login ✓
 ```
 
----
-
-## Nutzersicht (Administrator)
-
-### Voraussetzung
-
-- Der neue Benutzer muss bereits im Admin-Panel angelegt sein (Name, E-Mail, Filiale, Rollen).
-- Der Benutzer **muss eine E-Mail-Adresse** haben, damit die Einladung versendet werden kann.
-- Die **SMTP-Einstellungen** müssen korrekt konfiguriert sein (siehe [E-Mail Versand Dokumentation](./EMAIL-VERSAND.md)).
-
-### Einladung senden
-
-1. Im Admin-Panel → **Benutzer**-Übersicht navigieren.
-2. In der Zeile des gewünschten Benutzers auf das **Briefumschlag-Icon** (✉) klicken.
-3. Es erscheint ein **Bestätigungs-Dialog** mit Name und E-Mail des Benutzers.
-4. Auf **"Einladung senden"** klicken.
-5. Bei Erfolg erscheint eine grüne Benachrichtigung: *"Einladung wurde an … gesendet."*
-6. Bei Fehler (z. B. SMTP-Problem) erscheint eine rote Fehlermeldung mit Details.
-
-### Einladung aus der Personalübersicht
-
 Seit 09/2026 kann ein Hub-Konto auch direkt aus der **Personalübersicht**
-(`/hub/staff/overview`, Spalte „Hub-Konto" → „Konto anlegen") angelegt werden.
-Der Wizard fragt im letzten Schritt, ob die Einladung sofort verschickt werden
-soll; technisch läuft derselbe Weg (`App\Services\UserInvitationService`).
-Details: [Personalverwaltung](./STAFF-MODULE.md), Abschnitt „Hub-Konto anlegen".
+(`/hub/staff`, Spalte „Hub-Konto" → „Konto anlegen") angelegt werden. Der Wizard fragt im
+letzten Schritt, ob die Einladung sofort verschickt werden soll; technisch läuft derselbe Weg
+(`App\Services\UserInvitationService`). Details: [Personalverwaltung](./STAFF-MODULE.md),
+Abschnitt „Hub-Konto-Wizard".
 
-### Erneute Einladung
+### Fachregeln
 
-- Eine neue Einladung kann jederzeit gesendet werden.
-- Beim Versenden einer neuen Einladung werden **alle vorherigen offenen Einladungen** automatisch ungültig gemacht.
-- Dies ist nützlich, wenn der Benutzer die E-Mail nicht erhalten hat oder der Link abgelaufen ist.
+- **Voraussetzungen für den Versand:** Benutzer existiert im Admin-Panel (Name, E-Mail,
+  Filiale, Rollen), hat eine E-Mail-Adresse (`visible(fn ($record) => filled($record->email))`)
+  und die SMTP-Einstellungen sind konfiguriert. Ein Fehler beim Versand (z. B. SMTP) wird als
+  rote Filament-Notification mit Details gemeldet, ein Erfolg als grüne („Einladung wurde an …
+  gesendet.").
+- **Gültigkeit:** `expires_at = now() + 7 Tage`. **Erneuter Versand** ist jederzeit möglich;
+  alle offenen Einladungen desselben Benutzers bekommen dabei `expires_at = now()`.
+- **Rollenverteilung:** Admin setzt Name, Filiale, Rollen — der Benutzer vergibt _nur_ PIN
+  und Passwort.
+- **Setup-Seite:** Felder PIN (4 Ziffern, für den PIN-Login), Passwort (min. 8 Zeichen),
+  Passwort bestätigen. Bei Erfolg Weiterleitung zur Login-Seite mit Status „Dein Zugang wurde
+  eingerichtet!"; ab dann Login per PIN oder E-Mail/Passwort.
+- **E-Mail-Inhalt:** persönliche Begrüßung („Hallo [Vorname]"), Erklärung, dass ein
+  glatttHub-Zugang erstellt wurde, grüner Button **„Zugang einrichten"** mit Setup-Link,
+  Hinweis auf die 7-Tage-Gültigkeit, Fallback-URL als Text.
 
-### Hinweise
-
-- Die Einladung ist **7 Tage** gültig.
-- Der Button ist nur sichtbar, wenn der Benutzer eine E-Mail-Adresse hinterlegt hat.
-- Admin legt Name, Filiale und Rollen fest – der Benutzer vergibt sich _nur_ PIN und Passwort.
-
----
-
-## Nutzersicht (Eingeladener Benutzer)
-
-### E-Mail erhalten
-
-Der Benutzer erhält eine E-Mail mit:
-- Persönlicher Begrüßung ("Hallo [Vorname]")
-- Erklärung, dass ein glatttHub-Zugang erstellt wurde
-- Grüner Button **"Zugang einrichten"** mit Setup-Link
-- Hinweis auf 7-Tage-Gültigkeit
-- Fallback-URL als Text (falls Button nicht funktioniert)
-
-### Zugang einrichten
-
-1. Auf **"Zugang einrichten"** in der E-Mail klicken.
-2. Die **Setup-Seite** öffnet sich (sieht aus wie die Login-Seite).
-3. Folgende Felder ausfüllen:
-
-| Feld | Beschreibung |
-|------|-------------|
-| **PIN** | 4-stellige Zahl (wird für den schnellen PIN-Login verwendet) |
-| **Passwort** | Mindestens 8 Zeichen |
-| **Passwort bestätigen** | Passwort wiederholen |
-
-4. Auf **"Zugang einrichten"** klicken.
-5. Bei Erfolg: Weiterleitung zur Login-Seite mit Erfolgsmeldung *"Dein Zugang wurde eingerichtet!"*
-6. Ab jetzt kann sich der Benutzer per PIN oder E-Mail/Passwort einloggen.
-
-### Mögliche Fehler
+**Fehlerzustände der Setup-Seite:**
 
 | Fehler | Ursache | Lösung |
 |--------|---------|--------|
@@ -95,10 +101,6 @@ Der Benutzer erhält eine E-Mail mit:
 | "Einladung bereits verwendet" | PIN + Passwort wurden bereits gesetzt | Normal über Login-Seite anmelden |
 | "Diese PIN ist bereits vergeben" | Andere Person nutzt diese PIN bereits | Andere 4-stellige PIN wählen |
 | "Die Passwörter stimmen nicht überein" | Bestätigung weicht ab | Passwort erneut korrekt eingeben |
-
----
-
-## Entwicklersicht
 
 ### Architektur
 
@@ -160,7 +162,7 @@ Der Benutzer erhält eine E-Mail mit:
 
 **Migration:** `database/migrations/2026_03_03_100000_create_user_invitations_table.php`
 
-**SQL für Produktiv-DB:** [docs/sql/2026-03-03-user-invitations.sql](./sql/2026-03-03-user-invitations.sql)
+**SQL für Produktiv-DB (historisch, vor Auto-Migrate beim Deploy):** `sql/2026-03-03-user-invitations.sql`
 
 ### Dateien
 
@@ -181,6 +183,9 @@ Der Benutzer erhält eine E-Mail mit:
 |-------|----------|
 | `app/Filament/Resources/Users/Tables/UsersTable.php` | `Action::make('invite')` hinzugefügt als recordAction |
 | `routes/web.php` | Zwei Invitation-Routes hinzugefügt (GET + POST) |
+
+Seit 09/2026 zusätzlich: `app/Services/UserInvitationService.php` (gemeinsame Versandlogik für
+Filament-Aktion und Hub-Konto-Wizard, siehe [Personalverwaltung](./STAFF-MODULE.md)).
 
 ### Routes
 
@@ -389,8 +394,8 @@ Die Seite `auth/invitation-invalid.blade.php` zeigt:
 # Lokal
 php artisan migrate
 
-# Produktiv (manuell per SQL)
-# Siehe: docs/sql/2026-03-03-user-invitations.sql
+# Produktiv: seit 08.07.2026 automatisch beim Deploy (migrate --force --isolated);
+# historisch manuell per SQL: docs/sql/2026-03-03-user-invitations.sql
 ```
 
 ---
@@ -407,6 +412,8 @@ php artisan migrate
 
 ## Verwandte Dokumentation
 
+- [Personalverwaltung](./STAFF-MODULE.md) – Hub-Konto-Wizard, `UserProvisioningService`
+- [Hub-Nutzer archivieren](./USER-ARCHIVIERUNG.md) – Austritt statt Löschen
 - [PIN-Login-System](./PIN-LOGIN-SYSTEM.md) – PIN-Vergabe, PIN-Login, PinAuthenticationService
 - [Login-Design](./LOGIN-DESIGN.md) – Design-Klassen, Floating Labels, Theme-Toggle
 - [Design System](./DESIGN-SYSTEM.md) – Alle glattt-CSS-Klassen

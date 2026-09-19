@@ -1,5 +1,8 @@
 # 🧩 WordPress-Plugins für glattt.com — Übersicht
 
+!!! info "Bedienung bleibt in diesem Wiki"
+    Die Pflege der Website glattt.com gehört nicht ins Nutzerhandbuch — das beschreibt ausschließlich den glatttHub. Die Abschnitte „Für Endanwender" auf dieser Seite sind deshalb die verbindliche Anleitung für Marketing und Website-Pflege (Entscheidung Jan, 19.09.2026).
+
 Für die öffentliche Website **glattt.com** sind sechs eigene WordPress-Plugins
 entstanden. Diese Seite ist der Einstieg: Wer macht was, wie hängen sie
 zusammen, und wo berühren sie den glatttHub.

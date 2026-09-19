@@ -1,48 +1,36 @@
 # Profilseite
 
-## Übersicht
+Die Profilseite (`/hub/profile` → `hub.profile.index`, alternativ `/user/profile` →
+`profile.show` aus Jetstream) lässt jede Nutzerin ihre persönlichen Einstellungen pflegen:
+Profilbild, E-Mail, Passwort, PIN-Anmeldung, Zwei-Faktor-Authentifizierung, Browser-Sitzungen
+und Kontolöschung. Beide Routen rendern dieselben Partials im Hub-Layout (`layouts.hub`).
+Diese Seite beschreibt **Aufbau, Livewire-Komponenten, Auto-Save des Profilbilds und
+Styling-Regeln**; die Bedienung steht im Nutzerhandbuch.
 
-Die Profilseite ermöglicht Benutzern die Verwaltung ihrer persönlichen Einstellungen: Profilbild, E-Mail, Passwort, PIN-Anmeldung, Zwei-Faktor-Authentifizierung und Browser-Sitzungen.
+!!! nutzerhandbuch "Bedienung: Grundlagen 3 – Mein Profil im glatttHub"
+    [hilfe.hub.glattt.com/grundlagen/3/](https://hilfe.hub.glattt.com/grundlagen/3/) — Name und Bild, Passwort ändern, PIN verwalten, Geräte und Rundgänge.
 
-**Routen:**
-- `/hub/profile` → `hub.profile.index`
-- `/user/profile` → `profile.show` (Jetstream)
+    Angrenzend: [Grundlagen 1 – Anmelden & zurechtfinden](https://hilfe.hub.glattt.com/grundlagen/1/) (PIN- und E-Mail-Anmeldung).
 
-Beide rendern die gleichen Partials und nutzen das Hub-Layout (`layouts.hub`).
+## Für Anwender — Überblick
 
----
+**Was die Seite leistet.** Alles, was nur die eigene Person betrifft, wird hier gepflegt —
+unabhängig von der Personalverwaltung, die Rollen und Rechte vergibt. Das Profilbild
+speichert sich **sofort** beim Auswählen (kein Speichern-Knopf) und erscheint ohne Neuladen in
+Seitenleiste und Kopfzeile. Die vierstellige **PIN** ist der schnelle Anmeldeweg am Tablet im
+Institut (Status als Badge: grün = aktiv, gelb = keine PIN; „Zufällig" erzeugt eine PIN), die
+**Zwei-Faktor-Authentifizierung** sichert die E-Mail-Anmeldung mit einer Authenticator-App
+und Wiederherstellungscodes, und unter **Browser-Sitzungen** lassen sich fremde Geräte per
+Passwort-Bestätigung abmelden. Das Löschen des Kontos ist unwiderruflich und ebenfalls
+passwortgeschützt.
 
-## Für Endanwender
-
-### Profilbild ändern
-- Auf **„Neues Foto wählen"** klicken und ein Bild auswählen (JPG, PNG, WebP, GIF, max. 5 MB)
-- Das Bild wird **sofort gespeichert** — kein Klick auf „Speichern" nötig
-- Eine Toast-Benachrichtigung bestätigt den erfolgreichen Upload
-- Das neue Bild erscheint sofort in der Sidebar und im Header
-
-### E-Mail ändern
-- E-Mail-Feld im Bereich „Profilinformationen" ändern und „Speichern" klicken
-
-### Passwort ändern
-- Aktuelles Passwort eingeben, neues Passwort + Bestätigung eingeben, „Speichern" klicken
-
-### PIN-Anmeldung
-- Im Bereich „PIN-Code verwalten" eine 4-stellige PIN festlegen
-- Der Button **„Zufällig"** generiert eine zufällige PIN
-- PIN-Status wird als Badge im Karten-Header angezeigt (grün = aktiv, gelb = keine PIN)
-
-### Zwei-Faktor-Authentifizierung (2FA)
-- 2FA aktivieren, QR-Code mit Authenticator-App scannen, Bestätigungscode eingeben
-- Wiederherstellungscodes sicher aufbewahren
-
-### Browser-Sitzungen
-- Alle aktiven Sitzungen anzeigen
-- Andere Sitzungen per Passwort-Bestätigung abmelden
-
-### Konto löschen
-- Unwiderrufliche Löschung mit Passwort-Bestätigung
-
----
+| Vorgang | Anleitung |
+|---|---|
+| Name, E-Mail und Profilbild ändern | Grundlagen 3 |
+| Passwort ändern | Grundlagen 3 |
+| PIN festlegen oder ändern | Grundlagen 3 |
+| Zwei-Faktor, Browser-Sitzungen (Geräte) und Rundgänge | Grundlagen 3 |
+| Mit PIN oder E-Mail anmelden | Grundlagen 1 |
 
 ## Für Entwickler
 
@@ -60,6 +48,17 @@ Die Profilseite ist modular aufgebaut — jede Sektion ist ein eigenes Partial/L
 | Browser-Sessions | `hub.profile.partials.browser-sessions` | Jetstream-Standard | `profile.logout-other-browser-sessions-form` |
 | Konto löschen | `hub.profile.partials.delete-account` | Jetstream-Standard | `profile.delete-user-form` |
 
+### Fachregeln je Sektion
+
+- **Profilbild:** JPG, PNG, WebP, GIF, max. 5 MB; wird sofort gespeichert (Auto-Save, siehe
+  unten), Toast bestätigt den Upload, Sidebar und Header aktualisieren sich ohne Reload.
+- **E-Mail / Passwort:** klassische Formulare mit „Speichern" (Passwort: aktuelles Passwort +
+  neues Passwort + Bestätigung), Validierung in `UpdateUserProfileInformation`.
+- **PIN:** 4-stellig; „Zufällig" generiert eine PIN; PIN-Status als Badge im Karten-Header
+  (`badge-glattt-success` aktiv, `badge-glattt-warning` keine PIN).
+- **2FA:** Jetstream-Standard (QR-Code, Bestätigungscode, Wiederherstellungscodes).
+- **Browser-Sitzungen / Konto löschen:** Jetstream-Standard mit Passwort-Bestätigung.
+
 ### Layout
 
 **Passwort & PIN nebeneinander** auf großen Screens (ab 1024px):
@@ -71,6 +70,7 @@ Die Profilseite ist modular aufgebaut — jede Sektion ist ein eigenes Partial/L
 ```
 
 CSS-Klasse `profile-row-2col` (definiert in `theme_glattt.css`):
+
 - Mobile: 1 Spalte
 - Desktop (≥1024px): 2 gleich hohe Spalten via CSS Grid + Flex
 
@@ -130,6 +130,7 @@ Alpine-Listener leitet an `window.showToast()` weiter:
 ### Relevante Dateien
 
 **Views:**
+
 - `resources/views/hub/profile/index.blade.php` — Hub-Route Layout
 - `resources/views/profile/show.blade.php` — Jetstream-Route Layout
 - `resources/views/hub/profile/partials/*.blade.php` — Wrapper-Partials
@@ -137,13 +138,16 @@ Alpine-Listener leitet an `window.showToast()` weiter:
 - `resources/views/livewire/profile/update-pin-form.blade.php` — PIN-Formular
 
 **Livewire-Komponenten:**
+
 - `app/Livewire/Profile/UpdateProfileInformationForm.php` — Profilinfo + Foto-Upload
 - `app/Livewire/Profile/UpdatePinForm.php` — PIN-Verwaltung
 
 **Backend:**
+
 - `app/Actions/Fortify/UpdateUserProfileInformation.php` — Validierung & Speichern
 - `app/Models/User.php` — `HasProfilePhoto` Trait (Disk: `public` lokal, `gcs` Produktion)
 
 **Styling:**
+
 - `public/css/theme_glattt.css` — Alle Styles
 - `public/js/profile/profile.js` — Client-seitige Validierung

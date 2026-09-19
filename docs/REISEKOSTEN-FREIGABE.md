@@ -1,24 +1,56 @@
 # Reisekosten – Freigabe
 
-## Nutzerdokumentation
+Die Freigabe-Übersicht (`/hub/staff/reisekosten/freigabe`, Button „Freigabe" auf der
+Reisekosten-Hauptseite) ermöglicht es berechtigten Personen, eingereichte
+Reisekostenabrechnungen aller Mitarbeiter zentral zu prüfen, zu korrigieren und
+freizugeben oder abzulehnen. Erfasst und eingereicht werden Abrechnungen im
+[Reisekosten-Modul](REISEKOSTEN-MODULE.md). Diese Seite beschreibt **Absicht, Fachregeln der
+Entscheidung, Endpunkte, Controller-Logik und Alpine-Komponente**; die Bedienung Schritt
+für Schritt steht im Nutzerhandbuch.
 
-### Übersicht
+!!! nutzerhandbuch "Bedienung: Team 3 – Reisekosten freigeben"
+    [hilfe.hub.glattt.com/team/3/](https://hilfe.hub.glattt.com/team/3/) — Freigabe-Liste,
+    eine Abrechnung prüfen, freigeben oder ablehnen.
 
-Die Freigabe-Übersicht ermöglicht es berechtigten Personen, eingereichte Reisekostenabrechnungen zentral zu prüfen, zu korrigieren und freizugeben oder abzulehnen. Alle Anträge aller Mitarbeiter werden in einer gemeinsamen Liste dargestellt.
-
-**URL:** `/hub/staff/reisekosten/freigabe`
-
-> Voraussetzung: Die Reisekostenerfassung erfolgt über das [Reisekosten-Modul](REISEKOSTEN-MODULE.md). Dort werden Abrechnungen erstellt und eingereicht.
+    Angrenzend: [Team 2 – Reisekosten erfassen](https://hilfe.hub.glattt.com/team/2/)
+    (Erfassung und Einreichung durch die Mitarbeiterin).
 
 ---
 
-### Zugang
+## Für Anwender — Überblick
 
-Auf der Hauptseite der Reisekosten (`/hub/staff/reisekosten`) befindet sich oben neben der Mitarbeiter-Auswahl der Button **„Freigabe"**. Klick darauf öffnet die Freigabe-Übersicht.
+**Was die Freigabe leistet.** Jede eingereichte Abrechnung landet in einer gemeinsamen
+Liste — eingereichte zuerst, dann genehmigte und abgelehnte, filterbar nach Monat,
+Abwesenheitsart und Mitarbeiter, mit Kennzahlen (Offen, Genehmigt, Abgelehnt,
+Gesamtbetrag) über der Tabelle. Die Prüfung zeigt alle Angaben der Reise (Zeitraum,
+Verkehrsmittel, Abfahrt und Ziel, Arbeitszeiten je Tag, Kostenpositionen, Belege, Notizen)
+und endet mit einer von zwei Entscheidungen: **Genehmigen** oder **Ablehnen**.
+
+**Grundsätze:**
+
+- **Korrigieren statt zurückschicken.** Kleinere Abweichungen (Kilometer, Hin & Rück,
+  Arbeitszeiten, zusätzliche Kosten) korrigiert die prüfende Person direkt bei der
+  Genehmigung; die korrigierten Werte ersetzen die Originalwerte, alle Beträge werden
+  serverseitig neu berechnet. Eine optionale Anmerkung wird an die Notizen angehängt.
+- **Ablehnen braucht einen Grund.** Der Ablehnungsgrund ist Pflicht und bleibt an der
+  Abrechnung sichtbar; die Mitarbeiterin kann sie danach anpassen und erneut einreichen.
+- **Entschieden ist entschieden.** Genehmigte und abgelehnte Abrechnungen sind nur noch
+  Ansicht („Details"), nicht mehr änderbar.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Freigabe-Liste lesen, filtern, Kennzahlen | Team 3 |
+| Eine Abrechnung prüfen, Werte korrigieren | Team 3 |
+| Freigeben oder mit Grund ablehnen | Team 3 |
+| Abrechnung erfassen, einreichen, nach Ablehnung korrigieren | Team 2 |
 
 ---
 
-### Workflow
+## Für Entwickler
+
+### Workflow und Fachregeln
 
 ```
 Mitarbeiter reicht ein → Freigabe-Übersicht → Antrag prüfen → Genehmigen oder Ablehnen
@@ -26,155 +58,35 @@ Mitarbeiter reicht ein → Freigabe-Übersicht → Antrag prüfen → Genehmigen
 
 | Aktion | Ergebnis |
 |--------|----------|
-| **Genehmigen** | Status wechselt auf „Genehmigt", optionale Korrekturen werden übernommen |
-| **Ablehnen** | Status wechselt auf „Abgelehnt", Ablehnungsgrund wird gespeichert |
+| **Genehmigen** | Status wechselt auf `approved`, optionale Korrekturen werden übernommen und neu berechnet |
+| **Ablehnen** | Status wechselt auf `rejected`, Ablehnungsgrund (Pflicht) wird gespeichert |
+
+- **Nur `submitted` ist entscheidbar** — Genehmigen/Ablehnen auf anderem Status → HTTP 422.
+- **Korrigierbar bei der Genehmigung:** Kilometer (einfache Strecke), Hin & Rück
+  (Checkbox), Arbeitszeiten (Beginn/Ende pro Tag), zusätzliche Kosten (Betrag) — im UI;
+  der Endpoint akzeptiert darüber hinaus Hotel-/Bahnkosten und Mahlzeiten-Matrix (siehe
+  `approve()`). Korrigierte Werte ersetzen die Originalwerte; die Neuberechnung
+  (Verpflegungspauschale, Arbeitszeit, Fahrtkosten, Gesamt) erfolgt serverseitig über
+  `recalculate()`.
+- **Anmerkung** (optional) wird als „[Freigabe-Anmerkung]" an `notes` angehängt.
+- **Filter** (kombinierbar): Monat des Reise-Beginns (`JJJJ-MM`), Abwesenheitsart (nur Typen
+  mit `travel_expenses = true`), Mitarbeiter; „Zurücksetzen" leert alle.
+- **KPIs** über der Tabelle (bezogen auf die gefilterten Anträge): Offen = `submitted`,
+  Genehmigt = `approved`, Abgelehnt = `rejected`, Gesamtbetrag = Summe `total_amount`.
+- **Tabelle:** Mitarbeiter, Reisezeitraum, Abwesenheitsart, Ziel, km (einfache Entfernung),
+  Betrag, Status (farbig), Aktion „Prüfen" (offen) bzw. „Details" (abgeschlossen); Klick auf
+  Zeile oder Button öffnet das Prüfungs-Modal.
+- **Prüfungs-Modal:** Header farbig nach Status (Eingereicht blau/Info „Reisekostenantrag
+  prüfen", Genehmigt grün „– Genehmigt", Abgelehnt rot „– Abgelehnt"), bei Ablehnung roter
+  Hinweisblock mit Grund; Abschnitte Reisedaten (Abwesenheitsart, Zeitraum, Verkehrsmittel
+  mit Icon), Abreise & Ziel, Arbeitszeiten je Tag (bei `submitted` editierbar, sonst
+  Anzeige) mit Gesamt-Arbeitszeit, Kostenübersicht (Fahrtkosten Auto `km × Faktor × 0,30 €`
+  bzw. Bahn-Ticket, Verpflegung Brutto/Abzug/Netto, Übernachtung mit Hotelname und
+  Bezahlung, zusätzliche Kosten, Gesamt), Belege (Typ Beleg/Bahnticket/Hotel + Betrag),
+  Notizen, Freigabe-Entscheidung (nur bei `submitted`: Anmerkung, Ablehnungsgrund nach
+  Klick auf „Ablehnen"; erneuter Klick bestätigt), Buttons Schließen / Ablehnen / Genehmigen.
 
 ---
-
-### Filterleiste
-
-Die Übersichtsseite bietet drei Filter, die beliebig kombiniert werden können:
-
-| Filter | Beschreibung |
-|--------|-------------|
-| **Monat** | Filtert nach dem Monat des Reise-Beginns (Format: JJJJ-MM) |
-| **Abwesenheitsart** | Filtert nach Abwesenheitstyp (z.B. Dienstreise, Schulung) |
-| **Mitarbeiter** | Filtert nach einem bestimmten Mitarbeiter |
-
-Über **„Zurücksetzen"** werden alle Filter geleert und alle Anträge angezeigt.
-
----
-
-### KPI-Karten
-
-Oberhalb der Tabelle werden vier Kennzahlen angezeigt (basierend auf den aktuellen Filtern):
-
-| KPI | Beschreibung |
-|-----|-------------|
-| **Offen** | Anzahl eingereichte, noch nicht bearbeitete Anträge |
-| **Genehmigt** | Anzahl genehmigter Anträge |
-| **Abgelehnt** | Anzahl abgelehnter Anträge |
-| **Gesamtbetrag** | Summe aller angezeigten Anträge |
-
----
-
-### Antragstabelle
-
-Alle Anträge werden in einer sortierten Tabelle dargestellt. Eingereichte Anträge stehen immer oben.
-
-| Spalte | Beschreibung |
-|--------|-------------|
-| **Mitarbeiter** | Name des Mitarbeiters |
-| **Reisezeitraum** | Start- bis Enddatum der Reise |
-| **Abwesenheitsart** | Typ aus askDANTE (z.B. Dienstreise) |
-| **Ziel** | Reiseziel |
-| **km** | Einfache Entfernung in Kilometern |
-| **Betrag** | Gesamtbetrag der Abrechnung |
-| **Status** | Eingereicht / Genehmigt / Abgelehnt (farblich markiert) |
-| **Aktion** | „Prüfen" (bei offenen) oder „Details" (bei abgeschlossenen) |
-
-Klick auf eine Zeile oder den Aktions-Button öffnet das Prüfungs-Modal.
-
----
-
-### Prüfungs-Modal
-
-Das Modal zeigt alle Details einer Reisekostenabrechnung und ermöglicht bei eingereichten Anträgen Korrekturen.
-
-#### Header
-
-Der Header ist farblich gekennzeichnet:
-
-| Status | Farbe | Anzeige |
-|--------|-------|---------|
-| Eingereicht | Blau (Info) | „Reisekostenantrag prüfen" |
-| Genehmigt | Grün (Erfolg) | „Reisekostenantrag – Genehmigt" |
-| Abgelehnt | Rot (Fehler) | „Reisekostenantrag – Abgelehnt" |
-
-#### Ablehnungsgrund
-
-Bei abgelehnten Anträgen wird oben ein roter Hinweisblock mit dem Ablehnungsgrund angezeigt.
-
-#### Reisedaten
-
-Zeigt auf einen Blick:
-
-- **Abwesenheitsart** (z.B. Dienstreise)
-- **Zeitraum** (Reise-Beginn bis -Ende)
-- **Verkehrsmittel** (Auto oder Bahn mit Icon)
-
-#### Abreise & Ziel
-
-Zeigt Abfahrtsort und Zielort mit Straße, PLZ und Stadt.
-
-#### Arbeitszeiten
-
-Für jeden Reisetag wird eine Zeile angezeigt:
-
-| Element | Bei eingereichten Anträgen | Bei abgeschlossenen Anträgen |
-|---------|---------------------------|------------------------------|
-| **Datum** | Angezeigt | Angezeigt |
-| **Beginn** | Editierbares Zeitfeld (Korrektur möglich) | Nur Anzeige |
-| **Ende** | Editierbares Zeitfeld (Korrektur möglich) | Nur Anzeige |
-
-Darunter wird die **Gesamt-Arbeitszeit** angezeigt.
-
-!!! info "Arbeitszeiten korrigieren"
-    Bei eingereichten Anträgen können die Arbeitszeiten direkt im Modal korrigiert werden. Die geänderten Werte werden bei der Genehmigung übernommen und die Beträge (Verpflegungspauschale, Arbeitszeit) automatisch neu berechnet.
-
-#### Kostenübersicht
-
-Übersicht aller Kostenpositionen:
-
-| Position | Beschreibung |
-|----------|-------------|
-| **Fahrtkosten** | Auto: km × Faktor × 0,30 €/km; Bahn: Ticketkosten |
-| **Korrektur** | Nur bei eingereichten Auto-Anträgen: km und Hin & Rück editierbar |
-| **Verpflegungspauschale** | Brutto, ggf. Abzug durch gewährte Mahlzeiten, Netto |
-| **Übernachtung** | Nur wenn Übernachtung vorhanden; Hotelname und Bezahlung |
-| **Zusätzliche Kosten** | Beschreibung und Betrag (bei eingereichten Anträgen editierbar) |
-| **Gesamtbetrag** | Summe aller Positionen |
-
-!!! info "Korrekturen bei der Freigabe"
-    Folgende Werte können bei der Genehmigung korrigiert werden:
-    
-    - **Kilometer** (einfache Strecke)
-    - **Hin & Rück** (Checkbox)
-    - **Arbeitszeiten** (Beginn/Ende pro Tag)
-    - **Zusätzliche Kosten** (Betrag)
-    
-    Korrigierte Werte ersetzen die Originalwerte. Die Neuberechnung erfolgt serverseitig beim Genehmigen.
-
-#### Belege
-
-Liste aller hochgeladenen Belege mit Typ (Beleg, Bahnticket, Hotel) und Betrag.
-
-#### Notizen
-
-Freitext-Notizen des Mitarbeiters zur Reise.
-
-#### Freigabe-Entscheidung
-
-Nur bei eingereichten Anträgen sichtbar:
-
-| Feld | Beschreibung |
-|------|-------------|
-| **Anmerkung** (optional) | Freitext, wird als „[Freigabe-Anmerkung]" an die Notizen angehängt |
-| **Ablehnungsgrund** (Pflicht bei Ablehnung) | Wird nach Klick auf „Ablehnen" eingeblendet |
-
-#### Aktionsbuttons
-
-| Button | Funktion |
-|--------|----------|
-| **Schließen** | Modal schließen ohne Aktion |
-| **Ablehnen** | Zeigt das Ablehnungsgrund-Feld; bei erneutem Klick wird die Ablehnung bestätigt |
-| **Genehmigen** | Übernimmt Korrekturen (falls vorhanden), setzt Status auf „Genehmigt" |
-
----
-
----
-
-## Entwicklerdokumentation
 
 ### Dateistruktur
 

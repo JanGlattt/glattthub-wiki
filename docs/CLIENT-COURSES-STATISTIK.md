@@ -2,24 +2,72 @@
 
 > Statistik-Modul für verkaufte Behandlungspakete aus Phorest
 
-## Übersicht
+Das **glattt-Pakete Statistik**-Modul zeigt Verkaufszahlen und Nutzung von Behandlungspaketen
+(Client Courses) aus dem Phorest-System und verbindet die Phorest-Daten mit den internen
+Körperzonen-Definitionen. Diese Seite beschreibt **Kennzahlen-Definitionen, Architektur,
+Endpunkte, Datenbank-Schema und Sync**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
-Das **glattt-Pakete Statistik**-Modul zeigt Verkaufszahlen und Nutzung von Behandlungspaketen (Client Courses) aus dem Phorest-System. Es verbindet die Phorest-Daten mit den internen Körperzonen-Definitionen.
+**Zugang:** Hub → Berichte → glattt-Pakete
 
-## Für Anwender
+!!! nutzerhandbuch "Bedienung: Berichte 16 – glattt-Pakete Statistik"
+    [hilfe.hub.glattt.com/berichte/16/](https://hilfe.hub.glattt.com/berichte/16/) — den Bericht
+    öffnen, verkaufte Pakete, Nutzung und Reste, damit arbeiten.
 
-### Zugang
+    Angrenzend: [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/)
+    (Zeitraum, Standort, Kennzahlen-Zeile, Diagramm/Tabelle, Export),
+    [Kundenverwaltung 3 – Termine & Pakete](https://hilfe.hub.glattt.com/kundenverwaltung/3/)
+    (glattt Pakete einer einzelnen Kundin), [Berichte 7 – glattt-KPIs](https://hilfe.hub.glattt.com/berichte/7/)
+    (Paket-Bestand als Kennzahl).
 
-**Hub → Reports → glattt-Pakete**
+## Inhaltsverzeichnis
 
-### Funktionen
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Kennzahlen-Definitionen](#kennzahlen-definitionen)
+    - [Körperzonen-Berechnung](#korperzonen-berechnung)
+    - [Architektur](#architektur)
+    - [Dateien](#dateien)
+    - [API-Endpunkte](#api-endpunkte)
+    - [Datenbank-Schema](#datenbank-schema)
+    - [Körperzonen-Query](#korperzonen-query)
+    - [Alpine.js Komponente](#alpinejs-komponente)
+    - [Sync-Prozess](#sync-prozess)
+- [Changelog](#changelog)
+
+---
+
+## Für Anwender — Überblick
+
+**Was der Bericht leistet.** Er zeigt, wie viele Behandlungspakete je Monat verkauft wurden, wie
+viele Einheiten und Körperzonen darin stecken und wie groß der aktive Bestand ist (Pakete mit
+Resteinheiten, Ø verbleibende Einheiten). Grundlage sind die in Phorest gebuchten Client Courses,
+die nächtlich in den Hub gespiegelt werden; die Körperzonen je Paket ergeben sich aus den
+zugeordneten Services und deren KPZ-Definition im Hub.
+
+**Grundsatz:** Körperzonen werden **pro Service** gezählt, nicht mit den Einheiten multipliziert —
+ein Paket mit 10 Einheiten „Bikini (2 KPZ)" zählt als 2 Körperzonen, nicht als 20. Der globale
+Standort-Filter wirkt auf alle Zahlen. Die vollständigen Definitionen stehen unten unter
+[Kennzahlen-Definitionen](#kennzahlen-definitionen).
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Bericht öffnen, verkaufte Pakete, Nutzung und Reste lesen, damit arbeiten | Berichte 16 |
+| Standort setzen, Diagramm/Tabelle umschalten, CSV-Export | Berichte 0 |
+| Pakete einer einzelnen Kundin ansehen | Kundenverwaltung 3 |
+| Paket-Bestand als Kennzahl neben BGs und Abschlüssen | Berichte 7 |
+
+---
+
+## Für Entwickler
+
+### Kennzahlen-Definitionen
 
 | Bereich | Beschreibung |
 |---------|--------------|
 | **KPI-Dashboard** | Aktive Pakete, Neue Pakete (Monat), Ø Resteinheiten, Körperzonen |
-| **Monatliche Übersicht** | Tabelle mit Paketen, Einheiten und Körperzonen pro Monat |
-
-### KPI-Erklärungen
+| **Monatliche Übersicht** | Pakete, Einheiten und Körperzonen pro Monat (Diagramm, Tabelle über das Register) |
 
 | KPI | Bedeutung |
 |-----|-----------|
@@ -27,6 +75,8 @@ Das **glattt-Pakete Statistik**-Modul zeigt Verkaufszahlen und Nutzung von Behan
 | **Neue Pakete** | Im aktuellen Monat verkauft |
 | **Ø Resteinheiten** | Durchschnittliche verbleibende Einheiten pro aktivem Paket |
 | **Körperzonen** | Summe der verkauften Körperzonen im Monat |
+
+Der globale Branch-Filter in der Navigation filtert alle Daten pro Standort (`branch_id` an beiden Endpunkten).
 
 ### Körperzonen-Berechnung
 
@@ -42,14 +92,6 @@ Die Körperzonen werden aus den **Behandlungsservices** jedes Pakets berechnet:
   - Kinn (1 KPZ)
   - Wangen (1 KPZ)
 - → 3 Körperzonen
-
-### Filtern nach Standort
-
-Über den globalen Branch-Filter in der Navigation können die Daten pro Standort gefiltert werden.
-
----
-
-## Für Entwickler
 
 ### Architektur
 

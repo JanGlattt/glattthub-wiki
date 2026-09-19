@@ -1,26 +1,86 @@
 # Verkaufsstatistik
 
-Die Verkaufsstatistik zeigt eine umfassende Analyse der Vertragsverkäufe — pro Institut und pro Mitarbeiter, inklusive Hochrechnung bis zum Monatsende.
+Die Verkaufsstatistik zeigt eine umfassende Analyse der Vertragsverkäufe — pro Institut und pro
+Mitarbeiter, inklusive Hochrechnung bis zum Monatsende, Lastschriften-Bestand, Rücklastschriften,
+Sales Mix und Direktzahler-Segment. Diese Seite beschreibt **Definitionen je Karte, Datenbasis,
+Hochrechnungs-Algorithmus, Endpunkte, Charts und Tests**; die Bedienung Schritt für Schritt steht
+im Nutzerhandbuch.
 
 **Zugang:** Hub → Berichte → Verkaufsstatistik  
 **URL:** `/hub/reports/sales-statistics`  
 **Berechtigung:** `view_report_sales_statistics`
 
+!!! nutzerhandbuch "Bedienung: Berichte 1 – Verkaufsstatistik"
+    [hilfe.hub.glattt.com/berichte/1/](https://hilfe.hub.glattt.com/berichte/1/) — den Bericht
+    öffnen, Verkäufe je Institut, Verkäufe je Mitarbeiterin, Fallstricke und Export.
+
+    Angrenzend: [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/)
+    (Zeitraum, Standort, Kennzahlen-Zeile, Diagramm/Tabelle, Export),
+    [Berichte 7 – glattt-KPIs](https://hilfe.hub.glattt.com/berichte/7/),
+    [Berichte 5 – Widerruf-Statistik](https://hilfe.hub.glattt.com/berichte/5/),
+    [Berichte 9 – Mitarbeiterperformance](https://hilfe.hub.glattt.com/berichte/9/),
+    [Verträge 5 – SEPA-Einzug und Rücklastschrift](https://hilfe.hub.glattt.com/vertraege/5/)
+    (was hinter den Rücklastschriften steckt).
+
+## Inhaltsverzeichnis
+
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Karten und ihre Definitionen](#karten-und-ihre-definitionen)
+    - [Tabellen-Ansicht (Diagramm ↔ Tabelle)](#tabellen-ansicht-diagramm-tabelle)
+    - [Brutto/Netto-Umschalter](#bruttonetto-umschalter)
+    - [Standort-Filter](#standort-filter)
+    - [Ladeverhalten](#ladeverhalten)
+    - [Hochrechnung](#hochrechnung)
+    - [Architektur](#architektur)
+    - [Relevante Dateien](#relevante-dateien)
+    - [Datengrundlage](#datengrundlage)
+    - [Caching](#caching)
+    - [Hochrechnungs-Algorithmus](#hochrechnungs-algorithmus)
+    - [Permission](#permission)
+    - [Tests](#tests)
+
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
 
-### Was zeigt diese Seite?
+**Was der Bericht leistet.** Die Verkaufsstatistik gibt den Überblick über alle abgeschlossenen
+Verträge (aktiv + abgeschlossen) und beantwortet: Wie viele Verträge wurden diesen Monat
+abgeschlossen, wie hoch ist der Umsatz, welches Institut und welche Mitarbeiterin verkaufen am
+meisten, wie wird der Monat voraussichtlich enden (Hochrechnung)? Dazu kommen Bestandskunden und
+Flex-Behandlungen, Vertragslaufzeiten, Zahlungsausfälle nach Ratenfortschritt, der Sales Mix nach
+Paket-Umfang, Neukunden pro Monat, das Lastschriften-Einzugsvolumen mit 24-Monats-Prognose,
+Rücklastschriften je Monat und das Direktzahler-Segment.
 
-Die Verkaufsstatistik gibt einen Überblick über alle abgeschlossenen Verträge (aktiv + abgeschlossen). Sie beantwortet Fragen wie:
+**Grundsätze:** Verkaufsdatum ist die **Unterschrift** (`signed_at`); Umsatzzahlen rechnen nur mit
+aktiven und abgeschlossenen Verträgen, Rücklastschrift-Auswertungen dagegen mit allen Verträgen, die
+je eingezogen haben (auch widerrufene — geplatzt ist geplatzt). Die **Hochrechnung** ist linear über
+**Verkaufstage** (Mo–Sa ohne Feiertage), liegt nie unter dem Ist-Stand und entfällt, sobald ein
+Datumsfilter den laufenden Monat anschneidet. Der **Brutto/Netto-Umschalter** im Seitenkopf rechnet
+alle Euro-Werte der Seite um (netto = brutto ÷ 1,19). Bis 05/2026 stammen die Lastschrift-Historien
+aus der manuellen Alt-Auswertung, ab 06/2026 aus dem Hub-Zahlungsbuch — Alt-Monate sind nicht
+standortscharf. Vollständige Definitionen je Karte stehen unten unter
+[Karten und ihre Definitionen](#karten-und-ihre-definitionen).
 
-- Wie viele Verträge wurden diesen Monat abgeschlossen?
-- Wie hoch ist der Gesamtumsatz?
-- Welches Institut verkauft am meisten?
-- Welche/r Mitarbeiter/in hat die beste Verkaufsleistung?
-- Wie wird der Monat voraussichtlich enden? (Hochrechnung)
+**Wo was erledigt wird:**
 
-### Sektionen
+| Vorgang | Anleitung |
+|---|---|
+| Bericht öffnen, Kennzahlen-Zeile, Verkäufe je Institut und je Mitarbeiterin lesen | Berichte 1 |
+| Fallstricke (Hochrechnung, Legacy-Laufzeiten, Alt-Historie) und Export | Berichte 1 |
+| Zeitraum, Standort, Verkäufer:in setzen; Diagramm/Tabelle; Brutto/Netto; CSV-Export | Berichte 0 |
+| Beratungen und Abschlüsse je Mitarbeiterin (Conversion) | Berichte 9 |
+| Abschluss je Beratung, Wert einer Neukundin | Berichte 7 |
+| Widerrufe hinter den Netto-Zahlen | Berichte 5 |
+| Was eine Rücklastschrift am Vertrag bedeutet | Verträge 5 |
+
+---
+
+## Für Entwickler
+
+### Karten und ihre Definitionen
+
+Fachliche Definition, Datenbasis und Umschalter je Auswertungs-Karte — in der Reihenfolge der Seite.
 
 #### KPI-Dashboard
 
@@ -103,7 +163,7 @@ Je Ansicht zwei Quoten:
 
 **Zu beachten:** Späte Viertel bzw. hohe Ratennummern haben weniger Raten (viele Verträge sind noch nicht so weit) — kleine Grundmengen machen die Quote empfindlicher für Ausreißer.
 
-### Sales Mix — Paket-Umfang
+#### Sales Mix — Paket-Umfang
 
 Monatsweise Verteilung nach verkauftem Umfang: **1, 2, 3, 4, 5+ Körperzonen** sowie **Ganzkörper (GK)** — als gestapeltes Balkendiagramm über die **vollständige Historie** (Zeitraum per Schieberegler unten eingrenzbar, Start: letzte 13 Monate). Umschalter (rein clientseitig, kein Neuladen): **Stückzahl / Umsatz** und **Absolut / Anteil %**.
 
@@ -114,13 +174,13 @@ Ein **Perspektiven-Umschalter** wählt zwischen zwei Sichten:
 
 Die GK-Klassifizierung ist **zeitpunktgenau**: Ein Vertrag zählt als Ganzkörper, wenn seine Körperzonen-Anzahl die GK-Grenze der Preisliste erreicht, die **zum Verkaufszeitpunkt** galt (heute ab 6, früher ab 7 — keine rückwirkende Umklassifizierung). Hub-Verträge nutzen die am Vertrag hinterlegte Preisliste; Altverträge ohne Preislisten-Referenz werden über das Unterschriftsdatum aus der Preislisten-Historie zugeordnet. Die Kategorie „5+ KPZ (unter GK)" fängt Verträge mit fünf oder mehr Zonen unterhalb der damaligen GK-Grenze (z.B. 6 Zonen, als GK noch ab 7 begann).
 
-### Neukunden pro Monat
+#### Neukunden pro Monat
 
 Anzahl neuer Kunden pro Monat, gestapelt je Institut (Institutsfarben), über die **vollständige Historie** (Schieberegler unten, Start: letzte 13 Monate). **Neukunde = ab dem ersten Beratungsgespräch** — gezählt im Monat und Institut des ersten BGs; Rückkehrer bleiben dauerhaft Bestandskunden. Datenquelle ist die vollständige Phorest-Terminhistorie (ohne den `client_statistics`-Stichtag).
 
 Beide neuen Charts (und die Körperzonen-Charts) haben ein **Serien-Hover-Highlight**: beim Überfahren einer Serie wird diese über alle Monate hervorgehoben, der Rest gedimmt (`emphasis: { focus: 'series' }`, verbindliche Konvention für Balken-Charts — siehe `charts.instructions.md`).
 
-### Lastschriften-Bestand & Einzugsvolumen (MRR)
+#### Lastschriften-Bestand & Einzugsvolumen (MRR)
 
 Das monatliche Lastschrift-Einzugsvolumen als **gestapeltes Flächenchart** über die **volle Historie** — die Gesamthöhe je Monat ist das fällige Volumen, zerlegt in vier Bänder (Standard-Zoom: alles, Regler unten grenzt ein). Zusätzlich die Anzahl aktiver Mandate auf der rechten Achse (über die Legende ausblendbar). Ersetzt die frühere Alt-Auswertung „Wert der Lasts. gesamt" aus dem Legacy-System.
 
@@ -139,7 +199,7 @@ Die Alt-Historie ist ein **Gesamt-Aggregat ohne Standort-/Verkäufer-/KPZ-Split*
 
 **Bestands-Schätzung (seit 31.08.2026):** Bei vielen aktiven Legacy-Verträgen (GoCardless-Daueraufträge) reicht der gespiegelte Zahlungsplan nicht bis zum vertraglichen Ende — GoCardless plant nur begrenzt voraus, und die früheren „Geschätzt"-Verlängerungen wurden durch Neuberechnungen/Pausen/Bankwechsel storniert und nie neu angelegt. Ohne Korrektur fehlte dadurch echtes Bestandsvolumen in der Prognose (Prod-Analyse 31.08.2026: **533 aktiv zahlende Verträge, ~90 T€ Monatsrate, ~476 T€ Fehlvolumen**, Schwerpunkt Mitte 2027). Die Prognose schreibt für solche Verträge die Monatsrate rechnerisch bis zum vertraglichen Ende (`first_payment_date` + `installment_count`) fort. Bedingungen: Vertrag aktiv, SEPA, in den letzten 60 Tagen bezahlt, Planlücke ≥ 2 Monate (1 Monat Differenz ist normal — oft liegt eine Rate, z.B. die Anzahlung, planmäßig außerhalb des SEPA-Plans). **Bewusst NICHT über den Restwert** (`total_value − legacy_collected`) verlängert: `legacy_collected_cents` ist unvollständig und würde Restlaufzeiten massiv überschätzen (Stichprobe: 13 statt 3 Monate). Der Schätzanteil steht je Monat als `synthetic_cents` in der API, im Tooltip als „davon Bestands-Schätzung" und im CSV-Export als eigene Spalte. Die Zahlungspläne selbst bleiben unangetastet.
 
-### Rücklastschriften pro Monat
+#### Rücklastschriften pro Monat
 
 Die Rücklastschriften (RLS/Chargebacks) je **Fälligkeitsmonat** über die **volle Historie** — als **Quote** (Anteil geplatzter Raten nach Anzahl und nach Wert) oder als absolute **Anzahl** (Umschalter, rein clientseitig). Ordnungsgröße für die Gesundheit des Lastschrifteinzugs; ergänzt die Sektion „Zahlungsausfälle nach Ratenfortschritt", die dieselben Daten nach Vertragsphase statt Kalendermonat auswertet.
 
@@ -153,7 +213,7 @@ Raten, die nach einer Rücklastschrift doch noch bezahlt wurden (Wiederholungsei
 
 **Vertragsstatus:** Diese Auswertung (und „Zahlungsausfälle nach Ratenfortschritt") zählt Einzüge auf allen Verträgen, die je eingezogen haben — **auch auf widerrufenen und geänderten**. Geplatzt ist geplatzt, unabhängig davon, was später aus dem Vertrag wurde; nur Entwürfe bleiben außen vor (`SalesStatisticsService::COLLECTION_STATUSES`). Die übrigen Verkaufszahlen (Umsatz, MRR, Einzugsvolumen) rechnen weiterhin nur mit aktiven und abgeschlossenen Verträgen (`SALE_STATUSES`) — ein widerrufener Vertrag trägt keinen Bestandsumsatz mehr.
 
-### Direktzahler-Segment
+#### Direktzahler-Segment
 
 Die direkt (ohne Ratenzahlung) bezahlten Abschlüsse je Abschlussmonat: **Kunden, Körperzonen oder Umsatz** als Balken (Metrik-Umschalter), der **%-Anteil an allen Abschlüssen** des Monats als Linie auf der rechten Achse. Der Tooltip zeigt zusätzlich den Ø-Umsatz pro Kunde. Volle Historie, Zoom-Regler wie bei den übrigen Monats-Charts.
 
@@ -238,8 +298,6 @@ Zwei Eigenschaften der Hochrechnung:
   unvollständig wäre.
 
 ---
-
-## Für Entwickler
 
 ### Architektur
 

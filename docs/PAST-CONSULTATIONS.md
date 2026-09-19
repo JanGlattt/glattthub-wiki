@@ -1,14 +1,59 @@
 # Vergangene Beratungsgespräche
 
-Historische Analyse aller Beratungstermine aus der Phorest-Terminhistorie: Beratungsgespräche-Analyse (monatliche Entwicklung, No-Shows, Ampel-Tabelle), Wochentag/Uhrzeit-Muster, No-show-Matrix („Analyse Gigi") und Buchungseingänge.
+Historische Analyse aller Beratungstermine aus der Phorest-Terminhistorie: Beratungsgespräche-Analyse
+(monatliche Entwicklung, No-Shows, Ampel-Tabelle), Wochentag/Uhrzeit-Muster, No-show-Matrix
+(„Analyse Gigi"), Vorlauf & Termin-Erfolg und Buchungseingänge. Diese Seite beschreibt
+**Kennzahl-Definitionen, Datenbasis, Endpunkte, Dateien und Fallstricke**; die Bedienung Schritt für
+Schritt steht im Nutzerhandbuch.
 
-**Zugang:** Hub → Berichte → Vergangene Beratungsgespräche
-**URL:** `/hub/reports/past-consultations`
+**Zugang:** Hub → Berichte → Vergangene Beratungsgespräche ·
+**URL:** `/hub/reports/past-consultations` ·
 **Berechtigung:** `view_report_past_consultations`
+
+!!! nutzerhandbuch "Bedienung: Berichte 3 – Vergangene Beratungsgespräche"
+    [hilfe.hub.glattt.com/berichte/3/](https://hilfe.hub.glattt.com/berichte/3/) — Bericht öffnen,
+    Beratungen im Verlauf, was daraus wurde, Datenlage und Export.
+
+    Rahmen aller Berichtsseiten (Zeitraum und Standort, Kennzahlen-Zeile, Diagramm oder Tabelle,
+    Export): [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/).
+    Angrenzend: [Berichte 2 – Zukünftige Beratungsgespräche](https://hilfe.hub.glattt.com/berichte/2/),
+    [Berichte 4 – Stornierte und gelöschte Termine](https://hilfe.hub.glattt.com/berichte/4/),
+    [Berichte 6 – Terminstatistik](https://hilfe.hub.glattt.com/berichte/6/).
 
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
+
+**Was der Bericht beantwortet.** Wie viele Beratungsgespräche haben wirklich stattgefunden, wie viele
+sind ausgefallen, wie entwickelt sich das je Institut und Monat, zu welchen Wochentagen und Uhrzeiten
+läuft es gut, und — seit 08/2026 — wie hängt der **Buchungsvorlauf** mit Erscheinen und Abschluss
+zusammen. Der Standort-Filter der Seitenleiste wirkt seit 07/2026 lückenlos auf alle Karten.
+
+**Was „nicht erschienen" heißt.** Als No-Show zählt ein vergangener Termin mit Status *NO_SHOW*,
+*BOOKED*, *CONFIRMED* oder *CHECKED_IN* — also auch der nie final gepflegte Termin; stornierte und
+gelöschte Termine zählen gar nicht. **Termine von heute, die noch anstehen, bleiben komplett außen
+vor** — sonst stünde die No-Show-Quote jeden Morgen bei fast 100 %.
+
+**Eine Karte rechnet bewusst strenger.** „Vorlauf & Termin-Erfolg" weist eine **Ausfallquote** aus:
+No-Shows **plus** Stornierungen unter 24 Stunden vor Terminbeginn, weil ein Kurzfrist-Storno für das
+Institut nicht mehr besetzbar ist. Diese Quote liegt deshalb systematisch über der No-Show-Quote der
+übrigen Karten (~29 % gegenüber ~25 % über zwölf Monate) — kein Widerspruch, sondern zwei Fragen.
+Alle Definitionen dieser Karte stehen unter
+[Vorlauf & Termin-Erfolg — Definitionen](#vorlauf-termin-erfolg-definitionen).
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Bericht öffnen, Beratungen im Verlauf, was daraus wurde, Datenlage und Export | Berichte 3 |
+| Zeitraum und Standort, Kennzahlen-Zeile, Diagramm/Tabelle, Export | Berichte 0 |
+| Kommende Beratungen und freie Slots | Berichte 2 |
+| Abgesagte und gelöschte Termine im Detail | Berichte 4 |
+| Alle Terminarten, Dauer und Körperzonen | Berichte 6 |
+
+---
+
+## Für Entwickler
 
 ### Aufbau der Seite (Statistik-Bauplan, seit 07/2026)
 
@@ -111,9 +156,6 @@ Offline-Buchungen?
 - **Deduplizierung**: eine Buchung je Kundin und Tag (Kabinen-Doppelzeilen
   zählen nicht doppelt).
 
----
-
-## Für Entwickler
 
 ### Architektur
 

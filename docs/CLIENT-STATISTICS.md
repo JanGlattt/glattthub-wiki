@@ -2,23 +2,84 @@
 
 > Umfassende Kundenanalyse mit Demografie, Conversion-Funnel, Körperzonen, Widerrufe und geografischer Verteilung
 
-## Übersicht
+Das Modul **„Der glattt-Kunde"** bietet eine datenbasierte 360°-Analyse aller Kunden. Die Seite
+aggregiert Daten aus Phorest (Termine, Kundendaten), internen Verträgen, Beratungsgesprächen und
+Widerrufen in einer denormalisierten Statistik-Tabelle (`client_statistics`). Alle Daten werden
+über einen Sync-Prozess vorbereitet und per API-Endpoints an ein interaktives Frontend (ECharts
+seit dem Bauplan-Umbau 07/2026, Leaflet für die Karte) ausgeliefert. Diese Seite beschreibt
+**Definitionen je Karte, Datenlücken, Sync, Datenmodell, Endpunkte und Klassifizierer**; die
+Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
-Das Modul **„Der glattt-Kunde"** bietet eine datenbasierte 360°-Analyse aller Kunden. Die Seite aggregiert Daten aus Phorest (Termine, Kundendaten), internen Verträgen, Beratungsgesprächen und Widerrufen in einer denormalisierten Statistik-Tabelle. Alle Daten werden über einen Sync-Prozess vorbereitet und per API-Endpoints an ein interaktives Frontend mit Chart.js und Leaflet ausgeliefert.
+**Route:** `/hub/reports/client-statistics` — **Zugang:** Hub → Berichte → Der glattt-Kunde
 
-**Route:** `/hub/reports/client-statistics`
+!!! nutzerhandbuch "Bedienung: Berichte 8 – Der glattt-Kunde"
+    [hilfe.hub.glattt.com/berichte/8/](https://hilfe.hub.glattt.com/berichte/8/) — den Bericht
+    öffnen, Demografie und Einzugsgebiet, Kanäle und Conversion, Personas nutzen.
+
+    Angrenzend: [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/)
+    (Zeitraum, Standort, Kennzahlen-Zeile, Diagramm/Tabelle, Export),
+    [Berichte 14 – Ads-Analyse](https://hilfe.hub.glattt.com/berichte/14/) (Herkunft der Buchungen),
+    [Berichte 5 – Widerruf-Statistik](https://hilfe.hub.glattt.com/berichte/5/),
+    [Kundenverwaltung 1 – Kundin finden & Profil verstehen](https://hilfe.hub.glattt.com/kundenverwaltung/1/).
+
+## Inhaltsverzeichnis
+
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Seitenaufbau und Definitionen je Karte](#seitenaufbau-und-definitionen-je-karte)
+    - [Filter der Seite](#filter-der-seite)
+    - [Daten-Synchronisation](#daten-synchronisation)
+    - [Architektur](#architektur)
+    - [Dateien](#dateien)
+    - [Datenbank-Tabellen](#datenbank-tabellen)
+    - [API-Endpoints](#api-endpoints)
+    - [Model-Konstanten](#model-konstanten)
+    - [Caching](#caching)
+    - [Sync-Prozess](#sync-prozess)
+    - [JavaScript-Architektur](#javascript-architektur)
+    - [Leaflet-Karte](#leaflet-karte)
+    - [Deployment (Produktiv-DB)](#deployment-produktiv-db)
+    - [Herkunftsanalyse — Technische Details](#herkunftsanalyse-technische-details)
+    - [Bekannte Gotchas](#bekannte-gotchas)
 
 ---
 
-## Für Anwender
+## Für Anwender — Überblick
 
-### Zugang
+**Was der Bericht leistet.** Wer sind die Kundinnen und Kunden von glattt — wie alt, welches
+Geschlecht, woher (Postleitzahl, Entfernung zum Institut, vermutete Namensherkunft), über welchen
+Kanal gewonnen, und wie viele von ihnen gehen den Weg von der Beratung zum Vertrag? Der Bericht
+zeigt eine Kennzahlen-Zeile, Demografie, Conversion-Funnel und Akquisekanäle, Entfernungs- und
+Körperzonen-Verteilung, Widerrufs-Analyse nach Gruppen, eine Einzugsgebiets-Karte, Top-Postleitzahlen,
+Persona-Segmente (Geschlecht × Altersgruppe) und die Herkunftsverteilung. Alle Karten sind
+zweiseitig (Diagramm, Tabelle dahinter); nur die Leaflet-Karte hat kein Register.
 
-**Hub → Reports → Der glattt-Kunde**
+**Datenbasis und Grundsätze:** Gezählt werden Phorest-Kunden mit Ersttermin ab 01.01.2024, nächtlich
+in eine Statistik-Tabelle gespiegelt (Delta-Sync 03:30); die Seite ist für alle Hub-Benutzer mit
+Report-Zugriff sichtbar und zeigt bei fehlendem Sync einen Hinweis. Die Conversion-Rate zählt
+Vertrag **nur nach Beratungsgespräch** — in Funnel, Segmenten und Kanälen gleich. Zwei Datenlücken
+gehören zum Lesen dazu: Vertragsdaten existieren erst seit der Hub-Ära (Kunden mit Beratung vor 2025
+haben nur ~7 % hinterlegte Verträge — aussagekräftig ist der Zeitraum ab Januar 2025), und
+Kanaldaten gibt es erst ab 30.03.2026 (ältere Kunden erscheinen als „Unbekannt"). Fehlende
+Angaben werden sichtbar ausgewiesen, nie still weggelassen — „Ohne vollständige Angaben" ist eine
+eigene Segmentzeile.
 
-Die Seite ist für alle Hub-Benutzer mit Report-Zugriff verfügbar. Die Daten werden automatisch synchronisiert — beim ersten Aufruf wird geprüft, ob ein Sync stattgefunden hat.
+**Wo was erledigt wird:**
 
-### Seitenbereiche
+| Vorgang | Anleitung |
+|---|---|
+| Bericht öffnen, Demografie und Einzugsgebiet lesen | Berichte 8 |
+| Kanäle und Conversion verstehen, Personas nutzen | Berichte 8 |
+| Zeitraum, Standort und Detailfilter setzen, Diagramm/Tabelle, CSV-Export | Berichte 0 |
+| Herkunft der Buchungen im Werbe-Kontext | Berichte 14 |
+| Widerrufe im Detail | Berichte 5 |
+| Einzelne Kundin ansehen | Kundenverwaltung 1 |
+
+---
+
+## Für Entwickler
+
+### Seitenaufbau und Definitionen je Karte
 
 Seit 07/2026 folgt die Seite dem verbindlichen **Statistik-Bauplan**: Alle neun
 Analyse-Karten sind zweiseitig — das **Diagramm ist die Standard-Ansicht**, die
@@ -170,7 +231,7 @@ Analyse der vermuteten kulturellen Herkunft der Kunden basierend auf Vor- und Na
 
 Über den Button „KI-Optimierung" werden die verbleibenden „Sonstige"-Einträge per Google Gemini AI nachklassifiziert. Die Verarbeitung erfolgt Batch für Batch (30 Namen pro Anfrage), um das kostenlose Rate-Limit (15 Anfragen/Minute) einzuhalten. Ein Fortschrittsbalken zeigt den aktuellen Status.
 
-### Filter
+### Filter der Seite
 
 Über den ausklappbaren Filter-Bereich können alle Daten eingeschränkt werden:
 
@@ -197,8 +258,6 @@ Die Statistiken basieren auf einer **vorberechneten Tabelle** (`client_statistic
 - **Datenquelle:** Phorest-Kunden ab Ersttermin 01.01.2024
 
 ---
-
-## Für Entwickler
 
 ### Architektur
 

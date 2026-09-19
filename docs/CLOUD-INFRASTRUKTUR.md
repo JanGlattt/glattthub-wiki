@@ -147,7 +147,7 @@ IAP schützt die Web-App mit einer Google-Anmeldung, die **vor** dem normalen Ap
 
 **Wichtig:** IAP greift nur bei Zugriff über den Load Balancer (Custom Domains). Die `*.run.app`-URLs umgehen den Load Balancer und damit auch IAP.
 
-**Ausnahme:** API-Pfade (`/api/*`) sind vom IAP ausgenommen — sie werden über separate Backend-Services ohne IAP geroutet. Details siehe [API-Pfade vom IAP ausschließen](#api-pfade-vom-iap-ausschlieen).
+**Ausnahme:** API-Pfade (`/api/*`) sind vom IAP ausgenommen — sie werden über separate Backend-Services ohne IAP geroutet. Details siehe [API-Pfade vom IAP ausschließen](#pfade-vom-iap-ausschlieen-api-token-seiten).
 
 #### Voraussetzungen (bereits eingerichtet)
 

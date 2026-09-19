@@ -1,8 +1,72 @@
-# 💉 Behandlungseinstellungen (Treatment Settings)
+# Behandlungseinstellungen (Treatment Settings)
 
-Die Behandlungseinstellungen ermöglichen das Erfassen und Dokumentieren von Laser-Parametern für jede Körperzone eines Termins. Die Daten werden pro Kunde und Zone über mehrere Behandlungen hinweg protokolliert.
+Die Behandlungseinstellungen — im Hub „Einstellungszettel" — erfassen und dokumentieren die
+Laser-Parameter je Körperzone eines Termins (Laserkopf, Hauttyp/Skintel, Haar, empfohlene und
+genutzte ms/Joule, Notizen, Fotos). Die Daten werden pro Kundin und Zone über alle Behandlungen
+hinweg protokolliert, mit automatischer Sitzungsnummer, Behandlungshistorie als Tabelle und
+Warnungen, wenn die Werte nicht steigen. Das Modul ist für Tablets ohne Tastatur gebaut. Diese
+Seite beschreibt Verhalten, Datenmodell, Endpunkte, UI-Komponenten und Fallstricke; die Bedienung
+Schritt für Schritt steht im Nutzerhandbuch.
 
-## 📋 Übersicht
+!!! nutzerhandbuch "Bedienung: Terminansicht 8 und Kundenverwaltung 6 im Nutzerhandbuch"
+    [Terminansicht 8 – Behandlungstermin & Einstellungszettel](https://hilfe.hub.glattt.com/terminansicht/8/) —
+    Behandlungstermin starten, Zone wählen, Zettel ausfüllen und speichern, wenn die Werte nicht steigen,
+    Fortschritt im Blick, Behandlung beenden ·
+    [Kundenverwaltung 6 – Unterlagen & Behandlungsverlauf](https://hilfe.hub.glattt.com/kundenverwaltung/6/) —
+    Einstellungszettel und Behandlungsfotos im Kundenprofil lesen.
+
+    Angrenzend: [Terminansicht 10 – Sitzungsbestätigung](https://hilfe.hub.glattt.com/terminansicht/10/)
+    (das Pflichtformular, das den Einstellungszettel sperrt).
+
+## Inhaltsverzeichnis
+
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Funktionsumfang und Verhalten](#funktionsumfang-und-verhalten-seit-februar-2026)
+    - [URL-Struktur](#url-struktur)
+    - [Dateistruktur](#dateistruktur)
+    - [Datenbank-Schema](#datenbank-schema)
+    - [UI-Komponenten](#ui-komponenten)
+    - [Controller-Methoden](#controller-methoden)
+    - [Behandlungsnummerierung](#behandlungsnummerierung)
+    - [Tablet-Optimierung](#tablet-optimierung)
+    - [SQL für Cloud-Deployment (veraltet)](#sql-fur-cloud-deployment-veraltet)
+- [Verwandte Dokumentation](#verwandte-dokumentation)
+
+---
+
+## Für Anwender — Überblick
+
+**Was das Modul leistet.** Während eines laufenden Behandlungstermins öffnet die Kachel
+„Einstellungszettel" in der Terminansicht eine Körpergrafik; ein Tipp auf eine Zone (oder eine
+selbst benannte Zusatz-Zone wie „Kinn") zeigt alle bisherigen Sitzungen dieser Zone als Tabelle
+und darunter die geführte Eingabe der aktuellen Sitzung in sechs Gruppen (Laserkopf, Hauttyp,
+Haar, empfohlene Werte, genutzte Werte, Notizen und Fotos). Die Sitzungsnummer und die
+Mitarbeiterin kommen automatisch aus Historie und Phorest-Termin. Im Kundenprofil sind dieselben
+Daten nur lesbar (Reiter mit Behandlungsverlauf und Fotogalerie).
+
+**Grundsätze:**
+
+- **Der Zettel ist gesperrt, bis die Pflichtformulare des Termins erledigt sind** (z.B. die
+  Sitzungsbestätigung) — die Kachel zeigt ein Schloss und nennt, was fehlt.
+- **Die Werte sollen steigen:** Liegen die genutzten Joule außerhalb der empfohlenen Spanne oder
+  unter dem Wert der letzten Sitzung, warnt das System rot und fragt vor dem Speichern nach.
+- **Skintel oder Hauttyp** — eines von beiden ist Pflicht; fällt das Skintel-Gerät aus, wird der
+  Hauttyp I–VI gewählt.
+- **Fotos erst nach dem Speichern** der Sitzung; sie liegen im privaten Cloud-Speicher und sind nur
+  über zeitlich begrenzte Links abrufbar.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Behandlungstermin starten, Zone wählen, Zettel ausfüllen und speichern, Warnungen, Behandlung beenden | Terminansicht 8 |
+| Gesperrter Einstellungszettel: Sitzungsbestätigung ausfüllen | Terminansicht 10 |
+| Einstellungszettel und Behandlungsfotos im Kundenprofil lesen | Kundenverwaltung 6 |
+
+---
+
+## Für Entwickler
 
 Das Modul ist für den Einsatz auf **Tablets ohne Tastatur** optimiert:
 
@@ -13,12 +77,15 @@ Das Modul ist für den Einsatz auf **Tablets ohne Tastatur** optimiert:
 - **Automatische Nummerierung** - Behandlungsnummer wird pro Zone/Kunde gezählt
 - **Behandlungszähler** - Badge zeigt an, wie oft eine Zone bereits behandelt wurde
 - **iPad-Zahlentastatur** - Numerische Felder öffnen automatisch die Zahlentastatur
+- **Sperre durch Pflichtformulare** - `treatmentLocked` in der Terminansicht (siehe `APPOINTMENT-VIEW.md`,
+  „Formular-Kette, Pflichtformulare & Mitunterzeichner"); Behandlungs-Chips der Sitzungs-Karte werden
+  über das Event `update-configured-zones` und `GET …/treated-zones` nachgeführt
 
 ---
 
-## ✨ Neue Features (Februar 2026)
+### Funktionsumfang und Verhalten (seit Februar 2026)
 
-### Behandlungshistorie im Kundenprofil
+#### Behandlungshistorie im Kundenprofil
 
 Die Behandlungseinstellungen sind jetzt auch als **Tab im Kundenprofil** verfügbar (nicht nur in der Termin-Session). Details siehe [CLIENT-DETAIL-MODULE.md](CLIENT-DETAIL-MODULE.md).
 
@@ -28,7 +95,7 @@ Die Behandlungseinstellungen sind jetzt auch als **Tab im Kundenprofil** verfüg
 - Nur Zonen mit vorhandenen Behandlungen werden angezeigt
 - Layout: Körpergrafik + Buttons oben, Tabelle volle Breite unten
 
-### Behandlungszähler-Badges
+#### Behandlungszähler-Badges
 
 Alle Körperzonen zeigen jetzt einen **Behandlungszähler** an:
 
@@ -36,7 +103,7 @@ Alle Körperzonen zeigen jetzt einen **Behandlungszähler** an:
 - **Custom-Zonen**: Ebenfalls mit Behandlungszähler
 - **Teal-Highlighting**: Bereits behandelte Zonen werden farblich hervorgehoben
 
-### Automatisches Laden von Custom-Zonen
+#### Automatisches Laden von Custom-Zonen
 
 Custom-Zonen eines Kunden werden aus der Datenbank geladen:
 
@@ -44,7 +111,7 @@ Custom-Zonen eines Kunden werden aus der Datenbank geladen:
 - Gruppiert nach `custom_zone_name` mit Behandlungsanzahl
 - Keine manuelle Neueingabe notwendig
 
-### Behandlungshistorie als Tabelle
+#### Behandlungshistorie als Tabelle
 
 Das Modal zeigt die **komplette Behandlungshistorie** in Tabellenform:
 
@@ -77,7 +144,7 @@ Das Modal zeigt die **komplette Behandlungshistorie** in Tabellenform:
   `.modal-glattt-dropdown-safe`); sonst bleibt der Container Scroll-Container für lange Historien
 - Ladezustand: Skeleton-Card mit Zonen-Kachel-Raster statt Spinner
 
-### Red Flags (Joule-Warnungen)
+#### Red Flags (Joule-Warnungen)
 
 Beim Erfassen der genutzten Joule warnt das System live (rotes Feld + Hinweisbanner) und
 zusätzlich mit einem Bestätigungs-Popup vor dem Speichern („Trotzdem speichern"), wenn:
@@ -86,14 +153,14 @@ zusätzlich mit einem Bestätigungs-Popup vor dem Speichern („Trotzdem speiche
 - die genutzten Joule **niedriger als bei der letzten Sitzung** derselben Zone sind
   (Hintergrund: Nach 3–4 Sitzungen sollten die Einstellungen steigen).
 
-### Skintel-Ausfall: Hauttyp I–VI
+#### Skintel-Ausfall: Hauttyp I–VI
 
 Neben dem Skintel-Wert (0-100) kann alternativ der **Hauttyp I–VI** (Fitzpatrick) gewählt
 werden — für den Fall, dass das Skintel-Gerät nicht funktioniert. Beim Speichern ist
 **Skintel oder Typ** Pflicht (eines von beiden reicht). Anzeige in der Spalte „Skintel/Typ"
 (z.B. `45` oder `Typ III`).
 
-### iPad-Zahlentastatur
+#### iPad-Zahlentastatur
 
 Alle numerischen Eingabefelder haben `inputmode="numeric"`:
 
@@ -105,7 +172,7 @@ Alle numerischen Eingabefelder haben `inputmode="numeric"`:
 
 Auf iPad/iPhone erscheint automatisch die Zahlentastatur.
 
-### Foto-Dokumentation
+#### Foto-Dokumentation
 
 Pro Behandlung können **Fotos** hochgeladen werden:
 
@@ -120,19 +187,19 @@ Pro Behandlung können **Fotos** hochgeladen werden:
 
 ---
 
-## 🔗 URL-Struktur
+### 🔗 URL-Struktur
 
 ```
 /hub/appointment/{branchId}/{appointmentId}/session/treatment-settings
 ```
 
-### Zugang
+#### Zugang
 
 Erreichbar über die **Unified Terminansicht** → Session-Grid → Kachel "Behandlungseinstellungen".
 
 ---
 
-## 📁 Dateistruktur
+### 📁 Dateistruktur
 
 ```
 resources/views/
@@ -160,9 +227,9 @@ database/migrations/
 
 ---
 
-## 🗃️ Datenbank-Schema
+### 🗃️ Datenbank-Schema
 
-### Tabelle: `treatment_settings`
+#### Tabelle: `treatment_settings`
 
 ```sql
 CREATE TABLE `treatment_settings` (
@@ -217,7 +284,7 @@ CREATE TABLE `treatment_settings` (
 );
 ```
 
-### Enum-Werte
+#### Enum-Werte
 
 | Feld | Wert | Bedeutung |
 |------|------|-----------|
@@ -234,7 +301,7 @@ CREATE TABLE `treatment_settings` (
 | | `m` | Mittel |
 | | `nd` | Nicht dicht |
 
-### Tabelle: `treatment_setting_photos`
+#### Tabelle: `treatment_setting_photos`
 
 ```sql
 CREATE TABLE `treatment_setting_photos` (
@@ -271,9 +338,9 @@ CREATE TABLE `treatment_setting_photos` (
 
 ---
 
-## 🎨 UI-Komponenten
+### 🎨 UI-Komponenten
 
-### Körpergrafik (Body Zone Selector Treatment)
+#### Körpergrafik (Body Zone Selector Treatment)
 
 Eine spezialisierte Variante der Körperzonen-Komponente:
 
@@ -300,7 +367,7 @@ Eine spezialisierte Variante der Körperzonen-Komponente:
 | `custom-zone-added` | `{ key, name, isCustom }` | Benutzerdefinierte Zone hinzugefügt |
 | `custom-zone-removed` | `{ key }` | Benutzerdefinierte Zone entfernt |
 
-### Benutzerdefinierte Zonen
+#### Benutzerdefinierte Zonen
 
 Für kleine Bereiche, die nicht auf der Körpergrafik sind:
 
@@ -312,7 +379,7 @@ Für kleine Bereiche, die nicht auf der Körpergrafik sind:
 
 **Beispiele:** Kinn, Oberlippe, Augenbrauen, Zehen, Ohrläppchen
 
-### Einstellungsformular (Modal)
+#### Einstellungsformular (Modal)
 
 Touch-optimiertes Modal mit **Behandlungstabelle**:
 
@@ -344,9 +411,9 @@ Touch-optimiertes Modal mit **Behandlungstabelle**:
 
 ---
 
-## 🔧 Controller-Methoden
+### 🔧 Controller-Methoden
 
-### `sessionTreatmentSettings()`
+#### `sessionTreatmentSettings()`
 Rendert die Hauptansicht.
 
 ```php
@@ -354,7 +421,7 @@ Route::get('/appointment/{branchId}/{appointmentId}/session/treatment-settings',
     [AppointmentViewController::class, 'sessionTreatmentSettings']);
 ```
 
-### `getTreatmentSettingsData()`
+#### `getTreatmentSettingsData()`
 Liefert alle Daten per AJAX.
 
 ```php
@@ -385,9 +452,9 @@ Route::get('/appointment/{branchId}/{appointmentId}/session/treatment-settings/d
 }
 ```
 
-### Neue Response-Felder
+#### Neue Response-Felder
 
-#### `treatmentHistory`
+##### `treatmentHistory`
 Alle vergangenen Behandlungen pro Zone als Array (für Tabellenanzeige):
 ```json
 {
@@ -398,7 +465,7 @@ Alle vergangenen Behandlungen pro Zone als Array (für Tabellenanzeige):
 }
 ```
 
-#### `clientCustomZones`
+##### `clientCustomZones`
 Custom-Zonen des Kunden (aus allen Terminen):
 ```json
 [
@@ -407,7 +474,7 @@ Custom-Zonen des Kunden (aus allen Terminen):
 ]
 ```
 
-#### `zoneTreatmentCounts`
+##### `zoneTreatmentCounts`
 Anzahl der Behandlungen pro Standard-Zone:
 ```json
 {
@@ -417,7 +484,7 @@ Anzahl der Behandlungen pro Standard-Zone:
 }
 ```
 
-### `saveTreatmentSettings()`
+#### `saveTreatmentSettings()`
 Speichert Einstellungen.
 
 ```php
@@ -447,7 +514,7 @@ Route::post('/appointment/{branchId}/{appointmentId}/session/treatment-settings'
 }
 ```
 
-### Foto-API-Routen
+#### Foto-API-Routen
 
 ```php
 // Foto hochladen
@@ -490,7 +557,7 @@ Route::get('/treatment-settings/photos/{photoId}/view',
 
 ---
 
-## 🔄 Behandlungsnummerierung
+### 🔄 Behandlungsnummerierung
 
 Die Behandlungsnummer wird **automatisch** berechnet:
 
@@ -509,7 +576,7 @@ TreatmentSetting::where('phorest_client_id', $clientId)
 
 ---
 
-## 📱 Tablet-Optimierung
+### 📱 Tablet-Optimierung
 
 Alle UI-Elemente sind für Touch ohne Tastatur optimiert:
 
@@ -529,17 +596,14 @@ Alle UI-Elemente sind für Touch ohne Tastatur optimiert:
 
 ---
 
-## 🔗 Verwandte Dokumentation
+### SQL für Cloud-Deployment (veraltet)
 
-- [APPOINTMENT-VIEW.md](APPOINTMENT-VIEW.md) - Terminansicht
-- [BODY-ZONE-SELECTOR.md](BODY-ZONE-SELECTOR.md) - Körperzonen-Komponente
-- [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) - GLATTT Design System
+> **Veraltet:** Dieses Hand-SQL stammt aus der Zeit vor dem automatischen Migrations-Lauf.
+> Seit 07/2026 fährt der Docker-Entrypoint `php artisan migrate --force --isolated` beim Deploy —
+> Schema-Änderungen laufen ausschließlich über die Migrationen in `database/migrations/`
+> (siehe Dateistruktur). Der Block bleibt nur als Referenz für die Spalten-Kommentare stehen.
 
----
-
-## 📝 SQL für Cloud-Deployment
-
-Komplettes SQL zum Anlegen der Tabelle in der Cloud-Datenbank:
+Ursprüngliches SQL zum Anlegen der Tabelle in der Cloud-Datenbank:
 
 ```sql
 -- Behandlungseinstellungen: Laser-Einstellungen pro Termin und Körperzone
@@ -594,3 +658,13 @@ CREATE TABLE IF NOT EXISTS `treatment_settings` (
     CONSTRAINT `treatment_settings_user_fk` FOREIGN KEY (`created_by_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
+
+---
+
+## Verwandte Dokumentation
+
+- [APPOINTMENT-VIEW.md](APPOINTMENT-VIEW.md) - Terminansicht
+- [BODY-ZONE-SELECTOR.md](BODY-ZONE-SELECTOR.md) - Körperzonen-Komponente
+- [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) - GLATTT Design System
+
+---

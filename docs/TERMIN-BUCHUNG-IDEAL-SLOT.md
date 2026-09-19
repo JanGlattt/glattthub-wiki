@@ -1,76 +1,99 @@
 # Termin buchen – Ideale Slot-Findung
 
-Modul im glatttHub, das beim Buchen oder Verlegen eines Termins automatisch den **idealen Slot** vorschlägt. Es setzt die internen Produktivitäts-Regeln um: zuerst einen Raum füllen, keine Lücken, exakte Anschlusszeiten – und bucht immer alle aktiven Paket-Services des Kunden plus die Desinfektion.
+Modul im glatttHub, das beim Buchen oder Verlegen eines Termins automatisch den **idealen Slot**
+vorschlägt. Es setzt die internen Produktivitäts-Regeln um: zuerst einen Raum füllen, keine Lücken,
+exakte Anschlusszeiten – und bucht immer alle aktiven Paket-Services des Kunden plus die
+Desinfektion. Dazu gehört der **Self-Service-Link**, über den die Kundin ohne Login selbst einen
+Slot wählt. Diese Seite beschreibt Absicht, Regeln, Slot-Engine, Phorest-Integration,
+Livewire-Komponenten, Token-Modell und Tests; die Bedienung Schritt für Schritt steht im
+Nutzerhandbuch.
+
+!!! nutzerhandbuch "Bedienung: Terminansicht 9 – Termin buchen"
+    [hilfe.hub.glattt.com/terminansicht/9/](https://hilfe.hub.glattt.com/terminansicht/9/) — Kundin und
+    Institut wählen, Zeit finden, buchen und bestätigen, Link zur Selbstbuchung erstellen.
+
+    Angrenzend: [Kundenverwaltung 3 – Termine & Pakete](https://hilfe.hub.glattt.com/kundenverwaltung/3/)
+    (Verlegen und Link aus dem Kundenprofil),
+    [Terminansicht 6 – Direkt behandeln & Termin beenden](https://hilfe.hub.glattt.com/terminansicht/6/)
+    (Folgetermin nach dem Termin).
 
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
 
-### Was macht dieses Modul?
+**Was das Modul leistet.** Statt zu fragen „gleicher Tag, gleiche Zeit in 8 Wochen?" sucht das
+Modul im Kalender den **nächsten freien Termin, der direkt an einen bestehenden anschließt** – im
+richtigen Raum und ohne kleine Lücken. Die Mitarbeiterin wählt nur Institut und Kundin, das
+System schlägt mehrere ideale Termine an unterschiedlichen Tagen vor. Verlegt wird direkt im
+Kundenprofil (Reiter „Termine", Knopf „Verlegen") oder aus der Terminansicht; alternativ bekommt
+die Kundin einen **Self-Service-Link** (48 Stunden gültig, einmalig nutzbar) und wählt selbst –
+Institut und Leistungen sind darin fest vorgegeben, auf Wunsch nur lückenlose Slots.
 
-Statt zu fragen „gleicher Tag, gleiche Zeit in 8 Wochen?" sucht das Modul im Kalender den **nächsten freien Termin, der direkt an einen bestehenden anschließt** – im richtigen Raum und ohne kleine Lücken. Der angemeldete Mitarbeiter wählt nur Institut und Kunde, das System schlägt mehrere ideale Termine an unterschiedlichen Tagen vor.
+**Die Regeln, die das Modul umsetzt:**
 
-### Die Regeln, die das Modul umsetzt
+1. **Erst einen Raum füllen** – Termine werden zuerst komplett in **Raum 1** (z.B. `BI 1`) gelegt,
+   bis dieser zu ca. **80 %** ausgelastet ist. Erst dann wird **Raum 2** (`BI 2`) geöffnet. So muss bei
+   Krankheit einer Mitarbeiterin niemand verschoben oder abgesagt werden.
+2. **Keine Lücken** – der neue Termin schließt direkt an den vorherigen an. 5–10-Minuten-Lücken sind
+   verlorene Zeit.
+3. **Exakte Anschlusszeiten** – wenn der nächste freie Termin um **9:55 Uhr** anschließt, wird
+   **9:55 Uhr** gebucht und nicht 10:00 Uhr.
+4. **Alle Services + Desinfektion** – es werden immer alle aktiven Paket-Services der Kundin gebucht
+   und automatisch der 10-minütige **Desinfektions**-Service angehängt (Reinigungszeit zwischen Kunden).
 
-1. **Erst einen Raum füllen** – Termine werden zuerst komplett in **Raum 1** (z.B. `BI 1`) gelegt, bis dieser zu ca. **80 %** ausgelastet ist. Erst dann wird **Raum 2** (`BI 2`) geöffnet. So muss bei Krankheit eines Mitarbeiters niemand verschoben oder abgesagt werden.
-2. **Keine Lücken** – der neue Termin schließt direkt an den vorherigen an. 5–10-Minuten-Lücken sind verlorene Zeit.
-3. **Exakte Anschlusszeiten** – wenn der nächste freie Termin um **9:55 Uhr** anschließt, wird **9:55 Uhr** gebucht und nicht 10:00 Uhr.
-4. **Alle Services + Desinfektion** – es werden immer alle aktiven Paket-Services des Kunden gebucht und automatisch der 10-minütige **Desinfektions**-Service angehängt (Reinigungszeit zwischen Kunden).
+**Wo was erledigt wird:**
 
-### Wo finde ich das Modul?
-
-Das Verlegen ist direkt im **Kundenprofil → Tab „Termine"** über den Button **„Verlegen"** bei jedem zukünftigen, nicht stornierten Termin erreichbar. Bei bereits stornierten oder vergangenen Terminen werden „Verlegen" und „Link" ausgeblendet – ein stornierter Termin kann nicht mehr verlegt werden.
-
-> Die eigenständige Buchungsseite (`Hub → Termin buchen`) existiert noch im Code, ist aber aus der Navigation entfernt. Der primäre Weg ist ausschließlich das Modal auf der Kundenseite.
-
-### Termin verlegen
-
-Es gibt **zwei Wege**, einen Termin zu verlegen:
-
-1. **Direkt im Kundenprofil** (empfohlen): Im Tab **„Termine"** hat jeder zukünftige Termin einen Button **„Verlegen"**. Ein Klick öffnet ein **Modal** mit der vollständigen Slot-Logik:
-   - Oben wählt man **Institut** (bestehende Filiale vorausgewählt) und das **erste mögliche Datum**.
-   - Die Services des Kunden (alle aktiven Paket-Services + Desinfektion) werden **automatisch übernommen** und als Badges angezeigt.
-   - Darunter erscheinen die idealen freien Slots als kompakte Liste, gruppiert pro Tag.
-   - Ein Klick auf einen Slot storniert die alten Termine und legt den neuen an. Danach lädt die Terminliste automatisch neu und es erscheint eine Erfolgsmeldung.
-2. **Aus der Terminansicht** eines Termins: Button **„Verlegen"** öffnet das Buchungsmodul (`hub.booking`) mit vorausgewähltem Kunden, Institut und den `appointmentIds` des Termins.
-
-> **Wichtig – Stornierung per appointmentId:** Bestehende Phorest-Termine besitzen **keine abrufbare `bookingId`** (diese wird nur beim Erstellen einer Buchung einmalig zurückgegeben und ist später nirgends abrufbar). Das Verlegen storniert daher jeden Service-Termin einzeln über seine `appointmentId` (`appointment/cancel?appointment_id=…`) und legt anschließend eine neue Buchung an. Ein im Profil gruppierter Termin kann aus mehreren `appointmentIds` bestehen (mehrere aufeinanderfolgende Services) – es werden alle storniert.
-
-### Selfservice: Kunde bucht/verlegt selbst per Link
-
-Zusätzlich zur Buchung durch Mitarbeiter kann ein **Self-Service-Link** an den Kunden geschickt werden, über den er sich **ohne Login** selbst einen Termin aussucht.
-
-**Wie erstellt man den Link?**
-
-Im Kundenprofil → Tab **„Termine"**:
-- **Neuer Termin**: Button **„Link erstellen"** in der Karte „Selfservice-Terminbuchung" (immer sichtbar).
-- **Verlegen**: Button **„Link"** (Kettensymbol) bei jedem zukünftigen, nicht stornierten Termin, direkt neben „Verlegen".
-
-Im sich öffnenden Modal legt der Mitarbeiter fest:
-1. **Institut** – bei „Verlegen" das Institut des bestehenden Termins, bei „Neuer Termin" das Institut des letzten bekannten Termins bzw. (falls der Kunde noch keinen Termin hatte) `lastVisitedBranchId`/`creatingBranchId` aus den Phorest-Kundendaten. Immer frei änderbar. Solange kein Institut gewählt ist, zeigt die Service-Liste weiter unten den Hinweis „Bitte zuerst ein Institut auswählen" statt einer irreführenden „nicht gefunden"-Meldung.
-2. **Frühestens ab** – Datum, ab dem gesucht wird
-3. **Nur Termine ohne Lücke anbieten** (Toggle, standardmäßig an) – steuert den „grün/grau"-Filter (siehe unten)
-4. **Services für diesen Termin** – Checkbox-Liste aller aktiven Paket-Services + Extrazeit des Kunden (`BookingService::getServiceOptions()`, identisch zur Auswahl im Buchungsmodul für Mitarbeiter). **Standardmäßig sind alle Positionen ausgewählt** (alle aktiven Abos + ggf. Extrazeit); der Mitarbeiter kann einzelne bewusst **abwählen** oder wieder **zubuchen**, bevor der Link generiert wird. Die Desinfektion wird beim Buchen immer automatisch ergänzt und ist kein Auswahlpunkt. Ohne mindestens einen ausgewählten Service kann kein Link erstellt werden. Ein Instituts-Wechsel lädt die Service-Liste neu (andere Service-IDs/Verfügbarkeiten je Institut).
-
-Nach Klick auf „Link erstellen" wird der Link angezeigt mit **„Kopieren"**-Button und, falls eine Mobilnummer beim Kunden hinterlegt ist, einem **„Per WhatsApp senden"**-Button (öffnet `wa.me` mit vorausgefüllter Nachricht in WhatsApp/WhatsApp Web – keine Superchat-API-Integration, funktioniert immer, unabhängig vom 24h-Antwortfenster).
-
-**„Nur grüne" vs. „auch graue" Termine:**
-
-Im Slot-Kalender sind Slots mit `is_adjacent = true` **grün hervorgehoben** (`slot-pill--adjacent`, `--color-success`) – sie schließen lückenlos an einen bestehenden Termin oder die Arbeitszeit-Grenze an und sind aus Produktivitätssicht **ideal**. Andere freie Slots (`is_adjacent = false`, z.B. gestapelte Füller mitten am Tag) werden **neutral/weiß** dargestellt. Ist der Toggle „Nur ohne Lücke" aktiv, sieht der Kunde **ausschließlich grüne Slots** – so kann er sich nie einen Termin aussuchen, der eine Produktivitäts-Lücke reißt.
-
-**Was sieht der Kunde?**
-
-Eine schlanke, eigenständige Seite (`/shared/booking/{token}`, kein Login, kein Hub-Layout): Datum-Auswahl (nicht vor das festgelegte Mindestdatum), darunter die freien Slots als Liste. Institut und Services (exakt die beim Link-Erstellen ausgewählten Positionen + Desinfektion) sind **fest vorgegeben** und nicht änderbar. Bei einer Verlegung (`mode=reschedule`) wird der zu verlegende Termin oben als **„Zu verlegender Termin"**-Badge angezeigt (statt reinem Fließtext). Nach Klick auf einen Slot wird sofort gebucht bzw. der alte Termin verlegt; der Link ist danach verbraucht. Auf der Erfolgsseite kann der Kunde per **„Zum Kalender hinzufügen"**-Button eine `.ics`-Datei herunterladen (Datum, Uhrzeit, Dauer, Institutsadresse als Ort – bewusst **ohne** die einzelnen Service-Namen, um keine Behandlungsdetails im Kalendereintrag preiszugeben).
-
-**Sicherheit & Gültigkeit:** Identisches Muster wie beim Formular-Teilen – 64-Zeichen-Token, **48 Stunden gültig**, **einmalig nutzbar** (verfällt sofort nach erfolgreicher Buchung). Bei ungültigem/abgelaufenem/bereits genutztem Link sieht der Kunde eine passende Fehlermeldung statt eines Fehlers. Zusätzlich `throttle:shared-page` (30 Anfragen/Min. pro IP) auf dem Seitenaufruf.
-
-**Infrastruktur-Hinweis:** `/shared/booking/{token}` läuft über einen eigenen Backend-Service ohne IAP (`backend-glattthub-{env}-public`), damit Kunden ohne `@labrado-schlueter.com`-Google-Account die Seite überhaupt erreichen können — siehe [CLOUD-INFRASTRUKTUR.md](CLOUD-INFRASTRUKTUR.md#pfade-vom-iap-ausschließen-api--token-seiten).
-
-**Benachrichtigung:** Bucht der Kunde selbst einen Termin, wird das zuständige Institut-Team per `NotificationService` benachrichtigt (`forInstitutes([$branchId])`).
+| Vorgang | Anleitung |
+|---|---|
+| Termin buchen: Kundin und Institut, Zeit finden, buchen und bestätigen | Terminansicht 9 |
+| Link zur Selbstbuchung erstellen und per WhatsApp senden | Terminansicht 9 |
+| Termin aus dem Kundenprofil verlegen, Link zum Verlegen | Kundenverwaltung 3 |
+| Folgetermin direkt nach dem Termin planen | Terminansicht 6 |
 
 ---
 
 ## Für Entwickler
+
+### Einstiegspunkte
+
+- **Kundenprofil → Tab „Termine"** (empfohlen): Button **„Verlegen"** bei jedem zukünftigen, nicht
+  stornierten Termin öffnet das `RescheduleSlotModal` mit der vollständigen Slot-Logik — Institut
+  (bestehende Filiale vorausgewählt) und erstes mögliches Datum oben, Services des Kunden (alle aktiven
+  Paket-Services + Desinfektion) automatisch übernommen und als Badges angezeigt, darunter die idealen
+  Slots gruppiert pro Tag. Ein Klick auf einen Slot storniert die alten Termine und legt den neuen an;
+  die Terminliste lädt neu, Erfolgsmeldung. Bei stornierten oder vergangenen Terminen werden „Verlegen"
+  und „Link" ausgeblendet – ein stornierter Termin kann nicht mehr verlegt werden.
+- **Terminansicht:** Button **„Verlegen"** in der Sidebar öffnet das Buchungsmodul (`hub.booking`) mit
+  vorausgewähltem Kunden, Institut und den `appointmentIds` des Termins.
+- **Buchungsseite** `Hub → Termin buchen` (`hub.booking`): existiert im Code, ist aber aus der
+  Navigation entfernt. Der primäre Weg ist das Modal auf der Kundenseite.
+- **Folgetermin nach „Termin beenden"** (`FollowUpBookingModal`, `mode=new`): siehe
+  `FOLGETERMIN-BEWERTUNGSLINK.md`.
+
+> **Wichtig – Stornierung per appointmentId:** Bestehende Phorest-Termine besitzen **keine abrufbare `bookingId`** (diese wird nur beim Erstellen einer Buchung einmalig zurückgegeben und ist später nirgends abrufbar). Das Verlegen storniert daher jeden Service-Termin einzeln über seine `appointmentId` (`appointment/cancel?appointment_id=…`) und legt anschließend eine neue Buchung an. Ein im Profil gruppierter Termin kann aus mehreren `appointmentIds` bestehen (mehrere aufeinanderfolgende Services) – es werden alle storniert.
+
+### Self-Service-Link: Fachregeln
+
+Zusätzlich zur Buchung durch Mitarbeiter kann ein **Self-Service-Link** an die Kundin geschickt werden, über den sie sich **ohne Login** selbst einen Termin aussucht.
+
+**Link erstellen** (Kundenprofil → Tab **„Termine"**): **Neuer Termin** über „Link erstellen" in der Karte „Selfservice-Terminbuchung" (immer sichtbar); **Verlegen** über den „Link"-Button (Kettensymbol) bei jedem zukünftigen, nicht stornierten Termin, direkt neben „Verlegen". Im Modal (`BookingShareLinkModal`) legt die Mitarbeiterin fest:
+
+1. **Institut** – bei „Verlegen" das Institut des bestehenden Termins, bei „Neuer Termin" das Institut des letzten bekannten Termins bzw. (falls der Kunde noch keinen Termin hatte) `lastVisitedBranchId`/`creatingBranchId` aus den Phorest-Kundendaten. Immer frei änderbar. Solange kein Institut gewählt ist, zeigt die Service-Liste weiter unten den Hinweis „Bitte zuerst ein Institut auswählen" statt einer irreführenden „nicht gefunden"-Meldung.
+2. **Frühestens ab** – Datum, ab dem gesucht wird
+3. **Nur Termine ohne Lücke anbieten** (Toggle, standardmäßig an) – steuert den „grün/grau"-Filter (siehe unten)
+4. **Services für diesen Termin** – Checkbox-Liste aller aktiven Paket-Services + Extrazeit des Kunden (`BookingService::getServiceOptions()`, identisch zur Auswahl im Buchungsmodul für Mitarbeiter). **Standardmäßig sind alle Positionen ausgewählt** (alle aktiven Abos + ggf. Extrazeit); die Mitarbeiterin kann einzelne bewusst **abwählen** oder wieder **zubuchen**, bevor der Link generiert wird. Die Desinfektion wird beim Buchen immer automatisch ergänzt und ist kein Auswahlpunkt. Ohne mindestens einen ausgewählten Service kann kein Link erstellt werden. Ein Instituts-Wechsel lädt die Service-Liste neu (andere Service-IDs/Verfügbarkeiten je Institut).
+
+Nach Klick auf „Link erstellen" wird der Link angezeigt mit **„Kopieren"**-Button und, falls eine Mobilnummer beim Kunden hinterlegt ist, einem **„Per WhatsApp senden"**-Button (öffnet `wa.me` mit vorausgefüllter Nachricht in WhatsApp/WhatsApp Web – keine Superchat-API-Integration, funktioniert immer, unabhängig vom 24h-Antwortfenster).
+
+**„Nur grüne" vs. „auch graue" Termine:** Im Slot-Kalender sind Slots mit `is_adjacent = true` **grün hervorgehoben** (`slot-pill--adjacent`, `--color-success`) – sie schließen lückenlos an einen bestehenden Termin oder die Arbeitszeit-Grenze an und sind aus Produktivitätssicht **ideal**. Andere freie Slots (`is_adjacent = false`, z.B. gestapelte Füller mitten am Tag) werden **neutral/weiß** dargestellt. Ist der Toggle „Nur ohne Lücke" aktiv, sieht die Kundin **ausschließlich grüne Slots** – so kann sie sich nie einen Termin aussuchen, der eine Produktivitäts-Lücke reißt.
+
+**Was die Kundin sieht:** Eine schlanke, eigenständige Seite (`/shared/booking/{token}`, kein Login, kein Hub-Layout): Datum-Auswahl (nicht vor das festgelegte Mindestdatum), darunter die freien Slots als Liste. Institut und Services (exakt die beim Link-Erstellen ausgewählten Positionen + Desinfektion) sind **fest vorgegeben** und nicht änderbar. Bei einer Verlegung (`mode=reschedule`) wird der zu verlegende Termin oben als **„Zu verlegender Termin"**-Badge angezeigt (statt reinem Fließtext). Nach Klick auf einen Slot wird sofort gebucht bzw. der alte Termin verlegt; der Link ist danach verbraucht. Auf der Erfolgsseite kann die Kundin per **„Zum Kalender hinzufügen"**-Button eine `.ics`-Datei herunterladen (Datum, Uhrzeit, Dauer, Institutsadresse als Ort – bewusst **ohne** die einzelnen Service-Namen, um keine Behandlungsdetails im Kalendereintrag preiszugeben).
+
+**Sicherheit & Gültigkeit:** Identisches Muster wie beim Formular-Teilen – 64-Zeichen-Token, **48 Stunden gültig**, **einmalig nutzbar** (verfällt sofort nach erfolgreicher Buchung). Bei ungültigem/abgelaufenem/bereits genutztem Link sieht die Kundin eine passende Fehlermeldung statt eines Fehlers. Zusätzlich `throttle:shared-page` (30 Anfragen/Min. pro IP) auf dem Seitenaufruf.
+
+**Infrastruktur-Hinweis:** `/shared/booking/{token}` läuft über einen eigenen Backend-Service ohne IAP (`backend-glattthub-{env}-public`), damit Kunden ohne `@labrado-schlueter.com`-Google-Account die Seite überhaupt erreichen können — siehe [CLOUD-INFRASTRUKTUR.md](CLOUD-INFRASTRUKTUR.md#pfade-vom-iap-ausschlieen-api-token-seiten).
+
+**Benachrichtigung:** Bucht die Kundin selbst einen Termin, wird das zuständige Institut-Team per `NotificationService` benachrichtigt (`forInstitutes([$branchId])`).
 
 ### Architektur
 
@@ -223,7 +246,7 @@ app/Http/Controllers/SharedBookingController.php   # Rendert nur die Wrapper-Sei
 
 ### Berechtigung
 
-Recht `view_booking` (Migration `2026_06_28_100000_add_view_booking_permission.php`, `PermissionSeeder`, Produktiv-SQL `database/sql/booking_module_production.sql`). Zugewiesen an `super_admin`, `admin`, `user`.
+Recht `view_booking` (Migration `2026_06_28_100000_add_view_booking_permission.php`, `PermissionSeeder`, Produktiv-SQL `database/sql/booking_module_production.sql` — historisch; seit 07/2026 laufen Migrationen beim Deploy automatisch). Zugewiesen an `super_admin`, `admin`, `user`.
 
 ### Tests
 

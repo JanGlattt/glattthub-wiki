@@ -1,31 +1,51 @@
-# ⏱️ Session-Ablauf & Session-Modal
+# Session-Ablauf & Session-Modal
 
 Abgelaufene Sitzungen sind im Hub sofort erkennbar: Statt still scheiternder
 Hintergrundabfragen (leere Suche, hängende Karten) erscheint das Modal
-**„Sitzung abgelaufen"** mit direkter Anmeldemöglichkeit.
+**„Sitzung abgelaufen"** mit direkter Anmeldemöglichkeit per PIN oder
+E-Mail/Passwort, ohne die Seite zu verlassen. Diese Seite beschreibt **die
+zweigleisige Erkennung (Fetch-Interceptor + Heartbeat), den Re-Login ohne
+Seitenwechsel, die 419-Seite, die Session-Dauer aus dem Admin-Backend und die
+Service-Worker-Härtung**; die Bedienung Schritt für Schritt steht im
+Nutzerhandbuch.
 
-## Für Endanwender
+!!! nutzerhandbuch "Bedienung: Grundlagen 1 – Anmelden & zurechtfinden"
+    [hilfe.hub.glattt.com/grundlagen/1/](https://hilfe.hub.glattt.com/grundlagen/1/) — mit PIN oder E-Mail anmelden, Konto und Abmelden.
 
-- Läuft die Anmeldung ab, erscheint automatisch ein Modal „Sitzung abgelaufen" —
-  auch ohne Klick, spätestens nach einer Minute (Heartbeat) oder bei der
-  nächsten Aktion (z.B. globale Suche). Die Seite dahinter wird dabei
-  **unscharf gestellt**, damit niemand mitlesen kann, solange die Sitzung
-  abgelaufen ist.
-- Das Modal sieht aus wie die normale Anmeldeseite: einfach die **4-stellige
-  PIN** eingeben → **„Mit PIN anmelden"**. Danach bist du wieder genau auf
-  derselben Seite; offene Formulareingaben bleiben erhalten. Wer keine PIN
-  hinterlegt hat (Profil → PIN-Verwaltung), meldet sich mit dem Passwort an
-  (E-Mail ist vorausgefüllt); der Umschalter **PIN ⇄ E-Mail** steht im Modal
-  jederzeit bereit.
-- Auch die **419-Fehlerseite** („Sitzung abgelaufen" nach einem abgeschickten
-  Formular) bietet die direkte Neuanmeldung per PIN bzw. E-Mail/Passwort.
-- Alternativ führt „Zur Anmeldeseite" zum normalen Login (nötig z.B. bei
-  aktivierter Zwei-Faktor-Anmeldung — das Modal leitet dann automatisch um).
-- Die **Session-Dauer** stellt ein Admin unter Admin-Panel → Einstellungen →
-  **Session (Anmeldedauer)** ein — ohne Deployment, wirksam binnen einer Minute.
-  Nicht zu verwechseln mit dem Auto-Logout je Benutzer (Countdown in der
-  Sidebar), der weiterhin pro Benutzer im Benutzer-Formular konfiguriert wird;
-  vor dem Auto-Logout warnt jetzt zusätzlich ein Toast.
+    Angrenzend: [Grundlagen 3 – Mein Profil im glatttHub](https://hilfe.hub.glattt.com/grundlagen/3/) (PIN verwalten, Passwort ändern), [Admin 8 – Protokolle und Einstellungen](https://hilfe.hub.glattt.com/admin/8/) (Session-Dauer als Systemeinstellung).
+
+---
+
+## Für Anwender — Überblick
+
+**Was das Session-Modal leistet.** Läuft die Anmeldung ab, erscheint von selbst —
+spätestens nach einer Minute oder bei der nächsten Aktion — das Modal „Sitzung
+abgelaufen"; die Seite dahinter wird unscharf gestellt, damit niemand mitlesen
+kann. Das Modal sieht aus wie die Anmeldeseite: PIN eingeben (oder, wer keine PIN
+hinterlegt hat, E-Mail und Passwort) und man ist wieder genau auf derselben Seite,
+offene Formulareingaben bleiben erhalten. Auch die 419-Fehlerseite nach einem
+abgeschickten Formular bietet dieselbe direkte Neuanmeldung.
+
+**Grundsätze:**
+
+- **PIN ist der Standardweg**, der Umschalter PIN ⇄ E-Mail steht bereit; bei
+  aktivierter Zwei-Faktor-Anmeldung leitet das Modal auf die volle Anmeldeseite um.
+- **Die Session-Dauer** ist eine Systemeinstellung im Admin-Panel (Einstellungen →
+  Session), ohne Deployment wirksam binnen einer Minute. Nicht zu verwechseln mit
+  dem **Auto-Logout je Benutzer** (Countdown in der Sidebar), der weiterhin im
+  Benutzer-Formular konfiguriert wird; vor dem Auto-Logout warnt ein Toast.
+- **Zu viele Fehlversuche** (mehr als fünf pro Minute) sperren die PIN-Anmeldung
+  kurz — das Modal meldet „Zu viele Versuche".
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Mit PIN oder E-Mail anmelden, Konto, Abmelden | Grundlagen 1 |
+| PIN hinterlegen oder ändern, Passwort ändern | Grundlagen 3 |
+| Session-Dauer als Systemeinstellung | Admin 8 |
+
+---
 
 ## Für Entwickler
 
@@ -39,6 +59,9 @@ Hintergrundabfragen (leere Suche, hängende Karten) erscheint das Modal
    `SyntaxError: Unexpected token '<'`). Ausgenommen: `/login`, `/logout`,
    `/livewire` (eigene 419-Behandlung), `/sanctum`, Heartbeat.
 2. **Heartbeat:** alle 60s + bei `visibilitychange` → `GET /api/session/heartbeat`.
+
+Damit erscheint das Modal auch ohne Klick — spätestens nach einer Minute
+(Heartbeat) oder bei der nächsten Aktion (z.B. globale Suche).
 
 ### Heartbeat verlängert die Session NICHT
 
@@ -67,7 +90,7 @@ Der Backdrop **blurt die Seite dahinter** (`backdrop-filter` auf
 Einzel-Element aus Datenschutzgründen). **PIN ist die Standard-Methode** —
 analog zur Login-Seite: Das Layout rendert `data-has-pin` (hat der angemeldete
 Nutzer eine PIN?); nur dann gibt es den Umschalter PIN ⇄ E-Mail, sonst
-zeigt das Modal direkt E-Mail/Passwort. Ablauf beim Anmelden:
+zeigt das Modal direkt E-Mail/Passwort (E-Mail vorausgefüllt). Ablauf beim Anmelden:
 
 1. `GET /login` → frisches CSRF-Token aus dem `csrf-token`-Meta der Antwort
    (neue Gast-Session).
@@ -80,6 +103,8 @@ zeigt das Modal direkt E-Mail/Passwort. Ablauf beim Anmelden:
    Erfolgs-Toast. `two_factor: true` → Redirect auf die volle Login-Seite.
 
 Kein `window.location`-Wechsel — DOM samt Formulareingaben bleibt stehen.
+„Zur Anmeldeseite" führt alternativ zum normalen Login (nötig z.B. bei
+aktivierter Zwei-Faktor-Anmeldung — das Modal leitet dann automatisch um).
 
 **Throttling:** `POST /login/pin` läuft hinter `throttle:pin-login`
 (5/min pro IP, definiert im `FortifyServiceProvider`) — eine 4-stellige PIN
@@ -95,6 +120,12 @@ und Modal über die geteilten Theme-Klassen (`segmented-control-glattt-primary`,
 `input-glattt-pin-lg`, `session-guard-submit`, `session-guard-login-link`).
 
 ### Session-Dauer aus dem Admin-Backend
+
+Ein Admin stellt die Session-Dauer unter Admin-Panel → Einstellungen →
+**Session (Anmeldedauer)** ein — ohne Deployment, wirksam binnen einer Minute.
+Nicht zu verwechseln mit dem Auto-Logout je Benutzer (Countdown in der Sidebar),
+der pro Benutzer im Benutzer-Formular konfiguriert wird; vor dem Auto-Logout
+warnt zusätzlich ein Toast.
 
 - Tabelle `session_settings` (eine Zeile), Model `App\Models\SessionSetting`
   (`lifetimeMinutes()`, 60s-Cache, saved-Hook leert den Cache).

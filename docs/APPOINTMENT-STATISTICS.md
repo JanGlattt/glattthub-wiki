@@ -1,20 +1,66 @@
-# Terminstatistik - Dokumentation
+# Terminstatistik
 
-## Übersicht
+Auswertung aller **stattgefundenen** Termine: Anzahl, Dauer, behandelte Körperzonen, beliebteste
+Services und häufigste Service-Kombinationen — je Monat, mit Wochen-Drilldown und Standort-Filter.
+Diese Seite beschreibt **Kennzahl-Definitionen, Endpunkte, Abfragen, Frontend-Komponenten, Design
+und Changelog**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
-Die **Terminstatistik** bietet eine umfassende Analyse aller stattgefundenen Termine im System. Sie unterscheidet zwischen drei Terminarten und bietet zwei Hauptanalysen:
+**URL:** `/hub/reports/appointments-body-zones` (Hub → Berichte → Terminstatistik)
 
-### Terminarten
-1. **Beratungsgespräche** (blau): Termine die nur Beratungs-Services enthalten
-2. **Behandlungen** (grün): Termine die nur Behandlungs-Services enthalten
-3. **Beratung + Behandlung** (türkis): Kombinierte Termine mit beiden Service-Arten
+!!! nutzerhandbuch "Bedienung: Berichte 6 – Terminstatistik"
+    [hilfe.hub.glattt.com/berichte/6/](https://hilfe.hub.glattt.com/berichte/6/) — Bericht öffnen,
+    Auslastung, Terminarten im Verhältnis, Grenzen des Berichts.
 
-### Analyse-Module
-1. **Termine pro Monat**: Anzahl der Termine nach Kategorien (Diagramm & Tabelle)
-2. **Termindauer pro Monat**: Gesamtdauer aller Termine in Stunden/Minuten (Diagramm & Tabelle)
-3. **Körperzonen pro Monat**: Anzahl behandelter Körperzonen (Diagramm & Tabelle)
-4. **Top Services pro Monat**: Beliebteste Dienstleistungen mit Trends (Diagramm & Tabelle)
-5. **Service-Kombinationen pro Monat**: Häufigste Service-Kombinationen pro Termin (Diagramm & Tabelle)
+    Rahmen aller Berichtsseiten (Zeitraum und Standort, Kennzahlen-Zeile, Diagramm oder Tabelle,
+    Export): [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/).
+    Angrenzend: [Berichte 2 – Zukünftige Beratungsgespräche](https://hilfe.hub.glattt.com/berichte/2/),
+    [Berichte 3 – Vergangene Beratungsgespräche](https://hilfe.hub.glattt.com/berichte/3/),
+    [Berichte 4 – Stornierte und gelöschte Termine](https://hilfe.hub.glattt.com/berichte/4/),
+    [Betrieb 5 – Services und Körperzonen](https://hilfe.hub.glattt.com/betrieb/5/) (dort wird
+    gepflegt, was als Beratung zählt und wie viele Körperzonen ein Service hat).
+
+---
+
+## Für Anwender — Überblick
+
+**Was der Bericht beantwortet.** Wie viele Termine finden statt, wie verteilen sie sich auf die drei
+Terminarten, wie viel Zeit binden sie, wie viele Körperzonen werden dabei behandelt und welche
+Dienstleistungen (einzeln und in Kombination) werden am häufigsten gebucht. Alles je Monat, mit
+Wochen-Aufschlüsselung und Vergleich zu Vormonat und Vorjahr.
+
+**Drei Terminarten** — die Einordnung ergibt sich daraus, ob ein Termin nur Beratungs-Services, nur
+Behandlungs-Services oder beides enthält:
+
+1. **Beratungsgespräche** (blau): Termine, die nur Beratungs-Services enthalten
+2. **Behandlungen** (grün): Termine, die nur Behandlungs-Services enthalten
+3. **Beratung + Behandlung** (türkis): kombinierte Termine mit beiden Service-Arten
+
+**Fünf Analysen:** Termine pro Monat · Termindauer pro Monat · Körperzonen pro Monat · Top Services
+pro Monat · Service-Kombinationen pro Monat — jeweils als Diagramm (Standard) und als Tabelle hinter
+dem Karten-Register.
+
+**Zwei Dinge, die man wissen muss.** Erstens zählen **nur stattgefundene Termine** (Phorest-Status
+*abgeschlossen* bzw. *bezahlt*) — Ausnahme sind die ausdrücklich so benannten No-Show-Kennzahlen.
+Zweitens sind alle Monatsvergleiche **zeitpunktgleich**: Am 19. eines Monats wird mit dem 1.–19. des
+Vormonats und des Vorjahresmonats verglichen, nie mit einem vollen Monat gegen einen halben. Die
+vollständigen Definitionen — auch welche Services ausgeschlossen werden und wie Körperzonen gezählt
+werden — stehen unter [Kennzahl-Definitionen](#kennzahl-definitionen).
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Bericht öffnen, Auslastung, Terminarten, Grenzen des Berichts | Berichte 6 |
+| Zeitraum und Standort, Kennzahlen-Zeile, Diagramm/Tabelle, Export | Berichte 0 |
+| Beratungstermine vorausschauend bzw. rückblickend auswerten | Berichte 2 und 3 |
+| Abgesagte und gelöschte Termine | Berichte 4 |
+| Festlegen, was Beratung ist und wie viele Körperzonen ein Service hat | Betrieb 5 |
+
+---
+
+## Für Entwickler
+
+### Aufbau der Seite
 
 Seit 07/2026 folgt die Seite dem verbindlichen **Statistik-Bauplan**: Alle fünf
 Karten sind zweiseitig — das **Diagramm ist die Standard-Ansicht**, die Tabelle
@@ -24,27 +70,14 @@ in Endhöhe statt Spinnern; Fehler erscheinen je Karte mit „Erneut laden"; jed
 Karte hat ein **Info-Panel** (ⓘ) mit Erklärung, Spalten, Anomalien und
 Datenquelle. Alle Daten sind über den **CSV-Export** im Seitenkopf abrufbar.
 
----
+Der globale Standort-Filter der Seitenleiste wirkt auf alle Karten; „Alle Institute" aggregiert.
+Die Wochen-Details einer Monatszeile werden **lazy** nachgeladen.
 
-## Endbenutzer-Dokumentation
+### Kennzahl-Definitionen
 
-### Navigation
-1. Hub → Reports → "Terminstatistik"
-2. Oder direkt: `/hub/reports/appointments-body-zones`
-
-### KPI-Dashboard ⭐
-
-Das KPI-Dashboard zeigt die wichtigsten Kennzahlen auf einen Blick. 
-
-> ℹ️ **Hinweis:** Alle Kennzahlen beziehen sich auf **stattgefundene Termine**, sofern nicht anders angegeben (z.B. "No Shows").
-
-Alle KPIs sind **personalisierbar**:
-1. Klicken Sie auf **"Anpassen"** oben rechts
-2. Ziehen Sie die Karten per Drag & Drop um sie anzuordnen
-3. Entfernen oder fügen Sie Karten hinzu
-4. Klicken Sie **"Fertig"** um die Reihenfolge zu speichern
-
-Die Personalisierung wird im Browser gespeichert und bleibt beim nächsten Besuch erhalten.
+Alle Kennzahlen beziehen sich auf **stattgefundene Termine**, sofern nicht anders angegeben (z.B.
+„No Shows"). Die Kennzahlen-Zeile ist über `components/kpi-dashboard` personalisierbar (Drag & Drop,
+Auswahl im Browser gespeichert).
 
 #### Anzahl-KPIs (8 Stück)
 
@@ -98,6 +131,7 @@ Alle Vergleiche verwenden den **gleichen Zeitpunkt** im Vergleichsmonat:
 
 Bei mehreren Standorten werden zusätzlich bis zu 4 Standort-KPIs angezeigt mit Anzahl Termine und Aufschlüsselung nach Kategorien.
 
+
 ### Monatliche Übersicht (Termine pro Monat)
 
 #### Tabellenansicht
@@ -116,7 +150,7 @@ Bei mehreren Standorten werden zusätzlich bis zu 4 Standort-KPIs angezeigt mit 
 - Lazy Loading: Wochendaten werden erst bei Expansion geladen
 - Zeigt Kalenderwoche und Datumsbereich (z.B. "KW 7 (10.02. - 16.02.)")
 
-### Termindauer pro Monat ⭐ NEU
+### Termindauer pro Monat
 
 #### Total / Durchschnitt Toggle
 Oben links neben dem Titel können Sie umschalten zwischen:
@@ -134,7 +168,7 @@ Oben links neben dem Titel können Sie umschalten zwischen:
   - **Durchschnitt-Modus**: Y-Achse in Minuten (z.B. "45min")
 - Legende passt sich dem Modus an
 
-### Körperzonen pro Monat ⭐ NEU
+### Körperzonen pro Monat
 
 Zeigt wie viele Körperzonen pro Monat in allen Behandlungsterminen behandelt wurden.
 Gezählt werden nur stattgefundene Termine mit mindestens einer Behandlung —
@@ -157,12 +191,12 @@ Neben dem Titel kann die Kennzahl der Karte umgeschaltet werden:
 - Bar-Chart (Summe) mit Ø-Linie auf zweiter Y-Achse
 - Achsen und Tooltip passen sich dem Modus an (Körperzonen bzw. Stunden/Minuten)
 
-#### Technik (für Entwickler)
+#### Technik
 - Statistik `termine.body-zones` (StatisticRegistry) — Endpoint `/phorest/reports/appointments-body-zones/body-zones` (+ `/weeks`) liefert je Monat/Woche zusätzlich `duration` (gebuchte Minuten)
 - JS-Komponente in `public/js/statistics/termine.js` (`zonesMode: 'zones' | 'time'`)
 - CSV-Export-Quelle `appointments-zones-monthly` enthält die Spalte „Gebuchte Dauer (Minuten)"
 
-### Top Services pro Monat ⭐ NEU
+### Top Services pro Monat
 
 Zeigt die beliebtesten Dienstleistungen (Services) pro Monat mit Trend-Vergleichen.
 
@@ -170,7 +204,7 @@ Zeigt die beliebtesten Dienstleistungen (Services) pro Monat mit Trend-Vergleich
 
 #### Filter-Panel
 
-Klicken Sie auf das **Filter-Icon** (rechts neben dem Tabelle/Chart Toggle), um das Filter-Panel zu öffnen:
+Das Filter-Panel der Karte (Symbol neben dem Karten-Register) kennt diese Filter:
 
 | Filter | Beschreibung | Standard |
 |--------|--------------|----------|
@@ -179,7 +213,7 @@ Klicken Sie auf das **Filter-Icon** (rechts neben dem Tabelle/Chart Toggle), um 
 | **Mind. Termine** | Mindestanzahl Termine für Anzeige | 1 |
 | **Suche** | Textsuche im Service-Namen | - |
 
-> 💡 **Tipp:** Die Anzahl aktiver Filter wird als Badge am Filter-Button angezeigt.
+Die Anzahl aktiver Filter erscheint als Badge am Filter-Knopf.
 
 #### Tabellenansicht
 - **Zeilen**: Monate (neueste zuerst), expandierbar für Details
@@ -192,7 +226,7 @@ Klicken Sie auf das **Filter-Icon** (rechts neben dem Tabelle/Chart Toggle), um 
 - Farbcodierung nach Service-Typ
 - Interaktive Tooltips mit Anzahl
 
-### Service-Kombinationen pro Monat ⭐ NEU
+### Service-Kombinationen pro Monat
 
 Zeigt welche Kombinationen von Services am häufigsten in einem Termin gemeinsam gebucht werden.
 
@@ -202,7 +236,7 @@ Zeigt welche Kombinationen von Services am häufigsten in einem Termin gemeinsam
 
 #### Filter-Panel
 
-Klicken Sie auf das **Filter-Icon** (rechts neben dem Tabelle/Chart Toggle), um das Filter-Panel zu öffnen:
+Das Filter-Panel der Karte (Symbol neben dem Karten-Register) kennt diese Filter:
 
 | Filter | Beschreibung | Standard |
 |--------|--------------|----------|
@@ -211,7 +245,7 @@ Klicken Sie auf das **Filter-Icon** (rechts neben dem Tabelle/Chart Toggle), um 
 | **Mind. Termine** | Mindestanzahl Termine mit dieser Kombination | 2 |
 | **Suche** | Textsuche in Service-Namen der Kombination | - |
 
-> 💡 **Tipp:** Die Anzahl aktiver Filter wird als Badge am Filter-Button angezeigt.
+Die Anzahl aktiver Filter erscheint als Badge am Filter-Knopf.
 
 #### Tabellenansicht
 - **Zeilen**: Monate (neueste zuerst), expandierbar für Details
@@ -236,29 +270,6 @@ Klicken Sie auf das **Filter-Icon** (rechts neben dem Tabelle/Chart Toggle), um 
 - Erkennen Sie Muster in Kundenbuchungen
 - Optimieren Sie Terminplanung für häufige Kombinationen
 
-### Standort-Filterung
-
-- Nutzen Sie die globale Branch-Auswahl im Header
-- Daten werden automatisch für den gewählten Standort neu geladen
-- "Alle Institute" zeigt aggregierte Daten
-
-### Interaktion
-
-| Aktion | Ergebnis |
-|--------|----------|
-| Klick auf Monatszeile | Expandiert/Kollabiert Wochen-Details (in der Tabellen-Lasche) |
-| Karten-Register (rechter Kartenrand) | Wechselt je Karte zwischen Diagramm (Standard) und Tabelle |
-| Toggle Total/Durchschnitt | Wechselt Dauer-Anzeige (nur bei Termindauer/Körperzonen) |
-| Branch-Auswahl ändern | Lädt Daten für neuen Standort neu |
-| KPI-Card ziehen | Personalisiert Dashboard-Reihenfolge |
-| Top Services Filter-Btn | Öffnet/Schließt Filter-Panel |
-| Top Services Suche | Filtert Services nach Namen (300ms Debounce) |
-| Service-Kombinationen Filter-Btn | Öffnet/Schließt Filter-Panel ⭐ NEU |
-| Service-Kombinationen Suche | Filtert Kombinationen nach Service-Namen (300ms Debounce) ⭐ NEU |
-
----
-
-## Entwickler-Dokumentation
 
 ### Backend-Routes
 
@@ -692,11 +703,9 @@ this.loading = false;
 this.loadDetailData();
 ```
 
----
+### Design
 
-## Design
-
-### Farbschema
+#### Farbschema
 
 | Kategorie | Farbe | CSS Variable |
 |-----------|-------|--------------|
@@ -705,7 +714,7 @@ this.loadDetailData();
 | Behandlungen | Grün | `var(--color-success)` |
 | Kombiniert | Türkis | `var(--color-primary)` |
 
-### Chart-Farben
+#### Chart-Farben
 ```javascript
 // Gesamt
 borderColor: 'rgb(107, 114, 128)',  // Grau
@@ -720,7 +729,7 @@ borderColor: 'rgb(34, 197, 94)',    // Grün
 borderColor: 'rgb(59, 155, 159)',   // Türkis
 ```
 
-### Tabellen-Styling
+#### Tabellen-Styling
 
 Die Tabellen verwenden die `.table-glattt-heatmap` Klasse:
 - Sticky Header und erste Spalte
@@ -728,9 +737,20 @@ Die Tabellen verwenden die `.table-glattt-heatmap` Klasse:
 - Hervorhebung des aktuellen Monats
 - Einrückung für Wochen-Zeilen
 
-### Dark Mode
+#### Dark Mode
 
 Vollständig kompatibel mit Light/Dark Mode durch CSS-Variablen.
+
+### Dateien
+
+| Datei | Beschreibung |
+|-------|--------------|
+| `app/Http/Controllers/ReportController.php` | Backend-Logik (Methoden: `appointmentsBodyZones*`) |
+| `routes/web.php` | Route-Definitionen |
+| `public/js/appointments-body-zones.js` | Alpine.js App |
+| `resources/views/hub/reports/appointments-body-zones.blade.php` | Haupt-View |
+| `resources/views/hub/reports/partials/appointments-count.blade.php` | Termine-Card |
+| `resources/views/hub/reports/partials/appointment-duration.blade.php` | Dauer-Card |
 
 ---
 
@@ -741,19 +761,6 @@ Vollständig kompatibel mit Light/Dark Mode durch CSS-Variablen.
 | [Stornierte Termine](CANCELLED-APPOINTMENTS-ANALYSIS.md) | Analyse von Stornierungen und Löschungen |
 | [Buchungsvorlauf](BOOKING-LEAD-TIME-ANALYSIS.md) | Wie weit im Voraus gebucht wird |
 | [Wochentag/Uhrzeit](WEEKDAY-TIME-ANALYSIS.md) | Beliebteste Buchungszeiten |
-
----
-
-## Dateien
-
-| Datei | Beschreibung |
-|-------|--------------|
-| `app/Http/Controllers/ReportController.php` | Backend-Logik (Methoden: `appointmentsBodyZones*`) |
-| `routes/web.php` | Route-Definitionen |
-| `public/js/appointments-body-zones.js` | Alpine.js App |
-| `resources/views/hub/reports/appointments-body-zones.blade.php` | Haupt-View |
-| `resources/views/hub/reports/partials/appointments-count.blade.php` | Termine-Card |
-| `resources/views/hub/reports/partials/appointment-duration.blade.php` | Dauer-Card |
 
 ---
 

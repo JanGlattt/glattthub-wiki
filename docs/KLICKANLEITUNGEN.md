@@ -134,76 +134,76 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 
 | # | Prozess | Ort im Hub | Anleitung | Status |
 |---|---|---|---|---|
-| 1 | Tageserfassung Beratungsgespräche (Verkauf, Kein Verkauf, Upselling, Statistik) | Institutsseite `/shared/institut/{token}` | „Tageserfassung Beratungsgespräche" (25.08.2026) | ✅ fertig |
-| 2 | Beratungstermin finden, öffnen, Termin beginnen | `/hub/appointments` → Termin-Detailseite | **Terminansicht 1 – Beratungstermin starten** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
-| 3 | Formular „Kundeninformation & Einverständniserklärung" | Session → Formulare | **Terminansicht 2 – Kundeninformation & Einverständniserklärung** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
-| 4 | Formular „Behandlungsvertrag" (Zonen, Zahlungsart, Preisliste, Rabatt, Gutschein, Werber, AGB, Unterschrift) | dito | **Terminansicht 3 – Behandlungsvertrag abschließen** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
-| 5 | Formular „SEPA-Mandat" | dito | **Terminansicht 4 – SEPA-Mandat einrichten** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
-| 6 | Formular an die Kundin weitergeben („Formular teilen", 48-h-Link) | Formular-Kopfzeile | **Terminansicht 5 – Formular an die Kundin weitergeben** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
-| 7 | Direkt behandeln nach Vertragsabschluss + Termin beenden (Kasse, Folgetermin, Notiz) | Session-Kachel / Beenden-Ablauf | **Terminansicht 6 – Direkt behandeln & Termin beenden** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
-| 8 | Probleme & Fehlermeldungen (Nachschlagewerk, 3 Tabellen) | alle | **Terminansicht 7 – Probleme & Fehlermeldungen** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
-| 9 | Bestandskundin: Behandlungstermin starten, **Einstellungszettel pflegen**, Folgetermin, beenden | Termin-Detailseite | **Terminansicht 8 – Behandlungstermin & Einstellungszettel** (v1.1) | 🟠 Texte v1.1, Screenshots offen |
-| 9a | Behandlungstermin: Sitzungsbestätigung als Pflichtformular vor jeder Behandlung (sperrt den Einstellungszettel) | Termin-Detailseite › Session › Formulare | **Terminansicht 10 – Sitzungsbestätigung** (v1.0) | 🟠 Texte v1.0, Screenshots folgen (Staging-Behandlungstermin nötig) |
+| 1 | Tageserfassung Beratungsgespräche (Verkauf, Kein Verkauf, Upselling, Statistik) | Institutsseite `/shared/institut/{token}` | PDF „Tageserfassung Beratungsgespräche" (25.08.2026, Quellen verloren) | ⛔ entfällt — Jan 19.09.2026: die Institutsseite wird abgelöst, bis dahin läuft sie ohne Nutzerhandbuch; kein Deck |
+| 2 | Beratungstermin finden, öffnen, Termin beginnen | `/hub/appointments` → Termin-Detailseite | **Terminansicht 1 – Beratungstermin starten** (v1.1) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 3 | Formular „Kundeninformation & Einverständniserklärung" | Session → Formulare | **Terminansicht 2 – Kundeninformation & Einverständniserklärung** (v1.1) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 4 | Formular „Behandlungsvertrag" (Zonen, Zahlungsart, Preisliste, Rabatt, Gutschein, Werber, AGB, Unterschrift) | dito | **Terminansicht 3 – Behandlungsvertrag abschließen** (v1.1) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 5 | Formular „SEPA-Mandat" | dito | **Terminansicht 4 – SEPA-Mandat einrichten** (v1.1) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 6 | Formular an die Kundin weitergeben („Formular teilen", 48-h-Link) | Formular-Kopfzeile | **Terminansicht 5 – Formular an die Kundin weitergeben** (v1.1) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 7 | Direkt behandeln nach Vertragsabschluss + Termin beenden (Kasse, Folgetermin, Notiz) | Session-Kachel / Beenden-Ablauf | **Terminansicht 6 – Direkt behandeln & Termin beenden** (v1.1) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 8 | Probleme & Fehlermeldungen (Nachschlagewerk, 3 Tabellen) | alle | **Terminansicht 7 – Probleme & Fehlermeldungen** (v1.1) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 9 | Bestandskundin: Behandlungstermin starten, **Einstellungszettel pflegen**, Folgetermin, beenden | Termin-Detailseite | **Terminansicht 8 – Behandlungstermin & Einstellungszettel** (v1.1) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 9a | Behandlungstermin: Sitzungsbestätigung als Pflichtformular vor jeder Behandlung (sperrt den Einstellungszettel) | Termin-Detailseite › Session › Formulare | **Terminansicht 10 – Sitzungsbestätigung** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 10 | Zusatz-Service hinzubuchen, Kein-Verkauf erfassen (nach Umsetzung Asana 1218245871472844) | Termin-Detailseite | offen | ⬜ |
-| 11 | Folgetermin planen (ideale Slots), Termin verlegen | Termin-Detailseite / Buchungsseite | teilweise **Terminansicht 9** (Buchen); Verlegen offen | 🟠 teilweise |
+| 11 | Folgetermin planen (ideale Slots), Termin verlegen | Termin-Detailseite / Buchungsseite | teilweise **Terminansicht 9** (Buchen); Verlegen offen | 🟠 teilweise — Buchen im Portal, Verlegen offen |
 | 12 | Google-Bewertung per WhatsApp anfragen | Termin-Detailseite Sidebar | offen | ⬜ |
-| 13 | Kundenprofil `/hub/clients/{id}`: Kundin suchen, Profil lesen, Reiter-Wegweiser | Kunden | **Kundenverwaltung 1 – Kundin finden & Profil verstehen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 13a | Stammdaten bearbeiten (Feld-Schlösser, Adresse, Einwilligungen, Übernahme nach Phorest) | Kundenprofil › Kundeninfos | **Kundenverwaltung 2 – Kundendaten bearbeiten** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 13b | Terminhistorie, Buchungslink, Verlegen, Extrazeit, gekaufte Pakete | Kundenprofil › Termine, glattt Pakete | **Kundenverwaltung 3 – Termine & Pakete** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 13c | Vertrag, Rate, SEPA-Mandat, offene Forderungen, Zahlungsstand | Kundenprofil › Vertrag/Zahlungen, Forderungsmanagement | **Kundenverwaltung 4 – Vertrag, Zahlung & offene Forderungen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 13d | Automatische Nachrichten, WhatsApp lesen & senden, Zendesk-Tickets | Kundenprofil › Nachrichten, Kundenservice | **Kundenverwaltung 5 – Nachrichten & Kundenservice** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 13e | Eingereichte Formulare, Einstellungszettel, Behandlungsfotos | Kundenprofil › Dokumente, Behandlungseinstellungen | **Kundenverwaltung 6 – Unterlagen & Behandlungsverlauf** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 14 | Gutscheine (Verwaltung/Einlösung/Online-Verkauf) | Gutscheine-Modul | **Verkauf 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 15 | Termin buchen (Neukunde/Bestandskunde) | Buchungsseite | **Terminansicht 9** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 16 | Anmelden (PIN/E-Mail), Seitenleiste, Gruppen, Abmelden | Hub allgemein | **Grundlagen 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 16a | Standortwahl, globale Suche, Mitteilungen | Seitenleiste | **Grundlagen 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 16b | Profil: Name/Bild, Passwort, PIN, Geräte, Rundgänge | `/user/profile` | **Grundlagen 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 16c | Mobil: Menüleiste, Mehr-Menü, Zustandszeile, Tabellen | Hub auf Handy/Tablet | **Grundlagen 4** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 16d | glatttBert: fragen, was er weiß, was er nicht kann | Assistent auf jeder Seite | **Grundlagen 5** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 16e | Die Startseite: was dort steht, eigene Kacheln, Schnellzugriffe | `/hub` | **Grundlagen 6** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 17 | Bonus-Board: eigener Stand, Ziele, Hochrechnung, Team-Karte | `/hub/bonus` › Mein Board | **Bonus-Board 1 – Mein Bonus** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 18 | Challenges: Monats-Challenge, Ranking, Blind, Serien | `/hub/bonus` › Mein Board | **Bonus-Board 2 – Challenges verstehen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 19 | Management-Sicht: Institute vs. Minimalziele, Boni je Mitarbeiterin, Export | `/hub/bonus` › Management | **Bonus-Board 3 – Bonus-Board für die Leitung** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 20 | Bonus-Regeln und Challenges anlegen, Minimalziele, Sichtbarkeit | `/hub/bonus/verwaltung` | **Bonus-Board 4 – Regeln & Challenges anlegen** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 21 | Monatsabschluss: Widerrufe entscheiden, korrigieren, einfrieren, Google-Bewertungen | `/hub/bonus/verwaltung` | **Bonus-Board 5 – Monatsabschluss** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 22 | Vertragsliste: suchen, filtern, sortieren | `/hub/contracts` | **Verträge 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 23 | Vertragsseite: Kopf, Banner, Reiter, Vertragsdaten ändern | `/hub/contracts/{id}` | **Verträge 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 24 | Ratenplan lesen, alle Zustände, Auskunft geben | `/hub/contracts/{id}` › Zahlungen | **Verträge 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 24a | Zahlung nachtragen, verbuchen, erste Rate, RLS ausgleichen | dito | **Verträge 4** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 24b | SEPA einziehen, ablösen, RLS anhängen, abgleichen | dito | **Verträge 5** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 24c | **Laufzeit und Raten ändern**, pausieren, Gutschein verrechnen | dito | **Verträge 6** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 24d | Mandat anlegen, Bankverbindung ändern, Stammdaten | dito › SEPA | **Verträge 7** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 24e | Fehlgeschlagene Importe, Werber hinterlegen | `/hub/contracts` | **Verträge 8** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 25 | Widerruf erfassen (Assistent, Frist, Gründe) | `/hub/cancellations` | **Widerrufe 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 25a | Fallseite, Fristbeginn, Dokumente, Wiedervorlage | `/hub/cancellations/{id}` | **Widerrufe 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 25b | **Vertragsänderung im Fernabsatz** (Downgrade per Link) | dito | **Widerrufe 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 25c | Abwicklung: SEPA stornieren, Phorest, Abgabe | dito | **Widerrufe 4** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 25d | RA-Vorgang, Kosten, Schriftwechsel, Abschluss | dito | **Widerrufe 5** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 26 | Preislisten pflegen (Pakete, Rabattstufen, Zahlungsmodus) | `/hub/contracts` › Preislisten | **Verkauf 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 27 | Freunde werben: Empfehlung erfassen, Prämie, Auswertung | `/hub/contracts/referrals` | **Verkauf 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 28 | Zufriedenheitsbefragung auslösen und auswerten | `/hub/satisfaction` | **Verkauf 4** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 29 | Institute: Überblick, Steckbrief, Kennzahlen, Team | `/hub/branches` | **Betrieb 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 30 | Ein Institut pflegen: Infos, Bilder, Bank, Sichtbarkeit | `/hub/branches/{id}` | **Betrieb 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 31 | Formulare bauen: Editor, Feldtypen, Bedingungen | `/hub/forms` | **Betrieb 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 32 | Formular teilen und Einreichungen lesen | `/hub/forms` | **Betrieb 4** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 33 | Services und Körperzonen pflegen | `/hub/services` | **Betrieb 5** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 13 | Kundenprofil `/hub/clients/{id}`: Kundin suchen, Profil lesen, Reiter-Wegweiser | Kunden | **Kundenverwaltung 1 – Kundin finden & Profil verstehen** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 13a | Stammdaten bearbeiten (Feld-Schlösser, Adresse, Einwilligungen, Übernahme nach Phorest) | Kundenprofil › Kundeninfos | **Kundenverwaltung 2 – Kundendaten bearbeiten** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 13b | Terminhistorie, Buchungslink, Verlegen, Extrazeit, gekaufte Pakete | Kundenprofil › Termine, glattt Pakete | **Kundenverwaltung 3 – Termine & Pakete** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 13c | Vertrag, Rate, SEPA-Mandat, offene Forderungen, Zahlungsstand | Kundenprofil › Vertrag/Zahlungen, Forderungsmanagement | **Kundenverwaltung 4 – Vertrag, Zahlung & offene Forderungen** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 13d | Automatische Nachrichten, WhatsApp lesen & senden, Zendesk-Tickets | Kundenprofil › Nachrichten, Kundenservice | **Kundenverwaltung 5 – Nachrichten & Kundenservice** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 13e | Eingereichte Formulare, Einstellungszettel, Behandlungsfotos | Kundenprofil › Dokumente, Behandlungseinstellungen | **Kundenverwaltung 6 – Unterlagen & Behandlungsverlauf** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 14 | Gutscheine (Verwaltung/Einlösung/Online-Verkauf) | Gutscheine-Modul | **Verkauf 3** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 15 | Termin buchen (Neukunde/Bestandskunde) | Buchungsseite | **Terminansicht 9** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 16 | Anmelden (PIN/E-Mail), Seitenleiste, Gruppen, Abmelden | Hub allgemein | **Grundlagen 1** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 16a | Standortwahl, globale Suche, Mitteilungen | Seitenleiste | **Grundlagen 2** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 16b | Profil: Name/Bild, Passwort, PIN, Geräte, Rundgänge | `/user/profile` | **Grundlagen 3** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 16c | Mobil: Menüleiste, Mehr-Menü, Zustandszeile, Tabellen | Hub auf Handy/Tablet | **Grundlagen 4** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 16d | glatttBert: fragen, was er weiß, was er nicht kann | Assistent auf jeder Seite | **Grundlagen 5** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 16e | Die Startseite: was dort steht, eigene Kacheln, Schnellzugriffe | `/hub` | **Grundlagen 6** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 17 | Bonus-Board: eigener Stand, Ziele, Hochrechnung, Team-Karte | `/hub/bonus` › Mein Board | **Bonus-Board 1 – Mein Bonus** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 18 | Challenges: Monats-Challenge, Ranking, Blind, Serien | `/hub/bonus` › Mein Board | **Bonus-Board 2 – Challenges verstehen** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 19 | Management-Sicht: Institute vs. Minimalziele, Boni je Mitarbeiterin, Export | `/hub/bonus` › Management | **Bonus-Board 3 – Bonus-Board für die Leitung** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 20 | Bonus-Regeln und Challenges anlegen, Minimalziele, Sichtbarkeit | `/hub/bonus/verwaltung` | **Bonus-Board 4 – Regeln & Challenges anlegen** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 21 | Monatsabschluss: Widerrufe entscheiden, korrigieren, einfrieren, Google-Bewertungen | `/hub/bonus/verwaltung` | **Bonus-Board 5 – Monatsabschluss** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 22 | Vertragsliste: suchen, filtern, sortieren | `/hub/contracts` | **Verträge 1** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 23 | Vertragsseite: Kopf, Banner, Reiter, Vertragsdaten ändern | `/hub/contracts/{id}` | **Verträge 2** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 24 | Ratenplan lesen, alle Zustände, Auskunft geben | `/hub/contracts/{id}` › Zahlungen | **Verträge 3** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 24a | Zahlung nachtragen, verbuchen, erste Rate, RLS ausgleichen | dito | **Verträge 4** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 24b | SEPA einziehen, ablösen, RLS anhängen, abgleichen | dito | **Verträge 5** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 24c | **Laufzeit und Raten ändern**, pausieren, Gutschein verrechnen | dito | **Verträge 6** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 24d | Mandat anlegen, Bankverbindung ändern, Stammdaten | dito › SEPA | **Verträge 7** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 24e | Fehlgeschlagene Importe, Werber hinterlegen | `/hub/contracts` | **Verträge 8** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 25 | Widerruf erfassen (Assistent, Frist, Gründe) | `/hub/cancellations` | **Widerrufe 1** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 25a | Fallseite, Fristbeginn, Dokumente, Wiedervorlage | `/hub/cancellations/{id}` | **Widerrufe 2** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 25b | **Vertragsänderung im Fernabsatz** (Downgrade per Link) | dito | **Widerrufe 3** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 25c | Abwicklung: SEPA stornieren, Phorest, Abgabe | dito | **Widerrufe 4** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 25d | RA-Vorgang, Kosten, Schriftwechsel, Abschluss | dito | **Widerrufe 5** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 26 | Preislisten pflegen (Pakete, Rabattstufen, Zahlungsmodus) | `/hub/contracts` › Preislisten | **Verkauf 1** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 27 | Freunde werben: Empfehlung erfassen, Prämie, Auswertung | `/hub/contracts/referrals` | **Verkauf 2** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 28 | Zufriedenheitsbefragung auslösen und auswerten | `/hub/satisfaction` | **Verkauf 4** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 29 | Institute: Überblick, Steckbrief, Kennzahlen, Team | `/hub/branches` | **Betrieb 1** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 30 | Ein Institut pflegen: Infos, Bilder, Bank, Sichtbarkeit | `/hub/branches/{id}` | **Betrieb 2** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 31 | Formulare bauen: Editor, Feldtypen, Bedingungen | `/hub/forms` | **Betrieb 3** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 32 | Formular teilen und Einreichungen lesen | `/hub/forms` | **Betrieb 4** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 33 | Services und Körperzonen pflegen | `/hub/services` | **Betrieb 5** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 34 | Laser: Dashboard, Gerät, Wartung (4 Schritte), Fehler, Reparaturen, STK, Teile, Inventar, Stammdaten, Reports | `/hub/laser` | **Laser 1–13** (v1.0, 18.09.2026) | ✅ Screenshots Staging, im Portal |
-| 35 | Personalübersicht und Hub-Konten (Anlage, Einladung, Archivieren) | `/hub/staff` | **Team 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 36 | Reisekosten erfassen und einreichen | `/hub/staff/reisekosten` | **Team 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 37 | Reisekosten prüfen und freigeben | `/hub/staff/reisekosten-freigabe` | **Team 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 38 | Forderungsmanagement: Arbeitsliste, Fall anlegen | `/hub/receivables` | **Forderungen 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 38a | Fallseite, § 367-Verrechnung, Anschrift, Verlauf | `/hub/receivables/{id}` | **Forderungen 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 38b | **Mahnprozess führen**, fällig stellen, RLS-Entscheid | dito | **Forderungen 3** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 38c | Zahlungen, Bezahllink, SEPA pausieren, Kosten | dito | **Forderungen 4** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 38d | Ratenzahlungsvereinbarung abschließen und führen | dito | **Forderungen 5** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 38e | 250-€-Weiche, Mahnverfahren, ruhend, abschreiben | dito | **Forderungen 6** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 39 | Schulden im Überblick | `/hub/reports/schulden` | **Finanzen 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 40 | Unternehmensverträge erfassen und Fristen wahren | `/hub/company-contracts` | **Finanzen 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 41 | Report-Mails einrichten und Zustellungen prüfen | `/hub/report-mails` | **System 1** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 42 | Audit: Befunde lesen und abarbeiten | `/hub/audit` | **System 2** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 43 | Berichte allgemein: Zeitraum, Standort, Laschen, Export | `/hub/reports` | **Berichte 0** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 44 | Die 16 Berichtsseiten einzeln | `/hub/reports/*` | **Berichte 1–16** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
-| 45 | Verwaltungspanel: Benutzer, Inhalte, Stammdaten, Protokolle | `/admin` | **Admin 1–8** (v1.0) | 🟠 Texte v1.0, Screenshots offen |
+| 35 | Personalübersicht und Hub-Konten (Anlage, Einladung, Archivieren) | `/hub/staff` | **Team 1** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 36 | Reisekosten erfassen und einreichen | `/hub/staff/reisekosten` | **Team 2** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 37 | Reisekosten prüfen und freigeben | `/hub/staff/reisekosten-freigabe` | **Team 3** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 38 | Forderungsmanagement: Arbeitsliste, Fall anlegen | `/hub/receivables` | **Forderungen 1** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 38a | Fallseite, § 367-Verrechnung, Anschrift, Verlauf | `/hub/receivables/{id}` | **Forderungen 2** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 38b | **Mahnprozess führen**, fällig stellen, RLS-Entscheid | dito | **Forderungen 3** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 38c | Zahlungen, Bezahllink, SEPA pausieren, Kosten | dito | **Forderungen 4** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 38d | Ratenzahlungsvereinbarung abschließen und führen | dito | **Forderungen 5** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 38e | 250-€-Weiche, Mahnverfahren, ruhend, abschreiben | dito | **Forderungen 6** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 39 | Schulden im Überblick | `/hub/reports/schulden` | **Finanzen 1** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 40 | Unternehmensverträge erfassen und Fristen wahren | `/hub/company-contracts` | **Finanzen 2** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 41 | Report-Mails einrichten und Zustellungen prüfen | `/hub/report-mails` | **System 1** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 42 | Audit: Befunde lesen und abarbeiten | `/hub/audit` | **System 2** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 43 | Berichte allgemein: Zeitraum, Standort, Laschen, Export | `/hub/reports` | **Berichte 0** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 44 | Die 16 Berichtsseiten einzeln | `/hub/reports/*` | **Berichte 1–16** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 45 | Verwaltungspanel: Benutzer, Inhalte, Stammdaten, Protokolle | `/admin` | **Admin 1–8** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
 
 Die Liste wird mit jeder fertigen Anleitung fortgeschrieben. **Quellen** liegen reproduzierbar im
 Wiki-Repo unter `klickanleitungen/<serie>/` (je ein README dort), gebaut wird mit den Buildern aus
@@ -424,14 +424,34 @@ gedacht ist.
 
 ---
 
+## Stand 19.09.2026 — Aufteilung Wiki / Nutzerhandbuch und Entscheidungen
+
+Jan hat am 19.09.2026 die beiden Wissensplattformen getrennt: **Das Wiki ist die technische
+Dokumentation**, das **Nutzerhandbuch erklärt die Bedienung** mit Screenshots. Die Wiki-Seiten
+behalten „Für Endanwender" nur als Kurzfassung (was und warum) und verweisen per
+`!!! nutzerhandbuch` auf die Klickanleitung; Klick-Abläufe wandern in die Decks. Begonnen mit
+der Serie „Verträge" (`CONTRACTS-SEPA-MODULE.md`, `PREISLISTEN-MODUL.md`, `glatttPakete.md`,
+`LEGACY-VERTRAGS-IMPORT.md`, `GOOGLE-SHEETS-IMPORT.md`). Weitere Entscheidungen:
+
+| Thema | Entscheidung |
+|---|---|
+| Screenshots | In der Hilfe freigegeben (Bucket), im öffentlichen Wiki-Repo maskiert bzw. gar nicht — `shots/` bleibt gitignored |
+| Institutsseite Tageserfassung | **Kein** Dokument im Nutzerhandbuch: die Seite wird abgelöst, bis dahin wird die Hilfe dort nicht verwendet |
+| WordPress-Plugins (glattt.com) | Bedienung bleibt **ausschließlich im Wiki** (`WORDPRESS-*.md`), keine Serie „Website" |
+| Desktop-App | Im Einsatz auf den Macs, aber nur die Website mit eigenem Symbol — ein Hinweis in „Grundlagen 1", keine eigene Anleitung |
+| Terminansicht 2–8 | `audience: institut` nachgetragen (Zielgruppen-Filter im Portal griff vorher nicht) |
+| Offen im Nutzerhandbuch | Eigenes Dashboard (Wizard), Google-Bewertung per WhatsApp, Termin verlegen, Datensichtbarkeit in Admin 1, Unteranalysen der Terminstatistik, Conversion-Upload (weiter `geplant`) |
+
 ## Gesamtübersicht — 100 Dokumente in 15 Serien (Stand 18.09.2026)
 
 **18.09.2026:** Der Laser wurde aus Betrieb 6 herausgelöst und zur eigenen Serie **Laser 1–13** —
 kleinteilig, mit dem Wartungs-Assistenten in vier Dokumenten (Flow Maintenance mit 5-Minuten-
 Countdown, Pflicht-Fotos je Kachel, Anbauteile, Abschluss). Damit 99 Dokumente in 15 Serien.
 
-Alle Texte sind geschrieben, alle PDFs bauen durch. **Was überall fehlt, sind die Screenshots** —
-jede Serie bringt ihr Aufnahmeskript mit, aber kein Lauf ist bisher gefahren.
+Alle Texte sind geschrieben, alle PDFs bauen durch. **Seit 19.09.2026 gelten die Screenshots
+aus dem Gesamtlauf vom 17./18.09.2026 als freigegeben** (Jan: in der Hilfe ja, im öffentlichen
+Wiki-Repo bleiben sie außen vor — `shots/` ist gitignored, die Bilder liegen im Bucket); die
+Abdeckungsliste im Hub-Repo steht damit auf `fertig`.
 
 | Serie | Dokumente | Zielgruppe | Inhalt |
 |---|---|---|---|

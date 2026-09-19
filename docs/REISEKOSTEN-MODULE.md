@@ -1,16 +1,64 @@
 # Reisekosten-Modul
 
-## Nutzerdokumentation
+Das Reisekosten-Modul (`/hub/staff/reisekosten`) ermöglicht die digitale Erfassung,
+Berechnung und Einreichung von Reisekostenabrechnungen. Die Anspruchstage werden aus dem
+Dienstplan (askDANTE) ermittelt — nur Tage mit einem reisekostenrelevanten Abwesenheitstyp
+können abgerechnet werden; Verpflegungspauschale, Pausen und Fahrtkosten rechnet der Hub
+nach festen Regeln. Diese Seite beschreibt **Absicht, Fachregeln (Anspruch, Pauschalen,
+Status), Datenmodell, Endpunkte und Alpine-Komponente**; die Bedienung Schritt für Schritt
+steht im Nutzerhandbuch.
 
-### Übersicht
+!!! nutzerhandbuch "Bedienung: Team 2 – Reisekosten erfassen"
+    [hilfe.hub.glattt.com/team/2/](https://hilfe.hub.glattt.com/team/2/) — Abrechnung
+    beginnen, Fahrt und Ziel, Verpflegung und Belege, einreichen und verfolgen.
 
-Das Reisekosten-Modul ermöglicht die digitale Erfassung, Berechnung und Einreichung von Reisekostenabrechnungen. Die Anspruchstage werden automatisch aus dem Dienstplan (askDANTE) ermittelt – nur Tage mit einem reisekostenrelevanten Abwesenheitstyp können abgerechnet werden.
-
-**URL:** `/hub/staff/reisekosten`
-
-> Siehe auch: [Reisekosten – Freigabe](REISEKOSTEN-FREIGABE.md) für die Prüfung und Genehmigung eingereichte Abrechnungen.
+    Angrenzend: [Team 3 – Reisekosten freigeben](https://hilfe.hub.glattt.com/team/3/)
+    (Prüfung und Genehmigung, siehe [Reisekosten – Freigabe](REISEKOSTEN-FREIGABE.md)),
+    [Admin 5 – Stammdaten](https://hilfe.hub.glattt.com/admin/5/) (Abwesenheitsarten, die
+    Reisekosten erlauben).
 
 ---
+
+## Für Anwender — Überblick
+
+**Was das Modul leistet.** Eine Reisekostenabrechnung gehört immer zu einem **Anspruchstag**:
+einem Tag (oder Zeitraum), an dem laut askDANTE-Dienstplan eine reisekostenrelevante
+Abwesenheit eingetragen ist (z. B. Dienstreise, Schulung). Ohne diesen Eintrag gibt es keine
+Abrechnung — der Dienstplan ist die Grundlage, nicht ein Freitextdatum. Zum Anspruchstag
+erfasst die Mitarbeiterin Reisezeitraum, Arbeitszeiten je Tag, An- und Abreise (Auto mit
+automatisch berechneter Strecke oder Bahn), Übernachtung, gewährte Mahlzeiten, zusätzliche
+Kosten mit Belegen und Notizen. Der Hub berechnet daraus Pausen, Verpflegungspauschale,
+Fahrtkosten und den Gesamtbetrag — nach den gesetzlichen Regeln, ohne dass jemand nachrechnen
+muss.
+
+**Grundsätze:**
+
+- **Anspruch nur aus dem Dienstplan.** Welche Abwesenheitsarten Reisekosten (und ob sie eine
+  Verpflegungspauschale) erlauben, wird in den Stammdaten festgelegt.
+- **Belege sind Pflicht, wo Geld fließt:** Bahnticket bei Selbstzahlung, jeder Posten der
+  zusätzlichen Kosten, Hotelbeleg bei selbst gezahlter Übernachtung.
+- **Eingereicht ist die Grenze.** Eine eingereichte Abrechnung ist für die Mitarbeiterin
+  gesperrt; erst eine Ablehnung gibt sie zur Korrektur und erneuten Einreichung frei.
+  Genehmigte Abrechnungen sind endgültig.
+
+**Zustände einer Abrechnung:** *Entwurf* (angelegt, bearbeitbar) → *Eingereicht* (wartet auf
+Freigabe) → *Genehmigt* (keine Änderungen mehr) oder *Abgelehnt* (mit Grund; kann angepasst
+und erneut eingereicht werden). Details im [Status-Modell](#status-modell).
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Mitarbeiterin und Jahr wählen, Anspruchstage lesen, Abrechnung beginnen | Team 2 |
+| Reisezeitraum, Arbeitszeiten, Fahrt (Auto/Bahn) und Ziel erfassen | Team 2 |
+| Übernachtung, Mahlzeiten, zusätzliche Kosten, Belege hochladen | Team 2 |
+| Einreichen, Status verfolgen, nach Ablehnung korrigieren | Team 2 |
+| Eingereichte Abrechnungen prüfen, korrigieren, freigeben oder ablehnen | Team 3 |
+| Abwesenheitsarten mit Reisekosten-/Verpflegungs-Flag pflegen | Admin 5 |
+
+---
+
+## Für Entwickler
 
 ### Workflow
 
@@ -18,88 +66,49 @@ Das Reisekosten-Modul ermöglicht die digitale Erfassung, Berechnung und Einreic
 Mitarbeiter auswählen → Anspruchstage laden → Reisekostenabrechnung erstellen → Belege hochladen → Einreichen → (Genehmigung)
 ```
 
-| Status | Bedeutung |
-|--------|-----------|
-| **Entwurf** | Abrechnung angelegt, kann weiter bearbeitet werden |
-| **Eingereicht** | Abrechnung eingereicht, wartet auf Genehmigung |
-| **Genehmigt** | Abrechnung genehmigt, keine Änderungen mehr möglich |
-| **Abgelehnt** | Abrechnung abgelehnt, kann angepasst und erneut eingereicht werden |
+### Status-Modell
 
----
+| Status | DB-Wert | Bedeutung |
+|--------|---------|-----------|
+| **Entwurf** | `draft` | Abrechnung angelegt, kann weiter bearbeitet werden |
+| **Eingereicht** | `submitted` | Abrechnung eingereicht, wartet auf Genehmigung; für die Mitarbeiterin gesperrt |
+| **Genehmigt** | `approved` | Abrechnung genehmigt, keine Änderungen mehr möglich |
+| **Abgelehnt** | `rejected` | Abrechnung abgelehnt (mit `rejection_reason`), kann angepasst und erneut eingereicht werden |
 
-### Reisekostenabrechnung anlegen
+Nach dem Einreichen kann die Abrechnung nicht mehr bearbeitet werden (bis zur Ablehnung).
+Genehmigung und Ablehnung: siehe [Reisekosten – Freigabe](REISEKOSTEN-FREIGABE.md).
 
-#### 1. Mitarbeiter auswählen
+### Fachregeln
 
-Oben auf der Seite einen Mitarbeiter aus der Dropdown-Liste auswählen. Es werden alle Mitarbeiter aus askDANTE angezeigt (sortiert nach Nachname). Ein Jahr kann über die Jahr-Auswahl gewechselt werden.
+**Anspruchstage (askDANTE):** Ein Anspruchstag ist ein Arbeitstag mit einem Abwesenheitstyp,
+dessen `AbsenceType.travel_expenses = true` ist. Mehrtägige Reisen erscheinen als Zeitraum.
+Die Liste je Mitarbeiterin (alle askDANTE-Mitarbeiter, sortiert nach Nachname; Jahr
+wählbar) zeigt je Tag Datum, Typ, Status (Noch offen / Entwurf / Eingereicht / Genehmigt /
+Abgelehnt) und den berechneten Betrag. Nur die zum Anspruchstag passenden Daten sind als
+Reise-Beginn/-Ende wählbar. Der Abschnitt Übernachtung & Verpflegung erscheint nur, wenn der
+Abwesenheitstyp eine Verpflegungspauschale erlaubt (`allows_meal_allowance`).
 
-#### 2. Anspruchstage
+**Arbeitszeit je Reisetag:** Für jeden Tag der Reise werden Beginn und Ende erfasst (am
+ersten Tag „Abreise um", am letzten „Ankunft zu Hause um", dazwischen „Arbeitsbeginn" /
+„Arbeitsende"). Die Pause wird **automatisch** nach dem Arbeitszeitgesetz berechnet und ist
+nicht editierbar:
 
-Nach Auswahl eines Mitarbeiters werden dessen Anspruchstage angezeigt – das sind Arbeitstage mit einem reisekostenrelevanten Abwesenheitstyp (z.B. Dienstreise). Die Tage werden als Tabelle dargestellt:
+| Arbeitszeit | Pause |
+|------------|-------|
+| Bis 6 Stunden | 0 Minuten |
+| 6:00 – 6:30 | Gleitend von 0 bis 30 Minuten |
+| 6:30 – 9:00 | 30 Minuten |
+| 9:00 – 9:15 | Gleitend von 30 bis 45 Minuten |
+| Ab 9:15 | 45 Minuten |
 
-| Spalte | Beschreibung |
-|--------|-------------|
-| **Datum** | Einzeldatum oder Zeitraum (bei mehrtägigen Reisen) |
-| **Typ** | Abwesenheitstyp lt. askDANTE |
-| **Status** | Noch offen / Entwurf / Eingereicht / Genehmigt / Abgelehnt |
-| **Betrag** | Berechneter Gesamtbetrag (wenn Abrechnung vorhanden) |
-| **Aktion** | Button zum Anlegen oder Bearbeiten |
+Beispiel: Bei 6 Stunden und 22 Minuten → 22 Minuten Pause. Die Gesamtzeit aller Tage wird
+summiert (`total_work_minutes`).
 
-Klick auf einen Anspruchstag öffnet das Formular.
+**Verpflegungspauschale (gesetzliche Regeln):**
 
----
-
-### Formular: Reise erfassen
-
-Das Formular ist in folgende Abschnitte unterteilt:
-
-#### Reisedatum
-
-- **Reise-Beginn** und **Reise-Ende**: Werden über einen Kalender (Flatpickr) gewählt. Nur die zum Anspruchstag passenden Daten sind auswählbar.
-
-#### Arbeitszeit (pro Reisetag)
-
-Für jeden Tag der Reise wird eine Zeile mit Arbeitszeitfeldern angezeigt:
-
-| Feld | Beschreibung |
-|------|-------------|
-| **Abreise um** / **Arbeitsbeginn** | Uhrzeit-Eingabe. Am ersten Reisetag steht „Abreise um", an allen weiteren Tagen „Arbeitsbeginn". |
-| **Arbeitsende** / **Ankunft zu Hause um** | Uhrzeit-Eingabe. An allen Tagen außer dem letzten steht „Arbeitsende", am letzten Tag „Ankunft zu Hause um". |
-| **Pause (Min.)** | Automatisch berechnet, nicht editierbar. |
-
-!!! info "Automatische Pausenberechnung"
-    Die Pause wird pro Tag nach dem Arbeitszeitgesetz berechnet:
-    
-    | Arbeitszeit | Pause |
-    |------------|-------|
-    | Bis 6 Stunden | 0 Minuten |
-    | 6:00 – 6:30 | Gleitend von 0 bis 30 Minuten |
-    | 6:30 – 9:00 | 30 Minuten |
-    | 9:00 – 9:15 | Gleitend von 30 bis 45 Minuten |
-    | Ab 9:15 | 45 Minuten |
-    
-    Beispiel: Bei 6 Stunden und 22 Minuten → 22 Minuten Pause.
-
-Unter den Tageszeilen wird die **Gesamtzeit** aller Tage angezeigt.
-
-#### Übernachtung & Verpflegung
-
-!!! note "Nur sichtbar"
-    Dieser Abschnitt erscheint nur, wenn der Abwesenheitstyp eine Verpflegungspauschale erlaubt.
-
-**Übernachtung:**
-
-| Feld | Beschreibung |
-|------|-------------|
-| **Übernachtung** | Toggle ein/aus |
-| **Hotel bezahlt von** | „Hotel von glattt bezahlt" oder „Selbst bezahlt" (segmented control) |
-| **Hotelname** | Nur bei „Selbst bezahlt" – Name des Hotels |
-| **Hotelkosten** | Nur bei „Selbst bezahlt" – Kosteneingabe in EUR |
-| **Hotelbeleg** | Upload-Zone für Belege (PDF, JPG, PNG, max. 10 MB) |
-
-**Verpflegung (Mahlzeiten-Matrix):**
-
-Für jeden Reisetag können die **gewährten Mahlzeiten** per Checkbox markiert werden:
+- **Eintägige Reise:** 14 € bei mindestens 8 Stunden Arbeitszeit
+- **Mehrtägige Reise:** An- und Abreisetag je 14 €, volle Zwischentage je 28 €
+- **Gewährte Mahlzeiten** werden je Reisetag als Kürzung abgezogen (Mahlzeiten-Matrix):
 
 | Mahlzeit | Kürzung | Hinweis |
 |----------|---------|---------|
@@ -107,80 +116,34 @@ Für jeden Reisetag können die **gewährten Mahlzeiten** per Checkbox markiert 
 | **Mittagessen** | 11,20 € (40% von 28 €) | — |
 | **Abendessen** | 11,20 € (40% von 28 €) | Am Abreisetag nicht auswählbar |
 
-Darunter wird die berechnete **Verpflegungspauschale** angezeigt (Brutto, Abzug, Netto).
+Ergebnis: Brutto, Abzug, Netto (`meal_allowance_gross/deduction/net`).
 
-!!! info "Verpflegungspauschale nach gesetzlichen Regeln"
-    - **Eintägige Reise:** 14 € bei mindestens 8 Stunden Arbeitszeit
-    - **Mehrtägige Reise:** An- und Abreisetag je 14 €, volle Zwischentage je 28 €
-    - Gewährte Mahlzeiten werden als Kürzung abgezogen
+**Übernachtung:** Toggle; „Hotel von glattt bezahlt" oder „Selbst bezahlt" — nur bei
+Selbstzahlung werden Hotelname, Hotelkosten und Hotelbeleg erfasst und die Kosten
+erstattet.
 
-#### An- und Abreise
+**An- und Abreise:**
 
-**Verkehrsmittel wählen:** Auto oder Bahn (segmented control oben rechts).
+- **Auto:** Abfahrtsort per Adresssuche (Nominatim-Geocoding füllt Straße, PLZ, Stadt),
+  Ziel = Institut (Phorest-Filiale) oder anderes Ziel (Adresssuche), Entfernung automatisch
+  über OSRM-Routing oder manuell, „Hin- und Rückfahrt" (Standard an) verdoppelt die Strecke.
+  Berechnung: `X km × 2 × 0,30 €/km = Y,YY €` (`km_rate` 0,30).
+- **Bahn:** „Ticket von glattt bezahlt" oder „Selbst bezahlt"; nur bei Selbstzahlung
+  Ticketkosten + Bahnticket-Beleg.
 
-**Bei Auto:**
+**Zusätzliche Kosten:** beliebig viele Positionen (Beschreibung, Betrag, Beleg je Position —
+Pflicht für die Einreichung). **Notizen:** Freitext.
 
-| Feld | Beschreibung |
-|------|-------------|
-| **Abfahrtsort** | Adresse suchen (Nominatim-Geocoding) – Straße, PLZ, Stadt werden automatisch befüllt |
-| **Ziel** | Institut (aus Phorest-Filialen) oder Anderes Ziel (Adresssuche) |
-| **Entfernung (km)** | Wird automatisch über OSRM-Routing berechnet oder manuell eingegeben |
-| **Hin- und Rückfahrt** | Checkbox (standardmäßig aktiviert) – verdoppelt die Strecke |
+**Gesamtübersicht:** Fahrtkosten / Bahnticket + Hotelkosten + Verpflegungspauschale +
+zusätzliche Kosten = Gesamtbetrag (Beispiel: 120,00 + 89,00 + 42,00 + 15,50 = 266,50 €).
 
-Am Ende wird die Berechnung angezeigt: `X km × 2 × 0,30 €/km = Y,YY €`
+**Belege:** PDF, JPG, PNG, max. 10 MB je Datei; Typen `additional_cost`, `train_ticket`,
+`hotel`.
 
-**Bei Bahn:**
-
-| Feld | Beschreibung |
-|------|-------------|
-| **Ticket bezahlt von** | „Ticket von glattt bezahlt" oder „Selbst bezahlt" |
-| **Ticketkosten** | Nur bei „Selbst bezahlt" – Kosteneingabe in EUR |
-| **Bahnticket-Beleg** | Upload-Zone für Beleg |
-
-#### Zusätzliche Kosten
-
-Dynamische Liste mit Einzelpositionen:
-
-| Feld | Beschreibung |
-|------|-------------|
-| **Beschreibung** | Freitext für die Kostenposition |
-| **Betrag** | Betrag in EUR |
-| **Beleg** | Upload pro Position (Pflicht für die Einreichung) |
-
-Über „+ Kosten hinzufügen" können beliebig viele Positionen angelegt werden.
-
-#### Notizen
-
-Freitext-Feld für zusätzliche Hinweise zur Reise.
-
-#### Gesamtübersicht
-
-Am Ende des Formulars wird eine Zusammenfassung aller Kosten angezeigt:
-
-| Position | Beispiel |
-|----------|---------|
-| Fahrtkosten / Bahnticket | 120,00 € |
-| Hotelkosten | 89,00 € |
-| Verpflegungspauschale | 42,00 € |
-| Zusätzliche Kosten | 15,50 € |
-| **Gesamtbetrag** | **266,50 €** |
+**Einreichen** prüft: alle Pflichtfelder (Datum, Arbeitszeiten für alle Tage, Reisedaten)
+und Belege, wo erforderlich (Bahnticket bei Selbstzahlung, Belege bei zusätzlichen Kosten).
 
 ---
-
-### Einreichen
-
-Klick auf **„Einreichen"** prüft:
-
-- Alle Pflichtfelder ausgefüllt (Datum, Arbeitszeiten für alle Tage, Reisedaten)
-- Belege vorhanden (wo erforderlich: Bahnticket bei Selbstzahlung, Belege bei zusätzlichen Kosten)
-
-Nach dem Einreichen ändert sich der Status auf „Eingereicht" und die Abrechnung kann nicht mehr bearbeitet werden (bis zur Ablehnung).
-
----
-
----
-
-## Entwicklerdokumentation
 
 ### Dateistruktur
 
@@ -426,6 +389,8 @@ Einreichung mit Prüfungen:
 ### Alpine.js Component
 
 Die komplette UI ist in `reisekosten.blade.php` als einzelnes Alpine.js-Component implementiert.
+Datumsfelder laufen über Flatpickr (nur die zum Anspruchstag passenden Daten wählbar),
+Verkehrsmittel und „bezahlt von" als Segmented Control, Belege über Upload-Zonen.
 
 #### Wichtige State-Eigenschaften
 
@@ -476,9 +441,11 @@ setWorkTime(day, field, value) {
 
 ---
 
-### SQL für PROD-Migration
+### SQL für PROD-Migration (historisch)
 
-Alle Spalten, die nachträglich hinzugefügt wurden (falls die Laravel-Migrationen nicht direkt auf PROD ausgeführt werden können):
+Seit 08.07.2026 laufen Migrationen automatisch beim Deploy; das folgende SQL stammt aus der
+Zeit davor und bleibt als Referenz für die nachträglich hinzugefügten Spalten (falls die
+Laravel-Migrationen nicht direkt auf PROD ausgeführt werden können):
 
 ```sql
 -- Migration 3: Destination-Adressfelder

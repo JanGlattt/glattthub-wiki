@@ -5,23 +5,66 @@ Office-Bereiche — Kundenservice, Widerrufe, SEPA, Forderungsmanagement, HR und
 Ads — auf einer Seite, immer für das **laufende Jahr**, je Monat der **Stand zum
 Monatsende** und für den laufenden Monat der Stand am Tag des Aufrufs
 (gebaut 10.09.2026 nach Jans Vorgabe, KPI-Wünsche SEPA/Forderungen von Janine
-aus Asana „KPIs Sepas & Forderungen").
+aus Asana „KPIs Sepas & Forderungen"). Diese Seite beschreibt **Kennzahl-Definitionen,
+Architektur, Zeitlogik, Datenquellen und Betrieb**; die Bedienung Schritt für Schritt
+steht im Nutzerhandbuch.
 
 **URL:** `/hub/reports/office-meeting` · **Recht:** `view_report_office_meeting`
 (bei Einführung an alle Rollen mit `view_receivables` vergeben, also admin und Büro).
 
+!!! nutzerhandbuch "Bedienung: Berichte 11 – Office-Teammeeting"
+    [hilfe.hub.glattt.com/berichte/11/](https://hilfe.hub.glattt.com/berichte/11/) — Bericht öffnen,
+    Kundenservice und Widerrufe, SEPA/Forderungen/HR/Ads lesen, mit der Seite arbeiten.
+
+    Rahmen aller Berichtsseiten (Standort, Kennzahlen-Zeile, Diagramm oder Tabelle, Export):
+    [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/).
+    Angrenzend: [Berichte 1 – Verkaufsstatistik](https://hilfe.hub.glattt.com/berichte/1/),
+    [Berichte 5 – Widerruf-Statistik](https://hilfe.hub.glattt.com/berichte/5/),
+    [Berichte 13 – HR-Kennzahlen](https://hilfe.hub.glattt.com/berichte/13/),
+    [Berichte 14 – Ads-Analyse](https://hilfe.hub.glattt.com/berichte/14/),
+    Serie [Forderungen](https://hilfe.hub.glattt.com/forderungen/).
+
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
+
+**Wozu die Seite da ist.** Das Office-Team bespricht wöchentlich dieselben Bereiche; bis 09/2026
+wurden die Zahlen dafür aus mehreren Berichten und Tabellen zusammengetragen. Die Seite führt sie an
+einem Ort zusammen und legt **eine** Lesart fest: immer das laufende Jahr ab 1. Januar, je Monat der
+Stand zum Monatsende, für den laufenden Monat der Stand am Tag des Aufrufs. Es gibt deshalb bewusst
+**keine Zeitraum-Auswahl**; der Standortfilter der Sidebar wirkt auf alle Karten, die Institute
+kennen (Zendesk kennt keine Institute, die Kundenservice-Karte bleibt also ungefiltert).
+
+**Was darauf steht.** Oben die personalisierbare Kennzahlen-Zeile (laufender Monat bis heute,
+Vergleich zum Vormonat), darunter sieben Bereiche mit je einer oder mehreren zweiseitigen Karten.
+Die fachlichen Definitionen hinter jeder Zahl — was als Ticket zählt, wie die Abwimmelquote
+gerechnet wird, was „Rückläufer gesamt" meint, wie Janines vier Forderungs-Töpfe geschnitten sind —
+sind im Meeting abgestimmt und stehen unten unter
+[Kennzahl-Definitionen](#kennzahl-definitionen). Wer eine Zahl im Meeting verteidigen muss, liest
+dort nach.
+
+**Für die Besprechung selbst** gibt es einen Präsentationsmodus: Vollbild, eine Karte formatfüllend,
+Blättern per Tastatur oder Wischen, Agenda, Spotlight und Stift. Er ist eine Darstellungshilfe und
+ändert keine Daten.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Bericht öffnen, Bereiche durchgehen, mit der Seite arbeiten | Berichte 11 |
+| Standort, Kennzahlen-Zeile, Diagramm/Tabelle, Export | Berichte 0 |
+| Herkunftsberichte im Detail | Berichte 1, 5, 13, 14 |
+| Forderungsfälle bearbeiten, die hier nur gezählt werden | Serie Forderungen |
+
+---
+
+## Für Entwickler
 
 ### Aufbau der Seite
 
-Die Seite hat bewusst **keine Zeitraum-Auswahl**: Sie zeigt immer das laufende
-Jahr ab 1. Januar. Der Standortfilter der Sidebar wirkt auf alle Karten, die
-Institute kennen (nicht auf die Kundenservice-Tickets — Zendesk kennt keine
-Institute). Oben die personalisierbare KPI-Zeile (laufender Monat bis heute,
-Vergleich zum Vormonat), darunter sechs Bereiche mit je einer oder mehreren
-zweiseitigen Karten (Diagramm ⇄ Tabelle über das Register am Kartenrand).
+Sieben Bereiche mit je einer oder mehreren zweiseitigen Karten (Diagramm ⇄ Tabelle über das Register
+am Kartenrand); die Herkunft sagt, ob die Karte hier neu entstanden oder eine bestehende Statistik
+ist, die eingebettet wird.
 
 | Bereich | Karte | Kennzahl | Herkunft |
 |---|---|---|---|
@@ -39,7 +82,8 @@ zweiseitigen Karten (Diagramm ⇄ Tabelle über das Register am Kartenrand).
 | 6 Ads | Kostenverlauf & Kosten pro Lead | CPL gesamt und je Plattform, **ROAS** (Vertragswert aller Abschlüsse des Monats ÷ Werbekosten, dritte Achse) | Ads-Analyse, erweitert |
 | 6 Ads | Entwicklung geplanter Beratungsgespräche | Beratungen in den nächsten 28 Tagen je Stichtag, gleitender 7-Tage-Ø | Zukünftige Beratungen |
 
-### Was die Zahlen genau bedeuten
+
+### Kennzahl-Definitionen
 
 **Kundenservice.** Gezählt werden Tickets, deren Anfragender ein Endkunde ist
 und die nicht von einem Agenten angelegt wurden — Mahn-Mails des Hubs und für
@@ -151,10 +195,6 @@ Moderationsnotizen, „Seit letztem Meeting", PDF-Handout, Timer, Fernbedienung.
 Im Export-Modal stehen die vier Office-eigenen Quellen (Tickets, 30-Tage-Kohorte,
 Forderungsbestand, HR-Jahr) sowie die eingebetteten Karten der anderen Bereiche
 (Rücklastschriften, Einzugsvolumen, Widerrufs-Trend, Ads-Monate, Buchungsstand).
-
----
-
-## Für Entwickler
 
 ### Architektur
 

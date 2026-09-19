@@ -1,27 +1,95 @@
 # Mitarbeiterperformance
 
-Die Mitarbeiterperformance zeigt, welche Berater wie viele Beratungsgespräche hatten und wie oft daraus am selben Tag ein Vertrag abgeschlossen wurde — Tagesmessung, Beratungs-Ranking nach Conversion-Rate und Behandlungs-Ranking (Behandlungszeit & Auslastung je Mitarbeiter).
+Die Mitarbeiterperformance zeigt, welche Berater wie viele Beratungsgespräche hatten und wie oft
+daraus am selben Tag ein Vertrag abgeschlossen wurde — Tagesmessung (Ampel-Matrix),
+Beratungs-Ranking nach Conversion-Rate und Behandlungs-Ranking (Behandlungszeit & Auslastung je
+Mitarbeiter). Diese Seite beschreibt **Fachregeln (Abschluss-Zuordnung, Zielwerte, Zeitraum-Modell),
+Definitionen je Karte, Korrekturen, SQL-Kernlogik, Sync, Endpunkte und Performance-Maßnahmen**;
+die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
 **Zugang:** Hub → Berichte → Mitarbeiterperformance  
 **URL:** `/hub/reports/staff-performance`  
 **Berechtigung:** `view_report_sales_statistics`
 
+!!! nutzerhandbuch "Bedienung: Berichte 9 – Mitarbeiterperformance"
+    [hilfe.hub.glattt.com/berichte/9/](https://hilfe.hub.glattt.com/berichte/9/) — den Bericht
+    öffnen, die Kennzahlen je Person, Ziele und Ampel, fair vergleichen.
+
+    Angrenzend: [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/)
+    (Zeitraum, Standort, Kennzahlen-Zeile, Diagramm/Tabelle, Export),
+    [Berichte 13 – HR-Kennzahlen](https://hilfe.hub.glattt.com/berichte/13/) (Kapazität und
+    Produktivität auf Unternehmensebene), [Berichte 1 – Verkaufsstatistik](https://hilfe.hub.glattt.com/berichte/1/),
+    [Admin 7 – Personal und Vergütung](https://hilfe.hub.glattt.com/admin/7/) (Personalzuordnungen
+    Phorest ↔ Hub-Konto), [Bonus-Board 3 – Bonus-Board für die Leitung](https://hilfe.hub.glattt.com/bonus-board/3/).
+
+## Inhaltsverzeichnis
+
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Fachregeln: Abschluss-Zuordnung und Live-Betrachtung](#fachregeln-abschluss-zuordnung-und-live-betrachtung)
+    - [Zell-Detailansicht & manuelle Korrekturen](#zell-detailansicht-manuelle-korrekturen-seit-082026)
+    - [Aufbau der Seite](#aufbau-der-seite-statistik-bauplan-seit-072026)
+    - [Zeitraum-Modell](#zeitraum-ein-seiten-filter-monatsraster-eine-ausnahme)
+    - [Standort-Filter](#standort-filter)
+    - [Sektionen](#sektionen) — KPI-Zeile, Beratungs-Ranking, Tagesmessung, Zielwerte
+    - [Behandlungs-Ranking](#behandlungs-ranking-bis-082026-durchgefuhrte-behandlungen)
+    - [CSV-Export](#csv-export)
+    - [Architektur](#architektur)
+    - [Relevante Dateien](#relevante-dateien)
+    - [SQL-Kernlogik (CTEs)](#sql-kernlogik-ctes)
+    - [Aktualität der Daten](#aktualitat-der-daten-termine-von-heute)
+    - [Datengrundlagen](#datengrundlagen)
+    - [Schichtzeiten-Sync](#schichtzeiten-sync-stats_staff_shifts-seit-082026)
+    - [Staff-Mapping & Staff-Merging](#staff-mapping)
+    - [Zielwerte-Tabelle](#zielwerte-tabelle-staff_performance_targets)
+    - [API-Endpunkte](#api-endpunkte)
+    - [Tests](#tests)
+    - [Tagesmessung-Korrekturen (Umsetzung)](#tagesmessung-korrekturen-umsetzung)
+    - [Performance-Optimierungen](#performance-optimierungen)
+
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
 
-### Was zeigt diese Seite?
+**Was der Bericht leistet.** Er beantwortet, wie viele Beratungsgespräche eine Mitarbeiterin
+hatte, in wie vielen davon am selben Tag ein Vertrag zustande kam (Conversion-Rate), wie viele
+Körperzonen je Beratung und je Abschluss verkauft wurden, wie die Institute im Zeitraum zueinander
+stehen und wie viel Behandlungszeit und Auslastung auf die Einzelnen entfällt. Die **Tagesmessung**
+ist das tägliche Arbeitsmittel (Nachbau des früheren Google-Sheets): eine Ampel-Matrix je
+Mitarbeiterin mit Heute, dieser Woche und Monatsblöcken, farbcodiert nach konfigurierbaren
+Zielwerten. Das **Beratungs-Ranking** zeigt Conversion-Rate und Ø Körperzonen im Zeitverlauf plus
+Bestenliste, das **Behandlungs-Ranking** Behandlungsstunden, Auslastung und Termin-Anteil.
 
-Die Mitarbeiterperformance beantwortet Fragen wie:
+**Grundsätze:** Ein Abschluss zählt nur, wenn der Vertrag **am selben Kalendertag, für denselben
+Kunden, im selben Institut** unterschrieben wurde und aktiv oder abgeschlossen ist — Nachverkäufe
+Tage später zählen nicht (Definition Jan, 25.07.2026); bei mehreren Beratungen eines Kunden am Tag
+trägt die letzte das Ergebnis. Die Seite ist eine **Live-Betrachtung**: Ein Widerruf entfernt den
+Abschluss rückwirkend. Mit dem Recht „Tagesmessung korrigieren" lassen sich einzelne Gespräche
+ausschließen oder ein Vertrag manuell zuordnen — immer mit Begründung, sichtbar markiert und
+jederzeit aufhebbar. Der **Zeitraum** der Seite ist ein Monatsbereich (Vorauswahl: letzte vier
+Monate); die KPI-Zeile zeigt immer den laufenden Monat, die Diagramme immer die volle Historie mit
+Zoom-Leiste. Quoten aus wenigen Gesprächen sind gedämpft dargestellt (Bestenliste ab 20 Beratungen
+belastbar). Zielwerte und Ampel-Schwellen (Standard: CR grün ≥ 60 %, gelb ≥ 40 %; KpZ grün ≥ 3,0,
+gelb ≥ 2,0) sind global und je Standort einstellbar.
 
-- Wie viele Beratungsgespräche hatte ein Mitarbeiter?
-- In wie vielen davon wurde am selben Tag ein Vertrag abgeschlossen? (Conversion-Rate)
-- Wie viele Körperzonen wurden pro Abschluss verkauft?
-- Welcher Mitarbeiter hat die beste Conversion-Rate?
-- Wie stehen die Institute im gewählten Zeitraum zueinander? (Tagesmessung, Diagramm)
-- Wie viele Behandlungen hat ein Mitarbeiter durchgeführt?
+**Wo was erledigt wird:**
 
-### Verknüpfungslogik
+| Vorgang | Anleitung |
+|---|---|
+| Bericht öffnen, Tagesmessung lesen, Monat aufklappen, Zelle öffnen | Berichte 9 |
+| Die Kennzahlen je Person, Ziele und Ampel, fair vergleichen | Berichte 9 |
+| Zeitraum und Standort setzen, Diagramm/Tabelle umschalten, CSV-Export | Berichte 0 |
+| Zielwerte je Standort pflegen (Modal „Zielwerte", Admin-Panel) | Berichte 9 · Admin 8 |
+| Phorest-Profile einem Hub-Konto zuordnen (Personalzuordnungen) | Admin 7 |
+| Rechte vergeben (`view_report_sales_statistics`, `adjust_staff_performance_data`, `trigger_data_sync`) | Admin 1 |
+| Kapazität, Produktivität und Krankenquote auf Unternehmensebene | Berichte 13 |
+| Bonus-Ziele auf Basis der Beratungskennzahlen | Bonus-Board 3 |
+
+---
+
+## Für Entwickler
+
+### Fachregeln: Abschluss-Zuordnung und Live-Betrachtung
 
 Eine Beratung zählt als **Abschluss**, wenn:
 
@@ -106,6 +174,54 @@ vorbelegt ist: **Tabelle als Standard-Ansicht, Diagramm dahinter**. Begründung:
 Diese Karte wird abgelesen, nicht überflogen — sie ist das tägliche Arbeitsmittel
 und ersetzt das frühere Google-Sheet. Alle anderen Karten starten wie üblich mit
 dem Diagramm.
+
+### Zeitraum: EIN Seiten-Filter (Monatsraster), eine Ausnahme
+
+Seit 08/2026 sitzt im **Seitenkopf** (neben Export/Zielwerte) der
+**Monatsbereich-Picker** `<x-month-range-picker>` — er ist der Zeitraum-Filter
+der **ganzen Seite** (JS-State `filterFrom`/`filterTo`, `setFilterRange()` lädt
+alle zeitraumabhängigen Karten neu). Vorauswahl: die letzten vier
+Kalendermonate inkl. des laufenden, zurück wählbar bis zum ältesten
+Beratungstermin. Die früheren Karten-eigenen Filter (flatpickr an Tagesmessung
+und Behandlungen) sind entfallen.
+
+| Karte | Zeitraum |
+|---|---|
+| **KPI-Zeile** | **Ausnahme: immer laufender Monat** (steht im Titel der Zeile) |
+| **Tagesmessung, Tabelle** | Seiten-Zeitraum |
+| **Tagesmessung, Diagramm** | **Ausnahme: immer gesamte Historie** — Ausschnitt über die Zoom-Leiste |
+| **Beratungs-Ranking, Diagramm** | **Ausnahme: immer gesamte Historie** — Ausschnitt über die Zoom-Leiste |
+| **Beratungs-Ranking, Bestenliste** (+ Detail-Modal) | Seiten-Zeitraum |
+| **Behandlungs-Ranking, Diagramm** | **Ausnahme: immer gesamte Historie** — Ausschnitt über die Zoom-Leiste |
+| **Behandlungs-Ranking, Tabelle** | Seiten-Zeitraum |
+
+Alle Ausnahmen stehen in Hinweiszeile bzw. Titel der jeweiligen Karte und im
+Info-Panel, damit der Bezug nicht stillschweigend passiert.
+
+Die **Endpunkte** akzeptieren durchgehend `date_from`/`date_to` (siehe
+`StaffPerformanceController::extractFilters()`); die Tagesmessung zieht daraus ihre
+Monatsspalten (`getStaffOverview($filters, $from, $to)`), der CSV-Export nutzt
+dieselben Parameter für die Quellen mit `range`-Filter.
+
+### Standort-Filter
+
+Der Standort-Filter in der Seitenleiste filtert alle Daten auf ein bestimmtes
+Institut. Bei Wechsel werden alle Sektionen automatisch neu geladen
+(`branchChanged`-Event → `reloadAllData()`), jede Karte lädt dabei unabhängig.
+Serverseitig hängt er als `branch_id` an jedem Endpunkt und wirkt in
+`buildConsultationFilters()` (Beratungstermine) **und**
+`buildContractFilters()` (Verträge) — beide Seiten des Joins müssen gefiltert
+sein, sonst zählen Verträge fremder Standorte mit.
+
+> **Behobener Fehler (07/2026):** In `getConversionContractIds()` (Datenbasis der
+> Körperzonen-Verteilung) stehen die Vertrags-Platzhalter **zuerst** im SQL — im
+> INNER JOIN, vor den Service-IDs. Die Bindings wurden aber in der Reihenfolge von
+> `executeAggregateQuery()` zusammengesetzt (Beratung zuerst). Ohne Standortfilter
+> fiel das nicht auf, weil die Vertrags-Bindings dann leer sind; **mit** Filter
+> landete die `branch_id` auf dem falschen Platzhalter und die erste Service-UUID
+> in `c.branch_id = ?` — die Karte „Körperzonen-Verteilung" war bei jedem
+> ausgewählten Standort leer. Abgesichert durch
+> `test_body_zone_distribution_respects_the_branch_filter`.
 
 ### Sektionen
 
@@ -517,70 +633,6 @@ bei den übrigen 57 lag das letzte BG 1–7 Tage (15), 8–30 Tage (14) oder üb
 - Änderungen werden sofort in der Tabelle wirksam (ohne Seitenreload)
 - Zielwerte auch über Filament-Admin änderbar (`/admin/staff-performance-settings`)
 
-### Standort-Filter
-
-Der Standort-Filter in der Seitenleiste filtert alle Daten auf ein bestimmtes
-Institut. Bei Wechsel werden alle Sektionen automatisch neu geladen
-(`branchChanged`-Event → `reloadAllData()`), jede Karte lädt dabei unabhängig.
-Serverseitig hängt er als `branch_id` an jedem Endpunkt und wirkt in
-`buildConsultationFilters()` (Beratungstermine) **und**
-`buildContractFilters()` (Verträge) — beide Seiten des Joins müssen gefiltert
-sein, sonst zählen Verträge fremder Standorte mit.
-
-> **Behobener Fehler (07/2026):** In `getConversionContractIds()` (Datenbasis der
-> Körperzonen-Verteilung) stehen die Vertrags-Platzhalter **zuerst** im SQL — im
-> INNER JOIN, vor den Service-IDs. Die Bindings wurden aber in der Reihenfolge von
-> `executeAggregateQuery()` zusammengesetzt (Beratung zuerst). Ohne Standortfilter
-> fiel das nicht auf, weil die Vertrags-Bindings dann leer sind; **mit** Filter
-> landete die `branch_id` auf dem falschen Platzhalter und die erste Service-UUID
-> in `c.branch_id = ?` — die Karte „Körperzonen-Verteilung" war bei jedem
-> ausgewählten Standort leer. Abgesichert durch
-> `test_body_zone_distribution_respects_the_branch_filter`.
-
-### Zeitraum: EIN Seiten-Filter (Monatsraster), eine Ausnahme
-
-Seit 08/2026 sitzt im **Seitenkopf** (neben Export/Zielwerte) der
-**Monatsbereich-Picker** `<x-month-range-picker>` — er ist der Zeitraum-Filter
-der **ganzen Seite** (JS-State `filterFrom`/`filterTo`, `setFilterRange()` lädt
-alle zeitraumabhängigen Karten neu). Vorauswahl: die letzten vier
-Kalendermonate inkl. des laufenden, zurück wählbar bis zum ältesten
-Beratungstermin. Die früheren Karten-eigenen Filter (flatpickr an Tagesmessung
-und Behandlungen) sind entfallen.
-
-| Karte | Zeitraum |
-|---|---|
-| **KPI-Zeile** | **Ausnahme: immer laufender Monat** (steht im Titel der Zeile) |
-| **Tagesmessung, Tabelle** | Seiten-Zeitraum |
-| **Tagesmessung, Diagramm** | **Ausnahme: immer gesamte Historie** — Ausschnitt über die Zoom-Leiste |
-| **Beratungs-Ranking, Diagramm** | **Ausnahme: immer gesamte Historie** — Ausschnitt über die Zoom-Leiste |
-| **Beratungs-Ranking, Bestenliste** (+ Detail-Modal) | Seiten-Zeitraum |
-| **Behandlungs-Ranking, Diagramm** | **Ausnahme: immer gesamte Historie** — Ausschnitt über die Zoom-Leiste |
-| **Behandlungs-Ranking, Tabelle** | Seiten-Zeitraum |
-
-Alle Ausnahmen stehen in Hinweiszeile bzw. Titel der jeweiligen Karte und im
-Info-Panel, damit der Bezug nicht stillschweigend passiert.
-
-Die **Endpunkte** akzeptieren durchgehend `date_from`/`date_to` (siehe
-`StaffPerformanceController::extractFilters()`); die Tagesmessung zieht daraus ihre
-Monatsspalten (`getStaffOverview($filters, $from, $to)`), der CSV-Export nutzt
-dieselben Parameter für die Quellen mit `range`-Filter.
-
-### CSV-Export
-
-Über den Export-Button im Seitenkopf stehen alle Auswertungen der Seite als
-CSV bereit (Quellen in `ReportExportService::SOURCES`, alle mit Standort-Filter):
-
-| Quelle | Inhalt |
-|--------|--------|
-| `staff-overview` | Tagesmessung: BG, CR & KpZ je Zeitraum (eine Zeile pro Mitarbeiter × Zeitraum); `date_from`/`date_to` steuern die Monatsspalten wie im UI |
-| `staff-overview-branches` | Tagesmessung je Institut: Mitarbeiter-Zeilen standortweise, Instituts-Zwischensummen **und** die Gesamtzeile je Zeitraum (Spalte „Zeilenart“ = Mitarbeiter / Institut gesamt / Gesamt). Die Gesamtzeilen sind zugleich die Datenreihe der Diagramm-Linien |
-| `staff-ranking` | Bestenliste des Beratungs-Rankings mit allen Kennzahlen, standortübergreifend zusammengeführt; Spalte „Quote belastbar“ = ja/nein (≥ 20 Beratungen) |
-| `staff-treatments` | Behandlungs-Ranking: Termine, Service-Positionen, Behandlungs-/Schichtzeit (Std.), Auslastung (%), mögliche Termine, Termin-Anteil (%) + Behandlungsstunden des Instituts |
-
-Mit den drei gestrichenen Karten sind auch deren Quellen entfallen
-(`staff-branch-comparison`, `staff-monthly-trend`, `staff-body-zones`) — der Export
-einer Seite spiegelt, was die Seite zeigt.
-
 ### Behandlungs-Ranking (bis 08/2026 „Durchgeführte Behandlungen")
 
 Zeigt, wie viele Behandlungen die einzelnen Mitarbeiter wahrnehmen — seit
@@ -687,7 +739,21 @@ Hinweis zur Abgrenzung: Behandlungen je **Institut** und je **Behandlungsart** (
 
 ---
 
-## Für Entwickler
+### CSV-Export
+
+Über den Export-Button im Seitenkopf stehen alle Auswertungen der Seite als
+CSV bereit (Quellen in `ReportExportService::SOURCES`, alle mit Standort-Filter):
+
+| Quelle | Inhalt |
+|--------|--------|
+| `staff-overview` | Tagesmessung: BG, CR & KpZ je Zeitraum (eine Zeile pro Mitarbeiter × Zeitraum); `date_from`/`date_to` steuern die Monatsspalten wie im UI |
+| `staff-overview-branches` | Tagesmessung je Institut: Mitarbeiter-Zeilen standortweise, Instituts-Zwischensummen **und** die Gesamtzeile je Zeitraum (Spalte „Zeilenart“ = Mitarbeiter / Institut gesamt / Gesamt). Die Gesamtzeilen sind zugleich die Datenreihe der Diagramm-Linien |
+| `staff-ranking` | Bestenliste des Beratungs-Rankings mit allen Kennzahlen, standortübergreifend zusammengeführt; Spalte „Quote belastbar“ = ja/nein (≥ 20 Beratungen) |
+| `staff-treatments` | Behandlungs-Ranking: Termine, Service-Positionen, Behandlungs-/Schichtzeit (Std.), Auslastung (%), mögliche Termine, Termin-Anteil (%) + Behandlungsstunden des Instituts |
+
+Mit den drei gestrichenen Karten sind auch deren Quellen entfallen
+(`staff-branch-comparison`, `staff-monthly-trend`, `staff-body-zones`) — der Export
+einer Seite spiegelt, was die Seite zeigt.
 
 ### Architektur
 
@@ -1064,7 +1130,7 @@ fahren, die SQLite-Suiten decken diese Pfade nicht ab.
 
 ---
 
-## Tagesmessung-Korrekturen (Entwickler)
+### Tagesmessung-Korrekturen (Umsetzung)
 
 - **Tabelle `staff_performance_adjustments`** (Migration `2026_08_03_170000`):
   `type` (`exclude` | `assign_contract`), `appointment_id`
@@ -1113,11 +1179,11 @@ fahren, die SQLite-Suiten decken diese Pfade nicht ab.
   Validierung, Detailansicht auf SQLite; Wirkung auf die Aggregat-Query als
   `requiresMysql`-Tests gegen `glattthub_test`).
 
-## Performance-Optimierungen
+### Performance-Optimierungen
 
 Die Staff-Performance-Seite zeigt hunderte Datenzellen, Badges und Charts gleichzeitig. Folgende Optimierungen wurden implementiert, um Ruckeln (Jank) und hohe Render-Kosten zu vermeiden.
 
-### Backend (Query-Konsolidierung)
+#### Backend (Query-Konsolidierung)
 
 | Methode | Vorher | Nachher | Maßnahme |
 |---------|--------|---------|----------|
@@ -1131,7 +1197,7 @@ Die Staff-Performance-Seite zeigt hunderte Datenzellen, Badges und Charts gleich
 `SortsBranchIds`-Trait (`InstituteColor.sort_order`) — Charts, Tabellen und
 Exporte zeigen dieselbe konfigurierte Reihenfolge.
 
-### Frontend (Alpine.js)
+#### Frontend (Alpine.js)
 
 | Optimierung | Beschreibung |
 |-------------|-------------|
@@ -1153,7 +1219,7 @@ entfernt — sie hielten die Chart-Container beim Erstrender auf 0 px Breite
 Europe/Berlin kippte das Datum dadurch auf den Vortag, „Dieser Monat" enthielt
 immer den letzten Tag des Vormonats. Jetzt lokale Formatierung.
 
-### CSS (Globaler `backdrop-filter`-Bann)
+#### CSS (Globaler `backdrop-filter`-Bann)
 
 **Problem:** Die CSS-Eigenschaft `backdrop-filter: blur()` erzeugt pro Element eine GPU-Compositing-Layer. Bei hunderten gleichzeitig sichtbaren Badges (`.badge-glattt`) und der Seiten-Wrapper-Klasse `.dashboard-surface` führte das zu massiven Render-Kosten und spürbarem Ruckeln.
 

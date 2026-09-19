@@ -2,6 +2,9 @@
 
 > Übersicht über das Vertragsmodul im glatttHub
 
+!!! nutzerhandbuch "Bedienung: Serien „Verträge" und „Verkauf" im Nutzerhandbuch"
+    [Verträge 1–8](https://hilfe.hub.glattt.com/vertraege/) (Liste, Detail, Ratenplan, Zahlungen, SEPA, Laufzeit, Mandat, Importe) und [Verkauf 1 – Preislisten pflegen](https://hilfe.hub.glattt.com/verkauf/1/). Diese Seite ist der fachliche Überblick über Pakete und Verträge; die Details stehen in [Verträge & SEPA](CONTRACTS-SEPA-MODULE.md) und [Preislisten](PREISLISTEN-MODUL.md).
+
 ## Einführung
 
 Das **GLATTT Pakete**-Modul verwaltet alle Aspekte rund um Kundenverträge für dauerhafte Haarentfernung. Es ermöglicht die Definition von Behandlungspaketen basierend auf **Körperzonen (KPZ)**, flexible Preisgestaltung und standortspezifische Konditionen.
@@ -109,7 +112,7 @@ GoCardless-Integration für automatische Lastschriften:
 
 > 📖 **Vollständige Dokumentation:** [CONTRACTS-SEPA-MODULE.md](./CONTRACTS-SEPA-MODULE.md)
 >
-> 🆕 **Tages-Update 20.04.2026:** [CONTRACTS-SEPA-MODULE.md#update-20042026](./CONTRACTS-SEPA-MODULE.md#update-20042026)
+> 🆕 **Tages-Update 20.04.2026:** [CONTRACTS-SEPA-MODULE.md#update-20042026](./CONTRACTS-SEPA-MODULE.md#chronik-der-anderungen-neueste-zuerst)
 
 ## SEPA-Mandate (Kurzübersicht)
 
@@ -128,7 +131,7 @@ Bei Verträgen mit Ratenzahlung wird automatisch ein SEPA-Mandat erstellt.
 
 **Beispiel:** 19  Monate = 1 vor Ort + 18 SEPA-Raten
 
-> 📖 **Ausführliche Dokumentation:** [CONTRACTS-SEPA-MODULE.md](./CONTRACTS-SEPA-MODULE.md#sepa-mandate)
+> 📖 **Ausführliche Dokumentation:** [CONTRACTS-SEPA-MODULE.md](./CONTRACTS-SEPA-MODULE.md#fur-anwender-uberblick)
 
 ## GoCardless Integration (Kurzübersicht)
 

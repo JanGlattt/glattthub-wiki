@@ -1,86 +1,94 @@
 # Gutscheine-Modul (Vouchers)
 
-## Übersicht
+Das Gutscheine-Modul verwaltet die **Phorest-Gutscheine im Hub**: Übersicht aller Gutscheine mit
+Suche, Filter und KPI-Kacheln, Anpassung des Restbetrags direkt in der Tabelle und Anlage neuer
+Gutscheine mit Kundenzuweisung und automatisch erzeugter 8-stelliger Seriennummer. Es hält keine
+eigenen Daten — jede Änderung geht über den Phorest-Proxy (`PhorestController`) direkt in Phorest.
+Diese Seite beschreibt **Fachregeln, Endpunkte, Alpine-Komponente, Phorest-Details und
+Fehlerbehandlung**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
-Das Gutscheine-Modul ermöglicht die Verwaltung von Phorest-Gutscheinen im HUB. Es bietet eine Übersicht aller Gutscheine, die Möglichkeit zur Anpassung des Restbetrags und zur Erstellung neuer Gutscheine.
+!!! nutzerhandbuch "Bedienung: Verkauf 3 – Gutscheine verwalten"
+    [hilfe.hub.glattt.com/verkauf/3/](https://hilfe.hub.glattt.com/verkauf/3/) — Gutschein finden,
+    Restwert und Gültigkeit anpassen, neuen Gutschein anlegen.
 
-### Features
+    Angrenzend: [Admin 3 – Gutschein-Verkauf](https://hilfe.hub.glattt.com/admin/3/) (Online-Verkauf,
+    Bestellungen, Erstattung), [Verträge 6 – Laufzeit und Raten ändern](https://hilfe.hub.glattt.com/vertraege/6/)
+    (Gutschein mit dem Ratenplan verrechnen), [Terminansicht 3 – Behandlungsvertrag abschließen](https://hilfe.hub.glattt.com/terminansicht/3/)
+    (Gutschein beim Abschluss einlösen).
 
-- **Übersicht**: Alle Gutscheine mit Suchfunktion und Filterung
-- **KPI-Kacheln**: Aktive Gutscheine, aufgebrauchte Gutscheine, Gesamt-/Restwert
-- **Spalte „Zuletzt bebucht"**: Zeigt, wann ein Gutschein zuletzt verwendet/geändert wurde
-- **Inline-Bearbeitung**: Restbetrag direkt in der Tabelle anpassen
-- **Neuer Gutschein**: Modal zum Erstellen von Gutscheinen mit Kunden-Zuweisung
-- **Seriennummern**: Automatische Generierung von 8-stelligen eindeutigen Nummern
+## Inhaltsverzeichnis
 
----
-
-## Benutzerhandbuch
-
-### Gutscheine-Seite aufrufen
-
-Navigation: **Verwaltung → Gutscheine**
-
-URL: `/hub/vouchers`
-
-### Übersicht verstehen
-
-Die Seite zeigt zunächst **KPI-Kacheln** mit folgenden Werten:
-- **Aktive Gutscheine**: Anzahl der Gutscheine mit Restguthaben > 0
-- **Aufgebraucht**: Anzahl der vollständig eingelösten Gutscheine
-- **Gesamtwert (Original)**: Summe aller ursprünglichen Gutscheinwerte
-- **Restwert (Aktiv)**: Summe der verbleibenden Guthaben
-
-### Spalte „Zuletzt bebucht"
-
-Die Tabelle (und das Detail-Modal) zeigt pro Gutschein, wann er zuletzt bebucht wurde — mit Datum und relativer Angabe (z.B. „vor 3 Monaten"). So ist auf einen Blick erkennbar, wie lange ein Restwert bereits unberührt liegt; die Spalte ist sortierbar. Gutscheine ohne jede Buchung seit Erstellung zeigen **„Unberührt"**.
-
-> **Hinweis zur Datenquelle**: Phorest liefert keine Transaktionshistorie pro Gutschein. Als „Zuletzt bebucht" wird das Phorest-Feld `updatedAt` verwendet — es wird bei jeder Einlösung an der Kasse aktualisiert, aber auch bei sonstigen Änderungen am Gutschein (z.B. Restwert-Korrektur oder Gültigkeits-Anpassung im Hub). Liegt `updatedAt` weniger als 5 Minuten nach der Erstellung, gilt der Gutschein als unberührt (Toleranz für den Anlage-Prozess).
-
-### Gutscheine suchen
-
-Das Suchfeld durchsucht:
-- **Seriennummer**: 8-stellige Gutschein-Nummer
-- **Kundenname**: Vor- und Nachname
-- **Kundennummer**: Phorest External ID
-
-### Gutscheine filtern
-
-Über die Statusfilter-Buttons kann gefiltert werden:
-- **Alle**: Alle Gutscheine
-- **Aktiv**: Nur Gutscheine mit Restguthaben > 0
-- **Aufgebraucht**: Nur vollständig eingelöste Gutscheine
-
-### Restbetrag anpassen
-
-1. In der Zeile des gewünschten Gutscheins auf den **Restbetrag** klicken
-2. Der Betrag wird zu einem Eingabefeld
-3. Neuen Wert eingeben (z.B. `50,00` oder `50.00`)
-4. Mit der **Eingabetaste** bestätigen oder **Speichern-Button** klicken
-5. Mit **Escape** abbrechen
-
-> **Hinweis**: Der Restbetrag kann maximal so hoch sein wie der Originalwert.
-
-### Neuen Gutschein erstellen
-
-1. Auf den Button **„Neuer Gutschein"** oben rechts klicken
-2. Im Modal folgende Daten eingeben:
-
-| Feld | Beschreibung | Pflicht |
-|------|--------------|---------|
-| **Filiale** | Ausstellende Branch | ✓ |
-| **Wert (EUR)** | Gutscheinbetrag | ✓ |
-| **Seriennummer** | 8-stellige Nummer (wird automatisch generiert) | ✓ |
-| **Kunde** | Optional - Kundensuche mit Name/E-Mail/Kundennummer | ✗ |
-| **Gültig bis** | Ablaufdatum (Standard: 5 Jahre ab heute) | ✗ |
-| **Notizen** | Freies Textfeld | ✗ |
-
-3. Seriennummer kann mit dem **Würfel-Button** neu generiert werden
-4. Mit **„Gutschein erstellen"** speichern
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Fachregeln](#fachregeln)
+    - [Architektur](#architektur)
+    - [Dateien](#dateien)
+    - [API Endpoints](#api-endpoints)
+    - [Alpine.js Komponente](#alpinejs-komponente)
+    - [UI-Komponenten](#ui-komponenten)
+    - [Styling](#styling)
+    - [Phorest API Details](#phorest-api-details)
+    - [Fehlerbehandlung](#fehlerbehandlung)
+    - [Bekannte Einschränkungen](#bekannte-einschrankungen)
+- [Changelog](#changelog)
 
 ---
 
-## Entwickler-Dokumentation
+## Für Anwender — Überblick
+
+**Was das Modul leistet.** Gutscheine entstehen in Phorest — an der Kasse, über den
+Online-Gutschein-Verkauf oder im Hub. Die Seite **Verwaltung → Gutscheine** (`/hub/vouchers`) zeigt
+den gesamten Bestand mit Originalwert, Restwert, Gültigkeit, zugeordneter Kundin und dem Zeitpunkt
+der letzten Bebuchung, damit das Team auf einen Blick sieht, welche Guthaben offen sind und wie lange
+ein Restwert schon unberührt liegt. Der Restbetrag lässt sich direkt in der Tabelle korrigieren (etwa
+nach einer Kassen-Panne), neue Gutscheine werden mit ausstellendem Institut, Wert, optionaler Kundin
+und Gültigkeit angelegt und landen sofort in Phorest.
+
+**Grundsätze:**
+
+- **Phorest ist die einzige Wahrheit.** Der Hub speichert nichts selbst; Löschen ist nicht möglich
+  (Phorest erlaubt es nicht), die Seriennummer ist nach der Anlage unveränderlich.
+- **Der Restbetrag darf den Originalwert nie übersteigen.**
+- **„Zuletzt bebucht"** ist eine Näherung aus dem Phorest-Feld `updatedAt` — jede Einlösung, aber
+  auch jede Korrektur im Hub zählt als Bebuchung; unbebuchte Gutscheine stehen als „Unberührt".
+- **Aktiv** heißt Restguthaben > 0, **aufgebraucht** heißt vollständig eingelöst; die KPI-Kacheln
+  summieren Originalwert und Restwert erst, wenn alle Gutscheine geladen sind.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Gutschein suchen (Seriennummer, Name, Kundennummer), Statusfilter, KPI-Kacheln lesen | Verkauf 3 |
+| Restwert und Gültigkeit anpassen | Verkauf 3 |
+| Neuen Gutschein anlegen (Institut, Wert, Seriennummer, Kundin, Gültigkeit, Notiz) | Verkauf 3 |
+| Online verkaufte Gutscheine, Bestellungen, Storno und Erstattung | Admin 3 |
+| Gutschein mit Raten eines Vertrags verrechnen | Verträge 6 |
+| Gutschein beim Vertragsabschluss im Termin einlösen | Terminansicht 3 |
+
+---
+
+## Für Entwickler
+
+### Fachregeln
+
+- **Suche** durchsucht Seriennummer (8-stellig), Kundenname (Vor- und Nachname) und Kundennummer
+  (Phorest External ID); **Statusfilter** Alle / Aktiv (Restguthaben > 0) / Aufgebraucht (vollständig
+  eingelöst).
+- **KPI-Kacheln:** Aktive Gutscheine (Restguthaben > 0), Aufgebraucht (vollständig eingelöst),
+  Gesamtwert (Original) = Summe aller ursprünglichen Gutscheinwerte, Restwert (Aktiv) = Summe der
+  verbleibenden Guthaben — angezeigt erst nach vollständigem Laden (`valuesReady`).
+- **„Zuletzt bebucht"** (Tabelle und Detail-Modal, sortierbar, Datum + relative Angabe): Phorest
+  liefert keine Transaktionshistorie pro Gutschein. Als „Zuletzt bebucht" wird das Phorest-Feld
+  `updatedAt` verwendet — es wird bei jeder Einlösung an der Kasse aktualisiert, aber auch bei sonstigen
+  Änderungen am Gutschein (z.B. Restwert-Korrektur oder Gültigkeits-Anpassung im Hub). Liegt `updatedAt`
+  weniger als 5 Minuten nach der Erstellung, gilt der Gutschein als **unberührt** (Toleranz für den
+  Anlage-Prozess).
+- **Restbetrag anpassen** (Inline-Bearbeitung, Eingabe `50,00` oder `50.00`, Enter/Speichern,
+  Escape bricht ab): maximal so hoch wie der Originalwert.
+- **Neuer Gutschein:** Pflicht sind Filiale (ausstellende Branch), Wert (EUR) und die 8-stellige
+  Seriennummer (automatisch generiert, per Würfel-Button neu erzeugbar); optional Kunde
+  (Kundensuche mit Name/E-Mail/Kundennummer), Gültig bis (Standard: **5 Jahre ab heute**) und Notizen.
+  Währung ist EUR.
 
 ### Architektur
 
@@ -108,11 +116,11 @@ Das Suchfeld durchsucht:
 
 ---
 
-## API Endpoints
+### API Endpoints
 
 Alle Endpoints befinden sich unter dem Prefix `/phorest` und erfordern Authentifizierung.
 
-### GET /phorest/vouchers
+#### GET /phorest/vouchers
 
 Paginierte Liste von Gutscheinen.
 
@@ -153,7 +161,7 @@ Paginierte Liste von Gutscheinen.
 }
 ```
 
-### GET /phorest/vouchers/all
+#### GET /phorest/vouchers/all
 
 Lädt alle Gutscheine (automatische Pagination durch alle Seiten).
 
@@ -169,7 +177,7 @@ Lädt alle Gutscheine (automatische Pagination durch alle Seiten).
 }
 ```
 
-### GET /phorest/voucher/{voucherId}
+#### GET /phorest/voucher/{voucherId}
 
 Einzelner Gutschein nach ID.
 
@@ -188,7 +196,7 @@ Einzelner Gutschein nach ID.
 }
 ```
 
-### PUT /phorest/voucher/{voucherId}
+#### PUT /phorest/voucher/{voucherId}
 
 Gutschein aktualisieren.
 
@@ -216,7 +224,7 @@ Alle Felder sind optional - nur die übergebenen werden aktualisiert.
 }
 ```
 
-### POST /phorest/voucher
+#### POST /phorest/voucher
 
 Neuen Gutschein erstellen.
 
@@ -263,11 +271,11 @@ Neuen Gutschein erstellen.
 
 ---
 
-## Alpine.js Komponente
+### Alpine.js Komponente
 
 Die `vouchersPage()` Funktion in `public/js/vouchers.js` enthält folgende Hauptbestandteile:
 
-### State
+#### State
 
 ```javascript
 {
@@ -328,7 +336,7 @@ Die `vouchersPage()` Funktion in `public/js/vouchers.js` enthält folgende Haupt
 }
 ```
 
-### Wichtige Methoden
+#### Wichtige Methoden
 
 | Methode | Beschreibung |
 |---------|--------------|
@@ -347,7 +355,7 @@ Die `vouchersPage()` Funktion in `public/js/vouchers.js` enthält folgende Haupt
 | `selectClient(client)` | Wählt Kunden für neuen Gutschein |
 | `saveVoucher()` | Erstellt neuen Gutschein via API |
 
-### Progressive Loading
+#### Progressive Loading
 
 Die Daten werden **progressiv** geladen für bessere UX:
 
@@ -356,7 +364,7 @@ Die Daten werden **progressiv** geladen für bessere UX:
 3. **KPI-Werte** werden erst angezeigt, wenn alle Daten vollständig geladen sind (`valuesReady = true`)
 4. **Kundennamen** werden separat nachgeladen via `/phorest/clients/batch`
 
-### Seriennummern-Generierung
+#### Seriennummern-Generierung
 
 ```javascript
 generateSerialNumber() {
@@ -380,7 +388,7 @@ generateSerialNumber() {
 }
 ```
 
-### Kundensuche
+#### Kundensuche
 
 Die Suche erkennt automatisch den Suchtyp:
 
@@ -410,9 +418,9 @@ async searchClients() {
 
 ---
 
-## UI-Komponenten
+### UI-Komponenten
 
-### Floating Labels
+#### Floating Labels
 
 Das Modul verwendet das GLATTT Design System für Floating Labels:
 
@@ -426,7 +434,7 @@ Das Modul verwendet das GLATTT Design System für Floating Labels:
 </div>
 ```
 
-### Modals mit Teleport
+#### Modals mit Teleport
 
 Das Create-Modal verwendet Alpine's `x-teleport` für korrektes Z-Index-Verhalten:
 
@@ -445,7 +453,7 @@ Das Create-Modal verwendet Alpine's `x-teleport` für korrektes Z-Index-Verhalte
 </template>
 ```
 
-### KPI-Kacheln
+#### KPI-Kacheln
 
 ```html
 <div class="stats shadow bg-gradient-to-br from-blue-500/10 to-blue-600/10">
@@ -465,7 +473,7 @@ Das Create-Modal verwendet Alpine's `x-teleport` für korrektes Z-Index-Verhalte
 
 ---
 
-## Styling
+### Styling
 
 Die CSS-Klassen stammen aus dem GLATTT Design System (`theme_glattt.css`):
 
@@ -480,16 +488,16 @@ Die CSS-Klassen stammen aus dem GLATTT Design System (`theme_glattt.css`):
 
 ---
 
-## Phorest API Details
+### Phorest API Details
 
-### Vouchers Endpoint (Phorest)
+#### Vouchers Endpoint (Phorest)
 
 ```
 Base URL: https://api-gateway-eu.phorest.com
 Endpoint: /third-party-api-server/api/business/{businessId}/voucher
 ```
 
-### Response-Struktur von Phorest
+#### Response-Struktur von Phorest
 
 ```json
 {
@@ -519,7 +527,7 @@ Endpoint: /third-party-api-server/api/business/{businessId}/voucher
 }
 ```
 
-### POST Create Voucher (Phorest)
+#### POST Create Voucher (Phorest)
 
 ```json
 POST /third-party-api-server/api/business/{businessId}/voucher
@@ -538,9 +546,9 @@ POST /third-party-api-server/api/business/{businessId}/voucher
 
 ---
 
-## Fehlerbehandlung
+### Fehlerbehandlung
 
-### Duplikat-Seriennummer
+#### Duplikat-Seriennummer
 
 Falls eine Seriennummer bereits existiert, gibt Phorest einen 400-Fehler zurück:
 
@@ -554,7 +562,7 @@ Falls eine Seriennummer bereits existiert, gibt Phorest einen 400-Fehler zurück
 
 Die Frontend-Anzeige zeigt dies als Fehlermeldung im Modal an.
 
-### Validierungsfehler
+#### Validierungsfehler
 
 Laravel-Validierungsfehler werden als 422-Response zurückgegeben:
 
@@ -570,7 +578,7 @@ Laravel-Validierungsfehler werden als 422-Response zurückgegeben:
 
 ---
 
-## Bekannte Einschränkungen
+### Bekannte Einschränkungen
 
 1. **Keine Löschfunktion**: Phorest erlaubt kein Löschen von Gutscheinen
 2. **Seriennummer nicht änderbar**: Nach Erstellung kann die Seriennummer nicht geändert werden

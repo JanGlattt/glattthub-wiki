@@ -2,9 +2,12 @@
 
 > Vollständige Dokumentation für das Preislistenmanagement im glatttHub
 
+!!! nutzerhandbuch "Bedienung: Verkauf 1 – Preislisten pflegen"
+    [hilfe.hub.glattt.com/verkauf/1/](https://hilfe.hub.glattt.com/verkauf/1/) — Übersicht, Preise je Körperzone, Rabatte und Zahlungsmodus. Wie der Modus in den Vertrag kommt: [Verträge & SEPA › Zahlungsmodus je Preisliste](CONTRACTS-SEPA-MODULE.md#zahlungsmodus-je-preisliste-installment_mode).
+
 ## Inhaltsverzeichnis
 
-1. [Übersicht](#übersicht)
+1. [Übersicht](#ubersicht)
 2. [Anwender-Dokumentation](#anwender-dokumentation)
    - [Grundkonzept](#grundkonzept)
    - [Preisliste erstellen](#preisliste-erstellen)
@@ -16,9 +19,9 @@
    - [Architektur](#architektur)
    - [Datenbankstruktur](#datenbankstruktur)
    - [Models](#models)
-   - [Controller & API](#controller--api)
+   - [Controller & API](#controller-api)
    - [Frontend-Komponenten](#frontend-komponenten)
-   - [Erweiterungsmöglichkeiten](#erweiterungsmöglichkeiten)
+   - [Erweiterungsmöglichkeiten](#erweiterungsmoglichkeiten)
 
 ---
 

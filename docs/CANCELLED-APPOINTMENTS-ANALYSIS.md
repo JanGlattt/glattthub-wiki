@@ -1,17 +1,62 @@
-# Stornierte und gelöschte Termine - Dokumentation
+# Stornierte und gelöschte Termine
 
-## Übersicht
+Analyse der Terminausfälle: stornierte und gelöschte Termine je Monat, Kalenderwoche und Institut,
+mit Quoten, Prognose, Wochen-Drilldown, Detail-Belegen und einer eigenen Sicht auf stornierte
+**Beratungstermine**. Diese Seite beschreibt **Kennzahl-Definitionen, Zähllogik, Endpunkte,
+Frontend-Komponenten, Performance und Changelog**; die Bedienung Schritt für Schritt steht im
+Nutzerhandbuch.
 
-Die **Stornierte und gelöschte Termine Analyse** bietet eine umfassende Übersicht über Terminausfälle im System. Sie unterscheidet zwischen zwei Arten von abgesagten Terminen:
+**URL:** `/hub/reports/rescheduled-cancelled` (Hub → Berichte → Stornierte und gelöschte Termine)
 
-1. **Stornierte Termine** (orange): Termine mit `activation_state=CANCELED` - vom Kunden oder Mitarbeiter storniert
-2. **Gelöschte Termine** (rot): Termine mit `deleted=true` - komplett aus dem System entfernt
+!!! nutzerhandbuch "Bedienung: Berichte 4 – Stornierte und gelöschte Termine"
+    [hilfe.hub.glattt.com/berichte/4/](https://hilfe.hub.glattt.com/berichte/4/) — Bericht öffnen,
+    Vorlauf der Absagen, Muster erkennen, gegensteuern.
 
-## KPI-Dashboard ⭐ NEU
+    Rahmen aller Berichtsseiten (Zeitraum und Standort, Kennzahlen-Zeile, Diagramm oder Tabelle,
+    Export): [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/).
+    Angrenzend: [Berichte 2 – Zukünftige Beratungsgespräche](https://hilfe.hub.glattt.com/berichte/2/),
+    [Berichte 3 – Vergangene Beratungsgespräche](https://hilfe.hub.glattt.com/berichte/3/),
+    [Berichte 6 – Terminstatistik](https://hilfe.hub.glattt.com/berichte/6/).
 
-Das KPI-Dashboard zeigt die wichtigsten Kennzahlen auf einen Blick:
+---
 
-### KPIs (10 Stück)
+## Für Anwender — Überblick
+
+**Was der Bericht beantwortet.** Wie viele Termine fallen aus, an welchen Standorten und in welchen
+Monaten häufen sie sich, wie entwickelt sich die Quote — und, über den Filter „Nur Beratungsservices",
+wie stark es die Beratungsgespräche trifft. Unterschieden werden zwei Arten von Ausfall:
+
+1. **Stornierte Termine** (orange): in Phorest storniert (`activation_state = CANCELED`) — von der
+   Kundin oder von einer Mitarbeiterin abgesagt.
+2. **Gelöschte Termine** (rot): komplett aus dem System entfernt (`deleted = true`).
+
+**Was als *ein* Termin zählt.** Alle Einträge einer Kundin am selben Tag beim selben Institut gelten
+als ein Termin — die Kabinen-Doppelzeilen aus Phorest blähen die Zahlen also nicht auf.
+**Teilstornierungen zählen nicht:** Hat die Kundin am selben Tag noch einen aktiven Termin, war es
+eine Umbuchung innerhalb des Tages und kein Ausfall.
+
+**Datenlage:** Grundlage ist die synchronisierte Terminhistorie ab **01.01.2024** (davor war
+Einrichtungsphase). Die Belegliste der stornierten Beratungstermine reicht zusätzlich 14 Tage in die
+Zukunft und wird dafür live aus Phorest geholt — sie braucht deshalb spürbar länger und ist 15
+Minuten zwischengespeichert.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Bericht öffnen, Vorlauf der Absagen, Muster erkennen, gegensteuern | Berichte 4 |
+| Zeitraum und Standort, Kennzahlen-Zeile, Diagramm/Tabelle, Export | Berichte 0 |
+| Kommende Beratungen, freie Slots | Berichte 2 |
+| Durchgeführte Beratungen, No-Shows, Vorlauf-Erfolg | Berichte 3 |
+| Alle Terminarten, Dauer und Körperzonen | Berichte 6 |
+
+---
+
+## Für Entwickler
+
+### KPI-Zeile
+
+Personalisierbar über `components/kpi-dashboard` (Drag & Drop, Auswahl im Browser gespeichert) — zehn Kennzahlen:
 
 | # | KPI | Format | Vergleiche |
 |---|-----|--------|------------|
@@ -39,9 +84,8 @@ Das KPI-Dashboard zeigt die wichtigsten Kennzahlen auf einen Blick:
 
 Wenn für den aktuellen Monat noch keine Daten vorliegen (z.B. am 1. Februar), werden automatisch die Daten des Vormonats verwendet. Das Monatslabel im KPI zeigt den tatsächlich verwendeten Monat an.
 
-## Features
 
-### Zwei Analyse-Karten (zweiseitig: Diagramm + Tabellen-Lasche)
+### Die zwei Analyse-Karten (zweiseitig: Diagramm + Tabellen-Lasche)
 
 Beide Karten folgen seit 07/2026 dem verbindlichen Statistik-Bauplan
 (`statistics-pages.instructions.md`): **Diagramm ist die Standard-Ansicht**,
@@ -117,8 +161,6 @@ Ein "Termin" wird definiert als alle aufeinanderfolgenden Einträge eines Kunden
 - **Stornierte & gelöschte Termine pro Kalenderwoche & Institut** (Quelle `cancelled-appointments-weekly`, ISO-Wochen — spiegelt den Wochen-Drilldown der Heatmap)
 Beide Quellen respektieren Zeitraum- und Standort-Filter (`range`, `branch`).
 
-## Technische Details
-
 ### Backend-Routes
 
 | Route | Controller-Methode | Beschreibung |
@@ -129,7 +171,7 @@ Beide Quellen respektieren Zeitraum- und Standort-Filter (`range`, `branch`).
 | `GET /phorest/reports/cancelled-appointments/details` | `cancelledAppointmentsDetails()` | Einzelne Termine eines Monats |
 | `POST /phorest/reports/cancelled-appointments/notes` | `cancelledAppointmentsNotes()` | Notizen für Termine laden |
 
-### Lazy Loading Endpoints ⚡ NEU
+### Lazy Loading Endpoints
 
 | Route | Controller-Methode | Beschreibung |
 |-------|-------------------|--------------|
@@ -262,47 +304,27 @@ Beide Quellen respektieren Zeitraum- und Standort-Filter (`range`, `branch`).
 | `resources/views/hub/reports/partials/cancelled-appointments-monthly.blade.php` | Gelöschte Termine Card |
 | `resources/views/hub/reports/partials/cancelled-appointments-modal.blade.php` | Detail-Modal |
 
-## Datenquelle
+### Datenquelle
 
 - **Tabelle**: `stats_historic_appointments`
 - **Filter**: Nur Termine ab 01.01.2024 (davor war Einrichtungsphase)
 - **Storniert**: `deleted = false AND activation_state = 'CANCELED'`
 - **Gelöscht**: `deleted = true`
 
-## Verwendung
+### Design
 
-### Navigation
-1. Hub → Reports → "Stornierte und gelöschte Termine"
-2. Oder direkt: `/hub/reports/rescheduled-cancelled`
-
-### Interaktion
-
-#### Ansicht wechseln
-- **Tabelle/Chart**: Toggle-Buttons oben rechts in der Card
-- **Anzahl/Stornoquote**: Toggle-Buttons in der Stornierten-Termine-Card
-
-#### Details anzeigen
-- Klick auf eine Heatmap-Zelle öffnet das Detail-Modal
-- Modal zeigt alle Termine des Monats/der Woche für den gewählten Standort
-
-#### Wochen expandieren (Stornierte Termine)
-- Klick auf eine Monatszeile expandiert die Wochen-Details
-- Erneuter Klick klappt sie wieder zu
-
-## Design
-
-### Farbschema
+#### Farbschema
 - **Stornierte Termine**: Orange (`#f97316`) - Warnung/Aufmerksamkeit
 - **Gelöschte Termine**: Rot (`#ef4444`) - Kritisch/Danger
 - **Heatmap**: Transparenz-basierte Intensität (0.15 - 0.85)
 
-### Dark Mode
+#### Dark Mode
 - Vollständig kompatibel mit Light/Dark Mode
 - Verwendet CSS-Variablen für adaptive Farben
 
-## Performance-Optimierung ⚡
+### Performance-Optimierung
 
-### Problem (vor v1.3.0)
+#### Problem (vor v1.3.0)
 Die Seite machte **zwei separate API-Calls** für gelöschte und stornierte Termine:
 1. `/cancelled-appointments/monthly?type=deleted` 
 2. `/cancelled-appointments/monthly?type=cancelled`
@@ -315,7 +337,7 @@ Jeder Call führte 4 teure SQL-Queries aus:
 
 **Ergebnis in Production:** 28-48 Sekunden Ladezeit (Cloud Run + Cloud SQL Latenz)
 
-### Lösung: Kombinierter API-Endpunkt
+#### Lösung: Kombinierter API-Endpunkt
 
 Der neue `/cancelled-appointments/monthly/combined` Endpunkt:
 1. **Lädt Branch-Namen nur einmal** (statt 2x Phorest API-Call)
@@ -332,11 +354,11 @@ fetch('/cancelled-appointments/monthly/combined');
 // → Returns: { deleted: {...}, cancelled: {...} }
 ```
 
-### Erwartete Verbesserung
+#### Erwartete Verbesserung
 - **Lokal (MAMP):** ~1.5s → ~0.8s (-50%)
 - **Production (Cloud Run):** ~28-48s → ~14-24s (-50%)
 
-### Architektur
+#### Architektur
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -358,13 +380,7 @@ fetch('/cancelled-appointments/monthly/combined');
 └────────────────────────────┘  └──────────────────────────────┘
 ```
 
-## Verwandte Analysen
-
-- **Buchungsvorlauf-Analyse** - Wie weit im Voraus werden Termine gebucht
-- **Wochentag & Uhrzeit Analyse** - Beliebteste Buchungszeiten
-- **Freie Slots Analyse** - Verfügbare Beratungsslots
-
-## Dateien
+### Dateien
 
 | Datei | Beschreibung |
 |-------|--------------|
@@ -376,6 +392,15 @@ fetch('/cancelled-appointments/monthly/combined');
 | `resources/views/hub/reports/rescheduled-cancelled.blade.php` | Haupt-View |
 | `resources/views/hub/reports/partials/cancelled-appointments-*.blade.php` | Partial Views |
 | `resources/views/components/kpi-dashboard.blade.php` | Wiederverwendbare KPI-Component |
+
+---
+
+## Verwandte Analysen
+
+- **Buchungsvorlauf-Analyse** - Wie weit im Voraus werden Termine gebucht
+- **Wochentag & Uhrzeit Analyse** - Beliebteste Buchungszeiten
+- **Freie Slots Analyse** - Verfügbare Beratungsslots
+---
 
 ## Changelog
 

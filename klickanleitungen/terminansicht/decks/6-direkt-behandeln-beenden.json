@@ -2,6 +2,7 @@
  "out": "../pdf/Terminansicht-6-Direkt-behandeln-Termin-beenden",
  "meta": "../meta.json",
  "shots": "../shots",
+ "audience": "institut",
  "title": [
   "Direkt behandeln &",
   "Termin beenden"

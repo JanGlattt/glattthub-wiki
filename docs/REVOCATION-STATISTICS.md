@@ -1,20 +1,71 @@
 # Widerruf-Statistik
 
-Interner Bericht zur Analyse eingehender Widerrufe: absolut, als Quote der Verkäufe, in Euro und im Zeitverlauf (implementiert 07/2026 nach dem Statistik-Bauplan; Asana „Widerrufe im Berichtswesen").
+Interner Bericht zur Analyse eingehender Widerrufe: absolut, als Quote der Verkäufe, in Euro und im
+Zeitverlauf (implementiert 07/2026 nach dem Statistik-Bauplan; Asana „Widerrufe im Berichtswesen").
+Diese Seite beschreibt **Definitionen, Fallermittlung, Service, Cache, Routen und Frontend**; die
+Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
 **Zugang:** Hub → Berichte → Widerruf-Statistik
 **URL:** `/hub/reports/revocation-statistics`
 **Berechtigung:** `view_report_revocation_statistics` (eigene Permission; Standard-Vergabe an admin/super_admin, weitere Rollen im Hub freischaltbar)
 
+!!! nutzerhandbuch "Bedienung: Berichte 5 – Widerruf-Statistik"
+    [hilfe.hub.glattt.com/berichte/5/](https://hilfe.hub.glattt.com/berichte/5/) — den Bericht
+    öffnen, Quote und Volumen, Gründe verstehen, Verbindung zu anderen Zahlen.
+
+    Angrenzend: [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/)
+    (Zeitraum, Standort, Kennzahlen-Zeile, Diagramm/Tabelle, Export) und die Serie
+    [Widerrufe](https://hilfe.hub.glattt.com/widerrufe/) (Widerruf erfassen, Fall, Abwicklung).
+
+## Inhaltsverzeichnis
+
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Definitionen](#definitionen)
+    - [Sektionen der Seite](#sektionen-der-seite)
+    - [Filter](#filter)
+    - [Architektur](#architektur)
+    - [Datenmodell & Fallermittlung](#datenmodell-fallermittlung)
+    - [Service-Methoden](#service-methoden)
+    - [Cache](#cache)
+    - [Routen & Permission](#routen-permission)
+    - [Frontend](#frontend)
+    - [Registries](#registries)
+    - [Tests](#tests)
+
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
 
-### Was zeigt die Widerruf-Statistik?
+**Was der Bericht leistet.** Wie viele Verträge werden widerrufen, aus welchen Gründen, was kostet
+das in Euro — und wo (Institut/Verkäufer:in) fallen Ausreißer auf? Die Widerrufsquote ist ein
+Frühindikator für Beratungsqualität und Verkaufsdruck. Der Bericht zeigt die Entwicklung über
+die Zeit (auch als Körperzonen), die Struktur der Widerrufe (Grund, Ergebnis, Erste-Sitzung-Effekt),
+den Zeitraum bis zum Widerruf und die Quote im Vergleich nach Standort, Verkäufer:in, Vertragswert
+und Paket-Umfang.
 
-Wie viele Verträge werden widerrufen, aus welchen Gründen, was kostet das in Euro — und wo (Institut/Verkäufer:in) fallen Ausreißer auf? Die Widerrufsquote ist ein Frühindikator für Beratungsqualität und Verkaufsdruck.
+**Grundsätze:** Gezählt wird **ein Fall je Vertrag**. „Echte Widerrufe" sind akzeptierte Widerrufe
+plus stornierte Verträge (Legacy-Widerrufe existieren teils nur als Storno); die Quote bezieht sich
+auf **alle** Verträge inkl. Legacy-Import (Entscheidung Jan, 31.07.2026). Standardmäßig zählt ein
+Widerruf im Monat des **Vertragsabschlusses** („Wie gut waren die Verträge dieses Monats?") —
+junge Monate wirken dabei systematisch besser, weil Widerrufe noch eintreffen können; umschaltbar
+auf das Widerruf-Datum. Die vollständigen Begriffe stehen unten unter [Definitionen](#definitionen).
 
-### Zentrale Begriffe
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Bericht öffnen, Kennzahlen-Zeile lesen | Berichte 5 |
+| Quote und Volumen, Gründe verstehen, Verbindung zu anderen Zahlen | Berichte 5 |
+| Zeitraum, Datumsbasis, Verkäufer:in und Standort setzen; Diagramm/Tabelle; CSV-Export | Berichte 0 |
+| Widerruf erfassen, Fall bearbeiten, Abwicklung, RA-Vorgang | Serie Widerrufe |
+| Verkaufszahlen, auf die sich die Quote bezieht | Berichte 1 |
+
+---
+
+## Für Entwickler
+
+### Definitionen
 
 | Begriff | Bedeutung |
 |---|---|
@@ -24,15 +75,14 @@ Wie viele Verträge werden widerrufen, aus welchen Gründen, was kostet das in E
 | **Gefährdetes Volumen** | Gesamtvertragswert aller Eingänge |
 | **Verlorenes Volumen** | Gesamtvertragswert der echten Widerrufe |
 
-### Datumsbasis: Vertragsabschluss vs. Widerruf-Datum
+**Datumsbasis: Vertragsabschluss vs. Widerruf-Datum.** Standardmäßig zählt ein Widerruf im Monat des **Vertragsabschlusses** („Wie gut waren die Verträge dieses Monats?"). Umschaltbar auf **Widerruf-Datum** (Eingangsmonat). Die Vertrags-Basis der Quote bleibt immer dem Abschlussmonat zugeordnet. Achtung: Bei Datumsbasis „Vertragsabschluss" wirken junge Monate systematisch besser — Widerrufe können noch eintreffen.
 
-Standardmäßig zählt ein Widerruf im Monat des **Vertragsabschlusses** („Wie gut waren die Verträge dieses Monats?"). Umschaltbar auf **Widerruf-Datum** (Eingangsmonat). Die Vertrags-Basis der Quote bleibt immer dem Abschlussmonat zugeordnet. Achtung: Bei Datumsbasis „Vertragsabschluss" wirken junge Monate systematisch besser — Widerrufe können noch eintreffen.
+### Sektionen der Seite
 
-### Sektionen (alle Karten zweiseitig: Diagramm ⇄ Tabelle über das Karten-Register)
-
-Strukturgleiche Auswertungen sind zu Karten mit **Dimensions-Umschalter** zusammengelegt
-(Jan, 31.07.2026); die **Körperzonen** der widerrufenen Verträge laufen überall mit
-(KPIs, Trend-Tooltip/-Tabelle, Vergleichs-Tabellen, Exporte).
+Alle Karten sind zweiseitig (Diagramm ⇄ Tabelle über das Karten-Register). Strukturgleiche
+Auswertungen sind zu Karten mit **Dimensions-Umschalter** zusammengelegt (Jan, 31.07.2026); die
+**Körperzonen** der widerrufenen Verträge laufen überall mit (KPIs, Trend-Tooltip/-Tabelle,
+Vergleichs-Tabellen, Exporte).
 
 | Sektion | Inhalt |
 |---|---|
@@ -48,10 +98,6 @@ Strukturgleiche Auswertungen sind zu Karten mit **Dimensions-Umschalter** zusamm
 - **Verkäufer:in**-Dropdown
 - **Standort** über die globale Sidebar-Auswahl — wirkt serverseitig auf jede Karte
 - **CSV-Export** im Seitenkopf: 9 Quellen (`revocation-*`, inkl. `revocation-zones`), alle mit Zeitraum- und Standort-Filter und KPZ-Spalten, Datumsbasis der Exporte = Vertragsabschluss
-
----
-
-## Für Entwickler
 
 ### Architektur
 

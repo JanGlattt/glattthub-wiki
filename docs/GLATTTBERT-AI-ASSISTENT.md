@@ -1,164 +1,53 @@
 # glatttBert — KI-Assistent
 
-**glatttBert** ist der interne KI-Assistent von glatttHub. Er beantwortet
-Fragen zu Kunden, Verträgen, Statistiken, internen Prozessen und der
-Wissensdatenbank — direkt im Hub, angedockt neben der Seitenleiste.
+**glatttBert** ist der interne KI-Assistent von glatttHub. Er beantwortet Fragen zu Kunden,
+Verträgen, Statistiken, internen Prozessen und der Wissensdatenbank — direkt im Hub,
+angedockt neben der Seitenleiste (mobil über das Mehr-Sheet). Technisch ist er eine
+Livewire-Komponente über der OpenAI Assistants API v2 mit File-Search auf einem Vector Store,
+der nächtlich aus Google Drive befüllt wird, plus Hub-Tools für Kunden- und Kennzahlen-Abfragen.
+Diese Seite beschreibt **Architektur, Datenmodell, Sync, Chat-Flow, Tool-Logik und
+Einschränkungen**; die Bedienung steht im Nutzerhandbuch.
 
-![glatttBert Avatar](assets/glatttBert.png){ align=right width=120 }
+!!! nutzerhandbuch "Bedienung: Grundlagen 5 – glatttBert fragen"
+    [hilfe.hub.glattt.com/grundlagen/5/](https://hilfe.hub.glattt.com/grundlagen/5/) — Fragen stellen, was er weiß, was er nicht kann.
+
+    Angrenzend: [Grundlagen 1 – Anmelden & zurechtfinden](https://hilfe.hub.glattt.com/grundlagen/1/) (Seitenleiste),
+    [Grundlagen 4 – Auf dem Handy und Tablet](https://hilfe.hub.glattt.com/grundlagen/4/) (Mehr-Menü),
+    [Admin 1 – Benutzer und Rollen](https://hilfe.hub.glattt.com/admin/1/) (Recht `use_ai_assistant`).
 
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
 
-### Wo finde ich Bert?
+**Was Bert leistet.** Bert sitzt fest in der Navigation — am Desktop unten in der Seitenleiste
+über dem Profil, am Smartphone/Tablet als erste Schaltfläche im Mehr-Sheet — und öffnet sich
+neben der Leiste, ohne die Seite dahinter zu verdecken (`⌘K` / `Strg+K` von überall). Er
+merkt sich den Verlauf innerhalb einer Konversation, vergibt automatisch einen Titel und hält
+die letzten Konversationen in einer Verlaufsliste bereit.
 
-**Am Desktop** ganz unten in der Seitenleiste, direkt über deinem Profil: die
-Zeile mit Berts Avatar und „glatttBert / fragen". Ein Klick öffnet den Chat —
-er fährt neben der Leiste heraus, auf ihrer vollen Höhe, und wächst dabei aus
-dem Einstieg heraus. Die Seite dahinter bleibt sichtbar und bedienbar.
+**Was er weiß:**
 
-**Am Smartphone/Tablet** über „Mehr" in der unteren Leiste: Bert ist dort die
-erste der vier Schaltflächen unter dem Bereichs-Raster (neben Standort,
-Mitteilungen und Theme).
-
-!!! note "Seit 19.08.2026 ohne schwebende Blase"
-    Vorher klebte Bert als runder Knopf unten rechts über dem Inhalt. Weil er
-    inzwischen fest zum Arbeitsalltag gehört, hat er einen festen Platz in der
-    Navigation bekommen — an der Stelle, an der vorher die Verbindungsanzeige
-    („Verbunden") stand. Die Anzeige ist ersatzlos entfallen.
-
-> **Tastenkürzel:** `⌘K` (Mac) bzw. `Strg+K` (Windows) öffnet/schließt Bert von
-> jeder Seite aus und setzt den Fokus direkt ins Eingabefeld.
-
-### Was kann Bert?
-
-- **Wissensdatenbank-Fragen:** Bert hat Zugriff auf alle Dokumente,
-  Anleitungen und Standards aus unserem Google Drive (Vector-Store-basiert)
-- **Datenfragen:** Umsatz, Termine, Kunden-KPIs, Stornoquote, Top-Anzeigen
+- **Wissensdatenbank:** alle Dokumente, Anleitungen und Standards aus dem Google Drive
+  (nächtlich synchronisiert, Antworten mit Quellen-Verweisen als hochgestellte Ziffern)
+- **Hub-Daten:** Umsatz, Termine, Kunden-KPIs, Stornoquote, Top-Anzeigen — und einzelne
+  Kundinnen samt Notizen, wenn ein Name in der Frage vorkommt
 - **Prozessfragen:** „Wie funktioniert XY?", „Wer ist verantwortlich für Z?"
-- **Kontext-Erinnerungsvermögen:** Bert merkt sich den Gesprächsverlauf
-  innerhalb einer Konversation
 
-### Bedienung
+**Was er nicht kann:** Bert antwortet, er handelt nicht — Verträge, Termine oder Kundendaten
+ändert er nicht, dafür gibt es die Seiten des Hub und ihre Anleitungen. Er kennt nur, was in
+der Wissensdatenbank und den angebundenen Hub-Daten steht; was dort fehlt, kann er nicht
+wissen. Personen sucht er selbst (erst Kundinnen, dann Wissensdatenbank) und fragt nicht
+zurück, ob jemand Kundin ist.
 
-#### Chat-Fenster
+**Wer ihn sieht:** nur Nutzer mit dem Recht **`use_ai_assistant`** (Gruppe *Systemzugriff*
+im Rollen-Editor, siehe [Berechtigungssystem](BERECHTIGUNGSSYSTEM.md)).
 
-| Element | Funktion |
+| Vorgang | Anleitung |
 |---|---|
-| **Einstieg in der Seitenleiste** (mobil: „Mehr" → glatttBert) | Bert öffnen/schließen |
-| **Hamburger-Icon (Header links)** | Verlauf-Sidebar ein/ausblenden (nur im **maximierten Modus** sichtbar) |
-| **Plus-Icon im Header** | Neue Konversation starten (Textarea erhält automatisch den Fokus) |
-| **Maximieren-Icon** | Vollbild-Modus an/aus |
-| **X-Icon** | Chat schließen |
-
-!!! info "Minimierter Modus"
-    Im normalen (kleinen) Fenster wird der Sidebar-Toggle ausgeblendet. Falls die Sidebar beim Wechsel in den kleinen Modus offen war, schließt sie sich automatisch.
-    Im Header werden Name & Untertitel „glatttBert / AI Spezialist" ausgeblendet — stattdessen erscheint der Konversationstitel kompakt neben dem Avatar (zweizeilig, kleinere Schrift).
-
-#### Tastenkürzel
-
-| Shortcut | Aktion |
-|---|---|
-| `⌘K` / `Strg+K` | Bert öffnen / schließen |
-| `Esc` | Bert schließen (wenn offen) |
-| `⌘⇧N` / `Strg+Shift+N` | Neue Konversation starten |
-| `Enter` | Nachricht senden |
-| `Shift+Enter` | Zeilenumbruch in der Nachricht |
-
-#### Kontextbezogene Begrüßung
-
-Beim Öffnen einer neuen Konversation begrüßt Bert dich tageszeit- und
-wochentagsabhängig:
-
-- **Morgens (5–11 Uhr):** „Guten Morgen, {Vorname}!"
-- **Tagsüber (11–18 Uhr):** „Hallo, {Vorname}!"
-- **Abends (18–22 Uhr):** „Guten Abend, {Vorname}!"
-- **Nachts:** „Spät dran? Ich bin trotzdem hier."
-
-Der Untertitel variiert nach Wochentag (Wochenstart, Bergfest, Wochenende, …).
-
-#### Beispiel-Prompts
-
-Bei einer neuen, leeren Konversation siehst du **vier Beispiel-Karten**, mit
-denen du sofort einsteigen kannst:
-
-1. „Wie muss ich den Laser warten?"
-2. „Wie hoch ist die No-Show-Rate in diesem Monat?"
-3. „Was sind die glattt-Werte – und was sind unsere wichtigsten KPIs?"
-4. „Wer hilft mir, wenn ein Kunde unzufrieden ist?"
-
-Ein Klick auf eine Karte sendet die Frage sofort.
-
-#### Quick-Action-Chips
-
-Über dem Eingabefeld findest du **fünf Schnellzugriff-Chips** für
-datenorientierte Routine-Fragen:
-
-- 📊 Umsatz heute
-- 📅 Termine heute
-- 👥 Neukunden diese Woche
-- ⚠️ Stornoquote
-- 🎯 Top-Anzeige
-
-#### Verlauf-Sidebar
-
-Über das Hamburger-Icon im Header öffnest du den **Verlauf** deiner letzten
-30 Konversationen. Sie sind nach Zeitperiode gruppiert:
-
-- **Heute** — Konversationen vom aktuellen Tag
-- **Gestern** — Konversationen vom Vortag
-- **Diese Woche** — letzte 7 Tage
-- **Älter** — alle weiteren
-
-Funktionen in der Sidebar:
-
-- **Suchfeld oben:** Live-Suche nach Konversations-Titel (300 ms debounce)
-- **„Neue Konversation":** startet einen frischen Chat
-- **Klick auf Eintrag:** lädt die Konversation in den Hauptbereich
-- **Pin-Icon (Hover):** Konversation oben anheften; angeheftete Konversationen erscheinen in einer eigenen Sektion **„Angeheftet“** ganz oben
-- **Stift-Icon (Hover):** Konversation umbenennen — Inline-Edit direkt im Sidebar-Eintrag
-- **Mülleimer-Icon (Hover):** Löschen mit **Bestätigungs-Modal** (verhindert versehentliches Löschen)
-- **Aktive Konversation:** wird mit goldenem Linksbalken hervorgehoben
-
-!!! tip "Sofort-Eintrag"
-    Beim Senden der ersten Nachricht erscheint die neue Konversation **sofort** in der Sidebar (mit Platzhalter-Titel), noch bevor die Antwort generiert ist. Der Auto-Titel wird nachgereicht, sobald die Antwort vorliegt.
-
-> **Sidebar-Standardverhalten:**  
-> Im normalen Modus geschlossen, im maximierten Modus offen.  
-> Beim Wechsel von maximiert zu minimiert schließt sich die Sidebar automatisch.  
-> Der letzte Zustand wird in `localStorage` gespeichert.
-
-#### Auto-Titel
-
-Nach der ersten Antwort vergibt Bert automatisch einen passenden Titel
-(maximal 6 Wörter) für die Konversation — generiert über `gpt-4o-mini` als
-Hintergrund-Job. Der Job erhält den **vollen Konversations-Kontext** (User-Frage + Assistant-Antwort), nicht nur die User-Eingabe, damit der Titel das tatsächliche Thema treffender beschreibt. Bestehende Titel werden nicht überschrieben.
-
-#### Quellen-Referenzen
-
-Wenn Bert auf Wissensdatenbank-Dokumente zugreift, erscheinen am Ende der Antwort kleine **hochgestellte Ziffern** (`¹`, `²`, `³`) als Verweise auf die zugrundeliegenden Quellen. Ein Klick darauf zeigt den jeweiligen Dokument-Titel.
-
-#### Loading-Phasen
-
-Während Bert nachdenkt, siehst du im Chat einen Indicator mit wechselndem
-Text:
-
-- 0–2 s: „Bert denkt nach…"
-- 2–6 s: „Durchsuche Wissensdatenbank…"
-- 6–15 s: „Formuliere Antwort…"
-- ab 15 s: „Das dauert heute etwas länger…"
-
-#### Maximierter Modus
-
-Über das Maximieren-Icon im Header schaltest du auf 80 % Bildschirmbreite
-und 85 % Höhe um — ideal für Antworten mit langen Tabellen oder Listen.
-Der Zustand wird in `localStorage` gemerkt.
-
-### Berechtigungen
-
-Bert ist nur für Nutzer mit der Berechtigung **`use_ai_assistant`**
-verfügbar (Gruppe **Systemzugriff** im Rollen-Editor). Diese kann in der Personalverwaltung pro Rolle/Nutzer vergeben
-werden (siehe [Berechtigungssystem](BERECHTIGUNGSSYSTEM.md)).
+| Bert öffnen, Fragen stellen, Verlauf nutzen | Grundlagen 5 |
+| Was er weiß / was er nicht kann | Grundlagen 5 |
+| Einstieg in Seitenleiste bzw. Mehr-Menü finden | Grundlagen 1, Grundlagen 4 |
+| Recht `use_ai_assistant` vergeben | Admin 1 |
 
 ---
 
@@ -228,6 +117,7 @@ Berechtigung: Spatie Permission `use_ai_assistant`.
 |---|---|
 | `resources/views/livewire/hub/ai-assistant.blade.php` | Vollständiger Chat-UI |
 | `public/css/theme_glattt.css` | Sektion `.bert-chat-*` (ab Zeile ~19850) |
+| `public/js/bert-typewriter.js` | Typewriter-Effekt für frische Antworten |
 
 #### Konfiguration
 
@@ -237,6 +127,78 @@ Berechtigung: Spatie Permission `use_ai_assistant`.
 | `OPENAI_ASSISTANT_ID` | ID des Assistants (in OpenAI angelegt) |
 | `OPENAI_VECTOR_STORE_ID` | ID des Vector-Stores für File-Search |
 | `CRON_TOKEN` (`config/services.php`) | Auth für `/api/sync-knowledge-base` |
+
+### UI-Verhalten und Tastenkürzel (Referenz)
+
+Die Regeln, die das Chat-Fenster umsetzt — wer am Frontend arbeitet, muss sie kennen; die
+Bedienung selbst steht in Grundlagen 5.
+
+**Einstiege:** Desktop ganz unten in der Seitenleiste über dem Profil (Zeile mit Avatar und
+„glatttBert / fragen"); der Chat fährt neben der Leiste auf ihrer vollen Höhe heraus und
+wächst aus dem Einstieg, die Seite dahinter bleibt bedienbar. Mobil über „Mehr" in der unteren
+Leiste als erste der vier Schaltflächen unter dem Bereichs-Raster (neben Standort,
+Mitteilungen und Theme). Bis 19.08.2026 klebte Bert als runder Knopf unten rechts über dem
+Inhalt; der feste Platz ersetzte die Verbindungsanzeige („Verbunden"), die ersatzlos entfiel
+(siehe [Einstiege und Andockung](#einstiege-und-andockung-19082026)).
+
+**Header-Elemente:**
+
+| Element | Funktion |
+|---|---|
+| **Einstieg in der Seitenleiste** (mobil: „Mehr" → glatttBert) | Bert öffnen/schließen |
+| **Hamburger-Icon (Header links)** | Verlauf-Sidebar ein/ausblenden (nur im **maximierten Modus** sichtbar) |
+| **Plus-Icon im Header** | Neue Konversation starten (Textarea erhält automatisch den Fokus, Event `conversation-started`) |
+| **Maximieren-Icon** | Vollbild-Modus an/aus |
+| **X-Icon** | Chat schließen |
+
+**Tastenkürzel:**
+
+| Shortcut | Aktion |
+|---|---|
+| `⌘K` / `Strg+K` | Bert öffnen / schließen (Fokus ins Eingabefeld) |
+| `Esc` | Bert schließen (wenn offen) |
+| `⌘⇧N` / `Strg+Shift+N` | Neue Konversation starten |
+| `Enter` | Nachricht senden |
+| `Shift+Enter` | Zeilenumbruch in der Nachricht |
+
+**Minimierter Modus:** Der Sidebar-Toggle ist ausgeblendet; war die Sidebar beim Wechsel in
+den kleinen Modus offen, schließt sie sich automatisch. Im Header werden Name & Untertitel
+„glatttBert / AI Spezialist" ausgeblendet — stattdessen erscheint der Konversationstitel
+kompakt neben dem Avatar (zweizeilig, kleinere Schrift).
+
+**Maximierter Modus:** 80 % Bildschirmbreite und 85 % Höhe — für Antworten mit langen
+Tabellen oder Listen; der Zustand liegt in `localStorage`.
+
+**Kontextbezogene Begrüßung** bei neuer Konversation, tageszeit- und wochentagsabhängig:
+Morgens (5–11 Uhr) „Guten Morgen, {Vorname}!", tagsüber (11–18 Uhr) „Hallo, {Vorname}!",
+abends (18–22 Uhr) „Guten Abend, {Vorname}!", nachts „Spät dran? Ich bin trotzdem hier."
+Der Untertitel variiert nach Wochentag (Wochenstart, Bergfest, Wochenende, …).
+
+**Beispiel-Prompts** (vier Karten in der leeren Konversation, Klick sendet sofort):
+„Wie muss ich den Laser warten?", „Wie hoch ist die No-Show-Rate in diesem Monat?", „Was sind
+die glattt-Werte – und was sind unsere wichtigsten KPIs?", „Wer hilft mir, wenn ein Kunde
+unzufrieden ist?"
+
+**Quick-Action-Chips** über dem Eingabefeld (fünf datenorientierte Routine-Fragen): Umsatz
+heute · Termine heute · Neukunden diese Woche · Stornoquote · Top-Anzeige.
+
+**Verlauf-Sidebar** (Hamburger-Icon): die letzten 30 Konversationen, gruppiert nach Heute /
+Gestern / Diese Woche (letzte 7 Tage) / Älter, angeheftete in einer eigenen Sektion
+„Angeheftet" ganz oben. Funktionen: Suchfeld mit Live-Suche nach Titel (300 ms Debounce),
+„Neue Konversation", Klick lädt die Konversation, Pin-Icon (Hover) heftet an, Stift-Icon
+benennt inline um, Mülleimer löscht mit Bestätigungs-Modal; die aktive Konversation trägt
+einen goldenen Linksbalken. Standardverhalten: im normalen Modus geschlossen, im maximierten
+offen; beim Wechsel von maximiert zu minimiert schließt sie sich; der letzte Zustand liegt in
+`localStorage`. **Sofort-Eintrag:** Beim Senden der ersten Nachricht erscheint die neue
+Konversation sofort in der Sidebar (Platzhalter-Titel), der Auto-Titel wird nachgereicht.
+
+**Quellen-Referenzen:** Greift Bert auf Wissensdatenbank-Dokumente zu, stehen am Ende der
+Antwort hochgestellte Ziffern (`¹`, `²`, `³`); ein Klick zeigt den Dokument-Titel (Spalte
+`embeds`).
+
+**Loading-Phasen** (Indicator-Text während der Antwort): 0–2 s „Bert denkt nach…", 2–6 s
+„Durchsuche Wissensdatenbank…", 6–15 s „Formuliere Antwort…", ab 15 s „Das dauert heute etwas
+länger…".
 
 ### Knowledge-Base-Sync
 
@@ -301,6 +263,10 @@ generateResponse($message)
 ```
 
 ### Auto-Titel (`GenerateConversationTitleJob`)
+
+Nach der ersten Antwort vergibt Bert automatisch einen passenden Titel (maximal 6 Wörter)
+für die Konversation — generiert über `gpt-4o-mini` als Hintergrund-Job. Bestehende Titel
+werden nicht überschrieben.
 
 - Queue: **`push`**, tries 2, timeout 30 s
 - Modell: `gpt-4o-mini`, temperature 0.3, max 30 Tokens
@@ -382,6 +348,34 @@ if (!Auth::user()->can('use_ai_assistant')) {
 Im Blade ist das gesamte Panel in `@can('use_ai_assistant')` gewrappt — ebenso
 die beiden Einstiege in `sidebar.blade.php` und `bottom-nav.blade.php`.
 
+### Einstiege und Andockung (19.08.2026)
+
+Der Chat liegt weiterhin als Livewire-Komponente im Hub-Layout
+(`@livewire('hub.ai-assistant')`) und **nicht** in der Seitenleiste — dort
+würden ihn deren Overflow-Container beschneiden. Die Auslöser stehen also
+ausserhalb der Komponente und verständigen sich über Fenster-Ereignisse:
+
+| Ereignis | Richtung | Zweck |
+|---|---|---|
+| `glattt-bert-toggle` | Auslöser → Chat | Öffnen/Schließen (`x-on:glattt-bert-toggle.window`) |
+| `glattt-bert-state` | Chat → Auslöser | Zustand, damit sich der Einstieg einfärbt (`bertOpen` in `sidebarPanels()`) |
+
+Andockung (`.bert-chat-panel`, ab 1024 px): `left`, `top` und `height` folgen
+denselben Layout-Variablen wie `#sidebar`, dazu `--bert-dock-left` als
+gemeinsamer Anker. Klappt die Leiste ein, wechselt nur diese Variable
+(`body:has(#sidebar.sidebar-collapsed)`), der maximierte Modus rechnet seine
+Breite daraus. `transform-origin: left bottom` lässt das Panel aus dem Einstieg
+wachsen. Unter 1024 px bleibt die bisherige schwebende Geometrie, nur höher
+gesetzt, damit die untere Leiste frei bleibt.
+
+Die Begrüßungsblase wird per JS an den Einstieg geheftet
+(`positionGreeting()`): Dessen Höhe hängt vom Profilbereich ab (u. a. die von
+`auto-logout.js` nachgeschobene Countdown-Leiste) und lässt sich nicht in CSS
+festnageln. Gemessen wird im `requestAnimationFrame` nach `x-show`, gesetzt
+wird nur `top` — **kein** `transform`, den bespielt bereits `x-transition`.
+
+Abgesichert durch `tests/Feature/BertSidebarEntryTest.php`.
+
 ### Migration für Produktion
 
 `database/sql/glatttbert-prod-migration.sql` enthält:
@@ -412,34 +406,6 @@ ausgeführt — manuell durch den User in PROD eingespielt.
   File-Search variiert stark — typisch 0,005–0,03 € pro Antwort.
 
 ---
-
-### Einstiege und Andockung (19.08.2026)
-
-Der Chat liegt weiterhin als Livewire-Komponente im Hub-Layout
-(`@livewire('hub.ai-assistant')`) und **nicht** in der Seitenleiste — dort
-würden ihn deren Overflow-Container beschneiden. Die Auslöser stehen also
-ausserhalb der Komponente und verständigen sich über Fenster-Ereignisse:
-
-| Ereignis | Richtung | Zweck |
-|---|---|---|
-| `glattt-bert-toggle` | Auslöser → Chat | Öffnen/Schließen (`x-on:glattt-bert-toggle.window`) |
-| `glattt-bert-state` | Chat → Auslöser | Zustand, damit sich der Einstieg einfärbt (`bertOpen` in `sidebarPanels()`) |
-
-Andockung (`.bert-chat-panel`, ab 1024 px): `left`, `top` und `height` folgen
-denselben Layout-Variablen wie `#sidebar`, dazu `--bert-dock-left` als
-gemeinsamer Anker. Klappt die Leiste ein, wechselt nur diese Variable
-(`body:has(#sidebar.sidebar-collapsed)`), der maximierte Modus rechnet seine
-Breite daraus. `transform-origin: left bottom` lässt das Panel aus dem Einstieg
-wachsen. Unter 1024 px bleibt die bisherige schwebende Geometrie, nur höher
-gesetzt, damit die untere Leiste frei bleibt.
-
-Die Begrüßungsblase wird per JS an den Einstieg geheftet
-(`positionGreeting()`): Dessen Höhe hängt vom Profilbereich ab (u. a. die von
-`auto-logout.js` nachgeschobene Countdown-Leiste) und lässt sich nicht in CSS
-festnageln. Gemessen wird im `requestAnimationFrame` nach `x-show`, gesetzt
-wird nur `top` — **kein** `transform`, den bespielt bereits `x-transition`.
-
-Abgesichert durch `tests/Feature/BertSidebarEntryTest.php`.
 
 ## Feature-Historie
 
@@ -472,7 +438,7 @@ Abgesichert durch `tests/Feature/BertSidebarEntryTest.php`.
 | 2026-05 | Phorest Multi-Strategy-Suche (firstName+lastName-Kombos) in `HubToolExecutor` |
 | 2026-05 | Developer-Mode: `debug_info` als flacher String (kein nested JSON), KI halluziniert keine Fehler |
 | 2026-05 | MAMP-Timeout-Fix korrigiert: `php.ini` direkt (FastCGI ignoriert `.htaccess` `php_value`) |
-| 2026-08 | Fester Platz in der Seitenleiste statt schwebender Blase; Chat dockt neben der Leiste an, mobiler Einstieg im Mehr-Sheet |
+| 2026-08 | Fester Platz in der Seitenleiste statt schwebender Blase; Chat dockt neben der Leiste an, mobiler Einstieg im Mehr-Sheet (19.08.2026) |
 
 ---
 

@@ -57,7 +57,7 @@ Die API nutzt die bestehende Datenbankverbindung und benötigt keine externen Se
 
 In Staging und Produktion schützt Google **Identity-Aware Proxy (IAP)** die Web-App mit einer Google-Anmeldung. Für die REST-API ist IAP **deaktiviert** — API-Requests unter `/api/*` werden über separate Backend-Services ohne IAP geroutet.
 
-Die API nutzt stattdessen eigene Bearer-Token-Authentifizierung (siehe unten). Details zur Infrastruktur: [Cloud-Infrastruktur → API-Pfade vom IAP ausschließen](CLOUD-INFRASTRUKTUR.md#api-pfade-vom-iap-ausschlieen).
+Die API nutzt stattdessen eigene Bearer-Token-Authentifizierung (siehe unten). Details zur Infrastruktur: [Cloud-Infrastruktur → API-Pfade vom IAP ausschließen](CLOUD-INFRASTRUKTUR.md#pfade-vom-iap-ausschlieen-api-token-seiten).
 
 ### Token-Format
 

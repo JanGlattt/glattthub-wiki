@@ -1,41 +1,49 @@
 # Globale Suche
 
-Die globale Suche sitzt als Lupen-Button in der Sidebar (neben Institute und Mitteilungen) und findet beim Tippen live Kunden, Verträge, Unternehmensverträge, Gutscheine sowie App-Seiten & Statistik-Berichte — gruppiert und mit Direktnavigation zum Treffer.
+Die globale Suche sitzt als Lupen-Button in der Sidebar (neben Institute und
+Mitteilungen) und findet beim Tippen live Kunden, Verträge, Widerrufe,
+Unternehmensverträge, Gutscheine sowie App-Seiten & Statistik-Berichte —
+gruppiert und mit Direktnavigation zum Treffer. Diese Seite beschreibt
+**Architektur, Endpoint, Suchstrategien je Kategorie, die Seiten-Registry
+`GlobalSearchService::PAGES` und die Datenbank-Bausteine**; die Bedienung
+Schritt für Schritt steht im Nutzerhandbuch.
+
+!!! nutzerhandbuch "Bedienung: Grundlagen 2 – Standort, Suche & Mitteilungen"
+    [hilfe.hub.glattt.com/grundlagen/2/](https://hilfe.hub.glattt.com/grundlagen/2/) — die Suche öffnen, suchen und Treffer aufrufen.
+
+    Angrenzend: [Grundlagen 4 – Auf dem Handy und Tablet](https://hilfe.hub.glattt.com/grundlagen/4/) (die Suche im Mehr-Menü).
 
 ---
 
-## Für Anwender
+## Für Anwender — Überblick
 
-### Bedienung
+**Was die Suche leistet.** Ein Suchfeld für den ganzen Hub: Ab zwei Zeichen
+erscheinen sofort Treffer aus der lokalen Datenbank — Kundinnen (Name,
+Telefonnummer, Kundennummer, E-Mail), Verträge (Vertragsnummer oder Kundenname),
+Widerrufe, Unternehmensverträge, Gutscheine (Seriennummer) und jede Seite bzw.
+jeder Bericht des Hubs, auch über den Titel einer einzelnen Analyse („Google Ads"
+oder „Kampagnen-Übersicht" führt zur Ads-Analyse). Ergänzende Treffer aus Phorest
+(E-Mail-Suche, ganz neue Kundinnen) laden wenige Sekunden nach. Ein Klick auf ein
+Ergebnis führt direkt zum Ziel — Kundenprofil, Vertragsdetail, vorgefilterte
+Liste oder Bericht.
 
-- Die drei Buttons **Institute · Suche · Mitteilungen** zeigen standardmäßig nur Icons; beim Hovern (oder wenn das jeweilige Panel offen ist) klappt der Button auf und zeigt seine Beschriftung.
-- Klick auf die **Lupe** (oder **⇧⌘F** am Mac bzw. **Strg+Shift+F** unter Windows — funktioniert von jeder Seite aus, auch in der Desktop-App) öffnet das Suchfeld unter der Button-Reihe und fokussiert es. *(⌘K ist durch glatttBert belegt.)*
-- Ab **2 Zeichen** startet die Suche automatisch beim Tippen; die Ergebnisse erscheinen in einem Panel, das (wie Institute und Mitteilungen) über die Navigation gleitet.
-- **Esc**, erneuter Klick auf die Lupe oder Wisch nach rechts schließt die Suche; das ⨯ im Suchfeld leert die Eingabe.
-- Ein Klick auf ein Ergebnis navigiert direkt zum Ziel (Kundenprofil, Vertragsdetail, Bericht …).
+**Grundsätze:**
 
-### Was wird gefunden?
+- **Jeder Hub-Nutzer kann suchen** — es gibt kein eigenes Recht dafür. Die
+  **Kategorien** richten sich aber nach den bestehenden Rechten: Ohne
+  `view_contracts` keine Vertrags-Treffer, Seiten nur mit ihrer Seiten-Berechtigung.
+- **Von jeder Seite erreichbar** per Lupe oder Tastenkürzel ⇧⌘F (Mac) bzw.
+  Strg+Shift+F (Windows), auch in der Desktop-App; ⌘K ist glatttBert vorbehalten.
+- **Bindestrich-tolerant:** „Al Kaki" findet „Al-Kaki" und umgekehrt.
+- **Am Smartphone** liegt dieselbe Suche im Mehr-Menü der unteren Leiste.
 
-| Kategorie | Suchbar nach | Ziel |
-|---|---|---|
-| **Kunden** | Name, Telefonnummer, **Kundennummer/externalId** (z.B. `OS003354`, sofort aus der lokalen DB), E-Mail | Kundenprofil |
-| **Verträge** | Vertragsnummer (z.B. `2026.03.10-K12345`), Legacy-Kundennummer, **Kundenname/-nummer** (zeigt die Verträge des Kunden) | Vertragsdetail |
-| **Widerrufe** | Vertragsnummer, Legacy-Kundennummer, Kundenname — Status als Icon (Offen ⚠ / In Verhandlung 💬 / Abgeschlossen 🚩) | Widerrufe-Liste (vorgefiltert) |
-| **Unternehmensverträge** | Name, Vertragsnummer, Lieferant | Unternehmensverträge (vorgefiltert) |
-| **Gutscheine** | Seriennummer | Gutschein-Liste (vorgefiltert) |
-| **Seiten & Statistiken** | Seitenname, Stichwort, **Seiten-Beschreibung oder Analyse-Titel** (z.B. „Google Ads" oder „Kampagnen-Übersicht" → Ads-Analyse, „Reisekosten" → Personal) | Die jeweilige Seite |
+**Wo was erledigt wird:**
 
-Die Kundensuche läuft **zweistufig**: Treffer aus der lokalen Datenbank erscheinen sofort, ergänzende Treffer aus Phorest (E-Mail-Suche, ganz neue Kunden) laden wenige Sekunden nach („Phorest wird durchsucht…").
-
-### Berechtigungen
-
-Es gibt keine eigene Berechtigung für die Suche — jeder Hub-Nutzer kann suchen. Die **Kategorien** richten sich aber nach den bestehenden Berechtigungen: Wer z.B. kein `view_contracts` hat, bekommt keine Vertrags-Treffer; Seiten erscheinen nur, wenn die jeweilige Seiten-Berechtigung vorliegt.
-
-### Einschränkungen
-
-- **Mobil** ist die Suche in v1 nicht verfügbar (die Sidebar ist auf Mobilgeräten ausgeblendet). Eine Topbar-Variante ist als Follow-up angedacht.
-- Die Gutschein-Suche in Phorest matcht die Seriennummer **exakt** — Teilstrings finden nichts.
-- Brandneue Kunden erscheinen in der Sofort-Suche erst nach dem nächsten Statistik-Sync; die nachladende Phorest-Stufe findet sie aber direkt.
+| Vorgang | Anleitung |
+|---|---|
+| Suche öffnen (Lupe, Tastenkürzel), suchen, schließen | Grundlagen 2 |
+| Treffer-Kategorien lesen, zum Ziel springen | Grundlagen 2 |
+| Suche am Handy/Tablet (Mehr-Menü, Lupe im Scroll-Kopf) | Grundlagen 4 |
 
 ---
 
@@ -51,6 +59,28 @@ GET /hub/search?q=<query>&sources=remote   → Phorest-Suche (Kunden + Gutschein
 ```
 
 Das Frontend (Alpine, in `sidebarPanels()`) feuert nach 250ms Debounce **beide Requests parallel**, rendert die lokalen Treffer sofort und merged die Remote-Gruppen nach (Dedupe per Ergebnis-ID über einen `searchGroups`-Getter). Alte Requests werden per `AbortController` abgebrochen. Die Remote-Stufe startet erst ab 3 Zeichen (Phorest-Last).
+
+**Oberfläche in der Sidebar:** Die drei Buttons **Institute · Suche · Mitteilungen** zeigen standardmäßig nur Icons; beim Hovern (oder wenn das jeweilige Panel offen ist) klappt der Button auf und zeigt seine Beschriftung. Klick auf die Lupe (oder **⇧⌘F** am Mac bzw. **Strg+Shift+F** unter Windows — Listener im Sidebar-Partial, funktioniert von jeder Seite aus, auch in der Desktop-App; **⌘K ist durch glatttBert belegt**) öffnet das Suchfeld unter der Button-Reihe und fokussiert es. Ab **2 Zeichen** startet die Suche beim Tippen; die Ergebnisse erscheinen in einem Panel, das (wie Institute und Mitteilungen) über die Navigation gleitet. **Esc**, erneuter Klick auf die Lupe oder Wisch nach rechts schließt die Suche; das ⨯ im Suchfeld leert die Eingabe. Die Kundensuche läuft **zweistufig**: Treffer aus der lokalen Datenbank erscheinen sofort, ergänzende Treffer aus Phorest laden nach („Phorest wird durchsucht…").
+
+### Kategorien und Ziele
+
+| Kategorie | Suchbar nach | Ziel |
+|---|---|---|
+| **Kunden** | Name, Telefonnummer, **Kundennummer/externalId** (z.B. `OS003354`, sofort aus der lokalen DB), E-Mail | Kundenprofil |
+| **Verträge** | Vertragsnummer (z.B. `2026.03.10-K12345`), Legacy-Kundennummer, **Kundenname/-nummer** (zeigt die Verträge des Kunden) | Vertragsdetail |
+| **Widerrufe** | Vertragsnummer, Legacy-Kundennummer, Kundenname — Status als Icon (Offen ⚠ / In Verhandlung 💬 / Abgeschlossen 🚩) | Widerrufe-Liste (vorgefiltert) |
+| **Unternehmensverträge** | Name, Vertragsnummer, Lieferant | Unternehmensverträge (vorgefiltert) |
+| **Gutscheine** | Seriennummer | Gutschein-Liste (vorgefiltert) |
+| **Seiten & Statistiken** | Seitenname, Stichwort, **Seiten-Beschreibung oder Analyse-Titel** (z.B. „Google Ads" oder „Kampagnen-Übersicht" → Ads-Analyse, „Reisekosten" → Personal) | Die jeweilige Seite |
+
+### Grenzen
+
+- **Mobil:** In v1 war die Suche auf Mobilgeräten nicht verfügbar (die Sidebar ist
+  dort ausgeblendet). Seit dem Mobile-Redesign 08/2026 liegt dieselbe Suche im
+  Mehr-Sheet der Bottom-Navigation und hinter der Lupe des Scroll-Headers (siehe
+  `MOBILE-DESIGN.md`).
+- Die Gutschein-Suche in Phorest matcht die Seriennummer **exakt** — Teilstrings finden nichts.
+- Brandneue Kunden erscheinen in der Sofort-Suche erst nach dem nächsten Statistik-Sync; die nachladende Phorest-Stufe findet sie aber direkt.
 
 ### Relevante Dateien
 

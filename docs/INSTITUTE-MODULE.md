@@ -1,99 +1,139 @@
 # Institut-Modul
 
-## Übersicht
-Das Institut-Modul zeigt alle Phorest Branches als "Institute" an und bietet detaillierte Ansichten für jedes Institut.
+Das Institut-Modul bildet die Phorest-Branches als „Institute" im Hub ab: Übersichtsseite,
+Detailseite mit Steckbrief und fünf Reitern, Kontakt-Stammdaten, Standort-Farben und
+-Reihenfolge, Bankverbindung je Standort, Zugangs-Link der Institutsseite sowie die Regeln,
+nach denen ein Institut aus Gesamtansichten ausgeblendet wird. Diese Seite beschreibt
+**Absicht, Datenmodell, Endpunkte, Services und Fallstricke**; die Bedienung Schritt für
+Schritt steht im Nutzerhandbuch.
 
-## Features
+!!! nutzerhandbuch "Bedienung: Serie „Betrieb" 1–2 im Nutzerhandbuch"
+    [Betrieb 1 – Institute im Überblick](https://hilfe.hub.glattt.com/betrieb/1/) ·
+    [Betrieb 2 – Ein Institut pflegen](https://hilfe.hub.glattt.com/betrieb/2/)
 
-### Übersichtsseite (`/hub/branches`)
-- **Anzeige wenn "Alle Institute" ausgewählt**
-- Grid-Layout mit Institut-Karten
-- Jede Karte zeigt:
-  - Institut-Name
-  - Adresse
-  - Kontaktdaten (Telefon, E-Mail)
-  - Placeholder für Institut-Bild (später hinzufügbar)
-- Klickbare Karten führen zur Detail-Ansicht
+    Angrenzend: [Grundlagen 2 – Standort, Suche & Mitteilungen](https://hilfe.hub.glattt.com/grundlagen/2/)
+    (Standortfilter der Seitenleiste) und [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/)
+    (Standortfilter in Auswertungen).
 
-### Detail-Seite (`/hub/branches/{branchId}`) — seit 15.09.2026 „Steckbrief-Spalte"
+## Inhaltsverzeichnis
 
-Die Seite folgt seit dem 15.09.2026 dem Layout der Vertragsseite V2 (Abnahme
-per Mockup, Variante B): **Kopfzeile** mit Zurück-Pfeil, Name, Adresse und drei
-**Schnellaktionen** aus den Kontakt-Stammdaten („Anrufen" = Festnetz,
-„Anrufen mobil" = WhatsApp-Nummer als `tel:`-Link, „WhatsApp schreiben" =
-`wa.me`-Link), darunter das **Menüband** (`.tab-band-glattt`, dieselbe Optik wie
-die Vertragsseite: aktiver Reiter im Teal-Gradient, Heroicons, Team-Zähler) und
-der **Zweispalter**: Reiter-Inhalt links, rechts der feststehende **Steckbrief**.
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Seiten, Reiter und Rechte](#seiten-reiter-und-rechte)
+    - [Technische Implementierung](#technische-implementierung)
+    - [Standort-Farben](#standort-farben)
+    - [Standort-Reihenfolge (Sort Order)](#standort-reihenfolge-sort-order)
+    - [Institute aus Übersichten ausblenden (BranchVisibility)](#institute-aus-ubersichten-ausblenden-branchvisibility)
+    - [Terminologie](#terminologie)
+    - [Zukünftige Erweiterungen](#zukunftige-erweiterungen)
 
-**Mobil:** Titel mittig ohne Untertitel, Schnellaktionen über die volle Breite
-(Muster vom 15.09.2026), fünf Reiter als Symbol-Segmente mit Kurzbeschriftung
-(nichts scrollt), Steckbrief als zugeklappte Karte über dem Menüband. Auf dem
-iPad (unter 1280 px) steht der Steckbrief aufgeklappt über dem Menüband — das
-regelt allein das CSS-Grid (`grid-template-areas`), das Markup bleibt gleich.
+---
 
-#### Steckbrief (auf jedem Reiter sichtbar)
-- Standort-Icon, Stadt
-- **Farbe, Reihenfolge, Sichtbarkeit** mit Badges und — bei `manage_branch_images` —
-  direkt bearbeitbar (12 Schnellfarben, nativer Farbwähler, Hex-Feld, Reihenfolge
-  0–999, Schalter „Aus Übersichten ausblenden", ein Speichern)
-- Branch-ID und Account-ID mit Kopier-Knopf, Zeitzone · Währung, Koordinaten
-  mit Google-Maps-Link, Team-Größe mit Sprung zum Reiter „Team"
+## Für Anwender — Überblick
 
-#### 1. Infos
-- Kontaktdaten zweispaltig: links die Adresse aus Phorest (nur lesbar, mit
-  Karten-Link und Website), rechts die **Kontakt-Stammdaten** Telefon,
-  WhatsApp-Nummer, E-Mail untereinander (Tabelle `institute_contacts`,
-  Endpoints `GET/POST /phorest/institute/{branchId}/contact`, Schreibrecht
-  `manage_branch_images`; ohne Recht Leseansicht). Sie speisen die
-  Schnellaktionen der Kopfzeile und die **Terminerinnerungs-Mails** (Footer,
-  Buttons, Platzhalter `{{institut_telefon}}`/`{{institut_whatsapp}}`/
-  `{{institut_mail}}`, siehe `TERMINERINNERUNGEN.md`).
-- Standort-Icon (PNG/SVG, max. 2 MB) und Institut-Bild (max. 5 MB) — je eine
-  Karte; ein neues Icon erscheint sofort im Steckbrief
-- Standort auf der Karte (Google-Maps-Einbettung über die Phorest-Koordinaten)
+**Was das Modul leistet.** Jedes Institut ist im Hub ein eigener Ort mit Stammdaten, Team,
+Kennzahlen und Einstellungen. Die Übersicht zeigt alle Institute als Karten; die Detailseite
+führt links den Inhalt des gewählten Reiters und rechts den feststehenden **Steckbrief** mit
+Stadt, Farbe, Reihenfolge, Sichtbarkeit, Branch-ID, Zeitzone, Koordinaten und Team-Größe.
+Fünf Reiter gliedern den Rest: *Infos* (Adresse aus Phorest, Kontakt-Stammdaten, Icon und
+Bild, Karte), *Team* (Hub-Konten mit diesem Stamminstitut), *Kennzahlen* (laufender Monat,
+nur dieses Institut), *Bank* (Bankverbindung für Zahlungserinnerungen und Mahnungen) und
+*Extern* (Zugangs-Link der Institutsseite).
 
-#### 2. Team
-- glatttHub-Konten mit diesem Institut als Stamminstitut: Avatar, Name,
-  NiSV-Status (grün/gelb/orange/rot), „im Hub seit"; Klick öffnet das Profil.
-- Wird beim Seitenaufruf geladen (Zähler im Reiter).
+**Grundsätze, die überall gelten:**
 
-#### 3. Kennzahlen (seit 15.09.2026 mit echten Zahlen)
-- **KPI-Zeile** (`components/kpi-dashboard`, Speicher-Schlüssel `institute-kpis`,
-  sechs sichtbar, Reihenfolge personalisierbar) — nur dieses Institut,
-  laufender Monat: Durchgeführte BGs (Monat, nur PAID-Termine) · Beratungen
-  heute · Beratungen morgen · Geplant (7 Tage) · Geplant bis Monatsende ·
-  Verträge · Verkaufte Körperzonen · Ø Körperzonen. Endpoint
-  `GET /phorest/institute/{branchId}/kpis` → `KpiValueService::values()` mit
-  den IDs aus `InstituteController::KPI_IDS`; welche Kacheln erscheinen,
-  entscheidet die Berechtigung je Kennzahl (`view_report_glattt_kpis`,
-  `view_report_upcoming_consultations`, `view_report_sales_statistics`).
-- Darunter zwei **Registry-Statistiken** mit festem Standort über das
-  `statFilters`-Objekt der Seiten-App (Standort = Institut, Zeitraum = Monat):
-  „Aktueller Buchungsstand" (`termine.booking-status`) und „Körperzonen pro
-  Tag" (`sales.body-zones-daily`). Nichts ist doppelt gebaut.
-- Neu in der KpiRegistry dafür: `termine.upcoming_tomorrow`,
-  `termine.upcoming_month_end` (Eimer `tomorrow`/`month_end` aus
-  `ReportController::buildUpcomingConsultationsKpi`) und
+- **Phorest ist die Quelle der Stammdaten.** Adresse, Koordinaten, Zeitzone und Währung kommen
+  aus Phorest und sind im Hub nur lesbar. Im Hub gepflegt werden Kontakt-Stammdaten, Farbe,
+  Reihenfolge, Sichtbarkeit, Icon, Bild, Bankverbindung und Zugangs-Link.
+- **Farbe und Reihenfolge des Instituts gelten überall.** Einmal gesetzt, wirken sie in
+  Seitenleiste, Übersicht und in jeder Statistik-Tabelle und jedem Diagramm — nicht nur auf
+  der Institutsseite.
+- **„Ausgeblendet" heißt: nicht in Gesamtansichten.** Ein ausgeblendetes Institut zählt nicht
+  in „Alle Standorte" (Berichte, Terminübersicht, Startseite, CSV-Export), bleibt aber
+  ausdrücklich wählbar und zeigt dann seine Daten wie gewohnt. Typischer Fall: ein Institut im
+  Testbetrieb vor der Eröffnung.
+- **Kontakt-Stammdaten wirken nach außen.** Telefon, WhatsApp-Nummer und E-Mail speisen die
+  Schnellaktionen der Kopfzeile **und** die Terminerinnerungs-Mails.
+- **Rechte trennen die Reiter:** Bearbeiten von Farbe/Reihenfolge/Sichtbarkeit, Icon, Bild und
+  Kontakt braucht `manage_branch_images`, der Bank-Reiter `manage_branch_bank_details`, der
+  Reiter *Extern* `manage_institute_access_tokens`.
+
+**Wo was erledigt wird** — die Anleitung nennt Felder, Folgewirkungen und die gefährlichen Knöpfe:
+
+| Vorgang | Anleitung |
+|---|---|
+| Übersicht der Institute, Steckbrief lesen, Kennzahlen des Standorts, Team | Betrieb 1 |
+| Bild, Farbe und Symbol setzen, Bankverbindung, Zugangs-Link der Institutsseite | Betrieb 2 |
+| Standort in der Seitenleiste bzw. im Standort-Sheet wählen | Grundlagen 2 |
+| Standortfilter in Berichten und Exporten | Berichte 0 |
+
+---
+
+## Für Entwickler
+
+### Seiten, Reiter und Rechte
+
+**Übersichtsseite (`/hub/branches`)** — Grid aus Institut-Karten (Name, Adresse, Kontaktdaten,
+Institut-Bild bzw. Platzhalter, Badge „Ausgeblendet"), Klick führt in die Detail-Ansicht. Wird
+angezeigt, wenn „Alle Institute" gewählt ist.
+
+**Detail-Seite (`/hub/branches/{branchId}`) — seit 15.09.2026 „Steckbrief-Spalte"**
+
+Die Seite folgt seit dem 15.09.2026 dem Layout der Vertragsseite V2 (Abnahme per Mockup,
+Variante B): **Kopfzeile** mit Zurück-Pfeil, Name, Adresse und drei **Schnellaktionen** aus den
+Kontakt-Stammdaten („Anrufen" = Festnetz, „Anrufen mobil" = WhatsApp-Nummer als `tel:`-Link,
+„WhatsApp schreiben" = `wa.me`-Link), darunter das **Menüband** (`.tab-band-glattt`, dieselbe
+Optik wie die Vertragsseite: aktiver Reiter im Teal-Gradient, Heroicons, Team-Zähler) und der
+**Zweispalter**: Reiter-Inhalt links, rechts der feststehende **Steckbrief**.
+
+**Mobil:** Titel mittig ohne Untertitel, Schnellaktionen über die volle Breite (Muster vom
+15.09.2026), fünf Reiter als Symbol-Segmente mit Kurzbeschriftung (nichts scrollt), Steckbrief
+als zugeklappte Karte über dem Menüband. Auf dem iPad (unter 1280 px) steht der Steckbrief
+aufgeklappt über dem Menüband — das regelt allein das CSS-Grid (`grid-template-areas`), das
+Markup bleibt gleich.
+
+**Steckbrief** (auf jedem Reiter sichtbar): Standort-Icon und Stadt; **Farbe, Reihenfolge,
+Sichtbarkeit** mit Badges und — bei `manage_branch_images` — direkt bearbeitbar (12
+Schnellfarben, nativer Farbwähler, Hex-Feld, Reihenfolge 0–999, Schalter „Aus Übersichten
+ausblenden", ein Speichern); Branch-ID und Account-ID mit Kopier-Knopf; Zeitzone · Währung;
+Koordinaten mit Google-Maps-Link; Team-Größe mit Sprung zum Reiter „Team".
+
+| Reiter | Inhalt | Recht / Endpunkt |
+|---|---|---|
+| **1. Infos** | Adresse aus Phorest (nur lesbar, Karten-Link, Website) links, **Kontakt-Stammdaten** Telefon, WhatsApp-Nummer, E-Mail rechts; Standort-Icon (PNG/SVG, max. 2 MB) und Institut-Bild (max. 5 MB) als je eine Karte (neues Icon erscheint sofort im Steckbrief); Google-Maps-Einbettung über die Phorest-Koordinaten | Tabelle `institute_contacts`, `GET/POST /phorest/institute/{branchId}/contact`, Schreibrecht `manage_branch_images` (ohne Recht Leseansicht) |
+| **2. Team** | glatttHub-Konten mit diesem Institut als Stamminstitut: Avatar, Name, NiSV-Status (grün/gelb/orange/rot), „im Hub seit"; Klick öffnet das Profil. Wird beim Seitenaufruf geladen (Zähler im Reiter). | `GET /phorest/institute/{branchId}/staff` |
+| **3. Kennzahlen** | KPI-Zeile + zwei Registry-Statistiken (siehe unten) | `GET /phorest/institute/{branchId}/kpis` |
+| **4. Bank** | Bankverbindung je Standort für Zahlungserinnerungen und Mahnungen des Forderungsmanagements (Kontoinhaber, IBAN, BIC, Bank, Schalter „Aktiv") | nur `manage_branch_bank_details` |
+| **5. Extern** | Zugangs-Link der Institutsseite (Tageserfassung Beratungsgespräche): erstellen, kopieren, erneuern, widerrufen | nur `manage_institute_access_tokens` |
+
+**Kennzahlen-Reiter (seit 15.09.2026 mit echten Zahlen)**
+
+- **KPI-Zeile** (`components/kpi-dashboard`, Speicher-Schlüssel `institute-kpis`, sechs
+  sichtbar, Reihenfolge personalisierbar) — nur dieses Institut, laufender Monat:
+  Durchgeführte BGs (Monat, nur PAID-Termine) · Beratungen heute · Beratungen morgen ·
+  Geplant (7 Tage) · Geplant bis Monatsende · Verträge · Verkaufte Körperzonen · Ø Körperzonen.
+  Endpoint `GET /phorest/institute/{branchId}/kpis` → `KpiValueService::values()` mit den IDs
+  aus `InstituteController::KPI_IDS`; welche Kacheln erscheinen, entscheidet die Berechtigung
+  je Kennzahl (`view_report_glattt_kpis`, `view_report_upcoming_consultations`,
+  `view_report_sales_statistics`).
+- Darunter zwei **Registry-Statistiken** mit festem Standort über das `statFilters`-Objekt der
+  Seiten-App (Standort = Institut, Zeitraum = Monat): „Aktueller Buchungsstand"
+  (`termine.booking-status`) und „Körperzonen pro Tag" (`sales.body-zones-daily`). Nichts ist
+  doppelt gebaut.
+- Neu in der KpiRegistry dafür: `termine.upcoming_tomorrow`, `termine.upcoming_month_end`
+  (Eimer `tomorrow`/`month_end` aus `ReportController::buildUpcomingConsultationsKpi`) und
   `sales.total_body_zones` (Summe `body_zone_count` der Abschlüsse).
 
-#### 4. Bank (nur `manage_branch_bank_details`)
-- Bankverbindung je Standort für Zahlungserinnerungen und Mahnungen des
-  Forderungsmanagements (Kontoinhaber, IBAN, BIC, Bank, Schalter „Aktiv").
+### Technische Implementierung
 
-#### 5. Extern (nur `manage_institute_access_tokens`)
-- Zugangs-Link der Institutsseite (Tageserfassung Beratungsgespräche):
-  erstellen, kopieren, erneuern, widerrufen.
-
-## Technische Implementierung
-
-### Backend
+#### Backend
 - **Controller:** `InstituteController`
   - `index()` - Zeigt Übersicht oder Detail je nach Parameter
   - `show()` - Detail-Ansicht
   - `getInstituteDetails()` - API für Institut-Daten
   - `getInstituteStaff()` - API für Mitarbeiter
 
-### Routes
+#### Routes
 ```php
 // Views
 GET /hub/branches            -> InstituteController@index
@@ -110,7 +150,7 @@ GET  /phorest/institute/{branchId}/color -> InstituteController@getInstituteColo
 POST /phorest/institute/{branchId}/color -> InstituteController@saveInstituteColor
 ```
 
-### Frontend
+#### Frontend
 - **Views:**
   - `resources/views/hub/institutes/index.blade.php` - Übersicht
   - `resources/views/hub/institutes/show.blade.php` - Kopfzeile, Menüband, Zweispalter
@@ -136,25 +176,12 @@ POST /phorest/institute/{branchId}/color -> InstituteController@saveInstituteCol
   den Areas `band` / `main` / `steckbrief`; Steckbrief-Klassen `.institute-steckbrief-*`.
   Abgesichert durch `tests/Feature/InstituteDetailPageTest.php`.
 
-### Standort-Farben System
+### Standort-Farben
 
-#### Für Endanwender
-Jedes Institut kann eine individuelle Farbe und eine benutzerdefinierte Sortierreihenfolge erhalten:
-
-**Farbe:**
-1. Institut-Detailseite öffnen → Info-Tab
-2. Im Bereich „Standort-Farbe" eine der 12 vordefinierten Farben wählen oder über den Farbpicker eine beliebige Farbe auswählen
-3. „Farbe speichern" klicken
-4. Die Farbe wird sofort auf allen Statistik-Seiten aktiv (Terminstatistiken, Buchungsvorlauf, Freie-Slots, Stornierungen, Auslastung, Wochentag-/Uhrzeitanalyse)
-
-**Standort-Reihenfolge:**
-1. Institut-Detailseite öffnen → Info-Tab
-2. Im Feld „Reihenfolge" neben dem Farbpicker eine Zahl eingeben (0–999)
-3. Niedrigere Zahlen erscheinen weiter oben in der Liste
-4. Institute ohne Reihenfolge werden alphabetisch am Ende einsortiert
-5. Die Reihenfolge gilt überall: Sidebar, Übersichtsseite, alle Statistik-Tabellen und Diagramme
-
-#### Für Entwickler
+Jedes Institut trägt eine Farbe und eine Sortierreihenfolge; beide werden im Steckbrief der
+Detailseite gepflegt (Recht `manage_branch_images`) und wirken sofort auf allen Statistik-Seiten
+(Terminstatistiken, Buchungsvorlauf, Freie-Slots, Stornierungen, Auslastung, Wochentag-/
+Uhrzeitanalyse) sowie in Seitenleiste und Übersicht.
 
 **Architektur:**
 
@@ -250,13 +277,14 @@ Die folgenden Statistik-JS-Dateien verwenden nun `BranchColorService` statt loka
 
 ### Standort-Reihenfolge (Sort Order)
 
-#### Für Endanwender
-Die Reihenfolge, in der Standorte überall im System angezeigt werden, kann pro Institut individuell festgelegt werden. Ohne konfigurierte Reihenfolge werden Institute alphabetisch sortiert.
-
-#### Für Entwickler
+Die Reihenfolge, in der Standorte überall im System erscheinen, wird je Institut festgelegt
+(Feld „Reihenfolge", 0–999; niedrigere Zahlen zuerst). Institute ohne Reihenfolge werden
+alphabetisch am Ende einsortiert. Die Reihenfolge gilt in Seitenleiste, Übersichtsseite und
+allen Statistik-Tabellen und Diagrammen.
 
 **Zentrale Sortierung in `PhorestApiService::getBranches()`:**
-Die Sortierung ist direkt in der API-Service-Methode implementiert, sodass **alle Aufrufer** automatisch sortierte Branches erhalten — ohne Anpassung an jeder einzelnen Stelle.
+Die Sortierung ist direkt in der API-Service-Methode implementiert, sodass **alle Aufrufer**
+automatisch sortierte Branches erhalten — ohne Anpassung an jeder einzelnen Stelle.
 
 **Sortierlogik (3-stufig):**
 1. Branches mit `sort_order` → aufsteigend nach Zahl
@@ -292,29 +320,22 @@ POST /phorest/institute/{branchId}/color
 **Cache:**
 Die Sort-Order-Map wird 5 Minuten gecacht (`institute_sort_order_map`). Der Cache wird automatisch geleert, wenn eine Farbe oder Reihenfolge gespeichert wird (`InstituteColor::clearColorCache()`).
 
-### Institute aus Übersichten ausblenden (seit 09/2026)
+### Institute aus Übersichten ausblenden (BranchVisibility)
 
-#### Für Endanwender
-
-Auf der Detailseite eines Instituts (Info-Tab, Karte „Standort-Farbe, Reihenfolge &
-Sichtbarkeit") gibt es den Schalter **„Aus Übersichten ausblenden"**. Ist er gesetzt,
-zählen Termine und Zahlen dieses Instituts **nicht mehr in „Alle Standorte"** — in
-Berichten, der Terminübersicht, auf der Startseite und im CSV-Export. Das Institut
-bleibt in der Standortliste der Seitenleiste (und im Standort-Sheet auf dem Handy)
-wählbar und ist dort mit dem Badge **„Ausgeblendet"** gekennzeichnet; wählt man es
-ausdrücklich, erscheinen seine Daten wie gewohnt.
-
-Typischer Anwendungsfall: ein noch nicht eröffnetes Institut (z.B. Magdeburg vor der
-Eröffnung), in dem Testbuchungen laufen, die sonst Beratungszahlen und No-Show-Quoten
-aller Gesamtansichten verfälschen. Das Speichern des Schalters braucht das Recht
-`manage_branch_images` (wie Farbe und Reihenfolge) und leert den Application-Cache,
-damit die Gesamtansichten sofort den neuen Stand zeigen.
+**Fachregel (seit 09/2026).** Der Schalter **„Aus Übersichten ausblenden"** (Steckbrief der
+Detailseite, Karte „Standort-Farbe, Reihenfolge & Sichtbarkeit") nimmt Termine und Zahlen des
+Instituts aus **„Alle Standorte"** heraus — in Berichten, der Terminübersicht, auf der Startseite
+und im CSV-Export. Das Institut bleibt in der Standortliste der Seitenleiste (und im
+Standort-Sheet auf dem Handy) wählbar, dort mit dem Badge **„Ausgeblendet"**; wird es
+ausdrücklich gewählt, erscheinen seine Daten wie gewohnt. Typischer Anwendungsfall: ein noch
+nicht eröffnetes Institut (z.B. Magdeburg vor der Eröffnung), in dem Testbuchungen laufen, die
+sonst Beratungszahlen und No-Show-Quoten aller Gesamtansichten verfälschen. Das Speichern
+braucht das Recht `manage_branch_images` (wie Farbe und Reihenfolge) und leert den
+Application-Cache, damit die Gesamtansichten sofort den neuen Stand zeigen.
 
 **Bewusst nicht betroffen:** Report-Mails, Bonus-Board/Gamification, Mitteilungen und
 der glatttbert-Assistent (Entscheidung 07.09.2026) sowie Verwaltungslisten
 (Verträge, Widerrufe, Forderungen).
-
-#### Für Entwickler
 
 Regelwerk in **`app/Support/BranchVisibility`** — die einzige Stelle, an der
 „gewählter Standort" bzw. „Alle Standorte" in einen Filter übersetzt wird:
@@ -351,12 +372,12 @@ Weitere Bausteine:
 | Phorest „alle Institute" | `PhorestApiService::getAllBranchesAppointments()` (Terminübersicht + Startseite), `ConsultationStatsService` |
 | Tests | `tests/Unit/BranchVisibilityTest.php`, `tests/Feature/HiddenBranchOverviewTest.php`, `tests/Feature/InstituteColorApiTest.php` |
 
-## Terminologie
+### Terminologie
 - **Phorest:** "Branch"
 - **glatttHub UI:** "Institut"
 - **Code intern:** Beide Begriffe werden verwendet, aber User-facing ist "Institut"
 
-## Zukünftige Erweiterungen
+### Zukünftige Erweiterungen
 1. ~~**Institut-Bilder:** Upload und Anzeige von Institut-Fotos~~ ✅ Implementiert
 2. ~~**Google Maps Integration:** Standort-Karte im Info-Tab~~ ✅ Implementiert
 3. **Laser-Verwaltung:** Geräte-Datenbank mit Wartungsplan

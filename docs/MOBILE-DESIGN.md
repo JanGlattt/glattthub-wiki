@@ -1,78 +1,54 @@
 # Mobile Design (Smartphone & Tablet)
 
 Überarbeitetes Mobile-Layout des Hubs (08/2026): durchgängig auf Touch ausgelegt,
-ein konsistentes Muster für Smartphone **und** Tablet, Gestaltung ausschließlich
-über `theme_glattt.css`.
+ein konsistentes Muster für Smartphone **und** Tablet bis 1023 px, Gestaltung
+ausschließlich über `theme_glattt.css`. Diese Seite beschreibt **die
+Architektur-Entscheidungen, die relevanten Dateien, die verbindlichen Muster
+(Bottom-Nav, Mehr-Sheet, Tabellen, Kopfzeilen, Safe-Area) und die Prüfung einer
+Seite auf mobile Überläufe**; die Bedienung Schritt für Schritt steht im
+Nutzerhandbuch.
 
-## Für Endanwender
+!!! nutzerhandbuch "Bedienung: Grundlagen 4 – Auf dem Handy und Tablet"
+    [hilfe.hub.glattt.com/grundlagen/4/](https://hilfe.hub.glattt.com/grundlagen/4/) — die Leiste unten, das Mehr-Menü, Werkzeuge einer Seite, Listen und Tabellen.
 
-### Kein fester Kopfbereich mehr
+    Angrenzend: [Grundlagen 2 – Standort, Suche & Mitteilungen](https://hilfe.hub.glattt.com/grundlagen/2/), [Grundlagen 3 – Mein Profil](https://hilfe.hub.glattt.com/grundlagen/3/) (Rundgang am Handy).
 
-Auf Smartphone und Tablet gibt es keinen fixen Header mehr — jede Seite beginnt
-direkt mit ihrem Inhalt. Zur Orientierung zeigt eine schmale Titelzeile den
-Seitennamen (nur auf Seiten ohne eigene Überschrift); sie scrollt mit dem Inhalt
-weg. Der gewonnene Platz (vorher bis zu ~120 px auf iPhones mit Notch) gehört
-jetzt dem Inhalt.
+---
 
-Damit der Inhalt beim Scrollen nicht mit Uhr/Notch kollidiert (Instagram-Muster,
-16.08.2026):
+## Für Anwender — Überblick
 
-- Ein fixer **Scrim** (Verlauf + Blur) liegt dauerhaft unter der iOS-Statusleiste
-- Beim **Hochscrollen** blendet ein Kompakt-Header ein (Scroll-Richtungs-
-  Erkennung): glattt-Icon links, Seitenname mittig, **Lupe rechts**. Die Lupe
-  öffnet das Mehr-Sheet und springt direkt ins Suchfeld, sodass am Smartphone
-  sofort die Tastatur aufgeht. Beim Runterscrollen und nahe Seitenanfang
-  verschwindet die Leiste wieder
+**Was das mobile Muster leistet.** Auf Smartphone und Tablet (bis 1023 px Breite)
+gibt es keinen festen Kopfbereich mehr — jede Seite beginnt direkt mit ihrem
+Inhalt, der gewonnene Platz gehört dem Inhalt. Beim Hochscrollen blendet ein
+kompakter Kopf mit Seitenname und Lupe ein. Unten schwebt die Navigationsleiste mit
+den vier Hauptbereichen **Start, Termine, Kunden, Berichte**; der fünfte Knopf
+**„Mehr"** öffnet ein Sheet mit der globalen Suche, allen Bereichen (nach Rechten
+und in denselben Gruppen wie die Seitenleiste), Standort-Wahl, Mitteilungen,
+Theme-Umschalter und Abmelden. Ein rotes Badge am „Mehr"-Knopf zeigt ungelesene
+Mitteilungen.
 
-### Navigation: Bottom-Leiste + „Mehr"
+**Grundsätze:**
 
-Unten schwebt die Navigations-Leiste mit den vier Hauptbereichen **Start,
-Termine, Kunden, Berichte** — im Daumenbereich erreichbar. Der fünfte Knopf
-**„Mehr"** öffnet ein Bottom-Sheet mit:
+- **Tablet im Hochformat verhält sich wie ein Smartphone** — vorher gab es
+  zwischen 769 und 1023 px gar keine Navigation. Ab 1024 px gilt die
+  Desktop-Ansicht mit Sidebar.
+- **Tabellen bleiben Tabellen** (seitlich wischbar, kompakter); bei Listen bleibt
+  die erste Spalte stehen, damit klar bleibt, zu welcher Zeile ein Wert gehört.
+  Wo es reicht, entfallen mobil Nebenspalten.
+- **Standort und Mitteilungen wechseln nur den Inhalt des Mehr-Sheets**, ein
+  Zurück-Pfeil führt zum Menü.
+- **Nichts ragt über den rechten Rand** — Prüfmaßstab 390 px, seit dem Rollout
+  vom 17.08.2026 auf allen Seiten.
 
-- **Globaler Suche** (Seiten, Berichte, Kunden, Verträge, Gutscheine — wie die
-  Sidebar-Suche am Desktop, inkl. Phorest-Suche ab 3 Zeichen)
-- **allen Bereichen** als Icon-Grid — inklusive der vier Haupttabs (Start,
-  Termine, Kunden, Berichte), damit das Sheet vollständig ist, plus Personal,
-  Services, Report-Mails, Audit, Gutscheine, Verträge, Widerrufe, Bonus-Board,
-  Forderungen, Schulden, Unternehmensverträge, Institute, Laser, Formulare,
-  Einstellungen, Admin Panel — jeweils nur mit entsprechender Berechtigung
-  sichtbar
-- **Standort-Wahl** und **Mitteilungen** — beide öffnen KEIN eigenes Sheet und
-  keine eigene Seite, sondern wechseln nur den Inhalt des Mehr-Sheets
-  (Zurück-Pfeil im Kopf führt zum Menü zurück). Die Mitteilungs-Ansicht listet
-  alle Mitteilungen inline (ungelesene mit Punkt), bietet „Alle als gelesen
-  markieren" und verlinkt am Fuß weiterhin auf die Mitteilungsseite
-- **Theme-Umschalter**, dessen Icon und Beschriftung den AKTUELLEN Modus zeigen
-  (Sonne = Hell, Mond = Dunkel, Monitor = System) und bei jedem Wechsel
-  mitwandern
-- **Profil-Zeile** mit Abmelden
+**Wo was erledigt wird:**
 
-Ein rotes Badge am „Mehr"-Knopf erscheint, sobald ungelesene Mitteilungen
-vorliegen.
+| Vorgang | Anleitung |
+|---|---|
+| Leiste unten, Mehr-Menü, Werkzeuge einer Seite, Listen und Tabellen | Grundlagen 4 |
+| Standort wählen, suchen, Mitteilungen lesen | Grundlagen 2 |
+| Abmelden, Konto | Grundlagen 1 |
 
-### Tablet
-
-Tablets im Hochformat (bis 1023 px Breite) verwenden dasselbe Muster wie
-Smartphones. Vorher gab es zwischen 769 und 1023 px **gar keine** Navigation
-(Bottom-Leiste erschien erst ab 768 px, die Sidebar verschwand ab 1023 px).
-Ab 1024 px gilt unverändert die Desktop-Ansicht mit Sidebar.
-
-### Tabellen
-
-Tabellen bleiben mobil Tabellen (seitlich wischbar), werden aber kompakter.
-Bei Listen bleibt die erste Spalte beim Seitwärts-Wischen stehen, damit klar
-bleibt, zu welcher Zeile ein Wert gehört — seit dem Rollout 08/2026 in rund 60
-Listen quer durch den Hub (Kunden, Gutscheine, Forderungen, Schulden, Personal,
-Widerrufe, Bonus, Laser, Statistik-Matrizen …). Ausgenommen sind
-Ranking-Tabellen, deren erste Spalte nur die Rangnummer enthält, sowie kleine
-Aggregat- und Detailtabellen, die ohnehin auf den Bildschirm passen.
-
-### Rollout auf alle Seiten (17.08.2026)
-
-Nach der Abnahme der vier Beispielseiten wurde das Muster flächendeckend
-ausgerollt. Geprüft wurde jede Seite automatisiert bei 390 px Breite darauf,
-dass nichts über den rechten Rand ragt.
+---
 
 ## Für Entwickler
 
@@ -86,6 +62,58 @@ dass nichts über den rechten Rand ragt.
 3. **Tablet:** mobiles Muster bis 1023 px, ab 1024 px Desktop.
 4. Vor dem flächendeckenden Rollout: Abnahme anhand der Beispielseiten
    Start, Verträge, Termine, Ads-Analyse.
+
+### Verhalten im Überblick
+
+**Kein fester Kopfbereich mehr.** Jede Seite beginnt direkt mit ihrem Inhalt.
+Zur Orientierung zeigt eine schmale Titelzeile den Seitennamen (nur auf Seiten
+ohne eigene Überschrift); sie scrollt mit dem Inhalt weg. Der gewonnene Platz
+(vorher bis zu ~120 px auf iPhones mit Notch) gehört dem Inhalt. Damit der Inhalt
+beim Scrollen nicht mit Uhr/Notch kollidiert (Instagram-Muster, 16.08.2026):
+
+- Ein fixer **Scrim** (Verlauf + Blur) liegt dauerhaft unter der iOS-Statusleiste.
+- Beim **Hochscrollen** blendet ein Kompakt-Header ein (Scroll-Richtungs-
+  Erkennung): glattt-Icon links, Seitenname mittig, **Lupe rechts**. Die Lupe
+  öffnet das Mehr-Sheet und springt direkt ins Suchfeld, sodass am Smartphone
+  sofort die Tastatur aufgeht. Beim Runterscrollen und nahe Seitenanfang
+  verschwindet die Leiste wieder.
+
+**Bottom-Leiste + „Mehr".** Die Leiste trägt **Start, Termine, Kunden, Berichte**
+im Daumenbereich; der fünfte Knopf **„Mehr"** öffnet ein Bottom-Sheet mit:
+
+- **Globaler Suche** (Seiten, Berichte, Kunden, Verträge, Gutscheine — wie die
+  Sidebar-Suche am Desktop, inkl. Phorest-Suche ab 3 Zeichen)
+- **allen Bereichen** als Icon-Grid — inklusive der vier Haupttabs, damit das Sheet
+  vollständig ist, plus Personal, Services, Report-Mails, Audit, Gutscheine,
+  Verträge, Widerrufe, Bonus-Board, Forderungen, Schulden, Unternehmensverträge,
+  Institute, Laser, Formulare, Einstellungen, Admin Panel — jeweils nur mit
+  entsprechender Berechtigung sichtbar, gruppiert nach `NavigationGroups`
+- **Standort-Wahl** und **Mitteilungen** — beide öffnen KEIN eigenes Sheet und
+  keine eigene Seite, sondern wechseln nur den Inhalt des Mehr-Sheets
+  (Zurück-Pfeil im Kopf führt zum Menü zurück). Die Mitteilungs-Ansicht listet
+  alle Mitteilungen inline (ungelesene mit Punkt), bietet „Alle als gelesen
+  markieren" und verlinkt am Fuß weiterhin auf die Mitteilungsseite
+- **Theme-Umschalter**, dessen Icon und Beschriftung den AKTUELLEN Modus zeigen
+  (Sonne = Hell, Mond = Dunkel, Monitor = System) und bei jedem Wechsel mitwandern
+- **Profil-Zeile** mit Abmelden
+
+Ein rotes Badge am „Mehr"-Knopf erscheint, sobald ungelesene Mitteilungen vorliegen.
+
+**Tablet.** Tablets im Hochformat (bis 1023 px Breite) verwenden dasselbe Muster
+wie Smartphones. Vorher gab es zwischen 769 und 1023 px **gar keine** Navigation
+(Bottom-Leiste erschien erst ab 768 px, die Sidebar verschwand ab 1023 px). Ab
+1024 px gilt unverändert die Desktop-Ansicht mit Sidebar.
+
+**Tabellen.** Tabellen bleiben mobil Tabellen (seitlich wischbar), werden aber
+kompakter. Bei Listen bleibt die erste Spalte beim Seitwärts-Wischen stehen — seit
+dem Rollout 08/2026 in rund 60 Listen quer durch den Hub (Kunden, Gutscheine,
+Forderungen, Schulden, Personal, Widerrufe, Bonus, Laser, Statistik-Matrizen …).
+Ausgenommen sind Ranking-Tabellen, deren erste Spalte nur die Rangnummer enthält,
+sowie kleine Aggregat- und Detailtabellen, die ohnehin auf den Bildschirm passen.
+
+**Rollout auf alle Seiten (17.08.2026).** Nach der Abnahme der vier Beispielseiten
+wurde das Muster flächendeckend ausgerollt. Geprüft wurde jede Seite automatisiert
+bei 390 px Breite darauf, dass nichts über den rechten Rand ragt.
 
 ### Relevante Dateien
 

@@ -1,6 +1,38 @@
 # 🔔 Benachrichtigungssystem
 
-Das glatttHub Benachrichtigungssystem ermöglicht das Senden von **InApp-Benachrichtigungen** und **Push-Notifications** an Benutzer. Alle Benachrichtigungstypen werden über eine zentrale Stelle im Admin-Panel verwaltet.
+Das Benachrichtigungssystem verschickt **InApp-Mitteilungen** und **Push-Notifications** an
+Hub-Benutzer — manuell verfasst, durch ein Webhook- oder Hub-Ereignis ausgelöst, zeitgesteuert per
+Cron oder aus einem Datenbank-Event heraus. Verwaltet wird alles an einer Stelle:
+**Filament Admin → Kommunikation → Benachrichtigungen**. Diese Seite ist überwiegend technisch —
+sie beschreibt **Modi, Platzhalter, Architektur, Endpunkte und Deployment**; wie Mitteilungen im
+Hub gelesen werden und was das Team im Admin-Panel einstellt, steht im Nutzerhandbuch.
+
+!!! nutzerhandbuch "Bedienung: Grundlagen 2 und Admin 4 im Nutzerhandbuch"
+    [Grundlagen 2 – Standort, Suche & Mitteilungen](https://hilfe.hub.glattt.com/grundlagen/2/) —
+    Mitteilungen im Hub lesen und abarbeiten ·
+    [Admin 4 – Erinnerungen und WhatsApp](https://hilfe.hub.glattt.com/admin/4/) —
+    automatische Nachrichten, Einwilligungen und Protokolle im Admin-Panel.
+
+---
+
+## Für Anwender — Überblick
+
+Der Hub meldet sich von selbst, wenn etwas passiert, das jemand wissen muss — eine geplatzte
+Lastschrift, ein abgelaufenes Mandat, eine fällige Aufgabe oder eine Mitteilung, die jemand aus
+dem Büro von Hand verfasst hat. Jede Benachrichtigung erscheint **im Hub** (Glocke in der
+Kopfzeile) und zusätzlich als **Push-Mitteilung** auf den Geräten, auf denen der Empfänger Push
+erlaubt hat; wer sie bekommt, steuert die Zielgruppe (alle, Rollen, Institute oder einzelne
+Personen). Angelegt und eingestellt wird das ausschließlich im Admin-Panel unter
+*Kommunikation → Benachrichtigungen*.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Mitteilungen im Hub lesen und abarbeiten | Grundlagen 2 |
+| Automatische Nachrichten und Protokolle im Admin-Panel | Admin 4 |
+
+---
 
 ## 📍 Zentrale Verwaltung
 
@@ -10,20 +42,21 @@ Das glatttHub Benachrichtigungssystem ermöglicht das Senden von **InApp-Benachr
 
 ## 📋 Inhaltsverzeichnis
 
-1. [Überblick](#überblick)
-2. [Benachrichtigungs-Modi](#benachrichtigungs-modi)
-3. [Push-Notifications Setup](#push-notifications-setup)
-4. [Platzhalter-System](#platzhalter-system)
-5. [Technische Architektur](#technische-architektur)
-6. [API & Cron-Endpunkte](#api--cron-endpunkte)
-7. [Cloud Deployment](#cloud-deployment)
-8. [Entwicklung & Testing](#entwicklung--testing)
+1. [Für Anwender — Überblick](#fur-anwender-uberblick)
+2. [Überblick](#uberblick)
+3. [Benachrichtigungs-Modi](#benachrichtigungs-modi)
+4. [Push-Notifications Setup](#push-notifications-setup)
+5. [Platzhalter-System](#platzhalter-system)
+6. [Technische Architektur](#technische-architektur)
+7. [API & Cron-Endpunkte](#api-cron-endpunkte)
+8. [Cloud Deployment](#cloud-deployment)
+9. [Entwicklung & Testing](#entwicklung-testing)
 
 ---
 
 ## Überblick
 
-Das System unterstützt drei Arten von Benachrichtigungen:
+Das System unterstützt vier Arten von Benachrichtigungen:
 
 | Modus | Trigger | InApp | Push |
 |-------|---------|-------|------|
@@ -73,7 +106,7 @@ Automatische Benachrichtigungen bei GoCardless Events (Zahlungen, Mandate, etc.)
 **Provider "glatttHub" (interne Ereignisse, seit 08/2026):**
 
 Neben GoCardless speisen auch interne Hub-Ereignisse dieselbe Regel-Engine.
-Für Endanwender funktioniert alles wie bei GoCardless-Regeln — nur der
+Im Admin-Panel funktioniert alles wie bei GoCardless-Regeln — nur der
 Provider ist ein anderer:
 
 1. Modus: "Ereignis-Automatisierung" wählen

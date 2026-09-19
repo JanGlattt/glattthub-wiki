@@ -2,11 +2,72 @@
 
 Geführte Rundgänge, die neuen Nutzern zeigen, wo sie was finden — ohne dass
 jemand persönlich einweisen muss. Es gibt die **Rahmen-Tour** durch den Hub und
-**Seiten-Touren** für die wichtigsten Arbeitsseiten.
+**Seiten-Touren** für die wichtigsten Arbeitsseiten, technisch auf driver.js.
+Diese Seite beschreibt **den Schritt-Katalog (`TourRegistry`), den Stand je
+Nutzer, die Auto-Start-Regel, die gemeinsame Tour aller Statistikseiten und die
+Fallstricke von Sichtbarkeit, Scrollen und Overflow**; die Bedienung Schritt für
+Schritt steht im Nutzerhandbuch.
+
+!!! nutzerhandbuch "Bedienung: Grundlagen 1 – Anmelden & zurechtfinden · Grundlagen 3 – Mein Profil im glatttHub"
+    [hilfe.hub.glattt.com/grundlagen/1/](https://hilfe.hub.glattt.com/grundlagen/1/) — der erste Rundgang durch den Hub ·
+    [hilfe.hub.glattt.com/grundlagen/3/](https://hilfe.hub.glattt.com/grundlagen/3/) — Rundgänge im Profil erneut starten.
+
+    Angrenzend: [Grundlagen 4 – Auf dem Handy und Tablet](https://hilfe.hub.glattt.com/grundlagen/4/) (Rundgang im Mehr-Menü), [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/) (die gemeinsame Tour der Statistikseiten).
 
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
+
+**Was die Touren leisten.** Die **Rahmen-Tour** startet von allein beim ersten
+Aufruf des Hubs und zeigt in kurzen Sprechblasen nacheinander auf die
+Bedienelemente: Institut auswählen, globale Suche, Mitteilungen, die Menüpunkte,
+glatttBert, Hell-/Dunkelmodus und das eigene Profil. **Seiten-Touren** melden sich
+beim ersten Besuch der wichtigsten Arbeitsseiten (Terminübersicht, Terminansicht,
+Kundenakte, Vertrag, Forderungen, Berichte, eigene Dashboards) — aber erst, wenn
+die Rahmen-Tour durch ist, damit am ersten Tag nicht zwei Touren gleichzeitig
+kommen. Auf jeder Seite mit eigener Tour steht ein **Fragezeichen**, das sie
+jederzeit erneut startet.
+
+**Grundsätze:**
+
+- **Jede Tour erscheint nur einmal von allein** — ob sie durchgeklickt („Fertig")
+  oder weggeklickt (× / Esc) wurde. Bis 19.08.2026 meldete sich eine weggeklickte
+  Tour am Folgetag erneut; das wurde als tägliches Willkommens-Popup empfunden und
+  abgeschafft. Erneut ansehen: **Profil → Einführung in den Hub → „Rundgang
+  starten"**; dort steht auch, ob die Tour abgeschlossen oder weggeklickt wurde.
+- **Gezeigt wird nur, worauf man Zugriff hat.** Wer keine Verträge sehen darf,
+  bekommt den Schritt zu den Verträgen nicht — die Zahl der Schritte
+  unterscheidet sich je nach Rolle.
+- **Alle Statistikseiten teilen sich eine Tour**, die beim ersten Besuch
+  irgendeiner Berichtsseite läuft.
+- **Auf dem Handy** zeigt die Tour auf die untere Navigationsleiste; Elemente, die
+  es mobil nicht gibt (Institutsauswahl, globale Suche, Theme-Umschalter in der
+  Seitenleiste), werden übersprungen — die Tour bricht deswegen nicht ab.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Der erste Rundgang durch den Hub | Grundlagen 1 |
+| Rundgang im Profil erneut starten, Stand einsehen | Grundlagen 3 |
+| Rundgang am Handy (Mehr-Menü) | Grundlagen 4 |
+| Die gemeinsame Tour der Berichtsseiten | Berichte 0 |
+
+---
+
+## Für Entwickler
+
+### Aufbau
+
+| Baustein | Datei | Zweck |
+|---|---|---|
+| Schritt-Katalog | `app/Services/Onboarding/TourRegistry.php` | Einzige Quelle der Tour-Inhalte |
+| Stand je Nutzer | `app/Models/UserTour.php`, Tabelle `user_tours` | pending / dismissed / completed + Zeitstempel |
+| Endpoint | `app/Http/Controllers/OnboardingTourController.php`, `POST /hub/onboarding/tour` | Stand speichern |
+| Auslieferung | `resources/views/layouts/partials/onboarding-tour.blade.php` | `window.glatttTour` + Skript, eingebunden in `layouts/hub.blade.php` |
+| Ablauf | `public/js/onboarding-tour.js` | driver.js nachladen, Ziele auflösen, Ergebnis melden |
+| Aussehen | `public/css/theme_glattt.css`, Abschnitt „EINFÜHRUNGSTOUR“ | Farben/Schrift im glattt-Design, hell & dunkel |
+| Manueller Start | `resources/views/hub/profile/partials/onboarding.blade.php` | Karte im Profil, ruft `window.glatttTourStart()` |
 
 ### Die Touren im Überblick
 
@@ -25,56 +86,10 @@ jemand persönlich einweisen muss. Es gibt die **Rahmen-Tour** durch den Hub und
 
 Die Seiten-Touren melden sich erst, wenn die Rahmen-Tour durch ist — sonst kämen
 einem neuen Nutzer am ersten Tag zwei Touren gleichzeitig entgegen. Auf jeder
-Seite mit eigener Tour steht oben ein **Fragezeichen**, das sie jederzeit erneut
-startet.
-
-### Wann erscheint die Rahmen-Tour?
-
-Sie startet **von allein beim ersten Aufruf des Hubs**. Sie besteht aus
-kurzen Sprechblasen, die nacheinander auf ein Bedienelement zeigen: Institut
-auswählen, globale Suche, Mitteilungen, die Menüpunkte, glatttBert, Hell-/
-Dunkelmodus und das eigene Profil.
-
-- **Durchklicken** mit „Weiter“ bis „Fertig“ — danach erscheint die Tour nie
-  wieder von allein.
-- **Wegklicken** über das × oder die Esc-Taste — auch dann erscheint sie **nie
-  wieder von allein**. Bis 19.08.2026 meldete sie sich am Folgetag erneut; das
-  wurde als tägliches Willkommens-Popup empfunden und abgeschafft. Wer die Tour
-  doch sehen will, startet sie über das Profil (siehe unten).
-
-### Jederzeit erneut ansehen
-
-**Profil → Einführung in den Hub → „Rundgang starten“.** Dort steht auch, ob du
-die Tour bereits abgeschlossen oder zuletzt weggeklickt hast.
-
-### Warum sieht die Tour bei Kolleginnen anders aus?
-
-Es wird nur gezeigt, worauf man auch Zugriff hat. Wer keine Verträge sehen darf,
-bekommt den Schritt zu den Verträgen gar nicht erst. Die Zahl der Schritte
-unterscheidet sich dadurch je nach Rolle.
-
-### Auf dem Handy
-
-Die Tour passt sich an: Auf kleinen Bildschirmen zeigt sie auf die untere
-Navigationsleiste. Bedienelemente, die es mobil nicht gibt (Institutsauswahl,
-globale Suche, Theme-Umschalter liegen in der ausklappbaren Seitenleiste),
-werden übersprungen — die Tour bricht deswegen nicht ab.
-
----
-
-## Für Entwickler
-
-### Aufbau
-
-| Baustein | Datei | Zweck |
-|---|---|---|
-| Schritt-Katalog | `app/Services/Onboarding/TourRegistry.php` | Einzige Quelle der Tour-Inhalte |
-| Stand je Nutzer | `app/Models/UserTour.php`, Tabelle `user_tours` | pending / dismissed / completed + Zeitstempel |
-| Endpoint | `app/Http/Controllers/OnboardingTourController.php`, `POST /hub/onboarding/tour` | Stand speichern |
-| Auslieferung | `resources/views/layouts/partials/onboarding-tour.blade.php` | `window.glatttTour` + Skript, eingebunden in `layouts/hub.blade.php` |
-| Ablauf | `public/js/onboarding-tour.js` | driver.js nachladen, Ziele auflösen, Ergebnis melden |
-| Aussehen | `public/css/theme_glattt.css`, Abschnitt „EINFÜHRUNGSTOUR“ | Farben/Schrift im glattt-Design, hell & dunkel |
-| Manueller Start | `resources/views/hub/profile/partials/onboarding.blade.php` | Karte im Profil, ruft `window.glatttTourStart()` |
+Seite mit eigener Tour steht oben ein **Fragezeichen** (`<x-tour-help />`), das sie
+jederzeit erneut startet. Die Rahmen-Tour besteht aus kurzen Sprechblasen, die
+nacheinander auf ein Bedienelement zeigen: Institut auswählen, globale Suche,
+Mitteilungen, die Menüpunkte, glatttBert, Hell-/Dunkelmodus und das eigene Profil.
 
 ### Rahmen- und Seiten-Touren
 
@@ -238,6 +253,11 @@ Gemessener Stand nach den Korrekturen — je Fall trifft jeder Schritt sein Ziel
 | Eingeklappte Seitenleiste (72 px) | 12 (3 bewusst übersprungen) |
 | Mobil 390 × 844 | 8 |
 
+Auf kleinen Bildschirmen zeigt die Tour auf die untere Navigationsleiste;
+Bedienelemente, die es mobil nicht gibt (Institutsauswahl, globale Suche,
+Theme-Umschalter liegen in der ausklappbaren Seitenleiste), werden übersprungen —
+die Tour bricht deswegen nicht ab.
+
 ### Aussehen
 
 Die Sprechblase übernimmt den Aufbau von `.modal-glattt`: Verlaufs-Kopf
@@ -256,7 +276,9 @@ unter dem Ziel) also den Kopf-Verlauf, bei „side-top“ die Fussleiste.
   Folgetag erneut) wurde am 19.08.2026 abgeschafft: Es erschien den Nutzern
   als tägliches Willkommens-Popup beim Anmelden.
 
-Der manuelle Start aus dem Profil ändert den Stand nicht.
+Der manuelle Start aus dem Profil (**Profil → Einführung in den Hub → „Rundgang
+starten“**, Karte zeigt zusätzlich, ob abgeschlossen oder zuletzt weggeklickt)
+ändert den Stand nicht.
 
 ### driver.js
 

@@ -3,13 +3,56 @@
 Zieht Besuchsdaten aus der selbst-gehosteten **Matomo**-Instanz in den Hub und
 wertet sie als **Besucher- und Buchungs-Funnel** aus: Herkunft, Verweildauer,
 Top-Seiten und der Trichter *Buchung gestartet → Schritt 2 → Abschluss* inkl.
-Abbruchpunkten – segmentierbar nach Standort und Quelle.
-
-## Für Endanwender
+Abbruchpunkten — segmentierbar nach Standort und Quelle. Diese Seite beschreibt
+**Datenfluss, Instrumentierung, Rechenregeln, Tabellen, Endpunkte und Betrieb**;
+die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
 **Wo:** Berichte → *Besucher & Buchungs-Funnel* (`/hub/reports/visitor-funnel`).
 
-**Was die Seite zeigt:**
+!!! nutzerhandbuch "Bedienung: Berichte 15 – Besucher & Buchungs-Funnel"
+    [hilfe.hub.glattt.com/berichte/15/](https://hilfe.hub.glattt.com/berichte/15/) — Bericht öffnen,
+    Herkunft und Verhalten, der Buchungs-Trichter, was daraus folgt.
+
+    Rahmen aller Berichtsseiten (Zeitraum, Kennzahlen-Zeile, Diagramm oder Tabelle, Export):
+    [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/).
+    Angrenzend: [Berichte 14 – Ads-Analyse](https://hilfe.hub.glattt.com/berichte/14/).
+
+---
+
+## Für Anwender — Überblick
+
+**Was der Bericht beantwortet.** Wie viele Menschen besuchen glattt.com, woher kommen sie, wie lange
+bleiben sie — und vor allem: An welcher Stelle der Buchungsstrecke springen sie ab. Der Trichter hat
+vier Stufen (Standortseite besucht → Buchung gestartet → Schritt 2/Dateneingabe → Buchung
+abgeschlossen); an jedem Übergang steht, wie viele verloren gehen, wie lange sie vorher gebraucht
+haben und wohin sie danach gegangen sind. Verglichen wird wahlweise je Standort oder je Quelle, im
+Verlauf über die Zeit, nach Geräteklasse und nach Unterseite.
+
+**Die entscheidende Einschränkung.** Matomo sieht nur Besucherinnen **mit Cookie-Zustimmung und ohne
+Adblocker** (rund 60–70 %). Der Bericht ist deshalb für **Verhältnisse und Verläufe** gebaut, nicht
+für absolute Zahlen: Die echte Buchungszahl kommt server-seitig aus dem Buchungstracking, und
+mehrere Karten stellen dieser Matomo-Sicht eine Spalte „Buchungen (Server)" gegenüber. Besonders der
+Ads-Anteil wird von Matomo systematisch unterschätzt — für Budget-Entscheidungen gilt die
+Server-Spalte bzw. die Ads-Analyse. Die genauen Regeln, Hochrechnungen und Sicherungen stehen unter
+[Die Analyse-Karten & ihre Rechenregeln](#die-analyse-karten-ihre-rechenregeln).
+
+**Der Standortfilter der Seitenleiste wirkt hier nicht** — ein Matomo-Besuch bekommt erst mit der
+Buchung eine Instituts-Zuordnung (Entscheidung Jan, 31.07.2026). Standort-Vergleiche laufen über die
+Karte „Funnel-Vergleich".
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Bericht öffnen, Herkunft und Verhalten, Trichter lesen, Schlüsse ziehen | Berichte 15 |
+| Zeitraum, Kennzahlen-Zeile, Diagramm/Tabelle, Export | Berichte 0 |
+| Werbekampagnen und ihre Kosten, belastbare Ads-Zuordnung | Berichte 14 |
+
+---
+
+## Für Entwickler
+
+### Die Analyse-Karten & ihre Rechenregeln
 
 - **KPI-Dashboard (selbst zusammenstellbar):** Nutzt die wiederverwendbare
   KPI-Dashboard-Komponente (wie die Verkaufsstatistik): Über **„Anpassen"**
@@ -101,27 +144,6 @@ Quoten in % (Besuche im Tooltip), bei den Top-Unterseiten die Aufrufe mit
     Quellen-Filter (Buchungen lassen sich nicht nach Matomo-Quelle filtern).
     Zusätzlich gibt es die KPI **„Matomo-Erfassungsquote"** (Abschlüsse ÷
     Buchungen) als Datenqualitäts-Kennzahl.
-
-## Für Entwickler
-
-> **Update 07/2026 (Statistik-Bauplan):** Die Seite folgt jetzt dem
-> verbindlichen Bauplan — jede Analyse-Karte ist zweiseitig (Diagramm als
-> Standard, Tabelle über das Karten-Register; Herkunft/Geräte/Top-Seiten
-> zeigten vorher die Tabelle als Standard), mit Skeleton in Endhöhe,
-> Fehlerzustand je Karte (`sectionError` + „Erneut laden") und Info-Panel.
-> Alle Charts laufen über das `acquireChart`-Muster mit animierten Übergängen.
-> **Standort-Segmente** kommen serverseitig in der konfigurierten
-> Instituts-Reihenfolge (`SortsBranchIds`) und mit `branch_id` für die
-> zentralen Institutsfarben (`BranchColorService`).
-> **Dokumentierte Ausnahme:** Der Standort-Filter der Sidebar wirkt auf dieser
-> Seite nicht — Matomo-Besuche haben erst ab der Buchung eine
-> Instituts-Zuordnung (Entscheidung Jan, 31.07.2026); Standort-Vergleiche
-> laufen über die Karte „Funnel-Vergleich" (`matomo_visits.standort`).
-> Neue CSV-Quellen: `funnel-timeseries`, `funnel-devices`, `funnel-pages`
-> (zusätzlich zu `funnel-steps`, `funnel-branches`, `funnel-sources`) — damit
-> ist jede Karte exportierbar. `funnel-branches` exportierte zuvor den rohen
-> Seiten-Pfad als Spalte „Besucher" (behoben). Die Berichte-Übersichtskachel
-> las noch das alte KPI-Objekt-Format und zeigte dauerhaft 0 (behoben).
 
 ### Datenfluss
 
@@ -276,3 +298,26 @@ Standort/Quelle, Parameter `segment=standort|source`), `timeseries`
 (Tageswerte aller vier Funnel-Stufen),
 `devices` (Mobil/Desktop/Tablet mit Quoten), `insights`
 (automatische Erkenntnisse), `sources`, `top-pages`.
+
+---
+
+## Chronik der Änderungen (neueste zuerst)
+
+Die größeren Umbauten dieser Seite mit Anlass und Wirkung. Neue Erkenntnisse werden **nicht** hier,
+sondern oben an der thematisch passenden Stelle eingearbeitet; die Chronik wächst nur um den Anlass.
+Bedienung: Nutzerhandbuch, [Berichte 15](https://hilfe.hub.glattt.com/berichte/15/).
+
+### Update 07/2026 — Statistik-Bauplan
+
+Die Seite folgt seitdem dem verbindlichen Bauplan — jede Analyse-Karte ist zweiseitig (Diagramm als
+Standard, Tabelle über das Karten-Register; Herkunft/Geräte/Top-Seiten zeigten vorher die Tabelle als
+Standard), mit Skeleton in Endhöhe, Fehlerzustand je Karte (`sectionError` + „Erneut laden") und
+Info-Panel. Alle Charts laufen über das `acquireChart`-Muster mit animierten Übergängen.
+**Standort-Segmente** kommen serverseitig in der konfigurierten Instituts-Reihenfolge
+(`SortsBranchIds`) und mit `branch_id` für die zentralen Institutsfarben (`BranchColorService`).
+Dabei dokumentiert: Der Standort-Filter der Sidebar wirkt auf dieser Seite **nicht** (Entscheidung
+Jan, 31.07.2026, siehe oben). Neue CSV-Quellen: `funnel-timeseries`, `funnel-devices`, `funnel-pages`
+(zusätzlich zu `funnel-steps`, `funnel-branches`, `funnel-sources`) — damit ist jede Karte
+exportierbar. `funnel-branches` exportierte zuvor den rohen Seiten-Pfad als Spalte „Besucher"
+(behoben). Die Berichte-Übersichtskachel las noch das alte KPI-Objekt-Format und zeigte dauerhaft 0
+(behoben).

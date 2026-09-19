@@ -1,56 +1,49 @@
 # Ladeverhalten der Statistikseiten
 
-Wie sich Berichtsseiten beim Öffnen und beim Filtern verhalten — und warum sie
-dabei ruhig stehen bleiben.
+Wie sich Berichtsseiten beim Öffnen und beim Filtern verhalten — und warum sie dabei ruhig stehen
+bleiben. Diese Seite beschreibt **Grundregel, Bausteine, Markup-Muster, Fallstricke, Mobil-Regeln,
+Messwerte und Tests**; die Bedienung der Berichte selbst steht im Nutzerhandbuch.
+
+!!! nutzerhandbuch "Bedienung: Berichte 0 – So funktionieren die Berichte"
+    [hilfe.hub.glattt.com/berichte/0/](https://hilfe.hub.glattt.com/berichte/0/) — Zeitraum und
+    Standort, die Kennzahlen-Zeile, **Diagramm oder Tabelle**, Export und Verlässlichkeit. Der
+    Vorgang „Diagramm oder Tabelle" beschreibt, was auf dem Bildschirm passiert, während eine Karte
+    lädt oder neu rechnet.
+
+    Angrenzend: [Grundlagen 4 – Auf dem Handy und Tablet](https://hilfe.hub.glattt.com/grundlagen/4/).
 
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
 
-### Was sich geändert hat
+**Worum es geht.** Statistikseiten laden ihre Analysen einzeln und gleichzeitig. Früher war jede
+Karte anfangs nur wenige Zentimeter hoch und wuchs sprunghaft, sobald ihre Zahlen eintrafen — bei
+einem Dutzend Analysen rutschte die Seite deshalb minutenlang unter dem Mauszeiger weg. Wer früh mit
+dem Lesen anfing, verlor die Stelle.
 
-Statistikseiten laden ihre Analysen einzeln und gleichzeitig. Früher war jede
-Karte anfangs nur wenige Zentimeter hoch und wuchs sprunghaft, sobald ihre Zahlen
-eintrafen — bei einem Dutzend Analysen rutschte die Seite deshalb minutenlang
-unter dem Mauszeiger weg. Wer früh mit dem Lesen anfing, verlor die Stelle.
+**Jetzt gilt: Beim Öffnen steht die Seite sofort so, wie sie am Ende aussieht.** Alle Karten sind von
+Anfang an an ihrer endgültigen Position und in ihrer endgültigen Höhe da, zeigen sofort Titel und
+Umschalter und im Körper einen grauen Platzhalter, der die spätere Darstellung nachzeichnet. Sobald
+die Daten eintreffen, wird der Platzhalter gegen den Inhalt ausgeblendet — ohne dass sich etwas
+verschiebt. Die Analysen laden weiterhin unabhängig voneinander: Was zuerst fertig ist, ist zuerst zu
+sehen; nur springt nichts mehr.
 
-Jetzt gilt: **Beim Öffnen steht die Seite sofort so, wie sie am Ende aussieht.**
+**Beim Filtern** (Standort, Zeitraum, Brutto/Netto) bleibt die alte Ansicht gedimmt stehen und wird
+erst mit der neuen Antwort ausgetauscht; die Karten behalten ihre Höhe.
 
-- Alle Karten sind von Anfang an da — an ihrer endgültigen Position und in ihrer
-  endgültigen Höhe.
-- Jede Karte zeigt sofort ihren Titel und ihre Umschalter, auch wenn die Zahlen
-  noch unterwegs sind.
-- Im Kartenkörper steht so lange ein grauer Platzhalter, der die spätere
-  Darstellung nachzeichnet (Diagramm, Kennzahlen-Zeile, Tabelle).
-- Sobald die Daten da sind, blendet die Karte den Platzhalter gegen den Inhalt
-  aus — **ohne** dass sich irgendetwas verschiebt.
+**Wenn eine Auswertung nicht lädt**, meldet **nur diese Karte** den Fehler — an Ort und Stelle, in
+derselben Größe, mit einem Knopf „Erneut laden"; alle anderen Analysen bleiben nutzbar, im Seitenkopf
+steht ein rotes Badge „Fehler". Gibt es für die aktuelle Auswahl schlicht keine Zahlen, steht das
+ebenfalls in der Karte („Keine Daten vorhanden") — auch hier ohne Größensprung. Seit 07/2026 gilt
+dasselbe für die Übersichtsseite **Berichte & Statistiken**: Alle zwölf Vorschau-Karten zeigen beim
+Laden graue Platzhalter in ihrer Endhöhe statt der früheren Spinner.
 
-Die Analysen laden weiterhin unabhängig voneinander: Was zuerst fertig ist, ist
-zuerst zu sehen. Nur springt eben nichts mehr.
+**Wo was erledigt wird:**
 
-### Beim Filtern
-
-Wird ein Filter geändert (Standort, Zeitraum, Brutto/Netto), bleibt die alte
-Ansicht gedimmt stehen und wird erst mit der neuen Antwort ausgetauscht. Die
-Karten behalten dabei ihre Höhe.
-
-### Wenn eine Auswertung nicht lädt
-
-Fällt eine einzelne Auswertung aus, meldet **nur diese Karte** den Fehler — an
-Ort und Stelle, in derselben Größe, mit einem Knopf **„Erneut laden"**. Alle
-anderen Analysen der Seite bleiben nutzbar. Oben im Seitenkopf zeigt ein rotes
-Badge „Fehler", dass etwas fehlt.
-
-Gibt es für die aktuelle Auswahl schlicht keine Zahlen, steht das ebenfalls in
-der Karte („Keine Daten vorhanden") — auch hier ohne Größensprung.
-
-### Auch die Berichte-Übersichtsseite
-
-Seit 07/2026 gilt dasselbe für die Übersichtsseite **Berichte & Statistiken**:
-Alle zwölf Vorschau-Karten zeigen beim Laden graue Platzhalter in ihrer Endhöhe
-(Kennzahlen-Kacheln, Mini-Charts der Verkaufsstatistik, Standort-Tabelle) statt
-der früheren Lade-Spinner — die Kartenliste steht damit von der ersten Sekunde
-an ruhig.
+| Vorgang | Anleitung |
+|---|---|
+| Zeitraum und Standort, Kennzahlen-Zeile, **Diagramm oder Tabelle**, Export | Berichte 0 |
+| Berichte auf Handy und Tablet bedienen | Grundlagen 4 |
 
 ---
 

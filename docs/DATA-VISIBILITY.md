@@ -1,10 +1,46 @@
 # Datensichtbarkeit (zeilenscharfe Rechte)
 
-Steuert, **welche Datensätze** ein Benutzer in mitarbeiterbezogenen Reports sieht — nicht nur, welche Reports er öffnen darf. Grundlage für die Tagesmessungen (BGs/CR/KPZ je Mitarbeiter) und die HR-KPIs.
+Steuert, **welche Datensätze** ein Benutzer in mitarbeiterbezogenen Reports sieht — nicht nur,
+welche Reports er öffnen darf. Grundlage für die Tagesmessungen (BGs/CR/KPZ je Mitarbeiter), die
+HR-KPIs, die Standort-Sicht der Firmenverträge und die Empfängerprüfung interner
+Benachrichtigungen. Diese Seite beschreibt **Stufen, Regeln, Architektur und das Anbinden neuer
+Reports**; die Bedienung im Admin-Backend steht im Nutzerhandbuch.
 
-## Für Endanwender
+!!! nutzerhandbuch "Bedienung: Admin 1 – Benutzer und Rollen"
+    [hilfe.hub.glattt.com/admin/1/](https://hilfe.hub.glattt.com/admin/1/) — Rollen und Rechte,
+    was Rechte bewirken, Benutzer verwalten (dort auch „Erlaubte Institute" und Stamm-Institut).
+    Die drei **Sichtstufen der Datensichtbarkeit** sind im Nutzerhandbuch noch nicht erklärt — sie
+    folgen in Admin 1.
 
-### Die drei Stufen
+    Angrenzend: [Berichte 9 – Mitarbeiterperformance](https://hilfe.hub.glattt.com/berichte/9/)
+    (der Bericht, auf den die Stufen wirken).
+
+## Für Anwender — Überblick
+
+**Was das Regelwerk leistet.** Ein Recht wie „Bericht: Mitarbeiterperformance" öffnet die Seite —
+die Datensichtbarkeit legt fest, **wessen Zahlen** darauf erscheinen: nur die eigenen, die des
+Teams an den erlaubten Instituten oder alle. Die Stufe hängt an der Rolle (Admin-Backend → Rollen →
+Datensichtbarkeit) und ist eine bewusste Einschränkung: Ohne Auswahl gilt „alle Daten", bei mehreren
+Rollen gewinnt die weiteste Stufe. Die Einschränkung greift serverseitig, also auch für direkt
+aufgerufene Endpunkte und CSV-Exporte — eine fremde Mitarbeiterin lässt sich nicht durch Umbauen
+der URL sichtbar machen.
+
+**Die drei Stufen:** *Nur eigene Daten* (die Benutzerin sieht ausschließlich ihre eigenen Zahlen —
+dazu muss ihr Hub-Konto mit ihren Phorest-Staff-IDs verknüpft sein), *Eigenes Team am Standort*
+(alle Mitarbeiterinnen der erlaubten Institute, ersatzweise des Stamm-Instituts) und *Alle Daten*.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Rolle öffnen, Rechte setzen, Wirkung verstehen | Admin 1 |
+| Sichtstufe der Rolle wählen | folgt in Admin 1 |
+| Erlaubte Institute, Stamm-Institut und Phorest-Verknüpfung am Benutzer pflegen | Admin 1 (Benutzer verwalten) |
+| Mitarbeiterperformance lesen und exportieren | Berichte 9 |
+
+## Für Entwickler
+
+### Fachregeln
 
 Im Admin-Backend unter **Rollen → Berechtigungen → Datensichtbarkeit** stehen drei Stufen zur Auswahl:
 
@@ -14,15 +50,22 @@ Im Admin-Backend unter **Rollen → Berechtigungen → Datensichtbarkeit** stehe
 | Eigenes Team am Standort | `data_scope_branch` | Der Benutzer sieht alle Mitarbeiter seiner **erlaubten Institute** (Benutzer-Einstellung „Erlaubte Institute"; ist dort nichts gewählt, gilt das Stamm-Institut) |
 | Alle Daten | `data_scope_all` | Keine Einschränkung |
 
-### Regeln
-
-- **Ohne Auswahl gilt „alle Daten"** — bestehende Rollen verhalten sich unverändert. Einschränkung ist ein bewusster Opt-in pro Rolle.
+- **Ohne Auswahl gilt „alle Daten"** — bestehende Rollen verhalten sich unverändert. Einschränkung ist
+  ein bewusster Opt-in pro Rolle. (Migration `2026_08_03_140000` hat allen Rollen ohne Stufe
+  `data_scope_branch` nachgetragen — Hintergrund in `BERECHTIGUNGSSYSTEM.md`, „Datensichtbarkeit:
+  Fallback ohne vergebene Stufe ist 'alle Daten'". Beim Anlegen einer neuen Rolle immer eine Stufe
+  setzen.)
 - **Bei mehreren Rollen gewinnt die weiteste Stufe** (all > branch > own).
-- Die Einschränkung greift **serverseitig**: Auch direkt aufgerufene JSON-Endpoints und CSV-Exporte liefern nur die erlaubten Daten. Ein manuell angefragter fremder Standort ergibt ein leeres Ergebnis, eine fremde Mitarbeiter-Detailansicht einen Berechtigungsfehler.
-- Benutzer mit „nur eigene Daten" **ohne Phorest-Zuordnung** (keine Staff-IDs am Benutzer hinterlegt) sehen keine Daten — es gibt bewusst keinen stillen Rückfall auf mehr Sichtbarkeit. In dem Fall im Admin-Backend die Phorest-Verknüpfung des Benutzers pflegen.
-- Betroffen ist aktuell der Report **Mitarbeiterperformance** (Seite + CSV-Export). Rein aggregierte Berichte (z.B. Verkaufsstatistik) sind unverändert.
-
-## Für Entwickler
+- Die Einschränkung greift **serverseitig**: Auch direkt aufgerufene JSON-Endpoints und CSV-Exporte
+  liefern nur die erlaubten Daten. Ein manuell angefragter fremder Standort ergibt ein leeres Ergebnis,
+  eine fremde Mitarbeiter-Detailansicht einen Berechtigungsfehler.
+- Benutzer mit „nur eigene Daten" **ohne Phorest-Zuordnung** (keine Staff-IDs am Benutzer hinterlegt)
+  sehen keine Daten — es gibt bewusst keinen stillen Rückfall auf mehr Sichtbarkeit. In dem Fall im
+  Admin-Backend die Phorest-Verknüpfung des Benutzers pflegen.
+- Betroffen ist der Report **Mitarbeiterperformance** (Seite + CSV-Export); außerdem nutzen die
+  Firmenverträge (`CompanyContractController`), die Zufriedenheits-Arbeitsliste (Own zählt dort als
+  Standort-Sicht) und der Hub-Provider der Benachrichtigungen (`NotificationRecipientResolver`)
+  `dataScope()`. Rein aggregierte Berichte (z.B. Verkaufsstatistik) sind unverändert.
 
 ### Architektur
 

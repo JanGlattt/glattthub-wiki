@@ -1,21 +1,109 @@
 # Verträge & SEPA-Lastschriften
 
-> Vollständige Dokumentation für das Vertragsmodul mit GoCardless-Integration
+Das Vertragsmodul verwaltet die Behandlungsverträge der glattt-Pakete: Vertragsanlage aus dem
+unterschriebenen Formular, Preislisten mit Zahlungsmodus, Ratenplan in Cents, SEPA-Lastschriften
+über GoCardless (seit 07/2026 jede Rate ein Einzelzahlung), Mandate je Kundin, Korrekturen
+(Nachtragen, Verbuchen, Rücklastschriften), Pausen, Gutschein- und Werber-Verrechnung sowie der
+Phorest-Kauf der Abos. Diese Seite beschreibt **Absicht, Datenmodell, Services, Endpunkte und
+Fallstricke**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
-## Update 07.09.2026 — Zahlungsmodus je Preisliste: „1. Rate vor Ort" oder „alle Raten per SEPA"
+!!! nutzerhandbuch "Bedienung: Serie „Verträge" 1–8 im Nutzerhandbuch"
+    [Verträge 1 – Die Vertragsliste](https://hilfe.hub.glattt.com/vertraege/1/) ·
+    [2 – Der Vertrag im Detail](https://hilfe.hub.glattt.com/vertraege/2/) ·
+    [3 – Den Ratenplan lesen](https://hilfe.hub.glattt.com/vertraege/3/) ·
+    [4 – Zahlungen nachtragen und korrigieren](https://hilfe.hub.glattt.com/vertraege/4/) ·
+    [5 – SEPA-Einzug und Rücklastschrift](https://hilfe.hub.glattt.com/vertraege/5/) ·
+    [6 – Laufzeit und Raten ändern](https://hilfe.hub.glattt.com/vertraege/6/) ·
+    [7 – Mandat und Bankverbindung](https://hilfe.hub.glattt.com/vertraege/7/) ·
+    [8 – Import-Probleme und Werber](https://hilfe.hub.glattt.com/vertraege/8/)
 
-Bis dahin galt ausnahmslos: Die 1. Rate wird bei der 1. Sitzung vor Ort gezahlt,
-die weiteren Raten laufen per SEPA. Jetzt legt **die Preisliste** fest, welcher
-Modus für Verträge nach ihr gilt (Entscheidung Jan, 07.09.2026):
+    Angrenzend: [Verkauf 1 – Preislisten pflegen](https://hilfe.hub.glattt.com/verkauf/1/),
+    [Terminansicht 3 – Behandlungsvertrag abschließen](https://hilfe.hub.glattt.com/terminansicht/3/),
+    [Terminansicht 4 – SEPA-Mandat einrichten](https://hilfe.hub.glattt.com/terminansicht/4/),
+    Serien [Widerrufe](https://hilfe.hub.glattt.com/widerrufe/) und [Forderungen](https://hilfe.hub.glattt.com/forderungen/).
+
+## Inhaltsverzeichnis
+
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Zahlungsmodus je Preisliste](#zahlungsmodus-je-preisliste-installment_mode)
+    - [Status-Modell](#status-modell)
+    - [Architektur](#architektur)
+    - [Datenmodell](#datenmodell)
+    - [Vor-Ort-Rate: Herleitung und Zahlungs-Evidenz](#vor-ort-rate-herleitung-und-zahlungs-evidenz)
+    - [GoCardless Integration](#gocardless-integration)
+    - [Services & Jobs](#services-jobs)
+    - [Webhooks](#webhooks)
+    - [Cloud Deployment](#cloud-deployment)
+    - [API-Referenz](#api-referenz)
+    - [Migration von ContractMandate → ClientMandate](#migration-von-contractmandate-clientmandate)
+    - [Troubleshooting](#troubleshooting)
+- [Chronik der Änderungen](#chronik-der-anderungen-neueste-zuerst) — die Update-Blöcke seit 04/2026, neueste zuerst
+- [Changelog](#changelog)
+
+---
+
+## Für Anwender — Überblick
+
+**Was das Modul leistet.** Ein Vertrag entsteht mit der Unterschrift unter dem Behandlungsvertrag
+im Termin (oder über die Institutsseite bzw. den Altimport) und führt Paket, Zonen, Preisliste,
+Zahlungsart und Ratenplan. Bei Ratenzahlung gehört dazu ein SEPA-Mandat und ein Zahlungsplan bei
+GoCardless; das Büro sieht jede Rate mit ihrem Zustand, kann Zahlungen nachtragen oder verbuchen,
+Rücklastschriften ausgleichen oder anhängen, Laufzeit und Raten ändern, pausieren, Gutscheine und
+Werber verrechnen und Bankverbindung oder Mandat pflegen.
+
+**Grundsätze, die überall gelten:**
+
+- **Ein Mandat je Kundin, beliebig viele Verträge.** Bankdaten werden einmal erfasst; jeder
+  weitere Vertrag hängt sich an das aktive Mandat und bekommt seinen eigenen Zahlungsplan.
+- **Der Zahlungsmodus kommt aus der Preisliste:** „1. Rate vor Ort" (Standard) oder „alle Raten
+  per SEPA" — festgelegt bei der Vertragsanlage, später unveränderlich.
+- **Jede Rate ist ein eigener Einzug** (seit 07/2026). Änderungen am Plan sind nur an Raten möglich,
+  die noch nicht eingereicht sind — **„Eingereicht" ist die Grenze.**
+- **Geld fließt nur mit Beleg.** Eine bezahlte Rate braucht Zahlungs-Evidenz (Status *Gezahlt* oder
+  gesetztes Zahlungsdatum); ein Platzhalter im Plan beweist nichts.
+- **Alles Schreibende landet im Verlauf** des Vertrags (Wer, wann, was, Begründung).
+
+**Zustände eines Vertrags:** *Entwurf* (Vertrag da, SEPA fehlt) → *Aktiv* (Plan läuft) → *Abgeschlossen*
+(alles bezahlt) oder *Widerruf*. Direktzahler werden abgeschlossen, sobald Phorest eine bezahlte
+Sitzung verbucht; SEPA-Verträge, sobald die letzte Rate ausgezahlt ist. Die vollständigen
+Tabellen stehen unten im [Status-Modell](#status-modell).
+
+**Wo was erledigt wird** — die Anleitung nennt Felder, Folgewirkungen und die gefährlichen Knöpfe:
+
+| Vorgang | Anleitung |
+|---|---|
+| Vertrag finden, filtern, Zeile lesen | Verträge 1 |
+| Kopf, Banner, Reiter, Vertragsdaten ändern (mit Begründung) | Verträge 2 |
+| Ratenplan lesen, alle Raten-Zustände, Auskunft geben | Verträge 3 |
+| Gezahlte Rate nachtragen, manuelle Zahlung verbuchen, erste Rate bestätigen, geplatzte Rate ausgleichen | Verträge 4 |
+| Betrag per SEPA einziehen (Ablösung), Rücklastschrift anhängen, Abgleich, Legacy-Einzüge | Verträge 5 |
+| Offene Raten anpassen, Laufzeit verlängern, pausieren, fortsetzen, Gutschein verrechnen | Verträge 6 |
+| Mandat anlegen, Bankverbindung ändern, Mandat-Informationen | Verträge 7 |
+| Fehlgeschlagene Imports, Werber hinterlegen | Verträge 8 |
+| Preislisten, Rabattstufen, Zahlungsmodus | Verkauf 1 |
+| Abschluss im Termin (Behandlungsvertrag, SEPA-Mandat) | Terminansicht 3–4 |
+| Widerruf, Vertragsänderung im Fernabsatz | Serie Widerrufe |
+| Mahnprozess, Ratenzahlungsvereinbarung | Serie Forderungen |
+
+---
+
+# Für Entwickler
+
+## Zahlungsmodus je Preisliste (`installment_mode`)
+
+Bis zum 07.09.2026 galt ausnahmslos: Die 1. Rate wird bei der 1. Sitzung vor Ort gezahlt, die
+weiteren Raten laufen per SEPA. Seitdem legt **die Preisliste** fest, welcher Modus für Verträge
+nach ihr gilt (Entscheidung Jan, 07.09.2026):
 
 | Modus | `installment_mode` | Bedeutung |
 |---|---|---|
 | **1. Rate vor Ort** (Standard) | `first_on_site` | Rate 1 wird bei der 1. Sitzung vor Ort gezahlt, Raten 2–N per SEPA ab dem ersten Abbuchungsdatum — bisheriges Verhalten |
 | **Alle Raten per SEPA** | `all_sepa` | Keine Vor-Ort-Rate: Alle N Raten werden ab dem ersten Abbuchungsdatum per Lastschrift eingezogen |
 
-**Für Anwender**
+**Verhalten**
 
-- Einstellen unter *Verträge → Preise → Bearbeiten → Grundeinstellungen → Ratenzahlung*.
+- Einstellbar unter *Verträge → Preise → Bearbeiten → Grundeinstellungen → Ratenzahlung*.
   Das Feld ist **preisrelevant** und auf gesperrten Fassungen schreibgeschützt —
   Änderung nur über „Duplizieren" mit neuem Gültig-ab. Karten mit „alle Raten per
   SEPA" tragen ein Badge.
@@ -32,7 +120,7 @@ Modus für Verträge nach ihr gilt (Entscheidung Jan, 07.09.2026):
   Formular-Zusammenfassung („Zahlung: Alle Raten per SEPA-Lastschrift") und die
   Vertragsdetailseite (keine Vor-Ort-Zeile, kein „Zahlung bestätigen") folgen dem Modus.
 
-**Für Entwickler**
+**Umsetzung**
 
 - `PriceList::INSTALLMENT_MODE_FIRST_ON_SITE` / `::INSTALLMENT_MODE_ALL_SEPA`,
   `PriceList::firstInstallmentOnSite()`, `installmentModeLabel()`. Validierung, Sperre
@@ -57,1684 +145,17 @@ Modus für Verträge nach ihr gilt (Entscheidung Jan, 07.09.2026):
 - Tests: `tests/Feature/PriceListInstallmentModeTest.php`,
   `tests/Feature/AllSepaInstallmentPlanTest.php`.
 
-## Update 21.08.2026 — „Gezahlte Rate nachtragen" (fehlende Zeile dokumentieren)
-
-Asana-Bug „Zahlung pausierte Lastschrift" (Fall Roppel BS000955): Eine bei der
-unbefristeten Pausierung entfallene Rate wurde vom Kunden trotzdem bezahlt —
-im Zahlungsplan gab es aber keine Zeile mehr, auf die sich die Zahlung buchen
-ließ, und „Zahlung verbuchen" hätte fälschlich die (korrekten) offenen Raten
-verrechnet.
-
-### Für Endanwender (21.08.2026)
-
-Im Aktionen-Menü des Zahlungen-Tabs gibt es **„Gezahlte Rate nachtragen"**
-(sichtbar, solange der Vertrag einen offenen Restbetrag hat): Betrag,
-ursprüngliche Fälligkeit, Zahlungseingang, Zahlungsart, optional Referenz und
-Notiz. Die Zahlung wird als **eigene bezahlte Zeile** dokumentiert — offene
-Raten bleiben unangetastet, es wird **kein GoCardless-Einzug** ausgelöst.
-Gedacht für Lücken in der Historie: die bei einer Pausierung entfallene Rate
-oder ein fehlender Alt-Einzug aus der Star-Money-Ära. Ist der Restbetrag
-danach 0, wird der Vertrag automatisch abgeschlossen.
-
-### Für Entwickler (21.08.2026)
-
-`ContractController::recordBackfilledPayment()` (`POST
-/hub/contracts/{contract}/payments/backfill`): legt eine `paid`-Zeile mit
-Ratennummer max+1 an (zählt damit in `documentedSepaRatesCents()`, der
-rechnerische Altsystem-Block schrumpft entsprechend), Obergrenze
-`remaining_amount_cents`, `ContractChange` mit `field_name =
-payment_backfilled`. Kein FM-Sync nötig — die Zeile hat keinen
-RLS-Gebühr-Anker, `SettlementCaseSyncService::caseFor()` findet sie nie.
-UI: `openBackfillModal()`/`saveBackfill()` in `paymentsTab`
-(`public/js/contract-detail.js`), Modal in `tab-payments.blade.php`.
-Verwandter Daten-Nachtrag: Migration
-`2026_08_21_150000_settle_oliinyk_paid_bounced_rate` zieht bei OS003246 die
-per Überweisung gezahlte, im Forderungsmanagement bereits verbuchte Rate vom
-03.08.2026 am Vertrag nach (bewusst ohne Sync — der geschlossene Fall führt
-die Zahlung schon, eine Spiegelung würde doppelt zählen).
-Tests: `tests/Feature/ContractPaymentBackfillTest.php`.
-
-## Update 19.08.2026 (abends) — SEPA-Mail-Anrede repariert („Hallo Kunde"), Frankreich-IBAN-Hinweis, kaputte Blade-@php-Paarung
-
-Asana-Bug `1217629981905180`: Eine Aktivierungs-Mail grüßte mit **„Hallo Kunde,"**
-statt mit dem Kundennamen, obwohl die E-Mail-Adresse korrekt aufgelöst wurde.
-
-### Für Endanwender (19.08.2026)
-
-- SEPA-Mails (Onboarding, Aktivierung, Planänderung, Bankwechsel, Kündigung)
-  grüßen wieder zuverlässig mit dem Kundennamen. Ist ausnahmsweise wirklich kein
-  Name auflösbar, steht dort neutral „Hallo," — nie mehr „Hallo Kunde".
-- Onboarding- und Aktivierungs-Mail erklären jetzt in einer Info-Box, dass
-  GoCardless den Betrag über ein **französisches Konto einzieht** (FR-IBAN auf
-  dem Kontoauszug) — das hatte wiederholt zu verunsicherten Rückfragen geführt.
-
-### Für Entwickler (19.08.2026)
-
-**Ursache 1 — Cache-Key-Kollision:** Drei Stellen schrieben `client_data_{id}`
-in unterschiedlichen Formaten (SepaEmailService: `fullName`/`gender`;
-`ResolvesClientData`-Trait und `ContractController::getClientData()`: nur
-`name`). Cachte zuerst eine Listen-/Detailseite (z.B. unmittelbar vor „Zahlung
-verbuchen"), fand der Mail-Versand kein `fullName` → Fallback „Kunde", und
-`gender` fehlte → neutrale Anrede. Fix: **ein** zentraler
-`app/Services/ClientDataResolver.php` (resolve/resolveBulk, einheitliche
-Superset-Struktur `clientId/externalId/firstName/lastName/name/fullName/email/
-mobile/gender`, 300s-Cache, Fehlschläge 60s mit `failed`-Flag). Alle drei
-bisherigen Schreiber delegieren dorthin; Einträge in fremdem/altem Format werden
-erkannt und neu geladen. `resolve()` ignoriert gecachte Fehlschläge (Mail-Versand
-darf nicht an einem gescheiterten Listen-Aufruf hängen). `fullName` ist jetzt
-`null` statt Magic-String, wenn unbekannt; die Mailables akzeptieren
-`?string $recipientName`, die gemeinsame Anrede liegt in
-`resources/views/emails/sepa/_greeting.blade.php`.
-
-**Ursache 2 — Blade-@php-Paarung (separater, schwerer Fund):** Blades
-Raw-Block-Regex paart jedes `@php` lazy mit dem **nächsten** `@endphp` im
-Dokument. Der Schriftarten-Wechsler (22.07.2026) hatte in die Mail-Templates ein
-Inline-`@php($appFontFamily = …)` gesetzt — in Dateien mit einem späteren
-`@php … @endphp`-Block verschluckte das alles dazwischen als rohen PHP-Block.
-**Betroffen und seitdem zur Laufzeit kaputt:** `emails/sepa/onboarding`,
-`emails/sepa/mandate-cancelled`, `pdf/year-end-report`,
-`filament/pages/bert-dashboard`. Fix: Inline-Form dort in Block-Form
-umgeschrieben; `tests/Unit/BladePhpBlockConventionTest.php` kompiliert alle
-Views und bricht, sobald irgendwo wieder beide Formen kollidieren.
-
-Frankreich-IBAN-Hinweis: `resources/views/emails/sepa/_french-iban-hint.blade.php`,
-eingebunden in Onboarding + Aktivierung vor der Gläubiger-Info.
-
-Tests: `ClientDataResolverTest` (5), `BladePhpBlockConventionTest`,
-`SepaEmailServiceTest` (+2 Regression: fremdes Cache-Format → Name wird neu
-geladen; kein Name auflösbar → neutrale Anrede, nie „Hallo Kunde"),
-`SepaMailablesTest` (+1: FR-IBAN-Hinweis in beiden Mails).
-
-## Update 19.08.2026 — „Zahlung verbuchen" stellt Alt-Daueraufträge auf Einzelzahlungen um
-
-### Für Endanwender (19.08.2026)
-
-**„Manuelle Zahlung verbuchen" funktioniert jetzt auch bei Verträgen mit altem
-GoCardless-Dauerauftrag.** Bisher blockte das Modal mit „Verbuchung ist nur für
-Einzelzahlungs-Pläne möglich" — Vorauszahlungen per Überweisung ließen sich bei
-Altverträgen nicht eintragen (gemeldet 17.08.2026, H004627: Kunde hatte zwei
-Raten vorab überwiesen).
-
-Jetzt passiert beim Verbuchen automatisch die Umstellung aufs aktuelle Modell:
-
-- Der **Dauerauftrag wird bei GoCardless gekündigt** — er würde die extern
-  bezahlten Raten sonst weiter einziehen.
-- Die **gedeckten Raten** werden wie gewohnt als extern bezahlt markiert, eine
-  teilweise gedeckte Rate wird reduziert.
-- Die **verbleibenden offenen Raten** werden als GoCardless-Einzelzahlungen neu
-  angelegt — mit **denselben Ratennummern, Terminen und Beträgen** (gleiches
-  Muster wie Pause und Bankwechsel). Der Vertrag läuft ab dann dauerhaft auf dem
-  Einzelzahlungs-Modell (Standard seit 07/2026).
-
-Das Modal kündigt die Umstellung mit einem Warnhinweis an, die Erfolgsmeldung
-bestätigt sie. Raten, die der Dauerauftrag bereits als GC-Zahlung angelegt hat,
-laufen unverändert durch.
-
-### Für Entwickler (19.08.2026)
-
-- `GoCardlessPaymentPlanService::cancelRemotePlan()` — neuer Baustein, kündigt
-  **nur** den GC-Plan und löst die Verknüpfung am Vertrag, lokale Raten bleiben
-  stehen (idempotent: ohne verknüpften Plan gilt die Kündigung als erledigt,
-  ein Wiederholversuch nach Teilfehler läuft durch). `cancelPaymentPlan()`
-  nutzt ihn jetzt intern und storniert weiterhin zusätzlich die lokalen Raten.
-- `ContractController::recordExternalPayments()`: statt 422 bei
-  `gocardless_subscription_id` → innerhalb der Transaktion erst
-  `cancelRemotePlan()`, nach der Verrechnung werden die verbleibenden offenen
-  Raten **ohne** GC-Verknüpfung soft-deleted und via
-  `recreateIndividualPayments()` mit identischen Nummern/Terminen/Beträgen
-  GC-verknüpft neu angelegt (eine reduzierte Teilrate behält ihren reduzierten
-  Betrag). Guard: Dauerauftrag ohne Mandat mit `gocardless_mandate_id` → 422.
-- Warnhinweis im Modal: `record-payment-modal.blade.php` (server-gerendert über
-  `$contract->gocardless_subscription_id`).
-- Tests: 4 neue Fälle in `tests/Feature/ContractExternalPaymentTest.php`
-  (Umstellung, reduzierte Teilrate, GC-Fehler bricht ab, fehlendes Mandat);
-  der alte Ablehnungs-Test ist ersetzt.
-
-## Update 16.08.2026 — Reload über alle GC-Customer der Kundin + Kundennummer-Fallback beim Verbinden
-
-### Für Endanwender (16.08.2026)
-
-Zwei Sackgassen aus dem Alt-Import sind behoben:
-
-- **Kundin doppelt in GoCardless** (z. B. nach Vertragswechsel je Mandat ein
-  eigener Customer, Fall BS000962): Der 🔄-Abgleich im Zahlungen-Tab zieht jetzt
-  die Zahlungen **aller** Mandate/Customer der Kundin zusammen. Vorher brach er
-  mit „GoCardless kennt N bereits eingezogene Rate(n) nicht" ab, weil die am
-  alten Customer eingezogenen Raten bei der Abfrage des neuen fehlten.
-- **„GoCardless verbinden" findet Alt-Import-Kundinnen** (Fall HB001200): Wenn
-  weder `phorest_client_id` (Kundin in Phorest neu angelegt) noch die
-  Mandatsreferenz (GoCardless hat eine eigene vergeben, z. B. `GYBMGAF`)
-  treffen, sucht der Hub jetzt zusätzlich über die **Kundennummer** im
-  Customer-Metadatum (`kundennummer`/`custom_number`). Der Massen-Sync auf der
-  Vertragsliste nutzt denselben Fallback.
-
-### Für Entwickler (16.08.2026)
-
-- `ContractPaymentRebuildService::rebuild()`: sammelt `gocardless_customer_id`
-  aller `client_mandates` der Kundin (`client_id`, inkl. soft-deleted) und lädt
-  `/payments` je Customer (Dedupe über die Payment-ID). Geschwister-Verträge
-  für die Zuordnungs-/Ambiguitätslogik sind jetzt alle Verträge derselben
-  Kundin plus Verträge mit Mandat an einem der abgefragten Customer.
-- `GoCardlessMandateService::findActiveMandateByCustomerNumber()`: Customer-
-  Metadatum `kundennummer` oder `custom_number` (Alt-Import) exakt gegen die
-  Kundennummer des Vertrags; gemeinsame Mandats-Auswahl mit der
-  phorest_client_id-Suche in `pickActiveMandateFromCustomers()` extrahiert.
-- `Contract::customerNumber()`: `legacy_kundennummer`, sonst Suffix der
-  Vertragsnummer nach dem letzten `-`; nur plausible Nummern
-  (`/^[A-Za-z]{1,3}\d+$/`), sonst `null`.
-- Eingebaut als dritter Fallback in `ContractController::checkGoCardlessForMandate`
-  und `RunGoCardlessContractSyncJob`.
-- Tests: `RebuildReloadSafetyTest::test_reload_zieht_zahlungen_aller_customer_der_kundin`,
-  `GoCardlessCustomerNumberLookupTest`, `ContractCustomerNumberTest`.
-
-## Update 15.08.2026 — SEPA-Mandat reaktivieren (Widerruf zurückgezogen)
-
-### Für Endanwender (15.08.2026)
-
-Wird ein Mandat **von uns** storniert (typisch: im Widerruf-Prozess über die
-Widerruf-Detailseite) und zieht der Kunde den Widerruf später zurück, gibt es im
-**SEPA-Tab** des Vertrags jetzt die Box **„SEPA-Mandat reaktivieren"** (sichtbar
-bei Mandat-Status „Storniert"):
-
-- GoCardless setzt das Mandat wieder ein (kein neues Mandats-Formular nötig).
-- Der beim Storno automatisch gesicherte **Restplan wird 1:1 als Einzelzahlungen
-  neu angelegt** — Beträge, Ratennummern und Termine bleiben erhalten; Termine in
-  der Vergangenheit rutschen auf das früheste mögliche Einzugsdatum.
-- **Grenze:** Von Bank oder Kunde entzogene sowie abgelaufene Mandate lehnt
-  GoCardless ab — dann wie bisher „GoCardless neu verknüpfen" (neues Mandat).
-
-**Neuanlage nach Mandatsentzug (Fix 21.08.2026, Fall BS000714):** Nach
-„GoCardless neu verknüpfen" schlug „Mandat und Zahlungsplan anlegen" mit
-*„Validation failed (reference: matches the reference used by another
-mandate)"* fehl — GoCardless verlangt je Creditor **eindeutige
-Mandatsreferenzen**, auch gegenüber dem alten, entzogenen Mandat, und der Hub
-schickte die gespeicherte Referenz unverändert erneut.
-`GoCardlessMandateService::createGoCardlessMandate()` erkennt genau diesen
-Validierungsfehler jetzt und versucht es automatisch mit Suffix
-(`…-2`, `…-3`, bis `-6`) erneut; die tatsächlich verwendete Referenz wird am
-`ClientMandate` gespeichert und steht so auch in Einzugs-Metadaten und
-SEPA-Tab. Andere Fehler werden unverändert durchgereicht (kein Retry). Nur im
-Live-Betrieb relevant — die Sandbox vergibt eigene Referenzen.
-Tests: `tests/Feature/GoCardlessMandateReferenceRetryTest.php`.
-
-### Für Entwickler (15.08.2026)
-
-`POST /hub/contracts/{id}/gocardless-reinstate-mandate`
-(`ContractController::reinstateGoCardlessMandate`, Recht `manage_gocardless`):
-`GoCardlessApiService::reinstateMandate()` → lokaler Mandats-Status aus der
-Antwort (i.d.R. `submitted`, Webhook setzt später `active`) → Restplan aus dem
-jüngsten `ContractChange` mit `field_name = 'sepa_cancel_restore_plan'` über
-`GoCardlessPaymentPlanService::recreateIndividualPayments()`. Der Snapshot
-entsteht in `cancelGoCardlessMandate()` (`snapshotOpenRatesForReinstate()`),
-bevor der Webhook die offenen Raten storniert. Hat der Vertrag noch offene
-GC-Einzüge oder fehlt ein Snapshot, wird nichts angelegt und die Antwort sagt
-das explizit. Ein zugehöriger Widerruf-Fall bekommt `sepa_cancelled = false`
-zurück plus Verlaufs-Ereignis `sepa_reinstated`.
-Tests: `tests/Feature/CancellationSepaActionTest.php`.
-
-## Update 13.08.2026 — Direktzahler-Verbuchung + Ausweg aus fehlgeschlagenem SEPA-Mandat
-
-Zwei gemeldete Fälle (H004872, BS001318) deckten drei Lücken auf.
-
-### Für Endanwender (13.08.2026)
-
-- **Direktzahler: „Zahlung verbuchen" gibt es jetzt auch hier.** Zahlt ein
-  Direktzahler-Kunde nicht vor Ort, sondern per Überweisung, lässt sich der
-  Eingang im Zahlungen-Tab über den Button **„Zahlung verbuchen"** erfassen
-  (Betrag, Eingangsdatum, Zahlungsart, Referenz). Verbuchte Zahlungen erscheinen
-  in der Karte „Einmalzahlung" mit offenem Restbetrag; ist der gesamte
-  Vertragswert beglichen, wird der Vertrag automatisch abgeschlossen.
-- **Fehlgeschlagenes SEPA-Mandat ist keine Sackgasse mehr.** Steht ein Mandat
-  auf „Fehlgeschlagen" (z.B. weil die IBAN falsch aufgenommen war), zeigt der
-  SEPA-Tab jetzt den Fehlergrund und dieselben Aktionen wie bei „Ausstehend":
-  Bankverbindung ändern → „In GoCardless suchen" → „Mandat und Zahlungsplan
-  anlegen". Nach erfolgreicher Anlage springt der Status auf „Aktiv".
-- **Statusänderung über das Stift-Symbol funktioniert wieder** — vorher wurde
-  eine Statusänderung dort stillschweigend verworfen.
-- **Abweichender Kontoinhaber wird beim Bankwechsel gespeichert:** Wer im
-  Modal „Bankverbindung ändern" einen abweichenden Zahler mit E-Mail/Adresse
-  erfasst, findet diese Angaben jetzt am Mandat wieder (vorher gingen sie
-  verloren, der GoCardless-Kunde wurde mit den Daten der Vertragsnehmerin
-  angelegt).
-
-### Für Entwickler (13.08.2026)
-
-- **`getPayments()` ohne Mandat** (Direktzahler): liefert jetzt verbuchte
-  Zahlungen (Zeilen mit `installment_number > 1`), `can_record_without_plan`,
-  `remaining_cents` und `referral_block`; `loadPayments()` in
-  `contract-detail.js` lädt entsprechend auch ohne `mandateId`.
-  `recordStandaloneExternalPayment()` vermerkt bei Direktzahlern
-  „Direktzahler-Zahlung verbucht" statt „Ohne offenen Restplan verbucht".
-- **Modal „Manuelle Zahlung verbuchen"** liegt jetzt als eigenes Partial
-  `hub/contracts/partials/record-payment-modal.blade.php` und wird für SEPA-
-  UND Direktzahler-Verträge eingebunden (Texte per `$isDirectPayer`).
-- **Statuslücke geschlossen:** `tab-sepa.blade.php` rendert `failed`/`expired`
-  über den `pending`-Zweig (plus Danger-/Warning-Alert mit
-  `$mandate->gocardless_error`). `createGoCardless()` akzeptiert
-  `failed`/`expired` und hebt sie nach erfolgreichem Sync auf `active`
-  (`gocardless_error` wird geleert). `checkGoCardlessForMandate()` heilt den
-  Zustand „GC-IDs vorhanden, lokal pending/failed/expired" beim
-  `already_linked`-Early-Return auf `active` — vorher Endlos-Reload-Schleife.
-- **`updateMandateInfo()`** validiert jetzt `status`
-  (`in:pending,active,submitted,failed,cancelled,expired`) — das Feld wurde
-  vom Stift-Formular immer gesendet, aber nie übernommen.
-- **`updateBankAccount()`** validiert und persistiert `is_contract_holder_payer`
-  (→ `has_different_payer`), `payer_email` (`ValidGoCardlessEmail`),
-  `payer_street/postal_code/city`; beim Rückwechsel auf „Vertragsnehmer zahlt"
-  werden die Zahlerfelder geleert. Ohne das Flag im Payload bleibt alles
-  unverändert (Abwärtskompatibilität).
-- **Bewusst NICHT geändert:** Ein Verbindungsfehler bei „In GoCardless suchen"
-  schaltet den Anlegen-Button weiterhin nicht frei (`gcSearchNoResult` bleibt
-  false) — bei einem Timeout könnte in GC doch ein Mandat existieren,
-  Freischalten würde Duplikate riskieren.
-- Tests: `tests/Feature/ContractDirectPayerPaymentTest.php`,
-  `tests/Feature/ContractMandateRecoveryTest.php`.
-
-## Update 08.08.2026 (spät) — Verkaufbare Position „2 Kleine Zonen"
-
-Neben den 18 Grafik-Zonen gibt es jetzt die Position **„2 Kleine Zonen"**
-(z.B. Zehen, Nasenrücken) — verkaufbar wie jede andere Körperzone.
-
-**Für Endanwender:**
-
-- Im Körperzonen-Selector des Vertragsformulars unter der neuen Kategorie
-  **„Sonstiges"** wählbar (Listeneintrag ohne Grafik-Overlay). „Alle auswählen"
-  überspringt die Position bewusst.
-- Bei Auswahl erscheinen **zwei Pflicht-Textfelder** („Kleine Zone 1/2") — ohne
-  beide Angaben lässt sich das Formular nicht absenden (Client- und
-  Server-Validierung, auch im Shared-Link).
-- Die Angabe erscheint überall als `2 Kleine Zonen (Zehen & Nasenrücken)`:
-  im **Vertrags-PDF** am Zonen-Tag, in der Einreichungs-Ansicht und in den
-  Vertragslisten des Hubs.
-- Preislich zählt die Position als **1 KPZ** (Entscheidung Jan 08/2026 — die
-  Phorest-Preise entsprechen einer normalen Zone).
-- Behandlungs-Dokumentation: keine eigene Grafik-Zone — die konkreten kleinen
-  Zonen werden im Behandlungs-Selector über die bestehende Funktion
-  **„Weitere Zonen"** (Custom-Zonen) dokumentiert.
-
-**Für Entwickler:**
-
-- Zone `zwei_kleine_zonen` (`BodyZone::KEY_SMALL_ZONES`, Kategorie `sonstiges`)
-  — Migration `2026_08_08_150000_add_small_zones_body_zone_and_contract_note`
-  legt die Zone an (hebt Alt-Handanlagen auf den Key) und ergänzt
-  `contracts.small_zones_note`.
-- Die beiden Angaben laufen als `fields._small_zones_details` (kein eigenes
-  Formularfeld!) mit und landen in `form_submissions.metadata.small_zones_details`
-  — Validierung zentral in `FormController::resolveSmallZonesDetails()`
-  (auch vom `SharedFormController` genutzt). Draft/Share-Prefill nehmen den
-  Wert explizit mit (`_small_zones_details` in `form-fill.js`).
-- `ContractCreationService` schreibt `small_zones_note` („Zehen & Nasenrücken")
-  auf den Vertrag; Anzeige über `Contract::bodyZonesDisplay()` (sortiert nach
-  `sort_order`, Fallback Legacy-`body_zone_description`).
-- **Phorest:** Für die Aufbuchung braucht die Zone wie alle anderen ein
-  gemapptes Abo (Einstellungen → Körperzonen) — insgesamt also
-  **19 Zonen-Abos + 1 GK-Abo = 20 Courses**.
-- Tests: `tests/Feature/SmallZonesContractTest.php` (5 Tests).
-
-## Update 08.08.2026 (abends) — Preis-Modul: Gutscheine & Freunde-werben beim Abschluss
-
-Das `contract_price`-Feld des Vertragsformulars kann jetzt direkt beim Abschluss
-im Termin Gutscheine und Freunde-werben erfassen (nur Hub-Kontext, nicht im
-Shared-Link — Gate `supportsSigningExtras` in `form-fill.js`):
-
-- **Gutscheine:** Bei bekanntem Kunden werden dessen Phorest-Gutscheine mit
-  Restguthaben automatisch angezeigt (`GET /api/forms/client-vouchers`,
-  `ContractVoucherService::vouchersForClient()`). Abgelaufene sind rot markiert
-  und brauchen eine explizite Bestätigung (`accept_expired`, protokolliert als
-  `was_expired` im Einlöse-Beleg).
-- **Gutschein manuell hinzufügen (19.08.2026):** Unter der Vorschlagsliste kann
-  jeder beliebige Gutschein erfasst werden — per **Seriennummer** (Eingabefeld +
-  „Hinzufügen") oder per **QR-/Barcode-Scan** über die Gerätekamera. Der QR-Code
-  aus der Kauf-Mail und dem Geschenk-PDF enthält die Seriennummer im Klartext
-  (`VoucherQrService`), der Scan löst also direkt zur Seriennummer auf. Endpoint:
-  `GET /api/forms/voucher-by-serial?serial=` → `ContractVoucherService::findBySerial()`
-  (Gate `can:view_forms`). Gefundene Gutscheine landen in derselben Auswahl-Liste
-  und laufen unverändert durch die bestehende Einlösung (`voucher_redemptions`
-  im Preis-JSON, serverseitige Revalidierung). Gehört der Gutschein einem anderen
-  Kunden (verschenkt), zeigt ein Info-Badge den Karteninhaber — einlösbar bleibt
-  er trotzdem. Scanner: `html5-qrcode` (CDN, lazy erst beim ersten Scan geladen,
-  QR + gängige 1D-Barcodes); Kamera braucht HTTPS, auf `http://glattthub.local`
-  erscheint eine erklärende Fehlermeldung. Tests:
-  `tests/Feature/FormVoucherSerialLookupTest.php`.
-- **Einmalzahlung (total_only) kann Extras seit 19.08.2026 auch (vorher komplett
-  ausgeblendet):** Gutscheine und Freunde-werben stehen in beiden Zahlungsmodi zur
-  Verfügung. Da Einmalzahler keinen SEPA-Plan haben, über den die Kaskade laufen
-  könnte, löst `ContractCreationService::redeemSigningVouchersForDirectContract()`
-  die gewählten Gutscheine **sofort bei der Vertragsanlage** in Phorest ein
-  (Belege in `contract_voucher_redemptions`, Phorest-Notiz mit Kontext „Vertrag
-  (Einmalzahlung)"). Eingelöst wird höchstens der Vertragswert — der Überschuss
-  bleibt auf dem Gutschein; Fehler brechen die Vertragsanlage nie ab (Warnung im
-  Log, Verrechnung dann manuell). Der **Vertragswert bleibt unverändert** —
-  Gutscheine sind eine Zahlung, kein Preisnachlass: Die Zusammenfassung im
-  Formular zeigt „Gutschein-Verrechnung: −X €" und „Vor Ort zu zahlen: Y €"
-  (`signingVoucherAppliedCents()`/`signingVoucherRemainderCents()` in
-  `form-fill.js`). **Freunde werben gilt seit 19.08.2026 auch für Einmalzahler**
-  (Entscheidung Jan — ersetzt die frühere Regel `discount_cents = 0`): Der
-  50-€-Rabatt mindert die Zahlung vor Ort und wird sofort als verrechnet
-  dokumentiert (`discount_allocation = ['direct' => 5000]`, Notiz am Referral);
-  die Gutschein-Kapazität rechnet den Rabatt vorher ab (Reihenfolge wie die
-  SEPA-Kaskade: Rabatt zuerst, dann Gutscheine). Die Zusammenfassung zeigt
-  „Freunde werben: −50,00 €" als eigene Zeile. Außerdem blendet sie bei
-  total_only die (dort sinnlose) **Laufzeit-Zeile** aus. Tests:
-  `tests/Feature/DirectContractVoucherRedemptionTest.php`.
-- **Phorest-Kundenkonto spiegelt die Vor-Ort-Zahlung (19.08.2026):** Der
-  Phorest-Kauf (Courses, Zahlart „Hub") bleibt beim **vollen** Betrag
-  (Umsatz!), aber die Kundenkonto-Schuld
-  (`PhorestContractPurchaseService::calculateOnSiteDebtCents()`) wird nur noch
-  über das gebucht, was der Kunde an der Kasse tatsächlich zahlen soll:
-  SEPA = die hinterlegte reduzierte Vor-Ort-Rate (`signing_cascade.rate1_amount`),
-  Einmalzahlung = Vertragswert − Freunde-werben − eingelöste Gutscheine. Ist der
-  Betrag 0, wird gar keine Schuld gebucht. Ohne hinterlegte Kaskade
-  (Bestandsverträge, Fehler-Fallback) wird wie bisher der volle Kaufbetrag als
-  Schuld gebucht. Tests: `tests/Feature/SigningCascadeUpfrontTest.php`.
-- **Freunde werben:** Werber-Suche im Formular (`GET /api/forms/referrer-search`
-  → `ContractReferralService::searchReferrers()`, inkl. „Kein aktiver
-  Vertrag"-Badge). Beim Abschluss legt `ContractCreationService` den
-  `ContractReferral`-Datensatz an (Direktzahler: `discount_cents = 0`).
-- **Verrechnungs-Kaskade (Entscheidung Jan, erweitert 19.08.2026):** Rabatt,
-  Freunde-werben und Gutscheine mindern zuerst vollständig die **Vor-Ort-Rate**,
-  ein Rest die **folgenden SEPA-Raten der Reihe nach** (auf jeder bleibt das
-  GC-Minimum 1 € stehen — vorher endete die Kaskade bei Rate 2). Seit 19.08.2026
-  wird die Kaskade **bereits bei der Vertragsanlage** berechnet: Gutscheine
-  werden sofort in Phorest eingelöst (Kontext „Vertrag (Abschluss)"), die
-  Referral-Allocation sofort geschrieben und das Ergebnis in
-  **`contracts.signing_cascade`** (JSON: `rate1_amount`, `rates`-Map
-  installment_number → Betrag/Notiz, eingelöste Gutscheine) hinterlegt —
-  `GoCardlessPaymentPlanService::computeAndStoreSigningCascade()`, aufgerufen
-  aus `ContractCreationService`. Die Plan-Erstellung
-  (`resolveSigningCascade()`) greift dann **nur noch auf das Hinterlegte zu**
-  (keine Neuberechnung, keine Doppel-Einlösung — `finalizeSigningCascade()`
-  wird zum No-op). Schlägt das Vorab-Hinterlegen fehl (z.B. Phorest down),
-  bleibt `signing_cascade` leer und die Plan-Erstellung rechnet **live wie
-  bisher** — derselbe Fallback gilt für Bestandsverträge von vor der
-  Umstellung. Die Auswahl steht im Preis-JSON der Submission
-  (`Contract::signingInstructions()`) und übersteht so
-  auch den asynchronen Mandats-Flow. Ein Gutschein-Rest über
-  der Kaskaden-Kapazität bleibt als Guthaben auf dem Gutschein.
-- Tests: `tests/Feature/SigningCascadeTest.php`. Bekannte Grenze: Bei einem
-  späteren Plan-Neuaufbau bleibt der Preislisten-Rabatt erhalten (deterministisch),
-  bereits eingelöste Gutscheine/Referral-Reduktionen werden nicht erneut
-  angewandt (Einlösung ist einmalig — wie im nachträglichen Flow).
-
-## Update 08.09.2026 — SEPA-Mails im gemeinsamen glattt-Design; Willkommens-Mail mit allen Dokumenten der Formular-Kette
-
-### Für Endanwender (08.09.2026)
-
-Die Mail nach einem erfolgreichen Vertragsabschluss (Vertrag + SEPA-Mandat) heißt jetzt
-**„Herzlich Willkommen bei glattt – Deine Vertragsinformationen"** (vorher „Deine
-SEPA-Einzugsermächtigung – glatttHub"), begrüßt die Kundin freundlicher und enthält
-**alle unterschriebenen Dokumente der Termin-Kette** in dieser Reihenfolge:
-
-1. Kundeninformation & Einverständniserklärung (und alle weiteren Formulare, die
-   vor dem Vertrag ausgefüllt wurden)
-2. Behandlungsvertrag
-3. SEPA Mandat (Hub-Formular, Einzugsermächtigung)
-
-Das von GoCardless erzeugte Mandats-PDF wird **nicht mehr** mitgeschickt, sobald das eigene
-SEPA-Formular dabei ist (Entscheidung Jan 08.09.2026: zwei Mandats-Dokumente verwirren nur).
-Es dient nur noch als Ersatz (`MD000002-SEPA-Lastschriftmandat.pdf`), wenn zu einem Mandat kein
-Hub-Formular existiert; die Aktivierungs-Mail behält es wie bisher.
-
-**Anhänge heißen `Kundennummer-Dokumentname.pdf`**, normalisiert auf ASCII ohne Leerzeichen
-und Sonderzeichen (ä→ae, ß→ss, „&"/Leerzeichen→„-"), z.B.
-`MD000002-Kundeninformation-Einverstaendniserklaerung.pdf`, `MD000002-Behandlungsvertrag.pdf`,
-`MD000002-SEPA-Mandat.pdf` (vorher technische Namen
-wie `formular-behandlunsgvertrag-XbAqdS-22.pdf`). Der Dokumentname ist der Formularname aus
-dem Formular-Editor. Dasselbe Muster gilt für das GoCardless-PDF der Aktivierungs-Mail.
-
-Der Einleitungstext zählt die mitgeschickten Dokumente namentlich auf. Ein Formular,
-das einmal je Kundin gilt (z.B. beim Beratungstermin unterschrieben), wird auch dann
-angehängt, wenn der Vertrag erst bei einem späteren Termin zustande kam. Formulare
-„je Termin" (z.B. Sitzungsbestätigung) zählen nur, wenn sie beim Termin des Vertrags
-ausgefüllt wurden.
-
-**Einheitliches Design aller SEPA-Mails (Entscheidung Jan 08.09.2026):** Willkommen,
-Aktivierung, Zahlungsplan-Änderung, Bankverbindung geändert und Mandat beendet sehen jetzt
-aus wie die Zahlungserinnerung des Forderungsmanagements und die Terminerinnerung —
-Logo links, rechts der Kunden-Kasten mit Anlass, Name und Kd.-Nr., darunter Anrede,
-Überschrift, kurzer Text, ein hell hinterlegter **Kennzahlen-Block** (z.B. erste Abbuchung
-und Monatsrate), **Detaillisten mit Linien** statt grauer Karten, farbig gekantete
-Hinweiskästen (Gold = Info/Vorabankündigung, Rot = Achtung), Grußformel „Dein glattt-Team",
-Kundenservice-Kontakt, Gläubiger-Zeile und GoCardless-Pflichttext. Anrede bleibt „Du".
-**Seit 08.09.2026 abends auf Prod.** Outlook-Hinweis: Der Kunden-Kasten im Kopf ist eine Zeile mit drei
-Zellen (Logo · Füllzelle · Kasten) — eine verschachtelte Tabelle mit `align="right"` behandelt Outlook
-wie ein Float und rückt sie vom rechten Rand ein (Gmail nicht). Gilt ebenso für die Terminerinnerung.
-
-**Test-Mails für Abnahmen:** `php artisan sepa:test-mail <Vertrags-ID|Vertragsnummer> --to=<Adresse> [--type=all|onboarding|activation|change|bank|cancelled] [--dry-run]`
-verschickt die SEPA-Mails eines echten Vertrags mit allen Anhängen an eine beliebige Adresse —
-ohne Log-Eintrag, ohne Deduplication; `--dry-run` zeigt nur Betreff und Anhänge.
-
-### Für Entwickler (08.09.2026)
-
-- **Mail-Rahmen:** `resources/views/emails/sepa/layout.blade.php` (`@extends`, Sections
-  `title`/`eyebrow`/`body`) + Bausteine unter `emails/sepa/partials/` (`headline`, `paragraph`,
-  `hero` = Kennzahlen-Block, `details` = Linien-Liste, `hint` = Hinweiskasten mit `tone`
-  gold|alert|neutral, `button` = Goldkante). Tokens (Palette, Schrift aus `FontSettingsService`,
-  Zell-Reset) liefert `App\Mail\Sepa\MailTheme::tokens()` — jede Vorlage beginnt mit
-  `@php extract(MailTheme::tokens()); @endphp`, weil `@section`-Inhalte im Scope der
-  Kind-Vorlage gerendert werden und Includes nur Eltern-Variablen erben. Die Kd.-Nr. im
-  Kopf kommt aus `Contract::customerNumber()` (Hub-Format `YYYY.MM.DD-{Kdnr}[-n]`, Legacy-
-  Kundennummer) bzw. `ClientMandate::customerNumber()` (Mandatsreferenz). Der alte
-  GoCardless-Footer-Partial ist im Layout aufgegangen; `_greeting` und `_french-iban-hint`
-  bleiben als Includes.
-- `SepaEmailService::buildOnboardingMail()` / `buildMandateActivationMail()` (public) bauen
-  die Mailables inkl. aller Anhänge; `sendOnboardingEmail()`/`sendMandateActivationEmail()`
-  und der Befehl `sepa:test-mail` (`app/Console/Commands/SendTestSepaMail.php`) nutzen sie
-  gemeinsam; `recipientContext()` liefert Name/Geschlecht für die übrigen Typen.
-- `getPreContractPdfs()` — dieselbe Regel wie die Kachel-Sperre in der Terminansicht
-  (`missingPreContractForms` in `appointment-unified.js`): alle aktiven Formulare, die weder
-  `contract.enabled` noch SEPA sind (`ContractCreationService::shouldCreateContract()` /
-  `shouldProcessSepaMandate()`). Je Formular die neueste eingereichte Submission der Kundin am
-  Termin der Vertrags-Submission; Fallback auf die neueste Submission der Kundin, sofern das
-  Formular nicht `per_appointment` ist. Fehler lassen nur das einzelne Dokument aus, nie die Mail.
-- **Kundennummer** (`resolveCustomerNumber()`): aus der Hub-Vertragsnummer
-  (`YYYY.MM.DD-{Kundennummer}[-n]`, ohne API-Aufruf), sonst Phorest-`externalId`. Wird nur
-  ermittelt, wenn es Anhänge gibt (Tests mit `getClient()->never()` bleiben gültig).
-  `attachmentFilename()` normalisiert per `Str::ascii($name, 'de')` + `[^A-Za-z0-9]+ → -`.
-- `OnboardingMail` bekommt `preContractPdfs` (Liste aus `disk`/`path`/`filename`/`name`) und
-  `mandatePdfFilename`; `attachments()` liefert in Ketten-Reihenfolge, die View erhält
-  `preContractDocumentNames`. `MandateActivationMail` bekommt ebenfalls `mandatePdfFilename`.
-- Ohne `contracts.form_submission_id` (z.B. Tageserfassung der Institutsseite) gibt es
-  keine Vorvertrags-Anhänge.
-- Tests: `SepaMailablesTest` (Betreff, Anhang-Reihenfolge, alle fünf Mails im gemeinsamen
-  Rahmen: Anrede, Kd.-Nr., Grußformel, Gläubiger-ID, GoCardless-Pflichttext, keine alte
-  Karten-Optik), `SepaEmailServiceTest` (Termin-Zuordnung, Einmal-je-Kundin-Fallback, ohne
-  Vertragsformular, Kundennummer aus Vertragsnummer, Test-Befehl für alle Typen ohne Log).
-- **Staging-Hinweis:** `MAIL_MAILER=log` gilt dort nur nominell — `MailSettingsService::apply()`
-  setzt den Mailer aus `email_settings` (IONOS-SMTP, Prod-Kopie), SEPA-Mails gehen aus Staging
-  also **wirklich** raus. Testkunden nur mit eigenen Adressen anlegen.
-
-## Update 08.08.2026 — Readiness Verkauf: Rabatt auf die 1. Sitzung, GK-Abo-Buchung, Onboarding-Mail bei Bestandsmandat
-
-Drei Ergebnisse der Go-Live-Prüfung der Verkaufsstrecke (Asana `1217088816996378`):
-
-**Rabatt auf die 1. Sitzung (Entscheidung Jan):** Der Preislisten-Rabatt mindert
-ausschliesslich die **1. Rate vor Ort** — die SEPA-Monatsraten bleiben unverändert.
-
-- `Contract::firstSessionDiscountCents()` = Ratensumme − `total_value_cents`
-  (nur bei gesetzter `discount_id`); `plannedFirstInstallmentCents()` = Monatsrate − Rabatt.
-- Zahlungsplan: Rate 1 wird mit dem geminderten Betrag angelegt (Notiz nennt den
-  Rabatt), die Plausibilitätsprüfung beim Plan-Update geht damit auf 0 auf.
-- Phorest-Aufbuchung bei SEPA bucht die geminderte 1. Rate.
-- Vertrags-PDF zeigt jetzt: volle Monatsrate, „1. Rate vor Ort" (mit Rabatt-Verrechnung)
-  und den **Gesamtbetrag** (auch ohne Rabatt — Preisklarheit).
-- Vorher war das inkonsistent: PDF verteilte den Rabatt rechnerisch auf alle Monate,
-  GoCardless zog voll ein. Ausserdem brach jede Vertragsbearbeitung mit Rabatt still ab
-  (Aufruf nie existierender Methoden auf `PriceDiscount`) — behoben.
-
-**GK-Abo in Phorest:** Bei GK-Verträgen (`is_full_body`, Zonen ≥ `max_body_zones`
-der Preisliste) bucht `PhorestContractPurchaseService` jetzt **ein** GK-Abo mit dem
-Gesamtbetrag statt der Einzelzonen-Courses. Die Course-ID ist im Admin-Backend
-konfigurierbar (Einstellungen → „Phorest (GK-Abo)", Tabelle `phorest_settings`,
-Permission `manage_consultation_services`). Ohne Konfiguration greift bewusst das
-bisherige Einzelzonen-Verhalten (mit Warn-Log). Die gewählten Körperzonen bleiben
-unabhängig davon vollständig am Vertrag gespeichert (`contract_body_zones`).
-
-**Onboarding-Mail bei Bestandsmandat:** Die SEPA-Onboarding-Mail (Pre-Notification)
-wird jetzt je **(Mandat, Vertrag)** dedupliziert und auch beim wiederverwendeten
-Mandat versendet — vorher bekam ein Bestandskunde für den zweiten Vertrag nie eine
-Vorabankündigung. Tests: `ContractFirstSessionDiscountTest`,
-`PhorestFullBodyPurchaseTest`, `SepaEmailServiceTest`.
-
-## Update 31.07.2026 — „RLS anhängen": geplatzte Rate ans Ende des Zahlungsplans
-
-### Für Endanwender (31.07.2026)
-
-**Neu: Button „RLS anhängen"** hinter jeder geplatzten Rate im Zahlungen-Tab, direkt neben „Beglichen". Statt die Rücklastschrift nachzufassen, wandert ihr Betrag als **zusätzliche Rate ans Ende des Zahlungsplans** — der Plan verlängert sich um einen Monat, genau wie es in der letzten Mahnung angekündigt wird. Gedacht für den Fall, dass ihr das mit dem Kunden vereinbart oder er auf nichts reagiert.
-
-Im Modal steht vorab, was passiert: welche Rate erledigt wird, welche neue Ratennummer zu welchem Datum entsteht und wie sich der Betrag zusammensetzt. Die **RLS-Gebühr kann mit eingezogen werden** — ist an der Rate bereits eine offene Gebühr erfasst, ist der Haken vorbelegt und der Betrag eingetragen; er lässt sich ändern oder abwählen.
-
-Nach dem Anhängen:
-
-- Die alte Rate steht auf **Bezahlt** mit der Zahlungsart **„Angehängt"** und dem Vermerk, als welche Rate sie weiterläuft. Sie verschwindet damit aus der Schuldenliste und dem Mahnwesen.
-- **Wichtig:** Sie zählt bewusst **nicht** als Zahlungseingang. „Bezahlt", „Offen", der Zahlungsfortschritt und die Umsatzzahlen bleiben unverändert — es ist ja kein Geld geflossen, der Betrag steht jetzt nur an anderer Stelle im Plan. In der Verkaufsstatistik erscheint die Rate weiterhin im Monat des Platzens als Rücklastschrift und **nicht** als „RLS nachgezahlt".
-- Die neue Rate wird sofort als eigener GoCardless-Einzug angelegt.
-
-Wird die Gebühr mit angehängt, gilt sie **automatisch als bezahlt**, sobald der Einzug der angehängten Rate durch ist — sie steckt ja im eingezogenen Betrag. Kein manuelles Nachtragen über „Gebühr bezahlt" mehr.
-
-Voraussetzungen: aktives GoCardless-Mandat und ein Einzelzahlungs-Plan. Bei Verträgen mit altem Dauerauftrag erscheint der Button nicht (dort erst den Zahlungsplan stornieren). Mehrere geplatzte Raten werden einzeln angehängt.
-
-### Für Entwickler (31.07.2026)
-
-- **Endpoints:** `GET /hub/contracts/{contract}/payments/{payment}/append-info` (`getAppendBouncedInfo()` — Zielraten-Nummer, Fälligkeit, Betrag, erfasste Gebühr) und `POST …/payments/{payment}/append` (`appendBouncedPayment()`), beide unter `can:manage_gocardless`.
-- **Zieltermin:** `appendTargetFor()` — ein Monat nach der letzten nicht stornierten Rate (`addMonthNoOverflow()`), frühestens das `next_possible_charge_date` des Mandats. Ratennummer = `max(installment_number) + 1` **über dieselbe Grundmenge (ohne stornierte Zeilen)** — seit 07.09.2026; vorher zählten Storno-Reste aus Neuberechnung/Reload mit („Rate 25" bei einem Plan bis Rate 23, OS003259).
-- **Zahlungsfortschritt (07.09.2026):** Die angehängte Ursprungsrate (`is_rescheduled`) bleibt in Sidebar (`show.blade.php`) und Zahlungen-Tab (`contract-detail.js`) aus „Bezahlt" **und** aus der Gesamtsumme heraus — ihr Betrag zählt nur einmal, nämlich als neue Rate am Planende. Vorher stand er im Fortschritt doppelt (bezahlt + offen).
-- **Forderungsmanagement beim Anhängen (07.09.2026):** `DebtCaseIntakeService::handleRateAppended()` legt den Fall nur dann in die Beobachtung, wenn am Vertrag **keine weitere** Rücklastschrift offen ist; sonst läuft der Mahnprozess weiter und der neue Einzug wandert nur in `appended_payment_ids` (wird in Schreiben abgezogen). Nach jeder Neuberechnung (`updatePaymentPlan`) und jedem Reload (`ContractPaymentRebuildService`) läuft `reconcileAppendedMonitoring()`: Ist die beobachtete angehängte Rate storniert, verlässt der Fall die Beobachtung (Stufe „Neu", Frist heute). Details im Wiki `FORDERUNGSMANAGEMENT.md`.
-- **Reihenfolge wie bei der SEPA-Ablösung:** GC-Einzug ZUERST anlegen (scheitert er, ist nichts verändert; `tooSoonErrorHint()` als 422), danach in einer DB-Transaktion die neue Rate + Update der alten + `ContractChange` (`field_name = bounced_payment_appended`). Wirft die Transaktion, wird der Einzug als Kompensation storniert. Das echte `charge_date` aus der GC-Antwort wird übernommen (GoCardless verschiebt Wochenenden/Feiertage).
-- **Buchhaltungs-Kern — `ContractPayment::DIRECT_RESCHEDULED = 'rescheduled'`** (Migration `2026_07_31_170000_…`, ENUM-Erweiterung wie bei `voucher`): Die alte Rate steht auf `paid`, ist aber **kein Geldeingang**. Neu deshalb:
-  - `ContractPayment::scopeMoneyIn()` — `paid` UND nicht `rescheduled`. Ersetzt `where(status, PAID)` in `Contract::remaining_amount_cents`, `ContractMandate::paid_installments_count`/`updateRemainingAmount()` und im Kündigungs-Pfad des `ContractController`.
-  - `Contract::documentedSepaRatesCents()` schließt `rescheduled` aus, sonst wäre der Betrag doppelt dokumentiert und der rechnerische Altsystem-Block zu klein.
-  - `ContractPayment::sqlIsRescheduled()` / `sqlIsNotRescheduled()` für die Raw-Queries der `SalesStatisticsService`: angehängte Raten zählen im MRR-/RLS-Trend als **RLS** (sie platzten und wurden nicht nachgezahlt), nie als „eingezogen" oder „nachgezahlt"; in der Ausfall-Analyse zählen sie in `failed_ever`, nicht in `failed_open`.
-  - **Falle:** Das SQL-Prädikat MUSS `COALESCE(direct_payment_method,'')` verwenden. Ohne ist der Vergleich bei NULL weder wahr noch falsch, sondern NULL — ein umschließendes `NOT (...)` bleibt dann NULL und wirft ganz normale Zahlungen aus ihrem Band (genau so sind beim Bauen 4 MRR-Tests rot geworden).
-- **Kein „Korrigieren" für angehängte Raten:** `can_correct` schließt `rescheduled` aus (wie schon `voucher`) — es gibt keine Zahlung, die korrigiert werden könnte. Neues Flag `can_append` in `getPayments()` (geplatzt + GC-Mandat + kein Dauerauftrag), Anzeige-Typ „Angehängt".
-- **Automatische Gebühren-Quittierung:** Migration `2026_07_31_180000_…` ergänzt `appended_from_payment_id` (Ursprungsrate) und `appended_fee_cents` (eingerechnete Gebühr) an `contract_payments`. `ContractPayment::settleAppendedReturnFee()` setzt `return_fee_paid_at` an der Ursprungsrate und ist idempotent; aufgerufen aus `ProcessGoCardlessWebhookJob::handlePaymentsConfirmed()` (und als Sicherheitsnetz in `handlePaymentsPaidOut()`, falls das confirmed-Event ausbleibt). Ohne eingerechnete Gebühr passiert nichts — eine Gebühr, die bewusst NICHT mit angehängt wurde, bleibt offen.
-- **Frontend:** Button in `tab-payments.blade.php` neben „Beglichen", Modal darunter; `openAppendModal()`/`appendFeeCents()`/`appendTotalCents()`/`saveAppend()` in `public/js/contract-detail.js` (Komponente `paymentsTab`). Gebühr über das Projektmuster „transparenter Input + €-Overlay".
-- **Tests:** `tests/Feature/ContractAppendBouncedTest.php` — Anhängen (Nummer/Termin/Betrag, alte Rate `rescheduled`, Schuldenliste leer, `moneyIn` und Restbetrag unverändert), Gebühr inklusive, Guards (nur geplatzte Raten, Dauerauftrag, fremde Rate → 404), Vorschau-Endpoint.
-
-## Update 31.07.2026 — Bankwechsel übernimmt den Zahlungsplan, statt ihn neu zu rechnen
-
-### Für Endanwender (31.07.2026)
-
-**Behoben: Nach einer Änderung der Bankverbindung stimmte der Zahlungsplan nicht mehr.** Bei bestimmten Verträgen verschwanden die bereits per SEPA eingezogenen Raten aus dem Plan und es stand wieder die volle Ratenzahl aus dem Vertrag da — der Plan musste anschließend jedes Mal von Hand korrigiert werden (falsche Raten löschen, eine Minus-Differenz bestätigen, die gar nicht stimmte).
-
-Ab sofort gilt beim Bankwechsel: **Der vorhandene Restplan wird 1:1 auf das neue Mandat übertragen** — gleiche Ratennummern, gleiche Beträge, gleiche Fälligkeiten. Es wird nichts mehr aus der Vertragslaufzeit nachgerechnet. Findet der Hub keinen Restplan zum Übertragen (z.B. weil lokal gar keine offenen Raten hinterlegt sind), erfindet er **bewusst keinen** — stattdessen erscheint nach dem Speichern ein Hinweis mit Vertragsnummer und Anzahl der fehlenden Raten, und der Plan wird gezielt über „Zahlungsplan anlegen" im Zahlungen-Tab erstellt.
-
-**Neu: Vorschau im Modal „Bankverbindung ändern".** Schon vor dem Speichern steht dort, was passieren wird:
-
-- wie viele offene Raten mit welcher Summe auf das neue Konto umgebucht werden (Ratenliste über „Alle Raten anzeigen" aufklappbar),
-- wie viele bereits eingezogene Raten unverändert stehen bleiben,
-- geplatzte Raten, die **nicht** mit umgebucht werden (die laufen weiter über das Schulden-Verfahren),
-- überfällige Raten ohne dokumentierten Einzug, die als Altsystem-Einzug gewertet werden,
-- der Warnhinweis, wenn Raten im Plan fehlen und er hinterher manuell angelegt werden muss.
-
-**Stornierte Raten verschwinden nicht mehr spurlos.** Beim Bankwechsel und beim Stornieren eines Zahlungsplans wurden Raten teilweise ohne Notiz storniert — der Zahlungen-Tab blendet solche Zeilen komplett aus, für die Verwaltung waren sie damit weg. Jetzt bekommt jede stornierte Rate einen Grund und bleibt durchgestrichen sichtbar.
-
-**Der GoCardless-Abgleich (🔄) bricht ab, statt Geld zu verlieren.** Lagen bereits eingezogene Raten an einem früheren Mandat und GoCardless liefert sie nicht mit, hätte der Abgleich sie bisher aus dem Plan entfernt, ohne Ersatz anzulegen. Jetzt wird der Vorgang mit einer Meldung abgebrochen und die Verknüpfung kann geprüft werden.
-
-### Für Entwickler (31.07.2026)
-
-**Ursache.** Der Neuaufbau steckte nicht im `ContractPaymentRebuildService` (der hängt nur am 🔄-Button), sondern in `GoCardlessMandateService::changeBankAccount()`. Schritt 4 sicherte bei Einzelzahlungs-Verträgen nur Raten **mit** `gocardless_payment_id`; Verträge, deren Restplan aus rein lokalen Platzhaltern besteht (Import, Dauerauftrags-Historie, nie materialisierter Plan), fielen dadurch in Schritt 6 in den `else`-Zweig → `createIndividualPaymentPlan()` → `remainingSepaRateCount()` = `installment_count - 1 -` Raten in `submitted|confirmed|paid`. Nicht abgezogen wurden dabei u.a. gerade gelöschte Altsystem-Raten, gerade stornierte Raten und eingezogene Raten, deren Webhook nie ankam.
-
-**Umbau.**
-
-- Neue Methode `classifyRatesForBankChange(Contract)` — seiteneffektfreie Klassifizierung in `legacy_rates` (überfällige Platzhalter ohne GC-ID bei Verträgen vor `Contract::LEGACY_CUTOFF_DATE`) und `open_rates` (der echte Restplan, **mit und ohne** GC-Verknüpfung). Vorschau und Ausführung nutzen dieselbe Methode, damit sie nicht auseinanderlaufen können.
-- Schritt 6 kennt nur noch `recreateIndividualPayments()`. Der Neuberechnungs-Zweig ist ersatzlos entfallen; ohne Restplan wird der Vertrag über den neuen Rückgabewert `contracts_without_plan` (`contract_number`, `missing_rates`) gemeldet und im Controller als Warnung ausgegeben. `missing_rates` zieht bereits als Altsystem-Einzug gewertete Raten ab.
-- Lokale Aufräumung ist für beide Plan-Typen gleich: GC-verknüpfte offene Raten werden mit der Notiz `GoCardlessMandateService::BANK_CHANGE_CANCEL_NOTE` storniert, Platzhalter ohne GC-ID gelöscht (sie werden 1:1 durch die neuen, verknüpften Raten mit derselben Ratennummer ersetzt — sonst gäbe es jede Rate doppelt).
-- `GoCardlessPaymentPlanService::cancelLocalPayments()` storniert nie mehr ohne Notiz (Default `'Zahlungsplan storniert'`). Hintergrund: `ContractController::getPayments()` filtert `status === cancelled && ! filled($notes)` heraus.
-- `ContractPaymentRebuildService`: fehlt die `gocardless_customer_id` lokal, wird sie über `getMandate()->links.customer` nachgeschlagen und persistiert (sonst fragt der Reload nur das aktuelle Mandat ab und verpasst alles vom alten). Zusätzlich zweites Sicherheitsnetz neben dem bestehenden „leere GC-Antwort"-Abbruch: Enthält `$toSupersede` eine Rate in `paid|confirmed` mit GC-ID, die in der GC-Antwort fehlt, bricht der Reload mit Exception ab.
-
-**Vorschau-Endpoint.** `GET /hub/contracts/{contract}/bank-account/preview` (`ContractController::previewBankAccountChange()`, Middleware `can:manage_gocardless`) → `GoCardlessMandateService::previewBankChange(ClientMandate)`. Liefert je aktivem Vertrag des Mandats: `transfer_rates` (Nummer/Fälligkeit/Betrag), `transfer_amount_cents`, `settled_count`, `legacy_count`/`legacy_amount_cents`, `bounced_count`/`bounced_amount_cents` (failed/chargedback — laufen über das Schulden-Verfahren), `missing_rates`. Frontend: `loadBankPreview()` in `public/js/contract-detail.js` (aufgerufen aus `openBankModal()`), Markup in `tab-sepa.blade.php`, Styles `.bank-preview-glattt*` in `theme_glattt.css`; die Ratenliste ist eingeklappt, damit das IBAN-Feld ohne Scrollen erreichbar bleibt.
-
-**Tests.** `tests/Unit/GoCardlessBankChangeTest.php`: Restplan ohne GC-Verknüpfung wird übertragen statt nachgerechnet (Regression — prüft die **Anzahl** der GC-POSTs), kein erfundener Plan + Meldung, Storno nur mit Notiz, Vorschau-Klassifizierung. `tests/Feature/RebuildReloadSafetyTest.php`: Abbruch bei fehlenden eingezogenen Raten. `tests/Feature/ContractShowTest.php`: Vorschau-Endpoint + Berechtigung.
-
-| Datei | Änderung |
-|---|---|
-| `app/Services/GoCardlessMandateService.php` | `classifyRatesForBankChange()`, `previewBankChange()`, Fallback entfernt, `contracts_without_plan`, Storno-Notiz |
-| `app/Services/GoCardlessPaymentPlanService.php` | `cancelLocalPayments()` immer mit Notiz |
-| `app/Services/ContractPaymentRebuildService.php` | Customer-ID-Nachschlag + Abbruch bei fehlenden eingezogenen Raten |
-| `app/Http/Controllers/ContractController.php` | `previewBankAccountChange()`, Warnung für Verträge ohne Restplan |
-| `resources/views/hub/contracts/partials/tab-sepa.blade.php` | Vorschau-Block im Bankwechsel-Modal |
-| `public/js/contract-detail.js` | `loadBankPreview()`, Vorschau-State |
-| `public/css/theme_glattt.css` | `.bank-preview-glattt*` |
-
-## Update 31.07.2026 — SEPA-Ablösung: Wunsch-/Restbetrag per einmaligem Einzug
-
-### Für Endanwender (31.07.2026)
-
-**Neu: „Betrag einziehen"** im Zahlungen-Tab — die aktive Schwester der Sondertilgung: Statt auf eine Überweisung des Kunden zu warten, zieht glattt einen **frei wählbaren Betrag oder die gesamte Restsumme** per einmaliger SEPA-Lastschrift zum **Wunschdatum** ein (z.B. wenn ein Kunde die letzten Raten in einer Summe ablösen möchte). Im Modal: Betragsfeld mit Toggle **„Gesamte Restsumme einziehen"**, Einzugsdatum (frühestes Datum = SEPA-Vorlauf des Mandats, wird angezeigt) und eine Vorschau, welche Raten abgelöst bzw. reduziert werden.
-
-Der Betrag löst die **letzten offenen Raten** ab: Voll abgedeckte Raten werden storniert und durch eine **neue Ablöse-Rate** mit eigenem GoCardless-Einzug ersetzt, eine teilweise abgedeckte Rate wird reduziert. Geht die Zahlung ein, wird der Vertrag bei vollständiger Begleichung automatisch abgeschlossen (Webhook). **Platzt der Ablöse-Einzug**, erscheint er wie jede geplatzte Rate im normalen Rücklastschrift-Ablauf („Beglichen"-Button, RLS-Gebühr, Schulden-Liste) — die ursprünglichen Raten werden bewusst **nicht** automatisch wiederhergestellt; falls der Kunde doch wieder Raten möchte, den Plan über „Raten anpassen" umbauen. Bereits eingereichte Einzüge laufen durch; Verträge mit Alt-Dauerauftrag werden abgelehnt (erst Plan stornieren). Der Button erscheint nur bei GoCardless-verbundenen Einzelzahlungs-Verträgen mit offenen Raten (Rollen: super_admin, admin, filialleiterin, verwaltung).
-
-### Für Entwickler (31.07.2026)
-
-- **Endpoints:** `POST /hub/contracts/{contract}/payments/collect-sepa` (`ContractController::collectSepaPayment()`, Gate `manage_gocardless`) und `GET …/payments/collect-info` (`getSepaCollectInfo()` → `min_charge_date` aus `getCachedMandate()['next_possible_charge_date']`, Fallback `getNextPossibleChargeDate()`).
-- **Ablauf:** Verteilung von hinten wie bei `recordExternalPayments()`. Reihenfolge bewusst: **Ablöse-Einzug zuerst anlegen** (`createPayment()` mit Metadata-Trias inkl. `contract_id` — Pflicht für die Webhook-Selbstheilung; scheitert das, ist nichts verändert, `tooSoonErrorHint()`/`extractErrorMessage()` als 422). Danach in einer DB-Transaktion: voll gedeckte Raten via `cancelSpecificPayments()` stornieren (Platzhalter ohne GC-ID nur lokal auf `cancelled`), Teilrate via `reduceRateForPayoff()` reduzieren (wie `reduceRateForPartialPayment()`, aber **ohne** bezahlte Teilzeile — der abgelöste Anteil steckt in der Ablöse-Rate), neue Ablöse-Rate (`installment_number = max+1`, `due_date` = echtes `charge_date` aus der GC-Antwort, `status = scheduled`, Notiz „SEPA-Ablösung: Einmaleinzug …") + `ContractChange` (`field_name = sepa_payoff_collected`). Wirft die Transaktion, wird der Ablöse-Einzug als **Kompensation** wieder storniert.
-- **Kein `direct_payment_method` auf der Ablöse-Rate** — sonst griffen der Webhook-`cancelled`-Schutz und der Reload-Schutz des `ContractPaymentRebuildService`. Statusübergänge (confirmed/paid/failed) laufen komplett über die bestehenden Webhooks; `checkContractCompletion()` schließt den Vertrag nach Zahlungseingang ab.
-- **Frontend:** Eintrag „Betrag einziehen" + Modal in `tab-payments.blade.php` (Blade-Guard `$mandate->gocardless_mandate_id && ! $contract->gocardless_subscription_id`, Alpine `x-show="openExternalRates().length > 0"`); JS in `public/js/contract-detail.js` (`openCollectModal()` lädt `collect-info` und setzt das flatpickr-`minDate` dynamisch per `$watch('collectMinDate')`; Verrechnungs-Vorschau über den neuen gemeinsamen Helfer `allocationPreviewFor()`, den auch die Sondertilgung nutzt).
-- **Aktionen-Menü statt Button-Leiste:** Alle acht Aktionen des Zahlungen-Tabs (Raten anpassen, Zahlung verbuchen, Betrag einziehen, Gutschein einlösen, Werber hinterlegen, Pausieren, Mandats-PDF herunterladen, GoCardless-Abgleich) liegen jetzt in EINEM „Aktionen"-Dropdown ganz rechts im Karten-Header — neue wiederverwendbare Theme-Komponente `.action-menu-glattt` (Panel mit Icon + Titel + Beschreibung je Eintrag, Einträge auch als `<a>` möglich, `.action-menu-glattt-note` zeigt den `planEditBlockReason`, `:has`-Regel hebt die Karte bei offenem Menü über ihre Geschwister). Trigger ist die neue Gradient-Pill `.action-menu-glattt-trigger` (Bolt-Icon, wandernde Lichtkante beim Hover); das „GoCardless verbunden"-Badge sitzt jetzt links bei den Titel-Badges. Dokumentiert in `.github/agents/design-system.md` (Abschnitt Buttons).
-- Tests: `tests/Feature/ContractSepaCollectTest.php` (Ersetzen, Teilbetrag ohne Teilzeile, Mindest-Einzugsdatum, Dauerauftrag-/Restsummen-Guards, Kompensations-Storno, collect-info). **Achtung Http::fake in Tests:** zuerst registrierte Stubs gewinnen — deckungsgleiche Muster nicht in `setUp()` UND im Test faken.
-
-## Update 30.07.2026 — Pausierung für Daueraufträge, Plan-Storno für Einzelzahlungen, manuelle Zahlungsverbuchung
-
-### Für Endanwender (30.07.2026)
-
-**Pausieren funktioniert jetzt auch bei Legacy-Verträgen mit Dauerauftrag.** Bisher meldete das Pausieren-Modal bei solchen Verträgen „Es gibt keine offenen Raten, die pausiert werden könnten", obwohl offene Raten angezeigt wurden. Jetzt wird beim Pausieren der GoCardless-Dauerauftrag gekündigt; beim **Fortsetzen** werden die Restraten als Einzelzahlungen neu angelegt — der Vertrag läuft ab dann auf dem aktuellen Einzelzahlungs-Modell.
-
-**„Zahlungsplan stornieren" gibt es jetzt auch für Einzelzahlungs-Verträge** (Standard seit 07/2026). Der Button im Tab „Zahlungen & SEPA" erscheint, sobald offene GoCardless-Raten existieren; beim Storno werden alle offenen Einzelzahlungen aktiv bei GoCardless storniert (vorher wurden sie nur lokal ausgeblendet — der Einzug wäre weitergelaufen!).
-
-**Neu: „Zahlung verbuchen"** im Zahlungen-Tab — als **Sondertilgung**: Es wird ein beliebiger überwiesener Betrag eingegeben (Zahlungsdatum, Zahlungsart, Referenz), der von den **letzten offenen Raten** des Plans abgezogen wird. Voll gedeckte Raten werden als extern bezahlt markiert (GoCardless-Einzug storniert), eine teilweise gedeckte Rate wird **reduziert** (Einzug storniert + reduziert neu angelegt, gleiche Fälligkeit); der gezahlte Teilbetrag erscheint als eigene bezahlte Zeile mit derselben Ratennummer. Der Toggle **„Restsumme gesamt beglichen"** setzt den Betrag auf die komplette offene Restsumme — dann wird der Vertrag nach der Verbuchung **automatisch abgeschlossen**. Eine Vorschau im Modal zeigt vor dem Speichern, welche Raten beglichen bzw. reduziert werden. Bereits eingereichte Einzüge (submitted) laufen durch; Verträge mit Dauerauftrag werden abgelehnt (erst Plan stornieren/pausieren).
-
-#### Verrechnen mit: Planende oder bestimmte Raten (05.08.2026)
-
-Die Verteilung von hinten ist für eine echte Sondertilgung richtig, für eine
-**nachgetragene** Zahlung aber falsch: Ein Alt-Einzug aus 03/2026 landete so auf
-der Rate mit Fälligkeit 03/2027 — gemeldet am 04.08.2026 (H004468, zwei
-Star-Money-Einzüge). Im Modal steht deshalb oben ein Umschalter:
-
-- **Letzte offene Raten** (Vorgabe) — Sondertilgung wie bisher, verkürzt den Plan vom Ende her.
-- **Bestimmte Raten** — Auswahlliste aller offenen Raten mit Fälligkeit und Betrag.
-  Die Zahlung deckt die gewählten Raten **von der ältesten her**, ein Teilbetrag
-  reduziert die letzte davon. Der Plan wird nicht verkürzt.
-
-Technisch: `recordExternalPayments()` nimmt optional `payment_ids` entgegen. Mit
-Auswahl wird aufsteigend nach `due_date` verteilt und gegen die **Summe der
-gewählten Raten** geprüft (nicht gegen die ganze Restsumme); enthält die Auswahl
-eine nicht mehr offene Rate, antwortet der Endpoint mit 422. Der `ContractChange`
-hält im Feld `target` fest, welcher Modus gegriffen hat (`plan_end` /
-`selected_rates`).
-
-> **Fallstrick beim Zurücknehmen:** `cancelSpecificPayments()` läuft **vor** dem
-> Verbuchen und setzt GC-verknüpfte Zeilen auf `cancelled`. Würde
-> `settleOpenExternally()` einfach den aktuellen Status protokollieren, stünde in
-> der Historie `cancelled` statt `scheduled` — und `revertSettlement()` fände
-> keinen brauchbaren Vorzustand. Der Ausgangszustand wird deshalb **vor** der
-> Storno-Runde festgehalten und als vierter Parameter übergeben.
-
-#### Begleichung zurücknehmen
-
-`revertSettlement()` rekonstruiert den Vorzustand aus der Vertrags-Historie und
-akzeptiert dabei **jeden** dokumentierten Ausgangsstatus, nicht nur
-`failed`/`chargedback`. Vorher liess sich eine über „Zahlung verbuchen"
-beglichene **offene** Rate nie zurücknehmen (sie kam aus `scheduled`) — der
-Dialog meldete „Diese Zahlung kann nicht zurückgesetzt werden". Ohne jede Spur in
-der Historie bleibt es beim Fehlschlag-Fallback (`failed`); ein Vorzustand wird
-**nicht** geraten, sonst würde eine eigenständig dokumentierte Zahlung zur
-offenen Rate. War beim Verbuchen ein GoCardless-Einzug storniert worden, weist
-die Rückmeldung darauf hin, dass er nicht wieder auflebt.
-
-### Für Entwickler (30.07.2026)
-
-- **Pausierung Daueraufträge:** `ContractPauseService::openRates()` verlangt die GC-Verknüpfung (`gocardless_payment_id NOT NULL`) nur noch für Einzelzahlungs-Verträge — bei Verträgen mit `gocardless_subscription_id` zählen die lokalen Platzhalter (GoCardless materialisiert Subscription-Raten erst kurz vor Fälligkeit, siehe `ContractPaymentReconciler::projectSubscriptionInstallments()`). `pauseIndefinite()` kündigt die Subscription über `GoCardlessPaymentPlanService::cancelPaymentPlan()` (neuer optionaler Parameter `$localNote` → Platzhalter werden mit „Pausiert – unbefristet" storniert); `pauseFixed()` nutzt den neuen Zweig `pauseFixedSubscription()`: Subscription kündigen, Platzhalter soft-deleten, alle offenen Raten um N Monate verschoben via `recreateIndividualPayments()` neu anlegen. Das Fortsetzen (`resume()`) blieb unverändert — `createIndividualPaymentPlan()` legt die Restraten als Einzelzahlungen an.
-- **Plan-Storno:** `ContractController::hasActiveGoCardlessPlan()` erkennt jetzt auch Einzelzahlungs-Pläne (`GoCardlessPaymentPlanService::hasOpenGcPayments()`); `cancelGoCardlessPlan()` storniert offene GC-Einzelzahlungen aktiv per `cancelOpenGcPayments()` statt sie nur lokal auf `cancelled` zu setzen. Blade: `$hasActivePlan` in `tab-sepa.blade.php` berücksichtigt `$v2OpenGcCount`.
-- **Manuelle Zahlungsverbuchung (Sondertilgung):** neuer Endpoint `POST /hub/contracts/{contract}/payments/record-external` (`recordExternalPayments()`, Gate `manage_gocardless`) nimmt `amount_cents` entgegen und verteilt von hinten (`orderByDesc(due_date)`): voll gedeckte Raten → `ContractPayment::settleOpenExternally()` + GC-Storno (`cancelSpecificPayments()`), Teilbetrag → `reduceRateForPartialPayment()` (GC-Storno + reduzierte Neuanlage wie bei Gutschein/Referral, Teilbetrag als eigene `paid`-Zeile mit derselben Ratennummer, damit `remaining_amount_cents` stimmt). Modal & Button in `tab-payments.blade.php` (Betragsfeld nach Währungs-Konvention, Toggle „Restsumme gesamt beglichen", clientseitige Verrechnungs-Vorschau `recordPaymentAllocationPreview()`), JS in `contract-scripts.blade.php`. Achtung: Payload-`status` der Raten ist GC-gemappt (`scheduled`→`pending_submission`) — Filter nutzen `local_status`. Vollständige Begleichung (`remaining_amount_cents === 0`) schließt den Vertrag automatisch ab (`ContractChange` `TYPE_STATUS_CHANGED`); Dauerauftrag-Verträge werden mit 422 abgelehnt.
-- Tests: `tests/Feature/ContractExternalPaymentTest.php` (Verbuchung, Abschluss, submitted-Guard, Fremdraten, Plan-Storno Einzelzahlungen) + 2 neue Fälle in `tests/Feature/ContractPauseTest.php` (Dauerauftrag unbefristet/fix).
-
-## Update 19.07.2026 — Gutscheine direkt im Zahlungsplan verrechnen
-
-### Für Endanwender (19.07.2026)
-
-Phorest-Gutscheine können jetzt direkt mit dem SEPA-Zahlungsplan eines Vertrags verrechnet werden — an zwei Stellen:
-
-1. **Beim Anlegen des Zahlungsplans** (Modal „Mandat und Zahlungsplan anlegen" bzw. „Neuen Zahlungsplan anlegen"): Ganz oben gibt es die Sektion **„Gutscheine verrechnen"**. Die Gutscheine des Vertragskunden (mit Restguthaben) werden automatisch vorgeschlagen; zusätzlich kann jede beliebige **Gutscheinnummer gesucht** werden. Es können **beliebig viele** Gutscheine ausgewählt werden.
-2. **Nachträglich auf einen bestehenden Plan**: Im Zahlungen-Tab neben „Raten anpassen" über den Button **„Gutschein einlösen"** — gleiche Auswahl, mit Vorschau, welche offenen Raten gedeckt würden.
-
-So funktioniert die Verrechnung:
-
-- Das Guthaben wird **von den letzten Raten** abgezogen — der Plan **endet früher**, statt später zu beginnen. Die 1. Rate (vor Ort) ist nie betroffen.
-- **Voll gedeckte Raten** werden als **bezahlt** markiert (Zahlungsart *Gutschein*, Kommentar mit der Gutscheinnummer) — für sie wird **kein GoCardless-Einzug** angelegt bzw. der bestehende storniert.
-- Eine **teilgedeckte Rate** wird auf den Restbetrag **reduziert** (SEPA zieht nur noch den Rest ein), mit Kommentar wie „25,00 € per Gutschein 12345678 verrechnet". Technisches Minimum: mindestens 1 € Einzug (GoCardless-Untergrenze) — die Differenz bleibt auf dem Gutschein.
-- Es wird **nur der benötigte Betrag eingelöst**: Übersteigt das Guthaben die offene Plansumme, bleibt der Überschuss als Restguthaben auf dem Gutschein (kein Verfall). Das Phorest-Guthaben wird entsprechend reduziert (ggf. auf 0) und die Einlösung im Gutschein vermerkt („… € eingelöst am … (glatttHub, Zahlungsplan Vertrag …)").
-- **Abgelaufene Gutscheine** werden angezeigt und sind nutzbar — aber nur mit Warnhinweis und **expliziter Bestätigung**.
-- **Klare Trennung von Altsystem und Gutschein in allen Anzeigen**: Die Sidebar zeigt unter „Bezahlt" die Zeile **„davon Gutschein"** (analog zu „davon Altsystem"), die Zahlungstabelle bekommt für Teil-Verrechnungen eine eigene Fußzeile **„Gutschein-Verrechnung (Ratenkürzung)"** mit den Gutscheinnummern, und die Summen-Badges zeigen **„davon per Gutschein"**. Voll gedeckte Raten erscheinen als normale bezahlte Zeilen mit Typ *Gutschein*. Die Belege stehen zusätzlich im **Verlauf**-Tab.
-- **Fehlerfall Phorest**: Schlägt das Reduzieren des Guthabens nach der Plan-Anlage fehl, bleibt der Plan bestehen; eine deutliche **Warnung** (im Modal und dauerhaft im Zahlungen-Tab) fordert auf, das Guthaben manuell in der Gutschein-Verwaltung abzuziehen.
-- **Kein Auto-Restore**: Wird der Plan später storniert (Widerruf, Neuanlage), bleibt der Gutschein eingelöst — falls nötig, das Guthaben manuell über die Gutschein-Verwaltung wiederherstellen.
-
-### Für Entwickler (19.07.2026)
-
-- **Migration** `2026_07_19_100000_create_contract_voucher_redemptions_table`: Einlösungs-Belege (`contract_id`, `phorest_voucher_id`, `serial_number`, `amount_cents`, `remaining_balance_before_cents`, `was_expired`, `phorest_synced_at` — *null = Phorest-Update fehlgeschlagen*, `phorest_error`, `redeemed_by`). Model `ContractVoucherRedemption`, Relation `Contract::voucherRedemptions()`.
-- **`App\Services\ContractVoucherService`** — zentrale Logik:
-  - `clientVouchers()` / `findBySerial()`: Phorest-Gutscheine laden/suchen, normalisiert auf Cents (`normalizeVoucher()`).
-  - `validateForRedemption()`: frischer Phorest-Stand, Guthaben > 0, abgelaufen nur mit `accept_expired`.
-  - `distribute(Collection $rates, Collection $vouchers)` (statisch, unit-getestet): Von-hinten-Verteilung nach Fälligkeit, pro Rate `applied_cents`/`remaining_cents`/`fully_covered`/`parts` (welcher Gutschein deckt was), `per_voucher`, `applied_total_cents`. Konstante `MIN_REMAINDER_CENTS = 100` (GC-Minimum 1 €).
-  - `redeem()`: Load-Merge-PUT gegen Phorest (Muster wie `VoucherRefundService::zeroVoucher`), reduziert `remainingBalance` um den tatsächlich verrechneten Betrag + Notiz; Fehler → Warnung + Beleg mit `phorest_error`, **kein Abbruch**.
-- **Neue Zahlungsart** `ContractPayment::DIRECT_VOUCHER = 'voucher'` (Label „Gutschein"). Gutschein-Raten sind über `direct_payment_method` automatisch vor dem destruktiven Reload geschützt (`$protectedIds` in `ContractPaymentRebuildService`); `can_correct` ist für sie bewusst `false` (Korrektur läuft über die Gutschein-Verwaltung).
-- **Anlage-Flow** `ContractController::createGoCardless()`: optionales Request-Feld `vouchers[] = {voucher_id, accept_expired}`. Server validiert frisch, verteilt, legt **nur die nicht/teilgedeckten Raten** bei GoCardless an (teilgedeckte reduziert), erstellt danach die voll gedeckten Raten als `paid`-Gutschein-Raten und löst erst dann in Phorest ein (schlägt die GC-Anlage fehl, wurde kein Gutschein angefasst). Response: `voucher_applied_cents`, `voucher_warnings`.
-- **Nachträglicher Flow** `POST /hub/contracts/{contract}/payments/apply-vouchers` → `applyVouchersToPlan()` (Middleware `can:manage_gocardless`): verrechenbar sind die `editable_payments` aus `getOpenPaymentPlanContext()` (zukünftig, `scheduled`/`pending`). Verarbeitung von hinten, pro Rate: GC-Storno (tolerant wie `updatePaymentPlan`; zwischenzeitlich eingereichte Raten → Warnung, Rate bleibt offen) → voll gedeckt: lokal `paid` per Gutschein; teilgedeckt: reduzierter Ersatz-Einzug. Eingelöst wird **nur der tatsächlich verrechnete Betrag** — auch bei Teilabbruch.
-- **Lookup-Endpunkte**: `GET /hub/contracts/{contract}/vouchers` (Vorschläge des Kunden) und `GET …/vouchers/search?serial=` — gleiche Gates.
-- **Frontend**: Alpine-Mixin `voucherApplyMixin()` (`contract-scripts.blade.php`), per Spread in `sepaTab` und `paymentsTab`; gemeinsames Partial `voucher-apply-section.blade.php` (Vorschläge, Suche, Auswahl, Abgelaufen-Bestätigung). Vorschau der Verteilung im Anlage-Modal (Badges je Rate + Summenzeilen „Per Gutschein gedeckt" / „SEPA-Einzug nach Gutschein") und im Einlöse-Modal. `getPayments()` liefert `is_voucher` je Rate + `voucher_block` (Summe, Belege, `unsynced_count` für die Nachpflege-Warnung).
-- **Abgrenzung zum Altsystem-Block**: `Contract::voucherRedeemedCents()` (Gesamtsumme) und `voucherReductionCents()` (nur der Anteil, der als **Ratenkürzung** existiert — voll gedeckte Raten sind eigene bezahlte Zeilen). `computedLegacyCollectedCents()` zieht die Kürzung ab, sonst würde eine Gutschein-Teilverrechnung fälschlich als rechnerischer Starmoney-Einzug erscheinen. Der Plausibilitäts-Check in `updatePaymentPlan()` rechnet den Gutschein-Anteil ebenfalls mit ein (`mismatch.voucher_reduction_cents`). Frontend: `applyPaymentsResult()` addiert `voucher_block.reduction_cents` zu Bezahlt- und Gesamtsumme; die V2-Sidebar (`summary-sidebar.blade.php` + `show.blade.php`) zeigt „davon Gutschein" reaktiv über das `contract-payments-summary`-Event (`voucherAmount`).
-- **Tests**: `tests/Unit/ContractVoucherDistributionTest.php` (Verteilungslogik inkl. 1-€-Minimum und Fälligkeits-Sortierung), `tests/Feature/ContractVoucherRedemptionTest.php` (beide Flows, abgelaufene Gutscheine, Phorest-Fehler → Warnung, Abgrenzung Gutschein ≠ Altsystem).
-
-## Update 15.07.2026 — Vertragsliste: Filter nach SEPA-Mandats-Status
-
-In der Vertragsübersicht (Reiter **Verträge**, `hub.contracts`) gibt es im **Status**-Filter (Trichter-Icon der Status-Spalte) zusätzlich ein Dropdown **SEPA-Mandat**. Damit lässt sich nach dem Mandats-Status filtern: *SEPA ausstehend, aktiv, eingereicht, fehlgeschlagen, storniert, abgelaufen*.
-
-Die Auswahl **„SEPA ausstehend"** spiegelt exakt den gleichnamigen Listen-Badge — d.h. sie schließt stornierte und abgeschlossene Verträge aus (nur Mandate im Status `pending` an noch offenen Verträgen). Das hilft beim Abgleich mit der Management-Liste in der Übergangsphase.
-
-- Backend: `ContractController::getContracts()` wertet den Query-Param `mandate_status` aus (`whereHas('clientMandate', …)`; bei `pending` zusätzlich `whereNotIn('status', ['cancelled','completed'])`); Optionen kommen aus `getFilterOptions()` (`mandate_statuses`). Das Mandat wird jetzt eager-geladen (behebt ein N+1).
-- Frontend: Filter-State `mandateStatus` + Dropdown im Status-Popover von `resources/views/hub/contracts/index.blade.php`.
-- Tests: `tests/Feature/ContractListMandateFilterTest.php`.
-
-## Update 06.07.2026 — Vertragsdetailseite neu gestaltet + Bankwechsel-/Altsystem-Korrekturen
-
-### Für Nutzer (06.07.2026)
-
-Die Vertragsdetailseite wurde komplett überarbeitet und ist jetzt übersichtlicher aufgebaut. Die frühere Ansicht wurde abgelöst — es gibt nur noch das neue Layout.
-
-#### Was ist neu?
-
-- **Sticky-Sidebar rechts** mit allen Kerninfos auf einen Blick: Vertragsnummer, Kunde, Zahlungsfortschritt (Balken + Bezahlt/Offen/Raten), SEPA-Mandat (Status, Zahlungsplan, IBAN, Bank), Vertragsdaten (Status, Zahlungsart, Monatsrate, Rabatt 1. Sitzung, Unterschrieben-am, Verkäufer, Zonen) und Schnellaktionen. Bleibt beim Scrollen sichtbar.
-- **Vollbreites Menüband** über der Seite mit drei Tabs: **Übersicht**, **Zahlungen & SEPA**, **Verlauf**.
-- **Direkt-Links zu Tabs**: Jeder Tab hat einen eigenen Link-Anker. So kann man jemandem direkt den Zahlungen- oder Verlauf-Tab eines Vertrags schicken:
-  - Übersicht: `…/hub/contracts/{id}#uebersicht`
-  - Zahlungen & SEPA: `…/hub/contracts/{id}#zahlungen`
-  - Verlauf: `…/hub/contracts/{id}#verlauf`
-  Beim Wechsel eines Tabs aktualisiert sich der Link automatisch (teilbar/kopierbar).
-- **Zahlungen-Tabelle** überarbeitet: gebänderte Zeilen, das GoCardless-Symbol sitzt jetzt direkt im Status-Badge. Beim **Überfahren** zeigt es die Referenznummern (Zahlung/Abo/Plan), per **Klick** wird die Referenz in die Zwischenablage kopiert.
-- **Zahlungsfortschritt** berücksichtigt jetzt auch die **vor Ort bezahlte 1. Rate**, nicht nur die dokumentierten SEPA-Raten.
-- Öffnet man eines der Zahlungs-Modale (Raten anpassen, Zahlungsplan anlegen, Bankverbindung ändern), landet man nach dem Schließen automatisch im Zahlungen-Tab.
-
-#### Bankverbindung ändern — wichtige Korrektur
-
-Beim Ändern der IBAN eines Altvertrags wurden bisher **alle** noch offenen Raten neu angelegt — auch solche, die in Wahrheit **bereits über das Altsystem (Starmoney) eingezogen** worden waren. Dadurch konnten Zahlungen doppelt erzeugt werden.
-
-Jetzt gilt: Überfällige Raten ohne dokumentierten Einzug werden beim Bankwechsel **nicht** neu angelegt, sondern als Altsystem-Einzug gewertet (sie erscheinen im „Altsystem"-Block des Vertrags). Nach dem Speichern erscheint ein Hinweis, wie viele Raten (mit Summe) übersprungen wurden. Es werden nur noch die **wirklich offenen, zukünftigen** Raten auf das neue Mandat übertragen.
-
-#### Kein Altsystem-Einzug bei neuen Verträgen
-
-Verträge mit einem Vertragsdatum **ab dem 01.06.2026** hatten nie einen Altsystem-Einzug. Bei ihnen wird deshalb kein „davon Altsystem"-Betrag mehr angezeigt — auch dann nicht, wenn der SEPA-Einzug noch gar nicht gestartet ist. Der offene Betrag entspricht dort korrekt dem vollen Restwert.
-
----
-
-### Für Entwickler (06.07.2026)
-
-#### V1 entfernt, Redesign ist Standard
-
-Das Redesign lief zunächst als „V2" hinter einem Feature-Flag. Seit diesem Update ist es die **einzige** Ansicht:
-
-| Aktion | Detail |
-|--------|--------|
-| `show-v2.blade.php` | → umbenannt zu `show.blade.php` (alte V1-View gelöscht) |
-| Gelöschte Partials | `partials/tab-details.blade.php`, `partials/tab-history.blade.php` (V1) |
-| Route entfernt | `contracts.show.v2` + Controller-Methode `showV2()` |
-| Feature-Flag entfernt | `contract_v2_enabled` (config/app.php), `CONTRACT_V2_ENABLED` (phpunit.xml, .env) |
-| UI entfernt | „Zur klassischen Ansicht"-Link, „Neue Ansicht testen"-Button |
-| Test | `ContractShowV2Test` → `ContractShowTest` (Route `hub.contracts.show`) |
-
-`ContractController::show()` rendert `hub.contracts.show`; die Daten liefert weiterhin die private Methode `buildShowData()`. CSS-Klassen (`.contract-v2-*`) und der Ordner `resources/views/hub/contracts/v2/partials/` behalten aus Kompatibilitätsgründen ihre Namen (rein historisch, keine funktionale Bedeutung).
-
-#### Seiten-Aufbau (`show.blade.php`)
-
-```
-show.blade.php
-├── @php  … serverseitige KPI-Berechnung ($v2PaidCents inkl. legacyCollectedCents(), $v2OpenCents, …)
-├── v2/partials/header          … Titelzeile (editierbare Vertragsnummer)
-├── .contract-v2-tabs           … vollbreites Segmented-Control (Übersicht | Zahlungen & SEPA | Verlauf)
-└── .contract-v2-layout (Grid)
-    ├── .contract-v2-main
-    │   ├── v2/partials/tab-overview            (tabKey=details)
-    │   ├── partials/tab-payments               (tabKey=payments, hideSummaryBand=true)
-    │   ├── partials/tab-sepa                    (tabKey=payments, nur bei SEPA)
-    │   └── v2/partials/tab-history             (tabKey=history)
-    └── aside.contract-v2-sidebar → v2/partials/summary-sidebar
-```
-
-Geteilte Partials (`tab-payments`, `tab-sepa`, `contract-scripts`, `confirm-modal`) tragen einen `$tabKey`-Parameter, damit mehrere Inhalte unter einem Tab gestapelt werden können.
-
-#### Tab-Deep-Linking (Alpine)
-
-In `contractDetail()` (`partials/contract-scripts.blade.php`):
-
-- `tabSlugs = { details: 'uebersicht', payments: 'zahlungen', history: 'verlauf' }`
-- `init()` ruft `applyTabFromHash()` und registriert einen `hashchange`-Listener (Vor/Zurück).
-- `setActiveTab(tab)` setzt `activeTab` und schreibt den Slug via `history.replaceState` in die URL (kein Scroll-Sprung, kein History-Spam).
-- Alle Tab-Buttons und Sidebar-Schnellaktionen rufen `setActiveTab(...)`.
-- Die Zahlungs-Modale (`openEditPlanModal`, `openCreateGcModal`, `openBankModal`) dispatchen `contract-goto-payments`; das Root-Element (`@contract-goto-payments.window="setActiveTab('payments')"`) wechselt dann auf den Zahlungen-Tab.
-
-#### Reaktiver Zahlungsfortschritt in der Sidebar
-
-Die Server-KPIs kennen die vor Ort bezahlte 1. Rate nicht (Phorest-Terminlogik). Deshalb dispatcht `applyPaymentsResult()` nach dem Laden der Zahlungen ein `contract-payments-summary`-Event (Beträge in **Euro**, nicht Cents!); die Sidebar aktualisiert Progressbar, Bezahlt, Offen und den Raten-Zähler darüber.
-
-#### Altsystem-Stichtag (`Contract`)
-
-```php
-const LEGACY_CUTOFF_DATE = '2026-06-01';
-
-public function mayHaveLegacyCollection(): bool
-{
-    $contractDate = $this->signed_at ?? $this->start_date ?? $this->created_at;
-    return $contractDate !== null && $contractDate->lt(Carbon::parse(self::LEGACY_CUTOFF_DATE));
-}
-```
-
-- `computedLegacyCollectedCents()` liefert `0` für Verträge ab dem Stichtag → kein irreführender Legacy-Block bei Neuverträgen.
-- `GoCardlessPaymentPlanService::hasOverdueUndocumentedPayments()` gibt für Neuverträge `false` zurück (Webhook-Guard blockiert sie nicht).
-- **Tests** benötigen für Altvertrags-Szenarien explizit `signed_at` vor dem Stichtag (sonst greift der Cutoff über `created_at = now()`).
-
-#### Bankwechsel: Altsystem-Raten nicht doppelt anlegen
-
-In `GoCardlessMandateService::changeBankAccount()`:
-
-- Vor dem Sichern der offenen Raten werden pro Vertrag **überfällige `scheduled`-Platzhalter ohne GC-Verknüpfung** (nur bei Verträgen vor dem Altsystem-Stichtag) ermittelt. Sie werden **soft-gelöscht** und als `ContractChange` (`field_name = legacy_rates_removed`) protokolliert; der Betrag wandert damit in den rechnerischen Legacy-Block.
-- Rückgabe erweitert: `['mandate', 'subscription_errors', 'skipped_legacy']` (`skipped_legacy[contract_id] = { count, amount_cents }`).
-- Die automatische Fallback-Plananlage wird bei Altsystem-Historie übersprungen (sonst würde `remainingSepaRateCount` die undokumentierten Raten neu erfinden).
-- `ContractController::updateBankAccount()` hängt einen Warnhinweis an die Erfolgsmeldung (`warning: true`); das Frontend zeigt ihn per `alert()` vor dem Reload.
-- Bei Neuverträgen (ab Stichtag) gelten überfällige Platzhalter als **echte** offene Raten und werden normal auf das neue Mandat übertragen.
-
-#### Zahlungen-Tabelle & Clipboard
-
-- GoCardless-Icon sitzt im Status-Badge (`.payment-gc-badge-icon`), Referenz-Anzeige per Custom-Tooltip (`[data-tooltip]`), Kopieren per Klick.
-- `copyPaymentReference()` nutzt die Clipboard-API nur im **Secure Context** (HTTPS/localhost). Lokal (`http://glattthub.local:8888`) greift ein Fallback über ein unsichtbares Textarea + `document.execCommand('copy')`.
-
-#### Geplatzte Raten manuell als beglichen markieren (RLS + Gebühr)
-
-**Für Endanwender:** GoCardless spielt Rücklastschriften automatisch in den Hub zurück (Status *Fehlgeschlagen*/*Rückbuchung*). Wird eine solche Rate anschließend **per Überweisung oder bar** ausgeglichen, lässt sie sich im Zahlungen-Tab direkt als beglichen erfassen — DATEV liefert diese Info nicht zurück, deshalb der manuelle Weg:
-
-- Bei einer geplatzten Rate erscheint in der Spalte **Hinweis** der Button **„Als beglichen markieren"**.
-- Im Modal werden **eingegangener Betrag** (vorausgefüllt mit dem vollen Ratenbetrag), **Zahlungseingang** (das *tatsächliche* Eingangsdatum, nicht heute), **Zahlungsart** (Überweisung/Bar/Karte/Sonstige) und optional eine **Referenz** erfasst.
-- **Teilzahlung (Update 13.08.2026):** Zahlt der Kunde nur einen Teil (z.B. in zwei Raten zurück), einfach den tatsächlich eingegangenen Betrag eintragen. Der Teilbetrag erscheint als eigene bezahlte Zeile mit derselben Ratennummer, der **Rest bleibt als offene Rücklastschrift stehen** und kann später erneut (teil-)beglichen werden. Ein Hinweis im Modal zeigt den verbleibenden Restbetrag vor dem Speichern.
-- Zusätzlich lässt sich die **Rücklastschrift-Gebühr (RLS-Gebühr)** hinterlegen: Betrag und ob sie **bereits bezahlt** wurde. Ist die Gebühr noch offen, zeigt die Zeile ein Badge *„RLS-Gebühr offen"*; sie kann später über denselben Button nachträglich als bezahlt markiert werden (Badge *„RLS-Gebühr bezahlt"*).
-- Die Rate zählt danach als **bezahlt** und verschwindet aus dem Schulden-Modul. Es wird **kein neuer GoCardless-Einzug** ausgelöst — es ist eine rein lokale Buchung.
-- **Läuft zur Rate ein Mahnfall im Forderungsmanagement**, wird er automatisch mitgeführt: Der Eingang wird dem Fall gutgeschrieben und der Fall geschlossen, sobald nichts mehr offen ist (Details: Wiki `FORDERUNGSMANAGEMENT.md`).
-
-**Für Entwickler:**
-
-- Migration `2026_07_15_100000_add_return_fee_to_contract_payments`: neue Spalten `return_fee_cents` (nullable) + `return_fee_paid_at` (nullable) auf `contract_payments`.
-- `ContractPayment::settleBounced($receivedAt, $method, $reference, $notes, $feeCents, $feePaidAt)` setzt `status=paid`, `paid_at=$receivedAt`, `direct_payment_method=$method` und die Gebührenfelder; `recordReturnFee()` aktualisiert nur die Gebühr. Accessoren: `is_bounced`, `has_return_fee`, `is_return_fee_paid`, `return_fee`.
-- **Teilzahlung:** `ContractPayment::settleBouncedPartially()` nutzt das Split-Muster der Sondertilgung (`reduceRateForPartialPayment`), nur ohne GoCardless-Calls: RLS-Zeile wird um den Teilbetrag reduziert und bleibt `failed`/`chargedback` (inkl. Gebührenfelder), der Teilbetrag wird als eigene `paid`-Zeile mit derselben Ratennummer angelegt. Der Endpoint nimmt dafür optional `amount_cents` entgegen (ohne Angabe = voller Betrag, mehr als die Rate → 422).
-- **Mahnfall-Abgleich:** `SettlementCaseSyncService` (siehe `FORDERUNGSMANAGEMENT.md`) wird nach Begleichen/Korrektur/Revert/Gebühren-Nachtrag aufgerufen; alles läuft in einer DB-Transaktion.
-- Endpoint `POST /hub/contracts/{contract}/payments/{payment}/settle` → `ContractController::settleBouncedPayment()` (Middleware `can:manage_gocardless`). Nur auf geplatzten Raten (bzw. für Gebühren-Nachtrag auf Raten mit erfasster Gebühr).
-- **Reload-Schutz:** Weil `settleBounced()` `direct_payment_method` setzt, greift automatisch die `$protectedIds`-Regel in `ContractPaymentRebuildService::rebuild()` — die manuell beglichene Rate wird beim 🔄-Reload **nicht** storniert/überschrieben. `gocardless_payment_id` und `failure_reason` bleiben zur Historie erhalten.
-- **Leerräum-Schutz (Reload):** `rebuild()` bricht jetzt ab, wenn er bestehende (nicht geschützte) Raten stornieren würde, GoCardless aber **weder Zahlungen noch eine Vorschau** liefert (leere/ungültige GC-Antwort, Sandbox ohne Daten). So kann ein Reload den Zahlungsplan nicht mehr komplett leeren; der Fehler wird im Zahlungen-Tab sichtbar. Tests: `tests/Feature/RebuildReloadSafetyTest.php`.
-- **GC-Symbol:** Manuell beglichene Raten kamen nicht per GoCardless — `getPayments()` liefert `is_manual`, das Frontend (`hasGcReference()`) blendet das GoCardless-Symbol dann aus. Ein Auto-Hinweis („Per Überweisung beglichen am …") dokumentiert die Begleichung in der Ratenübersicht.
-- `getPayments()` liefert je Rate zusätzlich `can_settle`, `can_correct`, `paid_at`, `direct_payment_method`, `direct_payment_reference`, `has_return_fee`, `return_fee_cents`, `return_fee_paid`, `return_fee_paid_at`; das Modal + `saveSettlement()` liegen in `paymentsTab` (`contract-scripts.blade.php`), Button/Modal in `tab-payments.blade.php`.
-- Tests: `tests/Feature/SettleBouncedPaymentTest.php`, `tests/Unit/ContractPaymentSettlementTest.php`.
-
-#### Manuelle Begleichung korrigieren oder zurücksetzen (Update 18.07.2026)
-
-**Für Endanwender:** Wurde beim manuellen Begleichen ein **falsches Datum** erfasst oder versehentlich die **falsche Rate** beglichen, lässt sich das nachträglich reparieren:
-
-- Bei jeder manuell beglichenen Rate erscheint in der Status-Spalte der Button **„Korrigieren"**. Er öffnet dasselbe Modal, vorbefüllt mit den erfassten Werten — **Zahlungseingang, Zahlungsart, Referenz und RLS-Gebühr** können geändert und neu gespeichert werden.
-- Links im Modal-Footer gibt es zusätzlich **„Begleichung zurücksetzen"** (mit Sicherheitsabfrage): Die Rate kehrt in ihren **geplatzten Ursprungszustand** zurück (*Fehlgeschlagen*/*Rückbuchung*), erscheint wieder im Schulden-Modul und kann anschließend erneut — auf der richtigen Rate — beglichen werden.
-- Beides sind rein lokale Buchungen, es wird kein GoCardless-Einzug ausgelöst. Jede Korrektur wird im **Verlauf**-Tab des Vertrags protokolliert.
-
-**Für Entwickler:**
-
-- Keine Migration — nutzt die bestehenden Spalten. Der vorherige Status wird beim Zurücksetzen aus der Vertrags-Historie rekonstruiert (`ContractChange` mit `change_type=payment_updated`, `new_value=paid` → `old_value`); Fallback `failed`, wenn `failure_reason`/`failure_code` vorhanden. Ohne beides ist kein Zurücksetzen möglich (schützt echte Direktzahlungen).
-- `ContractPayment::correctSettlement($receivedAt, $method, $reference, $feeCents, $feePaidAt)` — aktualisiert die Begleichungsfelder; die Auto-Note („Per … beglichen am …") wird neu generiert, benutzerdefinierte Notes bleiben erhalten. `ContractPayment::revertSettlement()` — stellt den geplatzten Zustand wieder her und leert `paid_at`/`direct_payment_method`/Referenz/Gebührenfelder (damit entfällt auch der Reload-Schutz — korrekt, da die Rate wieder den GC-Zustand widerspiegelt).
-- Endpoint `POST /hub/contracts/{contract}/payments/{payment}/settle/correct` → `ContractController::correctSettledPayment()` (gleiche Middleware/Rollen wie beim Begleichen). Request-Feld `action`: `correct` (Default, mit Validierung wie beim Settle) oder `revert`.
-- Frontend: `settleMode` (`settle`/`correct`/`fee`) steuert Titel, Felder und Buttons des Settle-Modals; `revertSettlement()` in `contract-scripts.blade.php`. Der „Gebühr bezahlt"-Button erscheint nur noch, wenn die Rate nicht ohnehin korrigierbar ist (Gebühr wird dann im Korrektur-Modal gepflegt).
-- Tests: `tests/Feature/CorrectSettledPaymentTest.php`, `tests/Unit/ContractPaymentSettlementTest.php`.
-
-#### SEPA-Pausierung (Ratenzahlung aussetzen)
-
-**Für Endanwender:** Im Zahlungen-Tab kann ein SEPA-Vertrag über **„Pausieren"** ausgesetzt werden — für Fälle wie Arbeitslosigkeit oder Zahlungsschwierigkeiten. Zwei Arten:
-
-- **Fix (N Monate):** Die offenen Raten werden **um N Monate nach hinten verschoben**. Die Laufzeit verlängert sich entsprechend, der Kunde zahlt weiterhin alle Raten (nur später). Kein „Fortsetzen" nötig — der korrigierte Plan steht sofort.
-- **Unbefristet (Schuldner):** Alle offenen Raten werden **gestoppt**. Der Vertrag zeigt ein Pause-Banner; das SEPA-Mandat bleibt aktiv. Über **„Fortsetzen"** kommen **genau die beim Pausieren gestoppten Raten** ab einem gewählten Datum zurück (Anzahl und Beträge bleiben erhalten, ohne neues Mandat) — seit 21.08.2026 merkt sich die Pause dafür die stornierten Raten (`contract_pauses.paused_payment_ids`). Vorher rechnete das Fortsetzen den Plan aus `installment_count − bezahlte Zeilen` neu; bei Bestandsverträgen ohne Alt-Einzugs-Zeilen (Star-Money-Ära) entstand so ein kompletter neuer Zahlplan statt der Restraten (gemeldet 20.08.2026, Fall OS003246).
-
-Bereits **eingereichte** Raten (`submitted`, auf dem Weg zur Bank) laufen in beiden Fällen noch durch.
-
-**Endet der Vertrag, endet die Pause automatisch** (seit 11.08.2026). Wird einem Widerruf stattgegeben — oder der Vertrag durch Downgrade/Upgrade ersetzt —, verschwindet das Pause-Banner von selbst. Es wird dabei **nichts fortgesetzt**: Es werden keine Raten neu terminiert und GoCardless wird nicht angefasst; der Vorgang ist reine Zustandskorrektur und im Bearbeitungsverlauf als „SEPA-Pause beendet" vermerkt. Vorher blieb die Pausierung sichtbar stehen, obwohl es nichts mehr zu pausieren gab (gemeldet 06.08.2026, Janine).
-
-**Für Entwickler:**
-
-- GoCardless kann Einzelzahlungen (Standard seit 07/2026) **nicht** „pausieren" — der einzige Weg ist **Storno + Neuterminierung**. Der neue `App\Services\ContractPauseService` kapselt das und baut auf den bestehenden `public`-Bausteinen `GoCardlessPaymentPlanService::cancelOpenGcPayments()` / `recreateIndividualPayments()` / `createIndividualPaymentPlan()` auf.
-  - `pauseFixed()`: nur die **nächsten N** offenen Raten stornieren (`cancelSpecificPayments()`) + soft-deleten und ebenso viele am Planende neu anlegen — die übrigen offenen Raten behalten ihre GoCardless-Zahlung. Endergebnis identisch zu „alle um N verschieben", aber mit minimalem GC-Aufwand.
-  - `pauseIndefinite()`: offene Raten stornieren (Notiz „Pausiert – unbefristet" → im Reload geschützt, im Debt-Modul via `cancelled` ausgeschlossen), Mandat bleibt aktiv.
-  - `resume(startDate)`: legt **genau die an der Pause gemerkten Raten** (`paused_payment_ids`, Migration `2026_08_21_110000`) ab Startdatum via `recreateIndividualPayments()` neu an — mit Original-Ratennummern und -Beträgen; die stornierten Ursprungszeilen werden soft-gelöscht (keine Doppel-Nummern). Nur Pausen aus der Zeit **vor** dem Feld fallen auf die alte Neuberechnung (`createIndividualPaymentPlan()`, `installment_count − bezahlte Zeilen`) zurück.
-  - `endBecauseContractEnded($contract, $reason, $userId)` (11.08.2026): beendet eine laufende unbefristete Pause, weil der **Vertrag** endet. Ruft ausdrücklich **nicht** `resume()` auf (das würde Restraten neu terminieren) und fasst GoCardless nicht an — bei einer unbefristeten Pause sind die offenen Raten längst storniert, alles Weitere entscheidet der SEPA-Tab von Hand (Festlegung 31.07.2026). Fixe Pausen bleiben unberührt: Sie sind reine Historie.
-- Datenmodell: Tabelle `contract_pauses` (Migration `2026_07_15_110000`), Model `App\Models\ContractPause`. Am `Contract`: `pauses()`, `activeIndefinitePause()`, Accessor `is_paused`. **Kein** neuer Contract-Status (würde zahlreiche `where('status','active')`-Filter brechen).
-- **Zwei Ausgänge einer Pause** (Migration `2026_08_11_090000`): `resumed_at`/`resume_date` = fortgesetzt (Raten neu terminiert), `ended_at`/`ended_reason` = ohne Fortsetzung beendet, weil der Vertrag endete. Bewusst getrennte Spalten — ein gesetztes `resumed_at` ohne `resume_date` würde im Verlauf behaupten, die Einzüge liefen wieder. `ContractPause::is_active` und `Contract::activeIndefinitePause()` prüfen beide Felder.
-- **Auslöser** (alle drei Wege, auf denen ein Vertrag beendet wird): `RevocationOutcomeService::apply()` (Widerruf im Hub abgeschlossen — Rückgabe enthält `ended_pause`, die Meldung an den Bearbeiter nennt es), `ContractImportService::handleWiderruf()` (Widerruf aus dem Google Sheet) und `ContractController::resolveWiderrufImport()` (Widerruf manuell zugeordnet).
-- **Altbestand:** `php artisan revocations:apply-outcomes` hat einen dritten Schritt „Laufende SEPA-Pausen auf beendeten Verträgen" (Trockenlauf ohne `--force`, listet Vertragsnummer, Status, Pausenbeginn und Grund).
-- Endpoints: `POST /hub/contracts/{contract}/pause` (`type` fixed/indefinite, `months`, `reason`), `POST /hub/contracts/{contract}/resume` (`resume_date`) — `ContractController::pauseContract()` / `resumeContract()`, Gate `can:manage_gocardless`. `getPayments()` liefert `pause` + `can_pause` für Banner/Button.
-- **Guards gegen „Wegheilen" der unbefristeten Pause:** `GoCardlessPaymentPlanService::activatePendingPlans()` (mandates.active-Webhook) und `ContractPaymentReconciler::reconcileContract()` (täglicher Cron) überspringen pausierte Verträge (`$contract->is_paused`). Fixe Pausen brauchen keine Guards — die Raten bleiben reale GC-Zahlungen, nur später terminiert.
-- Tests: `tests/Feature/ContractPauseTest.php`, `tests/Feature/RevocationOutcomeTest.php` (Pause endet mit Widerruf/Downgrade, bleibt bei Ablehnung und bei fixer Pause stehen), `tests/Feature/ApplyRevocationOutcomesCommandTest.php`, `tests/Feature/ContractImportMandateSyncTest.php`.
-
-#### Geänderte / entfernte Dateien (Auszug)
-
-| Datei | Änderung |
-|-------|----------|
-| `app/Models/Contract.php` | `LEGACY_CUTOFF_DATE`, `mayHaveLegacyCollection()`, `computedLegacyCollectedCents()` respektiert Stichtag |
-| `app/Services/GoCardlessMandateService.php` | Altsystem-Guard im Bankwechsel, `skipped_legacy`-Rückgabe |
-| `app/Services/GoCardlessPaymentPlanService.php` | `hasOverdueUndocumentedPayments()` respektiert Stichtag |
-| `app/Http/Controllers/ContractController.php` | `showV2()` entfernt, Bankwechsel-Warnhinweis |
-| `routes/web.php`, `config/app.php`, `phpunit.xml` | Feature-Flag `contract_v2_enabled` entfernt |
-| `resources/views/hub/contracts/show.blade.php` | ehemals `show-v2`, Tab-Band, Deep-Linking |
-| `resources/views/hub/contracts/v2/partials/*` | header, summary-sidebar, tab-overview, tab-history |
-| `resources/views/hub/contracts/partials/{contract-scripts,tab-payments}.blade.php` | Deep-Linking, GC-Icon/Clipboard, reaktive Summary |
-| `public/css/theme_glattt.css` | `.contract-v2-tabs`, `.btn-glattt-ghost`, Tabellen-/Tooltip-/Progress-Feinschliff |
-
-#### Tests
-
-- `tests/Feature/ContractShowTest.php` (Route + Inhalte, 403 ohne Permission)
-- `tests/Unit/GoCardlessBankChangeTest.php` (u.a. Altsystem-Raten werden nicht neu angelegt, Neuvertrag-Verhalten)
-- `tests/Feature/ContractPaymentsDbOnlyTest.php` (Legacy-Block, Neuvertrag ohne Legacy-Block)
-
-Volle Suite: 523 Tests grün.
-
----
-
-## Update 18.05.2026 — Zahlungsart wechseln (Direktzahlung → SEPA)
-
-### Für Nutzer (18.05.2026)
-
-Ein bestehender Direktzahlungs-Vertrag kann nachträglich auf SEPA-Lastschrift umgestellt werden. Das ist zum Beispiel nötig, wenn ein Kunde zunächst bar gezahlt hat, aber der Rest auf Ratenzahlung per Lastschrift umgestellt werden soll.
-
-#### Schritt-für-Schritt
-
-1. **Vertrag öffnen** — Vertragsdetailseite über Hub → Verträge aufrufen
-2. **Vertragsübersicht bearbeiten** — Im Abschnitt „Vertragsübersicht" auf den Bearbeiten-Button klicken
-3. **Zahlungsart ändern** — Im Dropdown „Zahlungsart" von „Direktzahlung" auf „SEPA-Lastschrift" wechseln
-4. **SEPA-Felder ausfüllen** — Folgende Felder müssen zusätzlich ausgefüllt werden:
-   - **Anzahl Raten** — wie viele SEPA-Abbuchungen es geben soll
-   - **Monatliche Rate (€)** — Betrag pro Rate
-   - **Erste Abbuchung** — Datum der ersten SEPA-Abbuchung
-5. **Speichern** — Auf „Speichern" klicken → Bestätigungs-Modal zeigt die Diff-Tabelle der Änderungen
-6. **Begründung eingeben** — Pflichtfeld (mind. 10 Zeichen), z.B. „Von Direkt auf Lastschrift"
-7. **Änderungen speichern** — Klick auf „Änderungen speichern" im Modal
-8. **SEPA-Mandat anlegen** — Danach im Tab „SEPA-Mandat" ein Mandat anlegen:
-   - Entweder per **„Mandat manuell anlegen"** (Kontodaten direkt eingeben)
-   - Oder per **GoCardless-Suche**, falls der Kunde bereits ein Mandat bei GoCardless hat
-
-> **Wichtig:** Der reine Zahlungsart-Wechsel erstellt **kein** SEPA-Mandat. Schritt 8 ist zwingend nötig, damit Abbuchungen stattfinden können.
-
-#### Was wird automatisch berechnet?
-
-Wenn sich `Anzahl Raten` oder `Preisliste` ändert, berechnet das System den vorgeschlagenen Gesamtpreis neu (basierend auf der Preisgruppe der Preisliste für die entsprechende Zonenzahl und Laufzeit). Der Gesamtwert muss ggf. noch manuell angepasst werden.
-
----
-
-### Für Entwickler (18.05.2026)
-
-#### Geänderte Dateien
-
-| Datei | Änderung |
-|-------|----------|
-| `app/Models/PriceList.php` | Neue Methode `calculatePrice()` hinzugefügt |
-| `app/Models/Contract.php` | `calculateTotalValue()` übergibt jetzt `installment_count` |
-
-#### Bugfix: `PriceList::calculatePrice()` fehlte
-
-**Fehler:** `Call to undefined method App\Models\PriceList::calculatePrice()`
-
-**Ursache:** In `Contract::calculateTotalValue()` wurde `$this->priceList->calculatePrice($bodyZoneCount)` aufgerufen, obwohl diese Methode in `PriceList` gar nicht existierte. Der Fehler trat beim Wechsel der Zahlungsart auf, weil dabei auch `installment_count` geändert wird — was `calculateTotalValue()` auslöst.
-
-**Fix:** `calculatePrice(int $bodyZoneCount, ?int $months = null): int` in `PriceList` implementiert:
-
-```php
-public function calculatePrice(int $bodyZoneCount, ?int $months = null): int
-{
-    $effectiveZones = min($bodyZoneCount, $this->max_body_zones ?? $bodyZoneCount);
-    $query = $this->priceGroups()->where('body_zone_count', $effectiveZones);
-
-    if ($months !== null) {
-        $group = $query->where('months', $months)->first()
-            ?? $query->first(); // Fallback auf erste verfügbare Gruppe
-    } else {
-        $group = $query->first();
-    }
-
-    return $group ? $group->monthly_amount_cents * $group->months : 0;
-}
-```
-
-Außerdem übergibt `calculateTotalValue()` jetzt den `installment_count`:
-
-```php
-$basePrice = $this->priceList->calculatePrice($this->body_zone_count, $this->installment_count);
-```
-
-#### Ablauf im Controller: `updateContractOverview()`
-
-Route: `PATCH /hub/contracts/{contract}/overview`  
-Middleware: `can:edit_contract_data`
-
-1. Validiert Felder: `payment_method`, `installment_count`, `monthly_amount_cents`, `total_value_cents`, `first_payment_date`, `reason`
-2. Erkennt Änderungen per Feldvergleich
-3. Speichert alle geänderten Felder auf dem Vertrag
-4. Falls `installment_count` oder `price_list_id` geändert: ruft `calculateTotalValue()` auf und gibt Vorschlagswert zurück
-5. Schreibt jeden geänderten Wert als eigenen `ContractChange`-Eintrag (Typ: `field_updated`)
-
-#### Was das Bestätigungs-Modal zeigt
-
-Das Alpine.js-Frontend baut vor dem Speichern eine **Diff-Tabelle** aus den alten (PHP-Werten) und neuen (Formular-Werten) Feldern. Typische Einträge beim Zahlungsart-Wechsel:
-
-| Feld | Vorher | Nachher |
-|------|--------|---------|
-| Zahlungsart | Direktzahlung | SEPA-Lastschrift |
-| Startdatum | – | 2026-06-03 |
-| Anzahl Raten | – | 18 |
-| Erste Abbuchung | – | 2026-06-03 |
-
-Die Begründung ist Pflichtfeld (min. 10 Zeichen) und wird bei jedem `ContractChange` gespeichert.
-
----
-
-## Update 08.05.2026 — SEPA-Mandat manuell anlegen
-
-### Für Nutzer (08.05.2026)
-
-Auf der SEPA-Mandat-Seite eines Vertrags erscheint nun ein Button **„Mandat manuell anlegen"**, wenn für den Vertrag noch kein SEPA-Mandat in der Datenbank registriert ist.
-
-**Wann erscheint der Button?**
-
-- Nur wenn `payment_method === 'sepa'` und noch kein `ClientMandate` mit dem Vertrag verknüpft ist
-- Nur für Nutzer mit der Berechtigung `edit_contract_data`
-
-**Formular-Felder:**
-
-| Feld | Pflicht | Hinweis |
-|------|---------|---------|
-| Vorname | ✅ | Kontoinhaber |
-| Nachname | ✅ | Kontoinhaber |
-| IBAN | ✅ | Live-Validierung mit Prüfziffer (MOD-97) |
-| BIC | – | Wird automatisch per OpenIBAN-API befüllt |
-| Bankname | – | Wird automatisch per OpenIBAN-API befüllt |
-| Mandatsreferenz | – | Leer lassen = automatisch generiert (`MAN-XXXXXXXX`) |
-| Unterschrieben am | – | Zeitpunkt der Unterschrift |
-
-**Verhalten nach dem Speichern:**
-
-1. Ein neues `ClientMandate` mit Status **Ausstehend** wird angelegt
-2. Der Vertrag wird mit dem Mandat verknüpft (`client_mandate_id`)
-3. Der Vorgang wird im Bearbeitungsverlauf protokolliert
-4. Seite wird automatisch neu geladen — der SEPA-Tab zeigt jetzt das angelegte Mandat
-
-> **Hinweis:** Das Mandat wird zunächst nur lokal gespeichert (Status: Ausstehend). Um es mit GoCardless zu synchronisieren und den Zahlungsplan zu erstellen, danach die übliche GoCardless-Suche oder den „Mandat und Zahlungsplan anlegen"-Workflow nutzen.
-
-### Für Entwickler (08.05.2026)
-
-#### Neue / geänderte Dateien
-
-| Datei | Änderung |
-|-------|----------|
-| `app/Http/Controllers/ContractController.php` | Neue Methode `createMandate()` |
-| `routes/web.php` | Route `POST hub/contracts/{contract}/create-mandate` (Middleware `edit_contract_data`) |
-| `resources/views/hub/contracts/show.blade.php` | Button + Modal-Include + Alpine.js State & Methoden |
-| `resources/views/hub/contracts/partials/create-mandate-modal.blade.php` | Neues Modal-Partial |
-
-#### Controller: `createMandate(Request $request, Contract $contract)`
-
-```php
-// Route: POST hub/contracts/{contract}/create-mandate
-// Middleware: can:edit_contract_data
-```
-
-- Prüft ob bereits ein `ClientMandate` vorhanden ist (422 falls ja)
-- Validiert: `payer_first_name`, `payer_last_name`, `payer_iban` (required), `payer_bic`, `payer_bank_name`, `mandate_reference`, `mandate_signed_at` (optional)
-- Normalisiert IBAN (Leerzeichen entfernen, Großbuchstaben)
-- Auto-generiert `mandate_reference` falls leer: `MAN-` + 8 Hex-Zeichen
-- Erstellt `ClientMandate` mit `status = pending`
-- Setzt `contract.client_mandate_id`
-- Schreibt `ContractChange` vom Typ `mandate_created`
-
-#### Alpine.js — neue State-Variablen in `sepaTab()`
-
-```js
-showCreateMandateModal: false,
-createMandateSaving: false,
-createMandateError: null,
-createMandateSuccess: false,
-createMandateIbanLoading: false,
-createMandateIbanValid: false,
-createMandateIbanError: null,
-createMandateForm: { payer_first_name, payer_last_name, payer_iban, payer_bic, payer_bank_name, mandate_reference, mandate_signed_at }
-```
-
-Neue Methode `validateAndLookupMandateIban()` — nutzt die bereits vorhandenen `validateIBAN()` und `lookupBICFromIBAN()` aus demselben Scope wieder.
-
----
-
-## Update 30.04.2026 — SEPA-E-Mail-System vollständig implementiert
-
-Dieses Update implementiert ein vollständiges, GoCardless-konformes E-Mail-System für alle SEPA-relevanten Ereignisse.
-
-### Für Nutzer (30.04.2026)
-
-Kunden erhalten jetzt automatisch E-Mails bei folgenden Ereignissen:
-
-| Ereignis | Auslöser | E-Mail |
-|----------|----------|--------|
-| SEPA-Formular ausgefüllt (neuer Vertrag per Termin) | Automatisch nach GoCardless-Sync | **Onboarding** inkl. Vertrags-PDF |
-| SEPA-Mandat manuell aktiviert (Button im Hub) | Klick auf „Mandat aktivieren" | **Mandats-Aktivierung** ohne PDF |
-| Bankverbindung geändert | „Kontoverbindung ändern" im Hub | **Bankverbindung geändert** |
-| GoCardless-Mandat widerrufen | Widerruf-Button im Hub | **Mandat beendet** |
-| Vertragsdetails geändert (Rate, Datum) | Vertragsbearbeitung | **Vertragsänderung** |
-
-**E-Mail-Inhalte:**
-- Persönliche Anrede: „Liebe [Vorname]," / „Lieber [Vorname]," (geschlechtergerecht, aus Phorest)
-- Vertragsdetails: Behandlungszonen, Monatsrate, Anzahl SEPA-Raten, erste Abbuchung
-- SEPA Pre-Notification (GoCardless-Pflichtangabe): Anzahl Raten, erste und letzte Abbuchung, Betrag, Gläubiger-ID
-- Mandatsdetails: Mandatsreferenz, maskierte IBAN, Gläubiger-ID
-- Abschnitt mit Gläubiger- und GoCardless-Informationen
-
-**Ratenzählung:**
-- Bei z.B. 19 Monaten: **1 Rate vor Ort** + **18 SEPA-Lastschriften**
-- E-Mail zeigt: „18 SEPA + 1 vor Ort"
-- Pre-Notification zeigt Anzahl SEPA-Raten (= `installment_count - 1`)
-- Letzte Abbuchung = Erste Abbuchung + `installment_count - 2` Monate
-
-**Deduplication:**
-- Onboarding-Mail wird pro Mandat nur einmal versendet (kein doppelter Versand bei erneutem Sync)
-- `force_resend`-Parameter für Ausnahmen (z.B. Supportfälle)
-
-### Für Entwickler (30.04.2026)
-
-#### Neue Dateien
-
-| Datei | Zweck |
-|-------|-------|
-| `app/Services/SepaEmailService.php` | Zentraler Service für alle SEPA-E-Mails |
-| `app/Models/SepaEmailLog.php` | Logging-Model mit Deduplication-Logik |
-| `app/Mail/Sepa/OnboardingMail.php` | Mailable: Onboarding inkl. PDF |
-| `app/Mail/Sepa/MandateActivationMail.php` | Mailable: Mandats-Aktivierung |
-| `app/Mail/Sepa/ChangeNotificationMail.php` | Mailable: Vertragsänderung |
-| `app/Mail/Sepa/BankAccountChangedMail.php` | Mailable: Bankverbindung geändert |
-| `app/Mail/Sepa/MandateCancelledMail.php` | Mailable: Mandat beendet |
-| `resources/views/emails/sepa/onboarding.blade.php` | Template: Onboarding |
-| `resources/views/emails/sepa/mandate-activation.blade.php` | Template: Mandats-Aktivierung |
-| `resources/views/emails/sepa/change-notification.blade.php` | Template: Vertragsänderung |
-| `resources/views/emails/sepa/bank-account-changed.blade.php` | Template: Bankverbindung geändert |
-| `resources/views/emails/sepa/mandate-cancelled.blade.php` | Template: Mandat beendet |
-| `app/Filament/Resources/SepaEmailLogs/` | Filament Resource für E-Mail-Log-Übersicht |
-| `database/migrations/2026_04_29_180000_create_sepa_email_logs_table.php` | Tabelle `sepa_email_logs` |
-| `database/migrations/2026_04_30_100000_add_bank_account_changed_and_mandate_cancelled_to_sepa_email_logs.php` | Enum-Erweiterung für neue Mail-Typen |
-| `tests/Feature/SepaEmailServiceTest.php` | Feature-Tests (19/19 ✅) |
-
-#### `SepaEmailService` — Methoden-Übersicht
-
-```php
-sendOnboardingEmail(ClientMandate $mandate, Contract $contract, bool $forceResend = false): void
-sendMandateActivationEmail(ClientMandate $mandate, Contract $contract): void
-sendChangeNotificationEmail(ClientMandate $mandate, Contract $contract, array|Collection $changes): void
-sendBankAccountChangedEmail(ClientMandate $mandate, Contract $contract, string $maskedIban = '–'): void
-sendMandateCancelledEmail(ClientMandate $mandate, Contract $contract): void
-```
-
-Alle Methoden:
-- Ermitteln Empfänger-E-Mail aus `payer_email` (bei abweichendem Zahler) oder Phorest-API
-- Laden Name und Geschlecht aus Phorest für personalisierte Anrede
-- Loggen Erfolg/Fehler in `sepa_email_logs`
-- Wenden Mail-Einstellungen via `MailSettingsService` an (From-Name, From-Address)
-
-#### `SepaEmailLog` — Typen-Konstanten
-
-```php
-TYPE_ONBOARDING         = 'onboarding'
-TYPE_ACTIVATION         = 'activation'
-TYPE_CHANGE_NOTIFICATION = 'change_notification'
-TYPE_BANK_ACCOUNT_CHANGED = 'bank_account_changed'
-TYPE_MANDATE_CANCELLED  = 'mandate_cancelled'
-```
-
-#### Aufruf-Stellen
-
-| Mail | Aufruf in |
-|------|-----------|
-| Onboarding | `SyncMandateToGoCardlessJob` — nach erfolgreichem GoCardless-Sync |
-| Aktivierung | `ContractController::activateMandate()` — manueller Button |
-| Änderung | `ContractController::updateContractData()` — Vertragsbearbeitung |
-| Bankverbindung geändert | `GoCardlessMandateService::changeBankAccount()` — nach API-Aufruf |
-| Mandat beendet | `GoCardlessMandateService::cancelMandate()` + `ContractController::cancelGoCardlessMandate()` |
-
-#### `installment_count`-Semantik
-
-```
-installment_count = 19
-├── Rate 1: vor Ort bezahlt
-└── Rate 2-19: SEPA (= installment_count - 1 = 18 Lastschriften)
-
-GoCardless Subscription count = installment_count - 1
-E-Mail installmentCount       = installment_count - 1
-E-Mail lastPaymentDate        = first_payment_date + (installment_count - 2) Monate
-```
-
-#### GoCardless Compliance — Pre-Notification
-
-Die E-Mails erfüllen die GoCardless-Pflichtanforderungen für SEPA Pre-Notifications:
-
-| Pflichtfeld | Quelle |
-|-------------|--------|
-| Anzahl Raten | `installment_count - 1` |
-| Erste Abbuchung | `contract.first_payment_date` |
-| Letzte Abbuchung | `first_payment_date + (installment_count - 2) Monate` |
-| Abbuchungsbetrag | `monthly_amount_cents / 100` |
-| Gläubiger-ID | `DE33ZZZ00001960715` (config) |
-| Mandatsreferenz | `mandate.mandate_reference` |
-| Kontoinhaber | `mandate.payer_*` oder Phorest-Client-Name |
-
-#### Test-Mails manuell versenden
-
-```bash
-php artisan tinker --execute="
-use App\Models\ClientMandate;
-use App\Models\Contract;
-use App\Services\SepaEmailService;
-
-\$mandate = ClientMandate::where('mandate_reference', 'REFERENZ')->firstOrFail();
-\$contract = Contract::where('contract_number', 'VERTRAGSNUMMER')->firstOrFail();
-
-\$service = app(SepaEmailService::class);
-
-// Onboarding (mit force_resend um Deduplication zu umgehen):
-\$service->sendOnboardingEmail(\$mandate, \$contract, true);
-
-// Aktivierung:
-\$service->sendMandateActivationEmail(\$mandate, \$contract);
-
-// Mandat beendet:
-\$service->sendMandateCancelledEmail(\$mandate, \$contract);
-"
-```
-
-## Update 28.04.2026 — GoCardless-Plan stornieren & neu anlegen
-
-Dieses Update verbessert den Workflow rund um das Stornieren und Neu-Anlegen von GoCardless-Zahlungsplänen im SEPA-Mandat-Tab.
-
-### Für Nutzer (28.04.2026)
-
-**Zahlungsplan stornieren:**
-- Der Button „Zahlungsplan stornieren" erscheint jetzt für **alle** aktiven GoCardless-Pläne — sowohl für neuere Instalment Schedules als auch für ältere Daueraufträge (Subscriptions).
-- Nach dem Stornieren werden alle lokalen „Vorgemerkt"-Zahlungen automatisch auf „Storniert" gesetzt.
-- Im Bearbeitungsverlauf wird dokumentiert welche Summe bis zum Stornierungszeitpunkt bereits über GoCardless eingezogen wurde.
-- Im GoCardless-Status-Bereich erscheint ein grüner Hinweis mit dem bereits eingezogenen Betrag (sofern Zahlungen vorhanden).
-
-**Neuen Zahlungsplan anlegen:**
-- Nach dem Stornieren ist der Button „Neuen Zahlungsplan anlegen" direkt sichtbar — ohne Seite neu laden zu müssen.
-- Mandatsreferenz und Bankverbindung bleiben erhalten; nur der Zahlungsplan selbst wird storniert.
-
-**Anzeigebereinigung:**
-- Bei einem stornierten Mandat werden die Felder „Monatliche Rate", „Anzahl Raten" und „Erste Abbuchung" ausgeblendet — diese Werte stammen vom alten Plan und sind nach der Stornierung nicht mehr relevant.
-- Die Zeile „Erstellt am …" im Seitentitel wurde entfernt.
-
-**Kundendaten-Darstellung:**
-- E-Mail-Adresse und Telefonnummer werden wieder korrekt in einer Zeile mit Icon dargestellt (CSS-Bugfix Alpine.js).
-
-### Für Entwickler (28.04.2026)
-
-**`hasActiveGoCardlessPlan()` erweitert** (`ContractController.php`):
-- Prüft jetzt beide Plan-Typen:
-  - `ClientMandate.gocardless_instalment_schedule_id` (Instalment Schedule)
-  - `Contract.gocardless_subscription_id` (Dauerauftrag/Subscription)
-
-**`cancelGoCardlessPlan()` erweitert** (`ContractController.php`):
-- Berechnet vor dem Stornieren den bereits eingezogenen Betrag: `ContractPayment` mit `status=paid` und `gocardless_payment_id IS NOT NULL`
-- Storniert `gocardless_subscription_id` via `GoCardlessApiService::cancelSubscription()` (zusätzlich zu Instalment Schedule)
-- Setzt `contract.gocardless_subscription_id = null` und speichert
-- Setzt alle lokalen Zahlungen mit `status IN (scheduled, pending)` auf `cancelled`
-- Schreibt `ContractChange` mit Plan-ID und eingezogenem Betrag im `old_value`-Feld
-
-**View `show.blade.php` — Bedingungen angepasst:**
-- Cancel-Button: `@if((!empty($mandate->gocardless_instalment_schedule_id) && in_array(...)) || !empty($contract->gocardless_subscription_id))`
-- Bankverbindung/GoCardless-Section: jetzt auch bei `mandate->status === 'cancelled'` sichtbar (war: nur `active`, `submitted`)
-- Zahlungsplan-Felder (Rate, Anzahl Raten, Erste Abbuchung): werden bei `status === 'cancelled'` ausgeblendet
-- Alpine.js `x-show` + `display: flex` Bug bei E-Mail/Telefon-Spans: von statischem `style=` auf `:style=` (dynamisches Alpine-Binding) umgestellt
-
-
-
-Dieses Update implementiert alle Pflichtanforderungen laut [GoCardless SEPA Custom Payment Pages](https://support.gocardless.com/hc/en-gb/articles/360001245585-Eurozone-SEPA-custom-payment-pages) für die Nutzung eigener Zahlungsseiten.
-
-### Für Nutzer (27.04.2026)
-
-**Im SEPA-Formular (vor dem Absenden):**
-- Zwischen dem letzten Formularfeld und dem „Formular absenden"-Button erscheinen jetzt die gesetzlich vorgeschriebenen GoCardless-Hinweise: Regulatory Status und Datenschutz-Link.
-
-**Im Erfolgs-Modal (nach dem Absenden):**
-- Überschrift zeigt jetzt: „SEPA-Lastschriftmandat erfolgreich eingerichtet."
-- Hinweis: „Zahlungen erscheinen auf dem Kontoauszug als **glattt**."
-- Hinweis: „Du erhältst vor jeder Abbuchung mindestens 3 Werktage im Voraus eine Benachrichtigung per E-Mail."
-- Regulatory Status + Datenschutz-Link (GoCardless Pflichtfelder)
-
-Diese Hinweise erscheinen **nur bei Formularen mit SEPA-Feldern** — alle anderen Formulare sind nicht betroffen.
-
-**Im Form-Editor noch manuell anzupassen (einmalig):**
-
-| Wo | Was | Typ |
-|---|---|---|
-| Nach Gläubiger-ID-Feld | Gläubiger-Name, Adresse, Land | `paragraph`-Feld |
-| Vor Kontoinhaber-Feldern | „Zahlungsart: Wiederkehrend" | `paragraph`-Feld |
-| Vor dem Einwilligungstext | Vorabhinweis (3 Werktage) | `paragraph`-Feld |
-| Bestehender Einwilligungstext | Auf offizielle EPC-Formulierung aktualisieren | Feld editieren |
-
-### Für Entwickler (27.04.2026)
-
-**Neue Dateien:**
-- `resources/views/partials/gocardless-footer.blade.php` — Statisches Partial mit Regulatory Status + Privacy Notice (eingebunden per `@include`)
-
-**Geänderte Dateien:**
-- `resources/views/forms/shared-fill.blade.php` — `$isSepaForm`-Flag (`$form->fields->contains('type', 'sepa_iban')`), Footer vor Submit-Button, SEPA-spezifischer Success State
-- `resources/views/partials/form-submission-modal.blade.php` — SEPA-Erkennung via Alpine.js `form.fields.some(f => f.type === 'sepa_iban')`, SEPA-Überschrift per `<template x-if>`, SEPA-Infoblock (Kontoauszug, Vorankündigung, Regulatory)
-- `resources/views/hub/forms/fill.blade.php` — `isSepaForm`-Variable an Modal-Include übergeben
-- `resources/views/hub/appointment-unified/partials/form-fill-inline.blade.php` — Alpine.js-basierte SEPA-Erkennung (kein PHP `$form` verfügbar), Footer vor Submit-Button
-- `public/css/theme_glattt.css` — Neue Klasse `.gocardless-footer-notice` (inkl. Dark Mode)
-
-**SEPA-Erkennung Logik:**
-- PHP-Kontext (shared-fill, fill): `$form->fields->contains('type', 'sepa_iban')`
-- Alpine.js-Kontext (Modal, inline): `form && form.fields && form.fields.some(f => f.type === 'sepa_iban')`
-- `form-fill-inline.blade.php` hat kein PHP `$form` — hier ausschließlich Alpine.js-Erkennung
-
-**GoCardless Compliance Status nach diesem Update:**
-
-| Anforderung | Seite | Status |
-|---|---|---|
-| HTTPS | alle | ✅ |
-| Vor-/Nachname | SEPA-Formular | ✅ |
-| E-Mail | SEPA-Formular | ✅ |
-| IBAN | SEPA-Formular | ✅ |
-| Adresse | SEPA-Formular | ✅ |
-| Gläubiger-Name + Adresse | SEPA-Formular | ⚠️ via Form-Editor |
-| Zahlungsart (Wiederkehrend) | SEPA-Formular | ⚠️ via Form-Editor |
-| Vorabhinweis 3 Werktage | SEPA-Formular | ⚠️ via Form-Editor |
-| Einwilligungstext EPC | SEPA-Formular | ⚠️ via Form-Editor |
-| Regulatory Footer | SEPA-Formular + Modal | ✅ |
-| Privacy Notice | SEPA-Formular + Modal | ✅ |
-| Success-Überschrift | Success Modal | ✅ |
-| Kontoauszug-Hinweis | Success Modal | ✅ |
-| IP + Timestamp | Backend | ✅ |
-| GoCardless Approval | — | ⏳ Screenshots senden |
-
-
-
-Dieses Tages-Update erweitert den Vertragsbereich um einen durchgängigen Workflow für:
-
-- GoCardless-Erstellung direkt aus dem Vertragsdetail (SEPA-Tab)
-- Bearbeitung offener Raten im Zahlungen-Tab (inkl. Aussetzen)
-- Robuste Fehlerbehandlung bei veralteten GoCardless-IDs
-- Korrekte Herleitung der 1. Rate (Vor Ort) aus dem ersten relevanten Termin nach Beratung
-
-Die Details sind unten jeweils in den Abschnitten „Für Nutzer“ und „Für Entwickler“ ergänzt.
-
-## Update 22.04.2026
-
-Dieses Tages-Update ergänzt das Vertragsmodul um automatisierte Status-Verwaltung und verbesserte Filter-UX:
-
-### Für Nutzer (22.04.2026)
-
-- **Vertragsübersicht zeigt standardmäßig** nur Entwurf, Aktiv und Widerruf-Verträge — Abgeschlossene sind ausgeblendet, können aber jederzeit eingeblendet werden.
-- **Status-Filter ist nun Multi-Select**: Mehrere Status können gleichzeitig ausgewählt werden (z.B. nur Aktiv + Entwurf). Ein Klick aktiviert/deaktiviert jeden Status einzeln.
-- **Direktzahlungs-Verträge** werden täglich automatisch auf „Abgeschlossen" gesetzt, sobald Phorest eine bezahlte Sitzung (PAID) für den Kunden verbucht.
-- **Legacy-Verträge (Altdaten)**: Historische Verträge aus dem alten GoCardless-System, die vollständig bezahlt sind, wurden als Batch auf „Abgeschlossen" gesetzt.
-
-### Für Entwickler (22.04.2026)
-
-**Automatischer `completed`-Status für Direktzahlungs-Verträge:**
-- Neuer Artisan-Command: `contracts:complete-direct-payments` — prüft täglich ob für `payment_method=direct` + `status=active` Verträge eine `PAID`-Sitzung in `stats_historic_appointments` ab Vertragsunterzeichnung vorliegt.
-- Beratungstermine (3 bekannte Service-IDs) werden dabei ausgeschlossen.
-- Läuft täglich um 05:00 via Google Cloud Scheduler (`/api/cron/complete-direct-contracts`).
-- Unterstützt `--dry-run` für sichere Tests.
-
-**Legacy-Batch-Abschluss (einmalig):**
-- Artisan-Command: `contracts:mark-legacy-completed --paid-csv=... --exclude-csv=...`
-- `--paid-csv`: vollständige Vertragsnummern (Tabellenblatt2, Format `YYYY.MM.DD-KUNDENNR`)
-- `--exclude-csv`: Kundennummern-Suffixe die TROTZDEM nicht abgeschlossen werden sollen (Tabellenblatt3)
-- Matching case-insensitiv; nur `status=active` Verträge werden angefasst.
-- Schreibt `contract_changes`-Einträge zur Nachvollziehbarkeit.
-
-**Status-Filter Multi-Select:**
-- Frontend: `filters.statuses` ist jetzt ein Array (war: `filters.status` String).
-- Standard-Auswahl: `['draft', 'active', 'cancelled']` (Abgeschlossene ausgeblendet).
-- URL-Parameter: `?statuses=draft,active,cancelled` (komma-getrennt).
-- Controller akzeptiert weiterhin `?status=` als Single-Value-Fallback (rückwärtskompatibel).
-- Neue Hilfsfunktion `toggleStatus(value)` im Alpine-Component.
-
----
-
-## Update 21.04.2026
-
-Dieses Tages-Update ergänzt den Vertragsbereich um Stabilität und Vollständigkeit in der GoCardless-Anbindung:
-
-- Mandatssuche priorisiert über `phorest_client_id` (inkl. Variante `phorest_clientid`) mit Referenz-Fallback
-- Sammel-Sync auf der Vertragsübersicht, um fehlende GoCardless-Verknüpfungen ohne Einzelklicks nachzuziehen
-- Korrekte Bearbeitbarkeit von offenen Raten auch bei Legacy-/Migrationsfällen
-- Vollständige Darstellung von Daueraufträgen über den GoCardless-Preview-Horizont hinaus bis zum Enddatum
-- Ergänzung historischer Altsystem-Monate vor dem ersten GoCardless-Monat
-- Priorisierte und gedeckelte Zahlungsanzeige (explizit GoCardless > projiziert GoCardless > Altsystem)
-- Kein GoCardless-Symbol bei rein projizierten GoCardless-Zeilen (visuell wie bei Hub-Planvorschau)
-
-### Für Nutzer (21.04.2026)
-
-- Der Button „In GoCardless suchen“ findet bestehende Mandate zuverlässiger, auch wenn die Mandatsreferenz nicht exakt passt.
-- Auf der Vertragsliste steht ein neuer Button „GoCardless-Sync“ zur Verfügung, um fehlende Verknüpfungen gesammelt nachzuziehen.
-- In der Zahlungsansicht von Daueraufträgen werden fehlende zukünftige Monate bis zum Enddatum eingeblendet.
-- Bereits vor GoCardless eingezogene Monatsraten aus dem Altsystem werden vor dem ersten GoCardless-Monat ergänzt.
-- Die Summe „unten“ wird nicht mehr durch Doppel-/Überzählungen verfälscht, da die Anzeige auf den erwarteten SEPA-Gesamtbetrag begrenzt ist.
-
-### Für Entwickler (21.04.2026)
-
-- Mandatssuche: Reihenfolge ist jetzt
-    1. lokales aktives `ClientMandate`
-    2. GoCardless Customer-Metadata (`phorest_client_id`, `phorest_clientid`)
-    3. Referenz-Suche (`mandate_reference` / `contract_number`)
-- Batch-Sync-Endpunkt für Vertragsübersicht hinzugefügt (`sync-gocardless-links`) inkl. Ergebniszähler (`checked`, `linked_via_local`, `linked_via_api`, `not_found`, `failed`).
-- Zahlungs-API liefert pro Zeile ein internes `source`-Kennzeichen für UI-Steuerung (`gc_explicit`, `gc_projected`, `legacy_local`, `legacy_projected`, `local`).
-- Daueraufträge: zukünftige Monate werden bis `subscription.end_date` monatlich ergänzt, wenn GoCardless nur den begrenzten Upcoming-Horizont liefert.
-- Legacy-Monate vor erstem expliziten GoCardless-Monat werden synthetisch ergänzt.
-- Priorisierung/Deckelung der Anzeige: explizite GoCardless-Zahlungen bleiben immer vorrangig, danach projizierte GoCardless-Zahlungen, danach Altsystem-Zahlungen bis zur erwarteten SEPA-Sollsumme.
-
-## Inhaltsverzeichnis
-
-- [Für Nutzer](#für-nutzer)
-  - [Übersicht](#übersicht)
-  - [Verträge erstellen](#verträge-erstellen)
-  - [SEPA-Mandate](#sepa-mandate)
-  - [Zahlungsübersicht](#zahlungsübersicht)
-  - [Status verstehen](#status-verstehen)
-- [Für Entwickler](#für-entwickler)
-  - [Architektur](#architektur)
-  - [Datenmodell](#datenmodell)
-  - [GoCardless Integration](#gocardless-integration)
-  - [Services & Jobs](#services--jobs)
-  - [Phorest-Kauf nach Vertragsabschluss](#phorest-kauf-purchase-nach-vertragsabschluss)
-  - [Webhooks](#webhooks)
-  - [Cloud Deployment](#cloud-deployment)
-  - [API-Referenz](#api-referenz)
-  - [Migration von ContractMandate → ClientMandate](#migration-von-contractmandate--clientmandate)
-
----
-
-# Für Nutzer
-
-## Übersicht
-
-Das Vertragsmodul ermöglicht die vollständige Verwaltung von Kundenverträgen für GLATTT-Pakete:
-
-- **Vertragserstellung** aus ausgefüllten Formularen
-- **SEPA-Lastschriften** mit automatischer GoCardless-Synchronisierung
-- **Ratenzahlung** mit flexiblen Laufzeiten (3-24 Monate)
-- **Zahlungsübersicht** mit Status-Tracking
-- **Mandats-Wiederverwendung** — ein Kunde, ein Mandat, beliebig viele Verträge
-
-### Zugang
-
-1. glatttHub öffnen
-2. Im Menü **Verträge** auswählen
-3. Vertragsübersicht wird angezeigt
-
-## Verträge erstellen
-
-### Automatische Erstellung
-
-Verträge werden automatisch erstellt, wenn ein Kunde das **Vertragsformular** ausfüllt:
-
-1. Kunde wählt Behandlungszonen (KPZ) aus
-2. Kunde wählt Zahlungsart (Ratenzahlung oder Gesamtpreis)
-3. Preis wird automatisch berechnet
-4. Kunde unterschreibt digital
-5. Vertrag wird erstellt:
-   - **Gesamtzahlung** → Status **Aktiv**, Zahlungsart **Einmalzahlung**
-   - **Ratenzahlung** → Status **Entwurf**, Zahlungsart **SEPA-Lastschrift**
-
-#### Zahlungsart-Erkennung
-
-Die Zahlungsart wird anhand des `display_mode` des sichtbaren `contract_price`-Feldes bestimmt:
-
-| display_mode | Zahlungsart | Vertragsstatus |
-|---|---|---|
-| `total_only` | Einmalzahlung (Direkt) | Aktiv |
-| `rates_only` | SEPA-Lastschrift | Entwurf |
-| `both` (Fallback) | Anhand der Monate (≤1 = Direkt) | Je nach Typ |
-
-> **Wichtig:** Bei Formularen mit mehreren `contract_price`-Feldern (z.B. eins für Raten, eins für Gesamtpreis mit unterschiedlichen `show_condition`) wird der Preis automatisch in **alle** `contract_price`-Felder geschrieben, damit das jeweils sichtbare Feld den korrekten Wert enthält.
-
-#### Vertragsnummer
-
-Format: `YYYY.MM.DD-ExternalID` (z.B. `2026.02.12-OS003354`)
-
-Bei mehreren Verträgen desselben Kunden am selben Tag wird automatisch ein Suffix angehängt: `-2`, `-3`, etc.
-
-### Vertragsdetails
-
-Nach Erstellung eines Vertrags siehst du:
-
-| Feld | Beschreibung |
-|------|--------------|
-| **Vertragsnummer** | Eindeutige ID (z.B. 2026.02.10-BI005945) |
-| **Kunde** | Name und Phorest-ID |
-| **Paket** | Behandlungszonen und Laufzeit |
-| **Preis** | Monatliche Rate und Gesamtbetrag |
-| **Status** | Entwurf, Aktiv, Abgeschlossen, Storniert |
-
-## SEPA-Mandate
-
-Bei Verträgen mit Ratenzahlung ist ein SEPA-Lastschriftmandat erforderlich.
-
-### Mandat pro Kunde (nicht pro Vertrag)
-
-**Wichtig:** Ein SEPA-Mandat gehört immer zum **Kunden**, nicht zum einzelnen Vertrag. Das bedeutet:
-
-- Hat ein Kunde bereits ein aktives Mandat, wird ein neuer Vertrag automatisch mit dem bestehenden Mandat verknüpft
-- Die Bankdaten (IBAN, BIC, Kontoinhaber) werden nur einmal pro Kunde erfasst
-- Jeder Vertrag hat seinen **eigenen Dauerauftrag** (Subscription) — aber alle nutzen dasselbe SEPA-Mandat
-
-### Ablauf für den Kunden
-
-1. **Vertragsformular** ausfüllen und unterschreiben
-2. **SEPA-Formular** ausfüllen (nur bei neuem Kunden oder fehlendem Mandat):
-   - IBAN eingeben
-   - BIC (optional, wird automatisch ermittelt)
-   - Bei abweichendem Kontoinhaber: Name, Adresse, E-Mail
-   - Startdatum für erste Abbuchung wählen
-3. Fertig! Die Lastschriften werden automatisch eingezogen
-
-### Bestehendes Mandat verknüpfen
-
-Wenn ein Kunde bereits ein aktives GoCardless-Mandat hat (z.B. aus einem früheren Vertrag):
-
-1. Der Vertrag wird im Status **Entwurf** angezeigt
-2. Im SEPA-Tab erscheint der Button **"Bestehendes Mandat verknüpfen"**
-3. Das System sucht automatisch:
-   - Zuerst in der lokalen Datenbank nach einem aktiven `ClientMandate` für diesen Kunden
-    - Dann in der GoCardless API per Customer-Metadata (`phorest_client_id` / `phorest_clientid`)
-    - Falls nötig als Fallback per Mandatsreferenz
-4. Bei Fund wird das Mandat verknüpft und der Zahlungsplan automatisch erstellt
-
-### SEPA-Mandat Ansicht
-
-Im Hub unter **Verträge → [Vertrag] → SEPA-Mandat** siehst du:
-
-- **Mandatsreferenz**: Eindeutige SEPA-Referenz
-- **Monatliche Rate**: Abbuchungsbetrag
-- **Anzahl Raten**: z.B. "18+1 Raten" (18 SEPA + 1 vor Ort)
-- **Erste Abbuchung**: Datum der ersten SEPA-Lastschrift
-- **Bankverbindung**: Kontoinhaber, Bank, IBAN (maskiert), BIC
-
-### GoCardless Status
-
-Wenn das Mandat mit GoCardless synchronisiert wurde, erscheinen zusätzlich:
-
-- **Grüner Badge**: "GoCardless" - Synchronisierung erfolgreich
-- **Mandate ID**: GoCardless-Referenz
-- **Customer ID**: GoCardless-Kundennummer
-- **Ratenzahlungsplan**: GoCardless Schedule-ID (pro Vertrag)
-- **Synchronisiert am**: Zeitstempel
-
-### Abweichender Zahler
-
-Falls jemand anderes als der Kunde die Raten zahlt:
-
-1. Im SEPA-Formular "Jemand anders ist Kontoinhaber" wählen
-2. Bankdaten des Zahlers eingeben
-3. Zusätzlich: E-Mail und Adresse des Zahlers
-4. In der Vertragsansicht erscheint ein **gelber Badge** "Abweichender Zahler"
-
-## Zahlungsübersicht
-
-Im Tab **Zahlungen** siehst du alle geplanten und durchgeführten Zahlungen:
-
-### Ratenplan anpassen (neu)
-
-Wenn der Vertrag bereits mit GoCardless verknüpft ist und zukünftige Raten noch nicht eingereicht wurden:
-
-1. Im Zahlungen-Tab auf **Raten anpassen** klicken
-2. Offene zukünftige Raten bearbeiten:
-    - Betrag und Fälligkeitsdatum ändern
-    - Rate entfernen
-    - Rate **aussetzen** (wird an das Ende verschoben)
-    - Neue Rate hinzufügen
-3. Speichern
-
-Wichtige Regeln:
-
-- Nur **zukünftige, noch nicht eingereichte** Raten sind bearbeitbar.
-- Wenn sich die offene Gesamtsumme ändert, ist ein **Kommentar Pflicht**.
-- Wenn die Summe gleich bleibt, ist der Kommentar optional.
-- Änderungen werden als neuer Restplan an GoCardless übertragen.
-
-### Vor-Ort-Zahlung (Rate 1)
-
-Die erste Rate wird als **Vor Ort / Kasse** geführt und aus dem ersten **Behandlungstermin ab Vertragsunterschrift** abgeleitet.
-
-**Was als Behandlung zählt.** Nur Services mit `body_zones > 0` aus `consultation_services`. „Keine Beratung" reicht nicht: Phorest kennt zahlreiche Positionen, die wie Services gebucht werden, aber niemanden behandeln — Extrazeit, Desinfektion, Vorbereitung, Formularschritte („2. Lastschrift + Behandlungsvertrag"), Storno- und NoShow-Marker. Sie alle haben `body_zones = 0`.
-
-> **Für die Pflege wichtig:** Wird in Phorest ein neuer Service angelegt, kommt er mit `body_zones = 0` in den Hub und gilt damit **nicht** als Behandlung. Echte Behandlungs-Services müssen in Filament unter *Beratungs-Services* mit ihrer Körperzonen-Zahl gepflegt werden — sonst erkennt der Hub die erste Sitzung nicht.
-
-**Welcher Termin gehört zu welchem Vertrag.** Maßgeblich ist die **Vertragsunterschrift** (`signed_at`, ersatzweise `start_date`/`created_at`): Termine davor gehören nicht zu diesem Vertrag. Vorher genügte „nach dem letzten Beratungsgespräch des Kunden" — bei einem Upgrade auf ein größeres Paket lag dieses Gespräch aber vor **beiden** Verträgen, sodass der Folgevertrag die bereits vor Ort bezahlte erste Sitzung des Vorvertrags erbte (gemeldet 05.08.2026, BI006136: angezeigtes Datum sieben Wochen vor der eigenen Unterschrift).
-
-Unter den Terminen ab Unterschrift ist die erste Sitzung der erste, an dem eine Position hängt, die **überhaupt etwas kostet**. Im Paket enthaltene Folgebehandlungen laufen in Phorest als `Abo.LS-…` mit 0,00 €, Erstsitzungen (`Erste.Sitz …`) tragen den vor Ort fälligen Betrag. Gibt es keine kostenpflichtige Position, bleibt der erste Behandlungstermin als Datum stehen — er gilt dann aber nie als bezahlt.
-
-- **Datum:** Wie oben. „Vorbei" ist ein Termin ab seiner tatsächlichen Startzeit, nicht ab Mitternacht.
-- **Betrag:** Eine Monatsrate (oder der bei der Bestätigung erfasste Betrag).
-- **Statuslogik:**
-    - **Gezahlt** — nur mit echter Zahlungs-Evidenz: An der ersten Sitzung wurde eine Position **mit Betrag** kassiert (`PAID`) bzw. der Kunde war eingecheckt und das Kundenkonto ist ausgeglichen. Eine kassierte 0-€-Behandlung belegt keine Zahlung.
-    - **Gezahlt (laut Altsystem)** — beim Altbestand steht die Vor-Ort-Zahlung im Übergabe-Sheet (`legacy_erste_sitzung_bezahlt`). Das ist die belastbarere Quelle, weil die Sitzungen dieser Verträge in Phorest häufig mit 0,00 € geführt werden; der Hinweis nennt den Betrag (Entscheidung Jan, 05.08.2026).
-    - **Termin ausstehend** — die erste Sitzung liegt noch in der Zukunft oder hat noch nicht stattgefunden.
-    - **Keine Zahlung geleistet** — Termin vorbei, am Kundenkonto steht noch ein offener Betrag („Auf das Kundenkonto gebucht").
-    - **Zahlung nicht bestätigt** — Termin vorbei, aber keine kassierte Zahlung dokumentiert (NoShow, Checkout fehlt) — oder von Hand als nicht geleistet vermerkt.
-
-> **Gelöschte Positionen sind Karteileichen.** `stats_historic_appointments` behält Positionen mit `deleted = 1` samt altem Preis, obwohl Phorest sie nicht mehr führt. Für die Zahlungsfrage müssen sie ausgeschlossen werden — im gemeldeten Fall stand dort eine gelöschte Erstsitzung über 179,99 €, die es in Phorest gar nicht mehr gibt.
-
-#### Zahlung manuell bestätigen
-
-Phorest liefert nur den **aktuellen** Kundensaldo, keine Kontohistorie: Eine Barzahlung an der Kasse oder eine Woche später eingegangene Überweisung kann der Hub nicht selbst erkennen. Deshalb lässt sich die 1. Rate von Hand bestätigen — Button **„Zahlung bestätigen"** an der Rate (Recht `manage_gocardless`).
-
-- Erfasst werden Zahlungsdatum, Zahlungsart (bar/Karte/Überweisung/sonstige), Betrag (voreingestellt die Monatsrate) und optional eine Referenz.
-- Die Bestätigung landet in der `contract_payments`-Zeile mit `installment_number = 1` — Status `paid`, `paid_at` gesetzt, Hinweis „Per Überweisung beglichen am TT.MM.JJJJ".
-- Die Bestätigung **schlägt die Phorest-Heuristik**: Ist sie gesetzt, hängt der Status nicht mehr am Terminkalender.
-- **Korrigieren** und **Zurücknehmen** sind über denselben Dialog möglich. Zurücknehmen **löscht die Zeile nicht**, sondern setzt sie in den Platzhalter-Zustand zurück (siehe unten).
-- Es wird **kein** GoCardless-Einzug ausgelöst. Zahlungsplan-Neuberechnung und Reconciler fassen Rate 1 nicht an (beide arbeiten auf `installment_number > 1`).
-
-#### Einem falschen „Gezahlt" widersprechen
-
-Die Gegenrichtung zur Bestätigung: Zeigt der Hub „Gezahlt", weil er es aus Phorest herleitet, obwohl real nichts geflossen ist, ließ sich das bis 08/2026 im Hub nirgends festhalten — es blieb nur, den Fall zu melden. Jetzt steht an einer solchen Rate der Button **„Nicht gezahlt"** (Recht `manage_gocardless`).
-
-- Der Vermerk landet als `onsite_denied_at` auf derselben Zeile (`installment_number = 1`) und **schlägt jede Termin-Heuristik**: Die Rate zeigt dann „Zahlung nicht bestätigt" mit dem Hinweis „Als nicht vor Ort gezahlt vermerkt am TT.MM.JJJJ".
-- **„Vermerk aufheben"** nimmt ihn zurück, danach gilt wieder, was Phorest hergibt. Wer den Vermerk gesetzt oder aufgehoben hat, steht in der Vertragshistorie.
-- Eine anschließende Bestätigung („Zahlung bestätigen") hebt den Vermerk automatisch auf — beides gleichzeitig gibt es nicht.
-- Typischer Anlass: Verträge, bei denen gar keine Vor-Ort-Zahlung vereinbart war, weil die erste Rate mit abgebucht wird.
-
-> **Platzhalter ≠ Zahlung — die wichtigste Fallgrube an dieser Stelle.**
-> `GoCardlessPaymentPlanService::createFirstPaymentRecord()` legt bei **jeder**
-> Vertragsanlage eine Zeile mit `installment_number = 1`, `status = scheduled`,
-> `notes = "Zahlung vor Ort"` und `due_date = first_payment_date` an. Sie hält nur
-> den Platz für die vor Ort fällige Rate und sagt **nichts** darüber aus, ob jemand
-> gezahlt hat. Wer die Bestätigung über „Zeile vorhanden und nicht storniert"
-> erkennt, erklärt damit jeden Neuvertrag für bezahlt und zeigt statt des
-> Behandlungstermins das **erste Abbuchungsdatum** an — im August 2026 genau so
-> passiert (alle betroffenen Verträge zeigten „den 3. eines Monats"). Beglichen ist
-> die Rate nur mit Zahlungs-Evidenz: Status `paid` **oder** gesetztes `paid_at`
-> (`ContractController::findConfirmedFirstInstallment()`). Aus demselben Grund darf
-> „Zurücknehmen" die Zeile nicht löschen — sie ist zugleich der Platzhalter des
-> Zahlungsplans.
-
-### SEPA-Lastschriften (Raten 2-19)
-
-Alle weiteren Raten werden per SEPA eingezogen:
-
-| Spalte | Beschreibung |
-|--------|--------------|
-| **Rate** | Nummer (2, 3, 4, ...) |
-| **Fällig am** | Abbuchungsdatum |
-| **Betrag** | Ratenbetrag |
-| **Status** | Ausstehend, Bestätigt, Ausgezahlt, Fehlgeschlagen |
-| **GoCardless ID** | Payment-Referenz |
-
-### Status-Farben
-
-- 🟡 **Vorgemerkt** (pending_submission, scheduled) - Noch nicht eingezogen / geplant
-- 🟢 **Bestätigt** (confirmed) - Abbuchung erfolgreich
-- 🔵 **Ausgezahlt** (paid_out) - Auf eurem Konto eingegangen
-- 🔴 **Fehlgeschlagen** (failed) - Abbuchung gescheitert
-
-### GoCardless-Symbol
-
-Zahlungen die bei GoCardless als Dauerauftrag vorgemerkt sind (via `upcoming_payments` API) werden mit dem GoCardless-Symbol angezeigt. Zahlungen die nur lokal in der Datenbank stehen (da GoCardless max. 10 upcoming payments liefert) zeigen das gleiche "Vorgemerkt"-Badge aber ohne GC-Symbol.
-
-Das GC-Symbol wechselt automatisch zwischen Light- und Darkmode (Primary/Negative SVG).
-
-Zusätzlich werden in der Tabelle jetzt GoCardless-Referenzen, Typen und Notizen konsolidiert dargestellt (inkl. lokalem Fallback).
-
-## Status verstehen
+## Status-Modell
 
 ### Vertrags-Status
 
 | Status | Bedeutung | Nächster Schritt |
 |--------|-----------|------------------|
-| **Entwurf** | Vertrag erstellt, SEPA fehlt | Kunde füllt SEPA-Formular aus |
-| **Aktiv** | Alles bereit, Zahlungen laufen | Automatisch |
-| **Abgeschlossen** | Alle Raten / Einmalzahlung bezahlt | — |
-| **Widerruf** | Vertrag abgebrochen | — |
+| **Entwurf** (`draft`) | Vertrag erstellt, SEPA fehlt | Kundin füllt SEPA-Formular aus |
+| **Aktiv** (`active`) | Alles bereit, Zahlungen laufen | Automatisch |
+| **Abgeschlossen** (`completed`) | Alle Raten / Einmalzahlung bezahlt | — |
+| **Widerruf** (`cancelled`) | Vertrag abgebrochen | — |
+| **Ersetzt** (`modified`) | Durch Folgevertrag abgelöst (Downgrade/Upgrade) | — |
 
 ### Automatische Status-Übergänge
 
@@ -1742,22 +163,49 @@ Zusätzlich werden in der Tabelle jetzt GoCardless-Referenzen, Typen und Notizen
 |----------|-----|------|-------------|
 | GoCardless Webhook (`payment paid_out`) | Aktiv | Abgeschlossen | `ProcessGoCardlessWebhookJob::checkContractCompletion()` |
 | PAID-Sitzung in Phorest (Direktzahlung) | Aktiv | Abgeschlossen | `contracts:complete-direct-payments` (täglich 05:00) |
+| Restbetrag 0 nach manueller Verbuchung/Nachtrag | Aktiv | Abgeschlossen | `ContractController` (Sondertilgung, Backfill) |
 
-> **Direktzahlungs-Verträge** (`payment_method=direct`) werden nicht per GoCardless-Webhook abgeschlossen, da es keine Lastschriften gibt. Stattdessen prüft ein täglicher Job ob Phorest eine bezahlte Behandlungssitzung verbucht hat.
+> **Direktzahlungs-Verträge** (`payment_method=direct`) werden nicht per GoCardless-Webhook
+> abgeschlossen, da es keine Lastschriften gibt. Stattdessen prüft ein täglicher Job, ob Phorest
+> eine bezahlte Behandlungssitzung verbucht hat.
 
-### Mandat-Status
+### Mandat-Status (`client_mandates.status`)
 
 | Status | Bedeutung |
 |--------|-----------|
-| **Ausstehend** (pending) | Bankdaten fehlen |
-| **Aktiv** (active) | SEPA-Formular ausgefüllt |
-| **Submitted** | Mit GoCardless synchronisiert |
-| **Fehlgeschlagen** (failed) | GoCardless-Fehler |
-| **Storniert** (cancelled) | Mandat widerrufen |
+| **Ausstehend** (`pending`) | Bankdaten fehlen |
+| **Aktiv** (`active`) | SEPA-Formular ausgefüllt bzw. von GoCardless bestätigt |
+| **Eingereicht** (`submitted`) | Mit GoCardless synchronisiert, Bestätigung ausstehend |
+| **Fehlgeschlagen** (`failed`) | GoCardless-Fehler (Grund in `gocardless_error`) |
+| **Storniert** (`cancelled`) | Mandat widerrufen — reaktivierbar, wenn *wir* storniert haben |
+| **Abgelaufen** (`expired`) | Von GoCardless beendet |
 
----
+### Raten-Zustände (`contract_payments`)
 
-# Für Entwickler
+Der Zahlungen-Tab zeigt je Rate einen von fünfzehn Zuständen (`public/js/contract-detail.js`):
+Geplant · Vorgemerkt · Eingereicht · Bestätigt · Gezahlt · Ausgezahlt · Fehlgeschlagen ·
+Rückbuchung · Storniert · Vor Ort · Zahlung nicht bestätigt · Keine Zahlung geleistet ·
+Termin ausstehend · Warte auf Freigabe · Abgelehnt. **„Eingereicht" ist die Grenze** — danach
+ist eine Rate nicht mehr änderbar.
+
+| DB-Status | Anzeige | Quelle |
+|---|---|---|
+| `scheduled` | Geplant / Vorgemerkt | lokaler Platzhalter (GoCardless liefert max. 10 `upcoming_payments`, der Rest ist lokal) |
+| `pending_submission` | Vorgemerkt | bei GoCardless angelegt, noch nicht eingereicht |
+| `submitted` | Eingereicht | auf dem Weg zur Bank |
+| `confirmed` | Bestätigt | Abbuchung erfolgreich |
+| `paid` | Gezahlt | lokal beglichen (vor Ort, Überweisung, Gutschein, „Angehängt") — siehe `direct_payment_method` |
+| `paid_out` | Ausgezahlt | auf unserem Konto eingegangen |
+| `failed` | Fehlgeschlagen | Rücklastschrift |
+| `charged_back` | Rückbuchung | vom Kunden zurückgeholt |
+| `cancelled` | Storniert | mit Grund in `notes` (ohne Grund blendet der Tab die Zeile aus) |
+| `customer_approval_denied` | Abgelehnt | Kundin hat den Einzug abgelehnt |
+
+Die Zeile mit `installment_number = 1` (Vor-Ort-Rate) bekommt ihre Anzeige aus der Terminlogik,
+siehe [Vor-Ort-Rate](#vor-ort-rate-herleitung-und-zahlungs-evidenz). Zahlungen mit
+`links.subscription`/GoCardless-ID tragen das **GoCardless-Symbol** (Light/Dark-Variante), rein
+lokale Zeilen nicht; die Tabelle zeigt Referenzen, Typ und Notiz konsolidiert (Klick auf das
+Symbol kopiert die Referenz).
 
 ## Architektur
 
@@ -2144,6 +592,56 @@ CREATE TABLE contract_mandates (
     -- ... (alte Spalten bleiben erhalten)
 );
 ```
+
+## Vor-Ort-Rate: Herleitung und Zahlungs-Evidenz
+
+Bei `first_on_site` wird die erste Rate als **Vor Ort / Kasse** geführt und aus dem ersten
+**Behandlungstermin ab Vertragsunterschrift** abgeleitet.
+
+**Was als Behandlung zählt.** Nur Services mit `body_zones > 0` aus `consultation_services`. „Keine Beratung" reicht nicht: Phorest kennt zahlreiche Positionen, die wie Services gebucht werden, aber niemanden behandeln — Extrazeit, Desinfektion, Vorbereitung, Formularschritte („2. Lastschrift + Behandlungsvertrag"), Storno- und NoShow-Marker. Sie alle haben `body_zones = 0`.
+
+> **Für die Pflege wichtig:** Wird in Phorest ein neuer Service angelegt, kommt er mit `body_zones = 0` in den Hub und gilt damit **nicht** als Behandlung. Echte Behandlungs-Services müssen in Filament unter *Beratungs-Services* mit ihrer Körperzonen-Zahl gepflegt werden — sonst erkennt der Hub die erste Sitzung nicht.
+
+**Welcher Termin gehört zu welchem Vertrag.** Maßgeblich ist die **Vertragsunterschrift** (`signed_at`, ersatzweise `start_date`/`created_at`): Termine davor gehören nicht zu diesem Vertrag. Vorher genügte „nach dem letzten Beratungsgespräch des Kunden" — bei einem Upgrade auf ein größeres Paket lag dieses Gespräch aber vor **beiden** Verträgen, sodass der Folgevertrag die bereits vor Ort bezahlte erste Sitzung des Vorvertrags erbte (gemeldet 05.08.2026, BI006136: angezeigtes Datum sieben Wochen vor der eigenen Unterschrift).
+
+Unter den Terminen ab Unterschrift ist die erste Sitzung der erste, an dem eine Position hängt, die **überhaupt etwas kostet**. Im Paket enthaltene Folgebehandlungen laufen in Phorest als `Abo.LS-…` mit 0,00 €, Erstsitzungen (`Erste.Sitz …`) tragen den vor Ort fälligen Betrag. Gibt es keine kostenpflichtige Position, bleibt der erste Behandlungstermin als Datum stehen — er gilt dann aber nie als bezahlt.
+
+- **Datum:** Wie oben. „Vorbei" ist ein Termin ab seiner tatsächlichen Startzeit, nicht ab Mitternacht.
+- **Betrag:** Eine Monatsrate abzüglich Preislisten-Rabatt (oder der bei der Bestätigung erfasste Betrag).
+- **Statuslogik:**
+    - **Gezahlt** — nur mit echter Zahlungs-Evidenz: An der ersten Sitzung wurde eine Position **mit Betrag** kassiert (`PAID`) bzw. der Kunde war eingecheckt und das Kundenkonto ist ausgeglichen. Eine kassierte 0-€-Behandlung belegt keine Zahlung.
+    - **Gezahlt (laut Altsystem)** — beim Altbestand steht die Vor-Ort-Zahlung im Übergabe-Sheet (`legacy_erste_sitzung_bezahlt`). Das ist die belastbarere Quelle, weil die Sitzungen dieser Verträge in Phorest häufig mit 0,00 € geführt werden; der Hinweis nennt den Betrag (Entscheidung Jan, 05.08.2026).
+    - **Termin ausstehend** — die erste Sitzung liegt noch in der Zukunft oder hat noch nicht stattgefunden.
+    - **Keine Zahlung geleistet** — Termin vorbei, am Kundenkonto steht noch ein offener Betrag („Auf das Kundenkonto gebucht").
+    - **Zahlung nicht bestätigt** — Termin vorbei, aber keine kassierte Zahlung dokumentiert (NoShow, Checkout fehlt) — oder von Hand als nicht geleistet vermerkt.
+
+> **Gelöschte Positionen sind Karteileichen.** `stats_historic_appointments` behält Positionen mit `deleted = 1` samt altem Preis, obwohl Phorest sie nicht mehr führt. Für die Zahlungsfrage müssen sie ausgeschlossen werden — im gemeldeten Fall stand dort eine gelöschte Erstsitzung über 179,99 €, die es in Phorest gar nicht mehr gibt.
+
+### Zahlung manuell bestätigen und widersprechen
+
+Phorest liefert nur den **aktuellen** Kundensaldo, keine Kontohistorie: Eine Barzahlung an der Kasse oder eine Woche später eingegangene Überweisung kann der Hub nicht selbst erkennen. Deshalb lässt sich die 1. Rate von Hand bestätigen — Button **„Zahlung bestätigen"** an der Rate (Recht `manage_gocardless`; Bedienung: Verträge 4).
+
+- Erfasst werden Zahlungsdatum, Zahlungsart (bar/Karte/Überweisung/sonstige), Betrag (voreingestellt die Monatsrate) und optional eine Referenz.
+- Die Bestätigung landet in der `contract_payments`-Zeile mit `installment_number = 1` — Status `paid`, `paid_at` gesetzt, Hinweis „Per Überweisung beglichen am TT.MM.JJJJ".
+- Die Bestätigung **schlägt die Phorest-Heuristik**: Ist sie gesetzt, hängt der Status nicht mehr am Terminkalender.
+- **Korrigieren** und **Zurücknehmen** sind über denselben Dialog möglich. Zurücknehmen **löscht die Zeile nicht**, sondern setzt sie in den Platzhalter-Zustand zurück (siehe unten).
+- Es wird **kein** GoCardless-Einzug ausgelöst. Zahlungsplan-Neuberechnung und Reconciler fassen Rate 1 nicht an (beide arbeiten ab `firstSepaInstallmentNumber()`).
+
+Die Gegenrichtung: Zeigt der Hub „Gezahlt", weil er es aus Phorest herleitet, obwohl real nichts geflossen ist, setzt der Button **„Nicht gezahlt"** (Recht `manage_gocardless`) den Vermerk `onsite_denied_at` auf derselben Zeile. Er **schlägt jede Termin-Heuristik** (Anzeige „Zahlung nicht bestätigt" mit Hinweis „Als nicht vor Ort gezahlt vermerkt am TT.MM.JJJJ"); **„Vermerk aufheben"** nimmt ihn zurück, eine anschließende Bestätigung hebt ihn automatisch auf. Wer gesetzt oder aufgehoben hat, steht in der Vertragshistorie. Typischer Anlass: Verträge, bei denen gar keine Vor-Ort-Zahlung vereinbart war, weil die erste Rate mit abgebucht wird.
+
+> **Platzhalter ≠ Zahlung — die wichtigste Fallgrube an dieser Stelle.**
+> `GoCardlessPaymentPlanService::createFirstPaymentRecord()` legt bei **jeder**
+> Vertragsanlage (mit Vor-Ort-Rate) eine Zeile mit `installment_number = 1`, `status = scheduled`,
+> `notes = "Zahlung vor Ort"` und `due_date = first_payment_date` an. Sie hält nur
+> den Platz für die vor Ort fällige Rate und sagt **nichts** darüber aus, ob jemand
+> gezahlt hat. Wer die Bestätigung über „Zeile vorhanden und nicht storniert"
+> erkennt, erklärt damit jeden Neuvertrag für bezahlt und zeigt statt des
+> Behandlungstermins das **erste Abbuchungsdatum** an — im August 2026 genau so
+> passiert (alle betroffenen Verträge zeigten „den 3. eines Monats"). Beglichen ist
+> die Rate nur mit Zahlungs-Evidenz: Status `paid` **oder** gesetztes `paid_at`
+> (`ContractController::findConfirmedFirstInstallment()`). Aus demselben Grund darf
+> „Zurücknehmen" die Zeile nicht löschen — sie ist zugleich der Platzhalter des
+> Zahlungsplans.
 
 ## GoCardless Integration
 
@@ -2796,6 +1294,1432 @@ Contract.first_payment_date
 Alte Verträge die noch kein `client_mandate_id` haben, werden über die Legacy-Fallbacks bedient:
 - `Contract→createPaymentSchedule()` prüft erst `$this->clientMandate`, dann `$this->mandate`
 - `ContractPayment→isSepaPayment` prüft sowohl `client_mandate_id` als auch `mandate_id`
+
+---
+
+---
+
+## Chronik der Änderungen (neueste zuerst)
+
+Die Update-Blöcke seit April 2026 in der Reihenfolge ihres Entstehens — jeweils mit dem Anlass
+(Asana-Bug, Fall, Entscheidung), der fachlichen Wirkung und der technischen Umsetzung. Neue
+Erkenntnisse werden **nicht** hier, sondern oben an der thematisch passenden Stelle eingearbeitet;
+die Chronik wächst nur um den Verweis. Bedienung: Nutzerhandbuch, Serie „Verträge".
+### Update 21.08.2026 — „Gezahlte Rate nachtragen" (fehlende Zeile dokumentieren)
+
+Asana-Bug „Zahlung pausierte Lastschrift" (Fall Roppel BS000955): Eine bei der
+unbefristeten Pausierung entfallene Rate wurde vom Kunden trotzdem bezahlt —
+im Zahlungsplan gab es aber keine Zeile mehr, auf die sich die Zahlung buchen
+ließ, und „Zahlung verbuchen" hätte fälschlich die (korrekten) offenen Raten
+verrechnet.
+
+#### Für Endanwender (21.08.2026)
+
+Im Aktionen-Menü des Zahlungen-Tabs gibt es **„Gezahlte Rate nachtragen"**
+(sichtbar, solange der Vertrag einen offenen Restbetrag hat): Betrag,
+ursprüngliche Fälligkeit, Zahlungseingang, Zahlungsart, optional Referenz und
+Notiz. Die Zahlung wird als **eigene bezahlte Zeile** dokumentiert — offene
+Raten bleiben unangetastet, es wird **kein GoCardless-Einzug** ausgelöst.
+Gedacht für Lücken in der Historie: die bei einer Pausierung entfallene Rate
+oder ein fehlender Alt-Einzug aus der Star-Money-Ära. Ist der Restbetrag
+danach 0, wird der Vertrag automatisch abgeschlossen.
+
+#### Für Entwickler (21.08.2026)
+
+`ContractController::recordBackfilledPayment()` (`POST
+/hub/contracts/{contract}/payments/backfill`): legt eine `paid`-Zeile mit
+Ratennummer max+1 an (zählt damit in `documentedSepaRatesCents()`, der
+rechnerische Altsystem-Block schrumpft entsprechend), Obergrenze
+`remaining_amount_cents`, `ContractChange` mit `field_name =
+payment_backfilled`. Kein FM-Sync nötig — die Zeile hat keinen
+RLS-Gebühr-Anker, `SettlementCaseSyncService::caseFor()` findet sie nie.
+UI: `openBackfillModal()`/`saveBackfill()` in `paymentsTab`
+(`public/js/contract-detail.js`), Modal in `tab-payments.blade.php`.
+Verwandter Daten-Nachtrag: Migration
+`2026_08_21_150000_settle_oliinyk_paid_bounced_rate` zieht bei OS003246 die
+per Überweisung gezahlte, im Forderungsmanagement bereits verbuchte Rate vom
+03.08.2026 am Vertrag nach (bewusst ohne Sync — der geschlossene Fall führt
+die Zahlung schon, eine Spiegelung würde doppelt zählen).
+Tests: `tests/Feature/ContractPaymentBackfillTest.php`.
+
+### Update 19.08.2026 (abends) — SEPA-Mail-Anrede repariert („Hallo Kunde"), Frankreich-IBAN-Hinweis, kaputte Blade-@php-Paarung
+
+Asana-Bug `1217629981905180`: Eine Aktivierungs-Mail grüßte mit **„Hallo Kunde,"**
+statt mit dem Kundennamen, obwohl die E-Mail-Adresse korrekt aufgelöst wurde.
+
+#### Für Endanwender (19.08.2026)
+
+- SEPA-Mails (Onboarding, Aktivierung, Planänderung, Bankwechsel, Kündigung)
+  grüßen wieder zuverlässig mit dem Kundennamen. Ist ausnahmsweise wirklich kein
+  Name auflösbar, steht dort neutral „Hallo," — nie mehr „Hallo Kunde".
+- Onboarding- und Aktivierungs-Mail erklären jetzt in einer Info-Box, dass
+  GoCardless den Betrag über ein **französisches Konto einzieht** (FR-IBAN auf
+  dem Kontoauszug) — das hatte wiederholt zu verunsicherten Rückfragen geführt.
+
+#### Für Entwickler (19.08.2026)
+
+**Ursache 1 — Cache-Key-Kollision:** Drei Stellen schrieben `client_data_{id}`
+in unterschiedlichen Formaten (SepaEmailService: `fullName`/`gender`;
+`ResolvesClientData`-Trait und `ContractController::getClientData()`: nur
+`name`). Cachte zuerst eine Listen-/Detailseite (z.B. unmittelbar vor „Zahlung
+verbuchen"), fand der Mail-Versand kein `fullName` → Fallback „Kunde", und
+`gender` fehlte → neutrale Anrede. Fix: **ein** zentraler
+`app/Services/ClientDataResolver.php` (resolve/resolveBulk, einheitliche
+Superset-Struktur `clientId/externalId/firstName/lastName/name/fullName/email/
+mobile/gender`, 300s-Cache, Fehlschläge 60s mit `failed`-Flag). Alle drei
+bisherigen Schreiber delegieren dorthin; Einträge in fremdem/altem Format werden
+erkannt und neu geladen. `resolve()` ignoriert gecachte Fehlschläge (Mail-Versand
+darf nicht an einem gescheiterten Listen-Aufruf hängen). `fullName` ist jetzt
+`null` statt Magic-String, wenn unbekannt; die Mailables akzeptieren
+`?string $recipientName`, die gemeinsame Anrede liegt in
+`resources/views/emails/sepa/_greeting.blade.php`.
+
+**Ursache 2 — Blade-@php-Paarung (separater, schwerer Fund):** Blades
+Raw-Block-Regex paart jedes `@php` lazy mit dem **nächsten** `@endphp` im
+Dokument. Der Schriftarten-Wechsler (22.07.2026) hatte in die Mail-Templates ein
+Inline-`@php($appFontFamily = …)` gesetzt — in Dateien mit einem späteren
+`@php … @endphp`-Block verschluckte das alles dazwischen als rohen PHP-Block.
+**Betroffen und seitdem zur Laufzeit kaputt:** `emails/sepa/onboarding`,
+`emails/sepa/mandate-cancelled`, `pdf/year-end-report`,
+`filament/pages/bert-dashboard`. Fix: Inline-Form dort in Block-Form
+umgeschrieben; `tests/Unit/BladePhpBlockConventionTest.php` kompiliert alle
+Views und bricht, sobald irgendwo wieder beide Formen kollidieren.
+
+Frankreich-IBAN-Hinweis: `resources/views/emails/sepa/_french-iban-hint.blade.php`,
+eingebunden in Onboarding + Aktivierung vor der Gläubiger-Info.
+
+Tests: `ClientDataResolverTest` (5), `BladePhpBlockConventionTest`,
+`SepaEmailServiceTest` (+2 Regression: fremdes Cache-Format → Name wird neu
+geladen; kein Name auflösbar → neutrale Anrede, nie „Hallo Kunde"),
+`SepaMailablesTest` (+1: FR-IBAN-Hinweis in beiden Mails).
+
+### Update 19.08.2026 — „Zahlung verbuchen" stellt Alt-Daueraufträge auf Einzelzahlungen um
+
+#### Für Endanwender (19.08.2026)
+
+**„Manuelle Zahlung verbuchen" funktioniert jetzt auch bei Verträgen mit altem
+GoCardless-Dauerauftrag.** Bisher blockte das Modal mit „Verbuchung ist nur für
+Einzelzahlungs-Pläne möglich" — Vorauszahlungen per Überweisung ließen sich bei
+Altverträgen nicht eintragen (gemeldet 17.08.2026, H004627: Kunde hatte zwei
+Raten vorab überwiesen).
+
+Jetzt passiert beim Verbuchen automatisch die Umstellung aufs aktuelle Modell:
+
+- Der **Dauerauftrag wird bei GoCardless gekündigt** — er würde die extern
+  bezahlten Raten sonst weiter einziehen.
+- Die **gedeckten Raten** werden wie gewohnt als extern bezahlt markiert, eine
+  teilweise gedeckte Rate wird reduziert.
+- Die **verbleibenden offenen Raten** werden als GoCardless-Einzelzahlungen neu
+  angelegt — mit **denselben Ratennummern, Terminen und Beträgen** (gleiches
+  Muster wie Pause und Bankwechsel). Der Vertrag läuft ab dann dauerhaft auf dem
+  Einzelzahlungs-Modell (Standard seit 07/2026).
+
+Das Modal kündigt die Umstellung mit einem Warnhinweis an, die Erfolgsmeldung
+bestätigt sie. Raten, die der Dauerauftrag bereits als GC-Zahlung angelegt hat,
+laufen unverändert durch.
+
+#### Für Entwickler (19.08.2026)
+
+- `GoCardlessPaymentPlanService::cancelRemotePlan()` — neuer Baustein, kündigt
+  **nur** den GC-Plan und löst die Verknüpfung am Vertrag, lokale Raten bleiben
+  stehen (idempotent: ohne verknüpften Plan gilt die Kündigung als erledigt,
+  ein Wiederholversuch nach Teilfehler läuft durch). `cancelPaymentPlan()`
+  nutzt ihn jetzt intern und storniert weiterhin zusätzlich die lokalen Raten.
+- `ContractController::recordExternalPayments()`: statt 422 bei
+  `gocardless_subscription_id` → innerhalb der Transaktion erst
+  `cancelRemotePlan()`, nach der Verrechnung werden die verbleibenden offenen
+  Raten **ohne** GC-Verknüpfung soft-deleted und via
+  `recreateIndividualPayments()` mit identischen Nummern/Terminen/Beträgen
+  GC-verknüpft neu angelegt (eine reduzierte Teilrate behält ihren reduzierten
+  Betrag). Guard: Dauerauftrag ohne Mandat mit `gocardless_mandate_id` → 422.
+- Warnhinweis im Modal: `record-payment-modal.blade.php` (server-gerendert über
+  `$contract->gocardless_subscription_id`).
+- Tests: 4 neue Fälle in `tests/Feature/ContractExternalPaymentTest.php`
+  (Umstellung, reduzierte Teilrate, GC-Fehler bricht ab, fehlendes Mandat);
+  der alte Ablehnungs-Test ist ersetzt.
+
+### Update 16.08.2026 — Reload über alle GC-Customer der Kundin + Kundennummer-Fallback beim Verbinden
+
+#### Für Endanwender (16.08.2026)
+
+Zwei Sackgassen aus dem Alt-Import sind behoben:
+
+- **Kundin doppelt in GoCardless** (z. B. nach Vertragswechsel je Mandat ein
+  eigener Customer, Fall BS000962): Der 🔄-Abgleich im Zahlungen-Tab zieht jetzt
+  die Zahlungen **aller** Mandate/Customer der Kundin zusammen. Vorher brach er
+  mit „GoCardless kennt N bereits eingezogene Rate(n) nicht" ab, weil die am
+  alten Customer eingezogenen Raten bei der Abfrage des neuen fehlten.
+- **„GoCardless verbinden" findet Alt-Import-Kundinnen** (Fall HB001200): Wenn
+  weder `phorest_client_id` (Kundin in Phorest neu angelegt) noch die
+  Mandatsreferenz (GoCardless hat eine eigene vergeben, z. B. `GYBMGAF`)
+  treffen, sucht der Hub jetzt zusätzlich über die **Kundennummer** im
+  Customer-Metadatum (`kundennummer`/`custom_number`). Der Massen-Sync auf der
+  Vertragsliste nutzt denselben Fallback.
+
+#### Für Entwickler (16.08.2026)
+
+- `ContractPaymentRebuildService::rebuild()`: sammelt `gocardless_customer_id`
+  aller `client_mandates` der Kundin (`client_id`, inkl. soft-deleted) und lädt
+  `/payments` je Customer (Dedupe über die Payment-ID). Geschwister-Verträge
+  für die Zuordnungs-/Ambiguitätslogik sind jetzt alle Verträge derselben
+  Kundin plus Verträge mit Mandat an einem der abgefragten Customer.
+- `GoCardlessMandateService::findActiveMandateByCustomerNumber()`: Customer-
+  Metadatum `kundennummer` oder `custom_number` (Alt-Import) exakt gegen die
+  Kundennummer des Vertrags; gemeinsame Mandats-Auswahl mit der
+  phorest_client_id-Suche in `pickActiveMandateFromCustomers()` extrahiert.
+- `Contract::customerNumber()`: `legacy_kundennummer`, sonst Suffix der
+  Vertragsnummer nach dem letzten `-`; nur plausible Nummern
+  (`/^[A-Za-z]{1,3}\d+$/`), sonst `null`.
+- Eingebaut als dritter Fallback in `ContractController::checkGoCardlessForMandate`
+  und `RunGoCardlessContractSyncJob`.
+- Tests: `RebuildReloadSafetyTest::test_reload_zieht_zahlungen_aller_customer_der_kundin`,
+  `GoCardlessCustomerNumberLookupTest`, `ContractCustomerNumberTest`.
+
+### Update 15.08.2026 — SEPA-Mandat reaktivieren (Widerruf zurückgezogen)
+
+#### Für Endanwender (15.08.2026)
+
+Wird ein Mandat **von uns** storniert (typisch: im Widerruf-Prozess über die
+Widerruf-Detailseite) und zieht der Kunde den Widerruf später zurück, gibt es im
+**SEPA-Tab** des Vertrags jetzt die Box **„SEPA-Mandat reaktivieren"** (sichtbar
+bei Mandat-Status „Storniert"):
+
+- GoCardless setzt das Mandat wieder ein (kein neues Mandats-Formular nötig).
+- Der beim Storno automatisch gesicherte **Restplan wird 1:1 als Einzelzahlungen
+  neu angelegt** — Beträge, Ratennummern und Termine bleiben erhalten; Termine in
+  der Vergangenheit rutschen auf das früheste mögliche Einzugsdatum.
+- **Grenze:** Von Bank oder Kunde entzogene sowie abgelaufene Mandate lehnt
+  GoCardless ab — dann wie bisher „GoCardless neu verknüpfen" (neues Mandat).
+
+**Neuanlage nach Mandatsentzug (Fix 21.08.2026, Fall BS000714):** Nach
+„GoCardless neu verknüpfen" schlug „Mandat und Zahlungsplan anlegen" mit
+*„Validation failed (reference: matches the reference used by another
+mandate)"* fehl — GoCardless verlangt je Creditor **eindeutige
+Mandatsreferenzen**, auch gegenüber dem alten, entzogenen Mandat, und der Hub
+schickte die gespeicherte Referenz unverändert erneut.
+`GoCardlessMandateService::createGoCardlessMandate()` erkennt genau diesen
+Validierungsfehler jetzt und versucht es automatisch mit Suffix
+(`…-2`, `…-3`, bis `-6`) erneut; die tatsächlich verwendete Referenz wird am
+`ClientMandate` gespeichert und steht so auch in Einzugs-Metadaten und
+SEPA-Tab. Andere Fehler werden unverändert durchgereicht (kein Retry). Nur im
+Live-Betrieb relevant — die Sandbox vergibt eigene Referenzen.
+Tests: `tests/Feature/GoCardlessMandateReferenceRetryTest.php`.
+
+#### Für Entwickler (15.08.2026)
+
+`POST /hub/contracts/{id}/gocardless-reinstate-mandate`
+(`ContractController::reinstateGoCardlessMandate`, Recht `manage_gocardless`):
+`GoCardlessApiService::reinstateMandate()` → lokaler Mandats-Status aus der
+Antwort (i.d.R. `submitted`, Webhook setzt später `active`) → Restplan aus dem
+jüngsten `ContractChange` mit `field_name = 'sepa_cancel_restore_plan'` über
+`GoCardlessPaymentPlanService::recreateIndividualPayments()`. Der Snapshot
+entsteht in `cancelGoCardlessMandate()` (`snapshotOpenRatesForReinstate()`),
+bevor der Webhook die offenen Raten storniert. Hat der Vertrag noch offene
+GC-Einzüge oder fehlt ein Snapshot, wird nichts angelegt und die Antwort sagt
+das explizit. Ein zugehöriger Widerruf-Fall bekommt `sepa_cancelled = false`
+zurück plus Verlaufs-Ereignis `sepa_reinstated`.
+Tests: `tests/Feature/CancellationSepaActionTest.php`.
+
+### Update 13.08.2026 — Direktzahler-Verbuchung + Ausweg aus fehlgeschlagenem SEPA-Mandat
+
+Zwei gemeldete Fälle (H004872, BS001318) deckten drei Lücken auf.
+
+#### Für Endanwender (13.08.2026)
+
+- **Direktzahler: „Zahlung verbuchen" gibt es jetzt auch hier.** Zahlt ein
+  Direktzahler-Kunde nicht vor Ort, sondern per Überweisung, lässt sich der
+  Eingang im Zahlungen-Tab über den Button **„Zahlung verbuchen"** erfassen
+  (Betrag, Eingangsdatum, Zahlungsart, Referenz). Verbuchte Zahlungen erscheinen
+  in der Karte „Einmalzahlung" mit offenem Restbetrag; ist der gesamte
+  Vertragswert beglichen, wird der Vertrag automatisch abgeschlossen.
+- **Fehlgeschlagenes SEPA-Mandat ist keine Sackgasse mehr.** Steht ein Mandat
+  auf „Fehlgeschlagen" (z.B. weil die IBAN falsch aufgenommen war), zeigt der
+  SEPA-Tab jetzt den Fehlergrund und dieselben Aktionen wie bei „Ausstehend":
+  Bankverbindung ändern → „In GoCardless suchen" → „Mandat und Zahlungsplan
+  anlegen". Nach erfolgreicher Anlage springt der Status auf „Aktiv".
+- **Statusänderung über das Stift-Symbol funktioniert wieder** — vorher wurde
+  eine Statusänderung dort stillschweigend verworfen.
+- **Abweichender Kontoinhaber wird beim Bankwechsel gespeichert:** Wer im
+  Modal „Bankverbindung ändern" einen abweichenden Zahler mit E-Mail/Adresse
+  erfasst, findet diese Angaben jetzt am Mandat wieder (vorher gingen sie
+  verloren, der GoCardless-Kunde wurde mit den Daten der Vertragsnehmerin
+  angelegt).
+
+#### Für Entwickler (13.08.2026)
+
+- **`getPayments()` ohne Mandat** (Direktzahler): liefert jetzt verbuchte
+  Zahlungen (Zeilen mit `installment_number > 1`), `can_record_without_plan`,
+  `remaining_cents` und `referral_block`; `loadPayments()` in
+  `contract-detail.js` lädt entsprechend auch ohne `mandateId`.
+  `recordStandaloneExternalPayment()` vermerkt bei Direktzahlern
+  „Direktzahler-Zahlung verbucht" statt „Ohne offenen Restplan verbucht".
+- **Modal „Manuelle Zahlung verbuchen"** liegt jetzt als eigenes Partial
+  `hub/contracts/partials/record-payment-modal.blade.php` und wird für SEPA-
+  UND Direktzahler-Verträge eingebunden (Texte per `$isDirectPayer`).
+- **Statuslücke geschlossen:** `tab-sepa.blade.php` rendert `failed`/`expired`
+  über den `pending`-Zweig (plus Danger-/Warning-Alert mit
+  `$mandate->gocardless_error`). `createGoCardless()` akzeptiert
+  `failed`/`expired` und hebt sie nach erfolgreichem Sync auf `active`
+  (`gocardless_error` wird geleert). `checkGoCardlessForMandate()` heilt den
+  Zustand „GC-IDs vorhanden, lokal pending/failed/expired" beim
+  `already_linked`-Early-Return auf `active` — vorher Endlos-Reload-Schleife.
+- **`updateMandateInfo()`** validiert jetzt `status`
+  (`in:pending,active,submitted,failed,cancelled,expired`) — das Feld wurde
+  vom Stift-Formular immer gesendet, aber nie übernommen.
+- **`updateBankAccount()`** validiert und persistiert `is_contract_holder_payer`
+  (→ `has_different_payer`), `payer_email` (`ValidGoCardlessEmail`),
+  `payer_street/postal_code/city`; beim Rückwechsel auf „Vertragsnehmer zahlt"
+  werden die Zahlerfelder geleert. Ohne das Flag im Payload bleibt alles
+  unverändert (Abwärtskompatibilität).
+- **Bewusst NICHT geändert:** Ein Verbindungsfehler bei „In GoCardless suchen"
+  schaltet den Anlegen-Button weiterhin nicht frei (`gcSearchNoResult` bleibt
+  false) — bei einem Timeout könnte in GC doch ein Mandat existieren,
+  Freischalten würde Duplikate riskieren.
+- Tests: `tests/Feature/ContractDirectPayerPaymentTest.php`,
+  `tests/Feature/ContractMandateRecoveryTest.php`.
+
+### Update 08.08.2026 (spät) — Verkaufbare Position „2 Kleine Zonen"
+
+Neben den 18 Grafik-Zonen gibt es jetzt die Position **„2 Kleine Zonen"**
+(z.B. Zehen, Nasenrücken) — verkaufbar wie jede andere Körperzone.
+
+**Für Endanwender:**
+
+- Im Körperzonen-Selector des Vertragsformulars unter der neuen Kategorie
+  **„Sonstiges"** wählbar (Listeneintrag ohne Grafik-Overlay). „Alle auswählen"
+  überspringt die Position bewusst.
+- Bei Auswahl erscheinen **zwei Pflicht-Textfelder** („Kleine Zone 1/2") — ohne
+  beide Angaben lässt sich das Formular nicht absenden (Client- und
+  Server-Validierung, auch im Shared-Link).
+- Die Angabe erscheint überall als `2 Kleine Zonen (Zehen & Nasenrücken)`:
+  im **Vertrags-PDF** am Zonen-Tag, in der Einreichungs-Ansicht und in den
+  Vertragslisten des Hubs.
+- Preislich zählt die Position als **1 KPZ** (Entscheidung Jan 08/2026 — die
+  Phorest-Preise entsprechen einer normalen Zone).
+- Behandlungs-Dokumentation: keine eigene Grafik-Zone — die konkreten kleinen
+  Zonen werden im Behandlungs-Selector über die bestehende Funktion
+  **„Weitere Zonen"** (Custom-Zonen) dokumentiert.
+
+**Für Entwickler:**
+
+- Zone `zwei_kleine_zonen` (`BodyZone::KEY_SMALL_ZONES`, Kategorie `sonstiges`)
+  — Migration `2026_08_08_150000_add_small_zones_body_zone_and_contract_note`
+  legt die Zone an (hebt Alt-Handanlagen auf den Key) und ergänzt
+  `contracts.small_zones_note`.
+- Die beiden Angaben laufen als `fields._small_zones_details` (kein eigenes
+  Formularfeld!) mit und landen in `form_submissions.metadata.small_zones_details`
+  — Validierung zentral in `FormController::resolveSmallZonesDetails()`
+  (auch vom `SharedFormController` genutzt). Draft/Share-Prefill nehmen den
+  Wert explizit mit (`_small_zones_details` in `form-fill.js`).
+- `ContractCreationService` schreibt `small_zones_note` („Zehen & Nasenrücken")
+  auf den Vertrag; Anzeige über `Contract::bodyZonesDisplay()` (sortiert nach
+  `sort_order`, Fallback Legacy-`body_zone_description`).
+- **Phorest:** Für die Aufbuchung braucht die Zone wie alle anderen ein
+  gemapptes Abo (Einstellungen → Körperzonen) — insgesamt also
+  **19 Zonen-Abos + 1 GK-Abo = 20 Courses**.
+- Tests: `tests/Feature/SmallZonesContractTest.php` (5 Tests).
+
+### Update 08.08.2026 (abends) — Preis-Modul: Gutscheine & Freunde-werben beim Abschluss
+
+Das `contract_price`-Feld des Vertragsformulars kann jetzt direkt beim Abschluss
+im Termin Gutscheine und Freunde-werben erfassen (nur Hub-Kontext, nicht im
+Shared-Link — Gate `supportsSigningExtras` in `form-fill.js`):
+
+- **Gutscheine:** Bei bekanntem Kunden werden dessen Phorest-Gutscheine mit
+  Restguthaben automatisch angezeigt (`GET /api/forms/client-vouchers`,
+  `ContractVoucherService::vouchersForClient()`). Abgelaufene sind rot markiert
+  und brauchen eine explizite Bestätigung (`accept_expired`, protokolliert als
+  `was_expired` im Einlöse-Beleg).
+- **Gutschein manuell hinzufügen (19.08.2026):** Unter der Vorschlagsliste kann
+  jeder beliebige Gutschein erfasst werden — per **Seriennummer** (Eingabefeld +
+  „Hinzufügen") oder per **QR-/Barcode-Scan** über die Gerätekamera. Der QR-Code
+  aus der Kauf-Mail und dem Geschenk-PDF enthält die Seriennummer im Klartext
+  (`VoucherQrService`), der Scan löst also direkt zur Seriennummer auf. Endpoint:
+  `GET /api/forms/voucher-by-serial?serial=` → `ContractVoucherService::findBySerial()`
+  (Gate `can:view_forms`). Gefundene Gutscheine landen in derselben Auswahl-Liste
+  und laufen unverändert durch die bestehende Einlösung (`voucher_redemptions`
+  im Preis-JSON, serverseitige Revalidierung). Gehört der Gutschein einem anderen
+  Kunden (verschenkt), zeigt ein Info-Badge den Karteninhaber — einlösbar bleibt
+  er trotzdem. Scanner: `html5-qrcode` (CDN, lazy erst beim ersten Scan geladen,
+  QR + gängige 1D-Barcodes); Kamera braucht HTTPS, auf `http://glattthub.local`
+  erscheint eine erklärende Fehlermeldung. Tests:
+  `tests/Feature/FormVoucherSerialLookupTest.php`.
+- **Einmalzahlung (total_only) kann Extras seit 19.08.2026 auch (vorher komplett
+  ausgeblendet):** Gutscheine und Freunde-werben stehen in beiden Zahlungsmodi zur
+  Verfügung. Da Einmalzahler keinen SEPA-Plan haben, über den die Kaskade laufen
+  könnte, löst `ContractCreationService::redeemSigningVouchersForDirectContract()`
+  die gewählten Gutscheine **sofort bei der Vertragsanlage** in Phorest ein
+  (Belege in `contract_voucher_redemptions`, Phorest-Notiz mit Kontext „Vertrag
+  (Einmalzahlung)"). Eingelöst wird höchstens der Vertragswert — der Überschuss
+  bleibt auf dem Gutschein; Fehler brechen die Vertragsanlage nie ab (Warnung im
+  Log, Verrechnung dann manuell). Der **Vertragswert bleibt unverändert** —
+  Gutscheine sind eine Zahlung, kein Preisnachlass: Die Zusammenfassung im
+  Formular zeigt „Gutschein-Verrechnung: −X €" und „Vor Ort zu zahlen: Y €"
+  (`signingVoucherAppliedCents()`/`signingVoucherRemainderCents()` in
+  `form-fill.js`). **Freunde werben gilt seit 19.08.2026 auch für Einmalzahler**
+  (Entscheidung Jan — ersetzt die frühere Regel `discount_cents = 0`): Der
+  50-€-Rabatt mindert die Zahlung vor Ort und wird sofort als verrechnet
+  dokumentiert (`discount_allocation = ['direct' => 5000]`, Notiz am Referral);
+  die Gutschein-Kapazität rechnet den Rabatt vorher ab (Reihenfolge wie die
+  SEPA-Kaskade: Rabatt zuerst, dann Gutscheine). Die Zusammenfassung zeigt
+  „Freunde werben: −50,00 €" als eigene Zeile. Außerdem blendet sie bei
+  total_only die (dort sinnlose) **Laufzeit-Zeile** aus. Tests:
+  `tests/Feature/DirectContractVoucherRedemptionTest.php`.
+- **Phorest-Kundenkonto spiegelt die Vor-Ort-Zahlung (19.08.2026):** Der
+  Phorest-Kauf (Courses, Zahlart „Hub") bleibt beim **vollen** Betrag
+  (Umsatz!), aber die Kundenkonto-Schuld
+  (`PhorestContractPurchaseService::calculateOnSiteDebtCents()`) wird nur noch
+  über das gebucht, was der Kunde an der Kasse tatsächlich zahlen soll:
+  SEPA = die hinterlegte reduzierte Vor-Ort-Rate (`signing_cascade.rate1_amount`),
+  Einmalzahlung = Vertragswert − Freunde-werben − eingelöste Gutscheine. Ist der
+  Betrag 0, wird gar keine Schuld gebucht. Ohne hinterlegte Kaskade
+  (Bestandsverträge, Fehler-Fallback) wird wie bisher der volle Kaufbetrag als
+  Schuld gebucht. Tests: `tests/Feature/SigningCascadeUpfrontTest.php`.
+- **Freunde werben:** Werber-Suche im Formular (`GET /api/forms/referrer-search`
+  → `ContractReferralService::searchReferrers()`, inkl. „Kein aktiver
+  Vertrag"-Badge). Beim Abschluss legt `ContractCreationService` den
+  `ContractReferral`-Datensatz an (Direktzahler: `discount_cents = 0`).
+- **Verrechnungs-Kaskade (Entscheidung Jan, erweitert 19.08.2026):** Rabatt,
+  Freunde-werben und Gutscheine mindern zuerst vollständig die **Vor-Ort-Rate**,
+  ein Rest die **folgenden SEPA-Raten der Reihe nach** (auf jeder bleibt das
+  GC-Minimum 1 € stehen — vorher endete die Kaskade bei Rate 2). Seit 19.08.2026
+  wird die Kaskade **bereits bei der Vertragsanlage** berechnet: Gutscheine
+  werden sofort in Phorest eingelöst (Kontext „Vertrag (Abschluss)"), die
+  Referral-Allocation sofort geschrieben und das Ergebnis in
+  **`contracts.signing_cascade`** (JSON: `rate1_amount`, `rates`-Map
+  installment_number → Betrag/Notiz, eingelöste Gutscheine) hinterlegt —
+  `GoCardlessPaymentPlanService::computeAndStoreSigningCascade()`, aufgerufen
+  aus `ContractCreationService`. Die Plan-Erstellung
+  (`resolveSigningCascade()`) greift dann **nur noch auf das Hinterlegte zu**
+  (keine Neuberechnung, keine Doppel-Einlösung — `finalizeSigningCascade()`
+  wird zum No-op). Schlägt das Vorab-Hinterlegen fehl (z.B. Phorest down),
+  bleibt `signing_cascade` leer und die Plan-Erstellung rechnet **live wie
+  bisher** — derselbe Fallback gilt für Bestandsverträge von vor der
+  Umstellung. Die Auswahl steht im Preis-JSON der Submission
+  (`Contract::signingInstructions()`) und übersteht so
+  auch den asynchronen Mandats-Flow. Ein Gutschein-Rest über
+  der Kaskaden-Kapazität bleibt als Guthaben auf dem Gutschein.
+- Tests: `tests/Feature/SigningCascadeTest.php`. Bekannte Grenze: Bei einem
+  späteren Plan-Neuaufbau bleibt der Preislisten-Rabatt erhalten (deterministisch),
+  bereits eingelöste Gutscheine/Referral-Reduktionen werden nicht erneut
+  angewandt (Einlösung ist einmalig — wie im nachträglichen Flow).
+
+### Update 08.09.2026 — SEPA-Mails im gemeinsamen glattt-Design; Willkommens-Mail mit allen Dokumenten der Formular-Kette
+
+#### Für Endanwender (08.09.2026)
+
+Die Mail nach einem erfolgreichen Vertragsabschluss (Vertrag + SEPA-Mandat) heißt jetzt
+**„Herzlich Willkommen bei glattt – Deine Vertragsinformationen"** (vorher „Deine
+SEPA-Einzugsermächtigung – glatttHub"), begrüßt die Kundin freundlicher und enthält
+**alle unterschriebenen Dokumente der Termin-Kette** in dieser Reihenfolge:
+
+1. Kundeninformation & Einverständniserklärung (und alle weiteren Formulare, die
+   vor dem Vertrag ausgefüllt wurden)
+2. Behandlungsvertrag
+3. SEPA Mandat (Hub-Formular, Einzugsermächtigung)
+
+Das von GoCardless erzeugte Mandats-PDF wird **nicht mehr** mitgeschickt, sobald das eigene
+SEPA-Formular dabei ist (Entscheidung Jan 08.09.2026: zwei Mandats-Dokumente verwirren nur).
+Es dient nur noch als Ersatz (`MD000002-SEPA-Lastschriftmandat.pdf`), wenn zu einem Mandat kein
+Hub-Formular existiert; die Aktivierungs-Mail behält es wie bisher.
+
+**Anhänge heißen `Kundennummer-Dokumentname.pdf`**, normalisiert auf ASCII ohne Leerzeichen
+und Sonderzeichen (ä→ae, ß→ss, „&"/Leerzeichen→„-"), z.B.
+`MD000002-Kundeninformation-Einverstaendniserklaerung.pdf`, `MD000002-Behandlungsvertrag.pdf`,
+`MD000002-SEPA-Mandat.pdf` (vorher technische Namen
+wie `formular-behandlunsgvertrag-XbAqdS-22.pdf`). Der Dokumentname ist der Formularname aus
+dem Formular-Editor. Dasselbe Muster gilt für das GoCardless-PDF der Aktivierungs-Mail.
+
+Der Einleitungstext zählt die mitgeschickten Dokumente namentlich auf. Ein Formular,
+das einmal je Kundin gilt (z.B. beim Beratungstermin unterschrieben), wird auch dann
+angehängt, wenn der Vertrag erst bei einem späteren Termin zustande kam. Formulare
+„je Termin" (z.B. Sitzungsbestätigung) zählen nur, wenn sie beim Termin des Vertrags
+ausgefüllt wurden.
+
+**Einheitliches Design aller SEPA-Mails (Entscheidung Jan 08.09.2026):** Willkommen,
+Aktivierung, Zahlungsplan-Änderung, Bankverbindung geändert und Mandat beendet sehen jetzt
+aus wie die Zahlungserinnerung des Forderungsmanagements und die Terminerinnerung —
+Logo links, rechts der Kunden-Kasten mit Anlass, Name und Kd.-Nr., darunter Anrede,
+Überschrift, kurzer Text, ein hell hinterlegter **Kennzahlen-Block** (z.B. erste Abbuchung
+und Monatsrate), **Detaillisten mit Linien** statt grauer Karten, farbig gekantete
+Hinweiskästen (Gold = Info/Vorabankündigung, Rot = Achtung), Grußformel „Dein glattt-Team",
+Kundenservice-Kontakt, Gläubiger-Zeile und GoCardless-Pflichttext. Anrede bleibt „Du".
+**Seit 08.09.2026 abends auf Prod.** Outlook-Hinweis: Der Kunden-Kasten im Kopf ist eine Zeile mit drei
+Zellen (Logo · Füllzelle · Kasten) — eine verschachtelte Tabelle mit `align="right"` behandelt Outlook
+wie ein Float und rückt sie vom rechten Rand ein (Gmail nicht). Gilt ebenso für die Terminerinnerung.
+
+**Test-Mails für Abnahmen:** `php artisan sepa:test-mail <Vertrags-ID|Vertragsnummer> --to=<Adresse> [--type=all|onboarding|activation|change|bank|cancelled] [--dry-run]`
+verschickt die SEPA-Mails eines echten Vertrags mit allen Anhängen an eine beliebige Adresse —
+ohne Log-Eintrag, ohne Deduplication; `--dry-run` zeigt nur Betreff und Anhänge.
+
+#### Für Entwickler (08.09.2026)
+
+- **Mail-Rahmen:** `resources/views/emails/sepa/layout.blade.php` (`@extends`, Sections
+  `title`/`eyebrow`/`body`) + Bausteine unter `emails/sepa/partials/` (`headline`, `paragraph`,
+  `hero` = Kennzahlen-Block, `details` = Linien-Liste, `hint` = Hinweiskasten mit `tone`
+  gold|alert|neutral, `button` = Goldkante). Tokens (Palette, Schrift aus `FontSettingsService`,
+  Zell-Reset) liefert `App\Mail\Sepa\MailTheme::tokens()` — jede Vorlage beginnt mit
+  `@php extract(MailTheme::tokens()); @endphp`, weil `@section`-Inhalte im Scope der
+  Kind-Vorlage gerendert werden und Includes nur Eltern-Variablen erben. Die Kd.-Nr. im
+  Kopf kommt aus `Contract::customerNumber()` (Hub-Format `YYYY.MM.DD-{Kdnr}[-n]`, Legacy-
+  Kundennummer) bzw. `ClientMandate::customerNumber()` (Mandatsreferenz). Der alte
+  GoCardless-Footer-Partial ist im Layout aufgegangen; `_greeting` und `_french-iban-hint`
+  bleiben als Includes.
+- `SepaEmailService::buildOnboardingMail()` / `buildMandateActivationMail()` (public) bauen
+  die Mailables inkl. aller Anhänge; `sendOnboardingEmail()`/`sendMandateActivationEmail()`
+  und der Befehl `sepa:test-mail` (`app/Console/Commands/SendTestSepaMail.php`) nutzen sie
+  gemeinsam; `recipientContext()` liefert Name/Geschlecht für die übrigen Typen.
+- `getPreContractPdfs()` — dieselbe Regel wie die Kachel-Sperre in der Terminansicht
+  (`missingPreContractForms` in `appointment-unified.js`): alle aktiven Formulare, die weder
+  `contract.enabled` noch SEPA sind (`ContractCreationService::shouldCreateContract()` /
+  `shouldProcessSepaMandate()`). Je Formular die neueste eingereichte Submission der Kundin am
+  Termin der Vertrags-Submission; Fallback auf die neueste Submission der Kundin, sofern das
+  Formular nicht `per_appointment` ist. Fehler lassen nur das einzelne Dokument aus, nie die Mail.
+- **Kundennummer** (`resolveCustomerNumber()`): aus der Hub-Vertragsnummer
+  (`YYYY.MM.DD-{Kundennummer}[-n]`, ohne API-Aufruf), sonst Phorest-`externalId`. Wird nur
+  ermittelt, wenn es Anhänge gibt (Tests mit `getClient()->never()` bleiben gültig).
+  `attachmentFilename()` normalisiert per `Str::ascii($name, 'de')` + `[^A-Za-z0-9]+ → -`.
+- `OnboardingMail` bekommt `preContractPdfs` (Liste aus `disk`/`path`/`filename`/`name`) und
+  `mandatePdfFilename`; `attachments()` liefert in Ketten-Reihenfolge, die View erhält
+  `preContractDocumentNames`. `MandateActivationMail` bekommt ebenfalls `mandatePdfFilename`.
+- Ohne `contracts.form_submission_id` (z.B. Tageserfassung der Institutsseite) gibt es
+  keine Vorvertrags-Anhänge.
+- Tests: `SepaMailablesTest` (Betreff, Anhang-Reihenfolge, alle fünf Mails im gemeinsamen
+  Rahmen: Anrede, Kd.-Nr., Grußformel, Gläubiger-ID, GoCardless-Pflichttext, keine alte
+  Karten-Optik), `SepaEmailServiceTest` (Termin-Zuordnung, Einmal-je-Kundin-Fallback, ohne
+  Vertragsformular, Kundennummer aus Vertragsnummer, Test-Befehl für alle Typen ohne Log).
+- **Staging-Hinweis:** `MAIL_MAILER=log` gilt dort nur nominell — `MailSettingsService::apply()`
+  setzt den Mailer aus `email_settings` (IONOS-SMTP, Prod-Kopie), SEPA-Mails gehen aus Staging
+  also **wirklich** raus. Testkunden nur mit eigenen Adressen anlegen.
+
+### Update 08.08.2026 — Readiness Verkauf: Rabatt auf die 1. Sitzung, GK-Abo-Buchung, Onboarding-Mail bei Bestandsmandat
+
+Drei Ergebnisse der Go-Live-Prüfung der Verkaufsstrecke (Asana `1217088816996378`):
+
+**Rabatt auf die 1. Sitzung (Entscheidung Jan):** Der Preislisten-Rabatt mindert
+ausschliesslich die **1. Rate vor Ort** — die SEPA-Monatsraten bleiben unverändert.
+
+- `Contract::firstSessionDiscountCents()` = Ratensumme − `total_value_cents`
+  (nur bei gesetzter `discount_id`); `plannedFirstInstallmentCents()` = Monatsrate − Rabatt.
+- Zahlungsplan: Rate 1 wird mit dem geminderten Betrag angelegt (Notiz nennt den
+  Rabatt), die Plausibilitätsprüfung beim Plan-Update geht damit auf 0 auf.
+- Phorest-Aufbuchung bei SEPA bucht die geminderte 1. Rate.
+- Vertrags-PDF zeigt jetzt: volle Monatsrate, „1. Rate vor Ort" (mit Rabatt-Verrechnung)
+  und den **Gesamtbetrag** (auch ohne Rabatt — Preisklarheit).
+- Vorher war das inkonsistent: PDF verteilte den Rabatt rechnerisch auf alle Monate,
+  GoCardless zog voll ein. Ausserdem brach jede Vertragsbearbeitung mit Rabatt still ab
+  (Aufruf nie existierender Methoden auf `PriceDiscount`) — behoben.
+
+**GK-Abo in Phorest:** Bei GK-Verträgen (`is_full_body`, Zonen ≥ `max_body_zones`
+der Preisliste) bucht `PhorestContractPurchaseService` jetzt **ein** GK-Abo mit dem
+Gesamtbetrag statt der Einzelzonen-Courses. Die Course-ID ist im Admin-Backend
+konfigurierbar (Einstellungen → „Phorest (GK-Abo)", Tabelle `phorest_settings`,
+Permission `manage_consultation_services`). Ohne Konfiguration greift bewusst das
+bisherige Einzelzonen-Verhalten (mit Warn-Log). Die gewählten Körperzonen bleiben
+unabhängig davon vollständig am Vertrag gespeichert (`contract_body_zones`).
+
+**Onboarding-Mail bei Bestandsmandat:** Die SEPA-Onboarding-Mail (Pre-Notification)
+wird jetzt je **(Mandat, Vertrag)** dedupliziert und auch beim wiederverwendeten
+Mandat versendet — vorher bekam ein Bestandskunde für den zweiten Vertrag nie eine
+Vorabankündigung. Tests: `ContractFirstSessionDiscountTest`,
+`PhorestFullBodyPurchaseTest`, `SepaEmailServiceTest`.
+
+### Update 31.07.2026 — „RLS anhängen": geplatzte Rate ans Ende des Zahlungsplans
+
+#### Für Endanwender (31.07.2026)
+
+**Neu: Button „RLS anhängen"** hinter jeder geplatzten Rate im Zahlungen-Tab, direkt neben „Beglichen". Statt die Rücklastschrift nachzufassen, wandert ihr Betrag als **zusätzliche Rate ans Ende des Zahlungsplans** — der Plan verlängert sich um einen Monat, genau wie es in der letzten Mahnung angekündigt wird. Gedacht für den Fall, dass ihr das mit dem Kunden vereinbart oder er auf nichts reagiert.
+
+Im Modal steht vorab, was passiert: welche Rate erledigt wird, welche neue Ratennummer zu welchem Datum entsteht und wie sich der Betrag zusammensetzt. Die **RLS-Gebühr kann mit eingezogen werden** — ist an der Rate bereits eine offene Gebühr erfasst, ist der Haken vorbelegt und der Betrag eingetragen; er lässt sich ändern oder abwählen.
+
+Nach dem Anhängen:
+
+- Die alte Rate steht auf **Bezahlt** mit der Zahlungsart **„Angehängt"** und dem Vermerk, als welche Rate sie weiterläuft. Sie verschwindet damit aus der Schuldenliste und dem Mahnwesen.
+- **Wichtig:** Sie zählt bewusst **nicht** als Zahlungseingang. „Bezahlt", „Offen", der Zahlungsfortschritt und die Umsatzzahlen bleiben unverändert — es ist ja kein Geld geflossen, der Betrag steht jetzt nur an anderer Stelle im Plan. In der Verkaufsstatistik erscheint die Rate weiterhin im Monat des Platzens als Rücklastschrift und **nicht** als „RLS nachgezahlt".
+- Die neue Rate wird sofort als eigener GoCardless-Einzug angelegt.
+
+Wird die Gebühr mit angehängt, gilt sie **automatisch als bezahlt**, sobald der Einzug der angehängten Rate durch ist — sie steckt ja im eingezogenen Betrag. Kein manuelles Nachtragen über „Gebühr bezahlt" mehr.
+
+Voraussetzungen: aktives GoCardless-Mandat und ein Einzelzahlungs-Plan. Bei Verträgen mit altem Dauerauftrag erscheint der Button nicht (dort erst den Zahlungsplan stornieren). Mehrere geplatzte Raten werden einzeln angehängt.
+
+#### Für Entwickler (31.07.2026)
+
+- **Endpoints:** `GET /hub/contracts/{contract}/payments/{payment}/append-info` (`getAppendBouncedInfo()` — Zielraten-Nummer, Fälligkeit, Betrag, erfasste Gebühr) und `POST …/payments/{payment}/append` (`appendBouncedPayment()`), beide unter `can:manage_gocardless`.
+- **Zieltermin:** `appendTargetFor()` — ein Monat nach der letzten nicht stornierten Rate (`addMonthNoOverflow()`), frühestens das `next_possible_charge_date` des Mandats. Ratennummer = `max(installment_number) + 1` **über dieselbe Grundmenge (ohne stornierte Zeilen)** — seit 07.09.2026; vorher zählten Storno-Reste aus Neuberechnung/Reload mit („Rate 25" bei einem Plan bis Rate 23, OS003259).
+- **Zahlungsfortschritt (07.09.2026):** Die angehängte Ursprungsrate (`is_rescheduled`) bleibt in Sidebar (`show.blade.php`) und Zahlungen-Tab (`contract-detail.js`) aus „Bezahlt" **und** aus der Gesamtsumme heraus — ihr Betrag zählt nur einmal, nämlich als neue Rate am Planende. Vorher stand er im Fortschritt doppelt (bezahlt + offen).
+- **Forderungsmanagement beim Anhängen (07.09.2026):** `DebtCaseIntakeService::handleRateAppended()` legt den Fall nur dann in die Beobachtung, wenn am Vertrag **keine weitere** Rücklastschrift offen ist; sonst läuft der Mahnprozess weiter und der neue Einzug wandert nur in `appended_payment_ids` (wird in Schreiben abgezogen). Nach jeder Neuberechnung (`updatePaymentPlan`) und jedem Reload (`ContractPaymentRebuildService`) läuft `reconcileAppendedMonitoring()`: Ist die beobachtete angehängte Rate storniert, verlässt der Fall die Beobachtung (Stufe „Neu", Frist heute). Details im Wiki `FORDERUNGSMANAGEMENT.md`.
+- **Reihenfolge wie bei der SEPA-Ablösung:** GC-Einzug ZUERST anlegen (scheitert er, ist nichts verändert; `tooSoonErrorHint()` als 422), danach in einer DB-Transaktion die neue Rate + Update der alten + `ContractChange` (`field_name = bounced_payment_appended`). Wirft die Transaktion, wird der Einzug als Kompensation storniert. Das echte `charge_date` aus der GC-Antwort wird übernommen (GoCardless verschiebt Wochenenden/Feiertage).
+- **Buchhaltungs-Kern — `ContractPayment::DIRECT_RESCHEDULED = 'rescheduled'`** (Migration `2026_07_31_170000_…`, ENUM-Erweiterung wie bei `voucher`): Die alte Rate steht auf `paid`, ist aber **kein Geldeingang**. Neu deshalb:
+  - `ContractPayment::scopeMoneyIn()` — `paid` UND nicht `rescheduled`. Ersetzt `where(status, PAID)` in `Contract::remaining_amount_cents`, `ContractMandate::paid_installments_count`/`updateRemainingAmount()` und im Kündigungs-Pfad des `ContractController`.
+  - `Contract::documentedSepaRatesCents()` schließt `rescheduled` aus, sonst wäre der Betrag doppelt dokumentiert und der rechnerische Altsystem-Block zu klein.
+  - `ContractPayment::sqlIsRescheduled()` / `sqlIsNotRescheduled()` für die Raw-Queries der `SalesStatisticsService`: angehängte Raten zählen im MRR-/RLS-Trend als **RLS** (sie platzten und wurden nicht nachgezahlt), nie als „eingezogen" oder „nachgezahlt"; in der Ausfall-Analyse zählen sie in `failed_ever`, nicht in `failed_open`.
+  - **Falle:** Das SQL-Prädikat MUSS `COALESCE(direct_payment_method,'')` verwenden. Ohne ist der Vergleich bei NULL weder wahr noch falsch, sondern NULL — ein umschließendes `NOT (...)` bleibt dann NULL und wirft ganz normale Zahlungen aus ihrem Band (genau so sind beim Bauen 4 MRR-Tests rot geworden).
+- **Kein „Korrigieren" für angehängte Raten:** `can_correct` schließt `rescheduled` aus (wie schon `voucher`) — es gibt keine Zahlung, die korrigiert werden könnte. Neues Flag `can_append` in `getPayments()` (geplatzt + GC-Mandat + kein Dauerauftrag), Anzeige-Typ „Angehängt".
+- **Automatische Gebühren-Quittierung:** Migration `2026_07_31_180000_…` ergänzt `appended_from_payment_id` (Ursprungsrate) und `appended_fee_cents` (eingerechnete Gebühr) an `contract_payments`. `ContractPayment::settleAppendedReturnFee()` setzt `return_fee_paid_at` an der Ursprungsrate und ist idempotent; aufgerufen aus `ProcessGoCardlessWebhookJob::handlePaymentsConfirmed()` (und als Sicherheitsnetz in `handlePaymentsPaidOut()`, falls das confirmed-Event ausbleibt). Ohne eingerechnete Gebühr passiert nichts — eine Gebühr, die bewusst NICHT mit angehängt wurde, bleibt offen.
+- **Frontend:** Button in `tab-payments.blade.php` neben „Beglichen", Modal darunter; `openAppendModal()`/`appendFeeCents()`/`appendTotalCents()`/`saveAppend()` in `public/js/contract-detail.js` (Komponente `paymentsTab`). Gebühr über das Projektmuster „transparenter Input + €-Overlay".
+- **Tests:** `tests/Feature/ContractAppendBouncedTest.php` — Anhängen (Nummer/Termin/Betrag, alte Rate `rescheduled`, Schuldenliste leer, `moneyIn` und Restbetrag unverändert), Gebühr inklusive, Guards (nur geplatzte Raten, Dauerauftrag, fremde Rate → 404), Vorschau-Endpoint.
+
+### Update 31.07.2026 — Bankwechsel übernimmt den Zahlungsplan, statt ihn neu zu rechnen
+
+#### Für Endanwender (31.07.2026)
+
+**Behoben: Nach einer Änderung der Bankverbindung stimmte der Zahlungsplan nicht mehr.** Bei bestimmten Verträgen verschwanden die bereits per SEPA eingezogenen Raten aus dem Plan und es stand wieder die volle Ratenzahl aus dem Vertrag da — der Plan musste anschließend jedes Mal von Hand korrigiert werden (falsche Raten löschen, eine Minus-Differenz bestätigen, die gar nicht stimmte).
+
+Ab sofort gilt beim Bankwechsel: **Der vorhandene Restplan wird 1:1 auf das neue Mandat übertragen** — gleiche Ratennummern, gleiche Beträge, gleiche Fälligkeiten. Es wird nichts mehr aus der Vertragslaufzeit nachgerechnet. Findet der Hub keinen Restplan zum Übertragen (z.B. weil lokal gar keine offenen Raten hinterlegt sind), erfindet er **bewusst keinen** — stattdessen erscheint nach dem Speichern ein Hinweis mit Vertragsnummer und Anzahl der fehlenden Raten, und der Plan wird gezielt über „Zahlungsplan anlegen" im Zahlungen-Tab erstellt.
+
+**Neu: Vorschau im Modal „Bankverbindung ändern".** Schon vor dem Speichern steht dort, was passieren wird:
+
+- wie viele offene Raten mit welcher Summe auf das neue Konto umgebucht werden (Ratenliste über „Alle Raten anzeigen" aufklappbar),
+- wie viele bereits eingezogene Raten unverändert stehen bleiben,
+- geplatzte Raten, die **nicht** mit umgebucht werden (die laufen weiter über das Schulden-Verfahren),
+- überfällige Raten ohne dokumentierten Einzug, die als Altsystem-Einzug gewertet werden,
+- der Warnhinweis, wenn Raten im Plan fehlen und er hinterher manuell angelegt werden muss.
+
+**Stornierte Raten verschwinden nicht mehr spurlos.** Beim Bankwechsel und beim Stornieren eines Zahlungsplans wurden Raten teilweise ohne Notiz storniert — der Zahlungen-Tab blendet solche Zeilen komplett aus, für die Verwaltung waren sie damit weg. Jetzt bekommt jede stornierte Rate einen Grund und bleibt durchgestrichen sichtbar.
+
+**Der GoCardless-Abgleich (🔄) bricht ab, statt Geld zu verlieren.** Lagen bereits eingezogene Raten an einem früheren Mandat und GoCardless liefert sie nicht mit, hätte der Abgleich sie bisher aus dem Plan entfernt, ohne Ersatz anzulegen. Jetzt wird der Vorgang mit einer Meldung abgebrochen und die Verknüpfung kann geprüft werden.
+
+#### Für Entwickler (31.07.2026)
+
+**Ursache.** Der Neuaufbau steckte nicht im `ContractPaymentRebuildService` (der hängt nur am 🔄-Button), sondern in `GoCardlessMandateService::changeBankAccount()`. Schritt 4 sicherte bei Einzelzahlungs-Verträgen nur Raten **mit** `gocardless_payment_id`; Verträge, deren Restplan aus rein lokalen Platzhaltern besteht (Import, Dauerauftrags-Historie, nie materialisierter Plan), fielen dadurch in Schritt 6 in den `else`-Zweig → `createIndividualPaymentPlan()` → `remainingSepaRateCount()` = `installment_count - 1 -` Raten in `submitted|confirmed|paid`. Nicht abgezogen wurden dabei u.a. gerade gelöschte Altsystem-Raten, gerade stornierte Raten und eingezogene Raten, deren Webhook nie ankam.
+
+**Umbau.**
+
+- Neue Methode `classifyRatesForBankChange(Contract)` — seiteneffektfreie Klassifizierung in `legacy_rates` (überfällige Platzhalter ohne GC-ID bei Verträgen vor `Contract::LEGACY_CUTOFF_DATE`) und `open_rates` (der echte Restplan, **mit und ohne** GC-Verknüpfung). Vorschau und Ausführung nutzen dieselbe Methode, damit sie nicht auseinanderlaufen können.
+- Schritt 6 kennt nur noch `recreateIndividualPayments()`. Der Neuberechnungs-Zweig ist ersatzlos entfallen; ohne Restplan wird der Vertrag über den neuen Rückgabewert `contracts_without_plan` (`contract_number`, `missing_rates`) gemeldet und im Controller als Warnung ausgegeben. `missing_rates` zieht bereits als Altsystem-Einzug gewertete Raten ab.
+- Lokale Aufräumung ist für beide Plan-Typen gleich: GC-verknüpfte offene Raten werden mit der Notiz `GoCardlessMandateService::BANK_CHANGE_CANCEL_NOTE` storniert, Platzhalter ohne GC-ID gelöscht (sie werden 1:1 durch die neuen, verknüpften Raten mit derselben Ratennummer ersetzt — sonst gäbe es jede Rate doppelt).
+- `GoCardlessPaymentPlanService::cancelLocalPayments()` storniert nie mehr ohne Notiz (Default `'Zahlungsplan storniert'`). Hintergrund: `ContractController::getPayments()` filtert `status === cancelled && ! filled($notes)` heraus.
+- `ContractPaymentRebuildService`: fehlt die `gocardless_customer_id` lokal, wird sie über `getMandate()->links.customer` nachgeschlagen und persistiert (sonst fragt der Reload nur das aktuelle Mandat ab und verpasst alles vom alten). Zusätzlich zweites Sicherheitsnetz neben dem bestehenden „leere GC-Antwort"-Abbruch: Enthält `$toSupersede` eine Rate in `paid|confirmed` mit GC-ID, die in der GC-Antwort fehlt, bricht der Reload mit Exception ab.
+
+**Vorschau-Endpoint.** `GET /hub/contracts/{contract}/bank-account/preview` (`ContractController::previewBankAccountChange()`, Middleware `can:manage_gocardless`) → `GoCardlessMandateService::previewBankChange(ClientMandate)`. Liefert je aktivem Vertrag des Mandats: `transfer_rates` (Nummer/Fälligkeit/Betrag), `transfer_amount_cents`, `settled_count`, `legacy_count`/`legacy_amount_cents`, `bounced_count`/`bounced_amount_cents` (failed/chargedback — laufen über das Schulden-Verfahren), `missing_rates`. Frontend: `loadBankPreview()` in `public/js/contract-detail.js` (aufgerufen aus `openBankModal()`), Markup in `tab-sepa.blade.php`, Styles `.bank-preview-glattt*` in `theme_glattt.css`; die Ratenliste ist eingeklappt, damit das IBAN-Feld ohne Scrollen erreichbar bleibt.
+
+**Tests.** `tests/Unit/GoCardlessBankChangeTest.php`: Restplan ohne GC-Verknüpfung wird übertragen statt nachgerechnet (Regression — prüft die **Anzahl** der GC-POSTs), kein erfundener Plan + Meldung, Storno nur mit Notiz, Vorschau-Klassifizierung. `tests/Feature/RebuildReloadSafetyTest.php`: Abbruch bei fehlenden eingezogenen Raten. `tests/Feature/ContractShowTest.php`: Vorschau-Endpoint + Berechtigung.
+
+| Datei | Änderung |
+|---|---|
+| `app/Services/GoCardlessMandateService.php` | `classifyRatesForBankChange()`, `previewBankChange()`, Fallback entfernt, `contracts_without_plan`, Storno-Notiz |
+| `app/Services/GoCardlessPaymentPlanService.php` | `cancelLocalPayments()` immer mit Notiz |
+| `app/Services/ContractPaymentRebuildService.php` | Customer-ID-Nachschlag + Abbruch bei fehlenden eingezogenen Raten |
+| `app/Http/Controllers/ContractController.php` | `previewBankAccountChange()`, Warnung für Verträge ohne Restplan |
+| `resources/views/hub/contracts/partials/tab-sepa.blade.php` | Vorschau-Block im Bankwechsel-Modal |
+| `public/js/contract-detail.js` | `loadBankPreview()`, Vorschau-State |
+| `public/css/theme_glattt.css` | `.bank-preview-glattt*` |
+
+### Update 31.07.2026 — SEPA-Ablösung: Wunsch-/Restbetrag per einmaligem Einzug
+
+#### Für Endanwender (31.07.2026)
+
+**Neu: „Betrag einziehen"** im Zahlungen-Tab — die aktive Schwester der Sondertilgung: Statt auf eine Überweisung des Kunden zu warten, zieht glattt einen **frei wählbaren Betrag oder die gesamte Restsumme** per einmaliger SEPA-Lastschrift zum **Wunschdatum** ein (z.B. wenn ein Kunde die letzten Raten in einer Summe ablösen möchte). Im Modal: Betragsfeld mit Toggle **„Gesamte Restsumme einziehen"**, Einzugsdatum (frühestes Datum = SEPA-Vorlauf des Mandats, wird angezeigt) und eine Vorschau, welche Raten abgelöst bzw. reduziert werden.
+
+Der Betrag löst die **letzten offenen Raten** ab: Voll abgedeckte Raten werden storniert und durch eine **neue Ablöse-Rate** mit eigenem GoCardless-Einzug ersetzt, eine teilweise abgedeckte Rate wird reduziert. Geht die Zahlung ein, wird der Vertrag bei vollständiger Begleichung automatisch abgeschlossen (Webhook). **Platzt der Ablöse-Einzug**, erscheint er wie jede geplatzte Rate im normalen Rücklastschrift-Ablauf („Beglichen"-Button, RLS-Gebühr, Schulden-Liste) — die ursprünglichen Raten werden bewusst **nicht** automatisch wiederhergestellt; falls der Kunde doch wieder Raten möchte, den Plan über „Raten anpassen" umbauen. Bereits eingereichte Einzüge laufen durch; Verträge mit Alt-Dauerauftrag werden abgelehnt (erst Plan stornieren). Der Button erscheint nur bei GoCardless-verbundenen Einzelzahlungs-Verträgen mit offenen Raten (Rollen: super_admin, admin, filialleiterin, verwaltung).
+
+#### Für Entwickler (31.07.2026)
+
+- **Endpoints:** `POST /hub/contracts/{contract}/payments/collect-sepa` (`ContractController::collectSepaPayment()`, Gate `manage_gocardless`) und `GET …/payments/collect-info` (`getSepaCollectInfo()` → `min_charge_date` aus `getCachedMandate()['next_possible_charge_date']`, Fallback `getNextPossibleChargeDate()`).
+- **Ablauf:** Verteilung von hinten wie bei `recordExternalPayments()`. Reihenfolge bewusst: **Ablöse-Einzug zuerst anlegen** (`createPayment()` mit Metadata-Trias inkl. `contract_id` — Pflicht für die Webhook-Selbstheilung; scheitert das, ist nichts verändert, `tooSoonErrorHint()`/`extractErrorMessage()` als 422). Danach in einer DB-Transaktion: voll gedeckte Raten via `cancelSpecificPayments()` stornieren (Platzhalter ohne GC-ID nur lokal auf `cancelled`), Teilrate via `reduceRateForPayoff()` reduzieren (wie `reduceRateForPartialPayment()`, aber **ohne** bezahlte Teilzeile — der abgelöste Anteil steckt in der Ablöse-Rate), neue Ablöse-Rate (`installment_number = max+1`, `due_date` = echtes `charge_date` aus der GC-Antwort, `status = scheduled`, Notiz „SEPA-Ablösung: Einmaleinzug …") + `ContractChange` (`field_name = sepa_payoff_collected`). Wirft die Transaktion, wird der Ablöse-Einzug als **Kompensation** wieder storniert.
+- **Kein `direct_payment_method` auf der Ablöse-Rate** — sonst griffen der Webhook-`cancelled`-Schutz und der Reload-Schutz des `ContractPaymentRebuildService`. Statusübergänge (confirmed/paid/failed) laufen komplett über die bestehenden Webhooks; `checkContractCompletion()` schließt den Vertrag nach Zahlungseingang ab.
+- **Frontend:** Eintrag „Betrag einziehen" + Modal in `tab-payments.blade.php` (Blade-Guard `$mandate->gocardless_mandate_id && ! $contract->gocardless_subscription_id`, Alpine `x-show="openExternalRates().length > 0"`); JS in `public/js/contract-detail.js` (`openCollectModal()` lädt `collect-info` und setzt das flatpickr-`minDate` dynamisch per `$watch('collectMinDate')`; Verrechnungs-Vorschau über den neuen gemeinsamen Helfer `allocationPreviewFor()`, den auch die Sondertilgung nutzt).
+- **Aktionen-Menü statt Button-Leiste:** Alle acht Aktionen des Zahlungen-Tabs (Raten anpassen, Zahlung verbuchen, Betrag einziehen, Gutschein einlösen, Werber hinterlegen, Pausieren, Mandats-PDF herunterladen, GoCardless-Abgleich) liegen jetzt in EINEM „Aktionen"-Dropdown ganz rechts im Karten-Header — neue wiederverwendbare Theme-Komponente `.action-menu-glattt` (Panel mit Icon + Titel + Beschreibung je Eintrag, Einträge auch als `<a>` möglich, `.action-menu-glattt-note` zeigt den `planEditBlockReason`, `:has`-Regel hebt die Karte bei offenem Menü über ihre Geschwister). Trigger ist die neue Gradient-Pill `.action-menu-glattt-trigger` (Bolt-Icon, wandernde Lichtkante beim Hover); das „GoCardless verbunden"-Badge sitzt jetzt links bei den Titel-Badges. Dokumentiert in `.github/agents/design-system.md` (Abschnitt Buttons).
+- Tests: `tests/Feature/ContractSepaCollectTest.php` (Ersetzen, Teilbetrag ohne Teilzeile, Mindest-Einzugsdatum, Dauerauftrag-/Restsummen-Guards, Kompensations-Storno, collect-info). **Achtung Http::fake in Tests:** zuerst registrierte Stubs gewinnen — deckungsgleiche Muster nicht in `setUp()` UND im Test faken.
+
+### Update 30.07.2026 — Pausierung für Daueraufträge, Plan-Storno für Einzelzahlungen, manuelle Zahlungsverbuchung
+
+#### Für Endanwender (30.07.2026)
+
+**Pausieren funktioniert jetzt auch bei Legacy-Verträgen mit Dauerauftrag.** Bisher meldete das Pausieren-Modal bei solchen Verträgen „Es gibt keine offenen Raten, die pausiert werden könnten", obwohl offene Raten angezeigt wurden. Jetzt wird beim Pausieren der GoCardless-Dauerauftrag gekündigt; beim **Fortsetzen** werden die Restraten als Einzelzahlungen neu angelegt — der Vertrag läuft ab dann auf dem aktuellen Einzelzahlungs-Modell.
+
+**„Zahlungsplan stornieren" gibt es jetzt auch für Einzelzahlungs-Verträge** (Standard seit 07/2026). Der Button im Tab „Zahlungen & SEPA" erscheint, sobald offene GoCardless-Raten existieren; beim Storno werden alle offenen Einzelzahlungen aktiv bei GoCardless storniert (vorher wurden sie nur lokal ausgeblendet — der Einzug wäre weitergelaufen!).
+
+**Neu: „Zahlung verbuchen"** im Zahlungen-Tab — als **Sondertilgung**: Es wird ein beliebiger überwiesener Betrag eingegeben (Zahlungsdatum, Zahlungsart, Referenz), der von den **letzten offenen Raten** des Plans abgezogen wird. Voll gedeckte Raten werden als extern bezahlt markiert (GoCardless-Einzug storniert), eine teilweise gedeckte Rate wird **reduziert** (Einzug storniert + reduziert neu angelegt, gleiche Fälligkeit); der gezahlte Teilbetrag erscheint als eigene bezahlte Zeile mit derselben Ratennummer. Der Toggle **„Restsumme gesamt beglichen"** setzt den Betrag auf die komplette offene Restsumme — dann wird der Vertrag nach der Verbuchung **automatisch abgeschlossen**. Eine Vorschau im Modal zeigt vor dem Speichern, welche Raten beglichen bzw. reduziert werden. Bereits eingereichte Einzüge (submitted) laufen durch; Verträge mit Dauerauftrag werden abgelehnt (erst Plan stornieren/pausieren).
+
+##### Verrechnen mit: Planende oder bestimmte Raten (05.08.2026)
+
+Die Verteilung von hinten ist für eine echte Sondertilgung richtig, für eine
+**nachgetragene** Zahlung aber falsch: Ein Alt-Einzug aus 03/2026 landete so auf
+der Rate mit Fälligkeit 03/2027 — gemeldet am 04.08.2026 (H004468, zwei
+Star-Money-Einzüge). Im Modal steht deshalb oben ein Umschalter:
+
+- **Letzte offene Raten** (Vorgabe) — Sondertilgung wie bisher, verkürzt den Plan vom Ende her.
+- **Bestimmte Raten** — Auswahlliste aller offenen Raten mit Fälligkeit und Betrag.
+  Die Zahlung deckt die gewählten Raten **von der ältesten her**, ein Teilbetrag
+  reduziert die letzte davon. Der Plan wird nicht verkürzt.
+
+Technisch: `recordExternalPayments()` nimmt optional `payment_ids` entgegen. Mit
+Auswahl wird aufsteigend nach `due_date` verteilt und gegen die **Summe der
+gewählten Raten** geprüft (nicht gegen die ganze Restsumme); enthält die Auswahl
+eine nicht mehr offene Rate, antwortet der Endpoint mit 422. Der `ContractChange`
+hält im Feld `target` fest, welcher Modus gegriffen hat (`plan_end` /
+`selected_rates`).
+
+> **Fallstrick beim Zurücknehmen:** `cancelSpecificPayments()` läuft **vor** dem
+> Verbuchen und setzt GC-verknüpfte Zeilen auf `cancelled`. Würde
+> `settleOpenExternally()` einfach den aktuellen Status protokollieren, stünde in
+> der Historie `cancelled` statt `scheduled` — und `revertSettlement()` fände
+> keinen brauchbaren Vorzustand. Der Ausgangszustand wird deshalb **vor** der
+> Storno-Runde festgehalten und als vierter Parameter übergeben.
+
+##### Begleichung zurücknehmen
+
+`revertSettlement()` rekonstruiert den Vorzustand aus der Vertrags-Historie und
+akzeptiert dabei **jeden** dokumentierten Ausgangsstatus, nicht nur
+`failed`/`chargedback`. Vorher liess sich eine über „Zahlung verbuchen"
+beglichene **offene** Rate nie zurücknehmen (sie kam aus `scheduled`) — der
+Dialog meldete „Diese Zahlung kann nicht zurückgesetzt werden". Ohne jede Spur in
+der Historie bleibt es beim Fehlschlag-Fallback (`failed`); ein Vorzustand wird
+**nicht** geraten, sonst würde eine eigenständig dokumentierte Zahlung zur
+offenen Rate. War beim Verbuchen ein GoCardless-Einzug storniert worden, weist
+die Rückmeldung darauf hin, dass er nicht wieder auflebt.
+
+#### Für Entwickler (30.07.2026)
+
+- **Pausierung Daueraufträge:** `ContractPauseService::openRates()` verlangt die GC-Verknüpfung (`gocardless_payment_id NOT NULL`) nur noch für Einzelzahlungs-Verträge — bei Verträgen mit `gocardless_subscription_id` zählen die lokalen Platzhalter (GoCardless materialisiert Subscription-Raten erst kurz vor Fälligkeit, siehe `ContractPaymentReconciler::projectSubscriptionInstallments()`). `pauseIndefinite()` kündigt die Subscription über `GoCardlessPaymentPlanService::cancelPaymentPlan()` (neuer optionaler Parameter `$localNote` → Platzhalter werden mit „Pausiert – unbefristet" storniert); `pauseFixed()` nutzt den neuen Zweig `pauseFixedSubscription()`: Subscription kündigen, Platzhalter soft-deleten, alle offenen Raten um N Monate verschoben via `recreateIndividualPayments()` neu anlegen. Das Fortsetzen (`resume()`) blieb unverändert — `createIndividualPaymentPlan()` legt die Restraten als Einzelzahlungen an.
+- **Plan-Storno:** `ContractController::hasActiveGoCardlessPlan()` erkennt jetzt auch Einzelzahlungs-Pläne (`GoCardlessPaymentPlanService::hasOpenGcPayments()`); `cancelGoCardlessPlan()` storniert offene GC-Einzelzahlungen aktiv per `cancelOpenGcPayments()` statt sie nur lokal auf `cancelled` zu setzen. Blade: `$hasActivePlan` in `tab-sepa.blade.php` berücksichtigt `$v2OpenGcCount`.
+- **Manuelle Zahlungsverbuchung (Sondertilgung):** neuer Endpoint `POST /hub/contracts/{contract}/payments/record-external` (`recordExternalPayments()`, Gate `manage_gocardless`) nimmt `amount_cents` entgegen und verteilt von hinten (`orderByDesc(due_date)`): voll gedeckte Raten → `ContractPayment::settleOpenExternally()` + GC-Storno (`cancelSpecificPayments()`), Teilbetrag → `reduceRateForPartialPayment()` (GC-Storno + reduzierte Neuanlage wie bei Gutschein/Referral, Teilbetrag als eigene `paid`-Zeile mit derselben Ratennummer, damit `remaining_amount_cents` stimmt). Modal & Button in `tab-payments.blade.php` (Betragsfeld nach Währungs-Konvention, Toggle „Restsumme gesamt beglichen", clientseitige Verrechnungs-Vorschau `recordPaymentAllocationPreview()`), JS in `contract-scripts.blade.php`. Achtung: Payload-`status` der Raten ist GC-gemappt (`scheduled`→`pending_submission`) — Filter nutzen `local_status`. Vollständige Begleichung (`remaining_amount_cents === 0`) schließt den Vertrag automatisch ab (`ContractChange` `TYPE_STATUS_CHANGED`); Dauerauftrag-Verträge werden mit 422 abgelehnt.
+- Tests: `tests/Feature/ContractExternalPaymentTest.php` (Verbuchung, Abschluss, submitted-Guard, Fremdraten, Plan-Storno Einzelzahlungen) + 2 neue Fälle in `tests/Feature/ContractPauseTest.php` (Dauerauftrag unbefristet/fix).
+
+### Update 19.07.2026 — Gutscheine direkt im Zahlungsplan verrechnen
+
+#### Für Endanwender (19.07.2026)
+
+Phorest-Gutscheine können jetzt direkt mit dem SEPA-Zahlungsplan eines Vertrags verrechnet werden — an zwei Stellen:
+
+1. **Beim Anlegen des Zahlungsplans** (Modal „Mandat und Zahlungsplan anlegen" bzw. „Neuen Zahlungsplan anlegen"): Ganz oben gibt es die Sektion **„Gutscheine verrechnen"**. Die Gutscheine des Vertragskunden (mit Restguthaben) werden automatisch vorgeschlagen; zusätzlich kann jede beliebige **Gutscheinnummer gesucht** werden. Es können **beliebig viele** Gutscheine ausgewählt werden.
+2. **Nachträglich auf einen bestehenden Plan**: Im Zahlungen-Tab neben „Raten anpassen" über den Button **„Gutschein einlösen"** — gleiche Auswahl, mit Vorschau, welche offenen Raten gedeckt würden.
+
+So funktioniert die Verrechnung:
+
+- Das Guthaben wird **von den letzten Raten** abgezogen — der Plan **endet früher**, statt später zu beginnen. Die 1. Rate (vor Ort) ist nie betroffen.
+- **Voll gedeckte Raten** werden als **bezahlt** markiert (Zahlungsart *Gutschein*, Kommentar mit der Gutscheinnummer) — für sie wird **kein GoCardless-Einzug** angelegt bzw. der bestehende storniert.
+- Eine **teilgedeckte Rate** wird auf den Restbetrag **reduziert** (SEPA zieht nur noch den Rest ein), mit Kommentar wie „25,00 € per Gutschein 12345678 verrechnet". Technisches Minimum: mindestens 1 € Einzug (GoCardless-Untergrenze) — die Differenz bleibt auf dem Gutschein.
+- Es wird **nur der benötigte Betrag eingelöst**: Übersteigt das Guthaben die offene Plansumme, bleibt der Überschuss als Restguthaben auf dem Gutschein (kein Verfall). Das Phorest-Guthaben wird entsprechend reduziert (ggf. auf 0) und die Einlösung im Gutschein vermerkt („… € eingelöst am … (glatttHub, Zahlungsplan Vertrag …)").
+- **Abgelaufene Gutscheine** werden angezeigt und sind nutzbar — aber nur mit Warnhinweis und **expliziter Bestätigung**.
+- **Klare Trennung von Altsystem und Gutschein in allen Anzeigen**: Die Sidebar zeigt unter „Bezahlt" die Zeile **„davon Gutschein"** (analog zu „davon Altsystem"), die Zahlungstabelle bekommt für Teil-Verrechnungen eine eigene Fußzeile **„Gutschein-Verrechnung (Ratenkürzung)"** mit den Gutscheinnummern, und die Summen-Badges zeigen **„davon per Gutschein"**. Voll gedeckte Raten erscheinen als normale bezahlte Zeilen mit Typ *Gutschein*. Die Belege stehen zusätzlich im **Verlauf**-Tab.
+- **Fehlerfall Phorest**: Schlägt das Reduzieren des Guthabens nach der Plan-Anlage fehl, bleibt der Plan bestehen; eine deutliche **Warnung** (im Modal und dauerhaft im Zahlungen-Tab) fordert auf, das Guthaben manuell in der Gutschein-Verwaltung abzuziehen.
+- **Kein Auto-Restore**: Wird der Plan später storniert (Widerruf, Neuanlage), bleibt der Gutschein eingelöst — falls nötig, das Guthaben manuell über die Gutschein-Verwaltung wiederherstellen.
+
+#### Für Entwickler (19.07.2026)
+
+- **Migration** `2026_07_19_100000_create_contract_voucher_redemptions_table`: Einlösungs-Belege (`contract_id`, `phorest_voucher_id`, `serial_number`, `amount_cents`, `remaining_balance_before_cents`, `was_expired`, `phorest_synced_at` — *null = Phorest-Update fehlgeschlagen*, `phorest_error`, `redeemed_by`). Model `ContractVoucherRedemption`, Relation `Contract::voucherRedemptions()`.
+- **`App\Services\ContractVoucherService`** — zentrale Logik:
+  - `clientVouchers()` / `findBySerial()`: Phorest-Gutscheine laden/suchen, normalisiert auf Cents (`normalizeVoucher()`).
+  - `validateForRedemption()`: frischer Phorest-Stand, Guthaben > 0, abgelaufen nur mit `accept_expired`.
+  - `distribute(Collection $rates, Collection $vouchers)` (statisch, unit-getestet): Von-hinten-Verteilung nach Fälligkeit, pro Rate `applied_cents`/`remaining_cents`/`fully_covered`/`parts` (welcher Gutschein deckt was), `per_voucher`, `applied_total_cents`. Konstante `MIN_REMAINDER_CENTS = 100` (GC-Minimum 1 €).
+  - `redeem()`: Load-Merge-PUT gegen Phorest (Muster wie `VoucherRefundService::zeroVoucher`), reduziert `remainingBalance` um den tatsächlich verrechneten Betrag + Notiz; Fehler → Warnung + Beleg mit `phorest_error`, **kein Abbruch**.
+- **Neue Zahlungsart** `ContractPayment::DIRECT_VOUCHER = 'voucher'` (Label „Gutschein"). Gutschein-Raten sind über `direct_payment_method` automatisch vor dem destruktiven Reload geschützt (`$protectedIds` in `ContractPaymentRebuildService`); `can_correct` ist für sie bewusst `false` (Korrektur läuft über die Gutschein-Verwaltung).
+- **Anlage-Flow** `ContractController::createGoCardless()`: optionales Request-Feld `vouchers[] = {voucher_id, accept_expired}`. Server validiert frisch, verteilt, legt **nur die nicht/teilgedeckten Raten** bei GoCardless an (teilgedeckte reduziert), erstellt danach die voll gedeckten Raten als `paid`-Gutschein-Raten und löst erst dann in Phorest ein (schlägt die GC-Anlage fehl, wurde kein Gutschein angefasst). Response: `voucher_applied_cents`, `voucher_warnings`.
+- **Nachträglicher Flow** `POST /hub/contracts/{contract}/payments/apply-vouchers` → `applyVouchersToPlan()` (Middleware `can:manage_gocardless`): verrechenbar sind die `editable_payments` aus `getOpenPaymentPlanContext()` (zukünftig, `scheduled`/`pending`). Verarbeitung von hinten, pro Rate: GC-Storno (tolerant wie `updatePaymentPlan`; zwischenzeitlich eingereichte Raten → Warnung, Rate bleibt offen) → voll gedeckt: lokal `paid` per Gutschein; teilgedeckt: reduzierter Ersatz-Einzug. Eingelöst wird **nur der tatsächlich verrechnete Betrag** — auch bei Teilabbruch.
+- **Lookup-Endpunkte**: `GET /hub/contracts/{contract}/vouchers` (Vorschläge des Kunden) und `GET …/vouchers/search?serial=` — gleiche Gates.
+- **Frontend**: Alpine-Mixin `voucherApplyMixin()` (`contract-scripts.blade.php`), per Spread in `sepaTab` und `paymentsTab`; gemeinsames Partial `voucher-apply-section.blade.php` (Vorschläge, Suche, Auswahl, Abgelaufen-Bestätigung). Vorschau der Verteilung im Anlage-Modal (Badges je Rate + Summenzeilen „Per Gutschein gedeckt" / „SEPA-Einzug nach Gutschein") und im Einlöse-Modal. `getPayments()` liefert `is_voucher` je Rate + `voucher_block` (Summe, Belege, `unsynced_count` für die Nachpflege-Warnung).
+- **Abgrenzung zum Altsystem-Block**: `Contract::voucherRedeemedCents()` (Gesamtsumme) und `voucherReductionCents()` (nur der Anteil, der als **Ratenkürzung** existiert — voll gedeckte Raten sind eigene bezahlte Zeilen). `computedLegacyCollectedCents()` zieht die Kürzung ab, sonst würde eine Gutschein-Teilverrechnung fälschlich als rechnerischer Starmoney-Einzug erscheinen. Der Plausibilitäts-Check in `updatePaymentPlan()` rechnet den Gutschein-Anteil ebenfalls mit ein (`mismatch.voucher_reduction_cents`). Frontend: `applyPaymentsResult()` addiert `voucher_block.reduction_cents` zu Bezahlt- und Gesamtsumme; die V2-Sidebar (`summary-sidebar.blade.php` + `show.blade.php`) zeigt „davon Gutschein" reaktiv über das `contract-payments-summary`-Event (`voucherAmount`).
+- **Tests**: `tests/Unit/ContractVoucherDistributionTest.php` (Verteilungslogik inkl. 1-€-Minimum und Fälligkeits-Sortierung), `tests/Feature/ContractVoucherRedemptionTest.php` (beide Flows, abgelaufene Gutscheine, Phorest-Fehler → Warnung, Abgrenzung Gutschein ≠ Altsystem).
+
+### Update 15.07.2026 — Vertragsliste: Filter nach SEPA-Mandats-Status
+
+In der Vertragsübersicht (Reiter **Verträge**, `hub.contracts`) gibt es im **Status**-Filter (Trichter-Icon der Status-Spalte) zusätzlich ein Dropdown **SEPA-Mandat**. Damit lässt sich nach dem Mandats-Status filtern: *SEPA ausstehend, aktiv, eingereicht, fehlgeschlagen, storniert, abgelaufen*.
+
+Die Auswahl **„SEPA ausstehend"** spiegelt exakt den gleichnamigen Listen-Badge — d.h. sie schließt stornierte und abgeschlossene Verträge aus (nur Mandate im Status `pending` an noch offenen Verträgen). Das hilft beim Abgleich mit der Management-Liste in der Übergangsphase.
+
+- Backend: `ContractController::getContracts()` wertet den Query-Param `mandate_status` aus (`whereHas('clientMandate', …)`; bei `pending` zusätzlich `whereNotIn('status', ['cancelled','completed'])`); Optionen kommen aus `getFilterOptions()` (`mandate_statuses`). Das Mandat wird jetzt eager-geladen (behebt ein N+1).
+- Frontend: Filter-State `mandateStatus` + Dropdown im Status-Popover von `resources/views/hub/contracts/index.blade.php`.
+- Tests: `tests/Feature/ContractListMandateFilterTest.php`.
+
+### Update 06.07.2026 — Vertragsdetailseite neu gestaltet + Bankwechsel-/Altsystem-Korrekturen
+
+#### Für Nutzer (06.07.2026)
+
+Die Vertragsdetailseite wurde komplett überarbeitet und ist jetzt übersichtlicher aufgebaut. Die frühere Ansicht wurde abgelöst — es gibt nur noch das neue Layout.
+
+##### Was ist neu?
+
+- **Sticky-Sidebar rechts** mit allen Kerninfos auf einen Blick: Vertragsnummer, Kunde, Zahlungsfortschritt (Balken + Bezahlt/Offen/Raten), SEPA-Mandat (Status, Zahlungsplan, IBAN, Bank), Vertragsdaten (Status, Zahlungsart, Monatsrate, Rabatt 1. Sitzung, Unterschrieben-am, Verkäufer, Zonen) und Schnellaktionen. Bleibt beim Scrollen sichtbar.
+- **Vollbreites Menüband** über der Seite mit drei Tabs: **Übersicht**, **Zahlungen & SEPA**, **Verlauf**.
+- **Direkt-Links zu Tabs**: Jeder Tab hat einen eigenen Link-Anker. So kann man jemandem direkt den Zahlungen- oder Verlauf-Tab eines Vertrags schicken:
+  - Übersicht: `…/hub/contracts/{id}#uebersicht`
+  - Zahlungen & SEPA: `…/hub/contracts/{id}#zahlungen`
+  - Verlauf: `…/hub/contracts/{id}#verlauf`
+  Beim Wechsel eines Tabs aktualisiert sich der Link automatisch (teilbar/kopierbar).
+- **Zahlungen-Tabelle** überarbeitet: gebänderte Zeilen, das GoCardless-Symbol sitzt jetzt direkt im Status-Badge. Beim **Überfahren** zeigt es die Referenznummern (Zahlung/Abo/Plan), per **Klick** wird die Referenz in die Zwischenablage kopiert.
+- **Zahlungsfortschritt** berücksichtigt jetzt auch die **vor Ort bezahlte 1. Rate**, nicht nur die dokumentierten SEPA-Raten.
+- Öffnet man eines der Zahlungs-Modale (Raten anpassen, Zahlungsplan anlegen, Bankverbindung ändern), landet man nach dem Schließen automatisch im Zahlungen-Tab.
+
+##### Bankverbindung ändern — wichtige Korrektur
+
+Beim Ändern der IBAN eines Altvertrags wurden bisher **alle** noch offenen Raten neu angelegt — auch solche, die in Wahrheit **bereits über das Altsystem (Starmoney) eingezogen** worden waren. Dadurch konnten Zahlungen doppelt erzeugt werden.
+
+Jetzt gilt: Überfällige Raten ohne dokumentierten Einzug werden beim Bankwechsel **nicht** neu angelegt, sondern als Altsystem-Einzug gewertet (sie erscheinen im „Altsystem"-Block des Vertrags). Nach dem Speichern erscheint ein Hinweis, wie viele Raten (mit Summe) übersprungen wurden. Es werden nur noch die **wirklich offenen, zukünftigen** Raten auf das neue Mandat übertragen.
+
+##### Kein Altsystem-Einzug bei neuen Verträgen
+
+Verträge mit einem Vertragsdatum **ab dem 01.06.2026** hatten nie einen Altsystem-Einzug. Bei ihnen wird deshalb kein „davon Altsystem"-Betrag mehr angezeigt — auch dann nicht, wenn der SEPA-Einzug noch gar nicht gestartet ist. Der offene Betrag entspricht dort korrekt dem vollen Restwert.
+
+---
+
+#### Für Entwickler (06.07.2026)
+
+##### V1 entfernt, Redesign ist Standard
+
+Das Redesign lief zunächst als „V2" hinter einem Feature-Flag. Seit diesem Update ist es die **einzige** Ansicht:
+
+| Aktion | Detail |
+|--------|--------|
+| `show-v2.blade.php` | → umbenannt zu `show.blade.php` (alte V1-View gelöscht) |
+| Gelöschte Partials | `partials/tab-details.blade.php`, `partials/tab-history.blade.php` (V1) |
+| Route entfernt | `contracts.show.v2` + Controller-Methode `showV2()` |
+| Feature-Flag entfernt | `contract_v2_enabled` (config/app.php), `CONTRACT_V2_ENABLED` (phpunit.xml, .env) |
+| UI entfernt | „Zur klassischen Ansicht"-Link, „Neue Ansicht testen"-Button |
+| Test | `ContractShowV2Test` → `ContractShowTest` (Route `hub.contracts.show`) |
+
+`ContractController::show()` rendert `hub.contracts.show`; die Daten liefert weiterhin die private Methode `buildShowData()`. CSS-Klassen (`.contract-v2-*`) und der Ordner `resources/views/hub/contracts/v2/partials/` behalten aus Kompatibilitätsgründen ihre Namen (rein historisch, keine funktionale Bedeutung).
+
+##### Seiten-Aufbau (`show.blade.php`)
+
+```
+show.blade.php
+├── @php  … serverseitige KPI-Berechnung ($v2PaidCents inkl. legacyCollectedCents(), $v2OpenCents, …)
+├── v2/partials/header          … Titelzeile (editierbare Vertragsnummer)
+├── .contract-v2-tabs           … vollbreites Segmented-Control (Übersicht | Zahlungen & SEPA | Verlauf)
+└── .contract-v2-layout (Grid)
+    ├── .contract-v2-main
+    │   ├── v2/partials/tab-overview            (tabKey=details)
+    │   ├── partials/tab-payments               (tabKey=payments, hideSummaryBand=true)
+    │   ├── partials/tab-sepa                    (tabKey=payments, nur bei SEPA)
+    │   └── v2/partials/tab-history             (tabKey=history)
+    └── aside.contract-v2-sidebar → v2/partials/summary-sidebar
+```
+
+Geteilte Partials (`tab-payments`, `tab-sepa`, `contract-scripts`, `confirm-modal`) tragen einen `$tabKey`-Parameter, damit mehrere Inhalte unter einem Tab gestapelt werden können.
+
+##### Tab-Deep-Linking (Alpine)
+
+In `contractDetail()` (`partials/contract-scripts.blade.php`):
+
+- `tabSlugs = { details: 'uebersicht', payments: 'zahlungen', history: 'verlauf' }`
+- `init()` ruft `applyTabFromHash()` und registriert einen `hashchange`-Listener (Vor/Zurück).
+- `setActiveTab(tab)` setzt `activeTab` und schreibt den Slug via `history.replaceState` in die URL (kein Scroll-Sprung, kein History-Spam).
+- Alle Tab-Buttons und Sidebar-Schnellaktionen rufen `setActiveTab(...)`.
+- Die Zahlungs-Modale (`openEditPlanModal`, `openCreateGcModal`, `openBankModal`) dispatchen `contract-goto-payments`; das Root-Element (`@contract-goto-payments.window="setActiveTab('payments')"`) wechselt dann auf den Zahlungen-Tab.
+
+##### Reaktiver Zahlungsfortschritt in der Sidebar
+
+Die Server-KPIs kennen die vor Ort bezahlte 1. Rate nicht (Phorest-Terminlogik). Deshalb dispatcht `applyPaymentsResult()` nach dem Laden der Zahlungen ein `contract-payments-summary`-Event (Beträge in **Euro**, nicht Cents!); die Sidebar aktualisiert Progressbar, Bezahlt, Offen und den Raten-Zähler darüber.
+
+##### Altsystem-Stichtag (`Contract`)
+
+```php
+const LEGACY_CUTOFF_DATE = '2026-06-01';
+
+public function mayHaveLegacyCollection(): bool
+{
+    $contractDate = $this->signed_at ?? $this->start_date ?? $this->created_at;
+    return $contractDate !== null && $contractDate->lt(Carbon::parse(self::LEGACY_CUTOFF_DATE));
+}
+```
+
+- `computedLegacyCollectedCents()` liefert `0` für Verträge ab dem Stichtag → kein irreführender Legacy-Block bei Neuverträgen.
+- `GoCardlessPaymentPlanService::hasOverdueUndocumentedPayments()` gibt für Neuverträge `false` zurück (Webhook-Guard blockiert sie nicht).
+- **Tests** benötigen für Altvertrags-Szenarien explizit `signed_at` vor dem Stichtag (sonst greift der Cutoff über `created_at = now()`).
+
+##### Bankwechsel: Altsystem-Raten nicht doppelt anlegen
+
+In `GoCardlessMandateService::changeBankAccount()`:
+
+- Vor dem Sichern der offenen Raten werden pro Vertrag **überfällige `scheduled`-Platzhalter ohne GC-Verknüpfung** (nur bei Verträgen vor dem Altsystem-Stichtag) ermittelt. Sie werden **soft-gelöscht** und als `ContractChange` (`field_name = legacy_rates_removed`) protokolliert; der Betrag wandert damit in den rechnerischen Legacy-Block.
+- Rückgabe erweitert: `['mandate', 'subscription_errors', 'skipped_legacy']` (`skipped_legacy[contract_id] = { count, amount_cents }`).
+- Die automatische Fallback-Plananlage wird bei Altsystem-Historie übersprungen (sonst würde `remainingSepaRateCount` die undokumentierten Raten neu erfinden).
+- `ContractController::updateBankAccount()` hängt einen Warnhinweis an die Erfolgsmeldung (`warning: true`); das Frontend zeigt ihn per `alert()` vor dem Reload.
+- Bei Neuverträgen (ab Stichtag) gelten überfällige Platzhalter als **echte** offene Raten und werden normal auf das neue Mandat übertragen.
+
+##### Zahlungen-Tabelle & Clipboard
+
+- GoCardless-Icon sitzt im Status-Badge (`.payment-gc-badge-icon`), Referenz-Anzeige per Custom-Tooltip (`[data-tooltip]`), Kopieren per Klick.
+- `copyPaymentReference()` nutzt die Clipboard-API nur im **Secure Context** (HTTPS/localhost). Lokal (`http://glattthub.local:8888`) greift ein Fallback über ein unsichtbares Textarea + `document.execCommand('copy')`.
+
+##### Geplatzte Raten manuell als beglichen markieren (RLS + Gebühr)
+
+**Für Endanwender:** GoCardless spielt Rücklastschriften automatisch in den Hub zurück (Status *Fehlgeschlagen*/*Rückbuchung*). Wird eine solche Rate anschließend **per Überweisung oder bar** ausgeglichen, lässt sie sich im Zahlungen-Tab direkt als beglichen erfassen — DATEV liefert diese Info nicht zurück, deshalb der manuelle Weg:
+
+- Bei einer geplatzten Rate erscheint in der Spalte **Hinweis** der Button **„Als beglichen markieren"**.
+- Im Modal werden **eingegangener Betrag** (vorausgefüllt mit dem vollen Ratenbetrag), **Zahlungseingang** (das *tatsächliche* Eingangsdatum, nicht heute), **Zahlungsart** (Überweisung/Bar/Karte/Sonstige) und optional eine **Referenz** erfasst.
+- **Teilzahlung (Update 13.08.2026):** Zahlt der Kunde nur einen Teil (z.B. in zwei Raten zurück), einfach den tatsächlich eingegangenen Betrag eintragen. Der Teilbetrag erscheint als eigene bezahlte Zeile mit derselben Ratennummer, der **Rest bleibt als offene Rücklastschrift stehen** und kann später erneut (teil-)beglichen werden. Ein Hinweis im Modal zeigt den verbleibenden Restbetrag vor dem Speichern.
+- Zusätzlich lässt sich die **Rücklastschrift-Gebühr (RLS-Gebühr)** hinterlegen: Betrag und ob sie **bereits bezahlt** wurde. Ist die Gebühr noch offen, zeigt die Zeile ein Badge *„RLS-Gebühr offen"*; sie kann später über denselben Button nachträglich als bezahlt markiert werden (Badge *„RLS-Gebühr bezahlt"*).
+- Die Rate zählt danach als **bezahlt** und verschwindet aus dem Schulden-Modul. Es wird **kein neuer GoCardless-Einzug** ausgelöst — es ist eine rein lokale Buchung.
+- **Läuft zur Rate ein Mahnfall im Forderungsmanagement**, wird er automatisch mitgeführt: Der Eingang wird dem Fall gutgeschrieben und der Fall geschlossen, sobald nichts mehr offen ist (Details: Wiki `FORDERUNGSMANAGEMENT.md`).
+
+**Für Entwickler:**
+
+- Migration `2026_07_15_100000_add_return_fee_to_contract_payments`: neue Spalten `return_fee_cents` (nullable) + `return_fee_paid_at` (nullable) auf `contract_payments`.
+- `ContractPayment::settleBounced($receivedAt, $method, $reference, $notes, $feeCents, $feePaidAt)` setzt `status=paid`, `paid_at=$receivedAt`, `direct_payment_method=$method` und die Gebührenfelder; `recordReturnFee()` aktualisiert nur die Gebühr. Accessoren: `is_bounced`, `has_return_fee`, `is_return_fee_paid`, `return_fee`.
+- **Teilzahlung:** `ContractPayment::settleBouncedPartially()` nutzt das Split-Muster der Sondertilgung (`reduceRateForPartialPayment`), nur ohne GoCardless-Calls: RLS-Zeile wird um den Teilbetrag reduziert und bleibt `failed`/`chargedback` (inkl. Gebührenfelder), der Teilbetrag wird als eigene `paid`-Zeile mit derselben Ratennummer angelegt. Der Endpoint nimmt dafür optional `amount_cents` entgegen (ohne Angabe = voller Betrag, mehr als die Rate → 422).
+- **Mahnfall-Abgleich:** `SettlementCaseSyncService` (siehe `FORDERUNGSMANAGEMENT.md`) wird nach Begleichen/Korrektur/Revert/Gebühren-Nachtrag aufgerufen; alles läuft in einer DB-Transaktion.
+- Endpoint `POST /hub/contracts/{contract}/payments/{payment}/settle` → `ContractController::settleBouncedPayment()` (Middleware `can:manage_gocardless`). Nur auf geplatzten Raten (bzw. für Gebühren-Nachtrag auf Raten mit erfasster Gebühr).
+- **Reload-Schutz:** Weil `settleBounced()` `direct_payment_method` setzt, greift automatisch die `$protectedIds`-Regel in `ContractPaymentRebuildService::rebuild()` — die manuell beglichene Rate wird beim 🔄-Reload **nicht** storniert/überschrieben. `gocardless_payment_id` und `failure_reason` bleiben zur Historie erhalten.
+- **Leerräum-Schutz (Reload):** `rebuild()` bricht jetzt ab, wenn er bestehende (nicht geschützte) Raten stornieren würde, GoCardless aber **weder Zahlungen noch eine Vorschau** liefert (leere/ungültige GC-Antwort, Sandbox ohne Daten). So kann ein Reload den Zahlungsplan nicht mehr komplett leeren; der Fehler wird im Zahlungen-Tab sichtbar. Tests: `tests/Feature/RebuildReloadSafetyTest.php`.
+- **GC-Symbol:** Manuell beglichene Raten kamen nicht per GoCardless — `getPayments()` liefert `is_manual`, das Frontend (`hasGcReference()`) blendet das GoCardless-Symbol dann aus. Ein Auto-Hinweis („Per Überweisung beglichen am …") dokumentiert die Begleichung in der Ratenübersicht.
+- `getPayments()` liefert je Rate zusätzlich `can_settle`, `can_correct`, `paid_at`, `direct_payment_method`, `direct_payment_reference`, `has_return_fee`, `return_fee_cents`, `return_fee_paid`, `return_fee_paid_at`; das Modal + `saveSettlement()` liegen in `paymentsTab` (`contract-scripts.blade.php`), Button/Modal in `tab-payments.blade.php`.
+- Tests: `tests/Feature/SettleBouncedPaymentTest.php`, `tests/Unit/ContractPaymentSettlementTest.php`.
+
+##### Manuelle Begleichung korrigieren oder zurücksetzen (Update 18.07.2026)
+
+**Für Endanwender:** Wurde beim manuellen Begleichen ein **falsches Datum** erfasst oder versehentlich die **falsche Rate** beglichen, lässt sich das nachträglich reparieren:
+
+- Bei jeder manuell beglichenen Rate erscheint in der Status-Spalte der Button **„Korrigieren"**. Er öffnet dasselbe Modal, vorbefüllt mit den erfassten Werten — **Zahlungseingang, Zahlungsart, Referenz und RLS-Gebühr** können geändert und neu gespeichert werden.
+- Links im Modal-Footer gibt es zusätzlich **„Begleichung zurücksetzen"** (mit Sicherheitsabfrage): Die Rate kehrt in ihren **geplatzten Ursprungszustand** zurück (*Fehlgeschlagen*/*Rückbuchung*), erscheint wieder im Schulden-Modul und kann anschließend erneut — auf der richtigen Rate — beglichen werden.
+- Beides sind rein lokale Buchungen, es wird kein GoCardless-Einzug ausgelöst. Jede Korrektur wird im **Verlauf**-Tab des Vertrags protokolliert.
+
+**Für Entwickler:**
+
+- Keine Migration — nutzt die bestehenden Spalten. Der vorherige Status wird beim Zurücksetzen aus der Vertrags-Historie rekonstruiert (`ContractChange` mit `change_type=payment_updated`, `new_value=paid` → `old_value`); Fallback `failed`, wenn `failure_reason`/`failure_code` vorhanden. Ohne beides ist kein Zurücksetzen möglich (schützt echte Direktzahlungen).
+- `ContractPayment::correctSettlement($receivedAt, $method, $reference, $feeCents, $feePaidAt)` — aktualisiert die Begleichungsfelder; die Auto-Note („Per … beglichen am …") wird neu generiert, benutzerdefinierte Notes bleiben erhalten. `ContractPayment::revertSettlement()` — stellt den geplatzten Zustand wieder her und leert `paid_at`/`direct_payment_method`/Referenz/Gebührenfelder (damit entfällt auch der Reload-Schutz — korrekt, da die Rate wieder den GC-Zustand widerspiegelt).
+- Endpoint `POST /hub/contracts/{contract}/payments/{payment}/settle/correct` → `ContractController::correctSettledPayment()` (gleiche Middleware/Rollen wie beim Begleichen). Request-Feld `action`: `correct` (Default, mit Validierung wie beim Settle) oder `revert`.
+- Frontend: `settleMode` (`settle`/`correct`/`fee`) steuert Titel, Felder und Buttons des Settle-Modals; `revertSettlement()` in `contract-scripts.blade.php`. Der „Gebühr bezahlt"-Button erscheint nur noch, wenn die Rate nicht ohnehin korrigierbar ist (Gebühr wird dann im Korrektur-Modal gepflegt).
+- Tests: `tests/Feature/CorrectSettledPaymentTest.php`, `tests/Unit/ContractPaymentSettlementTest.php`.
+
+##### SEPA-Pausierung (Ratenzahlung aussetzen)
+
+**Für Endanwender:** Im Zahlungen-Tab kann ein SEPA-Vertrag über **„Pausieren"** ausgesetzt werden — für Fälle wie Arbeitslosigkeit oder Zahlungsschwierigkeiten. Zwei Arten:
+
+- **Fix (N Monate):** Die offenen Raten werden **um N Monate nach hinten verschoben**. Die Laufzeit verlängert sich entsprechend, der Kunde zahlt weiterhin alle Raten (nur später). Kein „Fortsetzen" nötig — der korrigierte Plan steht sofort.
+- **Unbefristet (Schuldner):** Alle offenen Raten werden **gestoppt**. Der Vertrag zeigt ein Pause-Banner; das SEPA-Mandat bleibt aktiv. Über **„Fortsetzen"** kommen **genau die beim Pausieren gestoppten Raten** ab einem gewählten Datum zurück (Anzahl und Beträge bleiben erhalten, ohne neues Mandat) — seit 21.08.2026 merkt sich die Pause dafür die stornierten Raten (`contract_pauses.paused_payment_ids`). Vorher rechnete das Fortsetzen den Plan aus `installment_count − bezahlte Zeilen` neu; bei Bestandsverträgen ohne Alt-Einzugs-Zeilen (Star-Money-Ära) entstand so ein kompletter neuer Zahlplan statt der Restraten (gemeldet 20.08.2026, Fall OS003246).
+
+Bereits **eingereichte** Raten (`submitted`, auf dem Weg zur Bank) laufen in beiden Fällen noch durch.
+
+**Endet der Vertrag, endet die Pause automatisch** (seit 11.08.2026). Wird einem Widerruf stattgegeben — oder der Vertrag durch Downgrade/Upgrade ersetzt —, verschwindet das Pause-Banner von selbst. Es wird dabei **nichts fortgesetzt**: Es werden keine Raten neu terminiert und GoCardless wird nicht angefasst; der Vorgang ist reine Zustandskorrektur und im Bearbeitungsverlauf als „SEPA-Pause beendet" vermerkt. Vorher blieb die Pausierung sichtbar stehen, obwohl es nichts mehr zu pausieren gab (gemeldet 06.08.2026, Janine).
+
+**Für Entwickler:**
+
+- GoCardless kann Einzelzahlungen (Standard seit 07/2026) **nicht** „pausieren" — der einzige Weg ist **Storno + Neuterminierung**. Der neue `App\Services\ContractPauseService` kapselt das und baut auf den bestehenden `public`-Bausteinen `GoCardlessPaymentPlanService::cancelOpenGcPayments()` / `recreateIndividualPayments()` / `createIndividualPaymentPlan()` auf.
+  - `pauseFixed()`: nur die **nächsten N** offenen Raten stornieren (`cancelSpecificPayments()`) + soft-deleten und ebenso viele am Planende neu anlegen — die übrigen offenen Raten behalten ihre GoCardless-Zahlung. Endergebnis identisch zu „alle um N verschieben", aber mit minimalem GC-Aufwand.
+  - `pauseIndefinite()`: offene Raten stornieren (Notiz „Pausiert – unbefristet" → im Reload geschützt, im Debt-Modul via `cancelled` ausgeschlossen), Mandat bleibt aktiv.
+  - `resume(startDate)`: legt **genau die an der Pause gemerkten Raten** (`paused_payment_ids`, Migration `2026_08_21_110000`) ab Startdatum via `recreateIndividualPayments()` neu an — mit Original-Ratennummern und -Beträgen; die stornierten Ursprungszeilen werden soft-gelöscht (keine Doppel-Nummern). Nur Pausen aus der Zeit **vor** dem Feld fallen auf die alte Neuberechnung (`createIndividualPaymentPlan()`, `installment_count − bezahlte Zeilen`) zurück.
+  - `endBecauseContractEnded($contract, $reason, $userId)` (11.08.2026): beendet eine laufende unbefristete Pause, weil der **Vertrag** endet. Ruft ausdrücklich **nicht** `resume()` auf (das würde Restraten neu terminieren) und fasst GoCardless nicht an — bei einer unbefristeten Pause sind die offenen Raten längst storniert, alles Weitere entscheidet der SEPA-Tab von Hand (Festlegung 31.07.2026). Fixe Pausen bleiben unberührt: Sie sind reine Historie.
+- Datenmodell: Tabelle `contract_pauses` (Migration `2026_07_15_110000`), Model `App\Models\ContractPause`. Am `Contract`: `pauses()`, `activeIndefinitePause()`, Accessor `is_paused`. **Kein** neuer Contract-Status (würde zahlreiche `where('status','active')`-Filter brechen).
+- **Zwei Ausgänge einer Pause** (Migration `2026_08_11_090000`): `resumed_at`/`resume_date` = fortgesetzt (Raten neu terminiert), `ended_at`/`ended_reason` = ohne Fortsetzung beendet, weil der Vertrag endete. Bewusst getrennte Spalten — ein gesetztes `resumed_at` ohne `resume_date` würde im Verlauf behaupten, die Einzüge liefen wieder. `ContractPause::is_active` und `Contract::activeIndefinitePause()` prüfen beide Felder.
+- **Auslöser** (alle drei Wege, auf denen ein Vertrag beendet wird): `RevocationOutcomeService::apply()` (Widerruf im Hub abgeschlossen — Rückgabe enthält `ended_pause`, die Meldung an den Bearbeiter nennt es), `ContractImportService::handleWiderruf()` (Widerruf aus dem Google Sheet) und `ContractController::resolveWiderrufImport()` (Widerruf manuell zugeordnet).
+- **Altbestand:** `php artisan revocations:apply-outcomes` hat einen dritten Schritt „Laufende SEPA-Pausen auf beendeten Verträgen" (Trockenlauf ohne `--force`, listet Vertragsnummer, Status, Pausenbeginn und Grund).
+- Endpoints: `POST /hub/contracts/{contract}/pause` (`type` fixed/indefinite, `months`, `reason`), `POST /hub/contracts/{contract}/resume` (`resume_date`) — `ContractController::pauseContract()` / `resumeContract()`, Gate `can:manage_gocardless`. `getPayments()` liefert `pause` + `can_pause` für Banner/Button.
+- **Guards gegen „Wegheilen" der unbefristeten Pause:** `GoCardlessPaymentPlanService::activatePendingPlans()` (mandates.active-Webhook) und `ContractPaymentReconciler::reconcileContract()` (täglicher Cron) überspringen pausierte Verträge (`$contract->is_paused`). Fixe Pausen brauchen keine Guards — die Raten bleiben reale GC-Zahlungen, nur später terminiert.
+- Tests: `tests/Feature/ContractPauseTest.php`, `tests/Feature/RevocationOutcomeTest.php` (Pause endet mit Widerruf/Downgrade, bleibt bei Ablehnung und bei fixer Pause stehen), `tests/Feature/ApplyRevocationOutcomesCommandTest.php`, `tests/Feature/ContractImportMandateSyncTest.php`.
+
+##### Geänderte / entfernte Dateien (Auszug)
+
+| Datei | Änderung |
+|-------|----------|
+| `app/Models/Contract.php` | `LEGACY_CUTOFF_DATE`, `mayHaveLegacyCollection()`, `computedLegacyCollectedCents()` respektiert Stichtag |
+| `app/Services/GoCardlessMandateService.php` | Altsystem-Guard im Bankwechsel, `skipped_legacy`-Rückgabe |
+| `app/Services/GoCardlessPaymentPlanService.php` | `hasOverdueUndocumentedPayments()` respektiert Stichtag |
+| `app/Http/Controllers/ContractController.php` | `showV2()` entfernt, Bankwechsel-Warnhinweis |
+| `routes/web.php`, `config/app.php`, `phpunit.xml` | Feature-Flag `contract_v2_enabled` entfernt |
+| `resources/views/hub/contracts/show.blade.php` | ehemals `show-v2`, Tab-Band, Deep-Linking |
+| `resources/views/hub/contracts/v2/partials/*` | header, summary-sidebar, tab-overview, tab-history |
+| `resources/views/hub/contracts/partials/{contract-scripts,tab-payments}.blade.php` | Deep-Linking, GC-Icon/Clipboard, reaktive Summary |
+| `public/css/theme_glattt.css` | `.contract-v2-tabs`, `.btn-glattt-ghost`, Tabellen-/Tooltip-/Progress-Feinschliff |
+
+##### Tests
+
+- `tests/Feature/ContractShowTest.php` (Route + Inhalte, 403 ohne Permission)
+- `tests/Unit/GoCardlessBankChangeTest.php` (u.a. Altsystem-Raten werden nicht neu angelegt, Neuvertrag-Verhalten)
+- `tests/Feature/ContractPaymentsDbOnlyTest.php` (Legacy-Block, Neuvertrag ohne Legacy-Block)
+
+Volle Suite: 523 Tests grün.
+
+---
+
+### Update 18.05.2026 — Zahlungsart wechseln (Direktzahlung → SEPA)
+
+#### Für Nutzer (18.05.2026)
+
+Ein bestehender Direktzahlungs-Vertrag kann nachträglich auf SEPA-Lastschrift umgestellt werden. Das ist zum Beispiel nötig, wenn ein Kunde zunächst bar gezahlt hat, aber der Rest auf Ratenzahlung per Lastschrift umgestellt werden soll.
+
+##### Schritt-für-Schritt
+
+1. **Vertrag öffnen** — Vertragsdetailseite über Hub → Verträge aufrufen
+2. **Vertragsübersicht bearbeiten** — Im Abschnitt „Vertragsübersicht" auf den Bearbeiten-Button klicken
+3. **Zahlungsart ändern** — Im Dropdown „Zahlungsart" von „Direktzahlung" auf „SEPA-Lastschrift" wechseln
+4. **SEPA-Felder ausfüllen** — Folgende Felder müssen zusätzlich ausgefüllt werden:
+   - **Anzahl Raten** — wie viele SEPA-Abbuchungen es geben soll
+   - **Monatliche Rate (€)** — Betrag pro Rate
+   - **Erste Abbuchung** — Datum der ersten SEPA-Abbuchung
+5. **Speichern** — Auf „Speichern" klicken → Bestätigungs-Modal zeigt die Diff-Tabelle der Änderungen
+6. **Begründung eingeben** — Pflichtfeld (mind. 10 Zeichen), z.B. „Von Direkt auf Lastschrift"
+7. **Änderungen speichern** — Klick auf „Änderungen speichern" im Modal
+8. **SEPA-Mandat anlegen** — Danach im Tab „SEPA-Mandat" ein Mandat anlegen:
+   - Entweder per **„Mandat manuell anlegen"** (Kontodaten direkt eingeben)
+   - Oder per **GoCardless-Suche**, falls der Kunde bereits ein Mandat bei GoCardless hat
+
+> **Wichtig:** Der reine Zahlungsart-Wechsel erstellt **kein** SEPA-Mandat. Schritt 8 ist zwingend nötig, damit Abbuchungen stattfinden können.
+
+##### Was wird automatisch berechnet?
+
+Wenn sich `Anzahl Raten` oder `Preisliste` ändert, berechnet das System den vorgeschlagenen Gesamtpreis neu (basierend auf der Preisgruppe der Preisliste für die entsprechende Zonenzahl und Laufzeit). Der Gesamtwert muss ggf. noch manuell angepasst werden.
+
+---
+
+#### Für Entwickler (18.05.2026)
+
+##### Geänderte Dateien
+
+| Datei | Änderung |
+|-------|----------|
+| `app/Models/PriceList.php` | Neue Methode `calculatePrice()` hinzugefügt |
+| `app/Models/Contract.php` | `calculateTotalValue()` übergibt jetzt `installment_count` |
+
+##### Bugfix: `PriceList::calculatePrice()` fehlte
+
+**Fehler:** `Call to undefined method App\Models\PriceList::calculatePrice()`
+
+**Ursache:** In `Contract::calculateTotalValue()` wurde `$this->priceList->calculatePrice($bodyZoneCount)` aufgerufen, obwohl diese Methode in `PriceList` gar nicht existierte. Der Fehler trat beim Wechsel der Zahlungsart auf, weil dabei auch `installment_count` geändert wird — was `calculateTotalValue()` auslöst.
+
+**Fix:** `calculatePrice(int $bodyZoneCount, ?int $months = null): int` in `PriceList` implementiert:
+
+```php
+public function calculatePrice(int $bodyZoneCount, ?int $months = null): int
+{
+    $effectiveZones = min($bodyZoneCount, $this->max_body_zones ?? $bodyZoneCount);
+    $query = $this->priceGroups()->where('body_zone_count', $effectiveZones);
+
+    if ($months !== null) {
+        $group = $query->where('months', $months)->first()
+            ?? $query->first(); // Fallback auf erste verfügbare Gruppe
+    } else {
+        $group = $query->first();
+    }
+
+    return $group ? $group->monthly_amount_cents * $group->months : 0;
+}
+```
+
+Außerdem übergibt `calculateTotalValue()` jetzt den `installment_count`:
+
+```php
+$basePrice = $this->priceList->calculatePrice($this->body_zone_count, $this->installment_count);
+```
+
+##### Ablauf im Controller: `updateContractOverview()`
+
+Route: `PATCH /hub/contracts/{contract}/overview`  
+Middleware: `can:edit_contract_data`
+
+1. Validiert Felder: `payment_method`, `installment_count`, `monthly_amount_cents`, `total_value_cents`, `first_payment_date`, `reason`
+2. Erkennt Änderungen per Feldvergleich
+3. Speichert alle geänderten Felder auf dem Vertrag
+4. Falls `installment_count` oder `price_list_id` geändert: ruft `calculateTotalValue()` auf und gibt Vorschlagswert zurück
+5. Schreibt jeden geänderten Wert als eigenen `ContractChange`-Eintrag (Typ: `field_updated`)
+
+##### Was das Bestätigungs-Modal zeigt
+
+Das Alpine.js-Frontend baut vor dem Speichern eine **Diff-Tabelle** aus den alten (PHP-Werten) und neuen (Formular-Werten) Feldern. Typische Einträge beim Zahlungsart-Wechsel:
+
+| Feld | Vorher | Nachher |
+|------|--------|---------|
+| Zahlungsart | Direktzahlung | SEPA-Lastschrift |
+| Startdatum | – | 2026-06-03 |
+| Anzahl Raten | – | 18 |
+| Erste Abbuchung | – | 2026-06-03 |
+
+Die Begründung ist Pflichtfeld (min. 10 Zeichen) und wird bei jedem `ContractChange` gespeichert.
+
+---
+
+### Update 08.05.2026 — SEPA-Mandat manuell anlegen
+
+#### Für Nutzer (08.05.2026)
+
+Auf der SEPA-Mandat-Seite eines Vertrags erscheint nun ein Button **„Mandat manuell anlegen"**, wenn für den Vertrag noch kein SEPA-Mandat in der Datenbank registriert ist.
+
+**Wann erscheint der Button?**
+
+- Nur wenn `payment_method === 'sepa'` und noch kein `ClientMandate` mit dem Vertrag verknüpft ist
+- Nur für Nutzer mit der Berechtigung `edit_contract_data`
+
+**Formular-Felder:**
+
+| Feld | Pflicht | Hinweis |
+|------|---------|---------|
+| Vorname | ✅ | Kontoinhaber |
+| Nachname | ✅ | Kontoinhaber |
+| IBAN | ✅ | Live-Validierung mit Prüfziffer (MOD-97) |
+| BIC | – | Wird automatisch per OpenIBAN-API befüllt |
+| Bankname | – | Wird automatisch per OpenIBAN-API befüllt |
+| Mandatsreferenz | – | Leer lassen = automatisch generiert (`MAN-XXXXXXXX`) |
+| Unterschrieben am | – | Zeitpunkt der Unterschrift |
+
+**Verhalten nach dem Speichern:**
+
+1. Ein neues `ClientMandate` mit Status **Ausstehend** wird angelegt
+2. Der Vertrag wird mit dem Mandat verknüpft (`client_mandate_id`)
+3. Der Vorgang wird im Bearbeitungsverlauf protokolliert
+4. Seite wird automatisch neu geladen — der SEPA-Tab zeigt jetzt das angelegte Mandat
+
+> **Hinweis:** Das Mandat wird zunächst nur lokal gespeichert (Status: Ausstehend). Um es mit GoCardless zu synchronisieren und den Zahlungsplan zu erstellen, danach die übliche GoCardless-Suche oder den „Mandat und Zahlungsplan anlegen"-Workflow nutzen.
+
+#### Für Entwickler (08.05.2026)
+
+##### Neue / geänderte Dateien
+
+| Datei | Änderung |
+|-------|----------|
+| `app/Http/Controllers/ContractController.php` | Neue Methode `createMandate()` |
+| `routes/web.php` | Route `POST hub/contracts/{contract}/create-mandate` (Middleware `edit_contract_data`) |
+| `resources/views/hub/contracts/show.blade.php` | Button + Modal-Include + Alpine.js State & Methoden |
+| `resources/views/hub/contracts/partials/create-mandate-modal.blade.php` | Neues Modal-Partial |
+
+##### Controller: `createMandate(Request $request, Contract $contract)`
+
+```php
+// Route: POST hub/contracts/{contract}/create-mandate
+// Middleware: can:edit_contract_data
+```
+
+- Prüft ob bereits ein `ClientMandate` vorhanden ist (422 falls ja)
+- Validiert: `payer_first_name`, `payer_last_name`, `payer_iban` (required), `payer_bic`, `payer_bank_name`, `mandate_reference`, `mandate_signed_at` (optional)
+- Normalisiert IBAN (Leerzeichen entfernen, Großbuchstaben)
+- Auto-generiert `mandate_reference` falls leer: `MAN-` + 8 Hex-Zeichen
+- Erstellt `ClientMandate` mit `status = pending`
+- Setzt `contract.client_mandate_id`
+- Schreibt `ContractChange` vom Typ `mandate_created`
+
+##### Alpine.js — neue State-Variablen in `sepaTab()`
+
+```js
+showCreateMandateModal: false,
+createMandateSaving: false,
+createMandateError: null,
+createMandateSuccess: false,
+createMandateIbanLoading: false,
+createMandateIbanValid: false,
+createMandateIbanError: null,
+createMandateForm: { payer_first_name, payer_last_name, payer_iban, payer_bic, payer_bank_name, mandate_reference, mandate_signed_at }
+```
+
+Neue Methode `validateAndLookupMandateIban()` — nutzt die bereits vorhandenen `validateIBAN()` und `lookupBICFromIBAN()` aus demselben Scope wieder.
+
+---
+
+### Update 30.04.2026 — SEPA-E-Mail-System vollständig implementiert
+
+Dieses Update implementiert ein vollständiges, GoCardless-konformes E-Mail-System für alle SEPA-relevanten Ereignisse.
+
+#### Für Nutzer (30.04.2026)
+
+Kunden erhalten jetzt automatisch E-Mails bei folgenden Ereignissen:
+
+| Ereignis | Auslöser | E-Mail |
+|----------|----------|--------|
+| SEPA-Formular ausgefüllt (neuer Vertrag per Termin) | Automatisch nach GoCardless-Sync | **Onboarding** inkl. Vertrags-PDF |
+| SEPA-Mandat manuell aktiviert (Button im Hub) | Klick auf „Mandat aktivieren" | **Mandats-Aktivierung** ohne PDF |
+| Bankverbindung geändert | „Kontoverbindung ändern" im Hub | **Bankverbindung geändert** |
+| GoCardless-Mandat widerrufen | Widerruf-Button im Hub | **Mandat beendet** |
+| Vertragsdetails geändert (Rate, Datum) | Vertragsbearbeitung | **Vertragsänderung** |
+
+**E-Mail-Inhalte:**
+- Persönliche Anrede: „Liebe [Vorname]," / „Lieber [Vorname]," (geschlechtergerecht, aus Phorest)
+- Vertragsdetails: Behandlungszonen, Monatsrate, Anzahl SEPA-Raten, erste Abbuchung
+- SEPA Pre-Notification (GoCardless-Pflichtangabe): Anzahl Raten, erste und letzte Abbuchung, Betrag, Gläubiger-ID
+- Mandatsdetails: Mandatsreferenz, maskierte IBAN, Gläubiger-ID
+- Abschnitt mit Gläubiger- und GoCardless-Informationen
+
+**Ratenzählung:**
+- Bei z.B. 19 Monaten: **1 Rate vor Ort** + **18 SEPA-Lastschriften**
+- E-Mail zeigt: „18 SEPA + 1 vor Ort"
+- Pre-Notification zeigt Anzahl SEPA-Raten (= `installment_count - 1`)
+- Letzte Abbuchung = Erste Abbuchung + `installment_count - 2` Monate
+
+**Deduplication:**
+- Onboarding-Mail wird pro Mandat nur einmal versendet (kein doppelter Versand bei erneutem Sync)
+- `force_resend`-Parameter für Ausnahmen (z.B. Supportfälle)
+
+#### Für Entwickler (30.04.2026)
+
+##### Neue Dateien
+
+| Datei | Zweck |
+|-------|-------|
+| `app/Services/SepaEmailService.php` | Zentraler Service für alle SEPA-E-Mails |
+| `app/Models/SepaEmailLog.php` | Logging-Model mit Deduplication-Logik |
+| `app/Mail/Sepa/OnboardingMail.php` | Mailable: Onboarding inkl. PDF |
+| `app/Mail/Sepa/MandateActivationMail.php` | Mailable: Mandats-Aktivierung |
+| `app/Mail/Sepa/ChangeNotificationMail.php` | Mailable: Vertragsänderung |
+| `app/Mail/Sepa/BankAccountChangedMail.php` | Mailable: Bankverbindung geändert |
+| `app/Mail/Sepa/MandateCancelledMail.php` | Mailable: Mandat beendet |
+| `resources/views/emails/sepa/onboarding.blade.php` | Template: Onboarding |
+| `resources/views/emails/sepa/mandate-activation.blade.php` | Template: Mandats-Aktivierung |
+| `resources/views/emails/sepa/change-notification.blade.php` | Template: Vertragsänderung |
+| `resources/views/emails/sepa/bank-account-changed.blade.php` | Template: Bankverbindung geändert |
+| `resources/views/emails/sepa/mandate-cancelled.blade.php` | Template: Mandat beendet |
+| `app/Filament/Resources/SepaEmailLogs/` | Filament Resource für E-Mail-Log-Übersicht |
+| `database/migrations/2026_04_29_180000_create_sepa_email_logs_table.php` | Tabelle `sepa_email_logs` |
+| `database/migrations/2026_04_30_100000_add_bank_account_changed_and_mandate_cancelled_to_sepa_email_logs.php` | Enum-Erweiterung für neue Mail-Typen |
+| `tests/Feature/SepaEmailServiceTest.php` | Feature-Tests (19/19 ✅) |
+
+##### `SepaEmailService` — Methoden-Übersicht
+
+```php
+sendOnboardingEmail(ClientMandate $mandate, Contract $contract, bool $forceResend = false): void
+sendMandateActivationEmail(ClientMandate $mandate, Contract $contract): void
+sendChangeNotificationEmail(ClientMandate $mandate, Contract $contract, array|Collection $changes): void
+sendBankAccountChangedEmail(ClientMandate $mandate, Contract $contract, string $maskedIban = '–'): void
+sendMandateCancelledEmail(ClientMandate $mandate, Contract $contract): void
+```
+
+Alle Methoden:
+- Ermitteln Empfänger-E-Mail aus `payer_email` (bei abweichendem Zahler) oder Phorest-API
+- Laden Name und Geschlecht aus Phorest für personalisierte Anrede
+- Loggen Erfolg/Fehler in `sepa_email_logs`
+- Wenden Mail-Einstellungen via `MailSettingsService` an (From-Name, From-Address)
+
+##### `SepaEmailLog` — Typen-Konstanten
+
+```php
+TYPE_ONBOARDING         = 'onboarding'
+TYPE_ACTIVATION         = 'activation'
+TYPE_CHANGE_NOTIFICATION = 'change_notification'
+TYPE_BANK_ACCOUNT_CHANGED = 'bank_account_changed'
+TYPE_MANDATE_CANCELLED  = 'mandate_cancelled'
+```
+
+##### Aufruf-Stellen
+
+| Mail | Aufruf in |
+|------|-----------|
+| Onboarding | `SyncMandateToGoCardlessJob` — nach erfolgreichem GoCardless-Sync |
+| Aktivierung | `ContractController::activateMandate()` — manueller Button |
+| Änderung | `ContractController::updateContractData()` — Vertragsbearbeitung |
+| Bankverbindung geändert | `GoCardlessMandateService::changeBankAccount()` — nach API-Aufruf |
+| Mandat beendet | `GoCardlessMandateService::cancelMandate()` + `ContractController::cancelGoCardlessMandate()` |
+
+##### `installment_count`-Semantik
+
+```
+installment_count = 19
+├── Rate 1: vor Ort bezahlt
+└── Rate 2-19: SEPA (= installment_count - 1 = 18 Lastschriften)
+
+GoCardless Subscription count = installment_count - 1
+E-Mail installmentCount       = installment_count - 1
+E-Mail lastPaymentDate        = first_payment_date + (installment_count - 2) Monate
+```
+
+##### GoCardless Compliance — Pre-Notification
+
+Die E-Mails erfüllen die GoCardless-Pflichtanforderungen für SEPA Pre-Notifications:
+
+| Pflichtfeld | Quelle |
+|-------------|--------|
+| Anzahl Raten | `installment_count - 1` |
+| Erste Abbuchung | `contract.first_payment_date` |
+| Letzte Abbuchung | `first_payment_date + (installment_count - 2) Monate` |
+| Abbuchungsbetrag | `monthly_amount_cents / 100` |
+| Gläubiger-ID | `DE33ZZZ00001960715` (config) |
+| Mandatsreferenz | `mandate.mandate_reference` |
+| Kontoinhaber | `mandate.payer_*` oder Phorest-Client-Name |
+
+##### Test-Mails manuell versenden
+
+```bash
+php artisan tinker --execute="
+use App\Models\ClientMandate;
+use App\Models\Contract;
+use App\Services\SepaEmailService;
+
+\$mandate = ClientMandate::where('mandate_reference', 'REFERENZ')->firstOrFail();
+\$contract = Contract::where('contract_number', 'VERTRAGSNUMMER')->firstOrFail();
+
+\$service = app(SepaEmailService::class);
+
+// Onboarding (mit force_resend um Deduplication zu umgehen):
+\$service->sendOnboardingEmail(\$mandate, \$contract, true);
+
+// Aktivierung:
+\$service->sendMandateActivationEmail(\$mandate, \$contract);
+
+// Mandat beendet:
+\$service->sendMandateCancelledEmail(\$mandate, \$contract);
+"
+```
+
+### Update 28.04.2026 — GoCardless-Plan stornieren & neu anlegen
+
+Dieses Update verbessert den Workflow rund um das Stornieren und Neu-Anlegen von GoCardless-Zahlungsplänen im SEPA-Mandat-Tab.
+
+#### Für Nutzer (28.04.2026)
+
+**Zahlungsplan stornieren:**
+- Der Button „Zahlungsplan stornieren" erscheint jetzt für **alle** aktiven GoCardless-Pläne — sowohl für neuere Instalment Schedules als auch für ältere Daueraufträge (Subscriptions).
+- Nach dem Stornieren werden alle lokalen „Vorgemerkt"-Zahlungen automatisch auf „Storniert" gesetzt.
+- Im Bearbeitungsverlauf wird dokumentiert welche Summe bis zum Stornierungszeitpunkt bereits über GoCardless eingezogen wurde.
+- Im GoCardless-Status-Bereich erscheint ein grüner Hinweis mit dem bereits eingezogenen Betrag (sofern Zahlungen vorhanden).
+
+**Neuen Zahlungsplan anlegen:**
+- Nach dem Stornieren ist der Button „Neuen Zahlungsplan anlegen" direkt sichtbar — ohne Seite neu laden zu müssen.
+- Mandatsreferenz und Bankverbindung bleiben erhalten; nur der Zahlungsplan selbst wird storniert.
+
+**Anzeigebereinigung:**
+- Bei einem stornierten Mandat werden die Felder „Monatliche Rate", „Anzahl Raten" und „Erste Abbuchung" ausgeblendet — diese Werte stammen vom alten Plan und sind nach der Stornierung nicht mehr relevant.
+- Die Zeile „Erstellt am …" im Seitentitel wurde entfernt.
+
+**Kundendaten-Darstellung:**
+- E-Mail-Adresse und Telefonnummer werden wieder korrekt in einer Zeile mit Icon dargestellt (CSS-Bugfix Alpine.js).
+
+#### Für Entwickler (28.04.2026)
+
+**`hasActiveGoCardlessPlan()` erweitert** (`ContractController.php`):
+- Prüft jetzt beide Plan-Typen:
+  - `ClientMandate.gocardless_instalment_schedule_id` (Instalment Schedule)
+  - `Contract.gocardless_subscription_id` (Dauerauftrag/Subscription)
+
+**`cancelGoCardlessPlan()` erweitert** (`ContractController.php`):
+- Berechnet vor dem Stornieren den bereits eingezogenen Betrag: `ContractPayment` mit `status=paid` und `gocardless_payment_id IS NOT NULL`
+- Storniert `gocardless_subscription_id` via `GoCardlessApiService::cancelSubscription()` (zusätzlich zu Instalment Schedule)
+- Setzt `contract.gocardless_subscription_id = null` und speichert
+- Setzt alle lokalen Zahlungen mit `status IN (scheduled, pending)` auf `cancelled`
+- Schreibt `ContractChange` mit Plan-ID und eingezogenem Betrag im `old_value`-Feld
+
+**View `show.blade.php` — Bedingungen angepasst:**
+- Cancel-Button: `@if((!empty($mandate->gocardless_instalment_schedule_id) && in_array(...)) || !empty($contract->gocardless_subscription_id))`
+- Bankverbindung/GoCardless-Section: jetzt auch bei `mandate->status === 'cancelled'` sichtbar (war: nur `active`, `submitted`)
+- Zahlungsplan-Felder (Rate, Anzahl Raten, Erste Abbuchung): werden bei `status === 'cancelled'` ausgeblendet
+- Alpine.js `x-show` + `display: flex` Bug bei E-Mail/Telefon-Spans: von statischem `style=` auf `:style=` (dynamisches Alpine-Binding) umgestellt
+
+### Update 27.04.2026 — GoCardless-Pflichthinweise im SEPA-Formular (Custom Payment Pages)
+
+Dieses Update implementiert alle Pflichtanforderungen laut [GoCardless SEPA Custom Payment Pages](https://support.gocardless.com/hc/en-gb/articles/360001245585-Eurozone-SEPA-custom-payment-pages) für die Nutzung eigener Zahlungsseiten.
+
+#### Für Nutzer (27.04.2026)
+
+**Im SEPA-Formular (vor dem Absenden):**
+- Zwischen dem letzten Formularfeld und dem „Formular absenden"-Button erscheinen jetzt die gesetzlich vorgeschriebenen GoCardless-Hinweise: Regulatory Status und Datenschutz-Link.
+
+**Im Erfolgs-Modal (nach dem Absenden):**
+- Überschrift zeigt jetzt: „SEPA-Lastschriftmandat erfolgreich eingerichtet."
+- Hinweis: „Zahlungen erscheinen auf dem Kontoauszug als **glattt**."
+- Hinweis: „Du erhältst vor jeder Abbuchung mindestens 3 Werktage im Voraus eine Benachrichtigung per E-Mail."
+- Regulatory Status + Datenschutz-Link (GoCardless Pflichtfelder)
+
+Diese Hinweise erscheinen **nur bei Formularen mit SEPA-Feldern** — alle anderen Formulare sind nicht betroffen.
+
+**Im Form-Editor noch manuell anzupassen (einmalig):**
+
+| Wo | Was | Typ |
+|---|---|---|
+| Nach Gläubiger-ID-Feld | Gläubiger-Name, Adresse, Land | `paragraph`-Feld |
+| Vor Kontoinhaber-Feldern | „Zahlungsart: Wiederkehrend" | `paragraph`-Feld |
+| Vor dem Einwilligungstext | Vorabhinweis (3 Werktage) | `paragraph`-Feld |
+| Bestehender Einwilligungstext | Auf offizielle EPC-Formulierung aktualisieren | Feld editieren |
+
+#### Für Entwickler (27.04.2026)
+
+**Neue Dateien:**
+- `resources/views/partials/gocardless-footer.blade.php` — Statisches Partial mit Regulatory Status + Privacy Notice (eingebunden per `@include`)
+
+**Geänderte Dateien:**
+- `resources/views/forms/shared-fill.blade.php` — `$isSepaForm`-Flag (`$form->fields->contains('type', 'sepa_iban')`), Footer vor Submit-Button, SEPA-spezifischer Success State
+- `resources/views/partials/form-submission-modal.blade.php` — SEPA-Erkennung via Alpine.js `form.fields.some(f => f.type === 'sepa_iban')`, SEPA-Überschrift per `<template x-if>`, SEPA-Infoblock (Kontoauszug, Vorankündigung, Regulatory)
+- `resources/views/hub/forms/fill.blade.php` — `isSepaForm`-Variable an Modal-Include übergeben
+- `resources/views/hub/appointment-unified/partials/form-fill-inline.blade.php` — Alpine.js-basierte SEPA-Erkennung (kein PHP `$form` verfügbar), Footer vor Submit-Button
+- `public/css/theme_glattt.css` — Neue Klasse `.gocardless-footer-notice` (inkl. Dark Mode)
+
+**SEPA-Erkennung Logik:**
+- PHP-Kontext (shared-fill, fill): `$form->fields->contains('type', 'sepa_iban')`
+- Alpine.js-Kontext (Modal, inline): `form && form.fields && form.fields.some(f => f.type === 'sepa_iban')`
+- `form-fill-inline.blade.php` hat kein PHP `$form` — hier ausschließlich Alpine.js-Erkennung
+
+**GoCardless Compliance Status nach diesem Update:**
+
+| Anforderung | Seite | Status |
+|---|---|---|
+| HTTPS | alle | ✅ |
+| Vor-/Nachname | SEPA-Formular | ✅ |
+| E-Mail | SEPA-Formular | ✅ |
+| IBAN | SEPA-Formular | ✅ |
+| Adresse | SEPA-Formular | ✅ |
+| Gläubiger-Name + Adresse | SEPA-Formular | ⚠️ via Form-Editor |
+| Zahlungsart (Wiederkehrend) | SEPA-Formular | ⚠️ via Form-Editor |
+| Vorabhinweis 3 Werktage | SEPA-Formular | ⚠️ via Form-Editor |
+| Einwilligungstext EPC | SEPA-Formular | ⚠️ via Form-Editor |
+| Regulatory Footer | SEPA-Formular + Modal | ✅ |
+| Privacy Notice | SEPA-Formular + Modal | ✅ |
+| Success-Überschrift | Success Modal | ✅ |
+| Kontoauszug-Hinweis | Success Modal | ✅ |
+| IP + Timestamp | Backend | ✅ |
+| GoCardless Approval | — | ⏳ Screenshots senden |
+
+### Update April 2026 (zwischen 22.04. und 27.04.) — GoCardless-Erstellung aus dem Vertragsdetail, offene Raten bearbeiten
+
+Dieses Tages-Update erweitert den Vertragsbereich um einen durchgängigen Workflow für:
+
+- GoCardless-Erstellung direkt aus dem Vertragsdetail (SEPA-Tab)
+- Bearbeitung offener Raten im Zahlungen-Tab (inkl. Aussetzen)
+- Robuste Fehlerbehandlung bei veralteten GoCardless-IDs
+- Korrekte Herleitung der 1. Rate (Vor Ort) aus dem ersten relevanten Termin nach Beratung
+
+Die Details sind unten jeweils in den Abschnitten „Für Nutzer“ und „Für Entwickler“ ergänzt.
+
+### Update 22.04.2026
+
+Dieses Tages-Update ergänzt das Vertragsmodul um automatisierte Status-Verwaltung und verbesserte Filter-UX:
+
+#### Für Nutzer (22.04.2026)
+
+- **Vertragsübersicht zeigt standardmäßig** nur Entwurf, Aktiv und Widerruf-Verträge — Abgeschlossene sind ausgeblendet, können aber jederzeit eingeblendet werden.
+- **Status-Filter ist nun Multi-Select**: Mehrere Status können gleichzeitig ausgewählt werden (z.B. nur Aktiv + Entwurf). Ein Klick aktiviert/deaktiviert jeden Status einzeln.
+- **Direktzahlungs-Verträge** werden täglich automatisch auf „Abgeschlossen" gesetzt, sobald Phorest eine bezahlte Sitzung (PAID) für den Kunden verbucht.
+- **Legacy-Verträge (Altdaten)**: Historische Verträge aus dem alten GoCardless-System, die vollständig bezahlt sind, wurden als Batch auf „Abgeschlossen" gesetzt.
+
+#### Für Entwickler (22.04.2026)
+
+**Automatischer `completed`-Status für Direktzahlungs-Verträge:**
+- Neuer Artisan-Command: `contracts:complete-direct-payments` — prüft täglich ob für `payment_method=direct` + `status=active` Verträge eine `PAID`-Sitzung in `stats_historic_appointments` ab Vertragsunterzeichnung vorliegt.
+- Beratungstermine (3 bekannte Service-IDs) werden dabei ausgeschlossen.
+- Läuft täglich um 05:00 via Google Cloud Scheduler (`/api/cron/complete-direct-contracts`).
+- Unterstützt `--dry-run` für sichere Tests.
+
+**Legacy-Batch-Abschluss (einmalig):**
+- Artisan-Command: `contracts:mark-legacy-completed --paid-csv=... --exclude-csv=...`
+- `--paid-csv`: vollständige Vertragsnummern (Tabellenblatt2, Format `YYYY.MM.DD-KUNDENNR`)
+- `--exclude-csv`: Kundennummern-Suffixe die TROTZDEM nicht abgeschlossen werden sollen (Tabellenblatt3)
+- Matching case-insensitiv; nur `status=active` Verträge werden angefasst.
+- Schreibt `contract_changes`-Einträge zur Nachvollziehbarkeit.
+
+**Status-Filter Multi-Select:**
+- Frontend: `filters.statuses` ist jetzt ein Array (war: `filters.status` String).
+- Standard-Auswahl: `['draft', 'active', 'cancelled']` (Abgeschlossene ausgeblendet).
+- URL-Parameter: `?statuses=draft,active,cancelled` (komma-getrennt).
+- Controller akzeptiert weiterhin `?status=` als Single-Value-Fallback (rückwärtskompatibel).
+- Neue Hilfsfunktion `toggleStatus(value)` im Alpine-Component.
+
+---
+
+### Update 21.04.2026
+
+Dieses Tages-Update ergänzt den Vertragsbereich um Stabilität und Vollständigkeit in der GoCardless-Anbindung:
+
+- Mandatssuche priorisiert über `phorest_client_id` (inkl. Variante `phorest_clientid`) mit Referenz-Fallback
+- Sammel-Sync auf der Vertragsübersicht, um fehlende GoCardless-Verknüpfungen ohne Einzelklicks nachzuziehen
+- Korrekte Bearbeitbarkeit von offenen Raten auch bei Legacy-/Migrationsfällen
+- Vollständige Darstellung von Daueraufträgen über den GoCardless-Preview-Horizont hinaus bis zum Enddatum
+- Ergänzung historischer Altsystem-Monate vor dem ersten GoCardless-Monat
+- Priorisierte und gedeckelte Zahlungsanzeige (explizit GoCardless > projiziert GoCardless > Altsystem)
+- Kein GoCardless-Symbol bei rein projizierten GoCardless-Zeilen (visuell wie bei Hub-Planvorschau)
+
+#### Für Nutzer (21.04.2026)
+
+- Der Button „In GoCardless suchen“ findet bestehende Mandate zuverlässiger, auch wenn die Mandatsreferenz nicht exakt passt.
+- Auf der Vertragsliste steht ein neuer Button „GoCardless-Sync“ zur Verfügung, um fehlende Verknüpfungen gesammelt nachzuziehen.
+- In der Zahlungsansicht von Daueraufträgen werden fehlende zukünftige Monate bis zum Enddatum eingeblendet.
+- Bereits vor GoCardless eingezogene Monatsraten aus dem Altsystem werden vor dem ersten GoCardless-Monat ergänzt.
+- Die Summe „unten“ wird nicht mehr durch Doppel-/Überzählungen verfälscht, da die Anzeige auf den erwarteten SEPA-Gesamtbetrag begrenzt ist.
+
+#### Für Entwickler (21.04.2026)
+
+- Mandatssuche: Reihenfolge ist jetzt
+    1. lokales aktives `ClientMandate`
+    2. GoCardless Customer-Metadata (`phorest_client_id`, `phorest_clientid`)
+    3. Referenz-Suche (`mandate_reference` / `contract_number`)
+- Batch-Sync-Endpunkt für Vertragsübersicht hinzugefügt (`sync-gocardless-links`) inkl. Ergebniszähler (`checked`, `linked_via_local`, `linked_via_api`, `not_found`, `failed`).
+- Zahlungs-API liefert pro Zeile ein internes `source`-Kennzeichen für UI-Steuerung (`gc_explicit`, `gc_projected`, `legacy_local`, `legacy_projected`, `local`).
+- Daueraufträge: zukünftige Monate werden bis `subscription.end_date` monatlich ergänzt, wenn GoCardless nur den begrenzten Upcoming-Horizont liefert.
+- Legacy-Monate vor erstem expliziten GoCardless-Monat werden synthetisch ergänzt.
+- Priorisierung/Deckelung der Anzeige: explizite GoCardless-Zahlungen bleiben immer vorrangig, danach projizierte GoCardless-Zahlungen, danach Altsystem-Zahlungen bis zur erwarteten SEPA-Sollsumme.
 
 ---
 

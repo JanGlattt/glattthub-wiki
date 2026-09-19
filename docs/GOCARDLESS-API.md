@@ -8,8 +8,8 @@ GoCardless ist unser Finanzdienstleister für Lastschriften (Direct Debit / SEPA
 
 **Verwandte Dokumentationen:**
 - [Verträge & SEPA-Lastschriften](CONTRACTS-SEPA-MODULE.md) - Vollständige SEPA-Integration mit ClientMandate-Architektur, Zwei-Phasen-Sync, Subscriptions (Daueraufträge)
-- [In-App Benachrichtigungen](IN-APP-NOTIFICATIONS.md) - Automatische Benachrichtigungen bei Webhook-Events
-- [Push-Benachrichtigungen](PUSH-NOTIFICATIONS.md) - Web-Push bei wichtigen Events
+- [Benachrichtigungen](NOTIFICATIONS.md) - Automatische Benachrichtigungen bei Webhook-Events
+- [Benachrichtigungen → Push-Notifications](NOTIFICATIONS.md#push-notifications-setup) - Web-Push bei wichtigen Events
 
 > **Hinweis:** Diese Seite dokumentiert die allgemeine GoCardless API und den `GoCardlessApiService`. Für die glatttHub-spezifische Integration (ClientMandate, Zwei-Phasen-Sync, Subscriptions pro Vertrag) siehe [Verträge & SEPA-Lastschriften](CONTRACTS-SEPA-MODULE.md#gocardless-integration).
 
@@ -462,7 +462,7 @@ Bei kritischen Events werden automatisch In-App-Benachrichtigungen erstellt:
 
 Positive Events (`payments.confirmed`, `mandates.active`, etc.) erstellen ebenfalls Benachrichtigungen zur Übersicht.
 
-**➡️ Detaillierte Dokumentation:** [In-App Benachrichtigungen](IN-APP-NOTIFICATIONS.md#webhook-automatisierung)
+**➡️ Detaillierte Dokumentation:** [Benachrichtigungen → Webhook-Automatisierungen](NOTIFICATIONS.md#2-webhook-automatisierungen)
 
 ---
 
@@ -506,7 +506,7 @@ Im Admin-Panel können für jede Event-Kombination eigene Regeln definiert werde
 
 ### Verfügbare Platzhalter
 
-Alle Platzhalter sind dokumentiert unter: [In-App Benachrichtigungen → Verfügbare Platzhalter](IN-APP-NOTIFICATIONS.md#verfügbare-platzhalter)
+Alle Platzhalter sind dokumentiert unter: [Benachrichtigungen → Webhook-Platzhalter (GoCardless)](NOTIFICATIONS.md#webhook-platzhalter-gocardless)
 
 **Häufig genutzte:**
 
@@ -531,7 +531,7 @@ Alle Platzhalter sind dokumentiert unter: [In-App Benachrichtigungen → Verfüg
 
 Jede In-App-Benachrichtigung wird automatisch auch als **Push-Benachrichtigung** an dieselben Empfänger gesendet. Dafür ist keine zusätzliche Konfiguration nötig.
 
-**➡️ Push-Details:** [Push-Benachrichtigungen](PUSH-NOTIFICATIONS.md)
+**➡️ Push-Details:** [Benachrichtigungen → Push-Notifications](NOTIFICATIONS.md#push-notifications-setup)
 
 ### Webhook Events in Datenbank
 

@@ -1,12 +1,78 @@
-# 📅 Terminübersicht (Appointments Overview)
+# Terminübersicht (Appointments Overview)
 
-Die Terminübersicht unter `/hub/appointments` zeigt alle Termine eines Tages in einer übersichtlichen Karten-Ansicht. Sie ist die zentrale Anlaufstelle für die tägliche Terminplanung.
+Die Terminübersicht unter `/hub/appointments` zeigt alle Termine eines Tages als Karten-Liste
+oder Tageskalender und ist die zentrale Anlaufstelle für die tägliche Terminplanung: Von hier
+aus wird ein Termin geöffnet und in der Terminansicht bearbeitet. Über der Liste stehen drei
+Kennzahlen-Karten zu den Beratungen des Tages. Diese Seite beschreibt **Fachregeln (KPI-Definitionen,
+No-Show-Logik), Endpunkte, Rendering, Design-System und Fallstricke**; die Bedienung Schritt für
+Schritt steht im Nutzerhandbuch.
+
+!!! nutzerhandbuch "Bedienung: Terminansicht 1 – Beratungstermin starten"
+    [hilfe.hub.glattt.com/terminansicht/1/](https://hilfe.hub.glattt.com/terminansicht/1/) — Termin im
+    Tagesplan finden (Datum, Liste/Kalender, Beratungs-Filter), Termin öffnen und beginnen.
+
+    Angrenzend: [Grundlagen 2 – Standort, Suche & Mitteilungen](https://hilfe.hub.glattt.com/grundlagen/2/)
+    (Standortfilter der Seitenleiste), [Terminansicht 9 – Termin buchen](https://hilfe.hub.glattt.com/terminansicht/9/),
+    Serien-Übersicht [Terminansicht](https://hilfe.hub.glattt.com/terminansicht/).
+
+## Inhaltsverzeichnis
+
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Funktionsumfang](#funktionsumfang)
+    - [KPI-Karten (Beratungen des Tages)](#kpi-karten-beratungen-des-tages)
+    - [No-Show-Logik](#no-show-logik)
+    - [Ansichten](#ansichten)
+    - [Beratungs-Filter](#beratungs-filter)
+    - [Datum-Navigation](#datum-navigation)
+    - [Design-System: apt-card](#design-system-apt-card)
+    - [Responsive Verhalten](#responsive-verhalten)
+    - [Dateistruktur](#dateistruktur)
+    - [Technische Details](#technische-details)
+    - [Entwickler-Guide](#entwickler-guide)
+    - [Troubleshooting](#troubleshooting)
+- [Changelog](#changelog)
 
 ---
 
-## 📋 Überblick
+## Für Anwender — Überblick
 
-### Funktionen
+**Was die Seite leistet.** Die Terminübersicht zeigt die Termine des gewählten Tages — wahlweise
+als Karten-Liste (alle Standorte oder ein Standort) oder, bei gewähltem Standort, als
+Tageskalender mit einer Spalte je Mitarbeiterin und roter „Jetzt"-Linie. Der Standortfilter der
+Seitenleiste gilt für Liste, Kalender und Kennzahlen gleichermaßen. Jede Karte zeigt Uhrzeit,
+Kundin (Link ins Profil), Institut und Mitarbeiterin, Kontakt-Symbole, die aufklappbare
+Behandlungsliste und bei Beratungen die Terminnotiz; ein Klick auf „Termin öffnen" (oder auf
+einen Block im Kalender) führt in die Terminansicht.
+
+**Was die Farben und Kennzahlen bedeuten:**
+
+- Die **linke Kante** einer Karte trägt den Terminstatus: grün bestätigt, blau eingecheckt, gelb
+  ausstehend, grau abgeschlossen, rot storniert oder nicht erschienen.
+- Ein **goldenes „Beratung"-Badge** kennzeichnet Beratungsgespräche; nach einem Abschluss steht
+  die Zahl der verkauften Körperzonen dabei („Beratung · 4 Zonen"). Der goldene
+  „Beratung"-Knopf filtert die Ansicht auf diese Termine.
+- **No-Show** ist mehr als der Phorest-Status: Auch ein überfälliger, nie eingecheckter Termin
+  und ein Termin auf einer „Absage"-Spalte zählen als nicht erschienen — seitenweit, auch in den
+  Kennzahlen.
+- Die **drei Kennzahlen-Karten** oben (Beratungen mit stattgefunden/im Gange/geplant, verkaufte
+  Körperzonen, No-Shows mit Quote) beziehen sich immer auf den angezeigten Tag und den
+  gewählten Standort.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Tag wählen, Liste oder Kalender, Beratungen filtern, Termin öffnen und beginnen | Terminansicht 1 |
+| Standort in der Seitenleiste wählen | Grundlagen 2 |
+| Termin buchen oder verlegen | Terminansicht 9 |
+| Kennzahlen-Karten und Farben lesen | noch ohne eigene Anleitung — Serien-Übersicht [Terminansicht](https://hilfe.hub.glattt.com/terminansicht/) |
+
+---
+
+## Für Entwickler
+
+### Funktionsumfang
 
 | Feature | Beschreibung |
 |---------|--------------|
@@ -21,20 +87,15 @@ Die Terminübersicht unter `/hub/appointments` zeigt alle Termine eines Tages in
 | **No-Show-Erkennung** | Erweiterte Logik inkl. überfälliger Termine und "Absage"-Pseudo-Mitarbeitern |
 | **Beratungs-Badge** | Goldenes Badge kennzeichnet Beratungsgespräche; bei Abschluss inkl. Anzahl der verkauften Körperzonen (z.B. "Beratung · 4 Zonen") |
 | **"Jetzt"-Linie** | Rote Linie zeigt aktuelle Uhrzeit im Kalender |
-| **Kontaktdaten** | E-Mail und Telefon direkt in Karten-Header |
+| **Kontaktdaten** | E-Mail und Telefon direkt in Karten-Header (E-Mail-Icon öffnet das Mailprogramm, Telefon-Icon startet auf Mobilgeräten den Anruf) |
 | **Ausklappbare Services** | Behandlungsliste bei Bedarf einblenden |
 | **Terminnotiz bei Beratungen** | Beim Ausklappen einer Beratungs-Karte wird unter den Services die Phorest-Terminnotiz angezeigt (Lazy-Load beim ersten Ausklappen) |
+| **Kundenname → Profil** | Name in der Karte verlinkt ins Kundenprofil (Recht `view_client_detail`, seit 08.09.2026) |
 | **Responsive Layout** | Terminkarten und Header brechen auf schmalen Bildschirmen kontrolliert um |
 
-### URL
+**URL:** `/hub/appointments`
 
-```
-/hub/appointments
-```
-
----
-
-## 📊 KPI-Karten (Beratungen des Tages)
+### KPI-Karten (Beratungen des Tages)
 
 Über der Terminliste zeigen drei Karten die wichtigsten Beratungs-Kennzahlen des **ausgewählten Tages** (Standard: heute). Sie reagieren auf den Filialfilter der Sidebar und aktualisieren sich bei jedem Tages- oder Filialwechsel.
 
@@ -44,7 +105,7 @@ Die Terminübersicht unter `/hub/appointments` zeigt alle Termine eines Tages in
 | **Verkaufte Körperzonen** | Summe der in Beratungen verkauften Körperzonen | aus **X** Abschlüssen |
 | **No-Shows** | Anzahl nicht erschienener Beratungskunden | Quote: **X %** (No-Shows ÷ alle Beratungen des Tages) |
 
-### Definitionen
+#### Definitionen
 
 | Begriff | Bedeutung |
 |---------|-----------|
@@ -57,23 +118,21 @@ Die Terminübersicht unter `/hub/appointments` zeigt alle Termine eines Tages in
 
 Die drei Werte der Aufschlüsselung plus die No-Shows ergeben zusammen immer die Gesamtzahl. An vergangenen Tagen stehen "im Gange" und "geplant" auf 0.
 
-### Ladeverhalten (Skeleton)
+#### Ladeverhalten (Skeleton)
 
 - Beim Laden (initial, Tages- oder Filialwechsel) zeigen die Karten Shimmer-Platzhalter (`skeleton-glattt`) für Wert und Unterzeile; Label und Icon bleiben stehen.
 - Das Blade-Template rendert dieselben Skeleton-Karten statisch, damit vor dem ersten JS-Lauf nichts springt.
 - Die Werte erscheinen erst, wenn **auch die Mitarbeiterdaten** (`staffDataLoaded`, für die "Absage"-No-Show-Regel) **und die Vertragsdaten** (`contractStats`, für die Körperzonen-Karte) geladen sind — sonst würden die Zahlen nachträglich aufspringen.
 
-### Technik
+#### Technik
 
 - Beratungs-/No-Show-Zahlen client-seitig in `getConsultationKpis()` (`public/js/appointments.js`) aus den bereits geladenen Termindaten; die Körperzonen-Karte lädt parallel `GET /phorest/daily-contract-stats?date=…&branch_id=…` (`PhorestController::dailyContractStats`, aggregiert aus `contracts`).
 - Die Termin-Endpoints reichern jeden Termin zusätzlich server-seitig mit den Beratungsprotokoll-Feldern an (`hasConsultationRecord`, `consultationOutcome`, `consultationBodyZonesCount`) — diese werden aktuell nur an anderen Stellen genutzt, nicht für die KPI-Karten.
-- Rendering über `renderKpis()` / `renderKpiCard()` mit den bestehenden `.kpi-card`-Klassen aus `theme_glattt.css`; die Unterzeile nutzt die neue, wiederverwendbare Klasse `.kpi-card-breakdown` (größere Schrift, Zahlen fett in Primärtextfarbe via `<b>`).
+- Rendering über `renderKpis()` / `renderKpiCard()` mit den bestehenden `.kpi-card`-Klassen aus `theme_glattt.css`; die Unterzeile nutzt die wiederverwendbare Klasse `.kpi-card-breakdown` (größere Schrift, Zahlen fett in Primärtextfarbe via `<b>`).
 - Kartendefinitionen (Label, Icon, Farbe) zentral in `kpiCardDefs()`, damit Skeleton- und Normalzustand aus derselben Quelle rendern.
 - Grid: `#appointments-kpis`, 3-spaltig, unter 900px einspaltig.
 
----
-
-## 🚫 No-Show-Logik
+### No-Show-Logik
 
 Der effektive Terminstatus wird zentral in `getState(apt)` (`appointments.js`) bestimmt und gilt **überall auf dieser Seite**: Badge, farbige Statuslinie links an der Karte, Kalenderansicht und KPI-Karten. Ein Termin gilt als **No-Show**, wenn eine der Regeln zutrifft:
 
@@ -85,11 +144,9 @@ Der effektive Terminstatus wird zentral in `getState(apt)` (`appointments.js`) b
 
 > **Hinweis:** Die Mitarbeiternamen kommen per Batch-API nach dem ersten Rendern der Liste. Ein Absage-Termin kann daher kurz sein ursprüngliches Badge zeigen und springt dann auf "No Show" um (gleiche Progressive-Loading-Mechanik wie bei den Kundennamen).
 
----
+### Ansichten
 
-## 🔄 Ansichten
-
-### Listenansicht (Standard)
+#### Listenansicht (Standard)
 
 Die Standard-Ansicht zeigt Termine als Karten untereinander. Verfügbar bei allen Filialen oder "Alle Filialen".
 
@@ -101,16 +158,23 @@ ohne Recht bleibt der Name reiner Text. Technik: `appointments.blade.php` gibt d
 rendert den Link, Styles `.apt-card__client-link` in `theme_glattt.css`.
 Test: `tests/Feature/AppointmentsClientLinkTest.php`.
 
-### Kalenderansicht (Tageskalender)
+**Termin öffnen:** „Termin öffnen" rechts in der Karte und ein Klick auf einen Termin-Block im
+Kalender navigieren einheitlich auf die eigenständige **Split-View-Terminansicht**
+(`/hub/appointment/{branchId}/{appointmentId}`, per `Livewire.navigate()` in `openAppointment()`) —
+kein Overlay/iframe-Modal mehr; der Zurück-Button der Detailseite führt zur Terminübersicht zurück
+(Details: [APPOINTMENT-VIEW.md](APPOINTMENT-VIEW.md)).
 
-Bei Auswahl einer **einzelnen Filiale** erscheint ein View-Toggle. Der Kalender zeigt:
+#### Kalenderansicht (Tageskalender)
 
-- **Eine Spalte pro Mitarbeiter** mit Avatar und Name
-- **Zeitachse links** (volle und halbe Stunden)
+Bei Auswahl einer **einzelnen Filiale** erscheint ein View-Toggle (Liste/Kalender; bei "Alle Filialen" nicht sichtbar). Der Kalender zeigt:
+
+- **Eine Spalte pro Mitarbeiter** mit Avatar und Name (jeder Mitarbeiter mit Terminen am Tag)
+- **Zeitachse links** (volle und halbe Stunden, 08:00–20:00 Uhr)
 - **Termine als Blöcke** positioniert nach Uhrzeit
 - **Höhe = Dauer** des Termins (1 Stunde = 60px)
-- **Rote "Jetzt"-Linie** bei heutigem Datum
-- **Klick auf Termin** → öffnet Fullscreen-Ansicht
+- **Rote "Jetzt"-Linie** bei heutigem Datum (nur wenn die aktuelle Uhrzeit zwischen 08:00 und 20:00 liegt)
+- **Klick auf Termin** → öffnet die Terminansicht
+- Farben der Blöcke wie die Kartenkanten (siehe [Status-Farben](#status-farben)); Beratungstermine gold mit Rahmen
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -127,10 +191,6 @@ Bei Auswahl einer **einzelnen Filiale** erscheint ein View-Toggle. Der Kalender 
   ★ = Beratungsgespräch (gold)
 ```
 
----
-
-## 🔍 Filter
-
 ### Beratungs-Filter
 
 Der goldene "Beratung"-Button links von der Datumsauswahl filtert auf Beratungsgespräche:
@@ -139,9 +199,7 @@ Der goldene "Beratung"-Button links von der Datumsauswahl filtert auf Beratungsg
 - **Aktiv (gold):** Nur Termine mit Beratungs-Services
 - Funktioniert in beiden Ansichten (Liste und Kalender)
 
----
-
-## 🗓️ Datum-Navigation
+### Datum-Navigation
 
 Die Datumsauswahl verwendet **Flatpickr** mit deutscher Lokalisierung und bietet schnelle Navigation:
 
@@ -152,21 +210,20 @@ Die Datumsauswahl verwendet **Flatpickr** mit deutscher Lokalisierung und bietet
 └────────────────────────────────────────────────────────────┘
 ```
 
-### Navigation-Buttons
+| Button | Aktion |
+|--------|--------|
+| `««` | 1 Woche zurück |
+| `‹` | 1 Tag zurück |
+| Datumsfeld | Klick öffnet den Kalender-Popup (Anzeigeformat "Mo, 23. Feb 2026") |
+| `›` | 1 Tag vor |
+| `»»` | 1 Woche vor |
+| `Heute` | Zurück zum heutigen Tag (nur sichtbar bei anderem Tag) |
 
-| Button | Aktion | Tastenkürzel |
-|--------|--------|-------------|
-| `««` | 1 Woche zurück | - |
-| `‹` | 1 Tag zurück | - |
-| `›` | 1 Tag vor | - |
-| `»»` | 1 Woche vor | - |
-| `Heute` | Zurück zum heutigen Tag | - |
-
-### "Heute"-Button
+#### "Heute"-Button
 
 Rechts neben den Pfeilen erscheint ein **"Heute"**-Button (`#date-today`, Klasse `.date-nav__today`) — aber nur, wenn ein anderer Tag als heute ausgewählt ist. Ein Klick springt zurück zu heute (`goToToday()`), aktualisiert den Datepicker und lädt Termine + KPIs neu. Die Sichtbarkeit steuert `updateTodayButton()`, zentral aufgerufen in `loadAppointments()`, sodass jeder Navigationsweg (Pfeile, Wochensprung, Datepicker) abgedeckt ist.
 
-### Flatpickr Konfiguration
+#### Flatpickr Konfiguration
 
 ```javascript
 flatpickr(dateInput, {
@@ -179,7 +236,7 @@ flatpickr(dateInput, {
 });
 ```
 
-### Styling
+#### Styling
 
 Der Kalender-Popup wird mit glattt-Theme-Variablen gestylt:
 - Hintergrund: `--card-bg-glattt`
@@ -187,13 +244,11 @@ Der Kalender-Popup wird mit glattt-Theme-Variablen gestylt:
 - Heute: Gold-Umrandung
 - Dark Mode kompatibel
 
----
+### Design-System: apt-card
 
-## 🎨 Design-System: apt-card
+Die Terminkarten verwenden das **apt-card** Design-System mit CSS-Variablen aus `theme_glattt.css`.
 
-Die Terminkarten verwenden das neue **apt-card** Design-System mit CSS-Variablen aus `theme_glattt.css`.
-
-### Aufbau einer Karte
+#### Aufbau einer Karte
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -207,9 +262,9 @@ Die Terminkarten verwenden das neue **apt-card** Design-System mit CSS-Variablen
 └──────────────────────────────────────────────────────────┘
 ```
 
-### Status-Farben
+#### Status-Farben
 
-Die linke Kante der Karte zeigt den Terminstatus:
+Die linke Kante der Karte (und der Termin-Block im Kalender) zeigt den Terminstatus:
 
 | Status | Farbe | CSS-Klasse | Bedeutung |
 |--------|-------|------------|-----------|
@@ -220,7 +275,7 @@ Die linke Kante der Karte zeigt den Terminstatus:
 | **Cancelled** | 🔴 Rot | `--color-danger` | Storniert |
 | **No Show** | 🔴 Rot | `--color-danger` | Nicht erschienen |
 
-### Beratungs-Badge
+#### Beratungs-Badge
 
 Termine mit **Beratungsgesprächen** werden mit einem goldenen Badge hervorgehoben:
 
@@ -247,11 +302,9 @@ Termine mit **Beratungsgesprächen** werden mit einem goldenen Badge hervorgehob
 | `--upcoming` | Steht noch aus (`BOOKED`/`CONFIRMED`) | Invertiert: heller Hintergrund, goldene Schrift, goldener Rahmen |
 | `--noshow` | No-Show (inkl. Überfällig- und Absage-Regel) | Rot (wie das "No Show"-Pill) |
 
----
+### Responsive Verhalten
 
-## 📱 Responsive Verhalten
-
-### Terminkarten (apt-card)
+#### Terminkarten (apt-card)
 
 Die Terminkarten haben vier Layout-Stufen (Breakpoints in `theme_glattt.css`):
 
@@ -264,7 +317,7 @@ Die Terminkarten haben vier Layout-Stufen (Breakpoints in `theme_glattt.css`):
 
 Zusätzlich darf die **Kundenzeile umbrechen** (`flex-wrap` auf `.apt-card__client-row`): Bei Platzmangel rutschen ID-Chip und Beratungs-Badge unter den Namen, statt ihn auf wenige Zeichen zusammenzudrücken.
 
-### Seiten-Header
+#### Seiten-Header
 
 Der Header (Titel + Beratung-Button + Datumsauswahl) nutzt die Wrapper-Klasse `.appointments-page` als **CSS-Container** (`container-type: inline-size`), gescoped in `theme_glattt.css`:
 
@@ -276,9 +329,7 @@ Die Container-Query reagiert auf die tatsächliche Inhaltsbreite neben der Sideb
 
 Global wurde `.page-header-glattt-actions` (alle Hub-Seiten) auf `flex-wrap: wrap` umgestellt und `flex-shrink: 0` entfernt: Bei Platzmangel brechen die Actions als ganze Blöcke um, statt rechts abgeschnitten zu werden.
 
----
-
-## 📁 Dateistruktur
+### Dateistruktur
 
 ```
 public/
@@ -294,11 +345,9 @@ app/Http/Controllers/
 └── PhorestController.php      # API-Endpoints für Termine (inkl. Beratungsprotokoll-Anreicherung)
 ```
 
----
+### Technische Details
 
-## 🔧 Technische Details
-
-### API-Endpoints
+#### API-Endpoints
 
 | Endpoint | Beschreibung |
 |----------|--------------|
@@ -312,7 +361,7 @@ app/Http/Controllers/
 
 Beide Termin-Endpoints reichern die Antwort server-seitig mit Beratungsprotokoll-Daten an (`ConsultationRecord`, nur `is_completed = true`): `hasConsultationRecord`, `consultationOutcome`, `consultationOutcomeLabel`, `consultationBodyZonesCount` sowie Follow-Up-Termindaten. Die KPI-Karten konsumieren diese Felder direkt.
 
-### Batch-Fetching (Performance-Optimierung)
+#### Batch-Fetching (Performance-Optimierung)
 
 Da Phorest limitiert, werden Kunden und Mitarbeiter in **50er-Batches parallel** geladen:
 
@@ -338,20 +387,20 @@ async loadClientsBatch(clientIds) {
 }
 ```
 
-### Terminnotiz bei Beratungen (Lazy-Load)
+#### Terminnotiz bei Beratungen (Lazy-Load)
 
 Beratungs-Karten zeigen im ausgeklappten Bereich unter den Services die **Phorest-Terminnotiz**.
 
-**Für Endanwender:** Karte einer Beratung ausklappen (Pfeil rechts) → unter „Services:" erscheint „Terminnotiz:" mit dem Notiztext des Termins (z.B. Körperzonen-Wunsch, WhatsApp-Absprachen). Gibt es keine Notiz, steht dort „Keine Terminnotiz hinterlegt". Bei Nicht-Beratungsterminen erscheint der Block nicht.
+**Verhalten:** Karte einer Beratung ausklappen (Pfeil rechts) → unter „Services:" erscheint „Terminnotiz:" mit dem Notiztext des Termins (z.B. Körperzonen-Wunsch, WhatsApp-Absprachen). Gibt es keine Notiz, steht dort „Keine Terminnotiz hinterlegt". Bei Nicht-Beratungsterminen erscheint der Block nicht.
 
-**Für Entwickler:**
+**Umsetzung:**
 
 - Die Phorest-**Listen-API liefert trotz `includeNotes=true` keine Notizfelder** (empirisch geprüft 08/2026: 10 Tage, >500 Termine, 0 Notizen — der Detail-Endpoint liefert für dieselben Termine durchgehend Notizen). Deshalb werden Notizen **beim ersten Ausklappen** je Karte über `GET /phorest/appointment/{branchId}/{appointmentId}/details` nachgeladen (`ensureAppointmentNotes()` in `appointments.js`).
 - `PhorestApiService::deduplicateAppointments()` sammelt dafür `allAppointmentIds` (alle gemergten Phorest-Zeilen einer Karte) sowie `allNotes` (falls die Listen-API die Felder `notes`/`note`/`serviceNote` doch einmal liefert, entfällt der Nachlade-Request). Abgesichert durch `tests/Unit/AppointmentNotesDedupTest.php`.
 - Ergebnis wird am Termin-Objekt gecacht (`_notesLoaded`); beim Patchen des DOM wird geprüft, dass `renderedAppointments[index]` noch derselbe Termin ist (Tages-/Filterwechsel während des Fetches).
 - Styling: `.apt-card__notes`, `.apt-card__note`, `.apt-card__note--none` in `theme_glattt.css` (mehrzeilige Notizen via `white-space: pre-line`).
 
-### Beratungs-Service Erkennung
+#### Beratungs-Service Erkennung
 
 Beim Laden der Seite werden alle Beratungs-Service-IDs aus der DB geladen:
 
@@ -371,11 +420,9 @@ const isConsultation = appointment.services?.some(
 );
 ```
 
----
+### Entwickler-Guide
 
-## 👩‍💻 Entwickler-Guide
-
-### Neue Status-Farbe hinzufügen
+#### Neue Status-Farbe hinzufügen
 
 1. **CSS-Variable definieren** (falls nicht vorhanden) in `theme_glattt.css`:
    ```css
@@ -399,7 +446,7 @@ const isConsultation = appointment.services?.some(
    };
    ```
 
-### Beratungs-Services verwalten
+#### Beratungs-Services verwalten
 
 Beratungs-Services werden in der Datenbank (`consultation_services`) verwaltet:
 
@@ -411,7 +458,7 @@ SELECT * FROM consultation_services WHERE is_consultation = 1 AND is_active = 1;
 1. Service-ID aus Phorest ermitteln
 2. In der DB eintragen (Filament Admin oder direkt SQL)
 
-### CSS-Klassen Übersicht
+#### CSS-Klassen Übersicht
 
 | Klasse | Beschreibung |
 |--------|--------------|
@@ -421,6 +468,7 @@ SELECT * FROM consultation_services WHERE is_consultation = 1 AND is_active = 1;
 | `.apt-card__meta` | Filiale, Mitarbeiter |
 | `.apt-card__contact-icon` | E-Mail/Telefon Icons |
 | `.apt-card__consultation-badge` | Goldenes Beratungs-Badge |
+| `.apt-card__client-link` | Kundenname als Profil-Link |
 | `.apt-card__details` | Ausklappbarer Bereich |
 | `.apt-card__toggle` | Details ein-/ausklappen |
 | `.apt-card__services` | Behandlungsliste |
@@ -464,117 +512,9 @@ SELECT * FROM consultation_services WHERE is_consultation = 1 AND is_active = 1;
 | `.day-schedule__now-line` | Rote "Jetzt"-Linie für aktuellen Zeitpunkt |
 | `.day-schedule__empty` | Platzhalter wenn keine Termine |
 
----
+### Troubleshooting
 
-## 👤 Benutzer-Guide
-
-### Terminübersicht aufrufen
-
-1. **Navigation:** Klicke auf "Termine" im Hauptmenü oder gehe zu `/hub/appointments`
-2. **Filiale wählen:** Dropdown für Filiale nutzen (falls mehrere)
-
-### KPI-Karten lesen
-
-Oben auf der Seite zeigen drei Karten die Beratungs-Kennzahlen des angezeigten Tages:
-
-1. **Beratungen** — Wie viele Beratungsgespräche heute anstehen, darunter wie viele schon stattgefunden haben, gerade laufen und noch geplant sind.
-2. **Verkaufte Körperzonen** — Wie viele Körperzonen heute in Beratungen verkauft wurden und aus wie vielen Vertragsabschlüssen.
-3. **No-Shows** — Wie viele Beratungskunden nicht erschienen sind, mit Quote.
-
-Die Karten folgen dem gewählten Tag (blätterst du auf ein anderes Datum, zeigen sie dessen Zahlen) und dem Filialfilter der Sidebar. Während des Ladens erscheinen animierte Platzhalter.
-
-### Datum navigieren
-
-Die Datums-Auswahl befindet sich oben rechts mit praktischen Schnell-Buttons:
-
-| Button | Aktion |
-|--------|--------|
-| `««` (Doppelpfeil links) | Eine Woche zurück |
-| `‹` (Pfeil links) | Einen Tag zurück |
-| **Datumsfeld** | Klick öffnet Kalender-Popup |
-| `›` (Pfeil rechts) | Einen Tag vor |
-| `»»` (Doppelpfeil rechts) | Eine Woche vor |
-| **Heute** | Zurück zum heutigen Tag (erscheint nur, wenn ein anderer Tag gewählt ist) |
-
-**Tipps:**
-- Das Datum wird im Format "Mo, 23. Feb 2026" angezeigt
-- Bei Klick auf das Datumsfeld öffnet sich ein Kalender
-- Im Kalender: Heute ist gold umrandet, ausgewählter Tag gold ausgefüllt
-
-### Terminkarten verstehen
-
-**Farben der linken Kante:**
-- 🟢 **Grün** = Bestätigt
-- 🔵 **Blau** = Eingecheckt  
-- 🟡 **Gelb** = Ausstehend
-- 🔴 **Rot** = Storniert oder nicht erschienen
-- ⚫ **Grau** = Abgeschlossen
-
-**Goldenes "Beratung"-Badge:**
-- Zeigt an, dass es sich um ein Beratungsgespräch handelt
-- Diese Termine sind besonders wichtig für Neukundenakquise
-
-### Kontaktdaten nutzen
-
-- 📧 **E-Mail-Icon:** Klicken öffnet E-Mail-Programm
-- 📞 **Telefon-Icon:** Klicken startet Anruf (auf Mobilgeräten)
-
-### Behandlungen anzeigen
-
-1. Klicke auf "X Behandlungen anzeigen" 
-2. Die Liste klappt auf und zeigt alle gebuchten Services
-3. Erneutes Klicken klappt die Liste wieder ein
-
-### Beratungen filtern
-
-Der **"Beratung"**-Button oben links filtert die Ansicht:
-
-1. **Button anklicken** → Nur Beratungsgespräche werden angezeigt
-2. **Erneut klicken** → Filter wird aufgehoben, alle Termine sind sichtbar
-
-Der Button ist **gold** wenn aktiv.
-
-### Zwischen Ansichten wechseln
-
-Bei Auswahl einer **einzelnen Filiale** erscheint ein Ansicht-Wechsler:
-
-| Button | Ansicht |
-|--------|---------|
-| **Liste** | Standard-Kartenansicht (vertikal scrollbar) |
-| **Kalender** | Tagesplan mit Mitarbeiter-Spalten |
-
-**Hinweis:** Der Ansicht-Wechsler ist nur sichtbar, wenn eine Filiale ausgewählt ist (nicht bei "Alle Filialen").
-
-### Kalender-Ansicht nutzen
-
-Die Kalender-Ansicht zeigt einen **Tagesplan** mit:
-
-- **Linke Spalte:** Zeitachse von 08:00 - 20:00 Uhr
-- **Spalten pro Mitarbeiter:** Jeder Mitarbeiter mit Terminen hat eine Spalte
-- **Termin-Blöcke:** Positioniert nach Startzeit, Höhe entspricht Dauer
-- **Rote "Jetzt"-Linie:** Zeigt die aktuelle Uhrzeit (nur für heute)
-
-**Farben der Termin-Blöcke:**
-- 🟢 **Grün** = Bestätigt
-- 🔵 **Blau** = Eingecheckt  
-- 🟡 **Gelb** = Ausstehend
-- 🔴 **Rot** = Storniert oder nicht erschienen
-- ⚫ **Grau** = Abgeschlossen
-- 🟡 **Gold mit Rahmen** = Beratungstermin
-
-**Interaktion:**
-- Bei Klick auf einen Termin-Block öffnet sich die Detail-Ansicht
-
-### Termin-Details öffnen
-
-- Klicke auf **„Termin öffnen"** rechts in der Karte (oder auf einen Termin-Block im Kalender)
-- Beide navigieren einheitlich auf die eigenständige **Split-View-Terminansicht** (`/hub/appointment/{branchId}/{appointmentId}`) — kein Overlay/iframe-Modal mehr; der Zurück-Button der Detailseite führt zur Terminübersicht zurück (Details: [APPOINTMENT-VIEW.md](APPOINTMENT-VIEW.md))
-
----
-
-## 🐛 Troubleshooting
-
-### Kunden/Mitarbeiter werden nicht angezeigt
+#### Kunden/Mitarbeiter werden nicht angezeigt
 
 **Mögliche Ursachen:**
 - API-Rate-Limit erreicht
@@ -584,7 +524,7 @@ Die Kalender-Ansicht zeigt einen **Tagesplan** mit:
 - Seite neu laden
 - Browser-Konsole auf Fehler prüfen
 
-### Beratungs-Badge erscheint nicht
+#### Beratungs-Badge erscheint nicht
 
 **Mögliche Ursachen:**
 - Service ist nicht als Beratung markiert in DB
@@ -599,7 +539,7 @@ AND is_consultation = 1
 AND is_active = 1;
 ```
 
-### Termine laden langsam
+#### Termine laden langsam
 
 **Mögliche Ursachen:**
 - Viele Termine mit vielen verschiedenen Kunden
@@ -607,7 +547,7 @@ AND is_active = 1;
 
 **Hinweis:** Das Batch-Fetching optimiert bereits die Ladezeit. Bei sehr vielen Terminen (>100) kann es einige Sekunden dauern.
 
-### Kalender-Ansicht zeigt keine Spalten
+#### Kalender-Ansicht zeigt keine Spalten
 
 **Mögliche Ursachen:**
 - Keine Filiale ausgewählt (View-Toggle nicht sichtbar)
@@ -619,7 +559,7 @@ AND is_active = 1;
 - Prüfe ob Termine für den Tag existieren
 - Browser-Konsole auf `staffMap` prüfen
 
-### "Jetzt"-Linie nicht sichtbar
+#### "Jetzt"-Linie nicht sichtbar
 
 **Ursache:** Die rote Linie erscheint nur, wenn:
 - Das ausgewählte Datum **heute** ist
@@ -627,7 +567,12 @@ AND is_active = 1;
 
 ---
 
-## 📝 Changelog
+## Changelog
+
+### September 2026
+
+- ✨ **Neu:** Kundenname in der Terminkarte verlinkt ins Kundenprofil (Recht `view_client_detail`)
+- 📚 **Doku:** Endanwender-Abschnitte ins Nutzerhandbuch (Terminansicht 1) ausgelagert; diese Seite ist seit 19.09.2026 rein technische Dokumentation
 
 ### Juli 2026
 
@@ -662,7 +607,7 @@ AND is_active = 1;
 
 ---
 
-## 🔗 Verwandte Dokumentation
+## Verwandte Dokumentation
 
 - [APPOINTMENT-VIEW.md](APPOINTMENT-VIEW.md) - Fullscreen-Einzelterminansicht
 - [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) - CSS-Variablen und Farben

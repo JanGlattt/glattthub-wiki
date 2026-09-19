@@ -1,109 +1,82 @@
 # Gutschein-Aktion (Beratungs-WhatsApp)
 
-Die Gutschein-Aktion besteht aus zwei Teilen, die dieselbe Datengrundlage nutzen:
+Die Gutschein-Aktion besteht aus zwei Teilen, die dieselbe Datengrundlage nutzen: **Teil A** verlängert
+den geschenkten Gutschein automatisch beim Vertragsabschluss, **Teil B** wertet die Aktion auf einer
+eigenen Berichtsseite aus. Diese Seite beschreibt **Absicht, Erkennungslogik, Datenmodell, Services,
+Endpunkte und Datenfallen**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
-- **Teil A — Automatische Gültigkeitsverlängerung:** Der geschenkte Gutschein wird beim
-  Vertragsabschluss automatisch verlängert, damit ihn niemand mehr von Hand nachziehen muss.
-- **Teil B — Auswertung:** Eine eigene Berichtsseite zeigt, wie gut die Aktion angenommen wird und
-  ob sich Gutscheinkäufer anders verhalten als andere Beratungskunden.
+!!! nutzerhandbuch "Bedienung: Berichte 12 – Gutschein-Aktion"
+    [hilfe.hub.glattt.com/berichte/12/](https://hilfe.hub.glattt.com/berichte/12/) — Bericht öffnen,
+    Annahme messen, Wirkung vergleichen, entscheiden.
+
+    Rahmen aller Berichtsseiten (Zeitraum und Standort, Kennzahlen-Zeile, Diagramm oder Tabelle,
+    Export): [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/).
+    Angrenzend: [Verkauf 3 – Gutscheine verwalten](https://hilfe.hub.glattt.com/verkauf/3/),
+    [Admin 3 – Gutschein-Verkauf](https://hilfe.hub.glattt.com/admin/3/),
+    [Admin 4 – Erinnerungen und WhatsApp](https://hilfe.hub.glattt.com/admin/4/).
 
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
 
-### Worum geht es?
+**Worum es geht.** Nach dem Buchen eines Beratungsgesprächs bekommt die Kundin per WhatsApp ein
+Angebot: einen kleinen Gutschein kaufen und einen größeren geschenkt dazu erhalten. Der geschenkte
+Gutschein läuft am Tag des Beratungsgesprächs ab — das ist Absicht und hält den Kaufanreiz aufrecht
+(„gilt nur bis zum Beratungsgespräch"). Bezahlt wird aber meist erst am Tag der ersten Sitzung, der
+geschenkte Gutschein war dann regelmäßig schon abgelaufen und musste von Hand nachgezogen werden.
 
-Nach dem Buchen eines Beratungsgesprächs bekommt der Kunde per WhatsApp ein Angebot: einen kleinen
-Gutschein kaufen und einen größeren geschenkt dazu erhalten. Der **geschenkte Gutschein läuft am Tag
-des Beratungsgesprächs ab** — das ist Absicht und hält den Kaufanreiz aufrecht („gilt nur bis zum
-Beratungsgespräch").
+**Teil A nimmt den Instituten diese Nacharbeit ab.** Sobald für eine Kundin ein Vertrag **angelegt**
+wird (nicht erst bei Aktivierung oder erster Sitzung), verlängert der Hub den geschenkten Gutschein
+auf sechs Monate ab Vertragsabschluss und reaktiviert ihn, falls er bereits abgelaufen war. Betroffen
+ist ausschließlich der geschenkte Anteil, nie ein gekaufter oder regulär erworbener Gutschein; die
+Kundin wird dabei **nicht** benachrichtigt, jede Verlängerung aber protokolliert. Es gibt nichts zu
+bedienen — der Vorgang läuft im Hintergrund. Die Ausnahmen stehen unten unter
+[Fachregeln der Verlängerung](#fachregeln-der-verlangerung).
 
-Bezahlt wird aber meist nicht im Beratungsgespräch, sondern erst am Tag der ersten Sitzung. Der
-geschenkte Gutschein war dann in der Regel schon abgelaufen und musste jedes Mal manuell verlängert
-werden.
+**Teil B beantwortet zwei Fragen:** Wie gut wird die Aktion angenommen (Versand → Kauf → Beratung →
+Vertrag), und verhalten sich Gutscheinkäuferinnen anders als andere Beratungskundinnen? Dafür
+vergleicht der Bericht drei Gruppen und zeigt Annahmequote, Conversion, No-Show-Rate, Ø KPZ und
+Ø Vertragswert. Die Zahlen sind ein **Zusammenhang, kein Beweis einer Ursache** — wer einen Gutschein
+kauft, ist ohnehin kaufbereiter; die weiteren Vorbehalte stehen unter
+[Grenzen der Aussagekraft](#grenzen-der-aussagekraft).
 
-### Was passiert jetzt automatisch?
+**Wo was erledigt wird:**
 
-Sobald für einen Kunden ein **Vertrag angelegt** wird, verlängert der Hub dessen geschenkten
-Gutschein auf **sechs Monate ab Vertragsabschluss**:
+| Vorgang | Anleitung |
+|---|---|
+| Bericht öffnen, Annahme messen, Wirkung vergleichen, entscheiden | Berichte 12 |
+| Zeitraum und Standort, Kennzahlen-Zeile, Diagramm/Tabelle, Export | Berichte 0 |
+| Einzelne Gutscheine suchen, Restwert und Gültigkeit prüfen | Verkauf 3 |
+| Gutschein-Produkte, Bestellungen, Zustellung und Erstattung | Admin 3 |
+| Beratungs-WhatsApp konfigurieren, Einwilligungen und Protokolle | Admin 4 |
 
-- Der Auslöser ist das Anlegen des Vertrags — nicht die Aktivierung und nicht die erste Sitzung.
-- War der Gutschein bereits abgelaufen, wird er dabei **reaktiviert**.
-- Betroffen ist **ausschließlich der geschenkte Anteil**, nie der gekaufte Gutschein und nie ein
-  regulär gekaufter Gutschein.
-- **Der Kunde wird nicht informiert** — weder per E-Mail noch per WhatsApp.
-- Jede Verlängerung wird protokolliert; im Zweifel ist nachvollziehbar, warum ein Gutschein länger
-  galt.
+---
 
-Nichts zu tun: Der Vorgang läuft ohne Zutun der Institute im Hintergrund.
+## Für Entwickler
 
-### Wann wird *nicht* verlängert?
+### Fachregeln der Verlängerung
+
+Ausgelöst wird durch das **Anlegen** des Vertrags (`ContractObserver::created()`), verlängert wird auf
+sechs Monate ab Vertragsabschluss, und zwar nur der geschenkte Anteil. Nicht verlängert wird in diesen
+Fällen:
 
 | Fall | Verhalten |
 |---|---|
 | Gutschein bereits vollständig eingelöst | bleibt unangetastet (längere Gültigkeit ändert an leerem Guthaben nichts) |
 | Gutschein gilt ohnehin schon länger als sechs Monate | bleibt unangetastet — er wird nie verkürzt |
 | Regulär gekaufter Gutschein | bleibt unangetastet |
-| Kunde hat (noch) keinen Vertrag | bleibt offen; die Verlängerung erfolgt beim späteren Abschluss |
+| Kundin hat (noch) keinen Vertrag | bleibt offen; die Verlängerung erfolgt beim späteren Abschluss |
 
-### Die Berichtsseite
-
-Unter **Berichte → Gutschein-Aktion** (`/hub/reports/gutscheinaktion`) liegt die Auswertung. Sie
-folgt dem üblichen Aufbau: Zeitraum-Filter im Kopf, der Standort-Filter der Sidebar wirkt überall,
-jede Karte lässt sich zwischen Diagramm und Tabelle umschalten, und alle Zahlen sind über den
-CSV-Export abrufbar.
-
-**Kennzahlen-Zeile:** WhatsApp versendet, Gutscheine gekauft, Annahmequote, Conversion der Käufer,
-No-Show-Rate der Käufer, Ø KPZ und Ø Vertragswert der Käufer. Die Zeile ist wie überall per Drag &
-Drop personalisierbar.
-
-**Drei Analyse-Karten:**
-
-1. **Trichter der Gutschein-Aktion** — versendete WhatsApp → gekaufte Gutscheine → wahrgenommene
-   Beratungsgespräche → abgeschlossene Verträge, jeweils mit Quote zur Vorstufe und zur ersten Stufe.
-2. **Annahme der Gutschein-Aktion** — Versand, Käufe und Annahmequote je Monat.
-3. **Gutscheinkäufer im Vergleich** — dieselben Kennzahlen für drei Gruppen, Kennzahl per
-   Segmented Control umschaltbar.
-
-Alle drei Karten stehen über die Statistik-Registry auch als **Kacheln im Eigenen Dashboard** zur
-Verfügung.
-
-### Die drei Vergleichsgruppen
-
-| Gruppe | Wer ist drin? |
-|---|---|
-| **Gutscheinkäufer** | haben über den Kampagnen-Link tatsächlich gekauft |
-| **Angeschrieben, nicht gekauft** | haben die WhatsApp erhalten, aber nicht gekauft |
-| **Alle BG-Kunden ohne Gutscheinkauf** | der Gesamtvergleich |
-
-Die zweite Gruppe ist die **aussagekräftigere**: Sie trennt den Effekt des Gutscheins vom Effekt der
-bloßen Kontaktaufnahme.
-
-### Wichtig bei der Interpretation
-
-- **Zusammenhang, keine Kausalität.** Wer einen Gutschein kauft, ist tendenziell ohnehin
-  kaufbereiter. Eine höhere Conversion der Käufer beweist nicht, dass der Gutschein sie verursacht
-  hat.
-- **Gruppengrößen beachten.** Sie stehen in jeder Tabelle daneben — bei kleiner Basis schwanken
-  Quoten stark.
-- **Kein Zustellstatus.** Superchat liefert uns keinen Zustell- oder Lesestatus (siehe unten).
-  „Versendet" ist deshalb die Obergrenze der tatsächlich erreichten Kunden.
-- **Versand und Kauf hängen an unterschiedlichen Daten** (Termindatum bzw. Zahldatum). In einem eng
-  gewählten Zeitraum kann die Monats-Annahmequote dadurch verzerren; über längere Zeiträume gleicht
-  sich das aus.
+Keine Benachrichtigung an die Kundin (weder E-Mail noch WhatsApp) — bewusst, damit die Verlängerung
+keine neue Kaufaufforderung auslöst.
 
 ### Berechtigung
 
-Die Seite hängt am Recht **`view_report_voucher_campaign`** („Bericht: Gutschein-Aktion"). Es wurde
-per Migration an alle Rollen vergeben, die bereits `view_report_client_statistics` besitzen;
+Die Berichtsseite hängt am Recht **`view_report_voucher_campaign`** („Bericht: Gutschein-Aktion"). Es
+wurde per Migration an alle Rollen vergeben, die bereits `view_report_client_statistics` besitzen;
 Feinsteuerung danach über die Rechteverwaltung.
 
----
-
-## Für Entwickler
-
 ### Erkennung des geschenkten Gutscheins
-
 Der entscheidende Punkt: **Der geschenkte Gutschein ist kein fremder Phorest-Gutschein, sondern wird
 vom Hub selbst erzeugt.** Die Kette ist lückenlos:
 
@@ -169,6 +142,27 @@ Der Command sucht je offenem Gutschein den **ersten Vertrag des Kunden ab dem Gu
 Kunden ohne Vertrag werden übersprungen und bleiben bewusst **ohne** Protokolleintrag, damit ein
 späterer Abschluss den Automatismus nicht durch die Idempotenz-Sperre blockiert.
 
+### Teil B — Aufbau der Berichtsseite
+
+Die Seite liegt unter **Berichte → Gutschein-Aktion** (`/hub/reports/gutscheinaktion`) und folgt dem
+Standard-Bauplan der Statistikseiten (Kopf-Karte mit Zeitraum-Filter, Sidebar-Standortfilter wirkt
+überall, zweiseitige Karten Diagramm/Tabelle, CSV-Export).
+
+**Kennzahlen-Zeile** (`components/kpi-dashboard`, per Drag & Drop personalisierbar): WhatsApp
+versendet, Gutscheine gekauft, Annahmequote, Conversion der Käufer, No-Show-Rate der Käufer, Ø KPZ
+und Ø Vertragswert der Käufer.
+
+**Drei Analyse-Karten**, alle über die Statistik-Registry auch als Kacheln im Eigenen Dashboard
+verfügbar:
+
+1. **Trichter der Gutschein-Aktion** (`gutscheinaktion.funnel`) — versendete WhatsApp → gekaufte
+   Gutscheine → wahrgenommene Beratungsgespräche → abgeschlossene Verträge, jeweils mit Quote zur
+   Vorstufe und zur ersten Stufe.
+2. **Annahme der Gutschein-Aktion** (`gutscheinaktion.monthly`) — Versand, Käufe und Annahmequote je
+   Monat.
+3. **Gutscheinkäufer im Vergleich** (`gutscheinaktion.groups`) — dieselben Kennzahlen für die drei
+   Vergleichsgruppen, Kennzahl per Segmented Control umschaltbar.
+
 ### Teil B — Beteiligte Dateien
 
 | Datei | Zweck |
@@ -227,6 +221,31 @@ und zwischen beiden liegen oft Monate (in Prod bis Februar 2027). Über `appoint
 landen Angebote im Zeitraum ihres Termins statt in dem ihres Versands, und ein Zeitraum „bis heute"
 schneidet alle Angebote mit Zukunftstermin ab (08/2026 waren so 345 statt 450 sichtbar).
 
+
+### Die drei Vergleichsgruppen
+
+| Gruppe | Wer ist drin? |
+|---|---|
+| **Gutscheinkäufer** | haben über den Kampagnen-Link tatsächlich gekauft |
+| **Angeschrieben, nicht gekauft** | haben die WhatsApp erhalten, aber nicht gekauft |
+| **Alle BG-Kunden ohne Gutscheinkauf** | der Gesamtvergleich |
+
+Die zweite Gruppe ist die **aussagekräftigere**: Sie trennt den Effekt des Gutscheins vom Effekt der
+bloßen Kontaktaufnahme.
+
+### Grenzen der Aussagekraft
+
+- **Zusammenhang, keine Kausalität.** Wer einen Gutschein kauft, ist tendenziell ohnehin
+  kaufbereiter. Eine höhere Conversion der Käufer beweist nicht, dass der Gutschein sie verursacht
+  hat.
+- **Gruppengrößen beachten.** Sie stehen in jeder Tabelle daneben — bei kleiner Basis schwanken
+  Quoten stark.
+- **Kein Zustellstatus.** Superchat liefert uns keinen Zustell- oder Lesestatus (siehe
+  [Zustellstatus: nicht verfügbar](#zustellstatus-nicht-verfugbar)). „Versendet" ist deshalb die
+  Obergrenze der tatsächlich erreichten Kunden.
+- **Versand und Kauf hängen an unterschiedlichen Daten** (Termindatum bzw. Zahldatum). In einem eng
+  gewählten Zeitraum kann die Monats-Annahmequote dadurch verzerren; über längere Zeiträume gleicht
+  sich das aus.
 ### „Nicht zugestellt" — was die Zahl bedeutet
 
 Ausgewiesen wird der **fehlgeschlagene Versand** (`status = failed`) samt Fehlversand-Quote, bezogen

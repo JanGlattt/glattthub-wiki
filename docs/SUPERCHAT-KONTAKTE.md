@@ -1,20 +1,50 @@
 # Superchat-Kontakte & Automatische Verknüpfung
 
-Die Seite **Superchat-Kontakte** (im Admin-Bereich unter *Superchat-Mapping*) verwaltet die Verbindung zwischen WhatsApp-Kontakten in Superchat und Phorest-Kunden in glatttHub. Sie zeigt alle bekannten Superchat-Kontakte mit ihrem Phorest-Match-Status und ermöglicht den manuellen sowie automatischen Abgleich.
+Die Seite **Superchat-Kontakte** (Admin-Bereich, *Superchat-Mapping*, `/admin/superchat-contact-links`)
+verwaltet die Verbindung zwischen WhatsApp-Kontakten in Superchat und Phorest-Kunden in
+glatttHub: Sie zeigt alle bekannten Superchat-Kontakte mit ihrem Phorest-Match-Status,
+startet den vollständigen Kontakt-Sync und den Rückschreib-Job als Hintergrundprozesse und
+erlaubt die manuelle Zuordnung. Neue Kontakte werden per Webhook sofort automatisch verknüpft.
+Diese Seite beschreibt **Architektur, Hintergrundprozesse, Matching-Logik und Datenmodell**;
+die Bedienung steht im Nutzerhandbuch.
 
----
+!!! nutzerhandbuch "Bedienung: Admin 4 – Erinnerungen und WhatsApp · Kundenverwaltung 5 – Nachrichten & Kundenservice"
+    [hilfe.hub.glattt.com/admin/4/](https://hilfe.hub.glattt.com/admin/4/) — WhatsApp-Regeln, Einwilligungen und Protokolle im Admin-Panel.
+    [hilfe.hub.glattt.com/kundenverwaltung/5/](https://hilfe.hub.glattt.com/kundenverwaltung/5/) — wie sich eine fehlende Verknüpfung im Kundenprofil zeigt und über „Neue Nachricht" anlegen lässt.
 
-## Für Endanwender
+    Angrenzend: Serie [Admin](https://hilfe.hub.glattt.com/admin/) (Admin-Panel), [SUPERCHAT-WHATSAPP.md](SUPERCHAT-WHATSAPP.md) (Chat im Kundenprofil).
 
-### Wo finde ich die Seite?
+## Für Anwender — Überblick
 
-Admin-Bereich → linke Navigation → **Superchat-Mapping** (oder direkt `/admin/superchat-contact-links`).
+**Was das Modul leistet.** Damit WhatsApp-Konversationen im Kundenprofil erscheinen, muss der
+Superchat-Kontakt einer Phorest-Kundin zugeordnet sein. Diese Zuordnung entsteht **automatisch
+über die Mobilnummer** — sofort per Webhook, sobald eine neue Person zum ersten Mal schreibt,
+und gesammelt über den Kontakt-Sync. Umgekehrt schreibt der Hub Name, Phorest-Client-ID und
+Kundennummer als Attribute nach Superchat zurück, damit das Team dort sieht, mit wem es
+spricht. Was die Automatik nicht trifft (andere Nummer in Phorest als bei WhatsApp), wird auf
+der Admin-Seite **manuell zugeordnet**.
 
-### Was zeigen die Status-Karten?
+**Grundsätze:**
 
-Oben auf der Seite gibt es zwei Karten nebeneinander:
+- **Telefonnummer ist der einzige automatische Schlüssel** (E.164-normalisiert, beidseitig).
+- **Manuelle und bestätigte Zuordnungen werden nie vom Sync überschrieben.**
+- **Sync und Übertragung laufen im Hintergrund**; die Status-Karten der Seite zeigen den
+  Fortschritt live, ohne Neuladen.
 
-**Karte „Kontakte synchronisieren" (blau)**
+| Vorgang | Anleitung |
+|---|---|
+| Superchat-Mapping öffnen, Kontakte synchronisieren, Daten an Superchat übertragen, manuell zuordnen | Serie Admin (Admin-Panel), Admin 4 |
+| Fehlende Verknüpfung im Kundenprofil erkennen und per neuer Nachricht anlegen | Kundenverwaltung 5 |
+
+## Für Entwickler
+
+### Fachregeln: Status-Karten und Zuordnungsarten
+
+Die beiden Karten oben auf der Filament-Seite spiegeln die Cache-Einträge der Jobs (siehe
+[Cache-Keys](#cache-keys)); während ein Job läuft, zeigen sie einen animierten
+Fortschrittsbalken und aktualisieren sich jede Sekunde.
+
+**Karte „Kontakte synchronisieren" (blau, `superchat_sync_status`)**
 
 | Wert | Bedeutung |
 |------|-----------|
@@ -23,62 +53,40 @@ Oben auf der Seite gibt es zwei Karten nebeneinander:
 | Aktualisiert | Kontakte, deren Daten aktualisiert wurden |
 | Phorest-Matches | Kontakte, die automatisch einem Phorest-Kunden zugeordnet wurden |
 
-**Karte „Daten an Superchat übertragen" (gold)**
+**Karte „Daten an Superchat übertragen" (gold, `superchat_push_status`)**
 
 | Wert | Bedeutung |
 |------|-----------|
 | Gesamt | Anzahl der bestätigten Zuordnungen |
 | Übertragen | Kontakte, bei denen die Phorest-Daten erfolgreich zurückgeschrieben wurden |
 
-Während ein Job läuft, erscheint ein **animierter Fortschrittsbalken** in der jeweiligen Karte. Die Karte aktualisiert sich automatisch jede Sekunde — kein manuelles Neu-Laden nötig.
-
-### Kontakte synchronisieren (manuell)
-
-Schaltfläche **„Kontakte synchronisieren"** oben rechts → Bestätigungsdialog → **Sync starten**.
-
-Der Sync läuft im Hintergrund und:
+**Was der Sync tut** (Schaltfläche „Kontakte synchronisieren" → Bestätigungsdialog → „Sync starten"):
 
 1. Lädt alle WhatsApp-Kontakte aus Superchat (paginiert)
 2. Vergleicht die Telefonnummern mit den Phorest-Mobilnummern in glatttHub
 3. Legt neue Kontakte an bzw. aktualisiert bestehende
 4. Versucht automatisch eine Zuordnung per Telefonnummer
 
-Die Karte oben zeigt den Fortschritt in Echtzeit.
+**Was die Übertragung tut** (Schaltfläche „Daten an Superchat übertragen" → „Übertragung starten"):
+Für alle bestätigten Zuordnungen werden Vorname + Nachname (aus Phorest), die Phorest Client ID
+und die External ID / Kundennummer (beide als Custom-Attribut) nach Superchat geschrieben.
 
-### Daten an Superchat übertragen (manuell)
+**Manuelle Zuordnung:** Button „Zuordnen" je Tabellenzeile verknüpft einen Superchat-Kontakt mit
+einem Phorest-Kunden, wenn die Telefonnummern-Suche keinen Treffer liefert.
 
-Schaltfläche **„Daten an Superchat übertragen"** oben rechts → Bestätigungsdialog → **Übertragung starten**.
+**Zuordnungsarten (`match_method`):**
 
-Für alle bestätigten Zuordnungen werden folgende Daten zu Superchat zurückgeschrieben:
+| Anzeige | `match_method` | Bedeutung |
+|--------|---|-----------|
+| Automatisch (Telefon) | `auto` | Telefonnummer stimmte exakt überein |
+| Manuell | `manual` | Manuell zugeordnet |
+| Kein Mapping | `none` | Noch kein Phorest-Kunde gefunden |
 
-- Vorname + Nachname (aus Phorest)
-- Phorest Client ID (als Custom-Attribut)
-- External ID / Kundennummer (als Custom-Attribut)
-
-### Kontakte manuell zuordnen
-
-In der Tabelle gibt es pro Zeile den Button **„Zuordnen"**. Damit kann ein Superchat-Kontakt manuell mit einem Phorest-Kunden verknüpft werden, falls die automatische Telefonnummern-Suche keinen Treffer liefert.
-
-### Zuordnungsarten
-
-| Symbol | Bedeutung |
-|--------|-----------|
-| Automatisch (Telefon) | Telefonnummer stimmte exakt überein |
-| Manuell | Manuell zugeordnet |
-| Kein Mapping | Noch kein Phorest-Kunde gefunden |
-
-### Was passiert automatisch bei neuen Kontakten?
-
-Wenn eine neue Person zum ersten Mal eine WhatsApp-Nachricht an glattt schreibt, legt Superchat automatisch einen neuen Kontakt an und sendet ein `contact_created`-Webhook-Event an glatttHub. Innerhalb weniger Sekunden passiert Folgendes vollautomatisch:
-
-1. Telefonnummer des neuen Kontakts wird mit Phorest-Kunden verglichen
-2. Bei Treffer: Zuordnung wird sofort gespeichert und bestätigt (`is_confirmed = true`)
-3. Phorest-Daten (Name, Client ID, External ID) werden sofort zurück an Superchat geschrieben
-4. Ab diesem Moment erscheint der Kontakt mit vollständigem Phorest-Match in der Tabelle
-
----
-
-## Für Entwickler
+**Automatik bei neuen Kontakten:** Schreibt eine neue Person zum ersten Mal an glattt, legt
+Superchat den Kontakt an und sendet `contact_created`; innerhalb weniger Sekunden wird die
+Telefonnummer mit Phorest verglichen, bei Treffer die Zuordnung gespeichert und bestätigt
+(`is_confirmed = true`), die Phorest-Daten (Name, Client ID, External ID) sofort zurück an
+Superchat geschrieben — ab dann erscheint der Kontakt mit vollständigem Match in der Tabelle.
 
 ### Architektur-Überblick
 
@@ -192,18 +200,20 @@ ClientStatistic::whereNotNull('mobile')
 Probiert mehrere Telefonnummern-Varianten:
 
 | Eingabe | Variante | Beispiel |
-|---------|----------|---------|
+|---------|---------|---------|
 | E.164 ohne `+` | für Phorest-API | `491605782830` |
 | +49 → 0 | deutsches Format | `01605782830` |
 | Raw-Wert aus Superchat | Originalformat | `+491605782830` |
 
 **Bei Treffer (beide Stufen):**
+
 - `is_confirmed = true` (Webhook = verlässliche Quelle)
 - `match_method = auto`
 - `mobile` in `client_statistics` zurückschreiben (für künftige lokale Matches)
 - `PATCH /contacts/{superchat_id}` mit Name + Custom-Attributen
 
 **Kein Treffer:**
+
 - `match_method = none`
 - Kontakt wird angelegt, kann später manuell zugeordnet werden
 
@@ -241,7 +251,7 @@ tail -f storage/logs/superchat-background.log
 
 ### Produktiv-DB
 
-Bei Schema-Änderungen an `superchat_contact_links` erst lokal migrieren, dann SQL-Skript für Produktion erstellen. Die `superchat_contact_links`-Tabelle hat folgende wichtige Spalten:
+Bei Schema-Änderungen an `superchat_contact_links` erst lokal migrieren, dann SQL-Skript für Produktion erstellen (Hinweis aus der Zeit vor dem automatischen Migrate beim Deploy, 08.07.2026 — seither reicht die Migration im Repo). Die `superchat_contact_links`-Tabelle hat folgende wichtige Spalten:
 
 | Spalte | Typ | Bedeutung |
 |--------|-----|-----------|

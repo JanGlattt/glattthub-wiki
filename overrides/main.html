@@ -1,0 +1,9 @@
+{#- Hinweisleiste über der Kopfzeile: Weiche zum Nutzerhandbuch (hilfe.hub.glattt.com).
+    Ausblendbar (announce.dismiss in mkdocs.yml); der Stand wird im Browser gemerkt. -#}
+{% extends "base.html" %}
+
+{% block announce %}
+  <span>Du suchst die <strong>Bedienungsanleitung mit Screenshots</strong>? Die steht im Nutzerhandbuch:</span>
+  <a href="https://hilfe.hub.glattt.com" target="_blank" rel="noopener">hilfe.hub.glattt.com&nbsp;↗</a>
+  <span>— hier ist die technische Dokumentation für Entwicklung und Betrieb.</span>
+{% endblock %}

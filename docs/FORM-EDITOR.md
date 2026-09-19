@@ -1,8 +1,59 @@
 # Form Editor Modul
 
-## Übersicht
+Das Form Editor Modul erstellt, bearbeitet und verwaltet die dynamischen Formulare des
+glatttHub: visueller Drag-&-Drop-Editor mit 3-Spalten-Layout, rund zwei Dutzend Feldtypen,
+bedingte Anzeige, Pflichtformulare vor der Behandlung, Minderjährigen- und
+Mitunterzeichner-Logik, SEPA- und Vertragsauslöser sowie PDF-Export. Diese Seite ist die
+**technische Referenz** (Feldtypen, Datenbank-Struktur, Routen, Bedingungen, Readonly,
+Datumsregeln, SEPA-Integration, Adress-Suche, Unterschriften-SVG); die Bedienung Schritt für
+Schritt steht im Nutzerhandbuch.
 
-Das Form Editor Modul ermöglicht das Erstellen, Bearbeiten und Verwalten von dynamischen Formularen im GLATTT Hub. Es bietet einen visuellen Drag & Drop Editor sowie die Möglichkeit, ausgefüllte Formulare als PDF zu exportieren.
+!!! nutzerhandbuch "Bedienung: Betrieb 3 und 4 im Nutzerhandbuch"
+    [Betrieb 3 – Formulare erstellen](https://hilfe.hub.glattt.com/betrieb/3/) — Formular anlegen,
+    Felder anordnen, Regeln und Bedingungen, Einstellungen (Zuordnung, Vertrag, SEPA),
+    Minderjährige und Mitunterzeichner ·
+    [Betrieb 4 – Formulare teilen & Einreichungen](https://hilfe.hub.glattt.com/betrieb/4/) —
+    Formular teilen, die Kundenansicht, Eingereichtes lesen.
+
+    Angrenzend: [Terminansicht 2 – Kundeninformation & Einverständniserklärung](https://hilfe.hub.glattt.com/terminansicht/2/),
+    [Terminansicht 5 – Formular an die Kundin weitergeben](https://hilfe.hub.glattt.com/terminansicht/5/),
+    [Terminansicht 10 – Sitzungsbestätigung](https://hilfe.hub.glattt.com/terminansicht/10/),
+    [Terminansicht 11 – Erlaubnis Minderjährige](https://hilfe.hub.glattt.com/terminansicht/11/),
+    [Admin 2 – Inhalte und Dokumente](https://hilfe.hub.glattt.com/admin/2/) (Rechtsdokumente).
+
+## Für Anwender — Überblick
+
+**Was das Modul leistet.** Ein Formular wird einmal im Editor gebaut und danach überall
+eingesetzt: im Termin auf dem Tablet, als Link an die Kundin, als eingebettete Ansicht im
+Kundenprofil. Der Editor arbeitet visuell — Felder aus der Leiste ins Raster ziehen, rechts
+einstellen — und trennt bewusst **Entwurf** und **Veröffentlicht**: Erst ein veröffentlichtes
+Formular lässt sich ausfüllen. Was ein Formular am Ende auslöst (Vertragsanlage, SEPA-Mandat,
+Kundenzuordnung, Pflicht vor der Behandlung), steckt in seinen Einstellungen, nicht im
+einzelnen Feld.
+
+**Grundsätze, die überall gelten:**
+
+- **Ein Formular, eine Quelle.** Alle Ausfüll-Ansichten (Termin, Link, Kundenprofil) rendern
+  dasselbe Formular über denselben Feld-Renderer — eine Änderung wirkt sofort in allen.
+- **Eingereicht ist eingereicht.** Eine Einreichung hält den Stand zum Zeitpunkt des Absendens
+  fest, inklusive bestätigter Rechtsdokument-Fassung und Unterschrift; das PDF ist die
+  Ausfertigung dazu.
+- **Pflichtformulare sperren den Ablauf.** Ist ein Formular als Pflicht vor der Behandlung
+  markiert, bleibt der Einstellungszettel gesperrt, bis es vorliegt.
+- **Bedingte Felder verstecken, was nicht gebraucht wird** — sie werden erst sichtbar (und erst
+  dann pflichtig), wenn ihre Bedingung zutrifft.
+- **Minderjährige und Mitunterzeichner** ergänzen eine zweite Person: vor Ort oder per Link mit
+  Frist, beide Teile landen in **einer** Einreichung.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Formular anlegen, Felder anordnen, Feld-Einstellungen | Betrieb 3 |
+| Regeln und Bedingungen, Zuordnung, Vertrag, SEPA, Minderjährige und Mitunterzeichner | Betrieb 3 |
+| Formular teilen, Kundenansicht, Einreichungen lesen und als PDF laden | Betrieb 4 |
+| Formular im Termin ausfüllen bzw. an die Kundin weitergeben | Terminansicht 2 und 5 |
+| Rechtsdokumente (AGB & Co.) pflegen, die im Formular erscheinen | Admin 2 |
 
 ## Features
 
@@ -256,21 +307,15 @@ Vertrags-Look ausgelegt:
   `FormController::PDF_RENDERER_VERSION` — bestehende PDFs werden dann beim
   nächsten Abruf automatisch neu gerendert.
 
-## UI/UX Features
+## UI/UX-Konventionen
 
-### 🎯 Floating Labels
-- Alle Eingabefelder nutzen das GLATTT Floating Label Design
-- Labels schweben nach oben beim Fokus oder wenn Wert vorhanden
-- Konsistent in Editor und Ausfüll-Ansicht
+Kurzfassung — die Bedienung beschreibt [Betrieb 3](https://hilfe.hub.glattt.com/betrieb/3/):
 
-### 📌 Sticky Sidebars
-- Editor-Sidebars scrollen mit der Seite
-- Optimale Erreichbarkeit bei langen Formularen
-- Positionierung unter dem Header-Bar
-
-### ✅ Feld-Auswahl mit visueller Markierung
-- Ausgewählte Felder werden mit grüner Indikator-Leiste hervorgehoben
-- Klarer visueller Feedback beim Bearbeiten
+- **Floating Labels** an allen Eingabefeldern (GLATTT-Design), identisch in Editor und
+  Ausfüll-Ansicht — Label schwebt bei Fokus oder vorhandenem Wert nach oben.
+- **Sticky Sidebars**: Beide Editor-Spalten scrollen mit der Seite und sitzen unter der
+  Header-Bar, damit sie auch bei langen Formularen erreichbar bleiben.
+- **Feld-Auswahl**: Das aktive Feld trägt eine grüne Indikator-Leiste als visuelle Rückmeldung.
 
 ## Datenbank-Struktur
 
@@ -418,26 +463,14 @@ Dieses Partial wird von 2 verschiedenen Views eingebunden:
 
 ## Verwendung
 
-### Neues Formular erstellen
-
-1. Navigation zu "Formulare" im Seitenmenü
-2. Klick auf "+ Neues Formular"
-3. Formular benennen
-4. Felder per Drag & Drop hinzufügen
-5. Felder konfigurieren (Label, Optionen, Pflichtfeld, etc.)
-6. Speichern und ggf. veröffentlichen
-
-### Formular testen
-
-1. Im Editor auf "Vorschau" klicken
-2. Oder über die Formular-Übersicht "Testen" wählen
-3. Formular ausfüllen und absenden
-
-### Einreichungen verwalten
-
-1. In der Formular-Übersicht werden Einreichungszahlen angezeigt
-2. Einreichungen können angesehen werden
-3. PDF-Export für einzelne Einreichungen
+Die Abläufe „Formular anlegen und Felder konfigurieren", „Formular testen/vorschauen" und
+„Einreichungen ansehen und als PDF laden" stehen Schritt für Schritt im Nutzerhandbuch:
+[Betrieb 3 – Formulare erstellen](https://hilfe.hub.glattt.com/betrieb/3/) und
+[Betrieb 4 – Formulare teilen & Einreichungen](https://hilfe.hub.glattt.com/betrieb/4/).
+Technisch relevant bleibt: Ein Formular ist erst nach **Veröffentlichen** ausfüllbar
+(`forms.is_published`), die Vorschau rendert denselben Feld-Renderer wie die Ausfüll-Ansicht,
+und der PDF-Abruf je Einreichung läuft über `FormController` (siehe
+[PDF-Konfiguration](#pdf-konfiguration)).
 
 ## Body Zones Integration
 
@@ -688,7 +721,7 @@ Beim Einreichen eines SEPA-Formulars werden folgende Felder automatisch extrahie
 
 Der Bankname wird automatisch via OpenIBAN API aus der IBAN ermittelt.
 
-> **Siehe auch:** [glatttPakete.md](glatttPakete.md#sepa-mandate) für Details zur Vertragsverarbeitung
+> **Siehe auch:** [glatttPakete.md](glatttPakete.md#sepa-mandate-kurzubersicht) für Details zur Vertragsverarbeitung
 
 ### Vorausfüllung (Prefill)
 

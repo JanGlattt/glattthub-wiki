@@ -1,5 +1,8 @@
 # WordPress: Häufige Fragen (glattt FAQ)
 
+!!! info "Bedienung bleibt in diesem Wiki"
+    Die Pflege der Website glattt.com gehört nicht ins Nutzerhandbuch — das beschreibt ausschließlich den glatttHub. Die Abschnitte „Für Endanwender" auf dieser Seite sind deshalb die verbindliche Anleitung für Marketing und Website-Pflege (Entscheidung Jan, 19.09.2026).
+
 Eigenes WordPress-Plugin für **glattt.com**, das die häufigen Fragen als
 wiederverwendbares Element bereitstellt — in drei Darstellungen, mit einem
 Call-to-Action je Frage.

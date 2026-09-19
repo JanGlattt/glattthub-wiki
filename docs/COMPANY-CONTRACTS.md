@@ -1,76 +1,58 @@
 # Unternehmensverträge
 
-Zentrales Modul zur Verwaltung aller Unternehmensverträge (Mietverträge, SaaS-Abonnements, Dienstleistungsverträge etc.) im glatttHub.
+Zentrales Modul zur Verwaltung aller Unternehmensverträge der Firma (Mietverträge,
+SaaS-Abonnements, Dienstleistungsverträge etc.) — mit Kostenübersicht, Kündigungsfristen,
+Dokumentenablage, Änderungshistorie und einer KI-Analyse, die ein hochgeladenes Vertrags-PDF
+vorauswertet. Nicht zu verwechseln mit den Kundenverträgen (`Contract`, siehe
+[CONTRACTS-SEPA-MODULE.md](CONTRACTS-SEPA-MODULE.md)). Diese Seite beschreibt **Fachregeln,
+Datenmodell, Routen, Services und Fallstricke**; die Bedienung Schritt für Schritt steht im
+Nutzerhandbuch.
+
+!!! nutzerhandbuch "Bedienung: Finanzen 2 – Unternehmensverträge"
+    [hilfe.hub.glattt.com/finanzen/2/](https://hilfe.hub.glattt.com/finanzen/2/) — Die Übersicht,
+    einen Vertrag erfassen (Wizard inkl. KI-Vorschlägen), Fristen im Blick behalten.
 
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
 
-### Was macht dieses Modul?
+**Was das Modul leistet.** Alle Verträge, die die Firma selbst eingeht, liegen an einer Stelle:
+laufende, gekündigte und ausgelaufene. Ziel ist, **keine Kündigungsfrist zu verpassen**, die
+monatlichen Kosten je Vertragstyp und Standort zu kennen und jedes Vertragsdokument griffbereit
+zu haben. Erfasst wird ein Vertrag über einen sechsstufigen Assistenten; lädt man dabei das PDF
+hoch, liest eine KI Bezeichnung, Partner, Laufzeit und Betrag vor — was sie nur **erschlossen**
+hat, ist als „KI-Vorschlag — bitte überprüfen" markiert und muss geprüft werden.
 
-Das Modul "Unternehmensverträge" bietet einen vollständigen Überblick über alle laufenden, gekündigten und abgelaufenen Verträge der Firma. Ziel ist es, Kündigungsfristen nicht zu verpassen, Kosten im Blick zu behalten und Vertragsdokumente jederzeit griffbereit zu haben.
+**Grundsätze, die überall gelten:**
 
-### Wo finde ich das Modul?
+- **Die Frist zählt, nicht das Vertragsende.** Angezeigt und überwacht wird das
+  Kündigungsdatum (manuell gesetzt oder aus Enddatum minus Kündigungsfrist berechnet).
+- **Der Hub erinnert von selbst** — standardmäßig 30 Tage vor dem Kündigungsdatum per E-Mail,
+  je Vertrag einstellbar.
+- **Jede Änderung wird protokolliert** (Feld, alter Wert, neuer Wert, Zeitpunkt) und ist auf der
+  Detailseite einsehbar.
+- **Standort oder firmenweit:** Ein Vertrag gehört entweder einem Institut oder der ganzen Firma;
+  wer nicht Admin ist, sieht firmenweite Verträge plus die des eigenen Standorts.
+- **Die Übersicht zeigt zuerst nur aktive Verträge** — gekündigte und ausgelaufene erst nach
+  Anpassen des Status-Filters.
 
-**Hub → Unternehmensverträge** (Navigation)
+**Wo was erledigt wird:**
 
-### Übersichtsseite
+| Vorgang | Anleitung |
+|---|---|
+| Übersicht, Kostenkacheln, Filter und Suche | Finanzen 2 |
+| Vertrag anlegen (Assistent, KI-Analyse, Dokument) | Finanzen 2 |
+| Vertrag bearbeiten, Dokumente und Historie lesen | Finanzen 2 |
+| Erinnerungen und Kündigungsfristen im Blick behalten | Finanzen 2 |
 
-Die Übersicht zeigt:
+---
 
-- **Kosten-Zusammenfassung** (oben): Monatliche Gesamtkosten, Aufschlüsselung nach Vertragstyp und nach Standort
-- **Vertragsliste** (unten): Alle Verträge mit Bezeichnung, Typ, Vertragspartner, Standort, Betrag, Kündigungsdatum und Status
+## Für Entwickler
 
-**Filter:**
+### Fachregeln (Fristen, Status, Erinnerungen)
 
-Die Filterfunktion ist direkt an den Spaltenköpfen der Tabelle angebracht — identisches System wie bei den Kundenverträgen. Ein Klick auf das Filter-Icon öffnet ein Flyover-Popover.
-
-| Spalte | Filter-Art | Optionen |
-|--------|-----------|----------|
-| Typ | Multi-Select | Alle Vertragstypen (Standard + Custom) |
-| Standort | Einzel-Select | Firmenweit + alle Standorte |
-| Betrag (Netto) | Einzel-Select | Nach Zahlungsintervall (Monatlich, Jährlich, …) |
-| Status | Multi-Select | Aktiv / Gekündigt / Ausgelaufen |
-
-Zusätzlich gibt es ein **Suchfeld** (Bezeichnung oder Vertragspartner) und einen **„Filter zurücksetzen"**-Button, der erscheint sobald ein Filter aktiv ist.
-
-**Standard beim Laden:** Nur aktive Verträge angezeigt (Status-Filter auf „Aktiv" vorbelegt).
-
-### Neuen Vertrag anlegen
-
-Klick auf **"+ Neuen Vertrag anlegen"** (oben rechts) öffnet den Wizard-Modal.
-
-Der Wizard führt durch **6 Schritte**:
-
-| Schritt | Inhalt |
-|---------|--------|
-| 1 – Dokument | PDF/Bild hochladen → KI analysiert das Dokument automatisch |
-| 2 – Vertragsdetails | Name, Vertragstyp(en), Vertragspartner, Kontakte, Vertragsnummer |
-| 3 – Zuordnung | Standort (oder firmenweit) + verantwortlicher Mitarbeiter |
-| 4 – Laufzeit & Kündigung | Start-/Enddatum, Kündigungsfrist, automatische Verlängerung |
-| 5 – Kosten | Betrag, Zahlungsintervall, Preisanpassung |
-| 6 – Erinnerung & Notizen | Erinnerungstage vor Kündigungsfrist, freie Notizen |
-
-**KI-Analyse (Schritt 1):**
-Das hochgeladene PDF wird an Claude (Anthropic) gesendet. Die KI extrahiert automatisch Vertragsbezeichnung, Typ, Partner, Laufzeit und Betrag und befüllt die Felder in den nachfolgenden Schritten vor. Schritt 1 kann übersprungen werden — alle Felder sind manuell befüllbar.
-
-**Direktausgelesene Felder** (aus dem Dokument) werden normal übernommen. **Erschlossene Felder** (KI-Schlussfolgerung aus Kontext oder Branche) werden mit einem bernsteinfarbenen Badge **„★ KI-Vorschlag — bitte überprüfen"** unterhalb des Feldes markiert. Diese Felder sollten vom Nutzer explizit geprüft werden. Der Badge verschwindet sobald das Feld manuell bearbeitet wird.
-
-### Detailseite eines Vertrags
-
-Klick auf den Pfeil-Button in der Übersicht öffnet die Detailseite mit:
-
-- **Vertragsdetails**: Bezeichnung, Typ, Partner, Standort, Ansprechpartner
-- **Laufzeit & Kündigung**: Laufzeitdaten, Kündigungsdatum mit Farbmarkierung (Rot = abgelaufen, Gelb = < 30 Tage), Erinnerungs-Einstellungen
-- **Kosten**: Betrag, Zahlungsintervall, monatlich normalisierter Wert
-- **Dokumente**: Alle hochgeladenen Dateien — PDFs werden direkt im integrierten PDF-Viewer angezeigt, darunter ein Download-Button
-- **Änderungshistorie** (aufklappbar): Protokoll aller Änderungen mit Zeitstempel, Feld, altem und neuem Wert
-
-### Vertrag bearbeiten
-
-Auf der Detailseite: Button **"Bearbeiten"** (oben rechts). Öffnet denselben Wizard wie beim Anlegen, jedoch vorausgefüllt mit allen bestehenden Daten. Der Upload-Schritt (Schritt 1) wird übersprungen.
-
-### Statusfarben Kündigungsdatum
+**Kündigungsdatum:** `effective_cancellation_deadline` ist das manuell gesetzte Datum, sonst
+`end_date − notice_period_days`. Die Übersicht und die Detailseite färben es:
 
 | Farbe | Bedeutung |
 |-------|-----------|
@@ -79,13 +61,23 @@ Auf der Detailseite: Button **"Bearbeiten"** (oben rechts). Öffnet denselben Wi
 | Blau + "in X Tagen" | Weniger als 90 Tage bis Fristende |
 | (kein Badge) | Mehr als 90 Tage oder kein Datum gesetzt |
 
-### Erinnerungen
+**Erinnerung:** Erreicht `Kündigungsdatum − reminder_days_before` (Standard 30) den heutigen Tag,
+verschickt das System eine Erinnerungsmail (`->upcomingReminders()`); der Versand wird in
+`reminder_sent_at` festgehalten und in der Laufzeit-Sektion angezeigt.
 
-Das System verschickt automatisch eine Erinnerungsmail, wenn das Datum `Kündigungsdatum − Erinnerungstage` erreicht wird (Standard: 30 Tage vorher). Das Datum des letzten Versands wird in der Laufzeit-Sektion angezeigt.
+**Filter:** Die Übersicht liefert alle sichtbaren Verträge aus und filtert client-seitig
+(Alpine `companyContractsFilter()`) an den Spaltenköpfen — Typ (Multi-Select), Standort,
+Betrag nach Zahlungsintervall, Status (Multi-Select) plus Freitextsuche über Bezeichnung und
+Vertragspartner. **Vorbelegt ist der Status-Filter auf „Aktiv".**
 
----
+**KI-Vorschläge:** `extracted` (direkt aus dem Dokument gelesen) wird normal übernommen,
+`suggested` (aus Kontext/Branche erschlossen) bekommt im Wizard das bernsteinfarbene Badge
+„★ KI-Vorschlag — bitte überprüfen", das beim manuellen Bearbeiten des Feldes verschwindet.
+Schritt 1 (Upload) ist überspringbar, alle Felder sind manuell befüllbar; beim Bearbeiten eines
+bestehenden Vertrags entfällt Schritt 1.
 
-## Für Entwickler
+**Sichtbarkeit:** `admin`/`super_admin` sehen alle Verträge, alle anderen firmenweite
+(`branch_id IS NULL`) plus den eigenen Standort (`->forBranch($branchId)`).
 
 ### Architektur
 
@@ -283,6 +275,17 @@ ANTHROPIC_API_KEY=sk-ant-...
 ### Wizard-Modal: `company-contract-wizard.js`
 
 Alpine.js-Komponente `contractWizard(config)` — wird per `x-data` auf der Index- und Detailseite eingebunden.
+
+**Die sechs Schritte**:
+
+| Schritt | Inhalt |
+|---------|--------|
+| 1 – Dokument | PDF/Bild hochladen → KI analysiert das Dokument automatisch (überspringbar, im Edit-Mode ausgelassen) |
+| 2 – Vertragsdetails | Name, Vertragstyp(en), Vertragspartner, Kontakte, Vertragsnummer |
+| 3 – Zuordnung | Standort (oder firmenweit) + verantwortlicher Mitarbeiter |
+| 4 – Laufzeit & Kündigung | Start-/Enddatum, Kündigungsfrist, automatische Verlängerung |
+| 5 – Kosten | Betrag, Zahlungsintervall, Preisanpassung |
+| 6 – Erinnerung & Notizen | Erinnerungstage vor Kündigungsfrist, freie Notizen |
 
 **Konfigurationsparameter** (aus Blade übergeben):
 ```js

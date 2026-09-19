@@ -1,50 +1,59 @@
-# Buchungsvorlauf-Analyse - Dokumentation
+# Buchungsvorlauf-Analyse
 
-## Übersicht
+Heatmap-Karte auf der Berichtsseite [Zukünftige Beratungsgespräche](UPCOMING-CONSULTATIONS.md):
+**wie viele Tage im Voraus** Beratungstermine gebucht werden, je Wochentag und Uhrzeit. Diese Seite
+beschreibt **Berechnung, Endpunkt, Parameter, Response-Format, Dateien und Farbskalen**; die
+Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
-Die **Buchungsvorlauf-Analyse** ist eine Heatmap-Visualisierung, die zeigt, wie viele Tage im Voraus Beratungstermine gebucht werden. Sie hilft dabei zu verstehen, wann Kunden typischerweise ihre Termine buchen - ob spontan oder langfristig geplant.
+!!! nutzerhandbuch "Bedienung: Berichte 2 – Zukünftige Beratungsgespräche"
+    [hilfe.hub.glattt.com/berichte/2/](https://hilfe.hub.glattt.com/berichte/2/) — die Seite, auf der
+    diese Karte sitzt. Rahmen aller Berichtsseiten (Zeitraum und Standort, Kennzahlen-Zeile, Diagramm
+    oder Tabelle, Export): [Berichte 0](https://hilfe.hub.glattt.com/berichte/0/).
 
-## Features
+    **Für diese Einzelkarte gibt es noch keine eigene Klickanleitung — Anleitung folgt.** Bis dahin:
+    Serien-Übersicht [hilfe.hub.glattt.com/berichte/](https://hilfe.hub.glattt.com/berichte/).
 
-### Heatmap-Visualisierung
-- **Y-Achse**: Wochentage (Montag - Samstag)
-- **X-Achse**: Uhrzeiten (8:00 - 20:00)
+---
+
+## Für Anwender — Überblick
+
+**Was die Karte beantwortet.** Buchen die Kundinnen spontan oder langfristig? Die Heatmap zeigt je
+Wochentag (Mo–Sa) und Uhrzeit (8–20 Uhr), wie viele Tage im Voraus die Termine dieses Slots gebucht
+wurden — wahlweise als Durchschnitt oder als Median (robuster gegen Ausreißer), für alle Standorte
+gemeinsam oder je Standort als eigene Mini-Heatmap. Filter gibt es für den Zeitraum (Standard:
+letzte 6 Monate) und den Buchungstyp (online, offline, beides); der globale Standortfilter wirkt mit.
+
+Dazu kommen automatisch abgeleitete Befunde: Ø Vorlauf insgesamt, Wochentag mit dem längsten und mit
+dem kürzesten Vorlauf sowie der Slot mit dem längsten Vorlauf.
+
+**Wie man die Farben liest** — siehe [Beispiel-Interpretation](#beispiel-interpretation) unten.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Die Seite öffnen, auf der die Karte sitzt | Berichte 2 |
+| Zeitraum und Standort, Diagramm/Tabelle, Export | Berichte 0 |
+| Diese Einzelkarte Schritt für Schritt | Anleitung folgt (Serie Berichte) |
+
+---
+
+## Für Entwickler
+
+### Aufbau der Karte
+
+- **Y-Achse**: Wochentage (Montag – Samstag)
+- **X-Achse**: Uhrzeiten (8:00 – 20:00)
 - **Farbintensität**: Je dunkler die Zelle, desto länger der Vorlauf in Tagen
-- **Werte**: Durchschnittlicher/Median-Vorlauf in Tagen pro Slot
+- **Werte**: Durchschnittlicher bzw. Median-Vorlauf in Tagen pro Slot
 
-### Zeitraum-Filter
-- Letzte 3 Monate
-- Letzte 6 Monate (Standard)
-- Letzte 12 Monate
-- Alle Daten
-- Benutzerdefinierter Zeitraum
+**Filter und Modi:** Zeitraum (3 / 6 / 12 Monate, Alle Daten, benutzerdefiniert — Standard 6 Monate),
+Buchungstyp (Beides / Online / Offline), Aggregation (Durchschnitt / Median), Ansicht (Gesamt /
+Standorte als Mini-Heatmaps). Die Karte reagiert auf die globale Branch-Auswahl im Header und lädt
+bei Standort-Wechsel automatisch nach.
 
-### Buchungstyp-Filter
-- **Beides**: Online + Offline Buchungen
-- **Online**: Nur Online-Buchungen
-- **Offline**: Nur Offline-Buchungen (Telefon/vor Ort)
-
-### Aggregations-Modus
-- **Durchschnitt**: Mittlerer Vorlauf in Tagen
-- **Median**: Median-Vorlauf (robuster gegen Ausreißer)
-
-### Ansichts-Modi
-- **Gesamt**: Alle Standorte aggregiert
-- **Standorte**: Jeder Standort als eigene Mini-Heatmap (farblich unterschieden)
-
-### Automatische Insights
-Das System analysiert automatisch:
-- **Ø Vorlauf**: Gesamter Durchschnitt/Median aller Buchungen
-- **Längster Vorlauf Tag**: Der Wochentag mit dem längsten Buchungsvorlauf
-- **Kürzester Vorlauf Tag**: Der Wochentag mit dem kürzesten Vorlauf (spontane Buchungen)
-- **Früheste Buchungen**: Der Slot (Tag + Uhrzeit) mit dem längsten Vorlauf
-
-### Integration mit Branch-Auswahl
-- Reagiert auf die globale Branch-Auswahl im Header
-- Zeigt Daten für alle Standorte oder einzelne Standorte
-- Automatischer Reload bei Standort-Wechsel
-
-## Technische Details
+**Automatische Insights:** Ø Vorlauf, „Längster Vorlauf Tag", „Kürzester Vorlauf Tag" (spontane
+Buchungen) und „Früheste Buchungen" (Slot mit dem längsten Vorlauf).
 
 ### Backend
 - **Route**: `GET /phorest/reports/booking-lead-time-analysis`
@@ -124,38 +133,28 @@ $leadTimeDays = $createdAt->startOfDay()->diffInDays($appointmentDateTime->start
 - **Blade-Partial**: `resources/views/hub/reports/partials/consultation-booking-lead-time.blade.php`
 - **Integration**: Eingebettet in `upcoming-consultations.blade.php`
 
-## Verwendung
 
-Die Komponente wird auf der Seite "Kommende Beratungsgespräche" angezeigt, unterhalb der "Freie Slots Analyse".
+### Dateien
 
-### Interaktion
-1. **Zeitraum ändern**: Über Filter-Panel (Trichter-Icon)
-2. **Buchungstyp wählen**: Radio-Buttons im Filter-Panel
-3. **Aggregation umschalten**: Toggle zwischen Durchschnitt/Median
-4. **Ansicht wechseln**: Toggle zwischen Gesamt/Standorte
-5. **Standort filtern**: Über globales Header-Dropdown
-
-## Dateien
-
-### Backend
+#### Backend
 - `app/Http/Controllers/ReportController.php`
   - `bookingLeadTimeAnalysis()` - Hauptendpoint
   - `calculateLeadTimeInsights()` - Insight-Berechnung
   - `calculateLeadTimeByBranch()` - Standort-spezifische Daten
 
-### Frontend
+#### Frontend
 - `public/js/booking-lead-time.js` - Alpine.js Komponente
 - `resources/views/hub/reports/partials/consultation-booking-lead-time.blade.php` - Blade-Template
 
-### Routes
+#### Routes
 - `routes/web.php` - Route-Definition unter `/phorest/reports/booking-lead-time-analysis`
 
-## Design
+### Design
 
-### Farbskala (Gesamt-Ansicht)
+#### Farbskala (Gesamt-Ansicht)
 Verwendet die CSS-Variablen `--color-heatmap-1` bis `--color-heatmap-max` für eine grüne Farbskala.
 
-### Standort-Farben
+#### Standort-Farben
 Jeder Standort hat eine eigene Farbe:
 | Index | Farbe | Hex |
 |-------|-------|-----|
@@ -165,12 +164,14 @@ Jeder Standort hat eine eigene Farbe:
 | 3 | Pink | #E91E63 |
 | 4 | Blau | #0EA5E9 |
 
-## Beispiel-Interpretation
+### Beispiel-Interpretation
 
 - **Hoher Vorlauf (>10 Tage)**: Diese Slots werden langfristig geplant - gut für feste Terminserien
 - **Niedriger Vorlauf (<3 Tage)**: Spontane Buchungen - hier sollte immer Kapazität frei sein
 - **Samstag mit längstem Vorlauf**: Wochenend-Termine werden weit im Voraus gebucht
 - **Donnerstag mit kürzestem Vorlauf**: Donnerstag-Termine werden spontaner gebucht
+
+---
 
 ## Changelog
 

@@ -5,7 +5,21 @@ unterschrieben werden. Weil der Kunde dabei als Fernabsatz-Kunde ein 14-tägiges
 Widerrufsrecht hat, entsteht der Folgevertrag zunächst als **schwebender Vertrag**:
 Der Altvertrag läuft bis einen Tag nach Fristende unverändert weiter; erst dann
 ersetzt ihn der Folgevertrag automatisch. Widerruft der Kunde innerhalb der Frist,
-wird nur der schwebende Vertrag storniert — am Altvertrag ändert sich nichts.
+wird nur der schwebende Vertrag storniert — am Altvertrag ändert sich nichts. Diese
+Seite beschreibt **Absicht, Fachregeln, Bausteine, Datenmodell und Datenfluss**; die
+Bedienung Schritt für Schritt steht im Nutzerhandbuch.
+
+!!! nutzerhandbuch "Bedienung: Widerrufe 3 – Vertragsänderung im Fernabsatz"
+    [hilfe.hub.glattt.com/widerrufe/3/](https://hilfe.hub.glattt.com/widerrufe/3/) — wozu die
+    Vertragsänderung da ist, das Angebot zusammenstellen, Formular und Versandweg, der schwebende
+    Folgevertrag und das Modal „Widerruf des Folgevertrags".
+
+    Angrenzend: [Widerrufe 2 – Der Fall im Detail](https://hilfe.hub.glattt.com/widerrufe/2/),
+    [Widerrufe 4 – Die Abwicklung](https://hilfe.hub.glattt.com/widerrufe/4/) (Phorest-Pakete auf 0,
+    Downgrade-Formulare vor Ort), [Verträge 7 – Mandat und Bankverbindung](https://hilfe.hub.glattt.com/vertraege/7/)
+    (Mandat für den Folgevertrag), [Betrieb 3 – Formulare erstellen](https://hilfe.hub.glattt.com/betrieb/3/)
+    (Formular-Einstellungen), [Admin 2 – Inhalte und Dokumente](https://hilfe.hub.glattt.com/admin/2/)
+    (Rechtsdokumente).
 
 !!! warning "Rechtstexte sind ein Entwurf"
     Formulartext und Widerrufsbelehrung wurden am 11.09.2026 als Entwurf angelegt
@@ -15,76 +29,96 @@ wird nur der schwebende Vertrag storniert — am Altvertrag ändert sich nichts.
 
 ---
 
-# Für Endanwender
+## Für Anwender — Überblick
 
-## Ablauf in fünf Schritten
+**Was der Weg leistet und warum.** Bisher brauchte jedes Downgrade eine Unterschrift am
+Tablet im Institut. Der Fernabsatz-Weg erlaubt es, einem Kunden aus der Widerrufs-Fallakte
+heraus ein neues, kleineres Paket **per Link** anzubieten — mit dem Guthaben aus dem
+Altvertrag, das er mitnimmt. Weil ein so geschlossener Vertrag ein gesetzliches
+Widerrufsrecht hat, ist die Konstruktion bewusst eine **aufschiebend bedingte Ersetzung**:
+Unter dem neuen Vertrag wird vor Wirksamkeit nichts geleistet, der Altvertrag läuft weiter
+(Behandlungen, Raten), und ein Widerruf des Kunden lässt sich ohne jede Rückabwicklung
+umsetzen. Für **Upgrades** gilt der Weg bewusst noch nicht.
 
-1. **Angebot vorbereiten** — in der Widerrufs-Fallakte (Aktionen-Karte, Block
-   „Umsetzung") auf **„Vertragsänderung im Fernabsatz …"** klicken. Schritt 1 zeigt
-   den Altvertrag (KPZ, Gesamtwert, Rest) und das **Guthaben**, das der Kunde
-   mitnimmt. Körperzonen des neuen Pakets anhaken, Laufzeit und Rabatt wählen —
-   der Hub rechnet Rate, Gesamtwert und „Verbleibend nach Guthaben".
-2. **Senden** — Schritt 2: Formular „Vertragsänderung im Fernabsatz" wählen, per
-   E-Mail senden oder nur den Link erzeugen (z. B. für WhatsApp). Der Link ist
-   **7 Tage** gültig und einmal nutzbar. Der Fall-Verlauf hält Kanal und Paket fest.
-3. **Kunde unterschreibt** — die Kundenseite zeigt das Angebot als Übersicht
-   (nicht änderbar), die Vereinbarung (Fortführung, Ersetzung, Anrechnung, Zahlung),
-   die Widerrufsbelehrung mit Muster-Widerrufsformular und das Unterschriftsfeld.
-   Nach dem Absenden erhält der Kunde die **Vertragsbestätigung per E-Mail mit PDF**
-   (dauerhafter Datenträger — damit beginnt die Widerrufsfrist).
-4. **Frist läuft** — in der Fallakte steht der schwebende Folgevertrag mit
-   „Widerrufsfrist bis …" und „wirksam ab …". Der Fall bleibt **Offen**, die
-   Reaktion steht auf Downgrade, der Folgevertrag ist bereits verknüpft. Der
-   Altvertrag läuft normal weiter (Behandlungen, Raten).
-    - **Kunde widerruft:** Button „Kunde hat widerrufen …" — der schwebende Vertrag
-      wird storniert, Reaktion zurück auf Offen, der Altvertrag bleibt unberührt.
-5. **Wirksam** — einen Tag nach Fristende schaltet der Tageslauf (06:30) den
-   Folgevertrag automatisch aktiv: Altvertrag „Geändert" mit Folgevertrag-Verknüpfung,
-   Fall **Abgeschlossen (Downgrade)**, offene lokale Raten des Altvertrags storniert,
-   Guthaben in der Abschluss-Kaskade des Folgevertrags hinterlegt, Phorest-Kauf
-   (Direktzahler sofort, Ratenzahler mit unterschriebenem Mandat). Alle mit
-   `manage_revocations` bekommen eine Hub-Benachrichtigung. Ist der Tageslauf noch
-   nicht durch, gibt es in der Fallakte „Jetzt wirksam schalten".
+**Ablauf in fünf Schritten (fachlich):**
 
-## Was danach von Hand zu tun ist
+1. **Angebot vorbereiten** — aus der Widerrufs-Fallakte heraus wird das neue Paket
+   zusammengestellt (Körperzonen, Laufzeit, Rabatt); der Hub zeigt Altvertrag, Guthaben,
+   Rate, Gesamtwert und „Verbleibend nach Guthaben". Der Preis kommt immer aus dem Hub,
+   nie aus dem Formular.
+2. **Senden** — das Formular „Vertragsänderung im Fernabsatz" geht per E-Mail raus oder als
+   Link (z. B. für WhatsApp). Der Link ist **7 Tage** gültig und einmal nutzbar; der
+   Fall-Verlauf hält Kanal und Paket fest.
+3. **Kunde unterschreibt** — die Kundenseite zeigt das Angebot (nicht änderbar), die
+   Vereinbarung (Fortführung, Ersetzung, Anrechnung, Zahlung), die Widerrufsbelehrung mit
+   Muster-Widerrufsformular und das Unterschriftsfeld. Mit dem Absenden erhält der Kunde die
+   **Vertragsbestätigung per E-Mail mit PDF** (dauerhafter Datenträger) — damit beginnt die
+   Widerrufsfrist.
+4. **Frist läuft** — der Folgevertrag steht als **schwebend** in der Fallakte („Widerrufsfrist
+   bis …", „wirksam ab …"); der Fall bleibt *Offen* mit Reaktion *Downgrade*, der Folgevertrag
+   ist bereits verknüpft. Widerruft der Kunde, wird nur der schwebende Vertrag storniert und
+   die Reaktion geht zurück auf *Offen*.
+5. **Wirksam** — einen Tag nach Fristende schaltet der Tageslauf den Folgevertrag automatisch
+   aktiv: Altvertrag *Geändert* mit Verknüpfung, Fall *Abgeschlossen (Downgrade)*, offene
+   lokale Raten des Altvertrags storniert, Guthaben in der Abschluss-Kaskade hinterlegt,
+   Phorest-Kauf; alle mit `manage_revocations` bekommen eine Hub-Benachrichtigung. Vor dem
+   Tageslauf ist ein manuelles „Jetzt wirksam schalten" möglich.
 
-- **Zahlungsplan des Folgevertrags** im SEPA-Tab anlegen — bewusst nicht automatisch
-  (GoCardless wird seit 31.07.2026 nur manuell angefasst). Hat der Kunde ein aktives
-  Mandat, ist es bereits verknüpft; sonst liegt ein leeres pending-Mandat vor und das
-  SEPA-Formular muss noch eingeholt werden.
-- **Offene GoCardless-Einzüge des Altvertrags** prüfen und stornieren — die
-  Benachrichtigung nennt die Anzahl.
-- **Phorest-Pakete des Altvertrags** auf 0 setzen („Phorest-Pakete auf 0 setzen …" in
-  der Fallakte) — wie bei jedem Downgrade.
-- Übersteigt das Guthaben den Wert des neuen Vertrags, zeigt der Assistent den
-  **Überschuss** — der wird von Hand erstattet.
+**Was danach von Hand bleibt** — bewusst nicht automatisiert, Details in Widerrufe 3/4 und
+Verträge 7: Zahlungsplan des Folgevertrags im SEPA-Tab anlegen (GoCardless wird seit
+31.07.2026 nur manuell angefasst; ohne aktives Mandat erst das SEPA-Formular einholen),
+offene GoCardless-Einzüge des Altvertrags prüfen und stornieren (die Benachrichtigung nennt
+die Anzahl), Phorest-Pakete des Altvertrags auf 0 setzen, einen im Assistenten ausgewiesenen
+**Überschuss** des Guthabens von Hand erstatten.
 
-## Guthaben
-
-Guthaben = Vertragswert des Altvertrags − dokumentierter Rest (dieselbe Quelle wie das
-Forderungsmanagement): verbuchte Geldeingänge, gepflegte Altsystem-Einzüge,
-verrechnete Gutscheine und die als kassiert geltende Vor-Ort-Rate 1. Es wird bei der
-Unterschrift festgehalten und bei der Aktivierung gegen den dann aktuellen Stand
-geprüft (zwischenzeitlich eingezogene Raten zählen mit). Die Anrechnung läuft über die
-Abschluss-Kaskade: Rate 1, dann Rate 2, 3 … bis zum 1-€-Minimum je SEPA-Rate.
-
-## Schwebende Verträge in Listen und Statistiken
-
-Status **„Schwebend"** (`pending`, Badge Info-Blau) zählt in **keiner** Verkaufs-,
-MRR-, Bonus-, Gamification- oder Widerrufsstatistik, hat keinen Phorest-Kauf und keine
-Raten. In der Vertragsliste ist er über den Status-Filter „Schwebend" auffindbar.
-
-## Vor-Ort-Alternative
-
-Wird der Kunde ohnehin im Institut erwartet, bleibt der bisherige Weg
-(„Downgrade vor Ort (Formulare) …", Unterschrift am Tablet) — dort gibt es kein
+**Vor-Ort-Alternative:** Wird der Kunde ohnehin im Institut erwartet, bleibt der bisherige Weg
+(„Downgrade vor Ort (Formulare)", Unterschrift am Tablet) — dort gibt es kein
 Fernabsatz-Widerrufsrecht, der Vertrag entsteht sofort aktiv.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Angebot zusammenstellen, Formular und Versandweg wählen, schwebenden Folgevertrag verfolgen, Widerruf des Folgevertrags erfassen | Widerrufe 3 |
+| Fallakte lesen, Fall bearbeiten, Verlauf | Widerrufe 2 |
+| Nacharbeiten: Phorest-Pakete auf 0 setzen, Downgrade-Formulare vor Ort, SEPA-Mandat stornieren | Widerrufe 4 |
+| Mandat/Zahlungsplan für den Folgevertrag anlegen | Verträge 7, Verträge 6 |
+| Formular-Schalter „Vertragsänderung im Fernabsatz" pflegen | Betrieb 3 |
+| Rechtsdokumente (Widerrufsbelehrung) pflegen | Admin 2 |
 
 ---
 
-# Für Entwickler
+## Für Entwickler
 
-## Bausteine
+### Fachregeln
+
+- **Fristen:** Widerrufsfrist **14 Tage** ab Vertragsschluss (`WITHDRAWAL_PERIOD_DAYS`),
+  Aktivierung **einen Tag** nach Fristende (`ACTIVATION_BUFFER_DAYS = 1`):
+  `withdrawal_period_ends_at = signed_at + 14 Tage`, `effective_from = + 15 Tage`,
+  `first_payment_date = effective_from`. Angebots-Links gelten **7 Tage** und sind einmal
+  nutzbar (`FormShareToken`).
+- **Guthaben** = Vertragswert des Altvertrags − dokumentierter Rest (dieselbe Quelle wie das
+  Forderungsmanagement, `Contract::documentedRemainingCents()`): verbuchte Geldeingänge,
+  gepflegte Altsystem-Einzüge, verrechnete Gutscheine und die als kassiert geltende
+  Vor-Ort-Rate 1. Es wird bei der Unterschrift festgehalten und bei der Aktivierung gegen den
+  dann aktuellen Stand geprüft (zwischenzeitlich eingezogene Raten zählen mit). Die
+  Anrechnung läuft über die Abschluss-Kaskade: Rate 1, dann Rate 2, 3 … bis zum 1-€-Minimum
+  je SEPA-Rate. Übersteigt das Guthaben den Wert des neuen Vertrags, weist der Assistent den
+  **Überschuss** aus — Erstattung von Hand.
+- **Schwebende Verträge in Listen und Statistiken:** Status **„Schwebend"** (`pending`,
+  Badge Info-Blau) zählt in **keiner** Verkaufs-, MRR-, Bonus-, Gamification- oder
+  Widerrufsstatistik, hat keinen Phorest-Kauf und keine Raten. In der Vertragsliste ist er
+  über den Status-Filter „Schwebend" auffindbar.
+- **Widerruf durch den Kunden:** nur der schwebende Vertrag wird `cancelled`, der Fall verliert
+  `follow_up_contract_id`, die Reaktion geht zurück auf *Offen*; der Altvertrag bleibt
+  unberührt. Ein neues Angebot ist jederzeit möglich, solange kein Folgevertrag schwebt.
+- **Aktivierung ohne GoCardless:** Bei der Wirksamschaltung entsteht **kein Zahlungsplan und
+  kein GoCardless-Aufruf** — ein aktives Mandat des Kunden wird verknüpft, sonst ein leeres
+  pending-Mandat angelegt; der Zahlungsplan wird manuell im SEPA-Tab angelegt (Regel seit
+  31.07.2026: GoCardless nur manuell). Offene GoCardless-Einzüge des Altvertrags werden nur
+  gemeldet (Anzahl in der Benachrichtigung), nicht storniert.
+
+### Bausteine
 
 | Baustein | Datei |
 |---|---|
@@ -100,7 +134,7 @@ Fernabsatz-Widerrufsrecht, der Vertrag entsteht sofort aktiv.
 | Migration | `2026_09_11_100000_add_pending_status_and_distance_change_fields_to_contracts_table` |
 | Tests | `tests/Feature/ContractChangeOfferTest.php` |
 
-## Datenmodell
+### Datenmodell
 
 `contracts`: Status-ENUM um `pending` erweitert; neue Spalten `conclusion_channel`
 (`on_site`/`distance`), `withdrawal_period_ends_at`, `effective_from`,
@@ -112,7 +146,7 @@ Scopes `pending()`, `dueForActivation($today)`; Helfer `isPending()`,
 Neue Fall-Ereignisse (`ContractCancellationEvent`): `change_offer_sent`,
 `change_offer_signed`, `change_offer_activated`, `change_offer_withdrawn`.
 
-## Datenfluss
+### Datenfluss
 
 1. `prepare()` prüft das Angebot serverseitig (`quote()`: Zonen, Preisgruppe passend
    zur gedeckelten Zonenzahl, Rabatt auf eine Rate wie im Preis-Modul) und legt einen
@@ -140,7 +174,7 @@ Neue Fall-Ereignisse (`ContractCancellationEvent`): `change_offer_sent`,
 4. `withdraw()`: Folgevertrag `cancelled`, Fall `follow_up_contract_id = null`,
    Reaktion Offen, Ereignis.
 
-## Konventionen, die hier greifen
+### Konventionen, die hier greifen
 
 - `ContractObserver::created()` überspringt bei `pending` Verkaufs-Anlass und
   Gutschein-Job — beides feuert in `activate()`.
@@ -155,7 +189,7 @@ Neue Fall-Ereignisse (`ContractCancellationEvent`): `change_offer_sent`,
   erstellen" aus). `ContractController::getDowngradeForms()` listet solche Formulare
   bewusst nicht — sie funktionieren nur mit einem Angebots-Token.
 
-## Betrieb
+### Betrieb
 
 - **Cloud Scheduler:** Job für `POST /api/cron/activate-pending-contract-changes`
   (täglich 06:30, Header `X-Cron-Token`, `--max-retry-attempts=3`) anlegen — ohne Job
@@ -166,7 +200,7 @@ Neue Fall-Ereignisse (`ContractCancellationEvent`): `change_offer_sent`,
   bleiben im Fall-Verlauf sichtbar, ein neues Angebot ist jederzeit möglich, solange
   kein Folgevertrag schwebt.
 
-## Rechtlicher Hintergrund (Kurzfassung, keine Rechtsberatung)
+### Rechtlicher Hintergrund (Kurzfassung, keine Rechtsberatung)
 
 Vertragsverhandlung und -schluss laufen ausschließlich über Fernkommunikationsmittel
 in einem organisierten System → Fernabsatzvertrag (§ 312c BGB) mit Widerrufsrecht

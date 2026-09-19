@@ -1,200 +1,146 @@
 # Widerrufe (Vertragswiderrufe)
 
-> Erfassung, Bearbeitung und Übersicht aller Vertragswiderrufe mit Zendesk- und Phorest-Integration
+Das Widerrufe-Modul führt jeden Vertragswiderruf als **Fall** mit eigener Detailseite: Erfassung
+über einen Wizard mit Zendesk-Ticket und Phorest-Behandlungshistorie, Board mit den Buckets
+*Offen* / *Abgabe an RA* / *Abgeschlossen*, append-only-Verlauf samt Kundenkommunikation,
+Fristprüfung, Wiedervorlage, Dokumentenablage, RA-Vorgang mit Kosten und Ergebnis sowie die
+Umsetzung (SEPA-Storno, Phorest-Pakete, Downgrade vor Ort oder im Fernabsatz, Abgabe ans
+Forderungsmanagement). Der Abschluss eines Falls wirkt auf den Ursprungsvertrag. Diese Seite
+beschreibt **Absicht, Fachregeln, Datenmodell, Endpunkte und Frontend**; die Bedienung Schritt
+für Schritt steht im Nutzerhandbuch.
+
+!!! nutzerhandbuch "Bedienung: Serie „Widerrufe" 1–5 im Nutzerhandbuch"
+    [Widerrufe 1 – Widerruf erfassen](https://hilfe.hub.glattt.com/widerrufe/1/) ·
+    [2 – Der Fall im Detail](https://hilfe.hub.glattt.com/widerrufe/2/) ·
+    [3 – Vertragsänderung im Fernabsatz](https://hilfe.hub.glattt.com/widerrufe/3/) ·
+    [4 – Die Abwicklung](https://hilfe.hub.glattt.com/widerrufe/4/) ·
+    [5 – RA-Vorgang und Abschluss](https://hilfe.hub.glattt.com/widerrufe/5/)
+
+    Angrenzend: [Verträge 2 – Der Vertrag im Detail](https://hilfe.hub.glattt.com/vertraege/2/)
+    (Widerrufs-Banner), [Verträge 7 – Mandat und Bankverbindung](https://hilfe.hub.glattt.com/vertraege/7/)
+    (Mandat reaktivieren, neu verknüpfen), [Berichte 5 – Widerruf-Statistik](https://hilfe.hub.glattt.com/berichte/5/),
+    [Bonus-Board 5 – Monatsabschluss](https://hilfe.hub.glattt.com/bonus-board/5/) (Widerrufe entscheiden)
+    und die Serie [Forderungen](https://hilfe.hub.glattt.com/forderungen/) (Fall über die Restsumme).
 
 ## Inhaltsverzeichnis
 
-- [Für Nutzer](#für-nutzer)
-  - [Übersicht](#übersicht)
-  - [Widerrufe-Seite](#widerrufe-seite)
-  - [Fall-Detailseite](#fall-detailseite-seit-082026)
-  - [RA-Vorgang](#ra-vorgang-seit-082026)
-  - [Fristprüfung, Wiedervorlage & Dokumente](#fristprüfung-wiedervorlage--dokumente-seit-082026)
-  - [Widerruf erfassen](#widerruf-erfassen)
-  - [Widerruf bearbeiten](#widerruf-bearbeiten)
-  - [Filter & Suche](#filter--suche)
-  - [Tabellenspalten](#tabellenspalten)
-  - [Status-System](#status-system)
-- [Für Entwickler](#für-entwickler)
-  - [Architektur](#architektur)
-  - [Datenmodell](#datenmodell)
-  - [API-Endpunkte](#api-endpunkte)
-  - [Frontend-Komponenten](#frontend-komponenten)
-  - [Zendesk-Integration](#zendesk-integration)
-  - [Phorest-Integration](#phorest-integration)
-  - [Events & Kommunikation](#events--kommunikation)
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Fachregeln](#fachregeln)
+        - [Status-Modell](#status-modell)
+        - [Widerrufsgründe](#widerrufsgrunde)
+        - [Was der Abschluss mit dem Ursprungsvertrag macht](#was-der-abschluss-mit-dem-ursprungsvertrag-macht-ab-05082026)
+        - [Fristprüfung, Wertersatz, Wiedervorlage & Liegezeit](#fristprufung-wertersatz-wiedervorlage-liegezeit)
+        - [RA-Vorgang](#ra-vorgang)
+        - [Dokumentenablage](#dokumentenablage)
+        - [SEPA-Mandat, Reaktivierung & Abgabe ans Forderungsmanagement](#sepa-mandat-reaktivierung-abgabe-ans-forderungsmanagement)
+    - [Oberfläche (technische Sicht)](#oberflache-technische-sicht)
+    - [Architektur](#architektur)
+    - [Datenmodell](#datenmodell)
+    - [API-Endpunkte](#api-endpunkte)
+    - [Frontend-Komponenten](#frontend-komponenten)
+    - [Zendesk-Integration](#zendesk-integration)
+    - [Phorest-Integration](#phorest-integration)
+    - [Events & Kommunikation](#events-kommunikation)
+    - [CSS-Klassen](#css-klassen)
 
 ---
 
-# Für Nutzer
+## Für Anwender — Überblick
 
-## Übersicht
+**Was das Modul leistet.** Widerruft eine Kundin ihren Behandlungsvertrag, wird daraus im Hub
+ein Fall: Er hält Widerrufsdatum, Grund und Zendesk-Ticket fest, holt Beratungsgespräch,
+erste Sitzung und Folgetermine automatisch aus Phorest, ordnet den Widerruf in die 14-Tage-Frist
+ein und sammelt im **Verlauf** alles, was danach passiert — Feldänderungen, Notizen,
+Zendesk-Kommentare, Hub-Mails, WhatsApp und RA-Schriftwechsel in einem chronologischen Strang.
+Das Büro dokumentiert die Verhandlung (Reaktion, Folgevertrag), setzt die Entscheidung um
+(SEPA-Mandat stornieren, Phorest-Pakete auf 0, Downgrade vor Ort oder per Kundenlink im
+Fernabsatz, Abgabe ans Forderungsmanagement) und schließt den Fall mit einem Ergebnis ab, das
+der Hub auf den Ursprungsvertrag anwendet. Fälle beim Rechtsanwalt bekommen einen eigenen
+Bereich mit Kostenpositionen, Schriftwechsel, Ergebnis und Wirtschaftlichkeitsbilanz.
 
-Das Widerrufs-Modul ermöglicht die vollständige Verwaltung von Vertragswiderrufen:
+**Grundsätze, die überall gelten:**
 
-- **Widerruf erfassen** – direkt aus der Vertragsansicht oder der Widerrufe-Übersicht
-- **Zendesk-Verknüpfung** – automatische Ticket-Suche und Datumsübernahme
-- **Behandlungshistorie** – automatische Anzeige von Beratungsgespräch, Sitzungen und Terminen aus Phorest
-- **Verhandlungen dokumentieren** – Reaktion, Folgeverträge, SEPA- und Phorest-Status
-- **Übersichtsseite** – alle Widerrufe auf einen Blick mit Live-Filtern
+- **Jeder Widerruf ist ein Fall mit eigener Seite.** Bearbeitet wird ausschließlich auf der
+  Fall-Detailseite; ein neuer Fall startet immer in *Offen*, das Ergebnis wird erst beim
+  Abschluss abgefragt.
+- **Der Verlauf ist lückenlos und unveränderlich.** Jede Änderung landet als Alt/Neu-Diff,
+  jede Buchung, jeder Upload als Ereignis; Kostenpositionen sind nicht löschbar.
+- **Frist-Einordnung ist Entscheidungshilfe, keine Rechtsberatung** — *Fristgerecht*,
+  *Grenzfall* oder *Verspätet* nach Tagen seit Fristbeginn (Standard: Vertragsdatum,
+  abweichender Beginn einstellbar).
+- **Der Abschluss wirkt auf den Vertrag:** akzeptierter Widerruf storniert ihn, Downgrade/
+  Upgrade setzt ihn auf *Geändert* mit Verknüpfung zum Folgevertrag; rein lokale offene Raten
+  werden storniert, Raten mit GoCardless-Einzug nur gemeldet.
+- **GoCardless wird nie automatisch angefasst.** Mandats-Storno, Forderungsfall über die
+  Restsumme und Reaktivierung sind bewusste, manuelle Schritte.
 
-### Zugang
+**Zustände eines Falls:** *Offen* (neu erfasst bzw. in Bearbeitung) → optional *Abgabe an RA*
+(beim Rechtsanwalt, mit RA-Vorgang) → *Abgeschlossen* mit einer Reaktion: Widerruf akzeptiert,
+Widerruf abgelehnt, Upgrade, Downgrade, Korrektur oder Laufzeitanpassung. Der frühere Status
+„In Verhandlung" ist seit 08/2026 abgeschafft. Die vollständigen Tabellen stehen unten im
+[Status-Modell](#status-modell).
 
-1. glatttHub öffnen
-2. Im Seitenmenü **Widerrufe** (⊘-Icon) auswählen
-3. Die Widerrufe-Übersicht wird angezeigt
+**Wo was erledigt wird** — die Anleitung nennt Felder, Modale und Folgewirkungen:
 
----
-
-## Widerrufe-Seite
-
-Die Übersichtsseite zeigt alle Vertragswiderrufe in einer sortierbaren Tabelle.
-
-### Bucket-Board (seit 08/2026)
-
-Die Übersicht ist ein Board aus drei Bereichen:
-
-- **Offen** und **Abgabe an RA** liegen als zwei Karten-Buckets nebeneinander (mobil gestapelt).
-  Jeder Fall ist eine kleine Karte (Kunde, Vertragsnummer, Widerrufsdatum, Standort, Grund,
-  KPZ- und Zendesk-Badge) — Klick öffnet die Fall-Detailseite. Im Kartenkopf steht die
-  ungefilterte Gesamtzahl je Bucket.
-- **Abgeschlossene Fälle** folgen darunter als Tabelle mit **Infinite Scroll** (50er-Seiten,
-  Nachladen beim Scrollen; Sortier-Header sortieren die bereits geladenen Zeilen). Die Suche
-  filtert clientseitig — bei aktiver Suche mit noch ungeladenen Seiten erscheint der Button
-  „Alle laden".
-
-Der frühere Status „In Verhandlung" ist abgeschafft; Altfälle wurden per Migration nach „Offen"
-verschoben. Grund-/Ergebnis-Filter wirken serverseitig auf alle drei Bereiche.
-
----
-
-## Fall-Detailseite (seit 08/2026)
-
-Jeder Widerruf hat eine eigene, verlinkbare Seite unter `/hub/cancellations/{id}` — das Herzstück
-des Widerrufe-Umbaus 08/2026 (Phasen 1–6: Detailseite, Buckets, Wizard, Konversationsverlauf,
-RA-Vorgang, Fristprüfung/Wiedervorlage/Dokumente).
-
-**Erreichbar über:**
-
-- das ↗-Symbol am rechten Rand jeder Zeile der Übersicht (Klick auf die Zeile öffnet weiterhin das Bearbeiten-Modal),
-- den Button **„Zum Widerruf"** im roten Banner der Vertragsseite,
-- die globale Suche (Treffer führen jetzt direkt auf den Fall).
-
-**Aufbau** (analog zur Schuldenfall-Seite): links **Widerrufsgrund**, **Behandlungsstand** (BG,
-1. Sitzung, Tage dazwischen) und der **Verlauf**; rechts **Fall-Informationen** (Paket, Vertragswert,
-Standort, Zendesk-Ticket verlinkt, SEPA/Phorest-Kennzeichen), **Verknüpfungen** (Vertrag,
-Folgevertrag, Kundenprofil) und **Bearbeiten**.
-
-**Verlauf & Kommunikation (seit Phase 4):** Die Karte bündelt ALLE Bewegungen und die
-Kundenkommunikation als einen chronologischen Strang — Fall-Ereignisse (Anlage,
-Feldänderungen mit Alt/Neu, Statuswechsel, angewendetes Ergebnis), manuelle **Notizen**
-(Zendesk-Ticketnummern wie `#4201` klickbar), **Zendesk-Ticket-Kommentare** (über die
-verknüpfte Ticketnummer, 5 Minuten gecacht), **Hub-Mails** (SEPA-/Vertragsmails am Vertrag
-plus Mails an die Kundenadresse aus dem E-Mail-Protokoll) und der **WhatsApp-Verlauf**
-(lokaler Superchat-Spiegel). Ein Kanal-Filter blendet einzelne Quellen ein/aus; fällt eine
-Quelle aus (typisch Zendesk), erscheinen die übrigen trotzdem und der Ausfall wird als
-Hinweis angezeigt. Datenaufbereitung: `CancellationConversationService`, Endpoint
-`GET /hub/cancellations/{id}/conversation`.
-
-Ältere Fälle zeigen wenige Fall-Ereignisse — der Verlauf wird erst seit dem Umbau im
-August 2026 geführt; Kommunikation (Zendesk/E-Mail/WhatsApp) erscheint auch rückwirkend,
-soweit die Quellsysteme sie kennen.
+| Vorgang | Anleitung |
+|---|---|
+| Widerrufsliste lesen, Widerruf über den Assistenten erfassen, die neun Widerrufsgründe | Widerrufe 1 |
+| Fallseite lesen, Fall bearbeiten, Dokumente und Notizen, Wiedervorlage | Widerrufe 2 |
+| Downgrade-Angebot per Kundenlink, schwebender Folgevertrag, Widerruf des Folgevertrags | Widerrufe 3 (Details: [VERTRAGSAENDERUNG-FERNABSATZ.md](VERTRAGSAENDERUNG-FERNABSATZ.md)) |
+| Abwicklung: SEPA-Mandat stornieren, Phorest-Pakete auf 0, Downgrade vor Ort, ans Forderungsmanagement abgeben | Widerrufe 4 |
+| RA-Vorgang: Kostenposition, Schriftwechsel, Ergebnis, Fall abschließen | Widerrufe 5 |
+| Widerrufs-Banner und Verknüpfung auf der Vertragsseite | Verträge 2 |
+| Mandat reaktivieren oder neu verknüpfen (Widerruf zurückgezogen) | Verträge 7 |
+| Widerruf-Statistik inkl. RA-Wirtschaftlichkeit | Berichte 5 |
+| Offene Widerrufe im Monatsabschluss entscheiden | Bonus-Board 5 |
+| Mahnprozess über die Restsumme | Serie Forderungen |
 
 ---
 
-## RA-Vorgang (seit 08/2026)
+## Für Entwickler
 
-Wird ein Fall an den Rechtsanwalt abgegeben (Status **„Abgabe an RA"**), erscheint auf der
-Fall-Detailseite die Karte **„RA-Vorgang"** (Phase 5 des Umbaus). Sie bleibt auch nach dem
-Abschluss sichtbar, solange der Fall RA-Daten trägt — dann als Bilanz des Rechtswegs.
+### Fachregeln
 
-**Kennzahlen-Zeile:** Kosten gesamt, vereinnahmte Summe und die **Wirtschaftlichkeit**
-(vereinnahmt − Kosten, grün/rot nach Vorzeichen).
+#### Status-Modell
 
-**Kostenpositionen** (nur mit `manage_revocations`): vier Kostenarten nach dem Muster des
-Forderungsmanagements — **RA-Honorar**, **Gerichtskosten**, **gegnerische Anwaltskosten**,
-**Gutachter / Sonstiges**. Je Position Betrag (Komma-Eingabe, in Cents gespeichert), Datum
-und optionale Anmerkung; jede Buchung landet als Ereignis im Fall-Verlauf. Positionen sind
-bewusst nicht löschbar (append-only wie im Forderungsmanagement).
+**Widerrufs-Status** (`contract_cancellations.status`):
 
-**Schriftwechsel festhalten:** Korrespondenz mit dem **eigenen Anwalt** oder der **Gegenseite**,
-jeweils gesendet/eingegangen, optional mit Datum des Schreibens. Die Einträge erscheinen im
-Konversationsverlauf als eigener Kanal **„RA-Schriftwechsel"** und sind dort nach Beteiligten
-unterscheidbar und filterbar.
+| Status | Badge-Farbe | Bedeutung |
+|--------|------------|-----------|
+| `offen` | Warning (Orange) | Neu erfasst bzw. in Bearbeitung — jeder neue Fall startet hier |
+| `abgabe_ra` | Danger (Rot) | An den Rechtsanwalt abgegeben (eigener Bucket, seit 08/2026) |
+| `abgeschlossen` | Success (Grün) | Vorgang abgeschlossen; keine Statuswechsel mehr, Felder wie der Folgevertrag bleiben nachtragbar (Verknüpfung zum Ursprungsvertrag wird dann automatisch hergestellt) |
 
-**Ergebnis des RA-Vorgangs:** fünf Ergebnisarten — **Vergleich**, **Urteil pro uns**,
-**Urteil pro Kunde**, **Eingestellt / zurückgenommen**, **Kunde zahlt nach Mahnung** — plus
-die manuell erfasste **vereinnahmte Summe**. Beides wird als Feldänderung im Verlauf
-protokolliert.
+!!! note "„In Verhandlung" abgeschafft (08/2026)"
+    Der frühere Status `in_verhandlung` existiert nicht mehr — alle Bestandsfälle wanderten per
+    Migration nach `offen` (bewusst keine automatische Einsortierung nach Reaktion). Die Spalte
+    ist seitdem ein `VARCHAR`, die gültigen Werte prüft die Request-Validierung über
+    `ContractCancellation::statusLabels()`. Reaktion/Ergebnis wird erst beim Status
+    „Abgeschlossen" abgefragt; der Wizard fragt Status/Ergebnis bewusst nicht ab.
 
-**Auswertung:** Die Statistik **„RA-Vorgänge: Wirtschaftlichkeit"** auf der
-Widerruf-Statistik-Seite (und als Dashboard-Kachel, Statistik-Key `widerrufe.ra`) stellt
-Kosten und vereinnahmte Summen je Ergebnisart gegenüber; laufende Fälle ohne Ergebnis bilden
-eine eigene Gruppe. CSV-Export über die Quelle `revocation-ra`.
+**Reaktionen** (`reaction`):
 
----
+| Reaktion | Badge-Farbe | Bedeutung |
+|----------|------------|-----------|
+| `offen` | Grau | Noch keine Reaktion |
+| `widerruf_akzeptiert` | Grün | Widerruf wurde akzeptiert |
+| `widerruf_abgelehnt` | Rot | Widerruf wurde abgelehnt |
+| `upgrade` | Teal | Kunde hat auf ein höheres Paket gewechselt |
+| `downgrade` | Orange | Kunde hat auf ein niedrigeres Paket gewechselt |
+| `korrektur` | Grau | Vertrag wurde korrigiert |
+| `laufzeit` | Grau | Laufzeit wurde angepasst |
 
-## Fristprüfung, Wiedervorlage & Dokumente (seit 08/2026)
+Statuswechsel auf der Detailseite (Recht `manage_revocations`, „Widerrufe erfassen und
+bearbeiten"): „Abschließen …" (Ergebnis-Auswahl, bei Downgrade/Upgrade Folgevertrag-Suche,
+Hinweis auf die Wirkung am Ursprungsvertrag), „An Rechtsanwalt abgeben" bzw. „Zurück zu
+Offen". Gespeichert wird über `PUT /hub/cancellations/{id}` (Teil-Updates); jede Änderung
+landet als Alt/Neu-Diff im Fall-Verlauf, ein Statuswechsel als eigener Eintrag.
 
-Phase 6 des Umbaus ergänzt die Fall-Detailseite um vier Bausteine:
+#### Widerrufsgründe
 
-**Fristprüfung:** In der Widerrufsgrund-Karte steht die 14-Tage-Einordnung — Badge
-**Fristgerecht** (≤ 14 Tage), **Grenzfall** (15–17 Tage, Postweg/Zugang unklar) oder
-**Verspätet** (> 17 Tage), jeweils mit Tagen seit Fristbeginn. Standard-Fristbeginn ist das
-Vertragsdatum; ein **abweichender Fristbeginn** (z.B. verspätete Widerrufsbelehrung) lässt
-sich im Bearbeiten-Modal manuell setzen und wird als „manuell gesetzt" ausgewiesen. Die
-Einordnung ist ausdrücklich **Entscheidungshilfe, keine Rechtsberatung**.
-
-**Wertersatz:** Zeile in der Behandlungsstand-Karte. Der Bewertungsmaßstab ist noch nicht
-festgelegt (Entscheidung 11.08.2026) — die Berechnung steckt hinter dem Interface
-`App\Services\Revocations\WertersatzCalculator` (Auflösung über
-`config('revocations.wertersatz_calculator')`). Bis eine konkrete Strategie hinterlegt ist,
-zeigt die Zeile „Maßstab noch nicht festgelegt"; danach erscheint der Betrag automatisch.
-
-**Wiedervorlage:** Datumsfeld im Bearbeiten-Modal (Muster `DebtCase::deadline_at`).
-Fällige Wiedervorlagen (heute oder überfällig, Fall nicht abgeschlossen) zeigen ein rotes
-Badge in den Fall-Informationen und auf den Bucket-Karten der Übersicht (`WV TT.MM.JJJJ`).
-Der Command `cancellations:check-follow-ups` (täglich 08:00, Cloud Scheduler →
-`/api/cron/check-cancellation-follow-ups`) sendet EINE gesammelte Hub-Benachrichtigung an
-alle mit `manage_revocations`. Dazu zeigt die Detailseite die **Liegezeit** (Tage seit der
-letzten Bewegung im Verlauf, ab 14 Tagen rot).
-
-**Dokumentenablage:** Karte „Dokumente" auf der Detailseite — Anhänge je Fall nach dem
-Muster der Unternehmensvertrags-Dokumente (Cloud: `gcs-private`, lokal: `public`;
-Streaming über den Hub, nie öffentliche URLs). Upload (Mehrfachauswahl, PDF/Bilder/Word/
-E-Mail-Dateien, max. 20 MB) und Löschen brauchen `manage_revocations`, Ansehen reicht
-`view_revocations`. Jeder Upload/Löschvorgang landet im Fall-Verlauf. Beim **Festhalten
-eines RA-Schriftwechsels können bis zu 5 Dokumente direkt mit hochgeladen** werden — sie
-hängen dann am Verlaufseintrag (Badge „RA-Schriftwechsel" in der Ablage, Anhang-Chips am
-Eintrag im Konversationsverlauf).
-
----
-
-## Widerruf erfassen
-
-Neue Widerrufe entstehen seit 08/2026 (Phase 3 des Umbaus) über einen **4-Schritte-Wizard**
-(„Neuer Widerruf" auf der Übersicht bzw. „Widerruf erfassen" in der Kundenakte):
-
-1. **Vertrag** — Vertragssuche (Nummer/Kundenname) bzw. vorbelegter Vertrag mit Eckdaten
-2. **Widerruf** — Datum (flatpickr), Zendesk-Ticket (Lookup, Suche, Vorschläge aus der
-   Kunden-E-Mail; Ticket-Auswahl übernimmt das Datum), Grund, Beschreibung, Anmerkungen
-3. **Prüfung** — Frist-Einordnung (Tage seit Vertragsabschluss, als Entscheidungshilfe
-   gekennzeichnet) und Behandlungsstand aus Phorest; Achseln-Checkbox
-4. **Zusammenfassung** — Speichern; der Fall startet immer im Bucket **Offen** und der
-   Wizard leitet direkt auf die Fall-Detailseite weiter
-
-Partial: `hub/cancellations/partials/create-wizard.blade.php`, JS `cancellationCreateWizard()`
-in `public/js/cancellation-case.js`. Status/Ergebnis werden im Wizard bewusst nicht abgefragt —
-der Abschluss passiert auf der Detailseite.
-
-### Pflichtfelder
-
-| Feld | Beschreibung |
-|------|-------------|
-| **Widerrufsdatum** | Datum des Widerrufs (wird automatisch aus Zendesk-Ticket übernommen, falls verknüpft) |
-| **Grund** | Einer der vordefinierten Gründe (siehe unten) |
-
-### Widerrufsgründe
+Pflichtfelder eines Widerrufs sind **Widerrufsdatum** (wird automatisch aus dem verknüpften
+Zendesk-Ticket übernommen — Erstellungsdatum des Tickets) und **Grund**:
 
 | Wert | Anzeige |
 |------|---------|
@@ -208,185 +154,12 @@ der Abschluss passiert auf der Detailseite.
 | `sonstiges` | Sonstiges |
 | `upgrade` | Upgrade |
 
-### Zendesk-Ticket
+Automatisch aus Phorest ergänzt (Endpoint `GET /hub/contracts/{id}/cancellation-data`, siehe
+[Phorest-Integration](#phorest-integration)): Beratungsgespräch (Datum, Mitarbeiter,
+Dienstleistungen), 1. Sitzung, Tage zwischen BG und 1. Sitzung, weitere Sitzungen, geplante
+Termine; manuell: **Achseln im BG behandelt** (Ja/Nein).
 
-Im Feld **Zendesk Ticket** kann eine Ticket-Nummer eingegeben oder nach Tickets gesucht werden:
-
-- **Ticket-Nummer** (nur Ziffern) → direkter Lookup
-- **Suchbegriff** (Text) → durchsucht Zendesk-Tickets
-- **Automatische Suche** beim Öffnen basierend auf der Kunden-E-Mail
-
-Wird ein Ticket ausgewählt, wird das **Widerrufsdatum** automatisch auf das Erstellungsdatum des Tickets gesetzt.
-
-### Behandlungsinfo (automatisch)
-
-Folgende Daten werden automatisch aus Phorest geladen:
-
-- **Beratungsgespräch** – Datum, Mitarbeiter, Dienstleistungen
-- **1. Sitzung** – Datum und Details
-- **Tage zwischen BG und 1. Sitzung**
-- **Weitere Sitzungen** – Liste aller Folgesitzungen
-- **Geplante Termine** – Zukünftige Termine
-- **Achseln im BG behandelt** – Manuelle Angabe (Ja/Nein)
-
----
-
-## Widerruf bearbeiten
-
-Bearbeitet wird seit 08/2026 **ausschließlich auf der Fall-Detailseite** — das alte
-Create+Edit-Modal existiert nicht mehr. Die Detailseite bietet dafür (Recht „Widerrufe
-erfassen und bearbeiten"):
-
-- **Aktionen-Karte** (rechte Spalte): je nach Status „Abschließen …" (Modal mit
-  Ergebnis-Auswahl, bei Downgrade/Upgrade Folgevertrag-Suche, Hinweis was der Abschluss mit
-  dem Ursprungsvertrag macht), „An Rechtsanwalt abgeben" bzw. „Zurück zu Offen" sowie
-  „Fall bearbeiten" (Modal mit Datum, Grund, Zendesk-Ticket, Beschreibung, Anmerkungen,
-  Folgevertrag, SEPA-/Phorest-Kennzeichen). Abgeschlossene Fälle haben keine
-  Statuswechsel mehr; Felder wie der Folgevertrag bleiben nachtragbar (die Verknüpfung
-  zum Ursprungsvertrag wird dann automatisch hergestellt).
-- **Umsetzungs-Aktionen** (seit 15.08.2026 als Button-Block **in der Aktionen-Karte**,
-  rechte Spalte — die frühere Umsetzungs-Karte in der linken Spalte ist entfallen):
-  Jeder Button öffnet ein eigenes Modal — **„Vertragsänderung im Fernabsatz …"**
-  (seit 11.09.2026: Downgrade-Angebot per Kundenlink mit schwebendem Folgevertrag
-  und 14-tägiger Widerrufsfrist, siehe [VERTRAGSAENDERUNG-FERNABSATZ.md](VERTRAGSAENDERUNG-FERNABSATZ.md)),
-  „Downgrade vor Ort (Formulare) …" (solange der Fall
-  läuft bzw. bei Ergebnis Downgrade), „Phorest-Pakete auf 0 setzen …" (nach dem
-  Abschluss mit vertragsbeendendem Ergebnis) und „SEPA-Mandat stornieren …"
-  (**ab dem Eintrag des Widerrufs**, Recht `manage_gocardless`; GoCardless wird
-  **ausschließlich manuell** ausgelöst).
-
-### SEPA-Mandat im laufenden Prozess stornieren (08/2026)
-
-- **Für Endanwender:** „SEPA-Mandat stornieren …" in der Aktionen-Karte öffnet ein
-  Modal mit den Mandaten/Einzügen des Vertrags. Beim Mandats-Storno wird dort
-  entschieden, ob **zugleich ein Forderungsfall über die Restsumme** eröffnet wird
-  (Einstieg „SEPA-Mandatsentzug":
-  Restsumme wird per E-Mail mit Frist angemahnt, danach letzte Mahnung). Ohne Häkchen
-  entsteht kein Fall — z.B. solange der Widerruf noch geprüft wird. Der Kunde erhält
-  automatisch die Mandats-gekündigt-E-Mail; der Storno wird als Kennzeichen
-  („SEPA storniert") und als Ereignis im Fall-Verlauf festgehalten.
-  **Kein Mandat vorhanden (24.08.2026):** Wurde das SEPA nie nach GoCardless
-  übertragen, zeigt das Modal statt der (leeren) Mandatsliste den Hinweis
-  „Keine GoCardless-Mandate am Vertrag" **plus den Button „SEPA als erledigt
-  vermerken (kein Mandat vorhanden)"** — der setzt das Kennzeichen
-  `sepa_cancelled` über den normalen Bearbeiten-Endpoint (`PUT
-  /hub/cancellations/{id}`, landet als Feldänderung im Verlauf). Vorher war
-  der Storno-Button in diesem Fall dauerhaft ausgegraut und der Schritt eine
-  Sackgasse (Nancy, Fall BI007432). Trägt ein Widerruf das Kennzeichen
-  `sepa_cancelled`, warnt zusätzlich der **SEPA-Tab der Vertragsseite**
-  („SEPA im Widerruf storniert — kein SEPA anlegen"), damit niemand für den
-  widerrufenen Vertrag ein neues Mandat oder einen Zahlungsplan anlegt
-  (Test: `ContractCancellationBannerTest`).
-- **Ans Forderungsmanagement abgeben (07.09.2026, Fall H004319):** Ist das
-  Mandat bereits storniert (vom Kunden entzogen oder Storno ohne Häkchen), ist
-  das Storno-Modal gesperrt — der Fall über die Restsumme entsteht dann über
-  den eigenen Knopf **„Ans Forderungsmanagement abgeben …"** in den
-  Umsetzungs-Aktionen (sichtbar bei aktivem Vertrag mit offener Restsumme;
-  läuft schon ein Fall, steht dort stattdessen „Zum Forderungsfall #…"). Das
-  Modal fragt, ob die Restsumme **bereits außerhalb des Hubs mit Frist
-  angemahnt** wurde: dann wird die E-Mail-Anmahnung mit dem angegebenen Datum
-  als extern erledigt nachgetragen (Frist 7 Tage ab Versand) und der Fall
-  steht direkt vor der letzten Mahnung per Post; ohne Häkchen beginnt er mit
-  der E-Mail-Anmahnung. Nach dem Abgeben landet man direkt im Fall. Der
-  Widerruf bekommt den Verlaufseintrag „Ans Forderungsmanagement abgegeben"
-  und in den Verknüpfungen den Link zum Fall. Technik: `POST
-  /hub/cancellations/{id}/receivables` (`manage_revocations`) →
-  `DebtCaseIntakeService::handoverFromCancellation()` (gleicher Kern wie der
-  Mandatsentzug: `openOrUpgradeMandateRevokedCase()`, Einstieg
-  `mandate_revoked`, `full_balance_due`; laufender Fall wird hochgestuft) +
-  `DebtCaseActionService::markActionDoneExternally()`; Ereignis
-  `handed_to_receivables`. Test: `CancellationReceivablesHandoverTest`.
-- **Widerruf zurückgezogen?** Ein von uns storniertes Mandat lässt sich im
-  **SEPA-Tab des Vertrags** per Knopfdruck reaktivieren („SEPA-Mandat reaktivieren"):
-  GoCardless setzt das Mandat wieder ein und der beim Storno gesicherte Restplan wird
-  als Einzelzahlungen neu angelegt. Von Bank/Kunde entzogene Mandate lehnt GoCardless
-  ab — dann bleibt nur ein neues Mandat („GoCardless neu verknüpfen").
-- **Für Entwickler:** `POST /hub/contracts/{id}/gocardless-cancel-mandate` nimmt
-  zusätzlich `cancellation_id` + `open_debt_case`; vor dem Storno sichert
-  `snapshotOpenRatesForReinstate()` die offenen Raten als `ContractChange`
-  (`sepa_cancel_restore_plan`). Der Forderungsfall entsteht über
-  `DebtCaseIntakeService::handleMandateRevoked()` (gleicher Einstieg wie beim
-  Webhook-Entzug, eigener Verlaufs-Text). Die Reaktivierung läuft über
-  `POST /hub/contracts/{id}/gocardless-reinstate-mandate`
-  (`GoCardlessApiService::reinstateMandate()` + `recreateIndividualPayments()`).
-  Verlaufs-Ereignisse: `sepa_cancelled` / `sepa_reinstated`. Das automatische
-  Origin-Gating im Webhook bleibt unverändert: Nur `bank`/`customer` eröffnet
-  automatisch einen Fall, `api`-Stornos nie. Tests:
-  `tests/Feature/CancellationSepaActionTest.php`.
-
-Gespeichert wird über `PUT /hub/cancellations/{id}` (Teil-Updates); jede Änderung landet
-als Alt/Neu-Diff im Fall-Verlauf.
-
----
-
-## Filter & Suche
-
-Die Filterleiste bietet Live-Filter ohne zusätzlichen „Filtern"-Button:
-
-| Filter | Typ | Beschreibung |
-|--------|-----|-------------|
-| **Suche** | Textfeld (Pill-Form) | Durchsucht Kunde, Vertragsnummer, Produkt, Grund, Zendesk-Ticket, Notizen |
-| **Status** | Board-Bereiche | Offen · Abgabe an RA (Karten-Buckets) · Abgeschlossen (Liste) — kein eigener Filter mehr |
-| **Reaktion** | Dropdown | Alle Reaktionen · Offen · Akzeptiert · Abgelehnt · Upgrade · Downgrade · Korrektur · Laufzeitanpassung |
-| **Grund** | Dropdown | Alle Gründe + alle 9 Widerrufsgründe |
-
-!!! tip "Live-Filter"
-    Dropdown-Änderungen lösen sofort einen Server-Reload aus. Die Textsuche filtert zusätzlich client-seitig in Echtzeit. Der **Zurücksetzen**-Button erscheint nur, wenn mindestens ein Filter aktiv ist.
-
----
-
-## Tabellenspalten
-
-Alle Spaltenköpfe sind klickbar zum Sortieren (aufsteigend ↑ / absteigend ↓):
-
-| Spalte | Inhalt | Sortierbar |
-|--------|--------|------------|
-| **Datum** | Widerrufsdatum (Standard: neueste zuerst) | ✅ |
-| **Kunde** | Kundenname aus Phorest | ✅ |
-| **Vertrag** | Vertragsnummer + Produktname | ✅ |
-| **Grund** | Widerrufsgrund (Klartext) | ✅ |
-| **Status** | Farbiges Badge (Offen/Abgabe an RA/Abgeschlossen) | ✅ |
-| **Reaktion** | Farbiges Badge (Offen/Akzeptiert/Abgelehnt/…) | ✅ |
-| **SEPA** | ✓ oder ✗ – ob SEPA-Mandat storniert | ❌ |
-| **Phorest** | ✓ oder ✗ – ob in Phorest aktualisiert | ❌ |
-| **Aktion** | ↗-Symbol öffnet die Fall-Detailseite | ❌ |
-
-Klick auf eine **Tabellenzeile** (und auf eine Bucket-Karte) öffnet die Fall-Detailseite.
-Das Widerrufs-Modal wird von der Übersicht nur noch für die **Neuanlage** genutzt; bearbeitet
-wird über die Detailseite (bis Phase 3 via Vertragsseite).
-
----
-
-## Status-System
-
-### Widerrufs-Status
-
-| Status | Badge-Farbe | Bedeutung |
-|--------|------------|-----------|
-| `offen` | 🟡 Warning (Orange) | Neu erfasst bzw. in Bearbeitung |
-| `abgabe_ra` | 🔴 Danger (Rot) | An den Rechtsanwalt abgegeben (eigener Bucket, seit 08/2026) |
-| `abgeschlossen` | 🟢 Success (Grün) | Vorgang abgeschlossen |
-
-!!! note "„In Verhandlung" abgeschafft (08/2026)"
-    Der frühere Status `in_verhandlung` existiert nicht mehr — alle Bestandsfälle wanderten per
-    Migration nach `offen` (bewusst keine automatische Einsortierung nach Reaktion). Die Spalte
-    ist seitdem ein `VARCHAR`, die gültigen Werte prüft die Request-Validierung über
-    `ContractCancellation::statusLabels()`. Reaktion/Ergebnis wird erst beim Status
-    „Abgeschlossen" abgefragt.
-
-### Reaktionen
-
-| Reaktion | Badge-Farbe | Bedeutung |
-|----------|------------|-----------|
-| `offen` | Grau | Noch keine Reaktion |
-| `widerruf_akzeptiert` | Grün | Widerruf wurde akzeptiert |
-| `widerruf_abgelehnt` | Rot | Widerruf wurde abgelehnt |
-| `upgrade` | Teal | Kunde hat auf ein höheres Paket gewechselt |
-| `downgrade` | Orange | Kunde hat auf ein niedrigeres Paket gewechselt |
-| `korrektur` | Grau | Vertrag wurde korrigiert |
-| `laufzeit` | Grau | Laufzeit wurde angepasst |
-
-### Was der Abschluss mit dem Ursprungsvertrag macht (ab 05.08.2026)
+#### Was der Abschluss mit dem Ursprungsvertrag macht (ab 05.08.2026)
 
 Sobald ein Vorgang auf **Abgeschlossen** steht, wendet
 `RevocationOutcomeService` das Ergebnis auf den Ursprungsvertrag an — in beiden
@@ -425,11 +198,213 @@ ausschliesslich manuell über den SEPA-Tab.
 > damit in jeder Auswertung als laufender Vertrag mit offener Forderung
 > (gemeldet 31.07./03.08.2026, HB001383 — auf Prod der einzige solche Fall).
 
----
+#### Fristprüfung, Wertersatz, Wiedervorlage & Liegezeit
 
-# Für Entwickler
+Phase 6 des Umbaus 08/2026 — die Regeln hinter den Bausteinen der Fall-Detailseite:
 
-## Architektur
+**Fristprüfung:** In der Widerrufsgrund-Karte steht die 14-Tage-Einordnung — Badge
+**Fristgerecht** (≤ 14 Tage), **Grenzfall** (15–17 Tage, Postweg/Zugang unklar) oder
+**Verspätet** (> 17 Tage), jeweils mit Tagen seit Fristbeginn. Standard-Fristbeginn ist das
+Vertragsdatum; ein **abweichender Fristbeginn** (z.B. verspätete Widerrufsbelehrung,
+`withdrawal_period_started_on`) lässt sich im Bearbeiten-Modal manuell setzen und wird als
+„manuell gesetzt" ausgewiesen. Die Einordnung ist ausdrücklich **Entscheidungshilfe, keine
+Rechtsberatung** (Accessor `withdrawal_period_check`). Der Wizard zeigt dieselbe Einordnung
+(Tage seit Vertragsabschluss) bereits im Prüfungs-Schritt.
+
+**Wertersatz:** Zeile in der Behandlungsstand-Karte. Der Bewertungsmaßstab ist noch nicht
+festgelegt (Entscheidung 11.08.2026) — die Berechnung steckt hinter dem Interface
+`App\Services\Revocations\WertersatzCalculator` (Auflösung über
+`config('revocations.wertersatz_calculator')`). Bis eine konkrete Strategie hinterlegt ist,
+zeigt die Zeile „Maßstab noch nicht festgelegt"; danach erscheint der Betrag automatisch.
+
+**Wiedervorlage:** Datumsfeld im Bearbeiten-Modal (`follow_up_on`, Muster
+`DebtCase::deadline_at`). Fällige Wiedervorlagen (heute oder überfällig, Fall nicht
+abgeschlossen; Scope `dueForFollowUp`) zeigen ein rotes Badge in den Fall-Informationen und auf
+den Bucket-Karten der Übersicht (`WV TT.MM.JJJJ`). Der Command `cancellations:check-follow-ups`
+(täglich 08:00, Cloud Scheduler → `/api/cron/check-cancellation-follow-ups`) sendet EINE
+gesammelte Hub-Benachrichtigung an alle mit `manage_revocations`. Dazu zeigt die Detailseite
+die **Liegezeit** (`days_idle`: Tage seit der letzten Bewegung im Verlauf, ab 14 Tagen rot).
+
+#### RA-Vorgang
+
+Wird ein Fall an den Rechtsanwalt abgegeben (Status **„Abgabe an RA"**), erscheint auf der
+Fall-Detailseite die Karte **„RA-Vorgang"** (Phase 5 des Umbaus). Sie bleibt auch nach dem
+Abschluss sichtbar, solange der Fall RA-Daten trägt (`has_ra_process`) — dann als Bilanz des
+Rechtswegs.
+
+**Kennzahlen-Zeile:** Kosten gesamt (`ra_total_costs_cents`), vereinnahmte Summe
+(`ra_recovered_amount_cents`) und die **Wirtschaftlichkeit** (`ra_net_cents` = vereinnahmt −
+Kosten, grün/rot nach Vorzeichen).
+
+**Kostenpositionen** (nur mit `manage_revocations`): vier Kostenarten nach dem Muster des
+Forderungsmanagements — **RA-Honorar** (`ra_fee`), **Gerichtskosten** (`court`), **gegnerische
+Anwaltskosten** (`opponent_fee`), **Gutachter / Sonstiges** (`expert_other`). Je Position
+Betrag (Komma-Eingabe, in Cents gespeichert), Datum und optionale Anmerkung; jede Buchung landet
+als Ereignis im Fall-Verlauf. Positionen sind bewusst nicht löschbar (append-only wie im
+Forderungsmanagement; Tabelle `cancellation_cost_items`).
+
+**Schriftwechsel festhalten:** Korrespondenz mit dem **eigenen Anwalt** oder der **Gegenseite**,
+jeweils gesendet/eingegangen, optional mit Datum des Schreibens (Endpoint
+`POST /hub/cancellations/{id}/correspondence`, party/direction/text, optional bis zu 5
+`files[]`). Die Einträge erscheinen im Konversationsverlauf als eigener Kanal
+**„RA-Schriftwechsel"** und sind dort nach Beteiligten unterscheidbar und filterbar.
+
+**Ergebnis des RA-Vorgangs** (`ra_outcome`): fünf Ergebnisarten — **Vergleich** (`vergleich`),
+**Urteil pro uns** (`urteil_pro_uns`), **Urteil pro Kunde** (`urteil_pro_kunde`),
+**Eingestellt / zurückgenommen** (`eingestellt`), **Kunde zahlt nach Mahnung**
+(`zahlung_nach_mahnung`) — plus die manuell erfasste **vereinnahmte Summe**. Beides wird als
+Feldänderung im Verlauf protokolliert.
+
+**Auswertung:** Die Statistik **„RA-Vorgänge: Wirtschaftlichkeit"** auf der
+Widerruf-Statistik-Seite (und als Dashboard-Kachel, Statistik-Key `widerrufe.ra`, Partial
+`resources/views/statistics/widerrufe/ra.blade.php`) stellt Kosten und vereinnahmte Summen je
+Ergebnisart gegenüber; laufende Fälle ohne Ergebnis bilden eine eigene Gruppe. CSV-Export über
+die Quelle `revocation-ra`.
+
+#### Dokumentenablage
+
+Karte „Dokumente" auf der Detailseite — Anhänge je Fall nach dem Muster der
+Unternehmensvertrags-Dokumente (Cloud: `gcs-private`, lokal: `public`; Streaming über den Hub,
+nie öffentliche URLs). Upload (Mehrfachauswahl, PDF/Bilder/Word/E-Mail-Dateien, max. 20 MB,
+max. 10 je Request) und Löschen brauchen `manage_revocations`, Ansehen reicht `view_revocations`.
+Jeder Upload/Löschvorgang landet im Fall-Verlauf. Beim **Festhalten eines RA-Schriftwechsels
+können bis zu 5 Dokumente direkt mit hochgeladen** werden — sie hängen dann am Verlaufseintrag
+(`cancellation_documents.event_id`; Badge „RA-Schriftwechsel" in der Ablage, Anhang-Chips am
+Eintrag im Konversationsverlauf). Löschen des Datensatzes entfernt auch die Datei (Model-Boot).
+
+#### SEPA-Mandat, Reaktivierung & Abgabe ans Forderungsmanagement
+
+Die Umsetzungs-Aktionen liegen seit 15.08.2026 als Button-Block **in der Aktionen-Karte**
+(rechte Spalte; die frühere Umsetzungs-Karte in der linken Spalte ist entfallen). Jeder Button
+öffnet ein eigenes Modal: **„Vertragsänderung im Fernabsatz …"** (seit 11.09.2026:
+Downgrade-Angebot per Kundenlink mit schwebendem Folgevertrag und 14-tägiger Widerrufsfrist,
+siehe [VERTRAGSAENDERUNG-FERNABSATZ.md](VERTRAGSAENDERUNG-FERNABSATZ.md)), „Downgrade vor Ort
+(Formulare) …" (solange der Fall läuft bzw. bei Ergebnis Downgrade), „Phorest-Pakete auf 0
+setzen …" (nach dem Abschluss mit vertragsbeendendem Ergebnis), „SEPA-Mandat stornieren …"
+(**ab dem Eintrag des Widerrufs**, Recht `manage_gocardless`; GoCardless wird **ausschließlich
+manuell** ausgelöst) und „Ans Forderungsmanagement abgeben …".
+
+- **Mandats-Storno im laufenden Prozess (08/2026):** „SEPA-Mandat stornieren …" zeigt die
+  Mandate/Einzüge des Vertrags. Beim Mandats-Storno wird dort entschieden, ob **zugleich ein
+  Forderungsfall über die Restsumme** eröffnet wird (Einstieg „SEPA-Mandatsentzug": Restsumme
+  wird per E-Mail mit Frist angemahnt, danach letzte Mahnung). Ohne Häkchen entsteht kein Fall
+  — z.B. solange der Widerruf noch geprüft wird. Der Kunde erhält automatisch die
+  Mandats-gekündigt-E-Mail; der Storno wird als Kennzeichen („SEPA storniert",
+  `sepa_cancelled`) und als Ereignis im Fall-Verlauf festgehalten.
+- **Kein Mandat vorhanden (24.08.2026):** Wurde das SEPA nie nach GoCardless übertragen, zeigt
+  das Modal statt der (leeren) Mandatsliste den Hinweis „Keine GoCardless-Mandate am Vertrag"
+  **plus den Button „SEPA als erledigt vermerken (kein Mandat vorhanden)"** — der setzt das
+  Kennzeichen `sepa_cancelled` über den normalen Bearbeiten-Endpoint (`PUT
+  /hub/cancellations/{id}`, landet als Feldänderung im Verlauf). Vorher war der Storno-Button in
+  diesem Fall dauerhaft ausgegraut und der Schritt eine Sackgasse (Fall BI007432). Trägt ein
+  Widerruf das Kennzeichen `sepa_cancelled`, warnt zusätzlich der **SEPA-Tab der
+  Vertragsseite** („SEPA im Widerruf storniert — kein SEPA anlegen"), damit niemand für den
+  widerrufenen Vertrag ein neues Mandat oder einen Zahlungsplan anlegt (Test:
+  `ContractCancellationBannerTest`).
+- **Ans Forderungsmanagement abgeben (07.09.2026, Fall H004319):** Ist das Mandat bereits
+  storniert (vom Kunden entzogen oder Storno ohne Häkchen), ist das Storno-Modal gesperrt —
+  der Fall über die Restsumme entsteht dann über den eigenen Knopf **„Ans Forderungsmanagement
+  abgeben …"** in den Umsetzungs-Aktionen (sichtbar bei aktivem Vertrag mit offener Restsumme;
+  läuft schon ein Fall, steht dort stattdessen „Zum Forderungsfall #…"). Das Modal fragt, ob die
+  Restsumme **bereits außerhalb des Hubs mit Frist angemahnt** wurde: dann wird die
+  E-Mail-Anmahnung mit dem angegebenen Datum als extern erledigt nachgetragen (Frist 7 Tage ab
+  Versand) und der Fall steht direkt vor der letzten Mahnung per Post; ohne Häkchen beginnt er
+  mit der E-Mail-Anmahnung. Nach dem Abgeben landet man direkt im Fall. Der Widerruf bekommt
+  den Verlaufseintrag „Ans Forderungsmanagement abgegeben" und in den Verknüpfungen den Link
+  zum Fall. Die Restsumme ist der dokumentierte Vertragsrest
+  (`Contract::documentedRemainingCents()`, siehe [FORDERUNGSMANAGEMENT.md](FORDERUNGSMANAGEMENT.md)).
+  Technik: `POST /hub/cancellations/{id}/receivables` (`manage_revocations`) →
+  `DebtCaseIntakeService::handoverFromCancellation()` (gleicher Kern wie der Mandatsentzug:
+  `openOrUpgradeMandateRevokedCase()`, Einstieg `mandate_revoked`, `full_balance_due`;
+  laufender Fall wird hochgestuft) + `DebtCaseActionService::markActionDoneExternally()`;
+  Ereignis `handed_to_receivables`. Test: `CancellationReceivablesHandoverTest`.
+- **Widerruf zurückgezogen?** Ein von uns storniertes Mandat lässt sich im **SEPA-Tab des
+  Vertrags** per Knopfdruck reaktivieren („SEPA-Mandat reaktivieren"): GoCardless setzt das
+  Mandat wieder ein und der beim Storno gesicherte Restplan wird als Einzelzahlungen neu
+  angelegt. Von Bank/Kunde entzogene Mandate lehnt GoCardless ab — dann bleibt nur ein neues
+  Mandat („GoCardless neu verknüpfen").
+- **Technik:** `POST /hub/contracts/{id}/gocardless-cancel-mandate` nimmt zusätzlich
+  `cancellation_id` + `open_debt_case`; vor dem Storno sichert
+  `snapshotOpenRatesForReinstate()` die offenen Raten als `ContractChange`
+  (`sepa_cancel_restore_plan`). Der Forderungsfall entsteht über
+  `DebtCaseIntakeService::handleMandateRevoked()` (gleicher Einstieg wie beim Webhook-Entzug,
+  eigener Verlaufs-Text). Die Reaktivierung läuft über
+  `POST /hub/contracts/{id}/gocardless-reinstate-mandate`
+  (`GoCardlessApiService::reinstateMandate()` + `recreateIndividualPayments()`).
+  Verlaufs-Ereignisse: `sepa_cancelled` / `sepa_reinstated`. Das automatische Origin-Gating im
+  Webhook bleibt unverändert: Nur `bank`/`customer` eröffnet automatisch einen Fall,
+  `api`-Stornos nie. Tests: `tests/Feature/CancellationSepaActionTest.php`.
+
+### Oberfläche (technische Sicht)
+
+Bedienung: Nutzerhandbuch, Widerrufe 1–2. Hier nur, was ein Entwickler über den Aufbau wissen muss.
+
+**Übersicht `/hub/cancellations` — Bucket-Board (seit 08/2026):** Board aus drei Bereichen.
+**Offen** und **Abgabe an RA** liegen als zwei Karten-Buckets nebeneinander (mobil gestapelt);
+jeder Fall ist eine kleine Karte (Kunde, Vertragsnummer, Widerrufsdatum, Standort, Grund, KPZ-
+und Zendesk-Badge, ggf. Wiedervorlage-Badge) — Klick öffnet die Fall-Detailseite; im Kartenkopf
+steht die ungefilterte Gesamtzahl je Bucket (`totalStatusCounts`). **Abgeschlossene Fälle**
+folgen darunter als Tabelle mit **Infinite Scroll** (50er-Seiten, Nachladen beim Scrollen;
+Sortier-Header sortieren die bereits geladenen Zeilen — Datum, Kunde, Vertrag, Grund, Status,
+Reaktion; SEPA-/Phorest-Kennzeichen und die Aktionsspalte sind nicht sortierbar). Die Suche
+filtert clientseitig — bei aktiver Suche mit noch ungeladenen Seiten erscheint der Button „Alle
+laden". Grund-/Ergebnis-Filter wirken serverseitig auf alle drei Bereiche:
+
+| Filter | Typ | Wirkung |
+|--------|-----|---------|
+| **Suche** | Textfeld | clientseitig: Kunde, Vertragsnummer, Produkt, Grund, Zendesk-Ticket, Notizen |
+| **Status** | Board-Bereiche | Offen · Abgabe an RA (Karten-Buckets) · Abgeschlossen (Liste) — kein eigener Filter mehr |
+| **Reaktion** | Dropdown | serverseitig; Alle · Offen · Akzeptiert · Abgelehnt · Upgrade · Downgrade · Korrektur · Laufzeitanpassung |
+| **Grund** | Dropdown | serverseitig; Alle + alle 9 Widerrufsgründe |
+
+Dropdown-Änderungen lösen sofort einen Server-Reload aus (`$watch`), die Textsuche filtert
+zusätzlich clientseitig; der Zurücksetzen-Button erscheint nur bei mindestens einem aktiven
+Filter (Details: [Frontend-Komponenten](#frontend-komponenten)).
+
+**Fall-Detailseite `/hub/cancellations/{id}` (seit 08/2026)** — das Herzstück des
+Widerrufe-Umbaus 08/2026 (Phasen 1–6: Detailseite, Buckets, Wizard, Konversationsverlauf,
+RA-Vorgang, Fristprüfung/Wiedervorlage/Dokumente). Erreichbar über die Bucket-Karten bzw. das
+↗-Symbol/den Zeilenklick der Übersicht, den Button **„Zum Widerruf"** im roten Banner der
+Vertragsseite (`GET /hub/cancellations/by-contract/{contract}`) und die globale Suche (Treffer
+führen direkt auf den Fall). **Aufbau** (analog zur Schuldenfall-Seite): links
+**Widerrufsgrund** (mit Frist-Einordnung), **Behandlungsstand** (BG, 1. Sitzung, Tage
+dazwischen, Wertersatz) und der **Verlauf**; rechts **Fall-Informationen** (Paket, Vertragswert,
+Standort, Zendesk-Ticket verlinkt, SEPA/Phorest-Kennzeichen, Wiedervorlage, Liegezeit),
+**Verknüpfungen** (Vertrag, Folgevertrag, Kundenprofil, Forderungsfall) und die
+**Aktionen-Karte** (Statuswechsel, „Fall bearbeiten" mit Datum, Grund, Zendesk-Ticket,
+Beschreibung, Anmerkungen, Folgevertrag, SEPA-/Phorest-Kennzeichen, Fristbeginn, Wiedervorlage;
+Umsetzungs-Aktionen). Dazu die Karten RA-Vorgang und Dokumente.
+
+**Verlauf & Kommunikation (seit Phase 4):** Die Karte bündelt ALLE Bewegungen und die
+Kundenkommunikation als einen chronologischen Strang — Fall-Ereignisse (Anlage,
+Feldänderungen mit Alt/Neu, Statuswechsel, angewendetes Ergebnis), manuelle **Notizen**
+(Zendesk-Ticketnummern wie `#4201` klickbar), **Zendesk-Ticket-Kommentare** (über die
+verknüpfte Ticketnummer, 5 Minuten gecacht), **Hub-Mails** (SEPA-/Vertragsmails am Vertrag
+plus Mails an die Kundenadresse aus dem E-Mail-Protokoll), der **WhatsApp-Verlauf**
+(lokaler Superchat-Spiegel) und der **RA-Schriftwechsel**. Ein Kanal-Filter blendet einzelne
+Quellen ein/aus; fällt eine Quelle aus (typisch Zendesk), erscheinen die übrigen trotzdem und
+der Ausfall wird als Hinweis angezeigt. Datenaufbereitung: `CancellationConversationService`,
+Endpoint `GET /hub/cancellations/{id}/conversation`. Ältere Fälle zeigen wenige
+Fall-Ereignisse — der Verlauf wird erst seit dem Umbau im August 2026 geführt; Kommunikation
+(Zendesk/E-Mail/WhatsApp) erscheint auch rückwirkend, soweit die Quellsysteme sie kennen.
+
+**Neuanlage-Wizard (Phase 3):** Neue Widerrufe entstehen seit 08/2026 über einen
+**4-Schritte-Wizard** („Neuer Widerruf" auf der Übersicht bzw. „Widerruf erfassen" in der
+Kundenakte): (1) **Vertrag** — Vertragssuche (Nummer/Kundenname) bzw. vorbelegter Vertrag mit
+Eckdaten; (2) **Widerruf** — Datum (flatpickr), Zendesk-Ticket (Lookup bei reiner
+Ticket-Nummer, Suche bei Text, automatische Vorschläge aus der Kunden-E-Mail; Ticket-Auswahl
+übernimmt das Erstellungsdatum als Widerrufsdatum), Grund, Beschreibung, Anmerkungen;
+(3) **Prüfung** — Frist-Einordnung und Behandlungsstand aus Phorest, Achseln-Checkbox;
+(4) **Zusammenfassung** — Speichern; der Fall startet immer im Bucket **Offen** und der Wizard
+leitet direkt auf die Fall-Detailseite weiter. Partial
+`hub/cancellations/partials/create-wizard.blade.php`, JS `cancellationCreateWizard()` in
+`public/js/cancellation-case.js`, Speichern über
+`POST /hub/contracts/{contract}/cancellation`. Status/Ergebnis werden im Wizard bewusst nicht
+abgefragt — der Abschluss passiert auf der Detailseite. Das alte Create+Edit-Modal
+(`cancellation-modal.blade.php`) existiert nicht mehr; bearbeitet wird ausschließlich auf der
+Fall-Detailseite.
+
+### Architektur
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -447,7 +422,7 @@ ausschliesslich manuell über den SEPA-Tab.
 └──────────────┴──────────────────────────────────────────┘
 ```
 
-### Dateien
+#### Dateien
 
 | Datei | Zweck |
 |-------|-------|
@@ -474,7 +449,7 @@ ausschliesslich manuell über den SEPA-Tab.
 Das alte `cancellation-modal.blade.php` (2.200 Zeilen, Create + Edit) ist mit Phase 3
 entfallen.
 
-### Fall-Verlauf (`contract_cancellation_events`, seit 08/2026)
+#### Fall-Verlauf (`contract_cancellation_events`, seit 08/2026)
 
 Append-only-Verlauf nach dem Muster von `debt_case_events` (Forderungsmanagement):
 `contract_cancellation_id`, `type`, `description`, `payload` (JSON), `user_id` (null = System).
@@ -491,7 +466,7 @@ Routen: `GET /hub/cancellations/{id}` (`can:view_revocations`, `whereNumber` —
 `/data`-Routen registriert!) und `POST /hub/cancellations/{id}/notes` (`can:manage_revocations`).
 Tests: `tests/Feature/CancellationCasePageTest.php`.
 
-### Importierte Widerrufe am falschen Vertrag (Vorfall 08/2026)
+#### Importierte Widerrufe am falschen Vertrag (Vorfall 08/2026)
 
 Widerrufe aus dem [Google-Sheets-Import](GOOGLE-SHEETS-IMPORT.md) trugen bis 08/2026 das Risiko, am **falschen Vertrag** zu landen: Die Vertragsnummer ist Datum + Kundennummer und damit nicht eindeutig, sobald ein Kunde am selben Tag zwei Verträge hat — beim Downgrade/Upgrade der Regelfall. Der Import überschrieb den ersten Vertrag mit dem zweiten, und die Widerrufs-Zeile stornierte anschließend den einzigen verbliebenen — also den laufenden.
 
@@ -514,9 +489,9 @@ Der Bestand (5 Verträge, Stand 11.08.2026) wurde mit `contracts:repair-misassig
 
 ---
 
-## Datenmodell
+### Datenmodell
 
-### `contract_cancellations`
+#### `contract_cancellations`
 
 | Feld | Typ | Beschreibung |
 |------|-----|-------------|
@@ -548,7 +523,7 @@ Der Bestand (5 Verträge, Stand 11.08.2026) wurde mit `contracts:repair-misassig
 | `created_at` | timestamp | Erstellt am |
 | `updated_at` | timestamp | Aktualisiert am |
 
-### `cancellation_cost_items` (seit 08/2026, Phase 5)
+#### `cancellation_cost_items` (seit 08/2026, Phase 5)
 
 Kostenpositionen des RA-Vorgangs — Muster `debt_cost_items` aus dem Forderungsmanagement.
 
@@ -562,7 +537,7 @@ Kostenpositionen des RA-Vorgangs — Muster `debt_cost_items` aus dem Forderungs
 | `created_by` | bigint (nullable, FK) | Erfasst von |
 | `deleted_at` | timestamp (nullable) | SoftDeletes — Raw-SQL-Abfragen brauchen `deleted_at IS NULL` |
 
-### `cancellation_documents` (seit 08/2026, Phase 6)
+#### `cancellation_documents` (seit 08/2026, Phase 6)
 
 Anhänge je Fall — Muster `company_contract_documents` (Datei wird beim Löschen des
 Datensatzes mit entfernt, siehe Model-Boot).
@@ -574,7 +549,7 @@ Datensatzes mit entfernt, siehe Model-Boot).
 | `file_name` / `file_path` / `disk` / `file_size` | — | Ablage (Cloud: `gcs-private`, lokal: `public`) |
 | `uploaded_by` | bigint (nullable, FK) | Hochgeladen von |
 
-### Beziehungen
+#### Beziehungen
 
 ```php
 ContractCancellation::belongsTo(Contract::class);
@@ -590,18 +565,18 @@ Berechnete Attribute: `ra_total_costs_cents` (Summe Kostenpositionen), `ra_net_c
 
 ---
 
-## API-Endpunkte
+### API-Endpunkte
 
 Alle Routen liegen unter dem Prefix `/hub` und sind authentifiziert.
 
-### Übersichtsseite
+#### Übersichtsseite
 
 | Method | Route | Controller | Name | Beschreibung |
 |--------|-------|-----------|------|-------------|
 | `GET` | `/hub/cancellations` | `cancellationsIndex()` | `hub.cancellations` | Rendert die Übersichtsseite |
 | `GET` | `/hub/cancellations/data` | `getCancellations()` | `hub.cancellations.data` | JSON-API: Paginierte Widerrufe |
 
-### CRUD (seit 08/2026 fall-bezogen)
+#### CRUD (seit 08/2026 fall-bezogen)
 
 | Method | Route | Controller | Beschreibung |
 |--------|-------|-----------|-------------|
@@ -620,7 +595,7 @@ Alle Routen liegen unter dem Prefix `/hub` und sind authentifiziert.
 
 Das frühere `GET`/`PUT /hub/contracts/{contract}/cancellation` (Modal-Edit) ist entfallen.
 
-### `GET /hub/cancellations/data` – Query-Parameter
+#### `GET /hub/cancellations/data` – Query-Parameter
 
 | Parameter | Typ | Default | Beschreibung |
 |-----------|-----|---------|-------------|
@@ -632,7 +607,7 @@ Das frühere `GET`/`PUT /hub/contracts/{contract}/cancellation` (Modal-Edit) ist
 | `date_from` | date | – | Filter: Widerrufsdatum ab |
 | `date_to` | date | – | Filter: Widerrufsdatum bis |
 
-### Response-Format (`getCancellations`)
+#### Response-Format (`getCancellations`)
 
 ```json
 {
@@ -682,9 +657,9 @@ Das frühere `GET`/`PUT /hub/contracts/{contract}/cancellation` (Modal-Edit) ist
 
 ---
 
-## Frontend-Komponenten
+### Frontend-Komponenten
 
-### Übersichtsseite (`index.blade.php`)
+#### Übersichtsseite (`index.blade.php`)
 
 Alpine.js-Komponente mit folgendem State:
 
@@ -717,7 +692,7 @@ Alpine.js-Komponente mit folgendem State:
 - **Textsuche**: Client-seitig über `filteredCancellations` Getter (kein Server-Request)
 - **Zurücksetzen-Button**: Nur sichtbar, wenn mindestens ein Filter aktiv ist (`x-show` + `x-transition.opacity`)
 
-### Widerrufs-Modal (`cancellation-modal.blade.php`)
+#### Widerrufs-Modal (`cancellation-modal.blade.php`)
 
 Wiederverwendbares Modal mit eigenem `x-data` Scope. Wird per `@include` eingebunden.
 
@@ -754,7 +729,7 @@ $watch('showCancellationModal')
 
 ---
 
-## Zendesk-Integration
+### Zendesk-Integration
 
 Das Modal bietet eine intelligente Zendesk-Ticket-Verknüpfung:
 
@@ -770,9 +745,9 @@ Das Modal bietet eine intelligente Zendesk-Ticket-Verknüpfung:
 
 ---
 
-## Phorest-Integration
+### Phorest-Integration
 
-### Automatische Behandlungshistorie
+#### Automatische Behandlungshistorie
 
 Beim Öffnen des Modals wird `GET /hub/contracts/{id}/cancellation-data` aufgerufen. Dieser Endpunkt nutzt die Phorest-API um folgende Daten zu laden:
 
@@ -784,7 +759,7 @@ Beim Öffnen des Modals wird `GET /hub/contracts/{id}/cancellation-data` aufgeru
 | Geplante Termine | Phorest: Zukünftige Termine |
 | Tage BG → 1. Sitzung | Berechnet aus Daten |
 
-### Client-Name-Resolution
+#### Client-Name-Resolution
 
 Die Übersichtsseite löst Kundennamen über `getClientDataBulk()` auf:
 
@@ -796,15 +771,15 @@ Die Übersichtsseite löst Kundennamen über `getClientDataBulk()` auf:
 
 ---
 
-## Events & Kommunikation
+### Events & Kommunikation
 
-### Dispatched Events
+#### Dispatched Events
 
 | Event | Auslöser | Payload | Listener |
 |-------|---------|---------|----------|
 | `cancellation-saved` | Nach erfolgreichem Speichern (Create/Update) | `{ contractId, cancellation }` | Übersichtsseite: `loadCancellations()` + `loadTotalStatusCounts()` |
 
-### Bindung in der Übersichtsseite
+#### Bindung in der Übersichtsseite
 
 ```html
 @cancellation-saved.window="loadCancellations(); loadTotalStatusCounts()"
@@ -814,7 +789,7 @@ Dies stellt sicher, dass die Tabelle und die Status-Badges nach jeder Änderung 
 
 ---
 
-## CSS-Klassen
+### CSS-Klassen
 
 Das Modul nutzt ausschließlich Klassen aus dem glattt Design System (`theme_glattt.css`):
 

@@ -1,9 +1,29 @@
 # Institut Bild-Upload Feature
 
-## Übersicht
-Ermöglicht das Hochladen, Anzeigen und Löschen von Bildern für jedes Institut.
+Hochladen, Anzeigen und Löschen des Institut-Bildes je Standort (Reiter *Infos* der
+Institut-Detailseite). Diese Seite beschreibt **Datenmodell, Endpunkte, Storage-Layout,
+Frontend-Aufbau und Grenzen**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
-## Technische Details
+!!! nutzerhandbuch "Bedienung: Betrieb 2 – Ein Institut pflegen"
+    [hilfe.hub.glattt.com/betrieb/2/](https://hilfe.hub.glattt.com/betrieb/2/) — Bild, Farbe und
+    Symbol eines Instituts setzen, Bankverbindung und Zugangs-Link.
+
+    Angrenzend: [Betrieb 1 – Institute im Überblick](https://hilfe.hub.glattt.com/betrieb/1/).
+
+## Für Anwender — Überblick
+
+Jedes Institut kann **genau ein** Bild führen; es erscheint auf der Institut-Karte der Übersicht
+und im Reiter *Infos* der Detailseite. Das Bild wird per Auswahl oder Drag & Drop hochgeladen,
+sofort als Vorschau gezeigt und über ein Hover-Overlay ersetzt oder gelöscht. Ein neuer Upload
+**überschreibt** das bisherige Bild — eine Historie gibt es bewusst nicht, es gilt immer das
+zuletzt hochgeladene Motiv. Wer hochgeladen hat, wird mitgespeichert.
+
+| Vorgang | Anleitung |
+|---|---|
+| Institut-Bild hochladen, ersetzen oder löschen | Betrieb 2 |
+| Wo das Bild erscheint (Übersicht, Detailseite) | Betrieb 1 |
+
+## Für Entwickler
 
 ### Datenbank
 - **Tabelle**: `institute_images`
@@ -96,30 +116,17 @@ Ermöglicht das Hochladen, Anzeigen und Löschen von Bildern für jedes Institut
 - Fetch API für AJAX Requests
 - CSS Grid für Layout
 
-## Verwendung
-
-### Bild hochladen
-1. Im Info-Tab auf "Bild auswählen" klicken oder Datei per Drag & Drop ziehen
-2. Bild wird automatisch hochgeladen
-3. Preview wird sofort angezeigt
-
-### Bild ersetzen
-1. Mit der Maus über das Bild fahren
-2. Auf "Neu hochladen" klicken
-3. Neues Bild auswählen
-
-### Bild löschen
-1. Mit der Maus über das Bild fahren
-2. Auf "Löschen" klicken
-3. Bestätigung im Dialog
-
-## Berechtigungen
+### Berechtigungen
 - Authentifizierung erforderlich
 - Alle authentifizierten User können Bilder hochladen/löschen
 - Upload-User wird in der Datenbank gespeichert
 
-## Limits
+### Limits
 - Max Dateigröße: 5MB
 - Erlaubte Formate: JPEG, PNG, GIF, WebP
 - Ein Bild pro Institut
 - Altes Bild wird beim Upload automatisch überschrieben
+
+## Verwandte Dokumentation
+
+- [Institut-Modul](INSTITUTE-MODULE.md)

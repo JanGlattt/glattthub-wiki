@@ -1,13 +1,20 @@
 site_name: glatttHub Dokumentation
-site_description: Dokumentation der glatttHub Web-Applikation
+site_description: Technische Dokumentation der glatttHub Web-Applikation — Architektur, Module, Integrationen, Betrieb. Bedienungsanleitungen für Mitarbeiterinnen stehen im Nutzerhandbuch hilfe.hub.glattt.com.
 site_url: https://janglattt.github.io/glattthub-wiki/
 repo_url: https://github.com/JanGlattt/glattthub-wiki
+repo_name: JanGlattt/glattthub-wiki
+edit_uri: edit/main/docs/
+copyright: glattt · Labrado &amp; Schlüter — interne technische Dokumentation
 
+# Tote Verweise brechen den Bau (seit 19.09.2026 sind alle bereinigt) —
+# `mkdocs build --strict` im Deploy scheitert damit bei einem falschen Link oder Anker.
 validation:
   links:
-    not_found: info
+    not_found: warn
     absolute_links: info
-    unrecognized_links: info
+    unrecognized_links: warn
+  omitted_files: warn
+  absolute_links: warn
 
 theme:
   name: material
@@ -20,35 +27,52 @@ theme:
       accent: custom
       toggle:
         icon: material/brightness-7
-        name: Dark Mode aktivieren
+        name: Dunkel
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: custom
       accent: custom
       toggle:
         icon: material/brightness-4
-        name: Light Mode aktivieren
-  font: false
+        name: Hell
+  # Hausschrift des Hubs (FontSetting::DEFAULT_FAMILY) — Google Fonts, Fallback-Stack in extra.css
+  font:
+    text: Lato
+    code: JetBrains Mono
   features:
+    - announce.dismiss
     - navigation.instant
+    - navigation.instant.progress
     - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.sections
-    - navigation.expand
-    - navigation.top
     - navigation.indexes
+    - navigation.prune
+    - navigation.top
+    - navigation.footer
     - search.suggest
     - search.highlight
+    - search.share
     - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.action.edit
     - toc.follow
   icon:
     repo: fontawesome/brands/github
+    edit: material/pencil
   logo: assets/glattt-icon.png
   favicon: assets/favicon.png
 
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/glattthub
+      link: https://github.com/JanGlattt/glattthub-wiki
+      name: Wiki-Repository
+    - icon: material/book-open-page-variant
+      link: https://hilfe.hub.glattt.com
+      name: Nutzerhandbuch (hilfe.hub.glattt.com)
   generator: false
 
 extra_css:
@@ -76,6 +100,11 @@ markdown_extensions:
 plugins:
   - search:
       lang: de
+  - git-revision-date-localized:
+      type: date
+      locale: de
+      fallback_to_build_date: true
+      enable_creation_date: false
   - minify:
       minify_html: true
   - swagger-ui-tag:
@@ -83,140 +112,170 @@ plugins:
       tryItOutEnabled: true
       syntaxHighlightTheme: monokai
 
+# Sechs Bereiche als Reiter (Entwickler-Sicht). Jeder Bereich hat eine Übersichtsseite
+# (<bereich>/index.md). Endanwender-Anleitungen liegen nicht hier, sondern im Nutzerhandbuch.
 nav:
-  - Startseite: index.md
-  - Start-Page:
-    - Übersicht: START-PAGE.md
-    - KPI-System: START-PAGE-KPIS.md
-  - Dashboard:
-    - Dashboard KPIs: DASHBOARD-KPIS.md
-  - Termine:
-    - Terminübersicht: APPOINTMENTS-OVERVIEW.md
-    - Terminansicht: APPOINTMENT-VIEW.md
-    - Folgetermin & Bewertungslink: FOLGETERMIN-BEWERTUNGSLINK.md
-    - Termin buchen (ideale Slots): TERMIN-BUCHUNG-IDEAL-SLOT.md
-    - Terminstatistik: APPOINTMENT-STATISTICS.md
-    - Zukünftige Beratungsgespräche: UPCOMING-CONSULTATIONS.md
-    - Vergangene Beratungsgespräche: PAST-CONSULTATIONS.md
-    - Buchungsvorlauf-Analyse: BOOKING-LEAD-TIME-ANALYSIS.md
-    - Stornierte Termine: CANCELLED-APPOINTMENTS-ANALYSIS.md
-    - Stornierte Beratungstermine: STORNIERTE-BERATUNGSTERMINE.md
-    - Wochentag & Uhrzeit-Analyse: WEEKDAY-TIME-ANALYSIS.md
-  - Kunden:
-    - Kundenprofil: CLIENT-DETAIL-MODULE.md
-    - Der glattt-Kunde (Statistik): CLIENT-STATISTICS.md
-    - glattt-Pakete: CLIENT-COURSES-MODULE.md
-    - Pakete-Statistik: CLIENT-COURSES-STATISTIK.md
-    - Behandlungseinstellungen: TREATMENT-SETTINGS.md
-  - Formulare:
-    - Formular-Editor: FORM-EDITOR.md
-    - Rechtsdokumente: LEGAL-DOCUMENTS.md
-    - Formulare extern teilen: SHARED-FORM-SYSTEM.md
-    - PDF-Erstellung: PDF-ERSTELLUNG.md
-    - Flatpickr (Datepicker): FLATPICKR.md
-    - Körperzonen-Selektor: BODY-ZONE-SELECTOR.md
-  - Verträge & Finanzen:
-    - Verträge & SEPA: CONTRACTS-SEPA-MODULE.md
-    - Unternehmensverträge: COMPANY-CONTRACTS.md
-    - Widerrufe: WIDERRUFE-MODULE.md
-    - Vertragsänderung im Fernabsatz: VERTRAGSAENDERUNG-FERNABSATZ.md
-    - Schulden: SCHULDEN-MODULE.md
-    - Forderungsmanagement: FORDERUNGSMANAGEMENT.md
-    - Legacy-Import: LEGACY-VERTRAGS-IMPORT.md
-    - Google Sheets Import: GOOGLE-SHEETS-IMPORT.md
-    - Preislisten: PREISLISTEN-MODUL.md
-    - glattt-Pakete & Verträge: glatttPakete.md
-    - GoCardless API: GOCARDLESS-API.md
-    - Gutscheine: GUTSCHEINE-MODULE.md
-    - Gutschein-Verkauf (Online): GUTSCHEIN-VERKAUF.md
-    - Freunde werben: FREUNDE-WERBEN.md
-    - Erfolgsanimation (Return-Seite): ERFOLGS-ANIMATION.md
-  - Laser:
-    - Laser-Modul: LASER-MODUL.md
-  - Institute & Personal:
-    - Institut-Modul: INSTITUTE-MODULE.md
-    - Institutsseite Tageserfassung: INSTITUTSSEITE-TAGESERFASSUNG.md
-    - Klickanleitungen (Standard & Inventar): KLICKANLEITUNGEN.md
-    - Klickanleitungen-Portal (hilfe.hub.glattt.com): KLICKANLEITUNGEN-PORTAL.md
-    - Gamification (Feiern & Badges): GAMIFICATION.md
-    - Institut Bild-Upload: INSTITUTE-IMAGE-UPLOAD.md
-    - Personalverwaltung: STAFF-MODULE.md
-    - Bonus-Board: BONUS-BOARD.md
-    - Reisekosten: REISEKOSTEN-MODULE.md
-    - Reisekosten Freigabe: REISEKOSTEN-FREIGABE.md
-    - Profil-Integration: PROFILE-INTEGRATION.md
-    - Einführungstour (Onboarding): ONBOARDING-TOUR.md
-    - Benutzer-Einladungen: USER-INVITATION-SYSTEM.md
-    - Benutzer archivieren: USER-ARCHIVIERUNG.md
-    - Berechtigungssystem: BERECHTIGUNGSSYSTEM.md
-    - Datensichtbarkeit: DATA-VISIBILITY.md
-  - Kommunikation:
-    - E-Mail Versand: EMAIL-VERSAND.md
-    - E-Mail-Protokoll (zentral): EMAIL-PROTOKOLL.md
-    - Benachrichtigungen: NOTIFICATIONS.md
-    - Superchat / WhatsApp: SUPERCHAT-WHATSAPP.md
-    - Beratungs-WhatsApp (Automatisierung): BERATUNGS-WHATSAPP.md
-    - Terminerinnerungen (Automatisierung): TERMINERINNERUNGEN.md
-    - Zufriedenheitsbefragung: ZUFRIEDENHEITSBEFRAGUNG.md
-    - Superchat-Kontakte & Sync: SUPERCHAT-KONTAKTE.md
-  - Berichte:
-    - Reports-Modul: REPORTS-MODULE.md
-    - glattt-KPIs: GLATTT-KPIS.md
-    - Report-Mails (geplanter Versand): REPORT-MAILS.md
-    - CSV-Export: CSV-EXPORT.md
-    - Eigenes Dashboard: CUSTOM-DASHBOARD.md
-    - Verkaufsstatistik: SALES-STATISTICS.md
-    - Ads-Analyse: ADS-ANALYSE.md
-    - Besucher & Buchungs-Funnel: MATOMO-BESUCHER-TRACKING.md
-    - Mitarbeiterperformance: STAFF-PERFORMANCE.md
-    - Widerruf-Statistik: REVOCATION-STATISTICS.md
-    - HR-Kennzahlen: HR-KENNZAHLEN.md
-    - Gutschein-Aktion: GUTSCHEIN-AKTION.md
-    - Office-Teammeeting: OFFICE-TEAMMEETING.md
-  - API-Integrationen:
-    - WordPress-Plugins (Übersicht): WORDPRESS-PLUGINS.md
-    - WordPress-Buchungswidget: WORDPRESS-BUCHUNGSWIDGET.md
-    - WordPress-Anfahrt: WORDPRESS-ANFAHRT.md
-    - WordPress-FAQ: WORDPRESS-FAQ.md
-    - WordPress-Rechner: WORDPRESS-RECHNER.md
-    - WordPress-Bewertungen: WORDPRESS-BEWERTUNGEN.md
-    - WordPress-Medien-Ordner: WORDPRESS-MEDIEN-ORDNER.md
+  - Start: index.md
+
+  - Einstieg & Betrieb:
+    - einstieg/index.md
+    - Umgebung:
+      - Entwicklungsumgebung (portabel): ENTWICKLUNGSUMGEBUNG.md
+      - MAMP Virtual Host: SETUP-ANLEITUNG.md
+      - Staging-Umgebung: STAGING-UMGEBUNG.md
+      - Desktop-App (Electron): DESKTOP-APP.md
+    - Cloud:
+      - Cloud-Infrastruktur: CLOUD-INFRASTRUKTUR.md
+      - Cloud Scheduler (Cronjobs): CLOUD-SCHEDULER-SETUP.md
+      - Cloud Storage: CLOUD-STORAGE-SETUP.md
+      - Queue-Worker: QUEUE-WORKER.md
+      - Security-Hardening: SECURITY-HARDENING.md
+    - Performance:
+      - Performance-Optimierung: PERFORMANCE-OPTIMIZATION.md
+      - Performance & Caching: PERFORMANCE-CACHING.md
+      - Lazy Loading: LAZY-LOADING-PERFORMANCE.md
+
+  - Architektur & Konventionen:
+    - architektur/index.md
+    - Design & UI:
+      - Design System: DESIGN-SYSTEM.md
+      - Dark Mode: DARKMODE.md
+      - Schriftart-Einstellungen: FONT-EINSTELLUNGEN.md
+      - Mobile Design: MOBILE-DESIGN.md
+      - Navigations-Gruppen: NAVIGATION-GRUPPEN.md
+      - Globale Suche: GLOBAL-SEARCH.md
+      - Standortfilter & mobile Navigation: STANDORTFILTER.md
+      - Seitenübergänge & Skeletons: SEITENUEBERGAENGE.md
+      - Ladeverhalten Statistikseiten: LADEVERHALTEN-STATISTIKSEITEN.md
+      - Login-Design: LOGIN-DESIGN.md
+    - Frontend-Bausteine:
+      - Charts (ECharts + Alpine.js): JAVASCRIPT-CHARTS.md
+      - Custom Dropdown: CUSTOM-DROPDOWN.md
+      - Flatpickr (Datepicker): FLATPICKR.md
+      - Körperzonen-Selektor: BODY-ZONE-SELECTOR.md
+      - PDF-Erstellung: PDF-ERSTELLUNG.md
+      - Erfolgsanimation: ERFOLGS-ANIMATION.md
+      - Einführungstour (Onboarding): ONBOARDING-TOUR.md
+    - Sicherheit & Rechte:
+      - Berechtigungssystem: BERECHTIGUNGSSYSTEM.md
+      - Datensichtbarkeit: DATA-VISIBILITY.md
+      - PIN-Login: PIN-LOGIN-SYSTEM.md
+      - Session-Ablauf & Modal: SESSION-ABLAUF.md
+
+  - Module:
+    - module/index.md
+    - Start & Dashboard:
+      - Startseite: START-PAGE.md
+      - Start-Page KPI-System: START-PAGE-KPIS.md
+      - Dashboard KPIs: DASHBOARD-KPIS.md
+    - Termine:
+      - Terminübersicht: APPOINTMENTS-OVERVIEW.md
+      - Terminansicht: APPOINTMENT-VIEW.md
+      - Folgetermin & Bewertungslink: FOLGETERMIN-BEWERTUNGSLINK.md
+      - Termin buchen (ideale Slots): TERMIN-BUCHUNG-IDEAL-SLOT.md
+      - Behandlungseinstellungen: TREATMENT-SETTINGS.md
+    - Kunden:
+      - Kundenprofil: CLIENT-DETAIL-MODULE.md
+      - glattt-Pakete (Client Courses): CLIENT-COURSES-MODULE.md
+    - Formulare:
+      - Formular-Editor: FORM-EDITOR.md
+      - Rechtsdokumente: LEGAL-DOCUMENTS.md
+      - Formulare extern teilen: SHARED-FORM-SYSTEM.md
+    - Verträge & Zahlungen:
+      - glattt-Pakete & Verträge (Überblick): glatttPakete.md
+      - Verträge & SEPA: CONTRACTS-SEPA-MODULE.md
+      - Preislisten: PREISLISTEN-MODUL.md
+      - Vertragsänderung im Fernabsatz: VERTRAGSAENDERUNG-FERNABSATZ.md
+      - Widerrufe: WIDERRUFE-MODULE.md
+      - Forderungsmanagement: FORDERUNGSMANAGEMENT.md
+      - Schulden: SCHULDEN-MODULE.md
+      - Unternehmensverträge: COMPANY-CONTRACTS.md
+      - Gutscheine: GUTSCHEINE-MODULE.md
+      - Gutschein-Verkauf (Online): GUTSCHEIN-VERKAUF.md
+      - Freunde werben: FREUNDE-WERBEN.md
+      - Legacy-Import: LEGACY-VERTRAGS-IMPORT.md
+      - Google Sheets Import: GOOGLE-SHEETS-IMPORT.md
+    - Laser:
+      - Laser-Modul: LASER-MODUL.md
+    - Institute & Personal:
+      - Institut-Modul: INSTITUTE-MODULE.md
+      - Institutsseite Tageserfassung: INSTITUTSSEITE-TAGESERFASSUNG.md
+      - Institut Bild-Upload: INSTITUTE-IMAGE-UPLOAD.md
+      - Personalverwaltung: STAFF-MODULE.md
+      - Benutzer-Einladungen: USER-INVITATION-SYSTEM.md
+      - Benutzer archivieren: USER-ARCHIVIERUNG.md
+      - Profilseite: PROFILE-INTEGRATION.md
+      - Bonus-Board: BONUS-BOARD.md
+      - Gamification (Feiern & Badges): GAMIFICATION.md
+      - Reisekosten: REISEKOSTEN-MODULE.md
+      - Reisekosten Freigabe: REISEKOSTEN-FREIGABE.md
+    - Kommunikation:
+      - E-Mail Versand: EMAIL-VERSAND.md
+      - E-Mail-Protokoll (zentral): EMAIL-PROTOKOLL.md
+      - Benachrichtigungen: NOTIFICATIONS.md
+      - Superchat / WhatsApp: SUPERCHAT-WHATSAPP.md
+      - Superchat-Kontakte & Sync: SUPERCHAT-KONTAKTE.md
+      - Beratungs-WhatsApp (Automatisierung): BERATUNGS-WHATSAPP.md
+      - Terminerinnerungen (Automatisierung): TERMINERINNERUNGEN.md
+      - Zufriedenheitsbefragung: ZUFRIEDENHEITSBEFRAGUNG.md
+    - KI-Assistent:
+      - glatttBert: GLATTTBERT-AI-ASSISTENT.md
+
+  - Berichte & Statistiken:
+    - berichte/index.md
+    - Grundlagen:
+      - Reports-Modul: REPORTS-MODULE.md
+      - Statistik-Registry & Eigenes Dashboard: CUSTOM-DASHBOARD.md
+      - Statistik-Inventar: STATISTIK-INVENTAR.md
+      - glattt-KPIs: GLATTT-KPIS.md
+      - CSV-Export: CSV-EXPORT.md
+      - Report-Mails (geplanter Versand): REPORT-MAILS.md
+    - Berichtsseiten:
+      - Verkaufsstatistik: SALES-STATISTICS.md
+      - Der glattt-Kunde: CLIENT-STATISTICS.md
+      - glattt-Pakete Statistik: CLIENT-COURSES-STATISTIK.md
+      - Mitarbeiterperformance: STAFF-PERFORMANCE.md
+      - Widerruf-Statistik: REVOCATION-STATISTICS.md
+      - HR-Kennzahlen: HR-KENNZAHLEN.md
+      - Gutschein-Aktion: GUTSCHEIN-AKTION.md
+      - Office-Teammeeting: OFFICE-TEAMMEETING.md
+      - Ads-Analyse: ADS-ANALYSE.md
+      - Besucher & Buchungs-Funnel: MATOMO-BESUCHER-TRACKING.md
+    - Termin-Analysen:
+      - Terminstatistik: APPOINTMENT-STATISTICS.md
+      - Zukünftige Beratungsgespräche: UPCOMING-CONSULTATIONS.md
+      - Vergangene Beratungsgespräche: PAST-CONSULTATIONS.md
+      - Buchungsvorlauf-Analyse: BOOKING-LEAD-TIME-ANALYSIS.md
+      - Buchungseingangs-Kalender: BUCHUNGSEINGANGS-KALENDER.md
+      - Stornierte Termine: CANCELLED-APPOINTMENTS-ANALYSIS.md
+      - Stornierte Beratungstermine: STORNIERTE-BERATUNGSTERMINE.md
+      - Wochentag & Uhrzeit-Analyse: WEEKDAY-TIME-ANALYSIS.md
+
+  - Integrationen:
+    - integrationen/index.md
+    - Externe Systeme:
+      - Phorest API: PHOREST-API.md
+      - Phorest Client-ID Import: PHOREST-CLIENT-ID-IMPORT.md
+      - GoCardless API: GOCARDLESS-API.md
+      - Zendesk API: ZENDESK-API.md
+      - askDANTE API: ASKDANTE-API.md
+      - Booking-Tracking (UTM/gclid/fbclid): BOOKING-TRACKING.md
+      - Conversion-Upload (Google Ads & Meta): CONVERSION-UPLOAD.md
     - REST-API:
       - Übersicht: REST-API.md
       - Endpoint-Referenz: REST-API-ENDPOINTS.md
       - Live-Tester: REST-API-TESTER.md
-      - Booking-Tracking: BOOKING-TRACKING.md
-    - Phorest API: PHOREST-API.md
-    - Phorest Client-ID Import: PHOREST-CLIENT-ID-IMPORT.md
-    - askDANTE API: ASKDANTE-API.md
-    - Zendesk API: ZENDESK-API.md
-  - KI-Assistent:
-    - glatttBert: GLATTTBERT-AI-ASSISTENT.md
-  - Design & UI:
-    - Design System: DESIGN-SYSTEM.md
-    - Mobile Design: MOBILE-DESIGN.md
-    - Navigations-Gruppen: NAVIGATION-GRUPPEN.md
-    - Ladeverhalten Statistikseiten: LADEVERHALTEN-STATISTIKSEITEN.md
-    - Schriftart-Einstellungen: FONT-EINSTELLUNGEN.md
-    - Globale Suche: GLOBAL-SEARCH.md
-    - Standortfilter & mobile Navigation: STANDORTFILTER.md
-    - Custom Dropdown: CUSTOM-DROPDOWN.md
-    - Dark Mode: DARKMODE.md
-    - Login-Design: LOGIN-DESIGN.md
-    - PIN-Login: PIN-LOGIN-SYSTEM.md
-    - Session-Ablauf & Modal: SESSION-ABLAUF.md
-  - Technisches:
-    - Setup-Anleitung: SETUP-ANLEITUNG.md
-    - Entwicklungsumgebung (portabel): ENTWICKLUNGSUMGEBUNG.md
-    - Desktop-App (Electron): DESKTOP-APP.md
-    - Cloud-Infrastruktur: CLOUD-INFRASTRUKTUR.md
-    - Staging-Umgebung: STAGING-UMGEBUNG.md
-    - Security-Hardening: SECURITY-HARDENING.md
-    - Chart.js + Alpine.js: JAVASCRIPT-CHARTS.md
-    - Performance-Optimierung: PERFORMANCE-OPTIMIZATION.md
-    - Seitenübergänge & Skeletons: SEITENUEBERGAENGE.md
-    - Performance & Caching: PERFORMANCE-CACHING.md
-    - Queue-Worker: QUEUE-WORKER.md
-    - Lazy Loading: LAZY-LOADING-PERFORMANCE.md
-    - Cloud Scheduler: CLOUD-SCHEDULER-SETUP.md
-    - Cloud Storage: CLOUD-STORAGE-SETUP.md
+    - WordPress (glattt.com):
+      - Plugins (Übersicht): WORDPRESS-PLUGINS.md
+      - Buchungswidget: WORDPRESS-BUCHUNGSWIDGET.md
+      - Anfahrt: WORDPRESS-ANFAHRT.md
+      - FAQ: WORDPRESS-FAQ.md
+      - Rechner: WORDPRESS-RECHNER.md
+      - Bewertungen: WORDPRESS-BEWERTUNGEN.md
+      - Medien-Ordner: WORDPRESS-MEDIEN-ORDNER.md
+
+  - Nutzerhandbuch:
+    - nutzerhandbuch/index.md
+    - Klickanleitungen (Standard & Inventar): KLICKANLEITUNGEN.md
+    - Portal hilfe.hub.glattt.com: KLICKANLEITUNGEN-PORTAL.md
+    - Zum Nutzerhandbuch ↗: https://hilfe.hub.glattt.com

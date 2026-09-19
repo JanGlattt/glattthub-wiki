@@ -1,5 +1,8 @@
 # Conversion-Upload (Google Ads & Meta)
 
+!!! info "Technische Wartungsseite"
+    Die Seite wird im Alltag von niemandem bedient; im Nutzerhandbuch ist sie deshalb als `geplant` geführt und bekommt erst mit dem Conversion-API-Projekt eine Anleitung. Siehe [Klickanleitungen](KLICKANLEITUNGEN.md).
+
 Serverseitige Übermittlung der Verkaufsstrecke an die Werbeplattformen, damit
 deren Algorithmen auf **tatsächliche Vertragsabschlüsse und deren Wert**
 optimieren statt auf bloße Buchungsmenge.

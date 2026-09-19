@@ -1,15 +1,67 @@
 # Berechtigungssystem
 
-## Uebersicht
+Das Berechtigungssystem steuert, wer im glatttHub was sehen und tun darf: Rollen bündeln Rechte,
+Rechte hängen an Navigation, Routen, Seitenelementen und Filament-Ressourcen. Dazu kommen zwei
+Einschränkungen neben den Rechten — die **Standort-Beschränkung** (welche Institute ein Benutzer
+überhaupt wählen kann) und die **Datensichtbarkeit** (welche Datensätze er in mitarbeiterbezogenen
+Auswertungen sieht). Diese Seite beschreibt **Katalog, Gates, Rollen-Editor, Cache-Verhalten,
+Datenmodell und Fallstricke**; die Bedienung des Admin-Panels steht im Nutzerhandbuch.
 
-Das Berechtigungssystem steuert den Zugriff auf alle Bereiche des glatttHub. Es basiert auf **Spatie Laravel Permission v6** und implementiert rollenbasierte Zugriffskontrolle (RBAC) auf vier Ebenen:
+!!! nutzerhandbuch "Bedienung: Admin 1 – Benutzer und Rollen"
+    [hilfe.hub.glattt.com/admin/1/](https://hilfe.hub.glattt.com/admin/1/) — Admin-Panel öffnen,
+    Benutzer verwalten, Rollen und Rechte setzen, was Rechte bewirken.
+
+    Angrenzend: [Team 1 – Personalübersicht und Hub-Konten](https://hilfe.hub.glattt.com/team/1/)
+    (Konto anlegen, einladen, archivieren) und
+    [Admin 8 – Protokolle und Einstellungen](https://hilfe.hub.glattt.com/admin/8/).
+
+---
+
+## Für Anwender — Überblick
+
+**Was das System leistet.** Jeder Hub-Zugang bekommt eine oder mehrere **Rollen**; die Rolle
+entscheidet, welche Menüpunkte erscheinen, welche Seiten sich öffnen lassen und welche Knöpfe
+überhaupt da sind. Wer eine Seite ohne Recht direkt aufruft, landet auf „Zugriff verweigert".
+Welche Rechte eine Rolle hat, wird im Admin-Panel in einem **Baum entlang der Hub-Struktur**
+gesetzt — eine Farbe je Recht zeigt, wie weit es reicht (blau = lesen, orange = bearbeiten,
+rot = löschen, Geld bewegen, Systemkonfiguration).
+
+**Grundsätze, die überall gelten:**
+
+- **Kein Recht, kein Zugriff** — und zwar auf jeder Ebene: Menü, Seite, Knopf, Admin-Panel.
+- **Rechte sind Daten, Rollen auch.** Beschriftung, Einordnung und Zugriffsstufe eines Rechts
+  sind ohne Software-Auslieferung pflegbar; **neu angelegt oder gelöscht** wird ein Recht dagegen
+  nur mit einer Migration, weil es sonst im Code nirgends geprüft würde.
+- **Änderungen wirken sofort.** Der Rechte-Zwischenspeicher wird bei jeder Änderung geleert; der
+  Knopf „Rechte jetzt anwenden" ist nur für Korrekturen an der Datenbank vorbei gedacht.
+- **Zwei Grenzen neben den Rechten:** die erlaubten Institute eines Benutzers (Standort-Beschränkung,
+  inklusive Stamm-Institut) und die Datensichtbarkeit (nur eigene Daten / eigenes Team / alle Daten).
+  Bei mehreren Rollen gewinnt die weiteste Stufe; ohne Auswahl gilt „Alle Daten".
+- **Die Rollen in Produktion heißen anders als im Seeder** (admin, Büro, Institute MA, Leitung) —
+  es gibt dort **keinen** `super_admin` und damit keinen Rechte-Bypass.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Admin-Panel öffnen, Benutzer anlegen und Rollen zuweisen | Admin 1 |
+| Rechte einer Rolle im Baum setzen, Zugriffsstufen verstehen | Admin 1 |
+| Erlaubte Institute und Stamm-Institut am Benutzer setzen | Admin 1 |
+| Hub-Konto einrichten, einladen, beim Austritt archivieren | Team 1 |
+| Protokolle und Systemeinstellungen prüfen | Admin 8 |
+
+---
+
+## Für Entwickler
+
+### Überblick und Zahlen
+
+Grundlage ist **Spatie Laravel Permission v6**; rollenbasierte Zugriffskontrolle (RBAC) auf vier Ebenen:
 
 1. **Navigation** -- Menue-Eintraege werden nur angezeigt, wenn der Benutzer die passende Berechtigung hat
 2. **Routen** -- Jede URL ist mit Middleware geschuetzt und gibt bei fehlendem Zugriff eine 403-Seite zurueck
 3. **Seiten-Elemente** -- Action-Buttons (Erstellen, Bearbeiten, Loeschen) werden per `@can`-Direktive ein-/ausgeblendet
 4. **Admin-Panel** -- Filament-Ressourcen und -Seiten pruefen Berechtigungen ueber Policies und `canAccess()`
-
-### Zahlen
 
 | Kennzahl | Wert |
 |----------|------|
@@ -55,11 +107,7 @@ Das Berechtigungssystem steuert den Zugriff auf alle Bereiche des glatttHub. Es 
 
 ---
 
-## Fuer Endanwender
-
-### Rollen
-
-Jedem Benutzer wird eine oder mehrere Rollen zugewiesen. Die Rolle bestimmt, was der Benutzer im glatttHub sehen und tun kann.
+### Rollen und Wirkung fehlender Rechte
 
 | Rolle | Beschreibung | Berechtigungen |
 |-------|-------------|----------------|
@@ -68,37 +116,14 @@ Jedem Benutzer wird eine oder mehrere Rollen zugewiesen. Die Rolle bestimmt, was
 | **user** | Basis-Hub-Zugang (Termine, Kunden, Personal ansehen) | 13 |
 | **finance** | Spezialisierte Finanz-Berechtigungen | 8 |
 
-### Was passiert bei fehlender Berechtigung?
+Das sind die **Seeder-Rollen**; in Produktion sieht der Bestand anders aus, siehe
+[Rollen in Produktion weichen vom Seeder ab](#rollen-in-produktion-weichen-vom-seeder-ab).
+
+Fehlt ein Recht:
 
 - **Navigation**: Menue-Punkte ohne Berechtigung werden nicht angezeigt
 - **Seiten-Elemente**: Buttons wie "Neuer Gutschein" oder "Bearbeiten" sind nicht sichtbar
 - **Direkte URL-Eingabe**: Es erscheint eine 403-Fehlerseite ("Zugriff verweigert")
-
-### Rollen bearbeiten (nur fuer Administratoren)
-
-Im Admin-Panel unter **Rollen** die gewuenschte Rolle oeffnen. Die Rechte stehen dort als **Baum
-entlang der Hub-Struktur**: Ebene 1 sind die Seiten in der Reihenfolge der Sidebar, Ebene 2 deren
-Unterseiten, Ebene 3 die einzelnen Rechte.
-
-1. Zweig aufklappen (Pfeil links) und einzelne Rechte setzen
-2. Die Checkbox am Zweig selbst vergibt oder entzieht **alle** Rechte des Zweigs auf einmal.
-   Ein waagerechter Strich statt Haekchen bedeutet: nur ein Teil der Rechte ist vergeben
-3. Der Zaehler rechts (`2/4`) zeigt, wie viele Rechte des Zweigs vergeben sind
-4. "Alle" und "Keine" oben wirken auf den gesamten Baum
-5. Speichern
-
-**Farbcodierung der Zugriffsstufe** -- damit ohne Lesen des Labels erkennbar ist, wie weit ein
-Recht reicht:
-
-| Farbe | Stufe | Bedeutung |
-|---|---|---|
-| Blau | Lesen | Sehen und oeffnen, nichts veraendern |
-| Orange | Bearbeiten | Anlegen und aendern, nichts unwiderruflich entfernen |
-| Rot | Vollzugriff | Loeschen, Geld bewegen, Systemkonfiguration |
-
-**Datensichtbarkeit** steht als eigener Bereich ueber den Berechtigungen. Da sich die drei Stufen
-gegenseitig ausschliessen, ist es eine Auswahl und keine Sammlung von Checkboxen. Ohne bewusste
-Auswahl gilt "Alle Daten"; hat ein Benutzer mehrere Rollen, gewinnt die weiteste Stufe.
 
 ### Rechte pflegen: Admin-Panel → Berechtigungen
 
@@ -109,21 +134,8 @@ Wie ein Recht im Rollen-Editor erscheint, wird unter **Berechtigungen** gepflegt
 - Mehrere Rechte lassen sich per Sammelaktion umhaengen oder auf eine Stufe setzen
 
 Neue Rechte **anlegen** und **loeschen** bleibt bewusst den Migrationen vorbehalten -- ein Recht
-ohne Gate im Code waere wirkungslos, genau das hat das Audit aufgeraeumt.
-
-### Wirken Aenderungen sofort?
-
-Ja. Der Berechtigungs-Cache wird bei jeder Aenderung an einer Rolle oder einem Recht automatisch
-geleert, und er liegt im Datenbank-Store -- ein Flush wirkt damit fuer alle laufenden
-Cloud-Run-Instanzen zugleich.
-
-Der Knopf **"Rechte jetzt anwenden"** im Kopf der Rollen- und der Berechtigungs-Seite wird nur
-gebraucht, wenn am Model vorbei geschrieben wurde: direktes SQL, eine Datenkorrektur oder ein
-Import. Dann haelt der Cache sonst bis zu 24 Stunden den alten Stand.
-
----
-
-## Fuer Entwickler
+ohne Gate im Code waere wirkungslos, genau das hat das Audit aufgeraeumt. Zum Cache-Verhalten
+siehe [Wirken Rechte-Aenderungen sofort?](#wirken-rechte-aenderungen-sofort-cache).
 
 ### Technischer Stack
 
@@ -526,6 +538,25 @@ Zwei Regeln dabei:
   einer einzelnen Checkbox ist keine Gliederung. Ohne diese Regel haette der Berichte-Zweig
   14 Unterzweige mit je einem Eintrag
 
+#### Bedienelemente und Farbcodierung
+
+Die Checkbox am Zweig selbst vergibt oder entzieht **alle** Rechte des Zweigs; ein waagerechter
+Strich statt Haekchen heisst „nur ein Teil vergeben". Der Zaehler am Zweig (`2/4`) nennt die Zahl
+der vergebenen Rechte, "Alle"/"Keine" oben wirken auf den gesamten Baum.
+
+Die Zugriffsstufe (`permissions.access_level`) ist farbig codiert, damit ohne Lesen des Labels
+erkennbar ist, wie weit ein Recht reicht:
+
+| Farbe | Stufe | Bedeutung |
+|---|---|---|
+| Blau | Lesen | Sehen und oeffnen, nichts veraendern |
+| Orange | Bearbeiten | Anlegen und aendern, nichts unwiderruflich entfernen |
+| Rot | Vollzugriff | Loeschen, Geld bewegen, Systemkonfiguration |
+
+**Datensichtbarkeit** steht als eigener Bereich ueber den Berechtigungen. Da sich die drei Stufen
+gegenseitig ausschliessen, ist es eine Auswahl und keine Sammlung von Checkboxen. Ohne bewusste
+Auswahl gilt "Alle Daten"; hat ein Benutzer mehrere Rollen, gewinnt die weiteste Stufe.
+
 #### Datenfluss
 
 ```
@@ -894,7 +925,7 @@ mysql -u USER -p DATENBANK < scripts/production-permissions-2026-03-29.sql
 
 Neben dem rollenbasierten Berechtigungssystem gibt es eine separate **Standort-Beschraenkung** pro User. Damit laesst sich festlegen, welche Phorest-Branches ein Benutzer in der Sidebar sehen und auswaehlen kann.
 
-### Fuer Endanwender
+### Fachliches Verhalten
 
 - **Keine Einschraenkung (Standard):** Der User sieht alle Institute in der Sidebar, inklusive der Option "Alle Standorte".
 - **Mit Einschraenkung:** Der User sieht nur die ihm zugewiesenen Institute. Die Option "Alle Standorte" ist ausgeblendet.
@@ -911,7 +942,7 @@ Im Filament Admin-Panel unter **Benutzer bearbeiten** gibt es die Sektion **"Erl
 4. Das **Stamm-Institut** Dropdown passt sich automatisch an: es zeigt nur die erlaubten Institute
 5. Wird ein Branch aus den erlaubten Instituten entfernt, wird das Stamm-Institut automatisch zurueckgesetzt
 
-### Fuer Entwickler
+### Technische Umsetzung
 
 #### Datenmodell
 

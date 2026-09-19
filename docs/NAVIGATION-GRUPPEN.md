@@ -2,18 +2,25 @@
 
 Seit 19.08.2026 ist die Hauptnavigation gruppiert: Die Sidebar zeigt nicht mehr
 19 gleichrangige Menüpunkte untereinander, sondern vier täglich gebrauchte
-Seiten plus fünf aufklappbare Gruppen.
+Seiten plus fünf aufklappbare Gruppen; das mobile Mehr-Sheet übernimmt denselben
+Zuschnitt als Überschriften. Diese Seite beschreibt **die eine Quelle des
+Zuschnitts (`NavigationGroups`), die Pflichtschritte für neue Menüpunkte, die
+Aufklapp-Mechanik, das Flyout der eingeklappten Leiste und die Kopplung an die
+Einführungstour**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
-## Für Endanwender
+!!! nutzerhandbuch "Bedienung: Grundlagen 1 – Anmelden & zurechtfinden"
+    [hilfe.hub.glattt.com/grundlagen/1/](https://hilfe.hub.glattt.com/grundlagen/1/) — die Seitenleiste, Gruppen auf- und zuklappen, eingeklappte Leiste.
 
-### Was sich geändert hat
+    Angrenzend: [Grundlagen 4 – Auf dem Handy und Tablet](https://hilfe.hub.glattt.com/grundlagen/4/) (das Mehr-Menü mit denselben Gruppen).
 
-Oben stehen unverändert die Seiten, die jeden Tag mehrfach gebraucht werden —
-**Start, Termine, Kunden, Berichte**. Sie sind weiterhin mit einem Klick
-erreichbar.
+---
 
-Darunter liegen die Gruppen. Jede zeigt ihr Symbol, den Namen und die Anzahl
-der Einträge, die du sehen darfst:
+## Für Anwender — Überblick
+
+**Was die Gruppierung leistet.** Oben stehen unverändert die Seiten, die jeden
+Tag mehrfach gebraucht werden — **Start, Termine, Kunden, Berichte** — mit einem
+Klick erreichbar. Darunter liegen fünf Gruppen, jede mit Symbol, Namen und der
+Anzahl der Einträge, die man sehen darf:
 
 | Gruppe | Enthält |
 |---|---|
@@ -23,27 +30,29 @@ der Einträge, die du sehen darfst:
 | **Betrieb** | Institute, Laser, Services, Formulare |
 | **System** | Report-Mails, Audit, Einstellungen, Admin Panel |
 
-### Bedienung
+**Grundsätze:**
 
-- Ein Klick auf den Gruppennamen klappt die Gruppe auf. Dabei schließt sich die
-  zuvor offene Gruppe — es ist immer **höchstens eine Gruppe offen**, damit die
-  Leiste kurz bleibt.
-- Die Gruppe der Seite, auf der du gerade bist, ist beim Laden **schon offen**.
-  Du musst nach einem Seitenwechsel also nichts erneut aufklappen.
-- Welche Gruppe du zuletzt offen hattest, merkt sich der Hub pro Browser.
-- **Eingeklappte Leiste** (Klick aufs Logo): Fährst du mit der Maus über ein
-  Gruppensymbol, klappt die Gruppe als kleines Panel daneben auf.
-- Gruppen, in denen du **keinen einzigen Eintrag** sehen darfst, tauchen gar
-  nicht erst auf.
-- Am schnellsten bleibt in vielen Fällen die **globale Suche** (⌘K / Strg+K) —
-  sie findet jede Seite ohne den Weg über das Menü.
+- **Höchstens eine Gruppe ist offen** (Akkordeon), damit die Leiste kurz bleibt;
+  die Gruppe der aktuellen Seite ist beim Laden schon offen, die zuletzt offene
+  merkt sich der Hub pro Browser.
+- **Gruppen ohne sichtbaren Eintrag tauchen nicht auf** — die Rechte entscheiden.
+- **Eingeklappte Leiste:** Beim Überfahren eines Gruppensymbols öffnet sich die
+  Gruppe als Flyout daneben.
+- **Am Smartphone** zeigt das Mehr-Sheet weiterhin alle Bereiche; die Gruppen sind
+  dort nur Überschriften über dem Kachelraster (Schnellzugriff, Verkauf, Finanzen,
+  Team, Betrieb, System). Nichts ist versteckt, es ist nur sortiert.
+- Am schnellsten bleibt oft die **globale Suche** — sie findet jede Seite ohne den
+  Weg über das Menü (siehe `GLOBAL-SEARCH.md`).
 
-### Am Smartphone
+**Wo was erledigt wird:**
 
-Das „Mehr"-Sheet zeigt weiterhin **alle** Bereiche auf einen Blick; die
-Gruppen erscheinen dort nur als Überschriften über dem Kachelraster
-(Schnellzugriff, Verkauf, Finanzen, Team, Betrieb, System). Nichts ist
-versteckt, es ist nur sortiert.
+| Vorgang | Anleitung |
+|---|---|
+| Seitenleiste lesen, Gruppen auf-/zuklappen, Leiste einklappen | Grundlagen 1 |
+| Mehr-Menü am Handy/Tablet | Grundlagen 4 |
+| Seite über die Suche statt über das Menü öffnen | Grundlagen 2 |
+
+---
 
 ## Für Entwickler
 

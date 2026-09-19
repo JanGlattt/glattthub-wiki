@@ -1,25 +1,88 @@
 # Beratungs-WhatsApp (Automatisierung)
 
-Automatische WhatsApp-Nachricht an Kunden bei ihrer **ersten Beratungsbuchung** — versendet über Superchat mit einem von Meta genehmigten WhatsApp-Template, konfigurierbar **je Standort**.
+Automatische WhatsApp-Nachricht an Kunden bei ihrer **ersten Beratungsbuchung** — versendet über
+Superchat mit einem von Meta genehmigten WhatsApp-Template, konfigurierbar **je Standort**, mit
+optionalem personalisiertem Gutschein-Kauf-Link und SMS/RCS-Fallback über Twilio. Diese Seite
+beschreibt **Auslöser, Fachregeln, Datenmodell, Job-Kette und Fallstricke**; die Bedienung im
+Admin-Panel steht im Nutzerhandbuch.
 
-## Für Endanwender
+!!! nutzerhandbuch "Bedienung: Admin 4 – Erinnerungen und WhatsApp"
+    [hilfe.hub.glattt.com/admin/4/](https://hilfe.hub.glattt.com/admin/4/) — Beratungs-WhatsApp je
+    Standort einrichten (Kanal, Vorlage, Platzhalter), Protokolle lesen und Fehlversuche wiederholen.
 
-### Einrichtung
+    Angrenzend: [Admin 3 – Gutschein-Verkauf](https://hilfe.hub.glattt.com/admin/3/) (Gutschein-Produkt
+    hinter dem Kauf-Link) und [Berichte 12 – Gutschein-Aktion](https://hilfe.hub.glattt.com/berichte/12/)
+    (was aus den versendeten Angeboten wird).
 
-**Admin-Panel → Integrationen → Beratungs-WhatsApp**
+---
 
-1. **„Standorte laden"** klicken — legt für jeden Phorest-Standort eine Konfigurationszeile an.
-2. Standort bearbeiten:
-    - **Automatischer Versand aktiv** einschalten
-    - **WhatsApp-Kanal** wählen (die Kanäle kommen live aus Superchat — in der Regel der Kanal des Standorts)
-    - **WhatsApp-Vorlage** wählen (nur von Meta genehmigte Templates des gewählten Kanals; die Vorschau zeigt den Text)
-    - **Gutschein-Produkt für den Kauf-Link** wählen (optional): Grundlage für den Platzhalter „Gutschein-Kauf-Link"
-    - **Platzhalter zuordnen**: Für jede Variable der Vorlage (`{{1}}`, `{{2}}`, …) den Inhalt wählen — Vorname, Nachname, vollständiger Name, Termin-Datum, Termin-Uhrzeit, Standort-Name, **Gutschein-Kauf-Link (personalisiert)** oder ein fester Text.
+## Für Anwender — Überblick
 
-**Gutschein-Kauf-Link:** Ist der Platzhalter gemappt, erzeugt der Versand automatisch einen **personalisierten Kauf-Link** (`VoucherPurchaseToken`) für das gewählte Gutschein-Produkt — mit vorbefülltem Kundenprofil (Phorest-Kunde, Name, **E-Mail**, Telefon) und Standort, Kampagnen-Label „Beratungs-WhatsApp" und **gültig bis zum Tag des Beratungstermins** („Nur bis zu Deinem Termin…"). Diese Links erscheinen ganz normal in der Kauf-Link-Verwaltung des Gutschein-Verkaufs. Bei einem erneuten Versand (Retry) wird ein noch gültiger Kampagnen-Token wiederverwendet statt ein neuer erzeugt. Kauft der Kunde über den Kampagnen-Link, verfällt auch das **Bonus-Guthaben des gekauften Gutscheins am Beratungstag** (festes `bonus_valid_until_date` am Bestell-Item) statt nach der Produkt-Standardfrist — Kassen-Hinweis, Phorest-Gutschein, Mail und Rechnung zeigen das Datum. Fehlt das Produkt, obwohl der Platzhalter gemappt ist, schlägt der Versand mit klarer Meldung im Protokoll fehl.
-3. Die Status-Spalte der Übersicht zeigt, ob ein Standort vollständig konfiguriert ist („Sendet automatisch") oder noch etwas fehlt.
+**Was die Automatisierung leistet.** Bucht eine Kundin zum ersten Mal ein Beratungsgespräch,
+schickt der Hub ihr ohne Zutun eine WhatsApp — Begrüßung, Termindaten und auf Wunsch ein nur bis
+zum Termintag gültiges Gutschein-Angebot. Eingerichtet wird das je Standort im Admin-Panel
+(Kanal, genehmigte Meta-Vorlage, Belegung der Platzhalter, optionales Versandfenster); das
+Protokoll zeigt für jeden Termin, ob gesendet, bewusst übersprungen oder fehlgeschlagen wurde,
+und lässt Fehlversuche wiederholen.
 
-### Wann wird gesendet?
+**Grundsätze, die überall gelten:**
+
+- **Nur die allererste Beratung eines Kunden** löst eine Nachricht aus, und **höchstens eine
+  Nachricht je Termin** — auch bei mehrfachen Sync-Läufen.
+- **Der Versand hängt nicht am nächtlichen Sync:** Buchungen über das Online-Widget gehen
+  innerhalb von Sekunden raus, der Phorest-Sync ist nur das Auffangnetz für telefonische Buchungen.
+- **Ein Standort sendet erst, wenn er vollständig konfiguriert ist** (aktiv, Kanal, genehmigte
+  Vorlage, alle Platzhalter belegt) — die Status-Spalte der Übersicht sagt, was fehlt.
+- **Kommt die WhatsApp nicht an,** geht dieselbe Botschaft automatisch per SMS/RCS raus — sofern
+  für den Standort ein Fallback-Text gepflegt ist.
+- **Das Protokoll ist die einzige Anlaufstelle.** Es gibt bewusst keine zusätzlichen Alarm-Mails.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Standorte laden, Kanal, Vorlage und Platzhalter einrichten | Admin 4 |
+| Versandfenster und SMS/RCS-Fallback-Text pflegen | Admin 4 |
+| Protokoll lesen, Fehlversuch wiederholen | Admin 4 |
+| Gutschein-Produkt hinter dem Kauf-Link pflegen | Admin 3 |
+| Wirkung der Aktion auswerten | Berichte 12 |
+
+---
+
+## Für Entwickler
+
+### Konfiguration je Standort (Fachregeln)
+
+Eine Zeile je Phorest-Standort (`consultation_whatsapp_settings`), angelegt über
+„Standorte laden" im Admin-Panel:
+
+- **Automatischer Versand aktiv** — ohne Häkchen passiert nichts.
+- **WhatsApp-Kanal** — live aus Superchat geladen, in der Regel der Kanal des Standorts.
+- **WhatsApp-Vorlage** — nur von Meta genehmigte Templates des gewählten Kanals.
+- **Gutschein-Produkt für den Kauf-Link** (optional) — Grundlage des Platzhalters
+  „Gutschein-Kauf-Link".
+- **Platzhalter-Zuordnung** — je Variable der Vorlage (`{{1}}`, `{{2}}`, …) eine Quelle:
+  Vorname, Nachname, vollständiger Name, Termin-Datum, Termin-Uhrzeit, Standort-Name,
+  Gutschein-Kauf-Link (personalisiert) oder fester Text
+  (`ConsultationWhatsappSetting::variableSources()`).
+- **Versandfenster** („frühestens ab / spätestens bis", optional) — hält Buchungen außerhalb des
+  Fensters zurück, siehe [Wann gesendet wird](#wann-gesendet-wird).
+- **Status „Sendet automatisch"** setzt voraus, dass alles davon vollständig ist
+  (`isReadyToSend()`).
+
+**Gutschein-Kauf-Link:** Ist der Platzhalter gemappt, erzeugt der Versand automatisch einen
+**personalisierten Kauf-Link** (`VoucherPurchaseToken`) für das gewählte Gutschein-Produkt — mit
+vorbefülltem Kundenprofil (Phorest-Kunde, Name, **E-Mail**, Telefon) und Standort, Kampagnen-Label
+„Beratungs-WhatsApp" und **gültig bis zum Tag des Beratungstermins** („Nur bis zu Deinem Termin…").
+Diese Links erscheinen ganz normal in der Kauf-Link-Verwaltung des Gutschein-Verkaufs. Bei einem
+erneuten Versand (Retry) wird ein noch gültiger Kampagnen-Token wiederverwendet statt ein neuer
+erzeugt. Kauft der Kunde über den Kampagnen-Link, verfällt auch das **Bonus-Guthaben des gekauften
+Gutscheins am Beratungstag** (festes `bonus_valid_until_date` am Bestell-Item) statt nach der
+Produkt-Standardfrist — Kassen-Hinweis, Phorest-Gutschein, Mail und Rechnung zeigen das Datum.
+Fehlt das Produkt, obwohl der Platzhalter gemappt ist, schlägt der Versand mit klarer Meldung im
+Protokoll fehl.
+
+### Wann gesendet wird
 
 - **Live-Trigger (Standard):** Das Online-Buchungswidget meldet jede abgeschlossene Buchung sofort per API (`booking_trackings`) — die WhatsApp geht innerhalb von Sekunden raus, ohne auf einen Sync zu warten.
 - **Auffangnetz:** Der Phorest-Sync (`sync:upcoming-consultations`, Cron) erkennt zusätzlich Beratungen, die nicht übers Widget gebucht wurden (telefonisch, direkt in Phorest). Die Dedupe je Termin verhindert Doppel-Nachrichten.
@@ -30,9 +93,8 @@ Automatische WhatsApp-Nachricht an Kunden bei ihrer **ersten Beratungsbuchung** 
 
 ### Versand-Protokoll
 
-**Admin-Panel → Integrationen → Beratungs-WhatsApp Protokoll**
-
-Jeder Verarbeitungsvorgang wird protokolliert:
+Filament-Resource „Beratungs-WhatsApp Protokoll" (Gruppe „Integrationen"), Quelle
+`consultation_whatsapp_logs` — jeder Verarbeitungsvorgang wird protokolliert:
 
 | Status | Bedeutung |
 |---|---|
@@ -42,9 +104,9 @@ Jeder Verarbeitungsvorgang wird protokolliert:
 
 Fehlgeschlagene Einträge haben eine Aktion **„Erneut versuchen"**, die den Versand für den Termin neu anstößt. Es gibt bewusst keine zusätzlichen Alarm-Benachrichtigungen — das Protokoll ist die eine Anlaufstelle.
 
-## Für Entwickler
+### Datenfluss & Job-Kette
 
-**Datenfluss (zwei Trigger, eine Pipeline):**
+**Zwei Trigger, eine Pipeline:**
 
 1. **Live (Widget):** `POST /api/v1/booking-trackings` → `BookingTrackingObserver::created()` (Beratungs-Service? Standort aktiv? Termin noch unbekannt?) → `RegisterConsultationBookingJob` holt die Termindetails aus Phorest (`getAppointment`) und legt die Zeile in `upcoming_consultations` an → deren Observer übernimmt. Schlägt der Phorest-Abruf dauerhaft fehl (3 Versuche, Backoff), bleibt keine halbe Zeile zurück — der Sync fängt nachts auf.
 2. **Sync (Auffangnetz):** `sync:upcoming-consultations` (Cron) legt neue Zeilen in `upcoming_consultations` an (Upsert über `appointment_id` — vom Live-Trigger angelegte Zeilen werden nur aktualisiert).
@@ -77,9 +139,10 @@ wird — Annahmequote, Conversion und Vergleich der Kundengruppen — steht unte
 beim Vertragsabschluss automatisch auf sechs Monate verlängert wird und warum das Kampagnen-Kennzeichen
 `Beratungs-WhatsApp` am Kauf-Token die eindeutige Erkennung liefert.
 
-## RCS/SMS-Fallback & Zustell-Check (seit 28.08.2026)
 
-**Für Endanwender:** Schlägt die Beratungs-WhatsApp fehl oder kommt sie nicht
+### RCS/SMS-Fallback & Zustell-Check (seit 28.08.2026)
+
+**Fachlich:** Schlägt die Beratungs-WhatsApp fehl oder kommt sie nicht
 an (z.B. kein WhatsApp auf dem Handy), bekommt der Kunde dieselbe Botschaft
 automatisch per SMS/RCS über Twilio — Absender „glattt". Der Fallback-Text
 wird je Standort im Admin gepflegt (Sektion „RCS/SMS-Fallback" der
@@ -88,8 +151,6 @@ ohne Text bleibt der Fallback für den Standort aus. Das Protokoll zeigt je
 Eintrag zwei neue Badges: **Zustellung** (Zugestellt/Gelesen/Nicht
 zugestellt) und **Fallback** (per SMS/RCS zugestellt, fehlgeschlagen,
 übersprungen).
-
-**Für Entwickler:**
 
 - Sofort-Fallback in `SendConsultationWhatsappJob` bei WhatsApp-spezifischen
   Fehlschlägen (Superchat-Kontakt, Template, Versand-API) →

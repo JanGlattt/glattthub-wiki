@@ -1,34 +1,63 @@
 # Buchungseingangs-Kalender
 
-## Übersicht
+Interaktiver Monatskalender auf der Berichtsseite [Vergangene Beratungsgespräche](PAST-CONSULTATIONS.md)
+(`/hub/reports/past-consultations`): Er zeigt, **wann Buchungen eingegangen sind** — also den
+Buchungszeitpunkt, nicht das Termindatum. Diese Seite beschreibt **Datenquellen, Queries,
+Status-Ableitung, Frontend-Komponente, Response-Format und bekannte Einschränkungen**; die Bedienung
+Schritt für Schritt steht im Nutzerhandbuch.
 
-Der **Buchungseingangs-Kalender** ist ein interaktiver Monatskalender auf der Seite „Vergangene Beratungsgespräche" (`/hub/reports/past-consultations`). Er zeigt, **wann Buchungen eingegangen sind** — also den Buchungszeitpunkt, nicht das Termindatum.
+!!! nutzerhandbuch "Bedienung: Berichte 3 – Vergangene Beratungsgespräche"
+    [hilfe.hub.glattt.com/berichte/3/](https://hilfe.hub.glattt.com/berichte/3/) — die Seite, auf der
+    dieser Kalender sitzt. Rahmen aller Berichtsseiten (Zeitraum und Standort, Kennzahlen-Zeile,
+    Diagramm oder Tabelle, Export): [Berichte 0](https://hilfe.hub.glattt.com/berichte/0/).
 
-> ⚠️ **Wichtiger Hinweis für Endanwender:** Das Datum im Kalender ist der **Buchungseingang** (wann der Kunde gebucht hat), nicht der Termin selbst. Ein Kalenderklick auf „15. April" zeigt alle Buchungen, die am 15. April eingegangen sind — die Termine selbst können an anderen Tagen liegen.
+    **Für diese Einzelkarte gibt es noch keine eigene Klickanleitung — Anleitung folgt.** Bis dahin:
+    Serien-Übersicht [hilfe.hub.glattt.com/berichte/](https://hilfe.hub.glattt.com/berichte/).
 
 ---
 
-## Endbenutzer-Dokumentation
+## Für Anwender — Überblick
 
-### Wo finde ich den Kalender?
+**Was der Kalender beantwortet.** An welchen Tagen sind Buchungen eingegangen, wie viele, und was ist
+aus ihnen geworden. Jeder Kalendertag trägt die Gesamtzahl der an diesem Tag **eingegangenen**
+Buchungen plus farbige Badges für stattgefunden, ausstehend, gelöscht und No-Show; daneben steht eine
+Wochen-Zusammenfassung je Standort. Ein Klick auf einen Tag öffnet die vollständige Buchungsliste
+dieses Tages mit Kundin, Termin, Standort, Status, Herkunft (Google Ads, Meta Ads, organisch, offline)
+und — falls vorhanden — dem daraus entstandenen Vertrag mit KPZ-Zahl.
 
-Hub → Berichte → Vergangene Beratungsgespräche → Abschnitt „Buchungseingangs-Kalender"
+!!! warning "Das Datum ist der Buchungseingang, nicht der Termin"
+    Ein Klick auf den „15. April" zeigt alle Buchungen, die **am 15. April eingegangen** sind — die
+    Termine selbst können an ganz anderen Tagen liegen. Genau das ist der Zweck der Karte: Sie misst
+    die Nachfrage zum Zeitpunkt ihrer Entstehung, nicht die Auslastung.
 
-### Kalender-Ansicht
+**Zwei Ansichten:** Anzahl (Standard) oder No-Show-Quote je Tag. Die genaue Bedeutung der Status- und
+Herkunftswerte steht unten unter [Status- und Herkunftswerte](#status-und-herkunftswerte); warum
+frische Buchungen zunächst als „Ausstehend" erscheinen, unter
+[Bekannte Einschränkungen](#bekannte-einschrankungen).
 
-Jeder Tag zeigt:
-- **Gesamtanzahl** Buchungen (große Zahl)
-- **Farbige Badges** mit Aufschlüsselung:
-  - ✓ Grün = stattgefundene Termine
-  - ◦ Neutral = ausstehend / noch nicht synchronisiert
-  - ✗ Rot = gelöschte Termine
-  - ⚠ Orange = No-Shows / No-Show-Rate (je nach Ansichtsmodus)
+**Wo was erledigt wird:**
 
-Rechts neben dem Kalender erscheint eine **KW-Zusammenfassung** mit der Buchungsanzahl pro Standort.
+| Vorgang | Anleitung |
+|---|---|
+| Die Seite öffnen, auf der der Kalender sitzt | Berichte 3 |
+| Zeitraum und Standort, Diagramm/Tabelle, Export | Berichte 0 |
+| Diesen Kalender Schritt für Schritt | Anleitung folgt (Serie Berichte) |
 
-### Tagesdetail-Modal
+---
 
-Klick auf einen Kalendertag öffnet ein Modal mit der **vollständigen Buchungsliste** für diesen Tag als Tabelle:
+## Für Entwickler
+
+### Aufbau der Karte
+
+Jeder Tag zeigt die **Gesamtanzahl** Buchungen (große Zahl) und farbige Badges mit der
+Aufschlüsselung: ✓ grün = stattgefundene Termine, ◦ neutral = ausstehend / noch nicht synchronisiert,
+✗ rot = gelöschte Termine, ⚠ orange = No-Shows bzw. No-Show-Rate (je nach Ansichtsmodus). Rechts
+neben dem Kalender steht eine **KW-Zusammenfassung** mit der Buchungsanzahl pro Standort.
+
+**Zwei Ansichtsmodi** über einen Toggle: **Anzahl** (Standard, absolute Buchungsanzahl pro Tag) und
+**No-Show-Rate** (Quote in %, Farbintensität spiegelt sie wider).
+
+**Tagesdetail-Modal** — vollständige Buchungsliste des Tages als Tabelle:
 
 | Spalte | Inhalt |
 |--------|--------|
@@ -37,9 +66,9 @@ Klick auf einen Kalendertag öffnet ein Modal mit der **vollständigen Buchungsl
 | **Standort** | Institutsname (ohne Präfix „glattt ") |
 | **Status** | Buchungsstatus (siehe unten) |
 | **Herkunft** | Wie die Buchung zustande kam |
-| **Vertrag** | KPZ-Anzahl und Vertragsnummer, falls vorhanden |
+| **Vertrag** | KPZ-Anzahl und Vertragsnummer, falls vorhanden — grünes Badge mit Abschlussdatum bei aktivem oder abgeschlossenem Vertrag, sonst „–" |
 
-#### Status-Werte
+### Status- und Herkunftswerte
 
 | Status | Farbe | Bedeutung |
 |--------|-------|-----------|
@@ -49,30 +78,12 @@ Klick auf einen Kalendertag öffnet ein Modal mit der **vollständigen Buchungsl
 | Ausstehend | Grau | Termin noch nicht mit Phorest synchronisiert |
 | Gelöscht | Rot | Termin wurde gelöscht |
 
-#### Herkunft-Werte
-
 | Herkunft | Bedeutung |
 |----------|-----------|
 | Google Ads | Über Google Ads Kampagne gebucht (gclid vorhanden) |
 | Meta Ads | Über Meta/Facebook Kampagne gebucht (fbclid vorhanden) |
 | Organisch | Online gebucht, ohne bezahlte Kampagne |
 | Offline / Institut | Im Institut oder telefonisch gebucht |
-
-#### Vertragsspalte
-
-- **Grünes Badge** mit KPZ-Anzahl + Vertragsnummer und Abschlussdatum, wenn ein aktiver oder abgeschlossener Vertrag vorliegt
-- **„–"** wenn kein Vertrag vorhanden
-
-### Zwei Ansichtsmodi
-
-Der Kalender hat einen Toggle für zwei Darstellungsmodi:
-
-1. **Anzahl-Modus** (Standard): Zeigt die absolute Buchungsanzahl pro Tag
-2. **No-Show-Rate-Modus**: Zeigt die No-Show-Quote in % pro Tag (Farbe spiegelt Intensität wider)
-
----
-
-## Entwickler-Dokumentation
 
 ### Architektur
 

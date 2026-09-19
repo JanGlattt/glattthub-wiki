@@ -5,6 +5,9 @@
 > **API-Endpoint:** `POST /api/v1/contracts/import`  
 > **Google Apps Script:** `ContractPreprocess.gs` + `ContractImport.gs`
 
+!!! nutzerhandbuch "Bedienung: Verträge 8 – Import-Probleme und Werber"
+    [hilfe.hub.glattt.com/vertraege/8/](https://hilfe.hub.glattt.com/vertraege/8/) — fehlgeschlagene Importe korrigieren oder verwerfen. Hier: Sheet-Struktur, Sync-Job und Fehlerklassen.
+
 ## Übersicht
 
 Automatischer Import neuer Verträge aus einem Google Sheet in die GlattHub-Datenbank. Ein zweistufiger Prozess bereitet die Daten zunächst auf (Preprocessing) und importiert sie dann per REST-API. Der Import erzeugt je nach Zahlungsart einen `Contract` und optional ein `ClientMandate` (SEPA).

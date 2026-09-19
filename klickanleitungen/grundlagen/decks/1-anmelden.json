@@ -13,9 +13,10 @@
  "subtitle": "Klickanleitung für den glatttHub — von der Anmeldung bis zum richtigen Menüpunkt",
  "eyebrow": "Grundlagen · Anmeldung & Navigation",
  "footerArea": "Grundlagen",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "19.09.2026",
+ "version": "1.1",
  "notes": [
+  "Auf den Macs im Institut und im Büro gibt es den Hub auch als **Desktop-App** — ein eigenes Fenster mit eigenem Symbol im Dock. Sie zeigt genau dieselbe Website: Anmeldung, Menü und alle Abläufe sind identisch mit dem Browser.",
   "Zwei Wege hinein: **PIN** für den schnellen Wechsel im Institut, **E-Mail und Passwort** als vollständige Anmeldung.",
   "Die Seitenleiste ist **nach Themen gruppiert** — was täglich gebraucht wird, steht oben ohne Gruppe.",
   "**Jede sieht nur, was sie darf.** Fehlt ein Menüpunkt, fehlt die Berechtigung — nicht der Hub."

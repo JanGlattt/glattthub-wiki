@@ -1,5 +1,8 @@
 # Institutsseite — Tageserfassung Beratungsgespräche
 
+!!! info "Keine Klickanleitung — Modul wird abgelöst"
+    Für die Institutsseite gibt es bewusst **kein** Dokument im Nutzerhandbuch: Sie wird abgelöst, und bis dahin arbeiten die Institute dort ohne Hilfe-Portal (Entscheidung Jan, 19.09.2026). Der Abschnitt „Für Endanwender" auf dieser Seite bleibt deshalb die einzige Beschreibung des Ablaufs. Das ältere PDF „Tageserfassung Beratungsgespräche" (25.08.2026) existiert noch, seine Quellen sind verloren.
+
 Externe, pro Institut tokengesicherte Seite (ohne Login), auf der die Institute
 ihre Beratungsgespräche des Tages direkt erfassen: **Verkauf**, **Nicht-Verkauf**
 oder **Upselling**. Verträge entstehen damit sofort und vollständig im Hub —

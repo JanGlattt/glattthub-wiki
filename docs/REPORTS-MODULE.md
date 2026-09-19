@@ -1,12 +1,79 @@
-# Reports Modul - Dokumentation
+# Reports-Modul
 
-## Übersicht
+Das **Reports-Modul** bündelt die Statistiken und Analysen des Hubs unter `/hub/reports`: die
+Übersichtsseite mit eigenen Dashboards und den festen Berichten aus der `ReportRegistry`, die
+terminbezogenen Berichte des `ReportController` (Beratungsgespräche, Stornos, Terminstatistik,
+Auslastung, Slots, Vorlauf, Wochentag/Uhrzeit) sowie die gemeinsamen Bausteine (KPI-Zeile,
+Lazy Loading, Feiertage, Standort-Filter). Diese Seite beschreibt **Aufbau, Endpunkte, Dateien
+und Datenquellen**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch. Berichte mit
+eigener Wiki-Seite (Verkaufsstatistik, Kundenstatistik, glattt-KPIs, …) sind dort dokumentiert.
 
-Das **Reports Modul** bietet umfassende Statistiken und Analysen für das Institut-Management. Alle Reports sind über `/hub/reports` erreichbar und unterstützen die Branch-Filterung über das globale Header-Dropdown.
+!!! nutzerhandbuch "Bedienung: Berichte 0 – So funktionieren die Berichte"
+    [hilfe.hub.glattt.com/berichte/0/](https://hilfe.hub.glattt.com/berichte/0/) — Zeitraum und
+    Standort, die Kennzahlen-Zeile, Diagramm oder Tabelle, Export und Verlässlichkeit — gilt für
+    jede Berichtsseite.
 
-## 📊 Verfügbare Reports
+    Die Berichte dieses Moduls: [Berichte 2 – Zukünftige Beratungsgespräche](https://hilfe.hub.glattt.com/berichte/2/) ·
+    [3 – Vergangene Beratungsgespräche](https://hilfe.hub.glattt.com/berichte/3/) ·
+    [4 – Stornierte und gelöschte Termine](https://hilfe.hub.glattt.com/berichte/4/) ·
+    [6 – Terminstatistik](https://hilfe.hub.glattt.com/berichte/6/); alle übrigen Berichte in der
+    Serien-Übersicht [Berichte](https://hilfe.hub.glattt.com/berichte/). Angrenzend:
+    [System 1 – Report-Mails einrichten](https://hilfe.hub.glattt.com/system/1/).
 
-### 1. Zukünftige Beratungsgespräche
+## Inhaltsverzeichnis
+
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Die Berichte des Moduls](#die-berichte-des-moduls)
+    - [Reports-Übersichtsseite](#reports-ubersichtsseite)
+    - [Technische Architektur](#technische-architektur)
+    - [Datenquellen](#datenquellen)
+    - [Berechtigungen](#berechtigungen)
+    - [Mobile Unterstützung](#mobile-unterstutzung)
+    - [Dark Mode](#dark-mode)
+- [Changelog](#changelog)
+
+---
+
+## Für Anwender — Überblick
+
+**Was das Modul leistet.** Unter „Berichte" findet das Team alle Auswertungen des Hubs an einem
+Ort: oben die selbst gebauten Dashboards, darunter die festen Berichte als Karten mit
+Live-Vorschau. Jeder Bericht folgt demselben Rahmen — Zeitraum und Standort aus der Seitenleiste,
+eine personalisierbare Kennzahlen-Zeile, Karten mit Diagramm und dahinterliegender Tabelle, ein
+CSV-Export im Seitenkopf. Die terminbezogenen Berichte (Beratungsgespräche kommend und vergangen,
+Stornos und Löschungen, Terminstatistik, Auslastung, freie Slots, Buchungsvorlauf, Wochentag &
+Uhrzeit) lesen aus der nächtlich synchronisierten Phorest-Terminhistorie; Kennzahlen des
+laufenden Monats fallen bei fehlenden Daten automatisch auf den Vormonat zurück (Monatslabel zeigt es).
+
+**Grundsätze:** Gezählt werden **stattgefundene Termine** (Phorest-Status PAID), sofern nicht
+ausdrücklich anders benannt (No-Shows, Stornos, Löschungen). Institute erscheinen überall in der
+konfigurierten Reihenfolge und Farbe; der Standort-Filter wirkt lückenlos, „Alle Standorte" lässt
+ausgeblendete Institute weg. Feiertage sind im Kalender bundesweit und regional berücksichtigt.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Zeitraum und Standort, Kennzahlen-Zeile anpassen, Diagramm/Tabelle, Export | Berichte 0 |
+| Zukünftige Beratungsgespräche (Kalender, Buchungsstand, Stornos im Blick) | Berichte 2 |
+| Vergangene Beratungsgespräche (Verlauf, No-Shows, Buchungseingang) | Berichte 3 |
+| Stornierte und gelöschte Termine (Vorlauf der Absagen, Muster) | Berichte 4 |
+| Terminstatistik (Auslastung, Terminarten, Termindauer, Top Services) | Berichte 6 |
+| Auslastung, Freie-Slots-Analyse, Buchungsvorlauf, Wochentag & Uhrzeit | Serie Berichte (Übersicht) |
+| Eigenes Dashboard bauen und teilen | [Eigenes Dashboard](CUSTOM-DASHBOARD.md) — Anleitung folgt (Berichte 17 geplant) |
+| Berichte per E-Mail versenden lassen | System 1 |
+
+---
+
+## Für Entwickler
+
+### Die Berichte des Moduls
+
+Routen, Inhalte, Endpunkte und Besonderheiten je Bericht. Berichte mit eigener Wiki-Seite sind
+verlinkt.
+
+#### 1. Zukünftige Beratungsgespräche
 **Route:** `/hub/reports/upcoming-consultations`
 
 Zeigt geplante Beratungstermine in den nächsten 7, 14 und 28 Tagen.
@@ -18,7 +85,7 @@ Zeigt geplante Beratungstermine in den nächsten 7, 14 und 28 Tagen.
 - Excel-Export
 - Alle KPI-Zusammenfassungen in Cards („Aktueller Buchungsstand", „Übersicht Beratungsgespräche", historischer Vergleich, Analysen) **und alle Karten der Berichte-Übersicht** nutzen die einheitliche Stat-Strip-Komponente (`.stat-strip-glattt`) — verbindliche Konvention für KPIs innerhalb von Cards, seit 08/2026 ohne Altbestand und durch `tests/Unit/StatStripConventionTest.php` abgesichert, siehe `.github/agents/design-system.md`
 
-#### Kalenderübersicht
+##### Kalenderübersicht
 
 Interaktiver Monatskalender mit zwei Ansichtsmodi:
 
@@ -27,7 +94,7 @@ Interaktiver Monatskalender mit zwei Ansichtsmodi:
 - **Toggle-Switch**: Umschalten zwischen beiden Ansichten im Kalender-Header
 - **Standort-Legende**: Farbige Punkte mit Standort-Namen (nur in pro-Standort-Ansicht)
 
-#### KW-Zusammenfassung
+##### KW-Zusammenfassung
 
 Am rechten Rand jeder Kalenderwoche wird eine KW-Karte angezeigt (nur Desktop >1350px):
 
@@ -36,7 +103,7 @@ Am rechten Rand jeder Kalenderwoche wird eine KW-Karte angezeigt (nur Desktop >1
 - Nur Standorte mit mindestens einem Termin werden angezeigt
 - Sortierung nach konfigurierter Standort-Reihenfolge (`sort_order`)
 
-#### Feiertage
+##### Feiertage
 
 Deutsche Feiertage werden automatisch im Kalender angezeigt. Die Erkennung basiert auf dem `spatie/holidays`-Paket und unterscheidet zwischen bundesweiten und regionalen Feiertagen.
 
@@ -63,7 +130,7 @@ Deutsche Feiertage werden automatisch im Kalender angezeigt. Die Erkennung basie
 | Bremen | Bremen | DE-HB |
 | Braunschweig | Niedersachsen | DE-NI |
 
-#### Responsive Verhalten
+##### Responsive Verhalten
 
 | Breakpoint | Verhalten |
 |------------|----------|
@@ -73,13 +140,13 @@ Deutsche Feiertage werden automatisch im Kalender angezeigt. Die Erkennung basie
 | ≤640px | Monatsname ausgeblendet, Auslastungs-Badge + Feiertags-Badge versteckt |
 | ≤480px | 2-Buchstaben-Wochentage, ultra-kompakt |
 
-#### Entwicklung geplanter Beratungsgespräche (seit 07/2026)
+##### Entwicklung geplanter Beratungsgespräche (seit 07/2026)
 
 Liniendiagramm (ECharts) direkt unter dem Kalender: Für jeden Stichtag seit Juni 2023
 wird der damalige Buchungsstand rekonstruiert — wie viele BGs waren an diesem Tag
 bereits für die nächsten **1, 3, 7 oder 28 Tage** gebucht?
 
-**Für Endanwender:**
+**Verhalten:**
 
 - **Zeitfenster-Umschalter**: 1 Tag / 3 Tage / 7 Tage / 28 Tage (Fenster = Stichtag + Folgetage)
 - **Gesamt / Standorte**: Umschalter wie bei der Freie-Slots-Analyse (nur bei „Alle Institute") — in der Standort-Ansicht eine Linie pro Institut in der offiziellen Institutsfarbe (`BranchColorService`); Legende blendet einzelne Standorte aus
@@ -88,7 +155,7 @@ bereits für die nächsten **1, 3, 7 oder 28 Tage** gebucht?
 - **Orientierung**: jeder zweite Monat ist dezent hinterlegt (Zebra-Muster, zoom-stabil), Jahreswechsel sind als vertikale Linien mit Jahreszahl markiert
 - Folgt der globalen Standort-Auswahl im Header; Info-Panel mit Erklärung je Card
 
-**Für Entwickler:**
+**Umsetzung:**
 
 - Zähllogik identisch mit dem Buchungsstand-Verlauf: Buchung vor Stichtag (`created_at_phorest`), harte Stornos nie, `activation_state=CANCELED` nur bis zur Stornierung (`updated_at_phorest`), Live-Phorest-Ergänzung für Fenster ab heute
 - Aber als **Bulk-Berechnung** (`ConsultationBookingOutlookService`): ein DB-Read + sortierte Buchungszeitpunkte + Binärsuche statt ~4.600 Count-Queries; Cache 1 h pro Standort-Filter. Response enthält `series` (Gesamt) und `branches[]` (je Standort dieselben Horizonte)
@@ -98,7 +165,7 @@ bereits für die nächsten **1, 3, 7 oder 28 Tage** gebucht?
 
 ---
 
-### 2. Vergangene Beratungsgespräche
+#### 2. Vergangene Beratungsgespräche
 **Route:** `/hub/reports/past-consultations`
 
 Historische Analyse vergangener Beratungstermine.
@@ -119,7 +186,7 @@ Historische Analyse vergangener Beratungstermine.
 
 ---
 
-### 3. Stornierte und gelöschte Termine ⭐ NEU
+#### 3. Stornierte und gelöschte Termine ⭐ NEU
 **Route:** `/hub/reports/rescheduled-cancelled`
 
 Umfassende Analyse von Terminausfällen.
@@ -139,7 +206,7 @@ Umfassende Analyse von Terminausfällen.
 
 ---
 
-### 4. Auslastung
+#### 4. Auslastung
 **Route:** `/hub/reports/utilization`
 
 Terminauslastung und Kapazitätsübersicht.
@@ -151,7 +218,7 @@ Terminauslastung und Kapazitätsübersicht.
 
 ---
 
-### 5. Freie Slots Analyse
+#### 5. Freie Slots Analyse
 **Route:** `/hub/reports/free-slots-analysis`
 
 Heatmap freier Beratungsslots nach Wochentag und Uhrzeit. Seit 07/2026 im Standard-Card-Layout mit Info-Panel.
@@ -165,7 +232,7 @@ Heatmap freier Beratungsslots nach Wochentag und Uhrzeit. Seit 07/2026 im Standa
 
 ---
 
-### 6. Buchungsvorlauf-Analyse
+#### 6. Buchungsvorlauf-Analyse
 **Route:** `/hub/reports/booking-lead-time-analysis`
 
 Wie viele Tage im Voraus werden Termine gebucht. Seit 07/2026 im Standard-Card-Layout mit Info-Panel.
@@ -180,7 +247,7 @@ Wie viele Tage im Voraus werden Termine gebucht. Seit 07/2026 im Standard-Card-L
 
 ---
 
-### 7. Wochentag & Uhrzeit Analyse
+#### 7. Wochentag & Uhrzeit Analyse
 **Route:** `/hub/reports/weekday-time-analysis`
 
 Sweetspot-Erkennung für optimale Buchungszeiten.
@@ -194,7 +261,7 @@ Sweetspot-Erkennung für optimale Buchungszeiten.
 
 ---
 
-### 8. Terminstatistik ⭐ AKTUALISIERT
+#### 8. Terminstatistik ⭐ AKTUALISIERT
 **Route:** `/hub/reports/appointments-body-zones`
 
 Umfassende Analyse aller stattgefundenen Termine nach Kategorien und Dauer.
@@ -221,7 +288,7 @@ Umfassende Analyse aller stattgefundenen Termine nach Kategorien und Dauer.
 
 ---
 
-## 🎯 Reports-Übersichtsseite
+### Reports-Übersichtsseite
 
 Die Übersichtsseite `/hub/reports` ist seit 08/2026 zweigeteilt.
 
@@ -268,21 +335,21 @@ zweites Mal in der Such-Registry. Beides kommt jetzt aus
     wieder Karten fest einbindet oder Berichte zurück in
     `GlobalSearchService::PAGES` wandern.
 
-### KPI-Vorschauen der Standard-Karten
+#### KPI-Vorschauen der Standard-Karten
 
-### Zukünftige Beratungsgespräche
+##### Zukünftige Beratungsgespräche
 - **Heute**: Termine am aktuellen Tag
 - Termine in 7/14/28 Tagen
 - Standort-Breakdown mit Heute-Spalte
 - ⚡ Optimierter KPI-Endpoint `/upcoming-consultations-kpi`
 
-### Vergangene Beratungsgespräche
+##### Vergangene Beratungsgespräche
 - Beratungen diesen Monat
 - Prognose
 - No-Show Rate
 - Beliebtester Tag
 
-### Stornierte und gelöschte Termine
+##### Stornierte und gelöschte Termine
 | KPI | Beschreibung |
 |-----|--------------|
 | Stornoquote | % der stornierten Termine vs. Vormonat/Vorjahr (PP) |
@@ -294,7 +361,7 @@ zweites Mal in der Such-Registry. Beides kommt jetzt aus
 \* Nur bei "Alle Institute"  
 \** Nur bei einzelnem Standort
 
-### Terminstatistik
+##### Terminstatistik
 | KPI | Beschreibung |
 |-----|-------------|
 | Behandlungen | Stattgefundene Behandlungen (ohne Beratung) vs. Vormonat |
@@ -304,14 +371,14 @@ zweites Mal in der Such-Registry. Beides kommt jetzt aus
 
 > ℹ️ Diese KPIs zeigen nur **stattgefundene Termine** (COMPLETED/PAID).
 
-### Fallback-Logik
+##### Fallback-Logik
 Wenn für den aktuellen Monat noch keine Daten vorliegen (z.B. am 1. Februar), werden automatisch die Daten des Vormonats angezeigt. Das Monatslabel passt sich entsprechend an (z.B. "Jan '26").
 
 ---
 
-## 🔧 Technische Architektur
+### Technische Architektur
 
-### Backend
+#### Backend
 
 ```
 app/Http/Controllers/ReportController.php
@@ -348,7 +415,7 @@ app/Http/Controllers/ReportController.php
 
 **Lazy Loading Dokumentation:** [LAZY-LOADING-PERFORMANCE.md](LAZY-LOADING-PERFORMANCE.md)
 
-### Frontend
+#### Frontend
 
 ```
 public/js/
@@ -359,7 +426,7 @@ public/js/
 └── cancelled-appointments-analysis.js  # Analyse-Komponenten
 ```
 
-### Backend-Services
+#### Backend-Services
 
 ```
 app/Services/
@@ -369,7 +436,7 @@ config/
 └── holidays.php                    # Standort → Bundesland Mapping
 ```
 
-### Views
+#### Views
 
 ```
 resources/views/hub/reports/
@@ -386,7 +453,7 @@ resources/views/hub/reports/
     └── cancelled-appointments-modal.blade.php
 ```
 
-### Komponenten
+#### Komponenten
 
 ```
 resources/views/components/
@@ -395,7 +462,7 @@ resources/views/components/
 
 ---
 
-## 📈 Datenquellen
+### Datenquellen
 
 | Report | Tabelle | API |
 |--------|---------|-----|
@@ -406,13 +473,13 @@ resources/views/components/
 
 ---
 
-## 🔐 Berechtigungen
+### Berechtigungen
 
 Alle Reports sind für angemeldete Benutzer zugänglich. Die Branch-Filterung erfolgt über das Header-Dropdown und wird im `localStorage` gespeichert.
 
 ---
 
-## 📱 Mobile Unterstützung
+### Mobile Unterstützung
 
 - Responsive Tabellen mit horizontalem Scroll
 - Charts passen sich der Bildschirmgröße an
@@ -422,7 +489,7 @@ Alle Reports sind für angemeldete Benutzer zugänglich. Die Branch-Filterung er
 
 ---
 
-## 🌓 Dark Mode
+### Dark Mode
 
 Alle Reports unterstützen den systemweiten Dark Mode mit angepassten Farbschemata für Heatmaps und Charts.
 

@@ -5,20 +5,103 @@ Was gilt für mich, wo stehe ich, was ist schon sicher, was fehlt noch — mit
 Hochrechnung, Serien-Anzeige und einer kleinen Celebration, wenn sich seit dem
 letzten Besuch etwas verbessert hat. Für die Verwaltung ist jeder Bonus eine
 konfigurierbare Regel aus dem **Boni-Baukasten** — nichts ist fest programmiert.
+Diese Seite beschreibt **Absicht, Fachregeln (Vorbehalt, Hochrechnung, Ranking,
+Parken, Freeze, Sichtstufen), Datenmodell, Engine, Endpunkte und Rechte**; die
+Bedienung Schritt für Schritt steht im Nutzerhandbuch.
+
+!!! nutzerhandbuch "Bedienung: Serie „Bonus-Board" 1–5 im Nutzerhandbuch"
+    [Bonus-Board 1 – Mein Bonus im Bonus-Board](https://hilfe.hub.glattt.com/bonus-board/1/) ·
+    [2 – Challenges verstehen](https://hilfe.hub.glattt.com/bonus-board/2/) ·
+    [3 – Bonus-Board für die Leitung](https://hilfe.hub.glattt.com/bonus-board/3/) ·
+    [4 – Regeln & Challenges anlegen](https://hilfe.hub.glattt.com/bonus-board/4/) ·
+    [5 – Monatsabschluss im Bonus-Board](https://hilfe.hub.glattt.com/bonus-board/5/)
+
+    Angrenzend: [Admin 1 – Benutzer und Rollen](https://hilfe.hub.glattt.com/admin/1/)
+    (Bonus-Klasse und askDANTE-Verknüpfung am Benutzer),
+    [Admin 7 – Personal und Vergütung](https://hilfe.hub.glattt.com/admin/7/) (Bonus-Auszahlungen),
+    [Grundlagen 6 – Die Startseite einrichten](https://hilfe.hub.glattt.com/grundlagen/6/) (Kachel „Mein Bonus"),
+    Serie [Widerrufe](https://hilfe.hub.glattt.com/widerrufe/) (Entscheidung, der der Bonus folgt).
+
+## Inhaltsverzeichnis
+
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Fachregeln: Mein Board](#fachregeln-mein-board)
+    - [Sichtstufen und Management-Sicht](#sichtstufen-und-management-sicht)
+    - [Fachregeln: Boni-Baukasten](#fachregeln-boni-baukasten-regeln-challenges)
+    - [Minimalziele, Widerrufe, Korrekturen, Monatsabschluss](#minimalziele-widerrufe-korrekturen-monatsabschluss)
+    - [Google-Bewertungen](#google-bewertungen)
+    - [Bonus-Klassen](#bonus-klassen)
+    - [Datenmodell](#datenmodell)
+    - [Engine](#engine)
+    - [HTTP-Schicht](#http-schicht)
+    - [Rechte](#rechte-migration-permissioncatalog-gates)
+    - [Frontend](#frontend)
+    - [Tests](#tests)
+    - [Bewusste Entscheidungen](#bewusste-entscheidungen)
 
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
 
-### Mein Board (`/hub/bonus`)
+**Was das Modul leistet.** Jede Mitarbeiterin sieht auf `/hub/bonus` ihren Monat: was schon
+gesichert ist, wo sie gerade steht, was die Hochrechnung bis Monatsende verspricht und wie
+viele Abwesenheitstage zählen — je Bonus-Regel als Ziel-Karte mit Fortschrittsbalken, dazu
+Ranking-Challenges, Serien und die Team-Zeile des eigenen Instituts. Leitung und Büro
+schalten in eine Management-Sicht (Institute vs. Minimalziele, Boni je Mitarbeiterin, offene
+Widerrufe, CSV/PDF-Export). Die Verwaltung baut jeden Bonus als Regel: Empfängerinnen,
+Kennzahl, Bedingung, Prämie, Serien, Sichtbarkeit — und schließt den Monat mit einem
+eingefrorenen, versionierten Stand ab, der die Auszahlungsbasis ist.
+
+**Grundsätze, die überall gelten:**
+
+- **Live-Betrachtung mit Vorbehalt statt stiller Abzüge.** KPZ zählen, bis ein Widerruf
+  entschieden oder der Monat eingefroren ist. Ein eingegangener, noch nicht entschiedener
+  Widerruf macht die betroffenen KPZ überall sichtbar zu „unter Vorbehalt" (schraffiert) —
+  abgezogen wird nichts, solange die Verwaltung nicht entscheidet.
+- **Hochrechnung nur für Summen.** Das bisherige Monatstempo wird linear fortgeschrieben —
+  Orientierung, keine Garantie. Ein Schnitt oder eine Quote (KPZ je Beratungsgespräch) wird
+  nicht hochgerechnet und ist im laufenden Monat nie „erreicht", höchstens „auf Kurs".
+- **Stichtag Monatsende.** Wer am Monatsletzten in einer Bonus-Klasse ist, wird für den ganzen
+  Monat nach ihr bewertet. Ohne Klasse steht die Person nicht auf dem Board.
+- **Abwesenheit mindert den Bonus** (bis 5 Tage voll, 6–10 halbiert, ab 11 entfällt) — nur bei
+  Boni mit aktivierter Abwesenheitsregel, Datenquelle Dienstplan askDANTE. Wer im Monat
+  keinen Arbeitstag hat, ist nicht bonusberechtigt.
+- **Der finale Freeze ist unveränderlich.** Danach sind Korrekturen, Entscheidungen und
+  weitere Freezes gesperrt; das Board zeigt für diesen Monat den eingefrorenen Stand.
+- **Drei Sichtstufen, drei Rechte:** eigene Zahlen, eigenes Institut (Standortleitung), alle
+  Institute (Büro).
+- **Google-Bewertungen werden einzeln von Hand erfasst** (keine API, keine Scraper); der
+  Positiv-Saldo je Institut × Monat ist das Google-Mindestziel.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
+|---|---|
+| Board öffnen, Monat auf einen Blick, Ziel-Karten lesen, Team-Stand des Instituts | Bonus-Board 1 |
+| Challenges erkennen, Ranking lesen, Blind-Challenge, Serien und Meilensteine | Bonus-Board 2 |
+| Management-Sicht öffnen, Institute vs. Minimalziele, Boni je Mitarbeiterin, offene Widerrufe, Stand herausgeben (CSV/PDF) | Bonus-Board 3 |
+| Verwaltung öffnen, Regel-Assistent (Grundlagen & Empfänger, Kennzahl & Bedingung, Prämie & Extras), Challenge für einen Monat, Minimalziele und Sichtbarkeit | Bonus-Board 4 |
+| Widerrufe entscheiden (zählt / zählt nicht / parken), Wert-Korrekturen, Monat einfrieren, Google-Bewertungen pflegen | Bonus-Board 5 |
+| Bonus-Klasse und askDANTE-Verknüpfung am Benutzer setzen | Admin 1 |
+| Bonus-Auszahlungen | Admin 7 |
+| Kachel „Mein Bonus" auf der Startseite | Grundlagen 6 |
+
+---
+
+## Für Entwickler
+
+### Fachregeln: Mein Board
+
+Was `/hub/bonus` je Nutzerin zeigt und wie die Werte zu lesen sind:
 
 - **Dein Monat auf einen Blick**: Schon gesichert / Aktueller Stand /
   Hochrechnung aufs Monatsende / Abwesenheitstage.
 - **Ziel-Karten**: je Bonus-Regel ein Fortschrittsbalken. Der volle Balken ist
-  dein aktueller Stand, der schraffierte Teil sind KPZ **unter
+  der aktuelle Stand, der schraffierte Teil sind KPZ **unter
   Widerrufs-Vorbehalt** (ein Widerruf ist eingegangen, aber noch nicht
   entschieden — abgezogen wird nichts, solange die Verwaltung nicht entscheidet).
-- **Hochrechnung**: dein bisheriges Monatstempo linear bis zum Monatsende
+- **Hochrechnung**: das bisherige Monatstempo linear bis zum Monatsende
   fortgeschrieben — Orientierung, keine Garantie. Gilt nur für **Summen**
   (verkaufte KPZ, Bewertungs-Saldo). Ein **Schnitt oder eine Quote** (z.B.
   KPZ je Beratungsgespräch) wird nicht hochgerechnet: Der aktuelle Wert ist
@@ -36,7 +119,7 @@ konfigurierbare Regel aus dem **Boni-Baukasten** — nichts ist fest programmier
   dort „Endstand".
 - **Serien**: Regeln mit Serien-Bonus zeigen die erreichten Monate in Folge als
   Punkte und was beim nächsten Meilenstein extra winkt (z.B. 3 bzw. 6 Monate).
-- **Celebration**: Hast du seit deinem letzten Besuch zu einer Verbesserung
+- **Celebration**: Hat die Nutzerin seit ihrem letzten Besuch zu einer Verbesserung
   beigetragen, gibt es Konfetti und eine persönliche Lob-Nachricht.
 - **Abwesenheitsregel**: bis 5 Abwesenheitstage im Monat → voller Bonus, 6 bis 10
   Tage → halbiert, ab 11 Tagen → entfällt (Regel gilt nur für Boni mit aktivierter
@@ -44,9 +127,9 @@ konfigurierbare Regel aus dem **Boni-Baukasten** — nichts ist fest programmier
   Datenquelle ist der Dienstplan (askDANTE); die Verwaltung kann Tage mit
   Begründung korrigieren.
 - **Startseite**: Die Kachel „Mein Bonus" lässt sich über „Karte hinzufügen"
-  auf der Startseite platzieren.
+  auf der Startseite platzieren (eigener `/tile`-Endpoint, siehe HTTP-Schicht).
 
-### Management-Sicht
+### Sichtstufen und Management-Sicht
 
 Das Board kennt seit 17.09.2026 **drei Sichtstufen**, jede an ein eigenes Recht
 gebunden (Rechteverwaltung → Zweig „Bonus-Board"):
@@ -114,70 +197,75 @@ Management-Sicht wechseln (Stand 09.09.2026):
   darunter die Widerrufsnummer), Kundenname, Verkäuferin, Institut, Eingang im
   deutschen Datumsformat, KPZ und Entscheidung.
 
-### Bonus-Verwaltung (`/hub/bonus/verwaltung`)
+### Fachregeln: Boni-Baukasten (Regeln & Challenges)
 
-- **Regeln & Challenges**: Der Baukasten. Jede Regel besteht aus
-  Empfängerinnen (Bonus-Klassen — optional **nur bestimmte Institute**, also
-  Klasse × Standort, z.B. eine Aktion für drei Standorte — oder einzelne
-  Nutzerinnen), Kennzahl + Bezug
-  (persönlich / je Institut / alle Institute), Bedingung (Minimalziel erreicht,
-  fester Schwellenwert, je Einheit über dem Ziel, Prozent des Ziels,
-  Wettbewerb/Ranking inkl. Gruppen-Duell mit Qualifikations-Minimum, **alle
-  relevanten Teams erreichen ihr Minimalziel** — relevant sind die in der
-  Bedingung gewählten Institute, sonst die Empfänger-Institute, sonst alle
-  Institute mit Minimalziel; optional in Prozent des Ziels, z.B. „25 % Boost,
-  wenn alle drei Teams 100 % erreichen"), Prämie
-  (fester Betrag, Betrag je Einheit mit Team-Split & Deckel, %-Aufschlag auf
-  den Monatsbonus, Sachprämie, Team-Budget), optionalen Serien-Stufen und
-  Sichtbarkeit.
-    - **„Prozent des Minimalziels"** zeigt überall das **effektive Ziel**:
-      Bei 120 % von 160 steht im Board, im Export und im PDF „Ziel 192", der
-      Balken-Strich sitzt bei 192, und „Erreicht – unter Vorbehalt" bedeutet,
-      dass die 192 nur mit Vorbehalts-KPZ geschafft sind. Der Hinweis nennt
-      das Minimalziel dazu („Ziel = 120 % des Minimalziels (160)").
-    - **Zielwert für Leitungen** (Schritt 3, bei Bedingungen am Minimalziel):
-      Standard ist bei **Challenges das normale Standortziel**, bei regulären
-      Regeln das Leitungs-Minimalziel; beides lässt sich je Regel fest
-      erzwingen. Ohne eigenes Leitungs-Minimalziel gilt immer das Standortziel.
-    - **Ranking-Challenge** (Bedingung „Ranking-Challenge (Plätze mit
-      Preisen)", Prämie „Preise je Platz"): Teams (Institute aus Schritt 2, leer
-      = alle mit Minimalziel) oder einzelne Mitarbeiterinnen werden nach der
-      Kennzahl sortiert. Team-Ranking wahlweise **in Prozent des Minimalziels**
-      (fair bei unterschiedlich großen Teams). Gleichstand = gleicher Platz, der
-      nächste entfällt (1, 1, 3). Optionales Qualifikations-Minimum. Preise je
-      Platz als Betrag und/oder Sachprämie; beim Team-Ranking je Teammitglied
-      oder als Team-Budget (nicht in der €-Summe). **Gesichert** ist der Platz,
-      den die Teilnehmerin auch ohne die eigenen Vorbehalts-KPZ gegen die vollen
-      Werte der anderen hält — nie besser als der aktuelle Platz.
-      **Blind-Challenge** (Häkchen in Schritt 3): Teilnehmerinnen sehen im
-      laufenden Monat nur den eigenen Wert, keine Platzierung und keine Prämie;
-      die Management-Sicht sieht alles, nach Monatsende auch die Teilnehmerinnen.
-      Jedes Ranking bekommt eine eigene Karte oben auf dem Board (beide Sichten)
-      und erscheint zusätzlich als Zeile in der Bonusliste jeder Teilnehmerin
-      („Platz 2 von 5 · Preis …"). Im PDF gibt es einen Abschnitt
-      „Ranking-Challenges", im CSV steht der Platz im Status.
-    - **Challenges sind monatsgebunden:** In Schritt 1 wird statt freier Daten
-      ein **Challenge-Monat** gewählt (vorbelegt mit dem in der Verwaltung
-      gewählten Monat, Auswahl Vormonat bis 12 Monate voraus); die Laufzeit ist
-      immer der 1. bis letzte Tag dieses Monats — der Server normalisiert auch
-      abweichend geschickte Daten. Die Verwaltung zeigt seit 10.09.2026 zwei
-      Karten: **Bonus-Regeln** (dauerhaft) und **Challenges**, gruppiert nach
-      Jahr und Monat, der aktuelle Monat aufgeklappt; Challenges ohne Laufzeit
-      stehen unter „Laufend". Hintergrund: Bis 10.09.2026 schob der Wizard beim
-      Bearbeiten die Laufzeit um einen Tag nach vorn (Datum kam als
-      UTC-Zeitstempel an, `substring(0, 10)` ergab den Vortag); die Migration
-      `2026_09_10_120000_normalize_bonus_challenge_months` hat bestehende
-      Challenges auf den gemeinten Monat gezogen (Starttag ≥ 28. = Folgemonat),
-      `valid_from`/`valid_until` sind seither als `date:Y-m-d` gecastet.
-    - **Basis des %-Aufschlags** (Schritt 4): „nur der reguläre Bonus" (zwei
-      Challenges mit je 25 % ergeben zusammen +50 %) oder „gesamter Monatsbonus
-      inkl. vorher berechneter Aufschläge" (25 % auf 125 % = +56,25 %; die
-      Reihenfolge ist die Anlage-Reihenfolge der Regeln). Regeln von vor dem
-      10.09.2026 ohne Angabe rechnen weiter auf den gesamten Monatsbonus; neue
-      Regeln starten mit „nur regulärer Bonus". Als Kennzahlen stehen die internen Bonus-Kennzahlen (verkaufte
+Verwaltung unter `/hub/bonus/verwaltung`. Jede Regel besteht aus
+Empfängerinnen (Bonus-Klassen — optional **nur bestimmte Institute**, also
+Klasse × Standort, z.B. eine Aktion für drei Standorte — oder einzelne
+Nutzerinnen), Kennzahl + Bezug
+(persönlich / je Institut / alle Institute), Bedingung (Minimalziel erreicht,
+fester Schwellenwert, je Einheit über dem Ziel, Prozent des Ziels,
+Wettbewerb/Ranking inkl. Gruppen-Duell mit Qualifikations-Minimum, **alle
+relevanten Teams erreichen ihr Minimalziel** — relevant sind die in der
+Bedingung gewählten Institute, sonst die Empfänger-Institute, sonst alle
+Institute mit Minimalziel; optional in Prozent des Ziels, z.B. „25 % Boost,
+wenn alle drei Teams 100 % erreichen"), Prämie
+(fester Betrag, Betrag je Einheit mit Team-Split & Deckel, %-Aufschlag auf
+den Monatsbonus, Sachprämie, Team-Budget), optionalen Serien-Stufen und
+Sichtbarkeit.
+
+- **„Prozent des Minimalziels"** zeigt überall das **effektive Ziel**:
+  Bei 120 % von 160 steht im Board, im Export und im PDF „Ziel 192", der
+  Balken-Strich sitzt bei 192, und „Erreicht – unter Vorbehalt" bedeutet,
+  dass die 192 nur mit Vorbehalts-KPZ geschafft sind. Der Hinweis nennt
+  das Minimalziel dazu („Ziel = 120 % des Minimalziels (160)").
+- **Zielwert für Leitungen** (Schritt 3, bei Bedingungen am Minimalziel):
+  Standard ist bei **Challenges das normale Standortziel**, bei regulären
+  Regeln das Leitungs-Minimalziel; beides lässt sich je Regel fest
+  erzwingen. Ohne eigenes Leitungs-Minimalziel gilt immer das Standortziel.
+- **Ranking-Challenge** (Bedingung „Ranking-Challenge (Plätze mit
+  Preisen)", Prämie „Preise je Platz"): Teams (Institute aus Schritt 2, leer
+  = alle mit Minimalziel) oder einzelne Mitarbeiterinnen werden nach der
+  Kennzahl sortiert. Team-Ranking wahlweise **in Prozent des Minimalziels**
+  (fair bei unterschiedlich großen Teams). Gleichstand = gleicher Platz, der
+  nächste entfällt (1, 1, 3). Optionales Qualifikations-Minimum. Preise je
+  Platz als Betrag und/oder Sachprämie; beim Team-Ranking je Teammitglied
+  oder als Team-Budget (nicht in der €-Summe). **Gesichert** ist der Platz,
+  den die Teilnehmerin auch ohne die eigenen Vorbehalts-KPZ gegen die vollen
+  Werte der anderen hält — nie besser als der aktuelle Platz.
+  **Blind-Challenge** (Häkchen in Schritt 3): Teilnehmerinnen sehen im
+  laufenden Monat nur den eigenen Wert, keine Platzierung und keine Prämie;
+  die Management-Sicht sieht alles, nach Monatsende auch die Teilnehmerinnen.
+  Jedes Ranking bekommt eine eigene Karte oben auf dem Board (beide Sichten)
+  und erscheint zusätzlich als Zeile in der Bonusliste jeder Teilnehmerin
+  („Platz 2 von 5 · Preis …"). Im PDF gibt es einen Abschnitt
+  „Ranking-Challenges", im CSV steht der Platz im Status.
+- **Challenges sind monatsgebunden:** In Schritt 1 wird statt freier Daten
+  ein **Challenge-Monat** gewählt (vorbelegt mit dem in der Verwaltung
+  gewählten Monat, Auswahl Vormonat bis 12 Monate voraus); die Laufzeit ist
+  immer der 1. bis letzte Tag dieses Monats — der Server normalisiert auch
+  abweichend geschickte Daten. Die Verwaltung zeigt seit 10.09.2026 zwei
+  Karten: **Bonus-Regeln** (dauerhaft) und **Challenges**, gruppiert nach
+  Jahr und Monat, der aktuelle Monat aufgeklappt; Challenges ohne Laufzeit
+  stehen unter „Laufend". Hintergrund: Bis 10.09.2026 schob der Wizard beim
+  Bearbeiten die Laufzeit um einen Tag nach vorn (Datum kam als
+  UTC-Zeitstempel an, `substring(0, 10)` ergab den Vortag); die Migration
+  `2026_09_10_120000_normalize_bonus_challenge_months` hat bestehende
+  Challenges auf den gemeinten Monat gezogen (Starttag ≥ 28. = Folgemonat),
+  `valid_from`/`valid_until` sind seither als `date:Y-m-d` gecastet.
+- **Basis des %-Aufschlags** (Schritt 4): „nur der reguläre Bonus" (zwei
+  Challenges mit je 25 % ergeben zusammen +50 %) oder „gesamter Monatsbonus
+  inkl. vorher berechneter Aufschläge" (25 % auf 125 % = +56,25 %; die
+  Reihenfolge ist die Anlage-Reihenfolge der Regeln). Regeln von vor dem
+  10.09.2026 ohne Angabe rechnen weiter auf den gesamten Monatsbonus; neue
+  Regeln starten mit „nur regulärer Bonus".
+- **Kennzahlen:** Als Kennzahlen stehen die internen Bonus-Kennzahlen (verkaufte
   KPZ, KPZ je Beratungsgespräch, Google-Saldo) und **jede Kennzahl der
   KpiRegistry** zur Verfügung (Registry-Kennzahlen nur je Institut oder
   unternehmensweit — mitarbeiterscharf liefert die Registry nicht).
+
+### Minimalziele, Widerrufe, Korrekturen, Monatsabschluss
+
 - **Minimalziele**: KPZ-Minimalziel für das Team, **separates
   KPZ-Minimalziel für Leitungen** (leer = Team-Ziel gilt) und
   Google-Mindestziel (Positiv-Saldo) je Institut × Monat. **Ziele gelten
@@ -212,11 +300,11 @@ Management-Sicht wechseln (Stand 09.09.2026):
 - **Sichtbarkeit je Nutzerin**: Regeln pro Nutzerin gezielt ein-/ausblenden —
   zusätzlich zur Regel-Sichtbarkeit (nur Empfängerinnen / Instituts-Team / alle).
 
-### Google-Bewertungen (`/hub/bonus/google-bewertungen`)
+### Google-Bewertungen
 
-Die Google-API ist nicht nutzbar (und Scraper verstoßen gegen die Google-ToS),
-deshalb wird **jede Bewertung einzeln manuell erfasst**: Institut, Datum,
-Sterne, mit/ohne Text. Hat die Bewertung einen Text, wird der **Originaltext
+`/hub/bonus/google-bewertungen`. Die Google-API ist nicht nutzbar (und Scraper verstoßen
+gegen die Google-ToS), deshalb wird **jede Bewertung einzeln manuell erfasst**: Institut,
+Datum, Sterne, mit/ohne Text. Hat die Bewertung einen Text, wird der **Originaltext
 aus Google mitkopiert und gespeichert** (Pflichtfeld bei gesetztem Text-Haken,
 Spalte `review_text`); die Tabelle zeigt einen Auszug, der volle Text steht im
 Tooltip. Zählweise (seit 05/2026): 4-5 Sterne +1, 1-3 Sterne −1,
@@ -224,10 +312,12 @@ ohne Text jeweils die Hälfte (±0,5). Der Positiv-Saldo je Institut × Monat is
 die Kennzahl `google_review_balance` und das Google-Mindestziel der Behandler-
 und Leitungs-Boni. Eigenes Recht: `manage_google_reviews`.
 
-### Bonus-Klassen (Admin → Benutzer)
+### Bonus-Klassen
 
 Jede Nutzerin wird auf der **Admin-User-Seite** einer der fünf Klassen
-zugeordnet — **zeitwirksam** über eine Historie (Klasse + „gültig ab"):
+zugeordnet — **zeitwirksam** über eine Historie (Klasse + „gültig ab"); der
+Hub-Konto-Wizard der Personalübersicht setzt die Klasse gleich beim Anlegen
+(siehe [Personalverwaltung](STAFF-MODULE.md)):
 
 | Klasse | Standard-Boni (Wiki-System) |
 |---|---|
@@ -237,13 +327,12 @@ zugeordnet — **zeitwirksam** über eine Historie (Klasse + „gültig ab"):
 | Office / Management | keine Standard-Boni — Ziel individueller Baukasten-Regeln und der Management-Sicht |
 
 **Stichtag Monatsende**: Wer am Monatsletzten in einer Klasse ist, wird für den
-ganzen Monat nach ihr bewertet.
+ganzen Monat nach ihr bewertet. Ohne Klasse erscheint die Person nicht auf dem
+Bonus-Board.
 
----
+### Datenmodell
 
-## Für Entwickler
-
-### Datenmodell (Migration `2026_08_12_100100_create_bonus_board_tables`)
+Migration `2026_08_12_100100_create_bonus_board_tables`:
 
 | Tabelle | Zweck |
 |---|---|
@@ -426,3 +515,6 @@ Kundennamen, CSV-/PDF-Export), `tests/Feature/HrUserLinkServiceTest.php` (askDAN
   als Prämientext angezeigt.
 - Die Kachel nutzt einen eigenen `/tile`-Endpoint, damit der Startseiten-Besuch
   die „Seit deinem letzten Besuch"-Celebration des Boards nicht verbraucht.
+
+Verwandt: [Gamification](GAMIFICATION.md) (Feiern auf der Institutsseite, Badges),
+[Hub-Nutzer archivieren](USER-ARCHIVIERUNG.md), [Personalverwaltung](STAFF-MODULE.md).

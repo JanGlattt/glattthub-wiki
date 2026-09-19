@@ -1,25 +1,108 @@
 # Gutschein-Verkauf (Online, Mollie)
 
-Online-Verkauf von Wertgutscheinen: Kunden erhalten einen Link (WhatsApp/Superchat, E-Mail-Kampagne oder manuell geteilt), zahlen z.B. 10 € über **Mollie** und bekommen einen z.B. 50 €-Gutschein, der automatisch in **Phorest** angelegt und per E-Mail mit Beleg-PDF zugestellt wird.
+Online-Verkauf von Wertgutscheinen: Kundinnen erhalten einen Link (WhatsApp/Superchat,
+E-Mail-Kampagne, Shop-Seite oder manuell geteilt), zahlen z.B. 10 € über **Mollie** und bekommen
+einen z.B. 50 €-Gutschein, der automatisch in **Phorest** angelegt und per E-Mail mit Rechnungs-PDF
+zugestellt wird. Der Kauf selbst läuft komplett auf den öffentlichen `/shared/`-Seiten — im Hub
+gibt es dafür keinen Vorgang; das Team pflegt Produkte, Kauf-Links, Bestellungen und die
+Mollie-Anbindung im **Admin-Backend**. Diese Seite beschreibt **Fachregeln, Datenmodell,
+Zahlungsfluss, Fulfillment, öffentliche Seiten und Betrieb**; die Bedienung im Admin steht im
+Nutzerhandbuch.
+
+!!! nutzerhandbuch "Bedienung: Admin 3 – Gutschein-Verkauf"
+    [hilfe.hub.glattt.com/admin/3/](https://hilfe.hub.glattt.com/admin/3/) — Gutschein-Produkte
+    pflegen, Bestellungen verfolgen, Zustellung und Erstattung, alles rund um den Verkauf
+    (Kauf-Links, Shop-Seite, Mollie).
+
+    Angrenzend: [Verkauf 3 – Gutscheine verwalten](https://hilfe.hub.glattt.com/verkauf/3/)
+    (der Phorest-Gutschein nach dem Kauf), [Admin 4 – Erinnerungen und WhatsApp](https://hilfe.hub.glattt.com/admin/4/)
+    (Beratungs-WhatsApp mit personalisiertem Kauf-Link),
+    [Berichte 12 – Gutschein-Aktion](https://hilfe.hub.glattt.com/berichte/12/) (Auswertung der Annahme).
+
+## Inhaltsverzeichnis
+
+- [Für Anwender — Überblick](#fur-anwender-uberblick)
+- [Für Entwickler](#fur-entwickler)
+    - [Fachregeln: Produkt-Konfiguration](#fachregeln-produkt-konfiguration)
+    - [Shop-Seite, Warenkorb & Mehrfach-Kauf](#shop-seite-warenkorb-mehrfach-kauf)
+    - [Teilverfall (Bonus-Guthaben verfällt früher)](#teilverfall-bonus-guthaben-verfallt-fruher)
+    - [Kauf-Links (personalisiert)](#kauf-links-personalisiert)
+    - [Status-Modell der Bestellung](#status-modell-der-bestellung)
+    - [Admin-Aktionen, Storno & Erstattung](#admin-aktionen-storno-erstattung)
+    - [Mollie-Konfiguration](#mollie-konfiguration)
+    - [Datenmodell](#datenmodell)
+    - [Zahlungsfluss (Mollie)](#zahlungsfluss-mollie)
+    - [Fulfillment-Pipeline](#fulfillment-pipeline)
+    - [Steuerliche Behandlung](#steuerliche-behandlung-steuerberater-entscheid-juli-2026)
+    - [Öffentliche Seiten](#offentliche-seiten)
+    - [Geschenkgutschein-PDF & Personenbindung](#geschenkgutschein-pdf-personenbindung)
+    - [Wunschbetrag, Rabattstaffeln & Kauffenster](#wunschbetrag-rabattstaffeln-kauffenster)
+    - [Kauf-Limit](#kauf-limit)
+    - [Konfiguration](#konfiguration)
+    - [Lokale Entwicklung](#lokale-entwicklung)
+    - [Tests](#tests)
+- [Offene Punkte / Go-Live-Checkliste](#offene-punkte-go-live-checkliste)
 
 ---
 
-## Für Endanwender
+## Für Anwender — Überblick
 
-### Produkte pflegen
+**Was das Modul leistet.** Das Team legt im Admin-Backend **Gutschein-Produkte** an (Festpreis
+wie „50 € für 10 €" oder Wunschbetrag mit Rabattstaffeln, Gültigkeit, optionaler Teilverfall des
+Bonus-Guthabens, Kauffenster, Kauf-Limit) und bringt sie auf drei Wegen zur Kundin: über die
+öffentliche **Shop-Seite** mit Warenkorb, über die **generische Produktseite** oder über
+**personalisierte Kauf-Links** (einzeln oder als Kampagne, z.B. aus der Beratungs-WhatsApp). Jede
+bezahlte Bestellung wird automatisch erfüllt — Phorest-Gutschein anlegen, Rechnung erzeugen, Mail
+mit Codes, QR-Code und Geschenk-PDF-Link verschicken — und erscheint mit ihrem Status in der
+Bestellliste, wo das Team nachsenden, erneut versuchen oder stornieren und erstatten kann.
 
-**Admin-Panel → Gutschein-Verkauf → Gutschein-Produkte** (Recht: `manage_voucher_products`)
+**Aus Kundensicht:** Die Kundin öffnet den Link, sieht die vorausgefüllte Checkout-Seite (nur Name
+und E-Mail, Telefon optional), wählt die Zahlart direkt auf unserer Seite (Karte eingebettet ohne
+Redirect, PayPal/Klarna & Co. direkt im Anbieter-Flow) und landet auf der Statusseite, die sich
+automatisch aktualisiert. Kurz darauf kommt die E-Mail mit Gutschein-Code, Wert, Gültigkeit,
+QR-Code zum Vorzeigen und Rechnung; im Institut wird der Code genannt oder der QR-Code gezeigt —
+Phorest verrechnet ihn wie jeden anderen Gutschein.
 
-Pro Produkt konfigurierbar:
+**Grundsätze:**
 
-| Feld | Bedeutung |
+- **Eine bezahlte Bestellung geht nie verloren** — scheitert Phorest oder die Mail, bleibt sie als
+  „Erfüllung fehlgeschlagen" sichtbar und wird nachgeholt.
+- **Der bezahlte Betrag bleibt die volle Regeldauer gültig**, nur ein geschenkter Bonus darf früher
+  verfallen (Teilverfall).
+- **Es liegen nie Geld und gültiger Gutschein gleichzeitig bei der Kundin**: Storno nullt zuerst
+  die Gutscheine in Phorest und erstattet dann.
+- **Preise werden ausschließlich serverseitig berechnet**; Kauffenster und Kauf-Limit gelten auf
+  jedem Kaufweg.
+
+**Wo was erledigt wird:**
+
+| Vorgang | Anleitung |
 |---|---|
-| Preismodell | **Festpreis** (fester Gutscheinwert zum festen Preis) oder **Wunschbetrag** (Kunde wählt den Gutscheinwert) |
-| Verkaufspreis / Gutscheinwert | Nur bei Festpreis: was der Kunde zahlt (z.B. 10,00 €) und was er bekommt (z.B. 50,00 €) |
+| Gutschein-Produkte anlegen und pflegen (Preismodell, Gültigkeit, Teilverfall, Shop, Kauffenster, Limit) | Admin 3 |
+| Bestellungen verfolgen, Status verstehen | Admin 3 |
+| E-Mail erneut senden, Rechnung, erneut versuchen, stornieren & erstatten | Admin 3 |
+| Kauf-Links einzeln oder als Kampagne erstellen, CSV-Export, Shop-Seite, Mollie einrichten | Admin 3 |
+| Beratungs-WhatsApp mit personalisiertem Kauf-Link konfigurieren | Admin 4 |
+| Den angelegten Phorest-Gutschein im Hub finden, Restwert prüfen | Verkauf 3 |
+| Annahme und Wirkung der Gutschein-Aktion auswerten | Berichte 12 |
+
+---
+
+## Für Entwickler
+
+### Fachregeln: Produkt-Konfiguration
+
+**Admin-Panel → Gutschein-Verkauf → Gutschein-Produkte** (Recht: `manage_voucher_products`). Pro
+Produkt gelten diese Regeln:
+
+| Einstellung | Regel |
+|---|---|
+| Preismodell | **Festpreis** (fester Gutscheinwert zum festen Preis) oder **Wunschbetrag** (Kundin wählt den Gutscheinwert) |
+| Verkaufspreis / Gutscheinwert | Nur bei Festpreis: was die Kundin zahlt (z.B. 10,00 €) und was sie bekommt (z.B. 50,00 €) |
 | Mindest-/Höchstbetrag, Schrittweite | Nur bei Wunschbetrag, z.B. 25–500 €. Schrittweite optional — leer = jeder beliebige Betrag (centgenau) |
 | Rabattstaffeln | Nur bei Wunschbetrag: „ab 100 € → 5 %, ab 250 € → 10 %" — der Preis sinkt, der Gutscheinwert bleibt (z.B. 100-€-Gutschein für 90 €) |
 | Gültigkeit | Relativ ab Kauf (Tage/Wochen/Monate, Standard 36 Monate) **oder** festes Ablaufdatum — das feste Datum hat Vorrang |
-| Teilverfall (optional) | Das Bonus-Guthaben (Gutscheinwert − Kaufpreis) verfällt früher — eigene Frist relativ oder als festes Datum. Details siehe „Teilverfall" unten |
+| Teilverfall (optional) | Das Bonus-Guthaben (Gutscheinwert − Kaufpreis) verfällt früher — eigene Frist relativ oder als festes Datum (siehe [Teilverfall](#teilverfall-bonus-guthaben-verfallt-fruher)) |
 | Im Shop anzeigen | Produkt erscheint auf der öffentlichen Shop-Seite — aus = Token-/Link-exklusiv |
 | Verkauf ab / bis (Kauffenster) | Optionaler Zeitraum, in dem das Produkt kaufbar ist — außerhalb ist es auf **keinem** Kaufweg erwerbbar (auch nicht über alte Links) |
 | Kauf-Limit | 1×, N× oder unbegrenzt pro Kund:in (Match über Phorest-Kunde bzw. E-Mail) |
@@ -29,13 +112,11 @@ Pro Produkt konfigurierbar:
 
 Jedes aktive Produkt hat eine **generische Kaufseite** ohne Prefill: `https://hub.glattt.com/shared/voucher/p/{slug}` (Link-Symbol in der Produktliste).
 
-### Gutschein-Shop (öffentliche Übersicht)
+### Shop-Seite, Warenkorb & Mehrfach-Kauf
 
 Unter `https://hub.glattt.com/shared/gutscheine` gibt es eine öffentliche **Shop-Seite** (Button „Shop-Seite" über der Produktliste): Karten mit Preis, Rabatt-Badge, Gültigkeit und ggf. „Nur bis …" für befristete Aktionen. Gelistet wird ein Produkt nur, wenn es **aktiv** ist, **„Im Shop anzeigen"** gesetzt hat und im **Kauffenster** liegt. Die Seite ist per Link erreichbar, aber nicht für Suchmaschinen indexierbar (noindex, wie alle `/shared/`-Seiten).
 
-Beim Kauf ohne personalisierten Link wählt der Kunde im Checkout **sein glattt-Institut** (Pflichtfeld, Vorauswahl = Standard-Institut) — der Phorest-Gutschein wird dort angelegt, ist aber überall einlösbar. Bei **Wunschbetrag-Produkten** wählt der Kunde den Gutscheinwert direkt auf der Karte (Eingabefeld + Schieberegler); Preis, Ersparnis und der Hinweis auf die nächste Rabattstufe aktualisieren sich live. Der Preis wird **ausschließlich serverseitig** berechnet.
-
-### Warenkorb & Mehrfach-Kauf
+Beim Kauf ohne personalisierten Link wählt die Kundin im Checkout **ihr glattt-Institut** (Pflichtfeld, Vorauswahl = Standard-Institut) — der Phorest-Gutschein wird dort angelegt, ist aber überall einlösbar. Bei **Wunschbetrag-Produkten** wählt die Kundin den Gutscheinwert direkt auf der Karte (Eingabefeld + Schieberegler); Preis, Ersparnis und der Hinweis auf die nächste Rabattstufe aktualisieren sich live. Der Preis wird **ausschließlich serverseitig** berechnet.
 
 Shop-Produkte landen per „In den Warenkorb" im **Session-Warenkorb** (gleiche Festpreis-Produkte erhöhen die Stückzahl, jeder Wunschbetrag ist eine eigene Zeile). Beim Hinzufügen fliegt eine Mini-Goldkarte zum **schwebenden Warenkorb-Button** (unten rechts, mit Stückzahl-Badge); danach öffnet sich automatisch die **Warenkorb-Popover-Karte** direkt darüber, wobei der „Zur Kasse"-Button kurz golden pulsiert. Der Button öffnet/schließt die Karte auch per Klick (Mengen-Stepper ±, Summe; Klick außerhalb oder ESC schließt sie) und führt zur **Warenkorb-Kasse** `/shared/gutscheine/kasse`: dort derselbe Checkout wie beim Einzelkauf (Zahlarten, Institut-Wahl, Consent). Es entsteht **eine Bestellung mit mehreren Positionen** → ein Zahlvorgang, **eine E-Mail mit allen Gutschein-Codes** (durchnummerierte Panels) und **eine Rechnung mit allen Positionen**. Kauf-Limits zählen die Stückzahl mit. Die **Token-Kasse bleibt unverändert** (Ein-Produkt-Ansicht, kein Warenkorb).
 
@@ -51,78 +132,66 @@ Bei rabattierten Produkten (Gutscheinwert > Kaufpreis) kann das **Bonus-Guthaben
 | Bonus-Guthaben | = Gutscheinwert − Kaufpreis (z.B. 40 €) | eigene, kürzere Frist |
 
 - Beide Gutscheine haben eigene 8-stellige Seriennummern und referenzieren sich gegenseitig in den Phorest-Notizen.
-- Der Kunde sieht den Teilverfall **vor dem Kauf** auf der Checkout-Seite, erhält beide Codes in der E-Mail (mit Hinweis auf das frühere Ablaufdatum) und auf dem Beleg werden beide Anteile ausgewiesen.
+- Die Kundin sieht den Teilverfall **vor dem Kauf** auf der Checkout-Seite, erhält beide Codes in der E-Mail (mit Hinweis auf das frühere Ablaufdatum) und auf dem Beleg werden beide Anteile ausgewiesen.
 - Phorest setzt den Verfall selbst durch — kein Cron-Job, keine nachträgliche Saldo-Änderung.
 - Damit bleibt der bezahlte Betrag die volle Regeldauer gültig (rechtlich relevant), nur der geschenkte Bonus verfällt früher.
+- Kampagnen-Links der Beratungs-WhatsApp setzen ein festes `bonus_valid_until_date` am Bestell-Item (Beratungstag) — siehe `BERATUNGS-WHATSAPP.md`.
 
-### Kauf-Links erstellen (personalisiert)
+### Kauf-Links (personalisiert)
 
 **Admin-Panel → Gutschein-Verkauf → Kauf-Links** (Recht: `manage_voucher_sales`)
 
-- **Einzelner Link**: „Einzelnen Link erstellen" → Phorest-Kunde suchen (Felder werden vorausgefüllt) → Institut prüfen → Link aus der Erfolgsmeldung oder der Liste kopieren.
-- **Kampagnen-Links (Bulk)**: „Kampagnen-Links erstellen" → Produkt, Kampagnen-Label, Gültigkeit, Empfängerliste einfügen (`Vorname;Nachname;E-Mail;Telefon`, eine Zeile pro Kunde). Kunden werden per E-Mail automatisch mit dem Phorest-Spiegel abgeglichen (Client-ID + Heimat-Institut).
-- **CSV-Export**: Links in der Liste markieren → Sammelaktion „Als CSV exportieren" → Datei mit personalisierten Links für Superchat-/E-Mail-Kampagnen-Tools.
+- **Einzelner Link**: Phorest-Kunde suchen (Felder werden vorausgefüllt) → Institut prüfen → Link aus der Erfolgsmeldung oder der Liste kopieren.
+- **Kampagnen-Links (Bulk)**: Produkt, Kampagnen-Label, Gültigkeit, Empfängerliste (`Vorname;Nachname;E-Mail;Telefon`, eine Zeile pro Kunde). Kunden werden per E-Mail automatisch mit dem Phorest-Spiegel abgeglichen (Client-ID + Heimat-Institut).
+- **CSV-Export**: Links markieren → Sammelaktion „Als CSV exportieren" → Datei mit personalisierten Links für Superchat-/E-Mail-Kampagnen-Tools.
 
-Kauf-Links sind standardmäßig 30 Tage gültig und **einmalig verwendbar** — nach einem bezahlten Kauf verfällt der Link. Kunden mit entwertetem/abgelaufenem Link sehen einen Hinweis mit Weiterleitung zur generischen Kaufseite.
+Kauf-Links sind standardmäßig **30 Tage gültig** und **einmalig verwendbar** — nach einem bezahlten Kauf verfällt der Link. Kundinnen mit entwertetem/abgelaufenem Link sehen einen Hinweis mit Weiterleitung zur generischen Kaufseite. Das `campaign_label` trägt die Auswertung (z.B. „Beratungs-WhatsApp", siehe `GUTSCHEIN-AKTION.md`).
 
-### Bestellungen überwachen
+### Status-Modell der Bestellung
 
 **Admin-Panel → Gutschein-Verkauf → Bestellungen** (Recht: `view_voucher_sales`)
 
-Status-Übersicht:
+| Status | DB-Wert | Bedeutung |
+|---|---|---|
+| Zahlung ausstehend | `pending` | Kundin wurde zu Mollie weitergeleitet, Zahlung noch offen |
+| Bezahlt | `paid` | Zahlung eingegangen, Gutschein-Anlage läuft |
+| Gutschein angelegt | `voucher_created` | Gutschein existiert in Phorest, E-Mail-Versand läuft |
+| Zugestellt | `delivered` | Kundin hat die Gutschein-E-Mail mit Beleg erhalten |
+| Zahlung fehlgeschlagen | `payment_failed` | Abgebrochen/abgelaufen — Kundin konnte es erneut versuchen, es wurde nichts abgebucht |
+| Erfüllung fehlgeschlagen | `fulfillment_failed` | **Zahlung ist eingegangen**, aber Phorest-Anlage oder E-Mail scheiterte → rotes Badge in der Navigation, Berechtigte (`manage_voucher_sales`) werden benachrichtigt |
+| Storniert & erstattet | `refunded` | Bestellung wurde vom Team storniert: Gutscheine in Phorest genullt, Betrag über Mollie erstattet |
 
-| Status | Bedeutung |
-|---|---|
-| Zahlung ausstehend | Kunde wurde zu Mollie weitergeleitet, Zahlung noch offen |
-| Bezahlt | Zahlung eingegangen, Gutschein-Anlage läuft |
-| Gutschein angelegt | Gutschein existiert in Phorest, E-Mail-Versand läuft |
-| Zugestellt | Kunde hat die Gutschein-E-Mail mit Beleg erhalten |
-| Zahlung fehlgeschlagen | Abgebrochen/abgelaufen — Kunde konnte es erneut versuchen, es wurde nichts abgebucht |
-| Erfüllung fehlgeschlagen | **Zahlung ist eingegangen**, aber Phorest-Anlage oder E-Mail scheiterte → rotes Badge in der Navigation, Admins werden benachrichtigt |
-| Storniert & erstattet | Bestellung wurde vom Team storniert: Gutscheine in Phorest genullt, Betrag über Mollie erstattet |
+**Status-Maschine** (`VoucherOrder`, geführte Übergänge über `mark*()`-Methoden mit `DB::transaction` + `lockForUpdate()` — dadurch idempotent gegen Duplikat-Webhooks und Webhook-vs.-Return-Races):
+
+```
+pending → paid → voucher_created → delivered
+pending → payment_failed                     (Mollie canceled/expired/failed)
+paid|voucher_created → fulfillment_failed    (Job-Retries erschöpft) → Admin-Retry
+paid|voucher_created|delivered|fulfillment_failed → refunded   (Storno, markRefunded() mit Row-Lock)
+```
+
+`order_type` (Default `voucher`) ist der Erweiterungspunkt für spätere Termin-Anzahlungen.
+
+### Admin-Aktionen, Storno & Erstattung
 
 Aktionen auf der Detailseite (Recht: `manage_voucher_sales`):
 
-- **Erneut versuchen** (bei „Erfüllung fehlgeschlagen"): wiederholt je nach fehlgeschlagenem Schritt die Phorest-Anlage oder nur den E-Mail-Versand.
-- **E-Mail erneut senden** (bei „Zugestellt"): z.B. wenn der Kunde die Mail nicht findet.
+- **Erneut versuchen** (bei „Erfüllung fehlgeschlagen"): wiederholt je nach fehlgeschlagenem Schritt (`failed_stage`) die Phorest-Anlage oder nur den E-Mail-Versand.
+- **E-Mail erneut senden** (bei „Zugestellt"): z.B. wenn die Kundin die Mail nicht findet.
 - **Status bei Mollie prüfen** (bei „Zahlung ausstehend"): manueller Abgleich.
 - **Rechnung herunterladen**: Rechnungs-PDF (mit 19 % USt-Ausweis).
-- **Stornieren** (bei allen bezahlten Status): setzt zuerst alle Phorest-Gutscheine der Bestellung auf 0 € (inkl. Bonus-Gutscheine, mit Storno-Vermerk in den Notizen), erstattet dann den **vollen gezahlten Betrag** über Mollie auf die ursprüngliche Zahlart und setzt den Status auf „Storniert & erstattet". Die Reihenfolge ist bewusst: Es liegen nie Geld **und** gültiger Gutschein gleichzeitig beim Kunden. **Einlöse-Schutz:** Wurde ein Gutschein bereits (teilweise) eingelöst (Restguthaben < Originalwert), bricht der Storno mit einer klaren Fehlermeldung ab, **bevor** etwas erstattet wird — solche Fälle klärt das Team manuell. Schlägt ein Schritt fehl, bleibt der Status unverändert und die Aktion kann **gefahrlos erneut ausgeführt** werden — von uns genullte Gutscheine sind an der Bestellung vermerkt (`meta.storno_zeroed_voucher_ids`, unterscheidet Retry von Einlösung) und eine bereits angelegte Erstattung (gespeicherte `mollie_refund_id`) wird übersprungen. Nach erfolgreichem Storno erhält der Kunde automatisch eine **Storno-Bestätigung per E-Mail** (`VoucherRefundedMail`: Erstattungsbetrag, Hinweis auf ungültige Gutschein-Codes; ein Mail-Fehler lässt den Storno nicht scheitern). Stornierte Bestellungen zählen nicht mehr aufs Kauf-Limit; öffnet der Kunde seinen Bestell-Link erneut, sieht er einen Storno-Hinweis.
+- **Stornieren** (bei allen bezahlten Status): setzt zuerst alle Phorest-Gutscheine der Bestellung auf 0 € (inkl. Bonus-Gutscheine, mit Storno-Vermerk in den Notizen), erstattet dann den **vollen gezahlten Betrag** über Mollie auf die ursprüngliche Zahlart und setzt den Status auf „Storniert & erstattet". Die Reihenfolge ist bewusst: Es liegen nie Geld **und** gültiger Gutschein gleichzeitig bei der Kundin. **Einlöse-Schutz:** Wurde ein Gutschein bereits (teilweise) eingelöst (Restguthaben < Originalwert), bricht der Storno mit einer klaren Fehlermeldung ab, **bevor** etwas erstattet wird — solche Fälle klärt das Team manuell. Schlägt ein Schritt fehl, bleibt der Status unverändert und die Aktion kann **gefahrlos erneut ausgeführt** werden — von uns genullte Gutscheine sind an der Bestellung vermerkt (`meta.storno_zeroed_voucher_ids`, unterscheidet Retry von Einlösung) und eine bereits angelegte Erstattung (gespeicherte `mollie_refund_id`) wird übersprungen. Nach erfolgreichem Storno erhält die Kundin automatisch eine **Storno-Bestätigung per E-Mail** (`VoucherRefundedMail`: Erstattungsbetrag, Hinweis auf ungültige Gutschein-Codes; ein Mail-Fehler lässt den Storno nicht scheitern). Stornierte Bestellungen zählen nicht mehr aufs Kauf-Limit; öffnet die Kundin ihren Bestell-Link erneut, sieht sie einen Storno-Hinweis.
 
 „E-Mail erneut senden", „Rechnung herunterladen" und „Stornieren" stehen zusätzlich direkt in der Bestell-Liste als Icon-Buttons zur Verfügung (gemeinsame Definition: `VoucherOrderActions`). Technik: `VoucherRefundService` (Phorest `getVoucher`/`updateVoucher` mit `remainingBalance: 0`, `MolliePaymentService::refundPayment()`, Status-Übergang `markRefunded()` mit Row-Lock); die Fulfillment-Jobs ignorieren stornierte Bestellungen über ihre Status-Allowlists.
 
-### Mollie einrichten
+### Mollie-Konfiguration
 
 **Admin-Panel → Einstellungen → Mollie (Zahlungen)** (Recht: `manage_voucher_products`)
 
-- **API-Key** aus dem [Mollie-Dashboard](https://my.mollie.com) eintragen (`test_...` für Staging, `live_...` für Produktion; wird verschlüsselt gespeichert). „Verbindung testen" zeigt die aktivierten Zahlarten.
-- **Profile-ID** (`pfl_...`, Mollie-Dashboard → Einstellungen → Website-Profile) eintragen, um die **eingebetteten Kartenfelder** zu aktivieren — Kartenzahler bleiben dann komplett auf unserer Seite. Ohne Profile-ID läuft Karte über die Mollie-Zahlungsseite (Redirect).
-- **Apple Pay direkt** (natives Sheet auf unserer Seite, ohne Redirect): Schalter „Apple Pay direkt auf der Checkout-Seite" aktivieren. Voraussetzungen: (1) Apple Pay im Mollie-Dashboard aktiv, (2) **Live-API-Key** hinterlegt (Apple-Merchant-Sessions funktionieren nur im Live-Mode), (3) Mollies Domain-Validierungsdatei öffentlich unter `https://hub.glattt.com/.well-known/apple-developer-merchantid-domain-association` erreichbar — die Datei liegt in `public/.well-known/`, der Pfad `/.well-known/*` braucht aber eine **IAP-Ausnahme am Load Balancer** (analog `/shared/*`). Solange der Schalter aus ist, läuft Apple Pay per Redirect.
+- **API-Key** aus dem [Mollie-Dashboard](https://my.mollie.com) (`test_...` für Staging, `live_...` für Produktion; wird verschlüsselt gespeichert). „Verbindung testen" zeigt die aktivierten Zahlarten.
+- **Profile-ID** (`pfl_...`, Mollie-Dashboard → Einstellungen → Website-Profile) aktiviert die **eingebetteten Kartenfelder** — Kartenzahler bleiben dann komplett auf unserer Seite. Ohne Profile-ID läuft Karte über die Mollie-Zahlungsseite (Redirect).
+- **Apple Pay direkt** (natives Sheet auf unserer Seite, ohne Redirect): Schalter „Apple Pay direkt auf der Checkout-Seite". Voraussetzungen: (1) Apple Pay im Mollie-Dashboard aktiv, (2) **Live-API-Key** hinterlegt (Apple-Merchant-Sessions funktionieren nur im Live-Mode), (3) Mollies Domain-Validierungsdatei öffentlich unter `https://hub.glattt.com/.well-known/apple-developer-merchantid-domain-association` erreichbar — die Datei liegt in `public/.well-known/`, der Pfad `/.well-known/*` braucht aber eine **IAP-Ausnahme am Load Balancer** (analog `/shared/*`). Solange der Schalter aus ist, läuft Apple Pay per Redirect.
 - Hinweis Zahlarten: Klassische **Überweisung (banktransfer)** dauert Tage bis zur Bestätigung — der Gutschein wird erst nach Zahlungseingang erstellt. Für „Gutschein sofort per E-Mail" ggf. im Mollie-Dashboard deaktivieren.
-
-### Kundensicht
-
-1. Kunde öffnet den Link → vorausgefüllte Checkout-Seite (nur Vorname, Nachname, E-Mail; Telefon optional).
-2. **Zahlart direkt auf unserer Seite wählen** (Buttons mit Logos, aus den im Mollie-Dashboard aktivierten Methoden geladen):
-   - **Karte**: Eingabe direkt auf der Seite (eingebettete Mollie-Components-Felder im glattt-Design) — kein Redirect. Nur wenn die Bank 3D Secure verlangt, gibt es eine kurze Weiterleitung zur Bankfreigabe.
-   - **PayPal, Klarna & Co.**: Weiterleitung direkt in den Anbieter-Flow (ohne Mollie-Zwischenseite), danach zurück auf unsere Statusseite.
-3. Statusseite aktualisiert sich automatisch, sobald die Zahlung bestätigt ist.
-4. E-Mail mit Gutschein-Code (8-stellige Seriennummer), Wert, Gültigkeit, **QR-Code zum Vorzeigen** und Rechnung als PDF. Unter jedem Code steht der goldene Button **„PDF-Gutschein zum Verschenken erstellen"** (außer bei personengebundenen Produkten — dort erscheint stattdessen der Hinweis, dass nur der Käufer einlösen darf; den QR-Code gibt es trotzdem, er dient dem Einlösen).
-5. Einlösung im Institut: Gutschein-Code nennen oder den QR-Code vorzeigen (aus der Mail oder vom Geschenk-PDF) — Phorest verrechnet ihn wie jeden anderen Gutschein.
-
-### Geschenkgutschein-PDF (zum Verschenken)
-
-Über den Button in der Kauf-Mail öffnet der Kunde eine öffentliche Seite (kein Login) mit einer **Live-Vorschau** des Geschenkgutscheins im Design der glattt Welcome-Karte („Bye Rasieren. Hallo Freiheit."). Drei optionale Felder — **Für**, **Von**, **Anlass** — spiegeln sich beim Tippen sofort in der Vorschau; leere Felder erscheinen nicht im PDF. „PDF-Gutschein herunterladen" erzeugt ein **A5-Querformat-PDF** zum Ausdrucken oder digitalen Verschicken:
-
-- Links der **Gutscheinwert im goldenen Kasten** (Cents hochgestellt), darunter die Personalisierung.
-- Unten rechts auf dem Gold-Bogen der weiße **Einlöse-Kasten**: QR-Code (enthält den Gutscheincode, funktioniert gedruckt wie vom Bildschirm), Code in 4er-Gruppen und Ablaufdatum.
-- Bei Teilverfall gibt es **je Code ein eigenes PDF** (Grundbetrag und Bonus-Guthaben haben je einen eigenen Link in der Mail).
-
-Es wird nichts gespeichert — jeder Download rendert frisch mit den aktuellen Feldwerten. Nach einer **Stornierung** funktioniert der Link nicht mehr; bei Produkten mit **„Gebunden an Käufer"** gibt es die Option gar nicht.
-
----
-
-## Für Entwickler
 
 ### Datenmodell
 
@@ -135,22 +204,12 @@ Es wird nichts gespeichert — jeder Download rendert frisch mit den aktuellen F
 | `voucher_receipt_counters` | Lückenlose Belegnummern pro Jahr (`GS-{Jahr}-{Nr}`), race-sicher via `lockForUpdate()` |
 | `mollie_settings` | API-Key (encrypted cast) + optionale Webhook-URL |
 
-**Status-Maschine** (`VoucherOrder`, geführte Übergänge über `mark*()`-Methoden mit `DB::transaction` + `lockForUpdate()` — dadurch idempotent gegen Duplikat-Webhooks und Webhook-vs.-Return-Races):
-
-```
-pending → paid → voucher_created → delivered
-pending → payment_failed                     (Mollie canceled/expired/failed)
-paid|voucher_created → fulfillment_failed    (Job-Retries erschöpft) → Admin-Retry
-```
-
-`order_type` (Default `voucher`) ist der Erweiterungspunkt für spätere Termin-Anzahlungen.
-
 ### Zahlungsfluss (Mollie)
 
 - `app/Services/MolliePaymentService.php` — Wrapper um `mollie/mollie-api-php` (Key aus DB, Fallback `config('mollie.api_key')`).
 - `createPayment($order, $method, $cardToken)`: `redirectUrl` = `/shared/voucher/return/{uuid}`, `metadata` = Order-ID.
-  - Mit `$method` (Zahlarten-Auswahl auf unserer Seite): Mollie springt direkt in den Anbieter-Flow.
-  - Mit `$cardToken` (eingebettete Kartenfelder): keine Checkout-URL nötig → Rückgabe ist unsere eigene Return-Seite; nur bei 3DS-Challenge liefert Mollie eine Redirect-URL.
+  - Mit `$method` (Zahlarten-Auswahl auf unserer Seite, Buttons mit Logos aus den im Mollie-Dashboard aktivierten Methoden): Mollie springt direkt in den Anbieter-Flow (PayPal, Klarna & Co. ohne Mollie-Zwischenseite, danach zurück auf unsere Statusseite).
+  - Mit `$cardToken` (eingebettete Kartenfelder): keine Checkout-URL nötig → Rückgabe ist unsere eigene Return-Seite; nur bei 3DS-Challenge liefert Mollie eine Redirect-URL (kurze Weiterleitung zur Bankfreigabe).
 - **Mollie Components** (eingebettete Kartenfelder): `mollie.js` wird in `resources/views/shared/voucher-checkout.blade.php` geladen; Init liest die Farben zur Laufzeit aus den CSS-Variablen des aktiven Themes, die Container tragen den `.input-glattt`-Look (`.mollie-component` in `theme_glattt.css`). Kartendaten gehen **nie** an unseren Server (PCI SAQ-A) — das Frontend tokenisiert (`createToken()`) und ruft `submit($cardToken)` auf. Wichtig: Die Mount-Container stehen in einem `wire:ignore`-Block, damit Livewire-Updates die iFrames nicht zerstören. Aktivierung über die **Profile-ID** in den Mollie-Einstellungen.
 - `getEnabledMethods()`: aktivierte Zahlarten (5 min gecacht, `includeWallets: applepay`) für die Auswahl-Buttons auf der Checkout-Seite; leer bei nicht konfiguriertem Mollie → Fallback Hosted Checkout.
 - **Apple Pay direct** (natives Sheet, kein Redirect): Klick auf den schwarzen Apple-Pay-Button (`.apple-pay-button`, `-webkit-appearance`) erstellt synchron eine `ApplePaySession` (User-Geste-Pflicht!). `onvalidatemerchant` → `POST /api/shared/voucher/applepay-session` (`SharedVoucherController::applePaySession`, nur Apple-Hosts als validationUrl, Toggle-Guard) → `MolliePaymentService::requestApplePayPaymentSession()` (`POST /v2/wallets/applepay/sessions`). `onpaymentauthorized` → Livewire `submitApplePay($token)` → `createPayment` mit `applePayPaymentToken` → Rückgabe `{success, redirectUrl}` → Sheet-Bestätigung → eigene Return-Seite. Sichtbarkeit: nur bei `ApplePaySession.canMakePayments()` UND aktivem Admin-Schalter; sonst Redirect-Fallback. Merchant-Sessions verfallen nach 5 min und erfordern den Live-Key.
@@ -163,7 +222,7 @@ paid|voucher_created → fulfillment_failed    (Job-Retries erschöpft) → Admi
 Nach `markPaid()`: `Bus::chain([CreatePhorestVoucherJob, SendVoucherEmailJob])` auf Queue `default` (Queue-Worker-Service konsumiert `push,default`).
 
 - **`CreatePhorestVoucherJob`** (5 Versuche, Backoff 60/300/900/3600 s): 8-stellige Seriennummer wird lokal (beide Serial-Spalten, unique index) **und** gegen Phorest geprüft und **vor** dem `createVoucher`-Call persistiert — nach einem Timeout-Retry wird der ggf. doch angelegte Gutschein per Serial **adoptiert** statt doppelt angelegt. Bei Teilverfall entstehen **zwei Gutscheine** (Grundbetrag + Bonus, je eigene Serial/Gültigkeit); schlägt nur der zweite fehl, macht der Retry genau dort weiter. Ablaufdatum aus dem Gültigkeits-Snapshot der Bestellung (`VoucherProduct::computeExpiry()`: festes Datum vor relativer Frist). Kein `createPurchase` — der Umsatz bleibt bei Mollie/Buchhaltung. Erfolg: Token entwertet, Institut via `NotificationService` benachrichtigt.
-- **`SendVoucherEmailJob`**: Rechnungsnummer aus Counter → PDF (`resources/views/pdf/voucher-receipt.blade.php`, dompdf) → Storage `gcs-private` (Prod) / `public` (lokal) → `VoucherPurchasedMail` mit Anhang. Wirft in Produktion bewusst eine Exception, wenn der Mailer auf `log` steht. 
+- **`SendVoucherEmailJob`**: Rechnungsnummer aus Counter → PDF (`resources/views/pdf/voucher-receipt.blade.php`, dompdf) → Storage `gcs-private` (Prod) / `public` (lokal) → `VoucherPurchasedMail` mit Anhang: Gutschein-Code (8-stellige Seriennummer), Wert, Gültigkeit, **QR-Code zum Vorzeigen**, Rechnung als PDF, unter jedem Code der goldene Button **„PDF-Gutschein zum Verschenken erstellen"** (außer bei personengebundenen Produkten — dort der Hinweis, dass nur der Käufer einlösen darf; den QR-Code gibt es trotzdem, er dient dem Einlösen). Wirft in Produktion bewusst eine Exception, wenn der Mailer auf `log` steht.
 - Endgültige Fehler → `fulfillment_failed` + `failed_stage` (`phorest`|`email`) + Admin-Notification. **Eine bezahlte Bestellung geht nie verloren.**
 
 ### Steuerliche Behandlung (Steuerberater-Entscheid Juli 2026)
@@ -187,13 +246,17 @@ GET  /shared/voucher/gift/{token}/{serial}/pdf   Geschenk-PDF-Download (?to&from
 GET  /shared/voucher/{token}        personalisierte Kaufseite (Prefill)
 ```
 
-Alle mit `throttle:shared-page`; Checkout-Submit zusätzlich per `RateLimiter` in der Livewire-Action. `/shared/*` läuft über den bestehenden IAP-Bypass (Load-Balancer-Path-Rule) — **keine Infrastruktur-Änderung nötig**. Livewire-Komponenten: `app/Livewire/Shared/VoucherCheckoutPage.php`, `VoucherReturnPage.php` (synct beim Laden + `wire:poll.3s`, max. 2 min — deckt lokale Entwicklung ohne erreichbaren Webhook ab).
+Alle mit `throttle:shared-page`; Checkout-Submit zusätzlich per `RateLimiter` in der Livewire-Action. `/shared/*` läuft über den bestehenden IAP-Bypass (Load-Balancer-Path-Rule) — **keine Infrastruktur-Änderung nötig**. Livewire-Komponenten: `app/Livewire/Shared/VoucherCheckoutPage.php` (Checkout: vorausgefüllte Felder Vorname, Nachname, E-Mail, Telefon optional; Zahlart-Auswahl), `VoucherReturnPage.php` (synct beim Laden + `wire:poll.3s`, max. 2 min — deckt lokale Entwicklung ohne erreichbaren Webhook ab; die Statusseite aktualisiert sich damit automatisch, sobald die Zahlung bestätigt ist).
 
 Die Return-Seite zeigt bei Pending/Erfolg eine animierte Sequenz (Kasse → Umschlag → Haken) — Details und Wiederverwendung: [ERFOLGS-ANIMATION.md](ERFOLGS-ANIMATION.md).
 
-**Erneuter Versuch nach fehlgeschlagener Zahlung:** „Erneut versuchen" führt zurück auf den **vorbefüllten Checkout** (`?retry={uuid}` — Prefill via `VoucherCheckoutPage::prefillFromRetryOrder()`, nur für unbezahlte Bestellungen desselben Produkts). Der Kunde kann dort eine andere Zahlart wählen und seine Angaben korrigieren; der Kauf läuft als neue Bestellung. Bevorzugt wird der noch gültige Kauf-Link (behält Branch + Phorest-Client), sonst die generische Produktseite (`VoucherReturnPage::buildRetryUrl()`). Ist beides nicht verfügbar (Produkt deaktiviert, Token abgelaufen), greift der Fallback `retryPayment()` — neue Mollie-Zahlung auf derselben Bestellung mit freier Methodenwahl im Hosted Checkout. Alte `pending`/`payment_failed`-Bestellungen räumt der Reconcile-Cron ab; das Kauf-Limit zählt ohnehin nur bezahlte Bestellungen.
+**Erneuter Versuch nach fehlgeschlagener Zahlung:** „Erneut versuchen" führt zurück auf den **vorbefüllten Checkout** (`?retry={uuid}` — Prefill via `VoucherCheckoutPage::prefillFromRetryOrder()`, nur für unbezahlte Bestellungen desselben Produkts). Die Kundin kann dort eine andere Zahlart wählen und ihre Angaben korrigieren; der Kauf läuft als neue Bestellung. Bevorzugt wird der noch gültige Kauf-Link (behält Branch + Phorest-Client), sonst die generische Produktseite (`VoucherReturnPage::buildRetryUrl()`). Ist beides nicht verfügbar (Produkt deaktiviert, Token abgelaufen), greift der Fallback `retryPayment()` — neue Mollie-Zahlung auf derselben Bestellung mit freier Methodenwahl im Hosted Checkout. Alte `pending`/`payment_failed`-Bestellungen räumt der Reconcile-Cron ab; das Kauf-Limit zählt ohnehin nur bezahlte Bestellungen.
 
-### Geschenkgutschein-PDF & Personenbindung (Entwickler)
+### Geschenkgutschein-PDF & Personenbindung
+
+**Verhalten:** Über den Button in der Kauf-Mail öffnet die Kundin eine öffentliche Seite (kein Login) mit einer **Live-Vorschau** des Geschenkgutscheins im Design der glattt Welcome-Karte („Bye Rasieren. Hallo Freiheit."). Drei optionale Felder — **Für**, **Von**, **Anlass** — spiegeln sich beim Tippen sofort in der Vorschau; leere Felder erscheinen nicht im PDF. „PDF-Gutschein herunterladen" erzeugt ein **A5-Querformat-PDF** zum Ausdrucken oder digitalen Verschicken: links der **Gutscheinwert im goldenen Kasten** (Cents hochgestellt), darunter die Personalisierung; unten rechts auf dem Gold-Bogen der weiße **Einlöse-Kasten** mit QR-Code (enthält den Gutscheincode, funktioniert gedruckt wie vom Bildschirm), Code in 4er-Gruppen und Ablaufdatum. Bei Teilverfall gibt es **je Code ein eigenes PDF** (Grundbetrag und Bonus-Guthaben haben je einen eigenen Link in der Mail). Es wird nichts gespeichert — jeder Download rendert frisch mit den aktuellen Feldwerten. Nach einer **Stornierung** funktioniert der Link nicht mehr; bei Produkten mit **„Gebunden an Käufer"** gibt es die Option gar nicht.
+
+**Umsetzung:**
 
 - **Zugriff**: `voucher_orders.gift_token` (`Str::random(64)`, unique) wird in `SendVoucherEmailJob` vor dem Versand erzeugt (`VoucherOrder::ensureGiftToken()`) — nur wenn mindestens eine Position nicht personengebunden ist. Auflösung in `SharedVoucherController::resolveGiftPart()`: 404 bei unbekanntem Token, fremder Seriennummer, personengebundener Position oder Status außerhalb `voucher_created|delivered` (→ Storno entwertet die Links). `VoucherOrder::giftPartForSerial()` liefert den Anteil (Grund- oder Bonus-Gutschein) mit Wert, Ablauf und Label.
 - **Personenbindung**: `voucher_products.buyer_bound` + Snapshot `voucher_order_items.buyer_bound` (gesetzt in `createOrderWithItems()`, Filament-Toggle „Gebunden an Käufer"). Hinweise: Kaufseite (`$buyerBound` in `VoucherCheckoutPage`), Kassen-Positionsliste (`buyer_bound` im Cart-Item-Array), Warenkorb-Popover (`note` im `cartPayload()`), Shop-Karte (ersetzt „ideal als Geschenk") und Kauf-Mail (statt Geschenk-Button).
@@ -204,7 +267,7 @@ Die Return-Seite zeigt bei Pending/Erfolg eine animierte Sequenz (Kasse → Umsc
 - **E-Mail-Templates** (Kauf + Storno): eigene warme Dark-Mode-Palette (`prefers-color-scheme` + Outlook-`[data-ogsc]`/`[data-ogsb]`), `color-scheme`-Metas gegen Client-Invertierung, `mail-nolink`/`x-apple-data-detectors` gegen blaue Auto-Links auf Codes und Daten. Im Gutschein-Panel: QR-Code im weißen Kasten (Weiß wird im Dark Mode per `!important` erzwungen — Scanner-Kontrast) und der Geschenk-Link als „bulletproof" Tabellen-Button (Dark Mode: helleres Gold mit dunkler Schrift).
 - **Tests**: `tests/Feature/VoucherSales/GiftPdfTest.php` (Seite, PDF-Download, Token-/Serial-Schutz, Storno, Personenbindung, Mail-Links/-Hinweis, QR-Codes in der Mail).
 
-### Wunschbetrag, Rabattstaffeln & Kauffenster (Entwickler)
+### Wunschbetrag, Rabattstaffeln & Kauffenster
 
 - `pricing_type` `fixed|custom`; bei `custom`: `min/max/value_step_cents` + `discount_tiers` (JSON: `[{min_value_cents, percent}, …]`).
 - **Einzige Preisquelle** ist `VoucherProduct::priceForValue($valueCents)` (höchste erreichte Staffel, kaufmännisch auf Cents gerundet) — der Checkout validiert den Wunschbetrag (`isValidCustomValue()`: Grenzen; Schrittweite ab Mindestbetrag nur, wenn konfiguriert) und berechnet den Preis beim Submit erneut serverseitig; Client-Werte werden nie übernommen. Die Bestellung snapshottet Wert/Preis wie beim Festpreis → Fulfillment, Rechnung und Teilverfall funktionieren unverändert. Der Rabatt-Anteil (Wert − Preis) wird zum Bonus-Gutschein, wenn das Produkt eine Bonus-Gültigkeit konfiguriert hat.
@@ -213,13 +276,13 @@ Die Return-Seite zeigt bei Pending/Erfolg eine animierte Sequenz (Kasse → Umsc
 
 ### Kauf-Limit
 
-Zählt Bestellungen in `paid|voucher_created|delivered|fulfillment_failed` je Produkt, gematcht über `phorest_client_id` **oder** `LOWER(email)`. Offene/fehlgeschlagene Zahlungen blockieren nicht.
+Zählt Bestellungen in `paid|voucher_created|delivered|fulfillment_failed` je Produkt, gematcht über `phorest_client_id` **oder** `LOWER(email)`. Offene/fehlgeschlagene und stornierte Zahlungen blockieren nicht; bei Warenkorb-Bestellungen zählt die Stückzahl.
 
 ### Konfiguration
 
 | Wo | Was |
 |---|---|
-| Filament → Mollie (Zahlungen) | API-Key (verschlüsselt), optionale Webhook-URL |
+| Filament → Mollie (Zahlungen) | API-Key (verschlüsselt), Profile-ID, Apple-Pay-Schalter, optionale Webhook-URL |
 | `.env` | `MOLLIE_API_KEY` (nur Dev-Fallback), `MOLLIE_WEBHOOK_URL` (Dev-Tunnel) |
 | Cloud Scheduler | Neuer Job: `POST /api/cron/reconcile-mollie-orders` (stündlich, X-Cron-Token) |
 | Permissions | `view_voucher_sales`, `manage_voucher_sales`, `manage_voucher_products` (Migration, super_admin/admin) |
@@ -243,4 +306,4 @@ Mollie erreicht `localhost` nicht mit Webhooks — der Flow funktioniert trotzde
 5. **Cloud Scheduler**-Job für den Reconcile-Cron anlegen (siehe CLOUD-SCHEDULER-SETUP.md).
 6. Auf Staging verifizieren: unauthentifizierter Aufruf von `/shared/voucher/p/{slug}` und `POST /api/webhooks/mollie` (IAP-Bypass), kompletter Test-Kauf inkl. Webhook.
 
-**Phase 2 (vorgesehen, nicht gebaut):** Termin-Anzahlungen (`order_type='deposit'`); automatische WhatsApp mit Kauf-Link nach gebuchtem Beratungsgespräch (Listener → `VoucherPurchaseToken` erzeugen → Versand via `SuperchatApiService`; `campaign_label` trägt die Auswertung).
+**Phase 2 (vorgesehen, nicht gebaut):** Termin-Anzahlungen (`order_type='deposit'`); automatische WhatsApp mit Kauf-Link nach gebuchtem Beratungsgespräch (Listener → `VoucherPurchaseToken` erzeugen → Versand via `SuperchatApiService`; `campaign_label` trägt die Auswertung) — der WhatsApp-Teil ist inzwischen als Beratungs-WhatsApp umgesetzt (`BERATUNGS-WHATSAPP.md`).

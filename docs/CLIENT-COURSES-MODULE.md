@@ -1,12 +1,35 @@
 # Client Courses (glattt-Pakete) Modul
 
-## Übersicht
+Dieses Modul stellt Phorest „Client Courses" (glattt-Pakete) im Kundenprofil dar — Tab
+**glattt Pakete** auf `/hub/clients/{clientId}`. Die Daten werden **direkt von der Phorest
+API** geladen und nach `client_id` gefiltert; zusätzlich existiert ein **nächtlicher Sync**
+in die lokale Tabelle `stats_client_courses` für Statistiken und Reports. Diese Seite
+beschreibt **API, Endpunkte, Sync und Datenmodell**; die Bedienung steht im Nutzerhandbuch.
 
-Dieses Modul stellt Phorest "Client Courses" (glattt-Pakete) auf der Kunden-Detailseite dar. Die Daten werden **direkt von der Phorest API** geladen und nach `client_id` gefiltert.
+!!! nutzerhandbuch "Bedienung: Kundenverwaltung 3 – Termine & Pakete"
+    [hilfe.hub.glattt.com/kundenverwaltung/3/](https://hilfe.hub.glattt.com/kundenverwaltung/3/) — Abschnitt „glattt Pakete": Pakete der Kundin mit Einheiten-Fortschritt lesen.
 
-Zusätzlich existiert ein **nächtlicher Sync** in eine lokale Datenbank-Tabelle (`stats_client_courses`) für Statistiken und Reports.
+    Angrenzend: [Berichte 16 – glattt-Pakete Statistik](https://hilfe.hub.glattt.com/berichte/16/)
+    (Auswertung aus dem nächtlichen Sync), Serie [Kundenverwaltung](https://hilfe.hub.glattt.com/kundenverwaltung/).
 
-## Phorest API Endpoint
+## Für Anwender — Überblick
+
+Ein **glattt-Paket** ist in Phorest ein „Client Course": eine gekaufte Menge an
+Behandlungs-Einheiten je Service, mit Kaufdatum, Ablaufdatum und Restguthaben. Im Kundenprofil
+zeigt der Tab *glattt Pakete* diese Pakete **live aus Phorest** — inklusive archivierter
+Pakete — als Karten mit Fortschrittsbalken (verbrauchte / verbleibende Einheiten). Es gibt
+dort nichts zu pflegen: Pakete entstehen und schrumpfen ausschließlich in Phorest (Kauf über
+den Hub-Vertrag, Abbuchung je bezahlter Sitzung). Für Statistiken zählt nicht die Live-Ansicht,
+sondern der nächtliche Spiegel in der Datenbank.
+
+| Vorgang | Anleitung |
+|---|---|
+| Pakete einer Kundin lesen (Einheiten, Ablauf, archiviert) | Kundenverwaltung 3 |
+| Verkaufte Pakete, Nutzung und Reste auswerten | Berichte 16 |
+
+## Für Entwickler
+
+### Phorest API Endpoint
 
 ```
 GET /business/{businessId}/clientcourse
@@ -14,7 +37,7 @@ GET /business/{businessId}/clientcourse
 
 > **Offizielle Dokumentation:** https://developer.phorest.com/reference/getclientcourses
 
-### Query-Parameter
+#### Query-Parameter
 
 | Parameter | Typ | Beschreibung |
 |-----------|-----|--------------|
@@ -25,8 +48,10 @@ GET /business/{businessId}/clientcourse
 | `page` | int | Seite, 0-basiert (default 0) |
 
 > **Wichtig:** Die Filter-Parameter `client_id` und `branch_id` verwenden **snake_case**, nicht camelCase!
+> Ein `clientId` wird still ignoriert und liefert die komplette Business-Liste
+> (siehe Projektwissen `phorest-clientcourses-param-falle`).
 
-### Response-Struktur
+#### Response-Struktur
 
 ```json
 {
@@ -66,11 +91,11 @@ GET /business/{businessId}/clientcourse
 }
 ```
 
-## Kunden-Detailseite (Live-Abfrage)
+### Kunden-Detailseite (Live-Abfrage)
 
 Auf der Kunden-Detailseite (`/hub/clients/{clientId}`, Tab "glattt Pakete") werden die Courses **direkt per Phorest API** geladen — ohne Umweg über die lokale Datenbank.
 
-### Ablauf
+#### Ablauf
 
 1. User klickt auf Tab "glattt Pakete"
 2. Frontend ruft `/phorest/client/{clientId}/courses` auf
@@ -81,7 +106,7 @@ Auf der Kunden-Detailseite (`/hub/clients/{clientId}`, Tab "glattt Pakete") werd
 4. Response wird direkt an das Frontend zurückgegeben
 5. Alpine.js rendert die Paket-Karten
 
-### Code-Referenz
+#### Code-Referenz
 
 ```php
 // PhorestController.php
@@ -102,7 +127,7 @@ public function getClientCourses(Request $request, string $clientId): JsonRespon
 }
 ```
 
-### PhorestApiService
+#### PhorestApiService
 
 ```php
 use App\Services\PhorestApiService;
@@ -117,26 +142,26 @@ $response = $api->getClientCourses([
 ]);
 ```
 
-### Routen
+#### Routen
 
 | Route | Controller | Beschreibung |
 |-------|-----------|--------------|
 | `GET /phorest/client/{clientId}/courses` | `PhorestController::getClientCourses` | Courses eines Kunden |
 | `GET /phorest/clientcourse/{clientCourseId}` | `PhorestController::getClientCourse` | Einzelner Course |
 
-### View
+#### View
 
 ```
 resources/views/hub/clients/partials/packages.blade.php
 ```
 
-## Nächtlicher Sync (für Statistiken)
+### Nächtlicher Sync (für Statistiken)
 
 Für Reports und Statistiken werden **alle** Courses nächtlich in die lokale DB synchronisiert.
 
 > Dieser Sync wird **nicht** für die Kunden-Detailseite verwendet.
 
-### Datenbank-Tabellen
+#### Datenbank-Tabellen
 
 **`stats_client_courses`** — Haupttabelle
 
@@ -169,7 +194,7 @@ Für Reports und Statistiken werden **alle** Courses nächtlich in die lokale DB
 | `initial_units` | int | Ursprüngliche Einheiten |
 | `remaining_units` | int | Verbleibende Einheiten |
 
-### Sync-Zeitplan
+#### Sync-Zeitplan
 
 Täglich um 04:00 Uhr via Google Cloud Scheduler:
 
@@ -178,7 +203,7 @@ POST /api/cron/sync-client-courses
 Header: X-Cron-Token: {TOKEN}
 ```
 
-### Artisan Command
+#### Artisan Command
 
 ```bash
 php artisan sync:client-courses
@@ -187,7 +212,7 @@ php artisan sync:client-courses --branch=BRANCH_ID
 php artisan sync:client-courses --dry-run
 ```
 
-## Dateien
+### Dateien
 
 | Datei | Beschreibung |
 |-------|--------------|
@@ -198,3 +223,7 @@ php artisan sync:client-courses --dry-run
 | `app/Models/StatsClientCourseItem.php` | Eloquent Model (nur für Sync/Reports) |
 | `app/Console/Commands/SyncClientCourses.php` | Artisan Sync Command |
 | `app/Http/Controllers/CronController.php` | Cron API Endpoint |
+
+## Verwandte Dokumentation
+
+- [CLIENT-DETAIL-MODULE.md](CLIENT-DETAIL-MODULE.md) — Kundenprofil mit Tab-System
