@@ -161,7 +161,12 @@ wird dafür festgelegt:
 
 Jedes Feld, das die zweite Person ausfüllt (ihre Angaben, ihre Unterschrift, die
 Überschrift ihres Abschnitts), bekommt im Feld-Panel den Schalter **„Gehört zur zweiten
-Person"**.
+Person"**. Das Namensfeld für die Anrede darf eines davon sein.
+
+**Beide Eltern nicht vor Ort:** Im Termin die Erlaubnis öffnen und über **„Formular teilen"**
+an Elternteil 1 schicken (E-Mail/WhatsApp/SMS). Elternteil 1 wählt im Link „beiden
+Elternteilen gemeinsam" → „bekommt einen Link" und den Weg; beim Absenden geht der
+Teil-Link automatisch an Elternteil 2.
 
 Optional gibt es ein **Handy-Feld der zweiten Person** — dann kann der Link auch per
 **WhatsApp** oder **SMS** gehen (siehe `SHARED-FORM-SYSTEM.md` → „Versandwege").
@@ -172,7 +177,9 @@ E-Mail / WhatsApp / SMS"** (nur die Wege, für die es ein Feld gibt; Standard: L
 E-Mail, weil oft nur ein Elternteil da ist):
 
 - **Anwesend:** Ihr Teil wird eingeblendet und mit ausgefüllt — eine Einreichung, fertig.
-- **Link:** Ihr Teil bleibt ausgeblendet, der Hauptteil wird eingereicht und die Einreichung
+- **Link:** Ihre Unterschrift bleibt ausgeblendet, ihre Angaben (Name, Verhältnis, …) dürfen
+  **optional vorausgefüllt** werden (Hinweis über dem Block) und sind im Link vorbelegt und
+  änderbar. Der Hauptteil wird eingereicht und die Einreichung
   **wartet** („Wartet auf zweite Unterschrift"). Die zweite Person bekommt einen Link
   (**7 Tage** gültig, einmal verwendbar), sieht das komplette Formular — die gesperrten
   Felder grau, **ihr eigener Teil gold markiert** („Von Ihnen auszufüllen", am Handy mit
@@ -193,7 +200,8 @@ geben), Feld-Settings `settings.cosigner_part = true`. Die Wahl reist als Pseudo
 (`email`|`whatsapp`|`sms`) mit und landet in `metadata.cosigner_mode` /
 `metadata.cosigner_channel`; der Versand läuft über `FormLinkMessenger`
 (`SHARED-FORM-SYSTEM.md`). Logik in `App\Services\Forms\CosignerService` (`config`,
-`triggered`, `pending`, `initiate`, `remind`, `markCompleted`), JS-Spiegel in
+`triggered`, `pending`, `hiddenInLinkMode` — nur Unterschrift/Datei —, `relaxesRequired`,
+`initiate`, `remind`, `markCompleted`), JS-Spiegel in
 `form-fill.js`/`shared-form-fill.js` (`cosignerTriggered`, `cosignerPartHidden`,
 `cosignerChooserAfter`). Wartende Einreichung: `form_submissions.status =
 awaiting_cosigner` + `metadata.cosigner {email, token_id, requested_at, reminders}`;

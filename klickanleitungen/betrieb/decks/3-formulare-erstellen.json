@@ -224,7 +224,7 @@
     {
      "n": 4,
      "title": "Felder der zweiten Person",
-     "text": "Jedes Feld, das sie ausfüllt, bekommt im Feld-Panel den Schalter **„Gehört zur zweiten Person“**."
+     "text": "Jedes Feld, das sie ausfüllt, bekommt den Schalter **„Gehört zur zweiten Person“**. Bekommt sie einen Link, sind diese Angaben vorausfüllbar — nur ihre Unterschrift bleibt ihr."
     }
    ],
    "hint": {

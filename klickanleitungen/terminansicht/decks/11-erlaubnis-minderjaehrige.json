@@ -14,7 +14,7 @@
  "eyebrow": "Terminansicht · Minderjährige Kundin",
  "footerArea": "Terminansicht",
  "stand": "19.09.2026",
- "version": "1.0",
+ "version": "1.1",
  "notes": [
   "Ist die Kundin **am Termintag unter 18**, hängt der Hub das Formular **„Erlaubnis Minderjährige“** automatisch an den Termin — bei jeder Dienstleistung. Ohne diese Erlaubnis bleibt der **Einstellungszettel gesperrt**.",
   "Bei **gemeinsamer Sorge** müssen **beide** Elternteile unterschreiben. Ist nur einer da, bekommt der andere einen **Link per E-Mail** und unterschreibt seinen Teil dort — erst dann ist das Formular vollständig.",
@@ -93,12 +93,12 @@
     {
      "n": 4,
      "title": "Die zweite Person …",
-     "text": "**„ist anwesend und unterschreibt jetzt“** oder **„bekommt einen Link“**. Vorausgewählt ist der Link — meist ist nur ein Elternteil da. Darunter der Weg: **E-Mail, WhatsApp oder SMS**."
+     "text": "**„ist anwesend und unterschreibt jetzt“** oder **„bekommt einen Link“** (E-Mail, WhatsApp, SMS). Ihre Angaben darunter kannst du schon eintragen — nur die Unterschrift bleibt ihr."
     },
     {
      "n": 5,
      "title": "E-Mail oder Handynummer",
-     "text": "Für E-Mail die Adresse, für WhatsApp und SMS die Handynummer der zweiten Person. Mit dem Elternteil gemeinsam prüfen — ein Tippfehler, und der Link kommt nie an."
+     "text": "Für E-Mail die Adresse, für WhatsApp/SMS die Handynummer der zweiten Person — mit dem Elternteil prüfen, ein Tippfehler und der Link kommt nie an."
     }
    ],
    "hint": {
@@ -156,7 +156,7 @@
     {
      "n": 1,
      "title": "Absenden",
-     "text": "Wie gewohnt unten **„Formular absenden“** — die Felder der zweiten Person sind dabei ausgeblendet."
+     "text": "Wie gewohnt unten **„Formular absenden“**. Angaben der zweiten Person, die du schon kennst (Name, Verhältnis), kannst du vorher eintragen — sie prüft sie im Link und ändert bei Bedarf."
     },
     {
      "n": 2,
@@ -177,6 +177,43 @@
    "hint": {
     "kind": "warn",
     "text": "**Behandeln ist erst möglich, wenn beide unterschrieben haben.** Den Link deshalb am besten noch im Institut mit dem anwesenden Elternteil verschicken lassen — viele Partner antworten in Minuten."
+   }
+  },
+  {
+   "h1": "Beide Eltern nicht vor Ort",
+   "sub": "Auch ohne anwesenden Elternteil lässt sich die Erlaubnis einholen: erst ein Teilen-Link an den einen, aus dessen Absenden entsteht der Link an den anderen.",
+   "card": {
+    "title": "Niemand vor Ort",
+    "text": "Formular teilen an Elternteil 1, Teil-Link an Elternteil 2"
+   },
+   "left": {
+    "shot": "e1-teilen-modal"
+   },
+   "leftCaption": "Aus der geöffneten Erlaubnis heraus: „Formular teilen“ mit dem Weg zu Elternteil 1 — das Kind ist aus dem Termin vorbefüllt.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Erlaubnis im Termin öffnen",
+     "text": "Kachel „Erlaubnis Minderjährige“ antippen, nichts ausfüllen, oben **„Formular teilen“**. Abschnitt 1 (Kind) ist bereits vorbefüllt."
+    },
+    {
+     "n": 2,
+     "title": "Link an Elternteil 1",
+     "text": "Weg wählen (E-Mail, WhatsApp, SMS), Adresse oder Nummer eintragen, **„Link erstellen“**. Gültig 48 Stunden."
+    },
+    {
+     "n": 3,
+     "title": "Elternteil 1 zu Hause",
+     "text": "Trägt sich ein, wählt **„beiden Elternteilen gemeinsam“** und **„bekommt einen Link“** für den anderen, gibt dessen Adresse oder Nummer an und unterschreibt."
+    },
+    {
+     "n": 4,
+     "title": "Elternteil 2 automatisch",
+     "text": "Beim Absenden schickt der Hub den Teil-Link (7 Tage) an Elternteil 2 — wie auf der nächsten Seite. Im Termin steht bis dahin „1 von 2 Unterschriften“."
+    }
+   ],
+   "hint": {
+    "text": "Sind beide Eltern zusammen zu Hause, wählt Elternteil 1 „ist anwesend und unterschreibt jetzt“ — dann unterschreiben beide auf demselben Handy, und es ist sofort erledigt."
    }
   },
   {
@@ -210,7 +247,7 @@
     {
      "n": 3,
      "title": "Eigenen Teil ausfüllen",
-     "text": "**Gold markiert** („Von Ihnen auszufüllen“): Verhältnis, Vorname, Nachname, Geburtsdatum — und die **Unterschrift** mit dem Finger. Am Handy führt der Knopf „Zu meinem Teil“ direkt dorthin."
+     "text": "**Gold markiert** („Von Ihnen auszufüllen“): Verhältnis, Vorname, Nachname, Geburtsdatum — vorbelegt, wenn im Institut schon eingetragen — und die **Unterschrift** mit dem Finger. Am Handy führt der Knopf „Zu meinem Teil“ direkt dorthin."
     },
     {
      "n": 4,
