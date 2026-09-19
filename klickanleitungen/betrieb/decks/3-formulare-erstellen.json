@@ -14,7 +14,7 @@
  "eyebrow": "Betrieb · Formular-Editor",
  "footerArea": "Betrieb",
  "stand": "19.09.2026",
- "version": "1.3",
+ "version": "1.4",
  "notes": [
   "Die Formulare sind **Daten, kein Code** — Kundeninformation, Behandlungsvertrag und SEPA-Mandat entstehen alle hier.",
   "Ein Formular mit **Vertrags- oder SEPA-Feld** löst echte Vorgänge aus: Vertrag anlegen, Mandat einrichten, Kauf in Phorest.",
@@ -58,7 +58,7 @@
   },
   {
    "h1": "Felder anordnen",
-   "sub": "Links die Bausteine, in der Mitte das Formular, rechts die Einstellungen des gewählten Feldes.",
+   "sub": "Oben Name und Beschreibung des Formulars, daneben **Entwurf | Veröffentlicht**, Vorschau und Speichern. Darunter die Felder.",
    "card": {
     "title": "Felder anordnen",
     "text": "Bausteine ziehen, Beschriftung und Breite setzen"
@@ -144,8 +144,8 @@
    "steps": [
     {
      "n": 1,
-     "title": "„Einstellungen“ öffnen",
-     "text": "Über den Knopf rechts oder einen Chip. Das Fenster hat vier Bereiche: **Zuordnung**, **Vertrag & SEPA**, **Mitunterzeichner**, **Mail & Download**."
+     "title": "„Bearbeiten“ oder Chip",
+     "text": "Die Chip-Zeile unter dem Kopf zeigt den Stand; **„Bearbeiten“** oder ein Tipp auf einen Chip öffnet das Fenster mit vier Bereichen: **Zuordnung**, **Vertrag & SEPA**, **Mitunterzeichner**, **Mail & Download**."
     },
     {
      "n": 2,
