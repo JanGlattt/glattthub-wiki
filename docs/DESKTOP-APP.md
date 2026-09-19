@@ -25,14 +25,16 @@ Die glatttHub Desktop-App ist eine native macOS-Anwendung, die die Web-App (`htt
 | Feature | Beschreibung |
 |---------|-------------|
 | **Eigenes Fenster** | Unabhängig vom Browser, eigenes Dock-Icon |
+| **Tabs** (seit 1.1.0) | Mehrere Hub-Seiten nebeneinander in einem Fenster, Tab-Leiste in der Titelzeile — neuer Tab per ⌘T oder „+", Wechsel per Klick, ⌃Tab oder ⌘1…9, schließen per ⌘W oder Kreuz. Rechtsklick auf einen Link (oder eine Kundenzeile) → „Link in neuem Tab öffnen", ⌘-Klick ebenso. Alles, was bisher ein neues Fenster öffnete (Admin-Panel, Formular-Vorschau, PDFs), wird zum Tab |
+| **Zurück / Vor / Neu laden** (seit 1.1.0) | Drei Knöpfe links in der Tab-Leiste, wirken auf den aktiven Tab (jeder Tab hat seinen eigenen Verlauf); Kürzel ⌘[ ⌘] ⌘R |
 | **Overlay-Titelleiste** | Schlankes Design mit macOS Traffic Lights (Schließen/Minimieren/Maximieren) |
 | **Spotlight-Suche** | „glatttHub" eingeben → App öffnen |
 | **Cmd+Tab** | Eigenes Icon in der App-Umschaltung |
 | **Deutsche Menüleiste** | glatttHub, Bearbeiten, Darstellung, Fenster, Hilfe |
 | **Tray-Icon** | Schnellzugriff über die macOS-Menüleiste |
-| **Admin-Panel** | Eigenes Fenster für das Filament Admin-Panel (Cmd+Shift+A) |
+| **Admin-Panel** | Eigener Tab für das Filament Admin-Panel (Cmd+Shift+A) |
 | **Push-Benachrichtigungen** | Native macOS-Benachrichtigungen (Opt-in beim ersten Start) |
-| **Tastenkürzel** | Cmd+R = Neu laden, Cmd+Shift+A = Admin-Panel, Cmd+Q = Beenden |
+| **Tastenkürzel** | Cmd+T = Neuer Tab, Cmd+W = Tab schließen, Cmd+Shift+W = Fenster schließen, Cmd+[ / Cmd+] = Zurück/Vor, Cmd+R = Neu laden, Cmd+Shift+A = Admin-Panel, Cmd+Q = Beenden |
 | **Immer aktuell** | Die Website wird live geladen — Inhalte sind immer aktuell |
 
 ### Menüleiste
@@ -41,8 +43,9 @@ Die glatttHub Desktop-App ist eine native macOS-Anwendung, die die Web-App (`htt
 |------|---------|
 | **glatttHub** | Über glatttHub, Ausblenden, Andere ausblenden, Alle einblenden, Beenden |
 | **Bearbeiten** | Widerrufen, Wiederholen, Ausschneiden, Kopieren, Einsetzen, Alles auswählen |
-| **Darstellung** | Neu laden (Cmd+R), Vergrößern, Verkleinern, Originalgröße, Vollbild |
-| **Fenster** | Minimieren, Maximieren, Admin-Panel öffnen (Cmd+Shift+A), Schließen, Alle nach vorne |
+| **Darstellung** | Zurück (Cmd+[), Vorwärts (Cmd+]), Neu laden (Cmd+R), Vergrößern, Verkleinern, Originalgröße, Vollbild |
+| **Tabs** | Neuer Tab (Cmd+T), Tab schließen (Cmd+W), Nächster/Vorheriger Tab (Ctrl+Tab / Ctrl+Shift+Tab), Tab 1–8 (Cmd+1…8), Letzter Tab (Cmd+9), Admin-Panel öffnen (Cmd+Shift+A) |
+| **Fenster** | Minimieren, Maximieren, Fenster schließen (Cmd+Shift+W), Alle nach vorne |
 | **Hilfe** | glatttHub Wiki (öffnet im Browser) |
 
 ### Push-Benachrichtigungen
@@ -57,7 +60,7 @@ Beim ersten Start der App erscheint ein Dialog, der fragt ob du Push-Benachricht
 In der macOS-Menüleiste (oben rechts) erscheint ein kleines glattt-Icon. Per Klick öffnet sich das Hauptfenster, per Rechtsklick ein Kontextmenü mit:
 
 - **glatttHub öffnen** — Hauptfenster anzeigen
-- **Admin-Panel** — Admin-Bereich in eigenem Fenster
+- **Admin-Panel** — Admin-Bereich in eigenem Tab
 - **Beenden** — App komplett schließen
 
 ### Voraussetzungen
@@ -74,7 +77,8 @@ In der macOS-Menüleiste (oben rechts) erscheint ein kleines glattt-Icon. Per Kl
 | Cmd+Tab | ⚠️ Chrome | ✅ glatttHub |
 | Kein Browser nötig | ❌ | ✅ |
 | Overlay-Titelleiste | ❌ | ✅ Schlankes Design |
-| Admin-Panel in eigenem Fenster | ❌ | ✅ Cmd+Shift+A |
+| Tabs im Fenster | ⚠️ Browser-Tabs | ✅ Tab-Leiste mit Zurück/Vor/Neu laden |
+| Admin-Panel in eigenem Tab | ❌ | ✅ Cmd+Shift+A |
 | Menüleiste | ❌ | ✅ Deutsch |
 | Tray-Icon | ❌ | ✅ |
 | Push-Benachrichtigungen | ✅ (im Browser) | ✅ (native macOS) |
@@ -88,29 +92,47 @@ In der macOS-Menüleiste (oben rechts) erscheint ein kleines glattt-Icon. Per Kl
 
 Die Desktop-App ist ein **Electron-Wrapper**. Electron öffnet ein Chromium-basiertes BrowserWindow und lädt die Produktions-URL. Es wird kein lokaler Code der Laravel-App ausgeführt.
 
+Seit 1.1.0 (20.09.2026) ist das Fenster **tab-fähig**: Der Inhalt des `BrowserWindow`
+selbst ist nur die 38 px hohe Tab-Leiste (`tabbar.html`); jede Hub-Seite läuft in einer
+eigenen `WebContentsView` darunter. Alle Views teilen sich die Standard-Session — ein Login
+für alle Tabs.
+
 ```
-┌─────────────────────────────────────────────────┐
-│  glatttHub.app (Electron)                       │
-│  ┌───────────────────────────────────────────┐  │
-│  │  ┌─ Traffic Lights ─┐  Drag-Region (CSS)  │  │
-│  │  │ 🔴 🟡 🟢         │                      │  │
-│  │  └──────────────────┘                      │  │
-│  │         BrowserWindow (Chromium)           │  │
-│  │                                            │  │
-│  │       https://hub.glattt.com               │  │  ← Alles vom Server
-│  │                                            │  │
-│  └────────────────────────────────────────────┘  │
-│  Main Process: Menü, Tray, CSS-Injection         │
-│  Preload: Drag-Region, electron-app Klasse       │
-└──────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│  glatttHub.app (Electron)                                │
+│  ┌────────────────────────────────────────────────────┐  │
+│  │ 🔴🟡🟢  ‹ › ↻ │ Start │ Kundendetails ✕ │ +        │  │  ← BrowserWindow-WebContents
+│  ├────────────────────────────────────────────────────┤  │     (tabbar.html, 38 px, Drag-Region)
+│  │                                                    │  │
+│  │   WebContentsView je Tab (y = 38, volle Breite)    │  │  ← https://hub.glattt.com
+│  │   nur der aktive Tab ist sichtbar                  │  │     (alles vom Server)
+│  │                                                    │  │
+│  └────────────────────────────────────────────────────┘  │
+│  Main: tabs.cjs (TabManager), Menü, Tray, CSS-Injection  │
+│  Preload je Tab: electron-app Klasse, ⌘-Klick, Theme     │
+└──────────────────────────────────────────────────────────┘
 ```
+
+!!! warning "Warum die Leiste im Fenster-WebContents liegt und nicht in einer View"
+    Eine `WebContentsView` im Bereich der versteckten macOS-Titelleiste
+    (`titleBarStyle: 'hiddenInset'`) bekommt **keine Mausklicks** — jeder Druck zieht das
+    Fenster. Nur die WebContents des `BrowserWindow` selbst reichen Klicks dort durch.
+    Deshalb: Leiste = Fensterinhalt, Seiten = Views ab y = 38. Außerdem gelten
+    `-webkit-app-region: drag`-Zonen **fensterweit** über alle WebContents hinweg: Die
+    Drag-Zone liegt darum nur auf `.strip` (38 px), nie auf dem `body` der Leiste, und die
+    Seite blendet ihre eigene `#electron-drag-region` aus, sobald sie unter der Leiste
+    läuft (Body-Klasse `electron-tabs-visible`). Beide Befunde vom 20.09.2026, siehe
+    `.github/knowledge/electron-webcontentsview-titelleiste-klicks.md`.
 
 ### Dateistruktur
 
 ```
 electron/
-├── main.cjs                 # Hauptprozess: Fenster, Menü, Tray, CSS-Injection
-├── preload.cjs              # Drag-Region injizieren, electron-app Body-Klasse
+├── main.cjs                 # Hauptprozess: Fenster, Menü, Tray, CSS-Injection, Push
+├── tabs.cjs                 # TabManager: Views je Tab, Leiste, Kontextmenüs, Zurück/Vor
+├── tabbar.html              # Tab-Leiste (Fensterinhalt, 38 px): Knöpfe, Tabs, Drag-Zone
+├── tabbar-preload.cjs       # IPC-Brücke der Leiste (Zustand rein, Aktionen raus)
+├── preload.cjs              # Preload je Tab: electron-app Klasse, Theme-Meldung, ⌘-Klick
 ├── patch-dev.sh             # Patcht Electron.app für Dev (Name, Icon, Identifier)
 ├── build-icns.sh            # Erstellt .icns aus Icon Composer Exports
 ├── update-web-icons.sh      # Aktualisiert Web-App Icons aus Icon Composer Exports
@@ -131,7 +153,7 @@ electron/
 | `build.productName` | `glatttHub` | App-Name in Dock/Spotlight |
 | `build.mac.icon` | `electron/icons/glatttHub_Icon.icon` | Apple Icon Composer Asset |
 | `build.mac.category` | `public.app-category.business` | macOS App-Kategorie |
-| `build.mac.target` | `["dmg", "zip"]` | Build-Targets |
+| `build.mac.target` | `["dmg", "zip", "pkg"]` | Build-Targets |
 | `build.mac.minimumSystemVersion` | `10.15` | Catalina+ |
 | `build.directories.output` | `electron/dist` | Build-Ausgabeverzeichnis |
 
@@ -142,10 +164,10 @@ Der Main-Prozess ist in logische Abschnitte gegliedert:
 #### URLs & Navigation
 
 ```javascript
-const APP_URL = 'https://hub.glattt.com';
-const ADMIN_URL = 'https://hub.glattt.com/admin';
+const APP_URL = process.env.GLATTTHUB_URL || 'https://hub.glattt.com';
+const ADMIN_URL = `${APP_URL}/admin`;
 const ALLOWED_DOMAINS = [
-  'hub.glattt.com',
+  new URL(APP_URL).hostname,
   'accounts.google.com',      // Google OAuth
   'accounts.youtube.com',     // Google Auth
   'login.microsoftonline.com', // Microsoft Auth
@@ -153,7 +175,33 @@ const ALLOWED_DOMAINS = [
 ];
 ```
 
-Nicht-erlaubte URLs werden automatisch im System-Browser geöffnet.
+Zwei Stufen: `isHubUrl()` (nur der Hub-Host) entscheidet, was ein **Tab** wird;
+`isAllowedUrl()` (Hub + Login-Anbieter), was im Tab navigiert werden darf. Login-Popups
+(Google/IAP brauchen `window.opener`) bleiben Popup-Fenster, alles andere geht in den
+System-Browser. Zum Testen gegen Staging:
+`GLATTTHUB_URL=https://staging.hub.glattt.com npm run electron:dev`.
+
+#### Tabs (`tabs.cjs`)
+
+| Aspekt | Umsetzung |
+|---|---|
+| Tab öffnen | `open(url, { activate })` — neue `WebContentsView` mit Seiten-Preload, `addChildView(view, 0)`; nur der aktive Tab ist `setVisible(true)` |
+| `target="_blank"` / `window.open` | `setWindowOpenHandler`: Hub-URL → Tab, Login-Domain → Popup erlaubt, sonst `shell.openExternal` |
+| Kontextmenü Seite | `context-menu`-Event: „Link in neuem Tab öffnen" (Hintergrund), „Link im Browser öffnen", „Link-Adresse kopieren", Bearbeiten-Rollen, „Seite in neuem Tab öffnen", „Neu laden" |
+| Zeilen ohne Link | Listen mit JS-Navigation (Kunden, Widerrufe, Formular-Karten) tragen `:data-href`; `resolveDataHref()` liest per `executeJavaScript` das Element unter dem Zeiger (`elementFromPoint`) — so bekommt auch eine `@click`-Zeile „in neuem Tab öffnen" |
+| ⌘-Klick | Seiten-Preload fängt Klicks mit Meta/Ctrl im Capture-Phase ab (`a[href]` oder `[data-href]`) und schickt `electron-tabs:open`; ⌘⇧ aktiviert den Tab |
+| Kontextmenü Tab | Neu laden, Duplizieren, Tab schließen, Andere Tabs schließen |
+| Zurück / Vor / Neu laden | `navigationHistory.goBack()/goForward()` und `reload()` des aktiven Tabs; Zustand (`canGoBack`/`canGoForward`) wird bei `did-navigate` und `did-navigate-in-page` (Livewire `wire:navigate`) neu gesendet |
+| Titel | `page-title-updated` → Präfix „glatttHub - " abgeschnitten; Fenstertitel folgt dem aktiven Tab |
+| Farbschema | Seiten-Preload meldet `html.dark` per `electron-theme:changed` (MutationObserver); nur der aktive Tab bestimmt die Leiste |
+| Letzter Tab schließen | schließt das Fenster (wie ⌘W im Browser) |
+| Admin-Panel | `openOrFocus(ADMIN_URL)` — vorhandenen Admin-Tab aktivieren statt neu öffnen |
+| Push-Klick | `loadInActive(url)` lädt die Ziel-URL im aktiven Tab |
+
+Die Seite setzt ihren Tab-Titel nach dem Nachladen der Daten über
+`window.setPageTitle('…')` (`public/js/hub.js`): Kundenseite `Name (Kunden-Nr.)`, Vertrag
+`Name · Vertrag NNN`, Forderungsfall `Name (Kunden-Nr.) · Fall #n` — gilt auch für
+Browser-Tabs.
 
 #### CSS-Injection
 
@@ -163,15 +211,21 @@ Injiziertes CSS:
 
 | CSS-Regel | Zweck |
 |-----------|-------|
-| `#electron-drag-region` | 38px Drag-Region oben (Fenster verschieben) |
-| `.fi-sidebar-header`, `.fi-topbar` | 38px Padding für Traffic Lights (Filament) |
-| `nav.hub-nav`, `.hub-topbar` | 38px Padding für Traffic Lights (Hub-Layout) |
+| `#electron-drag-region` | 38px Drag-Region oben (Fenster verschieben) — nur ohne Tab-Leiste; mit Leiste (`body.electron-tabs-visible`, seit 1.1.0 immer) ausgeblendet |
+| `.fi-sidebar` (≥ 64rem), `.fi-sidebar-header`, `.fi-topbar` | 38px Versatz für Traffic Lights (Filament) — nur ohne Tab-Leiste |
+| `nav.hub-nav`, `.hub-topbar` | 38px Padding für Traffic Lights (Hub-Layout) — nur ohne Tab-Leiste |
 | `a, button, input, ...` | `-webkit-app-region: no-drag` für klickbare Elemente |
 | `::-webkit-scrollbar` | Scrollbar ausblenden |
 
-#### Child-Windows
+Die „nur ohne Tab-Leiste"-Regeln bleiben als Rückfallebene für eine App ohne Leiste; seit
+1.1.0 beginnt jede Seite bereits unter der Leiste (y = 38) und braucht keinen Versatz.
+Gleiches gilt für `body.electron-app:not(.electron-tabs-visible) .apt-detail-topbar` in
+`theme_glattt.css` (Termine-Seite).
 
-Das Admin-Panel (Cmd+Shift+A) öffnet in einem eigenen Fenster. Child-Windows werden dedupliziert: Ist das Fenster für eine URL bereits offen, wird es fokussiert statt ein neues zu öffnen.
+#### Kein Child-Window mehr
+
+Bis 1.0.0 öffnete das Admin-Panel ein eigenes Fenster und jedes `target="_blank"` ein
+nacktes Standard-Fenster ohne Drag-Region. Seit 1.1.0 wird beides zum Tab (siehe oben).
 
 #### User-Agent
 
@@ -179,10 +233,12 @@ Das Admin-Panel (Cmd+Shift+A) öffnet in einem eigenen Fenster. Child-Windows we
 
 ### Preload-Script (`preload.cjs`)
 
-Das Preload-Script hat zwei Aufgaben:
+Das Preload-Script (läuft in jedem Tab) hat vier Aufgaben:
 
-1. **Drag-Region**: Erstellt ein `#electron-drag-region` div am Anfang des Body
-2. **Electron-Erkennung**: Setzt `document.body.classList.add('electron-app')`
+1. **Drag-Region**: Erstellt ein `#electron-drag-region` div am Anfang des Body (per CSS ausgeblendet, sobald die Seite unter der Tab-Leiste läuft)
+2. **Electron-Erkennung**: Setzt `document.body.classList.add('electron-app')` (und `electron-tabs-visible` auf Zuruf des Hauptprozesses)
+3. **Farbschema melden**: `html.dark` → `electron-theme:changed` für die Tab-Leiste
+4. **⌘-Klick**: Links und `[data-href]`-Zeilen mit Meta/Ctrl in einem neuen Tab öffnen
 
 Die Drag-Region wird bei drei Events neu erstellt (Sickerheit gegen SPA-Navigation):
 
@@ -371,8 +427,13 @@ export APPLE_API_ISSUER=84f1cc63-769a-4ea0-b54f-636f28ccbbaa
 electron/dist/
 ├── mac-arm64/
 │   └── glatttHub.app               # Signierte App (intern)
-└── glatttHub-1.0.0.pkg             # PKG-Installer für MDM
+├── glatttHub-1.1.0-arm64.dmg       # Direkter Download
+├── glatttHub-1.1.0-arm64-mac.zip   # ZIP-Archiv
+└── glatttHub-1.1.0-arm64.pkg       # PKG-Installer für MDM
 ```
+
+Die Versionsnummer kommt aus `package.json` (`version`) im Projekt-Root — vor jedem
+Release hochziehen, sonst überschreibt der Build die alte Nummer.
 
 ### Dev-Modus
 
@@ -446,10 +507,10 @@ Der Notarization-Hook (`electron/notarize.cjs`) wird von `electron-builder` auto
 
 | Feld | Wert |
 |------|------|
-| **File** | `electron/dist/glatttHub-1.0.0-arm64.pkg` |
+| **File** | `electron/dist/glatttHub-1.1.0-arm64.pkg` |
 | **Application name** | `glatttHub` |
 | **Bundle identifier** | `com.glattt.hub` |
-| **Version** | `1.0.0` |
+| **Version** | `1.1.0` |
 
 Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
@@ -471,7 +532,10 @@ Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 | Datei | Beschreibung |
 |-------|-------------|
 | `electron/main.cjs` | Hauptprozess: Fenster, Menü, Tray, CSS-Injection, APNs-Handler, Badge |
-| `electron/preload.cjs` | Drag-Region, electron-app Klasse, electronPush Bridge, electronBadge Bridge |
+| `electron/tabs.cjs` | TabManager: Views je Tab, Fenster-öffnen-Handler, Kontextmenüs, Zurück/Vor/Neu laden |
+| `electron/tabbar.html`, `electron/tabbar-preload.cjs` | Tab-Leiste (Fensterinhalt) und ihre IPC-Brücke |
+| `electron/preload.cjs` | Drag-Region, electron-app Klasse, Theme-Meldung, ⌘-Klick, electronPush Bridge, electronBadge Bridge |
+| `public/js/hub.js` (`setPageTitle`) | Tab-Titel aus nachgeladenen Daten (Kunde, Vertrag, Forderungsfall) |
 | `electron/notarize.cjs` | afterSign-Hook für Notarization |
 | `electron/electron-builder.config.cjs` | Build-Konfiguration (Signing, Notarization, PKG) |
 | `electron/entitlements.mac.plist` | macOS Entitlements (Push: `aps-environment: production`, Hardened Runtime) |
@@ -479,3 +543,12 @@ Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 | `storage/app/private/AuthKey_4VXP44Y6GY.p8` | APNs Key (nicht in Git) |
 | `storage/app/private/AuthKey_7FJYWAUF5W.p8` | Notarization Key (nicht in Git) |
 | `app/Services/ApplePushNotificationService.php` | APNs-Versand (edamov/pushok, Key aus ENV via /tmp) |
+
+---
+
+## Changelog
+
+| Datum | Version | Änderung |
+|---|---|---|
+| 20.09.2026 | 1.1.0 | Tabs im Fenster (Tab-Leiste in der Titelzeile, Kontextmenü „in neuem Tab öffnen", ⌘-Klick, `data-href` für JS-Zeilen), Zurück/Vor/Neu laden je Tab, Admin-Panel und `target="_blank"` als Tab statt Fenster, Tab-Titel mit Kundenname/-nummer, Hub-URL per `GLATTTHUB_URL` überschreibbar |
+| 09/2026 | 1.0.0 | Erste Version: Electron-Wrapper, Overlay-Titelleiste, Tray, APNs-Push, Dock-Badge, signiert & notarisiert, PKG für MDM |
