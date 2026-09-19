@@ -14,12 +14,12 @@
  "eyebrow": "Admin · Nachrichten",
  "footerArea": "Admin-Panel",
  "stand": "19.09.2026",
- "version": "1.1",
+ "version": "1.2",
  "notes": [
   "Hier wird eingestellt, **was der Hub von selbst verschickt** — an Kundinnen, ohne dass jemand tippt.",
   "**Jede Änderung wirkt sofort** auf alle künftigen Nachrichten; es gibt keinen Testversand an alle.",
   "Zustellfehler stehen in den Protokollen — ein Teil der WhatsApp-Nachrichten kommt nie an.",
-  "**Jede Team-Benachrichtigung ist ein Anlass im Katalog** — unter Kommunikation → Benachrichtigungen steht, was an wen auf welchem Weg geht."
+  "**Jede Team-Benachrichtigung ist ein Anlass im Katalog** — unter System → Benachrichtigungen steht, was an wen auf welchem Weg geht."
  ],
  "pages": [
   {
@@ -136,7 +136,7 @@
   },
   {
    "h1": "Benachrichtigungen an das Team",
-   "sub": "Unter Kommunikation → Benachrichtigungen steht der Katalog aller Anlässe: was der Hub wann an wen meldet — im Hub, per Push oder gar nicht.",
+   "sub": "Unter System → Benachrichtigungen steht der Katalog aller Anlässe: was der Hub wann an wen meldet — im Hub, per Push oder gar nicht.",
    "card": {
     "title": "Anlässe & Regeln",
     "text": "Je Anlass: an, aus, Kanäle, Zielgruppe, Häufigkeit"

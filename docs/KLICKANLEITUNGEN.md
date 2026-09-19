@@ -203,7 +203,7 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | 42 | Audit: Befunde lesen und abarbeiten | `/hub/audit` | **System 2** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 43 | Berichte allgemein: Zeitraum, Standort, Laschen, Export | `/hub/reports` | **Berichte 0** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 44 | Die 16 Berichtsseiten einzeln | `/hub/reports/*` | **Berichte 1–16** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
-| 45 | Verwaltungspanel: Benutzer, Inhalte, Stammdaten, Protokolle | `/admin` | **Admin 1–8** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 45 | Verwaltungspanel: Benutzer, Inhalte, Stammdaten, Protokolle | `/admin` | **Admin 1–8** (1: v1.1, 4: v1.2, sonst v1.0) | ⚠️ im Portal, Screenshots vom 17./18.09.2026 zeigen noch die alte Optik — nach dem Hub-Look-Deploy (19.09.2026) ganze Serie neu aufnehmen |
 
 Die Liste wird mit jeder fertigen Anleitung fortgeschrieben. **Quellen** liegen reproduzierbar im
 Wiki-Repo unter `klickanleitungen/<serie>/` (je ein README dort), gebaut wird mit den Buildern aus

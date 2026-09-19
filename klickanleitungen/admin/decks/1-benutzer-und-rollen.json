@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Konten, Rollen und Rechte verwalten",
  "eyebrow": "Admin · Benutzer & Rollen",
  "footerArea": "Admin-Panel",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "19.09.2026",
+ "version": "1.1",
  "notes": [
   "**Rollen entscheiden über alles**, was jemand im Hub sieht und darf — sie sind die wichtigste Einstellung überhaupt.",
   "Angelegt werden Konten über die **Personalübersicht** („Team 1“); hier werden sie verwaltet.",
@@ -23,7 +23,7 @@
  "pages": [
   {
    "h1": "Das Admin-Panel öffnen",
-   "sub": "Der Zugang liegt am Fuß der Seitenleiste; er ist an ein eigenes Recht gebunden.",
+   "sub": "Der Zugang liegt am Fuß der Seitenleiste; er ist an ein eigenes Recht gebunden. Das Panel sieht aus wie der Hub und ist genauso gegliedert.",
    "card": {
     "title": "Panel öffnen",
     "text": "Aufbau und Navigation"
@@ -31,7 +31,7 @@
    "left": {
     "shot": "a1-panel"
    },
-   "leftCaption": "Das Admin-Panel mit seinen Gruppen.",
+   "leftCaption": "Das Admin-Panel mit den Gruppen des Hubs.",
    "steps": [
     {
      "n": 1,
@@ -41,12 +41,17 @@
     {
      "n": 2,
      "title": "Gruppen",
-     "text": "Die Bereiche sind thematisch gruppiert — Inhalte, Einstellungen, Protokolle."
+     "text": "Dieselben Gruppen wie im Hub — **Verkauf, Finanzen, Team, Betrieb, System** — plus **Protokolle** für die Log-Listen. Nur eine Gruppe ist offen; die der aktuellen Seite geht von allein auf."
     },
     {
      "n": 3,
-     "title": "Anderes Werkzeug",
-     "text": "Das Panel sieht anders aus als der Hub. Das ist kein Fehler, es ist ein Verwaltungswerkzeug."
+     "title": "Listen",
+     "text": "Tabellen zeigen 50 Zeilen je Seite; unten lässt sich auf 100, 200 oder alle umstellen."
+    },
+    {
+     "n": 4,
+     "title": "Zurück in den Hub",
+     "text": "**„Zurück zum Hub“** am Fuß der Seitenleiste; darüber das eigene Konto mit Abmelden."
     }
    ],
    "hint": {

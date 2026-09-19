@@ -6,14 +6,20 @@ Dokumente gebündelt. Standard und Deck-Format: `klickanleitungen/README.md` und
 
 | Dokument | Deckt ab | Stand |
 |---|---|---|
-| **1 — Benutzer und Rollen** | Panel-Aufbau, Benutzerliste, Rollen und Rechte | v1.0, Screenshots offen |
+| **1 — Benutzer und Rollen** | Panel-Aufbau, Benutzerliste, Rollen und Rechte | v1.1 (19.09.2026, Hub-Look) |
 | **2 — Inhalte und Dokumente** | News, Wissensartikel, Rechtstexte | v1.0, Screenshots offen |
 | **3 — Gutschein-Verkauf** | Produkte, Bestellungen, Sonderfälle und Erstattungen | v1.0, Screenshots offen |
-| **4 — Erinnerungen und WhatsApp** | Terminerinnerungen, Beratungs-WhatsApp, Bewertungsanfragen | v1.0, Screenshots offen |
+| **4 — Erinnerungen und WhatsApp** | Terminerinnerungen, Beratungs-WhatsApp, Bewertungsanfragen | v1.2 (19.09.2026, Pfad System → Benachrichtigungen) |
 | **5 — Stammdaten** | Körperzonen, Beratungsservices, Abwesenheitsarten und weitere Listen | v1.0, Screenshots offen |
 | **6 — Gamification und Abzeichen** | Abzeichen, Anlässe, Institutsziele | v1.0, **noch nicht freigeschaltet** |
 | **7 — Personal und Vergütung** | Gehälter, Bonuszahlungen, Phorest-Zuordnung | v1.0, Screenshots offen |
 | **8 — Protokolle und Einstellungen** | E-Mail-Protokoll, PDF- und Schrifteinstellungen, Cache | v1.0, Screenshots offen |
+
+> **Screenshots aller acht Decks sind seit dem 19.09.2026 veraltet:** Das Panel trägt seitdem den
+> Hub-Look (Glas-Seitenleiste mit den Hub-Gruppen Verkauf/Finanzen/Team/Betrieb/System/Protokolle,
+> Türkis statt Orange, 50 Zeilen je Tabelle, kein Kopfbalken). Sobald der Stand auf Staging liegt,
+> `bash scripts/run-all.sh` für die ganze Serie laufen lassen, Bucket-Sync, `stand.txt` hochziehen.
+> Wiki: `docs/ADMIN-BACKEND.md`.
 
 Alle acht richten sich an die **Administration**. Das Panel ist kein Ort für den Institutsalltag
 — wer dort etwas ändert, verändert es für alle.

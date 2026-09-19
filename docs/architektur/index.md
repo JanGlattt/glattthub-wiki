@@ -8,9 +8,9 @@
 
     ---
 
-    Nur Komponenten-Klassen aus `theme_glattt.css`, Lato als Hausschrift, Dark Mode über CSS-Variablen, mobiles Seitenmuster, Navigations-Gruppen, globale Suche.
+    Nur Komponenten-Klassen aus `theme_glattt.css`, Lato als Hausschrift, Dark Mode über CSS-Variablen, mobiles Seitenmuster, Navigations-Gruppen, globale Suche, Admin-Backend im Hub-Look.
 
-    [:octicons-arrow-right-24: Design System](../DESIGN-SYSTEM.md) · [Mobile Design](../MOBILE-DESIGN.md) · [Navigation](../NAVIGATION-GRUPPEN.md)
+    [:octicons-arrow-right-24: Design System](../DESIGN-SYSTEM.md) · [Mobile Design](../MOBILE-DESIGN.md) · [Navigation](../NAVIGATION-GRUPPEN.md) · [Admin-Backend](../ADMIN-BACKEND.md)
 
 - :material-puzzle: **Frontend-Bausteine**
 

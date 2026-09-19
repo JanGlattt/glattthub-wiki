@@ -143,6 +143,7 @@ nav:
       - Schriftart-Einstellungen: FONT-EINSTELLUNGEN.md
       - Mobile Design: MOBILE-DESIGN.md
       - Navigations-Gruppen: NAVIGATION-GRUPPEN.md
+      - Admin-Backend (Filament) im Hub-Look: ADMIN-BACKEND.md
       - Globale Suche: GLOBAL-SEARCH.md
       - Standortfilter & mobile Navigation: STANDORTFILTER.md
       - Seitenübergänge & Skeletons: SEITENUEBERGAENGE.md
