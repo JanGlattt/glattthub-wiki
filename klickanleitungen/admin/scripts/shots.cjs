@@ -53,7 +53,7 @@ const PLAN = [
   ] },
   seite('a5-zonen', '/admin/body-zones'),
   seite('a5-beratung', '/admin/consultation-services'),
-  seite('a5-weitere', '/admin/customer-number-settings'),
+  seite('a5-weitere', '/admin/client-number-sequences'),
   seite('a6-badges', '/admin/badges'),
   seite('a6-trigger', '/admin/gamification-triggers'),
   seite('a6-ziele', '/admin/gamification-branch-goals'),
