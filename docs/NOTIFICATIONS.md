@@ -106,7 +106,7 @@ Automatische Benachrichtigungen bei Hub-Ereignissen **und** GoCardless-Webhooks 
 seit 19.09.2026 beides über denselben Katalog (`HubEventRegistry`), Provider `hub`.
 
 **Konfiguration:**
-1. Admin → Kommunikation → Benachrichtigungen → Reiter *Anlässe & Regeln*: Jeder
+1. Admin → System → Benachrichtigungen → Reiter *Anlässe & Regeln*: Jeder
    Katalog-Anlass hat bereits eine Regel-Zeile (aus den Standardwerten angelegt)
 2. Schnell-Schalter in der Zeile: Aktiv · Im Hub · Push
 3. *Bearbeiten*: **Frequenz** (⚡ Einzelbenachrichtigung ODER 📦 Tages-Zusammenfassung
@@ -572,6 +572,32 @@ gcloud scheduler jobs create http process-notification-automations \
 php artisan queue:work --queue=push,default --sleep=3 --tries=3
 ```
 
+### Testversand aus dem Admin (seit 19.09.2026)
+
+Zwei Aktionen auf *System → Benachrichtigungen*, Logik in
+`app/Services/Notifications/NotificationTestSender.php`, Oberfläche in
+`app/Filament/Resources/Notifications/NotificationTestActions.php`:
+
+| Aktion | Wo | Text | Empfänger | Kanäle |
+|---|---|---|---|---|
+| **Test senden** (Kopf) | Reiter-übergreifend | frei (Titel, Nachricht, Link, Typ, Icon) | Nutzer, Rollen, Rechte, Institute (Heimatfiliale) oder alle | Im Hub / Push frei wählbar — **exakt** die Gewählten, Stummschaltung und Kanal-Wahl bleiben aussen vor |
+| **Testen** (Zeile) | nur „Anlässe & Regeln" | Regeltext mit **Beispielwerten** (`samplePayload()`: bekannte Platzhalter wie `{kundenname}`, `{betrag}`, `{liste}` mit plausiblen Werten, unbekannte mit ihrer Beschreibung in Guillemets) | wie oben | **wie im Echtbetrieb**: Kanäle der Regel × persönliche Kanal-Wahl (`splitByChannel()`), auch bei inaktiver Regel |
+
+Die Empfänger-Auflösung läuft über denselben `NotificationRecipientResolver::targetedUsers()`
+wie echte Regeln (transiente Regel als Sonde) — nur ohne Datensatz-Bezug, also ohne
+Sichtbarkeitsfilter. Die Zustellung nutzt `HubNotificationDispatcher::sendPush()`; die
+In-App-Meldung entsteht mit `is_test = true`, Präfix **„[Test] "** im Titel und (beim
+Regel-Test) `source_rule_id`. Unter „Versendet" steht sie mit Herkunft „🧪 Test: …";
+sie zählt **nicht** als Auslösung (kein `HubNotificationEvent`, kein `markTriggered()`,
+der 30-Tage-Zähler nutzt `realSentNotifications()`). Die Rückmeldung
+(`NotificationTestResult::summary()`) nennt, wer es im Hub bekam, wer per Push mit/ohne
+angemeldetem Gerät (`PushSubscription::active()`) und wer wegen Stummschaltung leer
+ausging. Push läuft wie immer über die Queue — ohne Worker kommt nichts an.
+Tests: `tests/Feature/NotificationTestSendTest.php`.
+
+**Vorsicht:** Ein Test ist ein echter Versand — „An alle aktiven Nutzer" erreicht auf Prod
+das ganze Team. Vorbelegt ist der angemeldete Nutzer.
+
 ### Test-Commands
 
 ```bash
@@ -626,6 +652,9 @@ tail -f storage/logs/laravel.log | grep -i "notification\|push"
 
 ## Changelog
 
+- **19.09.2026 — Testversand:** „Test senden" (freier Text, Empfänger und Kanäle frei) und
+  „Testen" je Anlass-Regel (Beispielwerte, Kanäle/Stummschaltung wie im Echtbetrieb);
+  Meldungen mit `is_test`, Präfix „[Test]", Herkunft „Test", zählen nicht als Auslösung.
 - **19.09.2026 — Katalog-Runde 2 + GoCardless:** 27 weitere Anlässe (Beratungstermine,
   Vertragsstatus, Leistungsziele, Bonus/Abzeichen, Forderungen/RZV, Empfehlungen,
   Gutschein-Einlösung, Bewertungen, Laser-Störung/Reparatur, Reisekosten, neue

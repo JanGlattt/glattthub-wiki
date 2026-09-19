@@ -9,7 +9,7 @@ Dokumente gebündelt. Standard und Deck-Format: `klickanleitungen/README.md` und
 | **1 — Benutzer und Rollen** | Panel-Aufbau, Benutzerliste, Rollen und Rechte | v1.1 (19.09.2026, Hub-Look) |
 | **2 — Inhalte und Dokumente** | News, Wissensartikel, Rechtstexte | v1.0, Screenshots 19.09.2026 |
 | **3 — Gutschein-Verkauf** | Produkte, Bestellungen, Sonderfälle und Erstattungen | v1.0, Screenshots 19.09.2026 |
-| **4 — Erinnerungen und WhatsApp** | Terminerinnerungen, Beratungs-WhatsApp, Bewertungsanfragen | v1.2 (19.09.2026, Pfad System → Benachrichtigungen) |
+| **4 — Erinnerungen und WhatsApp** | Terminerinnerungen, Beratungs-WhatsApp, Bewertungsanfragen, Testversand | v1.3 (19.09.2026, Testversand) |
 | **5 — Stammdaten** | Körperzonen, Beratungsservices, Abwesenheitsarten und weitere Listen | v1.0, Screenshots 19.09.2026 |
 | **6 — Gamification und Abzeichen** | Abzeichen, Anlässe, Institutsziele | v1.0, **noch nicht freigeschaltet** |
 | **7 — Personal und Vergütung** | Gehälter, Bonuszahlungen, Phorest-Zuordnung | v1.0, Screenshots 19.09.2026 |
@@ -47,7 +47,7 @@ bash scripts/run-all.sh
 Der Zugang braucht **Admin-Rechte** — sonst landet der Lauf auf der Anmeldeseite oder bekommt
 403. Der Ablauf erkennt das, schreibt **„KEIN ZUGANG“** ins Protokoll und überspringt die Seite,
 statt ein Anmeldeformular zu fotografieren. Der Plan steht oben in `scripts/shots.cjs` —
-26 Screenshots.
+28 Screenshots.
 
 ### Der Lauf ändert nichts — und das ist hier besonders wichtig
 
@@ -60,6 +60,8 @@ Ausdrücklich nicht gedrückt werden:
 - Alles unter **Erinnerungen und WhatsApp** — aktive Regeln verschicken Nachrichten an echte
   Kundinnen, **auch von Staging aus** (Superchat kennt keine Sandbox).
 - **„Cache leeren“** — auf Prod ein spürbarer Eingriff.
+- **„Test senden“ / „Testen“** (Benachrichtigungen) — die Modale werden nur **geöffnet und
+  fotografiert**, nie abgeschickt: Ein Test ist ein echter Versand an die gewählten Empfänger.
 - Alles unter **Gamification**, solange das Modul nicht freigeschaltet ist.
 
 ### Was die Bilder brauchen
