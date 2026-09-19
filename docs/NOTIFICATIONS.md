@@ -100,41 +100,42 @@ Für einmalige Mitteilungen an Benutzer.
 4. Zielgruppe wählen (Global, Rollen, Institute, einzelne User)
 5. Speichern → Benachrichtigung wird sofort erstellt
 
-### 2. 🔄 Webhook-Automatisierungen
+### 2. 🔄 Ereignis-Regeln (Katalog-Anlässe)
 
-Automatische Benachrichtigungen bei GoCardless Events (Zahlungen, Mandate, etc.).
+Automatische Benachrichtigungen bei Hub-Ereignissen **und** GoCardless-Webhooks —
+seit 19.09.2026 beides über denselben Katalog (`HubEventRegistry`), Provider `hub`.
 
 **Konfiguration:**
-1. Modus: "Webhook-Automatisierung" wählen
-2. Provider: GoCardless
-3. Ressourcen-Typ: z.B. "Zahlungen"
-4. Aktion: z.B. "failed" (Zahlung fehlgeschlagen)
-5. Titel/Nachricht mit Platzhaltern: `Zahlung {resource_id} fehlgeschlagen: {cause}`
+1. Admin → Kommunikation → Benachrichtigungen → Reiter *Anlässe & Regeln*: Jeder
+   Katalog-Anlass hat bereits eine Regel-Zeile (aus den Standardwerten angelegt)
+2. Schnell-Schalter in der Zeile: Aktiv · Im Hub · Push
+3. *Bearbeiten*: **Frequenz** (⚡ Einzelbenachrichtigung ODER 📦 Tages-Zusammenfassung
+   mit Sendezeitpunkt — bei häufigen Ereignissen empfohlen), Titel/Nachricht mit den
+   Platzhaltern des Anlasses, Zielgruppe (Recht, Institut des Ereignisses, betroffene
+   Person, Rollen, Institute, Personen), „Nutzer dürfen stummschalten"
 
-**Unterstützte Events:**
+**GoCardless-Ereignisse** heißen im Katalog `gocardless_payments`, `gocardless_mandates`,
+`gocardless_refunds`, `gocardless_payouts` und `gocardless_subscriptions` (Altbestand,
+seit 07/2026 keine Abos mehr) — alle Aktionen der GoCardless-API sind anlegbar
+(inkl. `chargeback_settled`, `resubmission_requested`, `customer_approval_*`,
+`mandates.replaced/reinstated/blocked`). Die Payload wird im
+`HubNotificationDispatcher::gocardlessEvent()` aus Rate, Mandat und Vertrag
+angereichert: `{kundenname} {vertragsnummer} {institut} {verkaeuferin} {mandat} {betrag}
+{rate}` (z.B. „3/24") `{faellig_am} {naechster_versuch} {ursache}` (deutsch, Tabelle
+`HubEventRegistry::GOCARDLESS_CAUSES`) `{ursache_code} {beschreibung} {event_id}
+{resource_id}`; Payouts: `{betrag} {referenz} {ankunft}`. Idempotenz je Event-ID
+(`gc:<event_id>`), Institut des Ereignisses = Vertrags-Institut, betroffene Person =
+Verkäuferin.
 
-| Ressource | Events |
-|-----------|--------|
-| Zahlungen | created, submitted, confirmed, paid_out, failed, cancelled, charged_back |
-| Mandate | created, active, failed, cancelled, expired |
-| Abonnements | created, payment_created, cancelled, finished |
-| Erstattungen | created, paid, failed |
-| Auszahlungen | paid |
-
-**Provider "glatttHub" (interne Ereignisse, seit 08/2026):**
-
-Neben GoCardless speisen auch interne Hub-Ereignisse dieselbe Regel-Engine.
-Im Admin-Panel funktioniert alles wie bei GoCardless-Regeln — nur der
-Provider ist ein anderer:
-
-1. Modus: "Ereignis-Automatisierung" wählen
-2. Provider: **🏠 glatttHub (interne Ereignisse)**
-3. Ressourcen-Typ + Aktion wählen (siehe Tabelle)
-4. **Frequenz** wählen: ⚡ Einzelbenachrichtigung bei jedem Ereignis ODER
-   📦 Tages-Zusammenfassung (Digest) mit Sendezeitpunkt — bei häufigen
-   Ereignissen (z.B. Verkäufe) ist der Digest empfohlen, sonst stumpft die
-   Zielgruppe ab und schaltet Push komplett aus
-5. Titel/Nachricht mit Platzhaltern, Zielgruppe wie gewohnt
+Standard: `payments.failed`, `charged_back`, `mandates.failed/cancelled/blocked`,
+`refunds.failed` sofort als Pflichtmeldung an `manage_gocardless`;
+`late_failure_settled`, `chargeback_settled`, `payouts.paid` als Tages-Digest;
+Massen-Ereignisse (`created`, `submitted`, `confirmed`, `paid_out`, `cancelled` —
+5.870 bzw. 729 je Monat in Prod) stehen im Katalog, sind aber **aus**. Die
+Migration `2026_09_19_180000` hat bestehende `gocardless`-Regeln umgehängt; eine
+globale Regel (Prod: `payouts.paid` mit rohen IDs an alle) bekam die
+Katalog-Standardwerte. Der Alt-Katalog (`Notification::getGoCardlessEventTypes()`,
+`{cause}`-Platzhalter) bleibt nur für Altdaten lesbar.
 
 **Der Katalog (Stand 19.09.2026, verbindlich ist `HubEventRegistry::events()`):**
 
@@ -159,6 +160,21 @@ Provider ist ein anderer:
 | Betrieb | `legal_documents.changed` / `.sync_failed` | Recht `manage_legal_documents` | an, Pflicht |
 | Kommunikation | `news.published` — Nachricht veröffentlicht | Institut(e) der Nachricht bzw. alle | an |
 | Kommunikation | `custom_dashboards.shared` — Dashboard geteilt | betroffene Person | an |
+| Beratung | `consultations.booked` / `.cancelled` — Beratungsgespräch gebucht / storniert (`upcoming_consultations`) | Institut des Ereignisses | an (Buchung: Digest) |
+| Beratung | `staff_performance.kpz_above_target` / `.kpz_below_yellow` / `.cr_above_target` — Ø KPZ bzw. Conversion gegen die Schwellen des Instituts (`StaffPerformanceTarget`), laufender Monat, ab 10 Beratungen, einmal je Person und Monat (`HubDailyChecksService`) | betroffene Person + `view_bonus_board_branch/all` (unter Gelb: nur Leitung) | an |
+| Beratung | `survey_ratings.low` / `.top` — Bewertung ≤ 3 bzw. 5 Sterne | `manage_satisfaction_surveys` / Institut | an (5 Sterne: Digest) |
+| Verkauf | `contract_lifecycle.activated` / `.completed` — Vertrag unterschrieben (Entwurf/schwebend → aktiv) / vollständig bezahlt | Verkäuferin + Leitung / Verkäuferin | an (aktiv: Digest) |
+| Verkauf | `referrals.received` — Empfehlung eingegangen | Institut des Ereignisses | an |
+| Bonus | `bonus.rule_achieved` — Bonusziel erreicht (beim Einfrieren) / `bonus.month_frozen` — Monat final eingefroren | Person + `manage_bonus_rules` / alle auf dem Board | an |
+| Bonus | `gamification.badge_rewarded` — Abzeichen mit Prämie (`reward_cents > 0`) | betroffene Person | an, Digest |
+| Forderungen | `debt_cases.created` / `.payment_recorded` (manuell; Online-Zahlungen melden separat) / `.rzv_agreed` / `.rzv_defaulted` | `manage_receivables` | an (Fall/Zahlung: Digest) |
+| Gutscheine | `vouchers.redeemed` — Gutschein auf Vertrag angerechnet | Institut des Ereignisses | an, Digest |
+| Laser | `laser_service.error_reported` / `.repair_completed` (Status erledigt/zurück) | `manage_laser_repairs` (+ Institut) | an |
+| Personal | `travel_expenses.submitted` / `.approved` / `.rejected` | `approve_travel_expenses` / betroffene Person | an (frei/abgelehnt: Pflicht) |
+| Personal | `hub_users.invitation_accepted` — Neue Kollegin im Hub | `create_users` | an |
+| Widerrufe | `contract_change_deadlines.withdrawal_ends_tomorrow` — Widerrufsfrist endet morgen (`HubDailyChecksService`) | `manage_revocations` | an |
+| System | `system.command_failed` — geplanter Befehl mit Exit ≠ 0 (`NotifyOnFailedCommand`, Präfixe `sync:`, `stats:`, `gocardless:` …; einmal je Befehl und Stunde) | `access_admin` | an, Pflicht |
+| SEPA | `gocardless_*` — siehe Abschnitt „Ereignis-Regeln" | `manage_gocardless` | siehe oben |
 
 „Pflicht" = `user_can_mute = false`, die persönliche Kanal-Wahl greift nicht. Die
 Standardwerte gelten nur beim **Anlegen** der Regel (`HubEventRuleSync`) — was der Admin
@@ -369,9 +385,14 @@ app/
 │   └── Notifications/                      # Katalog + Regel-Engine (Hub-Anlässe)
 │       ├── HubEventRegistry.php            # Katalog: Modul, Label, Platzhalter, Standardwerte je Anlass
 │       ├── HubEventRuleSync.php            # legt je Katalog-Anlass die Regel-Zeile an (ensureRule/ensureAll)
+│       ├── HubDailyChecksService.php       # Tages-Prüfungen (Leistungsziele, Widerrufsfristen), 07:30 im Minuten-Cron
 │       ├── HubNotificationDispatcher.php   # je Anlass eine Methode; Aktiv, Idempotenz, Kanäle, Versand
 │       ├── HubDigestService.php            # Tages-Zusammenfassungen (Empfänger je Ereignis-Institut)
 │       └── NotificationRecipientResolver.php  # Zielgruppe (inkl. Recht/Ereignis-Bezug), Sichtbarkeit, Kanal-Split
+├── Observers/
+│   └── NotificationEventObserver.php       # Model-Lebenszyklus → Anlass (Beratungstermine, Forderungen, Laser, Reisekosten …)
+├── Listeners/
+│   └── NotifyOnFailedCommand.php           # CommandFinished mit Exit ≠ 0 → system.command_failed
 ├── Http/Controllers/
 │   └── NotificationPreferenceController.php  # „Meine Benachrichtigungen" (GET/PUT hub/notifications/preferences)
 ├── Models/
@@ -420,6 +441,16 @@ Platzhalter, Symbole) und `tests/Unit/NotificationDispatchConventionTest.php`
 `/admin/…`) oder hub-relative Kurzformen (`news-archiv`, `?news=5`); die
 Klick-Handler (Glocke, Mitteilungsseite, Startseite) hängen `/hub/` nur an
 relative Links. Für Push normalisiert `HubNotificationDispatcher::pushUrl()`.
+
+**Digest ↔ Sofort:** Wird eine Digest-Regel auf „Sofort" umgestellt, bleiben im
+Text oft `{anzahl}`/`{liste}`/`{datum}`; der Dispatcher füllt sie beim
+Einzelversand (1, Zusammenfassungszeile, heute), damit nichts als Platzhalter
+stehen bleibt.
+
+**Tages-Prüfungen ohne eigenen Scheduler-Job:** `HubDailyChecksService::runDue()`
+hängt im minütlichen `notifications:process-automations` (Cloud-Scheduler-Endpunkt
+existiert) und läuft ab 07:30 einmal je Tag (Cache-Marke) — ein neuer Cloud-Scheduler-
+Job ist nicht nötig. `--force` erzwingt den Lauf.
 
 **Symbole:** `icon_type` ist in MySQL ein ENUM — ein fremder Wert
 (`document-check`) ließ die Meldung bis 09/2026 still scheitern (SQLite in
@@ -595,6 +626,13 @@ tail -f storage/logs/laravel.log | grep -i "notification\|push"
 
 ## Changelog
 
+- **19.09.2026 — Katalog-Runde 2 + GoCardless:** 27 weitere Anlässe (Beratungstermine,
+  Vertragsstatus, Leistungsziele, Bonus/Abzeichen, Forderungen/RZV, Empfehlungen,
+  Gutschein-Einlösung, Bewertungen, Laser-Störung/Reparatur, Reisekosten, neue
+  Kollegin, Widerrufsfrist, fehlgeschlagene Befehle) und die GoCardless-Webhooks als
+  angereicherte Katalog-Anlässe (43 Aktionen, deutsche Platzhalter, Digest, Institut
+  des Ereignisses). Katalog: 100 Anlässe in 13 Modulen. Provider `gocardless`
+  abgelöst (Migration), Typ/Icon-Auswahl im Formular vollständig.
 - **19.09.2026 — Benachrichtigungs-Katalog:** Alle ~22 Code-Stellen mit direktem
   `NotificationService` und die drei Push-only-Laser-Typen sind Katalog-Anlässe
   (`HubEventRegistry`, 30 Anlässe in 10 Modulen). Regeln tragen Aktiv/Kanäle/

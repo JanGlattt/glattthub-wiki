@@ -10,15 +10,16 @@
   "Erinnerungen",
   "und WhatsApp"
  ],
- "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Terminerinnerungen, Beratungs-WhatsApp und Bewertungsanfragen",
+ "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Erinnerungen, WhatsApp und die Benachrichtigungen an das Team",
  "eyebrow": "Admin · Nachrichten",
  "footerArea": "Admin-Panel",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "19.09.2026",
+ "version": "1.1",
  "notes": [
   "Hier wird eingestellt, **was der Hub von selbst verschickt** — an Kundinnen, ohne dass jemand tippt.",
   "**Jede Änderung wirkt sofort** auf alle künftigen Nachrichten; es gibt keinen Testversand an alle.",
-  "Zustellfehler stehen in den Protokollen — ein Teil der WhatsApp-Nachrichten kommt nie an."
+  "Zustellfehler stehen in den Protokollen — ein Teil der WhatsApp-Nachrichten kommt nie an.",
+  "**Jede Team-Benachrichtigung ist ein Anlass im Katalog** — unter Kommunikation → Benachrichtigungen steht, was an wen auf welchem Weg geht."
  ],
  "pages": [
   {
@@ -131,6 +132,58 @@
    ],
    "hint": {
     "text": "**Nicht nach einem schwierigen Termin fragen.** Die Bitte um eine Bewertung ist ein Verstärker — sie verstärkt auch Unzufriedenheit."
+   }
+  },
+  {
+   "h1": "Benachrichtigungen an das Team",
+   "sub": "Unter Kommunikation → Benachrichtigungen steht der Katalog aller Anlässe: was der Hub wann an wen meldet — im Hub, per Push oder gar nicht.",
+   "card": {
+    "title": "Anlässe & Regeln",
+    "text": "Je Anlass: an, aus, Kanäle, Zielgruppe, Häufigkeit"
+   },
+   "left": {
+    "shot": "a4-anlaesse"
+   },
+   "right": {
+    "shot": "a4-anlass-regel"
+   },
+   "leftCaption": "Der Reiter „Anlässe & Regeln“ — je Zeile ein Anlass mit den Schaltern Aktiv, Im Hub, Push.",
+   "rightCaption": "Eine Regel im Formular: Kanäle, Text mit Platzhaltern und Zielgruppe.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Reiter wählen",
+     "text": "**„Anlässe & Regeln“** zeigt den Katalog, nach Modul gruppiert (Verkauf, Beratung, Forderungen, SEPA, Laser …). **„Versendet“** listet, was tatsächlich rausging — mit Herkunft."
+    },
+    {
+     "n": 2,
+     "title": "Schnell schalten",
+     "text": "Direkt in der Zeile: **Aktiv** (aus = der Anlass meldet gar nicht), **Im Hub** (Glocke) und **Push** (Geräte). Die Änderung gilt sofort."
+    },
+    {
+     "n": 3,
+     "title": "Regel öffnen",
+     "text": "**„Bearbeiten“** zeigt im Block **Aktiv & Kanäle** zusätzlich, ob Mitarbeiterinnen den Anlass für sich stummschalten dürfen — für Pflichtmeldungen aus."
+    },
+    {
+     "n": 4,
+     "title": "Zielgruppe und Text",
+     "text": "Wer die Meldung bekommt: alle, ein **Recht**, das **Institut des Ereignisses**, die **betroffene Person** (z.B. Verkäuferin) oder feste Personen. Der Text nutzt die **Platzhalter** aus der Liste darüber."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Sofort oder Tages-Zusammenfassung",
+     "text": "Häufige Anlässe (Beratungsbuchungen, Verkäufe, Gutscheine) laufen als **Digest** einmal täglich zur eingestellten Uhrzeit — sonst stumpft das Team ab und schaltet Push ganz aus."
+    },
+    {
+     "title": "GoCardless",
+     "text": "Geplatzte Lastschriften, Rücklastschriften und widerrufene Mandate sind Anlässe im Modul **SEPA & GoCardless** — mit Kundin, Vertrag, Rate und Ursache in Worten. Massen-Ereignisse (angelegt, eingezogen, ausgezahlt) stehen im Katalog, sind aber aus."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Der Katalog ist vollständig.** Ein Anlass, der hier nicht steht, existiert im Hub nicht — neue Anlässe kommen mit einem Update, nicht über „Erstellen“. „Erstellen“ ist für einmalige Mitteilungen von Hand."
    }
   },
   {

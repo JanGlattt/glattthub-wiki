@@ -30,6 +30,27 @@ const PLAN = [
   seite('a4-erinnerungen', '/admin/appointment-reminder-rules'),
   seite('a4-bg-whatsapp', '/admin/consultation-whatsapp-settings'),
   seite('a4-bewertung', '/admin/review-whatsapp-settings'),
+  // Benachrichtigungs-Katalog: Reiter „Anlässe & Regeln" (Schnell-Schalter) und eine Regel im Formular
+  { name: 'a4-anlaesse', url: '/admin/notifications', wait: 4000, steps: [['wait', 800]], marks: [
+    { id: 'reiter', kind: 'badge', n: 1, sel: '.fi-tabs', at: 'l' },
+    { id: 'schalter', kind: 'badge', n: 2, sel: '.fi-ta-row .fi-ta-toggle, .fi-ta-row .fi-toggle', at: 'l' },
+    { id: 'gruppe', kind: 'chip', label: 'Nach Modul', sel: '.fi-ta-group-header', at: 'r' },
+  ] },
+  { name: 'a4-anlass-regel', url: '/admin/notifications', wait: 4000, steps: [
+    ['fn', async (page, L) => {
+      // Regel „Gutschein online verkauft" öffnen (Katalog-Regel mit Institut des Ereignisses)
+      await page.evaluate(() => {
+        const row = [...document.querySelectorAll('.fi-ta-row')].find(r => r.innerText.includes('Gutschein online verkauft'));
+        const a = row && [...row.querySelectorAll('a[href]')].find(e => /\/edit/.test(e.getAttribute('href') || ''));
+        if (a) a.click();
+      });
+      await L.wait(page, 4000);
+    }],
+    ['scroll', '.fi-section-header-heading', 'Aktiv & Kanäle', 40],
+  ], marks: [
+    { id: 'kanaele', kind: 'badge', n: 3, ...({ fn: () => { const h = [...document.querySelectorAll('.fi-section-header-heading')].find(e => e.textContent.includes('Aktiv & Kanäle')); if (!h) return null; const b = h.closest('.fi-section').getBoundingClientRect(); return { x: b.x, y: b.y, w: b.width, h: b.height }; } }), at: 'tl' },
+    { id: 'zielgruppe', kind: 'badge', n: 4, ...({ fn: () => { const h = [...document.querySelectorAll('.fi-section-header-heading')].find(e => e.textContent.includes('Zielgruppe')); if (!h) return null; const b = h.getBoundingClientRect(); return { x: b.x, y: b.y, w: b.width, h: b.height }; } }), at: 'r' },
+  ] },
   seite('a5-zonen', '/admin/body-zones'),
   seite('a5-beratung', '/admin/consultation-services'),
   seite('a5-weitere', '/admin/customer-number-settings'),
