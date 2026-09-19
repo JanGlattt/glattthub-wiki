@@ -60,7 +60,8 @@ async function mask(page) {
     const froms = [...map.keys()].sort((a, b) => b.length - a.length);
     const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const chunks = [];
-    for (let i = 0; i < froms.length; i += 4000) chunks.push(new RegExp(froms.slice(i, i + 4000).map(esc).join('|'), 'g'));
+    // Nur ganze Wörter treffen: die Regel „Gül" (ein Vorname) machte sonst aus „Gültigkeit" ein „Wagnertigkeit"
+    for (let i = 0; i < froms.length; i += 4000) chunks.push(new RegExp('(?<![\\p{L}\\p{N}])(?:' + froms.slice(i, i + 4000).map(esc).join('|') + ')(?![\\p{L}\\p{N}])', 'gu'));
     const apply = (s) => { let out = String(s); for (const re of chunks) out = out.replace(re, (m) => map.get(m) ?? m); return out; };
     const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let n;

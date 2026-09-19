@@ -14,12 +14,13 @@
  "eyebrow": "Betrieb · Formular-Editor",
  "footerArea": "Betrieb",
  "stand": "19.09.2026",
- "version": "1.2",
+ "version": "1.3",
  "notes": [
   "Die Formulare sind **Daten, kein Code** — Kundeninformation, Behandlungsvertrag und SEPA-Mandat entstehen alle hier.",
   "Ein Formular mit **Vertrags- oder SEPA-Feld** löst echte Vorgänge aus: Vertrag anlegen, Mandat einrichten, Kauf in Phorest.",
-  "**Zuordnung über Dienstleistungen:** Welches Formular im Termin erscheint, entscheidet der gebuchte Service.",
-  "**Zwei neue Schalter seit 19.09.2026:** „Nur bei minderjährigen Kundinnen“ und die Card „Mitunterzeichner“ für Formulare mit zwei Unterschriften."
+  "**Zuordnung über Dienstleistungen:** Welches Formular im Termin erscheint, entscheidet der gebuchte Service — oder der Schalter „Nur bei minderjährigen Kundinnen“.",
+  "**Zwei neue Schalter seit 19.09.2026:** „Nur bei minderjährigen Kundinnen“ und die Card „Mitunterzeichner“ für Formulare mit zwei Unterschriften.",
+  "Seit 19.09.2026 stehen alle Einstellungen im **Fenster hinter „Einstellungen“**; die Zeile darunter zeigt den Stand als Chips."
  ],
  "pages": [
   {
@@ -130,34 +131,39 @@
    }
   },
   {
-   "h1": "Vertrag, SEPA und Zuordnung",
-   "sub": "Die folgenreichsten Einstellungen: Was das Formular auslöst und wo es auftaucht.",
+   "h1": "Einstellungen: Zuordnung, Vertrag, SEPA",
+   "sub": "Die folgenreichsten Einstellungen stehen im Fenster „Einstellungen“ — die Chip-Zeile unter dem Kopf zeigt, was gilt.",
    "card": {
-    "title": "Vertrag, SEPA, Zuordnung",
-    "text": "Was das Formular auslöst und wo es erscheint"
+    "title": "Einstellungen",
+    "text": "Chip-Zeile, Fenster mit Menüband, Zuordnung, Vertrag, SEPA"
    },
    "left": {
     "shot": "b11-einstellungen"
    },
-   "leftCaption": "Die Formular-Einstellungen mit Dienstleistungen und Häufigkeit.",
+   "leftCaption": "Die Chip-Zeile unter dem Kopf: jeder Chip nennt eine Einstellung und öffnet das Fenster am richtigen Bereich.",
    "steps": [
     {
      "n": 1,
-     "title": "Dienstleistungen auswählen",
-     "text": "Entscheidet, bei welchen Services das Formular im Termin angeboten wird — die Zuordnung, nach der die Terminansicht sortiert."
+     "title": "„Einstellungen“ öffnen",
+     "text": "Über den Knopf rechts oder einen Chip. Das Fenster hat vier Bereiche: **Zuordnung**, **Vertrag & SEPA**, **Mitunterzeichner**, **Mail & Download**."
     },
     {
      "n": 2,
-     "title": "Pflicht und Häufigkeit",
-     "text": "**„Pflichtformular vor Behandlung“** sperrt den Einstellungszettel. Gültigkeit **„Einmalig pro Kunde“** (z. B. Kundeninformation) oder **„Bei jedem Termin neu“**."
+     "title": "Dienstleistungen",
+     "text": "Entscheidet, bei welchen Services das Formular im Termin angeboten wird — die Zuordnung, nach der die Terminansicht sortiert."
     },
     {
      "n": 3,
-     "title": "Vertrags-Feld",
-     "text": "Macht aus dem Formular einen **Behandlungsvertrag** — mit Preisliste, Zonen, Rabatt und Gutschein („Terminansicht 3“)."
+     "title": "Pflicht und Gültigkeit",
+     "text": "**„Pflichtformular vor Behandlung“** sperrt den Einstellungszettel. Gültigkeit **„Einmalig pro Kunde“** oder **„Bei jedem Termin neu“**."
     },
     {
      "n": 4,
+     "title": "Vertrags-Feld",
+     "text": "Bereich „Vertrag & SEPA“: Macht aus dem Formular einen **Behandlungsvertrag** — mit Preisliste, Zonen, Rabatt und Gutschein („Terminansicht 3“)."
+    },
+    {
+     "n": 5,
      "title": "SEPA-Feld",
      "text": "Richtet das **Lastschriftmandat** ein. Es gehört immer hinter den Vertrag, nie davor („Terminansicht 4“)."
     }
@@ -175,11 +181,18 @@
    "hint": {
     "kind": "warn",
     "text": "**Die Reihenfolge der Formular-Kette ist erzwungen:** Kundeninformation → Behandlungsvertrag → SEPA-Mandat. Wer ein neues Vertrags- oder SEPA-Formular baut, ordnet es denselben Dienstleistungen zu — sonst erscheint es im Termin an der falschen Stelle oder gar nicht."
+   },
+   "right": {
+    "shot": "b11b-einstellungen-fenster"
+   },
+   "rightCaption": "Bereich „Zuordnung“ im Einstellungsfenster: Dienstleistungen, Pflicht vor Behandlung, Gültigkeit.",
+   "rightHint": {
+    "text": "„Vertrag & SEPA“ im Bild: „Betrieb 3“, Bild b11c. Beide Schalter sind bei den meisten Formularen aus — nur Behandlungsvertrag und SEPA-Mandat brauchen sie."
    }
   },
   {
    "h1": "Minderjährige und Mitunterzeichner",
-   "sub": "Formulare, die nur bei Kundinnen unter 18 erscheinen — und Formulare, die eine zweite Person mitunterschreibt.",
+   "sub": "Formulare nur für Kundinnen unter 18 — und Formulare, die eine zweite Person mitunterschreibt.",
    "card": {
     "title": "Minderjährige, zweite Person",
     "text": "Schalter „Nur bei minderjährigen Kundinnen“, Card „Mitunterzeichner“, Feld-Schalter"
@@ -187,49 +200,41 @@
    "left": {
     "shot": "b17-minderjaehrig-schalter"
    },
-   "leftCaption": "Dienstleistungen-Card mit dem Schalter „Nur bei minderjährigen Kundinnen“ — keine Dienstleistung nötig.",
+   "leftCaption": "Bereich „Zuordnung“ mit dem Schalter „Nur bei minderjährigen Kundinnen“ — keine Dienstleistung nötig.",
    "right": {
     "shot": "b18-mitunterzeichner"
    },
-   "rightCaption": "Card „Mitunterzeichner“: Auslöser-Frage, Auslöser-Antwort, E-Mail- und Handy-Feld der zweiten Person.",
+   "rightCaption": "Bereich „Mitunterzeichner“: Auslöser-Frage, Auslöser-Antwort, E-Mail- und Handy-Feld der zweiten Person.",
    "steps": [
     {
      "n": 1,
      "title": "„Nur bei minderjährigen Kundinnen“",
-     "text": "Das Formular erscheint bei **jedem** Termin, sobald die Kundin am Termintag unter 18 ist — unabhängig von der Dienstleistung — und muss vor dem Einstellungszettel ausgefüllt sein. Das Alter kommt aus Phorest."
+     "text": "Bereich **Zuordnung**: erscheint bei **jedem** Termin einer Kundin unter 18 (Alter aus Phorest) und muss vor dem Einstellungszettel ausgefüllt sein."
     },
     {
      "n": 2,
      "title": "Mitunterzeichner aktivieren",
-     "text": "Für Formulare mit **zwei Unterschriften** (beide Elternteile). Der Schalter schaltet die Card frei."
+     "text": "Bereich **Mitunterzeichner** — für Formulare mit **zwei Unterschriften**. Dann Auslöser-Frage und -Antwort wählen, z. B. „Sorge steht zu“ → „beiden gemeinsam“."
     },
     {
      "n": 3,
-     "title": "Auslöser-Frage und -Antwort",
-     "text": "Die Frage, deren Antwort den zweiten Teil nötig macht — z. B. „Die elterliche Sorge steht zu“ → „beiden Elternteilen gemeinsam“."
+     "title": "E-Mail- und Handy-Feld",
+     "text": "Link per Mail an die E-Mail-Adresse, per **WhatsApp oder SMS** an die Handynummer. Beide Felder gehören zum Hauptteil; eines ist Pflicht."
     },
     {
      "n": 4,
-     "title": "E-Mail- und Handy-Feld",
-     "text": "An die E-Mail-Adresse geht der Link per Mail, an die Handynummer per **WhatsApp oder SMS**. Beide Felder gehören zum **Hauptteil** und müssen bei der Auslöser-Antwort sichtbar sein (Bedingte Anzeige). Mindestens eines der beiden ist Pflicht."
-    },
-    {
-     "n": 5,
-     "title": "Felder der zweiten Person markieren",
-     "text": "Jedes Feld, das die zweite Person ausfüllt — Überschrift, Angaben, ihre Unterschrift — bekommt im Feld-Panel den Schalter **„Gehört zur zweiten Person“** („Betrieb 3“, Bild rechts unten)."
+     "title": "Felder der zweiten Person",
+     "text": "Jedes Feld, das sie ausfüllt, bekommt im Feld-Panel den Schalter **„Gehört zur zweiten Person“**."
     }
    ],
-   "rightHint": {
-    "text": "Beim Ausfüllen erscheint unter der Auslöser-Frage die Wahl **„ist anwesend und unterschreibt jetzt“ / „bekommt einen Link per E-Mail“**. Wie das im Termin aussieht: „Terminansicht 11“."
-   },
    "hint": {
     "kind": "warn",
-    "text": "**Das E-Mail-Feld nie als „zweite Person“ markieren** — es muss die erste Person ausfüllen, sonst weiß der Hub nicht, wohin der Link soll. Und die Auslöser-Frage muss im Hauptteil liegen."
+    "text": "**E-Mail- und Handy-Feld nie als „zweite Person“ markieren** — sie füllt die erste Person aus."
    },
    "notes": [
     {
      "title": "WhatsApp einrichten",
-     "text": "Unter **Admin → Formular-Links (WhatsApp/SMS)** je Standort den Superchat-Kanal und die von Meta genehmigte Vorlage wählen; dort stehen auch die SMS-Texte. Ohne Vorlage weicht der Hub auf E-Mail/SMS aus."
+     "text": "**Admin → Formular-Links (WhatsApp/SMS)**: Superchat-Kanal, genehmigte Vorlage, SMS-Texte je Standort."
     }
    ]
   }

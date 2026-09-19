@@ -84,9 +84,26 @@ Das Form Editor Modul ermöglicht das Erstellen, Bearbeiten und Verwalten von dy
   Speichern-Button persistiert — ungespeicherte Änderungen lösen beim Verlassen
   der Seite eine Warnung aus (Dirty-Guard)
 
+### ⚙️ Einstellungsfenster und Chip-Zeile (seit 19.09.2026)
+
+**Für Endanwender:** Alle Formular-Einstellungen stehen im Fenster **„Einstellungen"**
+(Knopf rechts im Kopf) mit vier Bereichen im Menüband: **Zuordnung** (Dienstleistungen,
+Pflichtformular, Nur Minderjährige, Gültigkeit), **Vertrag & SEPA**, **Mitunterzeichner**,
+**Mail & Download**. Unter dem Kopf zeigt eine schlanke **Chip-Zeile** den Stand
+(„Keine Dienstleistung · Nur Minderjährige · einmalig pro Kunde · Kein Vertrag · Kein SEPA ·
+Mitunterzeichner: E-Mail, WhatsApp/SMS · Kein PDF/Mail nach Absenden"); ein Klick auf
+einen Chip öffnet das Fenster am passenden Bereich. Die Felder beginnen damit direkt
+unter dem Kopf — vorher nahmen vier Einstellungs-Karten die erste Bildschirmhöhe ein.
+
+**Für Entwickler:** `editor.blade.php` — Statuszeile `[data-editor-status]`
+(`.form-editor-status`, Chips `statusServices()`, `statusRequired()`, `statusContract()`,
+`statusSepa()`, `statusCosigner()`, `statusMail()` in `form-editor.js`), Fenster
+`.form-editor-config-modal` mit `tab-band-glattt` (`settingsTab`, `openSettings(tab)`).
+Die Bereiche sind die früheren Karten (`.form-editor-config-section`), unverändert gebunden.
+
 ### 🔒 Pflichtformulare vor Behandlung
 
-**Für Endanwender:** In der Dienstleistungen-Card des Editors kann ein Formular als
+**Für Endanwender:** Im Bereich „Zuordnung" des Einstellungsfensters kann ein Formular als
 **„Pflichtformular vor Behandlung"** markiert werden. Bei Terminen, deren Dienstleistungen
 zum Formular passen, muss es dann ausgefüllt sein, bevor in der Terminansicht der
 Einstellungszettel geöffnet werden kann (Kachel ist gesperrt, Hinweis-Toast nennt die
@@ -108,7 +125,7 @@ gegen die Client-Submissions aus `GET /api/forms/submissions/client/{clientId}`,
 
 ### 🧒 Nur bei minderjährigen Kundinnen
 
-**Für Endanwender:** Der zweite Schalter in der Dienstleistungen-Card, **„Nur bei
+**Für Endanwender:** Der zweite Schalter im Bereich „Zuordnung", **„Nur bei
 minderjährigen Kundinnen"**, hängt ein Formular unabhängig von der Dienstleistung an
 **jeden Termin**, bei dem die Kundin am Termintag **unter 18** ist (z.B. die „Erlaubnis
 Minderjährige" der Sorgeberechtigten). Es zählt dann wie ein Pflichtformular: Der
@@ -134,8 +151,8 @@ Geburtsdatum sofort ankommt (`refreshClient()` nach `form-submitted`).
 ### 👥 Mitunterzeichner — eine zweite Person füllt ihren Teil aus
 
 **Für Endanwender:** Manche Formulare brauchen zwei Unterschriften, z.B. beide
-Elternteile bei gemeinsamer Sorge. In der Editor-Card **„Mitunterzeichner"** wird dafür
-festgelegt:
+Elternteile bei gemeinsamer Sorge. Im Bereich **„Mitunterzeichner"** des Einstellungsfensters
+wird dafür festgelegt:
 
 - die **Auslöser-Frage** und die **Auslöser-Antwort** (z.B. „Die elterliche Sorge steht zu"
   → „beiden Elternteilen gemeinsam"),

@@ -24,6 +24,11 @@ const formKnopf = (title) => ['fn', async (page, L) => {
   await L.waitLoaded(page);
 }];
 const editor = formKnopf('Formular bearbeiten');
+// Einstellungsfenster des Editors an einem Bereich öffnen (zuordnung | vertrag | mitunterzeichner | mail)
+const oeffneEinstellungen = (tab) => ['fn', async (page, L) => {
+  await page.evaluate((t) => { const el = document.querySelector('.form-editor-container'); Alpine.$data(el).openSettings(t); }, tab);
+  await L.wait(page, 1500);
+}];
 // Editor eines bestimmten Formulars (Karte über den Namen finden)
 const editorVon = (name) => ['fn', async (page, L) => {
   const ok = await page.evaluate((n) => { const card = [...document.querySelectorAll('.card-glattt')].find(c => c.offsetParent !== null && c.textContent.includes(n)); const b = card && [...card.querySelectorAll('button')].find(b => b.getAttribute('title') === 'Formular bearbeiten'); if (!b) return false; b.click(); return true; }, name);
@@ -83,15 +88,25 @@ const PLAN = [
       if (!ok) console.log('ABSCHNITT FEHLT: Bedingte Anzeige');
       await L.wait(page, 700);
     }]], noScroll: true },
-  { name: 'b11-einstellungen', url: '/hub/forms', steps: [['loaded'], editor, ['wait', 2500],
-    ['scroll', 'h3', 'Dienstleistungen', 160]] },
+  // Einstellungen leben seit 19.09.2026 im Fenster (Zahnrad / Chip) mit Menüband
+  { name: 'b11-einstellungen', url: '/hub/forms', steps: [['loaded'], editor, ['wait', 2500]], marks: [
+    { id: 'chips', kind: 'frame', color: 'teal', sel: '[data-editor-status]' },
+    { id: 'edit', kind: 'badge', n: 1, sel: '[data-editor-status] .form-editor-status-edit', at: 'l' },
+  ] },
+  { name: 'b11b-einstellungen-fenster', url: '/hub/forms', steps: [['loaded'], editor, ['wait', 2500], oeffneEinstellungen('zuordnung')], clip: '.form-editor-config-modal', marks: [
+    { id: 'band', kind: 'frame', sel: '[data-editor-settings-band]' },
+    { id: 'services', kind: 'badge', n: 2, ...L.byText('.form-editor-config-modal h3', 'Dienstleistungen'), at: 'l' },
+    { id: 'pflicht', kind: 'badge', n: 3, ...L.byText('.form-editor-config-modal .toggle-glattt-label', 'Pflichtformular'), at: 'l' },
+  ] },
+  { name: 'b11c-vertrag-sepa', url: '/hub/forms', steps: [['loaded'], editor, ['wait', 2500], oeffneEinstellungen('vertrag')], clip: '.form-editor-config-modal', marks: [
+    { id: 'vertrag', kind: 'badge', n: 4, ...L.byText('.form-editor-config-modal .toggle-glattt-label', 'Vertrag erstellen'), at: 'l' },
+    { id: 'sepa', kind: 'badge', n: 5, ...L.byText('.form-editor-config-modal .toggle-glattt-label', 'SEPA-Mandat'), at: 'l' },
+  ] },
   // Betrieb 3, Seite 5: Editor des Formulars „Erlaubnis Minderjährige" (Schalter + Mitunterzeichner-Card + Feld-Schalter)
-  { name: 'b17-minderjaehrig-schalter', url: '/hub/forms', steps: [['loaded'], editorVon('Erlaubnis Minderjährige'), ['wait', 2500],
-    ['scroll', 'h3', 'Dienstleistungen', 120]], marks: [
+  { name: 'b17-minderjaehrig-schalter', url: '/hub/forms', steps: [['loaded'], editorVon('Erlaubnis Minderjährige'), ['wait', 2500], oeffneEinstellungen('zuordnung')], clip: '.form-editor-config-modal', marks: [
     { id: 'minor', kind: 'badge', n: 1, sel: '[data-editor-minor-toggle]', at: 'l' },
   ] },
-  { name: 'b18-mitunterzeichner', url: '/hub/forms', steps: [['loaded'], editorVon('Erlaubnis Minderjährige'), ['wait', 2500],
-    ['scroll', 'h3', 'Mitunterzeichner', 120]], clip: '[data-editor-cosigner-card]', marks: [
+  { name: 'b18-mitunterzeichner', url: '/hub/forms', steps: [['loaded'], editorVon('Erlaubnis Minderjährige'), ['wait', 2500], oeffneEinstellungen('mitunterzeichner')], clip: '[data-editor-cosigner-card]', marks: [
     { id: 'aktiv', kind: 'badge', n: 2, sel: '[data-editor-cosigner-card] .toggle-glattt-wrapper', at: 'l' },
     { id: 'frage', kind: 'badge', n: 3, ...L.byText('[data-editor-cosigner-card] .form-glattt-hint', 'Die Frage'), at: 'l' },
     { id: 'mail', kind: 'badge', n: 4, ...L.byText('[data-editor-cosigner-card] .form-glattt-hint', 'An diese Adresse'), at: 'l' },
