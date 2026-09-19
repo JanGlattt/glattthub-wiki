@@ -183,8 +183,8 @@ Link ab, sobald die Ziel-Einreichung nicht mehr wartet. `submit()` zweigt bei
 `isCosignerPart()` nach `submitCosignerPart()` ab: nur die sichtbaren Teil-Felder werden
 validiert und per `updateOrCreate` gespeichert, `markCompleted()` setzt `submitted`,
 verwirft das PDF (`pdf_path = null`) und `ensureSubmissionPdf()` baut es mit beiden
-Unterschriften neu; der Token wird verbraucht. Gesperrte Unterschriften der ersten Person
-werden auf der Teil-Seite nicht gezeigt (nicht vorbefüllbar). Die Teil-Seite hebt die
+Unterschriften neu; der Token wird verbraucht. Die Unterschrift der ersten Person
+erscheint auf der Teil-Seite als Platzhalter „Liegt bereits vor" (nicht vorbefüllbar). Die Teil-Seite hebt die
 eigenen Felder gold hervor (`.form-fill-cosigner-own`, Marke „Von Ihnen auszufüllen"),
 dimmt gesperrte Felder stärker und bietet am Handy einen schwebenden Sprungknopf
 (`.form-fill-cosigner-jump`, IntersectionObserver); die Kundenkarte ist ein Theme-Alert

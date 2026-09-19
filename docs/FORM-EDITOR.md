@@ -177,7 +177,8 @@ E-Mail / WhatsApp / SMS"** (nur die Wege, für die es ein Feld gibt; Standard: L
 E-Mail, weil oft nur ein Elternteil da ist):
 
 - **Anwesend:** Ihr Teil wird eingeblendet und mit ausgefüllt — eine Einreichung, fertig.
-- **Link:** Ihre Unterschrift bleibt ausgeblendet, ihre Angaben (Name, Verhältnis, …) dürfen
+- **Link:** Ihr Unterschriftsfeld bleibt als **Platzhalter** stehen („Unterschreibt die zweite
+  Person in ihrem Link — per E-Mail an …"), ihre Angaben (Name, Verhältnis, …) dürfen
   **optional vorausgefüllt** werden (Hinweis über dem Block) und sind im Link vorbelegt und
   änderbar. Der Hauptteil wird eingereicht und die Einreichung
   **wartet** („Wartet auf zweite Unterschrift"). Die zweite Person bekommt einen Link

@@ -101,8 +101,13 @@ const feld = (re) => `(() => { const d = Alpine.$data(document.querySelector('[x
     { id: 'block', kind: 'badge', n: 1, fn: C.rectOfLabel, fnArg: 'Information der 2.', at: 'l' },
     { id: 'wahl', kind: 'chip', label: 'ist anwesend', sel: '[data-cosigner-choice] .segmented-control-glattt-option:first-child', at: 'l' },
   ]});
-  // zurück auf „Link" und Hauptteil füllen
-  await page.evaluate(() => F().setCosignerMode('link')); await L.wait(page, 500);
+  // zurück auf „Link" — die Unterschrift der zweiten Person bleibt als Platzhalter stehen
+  await page.evaluate(() => F().setCosignerMode('link')); await L.wait(page, 800);
+  await C.scrollToSel(page, '[data-signature-placeholder]', 330);
+  if (will('v4b-link-unterschriften')) await L.shot(page, 'v4b-link-unterschriften', { noScroll: true, marks: [
+    { id: 'eigene', kind: 'badge', n: 1, sel: 'canvas.signature-pad-canvas', at: 'l' },
+    { id: 'platzhalter', kind: 'badge', n: 2, sel: '[data-signature-placeholder]', at: 'l' },
+  ]});
   await page.evaluate(([n, mail]) => { const d = F(); d.values[n.vor1] = 'Maria'; d.values[n.nach1] = 'Musterfrau'; d.values[n.geb1] = '1984-03-12'; d.values[n.mail1] = 'mutter@beispiel.de'; d.values[n.mail2] = mail; if (n.phone2) d.values[n.phone2] = '0151 23456789'; }, [namen, MAIL]);
   await L.wait(page, 500);
   await C.scrollToSel(page, 'canvas.signature-pad-canvas', 200);

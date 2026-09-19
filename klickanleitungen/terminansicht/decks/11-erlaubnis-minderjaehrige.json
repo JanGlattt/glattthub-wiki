@@ -14,7 +14,7 @@
  "eyebrow": "Terminansicht · Minderjährige Kundin",
  "footerArea": "Terminansicht",
  "stand": "19.09.2026",
- "version": "1.1",
+ "version": "1.2",
  "notes": [
   "Ist die Kundin **am Termintag unter 18**, hängt der Hub das Formular **„Erlaubnis Minderjährige“** automatisch an den Termin — bei jeder Dienstleistung. Ohne diese Erlaubnis bleibt der **Einstellungszettel gesperrt**.",
   "Bei **gemeinsamer Sorge** müssen **beide** Elternteile unterschreiben. Ist nur einer da, bekommt der andere einen **Link per E-Mail** und unterschreibt seinen Teil dort — erst dann ist das Formular vollständig.",
@@ -131,11 +131,20 @@
      "n": 3,
      "title": "Absenden",
      "text": "Das Formular ist sofort vollständig, die Kachel bekommt den grünen Haken, der Einstellungszettel ist frei."
+    },
+    {
+     "n": 4,
+     "title": "Platzhalter bei Link",
+     "text": "Wählst du stattdessen den Link, bleibt das Unterschriftsfeld der zweiten Person als **Platzhalter** stehen — es zeigt, wohin ihr Link geht."
     }
    ],
    "hint": {
     "text": "Die Wahl lässt sich jederzeit umstellen: Wer zuerst „Link“ gewählt hat und die zweite Person kommt doch noch dazu, tippt auf „ist anwesend“ — der Block erscheint, nichts geht verloren."
-   }
+   },
+   "right": {
+    "shot": "v4b-link-unterschriften"
+   },
+   "rightCaption": "Bei „bekommt einen Link“: unten die eigene Unterschrift und der Platzhalter für die zweite Person — die folgt über ihren Link."
   },
   {
    "h1": "Nur ein Elternteil da: Link an den zweiten",
