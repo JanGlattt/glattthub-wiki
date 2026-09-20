@@ -81,13 +81,13 @@ staging.hub.glattt.com/*                                        → backend-glat
 hilfe.hub.glattt.com/*                                          → backend-glattthub-hilfe          → glattthub-hilfe       (mit IAP, Ingress nur LB)
 ```
 
-!!! warning "Offen: `/.well-known/*` für die iOS-App (Universal Links)"
-    Die iOS-App braucht `https://hub.glattt.com/.well-known/apple-app-site-association` (Route
-    im Hub seit 20.09.2026, Rückfall `/apple-app-site-association`) **ohne IAP** — Apples CDN lädt
-    die Datei beim Installieren ohne Cookies. Der Pfad `/.well-known/*` muss deshalb in die
-    `-public`-Pfadregel von Prod **und** Staging aufgenommen werden (wie `/shared/*`). Prüfung:
-    `curl -sI https://hub.glattt.com/.well-known/apple-app-site-association` liefert `200` und
-    `Content-Type: application/json` statt eines IAP-Redirects. Siehe [iOS-App](IOS-APP.md).
+!!! info "`/.well-known/*` ohne IAP (Universal Links der iOS-App)"
+    `/.well-known/*` liegt in beiden `-public`-Pfadregeln (Prod und Staging, geprüft 20.09.2026) —
+    Apples CDN lädt `https://hub.glattt.com/.well-known/apple-app-site-association` (Route im Hub
+    seit 20.09.2026, Rückfall `/apple-app-site-association`) damit ohne Cookies. Prüfung:
+    `curl -sI https://hub.glattt.com/.well-known/apple-app-site-association` → `200` und
+    `Content-Type: application/json`; Apples Sicht: `https://app-site-association.cdn-apple.com/a/v1/hub.glattt.com`.
+    Siehe [iOS-App](IOS-APP.md).
 
 #### Bekanntes Problem: Fehlendes CSS/JS auf Public-Seiten
 

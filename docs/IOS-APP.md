@@ -127,7 +127,7 @@ Erkennung: User-Agent-Suffix `glatttHub-iOS/<version>` (serverseitig `App\Suppor
 | B3 ✅ | APNs-Umgebung je Gerät | Migration `2026_09_20_120000_add_apns_environment_to_push_subscriptions_table`, `PushSubscription::usesProductionApns()`, Client je Subscription, Endpunkt nimmt `environment` + `device_type` `ios`. Test `ApplePushEnvironmentTest` |
 | B4 ✅ | Push-Payload | `badge` (`Notification::unreadCountFor()`), `category` (`HUB_OBJECT`/`HUB_INFO`, `ApplePushNotificationService::categoryFor()`), `thread-id` (Modul), `apns-collapse-id`; Zusatzdaten aus `HubNotificationDispatcher::pushData()`; `POST /api/push/mark-read` (`log_id` → Klick + In-App gelesen, Antwort `unread_count`). Test `ApplePushPayloadTest` |
 | B5 ✅ | Badge-Sync | Glocke (Sidebar) ruft `window.glatttNative.setBadge(unread)` neben `electronBadge` |
-| B6 ✅ (Hub) / offen (LB) | Universal Links | Route `/.well-known/apple-app-site-association` + `/apple-app-site-association` (`AppleAppSiteAssociationController`, Team/Bundle aus `config/push.php`); **LB-Regel `/.well-known/*` ohne IAP steht noch aus** (Jan). Test `AppleAppSiteAssociationTest` |
+| B6 ✅ | Universal Links | Route `/.well-known/apple-app-site-association` + `/apple-app-site-association` (`AppleAppSiteAssociationController`, Team/Bundle aus `config/push.php`); LB-Regel `/.well-known/*` ohne IAP existiert bereits (geprüft 20.09.2026). Test `AppleAppSiteAssociationTest` |
 | B7 | Geräte-Token | `POST /api/app/devices` (Session-Auth) → Sanctum-Token (`app:widgets`, `app:push`), Tabelle `app_devices`, Widerruf bei Abmelden/Archivieren |
 | B8 | Widget-Endpunkt | `GET /api/app/widgets/kpis` + `/catalog` via `KpiValueService` (Rechte, `BranchVisibility`, 5-Min-Cache) |
 | B9 | Geräte im Profil | iOS-Geräte in den Push-Einstellungen, „Gerät entfernen" |
@@ -161,7 +161,7 @@ Apps-&-Bücher-Token in Miradore.
 
 | Phase | Inhalt | Aufwand |
 |---|---|---|
-| 0 | Konten prüfen, App-Datensatz, Reviewer-Konto, Gerätebestand, LB-Regel `/.well-known/*` | 2–3 Tage |
+| 0 | Konten prüfen, App-Datensatz, Reviewer-Konto, Gerätebestand (LB-Regel `/.well-known/*` existiert bereits) | 2–3 Tage |
 | 1 | Hülle & Login, Downloads, Kamera, Offline, Einstellungen; B1–B2 | 2 Wochen |
 | 1b | Push, Universal Links, Long-Press-Menü, MDM-Config, Kiosk, Face ID; B3–B6, B10 | 1,5 Wochen |
 | 1c | TestFlight-Pilot, Review, Custom-App-Einreichung, Miradore, Klickanleitung | 1,5 Wochen |
@@ -196,4 +196,4 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | Datum | Version | Änderung |
 |---|---|---|
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
-| 20.09.2026 | — | Backend-Vorarbeiten B1 (App-Erkennung), B2 (generische Bridge), B3 (`apns_environment`), B4 (Payload + `mark-read`), B5 (Badge), B6 (AASA-Route), B10 (Kiosk-Konfiguration im Institut-Modul) auf `develop`; LB-Regel `/.well-known/*` offen |
+| 20.09.2026 | — | Backend-Vorarbeiten B1 (App-Erkennung), B2 (generische Bridge), B3 (`apns_environment`), B4 (Payload + `mark-read`), B5 (Badge), B6 (AASA-Route), B10 (Kiosk-Konfiguration im Institut-Modul) auf `develop`; LB-Regel `/.well-known/*` war schon vorhanden |
