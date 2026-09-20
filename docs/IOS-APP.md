@@ -155,7 +155,9 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
 - **Schnellaktionen** (langer Druck aufs Symbol, `UIApplicationShortcutItems` in `project.yml`):
   Termine heute, Kunde suchen (Mehr mit Suchfeld), Mitteilungen (Mehr → Liste), glatttBert. Beim
   Kaltstart merkt `SceneDelegate` (über `configurationForConnecting`) die Aktion, `AppContainer.perform`
-  führt sie nach `ready` aus (`state.pendingShortcut`).
+  führt sie nach `ready` aus (`state.pendingShortcut`). **Fallstrick:** `UIApplication.shared.delegate`
+  ist bei SwiftUI ein Wrapper, kein Cast auf `AppDelegate` — die Instanz merkt sich `AppDelegate.shared`.
+  Abgesichert durch den Springboard-UI-Test `QuickActionUITests` (Schema „glatttHub UI", ~2,5 Min).
 - **Mehr (`MoreSheet`) = Spiegel des mobilen Web-Sheets:** Suchfeld oben (`.searchable`, erst
   `/hub/search?q=` lokal, dann `sources=remote` für Phorest — Treffer ersetzen das Raster), Raster
   in vier Spalten mit den Überschriften Schnellzugriff/Verkauf/…/System (+ Admin Panel), Werkzeug-
