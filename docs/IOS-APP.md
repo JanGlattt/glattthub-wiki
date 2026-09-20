@@ -2,8 +2,9 @@
 
 Native iPhone-/iPad-App für glatttHub — eine Swift/SwiftUI-Hülle um den Hub (`WKWebView`) mit nativem
 Login, APNs-Push, Face ID, Kamera, Universal Links, Kontextmenü, MDM-Steuerung und Home-Screen-Widgets.
-**Stand 20.09.2026: Bauplan beschlossen; Backend-Vorarbeiten B1–B6 und B10 sind auf `develop`
-umgesetzt, das Xcode-Projekt noch nicht begonnen.** Der vollständige Bauplan mit
+**Stand 20.09.2026: Bauplan beschlossen; Backend-Vorarbeiten B1–B6 und B10 auf `develop`/Staging;
+Xcode-Projekt mit Phase-1-Code unter `ios/` angelegt — die Google/IAP-Anmeldung rendert im WKWebView
+(Weg A bewiesen, Simulator); voller Login mit Konto + PIN auf echtem Gerät steht aus.** Der vollständige Bauplan mit
 Entscheidungstabellen, Sequenzdiagrammen und Arbeitspaketen liegt als Claude-Doc vor
 ([glatttHub iOS-App — Bauplan](https://claude.ai/code/artifact/c74ef4a9-112c-4de2-ad61-9546f3612858));
 diese Seite ist die technische Kurzreferenz, die mit der Umsetzung wächst.
@@ -70,6 +71,31 @@ Cookie-Fach, die App bekommt die IAP-Cookies (`GCP_IAAP_AUTH_TOKEN_*`) nie zu se
   und bindet ein Gerätecookie (+ App Attest). Gleiche Sicherheitsaussage wie IAP, policy-konform.
 - Die App kapselt beides hinter einem `AuthProvider`-Protokoll; Erfolg von Weg A wird am **ersten
   Arbeitstag** geprüft — scheitert er, startet sofort Weg B.
+
+### Projekt bauen & testen
+
+Das Projekt liegt unter `ios/` im Hub-Repo und wird aus `ios/project.yml` erzeugt
+(**XcodeGen**, `brew install xcodegen`). Konfiguration **immer in `project.yml` ändern** und neu
+generieren — das eingecheckte `glatttHub.xcodeproj` ist abgeleitet:
+
+```bash
+cd ios && xcodegen generate                       # Projekt (neu) erzeugen
+open glatttHub.xcodeproj                          # Xcode: Scheme „glatttHub" (Debug = Staging-Hub, APNs-Sandbox)
+xcodebuild -project glatttHub.xcodeproj -scheme glatttHub \
+  -destination 'platform=iOS Simulator,name=iPhone 17' test CODE_SIGNING_ALLOWED=NO   # Swift-Tests ohne GUI
+```
+
+Schemes: `glatttHub` (Debug → Staging, Archiv → Release/Prod) und `glatttHub Staging` (TestFlight
+gegen Staging). Basis-URL je Konfiguration in `ios/Config/*.xcconfig` (`HUB_BASE_URL`), Push-Umgebung
+über die Compile-Bedingung `APNS_SANDBOX` (nur Debug). Simulator-Runtime einmalig per
+`xcodebuild -downloadPlatform iOS`; Push nur auf echtem Gerät.
+
+Dateistruktur: `App/` (Einstieg, `AppContainer` als Composition Root, `AppState`), `Config/`
+(`AppConfig`, `ManagedConfig` = MDM, `Keychain`, `DeviceIdentity`), `Web/` (`WebViewStore`,
+`WebCoordinator`, `PopupWebViewController`, `AllowedHosts`, `DownloadPresenter`), `Bridge/`
+(`NativeBridge`, `BridgeMessage`, `Resources/bridge.js`), `Auth/` (`SessionMonitor`, `HubSession`),
+`Push/` (`PushManager`, `NotificationDelegate`), `Lock/` (`BiometricLock`, `PrivacyShield`), `Menu/`
+(`HubObject`, `ObjectMenu`), `Screens/`, `glatttHubTests/` (Swift Testing).
 
 ### Architektur
 
@@ -196,4 +222,5 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | Datum | Version | Änderung |
 |---|---|---|
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
+| 20.09.2026 | 0.1 (dev) | Xcode-Projekt unter `ios/` (XcodeGen) mit Phase-1-Code; Google/IAP-Login rendert im WKWebView mit Safari-UA (Weg A bewiesen, Simulator); 14 Swift-Tests |
 | 20.09.2026 | — | Backend-Vorarbeiten B1 (App-Erkennung), B2 (generische Bridge), B3 (`apns_environment`), B4 (Payload + `mark-read`), B5 (Badge), B6 (AASA-Route), B10 (Kiosk-Konfiguration im Institut-Modul) auf `develop`; LB-Regel `/.well-known/*` war schon vorhanden |
