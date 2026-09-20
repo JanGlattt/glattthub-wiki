@@ -207,7 +207,13 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   angemeldet, nicht das WebView. E-Mail-Login: Sheet wegziehen, das Web-Formular liegt darunter.
   Nach erfolgreicher PIN bleibt das Sheet mit „Anmeldung läuft …" stehen, bis der Hub `ready`
   meldet (dann schließt es über der fertigen Startseite; Notausgang nach 20 s).
-- **Ladeschirm (`LoadingView`):** Beim Start und nach dem Abmelden liegt ein Schirm im Look der
+- **Kaltstart (gemessen 20.09.2026, Simulator/Staging):** erste Anfrage 0,00 s nach Prozessstart
+  (`loadStartOrPending()` im Container-Init), erste Antwort nach 1,85 s, Hub bereit nach 2,13 s — die
+  Zeit ist Netz + Cloud Run (Staging skaliert auf null, die erste Anfrage nach Ruhe trifft eine kalte
+  Instanz). App-seitig bleibt nichts zu holen; Logs `Start: …` (Kategorie `web`/`bridge`) zeigen die
+  Schritte. Launch-Screen zeigt Hub-Farbe + Logo an derselben Stelle wie der Ladeschirm.
+- **App-Switcher:** Inhalt bleibt sichtbar, `PrivacyShield` nur bei aktiver Face-ID-Sperre.
+- **Ladeschirm (`LoadingView`):** animiert (pulsierender Logo-Ring, drei laufende Gold-Punkte); Beim Start und nach dem Abmelden liegt ein Schirm im Look der
   Login-Seite (Verlauf, Logo, Spinner) über dem WebView, bis die erste Seite fertig ist
   (`didFinish`, `ready` oder Ladefehler → `isLoading = false`) — sonst bleibt der Bildschirm
   schwarz, solange Google/IAP laden. Launch-Screen und WebView-Hintergrund nutzen die Farbe
@@ -309,7 +315,12 @@ Rollennamen im Code, Tests je Paket.
 
 ### Widgets (WidgetKit, B8 — seit 20.09.2026)
 
-**Für Endanwender:** Ein Widget „glatttHub Kennzahlen" in vier Größen (klein: eine Zahl; mittel:
+**Für Endanwender:** Drei Widgets — **Kennzahlen** (frei wählbar), **Beratungsgespräche** (die
+Übersicht der Berichte-Seite: Zeiträume × Standort mit Ø-Vergleich) und **Verkaufte Körperzonen**
+(Balken je Monat mit Prognose oder je Tag, gestapelt nach Institut) — jeweils klein bis extra groß.
+Trend-Pfeile zeigen die Veränderung zur Vorperiode (grün/rot, bei Stornos & Co. umgekehrt).
+
+Kennzahlen-Widget im Detail: vier Größen (klein: eine Zahl; mittel:
 bis vier Kennzahlen in einer Zeile; groß: Liste oder — bei „Jeder Standort einzeln" — Tabelle je
 Standort; Sperrbildschirm: eine Zahl). Langer Druck → „Widget bearbeiten": Kennzahlen, Standort
 (Alle / ein Institut / jeder einzeln), Zeitraum (heute, Woche, Monat, 28 Tage, Jahr). Im laufenden
@@ -333,6 +344,14 @@ genau die Kennzahlen, die die zuletzt in der App angemeldete Person auch im Hub 
   App registriert das Gerät bei jeder Anmeldung (`ensureWidgetToken`, `session_token: keep`), Face-ID-
   Aktivierung mit `session_token: create`. „Gerät entfernen" räumt beide Token; Widgets zeigen dann
   „In der App anmelden".
+- **Bericht-Widgets** (`WidgetReportService`, `GET /api/app/widgets/consultations` und `/body-zones`,
+  jeweils mit dem Recht der Berichtsseite: `view_report_upcoming_consultations` bzw.
+  `view_report_sales_statistics`, sonst 403 → „Kein Zugriff auf den Bericht"): Beratungen aus
+  `ReportController::upcomingConsultationsKpi` (`by_branch` + Summen + Ø), Körperzonen aus
+  `SalesStatisticsService::getBodyZonesChart/getBodyZonesDailyChart` (Monate mit `projection`, Tage
+  des laufenden Monats). Standortnamen/-farben aus `AppBranchList`, ausgeblendete Institute fehlen.
+  Charts im Widget mit Swift Charts (gestapelte `BarMark`, Prognose-Rest als blasser Aufsatz).
+  Tests mit Fixtures, weil die Charts MySQL-Funktionen brauchen (`AppWidgetKpiTest`).
 - **Erweiterung `glatttHubWidgets`** (`ios/glatttHubWidgets`, XcodeGen-Target `app-extension`, in die App
   eingebettet, `SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated`): `KpiWidgetIntent`
   (`WidgetConfigurationIntent`: `kpis: [KpiEntity]`, `branch: BranchEntity?`, `range`), Entitäten aus
@@ -396,6 +415,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 |---|---|---|
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
+| 20.09.2026 | 0.1 (dev) | Widgets II: Beratungsgespräche- und Körperzonen-Widget (Swift Charts), Kennzahlen klein mit bis zu drei Werten und Trend-Pfeilen, Extra-Large; Ladeanimation, Launch-Logo, Inhalt im App-Switcher |
 | 20.09.2026 | 0.1 (dev) | Phase C: Widget-Endpunkte (B8, KpiRegistry mit Token-Rechten, lineare Monatsprognose), Widget-Token getrennt vom Sitzungs-Token, WidgetKit-Erweiterung mit App-Intent-Konfiguration in vier Größen |
 | 20.09.2026 | 0.1 (dev) | Phase B: Gerätetoken (B7, `app_devices` + Sanctum), Face-ID-Anmeldung als Sheet-Phase, App-Geräte im Profil (B9) |
 | 20.09.2026 | 0.1 (dev) | Phase A: ein WebView je Haupttab (Instant-Wechsel), Tab-Leiste minimiert beim Scrollen, Pull-to-Refresh, Schnellaktionen; Standort/Theme zwischen Tabs synchron |
