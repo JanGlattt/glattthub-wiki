@@ -283,7 +283,7 @@ Erkennung: User-Agent-Suffix `glatttHub-iOS/<version>` (serverseitig `App\Suppor
 | B5 ✅ | Badge-Sync | Glocke (Sidebar) ruft `window.glatttNative.setBadge(unread)` neben `electronBadge` |
 | B6 ✅ | Universal Links | Route `/.well-known/apple-app-site-association` + `/apple-app-site-association` (`AppleAppSiteAssociationController`, Team/Bundle aus `config/push.php`); LB-Regel `/.well-known/*` ohne IAP existiert bereits (geprüft 20.09.2026). Test `AppleAppSiteAssociationTest` |
 | B7 ✅ | Geräte-Token | `POST /api/app/devices` (Session-Auth) → Sanctum-Token (`app:session`, `app:widgets`), Tabelle `app_devices`, `POST /api/app/session` für Face ID; Widerruf im Profil/App und bei Archivierung (nicht beim Abmelden). Test `AppDeviceTokenTest` |
-| B8 | Widget-Endpunkt | `GET /api/app/widgets/kpis` + `/catalog` via `KpiValueService` (Rechte, `BranchVisibility`, 5-Min-Cache) |
+| B8 ✅ | Widget-Endpunkt | `GET /api/app/widgets/kpis` + `/catalog` via `KpiValueService` (Rechte, `BranchVisibility`, 5-Min-Cache) |
 | B9 ✅ | Geräte im Profil | Abschnitt „App-Geräte" auf der Profilseite (`hub/profile/partials/app-devices`), „Entfernen" widerruft das Token. **Klickanleitung Profil nachziehen** (neuer Abschnitt, Screenshot) |
 | B10 ✅ | Kiosk-Anker | Tab „Extern" des Institut-Moduls zeigt unter dem Zugangs-Link den Block „iPad-App (Kiosk-Modus)" mit der Managed App Configuration zum Kopieren (`InstituteAccessTokenController::appConfig()`, `deviceName` = „iPad <Institut>"). Test `InstituteAccessTokenAppConfigTest`. **Klickanleitung Betrieb 2 (Institut-Modul) muss nachgezogen werden** (neuer Block, Screenshot) |
 | B11 | Reviewer-Konto | `appreview@labrado-schlueter.com` mit PIN, Rolle Institute MA, Testinstitut Magdeburg |
@@ -291,15 +291,44 @@ Erkennung: User-Agent-Suffix `glatttHub-iOS/<version>` (serverseitig `App\Suppor
 Konventionen gelten unverändert: Migrationen statt SQL, `BranchVisibility`, Rechte nur über Gates, keine
 Rollennamen im Code, Tests je Paket.
 
-### Widgets (WidgetKit)
+### Widgets (WidgetKit, B8 — seit 20.09.2026)
 
-Widgets laufen in einer Extension ohne WebView-Cookies und ohne IAP-Login. Sie rufen
-`/api/app/widgets/kpis` (IAP-frei) mit dem Sanctum-Gerätetoken aus einer geteilten Keychain-Gruppe
-(`group.com.glattt.hub`) auf. Drei Widgets: **Kennzahl** (klein, Sperrbildschirm), **Kennzahlen-Zeile**
-(mittel, vier Werte wie ein `stat-strip`), **Tagesblick** (groß, pro Standort eine Zeile). Auswahl über
-`AppIntent`/`AppEntity` aus dem Rechte-gefilterten Katalog; Tippen öffnet die Berichtsseite per Universal
-Link; Aktualisierung alle 15 Min tagsüber; keine Widgets auf geteilten Geräten; `privacySensitive()` auf
-dem Sperrbildschirm.
+**Für Endanwender:** Ein Widget „glatttHub Kennzahlen" in vier Größen (klein: eine Zahl; mittel:
+bis vier Kennzahlen in einer Zeile; groß: Liste oder — bei „Jeder Standort einzeln" — Tabelle je
+Standort; Sperrbildschirm: eine Zahl). Langer Druck → „Widget bearbeiten": Kennzahlen, Standort
+(Alle / ein Institut / jeder einzeln), Zeitraum (heute, Woche, Monat, 28 Tage, Jahr). Im laufenden
+Monat zeigen Zähl- und Summenkennzahlen eine **lineare Prognose bis Monatsende**. Das Widget zeigt
+genau die Kennzahlen, die die zuletzt in der App angemeldete Person auch im Hub sehen darf.
+
+**Für Entwickler:**
+
+- **Endpunkte** (`routes/app.php`, Bearer-**Widget-Token** mit `app:widgets`, IAP-frei):
+  `GET /api/app/widgets/catalog` (erlaubte Kennzahlen aus `KpiRegistry::forUser`, Standorte aus
+  `AppBranchList`, Zeiträume, Vorgaben) und `GET /api/app/widgets/kpis?kpis=a,b&branch=&range=`.
+  Werte ausschließlich über `KpiValueService::values()` — je Kennzahl mit Rechteprüfung; nicht
+  erlaubte Kennzahlen fehlen still. `WidgetKpiService` bildet Zeiträume auf `date_from/date_to` ab
+  (Zukunfts-Kennzahlen ignorieren sie), `branch = 'each'` liefert einen Scope je sichtbarem Standort,
+  cached 15 Min. Prognose: `Ist ÷ vergangene Tage × Monatstage` für `WidgetKpiService::FORECAST_KPIS`,
+  ausdrücklich als „linear" beschriftet. Tests: `AppWidgetKpiTest`.
+- **Zwei Token je Gerät** (`app_devices.personal_access_token_id` = Sitzung/Face ID,
+  `widget_token_id` = Widgets): Das Widget-Token liegt in der App **ohne** Biometrie im geteilten
+  Keychain (`<Team>.com.glattt.hub`, `AfterFirstUnlockThisDeviceOnly`), weil Widgets unbeaufsichtigt
+  laden — dafür kann es keine Sitzung herstellen (`AppSessionController` prüft die Token-ID). Die
+  App registriert das Gerät bei jeder Anmeldung (`ensureWidgetToken`, `session_token: keep`), Face-ID-
+  Aktivierung mit `session_token: create`. „Gerät entfernen" räumt beide Token; Widgets zeigen dann
+  „In der App anmelden".
+- **Erweiterung `glatttHubWidgets`** (`ios/glatttHubWidgets`, XcodeGen-Target `app-extension`, in die App
+  eingebettet, `SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated`): `KpiWidgetIntent`
+  (`WidgetConfigurationIntent`: `kpis: [KpiEntity]`, `branch: BranchEntity?`, `range`), Entitäten aus
+  dem Katalog-Cache in der App-Gruppe (`group.com.glattt.hub`, max. 1 Tag alt, sonst frisch),
+  `KpiTimelineProvider` (30-Min-Takt, 401/403 → „In der App anmelden"), Ansichten je Familie in
+  `KpiWidget.swift`. Geteilter Code in `ios/Shared/WidgetShared.swift` (App-Gruppe, Keychain, Modelle,
+  `WidgetFormat` de-DE mit Kompaktform „98,5 T€", `WidgetAPI`) — alles `nonisolated`, weil die App
+  mit MainActor-Standard baut, die Erweiterung nicht. Tests: `WidgetFormatTests`.
+- **Fallstricke:** App-Gruppe und Keychain-Gruppe brauchen die Capability im Developer-Portal
+  (Xcode legt sie bei automatischer Signierung selbst an). Widgets bekommen keine Push-Auslöser —
+  die App ruft `WidgetCenter.shared.reloadAllTimelines()` nach Login, Katalog-Refresh und
+  Gerät-Entfernen.
 
 ### Verteilung
 
@@ -351,6 +380,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 |---|---|---|
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
+| 20.09.2026 | 0.1 (dev) | Phase C: Widget-Endpunkte (B8, KpiRegistry mit Token-Rechten, lineare Monatsprognose), Widget-Token getrennt vom Sitzungs-Token, WidgetKit-Erweiterung mit App-Intent-Konfiguration in vier Größen |
 | 20.09.2026 | 0.1 (dev) | Phase B: Gerätetoken (B7, `app_devices` + Sanctum), Face-ID-Anmeldung als Sheet-Phase, App-Geräte im Profil (B9) |
 | 20.09.2026 | 0.1 (dev) | Phase A: ein WebView je Haupttab (Instant-Wechsel), Tab-Leiste minimiert beim Scrollen, Pull-to-Refresh, Schnellaktionen; Standort/Theme zwischen Tabs synchron |
 | 20.09.2026 | 0.1 (dev) | Safe-Area als CSS-Variablen aus der App (env() war 0), glatttBert über der Tab-Leiste |
