@@ -273,8 +273,8 @@ Spiegelt `window.electronPush`; `push-notifications.js` bekommt eine generische 
 |---|---|
 | `registerForApnsNotifications()` → `{ token, environment: 'production'\|'sandbox', nativeDeviceId }` (löst die iOS-Systemabfrage aus) | `glattt:push-received` (Vordergrund-Push) |
 | `unregisterForApnsNotifications()`, `getPushStatus()` → `'granted'\|'denied'\|'default'` (Web-Vokabular, weil das WKWebView kein `window.Notification` hat) | `glattt:push-opened` (`url`, `log_id`) |
-| `setBadge(n)`, `saveFile({name,mime,base64})`, `openExternal(url)`, `haptic(kind)` | `glattt:foreground` |
-| `getInfo()` → `{ platform: 'ios', appName: 'glatttHub iOS App', appVersion, deviceName, nativeDeviceId, sharedDevice, kioskMode }`, `reportContext(ctx)` | `glattt:biometric-unlocked` |
+| `setBadge(n)`, `saveFile({name,mime,base64})`, `openExternal(url)`, `haptic(kind)`, `scanDocument()` → `{ name, mime, base64 }` (VisionKit, wirft bei Abbruch), `scanInto(input)` (legt den Scan in ein `<input type="file">`, löst `input`/`change` aus) | `glattt:foreground`, `glattt-bert-ask` (`question`, Siri-Intent) |
+| `getInfo()` → `{ platform: 'ios', appName: 'glatttHub iOS App', appVersion, deviceName, nativeDeviceId, sharedDevice, kioskMode, canScan }`, `reportContext(ctx)` | `glattt:biometric-unlocked` |
 | `ready({ path, loggedIn })` (jede Seitenlast; `loggedIn` = Hub-Layout erkannt), `branchChanged({ branchId })` (Standortfilter, von bridge.js selbst gemeldet), `openMore({ focusSearch })` (Lupe im Scroll-Header) | `glattt:set-branch` (`branchId`), `glattt:toggle-theme`, `glattt:start-tour`, `glattt:open-anleitung`, `glattt-bert-toggle` — Listener am Wurzelelement von `bottom-nav.blade.php` |
 
 `push-notifications.js` lädt `getInfo()` und `getPushStatus()` in `init()` (`loadNativeInfo()`); `device_type`
@@ -402,6 +402,60 @@ genau die Kennzahlen, die die zuletzt in der App angemeldete Person auch im Hub 
   die App ruft `WidgetCenter.shared.reloadAllTimelines()` nach Login, Katalog-Refresh und
   Gerät-Entfernen.
 
+### Phase D — Versionsprüfung, Siri, Scanner, Diagnose, Tastatur (seit 22.09.2026)
+
+**Für Endanwender:** Eine zu alte App sperrt sich mit „Bitte App aktualisieren"; Siri und die
+Kurzbefehle-App kennen „Wie läuft der Tag in glatttHub" (gesprochene Tagesübersicht ohne App-Start),
+„Termine", „Kunde suchen", „Frag glatttBert", „Mitteilungen"; an Upload-Stellen (Reisekosten-Belege,
+Forderungsfall-Beleg, Widerrufs-Dokumente, Unternehmensverträge) gibt es in der App den Knopf
+**Scannen** (Kamera mit Kantenerkennung, mehrseitig, PDF); in den Einstellungen **Diagnose anzeigen
+und teilen**; am iPad mit Tastatur ⌘1–⌘4 Haupttabs, ⌘5 Mehr, ⌘F Suche, ⌘⇧N Mitteilungen, ⌘[ / ⌘]
+zurück/vor, ⌘R neu laden, ⌘, Einstellungen (⌘K glatttBert kommt vom Hub selbst).
+
+!!! nutzerhandbuch "Bedienung: Grundlagen – iPhone/iPad-App (folgt nach dem Gerätetest)"
+
+**Für Entwickler:**
+
+- **Versionsprüfung:** `config/native_app.php` (`IOS_APP_MIN_VERSION`, `IOS_APP_LATEST_VERSION`,
+  `IOS_APP_UPDATE_URL`, `IOS_APP_UPDATE_MESSAGE`; leer = keine Sperre). `GET /api/app/version`
+  (ohne Login, `AppVersionController`/`AppVersionPolicy`, Version aus User-Agent oder `?version=`)
+  liefert `min_version`, `latest_version`, `outdated`, `update_available`, `update_url`. Die App
+  (`VersionGate`, Start + Vordergrund, höchstens stündlich) legt bei `outdated`
+  `UpdateRequiredView` über alles — auch über die Face-ID-Sperre; `update_available` ist nur ein
+  Hinweis in den Einstellungen. Sicherheitsnetz: Middleware `RejectOutdatedNativeApp` (web-Gruppe)
+  antwortet zu alten iOS-User-Agents mit `426` (HTML `app.outdated` bzw. JSON); das WebView meldet
+  426 an die `VersionGate` (`WebCoordinator.onUpgradeRequired`), die sofort nachliest. Tests
+  `AppVersionPolicyTest`, `VersionGateTests`. Vor dem Setzen einer Mindestversion prüfen, dass die
+  Custom App über ABM/Miradore auch wirklich verteilt ist — sonst sperrt man den Pilot aus.
+- **Siri / App Intents** (`ios/glatttHub/Intents/HubIntents.swift`): `TodayOverviewIntent`
+  antwortet ohne App-Start über das Widget-Token (`/api/app/widgets/today`, Recht
+  `view_appointments`; ohne Token „Bitte in der App anmelden"). `OpenAppointmentsIntent`,
+  `OpenNotificationsIntent`, `SearchClientIntent(query)` und `AskBertIntent(question)` öffnen die App
+  und laufen über dieselbe Schnellaktions-Schiene wie die Home-Screen-Aktionen
+  (`AppContainer.perform(shortcut:)`, vor der Anmeldung gemerkt); Suchbegriff → `state.moreSearchQuery`
+  (Mehr-Sheet füllt das Suchfeld), Frage → `state.pendingBertQuestion` → CustomEvent `glattt-bert-ask`
+  → `ai-assistant.blade.php` ruft `$wire.askPrompt()`. Sätze in `HubShortcuts` (`AppShortcutsProvider`,
+  `.applicationName` Pflicht). Nach Änderungen an Sätzen die App einmal starten — iOS registriert sie
+  beim Start.
+- **Dokumentenscanner:** `DocumentScanner` (VisionKit `VNDocumentCameraViewController`, Seiten als
+  JPEG 0,75 in ein PDF mit A4-Breite; das Delegate baut das PDF auf dem Hauptthread, weil
+  `VNDocumentCameraScan` nicht Sendable ist). Bridge `scanDocument()`; `scanInto(input)` in
+  `bridge.js` setzt `input.files` per `DataTransfer` (bei `multiple` bleiben vorhandene Dateien
+  erhalten) und feuert `input` + `change` — Livewire `wire:model` und Alpine `@change` sehen den
+  Scan wie eine Auswahl. Hub-Seite: Blade-Komponente `<x-app-scan-button input="$refs.feld"
+  label="…" />` rendert **nur** bei `NativeApp::isIos()` (Test `AppScanButtonTest`) und liegt an
+  fünf Stellen (Reisekosten Hotel/Bahn, Forderungsfall-Beleg, Widerrufs-Dokumente,
+  Unternehmensvertrag-Wizard). Weitere Stellen: Komponente neben das Datei-Feld, `x-ref` am Input.
+- **Diagnose:** `DiagnosticsReport.build()` (Version, Gerät, MDM, Zustand, Push, Face-ID/Widget-Token
+  nur als Präfix, Versionsregel, Netz per `NWPathMonitor`, letzte 60 Log-Zeilen des Subsystems
+  `com.glattt.hub` aus `OSLogStore(scope: .currentProcessIdentifier)`) → `DiagnosticsView` mit
+  `ShareLink` (Mail/WhatsApp an die IT). Einstiege: Einstellungen → Hilfe; im Kiosk-Modus ein
+  versteckter **Fünffach-Tipp oben links** (88 × 72 pt über dem Logo) — bewusst kein Ausstieg aus dem
+  Kiosk, der bleibt Sache des MDM.
+- **Tastaturkürzel:** `HubCommands` (`Commands` an der `WindowGroup`) — erscheinen im ⌘-Overlay des
+  iPad; Tab-Ziele aus `state.navigation.tabs` (`AppContainer.selectTab`, ohne Tab-Leiste lädt der
+  Pfad im aktiven WebView).
+
 ### Verteilung
 
 Apple Business Manager **Custom App** (App Store Connect → „Privat — nur für bestimmte Organisationen"
@@ -417,19 +471,19 @@ Apps-&-Bücher-Token in Miradore.
 | Phase | Inhalt | Stand |
 |---|---|---|
 | 0 | Konten prüfen, App-Datensatz, Reviewer-Konto, Gerätebestand (LB-Regel `/.well-known/*` existiert bereits) | **offen (Jan):** Reviewer-Konto B11, App-Store-Connect-Datensatz, ABM-Org-ID, ältestes iOS in Miradore, Paid-Apps-Vertrag |
-| 1 | Hülle & Login, Downloads, Kamera, Offline, Einstellungen; B1–B2 | ✅ auf `develop`/Staging; CSV-Export und Kamera-Upload auf dem Gerät noch nicht abgenommen |
-| 1b | Push, Universal Links, Long-Press-Menü, MDM-Config, Kiosk, Face ID; B3–B6, B10 | ✅ gebaut; Push auf dem iPhone und Kiosk-Modus auf einem Miradore-iPad noch nicht getestet |
+| 1 | Hülle & Login, Downloads, Kamera, Offline, Einstellungen; B1–B2 | ✅ abgenommen (Jan, 22.09.: CSV-Export und Kamera-Upload auf dem Gerät erfolgreich) |
+| 1b | Push, Universal Links, Long-Press-Menü, MDM-Config, Kiosk, Face ID; B3–B6, B10 | ✅ Push auf dem iPhone abgenommen (Jan, 22.09.); Kiosk-Modus auf einem Miradore-iPad weiter offen (kein Gerät vor Ort) |
 | A (20.09.) | Native Tab-Leiste (Liquid Glass), Mehr-Sheet nativ (Standort, Mitteilungen, Suche), WebView je Tab + Mehr-Pool, Pull-to-Refresh, Schnellaktionen, PIN-Sheet, Ladeschirm | ✅ abgenommen (Jan, 20./21.09.) |
 | B (20.09.) | Gerätetoken B7, Face-ID-Anmeldung, App-Geräte im Profil B9 | ✅ gebaut; Face-ID-Flow auf dem Gerät von Jan bestätigt („technisch funktioniert es") |
 | C (20.–22.09.) | Widgets B8: Kennzahlen, Tagesübersicht, Beratungsgespräche, Körperzonen | ✅ gebaut; Feinschliff nach 13 Geräte-Screenshots am 22.09. (Höhen füllen, Sparkline-Spalte, Kürzel, Tendenzpfeile, Prognose gestrichelt) — Abnahme der neuen Fassung auf dem Gerät offen |
 | 1c | TestFlight-Pilot, Review, Custom-App-Einreichung, Miradore, Klickanleitungen | **offen** — Klickanleitungen Profil (App-Geräte) und Institut (Kiosk-Block) nachziehen |
-| D | Versionsprüfung (`min_app_version`), Siri/App Intents, Dokumentenscanner, Diagnose senden, iPad-Tastaturkürzel | offen |
+| D (22.09.) | Versionsprüfung, Siri/App Intents, Dokumentenscanner, Diagnose teilen, iPad-Tastaturkürzel | ✅ gebaut (Abschnitt „Phase D"); Gerätetest offen: Siri-Sätze, Scanner-PDF im Hub, ⌘-Overlay am iPad |
 | 3 | Härtung Weg B (App-Host ohne IAP, Google Sign-In nativ, App Attest) | offen |
 | 4 | Native Prozesse nach Pilot-Entscheidung (Tageserfassung 4–6 Wochen, Laser-Wartung 2–3 Wochen) | offen |
 
 Bauen & testen: Xcode-Projekt aus `ios/project.yml` (`cd ios && xcodegen generate` nach neuen Dateien),
-Schema „glatttHub" (Debug = Staging + APNs-Sandbox), Unit-Tests `xcodebuild … test` (22 Swift-Tests),
-Springboard-UI-Test im Schema „glatttHub UI", Widget-Snapshots im Schema „glatttHub Widgets" (s. o.). Hub-Tests: `AppDeviceTokenTest`, `AppWidgetKpiTest`,
+Schema „glatttHub" (Debug = Staging + APNs-Sandbox), Unit-Tests `xcodebuild … test` (24 Swift-Tests),
+Springboard-UI-Test im Schema „glatttHub UI", Widget-Snapshots im Schema „glatttHub Widgets" (s. o.). Hub-Tests: `AppDeviceTokenTest`, `AppWidgetKpiTest`, `AppVersionPolicyTest`, `AppScanButtonTest`,
 `MobileNavigationTest`, `SafeAreaConventionTest`.
 
 ### Fallstricke (vorab bekannt)
@@ -461,6 +515,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
 | 21.09.2026 | 0.1 (dev) | Widgets III: Tagesübersicht-Widget, Sparklines im Kennzahlen-Widget, Körperzonen mit Prognose-Balken und Tages-Chart im großen Widget, Extra-Large-Portrait (iOS 27) |
+| 22.09.2026 | 0.1 (dev) | Phase D: Versionsprüfung (`/api/app/version`, `RejectOutdatedNativeApp` 426, `UpdateRequiredView`), Siri/App Intents (Tagesüberblick gesprochen, Termine, Suche, glatttBert, Mitteilungen), Dokumentenscanner (`scanDocument`/`scanInto`, `<x-app-scan-button>` an fünf Upload-Stellen), Diagnose teilen (+ Kiosk-Fünffach-Tipp), iPad-Tastaturkürzel |
 | 22.09.2026 | 0.1 (dev) | Widgets IV (Feinschliff nach Gerätetest): Höhen füllen statt fester Maße, Sparkline-Spalte rechts mit Prognose als gestrichelter Linie, Tendenzpfeile (Vergleichs-Schlüssel `value`/`trend` korrigiert), Institutskürzel `code` aus `AppBranchList`, keine Sparkline für `glattt`-Quelle, Snapshot-Target `glatttHubWidgetSnapshots` |
 | 20.09.2026 | 0.1 (dev) | Widgets II: Beratungsgespräche- und Körperzonen-Widget (Swift Charts), Kennzahlen klein mit bis zu drei Werten und Trend-Pfeilen, Extra-Large; Ladeanimation, Launch-Logo, Inhalt im App-Switcher |
 | 20.09.2026 | 0.1 (dev) | Phase C: Widget-Endpunkte (B8, KpiRegistry mit Token-Rechten, lineare Monatsprognose), Widget-Token getrennt vom Sitzungs-Token, WidgetKit-Erweiterung mit App-Intent-Konfiguration in vier Größen |
