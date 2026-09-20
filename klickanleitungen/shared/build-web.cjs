@@ -32,7 +32,7 @@ fs.mkdirSync(assetsOut, { recursive: true });
 fs.mkdirSync(shotsOut, { recursive: true });
 
 // Gestaltung und Skripte des Portals — eine Kopie je Build, keine Abhängigkeit zur Laufzeit
-for (const f of ['portal.css', 'portal.js', 'suche.js', 'suche-kern.js', 'logo.png', 'icon.png', 'Lato-Regular.woff2', 'Lato-Bold.woff2']) {
+for (const f of ['portal.css', 'portal.js', 'suche.js', 'suche-kern.js', 'logo.png', 'icon.png', 'favicon.png', 'Lato-Regular.woff2', 'Lato-Bold.woff2']) {
   fs.copyFileSync(path.join(__dirname, 'assets', f), path.join(assetsOut, f));
 }
 const miniSearch = path.join(__dirname, '..', 'node_modules', 'minisearch', 'dist', 'umd', 'index.js');
@@ -103,7 +103,7 @@ function shell({ title, body, nav, bodyClass = '' }) {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${D.esc(title)} · glatttHub Nutzerhandbuch</title>
 <meta name="robots" content="noindex,nofollow">
-<link rel="icon" href="/assets/icon.png">
+<link rel="icon" href="/assets/favicon.png">
 <link rel="stylesheet" href="/assets/portal.css">
 <script>try{var t=localStorage.getItem('portal-theme');if(t==='dark'||t==='light'){document.documentElement.dataset.theme=t;}}catch(e){}</script>
 </head><body class="portal ${bodyClass}">
