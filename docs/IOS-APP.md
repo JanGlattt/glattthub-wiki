@@ -129,13 +129,31 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   `has_branch_restriction` — nach Rechten gefiltert aus `MobileNavigation::PRIMARY/MORE` +
   `NavigationGroups::GROUPS`; Heroicon → SF Symbol über `MobileNavigation::SYMBOLS`. Dieselbe
   Klasse speist die Web-Bottom-Nav.
-- **App:** `HubTabBarController` (UIKit `UITabBarController`, ab iOS 18 `UITab`) über dem **einen**
-  WebView: jeder Tab ist ein Platzhalter-Controller, der beim Erscheinen das geteilte `WKWebView`
-  adoptiert. Tab-Tipp → `container.navigate(toPath:)`; URL-Wechsel im WebView (KVO auf
-  `webView.url`, folgt `wire:navigate`) → `syncSelection`. Badge am Tab „Mehr" = ungelesene
-  Mitteilungen. Nur bei kompakter Breite (iPhone, iPad schmal) — im iPad-Querformat zeigt der Hub
-  seine Sidebar. **Fünf Tabs, kein Such-Tab:** mit sechs Einträgen schiebt iOS den sechsten in ein
-  System-„Mehr"; die Suche steckt deshalb im Mehr-Sheet.
+- **App:** `HubTabBarController` (UIKit `UITabBarController`, ab iOS 18 `UITab`). **Jeder Haupttab
+  hat sein eigenes WebView** (seit 20.09.2026, Jan: „Instant-Wechsel wie Instagram"): `WebViewStore`
+  erzeugt sie lazy beim ersten Tipp, alle teilen `WKWebsiteDataStore.default()` (eine Sitzung, ein
+  localStorage), einen `WKProcessPool` und einen `WKUserContentController` (Bridge). Der Tab-Wechsel
+  zeigt nur ein anderes View — Scroll-Position und Unterseite bleiben; zweiter Tipp auf den aktiven
+  Tab scrollt nach oben bzw. führt von einer Unterseite zur Wurzel; ein Tab, der > 30 Min verborgen
+  war, lädt beim Erscheinen neu. `primary` (Tab 1) ist zugleich das WebView für Login, Kiosk und das
+  breite iPad. Bereiche aus dem Mehr-Sheet und Push-Ziele wechseln in den passenden Haupttab
+  (`tabIndex(for:)`), sonst laden sie im aktiven Tab. URL-Wechsel des **aktiven** WebViews (KVO,
+  folgt `wire:navigate`) → `syncSelection`. Badge am Tab „Mehr" = ungelesene Mitteilungen. Nur bei
+  kompakter Breite (iPhone, iPad schmal). **Fünf Tabs, kein Such-Tab:** mit sechs Einträgen schiebt
+  iOS den sechsten in ein System-„Mehr"; die Suche steckt deshalb im Mehr-Sheet.
+  **Tabs synchron halten:** Standort- und Theme-Wechsel passieren im Alpine-Zustand *eines* Tabs;
+  bridge.js meldet `branchChanged`/`themeChanged`, die App sendet `glattt:sync-branch` /
+  `glattt:sync-theme` an die anderen WebViews (`NativeBridge.emit(_:_:to: .others(source))`), die
+  Listener in `bottom-nav.blade.php` rufen `pickBranch()` bzw. `themeManager.setTheme()` nur bei
+  abweichendem Wert — so entsteht keine Schleife. `glattt:foreground` und `glattt:set-branch` gehen
+  an alle, Rundgang/glatttBert/Sheets nur an das aktive.
+- **Liquid-Glass-Details:** `tabBarMinimizeBehavior = .onScrollDown` (iOS 26, Leiste schrumpft beim
+  Runterscrollen — braucht `setContentScrollView(webView.scrollView, for: .bottom)` im Platzhalter),
+  **Pull-to-Refresh** (`UIRefreshControl` an jeder Scroll-View → `reload()`, Ende bei `didFinish`).
+- **Schnellaktionen** (langer Druck aufs Symbol, `UIApplicationShortcutItems` in `project.yml`):
+  Termine heute, Kunde suchen (Mehr mit Suchfeld), Mitteilungen (Mehr → Liste), glatttBert. Beim
+  Kaltstart merkt `SceneDelegate` (über `configurationForConnecting`) die Aktion, `AppContainer.perform`
+  führt sie nach `ready` aus (`state.pendingShortcut`).
 - **Mehr (`MoreSheet`) = Spiegel des mobilen Web-Sheets:** Suchfeld oben (`.searchable`, erst
   `/hub/search?q=` lokal, dann `sources=remote` für Phorest — Treffer ersetzen das Raster), Raster
   in vier Spalten mit den Überschriften Schnellzugriff/Verkauf/…/System (+ Admin Panel), Werkzeug-
@@ -297,6 +315,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 |---|---|---|
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
+| 20.09.2026 | 0.1 (dev) | Phase A: ein WebView je Haupttab (Instant-Wechsel), Tab-Leiste minimiert beim Scrollen, Pull-to-Refresh, Schnellaktionen; Standort/Theme zwischen Tabs synchron |
 | 20.09.2026 | 0.1 (dev) | Safe-Area als CSS-Variablen aus der App (env() war 0), glatttBert über der Tab-Leiste |
 | 20.09.2026 | 0.1 (dev) | Nativer PIN-Login als Sheet über der Login-Seite (bleibt mit Ladezustand bis `ready`); Ladeschirm statt schwarzem WebView beim Start; Abmelden ohne Rückfrage und nur aus dem Hub (Google/IAP bleibt, außer `sharedDevice`); Tab-Leiste nur angemeldet; Admin Panel in der System-Zeile |
 | 20.09.2026 | 0.1 (dev) | Mehr-Sheet als Spiegel des Web-Sheets (Suche oben, Raster mit Überschriften, Werkzeuge, Profil/Abmelden); Such-Tab entfernt (sechs Tabs → System-„Mehr"); Standortwahl und Mitteilungen nativ (`branches` im Navigations-Payload, `glattt:set-branch`), Lupe im Scroll-Header öffnet das native Mehr — das Web-Sheet geht in der App nicht mehr auf |
