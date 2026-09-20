@@ -27,6 +27,8 @@ Die glatttHub Desktop-App ist eine native macOS-Anwendung, die die Web-App (`htt
 | **Eigenes Fenster** | Unabhängig vom Browser, eigenes Dock-Icon |
 | **Tabs** (seit 1.1.0) | Mehrere Hub-Seiten nebeneinander in einem Fenster, Tab-Leiste in der Titelzeile — neuer Tab per ⌘T oder „+", Wechsel per Klick, ⌃Tab oder ⌘1…9, schließen per ⌘W oder Kreuz. Rechtsklick auf einen Link (oder eine Kundenzeile) → „Link in neuem Tab öffnen", ⌘-Klick ebenso. Alles, was bisher ein neues Fenster öffnete (Admin-Panel, Formular-Vorschau, PDFs), wird zum Tab |
 | **Zurück / Vor / Neu laden** (seit 1.1.0) | Drei Knöpfe links in der Tab-Leiste, wirken auf den aktiven Tab (jeder Tab hat seinen eigenen Verlauf); Kürzel ⌘[ ⌘] ⌘R |
+| **Rechtsklick-Menü** (seit 1.1.1) | Eigenes Menü im glattt-Look statt Browser-Menü. Auf einem Kunden, Vertrag oder Forderungsfall (Zeile, Karte, Link oder die Detailseite selbst) zeigt es oben, worum es geht, und bietet: öffnen, in neuem Tab öffnen, direkt zu einem Reiter (Termine, Pakete, Zahlungen, Ratenzahlung …), Kunde/Vertrag öffnen, Kunden-/Vertragsnummer kopieren. In Eingabefeldern Ausschneiden/Kopieren/Einsetzen, überall Zurück/Vorwärts/Neu laden. Rechtsklick auf einen Tab: Neu laden, Duplizieren, Tab/andere Tabs/Tabs rechts schließen |
+| **Tabs sortieren** (seit 1.1.1) | Tabs in der Leiste per Drag & Drop verschieben; die Reihenfolge gilt auch für ⌘1…9 |
 | **Overlay-Titelleiste** | Schlankes Design mit macOS Traffic Lights (Schließen/Minimieren/Maximieren) |
 | **Spotlight-Suche** | „glatttHub" eingeben → App öffnen |
 | **Cmd+Tab** | Eigenes Icon in der App-Umschaltung |
@@ -132,6 +134,8 @@ electron/
 ├── tabs.cjs                 # TabManager: Views je Tab, Leiste, Kontextmenüs, Zurück/Vor
 ├── tabbar.html              # Tab-Leiste (Fensterinhalt, 38 px): Knöpfe, Tabs, Drag-Zone
 ├── tabbar-preload.cjs       # IPC-Brücke der Leiste (Zustand rein, Aktionen raus)
+├── context-menu.cjs         # Kontextmenü-Renderer (Seiten + Tab-Leiste), Heroicons
+├── context-menu.css         # Optik des Kontextmenüs (injiziert / von der Leiste geladen)
 ├── preload.cjs              # Preload je Tab: electron-app Klasse, Theme-Meldung, ⌘-Klick
 ├── patch-dev.sh             # Patcht Electron.app für Dev (Name, Icon, Identifier)
 ├── build-icns.sh            # Erstellt .icns aus Icon Composer Exports
@@ -197,6 +201,48 @@ System-Browser. Zum Testen gegen Staging:
 | Letzter Tab schließen | schließt das Fenster (wie ⌘W im Browser) |
 | Admin-Panel | `openOrFocus(ADMIN_URL)` — vorhandenen Admin-Tab aktivieren statt neu öffnen |
 | Push-Klick | `loadInActive(url)` lädt die Ziel-URL im aktiven Tab |
+
+#### Kontextmenü (`context-menu.cjs`, `context-menu.css`)
+
+Das Rechtsklick-Menü ist **kein** natives Menü, sondern ein DOM-Element im jeweiligen
+Dokument („Glas-Karte mit Kopfzeile", Entscheidung Jan 20.09.2026): Lato, Theme-Farben
+der Seite (hell/dunkel), Heroicons, Tastatur ↑↓⏎/Esc, schließt bei Klick daneben,
+Scrollen, Größenänderung und Fokusverlust. Das Seiten-Preload fängt `contextmenu`
+(Capture) ab, ruft `preventDefault()` und baut die Einträge:
+
+| Kontext | Erkennung | Einträge |
+|---|---|---|
+| Kunde / Vertrag / Forderungsfall | `data-ctx="client\|contract\|case"` am nächsten Element (Zeile, Karte, Detailseiten-Wurzel mit `data-ctx-page`) — sonst Hub-URL des Links (`/hub/clients\|contracts\|receivables/…`); ein nackter Link („Zum Fall") in einer annotierten Zeile übernimmt deren Angaben | Kopf (Name · Nummer), `<Objekt> öffnen`, In neuem Tab öffnen, „direkt zu"-Reiter per URL-Anker, Kunde/Vertrag öffnen, Nummer kopieren |
+| Widerruf, Formular | `data-ctx="cancellation\|form"` bzw. URL | Kopf + Öffnen / In neuem Tab |
+| Sonstiger Hub-Link | `a[href]` / `[data-href]` | In neuem Tab öffnen, Öffnen und wechseln |
+| Externer Link | Host ≠ Hub | Im Browser öffnen (`shell.openExternal`, nur http/https) |
+| Eingabefeld / Markierung | `input`, `textarea`, `contenteditable` / Selection | Ausschneiden, Kopieren, Einsetzen, Alles auswählen (über `webContents.cut()` usw.) |
+| Immer (am Ende) | — | Zurück, Vorwärts (Zustand per `electron-tabs:nav-state`), Neu laden, Seite in neuem Tab öffnen |
+| Tab in der Leiste | `.tab` in `tabbar.html` | Neu laden, Duplizieren, Tab schließen, Andere Tabs schließen, Tabs rechts schließen |
+
+Attribute je Typ: `client` — `-id` (Phorest-Client-ID), `-label` (Name), `-number`
+(Kunden-Nr.); `contract` — `-id`, `-number` (Vertragsnummer), `-sub` (Kundenname),
+`-client`; `case` — `-id`, `-sub` (Kundenname), `-number` (Kunden-Nr.), `-client`,
+`-contract`. Ohne Attribute greift ein Rückfall (Name aus `.table-glattt-cell-primary`,
+erster Zelle oder `.pipeline-card-glattt-name`, Kunden-Nr. aus dem Badge der Zeile) —
+Notlösung, nicht Standard. Reiter-Anker: Kunde `#termine #pakete #vertrag-zahlungen
+#forderungen #nachrichten`, Vertrag `#zahlungen #emails #verlauf`, Fall `#ratenzahlung
+#gericht #verlauf`.
+
+!!! warning "Das Tab-Menü wird im aktiven Tab gezeichnet"
+    Das Leisten-Dokument liegt **unter** den Seiten-Views — ein Menü darin wäre ab
+    38 px verdeckt. Die Leiste meldet deshalb nur Tab und Zeigerposition
+    (`electron-tabs:tab-menu`), der Hauptprozess reicht sie um 38 px versetzt an den
+    aktiven Tab weiter (`electron-ctx:tab-menu`), der das Menü zeichnet.
+
+!!! warning "Pflicht bei jeder Seite"
+    Wer eine Seite baut oder überarbeitet, denkt das Menü mit: `data-ctx` an
+    Zeilen/Karten/Knöpfen zu Kunde, Vertrag, Fall; `:data-href` bei JS-Navigation;
+    `data-ctx-page` an Detailseiten; neue Reiter mit Slug. Abgesichert durch
+    `tests/Unit/DesktopContextMenuConventionTest.php`. Neue Objekttypen werden
+    einmal in `preload.cjs` (`HUB_OBJECTS`, `objectItems`, `objectHeader`)
+    beschrieben. Die Preloads laufen mit `sandbox: false`, damit sie
+    `context-menu.cjs` per `require` laden können (contextIsolation bleibt an).
 
 Die Seite setzt ihren Tab-Titel nach dem Nachladen der Daten über
 `window.setPageTitle('…')` (`public/js/hub.js`): Kundenseite `Name (Kunden-Nr.)`, Vertrag
@@ -427,9 +473,9 @@ export APPLE_API_ISSUER=84f1cc63-769a-4ea0-b54f-636f28ccbbaa
 electron/dist/
 ├── mac-arm64/
 │   └── glatttHub.app               # Signierte App (intern)
-├── glatttHub-1.1.0-arm64.dmg       # Direkter Download
-├── glatttHub-1.1.0-arm64-mac.zip   # ZIP-Archiv
-└── glatttHub-1.1.0-arm64.pkg       # PKG-Installer für MDM
+├── glatttHub-1.1.1-arm64.dmg       # Direkter Download
+├── glatttHub-1.1.1-arm64-mac.zip   # ZIP-Archiv
+└── glatttHub-1.1.1-arm64.pkg       # PKG-Installer für MDM
 ```
 
 Die Versionsnummer kommt aus `package.json` (`version`) im Projekt-Root — vor jedem
@@ -507,10 +553,10 @@ Der Notarization-Hook (`electron/notarize.cjs`) wird von `electron-builder` auto
 
 | Feld | Wert |
 |------|------|
-| **File** | `electron/dist/glatttHub-1.1.0-arm64.pkg` |
+| **File** | `electron/dist/glatttHub-1.1.1-arm64.pkg` |
 | **Application name** | `glatttHub` |
 | **Bundle identifier** | `com.glattt.hub` |
-| **Version** | `1.1.0` |
+| **Version** | `1.1.1` |
 
 Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
@@ -550,5 +596,6 @@ Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 20.09.2026 | 1.1.1 | Eigenes Rechtsklick-Menü mit Objekt-Einträgen (Kunde/Vertrag/Forderungsfall, `data-ctx`-Konvention + Konventions-Test), Tab-Menü, Tabs per Drag & Drop sortieren, 24 px Abstand unter der Leiste, Klasse `electron-tabs-visible` auf `<html>` (kein Layout-Sprung) |
 | 20.09.2026 | 1.1.0 | Tabs im Fenster (Tab-Leiste in der Titelzeile, Kontextmenü „in neuem Tab öffnen", ⌘-Klick, `data-href` für JS-Zeilen), Zurück/Vor/Neu laden je Tab, Admin-Panel und `target="_blank"` als Tab statt Fenster, Tab-Titel mit Kundenname/-nummer, Hub-URL per `GLATTTHUB_URL` überschreibbar |
 | 09/2026 | 1.0.0 | Erste Version: Electron-Wrapper, Overlay-Titelleiste, Tray, APNs-Push, Dock-Badge, signiert & notarisiert, PKG für MDM |
