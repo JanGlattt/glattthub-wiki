@@ -140,7 +140,10 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   `/hub/search?q=` lokal, dann `sources=remote` für Phorest — Treffer ersetzen das Raster), Raster
   in vier Spalten mit den Überschriften Schnellzugriff/Verkauf/…/System (+ Admin Panel), Werkzeug-
   Kacheln (glatttBert, Rundgang, Anleitung, Standort, Mitteilungen mit Badge, Design, App), Profil-
-  Zeile mit Avatar/Initialen und Abmelden (`POST /logout`, dann Cookies löschen).
+  Zeile mit Avatar/Initialen und Abmelden ohne Rückfrage (`POST /logout`, dann **nur die
+  Laravel-Cookies** des Hub-Hosts löschen — Google-/IAP-Sitzung bleibt, danach erscheint der
+  Hub-Login mit PIN; auf geteilten Geräten (`sharedDevice`) räumt `clearEverything()` auch
+  Google/IAP). Das Admin Panel füllt die System-Zeile auf vier Kacheln.
   **Standortwahl und Mitteilungen sind native Unteransichten** im selben `NavigationStack`
   (Zurück-Pfeil wie im Web): `BranchPickerView` (Alle Standorte nur ohne Nutzer-Einschränkung,
   Institute mit Farbkreis und Kürzel, „Ausgeblendet"-Kennzeichen) und `NotificationsView`
@@ -155,6 +158,19 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   **das Web-Sheet geht in der App nie mehr auf.** Die Lupe im mobilen Scroll-Header (`open-mobile-
   search`) fängt bridge.js ab (Capture + `stopImmediatePropagation`) und öffnet stattdessen das
   native Mehr mit fokussiertem Suchfeld (`openMore { focusSearch }`).
+- **Nur angemeldet:** Die Leiste erscheint erst, wenn bridge.js `ready({ loggedIn: true })`
+  meldet (Hub-Layout mit `<meta name="glattthub-app">`); auf Google-/IAP-Seiten (fremder Host in
+  `didFinish`) und auf der Hub-Login-Seite (`loggedIn: false`) ist sie versteckt
+  (`setTabBarHidden`, iOS 18+).
+- **Nativer PIN-Login (`PinLoginView`):** Meldet bridge.js `/login` ohne Anmeldung, legt die App
+  ein natives Sheet (medium) über die Web-Login-Seite: vier Punkte, Zifferntastatur, Absenden bei
+  der vierten Ziffer, `POST /login/pin` mit `Accept: application/json` (422 → Fehlertext aus
+  `errors.pin`, 429 → Wartehinweis). Grund: Im WKWebView schiebt die Tastatur die ganze Seite
+  hoch (kein Schalter dafür). **Fallstrick Cookies:** `HubSession` nutzt eine eigene URLSession
+  ohne Cookie-Speicher (`httpCookieAcceptPolicy = .never`) — Cookies kommen nur aus dem
+  WebView-Store, und die neue Laravel-Sitzung aus dem Set-Cookie der Login-Antwort wird per
+  `adoptCookies` in den `WKHTTPCookieStore` übernommen, sonst wäre nur die URLSession
+  angemeldet, nicht das WebView. E-Mail-Login: Sheet wegziehen, das Web-Formular liegt darunter.
 - **CSS:** `body.ios-app .mobile-bottom-nav { display: none }` und `--mobile-bottom-nav-space: 0`;
   den Abstand nach unten liefert die native Leiste über die Safe-Area.
 
@@ -169,7 +185,7 @@ Spiegelt `window.electronPush`; `push-notifications.js` bekommt eine generische 
 | `unregisterForApnsNotifications()`, `getPushStatus()` → `'granted'\|'denied'\|'default'` (Web-Vokabular, weil das WKWebView kein `window.Notification` hat) | `glattt:push-opened` (`url`, `log_id`) |
 | `setBadge(n)`, `saveFile({name,mime,base64})`, `openExternal(url)`, `haptic(kind)` | `glattt:foreground` |
 | `getInfo()` → `{ platform: 'ios', appName: 'glatttHub iOS App', appVersion, deviceName, nativeDeviceId, sharedDevice, kioskMode }`, `reportContext(ctx)` | `glattt:biometric-unlocked` |
-| `ready({ path })` (Hub-Layout erkannt), `branchChanged({ branchId })` (Standortfilter, von bridge.js selbst gemeldet), `openMore({ focusSearch })` (Lupe im Scroll-Header) | `glattt:set-branch` (`branchId`), `glattt:toggle-theme`, `glattt:start-tour`, `glattt:open-anleitung`, `glattt-bert-toggle` — Listener am Wurzelelement von `bottom-nav.blade.php` |
+| `ready({ path, loggedIn })` (jede Seitenlast; `loggedIn` = Hub-Layout erkannt), `branchChanged({ branchId })` (Standortfilter, von bridge.js selbst gemeldet), `openMore({ focusSearch })` (Lupe im Scroll-Header) | `glattt:set-branch` (`branchId`), `glattt:toggle-theme`, `glattt:start-tour`, `glattt:open-anleitung`, `glattt-bert-toggle` — Listener am Wurzelelement von `bottom-nav.blade.php` |
 
 `push-notifications.js` lädt `getInfo()` und `getPushStatus()` in `init()` (`loadNativeInfo()`); `device_type`
 wird daraus `ios` bzw. `macos`, der Gerätename kommt aus `deviceName`. `platform` ist `ios` für iPhone
@@ -267,6 +283,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 |---|---|---|
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
+| 20.09.2026 | 0.1 (dev) | Nativer PIN-Login als Sheet über der Login-Seite; Abmelden ohne Rückfrage und nur aus dem Hub (Google/IAP bleibt, außer `sharedDevice`); Tab-Leiste nur angemeldet; Admin Panel in der System-Zeile |
 | 20.09.2026 | 0.1 (dev) | Mehr-Sheet als Spiegel des Web-Sheets (Suche oben, Raster mit Überschriften, Werkzeuge, Profil/Abmelden); Such-Tab entfernt (sechs Tabs → System-„Mehr"); Standortwahl und Mitteilungen nativ (`branches` im Navigations-Payload, `glattt:set-branch`), Lupe im Scroll-Header öffnet das native Mehr — das Web-Sheet geht in der App nicht mehr auf |
 | 20.09.2026 | 0.1 (dev) | Xcode-Projekt unter `ios/` (XcodeGen) mit Phase-1-Code; Google/IAP-Login rendert im WKWebView mit Safari-UA (Weg A bewiesen, Simulator); 14 Swift-Tests |
 | 20.09.2026 | — | Backend-Vorarbeiten B1 (App-Erkennung), B2 (generische Bridge), B3 (`apns_environment`), B4 (Payload + `mark-read`), B5 (Badge), B6 (AASA-Route), B10 (Kiosk-Konfiguration im Institut-Modul) auf `develop`; LB-Regel `/.well-known/*` war schon vorhanden |
