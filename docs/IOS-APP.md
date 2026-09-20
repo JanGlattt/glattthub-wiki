@@ -140,6 +140,14 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   (`tabIndex(for:)`); **alles andere lädt im eigenen WebView des „Mehr"-Tabs** (`selectMore()`,
   „Mehr" ist dann markiert, die vier Haupttabs behalten ihre Seiten — Befund Jan 20.09.2026: vorher
   landete Verträge im Berichte-Tab). Ein Nutzer-Tipp auf „Mehr" öffnet weiter nur das Sheet.
+  **Mehr-Pool (seit 20.09.2026):** Statt einem Mehr-WebView ein LRU-Pool (`WebViewStore.moreWebView(forKey:)`,
+  iPhone 4, iPad 6) — Schlüssel ist der Navigations-Eintrag (sonst der Pfad). Zuletzt offene Mehr-
+  Bereiche sind beim nächsten Antippen sofort da (inkl. Scroll-Position); der älteste fliegt raus,
+  wenn der Pool voll ist. Nach dem Login wird der zuletzt genutzte Bereich im Hintergrund vorgewärmt
+  (`prewarmMore`). **Bewusst nicht „alle 20 Seiten vorladen":** ~50 MB und ein WebContent-Prozess je
+  WebView — iOS beendet die App dann im Hintergrund. Messung 20.09.2026 (lokal, warm, als
+  `X-Livewire-Navigate`): alle 20 Navigationsseiten rendern in 0,21–0,28 s — der Rest ist Cloud-Run-
+  TTFB und Netz, serverseitig gibt es keine langsame Seite mehr zu beschleunigen.
   **Seitenwechsel per `WebViewStore.navigate`:** sofort eine hub-farbene Ladefläche mit Spinner über
   dem Ziel-WebView (sonst steht 1–2 s die alte Seite), dann `Livewire.navigate(url)` im WebView (kein
   Asset-Neuladen), Fallback `load()`; die Fläche geht bei `didCommit`, beim `ready` der Bridge
