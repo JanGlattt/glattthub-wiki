@@ -123,21 +123,38 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
 
 - **Quelle:** `GET /api/app/navigation` (`AppNavigationController`, Session-Auth, `routes/app.php`)
   liefert `tabs` (Start, Termine, Kunden, Berichte), `groups` (Verkauf … System mit Einträgen),
-  `utilities` (Mitteilungen, Profil, Admin) und `unread_count` — nach Rechten gefiltert aus
-  `MobileNavigation::PRIMARY/MORE` + `NavigationGroups::GROUPS`; Heroicon → SF Symbol über
-  `MobileNavigation::SYMBOLS`. Dieselbe Klasse speist die Web-Bottom-Nav.
-- **App:** `HubTabBarController` (UIKit `UITabBarController`, ab iOS 18 `UITab`/`UISearchTab`) über
-  dem **einen** WebView: jeder Tab ist ein Platzhalter-Controller, der beim Erscheinen das geteilte
-  `WKWebView` adoptiert. Tab-Tipp → `container.navigate(toPath:)`; URL-Wechsel im WebView (KVO auf
+  `utilities` (Mitteilungen, Profil, Admin), `user` (Name, E-Mail, Avatar, `can_ai`), `klick_portal`,
+  `unread_count` sowie `branches` (Standorte für die native Standortwahl: erlaubte Institute des
+  Nutzers, Reihenfolge/Farbe aus dem Institut-Modul, `hidden` für ausgeblendete) und
+  `has_branch_restriction` — nach Rechten gefiltert aus `MobileNavigation::PRIMARY/MORE` +
+  `NavigationGroups::GROUPS`; Heroicon → SF Symbol über `MobileNavigation::SYMBOLS`. Dieselbe
+  Klasse speist die Web-Bottom-Nav.
+- **App:** `HubTabBarController` (UIKit `UITabBarController`, ab iOS 18 `UITab`) über dem **einen**
+  WebView: jeder Tab ist ein Platzhalter-Controller, der beim Erscheinen das geteilte `WKWebView`
+  adoptiert. Tab-Tipp → `container.navigate(toPath:)`; URL-Wechsel im WebView (KVO auf
   `webView.url`, folgt `wire:navigate`) → `syncSelection`. Badge am Tab „Mehr" = ungelesene
   Mitteilungen. Nur bei kompakter Breite (iPhone, iPad schmal) — im iPad-Querformat zeigt der Hub
-  seine Sidebar.
-- **Mehr:** natives Sheet (`MoreSheet`) mit Mitteilungen, Standort wechseln, den Gruppen, Profil,
-  Admin-Backend, Design wechseln, Rundgang, App-Einstellungen. Standort/Design/Rundgang delegieren an
-  das Web-Sheet des Hubs über Bridge-Events (`glattt:open-more` mit `view: branch`,
-  `glattt:toggle-theme`, `glattt:start-tour`), die `bottom-nav.blade.php` am Wurzelelement hört.
-- **Suche:** `SearchSheet` (SwiftUI `.searchable`) gegen `/hub/search?q=` (lokal) und
-  `sources=remote` (Phorest), Treffer öffnen im WebView.
+  seine Sidebar. **Fünf Tabs, kein Such-Tab:** mit sechs Einträgen schiebt iOS den sechsten in ein
+  System-„Mehr"; die Suche steckt deshalb im Mehr-Sheet.
+- **Mehr (`MoreSheet`) = Spiegel des mobilen Web-Sheets:** Suchfeld oben (`.searchable`, erst
+  `/hub/search?q=` lokal, dann `sources=remote` für Phorest — Treffer ersetzen das Raster), Raster
+  in vier Spalten mit den Überschriften Schnellzugriff/Verkauf/…/System (+ Admin Panel), Werkzeug-
+  Kacheln (glatttBert, Rundgang, Anleitung, Standort, Mitteilungen mit Badge, Design, App), Profil-
+  Zeile mit Avatar/Initialen und Abmelden (`POST /logout`, dann Cookies löschen).
+  **Standortwahl und Mitteilungen sind native Unteransichten** im selben `NavigationStack`
+  (Zurück-Pfeil wie im Web): `BranchPickerView` (Alle Standorte nur ohne Nutzer-Einschränkung,
+  Institute mit Farbkreis und Kürzel, „Ausgeblendet"-Kennzeichen) und `NotificationsView`
+  (`GET /phorest/notifications?branch_id=`, Tippen markiert gelesen + öffnet das Ziel, „Alle
+  gelesen", Link zur Mitteilungsseite — dieselben Endpunkte wie Glocke und Web-Sheet, aufgerufen
+  mit den WebView-Cookies inkl. IAP). Die Standort-Kachel zeigt Farbe und Kürzel des gewählten
+  Instituts. **Der Hub bleibt die Wahrheit für den Standortfilter:** bridge.js meldet
+  `localStorage.selectedBranch` (`branchChanged`), die App schreibt die Wahl per
+  `glattt:set-branch` zurück, `bottom-nav.blade.php` ruft daraufhin `pickBranch()` (localStorage +
+  `selectedBranchUser` + Event `branchChanged` für alle Karten). Nur Rundgang, Design und glatttBert
+  delegieren noch an den Hub (`glattt:start-tour`, `glattt:toggle-theme`, `glattt-bert-toggle`) —
+  **das Web-Sheet geht in der App nie mehr auf.** Die Lupe im mobilen Scroll-Header (`open-mobile-
+  search`) fängt bridge.js ab (Capture + `stopImmediatePropagation`) und öffnet stattdessen das
+  native Mehr mit fokussiertem Suchfeld (`openMore { focusSearch }`).
 - **CSS:** `body.ios-app .mobile-bottom-nav { display: none }` und `--mobile-bottom-nav-space: 0`;
   den Abstand nach unten liefert die native Leiste über die Safe-Area.
 
@@ -152,6 +169,7 @@ Spiegelt `window.electronPush`; `push-notifications.js` bekommt eine generische 
 | `unregisterForApnsNotifications()`, `getPushStatus()` → `'granted'\|'denied'\|'default'` (Web-Vokabular, weil das WKWebView kein `window.Notification` hat) | `glattt:push-opened` (`url`, `log_id`) |
 | `setBadge(n)`, `saveFile({name,mime,base64})`, `openExternal(url)`, `haptic(kind)` | `glattt:foreground` |
 | `getInfo()` → `{ platform: 'ios', appName: 'glatttHub iOS App', appVersion, deviceName, nativeDeviceId, sharedDevice, kioskMode }`, `reportContext(ctx)` | `glattt:biometric-unlocked` |
+| `ready({ path })` (Hub-Layout erkannt), `branchChanged({ branchId })` (Standortfilter, von bridge.js selbst gemeldet), `openMore({ focusSearch })` (Lupe im Scroll-Header) | `glattt:set-branch` (`branchId`), `glattt:toggle-theme`, `glattt:start-tour`, `glattt:open-anleitung`, `glattt-bert-toggle` — Listener am Wurzelelement von `bottom-nav.blade.php` |
 
 `push-notifications.js` lädt `getInfo()` und `getPushStatus()` in `init()` (`loadNativeInfo()`); `device_type`
 wird daraus `ios` bzw. `macos`, der Gerätename kommt aus `deviceName`. `platform` ist `ios` für iPhone
@@ -249,5 +267,6 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 |---|---|---|
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
+| 20.09.2026 | 0.1 (dev) | Mehr-Sheet als Spiegel des Web-Sheets (Suche oben, Raster mit Überschriften, Werkzeuge, Profil/Abmelden); Such-Tab entfernt (sechs Tabs → System-„Mehr"); Standortwahl und Mitteilungen nativ (`branches` im Navigations-Payload, `glattt:set-branch`), Lupe im Scroll-Header öffnet das native Mehr — das Web-Sheet geht in der App nicht mehr auf |
 | 20.09.2026 | 0.1 (dev) | Xcode-Projekt unter `ios/` (XcodeGen) mit Phase-1-Code; Google/IAP-Login rendert im WKWebView mit Safari-UA (Weg A bewiesen, Simulator); 14 Swift-Tests |
 | 20.09.2026 | — | Backend-Vorarbeiten B1 (App-Erkennung), B2 (generische Bridge), B3 (`apns_environment`), B4 (Payload + `mark-read`), B5 (Badge), B6 (AASA-Route), B10 (Kiosk-Konfiguration im Institut-Modul) auf `develop`; LB-Regel `/.well-known/*` war schon vorhanden |
