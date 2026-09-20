@@ -384,17 +384,25 @@ Login Google Workspace → PIN, Reviewer-Konto, Ausnahme Guideline 4.8 (Firmenko
 Voraussetzungen: Developer-Konto als Organisation mit akzeptiertem Paid-Apps-Agreement, ABM-Org-ID,
 Apps-&-Bücher-Token in Miradore.
 
-### Phasen
+### Phasen & Stand (21.09.2026)
 
-| Phase | Inhalt | Aufwand |
+| Phase | Inhalt | Stand |
 |---|---|---|
-| 0 | Konten prüfen, App-Datensatz, Reviewer-Konto, Gerätebestand (LB-Regel `/.well-known/*` existiert bereits) | 2–3 Tage |
-| 1 | Hülle & Login, Downloads, Kamera, Offline, Einstellungen; B1–B2 | 2 Wochen |
-| 1b | Push, Universal Links, Long-Press-Menü, MDM-Config, Kiosk, Face ID; B3–B6, B10 | 1,5 Wochen |
-| 1c | TestFlight-Pilot, Review, Custom-App-Einreichung, Miradore, Klickanleitung | 1,5 Wochen |
-| 2 | Geräte-Token & Widgets; B7–B9 | 2 Wochen |
-| 3 | Härtung Weg B (App-Host ohne IAP, Google Sign-In nativ, App Attest) | 1,5 Wochen |
-| 4 | Native Prozesse nach Pilot-Entscheidung (Tageserfassung 4–6 Wochen, Laser-Wartung 2–3 Wochen) | je Prozess |
+| 0 | Konten prüfen, App-Datensatz, Reviewer-Konto, Gerätebestand (LB-Regel `/.well-known/*` existiert bereits) | **offen (Jan):** Reviewer-Konto B11, App-Store-Connect-Datensatz, ABM-Org-ID, ältestes iOS in Miradore, Paid-Apps-Vertrag |
+| 1 | Hülle & Login, Downloads, Kamera, Offline, Einstellungen; B1–B2 | ✅ auf `develop`/Staging; CSV-Export und Kamera-Upload auf dem Gerät noch nicht abgenommen |
+| 1b | Push, Universal Links, Long-Press-Menü, MDM-Config, Kiosk, Face ID; B3–B6, B10 | ✅ gebaut; Push auf dem iPhone und Kiosk-Modus auf einem Miradore-iPad noch nicht getestet |
+| A (20.09.) | Native Tab-Leiste (Liquid Glass), Mehr-Sheet nativ (Standort, Mitteilungen, Suche), WebView je Tab + Mehr-Pool, Pull-to-Refresh, Schnellaktionen, PIN-Sheet, Ladeschirm | ✅ abgenommen (Jan, 20./21.09.) |
+| B (20.09.) | Gerätetoken B7, Face-ID-Anmeldung, App-Geräte im Profil B9 | ✅ gebaut; Face-ID-Flow auf dem Gerät von Jan bestätigt („technisch funktioniert es") |
+| C (20./21.09.) | Widgets B8: Kennzahlen, Tagesübersicht, Beratungsgespräche, Körperzonen | ✅ gebaut, erste Widgets auf dem iPhone gesehen; Feinschliff nach Screenshots |
+| 1c | TestFlight-Pilot, Review, Custom-App-Einreichung, Miradore, Klickanleitungen | **offen** — Klickanleitungen Profil (App-Geräte) und Institut (Kiosk-Block) nachziehen |
+| D | Versionsprüfung (`min_app_version`), Siri/App Intents, Dokumentenscanner, Diagnose senden, iPad-Tastaturkürzel | offen |
+| 3 | Härtung Weg B (App-Host ohne IAP, Google Sign-In nativ, App Attest) | offen |
+| 4 | Native Prozesse nach Pilot-Entscheidung (Tageserfassung 4–6 Wochen, Laser-Wartung 2–3 Wochen) | offen |
+
+Bauen & testen: Xcode-Projekt aus `ios/project.yml` (`cd ios && xcodegen generate` nach neuen Dateien),
+Schema „glatttHub" (Debug = Staging + APNs-Sandbox), Unit-Tests `xcodebuild … test` (21 Swift-Tests),
+Springboard-UI-Test im Schema „glatttHub UI". Hub-Tests: `AppDeviceTokenTest`, `AppWidgetKpiTest`,
+`MobileNavigationTest`, `SafeAreaConventionTest`.
 
 ### Fallstricke (vorab bekannt)
 
