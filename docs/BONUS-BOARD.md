@@ -288,8 +288,14 @@ Sichtbarkeit.
   verschwinden. Hereingeparkte Fälle stehen mit Herkunft („aus August
   geparkt"), auf den Zielen erscheint „davon 6 aus dem Vormonat geparkt" bzw.
   „4 in den Folgemonat geparkt". Geparkte KPZ zählen im Folgemonat **nur für
-  Summen-Ziele** (verkaufte KPZ), nicht im Schnitt KPZ je Beratungsgespräch —
-  das Gespräch lag im Ursprungsmonat.
+  reguläre Summen-Ziele** (verkaufte KPZ), nicht im Schnitt KPZ je Beratungsgespräch —
+  das Gespräch lag im Ursprungsmonat — und **nie in Monats-Challenges**
+  (Entscheidung Jan, 20.09.2026): Ranking-, Prozent- und „alle Teams"-Challenges
+  rechnen ohne hereingeparkte KPZ, die Challenge-Karte sagt das in der
+  Unterzeile („geparkte Widerrufe zählen nicht"). Weil die Instituts-Übersicht
+  hereingeparkte KPZ mitzählt, weicht ihr „KPZ Ist" von der Verkaufsstatistik
+  (Vertrag zählt immer im Unterschriftsmonat) ab — die Tabelle nennt den
+  Anteil unter der Zahl („davon 22 aus Vormonat geparkt"), auch im PDF.
 - **Wert-Korrekturen**: jede Kennzahl (auch Abwesenheitstage) manuell
   korrigieren — **Begründung ist Pflicht**, alles landet im Audit-Trail und ist
   auf den betroffenen Board-Karten sichtbar.
@@ -496,8 +502,13 @@ Kundennamen, CSV-/PDF-Export), `tests/Feature/HrUserLinkServiceTest.php` (askDAN
   park / auto_count / auto_exclude / decided_earlier) plus `landing_month`,
   `origin_month`, `carried_in`. Endpoint `POST /hub/bonus/revocation-decisions`
   braucht `scope` (team/personal) und `decision` (count/exclude/park); Parken
-  scheitert, wenn der Folgemonat final eingefroren ist. Tests:
+  scheitert, wenn der Folgemonat final eingefroren ist. `resolve()` hat seit
+  20.09.2026 den Schalter `withParked` (eigener Cache-Schlüssel):
+  `BonusCalculationService::resolveForRule()` übergibt `! $rule->is_challenge`,
+  damit Challenges ohne `carried_in`/`carried_at_risk` rechnen; die
+  Instituts-Übersicht (`branches[].kpz_carried_in`) bleibt mit. Tests:
   `BonusEngineTest::test_geparkter_*`, `test_parken_wirkt_getrennt_*`,
+  `test_geparkte_kpz_zaehlen_in_monats_challenges_nie`,
   `BonusBoardPageTest::test_widerruf_entscheidung_je_scope_und_parken`.
 - **Hochrechnung linear** (Wert ÷ verstrichener Monatsanteil) — bewusst simpel
   und erklärbar. **Nur für Summen**: `BonusMetricResolver::metricKind()`
