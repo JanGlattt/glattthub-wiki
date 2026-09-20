@@ -369,6 +369,34 @@ genau die Kennzahlen, die die zuletzt in der App angemeldete Person auch im Hub 
   `KpiWidget.swift`. Geteilter Code in `ios/Shared/WidgetShared.swift` (App-Gruppe, Keychain, Modelle,
   `WidgetFormat` de-DE mit Kompaktform „98,5 T€", `WidgetAPI`) — alles `nonisolated`, weil die App
   mit MainActor-Standard baut, die Erweiterung nicht. Tests: `WidgetFormatTests`.
+- **Layout-Regeln (Feinschliff 22.09.2026 nach Gerätetest, Entscheidungen Jan):** Widgets füllen
+  ihre Höhe — Listenzeilen wachsen gleichmäßig (`View.fill(max:)` in `WidgetChrome.swift`, gedeckelt,
+  damit wenige Zeilen im Hochformat nicht auseinanderlaufen), Charts bekommen die Resthöhe über
+  `GeometryReader` statt fester `frame(height:)` (vorher lief das seitengroße KPZ-Widget oben und
+  unten über, mittlere Widgets blieben halb leer). In Listen steht die **Sparkline als eigene rechte
+  Spalte** (`sparkColumnWidth`, auch leer, damit alle Zahlen bündig stehen) mit der Zahl direkt links
+  daneben. **Prognose in der Sparkline nach Hub-Konvention:** gestrichelte Linie ab dem Vorzeitraum zum
+  hohlen Punkt senkrecht über dem letzten Ist-Wert. **Institutskürzel** (`code`: BI, H, OS, HB, BS,
+  MD — aus `ClientNumberService::PREFIX_SUGGESTIONS`, geliefert von `AppBranchList`) in allen
+  Tabellen und engen Kopfzeilen; Legenden behalten den Kurznamen. Prognose im Monats-Chart bleibt ein
+  eigener blasser Balken, Wochenend-Tage in voller Farbe (nur die Achsenbeschriftung blasser). Einheitlich
+  „Alle Standorte" (nicht „Alle Institute"). Platzhalter: Shapes werden von `redacted` nicht ausgegraut —
+  `Sparkline`/`TrendBadge` lesen `redactionReasons` selbst. **Galerie-Vorschau** („Widget hinzufügen",
+  `context.isPreview`) zeigt die Beispieldaten (`sample`, `nonisolated`) statt grauer Balken. **Einheit
+  entfällt, wenn das Label sie nennt** („Verkaufte Körperzonen" → 261, nicht „261 KPZ";
+  `KpiWidgetView.displayUnit`, € und % bleiben) — Test `KpiDisplayUnitTests` im Snapshot-Target.
+- **Vergleiche/Tendenzpfeile:** Die Services liefern `comparisons[].value`/`trend`/`unit` (`PP` bei
+  Quoten) — genau so liest es das Web-KPI-Dashboard. `WidgetKpiService::comparison()` bildet das auf
+  `change`/`unit`/`direction` ab; bis 22.09.2026 las er `change`/`direction` und es gab nie einen Pfeil.
+  `UNRANGED_SOURCES` (`glattt`) bekommen keine Sparkline, weil `GlatttKpiService` den Zeitraum
+  ignoriert und sonst sechsmal derselbe Wert erschien (flache Linie).
+- **Snapshots ohne Gerät:** Target `glatttHubWidgetSnapshots` (Schema „glatttHub Widgets") kompiliert die
+  Widget-Quellen ohne `WidgetBundle.swift` und rastert alle Widgets mit Beispieldaten in allen Größen
+  hell/dunkel per `ImageRenderer`:
+  `TEST_RUNNER_WIDGET_SNAPSHOT_DIR=/tmp/widgets xcodebuild -project ios/glatttHub.xcodeproj -scheme "glatttHub Widgets" -destination 'platform=iOS Simulator,name=iPhone 17' test CODE_SIGNING_ALLOWED=NO`
+  (ohne Variable übersprungen; `TEST_RUNNER_`-Präfix reicht die Variable an den Test-Runner durch).
+  Dafür gibt es `widgetFamilyOverride` im Environment (`widgetFamily` ist nur lesbar) und
+  `WidgetChrome.bundle` (`Bundle(for:)` — `Bundle.main` wäre im Test die Host-App ohne die Farben).
 - **Fallstricke:** App-Gruppe und Keychain-Gruppe brauchen die Capability im Developer-Portal
   (Xcode legt sie bei automatischer Signierung selbst an). Widgets bekommen keine Push-Auslöser —
   die App ruft `WidgetCenter.shared.reloadAllTimelines()` nach Login, Katalog-Refresh und
@@ -384,7 +412,7 @@ Login Google Workspace → PIN, Reviewer-Konto, Ausnahme Guideline 4.8 (Firmenko
 Voraussetzungen: Developer-Konto als Organisation mit akzeptiertem Paid-Apps-Agreement, ABM-Org-ID,
 Apps-&-Bücher-Token in Miradore.
 
-### Phasen & Stand (21.09.2026)
+### Phasen & Stand (22.09.2026)
 
 | Phase | Inhalt | Stand |
 |---|---|---|
@@ -393,15 +421,15 @@ Apps-&-Bücher-Token in Miradore.
 | 1b | Push, Universal Links, Long-Press-Menü, MDM-Config, Kiosk, Face ID; B3–B6, B10 | ✅ gebaut; Push auf dem iPhone und Kiosk-Modus auf einem Miradore-iPad noch nicht getestet |
 | A (20.09.) | Native Tab-Leiste (Liquid Glass), Mehr-Sheet nativ (Standort, Mitteilungen, Suche), WebView je Tab + Mehr-Pool, Pull-to-Refresh, Schnellaktionen, PIN-Sheet, Ladeschirm | ✅ abgenommen (Jan, 20./21.09.) |
 | B (20.09.) | Gerätetoken B7, Face-ID-Anmeldung, App-Geräte im Profil B9 | ✅ gebaut; Face-ID-Flow auf dem Gerät von Jan bestätigt („technisch funktioniert es") |
-| C (20./21.09.) | Widgets B8: Kennzahlen, Tagesübersicht, Beratungsgespräche, Körperzonen | ✅ gebaut, erste Widgets auf dem iPhone gesehen; Feinschliff nach Screenshots |
+| C (20.–22.09.) | Widgets B8: Kennzahlen, Tagesübersicht, Beratungsgespräche, Körperzonen | ✅ gebaut; Feinschliff nach 13 Geräte-Screenshots am 22.09. (Höhen füllen, Sparkline-Spalte, Kürzel, Tendenzpfeile, Prognose gestrichelt) — Abnahme der neuen Fassung auf dem Gerät offen |
 | 1c | TestFlight-Pilot, Review, Custom-App-Einreichung, Miradore, Klickanleitungen | **offen** — Klickanleitungen Profil (App-Geräte) und Institut (Kiosk-Block) nachziehen |
 | D | Versionsprüfung (`min_app_version`), Siri/App Intents, Dokumentenscanner, Diagnose senden, iPad-Tastaturkürzel | offen |
 | 3 | Härtung Weg B (App-Host ohne IAP, Google Sign-In nativ, App Attest) | offen |
 | 4 | Native Prozesse nach Pilot-Entscheidung (Tageserfassung 4–6 Wochen, Laser-Wartung 2–3 Wochen) | offen |
 
 Bauen & testen: Xcode-Projekt aus `ios/project.yml` (`cd ios && xcodegen generate` nach neuen Dateien),
-Schema „glatttHub" (Debug = Staging + APNs-Sandbox), Unit-Tests `xcodebuild … test` (21 Swift-Tests),
-Springboard-UI-Test im Schema „glatttHub UI". Hub-Tests: `AppDeviceTokenTest`, `AppWidgetKpiTest`,
+Schema „glatttHub" (Debug = Staging + APNs-Sandbox), Unit-Tests `xcodebuild … test` (22 Swift-Tests),
+Springboard-UI-Test im Schema „glatttHub UI", Widget-Snapshots im Schema „glatttHub Widgets" (s. o.). Hub-Tests: `AppDeviceTokenTest`, `AppWidgetKpiTest`,
 `MobileNavigationTest`, `SafeAreaConventionTest`.
 
 ### Fallstricke (vorab bekannt)
@@ -433,6 +461,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
 | 21.09.2026 | 0.1 (dev) | Widgets III: Tagesübersicht-Widget, Sparklines im Kennzahlen-Widget, Körperzonen mit Prognose-Balken und Tages-Chart im großen Widget, Extra-Large-Portrait (iOS 27) |
+| 22.09.2026 | 0.1 (dev) | Widgets IV (Feinschliff nach Gerätetest): Höhen füllen statt fester Maße, Sparkline-Spalte rechts mit Prognose als gestrichelter Linie, Tendenzpfeile (Vergleichs-Schlüssel `value`/`trend` korrigiert), Institutskürzel `code` aus `AppBranchList`, keine Sparkline für `glattt`-Quelle, Snapshot-Target `glatttHubWidgetSnapshots` |
 | 20.09.2026 | 0.1 (dev) | Widgets II: Beratungsgespräche- und Körperzonen-Widget (Swift Charts), Kennzahlen klein mit bis zu drei Werten und Trend-Pfeilen, Extra-Large; Ladeanimation, Launch-Logo, Inhalt im App-Switcher |
 | 20.09.2026 | 0.1 (dev) | Phase C: Widget-Endpunkte (B8, KpiRegistry mit Token-Rechten, lineare Monatsprognose), Widget-Token getrennt vom Sitzungs-Token, WidgetKit-Erweiterung mit App-Intent-Konfiguration in vier Größen |
 | 20.09.2026 | 0.1 (dev) | Phase B: Gerätetoken (B7, `app_devices` + Sanctum), Face-ID-Anmeldung als Sheet-Phase, App-Geräte im Profil (B9) |
