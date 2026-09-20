@@ -10,7 +10,7 @@
 
     Lokal (MAMP oder SQLite), Devcontainer, Claude Code Cloud — und Staging als Abnahme-Umgebung mit täglicher Prod-Kopie.
 
-    [:octicons-arrow-right-24: Entwicklungsumgebung](../ENTWICKLUNGSUMGEBUNG.md) · [Staging](../STAGING-UMGEBUNG.md) · [Desktop-App](../DESKTOP-APP.md)
+    [:octicons-arrow-right-24: Entwicklungsumgebung](../ENTWICKLUNGSUMGEBUNG.md) · [Staging](../STAGING-UMGEBUNG.md) · [Desktop-App](../DESKTOP-APP.md) · [iOS-App](../IOS-APP.md)
 
 - :material-google-cloud: **Cloud**
 

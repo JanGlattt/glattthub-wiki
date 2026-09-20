@@ -124,6 +124,7 @@ nav:
       - MAMP Virtual Host: SETUP-ANLEITUNG.md
       - Staging-Umgebung: STAGING-UMGEBUNG.md
       - Desktop-App (Electron): DESKTOP-APP.md
+      - iOS/iPadOS-App (Swift): IOS-APP.md
     - Cloud:
       - Cloud-Infrastruktur: CLOUD-INFRASTRUKTUR.md
       - Cloud Scheduler (Cronjobs): CLOUD-SCHEDULER-SETUP.md
