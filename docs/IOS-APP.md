@@ -2,7 +2,8 @@
 
 Native iPhone-/iPad-App für glatttHub — eine Swift/SwiftUI-Hülle um den Hub (`WKWebView`) mit nativem
 Login, APNs-Push, Face ID, Kamera, Universal Links, Kontextmenü, MDM-Steuerung und Home-Screen-Widgets.
-**Stand 20.09.2026: Bauplan beschlossen, Umsetzung noch nicht begonnen.** Der vollständige Bauplan mit
+**Stand 20.09.2026: Bauplan beschlossen; Backend-Vorarbeiten B1, B2, B3, B5 und B6 sind auf `develop`
+umgesetzt, das Xcode-Projekt noch nicht begonnen.** Der vollständige Bauplan mit
 Entscheidungstabellen, Sequenzdiagrammen und Arbeitspaketen liegt als Claude-Doc vor
 ([glatttHub iOS-App — Bauplan](https://claude.ai/code/artifact/c74ef4a9-112c-4de2-ad61-9546f3612858));
 diese Seite ist die technische Kurzreferenz, die mit der Umsetzung wächst.
@@ -95,10 +96,14 @@ Spiegelt `window.electronPush`; `push-notifications.js` bekommt eine generische 
 
 | Hub → App | App → Hub (CustomEvent) |
 |---|---|
-| `registerForApnsNotifications()` → `{ token, environment, nativeDeviceId }` | `glattt:push-received` (Vordergrund-Push) |
-| `unregisterForApnsNotifications()`, `getPushStatus()` | `glattt:push-opened` (`url`, `log_id`) |
+| `registerForApnsNotifications()` → `{ token, environment: 'production'\|'sandbox', nativeDeviceId }` (löst die iOS-Systemabfrage aus) | `glattt:push-received` (Vordergrund-Push) |
+| `unregisterForApnsNotifications()`, `getPushStatus()` → `'granted'\|'denied'\|'default'` (Web-Vokabular, weil das WKWebView kein `window.Notification` hat) | `glattt:push-opened` (`url`, `log_id`) |
 | `setBadge(n)`, `saveFile({name,mime,base64})`, `openExternal(url)`, `haptic(kind)` | `glattt:foreground` |
-| `getInfo()` → `{ platform, appVersion, deviceName, sharedDevice, kioskMode }`, `reportContext(ctx)` | `glattt:biometric-unlocked` |
+| `getInfo()` → `{ platform: 'ios', appName: 'glatttHub iOS App', appVersion, deviceName, nativeDeviceId, sharedDevice, kioskMode }`, `reportContext(ctx)` | `glattt:biometric-unlocked` |
+
+`push-notifications.js` lädt `getInfo()` und `getPushStatus()` in `init()` (`loadNativeInfo()`); `device_type`
+wird daraus `ios` bzw. `macos`, der Gerätename kommt aus `deviceName`. `platform` ist `ios` für iPhone
+**und** iPad (die ENUM-Spalte `device_type` kennt kein `ipados`; der Gerätename unterscheidet).
 
 Erkennung: User-Agent-Suffix `glatttHub-iOS/<version>` (serverseitig `App\Support\NativeApp::isIos()`),
 `body.ios-app`, `<meta name="glattthub-app" content="ios">`. Bridge nur für den Hub-Host injizieren.
@@ -117,12 +122,12 @@ Erkennung: User-Agent-Suffix `glatttHub-iOS/<version>` (serverseitig `App\Suppor
 
 | # | Paket | Kern |
 |---|---|---|
-| B1 | App-Erkennung | `NativeApp::isIos()`, Meta-Tag, PWA-Banner/Desktop-Hinweis in der App ausblenden |
-| B2 | Generische Push-Bridge | `push-notifications.js`: `getNativeBridge()`, `device_type` aus `getInfo()` |
-| B3 | APNs-Umgebung je Gerät | Migration `apns_environment` (`production`/`sandbox`), Client je Umgebung, `device_type` `ios`/`ipados` |
+| B1 ✅ | App-Erkennung | `App\Support\NativeApp` (User-Agent-Suffix `glatttHub-iOS/<version>`), `<meta name="glattthub-app">` + `glattthub-app-version`, `body.ios-app`; Push-Init im Layout prüft `isNativeSupported()` statt Electron/PWA-Bedingungen. Test `NativeAppDetectionTest` |
+| B2 ✅ | Generische Push-Bridge | `push-notifications.js`: `getNativeBridge()`, `isNativeSupported()`, `loadNativeInfo()`, `subscribeNative()`; `getPermission()` ohne `window.Notification`; Electron-Aliase bleiben |
+| B3 ✅ | APNs-Umgebung je Gerät | Migration `2026_09_20_120000_add_apns_environment_to_push_subscriptions_table`, `PushSubscription::usesProductionApns()`, Client je Subscription, Endpunkt nimmt `environment` + `device_type` `ios`. Test `ApplePushEnvironmentTest` |
 | B4 | Push-Payload | `badge`, `category` (`HUB_OBJECT`/`HUB_INFO`), `thread-id`, `apns-collapse-id`; `POST /api/push/mark-read` |
-| B5 | Badge-Sync | Glocke ruft `glatttNative.setBadge(unread)` |
-| B6 | Universal Links | `public/.well-known/apple-app-site-association` (Prod + Staging), LB-Regel `/.well-known/*` ohne IAP |
+| B5 ✅ | Badge-Sync | Glocke (Sidebar) ruft `window.glatttNative.setBadge(unread)` neben `electronBadge` |
+| B6 ✅ (Hub) / offen (LB) | Universal Links | Route `/.well-known/apple-app-site-association` + `/apple-app-site-association` (`AppleAppSiteAssociationController`, Team/Bundle aus `config/push.php`); **LB-Regel `/.well-known/*` ohne IAP steht noch aus** (Jan). Test `AppleAppSiteAssociationTest` |
 | B7 | Geräte-Token | `POST /api/app/devices` (Session-Auth) → Sanctum-Token (`app:widgets`, `app:push`), Tabelle `app_devices`, Widerruf bei Abmelden/Archivieren |
 | B8 | Widget-Endpunkt | `GET /api/app/widgets/kpis` + `/catalog` via `KpiValueService` (Rechte, `BranchVisibility`, 5-Min-Cache) |
 | B9 | Geräte im Profil | iOS-Geräte in den Push-Einstellungen, „Gerät entfernen" |
@@ -175,11 +180,14 @@ Apps-&-Bücher-Token in Miradore.
 - **Kein `WKWebView` pro Seite**: ein Data-Store, sonst laufen Sitzungen auseinander.
 - **`window.open(blob:)`** öffnet nichts — Blob-Downloads über `glatttNative.saveFile`.
 
-### Relevante Dateien (geplant)
+### Relevante Dateien
 
-`ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Config/*.xcconfig`, `ios/release.sh`,
-`app/Support/NativeApp.php`, `public/.well-known/apple-app-site-association`,
-`app/Http/Controllers/Api/App/*`, `public/js/push-notifications.js`, `app/Services/ApplePushNotificationService.php`.
+Vorhanden: `app/Support/NativeApp.php`, `app/Http/Controllers/App/AppleAppSiteAssociationController.php`,
+`public/js/push-notifications.js`, `app/Services/ApplePushNotificationService.php`,
+`app/Services/PushNotificationService.php` (`subscribeNative`), `resources/views/layouts/hub.blade.php`
+(Meta-Tags, Body-Klasse, Push-Init), `resources/views/layouts/partials/sidebar.blade.php` (Badge).
+Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Config/*.xcconfig`,
+`ios/release.sh`, `app/Http/Controllers/Api/App/*` (Geräte-Token, Widget-API).
 
 ---
 
@@ -187,4 +195,5 @@ Apps-&-Bücher-Token in Miradore.
 
 | Datum | Version | Änderung |
 |---|---|---|
-| 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets); noch keine Umsetzung |
+| 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
+| 20.09.2026 | — | Backend-Vorarbeiten B1 (App-Erkennung), B2 (generische Bridge), B3 (`apns_environment`), B5 (Badge), B6 (AASA-Route) auf `develop`; LB-Regel `/.well-known/*` offen |

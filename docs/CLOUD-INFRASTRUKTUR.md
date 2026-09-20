@@ -81,6 +81,14 @@ staging.hub.glattt.com/*                                        → backend-glat
 hilfe.hub.glattt.com/*                                          → backend-glattthub-hilfe          → glattthub-hilfe       (mit IAP, Ingress nur LB)
 ```
 
+!!! warning "Offen: `/.well-known/*` für die iOS-App (Universal Links)"
+    Die iOS-App braucht `https://hub.glattt.com/.well-known/apple-app-site-association` (Route
+    im Hub seit 20.09.2026, Rückfall `/apple-app-site-association`) **ohne IAP** — Apples CDN lädt
+    die Datei beim Installieren ohne Cookies. Der Pfad `/.well-known/*` muss deshalb in die
+    `-public`-Pfadregel von Prod **und** Staging aufgenommen werden (wie `/shared/*`). Prüfung:
+    `curl -sI https://hub.glattt.com/.well-known/apple-app-site-association` liefert `200` und
+    `Content-Type: application/json` statt eines IAP-Redirects. Siehe [iOS-App](IOS-APP.md).
+
 #### Bekanntes Problem: Fehlendes CSS/JS auf Public-Seiten
 
 Nach der Ersteinrichtung des `/shared/*`-Bypasses lud die HTML-Seite zwar, aber **ohne Styling und Interaktivität** (Konsole: `Refused to execute .../livewire/livewire.min.js` wegen `X-Content-Type-Options: nosniff`, sowie 403-Fehler für CSS/Fonts/Bilder). Ursache: Nur die HTML-Seite selbst lief über `/shared/*`, alle referenzierten Assets (`/build/*` von Vite, `/css/theme_glattt.css`, `/fonts/*`, `/images/*`) sowie der Livewire-Update-Endpunkt (`/livewire/update`, `/livewire/livewire.min.js`) liefen weiterhin über den IAP-geschützten Standard-Pfad und wurden vom Browser als Cross-Origin-Redirect zu Google IAP abgelehnt (CORS). Lösung: Diese Pfade zusätzlich in die `-public`-Pfadregel aufgenommen.

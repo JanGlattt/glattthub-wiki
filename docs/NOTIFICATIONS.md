@@ -267,6 +267,23 @@ Push auf iOS funktioniert **nur** wenn:
 2. iOS 16.4+ verwendet wird
 3. Die Berechtigung in der installierten App erteilt wird
 
+### APNs-Umgebung je Gerät (Desktop-App und iOS-App)
+
+Der APNs-Host wird seit 20.09.2026 **je Subscription** gewählt (`push_subscriptions.apns_environment`),
+nicht mehr global über `APNS_ENVIRONMENT`: Xcode-Debug-Builds der iOS-App registrieren
+Sandbox-Tokens, TestFlight-/Store-Builds und die Electron-App Production-Tokens. Ein Sandbox-Token
+gegen den Production-Host ergab `BadDeviceToken` und deaktivierte das Gerät. Die Bridge der App
+liefert die Umgebung mit der Registrierung (`registerForApnsNotifications()` →
+`{ token, environment, nativeDeviceId? }`), `push-notifications.js` reicht sie als `environment` an
+`/api/push/subscribe/native` weiter; `ApplePushNotificationService` erzeugt den pushok-Client mit
+`$subscription->usesProductionApns()`. `APNS_ENVIRONMENT` bleibt nur als Rückfall für Zeilen ohne Wert.
+
+`push-notifications.js` kennt seit demselben Datum eine **generische native Bridge**
+(`getNativeBridge()` = `window.glatttNative` der iOS-App, sonst `window.electronPush`); die
+iOS-Bridge liefert zusätzlich `getInfo()` (Plattform, App-Name, Gerätename, Keychain-Geräte-ID),
+`getPushStatus()` (`granted`/`denied`/`default`, weil das WKWebView kein `window.Notification` hat)
+und `setBadge(n)` (App-Symbol, aus der Glocke gespeist). Details: [iOS-App](IOS-APP.md).
+
 ### APNs-Konfiguration (Desktop App)
 
 Für native macOS Push-Notifications über die Electron-App:
@@ -488,9 +505,10 @@ Nutzer + Regel, Cascade beim Löschen von Nutzer oder Regel.
 ```sql
 - id, user_id
 - provider          -- 'webpush' oder 'apns'
-- native_device_id  -- Persistente Installations-ID (Electron)
+- native_device_id  -- Persistente Installations-ID (Electron: localStorage, iOS: Keychain-UUID)
 - endpoint, endpoint_hash, public_key, auth_token  -- WebPush
 - apns_device_token, apns_device_token_hash        -- APNs
+- apns_environment  -- 'production' | 'sandbox' (seit 20.09.2026; Xcode-Debug-Builds der iOS-App)
 - browser, device_type, device_name, user_agent
 - is_active, failure_count, last_used_at
 - created_at, updated_at
@@ -507,8 +525,8 @@ Nutzer + Regel, Cascade beim Löschen von Nutzer oder Regel.
 | `/push/vapid-key` | GET | VAPID Public Key abrufen |
 | `/push/subscribe` | POST | WebPush-Subscription registrieren |
 | `/push/unsubscribe` | POST | WebPush-Subscription entfernen |
-| `/push/subscribe/native` | POST | APNs-Token registrieren (Desktop App) |
-| `/push/unsubscribe/native` | POST | APNs-Token entfernen (Desktop App) |
+| `/push/subscribe/native` | POST | APNs-Token registrieren (Desktop-App, iOS-App) — Felder `device_token`, `native_device_id`, `device_type` (`macos`/`ios`), `device_name`, `browser`, `environment` (`production`/`sandbox`) |
+| `/push/unsubscribe/native` | POST | APNs-Token entfernen (Desktop-App, iOS-App) |
 | `/push/test` | POST | Test-Push senden |
 
 !!! info "Accept-Header erforderlich"
