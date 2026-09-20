@@ -120,7 +120,8 @@ bei 390 px Breite darauf, dass nichts über den rechten Rand ragt.
 | Datei | Inhalt |
 |---|---|
 | `resources/views/layouts/hub.blade.php` | Layout ohne Topbar/Spacer/Overlay, mobile Titelzeile |
-| `resources/views/layouts/partials/bottom-nav.blade.php` | Bottom-Nav + Mehr-Sheet (Grid aus `$moreMenuItems`, Suche, Utilities, Profil) + Standort-Sheet |
+| `app/Services/Navigation/MobileNavigation.php` | Einträge der Bottom-Nav und des Mehr-Grids (seit 20.09.2026 gemeinsame Quelle mit der iOS-App) |
+| `resources/views/layouts/partials/bottom-nav.blade.php` | Bottom-Nav + Mehr-Sheet (Grid aus `MobileNavigation::PRIMARY/MORE`, Suche, Utilities, Profil) + Standort-Sheet |
 | `app/Services/Navigation/NavigationGroups.php` | Gruppen-Überschriften im Mehr-Raster (gleicher Zuschnitt wie die Sidebar) — siehe `NAVIGATION-GRUPPEN.md` |
 | `public/css/theme_glattt.css` | Abschnitte „MOBILE SEITENTITEL", „MEHR-SHEET", „MOBILE TABELLEN-MUSTER"; Bottom-Nav-Breakpoint 1023 px |
 | `tests/Unit/MobileNavParityTest.php` | Konventionstest: jeder Sidebar-Menüpunkt, Suche, Mitteilungen, Profil mobil erreichbar; kein Topbar-Rückfall |
@@ -128,8 +129,12 @@ bei 390 px Breite darauf, dass nichts über den rechten Rand ragt.
 
 ### Muster & Konventionen
 
-- **Neuer Menüpunkt?** In `sidebar.blade.php` UND in `$moreMenuItems`
-  (`bottom-nav.blade.php`) eintragen — `MobileNavParityTest` bricht sonst.
+- **Neuer Menüpunkt?** In `sidebar.blade.php` UND in `MobileNavigation::MORE`
+  (`app/Services/Navigation/MobileNavigation.php`, inkl. SF Symbol in `SYMBOLS`) eintragen —
+  `MobileNavParityTest`/`MobileNavigationTest` brechen sonst. In der iOS-App ersetzt eine native
+  Tab-Leiste die Web-Bottom-Nav (`body.ios-app .mobile-bottom-nav { display: none }`); das
+  Mehr-Sheet des Webs bleibt für Standort, Mitteilungen, Design und Rundgang im Einsatz und wird
+  per Bridge-Event `glattt:open-more` geöffnet — siehe [iOS-App](IOS-APP.md).
   Icons als Heroicon-Namen (`<x-dynamic-component :component="'heroicon-o-'.$icon" />`).
 - **Mobile Tabellen:** kompakte Dichte kommt automatisch (`≤767px`). Für Listen,
   deren Zeilen ohne erste Spalte nicht zuordenbar sind, die Opt-in-Klasse

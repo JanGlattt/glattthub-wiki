@@ -115,6 +115,32 @@ glatttHubWidgets (WidgetKit-Extension, App Group, Keychain-Sharing)
 Konfiguration: `HUB_BASE_URL` per `xcconfig` (Debug/Staging = Staging-URL, Release = Prod), zur Laufzeit
 überschreibbar durch Managed App Configuration (`com.apple.configuration.managed`).
 
+### Native Tab-Leiste (Liquid Glass) & Mehr-Sheet
+
+Seit 20.09.2026 ersetzt eine **native Tab-Leiste** die Web-Bottom-Nav in der App (Entscheidung
+Jan: Option A). Auf iOS 26 rendert iOS sie als Liquid Glass (schwebend, schrumpft beim Scrollen,
+Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App zeichnet nichts selbst.
+
+- **Quelle:** `GET /api/app/navigation` (`AppNavigationController`, Session-Auth, `routes/app.php`)
+  liefert `tabs` (Start, Termine, Kunden, Berichte), `groups` (Verkauf … System mit Einträgen),
+  `utilities` (Mitteilungen, Profil, Admin) und `unread_count` — nach Rechten gefiltert aus
+  `MobileNavigation::PRIMARY/MORE` + `NavigationGroups::GROUPS`; Heroicon → SF Symbol über
+  `MobileNavigation::SYMBOLS`. Dieselbe Klasse speist die Web-Bottom-Nav.
+- **App:** `HubTabBarController` (UIKit `UITabBarController`, ab iOS 18 `UITab`/`UISearchTab`) über
+  dem **einen** WebView: jeder Tab ist ein Platzhalter-Controller, der beim Erscheinen das geteilte
+  `WKWebView` adoptiert. Tab-Tipp → `container.navigate(toPath:)`; URL-Wechsel im WebView (KVO auf
+  `webView.url`, folgt `wire:navigate`) → `syncSelection`. Badge am Tab „Mehr" = ungelesene
+  Mitteilungen. Nur bei kompakter Breite (iPhone, iPad schmal) — im iPad-Querformat zeigt der Hub
+  seine Sidebar.
+- **Mehr:** natives Sheet (`MoreSheet`) mit Mitteilungen, Standort wechseln, den Gruppen, Profil,
+  Admin-Backend, Design wechseln, Rundgang, App-Einstellungen. Standort/Design/Rundgang delegieren an
+  das Web-Sheet des Hubs über Bridge-Events (`glattt:open-more` mit `view: branch`,
+  `glattt:toggle-theme`, `glattt:start-tour`), die `bottom-nav.blade.php` am Wurzelelement hört.
+- **Suche:** `SearchSheet` (SwiftUI `.searchable`) gegen `/hub/search?q=` (lokal) und
+  `sources=remote` (Phorest), Treffer öffnen im WebView.
+- **CSS:** `body.ios-app .mobile-bottom-nav { display: none }` und `--mobile-bottom-nav-space: 0`;
+  den Abstand nach unten liefert die native Leiste über die Safe-Area.
+
 ### Bridge `window.glatttNative`
 
 Spiegelt `window.electronPush`; `push-notifications.js` bekommt eine generische Abstraktion
@@ -222,5 +248,6 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | Datum | Version | Änderung |
 |---|---|---|
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
+| 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
 | 20.09.2026 | 0.1 (dev) | Xcode-Projekt unter `ios/` (XcodeGen) mit Phase-1-Code; Google/IAP-Login rendert im WKWebView mit Safari-UA (Weg A bewiesen, Simulator); 14 Swift-Tests |
 | 20.09.2026 | — | Backend-Vorarbeiten B1 (App-Erkennung), B2 (generische Bridge), B3 (`apns_environment`), B4 (Payload + `mark-read`), B5 (Badge), B6 (AASA-Route), B10 (Kiosk-Konfiguration im Institut-Modul) auf `develop`; LB-Regel `/.well-known/*` war schon vorhanden |

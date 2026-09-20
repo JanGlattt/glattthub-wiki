@@ -83,8 +83,11 @@ einmal:
 2. Den Eintrag im Markup **innerhalb** von `<div class="menu-submenu-inner">`
    derselben Gruppe einsortieren
    (`resources/views/layouts/partials/sidebar.blade.php`).
-3. Eintrag im mobilen Mehr-Sheet ergänzen (`$moreMenuItems` in
-   `bottom-nav.blade.php`, mit `'group' => '<gruppenschlüssel>'`).
+3. Eintrag in `App\Services\Navigation\MobileNavigation::MORE` ergänzen (mit
+   `'group' => '<gruppenschlüssel>'`) — seit 20.09.2026 die gemeinsame Quelle für das mobile
+   Mehr-Sheet (`bottom-nav.blade.php` liest `MobileNavigation::PRIMARY/MORE`) **und** die
+   native Tab-Leiste der iOS-App (`GET /api/app/navigation`); für die App braucht das Heroicon
+   ein SF Symbol in `MobileNavigation::SYMBOLS` (`MobileNavigationTest`).
 4. Seite in `GlobalSearchService::PAGES` aufnehmen (siehe `GLOBAL-SEARCH.md`).
 
 Ein Menüpunkt, der einfach unten angehängt wird, fällt in
@@ -138,6 +141,7 @@ Leiste wird stattdessen der Gruppenkopf hervorgehoben.
 |---|---|
 | `app/Services/Navigation/NavigationGroups.php` | Zuschnitt der Gruppen (Label, Icon, Rechte, Routen) |
 | `resources/views/layouts/partials/sidebar.blade.php` | Gruppen-Markup + `sidebarPanels()` (`openGroup`, `toggleGroup`) |
+| `app/Services/Navigation/MobileNavigation.php` | Einträge der mobilen Navigation (Haupttabs + Mehr) — Quelle für Web-Bottom-Nav und iOS-App |
 | `resources/views/layouts/partials/bottom-nav.blade.php` | Mehr-Sheet mit Gruppen-Überschriften |
 | `public/css/theme_glattt.css` | Abschnitt „NAVIGATIONS-GRUPPEN", `.mobile-more-grid-heading` |
 | `public/js/onboarding-tour.js` | Tour klappt die Gruppe des Schritts auf |
