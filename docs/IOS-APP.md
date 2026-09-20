@@ -206,6 +206,42 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
 - **CSS:** `body.ios-app .mobile-bottom-nav { display: none }` und `--mobile-bottom-nav-space: 0`;
   den Abstand nach unten liefert die native Leiste über die Safe-Area.
 
+### Gerätetoken & Face-ID-Anmeldung (B7/B9, seit 20.09.2026)
+
+**Für Endanwender:** Nach dem ersten PIN-Login fragt die App auf persönlichen Geräten „Künftig mit
+Face ID anmelden?". Danach meldet Face ID/Touch ID genau diese Person an — ohne PIN, ohne Google-
+Dialog. Im Profil unter **App-Geräte** sieht man seine Geräte und kann jedes entfernen; dann
+verlangt die App dort wieder die PIN. Abmelden in der App hebt Face ID **nicht** auf.
+
+**Für Entwickler:**
+
+- **Datenmodell:** `app_devices` (Nutzer × `native_device_id`, Gerätename, Plattform, App-/OS-Version,
+  `last_used_at`, FK auf `personal_access_tokens`). Das Token ist ein Sanctum-Token mit den
+  Fähigkeiten `app:session` und `app:widgets` (`AppDevice::ABILITIES`) — dasselbe Token speist
+  später die Widgets.
+- **Service `AppDeviceService`:** `register()` ersetzt ein bestehendes Token desselben Geräts und
+  entzieht anderen Nutzern dasselbe Gerät (das Gerät gehört jetzt dieser Person); `revoke()` löscht
+  Token + Gerät. `RejectArchivedUsers` widerruft beim ersten Aufruf eines archivierten Nutzers
+  alle seine Geräte.
+- **Endpunkte (`routes/app.php`, IAP-frei):** `GET/POST /api/app/devices` und
+  `DELETE /api/app/devices/{device}` mit Session-Auth (WebView-Cookies, direkt nach der PIN);
+  `POST /api/app/session` mit **Bearer-Token** (`auth:sanctum`, CSRF-Ausnahme in `bootstrap/app.php`)
+  → `Auth::guard('web')->login()` + `session()->regenerate()`, der Session-Cookie der Antwort geht
+  in den WebView. Ungültiges/widerrufenes Token → 401, archiviert → 403 (+ Widerruf).
+- **App:** `DeviceCredential` legt das Token im Keychain mit
+  `SecAccessControlCreateWithFlags(kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly, .biometryCurrentSet)`
+  ab — Lesen löst Face ID aus (`LAContext` in der Query, `SecItemCopyMatching` abseits des Main-
+  Threads), ein neu registriertes Gesicht macht den Eintrag ungültig. Unverschlüsselt liegen nur
+  Name/E-Mail (Anzeige „Als … anmelden") und die Geräte-ID des Hubs. `PinLoginView` hat vier
+  Phasen: `enter` (PIN, mit Face-ID-Knopf falls eingerichtet), `biometric` (Abfrage läuft),
+  `offer` (nach PIN: aktivieren / später / nicht mehr fragen), `loading` (bis `ready`).
+  `AppContainer.loginWithBiometrics()` → Token → `/api/app/session` → Cookies → Hub laden; bei 401/403
+  wird der Keychain-Eintrag gelöscht und die PIN angeboten. Einstellungen zeigen, für wen die
+  Anmeldung eingerichtet ist, und heben sie auf (`DELETE` + Keychain).
+- **Profilseite:** Partial `hub/profile/partials/app-devices.blade.php` (Alpine, `GET/DELETE`).
+- **Test:** `tests/Feature/AppDeviceTokenTest.php` (Registrieren/Ersetzen, Sitzung, Widerruf,
+  Archivierung, Besitzerwechsel, Sichtbarkeit je Nutzer).
+
 ### Bridge `window.glatttNative`
 
 Spiegelt `window.electronPush`; `push-notifications.js` bekommt eine generische Abstraktion
@@ -246,9 +282,9 @@ Erkennung: User-Agent-Suffix `glatttHub-iOS/<version>` (serverseitig `App\Suppor
 | B4 ✅ | Push-Payload | `badge` (`Notification::unreadCountFor()`), `category` (`HUB_OBJECT`/`HUB_INFO`, `ApplePushNotificationService::categoryFor()`), `thread-id` (Modul), `apns-collapse-id`; Zusatzdaten aus `HubNotificationDispatcher::pushData()`; `POST /api/push/mark-read` (`log_id` → Klick + In-App gelesen, Antwort `unread_count`). Test `ApplePushPayloadTest` |
 | B5 ✅ | Badge-Sync | Glocke (Sidebar) ruft `window.glatttNative.setBadge(unread)` neben `electronBadge` |
 | B6 ✅ | Universal Links | Route `/.well-known/apple-app-site-association` + `/apple-app-site-association` (`AppleAppSiteAssociationController`, Team/Bundle aus `config/push.php`); LB-Regel `/.well-known/*` ohne IAP existiert bereits (geprüft 20.09.2026). Test `AppleAppSiteAssociationTest` |
-| B7 | Geräte-Token | `POST /api/app/devices` (Session-Auth) → Sanctum-Token (`app:widgets`, `app:push`), Tabelle `app_devices`, Widerruf bei Abmelden/Archivieren |
+| B7 ✅ | Geräte-Token | `POST /api/app/devices` (Session-Auth) → Sanctum-Token (`app:session`, `app:widgets`), Tabelle `app_devices`, `POST /api/app/session` für Face ID; Widerruf im Profil/App und bei Archivierung (nicht beim Abmelden). Test `AppDeviceTokenTest` |
 | B8 | Widget-Endpunkt | `GET /api/app/widgets/kpis` + `/catalog` via `KpiValueService` (Rechte, `BranchVisibility`, 5-Min-Cache) |
-| B9 | Geräte im Profil | iOS-Geräte in den Push-Einstellungen, „Gerät entfernen" |
+| B9 ✅ | Geräte im Profil | Abschnitt „App-Geräte" auf der Profilseite (`hub/profile/partials/app-devices`), „Entfernen" widerruft das Token. **Klickanleitung Profil nachziehen** (neuer Abschnitt, Screenshot) |
 | B10 ✅ | Kiosk-Anker | Tab „Extern" des Institut-Moduls zeigt unter dem Zugangs-Link den Block „iPad-App (Kiosk-Modus)" mit der Managed App Configuration zum Kopieren (`InstituteAccessTokenController::appConfig()`, `deviceName` = „iPad <Institut>"). Test `InstituteAccessTokenAppConfigTest`. **Klickanleitung Betrieb 2 (Institut-Modul) muss nachgezogen werden** (neuer Block, Screenshot) |
 | B11 | Reviewer-Konto | `appreview@labrado-schlueter.com` mit PIN, Rolle Institute MA, Testinstitut Magdeburg |
 
@@ -315,6 +351,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 |---|---|---|
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
+| 20.09.2026 | 0.1 (dev) | Phase B: Gerätetoken (B7, `app_devices` + Sanctum), Face-ID-Anmeldung als Sheet-Phase, App-Geräte im Profil (B9) |
 | 20.09.2026 | 0.1 (dev) | Phase A: ein WebView je Haupttab (Instant-Wechsel), Tab-Leiste minimiert beim Scrollen, Pull-to-Refresh, Schnellaktionen; Standort/Theme zwischen Tabs synchron |
 | 20.09.2026 | 0.1 (dev) | Safe-Area als CSS-Variablen aus der App (env() war 0), glatttBert über der Tab-Leiste |
 | 20.09.2026 | 0.1 (dev) | Nativer PIN-Login als Sheet über der Login-Seite (bleibt mit Ladezustand bis `ready`); Ladeschirm statt schwarzem WebView beim Start; Abmelden ohne Rückfrage und nur aus dem Hub (Google/IAP bleibt, außer `sharedDevice`); Tab-Leiste nur angemeldet; Admin Panel in der System-Zeile |
