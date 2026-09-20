@@ -137,9 +137,11 @@ electron/
 ├── context-menu.cjs         # Kontextmenü-Renderer (Seiten + Tab-Leiste), Heroicons
 ├── context-menu.css         # Optik des Kontextmenüs (injiziert / von der Leiste geladen)
 ├── preload.cjs              # Preload je Tab: electron-app Klasse, Theme-Meldung, ⌘-Klick
+├── release.sh               # Release: Build + PKG/DMG nachbessern + Notarisierung mit Wiederholung
 ├── patch-dev.sh             # Patcht Electron.app für Dev (Name, Icon, Identifier)
-├── build-icns.sh            # Erstellt .icns aus Icon Composer Exports
-├── update-web-icons.sh      # Aktualisiert Web-App Icons aus Icon Composer Exports
+├── icon-exports.sh          # Helfer: Icon-Composer-Exporte nach Pixelgröße finden (beide Namensschemata)
+├── build-icns.sh            # Erstellt .icns/.png aus Icon Composer Exports
+├── update-web-icons.sh      # Aktualisiert Web-App Icons (PWA) aus Icon Composer Exports
 ├── icons/
 │   ├── glatttHub_Icon.icon  # Apple Icon Composer Asset (für Build)
 │   ├── icon.icns            # macOS App-Icon (.icns Fallback)
@@ -445,6 +447,9 @@ macOS-Menüleisten-Icon als **Template Image**:
 ### Build-Befehle
 
 ```bash
+# Release — Build, Signierung, Notarisierung inkl. Nachbesserung (empfohlen)
+npm run electron:release      # = bash electron/release.sh; --fix bessert nur PKG/DMG nach
+
 # Development (öffnet App, verbindet mit Produktions-URL)
 npm run electron:dev
 
@@ -458,7 +463,17 @@ npm run electron:build:dmg
 npm run electron:build:mdm
 ```
 
-Für signierten Build vor dem Ausführen im Terminal:
+!!! tip "Immer über `release.sh` bauen"
+    Der nackte `electron-builder`-Lauf notarisiert die App zuverlässig, scheitert aber
+    immer wieder beim Upload von PKG/DMG (Timeout) oder am Zeitstempel-Server beim
+    PKG-Signieren („Error signing data"). `electron/release.sh` fährt den Build, baut
+    fehlende/unnotarisierte PKG/DMG aus der fertigen `.app` nach (DMG **immer** per
+    `--prepackaged <pfad>/glatttHub.app` — mit dem Verzeichnis landet ein Ordner
+    `glatttHub.app/glatttHub.app` im Image, die App ist dann „beschädigt"), wiederholt
+    Notarisierungen dreimal und prüft Struktur + Gatekeeper. Befund 20.09.2026.
+
+Für signierten Build vor dem Ausführen im Terminal (setzt `release.sh` selbst, wenn
+nicht gesetzt):
 
 ```bash
 export CSC_NAME="Labrado & Schluter GmbH (63DQ6FV92R)"
@@ -473,9 +488,9 @@ export APPLE_API_ISSUER=84f1cc63-769a-4ea0-b54f-636f28ccbbaa
 electron/dist/
 ├── mac-arm64/
 │   └── glatttHub.app               # Signierte App (intern)
-├── glatttHub-1.1.1-arm64.dmg       # Direkter Download
-├── glatttHub-1.1.1-arm64-mac.zip   # ZIP-Archiv
-└── glatttHub-1.1.1-arm64.pkg       # PKG-Installer für MDM
+├── glatttHub-1.1.2-arm64.dmg       # Direkter Download
+├── glatttHub-1.1.2-arm64-mac.zip   # ZIP-Archiv
+└── glatttHub-1.1.2-arm64.pkg       # PKG-Installer für MDM
 ```
 
 Die Versionsnummer kommt aus `package.json` (`version`) im Projekt-Root — vor jedem
@@ -553,10 +568,10 @@ Der Notarization-Hook (`electron/notarize.cjs`) wird von `electron-builder` auto
 
 | Feld | Wert |
 |------|------|
-| **File** | `electron/dist/glatttHub-1.1.1-arm64.pkg` |
+| **File** | `electron/dist/glatttHub-1.1.2-arm64.pkg` |
 | **Application name** | `glatttHub` |
 | **Bundle identifier** | `com.glattt.hub` |
-| **Version** | `1.1.1` |
+| **Version** | `1.1.2` |
 
 Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
@@ -596,6 +611,7 @@ Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 20.09.2026 | 1.1.2 | Neues App-Icon (Icon Composer, „Hub"-Schriftzug), Icon-Skripte für das neue Export-Namensschema (`Default-16@1x`), `release.sh` |
 | 20.09.2026 | 1.1.1 | Eigenes Rechtsklick-Menü mit Objekt-Einträgen (Kunde/Vertrag/Forderungsfall, `data-ctx`-Konvention + Konventions-Test), Tab-Menü, Tabs per Drag & Drop sortieren, 24 px Abstand unter der Leiste, Klasse `electron-tabs-visible` auf `<html>` (kein Layout-Sprung) |
 | 20.09.2026 | 1.1.0 | Tabs im Fenster (Tab-Leiste in der Titelzeile, Kontextmenü „in neuem Tab öffnen", ⌘-Klick, `data-href` für JS-Zeilen), Zurück/Vor/Neu laden je Tab, Admin-Panel und `target="_blank"` als Tab statt Fenster, Tab-Titel mit Kundenname/-nummer, Hub-URL per `GLATTTHUB_URL` überschreibbar |
 | 09/2026 | 1.0.0 | Erste Version: Electron-Wrapper, Overlay-Titelleiste, Tray, APNs-Push, Dock-Badge, signiert & notarisiert, PKG für MDM |
