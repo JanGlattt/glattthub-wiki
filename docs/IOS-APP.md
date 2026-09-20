@@ -315,10 +315,12 @@ Rollennamen im Code, Tests je Paket.
 
 ### Widgets (WidgetKit, B8 — seit 20.09.2026)
 
-**Für Endanwender:** Drei Widgets — **Kennzahlen** (frei wählbar), **Beratungsgespräche** (die
-Übersicht der Berichte-Seite: Zeiträume × Standort mit Ø-Vergleich) und **Verkaufte Körperzonen**
-(Balken je Monat mit Prognose oder je Tag, gestapelt nach Institut) — jeweils klein bis extra groß.
-Trend-Pfeile zeigen die Veränderung zur Vorperiode (grün/rot, bei Stornos & Co. umgekehrt).
+**Für Endanwender:** Vier Widgets — **Kennzahlen** (frei wählbar, mit Trend-Pfeil zur Vorperiode
+und Monats-Sparkline), **Tagesübersicht** (Beratungen stattgefunden/im Gange/geplant, Verkäufe,
+verkaufte KPZ, No-Shows mit Quote — die Karten der Terminübersicht, groß je Standort),
+**Beratungsgespräche** (Zeiträume × Standort mit Ø-Vergleich) und **Verkaufte Körperzonen** (Balken
+der letzten Monate + laufender Monat + Prognose-Balken, darunter je Tag; gestapelt nach Institut) —
+klein bis extra groß, auf iOS 27 auch das seitengroße Hochformat.
 
 Kennzahlen-Widget im Detail: vier Größen (klein: eine Zahl; mittel:
 bis vier Kennzahlen in einer Zeile; groß: Liste oder — bei „Jeder Standort einzeln" — Tabelle je
@@ -352,6 +354,13 @@ genau die Kennzahlen, die die zuletzt in der App angemeldete Person auch im Hub 
   des laufenden Monats). Standortnamen/-farben aus `AppBranchList`, ausgeblendete Institute fehlen.
   Charts im Widget mit Swift Charts (gestapelte `BarMark`, Prognose-Rest als blasser Aufsatz).
   Tests mit Fixtures, weil die Charts MySQL-Funktionen brauchen (`AppWidgetKpiTest`).
+- **Tagesübersicht** (`WidgetDayService`, `GET /api/app/widgets/today`, Recht `view_appointments`):
+  Termine des Tages live aus Phorest (alle sichtbaren Institute oder eines), Beratung = aktiver
+  Beratungs-Service, Zustände wie `appointments.js getState()` (Absage-Mitarbeiter = No-Show,
+  gebucht + 30 Min nach Ende = No-Show), Verkäufe/KPZ aus `contracts.signed_at` heute; 10-Min-Cache,
+  Widget-Takt 15 Min. **Kennzahlen-Historie:** `history=1` liefert die letzten 6 Monatswerte je
+  Kennzahl (Sparkline; nicht für `report`-Quellen) — 6 zusätzliche Service-Aufrufe, deshalb nur im
+  Monats-Zeitraum und gecacht.
 - **Erweiterung `glatttHubWidgets`** (`ios/glatttHubWidgets`, XcodeGen-Target `app-extension`, in die App
   eingebettet, `SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated`): `KpiWidgetIntent`
   (`WidgetConfigurationIntent`: `kpis: [KpiEntity]`, `branch: BranchEntity?`, `range`), Entitäten aus
@@ -415,6 +424,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 |---|---|---|
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
+| 21.09.2026 | 0.1 (dev) | Widgets III: Tagesübersicht-Widget, Sparklines im Kennzahlen-Widget, Körperzonen mit Prognose-Balken und Tages-Chart im großen Widget, Extra-Large-Portrait (iOS 27) |
 | 20.09.2026 | 0.1 (dev) | Widgets II: Beratungsgespräche- und Körperzonen-Widget (Swift Charts), Kennzahlen klein mit bis zu drei Werten und Trend-Pfeilen, Extra-Large; Ladeanimation, Launch-Logo, Inhalt im App-Switcher |
 | 20.09.2026 | 0.1 (dev) | Phase C: Widget-Endpunkte (B8, KpiRegistry mit Token-Rechten, lineare Monatsprognose), Widget-Token getrennt vom Sitzungs-Token, WidgetKit-Erweiterung mit App-Intent-Konfiguration in vier Größen |
 | 20.09.2026 | 0.1 (dev) | Phase B: Gerätetoken (B7, `app_devices` + Sanctum), Face-ID-Anmeldung als Sheet-Phase, App-Geräte im Profil (B9) |
