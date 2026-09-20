@@ -212,7 +212,7 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   Zeit ist Netz + Cloud Run (Staging skaliert auf null, die erste Anfrage nach Ruhe trifft eine kalte
   Instanz). App-seitig bleibt nichts zu holen; Logs `Start: …` (Kategorie `web`/`bridge`) zeigen die
   Schritte. Launch-Screen zeigt Hub-Farbe + Logo an derselben Stelle wie der Ladeschirm.
-- **App-Switcher:** Inhalt bleibt sichtbar, `PrivacyShield` nur bei aktiver Face-ID-Sperre.
+- **App-Switcher & Sperre:** Inhalt bleibt sichtbar; bei aktiver Face-ID-Sperre liegt nur ein Unschärfe-Schleier (`.ultraThinMaterial`) mit Entsperr-Knopf darüber.
 - **Ladeschirm (`LoadingView`):** animiert (pulsierender Logo-Ring, drei laufende Gold-Punkte); Beim Start und nach dem Abmelden liegt ein Schirm im Look der
   Login-Seite (Verlauf, Logo, Spinner) über dem WebView, bis die erste Seite fertig ist
   (`didFinish`, `ready` oder Ladefehler → `isLoading = false`) — sonst bleibt der Bildschirm
