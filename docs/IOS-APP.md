@@ -178,6 +178,13 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   (`didFinish`, `ready` oder Ladefehler → `isLoading = false`) — sonst bleibt der Bildschirm
   schwarz, solange Google/IAP laden. Launch-Screen und WebView-Hintergrund nutzen die Farbe
   `HubBackground` (hell `#f8fafc`, dunkel `#1e293b`) statt Schwarz/Weiß.
+- **Safe-Area kommt von der App, nicht von WebKit:** Mit `contentInsetAdjustmentBehavior = .never`
+  (nötig, damit der Hub bis unter die Statusleiste zeichnet) liefert WebKit `env(safe-area-inset-*)`
+  = 0 (gemessen 20.09.2026: nativ 62/83 pt). `theme_glattt.css` verwendet deshalb ausschließlich
+  `var(--safe-area-top|bottom|left|right)` (Standard in `:root` = `env()`), und die App setzt die
+  Werte per Inline-Style auf `<html>` — bei jedem `didCommit` und bei `safeAreaInsetsDidChange`
+  (`HubWKWebView`). Unten steckt die Höhe der Tab-Leiste drin, damit Body-Polster, Bottom-Sheets,
+  glatttBert und Badges darüber liegen. `SafeAreaConventionTest` verbietet direktes `env()`.
 - **CSS:** `body.ios-app .mobile-bottom-nav { display: none }` und `--mobile-bottom-nav-space: 0`;
   den Abstand nach unten liefert die native Leiste über die Safe-Area.
 
@@ -290,6 +297,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 |---|---|---|
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
+| 20.09.2026 | 0.1 (dev) | Safe-Area als CSS-Variablen aus der App (env() war 0), glatttBert über der Tab-Leiste |
 | 20.09.2026 | 0.1 (dev) | Nativer PIN-Login als Sheet über der Login-Seite (bleibt mit Ladezustand bis `ready`); Ladeschirm statt schwarzem WebView beim Start; Abmelden ohne Rückfrage und nur aus dem Hub (Google/IAP bleibt, außer `sharedDevice`); Tab-Leiste nur angemeldet; Admin Panel in der System-Zeile |
 | 20.09.2026 | 0.1 (dev) | Mehr-Sheet als Spiegel des Web-Sheets (Suche oben, Raster mit Überschriften, Werkzeuge, Profil/Abmelden); Such-Tab entfernt (sechs Tabs → System-„Mehr"); Standortwahl und Mitteilungen nativ (`branches` im Navigations-Payload, `glattt:set-branch`), Lupe im Scroll-Header öffnet das native Mehr — das Web-Sheet geht in der App nicht mehr auf |
 | 20.09.2026 | 0.1 (dev) | Xcode-Projekt unter `ios/` (XcodeGen) mit Phase-1-Code; Google/IAP-Login rendert im WKWebView mit Safari-UA (Weg A bewiesen, Simulator); 14 Swift-Tests |
