@@ -2,7 +2,7 @@
 
 Native iPhone-/iPad-App für glatttHub — eine Swift/SwiftUI-Hülle um den Hub (`WKWebView`) mit nativem
 Login, APNs-Push, Face ID, Kamera, Universal Links, Kontextmenü, MDM-Steuerung und Home-Screen-Widgets.
-**Stand 20.09.2026: Bauplan beschlossen; Backend-Vorarbeiten B1, B2, B3, B5 und B6 sind auf `develop`
+**Stand 20.09.2026: Bauplan beschlossen; Backend-Vorarbeiten B1–B6 und B10 sind auf `develop`
 umgesetzt, das Xcode-Projekt noch nicht begonnen.** Der vollständige Bauplan mit
 Entscheidungstabellen, Sequenzdiagrammen und Arbeitspaketen liegt als Claude-Doc vor
 ([glatttHub iOS-App — Bauplan](https://claude.ai/code/artifact/c74ef4a9-112c-4de2-ad61-9546f3612858));
@@ -125,13 +125,13 @@ Erkennung: User-Agent-Suffix `glatttHub-iOS/<version>` (serverseitig `App\Suppor
 | B1 ✅ | App-Erkennung | `App\Support\NativeApp` (User-Agent-Suffix `glatttHub-iOS/<version>`), `<meta name="glattthub-app">` + `glattthub-app-version`, `body.ios-app`; Push-Init im Layout prüft `isNativeSupported()` statt Electron/PWA-Bedingungen. Test `NativeAppDetectionTest` |
 | B2 ✅ | Generische Push-Bridge | `push-notifications.js`: `getNativeBridge()`, `isNativeSupported()`, `loadNativeInfo()`, `subscribeNative()`; `getPermission()` ohne `window.Notification`; Electron-Aliase bleiben |
 | B3 ✅ | APNs-Umgebung je Gerät | Migration `2026_09_20_120000_add_apns_environment_to_push_subscriptions_table`, `PushSubscription::usesProductionApns()`, Client je Subscription, Endpunkt nimmt `environment` + `device_type` `ios`. Test `ApplePushEnvironmentTest` |
-| B4 | Push-Payload | `badge`, `category` (`HUB_OBJECT`/`HUB_INFO`), `thread-id`, `apns-collapse-id`; `POST /api/push/mark-read` |
+| B4 ✅ | Push-Payload | `badge` (`Notification::unreadCountFor()`), `category` (`HUB_OBJECT`/`HUB_INFO`, `ApplePushNotificationService::categoryFor()`), `thread-id` (Modul), `apns-collapse-id`; Zusatzdaten aus `HubNotificationDispatcher::pushData()`; `POST /api/push/mark-read` (`log_id` → Klick + In-App gelesen, Antwort `unread_count`). Test `ApplePushPayloadTest` |
 | B5 ✅ | Badge-Sync | Glocke (Sidebar) ruft `window.glatttNative.setBadge(unread)` neben `electronBadge` |
 | B6 ✅ (Hub) / offen (LB) | Universal Links | Route `/.well-known/apple-app-site-association` + `/apple-app-site-association` (`AppleAppSiteAssociationController`, Team/Bundle aus `config/push.php`); **LB-Regel `/.well-known/*` ohne IAP steht noch aus** (Jan). Test `AppleAppSiteAssociationTest` |
 | B7 | Geräte-Token | `POST /api/app/devices` (Session-Auth) → Sanctum-Token (`app:widgets`, `app:push`), Tabelle `app_devices`, Widerruf bei Abmelden/Archivieren |
 | B8 | Widget-Endpunkt | `GET /api/app/widgets/kpis` + `/catalog` via `KpiValueService` (Rechte, `BranchVisibility`, 5-Min-Cache) |
 | B9 | Geräte im Profil | iOS-Geräte in den Push-Einstellungen, „Gerät entfernen" |
-| B10 | Kiosk-Anker | Institut-Modul zeigt den Seiten-Token als QR/MDM-Wert |
+| B10 ✅ | Kiosk-Anker | Tab „Extern" des Institut-Moduls zeigt unter dem Zugangs-Link den Block „iPad-App (Kiosk-Modus)" mit der Managed App Configuration zum Kopieren (`InstituteAccessTokenController::appConfig()`, `deviceName` = „iPad <Institut>"). Test `InstituteAccessTokenAppConfigTest`. **Klickanleitung Betrieb 2 (Institut-Modul) muss nachgezogen werden** (neuer Block, Screenshot) |
 | B11 | Reviewer-Konto | `appreview@labrado-schlueter.com` mit PIN, Rolle Institute MA, Testinstitut Magdeburg |
 
 Konventionen gelten unverändert: Migrationen statt SQL, `BranchVisibility`, Rechte nur über Gates, keine
@@ -196,4 +196,4 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | Datum | Version | Änderung |
 |---|---|---|
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
-| 20.09.2026 | — | Backend-Vorarbeiten B1 (App-Erkennung), B2 (generische Bridge), B3 (`apns_environment`), B5 (Badge), B6 (AASA-Route) auf `develop`; LB-Regel `/.well-known/*` offen |
+| 20.09.2026 | — | Backend-Vorarbeiten B1 (App-Erkennung), B2 (generische Bridge), B3 (`apns_environment`), B4 (Payload + `mark-read`), B5 (Badge), B6 (AASA-Route), B10 (Kiosk-Konfiguration im Institut-Modul) auf `develop`; LB-Regel `/.well-known/*` offen |

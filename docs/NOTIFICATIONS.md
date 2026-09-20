@@ -278,6 +278,17 @@ liefert die Umgebung mit der Registrierung (`registerForApnsNotifications()` →
 `/api/push/subscribe/native` weiter; `ApplePushNotificationService` erzeugt den pushok-Client mit
 `$subscription->usesProductionApns()`. `APNS_ENVIRONMENT` bleibt nur als Rückfall für Zeilen ohne Wert.
 
+**APNs-Payload für die iOS-App (seit 20.09.2026):** `ApplePushNotificationService::send` setzt neben
+`alert`/`sound`/`url`/`log_id`/`data` jetzt `category` (`HUB_OBJECT`, wenn `url` auf
+`/hub/clients|contracts|receivables/<id>` zeigt — die App bietet dann „Öffnen" und „Als gelesen
+markieren" —, sonst `HUB_INFO`; ein explizites `category` im Notification-Array gewinnt), `thread-id`
+(= `data.module`, Modul des Katalogs → iOS gruppiert je Modul), `badge` (ungelesene In-App-Meldungen
+des Empfängers, `Notification::unreadCountFor()`, dieselbe Sichtbarkeit wie die Glocke) und die
+`apns-collapse-id` (= `data.collapse_id`). `HubNotificationDispatcher::pushData()` liefert die
+Zusatzdaten `notification_id`, `rule_id`, `module`, `collapse_id` (`hub-<Regel>-<Hash des Ziels>`,
+Wiederholungen desselben Anlasses zum selben Ziel ersetzen die vorige Mitteilung); der Testversand
+schickt dieselben Daten plus `is_test`. Der Badge darf den Versand nie blockieren (Fehler → kein Badge).
+
 `push-notifications.js` kennt seit demselben Datum eine **generische native Bridge**
 (`getNativeBridge()` = `window.glatttNative` der iOS-App, sonst `window.electronPush`); die
 iOS-Bridge liefert zusätzlich `getInfo()` (Plattform, App-Name, Gerätename, Keychain-Geräte-ID),
@@ -527,6 +538,7 @@ Nutzer + Regel, Cascade beim Löschen von Nutzer oder Regel.
 | `/push/unsubscribe` | POST | WebPush-Subscription entfernen |
 | `/push/subscribe/native` | POST | APNs-Token registrieren (Desktop-App, iOS-App) — Felder `device_token`, `native_device_id`, `device_type` (`macos`/`ios`), `device_name`, `browser`, `environment` (`production`/`sandbox`) |
 | `/push/unsubscribe/native` | POST | APNs-Token entfernen (Desktop-App, iOS-App) |
+| `/push/mark-read` | POST | Aktion „Als gelesen markieren" der iOS-App: `log_id` → Klick verbuchen, verknüpfte In-App-Meldung (`data.notification_id`) für den Nutzer lesen, Antwort `unread_count` für den Badge; nur eigene Push-Logs (sonst 404) |
 | `/push/test` | POST | Test-Push senden |
 
 !!! info "Accept-Header erforderlich"

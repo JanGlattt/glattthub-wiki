@@ -104,7 +104,7 @@ Koordinaten mit Google-Maps-Link; Team-Größe mit Sprung zum Reiter „Team".
 | **2. Team** | glatttHub-Konten mit diesem Institut als Stamminstitut: Avatar, Name, NiSV-Status (grün/gelb/orange/rot), „im Hub seit"; Klick öffnet das Profil. Wird beim Seitenaufruf geladen (Zähler im Reiter). | `GET /phorest/institute/{branchId}/staff` |
 | **3. Kennzahlen** | KPI-Zeile + zwei Registry-Statistiken (siehe unten) | `GET /phorest/institute/{branchId}/kpis` |
 | **4. Bank** | Bankverbindung je Standort für Zahlungserinnerungen und Mahnungen des Forderungsmanagements (Kontoinhaber, IBAN, BIC, Bank, Schalter „Aktiv") | nur `manage_branch_bank_details` |
-| **5. Extern** | Zugangs-Link der Institutsseite (Tageserfassung Beratungsgespräche): erstellen, kopieren, erneuern, widerrufen | nur `manage_institute_access_tokens` |
+| **5. Extern** | Zugangs-Link der Institutsseite (Tageserfassung Beratungsgespräche): erstellen, kopieren, erneuern, widerrufen; darunter seit 20.09.2026 der Block **„iPad-App (Kiosk-Modus)"** mit den Schlüsseln der Managed App Configuration (`baseUrl`, `sharedDevice`, `kioskMode`, `instituteToken`, `deviceName`) zum Kopieren nach Miradore — `InstituteAccessTokenController::appConfig()`, Wiki [IOS-APP](IOS-APP.md) | nur `manage_institute_access_tokens` |
 
 **Kennzahlen-Reiter (seit 15.09.2026 mit echten Zahlen)**
 
