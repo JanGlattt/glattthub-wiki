@@ -137,7 +137,9 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   Tab scrollt nach oben bzw. führt von einer Unterseite zur Wurzel; ein Tab, der > 30 Min verborgen
   war, lädt beim Erscheinen neu. `primary` (Tab 1) ist zugleich das WebView für Login, Kiosk und das
   breite iPad. Bereiche aus dem Mehr-Sheet und Push-Ziele wechseln in den passenden Haupttab
-  (`tabIndex(for:)`), sonst laden sie im aktiven Tab. URL-Wechsel des **aktiven** WebViews (KVO,
+  (`tabIndex(for:)`); **alles andere lädt im eigenen WebView des „Mehr"-Tabs** (`selectMore()`,
+  „Mehr" ist dann markiert, die vier Haupttabs behalten ihre Seiten — Befund Jan 20.09.2026: vorher
+  landete Verträge im Berichte-Tab). Ein Nutzer-Tipp auf „Mehr" öffnet weiter nur das Sheet. URL-Wechsel des **aktiven** WebViews (KVO,
   folgt `wire:navigate`) → `syncSelection`. Badge am Tab „Mehr" = ungelesene Mitteilungen. Nur bei
   kompakter Breite (iPhone, iPad schmal). **Fünf Tabs, kein Such-Tab:** mit sechs Einträgen schiebt
   iOS den sechsten in ein System-„Mehr"; die Suche steckt deshalb im Mehr-Sheet.
