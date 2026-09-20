@@ -488,9 +488,9 @@ export APPLE_API_ISSUER=84f1cc63-769a-4ea0-b54f-636f28ccbbaa
 electron/dist/
 ├── mac-arm64/
 │   └── glatttHub.app               # Signierte App (intern)
-├── glatttHub-1.1.2-arm64.dmg       # Direkter Download
-├── glatttHub-1.1.2-arm64-mac.zip   # ZIP-Archiv
-└── glatttHub-1.1.2-arm64.pkg       # PKG-Installer für MDM
+├── glatttHub-1.1.3-arm64.dmg       # Direkter Download
+├── glatttHub-1.1.3-arm64-mac.zip   # ZIP-Archiv
+└── glatttHub-1.1.3-arm64.pkg       # PKG-Installer für MDM
 ```
 
 Die Versionsnummer kommt aus `package.json` (`version`) im Projekt-Root — vor jedem
@@ -568,10 +568,10 @@ Der Notarization-Hook (`electron/notarize.cjs`) wird von `electron-builder` auto
 
 | Feld | Wert |
 |------|------|
-| **File** | `electron/dist/glatttHub-1.1.2-arm64.pkg` |
+| **File** | `electron/dist/glatttHub-1.1.3-arm64.pkg` |
 | **Application name** | `glatttHub` |
 | **Bundle identifier** | `com.glattt.hub` |
-| **Version** | `1.1.2` |
+| **Version** | `1.1.3` |
 
 Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
@@ -611,6 +611,7 @@ Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 20.09.2026 | 1.1.3 | Neues Icon-Set (Icon Composer `@4x`-Exporte, `icon-exports.sh`), eigenes Favicon `glatttHub_Favicon.png` für Hub, Wiki und Nutzerhandbuch (`scripts/update-favicons.sh`), iOS-Web-App-Icons vollflächig auf Weiß (keine schwarzen Ecken auf dem iPhone-Homescreen) |
 | 20.09.2026 | 1.1.2 | Neues App-Icon (Icon Composer, „Hub"-Schriftzug), Icon-Skripte für das neue Export-Namensschema (`Default-16@1x`), `release.sh` |
 | 20.09.2026 | 1.1.1 | Eigenes Rechtsklick-Menü mit Objekt-Einträgen (Kunde/Vertrag/Forderungsfall, `data-ctx`-Konvention + Konventions-Test), Tab-Menü, Tabs per Drag & Drop sortieren, 24 px Abstand unter der Leiste, Klasse `electron-tabs-visible` auf `<html>` (kein Layout-Sprung) |
 | 20.09.2026 | 1.1.0 | Tabs im Fenster (Tab-Leiste in der Titelzeile, Kontextmenü „in neuem Tab öffnen", ⌘-Klick, `data-href` für JS-Zeilen), Zurück/Vor/Neu laden je Tab, Admin-Panel und `target="_blank"` als Tab statt Fenster, Tab-Titel mit Kundenname/-nummer, Hub-URL per `GLATTTHUB_URL` überschreibbar |
