@@ -1,0 +1,203 @@
+{
+ "out": "../pdf/Grundlagen-7-Die-Desktop-App",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Grundlagen",
+ "nr": 7,
+ "of": 7,
+ "audience": "institut",
+ "title": [
+  "Die Desktop-App:",
+  "Tabs & Rechtsklick"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub auf dem Mac — mehrere Seiten nebeneinander, Zurück und Vor, das Rechtsklick-Menü",
+ "eyebrow": "Grundlagen · Desktop-App",
+ "footerArea": "Grundlagen",
+ "stand": "20.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Desktop-App ist der glatttHub in einem **eigenen Fenster** auf dem Mac — Anmeldung und Bedienung sind dieselben wie im Browser.",
+  "Neu seit Version 1.1: **Tabs** in der Titelzeile, **Zurück / Vor / Neu laden** und ein **Rechtsklick-Menü**, das Kunden, Verträge und Forderungsfälle kennt.",
+  "Alles, was früher ein neues Fenster öffnete (Admin-Panel, Formular-Vorschau, PDF), erscheint jetzt als **Tab**."
+ ],
+ "pages": [
+  {
+   "h1": "Die Tab-Leiste",
+   "sub": "Ganz oben im Fenster: links Zurück, Vor und Neu laden, daneben ein Reiter je offener Seite, rechts das Plus für einen neuen Tab.",
+   "card": {
+    "title": "Tab-Leiste",
+    "text": "Zurück/Vor, Tabs wechseln, neuer Tab, schließen"
+   },
+   "left": {
+    "shot": "d1-tabs"
+   },
+   "leftCaption": "Drei offene Tabs — **„Kundenübersicht“** ist aktiv (goldene Linie, Schließen-Kreuz).",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zurück, Vor, Neu laden",
+     "text": "Die drei Knöpfe wirken auf den **aktiven Tab** — jeder Tab hat seinen eigenen Verlauf. Ausgegraut heißt: dort geht es nicht weiter."
+    },
+    {
+     "n": 2,
+     "title": "Tabs wechseln",
+     "text": "Ein Klick auf den Reiter holt die Seite nach vorn. Genauso: **⌃Tab** für den nächsten Tab, **⌘1** bis **⌘9** für Tab 1 bis 9."
+    },
+    {
+     "n": 3,
+     "title": "Neuer Tab",
+     "text": "Das **„+“** (oder **⌘T**) öffnet einen weiteren Tab mit der Startseite."
+    },
+    {
+     "n": 4,
+     "title": "Tab schließen",
+     "text": "Das **✕** am aktiven Reiter oder **⌘W**. Schließt man den letzten Tab, schließt sich das Fenster — die App bleibt im Dock."
+    }
+   ],
+   "hint": {
+    "text": "**Tabs sortieren:** Einen Reiter anfassen und seitlich ziehen — die Nachbarn weichen aus. Die neue Reihenfolge gilt auch für ⌘1 bis ⌘9."
+   }
+  },
+  {
+   "h1": "Einen Kunden in neuem Tab öffnen",
+   "sub": "Rechtsklick auf eine Kundenzeile: Das Menü zeigt oben, wen es meint, und bietet die passenden Wege.",
+   "card": {
+    "title": "Rechtsklick auf Kunden",
+    "text": "In neuem Tab, direkt zum Reiter, Kunden-Nr. kopieren"
+   },
+   "left": {
+    "shot": "d2-kontextmenu-kunde"
+   },
+   "leftCaption": "Das Rechtsklick-Menü auf der Zeile von **Marie Schneider** — Name und Kunden-Nr. stehen im Kopf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kopf lesen",
+     "text": "Oben steht, worauf sich das Menü bezieht: **Name und Kunden-Nr.** So verwechselt man bei vielen Zeilen nichts."
+    },
+    {
+     "n": 2,
+     "title": "„In neuem Tab öffnen“",
+     "text": "Öffnet das Kundenprofil in einem **neuen Tab im Hintergrund** — die Liste bleibt, wo sie ist. **„Kunde öffnen“** wechselt stattdessen im selben Tab."
+    },
+    {
+     "n": 3,
+     "title": "Direkt zu einem Reiter",
+     "text": "**Termine, glattt Pakete, Vertrag/Zahlungen, Forderungsmanagement, Nachrichten** — öffnet das Profil als neuen Tab gleich im gewünschten Reiter."
+    },
+    {
+     "n": 4,
+     "title": "„Kunden-Nr. kopieren“",
+     "text": "Legt die Nummer in die Zwischenablage — etwa für Phorest oder eine Nachricht ans Büro."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Immer dabei",
+     "text": "Unten im Menü stehen **Zurück, Vorwärts, Neu laden** und **„Seite in neuem Tab öffnen“** — egal, wo man klickt."
+    }
+   ],
+   "hint": {
+    "text": "**Das geht überall:** Bei einem Vertrag bietet das Menü Zahlungen, E-Mails, Verlauf und „Kunde öffnen“, bei einem Forderungsfall Ratenzahlung, Gericht, Verlauf, „Kunde öffnen“ und „Vertrag öffnen“. Und: **⌘-Klick** auf eine Zeile oder einen Link öffnet ebenfalls einen neuen Tab, **⌘⇧-Klick** wechselt gleich hinein."
+   }
+  },
+  {
+   "h1": "Rechtsklick auf einen Tab",
+   "sub": "Auch die Reiter selbst haben ein Menü — für Aufräumen und Neuladen.",
+   "card": {
+    "title": "Rechtsklick auf Tab",
+    "text": "Neu laden, duplizieren, schließen, aufräumen"
+   },
+   "left": {
+    "shot": "d3-tab-menu"
+   },
+   "leftCaption": "Das Menü zum Tab **„Anna Musterfrau (MD000001)“** — Tab 3 von 3.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kopf lesen",
+     "text": "Titel des Tabs und seine Position (**„Tab 3 von 3“**)."
+    },
+    {
+     "n": 2,
+     "title": "„Duplizieren“",
+     "text": "Öffnet dieselbe Seite ein zweites Mal — praktisch, um zwei Reiter eines Kunden nebeneinander zu haben."
+    },
+    {
+     "n": 3,
+     "title": "„Tab schließen“",
+     "text": "Schließt nur diesen Tab. **„Neu laden“** lädt ihn frisch vom Server."
+    },
+    {
+     "n": 4,
+     "title": "Aufräumen",
+     "text": "**„Andere Tabs schließen“** lässt nur diesen offen, **„Tabs rechts schließen“** alles rechts davon."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**⌘⇧W** schließt das **ganze Fenster** mit allen Tabs. Die App bleibt im Dock; ein Klick auf das Symbol öffnet sie wieder — mit einem Tab „Start“."
+   }
+  },
+  {
+   "h1": "Tastenkürzel im Überblick",
+   "sub": "Alles, was die Tab-Leiste kann, geht auch über die Tastatur.",
+   "card": {
+    "title": "Tastenkürzel",
+    "text": "Tabs, Verlauf und Fenster per Tastatur"
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Kürzel",
+     "Wirkung"
+    ],
+    "rows": [
+     [
+      "⌘T",
+      "Neuer Tab (Startseite)"
+     ],
+     [
+      "⌘W",
+      "Aktiven Tab schließen"
+     ],
+     [
+      "⌃Tab / ⌃⇧Tab",
+      "Nächster / vorheriger Tab"
+     ],
+     [
+      "⌘1 … ⌘8, ⌘9",
+      "Tab 1 bis 8, letzter Tab"
+     ],
+     [
+      "⌘[ / ⌘]",
+      "Zurück / Vorwärts im aktiven Tab"
+     ],
+     [
+      "⌘R",
+      "Aktiven Tab neu laden"
+     ],
+     [
+      "⌘-Klick / ⌘⇧-Klick",
+      "Link oder Zeile in neuem Tab öffnen / … und dorthin wechseln"
+     ],
+     [
+      "⌘⇧A",
+      "Admin-Panel als Tab öffnen (nur mit Berechtigung)"
+     ],
+     [
+      "⌘⇧W",
+      "Fenster schließen (alle Tabs)"
+     ],
+     [
+      "⌘Q",
+      "App beenden — danach kommen keine Mitteilungen mehr an"
+     ]
+    ]
+   },
+   "hint": {
+    "text": "**Im Browser** (Safari, Chrome) gibt es diese Leiste nicht — dort übernehmen die Browser-Tabs. Die Rechtsklick-Einträge für Kunde, Vertrag und Fall gibt es nur in der Desktop-App."
+   }
+  }
+ ]
+}

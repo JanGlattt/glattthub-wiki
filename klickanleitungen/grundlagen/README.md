@@ -1,6 +1,6 @@
 # Klickanleitungen Grundlagen — Quellen
 
-Quellen der Serie **Grundlagen 1–5** (Bedienung des glatttHub überhaupt). Standard und
+Quellen der Serie **Grundlagen 1–7** (Bedienung des glatttHub überhaupt). Standard und
 Deck-Format: `klickanleitungen/README.md` und Wiki `docs/KLICKANLEITUNGEN.md`.
 
 | Dokument | Inhalt |
@@ -10,6 +10,8 @@ Deck-Format: `klickanleitungen/README.md` und Wiki `docs/KLICKANLEITUNGEN.md`.
 | **3 — Mein Profil** | Name und Bild, Passwort, PIN verwalten, angemeldete Geräte, Rundgänge zurücksetzen |
 | **4 — Auf dem Handy und Tablet** | Menüleiste unten, Mehr-Menü, Zustandszeile mit aufklappbaren Werkzeugen, Tabellen mit weniger Spalten |
 | **5 — glatttBert fragen** | Assistent öffnen, was er beantwortet, was er nicht kann |
+| **6 — Die Startseite einrichten** | Kacheln, Kennzahlen, Schnellzugriffe, Neuigkeiten |
+| **7 — Die Desktop-App: Tabs & Rechtsklick** | Tab-Leiste mit Zurück/Vor/Neu laden, Kunden in neuem Tab, Rechtsklick-Menü auf Kunde/Vertrag/Fall und auf Tabs, Tastenkürzel |
 
 Alle fünf richten sich an **die Institute** — sie sind die Voraussetzung für jede weitere Serie.
 
@@ -72,3 +74,24 @@ Ablauf.
 | `i5-rundgang` | den Abschnitt „Einführung in den Hub“ im Profil |
 | `j3-zustandszeile` | eine Seite mit drei oder mehr Werkzeugen (Termine erfüllt das) |
 | `k2-bert-antwort` | eine funktionierende Assistenten-Anbindung auf der Umgebung |
+
+## Grundlagen 7 — Aufnahme aus der Desktop-App (20.09.2026)
+
+Die Bilder von Grundlagen 7 kommen **nicht** aus dem Browser, sondern aus der laufenden
+Desktop-App (Electron) über das Chrome-DevTools-Protokoll — `scripts/flow7-desktop-app.cjs`:
+
+```bash
+cd /Applications/MAMP/htdocs/glattthub
+env -u ELECTRON_RUN_AS_NODE npx electron --remote-debugging-port=9333 electron/main.cjs   # angemeldet lassen
+cd /Applications/MAMP/htdocs/glattthub-wiki/klickanleitungen/grundlagen
+node scripts/flow7-desktop-app.cjs            # d1-tabs, d2-kontextmenu-kunde, d3-tab-menu
+```
+
+Die App besteht aus zwei Dokumenten (Tab-Leiste 38 px als Fensterinhalt, Seite als View
+darunter); der Lauf nimmt beide getrennt auf (1440 × 38 und 1440 × 862, Retina) und setzt sie
+mit `sharp` zusammen, die macOS-Fensterknöpfe malt er selbst. Kundendaten werden nur im DOM
+maskiert (Beispielnamen, MD-Nummern, Telefon/E-Mail/Geburtsdatum, Profilbild ausgeblendet);
+das Push-Erlaubnis-Fenster des Dev-Modus wird mit „Später“ geschlossen. Der Lauf öffnet zwei
+Tabs und schließt sie am Ende wieder. Aufgenommen mit Jans Konto — die Seitenleiste zeigt
+deshalb mehr Gruppen, als eine Institute-Mitarbeiterin sieht (bewusst hingenommen, das Bild
+zeigt die Leiste, nicht die Seitenleiste).

@@ -161,6 +161,7 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | 16c | Mobil: Menüleiste, Mehr-Menü, Zustandszeile, Tabellen | Hub auf Handy/Tablet | **Grundlagen 4** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 16d | glatttBert: fragen, was er weiß, was er nicht kann | Assistent auf jeder Seite | **Grundlagen 5** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 16e | Die Startseite: was dort steht, eigene Kacheln, Schnellzugriffe | `/hub` | **Grundlagen 6** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 16f | Die Desktop-App: Tab-Leiste, Zurück/Vor/Neu laden, Rechtsklick-Menü auf Kunde/Vertrag/Fall und auf Tabs, Tastenkürzel | Desktop-App (alle Seiten) | **Grundlagen 7** (v1.0) | ✅ im Portal (Screenshots 20.09.2026, aus der App per CDP — `grundlagen/scripts/flow7-desktop-app.cjs`) |
 | 17 | Bonus-Board: eigener Stand, Ziele, Hochrechnung, Team-Karte | `/hub/bonus` › Mein Board | **Bonus-Board 1 – Mein Bonus** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 18 | Challenges: Monats-Challenge, Ranking, Blind, Serien | `/hub/bonus` › Mein Board | **Bonus-Board 2 – Challenges verstehen** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 19 | Management-Sicht: Institute vs. Minimalziele, Boni je Mitarbeiterin, Export | `/hub/bonus` › Management | **Bonus-Board 3 – Bonus-Board für die Leitung** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
@@ -502,6 +503,7 @@ beschrieben. Quellen unter `klickanleitungen/grundlagen/`.
 | **Grundlagen 4 – Auf dem Handy und Tablet** | Menüleiste unten, Mehr-Menü, Zustandszeile, Tabellen mit weniger Spalten |
 | **Grundlagen 5 – glatttBert fragen** | Assistent öffnen, was er beantwortet (Tabelle), was er nicht kann |
 | **Grundlagen 6 – Die Startseite** | Was auf der Startseite steht, eigene Kacheln, Schnellzugriffe, Mitteilungen im Blick |
+| **Grundlagen 7 – Die Desktop-App: Tabs & Rechtsklick** | Tab-Leiste mit Zurück/Vor/Neu laden, Kunden in neuem Tab, Rechtsklick-Menü auf Kunde/Vertrag/Fall und auf Tabs, Tastenkürzel |
 
 **Besonderheiten der Aufnahme:** zwei Bildgrößen (iPad quer für 1–3 und 5, **Telefon 390 × 844**
 für 4); die Anmeldebilder entstehen **ohne Sitzung** (`fresh: true`); Zugang **ohne Sonderrechte**,

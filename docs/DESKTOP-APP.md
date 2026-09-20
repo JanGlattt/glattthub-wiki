@@ -6,8 +6,8 @@ Native macOS Desktop-App für glatttHub — ein Electron-Wrapper um die Web-App.
 
 ## Für Endanwender
 
-!!! nutzerhandbuch "Bedienung wie im Browser"
-    Die Desktop-App ist der glatttHub in einem eigenen Fenster mit eigenem Symbol im Dock — auf den Macs der Institute und im Büro im Einsatz (Stand 19.09.2026). Alle Abläufe sind dieselben wie im Browser: [Nutzerhandbuch, Serie „Grundlagen"](https://hilfe.hub.glattt.com/grundlagen/). Es gibt keine eigene Anleitung für die App; dieser Abschnitt erklärt nur Installation und Updates.
+!!! nutzerhandbuch "Bedienung: Grundlagen 7 – Die Desktop-App: Tabs & Rechtsklick"
+    Die Desktop-App ist der glatttHub in einem eigenen Fenster mit eigenem Symbol im Dock — auf den Macs der Institute und im Büro im Einsatz. Alle Abläufe sind dieselben wie im Browser ([Serie „Grundlagen"](https://hilfe.hub.glattt.com/grundlagen/)); was die App zusätzlich kann — Tab-Leiste, Zurück/Vor/Neu laden, Rechtsklick-Menü auf Kunde/Vertrag/Fall und auf Tabs, Tastenkürzel — zeigt [Grundlagen 7](https://hilfe.hub.glattt.com/grundlagen/7/). Dieser Abschnitt erklärt Installation und Updates.
 
 ### Was ist die Desktop-App?
 
