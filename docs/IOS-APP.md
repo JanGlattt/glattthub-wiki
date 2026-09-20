@@ -171,6 +171,13 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   WebView-Store, und die neue Laravel-Sitzung aus dem Set-Cookie der Login-Antwort wird per
   `adoptCookies` in den `WKHTTPCookieStore` übernommen, sonst wäre nur die URLSession
   angemeldet, nicht das WebView. E-Mail-Login: Sheet wegziehen, das Web-Formular liegt darunter.
+  Nach erfolgreicher PIN bleibt das Sheet mit „Anmeldung läuft …" stehen, bis der Hub `ready`
+  meldet (dann schließt es über der fertigen Startseite; Notausgang nach 20 s).
+- **Ladeschirm (`LoadingView`):** Beim Start und nach dem Abmelden liegt ein Schirm im Look der
+  Login-Seite (Verlauf, Logo, Spinner) über dem WebView, bis die erste Seite fertig ist
+  (`didFinish`, `ready` oder Ladefehler → `isLoading = false`) — sonst bleibt der Bildschirm
+  schwarz, solange Google/IAP laden. Launch-Screen und WebView-Hintergrund nutzen die Farbe
+  `HubBackground` (hell `#f8fafc`, dunkel `#1e293b`) statt Schwarz/Weiß.
 - **CSS:** `body.ios-app .mobile-bottom-nav { display: none }` und `--mobile-bottom-nav-space: 0`;
   den Abstand nach unten liefert die native Leiste über die Safe-Area.
 
@@ -283,7 +290,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 |---|---|---|
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
-| 20.09.2026 | 0.1 (dev) | Nativer PIN-Login als Sheet über der Login-Seite; Abmelden ohne Rückfrage und nur aus dem Hub (Google/IAP bleibt, außer `sharedDevice`); Tab-Leiste nur angemeldet; Admin Panel in der System-Zeile |
+| 20.09.2026 | 0.1 (dev) | Nativer PIN-Login als Sheet über der Login-Seite (bleibt mit Ladezustand bis `ready`); Ladeschirm statt schwarzem WebView beim Start; Abmelden ohne Rückfrage und nur aus dem Hub (Google/IAP bleibt, außer `sharedDevice`); Tab-Leiste nur angemeldet; Admin Panel in der System-Zeile |
 | 20.09.2026 | 0.1 (dev) | Mehr-Sheet als Spiegel des Web-Sheets (Suche oben, Raster mit Überschriften, Werkzeuge, Profil/Abmelden); Such-Tab entfernt (sechs Tabs → System-„Mehr"); Standortwahl und Mitteilungen nativ (`branches` im Navigations-Payload, `glattt:set-branch`), Lupe im Scroll-Header öffnet das native Mehr — das Web-Sheet geht in der App nicht mehr auf |
 | 20.09.2026 | 0.1 (dev) | Xcode-Projekt unter `ios/` (XcodeGen) mit Phase-1-Code; Google/IAP-Login rendert im WKWebView mit Safari-UA (Weg A bewiesen, Simulator); 14 Swift-Tests |
 | 20.09.2026 | — | Backend-Vorarbeiten B1 (App-Erkennung), B2 (generische Bridge), B3 (`apns_environment`), B4 (Payload + `mark-read`), B5 (Badge), B6 (AASA-Route), B10 (Kiosk-Konfiguration im Institut-Modul) auf `develop`; LB-Regel `/.well-known/*` war schon vorhanden |
