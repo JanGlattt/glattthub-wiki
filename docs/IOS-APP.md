@@ -139,7 +139,11 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   breite iPad. Bereiche aus dem Mehr-Sheet und Push-Ziele wechseln in den passenden Haupttab
   (`tabIndex(for:)`); **alles andere lädt im eigenen WebView des „Mehr"-Tabs** (`selectMore()`,
   „Mehr" ist dann markiert, die vier Haupttabs behalten ihre Seiten — Befund Jan 20.09.2026: vorher
-  landete Verträge im Berichte-Tab). Ein Nutzer-Tipp auf „Mehr" öffnet weiter nur das Sheet. URL-Wechsel des **aktiven** WebViews (KVO,
+  landete Verträge im Berichte-Tab). Ein Nutzer-Tipp auf „Mehr" öffnet weiter nur das Sheet.
+  **Seitenwechsel per `WebViewStore.navigate`:** sofort eine hub-farbene Ladefläche mit Spinner über
+  dem Ziel-WebView (sonst steht 1–2 s die alte Seite), dann `Livewire.navigate(url)` im WebView (kein
+  Asset-Neuladen), Fallback `load()`; die Fläche geht bei `didCommit`, beim `ready` der Bridge
+  (`livewire:navigated`) oder nach 10 s. URL-Wechsel des **aktiven** WebViews (KVO,
   folgt `wire:navigate`) → `syncSelection`. Badge am Tab „Mehr" = ungelesene Mitteilungen. Nur bei
   kompakter Breite (iPhone, iPad schmal). **Fünf Tabs, kein Such-Tab:** mit sechs Einträgen schiebt
   iOS den sechsten in ein System-„Mehr"; die Suche steckt deshalb im Mehr-Sheet.
