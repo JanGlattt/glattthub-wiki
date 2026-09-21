@@ -668,7 +668,10 @@ Querformat** (Jan, 22.09.2026: „Komplett nativ"). Sie entsteht in vier Stufen;
 `develop`.
 
 **Für Endanwender:** Ein Tipp auf einen Termin (Terminliste, Web-Seiten, Push, Link) öffnet die
-native Terminansicht. Auf dem iPad quer liegt links die Spalte mit Kundin (Initialen, Name,
+native Terminansicht. Der **Einstellungszettel** ist seit Stufe 2 nativ: Körpergrafik zum Antippen,
+Zonenliste nach Kategorien mit Zähler und Haken, freie Zonen; das Zonen-Formular zeigt die bisherigen
+Sitzungen als Tabelle, darunter Laserkopf, Hauttyp, Haar, empfohlene und genutzte Werte, Notizen und
+Fotos (Kamera oder Fotos-App). Auf dem iPad quer liegt links die Spalte mit Kundin (Initialen, Name,
 Kunden-Nr., Geburtstag; Anrufen/E-Mail/Bewertung/Verlegen), Termindaten (Datum, Uhrzeit, Institut,
 Mitarbeiterin), den Bereichen (Übersicht, Formulare, Einstellungszettel, Verläufe) und der
 Sitzungssteuerung; rechts der Inhalt. Auf dem iPhone ist alles gestapelt mit fester Aktionsleiste
@@ -708,8 +711,27 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   UI-Tests `testAppointmentDetailScreens` (iPhone, Termine-Tab) und `testIpadAppointmentFromWeb`
   (iPad quer: Web-Termine → „Termin öffnen" → Vollbild → Schließen); Hub
   `AppointmentDetailLayoutTest`.
-- **Stufenplan:** 2 = Einstellungszettel nativ, 3 = Formulare nativ, 4 = Direkt behandeln /
-  Kasse-Details / Minderjährige.
+- **Stufe 2 — Einstellungszettel nativ (seit 22.09.2026):** `TreatmentSettingsModel` +
+  `TreatmentSettingsView` (Pane im Inhalt, Zonen-Formular als Blatt) gegen dieselben Endpunkte wie
+  `treatment-settings.js`: `GET …/session/treatment-settings/data`, `POST …/session/treatment-settings`
+  (`settings: [{…}]`, Antwort `data[0]` wird der Zone zugeordnet), `GET|POST hub/treatment-settings/{id}/photos`
+  (multipart über `HubSession.upload`, JPEG ≤ 2000 px), `DELETE hub/treatment-settings/photos/{id}`.
+  `BodyZoneCatalog` trägt die 18 Zonen mit Kategorie, Ebenen-Bild (Asset-Katalog `Koerperzonen/zone-<key>`,
+  Kopien von `public/images/koerperzonen`) und den **Klickflächen 1:1 aus
+  `partials/body-zone-selector-treatment.blade.php`** (0…100-Raster über der quadratischen Grafik;
+  bei Überlappung gewinnt die kleinere Fläche — Achsel vor Arm). Namen der Zonen kommen zur Laufzeit
+  aus `bodyZones`, freie Zonen bekommen denselben Schlüssel wie im Web (`BodyZoneCatalog.customKey`).
+  Regeln wie im Web: Sitzungsnummer je Zone fortlaufend, Skintel **oder** Hauttyp, Red Flags (Joule
+  außerhalb der J-Range oder unter der letzten Sitzung) als Bestätigung vor dem Speichern, Fotos erst
+  nach dem ersten Speichern, gesperrt bis alle Pflichtformulare da sind (`treatmentLocked`). Nach dem
+  Speichern zieht die Terminansicht `treated-zones` nach (Sitzungs-Chips). PHP-Collections kommen
+  je nach Inhalt als Objekt oder leeres Array — `TreatmentSettingsModel.entries` fängt beides.
+  Tests: `TreatmentSettingsTests` (Treffer-Test, Schlüssel, Red Flags, Payload),
+  `TreatmentSettingsSnapshotTests`, UI-Test `testIpadAppointmentFromWeb` (Folgetag → „Termin beginnen"
+  → Kachel → Zonenliste → Formular). **Prüfstand-Schalter:** Startargument `-glatttNoPhorestWrites`
+  (`AppointmentDetailModel.phorestWritesDisabled`) lässt Check-in, Beenden und Zusatzbuchung aus —
+  Pflicht für UI-Tests gegen den lokalen Hub, der die echte Phorest-API ruft.
+- **Stufenplan:** 3 = Formulare nativ, 4 = Direkt behandeln / Kasse-Details / Minderjährige.
 - **Lokaler Prüfstand:** MAMPs php-cgi stürzte bei Phorest-Aufrufen mit dem objc-Fork-Safety-Abort
   ab („incomplete headers", 500) — behoben per `-initial-env OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES`
   an der `FastCgiServer`-Zeile in `/Applications/MAMP/conf/apache/httpd.conf`. Der lokale Hub ruft
@@ -740,7 +762,7 @@ Apps-&-Bücher-Token in Miradore.
 | E (22.09.) | Native Startseite „Cockpit" je Rolle (Entwurf 1), Admin-Resource, `/api/app/start` | ✅ gebaut (Abschnitt „Native Startseite"); Abnahme auf dem Gerät offen |
 | F (22.09.) | Native Terminseite (Liste, KPIs, Kalender, Web-Terminansicht als Detailseite im Tab), `/api/app/appointments` | ✅ gebaut (Abschnitt „Native Terminseite"); Abnahme auf dem Gerät offen |
 | G (22.09.) | Native Login-Seite „Schlüssel", native Kundenliste + Kundenübersicht (Web-Registerkarten als Detailseite im Tab), `/api/app/clients` | ✅ gebaut (Abschnitte „Native Login-Seite", „Native Kundenseiten"); Abnahme auf dem Gerät offen |
-| H (22.09.) | Native Terminansicht Stufe 1 (Split-View iPad quer, Übersicht, Sitzungssteuerung, Beenden-Ablauf; Formulare/Zettel als Web-Blatt `?shell=native`) | ✅ gebaut (Abschnitt „Native Terminansicht"); Stufen 2–4 und Abnahme auf dem Gerät offen |
+| H (22.09.) | Native Terminansicht Stufe 1 (Split-View iPad quer, Übersicht, Sitzungssteuerung, Beenden-Ablauf) und Stufe 2 (Einstellungszettel nativ: Körpergrafik, Zonen-Formular, Fotos); Formulare noch als Web-Blatt `?shell=native` | ✅ Stufe 1 auf dem iPad abgenommen (Jan, 22.09.), Stufe 2 gebaut; Stufen 3–4 offen |
 | 3 | Härtung Weg B (App-Host ohne IAP, Google Sign-In nativ, App Attest) | offen |
 | 4 | Native Prozesse nach Pilot-Entscheidung (Tageserfassung 4–6 Wochen, Laser-Wartung 2–3 Wochen) | offen |
 
@@ -806,6 +828,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
 | 21.09.2026 | 0.1 (dev) | Widgets III: Tagesübersicht-Widget, Sparklines im Kennzahlen-Widget, Körperzonen mit Prognose-Balken und Tages-Chart im großen Widget, Extra-Large-Portrait (iOS 27) |
+| 22.09.2026 | 0.1 (dev) | Native Terminansicht Stufe 2: Einstellungszettel nativ — `BodyZoneCatalog` (Klickflächen aus dem Blade, Ebenen im Asset-Katalog), `TreatmentSettingsModel`/`-View` gegen die Endpunkte von `treatment-settings.js`, Zonen-Formular mit Verlauf, Red-Flag-Bestätigung, Fotos per `HubSession.upload` |
 | 22.09.2026 | 0.1 (dev) | Native Terminansicht Stufe 1: Split-View (iPad quer) / gestapelt (iPhone), dieselben Hub-Endpunkte wie das Web via `HubSession.json`, Termin beginnen/beenden (Kasse → Folgetermin → Notiz), Web-Blätter `?shell=native`; Öffnen aus Web (`livewire:navigate`-Hook, Coordinator), Tab, Push; iPad-Vollbild via `presentedAppointment` |
 | 22.09.2026 | 0.1 (dev) | Native Kundenliste und Kundenübersicht (Tab „Kunden"): `GET /api/app/clients`, `/api/app/clients/{id}`; `ClientSearchService` und `ClientAppointmentHistoryService` aus den Controllern herausgezogen; native Detailseiten im nativen Tab (`nativeDetailFactories`); Web-Push-Angebot im WebView unterdrückt |
 | 22.09.2026 | 0.1 (dev) | Native Login-Seite „Schlüssel": ganzseitig, eigener Ziffernblock, Face ID, Begrüßung mit Namen, E-Mail-Sheet (Fortify JSON), Google-Schritt mit nativem Kopf; `PinLoginView` entfällt |
