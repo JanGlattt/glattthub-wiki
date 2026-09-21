@@ -750,7 +750,21 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   `formEvent` an `NativeBridge.onFormEvent`; `AppointmentDetailModel.handleFormEvent` pflegt
   `submittedFormIds`/`lastContractPaymentMethod`, lädt Einreichungen und Kundin nach und schließt
   das eingebettete Formular. Neue Feldtypen des Editors stehen der App damit sofort zur Verfügung.
-- **Stufenplan:** 4 = Direkt behandeln / Kasse-Details / Minderjährige.
+- **Stufe 4 — Direkt behandeln, Kasse, Minderjährige (seit 22.09.2026):** „Direkt behandeln"
+  erscheint als Kachel, sobald im Termin ein Vertrag abgeschlossen ist und der SEPA-Schritt erledigt
+  (`directTreatmentAvailable`), und wird im Beenden-Ablauf nach der Kasse als Frage angeboten
+  (`showDirectOffer`, wie im Web vor der Folgetermin-Frage). Das Livewire-Modal
+  `DirectTreatmentModal` (gleiche Kabine, Paket-Services, „Kauf nachholen") läuft als Web-Blatt mit
+  `?view=session&shell=native&direct=1` (`openDirect` → `offerDirectTreatment()` nach dem Laden,
+  Klasse `apt-detail--native-direct` blendet den Seiteninhalt aus); `bridge.js` meldet
+  `direct-treatment-booked`/`-closed` als `directTreatment` an `NativeBridge.onDirectTreatment`.
+  Nach der Buchung beendet die App den Beratungstermin selbst (Kasse → Notiz → PAID, Folgetermin-Frage
+  entfällt) und öffnet den neuen Behandlungstermin mit `autoStart` (`container.openAppointment`).
+  Kasse: roter Vollbild-Schirm mit Betrag, Zusatz-Service-Hinweis, „wird kassiert" oder
+  Nicht-Kassierung mit Pflicht-Begründung (`payment-waiver`, in die Notiz vorbefüllt) — Stand wie
+  im Web. Minderjährige: Badges „Minderjährig (Alter)" / „Geburtsdatum fehlt" an der Kundin-Karte,
+  `requires_minor`-Formulare in der Kette, Einstellungszettel gesperrt bis zur Erlaubnis.
+  Test: `AppointmentDetailLayoutTest::test_native_terminansicht_bekommt_eingebettete_modi`.
 - **Lokaler Prüfstand:** MAMPs php-cgi stürzte bei Phorest-Aufrufen mit dem objc-Fork-Safety-Abort
   ab („incomplete headers", 500) — behoben per `-initial-env OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES`
   an der `FastCgiServer`-Zeile in `/Applications/MAMP/conf/apache/httpd.conf`. Der lokale Hub ruft
@@ -781,7 +795,7 @@ Apps-&-Bücher-Token in Miradore.
 | E (22.09.) | Native Startseite „Cockpit" je Rolle (Entwurf 1), Admin-Resource, `/api/app/start` | ✅ gebaut (Abschnitt „Native Startseite"); Abnahme auf dem Gerät offen |
 | F (22.09.) | Native Terminseite (Liste, KPIs, Kalender, Web-Terminansicht als Detailseite im Tab), `/api/app/appointments` | ✅ gebaut (Abschnitt „Native Terminseite"); Abnahme auf dem Gerät offen |
 | G (22.09.) | Native Login-Seite „Schlüssel", native Kundenliste + Kundenübersicht (Web-Registerkarten als Detailseite im Tab), `/api/app/clients` | ✅ gebaut (Abschnitte „Native Login-Seite", „Native Kundenseiten"); Abnahme auf dem Gerät offen |
-| H (22.09.) | Native Terminansicht Stufe 1 (Split-View iPad quer, Übersicht, Sitzungssteuerung, Beenden-Ablauf), Stufe 2 (Einstellungszettel nativ) und Stufe 3 (Formularliste/Kette nativ, Ausfüllen als eingebettete Web-Engine) | ✅ Stufe 1 auf dem iPad abgenommen (Jan, 22.09.), Stufen 2–3 gebaut; Stufe 4 offen |
+| H (22.09.) | Native Terminansicht komplett: Stufe 1 (Split-View iPad quer, Übersicht, Sitzungssteuerung, Beenden-Ablauf), Stufe 2 (Einstellungszettel nativ), Stufe 3 (Formularliste/Kette nativ, Ausfüllen als eingebettete Web-Engine), Stufe 4 (Direkt behandeln als Web-Blatt + nativer Abschluss, Kasse, Minderjährige) | ✅ Stufe 1 auf dem iPad abgenommen (Jan, 22.09.), Stufen 2–4 gebaut; Abnahme auf dem Gerät offen |
 | 3 | Härtung Weg B (App-Host ohne IAP, Google Sign-In nativ, App Attest) | offen |
 | 4 | Native Prozesse nach Pilot-Entscheidung (Tageserfassung 4–6 Wochen, Laser-Wartung 2–3 Wochen) | offen |
 
@@ -847,6 +861,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
 | 21.09.2026 | 0.1 (dev) | Widgets III: Tagesübersicht-Widget, Sparklines im Kennzahlen-Widget, Körperzonen mit Prognose-Balken und Tages-Chart im großen Widget, Extra-Large-Portrait (iOS 27) |
+| 22.09.2026 | 0.1 (dev) | Native Terminansicht Stufe 4: „Direkt behandeln" als Kachel und im Beenden-Ablauf (Livewire-Modal im Web-Blatt `?direct=1`, Bridge `directTreatment`, nativer Abschluss + Wechsel in den neuen Termin mit Auto-Start) |
 | 22.09.2026 | 0.1 (dev) | Native Terminansicht Stufe 3: Formularliste und Kette nativ (Sperren, Mitunterzeichner-Blatt, Zusatzformulare, SEPA-Banner), Ausfüllen als eingebettetes Web-Formular (`?view=forms&shell=native&form=ID`, `apt-detail--native-form`, Bridge `formEvent`) — Engine bleibt eine Wahrheit |
 | 22.09.2026 | 0.1 (dev) | Native Terminansicht Stufe 2: Einstellungszettel nativ — `BodyZoneCatalog` (Klickflächen aus dem Blade, Ebenen im Asset-Katalog), `TreatmentSettingsModel`/`-View` gegen die Endpunkte von `treatment-settings.js`, Zonen-Formular mit Verlauf, Red-Flag-Bestätigung, Fotos per `HubSession.upload` |
 | 22.09.2026 | 0.1 (dev) | Native Terminansicht Stufe 1: Split-View (iPad quer) / gestapelt (iPhone), dieselben Hub-Endpunkte wie das Web via `HubSession.json`, Termin beginnen/beenden (Kasse → Folgetermin → Notiz), Web-Blätter `?shell=native`; Öffnen aus Web (`livewire:navigate`-Hook, Coordinator), Tab, Push; iPad-Vollbild via `presentedAppointment` |

@@ -117,6 +117,7 @@ Kasse, Folgetermin und Pflicht-Notiz und schließt den Termin in Phorest ab.
 | `view` | Initiale Ansicht (`details`, `forms-history`, `settings-history`, `session`, `forms`, `treatment-settings`) | `details` |
 | `start` | `1` = Session startet beim Öffnen selbst (Check-in + Staff-Zuordnung); gesetzt beim Wechsel in den Behandlungstermin nach „Direkt behandeln" | — |
 | `shell` | `native` = nur die Inhaltsspalte ohne Kopfzeile, Sidebar und Aktionsleiste (`$nativeShell`, Klasse `apt-detail--native-shell`) — für eingebettete Web-Teile der **nativen** Terminansicht der iOS-App (`IOS-APP.md`) | — |
+| `direct` | `1` mit `shell=native` = „Direkt behandeln"-Modal sofort öffnen (`$openDirect`, Klasse `apt-detail--native-direct` versteckt den Seiteninhalt); die App beendet den Beratungstermin danach selbst und wechselt in den neuen Termin | — |
 | `form` | Formular-ID; mit `view=forms&shell=native` öffnet die Seite dieses Formular direkt zum Ausfüllen (`$openFormId`, Klasse `apt-detail--native-form` blendet Liste und Rücksprünge aus) — die App liefert Liste und Kette nativ, Absenden/Schließen meldet `bridge.js` als `formEvent` | — |
 
 Der frühere `embed=1`-Parameter (iframe-Modus) wurde **entfernt**.
