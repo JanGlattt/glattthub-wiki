@@ -494,7 +494,13 @@ hergeben, fehlt still.
   (`ensureWidgetToken`).
 - **Einhängen:** `HubTabBarController.startViewFactory` legt einen `UIHostingController` über den
   Platzhalter des Tabs `hub.start`; das Start-WebView bleibt darunter **am Leben** (Login-Erkennung,
-  Bridge, Sitzung, `ready`), ist aber unsichtbar. Zweiter Tipp auf „Start" → `state.startScrollToTop`
+  Bridge, Sitzung, `ready`), ist aber unsichtbar. Die Cockpit-Instanz entsteht **einmal** schon im
+  Start-Platzhalter vor der Navigation und wandert beim Aufbau der Leiste in den Start-Tab — sonst
+  blitzte nach `ready` die Web-Startseite auf, bis die Navigation da war (Befund Jan, 22.09.).
+- **Schrift:** Lato (Hausschrift) liegt als `Lato-Regular.ttf`/`Lato-Bold.ttf` unter
+  `ios/glatttHub/Resources/Fonts` (`UIAppFonts` in `project.yml`, dieselben Dateien wie
+  `public/fonts`); native Ansichten nutzen `HubFont` (Rollen wie `title`, `number`, `caption`,
+  Dynamic-Type-relativ). Die im Admin wählbare Google-Font gilt nur im Web — die App bleibt bei Lato. Zweiter Tipp auf „Start" → `state.startScrollToTop`
   (nach oben). Kein Cockpit im Kiosk-Modus und im iPad-Querformat ohne Tab-Leiste (dort bleibt die
   Web-Startseite mit Sidebar).
 - **Snapshots:** `CockpitSnapshotTests` (Schema „glatttHub", `TEST_RUNNER_WIDGET_SNAPSHOT_DIR`)
