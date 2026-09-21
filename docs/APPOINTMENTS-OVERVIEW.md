@@ -37,6 +37,11 @@ Schritt steht im Nutzerhandbuch.
 
 ## Für Anwender — Überblick
 
+> **iOS/iPadOS-App (seit 22.09.2026):** In der App ist der Tab „Termine" nativ — dieselben
+> Kennzahlen, Karten und der Tageskalender, gespeist aus `GET /api/app/appointments` (ein Aufruf
+> statt sieben, Zustand/No-Show-Regel serverseitig aus `WidgetDayService`). Details: `IOS-APP.md`,
+> Abschnitt „Native Terminseite".
+
 **Was die Seite leistet.** Die Terminübersicht zeigt die Termine des gewählten Tages — wahlweise
 als Karten-Liste (alle Standorte oder ein Standort) oder, bei gewähltem Standort, als
 Tageskalender mit einer Spalte je Mitarbeiterin und roter „Jetzt"-Linie. Der Standortfilter der

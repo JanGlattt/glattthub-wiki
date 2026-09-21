@@ -527,6 +527,64 @@ hergeben, fehlt still.
   (ImageRenderer rastert weder `ScrollView` noch Menü-Picker) und `Color("AccentColor")` statt
   `Color.accentColor` (greift im Renderer nicht).
 
+### Native Terminseite (Tab „Termine", seit 22.09.2026)
+
+**Für Endanwender:** Der Tab „Termine" ist in der App nativ — Datumsleiste (Tag/Woche vor und
+zurück, Tipp aufs Datum öffnet den Kalender, „Heute" erscheint an anderen Tagen), die drei
+Kennzahlen-Karten der Web-Seite, Filter „Alle / Beratungen", die Terminkarten mit Status-Kante,
+Kontakt-Symbolen und aufklappbaren Behandlungen (bei Beratungen mit Terminnotiz); nach links
+wischen ruft an, nach rechts öffnet das Profil. Bei gewähltem Standort gibt es den Tageskalender
+je Mitarbeiterin mit roter Jetzt-Linie. Ein Tipp auf einen Termin öffnet die gewohnte
+Web-Terminansicht im Tab (Check-in, Formulare, Beenden bleiben dort); „Zurück" der Seite oder die
+Wischgeste vom Rand führen in die Liste zurück. Aktualisiert wird beim Wiederkehren und per Ziehen
+(Entscheidung Jan: kein Timer).
+
+!!! nutzerhandbuch "Bedienung: Grundlagen – iPhone/iPad-App (folgt nach dem Gerätetest)"
+
+**Für Entwickler:**
+
+- **Endpunkt `GET /api/app/appointments?date=&branch=&fresh=`** (`AppAppointmentsController`,
+  Bearer-Gerätetoken über das Trait `RequiresAppToken`, das auch die Widgets nutzen):
+  `AppAppointmentsService` liefert die Termine eines Tages **fertig angereichert** — Kunde mit
+  Telefon/E-Mail (`getClientsParallel`), Mitarbeiterin, Institut (Kurzname, Kürzel, Farbe),
+  Behandlungen, effektiver Zustand (`PLANNED`/`CHECKED_IN`/`COMPLETED`/`NO_SHOW`/`CANCELLED` nach
+  den Regeln von `WidgetDayService::state()`: Absage-Mitarbeiter, 30-Minuten-Überfälligkeit),
+  Beratung mit verkauften Zonen, Notizen (`includeNotes`) — plus die drei KPIs, die Mitarbeiter-
+  Spalten (Initialen wie `getInitials()` im Web) und die Öffnungszeiten der Zeitachse (Mo–Fr 07–21,
+  Sa 09:30–18, So geschlossen). Die Web-Seite baut dasselbe aus sieben Aufrufen. **Eine Quelle für
+  Beratung und Verkäufe:** `WidgetDayService::consultationServiceIds()` und
+  `WidgetDayService::dailySales()` (Verträge des Tages je Kunde/Institut, `visibleBranch()` —
+  Konventionstest `BranchVisibilityConventionTest` führt beide Services). Standort-Beschränkung
+  (`allowed_branch_ids`): „Alle" = erlaubte, nicht ausgeblendete Institute; fremder Standort → 403.
+  Cache 5 Min je **Tag/Standort/Sichtbarkeit** (nicht je Nutzer — alle im Institut teilen sich den
+  Phorest-Aufruf), `can_view_client` wird außerhalb angehängt; `fresh=1` verwirft den Cache höchstens
+  alle 15 s. Datum wird exakt validiert (2026-02-31 → 422). Tests `AppAppointmentsTest`.
+- **Befund dabei (22.09.2026):** `getAllBranchesAppointments()` dedupliziert bereits — der zweite
+  `deduplicateAppointments()`-Durchlauf in `WidgetDayService::appointments()` reduzierte bei „Alle
+  Standorte" `allServices`/`allServiceIds`/`allNotes` wieder auf die erste Zeile (Beratung nicht
+  erkannt, Notizen weg). Behoben; galt auch für das Tagesübersicht-Widget.
+- **App:** `Appointments/AppointmentsViewModel` (Tag-Cache im Speicher, laufende Anfrage wird bei
+  Tag-/Standortwechsel abgebrochen, statische Formatter), `AppointmentsView` (Kopf, Datumsleiste,
+  KPI-Streifen, `List` mit `AppointmentCard` und Swipe-Aktionen, Skeleton), `DayScheduleView`
+  (Spalten je Mitarbeiterin, Achse = Öffnungszeiten erweitert um Termine außerhalb, Jetzt-Linie per
+  `TimelineView(.everyMinute)`). Modelle in `Shared/WidgetShared.swift` (`AppointmentsDay`).
+  Snapshots `AppointmentsSnapshotTests` (Liste, Kalender, Skeleton; statischer Modus
+  `appointmentsStaticLayout`).
+- **Native Tabs mit Web-Detailseiten (Architektur-Erweiterung):** Jeder native Tab sitzt in einem
+  `NativeTabNavigationController` (Leiste immer verborgen, Wischgeste bleibt). Welche
+  Web-Detailseiten ein Tab **im Tab** öffnet, sagt die Navigation selbst:
+  `MobileNavigation::PRIMARY[…]['detail']` → `detail_prefixes` im Navigationsmodell (Termine:
+  `/hub/appointment/`). `HubTabBarController.openDetail(url)` wählt den Tab und pusht
+  `HubWebPageController` mit dem Tab-eigenen WebView (`WebViewStore.webView(forTab:)` nach
+  **Schlüssel**, nicht Index — ohne Start-Recht wäre „Termine" Index 0 und bekäme sonst das
+  Hüllen-WebView); die Seite meldet ihren Titel per KVO, navigiert sie selbst auf die Tab-Wurzel
+  (`/hub/appointments`), poppt der Tab; beim Verlassen wird das WebView geleert (`about:blank`) und
+  das Bridge-Ziel auf die Hülle gesetzt — hinter der nativen Liste läuft keine Web-Seite weiter.
+  `AppContainer.open()` fragt zuerst `openDetail`, dann die Tabs; ein Tab-Pfad poppt eine offene
+  Detailseite (`popNativeToRoot`), Abmelden schließt alle (`resetNativeStacks`). Native Tabs an der
+  Wurzel aktivieren kein WebView (Pfad-Markierung, Bridge-Ziel). Zweiter Tipp: `nativeScrollToTop[key]`.
+  iPad-Drehung ohne Tab-Leiste setzt das aktive WebView auf `primary` zurück.
+
 ### Verteilung
 
 Apple Business Manager **Custom App** (App Store Connect → „Privat — nur für bestimmte Organisationen"
@@ -550,12 +608,13 @@ Apps-&-Bücher-Token in Miradore.
 | 1c | TestFlight-Pilot, Review, Custom-App-Einreichung, Miradore, Klickanleitungen | **offen** — Klickanleitungen Profil (App-Geräte) und Institut (Kiosk-Block) nachziehen |
 | D (22.09.) | Versionsprüfung, Siri/App Intents, Dokumentenscanner, Diagnose teilen, iPad-Tastaturkürzel | ✅ gebaut (Abschnitt „Phase D"); Gerätetest offen: Siri-Sätze, Scanner-PDF im Hub, ⌘-Overlay am iPad |
 | E (22.09.) | Native Startseite „Cockpit" je Rolle (Entwurf 1), Admin-Resource, `/api/app/start` | ✅ gebaut (Abschnitt „Native Startseite"); Abnahme auf dem Gerät offen |
+| F (22.09.) | Native Terminseite (Liste, KPIs, Kalender, Web-Terminansicht als Detailseite im Tab), `/api/app/appointments` | ✅ gebaut (Abschnitt „Native Terminseite"); Abnahme auf dem Gerät offen |
 | 3 | Härtung Weg B (App-Host ohne IAP, Google Sign-In nativ, App Attest) | offen |
 | 4 | Native Prozesse nach Pilot-Entscheidung (Tageserfassung 4–6 Wochen, Laser-Wartung 2–3 Wochen) | offen |
 
 Bauen & testen: Xcode-Projekt aus `ios/project.yml` (`cd ios && xcodegen generate` nach neuen Dateien),
 Schema „glatttHub" (Debug = Staging + APNs-Sandbox), Unit-Tests `xcodebuild … test` (24 Swift-Tests + Cockpit-Snapshot),
-Springboard-UI-Test im Schema „glatttHub UI", Widget-Snapshots im Schema „glatttHub Widgets" (s. o.). Hub-Tests: `AppDeviceTokenTest`, `AppWidgetKpiTest`, `AppVersionPolicyTest`, `AppScanButtonTest`, `AppStartTest`, `AppStartLayoutAdminTest`,
+Springboard-UI-Test im Schema „glatttHub UI", Widget-Snapshots im Schema „glatttHub Widgets" (s. o.). Hub-Tests: `AppDeviceTokenTest`, `AppWidgetKpiTest`, `AppVersionPolicyTest`, `AppScanButtonTest`, `AppStartTest`, `AppStartLayoutAdminTest`, `AppAppointmentsTest`,
 `MobileNavigationTest`, `SafeAreaConventionTest`.
 
 ### Fallstricke (vorab bekannt)
@@ -587,6 +646,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
 | 21.09.2026 | 0.1 (dev) | Widgets III: Tagesübersicht-Widget, Sparklines im Kennzahlen-Widget, Körperzonen mit Prognose-Balken und Tages-Chart im großen Widget, Extra-Large-Portrait (iOS 27) |
+| 22.09.2026 | 0.1 (dev) | Native Terminseite (Tab „Termine"): `GET /api/app/appointments` (angereichert, eine Quelle für Zustand/Beratung/Verkäufe), Liste mit Swipe, KPI-Streifen, Tageskalender, Web-Terminansicht als Detailseite im Tab; Architektur: `detail_prefixes` in der Navigation, `NativeTabNavigationController`, `HubWebPageController`; Befund doppeltes Dedupe bei „Alle Standorte" behoben |
 | 22.09.2026 | 0.1 (dev) | Native Startseite „Cockpit" (Entwurf 1 vom 22.09.): `app_start_layouts` je Rolle + Admin-Resource, `GET /api/app/start`, `CockpitView` über dem Start-WebView, Bonus-Stand nur mit eigenem Board |
 | 22.09.2026 | 0.1 (dev) | Phase D: Versionsprüfung (`/api/app/version`, `RejectOutdatedNativeApp` 426, `UpdateRequiredView`), Siri/App Intents (Tagesüberblick gesprochen, Termine, Suche, glatttBert, Mitteilungen), Dokumentenscanner (`scanDocument`/`scanInto`, `<x-app-scan-button>` an fünf Upload-Stellen), Diagnose teilen (+ Kiosk-Fünffach-Tipp), iPad-Tastaturkürzel |
 | 22.09.2026 | 0.1 (dev) | Widgets IV (Feinschliff nach Gerätetest): Höhen füllen statt fester Maße, Sparkline-Spalte rechts mit Prognose als gestrichelter Linie, Tendenzpfeile (Vergleichs-Schlüssel `value`/`trend` korrigiert), Institutskürzel `code` aus `AppBranchList`, keine Sparkline für `glattt`-Quelle, Snapshot-Target `glatttHubWidgetSnapshots` |
