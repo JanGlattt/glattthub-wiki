@@ -492,11 +492,18 @@ hergeben, fehlt still.
   aus), `CockpitView`/`CockpitSections` (SwiftUI, Swift Charts für das KPZ-Chart, Sparkline nach
   Hub-Konvention). Das Widget-Token wird vor dem ersten Laden sichergestellt
   (`ensureWidgetToken`).
-- **Einhängen:** `HubTabBarController.startViewFactory` legt einen `UIHostingController` über den
-  Platzhalter des Tabs `hub.start`; das Start-WebView bleibt darunter **am Leben** (Login-Erkennung,
-  Bridge, Sitzung, `ready`), ist aber unsichtbar. Die Cockpit-Instanz entsteht **einmal** schon im
-  Start-Platzhalter vor der Navigation und wandert beim Aufbau der Leiste in den Start-Tab — sonst
-  blitzte nach `ready` die Web-Startseite auf, bis die Navigation da war (Befund Jan, 22.09.).
+- **Einhängen (seit 22.09., zweite Fassung):** Der Start-Tab ist **rein nativ** — sein Platzhalter
+  hat kein WebView. Das Start-WebView (`store.primary`) lädt statt der Web-Startseite die **leere
+  Hub-Hülle `/hub/app-shell`** (Route `hub.app-shell`, View `hub/app-shell.blade.php`: Hub-Layout ohne
+  Kacheln, damit Sitzung, Bridge `ready`, Push und Standort-Sync weiter laufen) und hängt **hinter** dem
+  Tab-Inhalt (`attachShell`); nur im Login-Zustand (IAP/Google, Hub-Login, nach dem Abmelden) kommt es
+  nach vorn (`setShellVisible`). So kann beim Start nichts durchscheinen — die erste Fassung legte das
+  Cockpit über die geladene Web-Startseite, und zwischen `didFinish` und `ready` blitzte sie ~1 s auf.
+  `/hub` (Deep-Link, Tab-Tipp) wählt nur den Start-Tab, lädt nichts (`AppContainer.open`). iPad startet
+  weiter mit `/hub` (Querformat ohne Tab-Leiste zeigt die Web-Startseite mit Sidebar). glatttBert vom
+  Cockpit aus wechselt erst auf den Termine-Tab (sichtbare Hub-Seite) und öffnet dort (`bridge.onReady`
+  holt die wartende Schnellaktion nach). Zweiter Tipp auf „Start" → `state.startScrollToTop`. Kein
+  Cockpit im Kiosk-Modus.
 - **Schrift:** Lato (Hausschrift) liegt als `Lato-Regular.ttf`/`Lato-Bold.ttf` unter
   `ios/glatttHub/Resources/Fonts` (`UIAppFonts` in `project.yml`, dieselben Dateien wie
   `public/fonts`); native Ansichten nutzen `HubFont` (Rollen wie `title`, `number`, `caption`,
