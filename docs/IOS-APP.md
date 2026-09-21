@@ -616,6 +616,51 @@ Wischgeste vom Rand führen in die Liste zurück. Aktualisiert wird beim Wiederk
   Wurzel aktivieren kein WebView (Pfad-Markierung, Bridge-Ziel). Zweiter Tipp: `nativeScrollToTop[key]`.
   iPad-Drehung ohne Tab-Leiste setzt das aktive WebView auf `primary` zurück.
 
+### Native Kundenseiten (Tab „Kunden", seit 22.09.2026)
+
+**Für Endanwender:** Der Kunden-Tab ist nativ: Suchfeld (Name, Kunden-Nr., Telefon, E-Mail — wie
+im Web), Zeilen mit Initialen, Name, Kunden-Nr. und letztem Besuch, Nachladen beim Scrollen, Wischen
+nach rechts = Anrufen. Ein Tipp öffnet die **native Kundenübersicht**: Kopf mit Initialen, Name,
+Institut, „Kundin seit", Kontakt-Aktionen (Anrufen, WhatsApp, E-Mail, Route), darunter die Karten
+der Web-Übersicht — Kontakt, Termine (nächster/letzter, Zähler), Vertrag & Zahlungen (mit Hinweis
+auf offene Forderungsfälle), glattt Pakete (Einheiten-Balken), Behandlung, Dokumente, Phorest-Notiz.
+Jede Karte hat einen Pfeil zur passenden Registerkarte der Kundenseite; „Alle Bereiche" listet alle
+neun. Diese Registerkarten öffnen als Web-Seite **im Kunden-Tab mit Zurück** zur nativen Übersicht.
+
+**Für Entwickler:**
+
+- **Endpunkte** (`AppClientsController`, Bearer-Gerätetoken): `GET /api/app/clients?q=&page=`
+  (`AppClientService::search`, Recht `view_clients`) nutzt den **geteilten
+  `ClientSearchService`** — die Suchlogik der Web-Übersicht (Telefon/E-Mail/Kunden-Nr./Name über den
+  Spiegel `client_statistics`, Live-Fallback in Phorest) wurde dafür aus `ClientSearchController`
+  herausgezogen; 30 je Seite. `GET /api/app/clients/{id}` (`AppClientService::overview`, Recht
+  `view_client_detail`, `fresh=1` verwirft den Cache) baut die Übersicht aus Phorest-Kunde,
+  **`ClientAppointmentHistoryService`** (die Termin-Zusammenführung aus
+  `PhorestController::getClientAppointments`, ebenfalls herausgezogen), Phorest-Kursen, `Contract`,
+  `DebtCase` + `DebtCaseBalanceService`, `TreatmentSetting` (ohne Phorest-Aufrufe, Datum = Erfassung)
+  und `FormSubmission`; Cache 2 Min je Kunde (nutzerunabhängig, `can_view_contracts` wird außerhalb
+  angehängt). Zendesk/Superchat der Web-Übersicht sind bewusst nicht dabei (externe Aufrufe).
+  Tests `AppClientsTest`.
+- **App:** `Clients/ClientsViewModel.swift` (entprellte Suche 300 ms, Generationszähler, Seiten),
+  `ClientsView` (Liste, `ClientRow`), `ClientDetailView`/`ClientDetailContent` (Karten), Modelle
+  `ClientListPage`/`ClientOverview` in `Shared/WidgetShared.swift`, Formatierung `ClientFormat`
+  (ISO-Zeiten ohne Zone gelten als Ortszeit). Snapshots `ClientsSnapshotTests`, UI-Test
+  `testClientsScreens`.
+- **Native Detailseite im nativen Tab — neues Muster:** `HubTabBarController.nativeDetailFactories[key]`
+  liefert für eine URL eine native Ansicht (`/hub/clients/{id}` ohne Anker → `ClientDetailView` als
+  `NativeDetailHostingController`, Protokoll `NativeDetailPage` mit `detailPath` gegen doppeltes
+  Pushen); liefert sie nil, öffnet `openDetail` wie bisher die Web-Detailseite. Der Kunden-Tab hat
+  `detail: ['/hub/clients/']` in `MobileNavigation`; `/hub/clients/{id}#pakete` (Anker) geht als
+  Web-Seite. `HubWebPageController.show()` setzt bei gleicher Seite und anderem Anker nur
+  `location.hash` (die Kundenseite hört auf `hashchange`). Zurück-Knopf der nativen Übersicht:
+  `tabBar.popNative(key:)`. Damit ist der Weg für jede weitere native Detailseite fertig: Factory
+  registrieren, Pfad-Präfix in der Navigation, fertig.
+- **Web-Push-Angebot im WebView unterdrückt:** `pushPermissionModal.init()` im Hub-Layout bricht bei
+  `window.glatttNative` ab — die App nutzt APNs; die Web-Registerkarten zeigten sonst das Modal.
+- **Lokaler Prüfstand:** MAMPs php-cgi liefert bei Phorest-lastigen Aufrufen sporadisch
+  „incomplete headers" (500) — Cache per `tinker` vorwärmen, dann läuft der UI-Test durch; in CLI
+  und auf Staging ist der Endpunkt sauber.
+
 ### Verteilung
 
 Apple Business Manager **Custom App** (App Store Connect → „Privat — nur für bestimmte Organisationen"
@@ -640,6 +685,7 @@ Apps-&-Bücher-Token in Miradore.
 | D (22.09.) | Versionsprüfung, Siri/App Intents, Dokumentenscanner, Diagnose teilen, iPad-Tastaturkürzel | ✅ gebaut (Abschnitt „Phase D"); Gerätetest offen: Siri-Sätze, Scanner-PDF im Hub, ⌘-Overlay am iPad |
 | E (22.09.) | Native Startseite „Cockpit" je Rolle (Entwurf 1), Admin-Resource, `/api/app/start` | ✅ gebaut (Abschnitt „Native Startseite"); Abnahme auf dem Gerät offen |
 | F (22.09.) | Native Terminseite (Liste, KPIs, Kalender, Web-Terminansicht als Detailseite im Tab), `/api/app/appointments` | ✅ gebaut (Abschnitt „Native Terminseite"); Abnahme auf dem Gerät offen |
+| G (22.09.) | Native Login-Seite „Schlüssel", native Kundenliste + Kundenübersicht (Web-Registerkarten als Detailseite im Tab), `/api/app/clients` | ✅ gebaut (Abschnitte „Native Login-Seite", „Native Kundenseiten"); Abnahme auf dem Gerät offen |
 | 3 | Härtung Weg B (App-Host ohne IAP, Google Sign-In nativ, App Attest) | offen |
 | 4 | Native Prozesse nach Pilot-Entscheidung (Tageserfassung 4–6 Wochen, Laser-Wartung 2–3 Wochen) | offen |
 
@@ -705,6 +751,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
 | 21.09.2026 | 0.1 (dev) | Widgets III: Tagesübersicht-Widget, Sparklines im Kennzahlen-Widget, Körperzonen mit Prognose-Balken und Tages-Chart im großen Widget, Extra-Large-Portrait (iOS 27) |
+| 22.09.2026 | 0.1 (dev) | Native Kundenliste und Kundenübersicht (Tab „Kunden"): `GET /api/app/clients`, `/api/app/clients/{id}`; `ClientSearchService` und `ClientAppointmentHistoryService` aus den Controllern herausgezogen; native Detailseiten im nativen Tab (`nativeDetailFactories`); Web-Push-Angebot im WebView unterdrückt |
 | 22.09.2026 | 0.1 (dev) | Native Login-Seite „Schlüssel": ganzseitig, eigener Ziffernblock, Face ID, Begrüßung mit Namen, E-Mail-Sheet (Fortify JSON), Google-Schritt mit nativem Kopf; `PinLoginView` entfällt |
 | 22.09.2026 | 0.1 (dev) | Terminseite: Karte neu (Zeit-Spalte, Status-Kante innerhalb der Rundung, Chips, runde Kontakt-Knöpfe), Terminnotizen per `GET /api/app/appointments/notes` beim Ausklappen, Geräteregistrierung gegen Doppel-Insert gesperrt |
 | 22.09.2026 | 0.1 (dev) | Kaltstart: Start-Tab ist vom ersten Frame an das Cockpit (Factories über den Initializer, Prüfstand `LaunchFlashUITests`, `HubTabBarControllerTests`); abgebrochene Navigationen beenden den Ladeschirm nicht mehr |
