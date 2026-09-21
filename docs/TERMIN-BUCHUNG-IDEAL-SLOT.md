@@ -126,7 +126,12 @@ app/Services/Booking/
 Ein **Raum ist eine Phorest-Staff-Entität** mit Raum-Namen (`BI 1`, `BI 2`, `BI 3`, `H1`, `BS 1` …) – **nicht** die Person. Online-/Vorausbuchungen liegen in diesen Raum-Spalten; am Tag selbst „ziehen" die Mitarbeiter den Termin in ihre eigene Namensspalte. Für die Buchung sind ausschließlich die Raum-Entitäten relevant.
 
 - Erkennung über `config('booking.room_name_pattern')` (Regex, z.B. `BI 1`).
-- Räume müssen für alle gebuchten Services qualifiziert sein (`disqualifiedServices`).
+- Räume müssen für alle gebuchten Services qualifiziert sein (`disqualifiedServices`). Sind Räume
+  da, aber keiner qualifiziert, nennt die Warnung seit 22.09.2026 die Räume und den Ort der Einstellung
+  („… in Phorest nicht für alle gewählten Services freigeschaltet (Phorest → Mitarbeiter → Raum →
+  Services)") statt „keine Räume gefunden". Befund Magdeburg 22.09.2026: `MD 1`/`MD 2` waren für alle
+  Behandlungs-Services disqualifiziert — weder Folgetermin noch Umbuchung möglich, bis das in Phorest
+  gesetzt ist (kein Hub-Code).
 - Gebucht wird unter der `staffId` des Raums, der gerade gefüllt wird.
 
 ### Slot-Engine (SlotFinderService)

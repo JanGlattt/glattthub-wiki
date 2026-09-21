@@ -346,7 +346,10 @@ stehen am 08./09.09. die Test-Termine (PAID, nicht stornierbar — Phorest-Cance
   Magdeburgs**, nicht im Code: Es gibt keinen Service „Desinfektion" (Erkennung über den Namen,
   `BookingCalendarService::isDisinfection`), und die Kabinen „MD 1"/„MD 2" passen zwar zum Raum-Muster
   (`config/booking.php: room_name_pattern`), haben in Phorest aber die Behandlungs-Services nicht zugewiesen
-  (`resolveRooms()` filtert nach angebotenen Services).
+  (`resolveRooms()` filtert nach angebotenen Services). **Stand 22.09.2026:** Desinfektion existiert
+  inzwischen („...Desinfektion", qualifiziert); MD 1/MD 2 sind weiterhin für alle Behandlungs-Services
+  disqualifiziert — muss in Phorest (Mitarbeiter → Raum → Services) freigeschaltet werden, die Warnung
+  im Hub sagt das jetzt so.
 - Beim Absenden der Kundeninformation mit geänderter **Telefonnummer** blieb der Ablauf nach „In Phorest übernehmen"
   in Lauf 4 hängen (Phorest-Update vermutlich abgelehnt, kein Fehlerhinweis) — reproduzieren und Fehlerpfad prüfen.
 
