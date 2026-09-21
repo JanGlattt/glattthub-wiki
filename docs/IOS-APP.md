@@ -710,8 +710,9 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   (`onOpenAppointment`), `NativeBridge` (`openAppointment`), `bridge.js`; Hub:
   `AppointmentViewController::showUnified` (`nativeShell`), `appointment-unified/index.blade.php`,
   `theme_glattt.css`. Tests: `AppointmentDetailSnapshotTests` (iPad/iPhone × Ruhe/Sitzung),
-  UI-Tests `testAppointmentDetailScreens` (iPhone, Termine-Tab) und `testIpadAppointmentFromWeb`
-  (iPad quer: Web-Termine → „Termin öffnen" → Vollbild → Schließen); Hub
+  UI-Tests `testAppointmentDetailScreens` (iPhone, Termine-Tab) und `testIpadAppointmentFromList`
+  (iPad quer: Seitenleiste → native Terminliste → Karte → Vollbild → Schließen; seit der
+  iPad-Seitenleiste gibt es dort kein Web-Menü mehr); Hub
   `AppointmentDetailLayoutTest`.
 - **Stufe 2 — Einstellungszettel nativ (seit 22.09.2026):** `TreatmentSettingsModel` +
   `TreatmentSettingsView` (Pane im Inhalt, Zonen-Formular als Blatt) gegen dieselben Endpunkte wie
@@ -729,8 +730,9 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   Speichern zieht die Terminansicht `treated-zones` nach (Sitzungs-Chips). PHP-Collections kommen
   je nach Inhalt als Objekt oder leeres Array — `TreatmentSettingsModel.entries` fängt beides.
   Tests: `TreatmentSettingsTests` (Treffer-Test, Schlüssel, Red Flags, Payload),
-  `TreatmentSettingsSnapshotTests`, UI-Test `testIpadAppointmentFromWeb` (Folgetag → „Termin beginnen"
-  → Kachel → Zonenliste → Formular). **Prüfstand-Schalter:** Startargument `-glatttNoPhorestWrites`
+  `TreatmentSettingsSnapshotTests`, UI-Test `testIpadAppointmentFromList` (Folgetag → „Termin beginnen"
+  → Kachel → Zonenliste → Formular). Zifferntastatur des Zonen-Formulars: „Fertig" in der Tastaturleiste und ein Tipp neben die
+  Felder schließen sie (das iPad-Zahlenfeld hat keine eigene Fertig-Taste). **Prüfstand-Schalter:** Startargument `-glatttNoPhorestWrites`
   (`AppointmentDetailModel.phorestWritesDisabled`) lässt Check-in, Beenden und Zusatzbuchung aus —
   Pflicht für UI-Tests gegen den lokalen Hub, der die echte Phorest-API ruft.
 - **Stufe 3 — Formulare (seit 22.09.2026, Entscheidung Jan: eingebettet statt nachgebaut):**
@@ -750,10 +752,23 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   `formEvent` an `NativeBridge.onFormEvent`; `AppointmentDetailModel.handleFormEvent` pflegt
   `submittedFormIds`/`lastContractPaymentMethod`, lädt Einreichungen und Kundin nach und schließt
   das eingebettete Formular. Neue Feldtypen des Editors stehen der App damit sofort zur Verfügung.
+  **Kundenmodus (seit 21.09.2026):** Sobald ein Formular offen ist, liegt das iPad beim Kunden — die
+  linke Spalte wird 200 pt schmal (Initialen, Name, Formularname), Restzeit und „Termin beenden"
+  sind ausgeblendet; zurück geht es über „Zur Formularliste". Das Formular liegt ohne Karte direkt
+  auf dem nativen Hintergrund (`TransientWebView(transparent: true)`, Theme setzt `html`/`body`/
+  `.fullscreen-layout` bei `.apt-detail--native-form` transparent) und **scrollt als Dokument**:
+  Hülle, Body und Panel verlieren dort ihre feste Höhe, weil WebKit ein fokussiertes Feld nur im
+  Haupt-Scroller vor die Tastatur rückt. flatpickr-Jahresfeld: `bridge.js` setzt beim Tipp
+  `inputmode=none` (Pfeile stellen das Jahr, keine Tastatur). **Fallstrick:** `layouts.fullscreen`
+  (Terminseite) trägt seitdem ebenfalls `<meta name="glattthub-app">` — ohne den Tag meldete die
+  Bridge aus dem Formular-WebView `loggedIn:false`, `isReady` kippte und die Hülle schien durch;
+  `NativeBridge` wertet `ready` außerdem nur noch vom aktiven WebView, `WebCoordinator.didFinish`
+  ignoriert `about:blank`.
 - **Stufe 4 — Direkt behandeln, Kasse, Minderjährige (seit 22.09.2026):** „Direkt behandeln"
   erscheint als Kachel, sobald im Termin ein Vertrag abgeschlossen ist und der SEPA-Schritt erledigt
   (`directTreatmentAvailable`), und wird im Beenden-Ablauf nach der Kasse als Frage angeboten
-  (`showDirectOffer`, wie im Web vor der Folgetermin-Frage). Das Livewire-Modal
+  (`showDirectOffer`, wie im Web vor der Folgetermin-Frage; als `.alert`, weil das iPad-Popover
+  eines `confirmationDialog` die Abbrechen-Rolle weglässt und nichts abdunkelt). Das Livewire-Modal
   `DirectTreatmentModal` (gleiche Kabine, Paket-Services, „Kauf nachholen") läuft als Web-Blatt mit
   `?view=session&shell=native&direct=1` (`openDirect` → `offerDirectTreatment()` nach dem Laden,
   Klasse `apt-detail--native-direct` blendet den Seiteninhalt aus); `bridge.js` meldet
@@ -769,6 +784,54 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   ab („incomplete headers", 500) — behoben per `-initial-env OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES`
   an der `FastCgiServer`-Zeile in `/Applications/MAMP/conf/apache/httpd.conf`. Der lokale Hub ruft
   die **echte Phorest-API** — in Tests nie Check-in/Beenden/Buchen auslösen.
+
+### iPad: native Seitenleiste und Start-Raster (seit 22.09.2026)
+
+**Für Endanwender:** Auf dem iPad ersetzt die App das Menü des Hubs. Im Querformat steht die
+Leiste fest links (Start · Termine · Kunden · Berichte, darunter die Gruppen Verkauf/Finanzen/
+Team/Betrieb/System — immer nur eine offen; oben Standort, Suche, Mitteilungen, unten Profil,
+Admin, Abmelden). Im Hochformat bleibt eine schmale Symbol-Spalte; Logo, „Mehr" oder Profil
+öffnen die volle Leiste als Überlagerung. Die Startseite ist wie am iPhone nativ, auf dem iPad
+als Raster: Kennzahlen als Streifen über die volle Breite, die Bausteine der Admin-Reihenfolge
+als Kacheln (Chart breit, Karten schmal, Schnellzugriff als Zeile); im Hochformat ein Zweier-Raster.
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 22.09.2026, Entwürfe im Browser):** Menü-Konzept 1 „Seitenleiste" (statt
+  Symbol-Leiste + Panel oder schwebenden iPadOS-18-Tabs) und Startseiten-Layout A „Raster".
+- **Hülle:** `RootView` zeigt auf dem iPad (`userInterfaceIdiom == .pad`, Hub-Modus)
+  `PadShellView` statt `TabBarHost`; auf dem iPhone bleibt die Tab-Leiste. `PadShellView` legt
+  `PadSidebar` (250 pt quer · 76 pt Symbol-Spalte hoch + 290 pt Überlagerung) neben denselben
+  `HubTabBarController` (`TabBarHost(hidesTabBar: true)` → `tabBarAlwaysHidden`): native Tabs,
+  WebView je Tab, Mehr-Pool und Detailseiten laufen unverändert; die Leiste ruft `selectTab` bzw.
+  `navigate(toPath:)`. Die Leiste erscheint nur bei `isReady && navigation != nil` — davor
+  decken Ladeschirm/Login alles ab (Regel „Sichtbarkeit nur aus Zustand").
+- **Markierung aus Zustand:** `HubTabBarController.onSelectedKeyChanged` (Override von
+  `selectedViewController`) spiegelt `selectedKey` nach `AppState.activeTabKey`; die Leiste
+  markiert Haupttabs daraus und Gruppen-Einträge nur im Mehr-Pool (`activeTabKey == "more"`) über
+  `currentPath`. Der Start-Wert wird beim Anlegen des Controllers gesetzt — sonst blieb ein
+  alter Web-Pfad markiert.
+- **Web ohne Hub-Menü:** `bridge.js` bekommt `__NATIVE_MENU__` (iPad, nicht Kiosk) und setzt
+  `body.ios-native-menu`; das Theme blendet `#sidebar` aus, setzt `.main-content-area` auf
+  `margin-left: 0` und rückt glatttBert-Dock/Begrüßung nach links. Standort-/Mitteilungs-Panels
+  der (unsichtbaren) Web-Sidebar bleiben per Bridge nutzbar. Der Start-Tab lädt jetzt auch auf
+  dem iPad die Hülle `/hub/app-shell` (vorher der volle Hub).
+  Hinweis: Auf dem 11"-iPad bleiben den Web-Seiten quer 960 pt — sie rendern damit ihr
+  Tablet-Layout (< 1024 px, wie im Hochformat), nicht das Desktop-Layout.
+- **Start-Raster:** `CockpitSections` mit `padGrid`/`sizeClass == .regular` packt die Bausteine
+  gierig in Zeilen (`pack(_:columns:)`: 6 Spalten ab 900 pt, sonst 4; Heute-Streifen, Kennzahlen
+  und Schnellzugriff volle Breite, Chart 4/6, alle anderen 2/6 bzw. 2/4). Die Breite kommt vom
+  äußeren `GeometryReader` in `CockpitContent` — nie aus der eigenen Inhaltsbreite (die
+  schrumpft nach dem Einblenden der Leiste nicht mit). Kennzahlen-Kacheln füllen ihre Spalte
+  (`KpiTile(flexible:)`), das Logo im Kopf entfällt auf dem iPad (steht in der Leiste).
+- **Tests:** `PadShellSnapshotTests` (Leiste voll/Symbol-Spalte, Auswahl → Zustand,
+  Tab-Leiste verborgen), `CockpitSnapshotTests` (`cockpit-ipad-land/-port`, `testPadGridPacking`),
+  UI-Test `testIpadShell` (Kaltstart-Bildfolge quer, Leiste → Termine → Verkauf/Verträge ohne
+  Web-Sidebar → Start, Hochformat: Symbol-Spalte, Überlagerung, Termine). Kaltstart 22.09.2026:
+  Ladeschirm → Leiste + Cockpit-Skeleton → Daten, keine Web-Hülle sichtbar.
+- **Dateien:** `Navigation/PadShell.swift`, `Navigation/TabBarHost.swift`,
+  `Navigation/HubTabBarController.swift`, `Screens/RootView.swift`, `Start/CockpitView.swift`,
+  `Bridge/NativeBridge.swift`, `Resources/bridge.js`, Theme `body.ios-app.ios-native-menu`.
 
 ### Verteilung
 
@@ -796,6 +859,7 @@ Apps-&-Bücher-Token in Miradore.
 | F (22.09.) | Native Terminseite (Liste, KPIs, Kalender, Web-Terminansicht als Detailseite im Tab), `/api/app/appointments` | ✅ gebaut (Abschnitt „Native Terminseite"); Abnahme auf dem Gerät offen |
 | G (22.09.) | Native Login-Seite „Schlüssel", native Kundenliste + Kundenübersicht (Web-Registerkarten als Detailseite im Tab), `/api/app/clients` | ✅ gebaut (Abschnitte „Native Login-Seite", „Native Kundenseiten"); Abnahme auf dem Gerät offen |
 | H (22.09.) | Native Terminansicht komplett: Stufe 1 (Split-View iPad quer, Übersicht, Sitzungssteuerung, Beenden-Ablauf), Stufe 2 (Einstellungszettel nativ), Stufe 3 (Formularliste/Kette nativ, Ausfüllen als eingebettete Web-Engine), Stufe 4 (Direkt behandeln als Web-Blatt + nativer Abschluss, Kasse, Minderjährige) | ✅ Stufe 1 auf dem iPad abgenommen (Jan, 22.09.), Stufen 2–4 gebaut; Abnahme auf dem Gerät offen |
+| I (22.09.) | iPad: native Seitenleiste (quer fest, hoch Symbol-Spalte + Überlagerung) ersetzt das Web-Menü; native Startseite als Raster | ✅ gebaut (Abschnitt „iPad: native Seitenleiste"); Abnahme auf dem Gerät offen |
 | 3 | Härtung Weg B (App-Host ohne IAP, Google Sign-In nativ, App Attest) | offen |
 | 4 | Native Prozesse nach Pilot-Entscheidung (Tageserfassung 4–6 Wochen, Laser-Wartung 2–3 Wochen) | offen |
 
@@ -861,6 +925,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
 | 21.09.2026 | 0.1 (dev) | Widgets III: Tagesübersicht-Widget, Sparklines im Kennzahlen-Widget, Körperzonen mit Prognose-Balken und Tages-Chart im großen Widget, Extra-Large-Portrait (iOS 27) |
+| 22.09.2026 | 0.1 (dev) | iPad: native Seitenleiste `PadShellView`/`PadSidebar` (Entwurf 1) statt Web-Menü (`body.ios-native-menu`), Tab-Leiste verborgen, Auswahl gespiegelt in `activeTabKey`; Startseite als Raster (Entwurf A, `CockpitSections.pack`) |
 | 22.09.2026 | 0.1 (dev) | Native Terminansicht Stufe 4: „Direkt behandeln" als Kachel und im Beenden-Ablauf (Livewire-Modal im Web-Blatt `?direct=1`, Bridge `directTreatment`, nativer Abschluss + Wechsel in den neuen Termin mit Auto-Start) |
 | 22.09.2026 | 0.1 (dev) | Native Terminansicht Stufe 3: Formularliste und Kette nativ (Sperren, Mitunterzeichner-Blatt, Zusatzformulare, SEPA-Banner), Ausfüllen als eingebettetes Web-Formular (`?view=forms&shell=native&form=ID`, `apt-detail--native-form`, Bridge `formEvent`) — Engine bleibt eine Wahrheit |
 | 22.09.2026 | 0.1 (dev) | Native Terminansicht Stufe 2: Einstellungszettel nativ — `BodyZoneCatalog` (Klickflächen aus dem Blade, Ebenen im Asset-Katalog), `TreatmentSettingsModel`/`-View` gegen die Endpunkte von `treatment-settings.js`, Zonen-Formular mit Verlauf, Red-Flag-Bestätigung, Fotos per `HubSession.upload` |
