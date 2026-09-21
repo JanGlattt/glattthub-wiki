@@ -811,6 +811,17 @@ als Kacheln (Chart breit, Karten schmal, Schnellzugriff als Zeile); im Hochforma
   markiert Haupttabs daraus und Gruppen-Einträge nur im Mehr-Pool (`activeTabKey == "more"`) über
   `currentPath`. Der Start-Wert wird beim Anlegen des Controllers gesetzt — sonst blieb ein
   alter Web-Pfad markiert.
+- **Erscheinung (seit 21.09.2026):** hell wie eine iPadOS-Seitenleiste (getöntes Grau, dunkle
+  Schrift), dunkel im Blaugrau des Entwurfs — `PadSidebar.background`/`ink`/`rowBg` sind
+  adaptive `UIColor`-Farben. Fenstergrund ist der Inhaltsgrund (`systemGroupedBackground`), nur
+  die Leiste selbst ist getönt; die getönte Leiste als Fenstergrund legte dunkle Bänder unter
+  Statusleiste und Fuß über die volle Breite. Snapshots `pad-sidebar-full`, `-full-dark`, `-rail`.
+- **Widget-Token abgelehnt (401):** Cockpit, Terminseite und Kundenliste sprechen die
+  Bearer-API. Kennt der Hub das Gerät nicht mehr (Staging-DB-Kopie, Gerät im Profil entfernt),
+  verwirft `WidgetAPI.onUnauthorized` → `AppContainer.recoverWidgetToken()` den Token, registriert
+  das Gerät neu (single-flight, höchstens alle 30 s) und wiederholt die Anfrage einmal — vorher
+  blieben die Seiten mit „konnten nicht geladen werden" leer, weil `ensureWidgetToken` den toten
+  Token im Schlüsselbund für gültig hielt.
 - **Web ohne Hub-Menü:** `bridge.js` bekommt `__NATIVE_MENU__` (iPad, nicht Kiosk) und setzt
   `body.ios-native-menu`; das Theme blendet `#sidebar` aus, setzt `.main-content-area` auf
   `margin-left: 0` und rückt glatttBert-Dock/Begrüßung nach links. Standort-/Mitteilungs-Panels
