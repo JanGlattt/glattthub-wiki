@@ -492,18 +492,22 @@ hergeben, fehlt still.
   aus), `CockpitView`/`CockpitSections` (SwiftUI, Swift Charts für das KPZ-Chart, Sparkline nach
   Hub-Konvention). Das Widget-Token wird vor dem ersten Laden sichergestellt
   (`ensureWidgetToken`).
-- **Einhängen (seit 22.09., zweite Fassung):** Der Start-Tab ist **rein nativ** — sein Platzhalter
-  hat kein WebView. Das Start-WebView (`store.primary`) lädt statt der Web-Startseite die **leere
-  Hub-Hülle `/hub/app-shell`** (Route `hub.app-shell`, View `hub/app-shell.blade.php`: Hub-Layout ohne
-  Kacheln, damit Sitzung, Bridge `ready`, Push und Standort-Sync weiter laufen) und hängt **hinter** dem
-  Tab-Inhalt (`attachShell`); nur im Login-Zustand (IAP/Google, Hub-Login, nach dem Abmelden) kommt es
-  nach vorn (`setShellVisible`). So kann beim Start nichts durchscheinen — die erste Fassung legte das
-  Cockpit über die geladene Web-Startseite, und zwischen `didFinish` und `ready` blitzte sie ~1 s auf.
-  `/hub` (Deep-Link, Tab-Tipp) wählt nur den Start-Tab, lädt nichts (`AppContainer.open`). iPad startet
-  weiter mit `/hub` (Querformat ohne Tab-Leiste zeigt die Web-Startseite mit Sidebar). glatttBert vom
-  Cockpit aus wechselt erst auf den Termine-Tab (sichtbare Hub-Seite) und öffnet dort (`bridge.onReady`
-  holt die wartende Schnellaktion nach). Zweiter Tipp auf „Start" → `state.startScrollToTop`. Kein
-  Cockpit im Kiosk-Modus.
+- **Einhängen (seit 22.09., dritte Fassung — die Architekturregel für alle nativen Seiten):**
+  Native Tabs registrieren sich in `HubTabBarController.nativeFactories[key]` (heute `hub.start` →
+  `CockpitView`); ihr Platzhalter hat **kein WebView**, die Instanz entsteht einmal und überlebt
+  `apply(model)`. Das Start-WebView (`store.primary`) lädt die **leere Hub-Hülle `/hub/app-shell`**
+  (Route `hub.app-shell`: Hub-Layout ohne Kacheln — Sitzung, Bridge `ready`, Push, Standort-Sync laufen
+  darüber) und hängt **hinter** dem Tab-Inhalt (`attachShell`); nach vorn kommt es ausschließlich, wenn
+  eine Anmeldung ansteht (`needsLogin` oder „weder bereit noch ladend" — IAP/Google, Hub-Login, nach dem
+  Abmelden). **Entscheidend:** Der Ladeschirm (`RootView`) endet auf Hub-Seiten erst mit dem `ready` der
+  Bridge, nicht mit WebKits `didFinish` (auf fremden Hosts gibt es keine Bridge, dort mit `didFinish`;
+  Sicherheitsnetz 8 s). Genau in der Lücke zwischen `didFinish` und `ready` war vorher die Web-Seite
+  zu sehen — erst die Web-Startseite, dann die Hülle. Sichtbarkeit hängt damit an **einem** Zustand,
+  nicht an Timing. `/hub` (Deep-Link, Tab-Tipp) wählt nur den nativen Tab (`AppContainer.open`
+  bricht bei nativen Tabs ab). iPad startet weiter mit `/hub` (Querformat ohne Tab-Leiste zeigt die
+  Web-Startseite mit Sidebar). glatttBert vom Cockpit aus wechselt auf den ersten Web-Tab und öffnet
+  dort (`bridge.onReady` holt die wartende Schnellaktion nach). Zweiter Tipp auf einen nativen Tab →
+  `onReselectNative` (Start: `state.startScrollToTop`). Kein Cockpit im Kiosk-Modus.
 - **Schrift:** Lato (Hausschrift) liegt als `Lato-Regular.ttf`/`Lato-Bold.ttf` unter
   `ios/glatttHub/Resources/Fonts` (`UIAppFonts` in `project.yml`, dieselben Dateien wie
   `public/fonts`); native Ansichten nutzen `HubFont` (Rollen wie `title`, `number`, `caption`,
