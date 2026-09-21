@@ -33,7 +33,7 @@ Einstellung des Hubs.
 | **Finanzen** | Unternehmensverträge, Mollie, Phorest (GK-Abo), Offene Sitzungen vs. Lastschriften |
 | **Team** | Personal (Phorest-Staff), Gehälter, Boni & Provisionen, Abwesenheiten, Mitarbeiter-Zielwerte, Anlässe, Ziele je Institut, Badges, Verleihungen |
 | **Betrieb** | Terminerinnerungen (Regeln, Kanäle, Opt-in-Vormerke), Beratungs- und Bewertungs-WhatsApp, Formular-Links, Superchat-Kontakt-Mapping, Superchat-Playground |
-| **System** | Hub-Nutzer, Rollen, Berechtigungen, Startseite je Rolle, Benachrichtigungen, Report-Mails, Externe Empfänger, E-Mail-Versand, Schriftart, PDF, Session, Nachrichten, Wissensdatenbank, Bert-Dashboard |
+| **System** | Hub-Nutzer, Rollen, Berechtigungen, Startseite je Rolle, App-Startseite je Rolle (iOS-Cockpit, `IOS-APP.md`), Benachrichtigungen, Report-Mails, Externe Empfänger, E-Mail-Versand, Schriftart, PDF, Session, Nachrichten, Wissensdatenbank, Bert-Dashboard |
 | **Protokolle** | E-Mail-, SEPA-E-Mail-, Terminerinnerungs-, WhatsApp-Protokolle, Report-Mail-Versandprotokoll, Bert-Insights |
 
 ---

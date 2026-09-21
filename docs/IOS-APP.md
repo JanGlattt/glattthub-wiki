@@ -456,6 +456,52 @@ zurück/vor, ⌘R neu laden, ⌘, Einstellungen (⌘K glatttBert kommt vom Hub s
   iPad; Tab-Ziele aus `state.navigation.tabs` (`AppContainer.selectTab`, ohne Tab-Leiste lädt der
   Pfad im aktiven WebView).
 
+### Native Startseite „Cockpit" (seit 22.09.2026)
+
+**Für Endanwender:** Der Tab „Start" der App ist nativ: Begrüßung mit Logo und Standort,
+„Heute" (Beratungen, Verkäufe, KPZ, No-Shows), ein wischbares Kennzahlen-Karussell mit Verlauf,
+Tendenz und Prognose (Zeitraum Heute/Woche/Monat/Jahr), das KPZ-Monatschart, die
+Beratungs-Zeiträume, **Mein Bonus** (nur, wenn für die Person ein Bonus-Board existiert), die
+letzten drei Mitteilungen und der Schnellzugriff. Jede Karte springt in die passende Hub-Seite;
+Ziehen aktualisiert. Welche Abschnitte in welcher Reihenfolge und welche Kennzahlen erscheinen,
+legt das Admin-Backend **je Rolle** fest (System → „App-Startseite je Rolle"); was die Rechte nicht
+hergeben, fehlt still.
+
+!!! nutzerhandbuch "Bedienung: Grundlagen – iPhone/iPad-App (folgt nach dem Gerätetest)"
+
+**Für Entwickler:**
+
+- **Layout je Rolle:** Tabelle `app_start_layouts` (`role_id` null = Standard, `sections` =
+  Schlüssel in Reihenfolge, `kpis` = IDs der `KpiRegistry`), Modell `AppStartLayout` mit dem
+  Abschnitts-Katalog `SECTIONS` (Schlüssel, Beschriftung, Recht) und den Code-Voreinstellungen
+  `DEFAULT_SECTIONS`/`DEFAULT_KPIS`. Auflösung `AppStartLayout::forUser()`: Rolle mit den meisten
+  Abschnitten gewinnt (wie `StartPageRoleDefault`), sonst Standard, sonst Code. Nur ein
+  Standard-Eintrag (Modell-Guard, der DB-Unique lässt mehrere NULLs zu). Admin-Resource
+  `AppStartLayouts` (Gruppe System, Recht `manage_start_page_defaults`, Repeater für die
+  Reihenfolge, Mehrfachauswahl der Kennzahlen aus der Registry).
+- **Endpunkt `GET /api/app/start`** (Session-Auth wie `/api/app/navigation`, `AppStartService`):
+  Begrüßung nach Tageszeit (wie die Web-Startseite), Datum, Layout **rechtegefiltert** (Abschnitt
+  ohne Recht fehlt; Karussell ohne erlaubte Kennzahl fehlt; `bonus` fehlt ohne
+  `view_bonus_board` oder ohne eigenes Board — der Stand kommt aus
+  `BonusBoardController::tile()`, dem Kachel-Endpunkt ohne Besuchs-Snapshot), Bonus-Regeln
+  (max. 6: Name, Wert, Ziel, Fortschritt, erreicht), Schnellzugriff aus den Haupttabs plus Suche
+  und glatttBert. Tests `AppStartTest`, `AppStartLayoutAdminTest`.
+- **App:** `Start/StartModels.swift` (Rahmen), `StartViewModel` (lädt Rahmen und Mitteilungen
+  über die Session, die Zahlen über `WidgetAPI` mit dem Widget-Token — derselbe 15-Min-Cache wie die
+  Widgets; jeder Teil unabhängig, Standortwechsel/Vordergrund/5 Minuten lösen ein sanftes Neuladen
+  aus), `CockpitView`/`CockpitSections` (SwiftUI, Swift Charts für das KPZ-Chart, Sparkline nach
+  Hub-Konvention). Das Widget-Token wird vor dem ersten Laden sichergestellt
+  (`ensureWidgetToken`).
+- **Einhängen:** `HubTabBarController.startViewFactory` legt einen `UIHostingController` über den
+  Platzhalter des Tabs `hub.start`; das Start-WebView bleibt darunter **am Leben** (Login-Erkennung,
+  Bridge, Sitzung, `ready`), ist aber unsichtbar. Zweiter Tipp auf „Start" → `state.startScrollToTop`
+  (nach oben). Kein Cockpit im Kiosk-Modus und im iPad-Querformat ohne Tab-Leiste (dort bleibt die
+  Web-Startseite mit Sidebar).
+- **Snapshots:** `CockpitSnapshotTests` (Schema „glatttHub", `TEST_RUNNER_WIDGET_SNAPSHOT_DIR`)
+  rastert die Abschnitte mit Beispieldaten hell/dunkel; dafür `cockpitStaticLayout` im Environment
+  (ImageRenderer rastert weder `ScrollView` noch Menü-Picker) und `Color("AccentColor")` statt
+  `Color.accentColor` (greift im Renderer nicht).
+
 ### Verteilung
 
 Apple Business Manager **Custom App** (App Store Connect → „Privat — nur für bestimmte Organisationen"
@@ -478,12 +524,13 @@ Apps-&-Bücher-Token in Miradore.
 | C (20.–22.09.) | Widgets B8: Kennzahlen, Tagesübersicht, Beratungsgespräche, Körperzonen | ✅ gebaut; Feinschliff nach 13 Geräte-Screenshots am 22.09. (Höhen füllen, Sparkline-Spalte, Kürzel, Tendenzpfeile, Prognose gestrichelt) — Abnahme der neuen Fassung auf dem Gerät offen |
 | 1c | TestFlight-Pilot, Review, Custom-App-Einreichung, Miradore, Klickanleitungen | **offen** — Klickanleitungen Profil (App-Geräte) und Institut (Kiosk-Block) nachziehen |
 | D (22.09.) | Versionsprüfung, Siri/App Intents, Dokumentenscanner, Diagnose teilen, iPad-Tastaturkürzel | ✅ gebaut (Abschnitt „Phase D"); Gerätetest offen: Siri-Sätze, Scanner-PDF im Hub, ⌘-Overlay am iPad |
+| E (22.09.) | Native Startseite „Cockpit" je Rolle (Entwurf 1), Admin-Resource, `/api/app/start` | ✅ gebaut (Abschnitt „Native Startseite"); Abnahme auf dem Gerät offen |
 | 3 | Härtung Weg B (App-Host ohne IAP, Google Sign-In nativ, App Attest) | offen |
 | 4 | Native Prozesse nach Pilot-Entscheidung (Tageserfassung 4–6 Wochen, Laser-Wartung 2–3 Wochen) | offen |
 
 Bauen & testen: Xcode-Projekt aus `ios/project.yml` (`cd ios && xcodegen generate` nach neuen Dateien),
-Schema „glatttHub" (Debug = Staging + APNs-Sandbox), Unit-Tests `xcodebuild … test` (24 Swift-Tests),
-Springboard-UI-Test im Schema „glatttHub UI", Widget-Snapshots im Schema „glatttHub Widgets" (s. o.). Hub-Tests: `AppDeviceTokenTest`, `AppWidgetKpiTest`, `AppVersionPolicyTest`, `AppScanButtonTest`,
+Schema „glatttHub" (Debug = Staging + APNs-Sandbox), Unit-Tests `xcodebuild … test` (24 Swift-Tests + Cockpit-Snapshot),
+Springboard-UI-Test im Schema „glatttHub UI", Widget-Snapshots im Schema „glatttHub Widgets" (s. o.). Hub-Tests: `AppDeviceTokenTest`, `AppWidgetKpiTest`, `AppVersionPolicyTest`, `AppScanButtonTest`, `AppStartTest`, `AppStartLayoutAdminTest`,
 `MobileNavigationTest`, `SafeAreaConventionTest`.
 
 ### Fallstricke (vorab bekannt)
@@ -515,6 +562,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
 | 21.09.2026 | 0.1 (dev) | Widgets III: Tagesübersicht-Widget, Sparklines im Kennzahlen-Widget, Körperzonen mit Prognose-Balken und Tages-Chart im großen Widget, Extra-Large-Portrait (iOS 27) |
+| 22.09.2026 | 0.1 (dev) | Native Startseite „Cockpit" (Entwurf 1 vom 22.09.): `app_start_layouts` je Rolle + Admin-Resource, `GET /api/app/start`, `CockpitView` über dem Start-WebView, Bonus-Stand nur mit eigenem Board |
 | 22.09.2026 | 0.1 (dev) | Phase D: Versionsprüfung (`/api/app/version`, `RejectOutdatedNativeApp` 426, `UpdateRequiredView`), Siri/App Intents (Tagesüberblick gesprochen, Termine, Suche, glatttBert, Mitteilungen), Dokumentenscanner (`scanDocument`/`scanInto`, `<x-app-scan-button>` an fünf Upload-Stellen), Diagnose teilen (+ Kiosk-Fünffach-Tipp), iPad-Tastaturkürzel |
 | 22.09.2026 | 0.1 (dev) | Widgets IV (Feinschliff nach Gerätetest): Höhen füllen statt fester Maße, Sparkline-Spalte rechts mit Prognose als gestrichelter Linie, Tendenzpfeile (Vergleichs-Schlüssel `value`/`trend` korrigiert), Institutskürzel `code` aus `AppBranchList`, keine Sparkline für `glattt`-Quelle, Snapshot-Target `glatttHubWidgetSnapshots` |
 | 20.09.2026 | 0.1 (dev) | Widgets II: Beratungsgespräche- und Körperzonen-Widget (Swift Charts), Kennzahlen klein mit bis zu drei Werten und Trend-Pfeilen, Extra-Large; Ladeanimation, Launch-Logo, Inhalt im App-Switcher |
