@@ -731,8 +731,10 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   je nach Inhalt als Objekt oder leeres Array — `TreatmentSettingsModel.entries` fängt beides.
   Tests: `TreatmentSettingsTests` (Treffer-Test, Schlüssel, Red Flags, Payload),
   `TreatmentSettingsSnapshotTests`, UI-Test `testIpadAppointmentFromList` (Folgetag → „Termin beginnen"
-  → Kachel → Zonenliste → Formular). Zifferntastatur des Zonen-Formulars: „Fertig" in der Tastaturleiste und ein Tipp neben die
-  Felder schließen sie (das iPad-Zahlenfeld hat keine eigene Fertig-Taste). **Prüfstand-Schalter:** Startargument `-glatttNoPhorestWrites`
+  → Kachel → Zonenliste → Formular). Zahlenfelder des Zonen-Formulars nutzen `NumericKeypadField` (eigener Ziffernblock, `max:` weist
+  zu große Werte schon bei der Eingabe ab — Skintel 0–100, zusätzlich native Prüfung vor dem
+  Speichern). Zonenwahl seit 21.09.2026 mit Umschalter **Grafik | Liste** (`treatment-view-picker`):
+  Grafik groß (Zone antippen), Liste = Knöpfe nach Kategorie. **Prüfstand-Schalter:** Startargument `-glatttNoPhorestWrites`
   (`AppointmentDetailModel.phorestWritesDisabled`) lässt Check-in, Beenden und Zusatzbuchung aus —
   Pflicht für UI-Tests gegen den lokalen Hub, der die echte Phorest-API ruft.
 - **Stufe 3 — Formulare (seit 22.09.2026, Entscheidung Jan: eingebettet statt nachgebaut):**
@@ -764,14 +766,33 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   Bridge aus dem Formular-WebView `loggedIn:false`, `isReady` kippte und die Hülle schien durch;
   `NativeBridge` wertet `ready` außerdem nur noch vom aktiven WebView, `WebCoordinator.didFinish`
   ignoriert `about:blank`.
+- **Ergebnis nach dem Absenden (seit 21.09.2026, nativ):** `form-fill.js` feuert
+  `form-submitting` beim Start von `doSubmitForm()` und `form-submit-failed` bei Fehlern;
+  `form-submitted` trägt zusätzlich `submissionId`, `message`, `sepa`, `pdfEnabled`, `emailEnabled`,
+  `emailTo`, `emailBodyHtml`. Die App zeigt sofort ein Overlay („Formular wird eingereicht …") über
+  dem Web-Formular und danach `FormResultSheet` (Haken, SEPA-Hinweise, „PDF ansehen" =
+  `POST api/forms/submission/{id}/pdf` + Download über die Sitzung + QuickLook, „Per E-Mail
+  versenden" = `POST api/forms/submission/{id}/email` mit demselben Textbaustein, „Weiteres
+  Formular"/„Zur Terminansicht"). Das Web-Modal (`.form-submission-modal`) bleibt im App-Rahmen
+  per Theme unsichtbar (`body.ios-app:has(.apt-detail--native-form)`); der Browser ist unverändert.
 - **Stufe 4 — Direkt behandeln, Kasse, Minderjährige (seit 22.09.2026):** „Direkt behandeln"
   erscheint als Kachel, sobald im Termin ein Vertrag abgeschlossen ist und der SEPA-Schritt erledigt
   (`directTreatmentAvailable`), und wird im Beenden-Ablauf nach der Kasse als Frage angeboten
   (`showDirectOffer`, wie im Web vor der Folgetermin-Frage; als `.alert`, weil das iPad-Popover
-  eines `confirmationDialog` die Abbrechen-Rolle weglässt und nichts abdunkelt). Das Livewire-Modal
-  `DirectTreatmentModal` (gleiche Kabine, Paket-Services, „Kauf nachholen") läuft als Web-Blatt mit
-  `?view=session&shell=native&direct=1` (`openDirect` → `offerDirectTreatment()` nach dem Laden,
-  Klasse `apt-detail--native-direct` blendet den Seiteninhalt aus); `bridge.js` meldet
+  eines `confirmationDialog` die Abbrechen-Rolle weglässt und nichts abdunkelt). **Seit 21.09.2026
+  nativ:** `DirectTreatmentSheet`/`DirectTreatmentModel` (gleiche Kabine, Paket-Services zum
+  An-/Abwählen, „Kauf nachholen", „Neu laden") und `FollowUpBookingSheet`/`FollowUpBookingModel`
+  (Terminabstand-Schnellwahl + freie Wochen, Institut, Datum, Services, Slot-Pillen je Tag mit
+  „ohne Lücke" grün, Buchen mit Rückfrage, „Überspringen") in `BookingSheets.swift`. Beide sprechen
+  JSON-Endpunkte des `Hub\BookingApiController`: `GET/POST hub/appointment/{b}/{id}/direct-treatment
+  [/book|/retry-purchase]` (Recht `view_appointment_detail`) und `hub/booking/api/{services|
+  suggestions|book}` (Recht `view_booking`). Die Logik von „Direkt behandeln" liegt seitdem in
+  `App\Services\Booking\DirectTreatmentService` (Kabine/Startzeit aus dem Beratungstermin,
+  Optionen, Erklärung fehlender Services, Kauf nachholen, Buchen mit Desinfektion) — das Livewire-
+  Modal `DirectTreatmentModal` nutzt denselben Service. Tests `BookingApiTest`, Snapshots
+  `booking-direct`/`booking-followup` (`BookingSheetsSnapshotTests`). Das frühere Web-Blatt mit
+  `?view=session&shell=native&direct=1` (`openDirect`, Klasse `apt-detail--native-direct`) bleibt
+  im Hub erhalten, die App nutzt es nicht mehr; `bridge.js` meldet weiterhin
   `direct-treatment-booked`/`-closed` als `directTreatment` an `NativeBridge.onDirectTreatment`.
   Nach der Buchung beendet die App den Beratungstermin selbst (Kasse → Notiz → PAID, Folgetermin-Frage
   entfällt) und öffnet den neuen Behandlungstermin mit `autoStart` (`container.openAppointment`).
