@@ -671,7 +671,9 @@ Querformat** (Jan, 22.09.2026: „Komplett nativ"). Sie entsteht in vier Stufen;
 native Terminansicht. Der **Einstellungszettel** ist seit Stufe 2 nativ: Körpergrafik zum Antippen,
 Zonenliste nach Kategorien mit Zähler und Haken, freie Zonen; das Zonen-Formular zeigt die bisherigen
 Sitzungen als Tabelle, darunter Laserkopf, Hauttyp, Haar, empfohlene und genutzte Werte, Notizen und
-Fotos (Kamera oder Fotos-App). Auf dem iPad quer liegt links die Spalte mit Kundin (Initialen, Name,
+Fotos (Kamera oder Fotos-App). **Formulare** (Stufe 3): Liste und Reihenfolge nativ, das Ausfüllen
+selbst zeigt das bekannte Hub-Formular direkt in der Inhaltsspalte — mit Teilen, Unterschrift,
+Vertrag und SEPA wie im Web. Auf dem iPad quer liegt links die Spalte mit Kundin (Initialen, Name,
 Kunden-Nr., Geburtstag; Anrufen/E-Mail/Bewertung/Verlegen), Termindaten (Datum, Uhrzeit, Institut,
 Mitarbeiterin), den Bereichen (Übersicht, Formulare, Einstellungszettel, Verläufe) und der
 Sitzungssteuerung; rechts der Inhalt. Auf dem iPhone ist alles gestapelt mit fester Aktionsleiste
@@ -731,7 +733,24 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   → Kachel → Zonenliste → Formular). **Prüfstand-Schalter:** Startargument `-glatttNoPhorestWrites`
   (`AppointmentDetailModel.phorestWritesDisabled`) lässt Check-in, Beenden und Zusatzbuchung aus —
   Pflicht für UI-Tests gegen den lokalen Hub, der die echte Phorest-API ruft.
-- **Stufenplan:** 3 = Formulare nativ, 4 = Direkt behandeln / Kasse-Details / Minderjährige.
+- **Stufe 3 — Formulare (seit 22.09.2026, Entscheidung Jan: eingebettet statt nachgebaut):**
+  Die Formular-Engine `form-fill.js` (3.000 Zeilen, 25 Feldtypen, Preise/Gutscheine/SEPA/
+  Rechtsdokumente/Phorest-Abgleich, Validierung bewusst nur in PHP + JS) wird **nicht** in Swift
+  dupliziert. Nativ sind Liste und Kette (`formsPane`: Reihenfolge Kundeninformation → Vertrag →
+  SEPA, Sperrgründe, Pflicht-/Minderjährig-Badges, „1 von 2 Unterschriften", SEPA-Pflicht-Banner,
+  „Weiteres Formular" aus `availableExtraForms`), die Entscheidung beim Tipp (`openForm`: gesperrt →
+  Hinweis, Mitunterzeichner offen → natives Blatt mit „Bisherige Angaben" und „Link erneut senden"
+  via `POST api/forms/submissions/{id}/cosigner/remind`, eingereicht → Auswahl ansehen/erneut) und
+  der Rahmen. Das **Ausfüllen** läuft als `EmbeddedFormView` — ein `TransientWebView` in der
+  Inhaltsspalte (iPad) bzw. Vollbild (iPhone) mit `?view=forms&shell=native&form={id}`:
+  `showUnified` gibt `openFormId` weiter, `appointment-unified.js` öffnet das Formular nach dem
+  Laden direkt (`openSessionForm`, bei Bedarf in `extraFormIds`), die Klasse
+  `apt-detail--native-form` blendet Liste, Rücksprünge und „Zur Terminansicht" aus. `bridge.js`
+  meldet `form-submitted` (formId, cosignerPending, contractPaymentMethod) und `close-form` als
+  `formEvent` an `NativeBridge.onFormEvent`; `AppointmentDetailModel.handleFormEvent` pflegt
+  `submittedFormIds`/`lastContractPaymentMethod`, lädt Einreichungen und Kundin nach und schließt
+  das eingebettete Formular. Neue Feldtypen des Editors stehen der App damit sofort zur Verfügung.
+- **Stufenplan:** 4 = Direkt behandeln / Kasse-Details / Minderjährige.
 - **Lokaler Prüfstand:** MAMPs php-cgi stürzte bei Phorest-Aufrufen mit dem objc-Fork-Safety-Abort
   ab („incomplete headers", 500) — behoben per `-initial-env OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES`
   an der `FastCgiServer`-Zeile in `/Applications/MAMP/conf/apache/httpd.conf`. Der lokale Hub ruft
@@ -762,7 +781,7 @@ Apps-&-Bücher-Token in Miradore.
 | E (22.09.) | Native Startseite „Cockpit" je Rolle (Entwurf 1), Admin-Resource, `/api/app/start` | ✅ gebaut (Abschnitt „Native Startseite"); Abnahme auf dem Gerät offen |
 | F (22.09.) | Native Terminseite (Liste, KPIs, Kalender, Web-Terminansicht als Detailseite im Tab), `/api/app/appointments` | ✅ gebaut (Abschnitt „Native Terminseite"); Abnahme auf dem Gerät offen |
 | G (22.09.) | Native Login-Seite „Schlüssel", native Kundenliste + Kundenübersicht (Web-Registerkarten als Detailseite im Tab), `/api/app/clients` | ✅ gebaut (Abschnitte „Native Login-Seite", „Native Kundenseiten"); Abnahme auf dem Gerät offen |
-| H (22.09.) | Native Terminansicht Stufe 1 (Split-View iPad quer, Übersicht, Sitzungssteuerung, Beenden-Ablauf) und Stufe 2 (Einstellungszettel nativ: Körpergrafik, Zonen-Formular, Fotos); Formulare noch als Web-Blatt `?shell=native` | ✅ Stufe 1 auf dem iPad abgenommen (Jan, 22.09.), Stufe 2 gebaut; Stufen 3–4 offen |
+| H (22.09.) | Native Terminansicht Stufe 1 (Split-View iPad quer, Übersicht, Sitzungssteuerung, Beenden-Ablauf), Stufe 2 (Einstellungszettel nativ) und Stufe 3 (Formularliste/Kette nativ, Ausfüllen als eingebettete Web-Engine) | ✅ Stufe 1 auf dem iPad abgenommen (Jan, 22.09.), Stufen 2–3 gebaut; Stufe 4 offen |
 | 3 | Härtung Weg B (App-Host ohne IAP, Google Sign-In nativ, App Attest) | offen |
 | 4 | Native Prozesse nach Pilot-Entscheidung (Tageserfassung 4–6 Wochen, Laser-Wartung 2–3 Wochen) | offen |
 
@@ -828,6 +847,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
 | 21.09.2026 | 0.1 (dev) | Widgets III: Tagesübersicht-Widget, Sparklines im Kennzahlen-Widget, Körperzonen mit Prognose-Balken und Tages-Chart im großen Widget, Extra-Large-Portrait (iOS 27) |
+| 22.09.2026 | 0.1 (dev) | Native Terminansicht Stufe 3: Formularliste und Kette nativ (Sperren, Mitunterzeichner-Blatt, Zusatzformulare, SEPA-Banner), Ausfüllen als eingebettetes Web-Formular (`?view=forms&shell=native&form=ID`, `apt-detail--native-form`, Bridge `formEvent`) — Engine bleibt eine Wahrheit |
 | 22.09.2026 | 0.1 (dev) | Native Terminansicht Stufe 2: Einstellungszettel nativ — `BodyZoneCatalog` (Klickflächen aus dem Blade, Ebenen im Asset-Katalog), `TreatmentSettingsModel`/`-View` gegen die Endpunkte von `treatment-settings.js`, Zonen-Formular mit Verlauf, Red-Flag-Bestätigung, Fotos per `HubSession.upload` |
 | 22.09.2026 | 0.1 (dev) | Native Terminansicht Stufe 1: Split-View (iPad quer) / gestapelt (iPhone), dieselben Hub-Endpunkte wie das Web via `HubSession.json`, Termin beginnen/beenden (Kasse → Folgetermin → Notiz), Web-Blätter `?shell=native`; Öffnen aus Web (`livewire:navigate`-Hook, Coordinator), Tab, Push; iPad-Vollbild via `presentedAppointment` |
 | 22.09.2026 | 0.1 (dev) | Native Kundenliste und Kundenübersicht (Tab „Kunden"): `GET /api/app/clients`, `/api/app/clients/{id}`; `ClientSearchService` und `ClientAppointmentHistoryService` aus den Controllern herausgezogen; native Detailseiten im nativen Tab (`nativeDetailFactories`); Web-Push-Angebot im WebView unterdrückt |
