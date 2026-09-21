@@ -811,6 +811,15 @@ als Kacheln (Chart breit, Karten schmal, Schnellzugriff als Zeile); im Hochforma
   markiert Haupttabs daraus und Gruppen-Einträge nur im Mehr-Pool (`activeTabKey == "more"`) über
   `currentPath`. Der Start-Wert wird beim Anlegen des Controllers gesetzt — sonst blieb ein
   alter Web-Pfad markiert.
+- **Vollfläche & Ränder (seit 21.09.2026):** Die Terminansicht verlangt auf dem iPad das ganze
+  Fenster — `AppointmentDetailView` zählt `AppState.padFullscreenDepth` hoch/runter (Zähler, weil
+  „Direkt behandeln" die nächste Ansicht öffnet, bevor die alte verschwindet), `PadShellView`
+  blendet die Leiste dann aus. Verschachtelte Scroller (Cockpit im GeometryReader, Listen unter
+  einer Kopfzeile) bekommen `scrollsUnderSafeArea()` (`HubComponents.swift`): Inhalt läuft unter
+  Statusleiste/Home-Indicator durch statt hart am Safe-Area-Rand zu enden.
+- **Zahlenfelder:** `.numberPad` zeigt auf dem iPad die volle Tastatur im Ziffern-Layout. Der
+  Einstellungszettel nutzt deshalb `NumericKeypadField` — ein `UITextField` mit eigener
+  `inputView` (0–9, ⌫, Fertig); für Ganzzahl-Felder nativer Seiten immer diese Komponente.
 - **Erscheinung (seit 21.09.2026):** hell wie eine iPadOS-Seitenleiste (getöntes Grau, dunkle
   Schrift), dunkel im Blaugrau des Entwurfs — `PadSidebar.background`/`ink`/`rowBg` sind
   adaptive `UIColor`-Farben. Fenstergrund ist der Inhaltsgrund (`systemGroupedBackground`), nur
