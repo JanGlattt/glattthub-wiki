@@ -568,6 +568,20 @@ Wischgeste vom Rand führen in die Liste zurück. Aktualisiert wird beim Wiederk
   `deduplicateAppointments()`-Durchlauf in `WidgetDayService::appointments()` reduzierte bei „Alle
   Standorte" `allServices`/`allServiceIds`/`allNotes` wieder auf die erste Zeile (Beratung nicht
   erkannt, Notizen weg). Behoben; galt auch für das Tagesübersicht-Widget.
+- **Terminnotizen (22.09.2026):** Die Phorest-Listen-API liefert trotz `includeNotes=true` keine
+  Notizen — die Web-Seite lädt sie beim ersten Ausklappen je Phorest-Zeile über den Detail-Endpunkt
+  nach (`appointments.js ensureAppointmentNotes`). Nativ dasselbe: jeder Termin trägt `phorest_ids`
+  (alle zusammengeführten Zeilen), **`GET /api/app/appointments/notes?branch=&ids=a,b`**
+  (`AppAppointmentNotesController`, `AppAppointmentsService::notes()`) holt je Zeile
+  `getAppointment(includeNotes)`, liest `notes`/`note`/`serviceNote`, trimmt und dedupliziert; Cache
+  10 Min je Termin, höchstens 10 Zeilen je Anfrage, fremder Standort → 403. Die App ruft ihn beim
+  Ausklappen einer Beratung (`AppointmentsViewModel.loadNotes`, Zustände „wird geladen" / Notizen /
+  „Keine Terminnotiz hinterlegt"). Bewusst nicht für den ganzen Tag (12 Beratungen = 12 Aufrufe).
+- **Geräteregistrierung ist gesperrt (22.09.2026):** Beim Start fragen Navigation, Cockpit und
+  Terminseite gleichzeitig nach dem Widget-Token → zwei parallele `POST /api/app/devices` liefen in
+  den Unique-Index (`user_id`, `native_device_id`) und einer bekam 500, die Terminseite blieb ohne
+  Token. `AppDeviceService::register()` serialisiert jetzt mit `Cache::lock` je Gerät, die App
+  hält die Registrierung single-flight (`AppContainer.ensureWidgetToken`).
 - **App:** `Appointments/AppointmentsViewModel` (Tag-Cache im Speicher, laufende Anfrage wird bei
   Tag-/Standortwechsel abgebrochen, statische Formatter), `AppointmentsView` (Kopf, Datumsleiste,
   KPI-Streifen, `List` mit `AppointmentCard` und Swipe-Aktionen, Skeleton), `DayScheduleView`
@@ -679,6 +693,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
 | 21.09.2026 | 0.1 (dev) | Widgets III: Tagesübersicht-Widget, Sparklines im Kennzahlen-Widget, Körperzonen mit Prognose-Balken und Tages-Chart im großen Widget, Extra-Large-Portrait (iOS 27) |
+| 22.09.2026 | 0.1 (dev) | Terminseite: Karte neu (Zeit-Spalte, Status-Kante innerhalb der Rundung, Chips, runde Kontakt-Knöpfe), Terminnotizen per `GET /api/app/appointments/notes` beim Ausklappen, Geräteregistrierung gegen Doppel-Insert gesperrt |
 | 22.09.2026 | 0.1 (dev) | Kaltstart: Start-Tab ist vom ersten Frame an das Cockpit (Factories über den Initializer, Prüfstand `LaunchFlashUITests`, `HubTabBarControllerTests`); abgebrochene Navigationen beenden den Ladeschirm nicht mehr |
 | 22.09.2026 | 0.1 (dev) | Native Terminseite (Tab „Termine"): `GET /api/app/appointments` (angereichert, eine Quelle für Zustand/Beratung/Verkäufe), Liste mit Swipe, KPI-Streifen, Tageskalender, Web-Terminansicht als Detailseite im Tab; Architektur: `detail_prefixes` in der Navigation, `NativeTabNavigationController`, `HubWebPageController`; Befund doppeltes Dedupe bei „Alle Standorte" behoben |
 | 22.09.2026 | 0.1 (dev) | Native Startseite „Cockpit" (Entwurf 1 vom 22.09.): `app_start_layouts` je Rolle + Admin-Resource, `GET /api/app/start`, `CockpitView` über dem Start-WebView, Bonus-Stand nur mit eigenem Board |
