@@ -661,6 +661,60 @@ neun. Diese Registerkarten öffnen als Web-Seite **im Kunden-Tab mit Zurück** z
   „incomplete headers" (500) — Cache per `tinker` vorwärmen, dann läuft der UI-Test durch; in CLI
   und auf Staging ist der Endpunkt sauber.
 
+### Native Terminansicht (Stufe 1, seit 22.09.2026)
+
+Die Terminansicht ist die am häufigsten benutzte Seite des Tages — Hauptfokus **iPad im
+Querformat** (Jan, 22.09.2026: „Komplett nativ"). Sie entsteht in vier Stufen; Stufe 1 ist auf
+`develop`.
+
+**Für Endanwender:** Ein Tipp auf einen Termin (Terminliste, Web-Seiten, Push, Link) öffnet die
+native Terminansicht. Auf dem iPad quer liegt links die Spalte mit Kundin (Initialen, Name,
+Kunden-Nr., Geburtstag; Anrufen/E-Mail/Bewertung/Verlegen), Termindaten (Datum, Uhrzeit, Institut,
+Mitarbeiterin), den Bereichen (Übersicht, Formulare, Einstellungszettel, Verläufe) und der
+Sitzungssteuerung; rechts der Inhalt. Auf dem iPhone ist alles gestapelt mit fester Aktionsleiste
+unten. „Termin beginnen" checkt in Phorest ein und startet die Uhr (Restzeit, Fortschritt);
+„Termin beenden" führt durch Kasse-Hinweis (roter Saldo-Schirm mit Nicht-Kassierungs-Vermerk),
+Folgetermin-Buchung und Pflichtnotiz und schließt den Termin in Phorest ab (PAID). Formulare und
+Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite.
+
+**Für Entwickler:**
+
+- **Eine Quelle der Wahrheit:** Die native Seite ruft **dieselben JSON-Endpunkte wie die
+  Web-Terminansicht** (`hub/appointment/{b}/{a}/data`, forms, submissions, notes, packages,
+  merged-services, treated-zones, addon-services, review status, balance; POST `checkin`,
+  `log-start`, `note`, Addon-Buchung, Bewertungslink) über `HubSession.json()` (Sitzungs-Cookies +
+  XSRF, 30 s, Server-`message` bei Fehlern). Keine zweite Backend-Logik, keine App-Endpunkte für
+  Termin-Aktionen. `AppointmentDetailModel` spiegelt den Zustand von `appointment-unified.js`
+  (Formular-Kette `matchingForms`/`isFormRequired`/`treatmentLocked`, Status `effectiveState`,
+  Folgetermin-Eignung, Phorest-Zeiten `07:00:00.000` + `appointmentDate`).
+- **Öffnen von überall:** `AppointmentTarget(url:)` erkennt `/hub/appointment/{b}/{a}?view=&start=1`.
+  Wege: nativer Termine-Tab (`openDetail` → `nativeDetailFactories["hub.appointments"]`), Web-Seiten
+  (`bridge.js` hört auf das **abbrechbare `alpine:navigate`** vor Livewires Weiterleitung — deckt
+  `Livewire.navigate`, `wire:navigate`-Links und Redirects ab, `stopImmediatePropagation` hält Skeleton und Fetch-Abbruch des Hubs zurück; kein Monkey-Patch — plus
+  Capture-Klick auf `a[href]`; harte Seitenwechsel fängt `WebCoordinator.decidePolicyFor`),
+  Push/Universal Link (`AppContainer.open` → `openAppointment`). **iPad regular width** (keine
+  Tab-Leiste): `AppState.presentedAppointment` → `RootView.fullScreenCover`; kompakt: Push im Tab.
+  Innerhalb der Web-Terminansicht selbst (`[data-appointment-page]`, Blatt der nativen Seite) und
+  bei `HubWKWebView.allowsAppointmentPage` wird nicht abgefangen.
+- **Web-Blätter (Stufe 1):** `?shell=native` rendert `appointment-unified/index` ohne Kopfzeile,
+  Sidebar und Aktionsleiste (`$nativeShell` → `apt-detail--native-shell`, CSS im Theme);
+  `AppointmentWebSheet` + `TransientWebView` (`WebViewStore.makeTransientWebView()` teilt Sitzung
+  und Bridge, `discardTransient` beim Schließen); nach dem Schließen lädt die native Seite nach.
+- **Dateien:** `ios/glatttHub/AppointmentView/` (`AppointmentTarget`, `AppointmentDetailModel`,
+  `AppointmentDetailView`, `AppointmentWebSheet`), `HubSession.json`, `WebViewStore`/`WebCoordinator`
+  (`onOpenAppointment`), `NativeBridge` (`openAppointment`), `bridge.js`; Hub:
+  `AppointmentViewController::showUnified` (`nativeShell`), `appointment-unified/index.blade.php`,
+  `theme_glattt.css`. Tests: `AppointmentDetailSnapshotTests` (iPad/iPhone × Ruhe/Sitzung),
+  UI-Tests `testAppointmentDetailScreens` (iPhone, Termine-Tab) und `testIpadAppointmentFromWeb`
+  (iPad quer: Web-Termine → „Termin öffnen" → Vollbild → Schließen); Hub
+  `AppointmentDetailLayoutTest`.
+- **Stufenplan:** 2 = Einstellungszettel nativ, 3 = Formulare nativ, 4 = Direkt behandeln /
+  Kasse-Details / Minderjährige.
+- **Lokaler Prüfstand:** MAMPs php-cgi stürzte bei Phorest-Aufrufen mit dem objc-Fork-Safety-Abort
+  ab („incomplete headers", 500) — behoben per `-initial-env OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES`
+  an der `FastCgiServer`-Zeile in `/Applications/MAMP/conf/apache/httpd.conf`. Der lokale Hub ruft
+  die **echte Phorest-API** — in Tests nie Check-in/Beenden/Buchen auslösen.
+
 ### Verteilung
 
 Apple Business Manager **Custom App** (App Store Connect → „Privat — nur für bestimmte Organisationen"
@@ -686,6 +740,7 @@ Apps-&-Bücher-Token in Miradore.
 | E (22.09.) | Native Startseite „Cockpit" je Rolle (Entwurf 1), Admin-Resource, `/api/app/start` | ✅ gebaut (Abschnitt „Native Startseite"); Abnahme auf dem Gerät offen |
 | F (22.09.) | Native Terminseite (Liste, KPIs, Kalender, Web-Terminansicht als Detailseite im Tab), `/api/app/appointments` | ✅ gebaut (Abschnitt „Native Terminseite"); Abnahme auf dem Gerät offen |
 | G (22.09.) | Native Login-Seite „Schlüssel", native Kundenliste + Kundenübersicht (Web-Registerkarten als Detailseite im Tab), `/api/app/clients` | ✅ gebaut (Abschnitte „Native Login-Seite", „Native Kundenseiten"); Abnahme auf dem Gerät offen |
+| H (22.09.) | Native Terminansicht Stufe 1 (Split-View iPad quer, Übersicht, Sitzungssteuerung, Beenden-Ablauf; Formulare/Zettel als Web-Blatt `?shell=native`) | ✅ gebaut (Abschnitt „Native Terminansicht"); Stufen 2–4 und Abnahme auf dem Gerät offen |
 | 3 | Härtung Weg B (App-Host ohne IAP, Google Sign-In nativ, App Attest) | offen |
 | 4 | Native Prozesse nach Pilot-Entscheidung (Tageserfassung 4–6 Wochen, Laser-Wartung 2–3 Wochen) | offen |
 
@@ -751,6 +806,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
 | 21.09.2026 | 0.1 (dev) | Widgets III: Tagesübersicht-Widget, Sparklines im Kennzahlen-Widget, Körperzonen mit Prognose-Balken und Tages-Chart im großen Widget, Extra-Large-Portrait (iOS 27) |
+| 22.09.2026 | 0.1 (dev) | Native Terminansicht Stufe 1: Split-View (iPad quer) / gestapelt (iPhone), dieselben Hub-Endpunkte wie das Web via `HubSession.json`, Termin beginnen/beenden (Kasse → Folgetermin → Notiz), Web-Blätter `?shell=native`; Öffnen aus Web (`livewire:navigate`-Hook, Coordinator), Tab, Push; iPad-Vollbild via `presentedAppointment` |
 | 22.09.2026 | 0.1 (dev) | Native Kundenliste und Kundenübersicht (Tab „Kunden"): `GET /api/app/clients`, `/api/app/clients/{id}`; `ClientSearchService` und `ClientAppointmentHistoryService` aus den Controllern herausgezogen; native Detailseiten im nativen Tab (`nativeDetailFactories`); Web-Push-Angebot im WebView unterdrückt |
 | 22.09.2026 | 0.1 (dev) | Native Login-Seite „Schlüssel": ganzseitig, eigener Ziffernblock, Face ID, Begrüßung mit Namen, E-Mail-Sheet (Fortify JSON), Google-Schritt mit nativem Kopf; `PinLoginView` entfällt |
 | 22.09.2026 | 0.1 (dev) | Terminseite: Karte neu (Zeit-Spalte, Status-Kante innerhalb der Rundung, Chips, runde Kontakt-Knöpfe), Terminnotizen per `GET /api/app/appointments/notes` beim Ausklappen, Geräteregistrierung gegen Doppel-Insert gesperrt |

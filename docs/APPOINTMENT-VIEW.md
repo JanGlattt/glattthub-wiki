@@ -116,12 +116,14 @@ Kasse, Folgetermin und Pflicht-Notiz und schließt den Termin in Phorest ab.
 |-----------|--------------|---------|
 | `view` | Initiale Ansicht (`details`, `forms-history`, `settings-history`, `session`, `forms`, `treatment-settings`) | `details` |
 | `start` | `1` = Session startet beim Öffnen selbst (Check-in + Staff-Zuordnung); gesetzt beim Wechsel in den Behandlungstermin nach „Direkt behandeln" | — |
+| `shell` | `native` = nur die Inhaltsspalte ohne Kopfzeile, Sidebar und Aktionsleiste (`$nativeShell`, Klasse `apt-detail--native-shell`) — für die Web-Blätter (Formulare, Einstellungszettel) über der **nativen** Terminansicht der iOS-App, Stufe 1 (`IOS-APP.md`) | — |
 
 Der frühere `embed=1`-Parameter (iframe-Modus) wurde **entfernt**.
 
 ### Architektur
 
 - **Eine Route, eine Seite:** `showUnified()` rendert `hub/appointment-unified/index.blade.php` im Layout `layouts/fullscreen.blade.php` (ohne Hub-Sidebar, randlos: `padding: 0`, kein Lesecontainer). Die Terminübersicht öffnet die Terminansicht per `Livewire.navigate()` (SPA-Seitenwechsel, `openAppointment()` in `appointments.js`; vor 08/2026 harter Reload per `window.location.href`) — kein iframe/Modal.
+- **iOS-App:** In der App öffnet jeder Weg auf diese URL die **native** Terminansicht (Bridge hört auf das abbrechbare `alpine:navigate`, harte Seitenwechsel fängt die App ab); die Web-Seite läuft dort nur noch als Blatt mit `?shell=native`. Die native Seite spricht dieselben JSON-Endpunkte dieser Seite an — wer hier einen Endpunkt ändert, ändert ihn für die App mit. Der Wurzel-Knoten trägt `data-appointment-page`, damit die Bridge innerhalb der Seite nichts abfängt. Details: `IOS-APP.md`, Abschnitt „Native Terminansicht".
 - **Ein Alpine-Scope:** Top-Bar, Sidebar und Panels liegen alle im selben `x-data="appointmentUnified()"`-Root.
 - **Session-Zustand:** `sessionActive` wird **ausschließlich** durch `startSession()` gesetzt (Button unten links). `startSession()` führt aus: Check-in (falls Status Gebucht/Bestätigt), einmaliges `logSessionStart()`, Wechsel zur Session-Ansicht. `navigateTo(view)` ist ein reiner Ansichtswechsel ohne Nebenwirkungen. `endSession()` (Pflicht-Notiz → Phorest) setzt `sessionActive` zurück.
 - **Zurück-Sperre:** Bei `sessionActive` wird der „Termine"-Link durch einen gesperrten Button ersetzt (`.apt-detail-back--locked`); Klick zeigt einen Toast-Hinweis.
