@@ -508,6 +508,14 @@ hergeben, fehlt still.
   Web-Startseite mit Sidebar). glatttBert vom Cockpit aus wechselt auf den ersten Web-Tab und öffnet
   dort (`bridge.onReady` holt die wartende Schnellaktion nach). Zweiter Tipp auf einen nativen Tab →
   `onReselectNative` (Start: `state.startScrollToTop`). Kein Cockpit im Kiosk-Modus.
+- **Ladeschirm & Skeleton (22.09.):** `LoadingView` zeigt Logo (leichtes Atmen) und einen schmalen
+  Gold-Balken, der den Ladephasen folgt (`AppState.loadingPhase`: `connecting` beim Start,
+  `signingIn`/`loadingHub` bei der ersten Antwort je nach Host, `finishing` bei `didFinish`, `ready`
+  durch die Bridge) — mit Lauflicht und Phasentext; er bleibt bis `ready` und geht dann weich
+  (Opacity + leichtes Zoom, 0,45 s) ins Cockpit über. Das Cockpit zeigt vor den Daten ein Skeleton:
+  `View.skeleton(_:)` (redacted + grau + `Shimmer`-Lauflicht, `SkeletonBlock` für Charts/Listen), vor
+  dem ersten Rahmen die Standardseite als Platzhalter. Beide respektieren „Bewegung reduzieren".
+  Snapshot `cockpit-skeleton.png` im `CockpitSnapshotTests`.
 - **Schrift:** Lato (Hausschrift) liegt als `Lato-Regular.ttf`/`Lato-Bold.ttf` unter
   `ios/glatttHub/Resources/Fonts` (`UIAppFonts` in `project.yml`, dieselben Dateien wie
   `public/fonts`); native Ansichten nutzen `HubFont` (Rollen wie `title`, `number`, `caption`,
