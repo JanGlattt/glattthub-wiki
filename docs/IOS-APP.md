@@ -632,6 +632,34 @@ Springboard-UI-Test im Schema „glatttHub UI", Widget-Snapshots im Schema „gl
 - **Simulator empfängt keine APNs** — Push nur auf echten Geräten testen.
 - **Kein `WKWebView` pro Seite**: ein Data-Store, sonst laufen Sitzungen auseinander.
 - **`window.open(blob:)`** öffnet nichts — Blob-Downloads über `glatttNative.saveFile`.
+- **UIKit lädt die View des `UITabBarController` schon im `init`** (Setzen von `mode`/
+  `tabBarMinimizeBehavior`): Alles, was `viewDidLoad` für den ersten Tab braucht (native
+  Factories), muss über den Initializer kommen — sonst zeigt der erste Tab bis zur geladenen
+  Navigation das Hüllen-WebView. Das war das „Durchscheinen beim ersten Laden" (22.09.2026).
+- **iOS 18+: kein `tabBarItem` im `UITab`-Provider** eines bestehenden Controllers setzen —
+  Absturz `insertObject:atIndex:` in `setTabs`.
+
+### Kaltstart-Prüfstand — Pflicht vor „behoben" bei Start-/Sichtbarkeitsfehlern
+
+Sichtbarkeit beim Start ist erst dann geklärt, wenn der Kaltstart **als Bildfolge** vorliegt —
+Logik-Fixes ohne Bild waren dreimal an der falschen Stelle. Das Rezept (Simulator gegen den
+lokalen Hub, weil das iPhone nur per WLAN-Tunnel an Xcode hängt und Logs dort root brauchen):
+
+1. Build mit `HUB_BASE_URL=http://glattthub.local:8888` als xcodebuild-Override (Info.plist
+   erlaubt `NSAllowsLocalNetworking` — nur `.local`/IP-Hosts, Prod/Staging bleiben https).
+2. Anmeldung per PIN des lokalen Testusers: `TEST_RUNNER_HUB_PIN=… TEST_RUNNER_FLASH_DIR=…
+   xcodebuild test -scheme "glatttHub UI" -only-testing:glatttHubUITests/LaunchFlashUITests …`
+   (`ios/glatttHubUITests/LaunchFlashUITests.swift`; ohne PIN übersprungen). Die Sitzung
+   bleibt im Simulator.
+3. Kaltstart aus der Shell: `simctl terminate` → `log stream --predicate 'subsystem ==
+   "com.glattt.hub"'` im Hintergrund → `simctl launch` → Schleife `simctl io booted
+   screenshot` (~100 ms je Bild) → Frames als Kontaktbogen ansehen. (`app.launch()` in
+   XCUITest blockiert bis ~5 s nach Start, die frühen Frames fehlen dort.)
+4. `testTabsAfterColdStart` prüft danach Termine → Kunden → Start.
+
+Erwartete Bildfolge: Launch-Screen → Ladeschirm (Phasen) → beim Ausblenden liegt das
+**Cockpit-Skelett** dahinter → Cockpit. Nie ein Hub-Kopf, nie glatttBert, nie die Hülle.
+Projektwissen: `.github/knowledge/ios-kaltstart-nie-aus-timing.md`.
 
 ### Relevante Dateien
 
