@@ -196,11 +196,22 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   meldet (Hub-Layout mit `<meta name="glattthub-app">`); auf Google-/IAP-Seiten (fremder Host in
   `didFinish`) und auf der Hub-Login-Seite (`loggedIn: false`) ist sie versteckt
   (`setTabBarHidden`, iOS 18+).
-- **Nativer PIN-Login (`PinLoginView`):** Meldet bridge.js `/login` ohne Anmeldung, legt die App
-  ein natives Sheet (medium) über die Web-Login-Seite: vier Punkte, Zifferntastatur, Absenden bei
-  der vierten Ziffer, `POST /login/pin` mit `Accept: application/json` (422 → Fehlertext aus
-  `errors.pin`, 429 → Wartehinweis). Grund: Im WKWebView schiebt die Tastatur die ganze Seite
-  hoch (kein Schalter dafür). **Fallstrick Cookies:** `HubSession` nutzt eine eigene URLSession
+- **Native Login-Seite (`LoginView`, seit 22.09.2026 — Entwurf „Schlüssel", Entscheidung Jan):**
+  Meldet bridge.js `/login` ohne Anmeldung (oder nach dem Abmelden), zeigt die App eine
+  **ganzseitige native Anmeldung** über der Web-Login-Seite der Hülle: Verlauf wie Ladeschirm
+  (nahtlos Launch → Laden → Login), Logo, „Willkommen zurück" — mit Vornamen, sobald das Gerät
+  verknüpft ist (`DeviceCredential.meta`) —, vier Punkte, **eigener Ziffernblock** (`NumberPad`,
+  3 × 4 runde Tasten mit Buchstaben, unten links Face ID falls eingerichtet, rechts Löschen;
+  keine Systemtastatur, nichts schiebt hoch), Absenden bei der vierten Ziffer, falsche PIN →
+  rote Punkte zittern (`ShakeEffect`) + Fehltext. `POST /login/pin` mit `Accept: application/json`
+  (422 → `errors.pin`, 429 → Wartehinweis). **Zweitweg E-Mail** als Sheet (`EmailLoginSheet`,
+  Fortify `POST /login` JSON, `remember`; 2FA ist im Hub aus). Face-ID-Angebot nach der ersten
+  Anmeldung als Sheet (`BiometryOfferSheet`). Nach dem Login übernimmt `finishLogin()` den
+  Ladeschirm (`isLoading = true`, Phase „Hub wird geladen") bis `ready` → Cockpit. Zahnrad oben
+  rechts, Umgebungs-Badge unten außer auf Produktion. Der Google-/IAP-Schritt davor bleibt im
+  WebView; `LoginHintView` legt dort einen Kopf „Schritt 1 von 2 · Google-Anmeldung" darüber.
+  Reine Ansicht `LoginScreen` (Snapshots `LoginSnapshotTests`), UI-Tests `LaunchFlashUITests`
+  (PIN über den Ziffernblock, Fehlerfall, E-Mail-Sheet). **Fallstrick Cookies:** `HubSession` nutzt eine eigene URLSession
   ohne Cookie-Speicher (`httpCookieAcceptPolicy = .never`) — Cookies kommen nur aus dem
   WebView-Store, und die neue Laravel-Sitzung aus dem Set-Cookie der Login-Antwort wird per
   `adoptCookies` in den `WKHTTPCookieStore` übernommen, sonst wäre nur die URLSession
@@ -254,9 +265,10 @@ verlangt die App dort wieder die PIN. Abmelden in der App hebt Face ID **nicht**
   `SecAccessControlCreateWithFlags(kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly, .biometryCurrentSet)`
   ab — Lesen löst Face ID aus (`LAContext` in der Query, `SecItemCopyMatching` abseits des Main-
   Threads), ein neu registriertes Gesicht macht den Eintrag ungültig. Unverschlüsselt liegen nur
-  Name/E-Mail (Anzeige „Als … anmelden") und die Geräte-ID des Hubs. `PinLoginView` hat vier
-  Phasen: `enter` (PIN, mit Face-ID-Knopf falls eingerichtet), `biometric` (Abfrage läuft),
-  `offer` (nach PIN: aktivieren / später / nicht mehr fragen), `loading` (bis `ready`).
+  Name/E-Mail (Anzeige „Als … anmelden") und die Geräte-ID des Hubs. `LoginView` hat drei
+  Phasen: `enter` (PIN, mit Face-ID-Taste falls eingerichtet — beim Erscheinen wird Face ID einmal
+  von selbst abgefragt), `biometric` (Overlay „Anmeldung mit Face ID …"), `offer` (Sheet nach
+  PIN/E-Mail: aktivieren / später / nicht mehr fragen); das Laden bis `ready` zeigt der Ladeschirm.
   `AppContainer.loginWithBiometrics()` → Token → `/api/app/session` → Cookies → Hub laden; bei 401/403
   wird der Keychain-Eintrag gelöscht und die PIN angeboten. Einstellungen zeigen, für wen die
   Anmeldung eingerichtet ist, und heben sie auf (`DELETE` + Keychain).
@@ -693,6 +705,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
 | 21.09.2026 | 0.1 (dev) | Widgets III: Tagesübersicht-Widget, Sparklines im Kennzahlen-Widget, Körperzonen mit Prognose-Balken und Tages-Chart im großen Widget, Extra-Large-Portrait (iOS 27) |
+| 22.09.2026 | 0.1 (dev) | Native Login-Seite „Schlüssel": ganzseitig, eigener Ziffernblock, Face ID, Begrüßung mit Namen, E-Mail-Sheet (Fortify JSON), Google-Schritt mit nativem Kopf; `PinLoginView` entfällt |
 | 22.09.2026 | 0.1 (dev) | Terminseite: Karte neu (Zeit-Spalte, Status-Kante innerhalb der Rundung, Chips, runde Kontakt-Knöpfe), Terminnotizen per `GET /api/app/appointments/notes` beim Ausklappen, Geräteregistrierung gegen Doppel-Insert gesperrt |
 | 22.09.2026 | 0.1 (dev) | Kaltstart: Start-Tab ist vom ersten Frame an das Cockpit (Factories über den Initializer, Prüfstand `LaunchFlashUITests`, `HubTabBarControllerTests`); abgebrochene Navigationen beenden den Ladeschirm nicht mehr |
 | 22.09.2026 | 0.1 (dev) | Native Terminseite (Tab „Termine"): `GET /api/app/appointments` (angereichert, eine Quelle für Zustand/Beratung/Verkäufe), Liste mit Swipe, KPI-Streifen, Tageskalender, Web-Terminansicht als Detailseite im Tab; Architektur: `detail_prefixes` in der Navigation, `NativeTabNavigationController`, `HubWebPageController`; Befund doppeltes Dedupe bei „Alle Standorte" behoben |
