@@ -733,7 +733,8 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   `TreatmentSettingsSnapshotTests`, UI-Test `testIpadAppointmentFromList` (Folgetag → „Termin beginnen"
   → Kachel → Zonenliste → Formular). Zahlenfelder des Zonen-Formulars nutzen `NumericKeypadField` (eigener Ziffernblock, `max:` weist
   zu große Werte schon bei der Eingabe ab — Skintel 0–100, zusätzlich native Prüfung vor dem
-  Speichern). Zonenwahl seit 21.09.2026 mit Umschalter **Grafik | Liste** (`treatment-view-picker`):
+  Speichern; Fallstrick: `UITextField.insertText` umgeht `shouldChangeCharactersIn`, der Ziffernblock
+  fragt den Delegate deshalb selbst, bevor er einfügt). Zonenwahl seit 21.09.2026 mit Umschalter **Grafik | Liste** (`treatment-view-picker`):
   Grafik groß (Zone antippen), Liste = Knöpfe nach Kategorie. **Prüfstand-Schalter:** Startargument `-glatttNoPhorestWrites`
   (`AppointmentDetailModel.phorestWritesDisabled`) lässt Check-in, Beenden und Zusatzbuchung aus —
   Pflicht für UI-Tests gegen den lokalen Hub, der die echte Phorest-API ruft.
@@ -753,7 +754,13 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   meldet `form-submitted` (formId, cosignerPending, contractPaymentMethod) und `close-form` als
   `formEvent` an `NativeBridge.onFormEvent`; `AppointmentDetailModel.handleFormEvent` pflegt
   `submittedFormIds`/`lastContractPaymentMethod`, lädt Einreichungen und Kundin nach und schließt
-  das eingebettete Formular. Neue Feldtypen des Editors stehen der App damit sofort zur Verfügung.
+  das eingebettete Formular. **SEPA-Pflicht-Banner:** `contractPaymentMethod` ist nur die Schätzung des
+  Formulars (sichtbares `contract_price`-Feld, `display_mode`); verbindlich ist
+  `contract_payment_method` aus `GET /api/forms/submissions/client/{id}` (Zahlungsart des aus der
+  Einreichung entstandenen Vertrags, `FormSubmission::contract()`), das Web und App beim Nachladen
+  übernehmen — so überlebt „Direktzahler" auch ein erneutes Öffnen. Bis 21.09.2026 nahm die
+  Schätzung das erste Preisfeld mit Daten, beim Behandlungsvertrag immer das (verborgene) Raten-Feld:
+  jeder Direktzahler bekam die SEPA-Aufforderung. Neue Feldtypen des Editors stehen der App damit sofort zur Verfügung.
   **Kundenmodus (seit 21.09.2026):** Sobald ein Formular offen ist, liegt das iPad beim Kunden — die
   linke Spalte wird 200 pt schmal (Initialen, Name, Formularname), Restzeit und „Termin beenden"
   sind ausgeblendet; zurück geht es über „Zur Formularliste". Das Formular liegt ohne Karte direkt
