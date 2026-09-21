@@ -503,7 +503,12 @@ hergeben, fehlt still.
   Bridge, nicht mit WebKits `didFinish` (auf fremden Hosts gibt es keine Bridge, dort mit `didFinish`;
   Sicherheitsnetz 8 s). Genau in der Lücke zwischen `didFinish` und `ready` war vorher die Web-Seite
   zu sehen — erst die Web-Startseite, dann die Hülle. Sichtbarkeit hängt damit an **einem** Zustand,
-  nicht an Timing. `/hub` (Deep-Link, Tab-Tipp) wählt nur den nativen Tab (`AppContainer.open`
+  nicht an Timing. **Und die Factories der nativen Tabs kommen über den Initializer** des
+  `HubTabBarController`: UIKit lädt dessen View bereits im `init`, `viewDidLoad` baut den ersten Tab —
+  nachträglich gesetzte Factories bedeuteten einen Platzhalter mit dem Hüllen-WebView als Tab-Inhalt,
+  bis die Navigation kam (das war das „Durchscheinen beim ersten Laden", per Kaltstart-Prüfstand
+  `LaunchFlashUITests` bewiesen; `HubTabBarControllerTests` sichert es). Auf iOS 18+ darf der
+  `UITab`-Provider das `tabBarItem` eines bestehenden Tab-Controllers nicht anfassen (Absturz in `setTabs`). `/hub` (Deep-Link, Tab-Tipp) wählt nur den nativen Tab (`AppContainer.open`
   bricht bei nativen Tabs ab). iPad startet weiter mit `/hub` (Querformat ohne Tab-Leiste zeigt die
   Web-Startseite mit Sidebar). glatttBert vom Cockpit aus wechselt auf den ersten Web-Tab und öffnet
   dort (`bridge.onReady` holt die wartende Schnellaktion nach). Zweiter Tipp auf einen nativen Tab →
@@ -646,6 +651,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
 | 21.09.2026 | 0.1 (dev) | Widgets III: Tagesübersicht-Widget, Sparklines im Kennzahlen-Widget, Körperzonen mit Prognose-Balken und Tages-Chart im großen Widget, Extra-Large-Portrait (iOS 27) |
+| 22.09.2026 | 0.1 (dev) | Kaltstart: Start-Tab ist vom ersten Frame an das Cockpit (Factories über den Initializer, Prüfstand `LaunchFlashUITests`, `HubTabBarControllerTests`); abgebrochene Navigationen beenden den Ladeschirm nicht mehr |
 | 22.09.2026 | 0.1 (dev) | Native Terminseite (Tab „Termine"): `GET /api/app/appointments` (angereichert, eine Quelle für Zustand/Beratung/Verkäufe), Liste mit Swipe, KPI-Streifen, Tageskalender, Web-Terminansicht als Detailseite im Tab; Architektur: `detail_prefixes` in der Navigation, `NativeTabNavigationController`, `HubWebPageController`; Befund doppeltes Dedupe bei „Alle Standorte" behoben |
 | 22.09.2026 | 0.1 (dev) | Native Startseite „Cockpit" (Entwurf 1 vom 22.09.): `app_start_layouts` je Rolle + Admin-Resource, `GET /api/app/start`, `CockpitView` über dem Start-WebView, Bonus-Stand nur mit eigenem Board |
 | 22.09.2026 | 0.1 (dev) | Phase D: Versionsprüfung (`/api/app/version`, `RejectOutdatedNativeApp` 426, `UpdateRequiredView`), Siri/App Intents (Tagesüberblick gesprochen, Termine, Suche, glatttBert, Mitteilungen), Dokumentenscanner (`scanDocument`/`scanInto`, `<x-app-scan-button>` an fünf Upload-Stellen), Diagnose teilen (+ Kiosk-Fünffach-Tipp), iPad-Tastaturkürzel |
