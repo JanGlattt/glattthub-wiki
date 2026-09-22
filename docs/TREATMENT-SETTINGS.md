@@ -421,6 +421,20 @@ Route::get('/appointment/{branchId}/{appointmentId}/session/treatment-settings',
     [AppointmentViewController::class, 'sessionTreatmentSettings']);
 ```
 
+#### Geplante Zonen (`PlannedZoneResolver`)
+
+`App\Services\Treatments\PlannedZoneResolver::resolve(array $serviceNames)` leitet aus den
+Servicenamen der Termin-Gruppe (verschachtelte Services + direkt anschließende Buchungen, wie
+`getMergedServices`) die geplanten Zonen ab — `body_zones.phorest_service_id` ist unbelegt, die
+Namen tragen die Zone im Klartext („Erste.Sitz 59 UNTERER RÜCKEN", „Flex ARME", „Arm - Links").
+Muster-Tabelle im Service (Reihenfolge zählt: „UNTERSCHENKEL" vor „OBERSCHENKEL", „OBERARME+SCHULTERN"
+vor „ARM"); Sammelbegriffe fächern auf (ARME → beide Arme, EIN ARM → beide Kandidaten), Ganzkörper/„GK"
+setzt `full_body`, „2 Kleine Zonen" setzt `open`. Nicht-Behandlungen (Beratung, Desinfektion,
+Extrazeit, Rasur, Vorauszahlung …) werden ignoriert; ein unbekannter Name landet in `unmapped` und
+gibt — wenn sonst keine Zone erkannt wurde — alles frei, damit nie jede Zone zur Rückfrage wird.
+Genutzt von der iOS-App (Hervorhebung + Rückfrage bei fremder Zone); das Web-Formular ignoriert das
+Feld bisher. Tests: `PlannedZoneResolverTest`, `TreatmentSettingsTest::test_daten_endpoint_nennt_geplante_zonen`.
+
 #### `getTreatmentSettingsData()`
 Liefert alle Daten per AJAX.
 
@@ -442,6 +456,12 @@ Route::get('/appointment/{branchId}/{appointmentId}/session/treatment-settings/d
         "clientCustomZones": [ ... ],       // Alle Custom-Zonen des Kunden (gruppiert)
         "zoneTreatmentCounts": { ... },     // Anzahl Behandlungen pro Zone
         "treatmentNumbers": { ... },        // Nächste Behandlungsnummer pro Zone
+        "plannedZones": {                   // Im Termin geplante Zonen (seit 22.09.2026)
+            "keys": ["achseln", "unterer_ruecken"],
+            "full_body": false,             // Ganzkörper gebucht → keys = alle Zonen
+            "open": false,                  // alle Zonen frei (Ganzkörper, „2 Kleine Zonen", keine erkannte Zone)
+            "unmapped": []                  // Servicenamen ohne erkannte Zone (Diagnose)
+        },
         "options": {
             "hairColors": { "s": "Schwarz", ... },
             "hairThickness": { "d": "Dick", ... },

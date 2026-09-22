@@ -735,7 +735,14 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   zu große Werte schon bei der Eingabe ab — Skintel 0–100, zusätzlich native Prüfung vor dem
   Speichern; Fallstrick: `UITextField.insertText` umgeht `shouldChangeCharactersIn`, der Ziffernblock
   fragt den Delegate deshalb selbst, bevor er einfügt). Zonenwahl seit 21.09.2026 mit Umschalter **Grafik | Liste** (`treatment-view-picker`):
-  Grafik groß (Zone antippen), Liste = Knöpfe nach Kategorie. **Prüfstand-Schalter:** Startargument `-glatttNoPhorestWrites`
+  Grafik groß (Zone antippen), Liste = Knöpfe nach Kategorie. **Geplante Zonen (seit 22.09.2026):** der
+  Daten-Endpunkt liefert `plannedZones` (siehe `TREATMENT-SETTINGS.md`, `PlannedZoneResolver`); die
+  Grafik hebt geplante Zonen leicht hervor (Deckkraft 0,22, erfasst 0,45, früher behandelt 0,12), die
+  Liste markiert sie mit Kalender-Symbol und Akzentrahmen, der Hinweis nennt sie. Eine nicht geplante,
+  noch nicht erfasste Zone öffnet erst nach einem `.alert` „Zone nicht im Termin geplant" (`openForm(key,
+  confirmed:)`, `unplannedZonePending`); bei Ganzkörper sind alle Katalog-Zonen geplant, bei `open`
+  (Ganzkörper, „2 Kleine Zonen", keine erkannte Zone, alter Hub ohne Feld) gibt es keine Rückfrage.
+  **Prüfstand-Schalter:** Startargument `-glatttNoPhorestWrites`
   (`AppointmentDetailModel.phorestWritesDisabled`) lässt Check-in, Beenden und Zusatzbuchung aus —
   Pflicht für UI-Tests gegen den lokalen Hub, der die echte Phorest-API ruft.
 - **Stufe 3 — Formulare (seit 22.09.2026, Entscheidung Jan: eingebettet statt nachgebaut):**
