@@ -144,6 +144,16 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   Kommt die Navigation trotzdem nicht, zeigt die App `NavigationErrorView` („Erneut versuchen" /
   „Abmelden") statt des Ladeschirms. Abgesichert durch `MobileNavigationTest` und
   `NavigationModelTests`.
+- **`UITab`-Objekte werden wiederverwendet, nie neu gebaut (seit 23.09.2026).** `apply(_:)`
+  läuft nur bei geändertem Modell — also beim **Nutzerwechsel** auf dem geteilten iPad und
+  wenn nach der Offline-Hülle die echte Navigation nachkommt. Dann gaben frisch erzeugte
+  `UITab`s über ihren Provider Controller zurück, die noch an den alten UITabs hingen, und
+  `setTabs` stürzte mit einer Assertion in `-[UITab viewController]` ab (Absturzbericht Jan,
+  23.09.2026). `tabCache` hält die UITabs je Schlüssel; Titel und Symbol dürfen dem Modell
+  folgen, der gebundene Controller nie. `resetForLogout()` verwirft beim Abmelden Tabs **und**
+  native Container — sonst zeigte die nächste Anmeldung das Cockpit der Vorgängerin weiter.
+  Mit **derselben** PIN fällt nichts davon auf; Prüfstand ist
+  `testSwitchToAnotherUserWithDifferentPermissions`.
 - **App:** `HubTabBarController` (UIKit `UITabBarController`, ab iOS 18 `UITab`). **Jeder Haupttab
   hat sein eigenes WebView** (seit 20.09.2026, Jan: „Instant-Wechsel wie Instagram"): `WebViewStore`
   erzeugt sie lazy beim ersten Tipp, alle teilen `WKWebsiteDataStore.default()` (eine Sitzung, ein
@@ -255,6 +265,19 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   den Abstand nach unten liefert die native Leiste über die Safe-Area.
 
 ### Gerätetoken & Face-ID-Anmeldung (B7/B9, seit 20.09.2026)
+
+!!! warning "Nutzerwechsel auf dem geteilten Institut-iPad"
+    Die nativen Seiten (Cockpit, Termine, Kunden) fragen den Hub mit dem **Gerätetoken**,
+    nicht mit der Web-Sitzung. Der Token überlebt das Abmelden — serverseitig wird er nicht
+    widerrufen. Bis 23.09.2026 blieb er auch lokal liegen, und nach einem Nutzerwechsel
+    arbeitete die App weiter als die **vorherige** Person, inklusive deren Standort-Einschränkung
+    (Befund Jan: „Alle Standorte", angezeigt wurde nur Bielefeld). `AppContainer.logout()`
+    verwirft deshalb `WidgetShared` und zeichnet die Widgets neu; die nächste Anmeldung holt
+    sich über `ensureWidgetToken()` ein eigenes. **Wer einen weiteren nativen Bereich auf die
+    Token-Schiene legt, prüft, ob beim Abmelden wirklich alles mitgeht.**
+    Im selben Zug stürzte die App beim Wechsel ab, weil `setTabs` UITabs mit bereits
+    gebundenen Controllern bekam — siehe „Tab-Leiste" und
+    `.github/knowledge/ios-nutzerwechsel-geteiltes-ipad.md`.
 
 **Für Endanwender:** Nach dem ersten PIN-Login fragt die App auf persönlichen Geräten „Künftig mit
 Face ID anmelden?". Danach meldet Face ID/Touch ID genau diese Person an — ohne PIN, ohne Google-
