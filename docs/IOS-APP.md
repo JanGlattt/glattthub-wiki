@@ -803,8 +803,15 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   suggestions|book}` (Recht `view_booking`). Die Logik von „Direkt behandeln" liegt seitdem in
   `App\Services\Booking\DirectTreatmentService` (Kabine/Startzeit aus dem Beratungstermin,
   Optionen, Erklärung fehlender Services, Kauf nachholen, Buchen mit Desinfektion) — das Livewire-
-  Modal `DirectTreatmentModal` nutzt denselben Service. Tests `BookingApiTest`, Snapshots
-  `booking-direct`/`booking-followup` (`BookingSheetsSnapshotTests`). Das frühere Web-Blatt mit
+  Modal `DirectTreatmentModal` nutzt denselben Service. **Termin verlegen (seit 22.09.2026 nativ):**
+  dasselbe Blatt im Modus `FollowUpBookingModel.Mode.reschedule(appointmentId:currentLabel:)` —
+  Schnellwahl „ab heute / in 1 / 2 / 4 Wochen", Hinweis auf den bisherigen Termin, Rückfrage
+  „Termin verlegen? … wird storniert", Buchung über `POST hub/booking/api/reschedule`
+  (`appointment_ids[]` → der Server ergänzt alle Zeilen der Termin-Gruppe via
+  `AppointmentGroupResolver`, storniert sie und bucht neu — `BookingService::reschedule`, Notiz
+  „Verlegung"); danach wechselt die App zum neuen Termin (`bookedTarget` → `openAppointment`).
+  Tests `BookingApiTest`, Snapshots `booking-direct`/`booking-followup`/`booking-reschedule`
+  (`BookingSheetsSnapshotTests`). Das frühere Web-Blatt mit
   `?view=session&shell=native&direct=1` (`openDirect`, Klasse `apt-detail--native-direct`) bleibt
   im Hub erhalten, die App nutzt es nicht mehr; `bridge.js` meldet weiterhin
   `direct-treatment-booked`/`-closed` als `directTreatment` an `NativeBridge.onDirectTreatment`.
@@ -860,6 +867,23 @@ als Kacheln (Chart breit, Karten schmal, Schnellzugriff als Zeile); im Hochforma
   adaptive `UIColor`-Farben. Fenstergrund ist der Inhaltsgrund (`systemGroupedBackground`), nur
   die Leiste selbst ist getönt; die getönte Leiste als Fenstergrund legte dunkle Bänder unter
   Statusleiste und Fuß über die volle Breite. Snapshots `pad-sidebar-full`, `-full-dark`, `-rail`.
+- **Werkzeuge der Leiste (seit 22.09.2026):** Standort und Mitteilungen sind **Popover am
+  jeweiligen Knopf** (`PadBranchPopover`/`PadNotificationsPopover` um `BranchPickerView`/
+  `NotificationsView`, auch an der Glocke der Symbol-Spalte), die Lupe (und ⌘F) öffnet die
+  **App-interne Spotlight-Suche** `PadSearchOverlay`: schwebendes Fenster über dem Inhalt mit
+  großem Suchfeld, Treffer gruppiert (`GET /hub/search`, erst lokal, dann Phorest — Logik in
+  `HubSearchModel`, geteilt mit dem Mehr-Sheet), Enter öffnet den ersten Treffer, Esc/Tipp daneben
+  schließt (`AppState.showPadSearch`). Das iPhone-Mehr-Sheet erschien vorher für alle drei und
+  passte nicht auf das iPad. Die Abmelden-Rückfrage hängt als Popover am Abmelden-Knopf (ein
+  `confirmationDialog` an der ganzen Leiste zeigte mitten ins Bild). Profilfoto in Leiste und
+  Mehr-Sheet über `HubAvatarView` (`HubSession.imageData`, mit Hub-Cookies — `AsyncImage` hat
+  hinter IAP keine und zeigte nie ein Bild), je URL zwischengespeichert.
+- **Tab-Wechsel nach einem Web-Haupttab (22.09.2026):** Ein nativer Tab an der Wurzel gibt
+  Bridge-Ziel und Pfad an die Hülle zurück (`activateShellForNativeRoot`), und `syncSelection`
+  ignoriert Pfade, solange eine native Wurzel sichtbar ist (`nativeRootVisible`). Vorher blieb das
+  Berichte-WebView „aktiv": sein Pfad hielt die Markierung auf Berichten, und jede URL-Änderung der
+  Seite holte den Tab zurück — von Berichten kam man nicht zu Start/Termine/Kunden, von Forderungen
+  (kein Haupttab-Pfad) schon. `HubTabBarControllerTests.testNativeRootTabIsNotStolenByBackgroundWebPath`.
 - **Widget-Token abgelehnt (401):** Cockpit, Terminseite und Kundenliste sprechen die
   Bearer-API. Kennt der Hub das Gerät nicht mehr (Staging-DB-Kopie, Gerät im Profil entfernt),
   verwirft `WidgetAPI.onUnauthorized` → `AppContainer.recoverWidgetToken()` den Token, registriert
