@@ -69,6 +69,7 @@ Das Frontend (Alpine, in `sidebarPanels()`) feuert nach 250ms Debounce **beide R
 | **Kunden** | Name, Telefonnummer, **Kundennummer/externalId** (z.B. `OS003354`, sofort aus der lokalen DB), E-Mail | Kundenprofil |
 | **Verträge** | Vertragsnummer (z.B. `2026.03.10-K12345`), Legacy-Kundennummer, **Kundenname/-nummer** (zeigt die Verträge des Kunden) | Vertragsdetail |
 | **Widerrufe** | Vertragsnummer, Legacy-Kundennummer, Kundenname — Status als Icon (Offen ⚠ / In Verhandlung 💬 / Abgeschlossen 🚩) | Widerrufe-Liste (vorgefiltert) |
+| **Forderungsfälle** (seit 22.09.2026) | Vertragsnummer, Legacy-Kundennummer, Kundenname, Kundennummer — Titel = Vertragsnummer, darunter Kundenname · Kundennummer, Stufe als Badge | Fall-Detailseite `/hub/receivables/{id}` |
 | **Unternehmensverträge** | Name, Vertragsnummer, Lieferant | Unternehmensverträge (vorgefiltert) |
 | **Gutscheine** | Seriennummer | Gutschein-Liste (vorgefiltert) |
 | **Seiten & Statistiken** | Seitenname, Stichwort, **Seiten-Beschreibung oder Analyse-Titel** (z.B. „Google Ads" oder „Kampagnen-Übersicht" → Ads-Analyse, „Reisekosten" → Personal) | Die jeweilige Seite |
@@ -142,13 +143,14 @@ Gruppen-Keys: `clients`, `contracts`, `company_contracts`, `pages`, `vouchers`. 
 - **Kunden remote** (Phorest): ParamSet-Strategie wie `ContractController::searchClientsForContract` — `@` → E-Mail, `^[A-Za-z]{1,2}\d+$` → externalId, sonst Vor-/Nachname-Kombinationen; Dedupe per `clientId`. Fehler werden geloggt und führen zu leeren Gruppen (nie 500).
 - **Verträge**: `contract_number LIKE '%q%'`, `legacy_kundennummer LIKE 'q%'` **oder Kundenname/-nummer** (gleiche Namens-Logik wie die Kundensuche, via `applyClientNameConditions()` über den LEFT JOIN auf `client_statistics`) — wer nach „Anna Müller" sucht, sieht also auch deren Verträge. Der JOIN liefert zugleich den Kundennamen für die Anzeige (kein Phorest-Call). SoftDeletes werden respektiert.
 - **Widerrufe** (`can:view_cancellations`): JOIN `contract_cancellations` → `contracts` → `client_statistics`; matcht Vertragsnummer, Legacy-Kundennummer und Kundenname (gleicher Namens-Helper). Deep-Link `?search=` auf die Widerrufe-Seite — dort werden dabei alle Einträge geladen (`perPage=9999`), damit der Treffer nicht hinter der Pagination liegt.
+- **Forderungsfälle** (`can:view_receivables`, seit 22.09.2026): LEFT JOIN `debt_cases` → `contracts` → `client_statistics`; matcht Vertragsnummer, Legacy-Kundennummer, `external_id` und Kundenname; aktive Fälle zuerst, dann neueste. `type: debt_case`, Icon in der Web-Sidebar und der App (`exclamationmark.triangle`). Test `GlobalSearchDebtCaseTest`.
 - **Unternehmensverträge**: `name`/`contract_number`/`vendor_name` LIKE; Deep-Link `?search=` wird auf der Zielseite vorausgefüllt (Status-Filter dabei auf „alle").
 - **Seiten & Statistiken**: statische Registry `GlobalSearchService::PAGES` (`route`, `label`, `description`, `keywords`, `permission`, `section`). `description` = Untertitel im Seiten-Header, `keywords` enthalten zusätzlich die Sektions-/Analyse-Titel der Seite. Matching ist **wortbasiert**: jedes Suchwort muss in Label + Keywords + Description vorkommen (case-insensitive) — so findet „Google Ads" die Ads-Analyse und „Kampagnen-Übersicht" ihre Berichtsseite. Die Description wird als Untertitel im Treffer angezeigt. **Neue Seiten (oder neue Analyse-Sektionen) hier eintragen**, Permission exakt wie das Routen-Gate.
 - **Gutscheine**: nur bei serial-ähnlicher Query (`^[A-Za-z0-9\-]{4,}$`) → Phorest `getVouchers(['serialNumber' => $q])` (exakter Filter).
 
 ### Berechtigungen
 
-Kein neues Permission-Objekt. Der Endpoint liegt hinter `check.hub`; der Service filtert pro Kategorie mit `$user->can(...)`: `view_clients`, `view_contracts`, `view_company_contracts`, `view_vouchers` sowie pro Registry-Eintrag die jeweilige Seiten-Permission.
+Kein neues Permission-Objekt. Der Endpoint liegt hinter `check.hub`; der Service filtert pro Kategorie mit `$user->can(...)`: `view_clients`, `view_contracts`, `view_revocations`, `view_receivables`, `view_company_contracts`, `view_vouchers` sowie pro Registry-Eintrag die jeweilige Seiten-Permission.
 
 ### Datenbank
 

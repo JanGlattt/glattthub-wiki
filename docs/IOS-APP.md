@@ -877,7 +877,17 @@ als Kacheln (Chart breit, Karten schmal, Schnellzugriff als Zeile); im Hochforma
   passte nicht auf das iPad. Die Abmelden-Rückfrage hängt als Popover am Abmelden-Knopf (ein
   `confirmationDialog` an der ganzen Leiste zeigte mitten ins Bild). Profilfoto in Leiste und
   Mehr-Sheet über `HubAvatarView` (`HubSession.imageData`, mit Hub-Cookies — `AsyncImage` hat
-  hinter IAP keine und zeigte nie ein Bild), je URL zwischengespeichert.
+  hinter IAP keine und zeigte nie ein Bild), je URL zwischengespeichert. **Fallstrick Material:**
+  im Suchfenster (`.regularMaterial`) werden hierarchische Stile (`.secondary`, `.tertiary`)
+  vibrant und verschwinden auf dunklem Grund — Gruppen-Überschriften und Untertitel (Kundennummer,
+  Kundenname) waren deshalb unsichtbar; dort nur konkrete Farben (`Color(uiColor: .secondaryLabel)`).
+- **Flächen im Dunkelmodus (22.09.2026):** native Seiten nutzen `HubColor.page`/`HubColor.card`
+  (Assets `HubBackground` #f8fafc/#1e293b, `HubCard` weiß/#151e2e) statt `systemGroupedBackground`
+  — Schwarz wirkte fremd neben der Slate-Web-App. Web-Seiten unter `body.ios-native-menu` bekommen
+  schmalere Innenabstände (Wrapper 0,5 rem oben, Inhalt 1 rem seitlich, ≥ 1024 px `padding-top`
+  0,5 rem) wie die nativen Seiten. Kundenübersicht: Name + Kundennummer kleben in der Kopfzeile,
+  sobald die Kopfkarte weggescrollt ist (`HeroBottomKey`). Skeleton-Lauflicht phasenversetzt nach
+  Bildschirmposition (`Shimmer`), nicht mehr in allen Zeilen an derselben Stelle.
 - **Tab-Wechsel nach einem Web-Haupttab (22.09.2026):** Ein nativer Tab an der Wurzel gibt
   Bridge-Ziel und Pfad an die Hülle zurück (`activateShellForNativeRoot`), und `syncSelection`
   ignoriert Pfade, solange eine native Wurzel sichtbar ist (`nativeRootVisible`). Vorher blieb das
