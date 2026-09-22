@@ -1019,13 +1019,13 @@ Apps-&-Bücher-Token in Miradore.
 
 | Phase | Inhalt | Stand |
 |---|---|---|
-| 0 | Konten prüfen, App-Datensatz, Reviewer-Konto, Gerätebestand (LB-Regel `/.well-known/*` existiert bereits) | **offen (Jan):** Reviewer-Konto B11, App-Store-Connect-Datensatz, ABM-Org-ID, ältestes iOS in Miradore, Paid-Apps-Vertrag |
+| 0 | Konten prüfen, App-Datensatz, Reviewer-Konto, Gerätebestand (LB-Regel `/.well-known/*` existiert bereits) | ✅ **22.09.2026:** Paid-Apps-Vertrag aktiv (W-8BEN-E, Bankkonto), DSA-Händlerangabe, App-Datensatz `glatttHub` (App-ID 6814964852), API-Key mit Admin. Offen: Reviewer-Konto B11, ABM-Org-ID, ältestes iOS in Miradore |
 | 1 | Hülle & Login, Downloads, Kamera, Offline, Einstellungen; B1–B2 | ✅ abgenommen (Jan, 22.09.: CSV-Export und Kamera-Upload auf dem Gerät erfolgreich) |
 | 1b | Push, Universal Links, Long-Press-Menü, MDM-Config, Kiosk, Face ID; B3–B6, B10 | ✅ Push auf dem iPhone abgenommen (Jan, 22.09.); Kiosk-Modus auf einem Miradore-iPad weiter offen (kein Gerät vor Ort) |
 | A (20.09.) | Native Tab-Leiste (Liquid Glass), Mehr-Sheet nativ (Standort, Mitteilungen, Suche), WebView je Tab + Mehr-Pool, Pull-to-Refresh, Schnellaktionen, PIN-Sheet, Ladeschirm | ✅ abgenommen (Jan, 20./21.09.) |
 | B (20.09.) | Gerätetoken B7, Face-ID-Anmeldung, App-Geräte im Profil B9 | ✅ gebaut; Face-ID-Flow auf dem Gerät von Jan bestätigt („technisch funktioniert es") |
 | C (20.–22.09.) | Widgets B8: Kennzahlen, Tagesübersicht, Beratungsgespräche, Körperzonen | ✅ gebaut; Feinschliff nach 13 Geräte-Screenshots am 22.09. (Höhen füllen, Sparkline-Spalte, Kürzel, Tendenzpfeile, Prognose gestrichelt) — Abnahme der neuen Fassung auf dem Gerät offen |
-| 1c | TestFlight-Pilot, Review, Custom-App-Einreichung, Miradore, Klickanleitungen | **offen** — Klickanleitungen Profil (App-Geräte) und Institut (Kiosk-Block) nachziehen |
+| 1c | TestFlight-Pilot, Review, Custom-App-Einreichung, Miradore, Klickanleitungen | ✅ **TestFlight läuft** (22.09.2026): Build `1.0.0 (1)` gegen Prod, interne Gruppe „Pilot“ — Ablauf und Fallstricke in `.github/knowledge/ios-testflight-verteilung.md`. Offen: zwei Testerinnen als ASC-Benutzer, ABM-Org-ID + Apps-und-Bücher-Token, Reviewer-Konto, Klickanleitungen Profil (App-Geräte) und Institut (Kiosk-Block) |
 | D (22.09.) | Versionsprüfung, Siri/App Intents, Dokumentenscanner, Diagnose teilen, iPad-Tastaturkürzel | ✅ gebaut (Abschnitt „Phase D"); Gerätetest offen: Siri-Sätze, Scanner-PDF im Hub, ⌘-Overlay am iPad |
 | E (22.09.) | Native Startseite „Cockpit" je Rolle (Entwurf 1), Admin-Resource, `/api/app/start` | ✅ auf dem iPad abgenommen (Jan, 22.09.) |
 | F (22.09.) | Native Terminseite (Liste, KPIs, Kalender, Web-Terminansicht als Detailseite im Tab), `/api/app/appointments` | ✅ auf dem iPad abgenommen (Jan, 22.09.) |
