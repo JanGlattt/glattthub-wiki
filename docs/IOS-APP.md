@@ -126,12 +126,24 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
 
 - **Quelle:** `GET /api/app/navigation` (`AppNavigationController`, Session-Auth, `routes/app.php`)
   liefert `tabs` (Start, Termine, Kunden, Berichte), `groups` (Verkauf … System mit Einträgen),
-  `utilities` (Mitteilungen, Profil, Admin), `user` (Name, E-Mail, Avatar, `can_ai`), `klick_portal`,
+  `utilities` (Mitteilungen, Profil, Admin), `user` (ID, Name, E-Mail, Avatar, `can_ai`), `klick_portal`,
   `unread_count` sowie `branches` (Standorte für die native Standortwahl: erlaubte Institute des
   Nutzers, Reihenfolge/Farbe aus dem Institut-Modul, `hidden` für ausgeblendete) und
   `has_branch_restriction` — nach Rechten gefiltert aus `MobileNavigation::PRIMARY/MORE` +
   `NavigationGroups::GROUPS`; Heroicon → SF Symbol über `MobileNavigation::SYMBOLS`. Dieselbe
   Klasse speist die Web-Bottom-Nav.
+- **Die Antwort ist die Lebensader der App — ein einziges Feld legt sie lahm.** Ohne Navigation
+  gibt es weder Tab-Leiste noch Seitenleiste, also zeigt die App nur den Ladeschirm. Genau das
+  passierte am 22.09.2026 im Pilot: Die meisten Hub-Nutzerinnen melden sich **nur per PIN** an und
+  haben **gar keine E-Mail-Adresse** (19 von 21 auf Prod); `"email": null` verletzte ein
+  Pflichtfeld des Swift-Modells, `JSONDecoder` verwarf die **ganze** Antwort, und das iPad blieb
+  endlos auf „Bereit" stehen — während das Server-Log brav 200 meldete. Daraus drei Regeln:
+  der Hub liefert für die E-Mail **nie `null`**, sondern `''`; Nutzerinnen werden über
+  `user.id` identifiziert (die App trennt ihre Offline-Stände daran — über die Adresse wären sie
+  für alle PIN-Konten stillgelegt); und Felder der App-Modelle bleiben **großzügig optional**.
+  Kommt die Navigation trotzdem nicht, zeigt die App `NavigationErrorView` („Erneut versuchen" /
+  „Abmelden") statt des Ladeschirms. Abgesichert durch `MobileNavigationTest` und
+  `NavigationModelTests`.
 - **App:** `HubTabBarController` (UIKit `UITabBarController`, ab iOS 18 `UITab`). **Jeder Haupttab
   hat sein eigenes WebView** (seit 20.09.2026, Jan: „Instant-Wechsel wie Instagram"): `WebViewStore`
   erzeugt sie lazy beim ersten Tipp, alle teilen `WKWebsiteDataStore.default()` (eine Sitzung, ein
