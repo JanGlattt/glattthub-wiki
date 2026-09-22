@@ -1,0 +1,268 @@
+{
+ "out": "../pdf/App-2-Start-und-Menue",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "App",
+ "of": 7,
+ "audience": "institut",
+ "footerArea": "App",
+ "stand": "23.09.2026",
+ "version": "1.0",
+ "nr": 2,
+ "title": [
+  "Startseite, Menü,",
+  "Standort & Suche"
+ ],
+ "subtitle": "Klickanleitung für die glatttHub-App — die Startseite mit Kennzahlen, die Seitenleiste auf dem iPad, die Tab-Leiste auf dem iPhone, Standort wechseln, suchen, Mitteilungen lesen, abmelden",
+ "eyebrow": "App · Start & Menü",
+ "notes": [
+  "Die **Startseite** ist nativ: Tagesstreifen, Kennzahlen mit Trend, Beratungsgespräche, Bonus-Stand, Mitteilungen und Schnellzugriff — je nach Rolle unterschiedlich zusammengestellt.",
+  "Auf dem **iPad** ersetzt eine Seitenleiste das Web-Menü; auf dem **iPhone** gibt es die Tab-Leiste unten mit „Mehr“ für alle übrigen Bereiche.",
+  "**Standort, Suche und Mitteilungen** sitzen oben in der Leiste — die Suche öffnet ein Suchfenster über dem Inhalt, wie Spotlight."
+ ],
+ "pages": [
+  {
+   "h1": "Die Startseite",
+   "sub": "Kennzahlen des Tages, Trend zur Vorwoche, Beratungsgespräche, dein Bonus-Stand und der Schnellzugriff — alles auf einen Blick, ziehen zum Aktualisieren.",
+   "card": {
+    "title": "Startseite",
+    "text": "Kennzahlen, Beratungen, Bonus, Schnellzugriff"
+   },
+   "left": {
+    "shot": "cockpit-ipad-land"
+   },
+   "leftCaption": "Die Startseite im iPad-Querformat: Kennzahlen als Raster, darunter Beratungsgespräche und Mitteilungen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kennzahlen lesen",
+     "text": "Jede Kachel zeigt den Wert, den **Trend** (Pfeil und Prozent zur Vorwoche) und eine kleine Verlaufslinie. Antippen öffnet den passenden Bericht."
+    },
+    {
+     "n": 2,
+     "title": "Beratungsgespräche",
+     "text": "**Heute, Morgen, 7 Tage, bis Monatsende** — die Zahlen kommen aus Phorest, Ø ist der Tagesschnitt."
+    },
+    {
+     "n": 3,
+     "title": "Schnellzugriff",
+     "text": "Die Kacheln unten: Termine, Kunden, Berichte, Kunde suchen, glatttBert — und **Laser-Wartung**, wenn du Wartungen durchführst („App 5“)."
+    },
+    {
+     "n": 4,
+     "title": "Aktualisieren",
+     "text": "Nach unten ziehen lädt alles neu. Unten steht, von wann der Stand ist."
+    }
+   ],
+   "hint": {
+    "text": "**Je Rolle anders:** Was auf der Startseite steht, legt das Büro im Admin-Backend fest („App-Startseite je Rolle“). Fehlt dir eine Kachel, frag dort nach."
+   }
+  },
+  {
+   "h1": "Seitenleiste auf dem iPad",
+   "sub": "Links die Bereiche: oben die vier Hauptseiten, darunter die Gruppen Verkauf, Finanzen, Team, Betrieb, System — immer nur eine Gruppe offen.",
+   "card": {
+    "title": "Seitenleiste",
+    "text": "Hauptseiten, Gruppen, Profil und Abmelden"
+   },
+   "left": {
+    "shot": "pad-sidebar-full"
+   },
+   "leftCaption": "Die Seitenleiste im Querformat — **Start** ist markiert, die Gruppe Verkauf aufgeklappt.",
+   "right": {
+    "shot": "pad-port-drawer"
+   },
+   "rightCaption": "Im **Hochformat** wird die Leiste zur schmalen Symbol-Spalte; das Menü-Symbol schiebt sie als Überlagerung ein.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Hauptseiten",
+     "text": "**Start, Termine, Kunden, Berichte** — die ersten drei sind native Seiten, Berichte öffnet die Hub-Seite."
+    },
+    {
+     "n": 2,
+     "title": "Gruppen aufklappen",
+     "text": "Ein Tipp auf **Verkauf, Finanzen, Team, Betrieb, System** klappt die Gruppe auf; eine andere schließt sich dabei. Der Zähler nennt die Zahl der Einträge."
+    },
+    {
+     "n": 3,
+     "title": "Unten: du",
+     "text": "Profilbild, Name, dann **Profil, Admin** (nur mit Recht) und **Abmelden**. Abmelden fragt in einem kleinen Fenster nach — bestätigen."
+    },
+    {
+     "n": 4,
+     "title": "Hochformat",
+     "text": "Die Leiste zeigt nur Symbole. **Menü-Symbol** oben öffnet sie in voller Breite; ein Tipp daneben schließt sie wieder."
+    }
+   ],
+   "hint": {
+    "text": "**Tastatur am iPad:** **⌘1–⌘4** springen zu den Hauptseiten, **⌘F** öffnet die Suche, **⌘,** die Einstellungen. Gedrückt halten von ⌘ zeigt alle Kürzel."
+   }
+  },
+  {
+   "h1": "Standort wählen",
+   "sub": "Der Standortfilter gilt in der ganzen App — Startseite, Termine, Kunden, Berichte rechnen alle mit derselben Auswahl.",
+   "card": {
+    "title": "Standort",
+    "text": "Institut wählen oder alle"
+   },
+   "left": {
+    "shot": "pad-land-branch-popover",
+    "marks": [
+     {
+      "kind": "badge",
+      "n": 1,
+      "at": "l",
+      "pct": {
+       "x": 1.2,
+       "y": 8.5,
+       "w": 9,
+       "h": 3.5
+      }
+     },
+     {
+      "kind": "frame",
+      "pct": {
+       "x": 1,
+       "y": 13,
+       "w": 21,
+       "h": 40
+      }
+     }
+    ]
+   },
+   "leftCaption": "Das Standort-Fenster hängt am Knopf **„Alle Standorte“** oben in der Leiste.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Knopf antippen",
+     "text": "Oben links in der Leiste steht der aktuelle Standort — antippen öffnet die Liste."
+    },
+    {
+     "n": 2,
+     "title": "Institut wählen",
+     "text": "Ein Tipp auf das Institut setzt den Filter und schließt das Fenster. **„Alle Standorte“** zeigt alles, was nicht ausgeblendet ist."
+    },
+    {
+     "n": 3,
+     "title": "Überall gleich",
+     "text": "Die Auswahl gilt sofort auf allen Seiten — auch auf den Hub-Seiten in der App."
+    }
+   ],
+   "notes": [
+    {
+     "title": "iPhone",
+     "text": "Dort steht der Standort im **Mehr**-Menü ganz oben; die Auswahl funktioniert genauso."
+    }
+   ]
+  },
+  {
+   "h1": "Suchen wie mit Spotlight",
+   "sub": "Die Lupe (oder ⌘F) öffnet ein Suchfenster über dem Inhalt: Kunden, Verträge, Forderungsfälle, Seiten und Berichte — Treffer erscheinen beim Tippen.",
+   "card": {
+    "title": "Suche",
+    "text": "Kunden, Verträge, Fälle, Seiten"
+   },
+   "left": {
+    "shot": "pad-land-search-open",
+    "marks": [
+     {
+      "kind": "badge",
+      "n": 1,
+      "at": "l",
+      "pct": {
+       "x": 10.5,
+       "y": 8.5,
+       "w": 3,
+       "h": 3.5
+      }
+     },
+     {
+      "kind": "frame",
+      "pct": {
+       "x": 19,
+       "y": 10,
+       "w": 57,
+       "h": 12
+      }
+     }
+    ]
+   },
+   "leftCaption": "Das leere Suchfenster nennt, was es findet: **Kunden** nach Name oder Kunden-Nr., **Verträge** nach Nummer, **Seiten**.",
+   "right": {
+    "shot": "pad-search"
+   },
+   "rightCaption": "Treffer in Gruppen — unter dem Kundennamen die **Kunden-Nr.**, unter der Vertragsnummer der **Kundenname**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Lupe antippen",
+     "text": "Oben in der Leiste (iPad) oder im Scroll-Kopf (iPhone). Das Fenster legt sich über den Inhalt, die Tastatur kommt von selbst."
+    },
+    {
+     "n": 2,
+     "title": "Tippen, Treffer sehen",
+     "text": "Ab zwei Zeichen erscheinen Gruppen: Kunden, Verträge, Forderungsfälle, Unternehmensverträge, Gutscheine, Seiten."
+    },
+    {
+     "n": 3,
+     "title": "Öffnen",
+     "text": "Ein Tipp öffnet den Treffer — Kunden als native Kundenübersicht, Verträge und Fälle als Hub-Seite. **Enter** öffnet den ersten Treffer."
+    },
+    {
+     "n": 4,
+     "title": "Schließen",
+     "text": "Tipp neben das Fenster, **Esc** auf der Tastatur oder das ✕."
+    }
+   ]
+  },
+  {
+   "h1": "Mitteilungen und Abmelden",
+   "sub": "Die Glocke zeigt ungelesene Mitteilungen als rote Zahl; das Fenster listet sie, ein Tipp öffnet das Ziel. Abmelden sitzt unten links.",
+   "card": {
+    "title": "Mitteilungen",
+    "text": "Lesen, öffnen, alle gelesen — und abmelden"
+   },
+   "left": {
+    "shot": "pad-land-logout-popover",
+    "marks": [
+     {
+      "kind": "badge",
+      "n": 3,
+      "at": "l",
+      "pct": {
+       "x": 11.5,
+       "y": 91,
+       "w": 6,
+       "h": 5
+      }
+     }
+    ]
+   },
+   "leftCaption": "**Abmelden** fragt in einem Fenster direkt am Knopf nach — kein Versehen möglich.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Glocke antippen",
+     "text": "Das Mitteilungs-Fenster hängt an der Glocke. Ungelesene haben einen **goldenen Punkt**; der Haken oben rechts markiert alle als gelesen."
+    },
+    {
+     "n": 2,
+     "title": "Mitteilung öffnen",
+     "text": "Ein Tipp springt zum Ziel — Termin, Vertrag, Bericht. Push-Mitteilungen auf dem Sperrbildschirm öffnen dieselben Ziele."
+    },
+    {
+     "n": 3,
+     "title": "Abmelden",
+     "text": "Unten links **„Abmelden“**, dann im Fenster bestätigen. Auf dem geteilten Institut-iPad **immer** abmelden, wenn du gehst."
+    }
+   ],
+   "notes": [
+    {
+     "title": "iPhone",
+     "text": "Tab-Leiste unten: **Start, Termine, Kunden, Berichte, Mehr**. Unter Mehr liegen Standort, Suche, Mitteilungen und alle Gruppen; ein langer Druck auf das App-Symbol zeigt Schnellaktionen (Termine, Suche, Mitteilungen, glatttBert)."
+    }
+   ]
+  }
+ ]
+}

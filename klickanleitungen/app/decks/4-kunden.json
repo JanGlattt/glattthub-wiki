@@ -1,0 +1,90 @@
+{
+ "out": "../pdf/App-4-Kunden",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "App",
+ "of": 7,
+ "audience": "institut",
+ "footerArea": "App",
+ "stand": "23.09.2026",
+ "version": "1.0",
+ "nr": 4,
+ "title": [
+  "Kunden finden und",
+  "die Kundenübersicht"
+ ],
+ "subtitle": "Klickanleitung für die glatttHub-App — Kundenliste mit Suche, die native Kundenübersicht mit Karten, Termine und Pakete, die weiteren Reiter als Hub-Seite",
+ "eyebrow": "App · Kunden",
+ "notes": [
+  "Der Tab **Kunden** ist nativ: Liste mit Suche über Name, Kunden-Nr. oder Telefon, darunter die **Kundenübersicht** mit den Karten der Web-Übersicht.",
+  "Die weiteren Reiter des Kundenprofils (Pakete, Vertrag/Zahlungen, Forderungen, Nachrichten) öffnen als Hub-Seite **im selben Tab** — mit Zurück-Pfeil."
+ ],
+ "pages": [
+  {
+   "h1": "Kundenliste",
+   "sub": "Suche oben, darunter die Treffer mit Name, Kunden-Nr., Institut und letztem Besuch — ohne Suche die zuletzt besuchten Kundinnen.",
+   "card": {
+    "title": "Kundenliste",
+    "text": "Suchen nach Name, Nummer, Telefon"
+   },
+   "left": {
+    "shot": "clients-list-light"
+   },
+   "leftCaption": "Die Liste auf dem iPhone: **Kunden-Nr.** unter dem Namen, rechts der letzte Besuch.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Suchen",
+     "text": "Ins Feld tippen: Name, Kunden-Nr. (z. B. **MD000123**) oder Telefon. Treffer kommen beim Tippen."
+    },
+    {
+     "n": 2,
+     "title": "Öffnen",
+     "text": "Ein Tipp auf die Zeile öffnet die Kundenübersicht. Auf dem iPad bleibt die Seitenleiste stehen."
+    },
+    {
+     "n": 3,
+     "title": "Standort",
+     "text": "Die Liste folgt dem Standortfilter — „Alle Standorte“ zeigt alle Institute."
+    }
+   ]
+  },
+  {
+   "h1": "Die Kundenübersicht",
+   "sub": "Kopfkarte mit Kontakt und Kunden-Nr., darunter Pakete, nächste Termine, Verträge, Formulare — beim Scrollen bleiben Name und Nummer oben stehen.",
+   "card": {
+    "title": "Kundenübersicht",
+    "text": "Karten, Termine, Reiter"
+   },
+   "left": {
+    "shot": "client-detail-light"
+   },
+   "leftCaption": "Kopf mit Name, Kunden-Nr. und Kontakt; darunter die Karten der Übersicht.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kopf",
+     "text": "Name, **Kunden-Nr.**, Telefon, E-Mail, Institut. Scrollst du weiter, kleben Name und Nummer oben in der Kopfzeile."
+    },
+    {
+     "n": 2,
+     "title": "Termine",
+     "text": "Nächste und letzte Termine als Karten — antippen öffnet die **Terminansicht** („App 3“)."
+    },
+    {
+     "n": 3,
+     "title": "Reiter",
+     "text": "**Pakete, Vertrag/Zahlungen, Forderungen, Nachrichten** öffnen als Hub-Seite im Tab; der Pfeil oben links führt zurück."
+    },
+    {
+     "n": 4,
+     "title": "Aktualisieren",
+     "text": "Nach unten ziehen lädt Kundendaten frisch aus Phorest."
+    }
+   ],
+   "hint": {
+    "text": "**Kontextmenü:** Lange auf eine Kundin drücken (Liste oder Suche) zeigt **Termine, Pakete, Kunden-Nr. kopieren** — wie das Rechtsklick-Menü der Desktop-App."
+   }
+  }
+ ]
+}

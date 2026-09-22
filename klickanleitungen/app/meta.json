@@ -1,0 +1,332 @@
+{
+ "appointment-ipad-forms": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2360,
+   "height": 1640
+  },
+  "ratio": 0.6949152542372882,
+  "marks": []
+ },
+ "appointment-ipad-running": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2360,
+   "height": 1640
+  },
+  "ratio": 0.6949152542372882,
+  "marks": []
+ },
+ "appointment-ipad": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2360,
+   "height": 1640
+  },
+  "ratio": 0.6949152542372882,
+  "marks": []
+ },
+ "appointment-iphone": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 2200
+  },
+  "ratio": 2.8205128205128207,
+  "marks": []
+ },
+ "appointments-calendar": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1956
+  },
+  "ratio": 2.5076923076923077,
+  "marks": []
+ },
+ "appointments-list": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 2104
+  },
+  "ratio": 2.6974358974358976,
+  "marks": []
+ },
+ "bonus-management-ipad-institute": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2000,
+   "height": 1250
+  },
+  "ratio": 0.625,
+  "marks": []
+ },
+ "bonus-management-ipad-personen": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2000,
+   "height": 1650
+  },
+  "ratio": 0.825,
+  "marks": []
+ },
+ "bonus-own-ipad": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2000,
+   "height": 1560
+  },
+  "ratio": 0.78,
+  "marks": []
+ },
+ "bonus-own-iphone": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1800
+  },
+  "ratio": 2.3076923076923075,
+  "marks": []
+ },
+ "booking-direct": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1280,
+   "height": 1800
+  },
+  "ratio": 1.40625,
+  "marks": []
+ },
+ "booking-followup": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1280,
+   "height": 1800
+  },
+  "ratio": 1.40625,
+  "marks": []
+ },
+ "booking-reschedule": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1280,
+   "height": 1800
+  },
+  "ratio": 1.40625,
+  "marks": []
+ },
+ "client-detail-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1700
+  },
+  "ratio": 2.1794871794871793,
+  "marks": []
+ },
+ "clients-list-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 816
+  },
+  "ratio": 1.0461538461538462,
+  "marks": []
+ },
+ "cockpit-ipad-land": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1920,
+   "height": 1600
+  },
+  "ratio": 0.8333333333333334,
+  "marks": []
+ },
+ "cockpit-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1700
+  },
+  "ratio": 2.1794871794871793,
+  "marks": []
+ },
+ "login-faceid-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 786,
+   "height": 1704
+  },
+  "ratio": 2.16793893129771,
+  "marks": []
+ },
+ "login-pin-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 786,
+   "height": 1704
+  },
+  "ratio": 2.16793893129771,
+  "marks": []
+ },
+ "pad-bonus-own": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2420,
+   "height": 1668
+  },
+  "ratio": 0.6892561983471074,
+  "marks": []
+ },
+ "pad-land-branch-popover": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2420,
+   "height": 1668
+  },
+  "ratio": 0.6892561983471074,
+  "marks": []
+ },
+ "pad-land-logout-popover": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2420,
+   "height": 1668
+  },
+  "ratio": 0.6892561983471074,
+  "marks": []
+ },
+ "pad-land-search-open": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2420,
+   "height": 1668
+  },
+  "ratio": 0.6892561983471074,
+  "marks": []
+ },
+ "pad-laser-list": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2420,
+   "height": 1668
+  },
+  "ratio": 0.6892561983471074,
+  "marks": []
+ },
+ "pad-laser-step1-done": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2420,
+   "height": 1668
+  },
+  "ratio": 0.6892561983471074,
+  "marks": []
+ },
+ "pad-laser-step2-errors": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2420,
+   "height": 1668
+  },
+  "ratio": 0.6892561983471074,
+  "marks": []
+ },
+ "pad-laser-step2": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2420,
+   "height": 1668
+  },
+  "ratio": 0.6892561983471074,
+  "marks": []
+ },
+ "pad-port-drawer": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1668,
+   "height": 2420
+  },
+  "ratio": 1.4508393285371703,
+  "marks": []
+ },
+ "pad-search": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2360,
+   "height": 1640
+  },
+  "ratio": 0.6949152542372882,
+  "marks": []
+ },
+ "pad-sidebar-full": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "height": 1640
+  },
+  "ratio": 3.28,
+  "marks": []
+ },
+ "pad-sidebar-rail": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 152,
+   "height": 1640
+  },
+  "ratio": 10.789473684210526,
+  "marks": []
+ },
+ "treatment-form-ipad": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1800,
+   "height": 1800
+  },
+  "ratio": 1.0,
+  "marks": []
+ },
+ "treatment-ipad": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1980,
+   "height": 1520
+  },
+  "ratio": 0.7676767676767676,
+  "marks": []
+ }
+}

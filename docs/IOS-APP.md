@@ -13,7 +13,10 @@ diese Seite ist die technische Kurzreferenz, die mit der Umsetzung wächst.
 
 ## Für Endanwender
 
-!!! nutzerhandbuch "Bedienung: Grundlagen – Die iPhone-/iPad-App (folgt mit dem Pilot)"
+!!! nutzerhandbuch "Bedienung: Serie „App" 1–7 im Nutzerhandbuch"
+    [https://hilfe.hub.glattt.com/app/](https://hilfe.hub.glattt.com/app/) — Anmelden & Face ID, Startseite & Menü,
+    Termine & Terminansicht, Kunden, Laser-Wartung, Bonus-Board, Widgets/Siri/Scanner (Stand 23.09.2026).
+
     Die App ist der glatttHub als eigene App auf iPhone und iPad — auf den Instituts-iPads über die
     Geräteverwaltung installiert (nicht löschbar), auf persönlichen Geräten des Managements per
     Einlösecode aus dem App Store. Alle Abläufe sind dieselben wie im Browser
@@ -425,7 +428,8 @@ Forderungsfall-Beleg, Widerrufs-Dokumente, Unternehmensverträge) gibt es in der
 und teilen**; am iPad mit Tastatur ⌘1–⌘4 Haupttabs, ⌘5 Mehr, ⌘F Suche, ⌘⇧N Mitteilungen, ⌘[ / ⌘]
 zurück/vor, ⌘R neu laden, ⌘, Einstellungen (⌘K glatttBert kommt vom Hub selbst).
 
-!!! nutzerhandbuch "Bedienung: Grundlagen – iPhone/iPad-App (folgt nach dem Gerätetest)"
+!!! nutzerhandbuch "Bedienung: App 7 – Widgets, Siri, Scanner & Hilfe"
+    [https://hilfe.hub.glattt.com/app/7/](https://hilfe.hub.glattt.com/app/7/)
 
 **Für Entwickler:**
 
@@ -480,7 +484,8 @@ Ziehen aktualisiert. Welche Abschnitte in welcher Reihenfolge und welche Kennzah
 legt das Admin-Backend **je Rolle** fest (System → „App-Startseite je Rolle"); was die Rechte nicht
 hergeben, fehlt still.
 
-!!! nutzerhandbuch "Bedienung: Grundlagen – iPhone/iPad-App (folgt nach dem Gerätetest)"
+!!! nutzerhandbuch "Bedienung: App 7 – Widgets, Siri, Scanner & Hilfe"
+    [https://hilfe.hub.glattt.com/app/7/](https://hilfe.hub.glattt.com/app/7/)
 
 **Für Entwickler:**
 
@@ -557,7 +562,8 @@ Web-Terminansicht im Tab (Check-in, Formulare, Beenden bleiben dort); „Zurück
 Wischgeste vom Rand führen in die Liste zurück. Aktualisiert wird beim Wiederkehren und per Ziehen
 (Entscheidung Jan: kein Timer).
 
-!!! nutzerhandbuch "Bedienung: Grundlagen – iPhone/iPad-App (folgt nach dem Gerätetest)"
+!!! nutzerhandbuch "Bedienung: App 7 – Widgets, Siri, Scanner & Hilfe"
+    [https://hilfe.hub.glattt.com/app/7/](https://hilfe.hub.glattt.com/app/7/)
 
 **Für Entwickler:**
 

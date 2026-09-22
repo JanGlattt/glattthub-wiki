@@ -1,0 +1,106 @@
+{
+ "out": "../pdf/App-1-Anmelden-und-Face-ID",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "App",
+ "of": 7,
+ "audience": "institut",
+ "footerArea": "App",
+ "stand": "23.09.2026",
+ "version": "1.0",
+ "nr": 1,
+ "title": [
+  "Die App auf iPad",
+  "und iPhone: Anmelden"
+ ],
+ "subtitle": "Klickanleitung für die glatttHub-App — installieren, anmelden mit Google und PIN, das Gerät verknüpfen und danach mit Face ID oder Touch ID hinein",
+ "eyebrow": "App · Anmelden",
+ "notes": [
+  "Die glatttHub-App ist der Hub als **eigene App** auf iPad und iPhone — mit nativer Startseite, Terminen, Kunden, Terminansicht, Laser-Wartung und Bonus-Board. Alles andere zeigt die App als Hub-Seite.",
+  "Die App kommt über **Miradore** auf die Institut-iPads; auf dem eigenen Handy über den Einlösecode aus Apple Business Manager (fragt das Büro).",
+  "Anmeldung wie im Hub: **Google-Konto**, dann die **PIN**. Auf dem eigenen Gerät merkt sich die App die Anmeldung und lässt dich mit **Face ID** hinein."
+ ],
+ "pages": [
+  {
+   "h1": "Das erste Mal anmelden",
+   "sub": "Nach dem Start fragt die App nach dem Google-Konto — dann nach der PIN, genau wie im Browser.",
+   "card": {
+    "title": "Erste Anmeldung",
+    "text": "Google-Konto, dann PIN"
+   },
+   "left": {
+    "shot": "login-pin-light"
+   },
+   "leftCaption": "Die native PIN-Seite mit Ziffernblock — der Vorname kommt, sobald das Gerät verknüpft ist.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Google-Konto wählen",
+     "text": "Beim ersten Start öffnet sich die Google-Anmeldung. Das **glattt-Konto** wählen — ein privates Google-Konto kommt nicht hinein."
+    },
+    {
+     "n": 2,
+     "title": "PIN eintippen",
+     "text": "Die vier Ziffern deiner **Hub-PIN** über den Ziffernblock. Fertig — die App springt auf die Startseite."
+    },
+    {
+     "n": 3,
+     "title": "Kein Google?",
+     "text": "Unten **„Mit E-Mail anmelden“** führt zum Passwort-Weg (für Konten ohne Google)."
+    },
+    {
+     "n": 4,
+     "title": "Später-Frage",
+     "text": "Danach fragt die App einmal, ob sie das **Gerät verknüpfen** darf (nächste Seite). „Später“ ist erlaubt."
+    }
+   ],
+   "hint": {
+    "text": "**Auf dem Institut-iPad** (geteiltes Gerät) gibt es keine Verknüpfung und kein Face ID — dort meldet sich jede Mitarbeiterin mit ihrer PIN an und am Ende ab."
+   }
+  },
+  {
+   "h1": "Gerät verknüpfen und Face ID",
+   "sub": "Auf dem eigenen iPhone oder iPad muss man die PIN nicht jedes Mal tippen: Das Gerät wird einmal verknüpft, danach öffnet Face ID die App.",
+   "card": {
+    "title": "Face ID",
+    "text": "Gerät verknüpfen, danach nur noch das Gesicht"
+   },
+   "left": {
+    "shot": "login-faceid-light"
+   },
+   "leftCaption": "Das verknüpfte Gerät begrüßt dich mit Vornamen — **Face ID** öffnet, die PIN bleibt als Ausweg.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Verknüpfen bestätigen",
+     "text": "Nach der ersten Anmeldung: **„Gerät verknüpfen“** antippen und mit Face ID bestätigen. Die App legt dafür ein Gerätetoken an."
+    },
+    {
+     "n": 2,
+     "title": "Beim nächsten Start",
+     "text": "Die App zeigt **„Willkommen zurück, <Vorname>“** und fragt Face ID ab — kein Google, keine PIN."
+    },
+    {
+     "n": 3,
+     "title": "Wenn Face ID scheitert",
+     "text": "**„Mit PIN anmelden“** geht immer. Nach dreimal falscher PIN hilft das Büro."
+    },
+    {
+     "n": 4,
+     "title": "Verknüpfung lösen",
+     "text": "Im Hub unter **Mein Profil → App-Geräte** (oder in der App unter Einstellungen) — das Gerät verliert dann Face ID und Widgets."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Was die App noch fragt",
+     "text": "Beim ersten Start bittet sie um **Mitteilungen** (Push) — „Erlauben“, damit Termine und Hinweise ankommen. Die Kamera fragt sie erst, wenn du das erste Foto machst."
+    }
+   ],
+   "hint": {
+    "text": "**Geteiltes Gerät:** Die App sperrt sich nach Inaktivität. Auf dem Institut-iPad bitte immer **abmelden** (Seitenleiste unten links), wenn du gehst — sonst arbeitet die Kollegin unter deinem Namen.",
+    "kind": "warn"
+   }
+  }
+ ]
+}

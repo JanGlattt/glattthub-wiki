@@ -1,0 +1,111 @@
+{
+ "out": "../pdf/App-7-Widgets-Siri-Scanner",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "App",
+ "of": 7,
+ "audience": "institut",
+ "footerArea": "App",
+ "stand": "23.09.2026",
+ "version": "1.0",
+ "nr": 7,
+ "title": [
+  "Widgets, Siri,",
+  "Scanner & Hilfe"
+ ],
+ "subtitle": "Klickanleitung für die glatttHub-App — Kennzahlen als Widget auf dem Home-Bildschirm, Siri-Sätze, der Dokumentenscanner in Upload-Feldern, Diagnose teilen, Einstellungen",
+ "eyebrow": "App · Extras",
+ "notes": [
+  "Vier **Widgets** zeigen Kennzahlen, Tagesübersicht, Beratungsgespräche und Körperzonen auf dem Home-Bildschirm — ohne die App zu öffnen. Voraussetzung: das Gerät ist verknüpft („App 1“).",
+  "**Siri** kennt die App: Tagesüberblick, Termine, Suche, Mitteilungen, eine Frage an glatttBert.",
+  "In jedem Upload-Feld des Hubs bietet die App den **Scanner**: Dokument abfotografieren, gerade ziehen, als PDF anhängen."
+ ],
+ "pages": [
+  {
+   "h1": "Widgets einrichten",
+   "sub": "Lange auf den Home-Bildschirm drücken, „+“, glatttHub suchen — vier Widgets in drei Größen. Sie aktualisieren sich alle 15 Minuten.",
+   "card": {
+    "title": "Widgets",
+    "text": "Hinzufügen, Größe, Kennzahl wählen"
+   },
+   "steps": [
+    {
+     "n": 1,
+     "title": "Hinzufügen",
+     "text": "Home-Bildschirm lange drücken → **„+“** oben links → **glatttHub** → Widget wischen (Kennzahlen, Tagesübersicht, Beratungsgespräche, Körperzonen) → **„Widget hinzufügen“**."
+    },
+    {
+     "n": 2,
+     "title": "Kennzahl wählen",
+     "text": "Auf das Widget lange drücken → **„Widget bearbeiten“**: Kennzahl (Umsatz, Verträge, KPZ, Beratungen …), Zeitraum und Standort."
+    },
+    {
+     "n": 3,
+     "title": "Größen",
+     "text": "Klein: eine Zahl mit Trend. Mittel: Zahl + Verlaufslinie. Groß: vier Kennzahlen bzw. die ganze Tagesübersicht."
+    },
+    {
+     "n": 4,
+     "title": "Tipp aufs Widget",
+     "text": "Öffnet die App direkt auf dem passenden Bericht bzw. der Terminliste."
+    }
+   ],
+   "hint": {
+    "text": "**Widget zeigt „Anmelden“?** Das Gerät ist nicht (mehr) verknüpft — App öffnen, anmelden, „Gerät verknüpfen“ bestätigen („App 1“)."
+   },
+   "layout": "text"
+  },
+  {
+   "h1": "Siri, Scanner, Diagnose",
+   "sub": "Drei Helfer, die man leicht übersieht — und wo die Einstellungen der App sitzen.",
+   "card": {
+    "title": "Siri & Scanner",
+    "text": "Sätze, Dokument scannen, Hilfe teilen"
+   },
+   "hint": {
+    "text": "**Kiosk-Modus:** Auf dem Institut-iPad kann die App per Miradore im Kiosk laufen (nur die Institutsseite, kein Ausstieg). Fünffach oben links tippen zeigt die Diagnose — mehr nicht."
+   },
+   "layout": "text",
+   "table": {
+    "head": [
+     "Was",
+     "So geht es"
+    ],
+    "rows": [
+     [
+      "Siri: Tagesüberblick",
+      "„Hey Siri, wie läuft mein Tag im glatttHub?“ — liest Beratungen, Termine und Umsatz des Tages vor (Widget-Token, auch ohne geöffnete App)."
+     ],
+     [
+      "Siri: Termine / Suche / Mitteilungen",
+      "„Öffne meine Termine in glatttHub“, „Suche eine Kundin in glatttHub“, „Zeige Mitteilungen in glatttHub“ — öffnet die App an der Stelle."
+     ],
+     [
+      "Siri: glatttBert",
+      "„Frag glatttBert …“ — die Frage landet direkt im Assistenten."
+     ],
+     [
+      "Scanner",
+      "In jedem Upload-Feld einer Hub-Seite (Widerruf, Forderungsfall, Laser-Fehler, Reisekosten, Formulare) erscheint **„Scannen“**: Dokument fotografieren, Ecken prüfen, **Sichern** — das PDF hängt im Feld."
+     ],
+     [
+      "Foto-Upload",
+      "Upload-Felder bieten außerdem **Kamera** und **Mediathek** — wie in Safari."
+     ],
+     [
+      "Einstellungen",
+      "iPad: Seitenleiste unten **Profil** → Einstellungen; iPhone: Mehr → Einstellungen. Dort: Standort, Erscheinungsbild, Face ID, Gerät trennen, Version."
+     ],
+     [
+      "Diagnose teilen",
+      "Einstellungen → **Hilfe → Diagnose teilen** schickt Version, Gerät, letzte Meldungen (ohne Kundendaten) ans Büro — bei „die App macht was Komisches“ zuerst das."
+     ],
+     [
+      "Update nötig",
+      "Zeigt die App „Bitte aktualisieren“, ist die Version zu alt: Auf dem Institut-iPad verteilt Miradore das Update, auf dem eigenen Gerät der App Store."
+     ]
+    ]
+   }
+  }
+ ]
+}

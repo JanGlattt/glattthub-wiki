@@ -1,0 +1,227 @@
+{
+ "out": "../pdf/App-3-Termine-und-Terminansicht",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "App",
+ "of": 7,
+ "audience": "institut",
+ "footerArea": "App",
+ "stand": "23.09.2026",
+ "version": "1.0",
+ "nr": 3,
+ "title": [
+  "Termine und die",
+  "Terminansicht"
+ ],
+ "subtitle": "Klickanleitung für die glatttHub-App — Terminliste und Kalender, den Termin beginnen, Einstellungszettel, Formulare, Direkt behandeln, Folgetermin und Verlegen",
+ "eyebrow": "App · Termine",
+ "notes": [
+  "Die Terminseite ist nativ: **Liste** mit Kennzahlen und **Kalender**, umschaltbar. Ein Tipp öffnet die **Terminansicht** — auf dem iPad quer als zweispaltige Ansicht über dem Menü.",
+  "Die Terminansicht macht dasselbe wie im Browser: **Termin beginnen**, Einstellungszettel, Formulare ausfüllen, direkt behandeln, Folgetermin buchen, verlegen, beenden — nur schneller und mit Ziffernblock.",
+  "Regel wie im Hub: Ein Termin läuft nur, wenn **„Termin beginnen“** gedrückt wurde. Erst dann sind Zettel und Behandlung frei."
+ ],
+ "pages": [
+  {
+   "h1": "Terminliste und Kalender",
+   "sub": "Die native Terminseite: Kennzahlen oben, darunter die Termine des Tages als Karten; das Segment wechselt zwischen Liste, Beratungen und Kalender.",
+   "card": {
+    "title": "Terminseite",
+    "text": "Liste, Beratungen, Kalender, Tag wechseln"
+   },
+   "left": {
+    "shot": "appointments-list"
+   },
+   "leftCaption": "Die Liste auf dem iPhone — Kopf mit Datum und Standort, darunter die Karten mit Zeit, Kundin, Services und Status.",
+   "right": {
+    "shot": "appointments-calendar"
+   },
+   "rightCaption": "Der **Kalender** zeigt die Kabinen nebeneinander; ein Tipp auf einen Block öffnet den Termin.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Tag wechseln",
+     "text": "Pfeile im Kopf oder Tipp auf das Datum (Kalenderblatt). **Heute** bringt zurück."
+    },
+    {
+     "n": 2,
+     "title": "Segment",
+     "text": "**Alle / Beratungen / Kalender** — Beratungen zeigt nur Beratungsgespräche mit Status."
+    },
+    {
+     "n": 3,
+     "title": "Karte lesen",
+     "text": "Zeit, Kundin, Services, Kabine, Status-Kante (grün = bezahlt/erledigt, gold = läuft). **Antippen** öffnet die Terminansicht."
+    },
+    {
+     "n": 4,
+     "title": "Aktualisieren",
+     "text": "Nach unten ziehen. Die Liste merkt sich Tag und Standort."
+    }
+   ]
+  },
+  {
+   "h1": "Die Terminansicht",
+   "sub": "Links die Sitzungssteuerung mit Timer und den Schritten, rechts der Inhalt — Übersicht, Einstellungszettel, Formulare, Verlauf.",
+   "card": {
+    "title": "Terminansicht",
+    "text": "Beginnen, Schritte, Beenden"
+   },
+   "left": {
+    "shot": "appointment-ipad"
+   },
+   "leftCaption": "Vor dem Start: links Kundin, Termin und **„Termin beginnen“**, rechts die Übersicht mit Paketen und Hinweisen.",
+   "right": {
+    "shot": "appointment-ipad-running"
+   },
+   "rightCaption": "**Laufender Termin:** Timer, Mitarbeiterin, die Schritte als Register — und die Schnellknöpfe Verlegen, Folgetermin, Direkt behandeln.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Termin beginnen",
+     "text": "Der goldene Knopf links. Erst danach lassen sich Einstellungszettel und Behandlung erfassen — vorher nur lesen."
+    },
+    {
+     "n": 2,
+     "title": "Mitarbeiterin",
+     "text": "Unter dem Timer: Wer behandelt. Antippen ändert die Zuordnung (schreibt nach Phorest)."
+    },
+    {
+     "n": 3,
+     "title": "Register",
+     "text": "**Übersicht, Zettel, Formulare, Verlauf** — auf dem iPhone als Reiter oben."
+    },
+    {
+     "n": 4,
+     "title": "Termin beenden",
+     "text": "Unten links. Die App prüft, ob alles erfasst ist, fragt nach der Notiz und schließt den Termin als bezahlt (PAID) ab."
+    }
+   ],
+   "hint": {
+    "text": "**Zurück:** Auf dem iPad quer liegt die Terminansicht über dem Menü — **„Schließen“** oben links bringt zur Liste. Auf dem iPhone geht es über den Zurück-Pfeil."
+   }
+  },
+  {
+   "h1": "Der Einstellungszettel",
+   "sub": "Die Körpergrafik zeigt die Zonen; die im Termin geplanten Zonen sind hervorgehoben. Ein Tipp öffnet das Formular mit Sitzungsnummer, Skintel, Kopf, ms und Joule.",
+   "card": {
+    "title": "Einstellungszettel",
+    "text": "Zone wählen, Werte tippen, speichern"
+   },
+   "left": {
+    "shot": "treatment-ipad"
+   },
+   "leftCaption": "Grafik und Zonenliste: **geplante Zonen** leicht hervorgehoben, bereits erfasste voll — ein Tipp öffnet das Formular.",
+   "right": {
+    "shot": "treatment-form-ipad"
+   },
+   "rightCaption": "Das Zonen-Formular mit **Ziffernblock** statt Tastatur; unten der Verlauf der früheren Sitzungen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zone antippen",
+     "text": "In der Grafik oder in der Liste. **Ganzkörper**: alle Zonen sind frei. Eine Zone, die im Termin nicht geplant ist, fragt: **„Trotzdem erfassen?“**"
+    },
+    {
+     "n": 2,
+     "title": "Werte eintippen",
+     "text": "Skintel (0–100, mehr nimmt das Feld nicht an), Kopf, Haar, ms und Joule. Die J-Range steht daneben; **Werte außerhalb** oder unter der letzten Sitzung musst du bestätigen."
+    },
+    {
+     "n": 3,
+     "title": "Speichern",
+     "text": "Der goldene Knopf. Danach lassen sich **Fotos** aufnehmen (Kamera oder Mediathek)."
+    },
+    {
+     "n": 4,
+     "title": "Verlauf",
+     "text": "Unter dem Formular alle früheren Sitzungen dieser Zone — mit Fotos."
+    }
+   ],
+   "hint": {
+    "text": "**Sitzungsnummer** zählt je Zone automatisch weiter. Skintel **oder** Hauttyp reicht — eines von beiden ist Pflicht."
+   }
+  },
+  {
+   "h1": "Formulare und Direkt behandeln",
+   "sub": "Verträge, Erlaubnisse und Fragebögen füllt die Kundin in der App aus; „Direkt behandeln“ bucht die Behandlung im laufenden Termin.",
+   "card": {
+    "title": "Formulare",
+    "text": "Kette ausfüllen, Vertrag, direkt behandeln"
+   },
+   "left": {
+    "shot": "appointment-ipad-forms"
+   },
+   "leftCaption": "Das Register **Formulare**: die Kette des Termins, erledigte mit Haken, das offene Formular öffnet in der Inhaltsspalte.",
+   "right": {
+    "shot": "booking-direct"
+   },
+   "rightCaption": "**Direkt behandeln:** Kundin, Kabine, Startzeit und die Paket-Services — buchen, und der Termin läuft weiter.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Formular öffnen",
+     "text": "Ein Tipp auf das Formular — es öffnet rechts, die linke Spalte wird zum **Kundenmodus** (kein Timer, kein Beenden). Das iPad an die Kundin reichen."
+    },
+    {
+     "n": 2,
+     "title": "Ausfüllen und senden",
+     "text": "Unterschrift mit dem Finger, **„Absenden“** unten. Die App zieht die Einreichung nach und markiert das Formular als erledigt."
+    },
+    {
+     "n": 3,
+     "title": "Direktzahler",
+     "text": "Beim Vertrag mit **Direktzahlung** verlangt die App kein SEPA-Mandat mehr; bei Ratenzahlung folgt das Mandat in der Kette."
+    },
+    {
+     "n": 4,
+     "title": "Direkt behandeln",
+     "text": "Knopf in der Sitzungssteuerung. Kabine und Services prüfen, **buchen** — die App wechselt in den neuen Behandlungstermin."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Zweite Person",
+     "text": "Minderjährige oder Mitunterzeichner: Das Formular bietet **„Zweite Person vor Ort“** oder einen **7-Tage-Link** an — beides landet in derselben Einreichung."
+    }
+   ]
+  },
+  {
+   "h1": "Folgetermin und Verlegen",
+   "sub": "Beide Blätter sehen gleich aus: Wunschzeitraum wählen, Vorschläge durchsehen, buchen. Verlegen storniert den alten Termin dabei automatisch.",
+   "card": {
+    "title": "Folgetermin",
+    "text": "Vorschläge, buchen, verlegen"
+   },
+   "left": {
+    "shot": "booking-followup"
+   },
+   "leftCaption": "**Folgetermin:** Schnellwahl 4/6/8 Wochen oder ein Datum, darunter die freien Zeiten je Tag.",
+   "right": {
+    "shot": "booking-reschedule"
+   },
+   "rightCaption": "**Termin verlegen:** oben der bisherige Termin (wird storniert), darunter der neue — ab heute, 1, 2 oder 4 Wochen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Blatt öffnen",
+     "text": "In der Sitzungssteuerung **„Folgetermin“** bzw. **„Verlegen“**."
+    },
+    {
+     "n": 2,
+     "title": "Zeitraum",
+     "text": "Schnellwahl antippen oder das Datum setzen; **„Vorschläge laden“** holt freie Zeiten aus Phorest — Kabine und Mitarbeiterin passend zum Paket."
+    },
+    {
+     "n": 3,
+     "title": "Buchen",
+     "text": "Vorschlag antippen, **„Buchen“** bzw. **„Verlegen“**. Die App bestätigt mit Datum und Uhrzeit und öffnet den neuen Termin."
+    },
+    {
+     "n": 4,
+     "title": "Wenn nichts kommt",
+     "text": "„Keine buchbaren Räume“: Die Kabine ist in Phorest nicht für alle Services freigeschaltet — Hinweis ans Büro (Phorest → Mitarbeiter → Raum → Services)."
+    }
+   ]
+  }
+ ]
+}
