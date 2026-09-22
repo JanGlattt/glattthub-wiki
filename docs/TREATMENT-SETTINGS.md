@@ -435,6 +435,20 @@ gibt — wenn sonst keine Zone erkannt wurde — alles frei, damit nie jede Zone
 Genutzt von der iOS-App (Hervorhebung + Rückfrage bei fremder Zone); das Web-Formular ignoriert das
 Feld bisher. Tests: `PlannedZoneResolverTest`, `TreatmentSettingsTest::test_daten_endpoint_nennt_geplante_zonen`.
 
+**Unbekannte Servicenamen werden mitgeschrieben (seit 23.09.2026).** Jeder Name in `unmapped`
+landet über den `UnknownServiceRecorder` in `planned_zone_unknown_services` (Name + Standort,
+mit Zähler und letztem Auftreten). Auswerten und aufräumen:
+
+```bash
+php artisan treatments:unknown-zones            # Liste, meistgesehen zuerst
+php artisan treatments:unknown-zones --prune    # Namen entfernen, für die es inzwischen ein Muster gibt
+```
+
+Jeder Eintrag ist ein fehlendes Muster in `PlannedZoneResolver::PATTERNS` (bzw. `IGNORE`, wenn es
+keine Behandlung ist). Solange er fehlt, gibt der Zettel alle Zonen frei — es geht nichts kaputt,
+die Hervorhebung fehlt nur. Das Mitschreiben ist bewusst still: Ein Fehler dabei darf die
+Terminansicht nie stören. Test: `UnknownServiceRecorderTest`.
+
 #### `getTreatmentSettingsData()`
 Liefert alle Daten per AJAX.
 

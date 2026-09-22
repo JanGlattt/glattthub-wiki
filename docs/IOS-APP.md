@@ -317,7 +317,7 @@ Erkennung: User-Agent-Suffix `glatttHub-iOS/<version>` (serverseitig `App\Suppor
 | B1 ✅ | App-Erkennung | `App\Support\NativeApp` (User-Agent-Suffix `glatttHub-iOS/<version>`), `<meta name="glattthub-app">` + `glattthub-app-version`, `body.ios-app`; Push-Init im Layout prüft `isNativeSupported()` statt Electron/PWA-Bedingungen. Test `NativeAppDetectionTest` |
 | B2 ✅ | Generische Push-Bridge | `push-notifications.js`: `getNativeBridge()`, `isNativeSupported()`, `loadNativeInfo()`, `subscribeNative()`; `getPermission()` ohne `window.Notification`; Electron-Aliase bleiben |
 | B3 ✅ | APNs-Umgebung je Gerät | Migration `2026_09_20_120000_add_apns_environment_to_push_subscriptions_table`, `PushSubscription::usesProductionApns()`, Client je Subscription, Endpunkt nimmt `environment` + `device_type` `ios`. Test `ApplePushEnvironmentTest` |
-| B4 ✅ | Push-Payload | `badge` (`Notification::unreadCountFor()`), `category` (`HUB_OBJECT`/`HUB_INFO`, `ApplePushNotificationService::categoryFor()`), `thread-id` (Modul), `apns-collapse-id`; Zusatzdaten aus `HubNotificationDispatcher::pushData()`; `POST /api/push/mark-read` (`log_id` → Klick + In-App gelesen, Antwort `unread_count`). Test `ApplePushPayloadTest` |
+| B4 ✅ | Push-Payload | `badge` (`Notification::unreadCountFor()`), `category` (`HUB_APPOINTMENT`/`HUB_OBJECT`/`HUB_INFO`, `ApplePushNotificationService::categoryFor()` — seit 23.09.2026 bekommt eine Mitteilung zu `/hub/appointment/{branch}/{id}` die Aktion „Termin öffnen", die die **native Terminansicht** öffnet), `thread-id` (Modul), `apns-collapse-id`; Zusatzdaten aus `HubNotificationDispatcher::pushData()`; `POST /api/push/mark-read` (`log_id` → Klick + In-App gelesen, Antwort `unread_count`). Seit 23.09.2026 verlinkt die Selfservice-Terminbuchung den **gebuchten Termin** (`booking_result.appointment_id`), gescheiterte Terminerinnerungen die **Kundin** (`client_id`) statt der Listen. Tests `ApplePushPayloadTest`, `SelfServiceBookingLinkTest` |
 | B5 ✅ | Badge-Sync | Glocke (Sidebar) ruft `window.glatttNative.setBadge(unread)` neben `electronBadge` |
 | B6 ✅ | Universal Links | Route `/.well-known/apple-app-site-association` + `/apple-app-site-association` (`AppleAppSiteAssociationController`, Team/Bundle aus `config/push.php`); LB-Regel `/.well-known/*` ohne IAP existiert bereits (geprüft 20.09.2026). Test `AppleAppSiteAssociationTest` |
 | B7 ✅ | Geräte-Token | `POST /api/app/devices` (Session-Auth) → Sanctum-Token (`app:session`, `app:widgets`), Tabelle `app_devices`, `POST /api/app/session` für Face ID; Widerruf im Profil/App und bei Archivierung (nicht beim Abmelden). Test `AppDeviceTokenTest` |
@@ -972,6 +972,38 @@ keine zweite Logik im Backend:
 - **Tests:** `MaintenanceApiTest` (Hub), `BonusBoardSnapshotTests` (Helfer + Snapshots),
   UI-Tests `testIpadLaserMaintenance` (braucht einen vorbereiteten Entwurf mit abgeschlossenem
   Countdown, Rezept im Test) und `testIpadBonusBoard` im Schema „glatttHub UI".
+
+### Offline-Stände der nativen Seiten (seit 23.09.2026)
+
+Reißt im Institut das WLAN ab, zeigen **Startseite, Terminliste, Kundenliste und
+Kundenübersicht** den zuletzt geladenen Stand mit „Kein Netz · Stand 14:32 Uhr"
+(`OfflineNotice`) statt einer Fehlermeldung — auch nach einem Neustart der App.
+
+- **`OfflineStore`** (`ios/glatttHub/Offline/`) legt je Schlüssel eine JSON-Datei in
+  `Application Support/offline` (vom iCloud-Backup ausgenommen). Jeder Stand trägt
+  `savedAt` **und die E-Mail der Nutzerin**: Auf dem geteilten Institut-iPad sieht die
+  Kollegin nie den Stand der Vorgängerin (`OfflineStore.owner`, gesetzt beim Laden der
+  Navigation). **Abmelden löscht alles** (`AppContainer.logout()`), ein Nutzerwechsel
+  ebenfalls; Stände älter als sieben Tage werden nicht mehr gezeigt.
+- **Gesichert wird nur, was gelesen wird:** Cockpit je Standort (`start-<branch>`),
+  der **heutige** Tag der Terminliste (`appointments-<branch>`), die erste Seite der
+  Kundenliste ohne Suchbegriff (`clients-recent`) und jede geöffnete Kundenübersicht
+  (`client-<id>`). Terminansicht, Einstellungszettel, Laser-Wartung und Bonus-Board
+  bleiben bewusst live — ein veralteter Stand wäre dort gefährlich bzw. wertlos.
+- **Ablauf:** Beim Laden wird zuerst der gesicherte Stand gezeigt (Kaltstart ohne Netz),
+  dann die Anfrage gestellt. Erfolg → Stand sichern, Hinweis weg. Fehler → Hinweis mit
+  Zeitstempel, Ziehen lädt erneut. Wer einen neuen Tag oder eine Suche ohne Netz öffnet,
+  sieht weiter die gewohnte Fehlerkarte — dafür gibt es keinen Stand.
+- **Die Hülle muss mit:** Ohne Netz lädt `/hub/app-shell` nicht, damit kommt nie `ready` — die
+  App zeigte bis 23.09.2026 nur die Verbindungs-Fehlerseite, auch wenn Stände da waren. Deshalb
+  wird die **Navigation** mitgesichert (`navigation`), und `AppContainer.enterOfflineShell()`
+  (ausgelöst, sobald `state.isOffline` wird) setzt `isReady`, wenn die Sitzungs-Cookies noch
+  stehen (`SessionMonitor.isAuthenticated()` liest nur den Cookie-Store, also offline nutzbar)
+  **und** ein Stand vorliegt. `OfflineView` erscheint nur noch ohne Stand. Der `OfflineStore.owner`
+  liegt dafür in den UserDefaults — sonst wüsste die App beim Kaltstart nicht, wessen Stände das sind.
+- **Prüfstand:** Startargument `-glatttOffline` (`AppProbe.forcedOffline`, auch in
+  `WidgetAPI.perform`) lässt jeden Hub-Aufruf scheitern; UI-Test `testOfflineFallback` lädt erst
+  mit Netz und startet dann ohne (Bildbeweis `pad-offline-start.png`). Unit-Tests: `OfflineStoreTests`.
 
 ### Verteilung
 
