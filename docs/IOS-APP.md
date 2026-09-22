@@ -287,7 +287,8 @@ Spiegelt `window.electronPush`; `push-notifications.js` bekommt eine generische 
 | `unregisterForApnsNotifications()`, `getPushStatus()` → `'granted'\|'denied'\|'default'` (Web-Vokabular, weil das WKWebView kein `window.Notification` hat) | `glattt:push-opened` (`url`, `log_id`) |
 | `setBadge(n)`, `saveFile({name,mime,base64})`, `openExternal(url)`, `haptic(kind)`, `scanDocument()` → `{ name, mime, base64 }` (VisionKit, wirft bei Abbruch), `scanInto(input)` (legt den Scan in ein `<input type="file">`, löst `input`/`change` aus) | `glattt:foreground`, `glattt-bert-ask` (`question`, Siri-Intent) |
 | `getInfo()` → `{ platform: 'ios', appName: 'glatttHub iOS App', appVersion, deviceName, nativeDeviceId, sharedDevice, kioskMode, canScan }`, `reportContext(ctx)` | `glattt:biometric-unlocked` |
-| `ready({ path, loggedIn })` (jede Seitenlast; `loggedIn` = Hub-Layout erkannt), `branchChanged({ branchId })` (Standortfilter, von bridge.js selbst gemeldet), `openMore({ focusSearch })` (Lupe im Scroll-Header) | `glattt:set-branch` (`branchId`), `glattt:toggle-theme`, `glattt:start-tour`, `glattt:open-anleitung`, `glattt-bert-toggle` — Listener am Wurzelelement von `bottom-nav.blade.php` |
+| `ready({ path, loggedIn })` (jede Seitenlast; `loggedIn` = Hub-Layout erkannt), `branchChanged({ branchId })` (Standortfilter, von bridge.js selbst gemeldet), `openMore({ focusSearch })` (Lupe im Scroll-Header), `openPage({ path })` (native Mehr-Seite, von bridge.js bei Links auf `/hub/bonus`), `openLaserMaintenance({ laserId })` (Web-Knopf „Wartung durchführen") | `glattt:laser-maintenance-saved` (`laserId`) → Seite lädt neu |
+| — | `glattt:set-branch` (`branchId`), `glattt:toggle-theme`, `glattt:start-tour`, `glattt:open-anleitung`, `glattt-bert-toggle` — Listener am Wurzelelement von `bottom-nav.blade.php` |
 
 `push-notifications.js` lädt `getInfo()` und `getPushStatus()` in `init()` (`loadNativeInfo()`); `device_type`
 wird daraus `ios` bzw. `macos`, der Gerätename kommt aus `deviceName`. `platform` ist `ios` für iPhone
@@ -922,6 +923,50 @@ als Kacheln (Chart breit, Karten schmal, Schnellzugriff als Zeile); im Hochforma
   `Navigation/HubTabBarController.swift`, `Screens/RootView.swift`, `Start/CockpitView.swift`,
   `Bridge/NativeBridge.swift`, `Resources/bridge.js`, Theme `body.ios-app.ios-native-menu`.
 
+### Native Laser-Wartung und Bonus-Board (seit 23.09.2026)
+
+Zwei weitere Bereiche laufen nativ — mit **denselben Endpunkten und Regeln** wie das Web,
+keine zweite Logik im Backend:
+
+- **Laser-Wartung** (`ios/glatttHub/Laser/`): `LaserListView` (alle Geräte mit Standort, Status,
+  Fälligkeit der Wochenwartung, Entwurfs-Schritt; `GET hub/laser/api/lasers`) und der
+  Wartungs-Assistent `LaserMaintenanceView` — vier Schritte wie das Web-Fenster (Countdown, Laser
+  mit acht Foto-Kacheln, vier Anbauteile mit Zustand/Impulsen/Skintel-Tests/Fotos, Lager &
+  Abschluss). iPad: Schritte als Seitenleiste links, Inhalt rechts; iPhone: Schrittzeile oben.
+  Der Countdown zählt lokal, **ob die fünf Minuten um sind, entscheidet der Server**
+  (`countdown/complete` antwortet 422 mit Reststand); solange er läuft, bleibt der Bildschirm an
+  (`isIdleTimerDisabled`). Fotos: Kamera oder Fotos-Mediathek je Kachel, sofort in die
+  Entwurfs-Ablage (`POST …/photos/{slot}`), Vorschau über die Hub-Sitzung. Der Entwurf ist
+  derselbe wie im Web (`laser_maintenance_drafts`) — Web begonnen, App fortgesetzt, oder umgekehrt.
+  Einstiege: Schnellzugriff „Laser-Wartung" im Cockpit (Recht `perform_laser_maintenance`,
+  Aktion `laser`), Web-Knopf „Wartung durchführen" der Geräteseite (Bridge fängt das Alpine-Ereignis
+  `open-maintenance-wizard` in der Capture-Phase ab → `openLaserMaintenance`), nach dem Abschluss
+  `glattt:laser-maintenance-saved` → die Web-Seite lädt neu. Geräte-Detail, Reparaturen und Reports
+  bleiben Web. Details: `LASER-MODUL.md`, Abschnitt „Wartungsassistent".
+- **Bonus-Board** (`ios/glatttHub/Bonus/`): `BonusBoardModel` (Port von `bonus-board.js`) +
+  `BonusBoardView` — Mitarbeiterinnen-Sicht (Zusammenfassung, Challenges, Ziel-Karten mit Balken
+  und Zielmarke, Team-Karte, Celebration-Banner mit Konfetti) und Management-Sicht (Institute vs.
+  Minimalziele, Boni je Mitarbeiterin gruppiert nach Institut mit aufklappbaren Zielen, offene
+  Widerrufe, CSV/PDF über das Teilen-Blatt), Monatswahl, Umschalter „Mein Board / Management bzw.
+  Mein Institut" (Rechte kommen jetzt mit der `data`-Antwort: `can_switch_view`, `can_manage`,
+  `can_manage_reviews`, `scope`). Verwaltung und Google-Bewertungen bleiben Web.
+- **Native Mehr-Seiten** (`Bonus/NativeMorePage.swift`): Pfade, die die App selbst rendert statt sie im
+  Pool-WebView zu laden — Erkennung an genau dem Pfad (`/hub/bonus`; Unterseiten bleiben Web).
+  `AppContainer.open()` und der `WebCoordinator` (harte Navigationen) leiten dorthin,
+  `bridge.js` fängt `alpine:navigate` und Link-Klicks (`openPage`). Mit Tab-Leiste hängt
+  `HubTabBarController.selectMoreNative()` einen `UIHostingController` über das Pool-WebView des
+  Mehr-Tabs (`HubTabPlaceholderController.setMoreNative`); die Hülle wird aktiviert, `currentPath`
+  auf den Seitenpfad gesetzt — die iPad-Seitenleiste markiert damit den Menüpunkt, das nächste
+  Web-Ziel räumt die Seite über `setWebView()` ab. Ohne Tab-Leiste (Kiosk) als Vollbild
+  (`presentedMorePage`). Neue native Mehr-Seite = Fall in `NativeMorePage` + Pfad in
+  `NATIVE_PAGES` der Bridge.
+- **Gemeinsame Bausteine:** `HubSession.jsonBody()` liefert Status **und** Körper auch bei 422
+  (Feldfehler des Assistenten), `FixedGrid` (Raster ohne Lazy-Stack, damit der ImageRenderer der
+  Snapshot-Tests etwas sieht), `NumberField`/`NumericKeypadField` aus dem Einstellungszettel.
+- **Tests:** `MaintenanceApiTest` (Hub), `BonusBoardSnapshotTests` (Helfer + Snapshots),
+  UI-Tests `testIpadLaserMaintenance` (braucht einen vorbereiteten Entwurf mit abgeschlossenem
+  Countdown, Rezept im Test) und `testIpadBonusBoard` im Schema „glatttHub UI".
+
 ### Verteilung
 
 Apple Business Manager **Custom App** (App Store Connect → „Privat — nur für bestimmte Organisationen"
@@ -948,6 +993,7 @@ Apps-&-Bücher-Token in Miradore.
 | F (22.09.) | Native Terminseite (Liste, KPIs, Kalender, Web-Terminansicht als Detailseite im Tab), `/api/app/appointments` | ✅ auf dem iPad abgenommen (Jan, 22.09.) |
 | G (22.09.) | Native Login-Seite „Schlüssel", native Kundenliste + Kundenübersicht (Web-Registerkarten als Detailseite im Tab), `/api/app/clients` | ✅ auf dem iPad abgenommen (Jan, 22.09.; Name + Kundennummer kleben in der Kundenübersicht oben) |
 | H (22.09.) | Native Terminansicht komplett: Stufe 1 (Split-View iPad quer, Übersicht, Sitzungssteuerung, Beenden-Ablauf), Stufe 2 (Einstellungszettel nativ), Stufe 3 (Formularliste/Kette nativ, Ausfüllen als eingebettete Web-Engine), Stufe 4 (Direkt behandeln als Web-Blatt + nativer Abschluss, Kasse, Minderjährige) | ✅ Stufen 1–4 auf dem iPad abgenommen (Jan, 22.09.; inkl. geplante Zonen im Zettel, Skintel-Sperre, Direktzahler ohne SEPA, „Termin verlegen" nativ) |
+| J (23.09.) | Native Laser-Wartung (Liste + Assistent, `hub/laser/api`, gemeinsamer Entwurf mit dem Web-Fenster) und natives Bonus-Board (Mehr-Seite, beide Sichten, Export) | ✅ gebaut (Abschnitt „Native Laser-Wartung und Bonus-Board"); Abnahme auf dem Gerät offen |
 | I (22.09.) | iPad: native Seitenleiste (quer fest, hoch Symbol-Spalte + Überlagerung) ersetzt das Web-Menü; native Startseite als Raster | ✅ auf dem iPad abgenommen (Jan, 22.09.; Standort/Mitteilungen als Popover, Spotlight-Suche, Dunkelmodus in Slate) |
 | 3 | Härtung Weg B (App-Host ohne IAP, Google Sign-In nativ, App Attest) | offen |
 | 4 | Native Prozesse nach Pilot-Entscheidung (Tageserfassung 4–6 Wochen, Laser-Wartung 2–3 Wochen) | offen |

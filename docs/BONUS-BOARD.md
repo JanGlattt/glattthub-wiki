@@ -426,7 +426,10 @@ Das Standard-Bonussystem wird per Migration
 ### HTTP-Schicht
 
 - `BonusBoardController` — `/hub/bonus` (+ `/data`, `/tile`). `view=management`
-  nur mit `manage_bonus_rules`. Final eingefrorene Monate werden aus dem
+  nur mit `manage_bonus_rules`. Die Antwort der eigenen Sicht trägt seit 23.09.2026
+  zusätzlich `scope`, `can_switch_view`, `can_manage`, `can_manage_reviews` — die native
+  iOS-App rendert das Board aus derselben Antwort und braucht die Rechte, die das Blade aus
+  dem Controller bekommt (Umschalter, Verwaltungs-Knöpfe). Final eingefrorene Monate werden aus dem
   Freeze-Payload bedient. Die Management-Antwort wird zur Laufzeit angereichert
   (`decorateForManagement()`): `branch_meta` (Name, Farbe aus `InstituteColor`,
   Icon aus `InstituteIcon`, `sort_order`), `class_order`, `is_closed`
@@ -472,6 +475,16 @@ Das Standard-Bonussystem wird per Migration
   (Zwei-Zonen-Fortschrittsbalken, Serien-Punkte, Konfetti nach `vsa-burst`-Vorbild).
 - Bewusst **keine ECharts** auf dem Board (StatisticConventionTest) —
   Fortschrittsbalken statt Chart-Karten.
+- **Native iOS/iPadOS-App (seit 23.09.2026):** `ios/glatttHub/Bonus/` — `BonusBoardModel`
+  ist der Port von `bonus-board.js` (Status-Badges, Delta-Texte, `barModel` mit Zielmarke bei
+  ~77 %, `userGroups`, Celebration mit denselben Lob-Texten, CSV/PDF über die Export-Route +
+  Teilen-Blatt), `BonusBoardView` die Mitarbeiterinnen- und Management-Sicht. Die App fängt
+  jede Navigation auf genau `/hub/bonus` ab (`NativeMorePage`, Bridge `openPage`) und zeigt die
+  Seite im „Mehr"-Bereich: iPad neben der Seitenleiste (Menüpunkt markiert), iPhone im Mehr-Tab.
+  Verwaltung und Google-Bewertungen bleiben Web-Seiten. Snapshot-/Helfer-Tests:
+  `ios/glatttHubTests/BonusBoardSnapshotTests.swift`. **Änderungen an den Anzeige-Regeln in
+  `bonus-board.js` müssen im Swift-Modell nachgezogen werden** — die Daten sind eine Wahrheit,
+  die Darstellung zweimal.
 
 ### Tests
 

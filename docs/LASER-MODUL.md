@@ -235,6 +235,24 @@ erhalten:** Jedes Foto wandert beim Hochladen sofort in die Entwurfs-Ablage
 Abschluss von dort ans Protokoll (`LaserMediaService::adoptStored()`); „Wartung verwerfen"
 löscht die Ablage.
 
+**Native App (seit 23.09.2026).** Der Assistent existiert ein zweites Mal als native Ansicht der
+iOS/iPadOS-App (`ios/glatttHub/Laser/`), aber mit **derselben Logik und demselben Entwurf**: Die
+Regeln (Countdown auf dem Server, Pflichtfotos, Impulse ≥ letzter Wert, Skintel 0–50, Abschluss
+über `MaintenanceService`) stehen seither im `App\Services\Laser\MaintenanceWizardService`, den
+das Livewire-Fenster **und** die JSON-Endpunkte `hub/laser/api/maintenance/{laserId}/…`
+(`MaintenanceApiController`, Recht `perform_laser_maintenance`, Web-Sitzung) nutzen. Ein im Web
+begonnener Entwurf lässt sich in der App fortsetzen und umgekehrt (`laser_maintenance_drafts` je
+Laser + Nutzer, Payload-Schlüssel = Livewire-Eigenschaften). Endpunkte: `GET …` Ausgangslage
+(Teile, letzte Impulse, Kacheln, Entwurf mit Foto-URLs), `POST …/countdown` (Start, idempotent),
+`POST …/countdown/complete` (422 mit Reststand, wenn das Gerät zu früh meldet), `PUT …/draft`
+(Felder still sichern), `POST …/validate {step, substep, fields}` (Schritt 2 = Laser, 3 = Anbauteil;
+422 mit `errors` Feld → Meldung, Foto-Lücken als `photos.<slot>`), `POST …/photos/{slot}`
+(multipart `photo`, ersetzt das alte Foto der Kachel), `DELETE …/photos/{slot}`, `POST …/complete`,
+`DELETE …/draft`; dazu `GET hub/laser/api/lasers` für die native Laser-Liste (Fälligkeit, letzte
+Wartung, Entwurfs-Schritt). In der App öffnet der Web-Knopf „Wartung durchführen" der Geräteseite
+den nativen Assistenten (Bridge fängt `open-maintenance-wizard` ab), nach dem Abschluss lädt die
+Web-Seite sich über `glattt:laser-maintenance-saved` neu. Tests: `tests/Feature/Laser/MaintenanceApiTest.php`.
+
 ### Datenmodell (Tabellen)
 
 Alle Tabellen mit Prefix `laser_` (bzw. `lasers`). Migrationen: `database/migrations/2026_06_27_100000` … `100019`.
