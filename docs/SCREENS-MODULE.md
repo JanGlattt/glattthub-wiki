@@ -317,6 +317,13 @@ Front goldenes „g") und Top-Shelf (Schwarz mit Gold) stammen aus Jans Icon-Com
 das `.icon`-Format nicht kennt — die PNGs im Brandassets-Katalog sind mit rsvg-convert/ImageMagick daraus
 abgeleitet (Verläufe mit `-colorspace sRGB -type TrueColor` schreiben, sonst entstehen Graustufen-PNGs).
 
+**TestFlight:** `ios/scripts/testflight-upload.sh tvos --note "…"` archiviert, exportiert, validiert und lädt
+hoch (Doppel-Upload-Schutz über die App-Store-Connect-API, Testhinweis nach der Verarbeitung). Die TV-App hat
+eigene Nummern im Target `glatttHubTV` (`MARKETING_VERSION`/`CURRENT_PROJECT_VERSION`); ohne registriertes
+Apple TV im Team entsteht kein Entwicklungsprofil, deshalb bleibt das Archiv unsigniert und erst der Export
+signiert mit „Apple Distribution". Erster Build `1.0.0 (1)` am 24.09.2026, App-ID 6815394429. Details:
+`.github/knowledge/ios-testflight-verteilung.md`.
+
 ### Fallstricke
 
 - **tvOS-Simulator: Keychain überlebt keinen Neustart.** Jeder Start bekam eine neue Geräte-ID und koppelte neu
