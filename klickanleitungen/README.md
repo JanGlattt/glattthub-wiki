@@ -129,6 +129,21 @@ schlucken, wie es ist.
   listet Überschriften, Karten, Reiter und Knöpfe mit Position — die Grundlage jedes Plans.
 - **Lade-Platzhalter:** `L.waitLoaded(page)` wartet, bis Skelette und Spinner weg sind
   (Berichte zeigten sonst graue Kacheln).
+- **Zugang durch Google IAP (seit 23.09.2026):** `hub.glattt.com` und `staging.hub.glattt.com`
+  liegen hinter IAP, der frühere Umweg über die `*.run.app`-Adresse ist geschlossen (er war
+  zugleich ein offenes Loch in der Absicherung). `shared/lib/iap.cjs` holt ein OIDC-Token des
+  Dienstkontos `klickanleitungen@glattthub.iam.gserviceaccount.com` und setzt es als
+  `Proxy-Authorization`-Header auf den Browser-Kontext; IAP prüft es, entfernt es und reicht
+  die Anfrage durch, danach läuft die normale Hub-Anmeldung. Voraussetzungen: (1) `gcloud auth
+  login` mit einem Konto, das „Service Account Token Creator" auf dem Dienstkonto hat (Jan);
+  (2) IAP auf den Backends `backend-glattthub-prod`/`-staging` läuft mit einem **eigenen**
+  OAuth-Client (Google Auth Platform → Clients, Web-Anwendung, Redirect-URI
+  `https://iap.googleapis.com/v1/oauth/clientIds/<CLIENT_ID>:handleRedirect`), denn der von
+  Google verwaltete Standard-Client erlaubt keinen programmatischen Zugang („Invalid JWT
+  audience"); (3) dessen Client-ID steht als `KLICK_IAP_AUDIENCE` in der `.env`. Keine
+  Schlüsseldatei, nichts im Repo. `KLICK_IAP=0` schaltet den Header ab (lokal ist er ohnehin
+  aus). Läuft der Token-Abruf auf `PERMISSION_DENIED`, fehlt die Rolle oder sie ist noch nicht
+  propagiert (einige Minuten nach der Vergabe).
 - **Prod nur lesend, als Institute-Konto:** `KLICK_PIN=1234` statt E-Mail/Passwort meldet
   das Institute-Konto an (`state.<host>.json` je Umgebung — vor einem Wechsel des Kontos
   löschen, sonst läuft die alte Sitzung weiter). So entstehen Grundlagen, Kundenverwaltung

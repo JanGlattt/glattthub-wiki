@@ -7,6 +7,7 @@
    Beide sind gitignored; Vorlagen liegen je Serie als `.env.example` / `mask.example.json`. */
 const { chromium } = require('playwright');
 const fs = require('fs');
+const iap = require('./iap.cjs');   // Google IAP vor den Hub-Domains passieren (Dienstkonto-Token)
 
 const BASE = process.env.KLICK_BASE || '';
 const CREDS = [process.env.KLICK_USER || '', process.env.KLICK_PW || ''];
@@ -102,6 +103,8 @@ async function launch(opts = {}) {
     locale: 'de-DE',
     timezoneId: 'Europe/Berlin',
     storageState: fs.existsSync(STATE) && !opts.fresh ? STATE : undefined,
+    // IAP-Token für hub.glattt.com / staging.hub.glattt.com (lokal leer) — siehe iap.cjs
+    extraHTTPHeaders: iap.headers(BASE),
   });
   const page = await ctx.newPage();
   await page.addInitScript(() => {

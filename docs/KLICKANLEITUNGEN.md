@@ -112,17 +112,31 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 ### Zugang für Screenshots
 
 - **Institutsseite** (`/shared/institut/{token}`): ohne Login, Token je Standort.
-- **Hub-Seiten auf Staging**: `staging.hub.glattt.com` liegt hinter Google IAP — ein Headless-
-  Browser kommt dort nicht ohne Weiteres durch. **Der frühere Umweg über die `*.run.app`-Adresse
-  ist seit 23.09.2026 geschlossen** (Ingress nur noch über den Load Balancer, siehe
-  [Cloud-Infrastruktur](CLOUD-INFRASTRUKTUR.md)); er war zugleich das offene Loch in der
-  Absicherung. Ersatz, noch nicht eingerichtet: IAP akzeptiert ein OIDC-ID-Token eines
-  berechtigten Dienstkontos im Header `Authorization: Bearer <token>` (Rolle „IAP-secured Web
-  App User" auf dem Backend-Service, Token per `gcloud auth print-identity-token
-  --audiences=<IAP-Client-ID>`), Playwright setzt ihn über `extraHTTPHeaders`. Bis dahin laufen
-  Hub-Screenshots lokal. Danach wie gehabt per `POST /login/credentials` (E-Mail + Passwort)
-  anmelden; die Login-Seite hat **zwei** Formulare (`#form-pin` zuerst, `#form-email`), das
-  Formular immer über das E-Mail-Feld greifen.
+- **Hub-Seiten auf Staging und Prod** (`staging.hub.glattt.com`, `hub.glattt.com`): beide liegen
+  hinter Google IAP, und ein Headless-Browser kann die Google-Anmeldung nicht durchlaufen. **Der
+  frühere Umweg über die `*.run.app`-Adresse ist seit 23.09.2026 geschlossen** (Ingress nur noch
+  über den Load Balancer, siehe [Cloud-Infrastruktur](CLOUD-INFRASTRUKTUR.md)); er war zugleich
+  das offene Loch in der Absicherung. Seitdem passiert der Lauf IAP programmatisch:
+  `shared/lib/iap.cjs` holt per `gcloud auth print-identity-token --impersonate-service-account=…
+  --audiences=<IAP-Client-ID> --include-email` ein OIDC-Token des Dienstkontos
+  `klickanleitungen@glattthub.iam.gserviceaccount.com` (einzige Rolle: „IAP-secured Web App User"
+  auf `backend-glattthub-prod` und `backend-glattthub-staging`) und setzt es als
+  `Authorization: Bearer <token>` über `extraHTTPHeaders` auf den Browser-Kontext (Chromium
+  weigert sich, `Proxy-Authorization` als Extra-Header zu senden; der Hub ignoriert den fremden
+  Bearer-Token, Sanctum prüft die Sitzung zuerst). **Die Audience ist die Client-ID eines eigenen
+  IAP-OAuth-Clients** (`KLICK_IAP_AUDIENCE`): Der von Google verwaltete Standard-Client, mit dem
+  IAP bisher lief, lässt laut Google-Doku keinen programmatischen Zugang zu (Antwort „Invalid JWT
+  audience"), und die IAP-OAuth-Admin-API zum Anlegen per gcloud ist seit März 2026 abgeschaltet —
+  der Client entsteht in der Konsole (Google Auth Platform → Clients, Web-Anwendung, Redirect-URI
+  `https://iap.googleapis.com/v1/oauth/clientIds/<CLIENT_ID>:handleRedirect`) und wird per
+  `gcloud iap web enable --resource-type=backend-services --service=<backend> --oauth2-client-id=…
+  --oauth2-client-secret=…` an den Backends hinterlegt, erst Staging, dann Prod. Für die
+  Büro-Anmeldung ändert sich dadurch nichts (gleicher interner Consent-Screen). Voraussetzung ist
+  außerdem ein gcloud-Login mit „Service Account Token Creator" auf dem Dienstkonto — keine
+  Schlüsseldatei, nichts im Repo. Danach wie gehabt anmelden: per
+  `POST /login/credentials` (E-Mail + Passwort) oder `KLICK_PIN` (Institute-Konto auf Prod); die
+  Login-Seite hat **zwei** Formulare (`#form-pin` zuerst, `#form-email`), das E-Mail-Formular
+  immer über das E-Mail-Feld greifen.
 - **Lokal** (`glattthub.local:8888`): Testuser `claude-dev@example.com` (Passwort vor jedem Lauf
   neu setzen), aber lokal fehlen Prod-Formulare/Preislisten.
 - **Headless-Fallstricke**: Auf der Termin-Detailseite (`/hub/appointment/{branch}/{id}`)

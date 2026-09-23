@@ -2,7 +2,8 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 // Zugang und Termin des Laufs kommen aus der Umgebung — nie Zugangsdaten in dieser Datei ablegen,
 // das Wiki-Repo ist oeffentlich. Vorlage: ../.env.example, Aufruf ueber run-all.sh.
-const BASE = process.env.KLICK_BASE || 'https://glattthub-web-staging-cvznpz7gha-ey.a.run.app';
+const BASE = process.env.KLICK_BASE || 'https://staging.hub.glattt.com';
+const iap = require('../../shared/lib/iap.cjs');   // Google IAP passieren (Dienstkonto-Token), run.app-Umweg ist seit 23.09.2026 zu
 const MD = process.env.KLICK_BRANCH || 'KrzIg1nVrQ3kpKzkTgQlzA';        // Magdeburg (Phorest-Branch-ID)
 const APT = process.env.KLICK_APT || '';                                 // Phorest-ID des Beratungstermins des Laufs
 const DATE = process.env.KLICK_DATE || '';                               // Tag des Termins, Format JJJJ-MM-TT
@@ -14,7 +15,7 @@ const HIDE_CSS = '.env-badge{display:none!important}';
 
 async function launch(opts = {}) {
   const browser = await chromium.launch({ headless: opts.headless !== false, args: ['--disable-renderer-backgrounding','--disable-backgrounding-occluded-windows','--disable-features=CalculateNativeWinOcclusion'] });
-  const ctx = await browser.newContext({ viewport: opts.viewport || { width: 1180, height: 820 }, deviceScaleFactor: 2, colorScheme: 'light', locale: 'de-DE', timezoneId: 'Europe/Berlin', storageState: fs.existsSync('state.json') && !opts.fresh ? 'state.json' : undefined });
+  const ctx = await browser.newContext({ viewport: opts.viewport || { width: 1180, height: 820 }, deviceScaleFactor: 2, colorScheme: 'light', locale: 'de-DE', timezoneId: 'Europe/Berlin', storageState: fs.existsSync('state.json') && !opts.fresh ? 'state.json' : undefined, extraHTTPHeaders: iap.headers(BASE) });
   const page = await ctx.newPage();
   await page.addInitScript(() => { try { localStorage.setItem('glattthub-theme','light'); localStorage.setItem('bertGreetingShown', new Date().toISOString().slice(0,10)); } catch(e){} });
   await page.addInitScript(() => { window.S = () => Alpine.$data(document.querySelector('.apt-detail')); window.F = () => Alpine.$data(document.querySelector('[x-data^="formFill"]')); window.T = () => Alpine.$data(document.querySelector('[x-data^="treatmentSettings"]')); });
