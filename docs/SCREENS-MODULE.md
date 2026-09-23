@@ -115,9 +115,8 @@ per Migration angelegt und wie `manage_institute_access_tokens` zugeordnet (Bür
 
 `screens:cleanup` (täglich 03:30, Endpoint `/api/cron/cleanup-screens`, `CronSchedule`): löscht
 unbeanspruchte Codes eine Stunde nach Ablauf, zugeordnete Codes nach 7 Tagen, erledigte oder
-abgelaufene Befehle nach 7 Tagen. **Der Cloud-Scheduler-Job muss noch angelegt werden**
-(`--max-retry-attempts=3`, siehe [Cloud Scheduler](CLOUD-SCHEDULER-SETUP.md)); `cron:audit` meldet
-ihn bis dahin.
+abgelaufene Befehle nach 7 Tagen. Cloud-Scheduler-Job `cleanup-screens` (Prod, `30 3 * * *`,
+drei Wiederholungen) am 24.09.2026 angelegt, siehe [Cloud Scheduler](CLOUD-SCHEDULER-SETUP.md).
 
 ### Fallstricke
 
