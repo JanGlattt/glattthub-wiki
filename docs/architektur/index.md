@@ -26,7 +26,7 @@
 
     Spatie-Permissions ohne Rollennamen im Code, zeilenscharfe Datensichtbarkeit, PIN-Login, Session-Ablauf mit Sitzungsschutz. Dazu der Plan, die Anmeldung auf **Gerätevertrauen** zu stellen, damit sie ohne IAP trägt.
 
-    [:octicons-arrow-right-24: Berechtigungssystem](../BERECHTIGUNGSSYSTEM.md) · [Datensichtbarkeit](../DATA-VISIBILITY.md) · [Session](../SESSION-ABLAUF.md) · [Gerätevertrauen (Plan)](../GERAETEVERTRAUEN-PLAN.md)
+    [:octicons-arrow-right-24: Berechtigungssystem](../BERECHTIGUNGSSYSTEM.md) · [Datensichtbarkeit](../DATA-VISIBILITY.md) · [Session](../SESSION-ABLAUF.md) · [Gerätevertrauen (Plan)](../GERAETEVERTRAUEN-PLAN.md) · [App-Geräte & Freischalt-Code](../APP-GERAETE-FREISCHALTUNG.md)
 
 </div>
 

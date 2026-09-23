@@ -1,6 +1,6 @@
 # Gerätevertrauen für die iOS-App — Plan
 
-!!! info "Stand: Schritt 0 umgesetzt, der Rest ist Planung"
+!!! info "Stand: Schritt 0 und 1 umgesetzt, Schritt 2 und 3 freigegeben"
     Beschlossen am 23.09.2026 als **Vorlage zur Entscheidung** (Jan: „nur planen, nichts
     bauen"). Am selben Tag kam beim Sicherheits-Review ein offenes Loch ans Licht (siehe
     [Schritt 0](#schritt-0-die-offene-haustuer-erledigt)), das sofort geschlossen wurde.
@@ -250,7 +250,7 @@ Jeder Schritt hilft für sich und ist einzeln freizugeben.
 | # | Schritt | Wirkung | Grober Aufwand | Stand |
 |---|---|---|---|---|
 | 0 | **Ingress schließen** — `run.app` nur noch über den Load Balancer, Scheduler-Jobs auf die Domains, Schalter in Cloud Build | IAP trägt wirklich alles, was das Büro nutzt | 0,5 Tage | **erledigt 23.09.2026** |
-| 1 | **Freischalt-Token** (Tabelle, Ausstellen im Hub, QR + Mail + Link, Einlösen in der App, Widerruf) | Geräte werden zu einer bewussten, protokollierten Entscheidung | 2–3 Tage | offen |
+| 1 | **Freischalt-Code** (Tabellen, Ausstellen im Hub, QR + Mail + Link, Einlösen in der App, Widerruf, MDM-Schlüssel) | Geräte werden zu einer bewussten, protokollierten Entscheidung | 2–3 Tage | **umgesetzt 23.09.2026** — [APP-GERAETE-FREISCHALTUNG.md](APP-GERAETE-FREISCHALTUNG.md) |
 | 2 | **Gerätenachweis erzwingen** — Middleware: auf `hub.glattt.com` gilt das IAP-JWT, auf dem App-Host nur ein freigeschaltetes Gerät; ohne Nachweis nichts, auch nicht die Login-Seite; PIN-Bremse je Gerät statt je IP | Der PIN-Dialog ist von außen nicht mehr erreichbar; das Büro merkt nichts | 2 Tage | offen |
 | 3 | **App Attest** (iOS: Attestierung beim Einlösen, danach Assertions; Server: Prüfung) | Ein abgefangener Token nützt ohne echtes Gerät nichts | 2 Tage, heikel | offen |
 | 4 | **Eigener Host ohne IAP** für die App (`app.hub.glattt.com`) | Der Apple-Prüfer kommt herein — gefahrlos, weil 1–3 tragen | 1 Tag plus DNS/Zertifikat | offen, **erst nach 1–3** |
@@ -325,3 +325,7 @@ Wer das später schließen will, hat zwei Wege, die den Ablauf kaum verändern:
   von Prod und Staging offen — **Schritt 0** am selben Tag umgesetzt (Ingress nur über den
   Load Balancer, 16 Scheduler-Jobs umgehängt, Schalter in Cloud Build, `cron:audit` meldet
   `run.app`-Ziele).
+- **23.09.2026, abends** — Schritt 1 gebaut (Freigabe Jan, Code-Format `XXXX-XXXX-XXXX`
+  ohne 0/O/1/I/L): Hub-Seite „App-Geräte”, Einlösen in der App, QR-Scanner, MDM-Schlüssel.
+  Befund dabei: Die Keychain überlebt eine Neuinstallation, das Vertrauen also auch — erst
+  App Attest (Schritt 3) bindet an die Installation. Schritt 2 und 3 sind freigegeben.

@@ -163,6 +163,7 @@ nav:
       - Datensichtbarkeit: DATA-VISIBILITY.md
       - PIN-Login: PIN-LOGIN-SYSTEM.md
       - Gerätevertrauen statt IAP (Plan): GERAETEVERTRAUEN-PLAN.md
+      - App-Geräte & Freischalt-Code: APP-GERAETE-FREISCHALTUNG.md
       - Session-Ablauf & Modal: SESSION-ABLAUF.md
 
   - Module:

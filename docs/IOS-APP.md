@@ -41,7 +41,7 @@ fern konfiguriert (Kiosk-Modus für Instituts-iPads) und bei Bedarf fern entfern
 | Login | Google-Identität + IAP bleiben; Hub-PIN/Passwort wie heute; kein Blocker für den App-Review |
 | Verteilung | Apple Business Manager **Custom App**: Firmengeräte über Miradore (Pflicht-App), BYOD per Einlösecode |
 | Umfang | Alle Rollen, ganzer Hub, Institutsseite höchste Priorität, alles online, Kamera + Datei-Upload |
-| Push & Links | APNs mit Badge und Aktionen; Universal Links für `hub.glattt.com` (`/hub/*`, `/invitation/*`; `/shared/*` bleibt Safari) |
+| Push & Links | APNs mit Badge und Aktionen; Universal Links für `hub.glattt.com` (`/hub/*`, `/invitation/*`, `/shared/app/*` für den Freischalt-Link; übriges `/shared/*` bleibt Safari) |
 | Sicherheit | Web-Auto-Logout bleibt; Face ID/Touch ID nur auf nicht geteilten Geräten |
 | Widgets | WidgetKit-Widgets mit Kennzahlen aus der `KpiRegistry` (Ergänzung Jan, 20.09.2026) |
 | Entwicklung | Jan + Claude Code; Projekt unter `ios/` im Hub-Repo (neben `electron/`), Xcode 27, Swift 6, iOS 17+ |
@@ -407,6 +407,7 @@ Erkennung: User-Agent-Suffix `glatttHub-iOS/<version>` (serverseitig `App\Suppor
 | `kioskMode` / `instituteToken` | Bool / String | direkt auf die Institutsseite; Miradore setzt zusätzlich Single-App-Modus |
 | `deviceName` | String | Anzeigename in der Push-Geräteliste |
 | `lockAfterSeconds` | Int | Face-ID-Sperre nach Hintergrund (Standard 60) |
+| `enrollmentKey` | String | MDM-Schlüssel der Gerätefreischaltung (Hub → App-Geräte → Art „MDM-Schlüssel”); die App löst ihn beim Start still ein — [APP-GERAETE-FREISCHALTUNG.md](APP-GERAETE-FREISCHALTUNG.md) |
 
 ### Backend-Arbeitspakete im Hub
 
