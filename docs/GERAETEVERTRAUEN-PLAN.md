@@ -77,8 +77,14 @@ Am selben Tag geschlossen (Freigabe Jan):
   Deploy zurücksetzt.
 - `php artisan cron:audit` meldet einen Job mit `run.app`-Ziel als Fehler.
 
-Offen: Der Screenshot-Lauf der Klickanleitungen braucht einen neuen Zugang zu Staging
-(IAP-OIDC-Token eines Dienstkontos, Rezept in [KLICKANLEITUNGEN.md](KLICKANLEITUNGEN.md)).
+Nachgezogen am selben Tag: Der Screenshot-Lauf der Klickanleitungen, der bisher den
+`run.app`-Umweg nutzte, geht jetzt regulär durch IAP — OIDC-Token des Dienstkontos
+`klickanleitungen@…` gegen einen eigenen OAuth-Client (der von Google verwaltete Client
+kann keinen programmatischen Zugang, Rezept in [KLICKANLEITUNGEN.md](KLICKANLEITUNGEN.md)).
+Damit ist an Schritt 0 nichts mehr offen. Geprüft am 23.09.2026: Alle drei Web-Dienste
+(Prod, Staging, Hilfe-Portal) haben Ingress nur über den Load Balancer; die beiden
+Worker-Dienste stehen zwar auf `all`, liefern auf jeder Adresse aber nur ihre
+Health-Antwort `{"status":"ok","service":"queue-worker"}` — keine Anwendung, keine Daten.
 
 ## Das Prinzip
 
@@ -285,7 +291,8 @@ funktionierende Schicht entfernt man nicht ohne Not.
 3. **`/api/*` liegt außerhalb von IAP** und ist nur durch Sanctum-Token geschützt.
    Schritt 2 muss diesen Weg mitnehmen, sonst bleibt die Hintertür offen.
 4. **Der Screenshot-Lauf der Klickanleitungen** verlor mit Schritt 0 seinen Zugang zu
-   Staging; Ersatz per IAP-OIDC-Token (siehe [KLICKANLEITUNGEN.md](KLICKANLEITUNGEN.md)).
+   Staging; Ersatz per IAP-OIDC-Token ist seit 23.09.2026 in Betrieb
+   (siehe [KLICKANLEITUNGEN.md](KLICKANLEITUNGEN.md)).
 
 ## Restrisiko, das bewusst bleibt
 
@@ -340,3 +347,11 @@ Wer das später schließen will, hat zwei Wege, die den Ablauf kaum verändern:
   Vollbild „Gerät freischalten" vor der PIN (Variante A), QR-Scan, Anmeldung, Gerät steht
   als „attestiert" im Hub. Offen: Prod-Merge (zunächst Log-Modus), Freischaltung der
   Pilot-Geräte vor `enforce`, Klickanleitung, Schritt 4 und 5.
+- **23.09.2026, abends** — Prod-Merge im Log-Modus (Revision `glattthub-web-00675-8x9`, später
+  `00676-k8s`). Am Gerät nachgebessert: Freischaltung an den Hub-Host gebunden (Build 11), das
+  Vollbild „Gerät freischalten" liegt über allem, auch über einer laufenden Sitzung (Build 12),
+  Fehlerhinweis der Freischaltung deutlich größer (Build 13). Jans iPhone und iPad sind auf Prod
+  freigeschaltet und attestiert. Geräteliste zeigt, wem ein Gerät gehört (Bezeichnung des Codes,
+  zuletzt angemeldete Person). Schritt 0 vollständig abgeschlossen (Klickanleitungen-Zugang per
+  Dienstkonto, `cron:audit` ohne `run.app`-Ziel). Weiter offen: Pilot-Geräte freischalten, dann
+  `enforce` auf Prod, Klickanleitung „App-Geräte", Schritt 4 und 5.
