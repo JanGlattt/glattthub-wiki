@@ -165,7 +165,8 @@ Folgende APIs und Komponenten müssen aktiv sein, damit IAP funktioniert:
 |------------|--------|---------|
 | **IAP API** | ✅ Aktiv | `gcloud services enable iap.googleapis.com` |
 | **Cloud Resource Manager API** | ✅ Aktiv | `gcloud services enable cloudresourcemanager.googleapis.com` |
-| **OAuth Consent Screen** | ✅ Intern | App: `Anmeldung_glatttHub`, nur Google Workspace-Nutzer |
+| **OAuth Consent Screen** | ✅ Intern | App: `Anmeldung_glatttHub` (Umbenennung in „glatttHub" unter Google Auth Platform → Branding), nur Google Workspace-Nutzer |
+| **OAuth-Client** | ✅ Eigener Client seit 23.09.2026 | `99200336070-1n78g13leh01h24nqoh6ar8lcm01em63…` (Google Auth Platform → Clients, Web-Anwendung, Redirect-URI `https://iap.googleapis.com/v1/oauth/clientIds/<CLIENT_ID>:handleRedirect`), an beiden Backends per `gcloud iap web enable … --oauth2-client-id … --oauth2-client-secret …` hinterlegt. Grund: Der von Google verwaltete Standard-Client erlaubt keinen programmatischen Zugang (Klickanleitungen-Screenshots, siehe [KLICKANLEITUNGEN.md](KLICKANLEITUNGEN.md)). Secret nur in Jans lokaler `.env` (`GLATTT_HUB_IAP_CLIENT_SECRET`). Nach einer Änderung braucht der Edge einige Minuten, bis die Google-Umleitung den neuen Client nennt. |
 | **IAP Service Account** | ✅ Provisioniert | `service-99200336070@gcp-sa-iap.iam.gserviceaccount.com` |
 | **Cloud Run Invoker** | ✅ Beide Services | IAP Service Account hat `roles/run.invoker` auf beiden Cloud Run Services |
 
