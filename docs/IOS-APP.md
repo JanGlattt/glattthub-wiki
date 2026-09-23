@@ -283,6 +283,50 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
 - **Bild-URLs dürfen relativ kommen** — der Dienst macht sie absolut, APNs und die
   Erweiterung brauchen das.
 
+### Push-Registrierung: die App meldet ihr Gerät selbst (seit 23.09.2026)
+
+!!! danger "Push funktionierte vom ersten Build an nicht — und es fiel monatelang nicht auf"
+    Am 23.09.2026 stand in der Produktions-Datenbank **kein einziges** iOS-Gerät mit
+    Push-Abo. Nicht bei einer Person, sondern im ganzen Hub: Alle Einträge in
+    `push_subscriptions` mit `provider = 'apns'` gehörten der **macOS**-Desktop-App.
+    Die App holte den APNs-Token bei Apple ab, schickte ihn aber nie an
+    `/api/push/subscribe/native`.
+
+    Aufgefallen ist es nur, weil Jan genau hingesehen hat: „Es kam nur als Push nicht an,
+    **in der App war die Benachrichtigung da**." Genau diese Trennung ist der Beweis — der
+    In-App-Feed kommt über die Hub-Sitzung und braucht kein APNs. Solange die App offen
+    war, sah alles richtig aus.
+
+**Warum es so kam:** Der einzige Weg zur Registrierung führte über
+`push-notifications.js` → `subscribeNative()`, ausgelöst von einem Schalter auf der
+**Web-Seite** der Mitteilungen im Hub. Den fand im Betrieb niemand; die nativen
+Einstellungen zeigten den Berechtigungsstand nur an (`LabeledContent`), ohne ihn ändern
+zu können. Ein Fehler wurde nie gemeldet, weil nie etwas versucht wurde.
+
+**Wie es jetzt läuft** (`ios/glatttHub/Push/PushManager.swift`):
+
+- `syncSubscription(session:managed:)` hinterlegt den Token beim Hub — aufgerufen nach
+  **jeder** Anmeldung (`loadNavigation`) und bei jedem Wechsel in den Vordergrund
+  (`didBecomeActive`). Beides ist nötig: Apple rotiert den Token, und auf dem geteilten
+  iPad muss das Gerät zur angemeldeten Person wandern. Der Hub erkennt es an
+  `native_device_id` wieder und legt deshalb keine Karteileichen an.
+- `enable(session:managed:)` fragt die Erlaubnis **und** hinterlegt — der Weg aus den
+  Einstellungen („Mitteilungen einschalten") und aus der Einführung.
+- Die Einführung hat dafür eine eigene Karte. Bewusst dort und nicht beim App-Start: Wer
+  die Systemrückfrage ohne Zusammenhang bekommt, tippt „Nicht erlauben", und Push ist
+  danach **dauerhaft** aus — die Rückfrage kommt kein zweites Mal.
+- Gemeldet wird `device_type: 'ios'`. Ohne das zählt das Gerät als `macos`
+  (`PushNotificationService::subscribeNative` fällt auf `'macos'` zurück, wenn der Typ
+  nicht in `config('push.device_types')` steht).
+
+**Lehre für jede weitere Gerätefunktion:** Ein Weg, den nur eine versteckte Web-Seite
+anbietet, wird in der App nicht benutzt. Was die App können soll, muss sie selbst tun
+oder selbst anbieten.
+
+Abgesichert durch `tests/Feature/Push/NativeIosSubscriptionTest.php` (Gerät zählt als
+`ios`, rotierter Token legt kein zweites Gerät an, das Gerät folgt der angemeldeten
+Person, Sandbox bleibt von Produktion getrennt).
+
 ### Gerätetoken & Face-ID-Anmeldung (B7/B9, seit 20.09.2026)
 
 !!! warning "Nutzerwechsel auf dem geteilten Institut-iPad"
