@@ -43,7 +43,18 @@ Migration `2026_09_23_180000_create_device_enrollment_tables.php`:
   `secret_hash` (SHA-256 des Gerätegeheimnisses, unique), `kind` (`personal`/`shared`),
   `device_name`, `platform`, `app_version`, `os_version`, `branch_id`,
   `enrollment_token_id`, `enrolled_by`, `enrolled_at`, `last_seen_at`, `last_seen_ip`,
-  `revoked_at`/`revoked_by`, `attest_key_id` (Platz für Schritt 3).
+  `last_user_id`/`last_login_at` (wer sich dort zuletzt angemeldet hat, seit
+  `2026_09_23_233000_add_last_user_to_enrolled_devices.php`), `revoked_at`/`revoked_by`,
+  `attest_key_id` (Platz für Schritt 3).
+
+**Wem gehört das Gerät?** Die Liste im Hub muss eindeutig sagen, welches Gerät man widerruft
+(Jan, 23.09.2026). `EnrolledDevice::ownerLabel()` nimmt dafür die Bezeichnung des
+Freischalt-Codes („iPhone Nadin"), sonst die zuletzt angemeldete Person, sonst die
+Mail-Adresse des Codes. Die zuletzt angemeldete Person schreibt
+`DeviceEnrollmentService::recordLogin()` bei jeder PIN-Anmeldung (`PinLoginController`) und
+jeder Face-ID-Sitzung (`AppSessionController`), sofern die Anfrage einen gültigen
+Gerätenachweis trägt — auf einem geteilten iPad wechselt sie also mit jeder Kollegin. Die
+Spalte „Gehört zu" bleibt auch mobil sichtbar, „Zuletzt angemeldet" nur auf dem Desktop.
 
 **Code und Geheimnis stehen nie im Klartext in der Datenbank.** Der Code (31 Zeichen
 hoch 12, rund 59 Bit) wird genau einmal gezeigt bzw. verschickt; das Geheimnis
