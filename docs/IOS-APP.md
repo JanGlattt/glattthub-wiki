@@ -1027,6 +1027,57 @@ keine zweite Logik im Backend:
   UI-Tests `testIpadLaserMaintenance` (braucht einen vorbereiteten Entwurf mit abgeschlossenem
   Countdown, Rezept im Test) und `testIpadBonusBoard` im Schema „glatttHub UI".
 
+### Laser-Störung melden (seit 23.09.2026)
+
+`ios/glatttHub/Laser/LaserErrorView.swift` — Schnellzugriff „Laser-Fehler" im Cockpit
+(Recht `view_laser`) und aus der Geräteliste heraus. Dieselbe Wahrheit wie das
+Web-Formular: `LaserErrorService` legt Eintrag, Historie und Medien an, die App spricht
+`hub/laser/api/error-lasers`, `…/error-codes`, `…/errors` und `…/errors/{id}/media`.
+
+**Die Meldung wird zuerst gespeichert, Anhänge danach einzeln nachgeschoben.** Reißt im
+Institut das Netz ab, ist die Störung trotzdem erfasst — das ist wichtiger als ein
+vollständiger Anhang. Was nicht durchging, benennt die App.
+
+Drei Fallstricke, alle am 23.09.2026 aufgelaufen:
+
+- **Fotos aus der Galerie sind HEIC.** Unverändert als `fehler-1.jpg` hochgeladen, weist
+  `mimes:jpg,jpeg,png,mp4,mov,webm` sie ab — die Regel prüft den Inhalt, nicht den Namen.
+  Die Kamera ging, weil `UIImage.jpegData()` echtes JPEG liefert. Bilder werden deshalb in
+  `LaserErrorModel.attachment(from:index:)` **umgewandelt**; Videos behalten ihre echte
+  Endung und ihren echten MIME-Typ aus `item.supportedContentTypes`. Dieselbe Falle steckt
+  in jedem Web-Formular, das vom iPad bedient wird.
+- **Kameraerlaubnis vor dem Öffnen einholen.** Beim allerersten Tipp legt iOS seine
+  Rückfrage über die schon erscheinende Kamera und verwirft sie dabei: Die Kamera geht auf
+  und sofort wieder zu, beim zweiten Mal läuft alles. `AVCaptureDevice.requestAccess`
+  vorschalten.
+- **Mehrere Anhänge.** `PhotosPicker` mit `maxSelectionCount: 10`; die Auswahl wird nach
+  dem Einlesen geleert, sonst feuert `onChange` bei derselben Wahl nicht erneut.
+
+Aufnahme von Foto **oder** Video über `MediaCameraPicker` (`mediaTypes` mit `.image` und
+`.movie`, 60 s Obergrenze) — der `CameraPicker` der Einstellungszettel bleibt beim Bild.
+
+### Admin-Backend in der App (seit 23.09.2026)
+
+Das Filament-Backend läuft als gewöhnliche Web-Seite, braucht aber drei Sonderregeln:
+
+- **Es muss sich als App zu erkennen geben.** `AdminPanelProvider` hängt über `HEAD_END`
+  ein `<meta name="glattthub-app">` ein — ohne das meldet `bridge.js` kein `ready` und die
+  Seite blieb auf dem iPad leer.
+- **Volle Breite auf dem iPad.** Das Backend bringt sein eigenes Menü mit; daneben noch die
+  native Seitenleiste zu zeigen presst die Seite in den Rest der Breite und stellt zwei
+  Menüs nebeneinander. `PadShellView.onAdminPage` blendet die Leiste auf Admin-Pfaden aus
+  (Pfad aus `navigation.utilities.admin`).
+- **Abstand oben und unten.** Die Seite läuft dann über die **volle Höhe**, also liegen
+  Statusleiste und Home-Indicator über ihr. Die schwebende Menü-Karte startete bei 1 rem
+  und rutschte darunter; die Regeln am Ende von `theme_glattt.css` (`body.ios-app.fi-body`)
+  rechnen `var(--safe-area-*)` auf — nie `env()`, das ist in der App immer 0.
+
+**Rückweg in den Hub:** Der Admin verlinkt „Zurück zum Hub" auf `route('hub.start')` — eine
+Web-Adresse. Ohne Weiche lud dort die **Web-Fassung** der Startseite statt der nativen. Der
+`WebCoordinator` bricht deshalb eine angeklickte Navigation ab, wenn das Ziel ein **nativer**
+Tab ist (`opensNatively` → `AppContainer.isNativeTabPath`), und übergibt sie der App. Das
+gilt für jeden Link im Hub, nicht nur für den Admin.
+
 ### Offline-Stände der nativen Seiten (seit 23.09.2026)
 
 Reißt im Institut das WLAN ab, zeigen **Startseite, Terminliste, Kundenliste und
