@@ -33,6 +33,13 @@ Projektwissen `.github/knowledge/tvos-app-bauplan.md`.
     Die Google-Gesamtwertung (Schnitt, Anzahl, Stand) und die Öffnungszeiten pflegt das Büro im
     Institut-Modul im Reiter „Infos"; nach 60 Tagen erinnert der Hub an die Gesamtwertung.
 
+    **Kennzahlen-Modus (Zentrale):** Ein Bildschirm im Modus „Kennzahlen" blättert durch Eigene
+    Dashboards — im Formular des Bildschirms werden die Seiten (Dashboard, Zeitraum, Sekunden je Seite)
+    zusammengestellt. Kennzahlen erscheinen als Kacheln mit Tendenz und Verlauf, Statistik-Karten als
+    Bild, so wie sie im Hub aussehen; die Bilder erneuert der Hub alle 15 Minuten („Karten jetzt
+    rendern" stößt es sofort an). Gerechnet wird mit den Rechten des Bildschirm-Nutzers — ohne
+    Zuordnung mit dem technischen Nutzer „Bildschirm Zentrale", der alle Berichte lesen darf.
+
 ---
 
 ## Für Entwickler
@@ -91,6 +98,18 @@ Migrationen `2026_09_24_000100_create_screens_tables` und `2026_09_24_000200_add
 
 Migration `2026_09_24_010000_create_screen_content_tables`.
 
+### Datenmodell (Phase 4, Kennzahlen-Modus)
+
+| Tabelle | Zweck | Felder |
+|---|---|---|
+| `screen_dashboards` | Seiten eines Bildschirms im Kennzahlen-Modus | `screen_id`, `custom_dashboard_id`, `position`, `seconds` (10–600, Standard 30), `range` (`today`/`week`/`month`/`last_28`/`year` = `WidgetKpiService::RANGES`) |
+| `screen_dashboard_cards` | Gerenderte Statistik-Karten je Seite | `screen_dashboard_id`, `statistic_key`, `disk`, `path`, `sha256`, `bytes`, `width`, `height`, `rendered_at`, `error` (letzter Render-Fehler); unique je Seite + Statistik |
+
+Dazu `screens.user_id` (Bildschirm-Nutzer, sonst technischer Nutzer `bildschirm-zentrale@system.glattt.com`,
+angelegt in derselben Migration mit allen lesenden Berichtsrechten des Katalogs, kein Hub-Zugang) und
+`screens.settings.kpi_all_branches` (alle Standorte statt des eigenen; Zone „Büro" zeigt ohnehin alle).
+`Screen::kpiUser()` liefert den wirksamen Nutzer, `Screen::dashboards()` die Seiten in Reihenfolge.
+
 ### Services und Middleware
 
 - `App\Services\Screens\ScreenPairingService` — `begin()` (Code + Geheimnis, frühere offene Codes des
@@ -117,6 +136,7 @@ Migration `2026_09_24_010000_create_screen_content_tables`.
 | `POST /api/tv/heartbeat` | `screen.device` | `app_version`, `os_version`, `current_item`, `cache_bytes` → `has_commands`, `manifest_etag`, `poll_seconds` |
 | `GET /api/tv/commands` | `screen.device` | Offene Befehle |
 | `POST /api/tv/commands/{id}/ack` | `screen.device` | Befehl bestätigen (404 bei fremdem Befehl) |
+| `GET /api/tv/dashboards` | `screen.device` | Kennzahlen-Modus: Seiten mit Werten und Karten-Bildern, ETag/304 wie das Manifest; 409 `not_kpi_mode` für Signage-Bildschirme |
 
 Rate-Limiter `tv-pair` und `tv-device` stehen im `AppServiceProvider`.
 
@@ -154,6 +174,70 @@ Original die TV-Fassung; HEIC braucht Imagick, sonst „bitte als JPEG exportier
 `/admin-screens/media/*` (`begin`, `{id}/upload`, `{id}/complete`, `{id}/status`), Recht `manage_screens`.
 Der Bucket `glattthub` hat seit 24.09.2026 eine CORS-Regel für `hub.glattt.com` und
 `staging.hub.glattt.com` (PUT/GET/HEAD, `Content-Type`), siehe [Cloud Storage](CLOUD-STORAGE-SETUP.md).
+
+### Kennzahlen-Modus (Phase 4)
+
+**Entscheidung (24.09.2026): Weg A des Bauplans** — Statistik-Karten werden als Screenshot der echten
+Hub-Karte gerendert, nicht nativ nachgebaut. Damit ist jede Statistik der Registry sofort auf dem
+Fernseher, ohne Doppelpflege; der Preis ist Chromium im Docker-Image. Anders als im Bauplan braucht es
+**keinen Freigabe-Link** je Dashboard: die Render-Seite läuft über ein Ticket.
+
+Ablauf:
+
+1. `ScreenDashboardService::build(Screen)` baut die Antwort von `GET /api/tv/dashboards`: je Seite
+   (`screen_dashboards`) das Dashboard, der Zeitraum (`period()` wie im `WidgetKpiService`), die
+   Kennzahlen über `WidgetKpiService::values($user, $kpi_ids, $branch, $range, history: true)` —
+   dieselbe Quelle und derselbe 15-Minuten-Cache wie die iOS-Widgets, inklusive Rechteprüfung der
+   `KpiRegistry` — und die Karten aus `CustomDashboard::visibleTiles($user)` mit dem Bild-Block
+   (`url` signiert 24 h, `sha256`, `bytes`, Maße, `rendered_at`) oder `null`. Standort:
+   `branchFor()` = `''` (alle) für Zone „Büro" oder `settings.kpi_all_branches`, sonst der Standort
+   des Bildschirms. ETag ohne `generated_at` und ohne URLs. `poll_seconds` 300; der Heartbeat bleibt
+   bei 60 s.
+2. `RenderScreenDashboardCards` (Job, Queue `default`, `WithoutOverlapping` je Bildschirm) geht über
+   alle Seiten: verwaiste Karten (Kachel vom Dashboard entfernt) werden samt Bild gelöscht, Karten älter
+   als `screens.render_max_age_minutes` (15) neu gerendert. Auslöser: `screens:render-cards` alle
+   15 Minuten (nur Bildschirme mit Heartbeat in den letzten `render_only_seen_minutes`, Option
+   `--all`/`--force`), das Speichern des Bildschirm-Formulars und die Aktion „Karten jetzt rendern".
+3. `ScreenCardRenderer::render(page, key, filters)`: `ScreenCardTicket::issue()` legt ein 48-Zeichen-
+   Ticket (10 min) mit Seite, Statistik und Filtern in den Cache; Node-Skript
+   `resources/node/render-screen-card.mjs` (puppeteer-core, System-Chromium aus
+   `config('screens.chromium_binary')`) öffnet `/shared/screen-card/{ticket}` über
+   `screens.render_base_url` (Standard `APP_URL`), wartet auf `window.__screenCardState() === 'ready'`
+   (Alpine-Zustand `loading`/`error` der Statistik-Komponente), wartet Schriften und 900 ms ab und
+   fotografiert `[data-screen-card]` als Element (Viewport 1600 px breit, Gerätefaktor 2 → ~3000 px
+   breites PNG, Höhe = natürliche Höhe der Karte). Das PNG landet unter
+   `screens/cards/{screen}/{page}/{key}.png` auf `ScreenMedia::defaultDisk()`; Fehler (Exit 2 =
+   Statistik meldet Fehler, 3 = Zeitüberschreitung) stehen in `error`, ein altes Bild bleibt stehen.
+4. Render-Seite `shared/screen-card.blade.php` (`ScreenCardRenderController::show`): immer dunkel,
+   genau eine Statistik über `<x-screen-statistic>` — dieselbe JS-Komponente wie `<x-statistic>`, nur
+   die Endpunkte zeigen auf `/api/shared/screen-card/{ticket}/stat/{key}[/{extra}]`. Die Filter des
+   Tickets liegen als `statFilters` im umgebenden `x-data`, die Komponente holt sie per
+   `GlatttStats.frameFilters()`. Der Proxy (`ScreenCardRenderController::data`) erlaubt nur die
+   Statistik des Tickets, erzwingt dessen Filter und läuft über `App\Support\StatisticProxy` als
+   Bildschirm-Nutzer (`Auth::setUser`) — dasselbe Muster wie der Freigabe-Link des Dashboards, der
+   seit Phase 4 ebenfalls diesen Helfer nutzt. CSS-Block „BILDSCHIRM-KARTEN" in `theme_glattt.css`
+   blendet Register, Info-Knöpfe und „Mehr laden" aus.
+
+Docker: `chromium nss freetype harfbuzz ttf-freefont` per apk, `puppeteer-core` aus
+`resources/node/package.json` (eigene Lock-Datei, Stage `frontend` → `/render`, kopiert nach
+`resources/node/node_modules`). Konfiguration in `config/screens.php` (`SCREENS_CHROMIUM_BINARY`,
+Standard im Container `/usr/bin/chromium-browser`, leer = Renderer aus; `SCREENS_RENDER_BASE_URL`,
+Bildmaße, Zeitbudget 45 s). Der Worker rendert eine Karte in 3–10 s.
+
+Im Admin (`ScreenForm`): bei Modus „Kennzahlen" verschwindet die Standard-Playlist, es erscheinen
+Bildschirm-Nutzer, „Alle Standorte" und der Repeater **Seiten** (Dashboard mit Besitzer, Zeitraum,
+Sekunden); `EditScreen::afterSave()` reiht den Render-Job ein, die Kopf-Aktion „Karten jetzt rendern"
+erzwingt ihn.
+
+TV-App: `Model/Dashboards.swift` (Antwort), `KpiFormat` (de_DE: `number`/`currency`/`percent`/`ratio`/
+`duration`/`text`, Vergleich, Tendenz mit `invert_trend`, kompakte Millionen), `DashboardPaging`
+(volle Karte allein, halbe zu zweit; Kennzahlen nur auf der ersten Seite eines Dashboards),
+`DashboardPager` (blättert nach `seconds`, behält die Seite bei neuen Daten), `DashboardScreenView`
+(Kopf, Kacheln mit Sparkline aus Swift Charts, Karten-Bilder über den `MediaStore` — Karten sind
+`MediaEntry`s mit stabiler Kennung aus dem Statistik-Schlüssel und der Prüfsumme des Hubs, Fußzeile
+„Stand hh:mm", bei Netzausfall „Keine Verbindung — Stand …"). `ScreenState.syncDashboards()` läuft nach
+dem Manifest, wenn `screen.mode == "kpi"`; letzte Antwort im Caches-Ordner (`dashboards.json`),
+signierte URLs werden nach 20 h erneuert.
 
 ### Admin-Resources (Phase 2)
 
@@ -200,6 +284,10 @@ per Migration angelegt und wie `manage_institute_access_tokens` zugeordnet (Bür
 unbeanspruchte Codes eine Stunde nach Ablauf, zugeordnete Codes nach 7 Tagen, erledigte oder
 abgelaufene Befehle nach 7 Tagen. Cloud-Scheduler-Job `cleanup-screens` (Prod, `30 3 * * *`,
 drei Wiederholungen) am 24.09.2026 angelegt, siehe [Cloud Scheduler](CLOUD-SCHEDULER-SETUP.md).
+
+`screens:render-cards` (alle 15 Minuten, Endpoint `/api/cron/render-screen-cards`): reiht je aktivem
+Bildschirm im Kennzahlen-Modus mit Heartbeat in den letzten zwei Stunden einen `RenderScreenDashboardCards`-
+Job ein. Cloud-Scheduler-Job `render-screen-cards` (Prod, `*/15 * * * *`, drei Wiederholungen).
 
 ### tvOS-App (`ios/glatttHubTV`, Target `glatttHubTV`, Produkt `glatttScreens`, Bundle `com.glattt.hub.tv`)
 
@@ -264,11 +352,15 @@ Ablauf + Aufräumen, Version, Admin-Recht), `tests/Unit/ScreenPairingCodeTest.ph
 Normalisierung), `tests/Unit/ScreenScheduleResolverTest.php` (Fallbacks, Priorität/Spezifität, Fenster
 über Mitternacht, Wochentage, Programm-Abschnitte), `tests/Feature/ScreenContentTest.php` (Manifest mit
 ETag, Hochkant-Variante, Jetzt zeigen, Direkt-Upload lokal + Bildverarbeitung, Testimonial-Regeln,
-Institut-Felder, veraltete Wertung, Admin-Seiten). Konventionstests: `CronScheduleCoverageTest`, `PermissionCatalogTest`,
+Institut-Felder, veraltete Wertung, Admin-Seiten), `tests/Feature/ScreenDashboardsTest.php` (Kennzahlen-Modus:
+Seiten mit Rechten des Bildschirm-Nutzers, ETag, 409 für Signage, gelöschtes Dashboard, technischer Nutzer,
+Render-Seite und Proxy nur mit Ticket, Render-Job ohne Chromium, Admin-Formular mit Repeater). Swift:
+`DashboardPagerTests` (Seitenschnitt, Pager, Zahlenformat, Tendenz, Karten-Medium). Konventionstests: `CronScheduleCoverageTest`, `PermissionCatalogTest`,
 `AdminNavigationGroupTest`, `EnvExampleConventionTest`.
 
 ## Changelog
 
+- **24.09.2026** — Phase 4 (Kennzahlen-Modus) auf `develop`: Seiten aus Eigenen Dashboards, technischer Bildschirm-Nutzer, `GET /api/tv/dashboards`, Karten-Renderer mit headless Chromium (Weg A, Ticket statt Freigabe-Link), Admin-Formular, Dashboard-Blätterer in der TV-App.
 - **24.09.2026** — Phase 3 (tvOS-App v1) auf `develop`: Target `glatttHubTV`, Kopplung, Manifest-Wiedergabe, Cache, Hochkant, Marken-Design; Simulator-Prüfstand gegen den lokalen Hub bestanden.
 - **24.09.2026** — Phase 2 (Inhalte) auf `develop`: Mediathek mit Direkt-Upload und Verarbeitung, Testimonials mit Google-Übernahme, Playlists mit Vorschau, Zeitpläne mit „Jetzt zeigen", Manifest mit ETag, Gesamtwertung und Öffnungszeiten im Institut.
 - **24.09.2026** — Phase 1 (Backend-Kern) auf `develop`: Kopplung, Gerätenachweis, Heartbeat, Steuerkanal, Admin-Resource, Cron.

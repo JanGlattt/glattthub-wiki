@@ -476,6 +476,7 @@ Beide Jobs auf `hub.glattt.com`, Zeitzone Europe/Berlin, Retries 3 / Backoff 30 
 | `sync-zendesk-tickets` | `45 4 * * *` | `/api/cron/sync-zendesk-tickets` | 1800 s | Zendesk-Ticket-Spiegel (Kundenservice-Kennzahlen) |
 | `snapshot-office-kpis` | `30 23 * * *` | `/api/cron/snapshot-office-kpis` | 600 s | Forderungsbestand je Institut einfrieren — der letzte Lauf eines Monats ist der Monatsend-Stand |
 | `cleanup-screens` | `30 3 * * *` | `/api/cron/cleanup-screens` | 300 s | Apple-TV-App: abgelaufene Kopplungscodes und erledigte Befehle aufräumen |
+| `render-screen-cards` | `*/15 * * * *` | `/api/cron/render-screen-cards` | 300 s | Apple-TV-App: Statistik-Karten der Bildschirme im Kennzahlen-Modus rendern (Job je Bildschirm) |
 
 ## 4. Jobs testen
 
