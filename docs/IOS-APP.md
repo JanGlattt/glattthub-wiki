@@ -264,6 +264,25 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
 - **CSS:** `body.ios-app .mobile-bottom-nav { display: none }` und `--mobile-bottom-nav-space: 0`;
   den Abstand nach unten liefert die native Leiste über die Safe-Area.
 
+### Mitteilungen in der App und mit Bild (seit 23.09.2026)
+
+- **Im Vordergrund zeichnet die App ihr eigenes Banner**, nicht das des Systems: oben,
+  Liquid Glass, Symbol oder Bild links, Antippen öffnet das Ziel, Wischen nach oben legt es
+  weg. `NotificationDelegate.willPresent` gibt deshalb nur noch `[.sound, .badge]` zurück,
+  wenn die App bereit und nicht gesperrt ist. Reihenfolge und Anzeigedauer verwaltet
+  `NoticeCenter` (eine Mitteilung zur Zeit, fünf Sekunden), gezeichnet von
+  `InAppBannerLayer` über allem außer der Versionssperre.
+- **Bilder brauchen eine Notification Service Extension.** iOS lädt Anhänge nicht von
+  allein: Der Hub schickt die Adresse im Feld `image` und setzt `mutable-content`
+  (`ApplePushNotificationService`), die Erweiterung `glatttHubNotifications` lädt das Bild
+  nach und hängt es an. iOS gibt ihr nur wenige Sekunden — `serviceExtensionTimeWillExpire`
+  liefert dann den Text **ohne** Bild aus, denn eine Mitteilung ohne Bild ist besser als
+  keine. Die Auslieferung ist per Schloss auf genau einen Aufruf begrenzt: Download und
+  Zeitablauf können gleichzeitig kommen, und ein zweiter Aufruf des Rückrufs beendet die
+  Erweiterung mit einem Fehler.
+- **Bild-URLs dürfen relativ kommen** — der Dienst macht sie absolut, APNs und die
+  Erweiterung brauchen das.
+
 ### Gerätetoken & Face-ID-Anmeldung (B7/B9, seit 20.09.2026)
 
 !!! warning "Nutzerwechsel auf dem geteilten Institut-iPad"
