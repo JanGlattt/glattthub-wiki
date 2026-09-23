@@ -253,6 +253,42 @@ Beim Öffnen steht das Kartenraster **sofort in seiner Endhöhe**: Jede Karte ze
 
 Details und die verbindliche Bauform: [Ladeverhalten der Statistikseiten](LADEVERHALTEN-STATISTIKSEITEN.md).
 
+### Vergleichsfenster: gleicher Verkaufstag statt voller Vormonat
+
+Ein angefangener Monat wird **bis zum gleichen Verkaufstag** des Vormonats bzw. des Vorjahresmonats
+verglichen, nicht gegen den vollen Monat (Entscheidung Jan, 23.09.2026). Vorher standen am 22. September
+22 Tage gegen 31 — praktisch jede Kennzahl lag im Minus, obwohl der Monat genauso gut lief.
+
+Gezählt werden **Verkaufstage** (alles außer Sonn- und Feiertagen), nicht Kalendertage: Sonst verschiebt
+allein die Lage der Wochenenden den Vergleich. Mit Standort-Filter zählen die regionalen Feiertage des
+Bundeslandes, ohne Filter nur die bundesweiten — dieselbe Regel wie bei der Hochrechnung.
+
+Die Logik steht **einmal** in `App\Support\SellingDays`:
+
+- `count($from, $to, $branchId)` — Verkaufstage in einer Spanne
+- `nth($monthStart, $n, $monthEnd, $branchId)` — der n-te Verkaufstag eines Monats (endet spätestens am
+  Monatsletzten: ein kürzerer Vormonat schneidet das Fenster ab)
+- `previousMonthEquivalent($from, $to)` — das passende Vormonatsfenster, oder `null`, wenn der Zeitraum kein
+  angefangener Monat ist (freie Spannen und abgeschlossene Monate bleiben unangetastet)
+
+**Zwei Wege führen zu einem Vergleichswert — beide müssen die Regel kennen.** Das ist der Fallstrick, der die
+Umstellung zunächst halb wirkungslos ließ:
+
+1. Kennzahlen, deren Quelle in `KpiRegistry::SOURCES` ein `previous` deklariert, holen ihren Vormonatswert
+   über `KpiValueService::loadPrevious()`. Dort greift `SellingDays::previousMonthEquivalent()` zentral.
+2. Die **Verkaufs-Kennzahlen** haben `'previous' => null` — `SalesStatisticsService` baut seine Vergleiche
+   selbst. Dort liefert `comparisonWindows(?string $branchId)` die drei Fenster (`current`, `prev_month`,
+   `prev_year`) und wird an **allen drei** Stellen benutzt, an denen dieses Muster steckt: Kennzahlen
+   (`calculateKpiComparisons()`), Institute-Tabelle und Verkäuferinnen-Tabelle. Nur so passen die
+   Prozentwerte einer Seite auch untereinander zusammen.
+
+Wer eine weitere Auswertung mit eigenem Vormonatsvergleich baut, nimmt eine der beiden Wege — nie ein
+handgerechnetes `subMonth()`-Fenster daneben.
+
+Abgesichert durch `tests/Unit/SellingDaysTest.php` (8 Fälle: Sonntage, Monatsanfang am Sonntag, kürzerer
+Vormonat, freie Spannen) und `tests/Feature/SalesKpiComparisonTest.php` — dort der entscheidende Fall: gleich
+viele Verträge im gleichen Abschnitt müssen **0 %** ergeben, nicht −50 %.
+
 ### Hochrechnung
 
 Die Hochrechnung (Prognose) schätzt die erwartete Vertragsanzahl und den Umsatz bis zum Monatsende. Sie wird mit einem blauen Badge gekennzeichnet.
