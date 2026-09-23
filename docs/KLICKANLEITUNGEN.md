@@ -113,12 +113,16 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 
 - **Institutsseite** (`/shared/institut/{token}`): ohne Login, Token je Standort.
 - **Hub-Seiten auf Staging**: `staging.hub.glattt.com` liegt hinter Google IAP — ein Headless-
-  Browser kommt dort nicht durch. **Die `*.run.app`-Adresse des Cloud-Run-Services umgeht IAP**
-  (`gcloud run services describe glattthub-web-staging --region=europe-west3
-  --format='value(status.url)'`). Dort normal per `POST /login/credentials` (E-Mail + Passwort)
-  anmelden; Login-Seite hat **zwei** Formulare (`#form-pin` zuerst, `#form-email`), das
-  Formular immer über das E-Mail-Feld greifen. Achtung: `APP_URL` zeigt auf die IAP-Domain, daher
-  relativ navigieren.
+  Browser kommt dort nicht ohne Weiteres durch. **Der frühere Umweg über die `*.run.app`-Adresse
+  ist seit 23.09.2026 geschlossen** (Ingress nur noch über den Load Balancer, siehe
+  [Cloud-Infrastruktur](CLOUD-INFRASTRUKTUR.md)); er war zugleich das offene Loch in der
+  Absicherung. Ersatz, noch nicht eingerichtet: IAP akzeptiert ein OIDC-ID-Token eines
+  berechtigten Dienstkontos im Header `Authorization: Bearer <token>` (Rolle „IAP-secured Web
+  App User" auf dem Backend-Service, Token per `gcloud auth print-identity-token
+  --audiences=<IAP-Client-ID>`), Playwright setzt ihn über `extraHTTPHeaders`. Bis dahin laufen
+  Hub-Screenshots lokal. Danach wie gehabt per `POST /login/credentials` (E-Mail + Passwort)
+  anmelden; die Login-Seite hat **zwei** Formulare (`#form-pin` zuerst, `#form-email`), das
+  Formular immer über das E-Mail-Feld greifen.
 - **Lokal** (`glattthub.local:8888`): Testuser `claude-dev@example.com` (Passwort vor jedem Lauf
   neu setzen), aber lokal fehlen Prod-Formulare/Preislisten.
 - **Headless-Fallstricke**: Auf der Termin-Detailseite (`/hub/appointment/{branch}/{id}`)

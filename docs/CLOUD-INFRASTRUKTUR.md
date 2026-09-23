@@ -153,7 +153,7 @@ IAP schützt die Web-App mit einer Google-Anmeldung, die **vor** dem normalen Ap
 | **Produktion** | Alle Google Workspace-Nutzer + jan explizit | `domain:labrado-schlueter.com`, `user:jan@labrado-schlueter.com` |
 | **Staging** | Einzelne Nutzer | `user:jan@labrado-schlueter.com` |
 
-**Wichtig:** IAP greift nur bei Zugriff über den Load Balancer (Custom Domains). Die `*.run.app`-URLs umgehen den Load Balancer und damit auch IAP.
+**Wichtig:** IAP greift nur bei Zugriff über den Load Balancer (Custom Domains). Die `*.run.app`-Adressen der Dienste umgingen den Load Balancer und damit IAP — bis zum 23.09.2026 stand die Login-Seite von Prod **und** Staging dort ohne Google-Anmeldung offen (Befund beim Sicherheits-Review, siehe [Gerätevertrauen-Plan](GERAETEVERTRAUEN-PLAN.md)). Seitdem haben beide Web-Dienste den Ingress `internal-and-cloud-load-balancing`, gesetzt per `gcloud run services update … --ingress` und festgeschrieben in `cloudbuild.yaml` / `cloudbuild-staging.yaml`: Die `run.app`-Adressen antworten mit 404, jeder Zugriff läuft über den ALB. Alle Cloud-Scheduler-Jobs zeigen seither auf die Custom Domains — ein Job mit `run.app`-Ziel liefe ins Leere, `php artisan cron:audit` meldet ihn als Fehler.
 
 **Ausnahme:** API-Pfade (`/api/*`) sind vom IAP ausgenommen — sie werden über separate Backend-Services ohne IAP geroutet. Details siehe [API-Pfade vom IAP ausschließen](#pfade-vom-iap-ausschlieen-api-token-seiten).
 

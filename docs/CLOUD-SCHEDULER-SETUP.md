@@ -49,9 +49,11 @@ Da Cloud Run serverless ist (Container laufen nur bei Requests), können keine t
       beide ab: `sync-free-consulting-slots` ruft `/api/cron/sync-free-slots`, und
       `matomo-sync-visits-staging` sowie `prune-matomo-actions-staging` zeigen trotz
       ihres Namens auf **Prod**.
-    - **Prod hängt an zwei Hosts:** `hub.glattt.com` *und* der run.app-URL des
-      Dienstes. Wer nur die Custom Domain prüft, hält die halbe Liste für fehlend.
-      Staging erkennt man am Präfix `glattthub-web-staging`.
+    - **Nur die Custom Domains erreichen den Dienst.** Seit 23.09.2026 nehmen die
+      Web-Dienste Verkehr nur noch über den Load Balancer an (Ingress
+      `internal-and-cloud-load-balancing`); die 16 Jobs, die bis dahin auf
+      `run.app`-Adressen zeigten, wurden am selben Tag umgehängt. Ein Job mit
+      `run.app`-Ziel liefe ins Leere — `cron:audit` meldet ihn als Fehler.
 
     Die Zuordnung „Befehl → Endpoint" steht einmalig in
     `app/Support/CronSchedule.php`; `CronScheduleCoverageTest` prüft daraus Punkt 1
@@ -61,8 +63,9 @@ Da Cloud Run serverless ist (Container laufen nur bei Requests), können keine t
     `--max-retry-attempts=3` setzen. Ohne Retries reicht ein Cold-Start-502, um einen
     nächtlichen Lauf komplett ausfallen zu lassen — der Job gilt dann als „ausgeführt".
 
-    Als Ziel-URL `https://hub.glattt.com/...` verwenden, nicht die rohe
-    `run.app`-URL.
+    Als Ziel-URL **immer** `https://hub.glattt.com/...` bzw.
+    `https://staging.hub.glattt.com/...` verwenden — die `run.app`-Adressen
+    antworten seit 23.09.2026 mit 404.
 
 ## Kurzübersicht: Was wird wo eingetragen?
 
