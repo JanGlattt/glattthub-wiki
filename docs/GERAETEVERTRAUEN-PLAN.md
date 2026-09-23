@@ -1,6 +1,6 @@
 # Gerätevertrauen für die iOS-App — Plan
 
-!!! info "Stand: Schritt 0, 1 und 2 umgesetzt (Prod im Log-Modus), Schritt 3 freigegeben"
+!!! info "Stand: Schritt 0 bis 3 umgesetzt (Prod im Log-Modus), Schritt 4 und 5 offen"
     Beschlossen am 23.09.2026 als **Vorlage zur Entscheidung** (Jan: „nur planen, nichts
     bauen"). Am selben Tag kam beim Sicherheits-Review ein offenes Loch ans Licht (siehe
     [Schritt 0](#schritt-0-die-offene-haustuer-erledigt)), das sofort geschlossen wurde.
@@ -252,7 +252,7 @@ Jeder Schritt hilft für sich und ist einzeln freizugeben.
 | 0 | **Ingress schließen** — `run.app` nur noch über den Load Balancer, Scheduler-Jobs auf die Domains, Schalter in Cloud Build | IAP trägt wirklich alles, was das Büro nutzt | 0,5 Tage | **erledigt 23.09.2026** |
 | 1 | **Freischalt-Code** (Tabellen, Ausstellen im Hub, QR + Mail + Link, Einlösen in der App, Widerruf, MDM-Schlüssel) | Geräte werden zu einer bewussten, protokollierten Entscheidung | 2–3 Tage | **umgesetzt 23.09.2026** — [APP-GERAETE-FREISCHALTUNG.md](APP-GERAETE-FREISCHALTUNG.md) |
 | 2 | **Gerätenachweis erzwingen** — an jeder Anmeldung: IAP-JWT (verifiziert) oder freigeschaltetes Gerät; PIN-Bremse je Gerät, Sperre nach Fehlversuchen; Modus off/log/enforce | Der PIN-Dialog ist von außen nicht mehr erreichbar; das Büro merkt nichts | 2 Tage | **umgesetzt 23.09.2026** — Staging `enforce`, Prod `log` bis zur Freigabe |
-| 3 | **App Attest** (iOS: Attestierung beim Einlösen, danach Assertions; Server: Prüfung) | Ein abgefangener Token nützt ohne echtes Gerät nichts | 2 Tage, heikel | offen |
+| 3 | **App Attest** (iOS: Attestierung beim Einlösen, danach Assertions; Server: Prüfung) | Ein abgefangener Token nützt ohne echtes Gerät nichts | 2 Tage, heikel | **umgesetzt 23.09.2026** — Assertion-Pflicht für attestierte Geräte; `require_attestation` erst mit dem App-Host |
 | 4 | **Eigener Host ohne IAP** für die App (`app.hub.glattt.com`) | Der Apple-Prüfer kommt herein — gefahrlos, weil 1–3 tragen | 1 Tag plus DNS/Zertifikat | offen, **erst nach 1–3** |
 | 5 | **Prüfer-Konto** mit Token, wenigen Rechten und Testdaten; nach der Prüfung widerrufen | Custom-App-Prüfung möglich | 0,5 Tage | offen |
 | später | **Mac-App auf den Token-Weg** (Keychain-Geheimnis per `safeStorage`, Header, App-Host) | nichts läuft mehr ab | 1–2 Tage | nur bei Bedarf |
@@ -334,3 +334,7 @@ Wer das später schließen will, hat zwei Wege, die den Ablauf kaum verändern:
   erzwingt, Prod protokolliert zunächst — Umstellung auf `enforce`, sobald das Log einige Tage
   keine echten Büro-Anmeldungen als „ohne Nachweis" zeigt. Abweichung vom Plan: Die Login-Seite
   (GET) bleibt erreichbar, geprüft wird nur, wo eine Sitzung entsteht.
+- **23.09.2026, nachts** — Schritt 3 gebaut: App Attest mit Attestierung nach dem Einlösen
+  und Assertion bei jeder Anmeldung, Prüfung gegen Apples Wurzel im Hub. Noch nicht am
+  echten Gerät durchlaufen (Simulator kann kein App Attest) — Prüfung mit dem nächsten
+  TestFlight-Build gegen Staging.

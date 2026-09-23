@@ -1,4 +1,4 @@
-# App-Geräte: Freischalt-Code und Gerätenachweis (Gerätevertrauen, Schritt 1 und 2)
+# App-Geräte: Freischalt-Code, Gerätenachweis, App Attest (Gerätevertrauen, Schritt 1–3)
 
 Bauschritte 1 und 2 des Plans [Gerätevertrauen](GERAETEVERTRAUEN-PLAN.md), umgesetzt am
 23.09.2026 (Freigabe Jan). Die iOS-App muss einmal **freigeschaltet** werden, bevor sie
@@ -91,7 +91,9 @@ nichts außer dem Code, den die Mail ohnehin enthält, und löst nichts ein.
 - **Keychain überlebt die Neuinstallation.** `Keychain.set` nutzt
   `AfterFirstUnlockThisDeviceOnly`; iOS behält solche Einträge beim Löschen der App. Das
   Geheimnis und die Geräte-ID kommen nach einer Neuinstallation also wieder — anders als
-  der Plan annahm. Erst App Attest (Schritt 3) bindet an die Installation.
+  der Plan annahm. Der App-Attest-Schlüssel (Schritt 3) dagegen nicht: Nach einer
+  Neuinstallation scheitert die Assertion, der Hub antwortet `assertion_required`, und das
+  Gerät wird neu freigeschaltet — genau die Bindung an die Installation, die der Plan wollte.
 - **`Proxy-Authorization` verweigert Chromium**, IAP prüft aber auch `Authorization` — das
   betrifft nur den Klickanleitungen-Lauf, nicht die App.
 - **Widerruf im Hub erreicht die App nicht sofort.** Bis Schritt 2 merkt die App nichts;
@@ -151,6 +153,57 @@ bekäme 403.
 Gerät wurde im Hub widerrufen oder gesperrt) und die Login-Seite öffnet direkt den
 Einlöse-Dialog. Gilt für PIN, E-Mail und Face ID.
 
+### Schritt 3: App Attest — das Gerät beweist, dass es echt ist
+
+Ohne App Attest hängt der Geräte-Nachweis an einem Geheimnis, das kopierbar ist (Keychain
+→ Backup, Jailbreak). Mit App Attest erzeugt die App einen Schlüssel in der **Secure
+Enclave**, den Apple einmal beglaubigt; danach signiert sie bei jeder Anmeldung eine
+Challenge des Hubs. Der Schlüssel verlässt das Gerät nie.
+
+**Ablauf**
+
+1. `POST /api/app/enroll` liefert neben dem Geheimnis eine `attest_challenge` (Cache
+   `attest-challenge:<device>`, 5 min).
+2. Die App (`AppAttest.attest(challenge:)`, `DCAppAttestService`) erzeugt den Schlüssel,
+   lässt ihn attestieren und schickt `POST /api/app/attest {key_id, attestation}` mit dem
+   Gerätenachweis. Der Hub prüft (`AppAttestVerifier::verifyAttestation()`, nach Apples
+   „Validating apps that connect to your server"): Kette bis zu **Apples App-Attest-Wurzel**
+   (`resources/certs/apple-app-attestation-root-ca.pem`, gültig bis 2045), Nonce
+   `SHA-256(authData ‖ SHA-256(challenge))` in der Blatt-Erweiterung `1.2.840.113635.100.8.2`,
+   Schlüssel-ID = SHA-256 des öffentlichen Schlüssels, App-ID-Hash (`<Team>.<Bundle>` aus
+   `config/push.php`), Zähler 0, AAGUID `appattest` (Produktion) bzw. `appattestdevelop` (nur
+   mit `APP_ATTEST_ALLOW_DEVELOPMENT`), Credential-ID = Schlüssel-ID. Gespeichert werden
+   `attest_key_id`, `attest_public_key` (PEM), `attest_counter`, `attest_environment`,
+   `attested_at`. Die Hub-Seite zeigt „attestiert".
+3. **Jede Anmeldung** eines attestierten Geräts: `GET /api/app/challenge` (Cache
+   `assert-challenge:<device>:<hash>`, einmalig, 5 min) → Assertion in der Enclave →
+   Header `X-Hub-Assertion` + `X-Hub-Challenge` an `POST /login/pin` (bzw. E-Mail,
+   Face-ID-Sitzung). `DeviceTrust::assertionProblem()` prüft Signatur, App-ID und dass der
+   Zähler steigt (`verifyAssertion()`); die Challenge wird verbraucht. Fehlt oder scheitert
+   die Assertion: 403 `assertion_required`. Mit `DEVICE_TRUST_REQUIRE_ATTESTATION=true`
+   zählen nur noch attestierte Geräte (403 `attestation_required`) — vorgesehen für den
+   App-Host ohne IAP (Schritt 4); bis dahin bleiben unattestierte Geräte (Simulator, ältere
+   App) gültig.
+
+**App-Seite:** `ios/glatttHub/Auth/AppAttest.swift` (Schlüssel-ID in der Keychain
+`attest-key-id`), `HubSession.attachAssertion(to:)` hängt Challenge und Assertion an
+`postCredentials` und `api/app/session`; scheitert die Assertion mit `invalidKey`
+(Schlüssel nach Neuinstallation weg), vergisst die App die ID, der Hub antwortet
+`assertion_required`, die App verwirft die Freischaltung und bietet den Einlöse-Dialog an
+(neuer Code → neuer Schlüssel). Im Simulator ist App Attest nicht verfügbar; das Gerät
+bleibt dann unattestiert freigeschaltet.
+
+**CBOR:** eigener Mini-Decoder `App\Support\Cbor` (Ganzzahlen, Byte-/Textstrings,
+Arrays, Maps; Floats/Tags/unbestimmte Längen werden abgewiesen) — kein Paket nötig.
+
+**Tests:** `tests/Support/AppAttestFixture.php` baut per openssl-CLI eine eigene
+Wurzel/Zwischen-CA/Blatt-Kette mit Apples Nonce-Erweiterung und kodiert Attestierung und
+Assertion als CBOR; der Verifier bekommt die Test-Wurzel über
+`device_trust.app_attest.root_ca`. `tests/Unit/AppAttestVerifierTest.php` (gültig, falsche
+Challenge, fremde App, Zähler, Entwicklungs-AAGUID, fremde Wurzel, falsche Schlüssel-ID,
+Format, Assertion-Signatur/App-ID/Zähler, CBOR) und `DeviceTrustEnforcementTest`
+(Attest-Endpunkte, Assertion-Pflicht, Wiederholung, alter Zähler, `require_attestation`).
+
 ### Tests
 
 `tests/Feature/DeviceTrustEnforcementTest.php` (ohne Nachweis 403 bzw. Redirect, IAP-JWT
@@ -173,3 +226,6 @@ Cookie), `ManagedConfigTests::enrollmentKey`.
 - **23.09.2026, später** — Schritt 2: Nachweis bei jeder Anmeldung (IAP-JWT verifiziert oder
   Gerät), Modus off/log/enforce, PIN-Bremse je Gerät und Sperre nach Fehlversuchen; Staging
   `enforce`, Prod `log`. App erkennt 403 `device_not_trusted` und bietet die Freischaltung an.
+- **23.09.2026, nachts** — Schritt 3: App Attest. Attestierung direkt nach dem Einlösen,
+  Assertion bei jeder Anmeldung eines attestierten Geräts, Zähler gegen Wiederholung;
+  `require_attestation` für den späteren App-Host. Apples Wurzelzertifikat im Repo.
