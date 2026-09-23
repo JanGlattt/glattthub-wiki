@@ -1,10 +1,16 @@
 # Gerätevertrauen für die iOS-App — Plan
 
-!!! info "Stand: Schritt 0 bis 3 umgesetzt (Prod im Log-Modus), Schritt 4 und 5 offen"
+!!! info "Stand: Schritt 0 bis 4 umgesetzt — am App-Host fehlen noch DNS und das Zertifikat"
     Beschlossen am 23.09.2026 als **Vorlage zur Entscheidung** (Jan: „nur planen, nichts
     bauen"). Am selben Tag kam beim Sicherheits-Review ein offenes Loch ans Licht (siehe
     [Schritt 0](#schritt-0-die-offene-haustuer-erledigt)), das sofort geschlossen wurde.
     Alles Weitere wird je Schritt einzeln freigegeben.
+
+    Der **Code** für [Schritt 4](#schritt-4-der-app-host-ohne-iap) liegt seit 24.09.2026 auf
+    Prod. Was noch fehlt, ist reine Infrastruktur: A-Record im KAS-Panel, Zertifikat,
+    Backend-Service und Host-Regel am Load Balancer — und danach als letzter Schritt die
+    Basis-URL der App. Solange `app.hub.glattt.com` nicht auflöst, ändert sich nichts:
+    `device_trust.app_hosts` ist der einzige Schalter, und er wirkt nur für diesen Namen.
 
 ## Die Entscheidung in einem Absatz
 
@@ -259,7 +265,7 @@ Jeder Schritt hilft für sich und ist einzeln freizugeben.
 | 1 | **Freischalt-Code** (Tabellen, Ausstellen im Hub, QR + Mail + Link, Einlösen in der App, Widerruf, MDM-Schlüssel) | Geräte werden zu einer bewussten, protokollierten Entscheidung | 2–3 Tage | **umgesetzt 23.09.2026** — [APP-GERAETE-FREISCHALTUNG.md](APP-GERAETE-FREISCHALTUNG.md) |
 | 2 | **Gerätenachweis erzwingen** — an jeder Anmeldung: IAP-JWT (verifiziert) oder freigeschaltetes Gerät; PIN-Bremse je Gerät, Sperre nach Fehlversuchen; Modus off/log/enforce | Der PIN-Dialog ist von außen nicht mehr erreichbar; das Büro merkt nichts | 2 Tage | **umgesetzt 23.09.2026** — Staging `enforce`, Prod `log` bis zur Freigabe |
 | 3 | **App Attest** (iOS: Attestierung beim Einlösen, danach Assertions; Server: Prüfung) | Ein abgefangener Token nützt ohne echtes Gerät nichts | 2 Tage, heikel | **umgesetzt 23.09.2026** — Assertion-Pflicht für attestierte Geräte; `require_attestation` erst mit dem App-Host |
-| 4 | **Eigener Host ohne IAP** für die App (`app.hub.glattt.com`) | Der Apple-Prüfer kommt herein — gefahrlos, weil 1–3 tragen | 1 Tag plus DNS/Zertifikat | offen, **erst nach 1–3** |
+| 4 | **Eigener Host ohne IAP** für die App (`app.hub.glattt.com`) | Der Apple-Prüfer kommt herein — gefahrlos, weil 1–3 tragen | 1 Tag plus DNS/Zertifikat | **Code umgesetzt 24.09.2026**, Infrastruktur offen — [unten](#schritt-4-der-app-host-ohne-iap) |
 | 5 | **Prüfer-Konto** mit Token, wenigen Rechten und Testdaten; nach der Prüfung widerrufen | Custom-App-Prüfung möglich | 0,5 Tage | offen |
 | später | **Mac-App auf den Token-Weg** (Keychain-Geheimnis per `safeStorage`, Header, App-Host) | nichts läuft mehr ab | 1–2 Tage | nur bei Bedarf |
 
@@ -268,6 +274,105 @@ Die Aufwände sind grob.
 **IAP bleibt, wo es nichts kostet.** Für Browser, PWA und Mac-App auf `hub.glattt.com`
 ist es die Schicht, die heute trägt. Nur der App-Host verzichtet darauf. Eine
 funktionierende Schicht entfernt man nicht ohne Not.
+
+## Schritt 4: Der App-Host ohne IAP
+
+`app.hub.glattt.com` zeigt auf **denselben** Cloud-Run-Dienst wie `hub.glattt.com` — am
+Load Balancer aber ohne Google IAP. Für das Büro ändert sich damit nichts; der Hauptname
+bleibt, wie er ist.
+
+### Warum ein zweiter Backend-Service
+
+IAP ist eine Eigenschaft des **Backend-Services**, nicht des Hostnamens. Ein IAP-freier Weg
+braucht deshalb einen eigenen Backend-Service — er darf aber auf dieselbe Serverless-NEG
+zeigen, so wie es `backend-glattthub-prod-api` und `-public` längst tun (für `/api/*` und
+die öffentlichen Pfade). Es entsteht also kein zweiter Server, keine zweite Datenbank,
+keine zweite Revision.
+
+| Objekt | Wert |
+|---|---|
+| Backend-Service | `backend-glattthub-prod-app` → NEG `neg-glattthub-prod`, **IAP aus** |
+| Host-Regel | `app.hub.glattt.com` → Path-Matcher `app-matcher`, alles auf diesen Service |
+| Zertifikat | `cert-glattthub-prod-app` (Google-managed), zusätzlich am `proxy-glattthub` |
+| DNS | A-Record `app.hub` → **34.49.25.78** — im **KAS-Panel bei All-Inkl**, nicht in der Cloud |
+
+!!! warning "DNS liegt nicht in der Cloud"
+    `glattt.com` hat `ns5`/`ns6.kasserver.com`; die Cloud-DNS-API ist im Projekt nicht
+    aktiviert. Ein Google-managed-Zertifikat wird erst `ACTIVE`, wenn der Name auf die
+    Adresse des Load Balancers zeigt — der A-Record kommt also zuerst.
+
+### Was den Host schützt
+
+Ohne IAP ist der Gerätenachweis das Einzige. Deshalb gilt auf einem Host aus
+`device_trust.app_hosts` **zweierlei, unabhängig vom globalen Modus** (Prod steht weiterhin
+auf `log`, damit Browser und Mac-App nichts merken):
+
+1. **Die Anmeldung wird immer erzwungen, und nur attestierte Geräte zählen.**
+   `DeviceTrust::mode()` liefert dort `enforce`, `requiresAttestation()` gibt `true`. Ohne
+   das stünde der PIN-Dialog offen im Netz — und dort trifft jeder Versuch mit
+   [1 zu 476](#der-pin-ist-der-benutzername).
+2. **Jede Anfrage braucht ein freigeschaltetes Gerät**, nicht nur die Anmeldung
+   (`RequireTrustedAppHost`, Entscheidung Jan 23.09.2026). Auf `hub.glattt.com` braucht ein
+   gestohlenes Sitzungs-Cookie zusätzlich eine Google-Anmeldung; hier gibt es die nicht.
+   Wer den Hostnamen kennt, bekommt 403 — der Host ist von außen inhaltslos.
+
+Zwei Listen in `config/device_trust.php` regeln die Ausnahmen:
+
+| Liste | Inhalt | Warum |
+|---|---|---|
+| `app_host_public_paths` | `api/app/version`, `api/app/enroll`, `api/app/widgets/*`, `shared/*`, statische Dateien | Der Einstieg muss offen sein, sonst könnte sich nie ein Gerät freischalten. Widget- und Siri-Anfragen kommen aus dem Erweiterungs-Ziel, das den Schlüsselbund der App nicht liest — sie sind über ein Sanctum-Token mit eigener Fähigkeit geschützt. |
+| `app_host_blocked_paths` | `admin*`, `forgot-password`, `reset-password*`, `google/*` → **404** | Die App braucht sie nicht. Das Admin-Backend bleibt hinter IAP; der Fortify-Passwortweg wäre ohne IAP nur ein Versandweg für Fremde (19 von 21 Konten haben gar keine E-Mail-Adresse). |
+
+**Ein fehlender Eintrag in der ersten Liste sperrt die App aus.** Der Grund steht dann als
+`Anfrage auf dem App-Host ohne freigeschaltetes Gerät` samt Pfad im Log. Eingeführt wird
+deshalb mit `enforce` **bevor** die App auf den Host zeigt: Solange niemand ihn benutzt,
+kann nichts brechen, und der erste App-Test zeigt jede Lücke im Log.
+
+### Zwei Fehler, die dabei sichtbar wurden
+
+**Der WebView-Cookie kam nie an.** Der Gerätenachweis reist zweigleisig: als Header
+`X-Hub-Device` bei nativen Anfragen, als Cookie `glattthub_device` bei allem im WebView.
+Den Cookie setzt die App selbst im WKWebView-Speicher, also unverschlüsselt — und Laravels
+`EncryptCookies` macht aus jedem Cookie, der sich nicht entschlüsseln lässt, stillschweigend
+`null`. Der Cookie-Weg funktionierte damit von Schritt 1 bis 24.09.2026 nicht. Es fiel nicht
+auf, weil die Middleware bis dahin nur die Anmelde-POSTs prüfte und die aus nativem Code mit
+Header kommen. Behoben mit `encryptCookies(except: [DeviceEnrollmentService::COOKIE])`; der
+Wert ist ein Zufallsgeheimnis, das nur gegen seinen Hash geprüft wird. Der alte Test prüfte
+die Middleware direkt auf einem selbst gebauten `Request` und sprang genau über die Stelle
+hinweg — der neue Test geht durch den vollen `web`-Stack.
+
+**Angehängte Middleware läuft nach `auth`.** Laravel sortiert die Middleware je Route nach
+`$middlewarePriority`, und `Authenticate` steht dort; alles, was nur an `web` hängt, rutscht
+dahinter. Das Gate kam nie zum Zug, man sah bloß die Umleitung zur Anmeldung. Dazu bringt
+das Filament-Panel eine eigene Middleware-Liste mit, die die Gruppe `web` nicht enthält.
+`RequireTrustedAppHost` ist deshalb **global** registriert.
+
+### App-seitig: ein Hub, zwei Eingänge
+
+`ios/glatttHub/Config/HubHosts.swift` streift ein führendes `app.` ab und vergleicht
+darüber. Das war nötig, weil die App an drei Stellen exakt verglich:
+
+- `DeviceEnrollment.matches` — sonst hätten sich **alle** Geräte des Pilotbetriebs für nicht
+  freigeschaltet gehalten. Die Freischaltung gehört dem Hub, nicht dem Namen: Das Geheimnis
+  liegt serverseitig in der Hub-Datenbank.
+- `AllowedHosts.isHub` und `AppState.isHubURL` — Push-Nachrichten und Mails nennen weiterhin
+  `hub.glattt.com` (die `APP_URL` des Hubs). Ohne Normalisierung hätte die App sie für fremd
+  gehalten und an Safari übergeben, wo IAP steht.
+
+`AppContainer.open()` schreibt eingehende URLs zusätzlich auf den konfigurierten Eingang um
+— sonst liefe die Anfrage doch durch IAP. **`staging.` bleibt getrennt**; genau dafür war die
+Host-Bindung gedacht (Staging- und Prod-Build teilen Schlüsselbund und Einstellungen, weil
+sie dieselbe Bundle-ID haben).
+
+### Reihenfolge der Umstellung
+
+1. Code auf Prod — erledigt 24.09.2026 (`DEVICE_TRUST_APP_HOSTS=app.hub.glattt.com`,
+   `DEVICE_TRUST_APP_HOST_GATE=enforce` in `cloudbuild.yaml`).
+2. A-Record im KAS-Panel auf 34.49.25.78.
+3. Backend-Service, Zertifikat, Host-Regel am Load Balancer; Zertifikat abwarten (`ACTIVE`).
+4. Von außen prüfen: Anmeldung und Hub-Seiten 403, `/api/app/version` 200, `/admin` 404.
+5. Erst dann `HUB_BASE_URL` in `ios/Config/Base.xcconfig` auf `https://app.hub.glattt.com`,
+   neuer Build, mit einem Gerät testen und das Log auf 403 durchsehen.
 
 ## Drei Bedingungen, damit es hält
 
@@ -355,3 +460,14 @@ Wer das später schließen will, hat zwei Wege, die den Ablauf kaum verändern:
   zuletzt angemeldete Person). Schritt 0 vollständig abgeschlossen (Klickanleitungen-Zugang per
   Dienstkonto, `cron:audit` ohne `run.app`-Ziel). Weiter offen: Pilot-Geräte freischalten, dann
   `enforce` auf Prod, Klickanleitung „App-Geräte", Schritt 4 und 5.
+- **24.09.2026** — **Schritt 4 gebaut** (Freigabe Jan). Der Code liegt auf Prod: auf einem Host
+  aus `device_trust.app_hosts` gilt immer `enforce` samt Attestierung, und `RequireTrustedAppHost`
+  bindet dort **jede** Anfrage an ein freigeschaltetes Gerät (Entscheidung Jan: nicht nur die
+  Anmeldung). Zwei echte Fehler kamen dabei heraus: Der **WebView-Cookie** wurde von
+  `EncryptCookies` still verworfen — der Cookie-Weg aus Schritt 1 funktionierte nie, aufgefallen
+  erst, weil jetzt jede WebView-Anfrage einen Nachweis braucht; und **an `web` angehängte
+  Middleware läuft nach `auth`** (Prioritätssortierung), weshalb das Gate global registriert ist.
+  App-seitig fasst `HubHosts` beide Hostnamen zu einem Hub zusammen — ohne das hätten alle
+  Pilot-Geräte ihre Freischaltung verloren und Push-Links wären in Safari gelandet. Offen ist nur
+  noch Infrastruktur: A-Record im KAS-Panel, Zertifikat, Backend-Service und Host-Regel, danach
+  `HUB_BASE_URL` der App.

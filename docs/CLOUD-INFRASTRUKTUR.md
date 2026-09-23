@@ -134,6 +134,7 @@ gcloud compute ssl-certificates describe cert-glattthub-staging --global --forma
 | `hub` | A | `34.49.25.78` |
 | `staging.hub` | A | `34.49.25.78` |
 | `hilfe.hub` | A | `34.49.25.78` |
+| `app.hub` | A | `34.49.25.78` — **App-Host ohne IAP**, siehe unten |
 
 **DNS prüfen:**
 
@@ -320,6 +321,23 @@ Damit die REST-API (`/api/*`) ohne Google-Anmeldung per Bearer Token erreichbar 
 | `/api/*` | `backend-glattthub-{env}-api` | ❌ Aus | Bearer Token (Laravel) |
 | `/shared/*`, `/livewire/*`, `/build/*`, `/css/*`, `/js/*`, `/fonts/*`, `/images/*` | `backend-glattthub-{env}-public` | ❌ Aus | Token in URL (kryptographisch sicher, einmalig/ablaufend) + `throttle:shared-page`; Assets/Livewire sind ungeschützte, nicht-sensible Ressourcen |
 | `/*` (alles andere, insb. `/hub/*`) | `backend-glattthub-{env}` | ✅ An | Google-Anmeldung + Laravel Session |
+| **alles** auf `app.hub.glattt.com` | `backend-glattthub-prod-app` | ❌ Aus | **Gerätenachweis der iOS-App** (Freischaltung + App Attest), erzwungen in Laravel |
+
+!!! info "Der App-Host `app.hub.glattt.com` (seit 24.09.2026)"
+    Die iOS-App erreicht den Hub über einen **eigenen Hostnamen ohne IAP** — dieselbe
+    Serverless-NEG, eigener Backend-Service, eigene Host-Regel. Grund: Ein Apple-Prüfer hat
+    kein Konto in `labrado-schlueter.com` und kommt sonst nicht an IAP vorbei; die App als
+    Custom App zu verteilen setzt eine Prüfung voraus.
+
+    Hier ist **nicht** IAP der Schutz, sondern der Gerätenachweis: Auf diesem Host erzwingt
+    Laravel die Anmeldung immer (auch während Prod global auf `log` steht), verlangt
+    Attestierung und bindet **jede** Anfrage an ein freigeschaltetes Gerät. Wer den Namen
+    kennt, bekommt 403. Der Schalter dafür ist `DEVICE_TRUST_APP_HOSTS` am Cloud-Run-Dienst.
+    Vollständige Begründung, Ausnahmelisten und Umstellungsreihenfolge:
+    [Gerätevertrauen-Plan, Schritt 4](GERAETEVERTRAUEN-PLAN.md#schritt-4-der-app-host-ohne-iap).
+
+    **Der Hauptname bleibt unverändert hinter IAP** — für Browser, PWA und Mac-App ändert
+    sich nichts.
 
 **Einrichtung des `-public` Backend-Service (Referenz, bereits umgesetzt):**
 
