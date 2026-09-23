@@ -415,3 +415,20 @@ Google Cloud Storage Preise (Stand 2026, europe-west1):
 - [Google Cloud Storage Docs](https://cloud.google.com/storage/docs)
 - [Flysystem GCS Adapter](https://github.com/thephpleague/flysystem-google-cloud-storage)
 - [Cloud Run + GCS Best Practices](https://cloud.google.com/run/docs/tutorials/gcs)
+
+## CORS für den Direkt-Upload der Bildschirm-Medien (seit 24.09.2026)
+
+Die Mediathek der Apple-TV-App lädt Dateien bis 1 GB **direkt aus dem Browser** in den privaten Bucket
+`glattthub` (signierte PUT-URL, V4, 60 min). Dafür trägt der Bucket eine CORS-Regel:
+
+```json
+[{"origin": ["https://hub.glattt.com", "https://staging.hub.glattt.com"],
+  "method": ["PUT", "GET", "HEAD"],
+  "responseHeader": ["Content-Type", "Content-Length", "ETag"],
+  "maxAgeSeconds": 3600}]
+```
+
+Gesetzt mit `gcloud storage buckets update gs://glattthub --cors-file=cors.json`, prüfen mit
+`gcloud storage buckets describe gs://glattthub --format="yaml(cors_config)"`. Ein neuer Host (z. B. ein
+App-Host ohne IAP) muss hier ergänzt werden, sonst scheitert der Upload im Browser still mit einem
+CORS-Fehler. Details: [Bildschirme](SCREENS-MODULE.md).
