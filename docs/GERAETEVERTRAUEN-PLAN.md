@@ -1,16 +1,16 @@
 # Gerätevertrauen für die iOS-App — Plan
 
-!!! info "Stand: Schritt 0 bis 4 umgesetzt — am App-Host fehlen noch DNS und das Zertifikat"
+!!! info "Stand: Schritt 0 bis 4 umgesetzt und geprüft, Schritt 5 offen"
     Beschlossen am 23.09.2026 als **Vorlage zur Entscheidung** (Jan: „nur planen, nichts
     bauen"). Am selben Tag kam beim Sicherheits-Review ein offenes Loch ans Licht (siehe
     [Schritt 0](#schritt-0-die-offene-haustuer-erledigt)), das sofort geschlossen wurde.
     Alles Weitere wird je Schritt einzeln freigegeben.
 
-    Der **Code** für [Schritt 4](#schritt-4-der-app-host-ohne-iap) liegt seit 24.09.2026 auf
-    Prod. Was noch fehlt, ist reine Infrastruktur: A-Record im KAS-Panel, Zertifikat,
-    Backend-Service und Host-Regel am Load Balancer — und danach als letzter Schritt die
-    Basis-URL der App. Solange `app.hub.glattt.com` nicht auflöst, ändert sich nichts:
-    `device_trust.app_hosts` ist der einzige Schalter, und er wirkt nur für diesen Namen.
+    [Schritt 4](#schritt-4-der-app-host-ohne-iap) ist seit 24.09.2026 vollständig:
+    `app.hub.glattt.com` ist live und von außen geprüft — Anmeldung und Hub-Seiten
+    antworten ohne freigeschaltetes Gerät mit 403, die Versionsregel mit 200, Admin-Backend
+    und Passwortweg mit 404. Die drei bestehenden Hosts sind unverändert hinter IAP.
+    Offen ist nur noch ein Build mit der neuen Basis-URL und danach Schritt 5.
 
 ## Die Entscheidung in einem Absatz
 
@@ -265,7 +265,7 @@ Jeder Schritt hilft für sich und ist einzeln freizugeben.
 | 1 | **Freischalt-Code** (Tabellen, Ausstellen im Hub, QR + Mail + Link, Einlösen in der App, Widerruf, MDM-Schlüssel) | Geräte werden zu einer bewussten, protokollierten Entscheidung | 2–3 Tage | **umgesetzt 23.09.2026** — [APP-GERAETE-FREISCHALTUNG.md](APP-GERAETE-FREISCHALTUNG.md) |
 | 2 | **Gerätenachweis erzwingen** — an jeder Anmeldung: IAP-JWT (verifiziert) oder freigeschaltetes Gerät; PIN-Bremse je Gerät, Sperre nach Fehlversuchen; Modus off/log/enforce | Der PIN-Dialog ist von außen nicht mehr erreichbar; das Büro merkt nichts | 2 Tage | **umgesetzt 23.09.2026** — Staging `enforce`, Prod `log` bis zur Freigabe |
 | 3 | **App Attest** (iOS: Attestierung beim Einlösen, danach Assertions; Server: Prüfung) | Ein abgefangener Token nützt ohne echtes Gerät nichts | 2 Tage, heikel | **umgesetzt 23.09.2026** — Assertion-Pflicht für attestierte Geräte; `require_attestation` erst mit dem App-Host |
-| 4 | **Eigener Host ohne IAP** für die App (`app.hub.glattt.com`) | Der Apple-Prüfer kommt herein — gefahrlos, weil 1–3 tragen | 1 Tag plus DNS/Zertifikat | **Code umgesetzt 24.09.2026**, Infrastruktur offen — [unten](#schritt-4-der-app-host-ohne-iap) |
+| 4 | **Eigener Host ohne IAP** für die App (`app.hub.glattt.com`) | Der Apple-Prüfer kommt herein — gefahrlos, weil 1–3 tragen | 1 Tag plus DNS/Zertifikat | **umgesetzt und geprüft 24.09.2026** — [unten](#schritt-4-der-app-host-ohne-iap) |
 | 5 | **Prüfer-Konto** mit Token, wenigen Rechten und Testdaten; nach der Prüfung widerrufen | Custom-App-Prüfung möglich | 0,5 Tage | offen |
 | später | **Mac-App auf den Token-Weg** (Keychain-Geheimnis per `safeStorage`, Header, App-Host) | nichts läuft mehr ab | 1–2 Tage | nur bei Bedarf |
 
@@ -366,13 +366,23 @@ sie dieselbe Bundle-ID haben).
 
 ### Reihenfolge der Umstellung
 
-1. Code auf Prod — erledigt 24.09.2026 (`DEVICE_TRUST_APP_HOSTS=app.hub.glattt.com`,
+1. ✅ Code auf Prod (`DEVICE_TRUST_APP_HOSTS=app.hub.glattt.com`,
    `DEVICE_TRUST_APP_HOST_GATE=enforce` in `cloudbuild.yaml`).
-2. A-Record im KAS-Panel auf 34.49.25.78.
-3. Backend-Service, Zertifikat, Host-Regel am Load Balancer; Zertifikat abwarten (`ACTIVE`).
-4. Von außen prüfen: Anmeldung und Hub-Seiten 403, `/api/app/version` 200, `/admin` 404.
-5. Erst dann `HUB_BASE_URL` in `ios/Config/Base.xcconfig` auf `https://app.hub.glattt.com`,
-   neuer Build, mit einem Gerät testen und das Log auf 403 durchsehen.
+2. ✅ A-Record im KAS-Panel auf 34.49.25.78.
+3. ✅ Backend-Service, Zertifikat, Host-Regel am Load Balancer.
+4. ✅ Von außen geprüft: Anmeldung/Hub-Seiten 403 `device_required`,
+   `/api/app/version` 200, `/admin` und `/forgot-password` 404, statische Dateien 200;
+   `hub`, `staging.hub` und `hilfe.hub` unverändert hinter IAP.
+5. ✅ `HUB_BASE_URL` in `ios/Config/Base.xcconfig` auf `https://app.hub.glattt.com`.
+6. Offen: Build hochladen, mit einem Gerät prüfen und das Log auf 403 durchsehen — erst
+   dann den Pilotbetrieb umstellen.
+
+!!! warning "Nach dem Umstellen muss jedes Gerät attestiert sein"
+    Auf dem App-Host zählt nur ein attestiertes Gerät. Die App attestiert direkt nach dem
+    Einlösen; scheitert das (Simulator, kein Netz), bleibt das Gerät freigeschaltet, aber
+    unattestiert — die Anmeldung antwortet dann mit `attestation_required` und dem Hinweis,
+    das Gerät neu freizuschalten. Jans iPhone und iPad sind attestiert; bei weiteren
+    Pilot-Geräten ist das vor der Umstellung zu prüfen.
 
 ## Drei Bedingungen, damit es hält
 
@@ -471,3 +481,10 @@ Wer das später schließen will, hat zwei Wege, die den Ablauf kaum verändern:
   Pilot-Geräte ihre Freischaltung verloren und Push-Links wären in Safari gelandet. Offen ist nur
   noch Infrastruktur: A-Record im KAS-Panel, Zertifikat, Backend-Service und Host-Regel, danach
   `HUB_BASE_URL` der App.
+- **24.09.2026, später** — App-Host live: A-Record (Jan), Backend-Service ohne IAP,
+  Zertifikat, Host-Regel. Von außen geprüft, die drei bestehenden Hosts unverändert.
+  Basis-URL der App umgestellt. Dabei fiel auf, dass **dieselbe Cookie-Falle** auch das
+  Farbschema traf: Der Hub rendert `<html class="dark">` aus einem von JavaScript gesetzten
+  Cookie, das `EncryptCookies` verwarf — sichtbar als weißes Aufblitzen von 17 bis 100 ms bei
+  jedem `wire:navigate`, weil Livewires `replaceHtmlAttributes()` die Klasse entfernt, wenn
+  die neue Seite sie nicht mitbringt. Behoben.
