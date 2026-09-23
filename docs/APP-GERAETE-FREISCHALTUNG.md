@@ -81,7 +81,8 @@ nichts außer dem Code, den die Mail ohnehin enthält, und löst nichts ein.
 | `DeviceEnrollment` | `ios/glatttHub/Auth/DeviceEnrollment.swift` — Geheimnis in der Keychain (`device-secret`, „nach erstem Entsperren, nur dieses Gerät", **nicht** hinter Face ID, weil es auf geteilten iPads für alle gilt), Anzeige-Meta in UserDefaults, Cookie-Bau, `code(from:)` für den Link; `EnrollmentCode` als Spiegel der PHP-Klasse |
 | `HubSession.enroll(code:)` | `POST /api/app/enroll`; **jede** native Anfrage trägt `X-Hub-Device` (in `attachCookies`) |
 | Cookie fürs WebView | `installCookie(baseURL:)` beim Start, nach dem Einlösen, nach dem Abmelden (auf geteilten Geräten löscht `clearEverything()` alle Cookies — der Nachweis gehört zum Gerät, nicht zur Person, und kommt danach wieder rein) |
-| `EnrollmentSheet` | `ios/glatttHub/Screens/EnrollmentSheet.swift` — Code-Feld mit Live-Formatierung, QR-Scanner (`CodeScanner`, VisionKit `DataScannerViewController`, nur QR), Auto-Einlösen bei Code aus dem Link; erreichbar über „Gerät freischalten" auf der Login-Seite, die Einstellungen und `AppState.enrollmentRequest` |
+| `EnrollmentGateView` | `ios/glatttHub/Screens/EnrollmentGateView.swift` — **Vollbild vor der PIN** (Variante A, Entscheidung Jan 23.09.2026): solange das Gerät nicht freigeschaltet ist, gibt es keinen PIN-Block, sondern „QR-Code scannen" (Hauptweg) und „Code eingeben"; Institut-iPads mit MDM-Schlüssel zeigen nur „wird freigeschaltet". Nach dem Einlösen kurz der Erfolg (`AppState.enrollmentCelebrating`), dann die PIN-Seite. Lehnt der Hub ein Gerät ab (403 `device_not_trusted`, `assertion_required`), verwirft der Container die lokale Freischaltung und das Vollbild erscheint von selbst |
+| `EnrollmentSheet` | `ios/glatttHub/Screens/EnrollmentSheet.swift` — Code-Feld mit Live-Formatierung, QR-Scanner (`CodeScanner`, VisionKit `DataScannerViewController`, nur QR), Auto-Einlösen bei Code aus dem Link; erreichbar über „Code eingeben" im Vollbild, die Einstellungen und `AppState.enrollmentRequest` (Universal Link) |
 | Universal Link | `AppContainer.open(_:)` erkennt `/shared/app/freischalten/<CODE>` vor allem anderen — auch gesperrt oder abgemeldet |
 | MDM | `ManagedConfig.enrollmentKey`; `autoEnrollFromManagedConfig()` löst ihn beim Start und beim Aktivieren still ein, solange das Gerät nicht freigeschaltet ist |
 | Diagnose / Bridge | Zeile „Freischaltung" im Diagnosebericht; `deviceEnrolled` in `glatttNative.info()` |
@@ -233,3 +234,6 @@ Cookie), `ManagedConfigTests::enrollmentKey`.
 - **23.09.2026, nachts** — Schritt 3: App Attest. Attestierung direkt nach dem Einlösen,
   Assertion bei jeder Anmeldung eines attestierten Geräts, Zähler gegen Wiederholung;
   `require_attestation` für den späteren App-Host. Apples Wurzelzertifikat im Repo.
+- **23.09.2026, spät** — Nach dem ersten Gerätetest: IAP zählt für die App nicht mehr als
+  Nachweis; Vollbild „Gerät freischalten" vor der PIN (Variante A von drei Entwürfen, Jan);
+  Seitenskript über `@assets` (Konsolenfehler nach Livewire-Navigation).
