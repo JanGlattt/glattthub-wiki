@@ -60,7 +60,7 @@
 
     Institute mit Sichtbarkeit, Institutsseite (Tageserfassung), Personal und Hub-Konten, Bonus-Board, Gamification, Reisekosten.
 
-    [:octicons-arrow-right-24: Institut-Modul](../INSTITUTE-MODULE.md) · [Bonus-Board](../BONUS-BOARD.md) · [Personal](../STAFF-MODULE.md)
+    [:octicons-arrow-right-24: Institut-Modul](../INSTITUTE-MODULE.md) · [Bonus-Board](../BONUS-BOARD.md) · [Personal](../STAFF-MODULE.md) · [Bildschirme (Apple TV)](../SCREENS-MODULE.md)
 
     <small>Nutzerhandbuch: Serien *Betrieb*, *Team*, *Bonus-Board*</small>
 
