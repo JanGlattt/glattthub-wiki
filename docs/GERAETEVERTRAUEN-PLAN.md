@@ -335,6 +335,8 @@ Wer das später schließen will, hat zwei Wege, die den Ablauf kaum verändern:
   keine echten Büro-Anmeldungen als „ohne Nachweis" zeigt. Abweichung vom Plan: Die Login-Seite
   (GET) bleibt erreichbar, geprüft wird nur, wo eine Sitzung entsteht.
 - **23.09.2026, nachts** — Schritt 3 gebaut: App Attest mit Attestierung nach dem Einlösen
-  und Assertion bei jeder Anmeldung, Prüfung gegen Apples Wurzel im Hub. Noch nicht am
-  echten Gerät durchlaufen (Simulator kann kein App Attest) — Prüfung mit dem nächsten
-  TestFlight-Build gegen Staging.
+  und Assertion bei jeder Anmeldung, Prüfung gegen Apples Wurzel im Hub.
+- **23.09.2026, spät** — Am echten Gerät bestätigt (Jan, Debug-Build gegen Staging):
+  Vollbild „Gerät freischalten" vor der PIN (Variante A), QR-Scan, Anmeldung, Gerät steht
+  als „attestiert" im Hub. Offen: Prod-Merge (zunächst Log-Modus), Freischaltung der
+  Pilot-Geräte vor `enforce`, Klickanleitung, Schritt 4 und 5.
