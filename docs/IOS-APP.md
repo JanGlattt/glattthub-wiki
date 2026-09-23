@@ -432,8 +432,8 @@ Rollennamen im Code, Tests je Paket.
 ### Widgets (WidgetKit, B8 — seit 20.09.2026)
 
 **Für Endanwender:** Vier Widgets — **Kennzahlen** (frei wählbar, mit Trend-Pfeil zur Vorperiode
-und Monats-Sparkline), **Tagesübersicht** (Beratungen stattgefunden/im Gange/geplant, Verkäufe,
-verkaufte KPZ, No-Shows mit Quote — die Karten der Terminübersicht, groß je Standort),
+und Monats-Sparkline), **Tagesübersicht** (Beratungen stattgefunden/im Gange/geplant, **noch offen** = im Gange + geplant
+ohne No-Shows (Jan, 23.09.2026, statt Verkäufe), verkaufte KPZ, No-Shows mit Quote — die Karten der Terminübersicht, groß je Standort),
 **Beratungsgespräche** (Zeiträume × Standort mit Ø-Vergleich) und **Verkaufte Körperzonen** (Balken
 der letzten Monate + laufender Monat + Prognose-Balken, darunter je Tag; gestapelt nach Institut) —
 klein bis extra groß, auf iOS 27 auch das seitengroße Hochformat.
