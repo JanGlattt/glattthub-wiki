@@ -33,6 +33,13 @@ Projektwissen `.github/knowledge/tvos-app-bauplan.md`.
     Die Google-Gesamtwertung (Schnitt, Anzahl, Stand) und die Öffnungszeiten pflegt das Büro im
     Institut-Modul im Reiter „Infos"; nach 60 Tagen erinnert der Hub an die Gesamtwertung.
 
+    **Layouts und Texte:** Jedes Element einer Playlist hat ein Layout (drei je Typ) und die Texte,
+    die dieses Layout zeigt; unter dem Element steht die Vorschau, wie es auf dem Fernseher aussieht.
+    Fotos kommen automatisch vom jeweiligen Institut (Fassade, Empfang, Behandlungsraum, Team), wahlweise
+    ein festes Institutsfoto oder ein eigenes Bild aus der Mediathek. Bewertungen laufen aus dem Pool oder
+    als eine bestimmte Stimme, Videos so lange wie das Video oder mit fester Dauer, auf Wunsch mit QR-Code.
+    Der Zeitplan steht direkt unter den Elementen („Wann und wo läuft sie?“).
+
     **Kennzahlen-Modus (Zentrale):** Ein Bildschirm im Modus „Kennzahlen" blättert durch Eigene
     Dashboards — im Formular des Bildschirms werden die Seiten (Dashboard, Zeitraum, Sekunden je Seite)
     zusammengestellt. Kennzahlen erscheinen als Kacheln mit Tendenz und Verlauf, Statistik-Karten als
@@ -239,6 +246,67 @@ TV-App: `Model/Dashboards.swift` (Antwort), `KpiFormat` (de_DE: `number`/`curren
 dem Manifest, wenn `screen.mode == "kpi"`; letzte Antwort im Caches-Ordner (`dashboards.json`),
 signierte URLs werden nach 20 h erneuert.
 
+### Layouts, Texte, Institutsfotos (Phase 4b, 24.09.2026)
+
+**Entscheidung Jan (24.09.2026):** Statt einer festen Optik je Bildschirm werden alle Entwürfe des
+Designstudios zu **Layouts**, die im Admin je Element gewählt werden; Texte sind frei editierbar, eine
+Vorschau folgt dem Formular, und die Fotos kommen je Institut. Der Katalog
+`App\Services\Screens\ScreenLayouts` ist der Vertrag zwischen Hub und tvOS-App: je Typ drei Layouts
+(`image`/`video`: full, lowerthird, split · `testimonials`: soft, editorial, photo · `rating`: hero,
+card, voices · `qr`: photo, gold, claim · `institute`: panorama, profile, type) mit Name, Beschreibung,
+Textfeldern (`badge`, `headline`, `subline`, `cta`, `intro`, `caption`, Vorgaben je Typ in
+`TYPE_DEFAULTS`) und der Fotorolle, die das Layout bei „Automatisch“ zieht.
+
+**Datenmodell:** `screen_playlist_items` + `layout`, `texts` (JSON), `photo_role` (`auto` | Rolle |
+`own`), `photo_media_id`, `show_qr`, `testimonial_source` (`pool` | `single`), `testimonial_id`,
+`only_local_testimonials`, `duration_mode` (Video: `video` = Dateilänge, `fixed` = Sekunden); neuer
+Elementtyp `institute` (Logo, Standort, Öffnungszeiten, Buchungs-QR — dasselbe wie der Standby).
+`screen_media` + `branch_id`, `role` (Fassade, Empfang, Behandlungsraum, Team) = **Institutsfoto**.
+`screens.settings.standby_layout` / `standby_texts` wählen das Standby-Layout je Bildschirm.
+
+**Auflösung an einer Stelle:** `ScreenItemPresenter::resolve(item|Formularzustand, branchId,
+orientation, bookingUrl)` liefert Layout, Texte mit Vorgaben, das Foto (`InstitutePhotos::pick` mit
+Rückfällen: Standort + Rolle + Ausrichtung → Standort + Rolle → allgemeines Foto der Rolle
+(`branch_id` leer) → irgendein Foto des Standorts → nichts), das eigene Medium, den QR-Link (leer =
+Buchungsseite des Instituts) und die Stimmen (Pool des Standorts, alle Standorte oder eine feste
+Stimme). Manifest, Admin-Vorschau und Browser-Vorschau nutzen genau diese Methode — deshalb sehen alle
+drei dasselbe. Im Manifest trägt jedes Element `layout`, `texts`, `photo_media_id` (Foto im
+`media`-Block wie ein Medium, mit Prüfsumme), `show_qr`, `qr_url`, `testimonial_ids`, `duration_mode`;
+`testimonials` ist die Vereinigung aller benötigten Stimmen; `standby` bekommt `layout`, `texts`,
+`photo_media_id`, `branch_short`.
+
+**Vorschau:** Blade-Komponente `<x-screen-canvas :item :branch-id :orientation :live>` zeichnet ein
+Element als Canvas 1920 × 1080 bzw. 1080 × 1920 (Partials `resources/views/screens/layouts/<typ>/<layout>.blade.php`,
+CSS-Block „BILDSCHIRM-LAYOUTS“ in `theme_glattt.css`, Skalierung per Alpine `--s`; QR als SVG-Data-URI
+über `App\Support\QrSvg`, Wortmarke `public/images/glattt-logo.png`, Playfair Display Bold und Lato
+Light neu in `public/fonts`). Im Playlist-Formular (`ScreenPlaylistForm`) zeigt ein `Placeholder` je
+Element die Komponente mit dem Formularzustand (`live(debounce: 600)` auf den Textfeldern), Standort
+und Ausrichtung dafür in der Sektion „Vorschau-Einstellung“ (nicht persistiert). Die Browser-Vorschau
+der Playlist rendert jedes Element vorab und wechselt Stimmen per `data-voice`-Knoten; Videos laufen
+dort als `<video class="sc-bg-video">`.
+
+**Zeitpläne im Playlist-Formular:** Sektion „Wann und wo läuft sie?“ als Repeater auf `schedules`
+(Standorte, Zonen, Bildschirme, Wochentage, Von/Bis, Gültigkeit, Priorität als Auswahl Normal/Wichtig/
+Aktion); der Name des Zeitplans ist der Playlist-Name. Das Zeitplan-Modul bleibt für Übersicht und
+„Jetzt zeigen“.
+
+**Institutsfotos:** `screens:import-institute-photos` übernimmt die Fotos von glattt.com
+(`https://www.glattt.com/docs/uploads/…`, Liste im Befehl) als Medien mit Standort und Rolle; ohne
+Standort = Rückfall für Institute ohne eigene Fotos (Magdeburg). Hochkant-Motive gibt es heute nur für
+Hannover (und ein Bremen-Motiv) — Bildschirme im Hochformat anderer Standorte zeigen Querformate im
+Ausschnitt, bis Fotos nachgeliefert sind. Das Büro pflegt Standort und Rolle in der Mediathek.
+
+**tvOS:** `Views/LayoutViews.swift` zeichnet dieselben Layouts nativ (`MediaLayoutView`,
+`TestimonialsLayoutView`, `RatingLayoutView`, `QRLayoutView`, `InstituteLayoutView`), jedes prüft
+über die Fläche, ob es hochkant läuft (`RotatedContainer` liefert 1080 × 1920 pt). Wortmarke als Asset
+`Wordmark` statt Playfair-Text. Fotos laufen über den `MediaStore` (Prüfsumme, Vorlauf über
+`mediaInProgramOrder` inkl. `photo_media_id`). `PlaylistPlayer` nimmt den Timer auch bei Videos mit
+fester Dauer (`fixedDuration`). Standby = `InstituteLayoutView(standby.asItem)`.
+
+**Fallstrick:** SwiftUI `.shadow` auf einer Karte mit Text zeichnet den Schatten auch hinter jeden
+Buchstaben (grauer Fleck hinter „4,9“) — Schatten auf die Hintergrundform legen
+(`RoundedRectangle().fill().shadow()`), nicht auf den Container.
+
 ### Admin-Resources (Phase 2)
 
 - **Medien** (`ScreenMediaResource`, Sort 61): Liste mit Poster, Stand, Verwendung; Seite „Medien hochladen"
@@ -367,6 +435,7 @@ Render-Seite und Proxy nur mit Ticket, Render-Job ohne Chromium, Admin-Formular 
 
 ## Changelog
 
+- **24.09.2026** — Phase 4b (Layouts) auf `develop`: Layout-Katalog, Texte, Bildwahl, Bewertungsquelle, Videolaufzeit, Institutsfotos mit Rollen, Admin-Vorschau, Zeitpläne im Playlist-Formular, native Layouts in der TV-App.
 - **24.09.2026** — Phase 4 (Kennzahlen-Modus) auf `develop`: Seiten aus Eigenen Dashboards, technischer Bildschirm-Nutzer, `GET /api/tv/dashboards`, Karten-Renderer mit headless Chromium (Weg A, Ticket statt Freigabe-Link), Admin-Formular, Dashboard-Blätterer in der TV-App.
 - **24.09.2026** — Phase 3 (tvOS-App v1) auf `develop`: Target `glatttHubTV`, Kopplung, Manifest-Wiedergabe, Cache, Hochkant, Marken-Design; Simulator-Prüfstand gegen den lokalen Hub bestanden.
 - **24.09.2026** — Phase 2 (Inhalte) auf `develop`: Mediathek mit Direkt-Upload und Verarbeitung, Testimonials mit Google-Übernahme, Playlists mit Vorschau, Zeitpläne mit „Jetzt zeigen", Manifest mit ETag, Gesamtwertung und Öffnungszeiten im Institut.
