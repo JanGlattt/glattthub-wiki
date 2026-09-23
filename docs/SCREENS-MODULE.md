@@ -4,7 +4,10 @@ Digital-Signage-Player für die Institute (Bewertungen, Promo-Playlists mit Zeit
 bildschirm für die Zentrale, als native tvOS-App. **Stand 24.09.2026: Phase 1 (Backend-Kern) und
 Phase 2 (Inhalte) auf `develop`** — Kopplung per Code, Gerätenachweis, Heartbeat, Steuerkanal, Mediathek
 mit Direkt-Upload, Testimonials, Playlists mit Browser-Vorschau, Zeitpläne mit „Jetzt zeigen", Manifest
-mit ETag, Google-Gesamtwertung und Öffnungszeiten je Institut. Die tvOS-App folgt in Phase 3. Vollständiger Bauplan mit Entscheidungen und Arbeitspaketen als Claude-Doc:
+mit ETag, Google-Gesamtwertung und Öffnungszeiten je Institut. **Phase 3 (tvOS-App v1) ebenfalls auf
+`develop`:** Target `glatttHubTV` im iOS-Projekt, Kopplung, Manifest-Wiedergabe (Bild, Video, Testimonials,
+Gesamtwertung, QR, Standby), Cache, Hochkant, Marken-Design — am 23.09.2026 im Simulator gegen den
+lokalen Hub durchgespielt (Kopplung → Zuordnung → Programm). Vollständiger Bauplan mit Entscheidungen und Arbeitspaketen als Claude-Doc:
 [Apple-TV-App: Bauplan](https://claude.ai/code/artifact/3bdd5ce6-0a39-413b-874a-d4d91e4cbeb8);
 Projektwissen `.github/knowledge/tvos-app-bauplan.md`.
 
@@ -198,7 +201,42 @@ unbeanspruchte Codes eine Stunde nach Ablauf, zugeordnete Codes nach 7 Tagen, er
 abgelaufene Befehle nach 7 Tagen. Cloud-Scheduler-Job `cleanup-screens` (Prod, `30 3 * * *`,
 drei Wiederholungen) am 24.09.2026 angelegt, siehe [Cloud Scheduler](CLOUD-SCHEDULER-SETUP.md).
 
+### tvOS-App (`ios/glatttHubTV`, Target `glatttHubTV`, Produkt `glatttScreens`, Bundle `com.glattt.hub.tv`)
+
+Schema `glatttScreens`; bauen und testen ohne Xcode-GUI:
+`xcodebuild -project ios/glatttHub.xcodeproj -scheme glatttScreens -destination 'platform=tvOS Simulator,name=Apple TV 4K (3rd generation)' test CODE_SIGNING_ALLOWED=NO`
+(Runtime einmalig: `xcodebuild -downloadPlatform tvOS`). Prüfstand gegen den lokalen Hub:
+`SIMCTL_CHILD_HUB_BASE_URL=http://glattthub.local:8888 xcrun simctl launch <UDID> com.glattt.hub.tv`,
+Code aus `log show --predicate 'subsystem == "com.glattt.hub.tv"'` lesen, per Tinker
+`ScreenPairingService::claim()` zuordnen, `simctl io screenshot`.
+
+| Modul | Aufgabe |
+|---|---|
+| `App/ScreenState` | Zustandsautomat `starting → pairing → ready/disabled`; Sichtbarkeit nur aus Zustand. Eine Schleife: ohne Geheimnis Code holen, sonst Status bzw. Heartbeat + Manifest (ETag); Vordergrund kappt nur die Wartezeit, nie die laufende Anfrage |
+| `App/PairingStore` | Geheimnis + Geräte-ID in Keychain **und** UserDefaults, Bildschirm-Stammdaten, letztes Manifest im Caches-Ordner (Neustart ohne Netz) |
+| `App/TVConfig` | Basis-URL aus `HubBaseURL` (xcconfig), Override `HUB_BASE_URL`; User-Agent `glatttHub-tvOS/<version>` |
+| `Net/ScreenAPI` | `/api/tv/*` ohne Cookies; 401 → `unknownDevice` (neu koppeln), 410 → `disabled`/`expired`, 426 → `outdated` |
+| `Cache/MediaStore` (Actor) | `Caches/media/<id>-<sha256>.<ext>`, SHA-256 nach Download, LRU 6 GB, Vorlauf in Programmreihenfolge, single-flight je Medium |
+| `Play/ProgramScheduler` | Abschnitt zum Zeitpunkt, nächster Wechsel; nach Programmende läuft der letzte Abschnitt weiter |
+| `Play/PlaylistPlayer` | Reihenfolge/Mischen, Dauer-Timer, Videos bis Dateiende, Position je Playlist gemerkt, zweimal gescheitert = übersprungen |
+| `Views/*` | Pairing (Code 216 pt), Player mit Crossfade, Bild (Ken Burns 3 %), Video (`AVPlayerLayer`, ohne Transportleiste), Testimonials (drei Layouts), Gesamtwertung mit Google-Wortmarke, QR (CoreImage), Standby (Öffnungszeiten + Buchungs-QR), Diagnose-Overlay (Play/Pause), `RotatedContainer` für Hochkant |
+
+Design: Lato Light/Regular/Bold + **Playfair Display Bold als statische TTF** (`PlayfairDisplay-Bold.ttf`)
+— die Variable-Font-Datei registriert nur `PlayfairDisplay-Regular`, `.custom("PlayfairDisplay-Bold")` fiel
+still auf die Systemschrift zurück. Farben als Assets `BrandGold/Black/Mint/Grey`. App-Icon und Top-Shelf sind
+Platzhalter (goldener Kreis) bis Phase 5.
+
 ### Fallstricke
+
+- **tvOS-Simulator: Keychain überlebt keinen Neustart.** Jeder Start bekam eine neue Geräte-ID und koppelte neu
+  (drei verwaiste Bildschirme im lokalen Hub). Geheimnis und Geräte-ID liegen deshalb zusätzlich in
+  UserDefaults; auf dem Gerät gilt die Keychain. Der Test-Host läuft die App mit — `ScreenState.start()`
+  bricht unter `XCTestConfigurationFilePath` ab, sonst holt sich jeder Testlauf einen Kopplungscode und
+  überschreibt das Geheimnis.
+- **Leere PHP-Arrays werden `[]`**: `playlists` und `media` im Manifest sind als Objekt zu liefern
+  (`(object)`), sonst scheitert der Swift-Decoder mit `typeMismatch` (Befund 23.09.2026).
+- Eine laufende Kopplungsanfrage nie abbrechen (`refreshNow()` kappt nur die Wartezeit): ein gekappter
+  `POST /pair` liesse den Code auf dem Hub ohne Geheimnis auf dem Gerät stehen.
 
 - Gültigkeitskanten im `program()` **nie auf die Minute runden**: `valid_until` 23:44:14 gerundet auf
   23:44:00 liegt noch im Plan, der Abschnitt danach fällt weg (Befund 24.09.2026, Test
@@ -228,5 +266,6 @@ Institut-Felder, veraltete Wertung, Admin-Seiten). Konventionstests: `CronSchedu
 
 ## Changelog
 
+- **24.09.2026** — Phase 3 (tvOS-App v1) auf `develop`: Target `glatttHubTV`, Kopplung, Manifest-Wiedergabe, Cache, Hochkant, Marken-Design; Simulator-Prüfstand gegen den lokalen Hub bestanden.
 - **24.09.2026** — Phase 2 (Inhalte) auf `develop`: Mediathek mit Direkt-Upload und Verarbeitung, Testimonials mit Google-Übernahme, Playlists mit Vorschau, Zeitpläne mit „Jetzt zeigen", Manifest mit ETag, Gesamtwertung und Öffnungszeiten im Institut.
 - **24.09.2026** — Phase 1 (Backend-Kern) auf `develop`: Kopplung, Gerätenachweis, Heartbeat, Steuerkanal, Admin-Resource, Cron.

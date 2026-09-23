@@ -9,6 +9,9 @@ Entscheidungstabellen, Sequenzdiagrammen und Arbeitspaketen liegt als Claude-Doc
 ([glatttHub iOS-App — Bauplan](https://claude.ai/code/artifact/c74ef4a9-112c-4de2-ad61-9546f3612858));
 diese Seite ist die technische Kurzreferenz, die mit der Umsetzung wächst.
 
+Im selben Xcode-Projekt liegt seit 24.09.2026 die **Apple-TV-App „glattt Screens"** (Target `glatttHubTV`,
+Schema `glatttScreens`) — siehe [Bildschirme](SCREENS-MODULE.md).
+
 ---
 
 ## Für Endanwender
