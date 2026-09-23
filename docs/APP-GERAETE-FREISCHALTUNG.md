@@ -1,10 +1,10 @@
-# App-Geräte: Freischalt-Code (Gerätevertrauen, Schritt 1)
+# App-Geräte: Freischalt-Code und Gerätenachweis (Gerätevertrauen, Schritt 1 und 2)
 
-Erster Bauschritt des Plans [Gerätevertrauen](GERAETEVERTRAUEN-PLAN.md), umgesetzt am
+Bauschritte 1 und 2 des Plans [Gerätevertrauen](GERAETEVERTRAUEN-PLAN.md), umgesetzt am
 23.09.2026 (Freigabe Jan). Die iOS-App muss einmal **freigeschaltet** werden, bevor sie
-mit dem Hub sprechen darf. In Schritt 1 entsteht die Freischaltung (Code, Einlösen,
-Geheimnis, Widerruf) und der Hub **protokolliert** den Nachweis; **erzwungen** wird er
-erst in Schritt 2.
+mit dem Hub sprechen darf. Schritt 1 ist die Freischaltung (Code, Einlösen, Geheimnis,
+Widerruf); Schritt 2 **erzwingt** den Nachweis bei jeder Anmeldung und bremst PIN-Versuche
+je Gerät.
 
 ## Für Endanwender
 
@@ -104,8 +104,60 @@ nichts außer dem Code, den die Mail ohnehin enthält, und löst nichts ein.
   Schlüssel, solange ihr Geheimnis lokal liegt. Erst „Freischaltung entfernen" in den
   Einstellungen oder ein neuer Schlüssel im MDM.
 
+### Schritt 2: Der Nachweis wird erzwungen
+
+**Wo geprüft wird:** genau dort, wo eine Sitzung entsteht — `POST /login/pin`,
+`POST /login/credentials`, `POST /login` (Fortify) und `POST /api/app/session` (Face-ID-Token
+→ Sitzung). Alles danach schützt die Sitzung, die ohne Nachweis nicht entstanden wäre; der
+Freischalt-Endpunkt `POST /api/app/enroll` bleibt frei, er ist der Einstieg. Die Login-Seite
+selbst (GET) bleibt erreichbar, sie verrät nichts.
+
+**Was als Nachweis gilt** (`App\Services\Auth\DeviceTrust`, Ergebnis je Anfrage als
+Request-Attribut `device_trust`):
+
+| Quelle | Nachweis | Wer |
+|---|---|---|
+| `iap` | JWT `x-goog-iap-jwt-assertion`, **verifiziert** gegen Googles Schlüssel (`IapJwtVerifier`, ES256, JWKS 24 h gecacht): Aussteller `https://cloud.google.com/iap`, Ablauf, Audience `/projects/<nr>/global/backendServices/<id>` | Browser, PWA, Mac-App und die iOS-App auf `hub.glattt.com` — für das Büro ändert sich nichts |
+| `device` | freigeschaltetes, nicht widerrufenes Gerät (Header `X-Hub-Device` oder Cookie `glattthub_device`) | iOS-App, später auf dem App-Host ohne IAP (Schritt 4) |
+| `none` | — | Anmeldung wird abgewiesen: JSON 403 mit `reason = device_not_trusted`, Formular-Post zurück auf `/login` mit Fehler |
+
+**Modus** (`config/device_trust.php`, `DEVICE_TRUST_MODE`): `off` = nichts prüfen (lokal),
+`log` = Verstöße nur ins Log (Einführung, `Anmeldung ohne Gerätenachweis`), `enforce` =
+abweisen. Die Deploys setzen ihn: **Staging `enforce`** mit `IAP_BACKEND_SERVICE_IDS=7999871483778540957`,
+**Prod zunächst `log`** mit `3757467410591229426` (`cloudbuild*.yaml`). Ohne konfigurierte
+Backend-IDs gilt jede Audience des Projekts. Erst wenn das Prod-Log über einige Tage keine
+echten Büro-Anmeldungen als „ohne Nachweis" meldet, wird Prod auf `enforce` gestellt.
+
+**Wichtig:** Ein bloßer Header-Check wäre wertlos — sobald jemand am Load Balancer vorbeikäme
+(Befund 23.09.2026, `run.app`), könnte er den Header selbst setzen. Deshalb Signaturprüfung;
+ist Googles Schlüsselsatz nicht abrufbar, gilt **kein** JWT (nicht „jedes").
+
+**PIN-Bremse je Gerät** (`FortifyServiceProvider`, Limiter `pin-login`): Schlüssel je
+freigeschaltetem Gerät, sonst je Google-Konto (IAP-`sub`), sonst je IP — 5/min und 30/h.
+Dazu die Sperre aus dem Plan: nach `DEVICE_TRUST_PIN_FAILURES` (Standard 20) falschen PINs
+innerhalb einer Stunde verliert das Gerät seine Freischaltung
+(`DeviceEnrollmentService::registerPinFailure()`, Anlass `app_devices.locked`, nicht
+stummschaltbar); eine richtige PIN setzt den Zähler zurück. Wer das Gerät in der Hand hat,
+kann sich damit nicht in ein fremdes Konto raten.
+
+**Middleware-Reihenfolge, Falle:** Laravel zieht `throttle` per Priorität vor die
+Gruppen-Middleware. Der Rate-Limiter fragt `DeviceTrust` also **vor** `AttachEnrolledDevice`;
+deshalb schlägt `DeviceTrust::evaluate()` das Gerät selbst nach (Header/Cookie) und cacht das
+Ergebnis in der Anfrage — sonst stünde fälschlich „kein Nachweis" fest und jeder Geräte-Login
+bekäme 403.
+
+**App-Seite:** `HubSession` erkennt den 403 mit `device_not_trusted` als
+`PinLoginError.deviceNotTrusted`; `AppContainer` verwirft dann die lokale Freischaltung (das
+Gerät wurde im Hub widerrufen oder gesperrt) und die Login-Seite öffnet direkt den
+Einlöse-Dialog. Gilt für PIN, E-Mail und Face ID.
+
 ### Tests
 
+`tests/Feature/DeviceTrustEnforcementTest.php` (ohne Nachweis 403 bzw. Redirect, IAP-JWT
+und Gerät als Nachweis, Widerruf, Face-ID/E-Mail/Fortify geschützt, Freischalten frei,
+Modi, Sperre nach Fehlversuchen, Zähler-Reset, Bremse je Gerät),
+`tests/Unit/IapJwtVerifierTest.php` (gültig, fremder Aussteller, falsche Audience,
+abgelaufen, unbekannter Schlüssel, manipulierte Signatur, kein Schlüsselsatz),
 `tests/Feature/DeviceEnrollmentTest.php` (Ausstellen, Mail, Institut-Pflicht, Einlösen,
 Einmaligkeit, Ablauf/Widerruf, MDM-Mehrfachnutzung, Geheimnis-Erneuerung, Nachweis-
 Middleware, Bremse, Hinweisseite, Universal-Link-Pfad), `tests/Unit/EnrollmentCodeTest.php`
@@ -118,3 +170,6 @@ Cookie), `ManagedConfigTests::enrollmentKey`.
   Hinweisseite, Universal Link, Middleware (nur Protokoll), App-Seite mit Einlöse-Dialog,
   QR-Scanner, Cookie/Header, MDM-Schlüssel. Code-Format `XXXX-XXXX-XXXX` ohne 0/O/1/I/L
   (Jan). Klickanleitung geplant.
+- **23.09.2026, später** — Schritt 2: Nachweis bei jeder Anmeldung (IAP-JWT verifiziert oder
+  Gerät), Modus off/log/enforce, PIN-Bremse je Gerät und Sperre nach Fehlversuchen; Staging
+  `enforce`, Prod `log`. App erkennt 403 `device_not_trusted` und bietet die Freischaltung an.
