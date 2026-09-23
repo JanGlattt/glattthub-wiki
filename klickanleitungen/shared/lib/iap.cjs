@@ -19,7 +19,7 @@ const SA = process.env.KLICK_IAP_SA || 'klickanleitungen@glattthub.iam.gservicea
 // Audience = Client-ID des EIGENEN IAP-OAuth-Clients (Google Auth Platform → Clients, Typ Web-Anwendung),
 // mit dem IAP auf den Hub-Backends konfiguriert ist. Der von Google verwaltete Standard-Client
 // (369001918367-…) lässt laut Google-Doku keinen programmatischen Zugang zu („Invalid JWT audience").
-const AUDIENCE = process.env.KLICK_IAP_AUDIENCE || '';
+const AUDIENCE = process.env.KLICK_IAP_AUDIENCE || '99200336070-1n78g13leh01h24nqoh6ar8lcm01em63.apps.googleusercontent.com';
 
 let cached = null;
 
