@@ -162,6 +162,7 @@ nav:
       - Berechtigungssystem: BERECHTIGUNGSSYSTEM.md
       - Datensichtbarkeit: DATA-VISIBILITY.md
       - PIN-Login: PIN-LOGIN-SYSTEM.md
+      - Gerätevertrauen statt IAP (Plan): GERAETEVERTRAUEN-PLAN.md
       - Session-Ablauf & Modal: SESSION-ABLAUF.md
 
   - Module:
