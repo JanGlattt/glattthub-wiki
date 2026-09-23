@@ -223,8 +223,11 @@ Code aus `log show --predicate 'subsystem == "com.glattt.hub.tv"'` lesen, per Ti
 
 Design: Lato Light/Regular/Bold + **Playfair Display Bold als statische TTF** (`PlayfairDisplay-Bold.ttf`)
 — die Variable-Font-Datei registriert nur `PlayfairDisplay-Regular`, `.custom("PlayfairDisplay-Bold")` fiel
-still auf die Systemschrift zurück. Farben als Assets `BrandGold/Black/Mint/Grey`. App-Icon und Top-Shelf sind
-Platzhalter (goldener Kreis) bis Phase 5.
+still auf die Systemschrift zurück. Farben als Assets `BrandGold/Black/Mint/Grey`. App-Icon (Ebenen: Back weiß,
+Front goldenes „g") und Top-Shelf (Schwarz mit Gold) stammen aus Jans Icon-Composer-Datei
+`ios/glatttHubTV/Design/glatttScreen_Icon.icon`; die Datei selbst ist vom Build ausgeschlossen, weil tvOS
+das `.icon`-Format nicht kennt — die PNGs im Brandassets-Katalog sind mit rsvg-convert/ImageMagick daraus
+abgeleitet (Verläufe mit `-colorspace sRGB -type TrueColor` schreiben, sonst entstehen Graustufen-PNGs).
 
 ### Fallstricke
 
