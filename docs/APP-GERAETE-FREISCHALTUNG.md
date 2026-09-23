@@ -119,9 +119,13 @@ Request-Attribut `device_trust`):
 
 | Quelle | Nachweis | Wer |
 |---|---|---|
-| `iap` | JWT `x-goog-iap-jwt-assertion`, **verifiziert** gegen Googles Schlüssel (`IapJwtVerifier`, ES256, JWKS 24 h gecacht): Aussteller `https://cloud.google.com/iap`, Ablauf, Audience `/projects/<nr>/global/backendServices/<id>` | Browser, PWA, Mac-App und die iOS-App auf `hub.glattt.com` — für das Büro ändert sich nichts |
+| `iap` | JWT `x-goog-iap-jwt-assertion`, **verifiziert** gegen Googles Schlüssel (`IapJwtVerifier`, ES256, JWKS 24 h gecacht): Aussteller `https://cloud.google.com/iap`, Ablauf, Audience `/projects/<nr>/global/backendServices/<id>` | Browser, PWA und Mac-App — für das Büro ändert sich nichts. **Nicht** für die iOS-App: Anfragen mit dem App-User-Agent (`glatttHub-iOS/`) zählen nur mit Gerät, auch auf `hub.glattt.com` — sonst arbeitete eine Installation ohne Freischaltung dauerhaft über IAP (Befund Jan, 23.09.2026) |
 | `device` | freigeschaltetes, nicht widerrufenes Gerät (Header `X-Hub-Device` oder Cookie `glattthub_device`) | iOS-App, später auf dem App-Host ohne IAP (Schritt 4) |
 | `none` | — | Anmeldung wird abgewiesen: JSON 403 mit `reason = device_not_trusted`, Formular-Post zurück auf `/login` mit Fehler |
+
+**Folge für den Pilot:** Sobald Prod auf `enforce` steht, muss jedes iPhone und iPad mit der
+App einmal freigeschaltet sein — die App zeigt beim ersten abgewiesenen Login den
+Einlöse-Dialog. Die Codes dafür stellt das Büro vorher aus.
 
 **Modus** (`config/device_trust.php`, `DEVICE_TRUST_MODE`): `off` = nichts prüfen (lokal),
 `log` = Verstöße nur ins Log (Einführung, `Anmeldung ohne Gerätenachweis`), `enforce` =
