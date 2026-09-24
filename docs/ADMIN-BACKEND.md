@@ -2,7 +2,7 @@
 
 Das Verwaltungspanel unter `/admin` läuft auf **Filament 4**, sieht seit dem
 19.09.2026 aber aus wie eine Hub-Seite: schwebende Glas-Seitenleiste mit den
-**Gruppen des Hubs** (Verkauf, Finanzen, Team, Betrieb, System + Protokolle),
+**Gruppen des Hubs** (Verkauf, Finanzen, Team, Betrieb, System + Bildschirme und Protokolle),
 goldener Aktiv-Marker, Lato, Türkis als Primärfarbe, Karten wie `.card-glattt`,
 Tabellen wie `.table-glattt-striped`, der Hub-Verlauf als Hintergrund und
 derselbe Dark-Mode-Schalter. Tabellen zeigen **50 Zeilen** statt Filaments 10.
@@ -33,6 +33,7 @@ Einstellung des Hubs.
 | **Finanzen** | Unternehmensverträge, Mollie, Phorest (GK-Abo), Offene Sitzungen vs. Lastschriften |
 | **Team** | Personal (Phorest-Staff), Gehälter, Boni & Provisionen, Abwesenheiten, Mitarbeiter-Zielwerte, Anlässe, Ziele je Institut, Badges, Verleihungen |
 | **Betrieb** | Terminerinnerungen (Regeln, Kanäle, Opt-in-Vormerke), Beratungs- und Bewertungs-WhatsApp, Formular-Links, Superchat-Kontakt-Mapping, Superchat-Playground |
+| **Bildschirme** | Apple-TV-App „glattt Screens“ (`SCREENS-MODULE.md`): Bildschirme (Kopplung, Status, Steuerkanal), Medien und Upload, Testimonials, Playlists mit Drei-Spalten-Editor, Zeitpläne — eigene Gruppe seit 25.09.2026 |
 | **System** | Hub-Nutzer, Rollen, Berechtigungen, Startseite je Rolle, App-Startseite je Rolle (iOS-Cockpit, `IOS-APP.md`), Benachrichtigungen, Report-Mails, Externe Empfänger, E-Mail-Versand, Schriftart, PDF, Session, Nachrichten, Wissensdatenbank, Bert-Dashboard |
 | **Protokolle** | E-Mail-, SEPA-E-Mail-, Terminerinnerungs-, WhatsApp-Protokolle, Report-Mail-Versandprotokoll, Bert-Insights |
 

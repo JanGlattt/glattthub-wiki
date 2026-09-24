@@ -17,13 +17,13 @@ Projektwissen `.github/knowledge/tvos-app-bauplan.md`.
 
 !!! nutzerhandbuch "Bedienung: Serie „Bildschirme" — Klickanleitung entsteht mit Phase 5"
     Ein Apple TV zeigt beim ersten Start einen sechsstelligen Code. Im Admin-Backend unter
-    **Betrieb → Bildschirme → Bildschirm koppeln** wird der Code eingetragen und der Bildschirm einem
+    **Bildschirme → Bildschirme → Bildschirm koppeln** wird der Code eingetragen und der Bildschirm einem
     Institut, einer Zone (Schaufenster, Empfang, Kabine, Büro) und einer Ausrichtung zugeordnet. Danach
     läuft der Fernseher ohne Anmeldung. Die Liste zeigt je Bildschirm, ob er online ist und was gerade
     läuft; über das Menü lassen sich „Neu laden", „Neustart" und „Cache leeren" senden, ein Bildschirm
     deaktivieren oder trennen.
 
-    Was läuft, kommt aus vier Bausteinen unter **Betrieb**: **Medien** (Bilder und Videos bis 1 GB,
+    Was läuft, kommt aus vier Bausteinen derselben Gruppe **Bildschirme** im Admin-Menü: **Medien** (Bilder und Videos bis 1 GB,
     hochgeladen über „Medien hochladen"), **Testimonials** (Kundenstimmen, frei erfasst oder aus einer
     Google-Bewertung des Bonus-Boards übernommen; nur freigegebene erscheinen), **Playlists** (Reihenfolge
     aus Bild, Video, Bewertungen, Gesamtwertung, QR-Code — mit Vorschau im Browser) und **Zeitpläne**
@@ -309,15 +309,30 @@ Buchstaben (grauer Fleck hinter „4,9“) — Schatten auf die Hintergrundform 
 
 ### Admin-Resources (Phase 2)
 
+Alle fünf Resources hängen seit 25.09.2026 in der eigenen Admin-Gruppe **Bildschirme**
+(`AdminNavigationGroups::BILDSCHIRME`, zwischen Betrieb und System, Symbol Fernseher) — vorher als
+Anhang von Betrieb. Die Beschriftungen heißen dort schlicht Bildschirme, Medien, Testimonials,
+Playlists, Zeitpläne.
+
+
 - **Medien** (`ScreenMediaResource`, Sort 61): Liste mit Poster, Stand, Verwendung; Seite „Medien hochladen"
-  (Alpine, kein Livewire-Upload); Bearbeiten: Titel, Hochkant-Variante, Schlagworte; Löschen nur ohne Verwendung.
+  (Alpine, kein Livewire-Upload; Ablagefläche `.file-upload-glattt` mit Drag-and-Drop, Warteschlange mit
+  Titel, Fortschritt und Stand — ausschließlich Theme-Klassen, das Admin-Panel hat kein Tailwind); Bearbeiten: Titel, Hochkant-Variante, Schlagworte; Löschen nur ohne Verwendung.
 - **Testimonials** (`TestimonialResource`, Sort 62): Formular mit Einwilligungs-Regel (Pflichtdatum bei
   vollem Nachnamen — `Testimonial::hasFullSurname()` — oder Foto), Kopf-Aktion „Aus Google-Bewertung
   übernehmen" (nur Bewertungen mit Text, noch nicht übernommen; Eintrag entsteht ohne Freigabe).
-- **Playlists** (`ScreenPlaylistResource`, Sort 63): Repeater der Elemente (`orderColumn('position')`),
-  Standard-Playlist-Schalter (`makeDefault()` hält es bei einer), Seite **Vorschau** (`/vorschau`, Standort
-  und Ausrichtung wählbar; dieselbe Ablauflogik wie der TV, QR über einen öffentlichen Renderer nur in der
-  Vorschau — der TV zeichnet QR-Codes selbst).
+- **Playlists** (`ScreenPlaylistResource`, Sort 63): **Drei-Spalten-Editor** (seit 25.09.2026, nach dem
+  Editor-Prototyp): links die Reihenfolge der Elemente — Klick wählt, Ziehen sortiert (Filament
+  `x-sortable`, Aktion `reorder`), darunter die Palette „Element hinzufügen“ je Typ (Aktion `add` mit
+  Argument `type`, setzt Standard-Layout und schaltet das neue Element aktiv); in der Mitte das
+  Teilformular des gewählten Elements (Layout-Radio, Texte, Bildwahl, Bewertungsquelle, QR, Dauer);
+  rechts die klebende Vorschau mit Chips für Quer/Hoch und Standort (`Hidden`-Felder
+  `preview_branch_id`/`preview_orientation`, gesetzt per `$wire.set`). Technisch eine eigene
+  Repeater-View `resources/views/filament/forms/components/playlist-items.blade.php` über den
+  unveränderten Repeater (`orderColumn('position')`, Relationship); alle Teilformulare bleiben im DOM,
+  nur das aktive ist sichtbar. Standard-Playlist-Schalter (`makeDefault()` hält es bei einer), Seite
+  **Vorschau** (`/vorschau`, Standort und Ausrichtung wählbar; dieselbe Ablauflogik wie der TV, QR über
+  einen öffentlichen Renderer nur in der Vorschau — der TV zeichnet QR-Codes selbst).
 - **Zeitpläne** (`ScreenScheduleResource`, Sort 64): Wo (Standorte, Zonen, Bildschirme), Wann (Wochentage,
   Von/Bis, Gültig ab/bis), Priorität; Kopf-Aktion **Jetzt zeigen** (Playlist, Ziel, 1/4/24/168 h →
   Zeitplan mit Priorität 100, endet von selbst).
@@ -333,7 +348,7 @@ deren Stand älter als 60 Tage ist oder fehlt — einmal je Institut und Monat.
 
 ### Admin-Backend
 
-`App\Filament\Resources\Screens\ScreenResource` (Gruppe **Betrieb**, Sort 60, Recht `manage_screens`):
+`App\Filament\Resources\Screens\ScreenResource` (Gruppe **Bildschirme** — eigene Admin-Gruppe seit 25.09.2026, `AdminNavigationGroups::BILDSCHIRME`, Sort 60, Recht `manage_screens`):
 Liste mit Institut, Zone, Modus/Ausrichtung, Status-Badge (online = Heartbeat jünger als 3 min),
 „Läuft gerade", Version; Kopf-Aktion **Bildschirm koppeln** (Code, Name, Institut, Zone, Ausrichtung,
 Modus — Fehler erscheinen am Code-Feld); Zeilen-Menü mit Neu laden, Neustart, Cache leeren,
@@ -394,6 +409,10 @@ signiert mit „Apple Distribution". Erster Build `1.0.0 (1)` am 24.09.2026, App
 
 ### Fallstricke
 
+- **Custom-Views im Admin kennen keine Tailwind-Klassen.** Das Panel nutzt kein kompiliertes
+  Filament-Theme; `hidden`, `rounded-lg`, `px-4` in `resources/views/filament/…` bleiben wirkungslos
+  (die Upload-Seite stand so bis 25.09.2026 nackt da, nativer Datei-Input sichtbar). Nur Theme-Klassen
+  aus `theme_glattt.css` oder `.fi-body`-Regeln dort verwenden.
 - **tvOS-Simulator: Keychain überlebt keinen Neustart.** Jeder Start bekam eine neue Geräte-ID und koppelte neu
   (drei verwaiste Bildschirme im lokalen Hub). Geheimnis und Geräte-ID liegen deshalb zusätzlich in
   UserDefaults; auf dem Gerät gilt die Keychain. Der Test-Host läuft die App mit — `ScreenState.start()`
@@ -435,6 +454,7 @@ Render-Seite und Proxy nur mit Ticket, Render-Job ohne Chromium, Admin-Formular 
 
 ## Changelog
 
+- **25.09.2026** — Playlist-Editor als Drei-Spalten-Ansicht mit Ziehen und Ablegen und Palette (eigene Repeater-View), eigene Admin-Gruppe „Bildschirme“, Upload-Seite auf Theme-Klassen (vorher nackte Tailwind-Klassen ohne Wirkung).
 - **24.09.2026** — Phase 4b (Layouts) auf `develop`: Layout-Katalog, Texte, Bildwahl, Bewertungsquelle, Videolaufzeit, Institutsfotos mit Rollen, Admin-Vorschau, Zeitpläne im Playlist-Formular, native Layouts in der TV-App.
 - **24.09.2026** — Phase 4 (Kennzahlen-Modus) auf `develop`: Seiten aus Eigenen Dashboards, technischer Bildschirm-Nutzer, `GET /api/tv/dashboards`, Karten-Renderer mit headless Chromium (Weg A, Ticket statt Freigabe-Link), Admin-Formular, Dashboard-Blätterer in der TV-App.
 - **24.09.2026** — Phase 3 (tvOS-App v1) auf `develop`: Target `glatttHubTV`, Kopplung, Manifest-Wiedergabe, Cache, Hochkant, Marken-Design; Simulator-Prüfstand gegen den lokalen Hub bestanden.
