@@ -73,7 +73,7 @@ Die CSVs sind für **Excel (deutsch)** optimiert und lassen sich per Doppelklick
 
 | Seite | Datenquellen |
 |---|---|
-| Verkaufsstatistik | Monatliche Übersicht, Körperzonen pro Tag & Institut, Standort-Vergleich seit Eröffnung, Sales Mix (verkauft & Portfolio), Neukunden pro Monat & Institut, Lastschriften-Bestand & Einzugsvolumen (brutto & netto), Rücklastschriften pro Monat, Direktzahler-Segment (brutto & netto) |
+| Verkaufsstatistik | Monatliche Übersicht, Körperzonen pro Tag & Institut, Standort-Vergleich seit Eröffnung, Sales Mix (verkauft & Portfolio), Neukunden pro Monat & Institut, Lastschriften-Bestand & Einzugsvolumen (brutto & netto), Rücklastschriften pro Monat, Direktzahler-Segment (brutto & netto), **Verträge einzeln** (siehe unten) |
 | Vergangene Beratungsgespräche | No-show-Statistik pro Monat & Institut |
 | Zukünftige Beratungsgespräche | Geplante Beratungsgespräche pro Tag & Institut, Buchungsstand je Institut (7/14/28 Tage & Monatsende), Entwicklung geplanter Beratungsgespräche (Stichtags-Zeitreihe), Buchungsstand-Verlauf pro Monat (7/14/28 Tage), Freie Beratungsslots je Institut/Wochentag/Uhrzeit, Buchungsvorlauf-Verteilung |
 | Terminstatistik | Termine pro Monat & Institut, Behandelte Körperzonen pro Monat & Institut, Termindauer pro Monat & Institut (Minuten), Top Services pro Monat (Ranking), Service-Kombinationen pro Monat (Ranking) |
@@ -146,3 +146,43 @@ Die CSVs sind für **Excel (deutsch)** optimiert und lassen sich per Doppelklick
 - **Streaming**: `response()->streamDownload()` + `fputcsv` — auch große Exporte
   laufen speicherschonend.
 - Dateiname: `{key}_{date_from}_{date_to}.csv` bzw. `{key}_{heute}.csv`.
+
+## Die eine Quelle mit Personenbezug
+
+Seit 24.09.2026 gibt es auf der Verkaufsstatistik **`sales-contract-details`** —
+„Verträge einzeln: Kunde, Institut, Körperzonen, Verkäuferin, Widerruf". Sie fällt aus
+dem Rahmen, denn alle übrigen Quellen liefern ausschließlich Aggregate. Angefordert von
+Jan am 24.09.2026, ausdrücklich **namensscharf**.
+
+| Spalte | Herkunft |
+|---|---|
+| Vertragsnummer, Unterschrieben am, Körperzonen, Ganzkörper, Vertragsstatus | `contracts` |
+| Institut | `BranchVisibility::allBranchNames()` |
+| Kunde, Kundennummer | `client_statistics` über `phorest_client_id` |
+| Verkäuferin | `users` — Vor- **und** Nachname, `users.name` ist nur ein Accessor |
+| Widerrufseingang | frühestes `cancellation_date` des Vertrags |
+| Widerrufsbestätigung | Reaktion steht auf „Widerruf akzeptiert" (Entscheidung Jan) |
+| Reaktion auf den Widerruf | Klartext der Reaktion |
+
+### Drei Dinge, die hier leicht still falsch werden
+
+**Der Name steht nicht am Vertrag.** `contracts.client_id` ist eine Phorest-Kennung; Name
+und Kundennummer kommen aus `client_statistics`. Fehlt dort ein Eintrag, bleibt die Zeile
+im Export und sagt es offen („nicht in der Kundenstatistik: …"). Eine leere Namenszelle
+wäre in einer namensscharfen Liste die gefährlichste Antwort.
+
+**Ein Widerruf darf die Zeile nicht vervielfachen.** Zwei Widerrufsvorgänge an einem
+Vertrag hätten bei einem Join zwei Zeilen ergeben und jede Auszählung verfälscht — daher
+Unterabfragen.
+
+**Die Standort-Bindung gilt hier wirklich.** Berichte übergehen `allowed_branch_ids`
+bisher (offener Punkt in Asana); diese Quelle tut es nicht. Ein auf ein Institut
+begrenztes Konto bekommt ausschließlich dessen Verträge — sonst ließe sich über den
+Export der gesamte Kundenbestand ziehen, obwohl im Hub nur ein Institut offensteht.
+
+Abgesichert durch `tests/Feature/SalesContractDetailsExportTest.php` (11 Tests).
+
+!!! warning "Berechtigung"
+    Die Quelle hängt wie alle anderen an `view_report_sales_statistics` (Entscheidung Jan,
+    24.09.2026). Wer die Verkaufsstatistik sehen darf, kann also die Vertragsliste mit
+    Namen ziehen — begrenzt auf die eigenen Institute.
