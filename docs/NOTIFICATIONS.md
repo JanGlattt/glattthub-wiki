@@ -30,13 +30,21 @@ Ereignisses, betroffene Person, Rollen, Institute, einzelne Personen), die Frequ
 Tages-Zusammenfassung), wann er zuletzt ausgelöst hat und wie oft in den letzten 30 Tagen. Der
 Reiter *Versendet* zeigt die tatsächlich erzeugten Meldungen mit ihrer Herkunft.
 
+**Seit 24.09.2026 meldet sich eine neue Mitteilung im Hub von selbst:** Statt nur der Zahl an der
+Glocke erscheint eine Karte am Bildschirmrand (unten rechts, am Handy oben) mit Titel, Text und —
+wenn die Meldung eins trägt — einem Bild; Antippen öffnet den Vorgang und markiert gelesen, das ×
+legt sie weg. Bilder gehen auch auf den Sperrbildschirm des iPhones, in den Browser-Push
+(Chrome/Edge) und in das Banner der Desktop-App: je Anlass ein festes Bild im Admin, oder ein
+individuelles Bild aus dem Code (z.B. ein Foto zum Vorgang).
+
 Jede Mitarbeiterin entscheidet zusätzlich **für sich**, welche Anlässe sie erreichen: Unten auf
 der Mitteilungsseite („Meine Benachrichtigungen") gibt es je Anlass die Schalter „Im Hub" und
 „Push" — sofern der Admin den Anlass zur Stummschaltung freigegeben hat (Pflichtmeldungen wie
 eine fehlgeschlagene Gutschein-Anlage bleiben immer an).
 
-Bedienung (Mitteilungen lesen, eigene Kanäle je Anlass einstellen) siehe den
-Nutzerhandbuch-Verweis am Seitenanfang, Grundlagen 2, Seite „Meine Benachrichtigungen".
+Bedienung (Mitteilungen lesen, Hinweis-Karte, eigene Kanäle je Anlass einstellen) siehe den
+Nutzerhandbuch-Verweis am Seitenanfang, Grundlagen 2, Seiten „Hinweis auf neue Mitteilungen"
+und „Meine Benachrichtigungen".
 
 ---
 
@@ -392,6 +400,20 @@ Verwenden `{{platzhalter}}` Syntax:
 
 Verwenden `{{platzhalter}}` Syntax - abhängig vom gewählten Model.
 
+### Zwei Schreibweisen, zwei Engines — der Testversand kennt beide (seit 24.09.2026)
+
+Katalog- und GoCardless-Regeln füllen `{key}` über
+`HubNotificationDispatcher::replacePlaceholders()`; zeitbasierte Automatisierungen füllen
+`{{key}}` in `Notification::replaceTimeBasedPlaceholders()` aus
+`ConsultationStatsService::getStatsForPush()`, aktionsbasierte aus dem auslösenden Model.
+Der Regel-Test im Admin lief bis 24.09.2026 nur über die Katalog-Engine — bei der Regel
+„Beratungsgespräche" kam deshalb `{«current_date»}` und `{{7days_total}}` roh im Push an
+(der Beispielwert-Regex traf innerhalb der Doppelklammern nur den inneren Teil und kannte
+keine Schlüssel mit Ziffern). Seitdem rendert `NotificationTestSender::renderRule()` eine
+zeitbasierte Regel über denselben Weg wie der Echtbetrieb (`renderAutomation()`, also
+mit **Live-Werten**), alles andere über `samplePayload()` + `fill()` (beide Schreibweisen,
+Schlüssel mit Ziffern); die Vorschau im Modal nutzt dieselbe Methode wie der Versand.
+
 ---
 
 ## Technische Architektur
@@ -602,6 +624,51 @@ gcloud scheduler jobs create http process-notification-automations \
 php artisan queue:work --queue=push,default --sleep=3 --tries=3
 ```
 
+### Bilder in Benachrichtigungen (seit 24.09.2026)
+
+Jede Meldung kann ein Bild tragen — Spalte `notifications.image` (Migration
+`2026_09_24_100000`), Speicherpfad auf dem Bild-Disk (`Notification::imageDisk()`: in der
+Cloud der öffentliche GCS-Bucket, lokal `public`) oder eine absolute URL.
+`Notification::imageUrl()` macht daraus immer eine **absolute, ohne Anmeldung erreichbare**
+URL — die iOS-Erweiterung, der Browser-Push und die Desktop-App laden das Bild ohne
+Hub-Sitzung und ohne IAP; deshalb liegen Uploads im öffentlichen Bucket, nie hinter
+`hub.glattt.com`.
+
+| Quelle | Wo | Vorrang |
+|---|---|---|
+| **Festes Bild je Regel** | Admin-Formular „Benachrichtigungs-Details → Bild" (`FileUpload`, `notifications/images/`), auch in den Katalog-Standardwerten (`defaults.image`, `HubEventRuleSync`) | Standard |
+| **Individuelles Bild je Meldung** | Payload-Schlüssel `image` beim `dispatch()` (Pfad oder URL), Builder `NotificationService::image()` | schlägt das Regelbild |
+
+Weg durch die Kanäle: `HubNotificationDispatcher::deliver()` legt das Bild auf die In-App-Meldung
+(`imageOf()`), `sendPush()` gibt `['image' => absolute URL]` an `PushNotificationService::sendToUsers()`;
+`ApplePushNotificationService` setzt `image` + `mutable-content` (Erweiterung `glatttHubNotifications`
+hängt es an, siehe [iOS-App](IOS-APP.md)), der Web-Push-Payload trägt `image` (Chrome/Edge zeigen es,
+Safari/Firefox ignorieren es), die Desktop-App lädt es in `showDesktopNotification()` per `net.fetch`
+und übergibt es als `icon` (Vorschaubild rechts im macOS-Banner). Der JSON-Feed der Glocke
+(`GET /phorest/notifications`) liefert `image`; Liste, Detail, Mehr-Sheet, Mitteilungsseite und die
+Hinweis-Karte zeigen es statt des Typ-Symbols. Zeitbasierte/aktionsbasierte Automatisierungen
+übernehmen das Regelbild (`instanceAttributes()`, `SendNotificationAutomationJob`).
+Tests: `tests/Feature/NotificationImageTest.php`.
+
+### Hinweis-Karte im Hub (seit 24.09.2026)
+
+`public/js/hub-notices.js` (`window.GlatttNotices`), eingebunden im Hub-Layout. Die Glocke
+(Sidebar) und die mobile Leiste rufen nach jedem Abgleich `track(liste, { silent })`: alles
+Ungelesene mit einer ID über dem gemerkten Stand (`sessionStorage` `glattt.notices.seenMaxId`,
+gemeinsam für beide Instanzen, daher nichts doppelt) bekommt eine Karte
+(`.toast-glattt-notice` im Container `.toast-glattt-container-notices`, unten rechts, mobil oben,
+über der Menüleiste; Titel/Text per `textContent`, Vorschaubild, Klick → `POST
+/phorest/notifications/{id}/read` + `Livewire.navigate`, × schliesst, 8 s, hält bei Hover,
+höchstens drei). Der erste Stand einer Sitzung wird nur gemerkt.
+
+**Sofort statt 120 s:** Push-Ereignisse lösen über `glattt:notifications-refresh` einen Abgleich
+aus — der Service Worker meldet jeden Push per `postMessage({ type: 'PUSH_RECEIVED' })` an offene
+Seiten, die iOS-App per Bridge-Ereignis `glattt:push-received`, die Desktop-App per
+`window.electronPush.onApnsNotification`. Diese Abgleiche sind **stumm** (`silent: true`), weil das
+System die Meldung dort schon als Banner gezeigt hat; die Karte kommt für Meldungen ohne Push
+(nur „Im Hub") über den 120-s-Takt und beim Zurückkehren in den Tab (`visibilitychange`). In der
+iOS-App gibt es nie eine Web-Karte (natives Banner, `body.ios-app`/`window.glatttNative`).
+
 ### Testversand aus dem Admin (seit 19.09.2026)
 
 Zwei Aktionen auf *System → Benachrichtigungen*, Logik in
@@ -610,8 +677,8 @@ Zwei Aktionen auf *System → Benachrichtigungen*, Logik in
 
 | Aktion | Wo | Text | Empfänger | Kanäle |
 |---|---|---|---|---|
-| **Test senden** (Kopf) | Reiter-übergreifend | frei (Titel, Nachricht, Link, Typ, Icon) | Nutzer, Rollen, Rechte, Institute (Heimatfiliale) oder alle | Im Hub / Push frei wählbar — **exakt** die Gewählten, Stummschaltung und Kanal-Wahl bleiben aussen vor |
-| **Testen** (Zeile) | nur „Anlässe & Regeln" | Regeltext mit **Beispielwerten** (`samplePayload()`: bekannte Platzhalter wie `{kundenname}`, `{betrag}`, `{liste}` mit plausiblen Werten, unbekannte mit ihrer Beschreibung in Guillemets) | wie oben | **wie im Echtbetrieb**: Kanäle der Regel × persönliche Kanal-Wahl (`splitByChannel()`), auch bei inaktiver Regel |
+| **Test senden** (Kopf) | Reiter-übergreifend | frei (Titel, Nachricht, Link, Bild, Typ, Icon) | Nutzer, Rollen, Rechte, Institute (Heimatfiliale) oder alle | Im Hub / Push frei wählbar — **exakt** die Gewählten, Stummschaltung und Kanal-Wahl bleiben aussen vor |
+| **Testen** (Zeile) | nur „Anlässe & Regeln" | Regeltext gerendert wie im Echtbetrieb (`renderRule()`: zeitbasierte Automatisierungen mit Live-Werten, sonst `samplePayload()` — bekannte Platzhalter wie `{kundenname}`, `{betrag}`, `{liste}` mit plausiblen Werten, unbekannte mit ihrer Beschreibung in Guillemets), Regelbild geht mit | wie oben | **wie im Echtbetrieb**: Kanäle der Regel × persönliche Kanal-Wahl (`splitByChannel()`), auch bei inaktiver Regel |
 
 Die Empfänger-Auflösung läuft über denselben `NotificationRecipientResolver::targetedUsers()`
 wie echte Regeln (transiente Regel als Sonde) — nur ohne Datensatz-Bezug, also ohne
@@ -682,6 +749,11 @@ tail -f storage/logs/laravel.log | grep -i "notification\|push"
 
 ## Changelog
 
+- **24.09.2026 — Hinweis-Karte, Bilder, Testversand-Fix:** Neue Mitteilungen erscheinen im
+  Hub als Karte (`hub-notices.js`, sofort nach Push, sonst im 120-s-Takt); Meldungen tragen
+  ein Bild (`notifications.image`, festes Regelbild im Admin oder individuelles Bild aus dem
+  Code) — auf iOS-Sperrbildschirm, Web-Push, Desktop-App und in der Glocke; der Regel-Test
+  rendert zeitbasierte Automatisierungen mit Live-Werten statt roher `{{…}}`-Platzhalter.
 - **19.09.2026 — Testversand:** „Test senden" (freier Text, Empfänger und Kanäle frei) und
   „Testen" je Anlass-Regel (Beispielwerte, Kanäle/Stummschaltung wie im Echtbetrieb);
   Meldungen mit `is_test`, Präfix „[Test]", Herkunft „Test", zählen nicht als Auslösung.

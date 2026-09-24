@@ -1,209 +1,247 @@
 {
- "out": "../pdf/Grundlagen-2-Standort-Suche-Mitteilungen",
- "meta": "../meta.json",
- "shots": "../shots",
- "series": "Grundlagen",
- "nr": 2,
- "of": 7,
- "audience": "institut",
- "title": [
-  "Standort, Suche",
-  "& Mitteilungen"
- ],
- "subtitle": "Klickanleitung für den glatttHub — die drei Werkzeuge am Kopf der Seitenleiste und die eigenen Benachrichtigungs-Einstellungen",
- "eyebrow": "Grundlagen · Werkzeuge",
- "footerArea": "Grundlagen",
- "stand": "19.09.2026",
- "version": "1.1",
- "notes": [
-  "Der **Standort wirkt auf fast jede Seite** — Termine, Berichte, Verträge richten sich danach.",
-  "Die **Suche findet nicht nur Seiten**, sondern auch Kundinnen, Verträge und Gutscheine.",
-  "Die Standortwahl bleibt gespeichert, bis sie geändert wird — auch nach dem Abmelden.",
-  "**Jede Mitteilung lässt sich für dich abschalten** — getrennt für den Hub und für Push auf dem Handy, unten auf der Mitteilungsseite."
- ],
- "pages": [
-  {
-   "h1": "Standort wählen",
-   "sub": "Oben in der Seitenleiste steht, für welches Institut die Zahlen gelten. Diese Wahl zieht sich durch den ganzen Hub.",
-   "card": {
-    "title": "Standort wählen",
-    "text": "Institut einstellen — es wirkt auf fast jede Seite"
-   },
-   "left": {
-    "shot": "h1-standort"
-   },
-   "leftCaption": "Die Standortwahl mit den Instituts-Karten.",
-   "steps": [
+  "out": "../pdf/Grundlagen-2-Standort-Suche-Mitteilungen",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "Grundlagen",
+  "nr": 2,
+  "of": 7,
+  "audience": "institut",
+  "title": [
+    "Standort, Suche",
+    "& Mitteilungen"
+  ],
+  "subtitle": "Klickanleitung für den glatttHub — die drei Werkzeuge am Kopf der Seitenleiste und die eigenen Benachrichtigungs-Einstellungen",
+  "eyebrow": "Grundlagen · Werkzeuge",
+  "footerArea": "Grundlagen",
+  "stand": "24.09.2026",
+  "version": "1.2",
+  "notes": [
+    "Der **Standort wirkt auf fast jede Seite** — Termine, Berichte, Verträge richten sich danach.",
+    "Die **Suche findet nicht nur Seiten**, sondern auch Kundinnen, Verträge und Gutscheine.",
+    "Die Standortwahl bleibt gespeichert, bis sie geändert wird — auch nach dem Abmelden.",
+    "**Jede Mitteilung lässt sich für dich abschalten** — getrennt für den Hub und für Push auf dem Handy, unten auf der Mitteilungsseite.",
+    "**Neue Mitteilungen melden sich als Karte** am Bildschirmrand — antippen öffnet den Vorgang, das × legt sie weg."
+  ],
+  "pages": [
     {
-     "n": 1,
-     "title": "„Institute“ öffnen",
-     "text": "Der oberste der drei Knöpfe klappt die Auswahl auf."
+      "h1": "Standort wählen",
+      "sub": "Oben in der Seitenleiste steht, für welches Institut die Zahlen gelten. Diese Wahl zieht sich durch den ganzen Hub.",
+      "card": {
+        "title": "Standort wählen",
+        "text": "Institut einstellen — es wirkt auf fast jede Seite"
+      },
+      "left": {
+        "shot": "h1-standort"
+      },
+      "leftCaption": "Die Standortwahl mit den Instituts-Karten.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "„Institute“ öffnen",
+          "text": "Der oberste der drei Knöpfe klappt die Auswahl auf."
+        },
+        {
+          "n": 2,
+          "title": "Institut antippen",
+          "text": "Jede Karte ist ein Standort. Der gewählte trägt ein Häkchen."
+        },
+        {
+          "n": 3,
+          "title": "„Alle Standorte“",
+          "text": "Die oberste Karte hebt die Einschränkung auf — dann zeigt jede Seite die Zahlen **aller** Institute zusammen."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Ausgeblendete Institute",
+          "text": "Ein Standort mit dem Badge **„Ausgeblendet“** zählt **nicht** in „Alle Standorte“ — etwa ein Institut im Testbetrieb vor der Eröffnung. Seine Zahlen erscheinen nur, wenn er ausdrücklich gewählt ist."
+        },
+        {
+          "title": "Bleibt eingestellt",
+          "text": "Die Wahl gilt weiter, auch nach dem Abmelden. Wer sich über Zahlen wundert, prüft zuerst, welcher Standort oben steht."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "**Die häufigste Verwirrung im Hub:** „Die Zahlen stimmen nicht.“ In den allermeisten Fällen steht oben ein anderer Standort als gedacht — oder **„Alle Standorte“**, wo ein einzelnes Institut gemeint war."
+      }
     },
     {
-     "n": 2,
-     "title": "Institut antippen",
-     "text": "Jede Karte ist ein Standort. Der gewählte trägt ein Häkchen."
+      "h1": "Suchen",
+      "sub": "Ein Feld für alles: Seiten, Berichte, Kundinnen, Verträge und Gutscheine.",
+      "card": {
+        "title": "Suchen",
+        "text": "Seiten, Kundinnen, Verträge und Gutscheine finden"
+      },
+      "left": {
+        "shot": "h2-suche"
+      },
+      "right": {
+        "shot": "h3-suche-treffer"
+      },
+      "leftCaption": "Das Suchfeld unter den drei Knöpfen.",
+      "rightCaption": "Treffer nach Bereichen gruppiert.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Suche öffnen",
+          "text": "Der Knopf **„Suche“** oder das Tastenkürzel — es steht im Feld (**⇧⌘F** am Mac, **Strg⇧F** unter Windows)."
+        },
+        {
+          "n": 2,
+          "title": "Begriff eintippen",
+          "text": "Seitenname, Kundenname, Vertragsnummer oder Gutschein-Seriennummer — alles im selben Feld."
+        },
+        {
+          "n": 3,
+          "title": "Treffer lesen",
+          "text": "Die Ergebnisse sind nach **Bereichen gruppiert** (Seiten, Berichte, Kunden, Verträge …)."
+        },
+        {
+          "n": 4,
+          "title": "Öffnen",
+          "text": "Ein Tippen auf den Treffer führt direkt zur Seite oder zum Datensatz."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Phorest wird mitgesucht",
+          "text": "Bei Kundinnen sucht der Hub zusätzlich **live in Phorest**, wenn der lokale Bestand nichts hergibt. Das dauert etwas länger — ein Hinweis zeigt es an."
+        },
+        {
+          "title": "Nur Erlaubtes",
+          "text": "Die Suche zeigt ausschließlich Bereiche, für die die Berechtigung vorliegt. Was nicht erscheint, ist nicht weg — es ist gesperrt."
+        }
+      ],
+      "hint": {
+        "text": "**Schneller als jedes Menü:** Für Seiten, die selten gebraucht werden, ist die Suche der kürzeste Weg — Anfangsbuchstaben tippen statt die richtige Gruppe suchen."
+      }
     },
     {
-     "n": 3,
-     "title": "„Alle Standorte“",
-     "text": "Die oberste Karte hebt die Einschränkung auf — dann zeigt jede Seite die Zahlen **aller** Institute zusammen."
+      "h1": "Mitteilungen",
+      "sub": "Der dritte Knopf sammelt, was der Hub meldet — von der geplatzten Lastschrift bis zum neuen Formular.",
+      "card": {
+        "title": "Mitteilungen",
+        "text": "Meldungen lesen, öffnen, als gelesen markieren"
+      },
+      "left": {
+        "shot": "h4-mitteilungen"
+      },
+      "right": {
+        "shot": "h5-mitteilung-detail"
+      },
+      "leftCaption": "Die Liste der Mitteilungen; die Zahl am Knopf zeigt die ungelesenen.",
+      "rightCaption": "Eine aufgeklappte Mitteilung mit vollem Text.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Zähler beachten",
+          "text": "Die Zahl am Knopf sind die **ungelesenen** Mitteilungen. Ohne Zahl ist alles gelesen."
+        },
+        {
+          "n": 2,
+          "title": "Mitteilung öffnen",
+          "text": "Ein Tippen zeigt den ganzen Text — die Liste kürzt lange Meldungen ab."
+        },
+        {
+          "n": 3,
+          "title": "„Öffnen“",
+          "text": "Führt zu der Stelle, um die es geht — etwa zum betroffenen Vertrag oder Termin."
+        },
+        {
+          "n": 4,
+          "title": "Alle als gelesen",
+          "text": "Räumt die Liste auf. Die Mitteilungen bleiben lesbar, nur der Zähler verschwindet."
+        }
+      ],
+      "hint": {
+        "text": "**Mitteilungen ersetzen keine Absprache.** Was das Büro erledigen muss, gehört als **Asana-Task** dorthin — eine gelesene Mitteilung ist noch keine erledigte Aufgabe."
+      }
+    },
+    {
+      "h1": "Hinweis auf neue Mitteilungen",
+      "sub": "Kommt etwas Neues, meldet sich der Hub von selbst — mit einer Karte am Bildschirmrand, nicht nur mit der Zahl an der Glocke.",
+      "card": {
+        "title": "Hinweis-Karte",
+        "text": "Neue Mitteilung sehen, antippen, weglegen"
+      },
+      "left": {
+        "shot": "h7-hinweis-karte"
+      },
+      "leftCaption": "Die Karte unten rechts (am Handy oben): Titel, Text und — wenn die Meldung eins hat — ein Bild.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Karte erscheint",
+          "text": "Sobald eine neue Mitteilung für dich da ist, taucht unten rechts eine Karte auf — am Handy oben. Mehrere stapeln sich, spätestens nach drei wandert die älteste raus."
+        },
+        {
+          "n": 2,
+          "title": "Antippen öffnet",
+          "text": "Ein Tippen auf die Karte führt direkt zum Vorgang und markiert die Mitteilung als gelesen — der Zähler an der Glocke sinkt mit."
+        },
+        {
+          "n": 3,
+          "title": "Weglegen",
+          "text": "Das **×** schließt die Karte, ohne die Mitteilung als gelesen zu markieren. Ohne Tippen verschwindet sie nach ein paar Sekunden von selbst; solange der Zeiger darauf liegt, bleibt sie."
+        },
+        {
+          "n": 4,
+          "title": "Auf dem Handy und in der App",
+          "text": "Wer Push erlaubt hat, bekommt dieselbe Meldung als Mitteilung des Geräts — auf dem iPhone auch mit Bild auf dem Sperrbildschirm. In der glatttHub-App zeigt ein eigenes Banner am oberen Rand die Meldung."
+        }
+      ],
+      "hint": {
+        "text": "**Nichts verpasst:** Was die Karte gezeigt hat, steht weiterhin in der Liste hinter der Glocke und auf der Mitteilungsseite."
+      }
+    },
+    {
+      "h1": "Meine Benachrichtigungen",
+      "sub": "Unten auf der Mitteilungsseite steht, welche Anlässe dich erreichen — und du entscheidest je Anlass, ob im Hub, per Push oder gar nicht.",
+      "card": {
+        "title": "Meine Benachrichtigungen",
+        "text": "Je Anlass wählen: im Hub, per Push, beides oder stumm"
+      },
+      "left": {
+        "shot": "h6-meine-benachrichtigungen"
+      },
+      "leftCaption": "Die Karte „Meine Benachrichtigungen“ mit den Anlässen nach Bereichen und den beiden Schaltern je Zeile.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Mitteilungsseite öffnen",
+          "text": "In der Mitteilungsliste ganz unten **„Alle anzeigen“** — oder auf der Startseite in der Karte „Mitteilungen“."
+        },
+        {
+          "n": 2,
+          "title": "Nach unten scrollen",
+          "text": "Unter der Liste liegt die Karte **„Meine Benachrichtigungen“**. Die Anlässe sind nach Bereichen sortiert (Termine, Gutscheine, Forderungen …)."
+        },
+        {
+          "n": 3,
+          "title": "„Im Hub“ schalten",
+          "text": "Aus = die Meldung erscheint nicht mehr an der Glocke und nicht in der Liste."
+        },
+        {
+          "n": 4,
+          "title": "„Push“ schalten",
+          "text": "Aus = keine Mitteilung mehr auf Handy oder Rechner, auch wenn Push dort erlaubt ist. Jede Änderung wird sofort gespeichert."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Nur was dich betrifft",
+          "text": "Die Karte zeigt nur Anlässe, die dich nach Recht oder Institut erreichen können. Was fehlt, bekommst du ohnehin nicht."
+        },
+        {
+          "title": "Pflichtmeldungen",
+          "text": "Manche Meldungen lassen sich **nicht** abschalten — etwa wenn eine bezahlte Gutschein-Bestellung nicht angelegt werden konnte. Sie erscheinen hier gar nicht erst."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "**Stumm heißt stumm.** Wer beide Schalter ausmacht, erfährt von diesem Anlass nichts mehr — auch nicht nachträglich. Im Zweifel nur Push aus und „Im Hub“ an lassen."
+      }
     }
-   ],
-   "notes": [
-    {
-     "title": "Ausgeblendete Institute",
-     "text": "Ein Standort mit dem Badge **„Ausgeblendet“** zählt **nicht** in „Alle Standorte“ — etwa ein Institut im Testbetrieb vor der Eröffnung. Seine Zahlen erscheinen nur, wenn er ausdrücklich gewählt ist."
-    },
-    {
-     "title": "Bleibt eingestellt",
-     "text": "Die Wahl gilt weiter, auch nach dem Abmelden. Wer sich über Zahlen wundert, prüft zuerst, welcher Standort oben steht."
-    }
-   ],
-   "hint": {
-    "kind": "warn",
-    "text": "**Die häufigste Verwirrung im Hub:** „Die Zahlen stimmen nicht.“ In den allermeisten Fällen steht oben ein anderer Standort als gedacht — oder **„Alle Standorte“**, wo ein einzelnes Institut gemeint war."
-   }
-  },
-  {
-   "h1": "Suchen",
-   "sub": "Ein Feld für alles: Seiten, Berichte, Kundinnen, Verträge und Gutscheine.",
-   "card": {
-    "title": "Suchen",
-    "text": "Seiten, Kundinnen, Verträge und Gutscheine finden"
-   },
-   "left": {
-    "shot": "h2-suche"
-   },
-   "right": {
-    "shot": "h3-suche-treffer"
-   },
-   "leftCaption": "Das Suchfeld unter den drei Knöpfen.",
-   "rightCaption": "Treffer nach Bereichen gruppiert.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Suche öffnen",
-     "text": "Der Knopf **„Suche“** oder das Tastenkürzel — es steht im Feld (**⇧⌘F** am Mac, **Strg⇧F** unter Windows)."
-    },
-    {
-     "n": 2,
-     "title": "Begriff eintippen",
-     "text": "Seitenname, Kundenname, Vertragsnummer oder Gutschein-Seriennummer — alles im selben Feld."
-    },
-    {
-     "n": 3,
-     "title": "Treffer lesen",
-     "text": "Die Ergebnisse sind nach **Bereichen gruppiert** (Seiten, Berichte, Kunden, Verträge …)."
-    },
-    {
-     "n": 4,
-     "title": "Öffnen",
-     "text": "Ein Tippen auf den Treffer führt direkt zur Seite oder zum Datensatz."
-    }
-   ],
-   "notes": [
-    {
-     "title": "Phorest wird mitgesucht",
-     "text": "Bei Kundinnen sucht der Hub zusätzlich **live in Phorest**, wenn der lokale Bestand nichts hergibt. Das dauert etwas länger — ein Hinweis zeigt es an."
-    },
-    {
-     "title": "Nur Erlaubtes",
-     "text": "Die Suche zeigt ausschließlich Bereiche, für die die Berechtigung vorliegt. Was nicht erscheint, ist nicht weg — es ist gesperrt."
-    }
-   ],
-   "hint": {
-    "text": "**Schneller als jedes Menü:** Für Seiten, die selten gebraucht werden, ist die Suche der kürzeste Weg — Anfangsbuchstaben tippen statt die richtige Gruppe suchen."
-   }
-  },
-  {
-   "h1": "Mitteilungen",
-   "sub": "Der dritte Knopf sammelt, was der Hub meldet — von der geplatzten Lastschrift bis zum neuen Formular.",
-   "card": {
-    "title": "Mitteilungen",
-    "text": "Meldungen lesen, öffnen, als gelesen markieren"
-   },
-   "left": {
-    "shot": "h4-mitteilungen"
-   },
-   "right": {
-    "shot": "h5-mitteilung-detail"
-   },
-   "leftCaption": "Die Liste der Mitteilungen; die Zahl am Knopf zeigt die ungelesenen.",
-   "rightCaption": "Eine aufgeklappte Mitteilung mit vollem Text.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Zähler beachten",
-     "text": "Die Zahl am Knopf sind die **ungelesenen** Mitteilungen. Ohne Zahl ist alles gelesen."
-    },
-    {
-     "n": 2,
-     "title": "Mitteilung öffnen",
-     "text": "Ein Tippen zeigt den ganzen Text — die Liste kürzt lange Meldungen ab."
-    },
-    {
-     "n": 3,
-     "title": "„Öffnen“",
-     "text": "Führt zu der Stelle, um die es geht — etwa zum betroffenen Vertrag oder Termin."
-    },
-    {
-     "n": 4,
-     "title": "Alle als gelesen",
-     "text": "Räumt die Liste auf. Die Mitteilungen bleiben lesbar, nur der Zähler verschwindet."
-    }
-   ],
-   "hint": {
-    "text": "**Mitteilungen ersetzen keine Absprache.** Was das Büro erledigen muss, gehört als **Asana-Task** dorthin — eine gelesene Mitteilung ist noch keine erledigte Aufgabe."
-   }
-  },
-  {
-   "h1": "Meine Benachrichtigungen",
-   "sub": "Unten auf der Mitteilungsseite steht, welche Anlässe dich erreichen — und du entscheidest je Anlass, ob im Hub, per Push oder gar nicht.",
-   "card": {
-    "title": "Meine Benachrichtigungen",
-    "text": "Je Anlass wählen: im Hub, per Push, beides oder stumm"
-   },
-   "left": {
-    "shot": "h6-meine-benachrichtigungen"
-   },
-   "leftCaption": "Die Karte „Meine Benachrichtigungen“ mit den Anlässen nach Bereichen und den beiden Schaltern je Zeile.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Mitteilungsseite öffnen",
-     "text": "In der Mitteilungsliste ganz unten **„Alle anzeigen“** — oder auf der Startseite in der Karte „Mitteilungen“."
-    },
-    {
-     "n": 2,
-     "title": "Nach unten scrollen",
-     "text": "Unter der Liste liegt die Karte **„Meine Benachrichtigungen“**. Die Anlässe sind nach Bereichen sortiert (Termine, Gutscheine, Forderungen …)."
-    },
-    {
-     "n": 3,
-     "title": "„Im Hub“ schalten",
-     "text": "Aus = die Meldung erscheint nicht mehr an der Glocke und nicht in der Liste."
-    },
-    {
-     "n": 4,
-     "title": "„Push“ schalten",
-     "text": "Aus = keine Mitteilung mehr auf Handy oder Rechner, auch wenn Push dort erlaubt ist. Jede Änderung wird sofort gespeichert."
-    }
-   ],
-   "notes": [
-    {
-     "title": "Nur was dich betrifft",
-     "text": "Die Karte zeigt nur Anlässe, die dich nach Recht oder Institut erreichen können. Was fehlt, bekommst du ohnehin nicht."
-    },
-    {
-     "title": "Pflichtmeldungen",
-     "text": "Manche Meldungen lassen sich **nicht** abschalten — etwa wenn eine bezahlte Gutschein-Bestellung nicht angelegt werden konnte. Sie erscheinen hier gar nicht erst."
-    }
-   ],
-   "hint": {
-    "kind": "warn",
-    "text": "**Stumm heißt stumm.** Wer beide Schalter ausmacht, erfährt von diesem Anlass nichts mehr — auch nicht nachträglich. Im Zweifel nur Push aus und „Im Hub“ an lassen."
-   }
-  }
- ]
+  ]
 }

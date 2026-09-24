@@ -284,7 +284,13 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   Zeitablauf können gleichzeitig kommen, und ein zweiter Aufruf des Rückrufs beendet die
   Erweiterung mit einem Fehler.
 - **Bild-URLs dürfen relativ kommen** — der Dienst macht sie absolut, APNs und die
-  Erweiterung brauchen das.
+  Erweiterung brauchen das. Seit 24.09.2026 schickt der Hub tatsächlich Bilder: festes Bild
+  je Anlass-Regel oder individuelles Bild je Meldung, abgelegt im öffentlichen Bucket, damit
+  die Erweiterung ohne IAP und ohne Hub-Sitzung laden kann — siehe
+  [Notifications](NOTIFICATIONS.md), Abschnitt „Bilder in Benachrichtigungen".
+- **`glattt:push-received` löst im WebView einen stummen Abgleich der Glocke aus**
+  (`hub-notices.js`) — die Web-Hinweis-Karte bleibt in der App aus, das native Banner
+  übernimmt.
 
 ### Push-Registrierung: die App meldet ihr Gerät selbst (seit 23.09.2026)
 
