@@ -650,6 +650,14 @@ Hinweis-Karte zeigen es statt des Typ-Symbols. Zeitbasierte/aktionsbasierte Auto
 übernehmen das Regelbild (`instanceAttributes()`, `SendNotificationAutomationJob`).
 Tests: `tests/Feature/NotificationImageTest.php`.
 
+**APNs-Kopfzeilen (seit 25.09.2026):** `buildNotification()` setzt `apns-push-type: alert` und
+Priorität 10. Ohne Push-Typ schickt pushok Priorität 5 und keinen Typ — die Mitteilung kommt
+zwar an, iOS startete aber die Erweiterung nicht zuverlässig, das Bild fehlte (Befund 25.09.2026).
+Der Payload-Test `ApplePushPayloadTest::payload_carries_image_mutable_content_push_type_and_high_priority`
+wacht darüber; die Erweiterung selbst prüft `NotificationServiceImageTests` in-process mit einem
+echten Bucket-Bild (ein `simctl push` scheitert im Simulator an der fehlenden Berechtigung, solange
+die App nie `requestAuthorization` gerufen hat).
+
 ### Hinweis-Karte im Hub (seit 24.09.2026)
 
 `public/js/hub-notices.js` (`window.GlatttNotices`), eingebunden im Hub-Layout. Die Glocke
@@ -749,6 +757,8 @@ tail -f storage/logs/laravel.log | grep -i "notification\|push"
 
 ## Changelog
 
+- **25.09.2026 — APNs-Kopfzeilen:** `apns-push-type: alert` + Priorität 10, damit iOS die
+  Bild-Erweiterung startet; native Mitteilungsliste der App zeigt Vorschaubilder (Build 18).
 - **24.09.2026 — Hinweis-Karte, Bilder, Testversand-Fix:** Neue Mitteilungen erscheinen im
   Hub als Karte (`hub-notices.js`, sofort nach Push, sonst im 120-s-Takt); Meldungen tragen
   ein Bild (`notifications.image`, festes Regelbild im Admin oder individuelles Bild aus dem
