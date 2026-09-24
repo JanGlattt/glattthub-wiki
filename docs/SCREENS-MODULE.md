@@ -16,16 +16,17 @@ Projektwissen `.github/knowledge/tvos-app-bauplan.md`.
 ## Für Endanwender
 
 !!! nutzerhandbuch "Bedienung: Serie „Bildschirme" — Klickanleitung entsteht mit Phase 5"
-    Ein Apple TV zeigt beim ersten Start einen sechsstelligen Code. Im Admin-Backend unter
-    **Bildschirme → Bildschirme → Bildschirm koppeln** wird der Code eingetragen und der Bildschirm einem
-    Institut, einer Zone (Schaufenster, Empfang, Kabine, Büro) und einer Ausrichtung zugeordnet. Danach
+    Ein Apple TV zeigt beim ersten Start einen sechsstelligen Code. Im Hub unter **Betrieb →
+    Bildschirme → Bildschirm koppeln** wird der Code eingetragen und der Bildschirm einem Institut
+    (oder „Office (Zentrale)" für Bildschirme im Büro), einer Zone (Schaufenster, Empfang, Kabine,
+    Büro) und einer Ausrichtung zugeordnet. Danach
     läuft der Fernseher ohne Anmeldung. Die Liste zeigt je Bildschirm, ob er online ist und was gerade
     läuft; über das Menü lassen sich „Neu laden", „Neustart" und „Cache leeren" senden, ein Bildschirm
     deaktivieren oder trennen.
 
-    Was läuft, kommt aus vier Bausteinen derselben Gruppe **Bildschirme** im Admin-Menü: **Medien** (Bilder und Videos bis 1 GB,
-    hochgeladen über „Medien hochladen"), **Testimonials** (Kundenstimmen, frei erfasst oder aus einer
-    Google-Bewertung des Bonus-Boards übernommen; nur freigegebene erscheinen), **Playlists** (Reihenfolge
+    Was läuft, kommt aus den Reitern derselben Hub-Seite: **Medien** (Bilder und Videos bis 1 GB),
+    **Kundenstimmen** (frei erfasst oder aus einer Google-Bewertung des Bonus-Boards übernommen, auf
+    Wunsch mit Foto; nur freigegebene erscheinen), **Playlists** (Reihenfolge
     aus Bild, Video, Bewertungen, Gesamtwertung, QR-Code — mit Vorschau im Browser) und **Zeitpläne**
     (welche Playlist wann auf welchen Bildschirmen; „Jetzt zeigen" schaltet eine Playlist sofort für
     1 bis 168 Stunden). Ohne passenden Zeitplan läuft die Standard-Playlist des Bildschirms, sonst die
@@ -40,12 +41,21 @@ Projektwissen `.github/knowledge/tvos-app-bauplan.md`.
     als eine bestimmte Stimme, Videos so lange wie das Video oder mit fester Dauer, auf Wunsch mit QR-Code.
     Der Zeitplan steht direkt unter den Elementen („Wann und wo läuft sie?“).
 
-    **Kennzahlen-Modus (Zentrale):** Ein Bildschirm im Modus „Kennzahlen" blättert durch Eigene
-    Dashboards — im Formular des Bildschirms werden die Seiten (Dashboard, Zeitraum, Sekunden je Seite)
-    zusammengestellt. Kennzahlen erscheinen als Kacheln mit Tendenz und Verlauf, Statistik-Karten als
-    Bild, so wie sie im Hub aussehen; die Bilder erneuert der Hub alle 15 Minuten („Karten jetzt
-    rendern" stößt es sofort an). Gerechnet wird mit den Rechten des Bildschirm-Nutzers — ohne
-    Zuordnung mit dem technischen Nutzer „Bildschirm Zentrale", der alle Berichte lesen darf.
+    **Kennzahlen-Modus (Zentrale):** Ein Bildschirm im Modus „Kennzahlen" zeigt Seiten aus dem
+    **Seiten-Baukasten** („Seiten gestalten" auf der Bildschirm-Karte): Kacheln werden per Ziehen auf
+    ein Raster gelegt und in der Größe gezogen — Kennzahl (mit Tendenz und Verlauf), Diagramm (Balken,
+    Linie, Ring; Verlauf oder Vergleich der Institute), **Beratungen heute** (Uhrzeit, Institut,
+    Beraterin, Kundin, Ergebnis farbig, Kommentar), Uhr und freier Text. Mehrere Seiten blättern von
+    selbst oder per Fernbedienung (links/rechts); Werte gleiten beim Wechsel animiert um. Der
+    Einbrennschutz (alle x Minuten für y Sekunden Logo und Slogan) wird je Bildschirm in den
+    Einstellungen gesetzt. Bildschirme mit Standort „Office" rechnen über alle Institute. Gerechnet
+    wird mit den Rechten des Bildschirm-Nutzers — ohne Zuordnung mit dem technischen Nutzer
+    „Bildschirm Zentrale". Ohne gestaltete Seiten fällt der Bildschirm auf Eigene Dashboards zurück.
+
+    **Überwachung:** Jede Bildschirm-Karte zeigt „Läuft gerade" und „Laut Plan"; weichen beide länger
+    als 15 Minuten voneinander ab oder meldet sich ein Bildschirm länger als 10 Minuten nicht, kommt
+    eine Meldung (Bildschirm offline / wieder online / zeigt nicht das Geplante / Medium konnte nicht
+    abgespielt werden). „Verlauf" auf der Karte listet, was Hub und Fernseher zuletzt gemeldet haben.
 
 ---
 
@@ -402,6 +412,80 @@ Playlists, Zeitpläne.
   Von/Bis, Gültig ab/bis), Priorität; Kopf-Aktion **Jetzt zeigen** (Playlist, Ziel, 1/4/24/168 h →
   Zeitplan mit Priorität 100, endet von selbst).
 
+### Seiten-Baukasten des Kennzahlen-Modus (seit 25.09.2026)
+
+**Entscheidung Jan (25.09.2026):** Die Kennzahlen-Seiten werden nicht mehr aus Eigenen Dashboards
+abgeleitet, sondern je Bildschirm per Ziehen und Ablegen gebaut und **nativ** auf dem Fernseher
+gezeichnet (Swift Charts statt gerenderter Karten-Bilder). Eigene Dashboards bleiben als Rückfall,
+solange ein Bildschirm keine Seiten hat.
+
+- **Datenmodell:** `screen_pages` (`screen_id`, `name`, `sort_order`, `seconds` = Sekunden bis zum
+  automatischen Weiterblättern, 0 = nur per Fernbedienung, `columns` 3–6, `rows` 2–4, `tiles` JSON).
+  Jede Kachel: `key`, `type` (`kpi`, `chart`, `consultations`, `clock`, `text`), `x`/`y`/`w`/`h` im
+  Raster, `config` (KPI-ID + Zeitraum, Diagrammart `bar|line|ring` und Modus `history|branches`,
+  Text). Konstanten in `App\Models\ScreenPage`. Einbrennschutz in `screens.settings['burn_in']`
+  (`minutes`, `seconds`; Vorgabe 10/20, 0 Minuten = aus).
+- **Service `ScreenPageService`:** `build($screen)` löst jede Kachel zu fertigen Werten auf — KPIs über
+  `WidgetKpiService` mit Verlauf (Sparkline), Diagramme im Modus `branches` je sichtbarem Institut in
+  Institutsfarbe, `consultations` aus `upcoming_consultations` ∪ `consultation_records` des Tages
+  (Namen über `ClientStatistic`/`PhorestStaff`, Ergebnis-Label und Farbton aus `OUTCOME_LABELS`/
+  `OUTCOME_TONES`, offene Termine als „gebucht"). Standort aus `ScreenDashboardService::branchFor()`:
+  Office oder `kpi_all_branches` = alle Institute. Leere Objekte kommen als `(object)`, sonst
+  dekodiert Swift `[]` nicht.
+- **Endpunkt `GET /api/tv/pages`** (`TvPagesController`, Gerätenachweis wie das Manifest): `etag`,
+  `generated_at`, `poll_seconds` (60), `pages[]` mit aufgelösten `tiles[].data`, `burn_in`, `slogan`;
+  `304` bei gleichem ETag, `404` ohne Seiten (TV fällt dann auf `/api/tv/dashboards` zurück).
+- **Hub-Baukasten** `/hub/screens/devices/{screen}/pages` (`PagesHubController`: `builder`, `data`,
+  `save` (PUT, ganze Seitenliste, prüft Rasterüberlappung und -grenzen, `tiles.*.key` muss in der
+  Validierung stehen, sonst fällt er aus dem Payload), `preview` (POST, liefert eine Seite mit echten
+  Werten). View `hub/screens/pages.blade.php`, Logik `public/js/screens-pages-editor.js`
+  (Pointer-Events statt HTML5-Drag, `findFreeSpot()` beim Ablegen aus der Palette, Größe über den
+  Griff unten rechts, Vorschau als Sparkline/SVG). CSS-Block `.pg-*`.
+- **tvOS:** `Model/Pages.swift` (Payload), `Play/PagePager.swift` (Blättern, Auto-Wechsel ab 5 s,
+  Einbrennschutz-Timer; bleibt bei neuen Daten auf derselben Seite), `Views/PagesViews.swift`
+  (`PageGridView` mit `LazyVGrid`-freiem Raster, `KpiTile`, `ChartTile` mit `BarMark`/`LineMark`/
+  `SectorMark` — **braucht tvOS 17**, Ziel ist 17.0 —, `ConsultationsTile`, `ClockTile`, `TextTile`,
+  `BurnInView`). Fernbedienung über `.focusable().onMoveCommand`, Zahlen mit
+  `.contentTransition(.numericText())`. `ScreenState.syncPages()` pollt mit ETag.
+
+### Überwachung (seit 25.09.2026)
+
+Jan: „Können wir überwachen, dass der Apple TV das Ganze abspielt?" — ja, über drei Bausteine:
+
+- **`screen_events`** (`screen_id`, `source` hub|tv, `type`, `level` info|warning|error, `message`,
+  `payload`, `occurred_at`). Der Hub schreibt Kopplung, Befehle, Einstellungen, Trennen
+  (`ScreenEvent::log()` in `ScreenHubController`); der Fernseher sammelt seine Ereignisse
+  (`app_started`, `manifest_loaded`, `playlist_changed`, `command_executed`, `pages_loaded`,
+  `media_failed`) in `ScreenState.pendingEvents` und sendet sie nach dem Heartbeat an
+  **`POST /api/tv/events`** (`TvEventController`, nur Typen aus `ScreenEvent::TV_TYPES`;
+  `media_failed` löst sofort den Anlass `screens.media_failed` aus). Verlauf im Hub:
+  `GET /hub/screens/devices/{screen}/events`, Fenster „Verlauf" auf der Karte.
+- **`screens:watch`** (alle 5 Minuten, Cron `watch-screens`, `CronController::watchScreens`): meldet
+  einen Bildschirm **einmal** offline, wenn der Heartbeat ≥ 10 Minuten alt ist
+  (`screens.offline_notified_at`), und wieder online beim nächsten Heartbeat; vergleicht „Läuft gerade"
+  (Heartbeat `playing`) mit dem Ergebnis des `ScreenScheduleResolver` und meldet ab 15 Minuten
+  Abweichung (`screens.mismatch_since`) `screens.mismatch`. Die Karte zeigt die Abweichung als
+  Hinweis. **Offen (25.09.2026):** der Cloud-Scheduler-Job `watch-screens` (`*/5 * * * *`,
+  `/api/cron/watch-screens`, `--max-retry-attempts=3`) muss noch angelegt werden — die
+  gcloud-Anmeldung war abgelaufen; `cron:audit` meldet ihn bis dahin als fehlend.
+- **Anlässe** im Benachrichtigungs-Katalog (`HubEventRegistry`, Modul Bildschirme):
+  `screens.offline`, `screens.online`, `screens.mismatch`, `screens.media_failed` — Icons nur aus
+  `HubEventRegistry::ICONS` (`alert`/`success`/`warning`), Link `/hub/screens`.
+
+### Office als Standort, Fotos für Kundenstimmen (25.09.2026)
+
+- **`Screen::BRANCH_OFFICE = 'office'`** ist ein Pseudo-Institut („Office (Zentrale)") für Bildschirme
+  im Büro. `Screen::branchOptions()` liefert alle Institute plus Office (Kopplung und Einstellungen im
+  Hub, Admin-Resource), `Screen::branchShort()` den Kurznamen, `isOffice()` schaltet im
+  Kennzahlen-Modus auf alle Institute (`branchFor()` → `''`) und liefert im Manifest/Standby „Office"
+  als Namen (`ScreenPairingService::branchName()`, `ScreenManifestService`). Medien und Kundenstimmen
+  kennen kein Office — deren Standortlisten bleiben echte Institute.
+- **Foto einer Kundenstimme im Hub:** `POST /hub/screens/testimonials/{id}/photo` (`photo`: JPEG/PNG/
+  WebP ≤ 5 MB, Ablage `testimonials/` auf `Testimonial::photoDisk()`, altes Foto wird gelöscht) und
+  `DELETE …/photo`. Das Fenster „Kundenstimme" zeigt Vorschau, „Foto wählen/Anderes Foto" und „Foto
+  entfernen"; hochgeladen wird erst beim Speichern (nach `POST`/`PUT` der Stimme). Mit Foto braucht die
+  Freigabe wie bisher ein Einwilligungsdatum (`requiresConsent()`).
+
 ### Institut-Modul
 
 Reiter „Infos" → Kontaktkanäle: **Google-Bewertung** (Schnitt mit Komma, Anzahl, Stand per flatpickr) und
@@ -513,12 +597,17 @@ Normalisierung), `tests/Unit/ScreenScheduleResolverTest.php` (Fallbacks, Priorit
 ETag, Hochkant-Variante, Jetzt zeigen, Direkt-Upload lokal + Bildverarbeitung, Testimonial-Regeln,
 Institut-Felder, veraltete Wertung, Admin-Seiten), `tests/Feature/ScreenDashboardsTest.php` (Kennzahlen-Modus:
 Seiten mit Rechten des Bildschirm-Nutzers, ETag, 409 für Signage, gelöschtes Dashboard, technischer Nutzer,
-Render-Seite und Proxy nur mit Ticket, Render-Job ohne Chromium, Admin-Formular mit Repeater). Swift:
-`DashboardPagerTests` (Seitenschnitt, Pager, Zahlenformat, Tendenz, Karten-Medium). Konventionstests: `CronScheduleCoverageTest`, `PermissionCatalogTest`,
+Render-Seite und Proxy nur mit Ticket, Render-Job ohne Chromium, Admin-Formular mit Repeater),
+`tests/Feature/ScreenPagesTest.php` (Seiten-Endpunkt mit Rechten und Einbrennschutz, Beratungen heute,
+Ereignisse und Medienfehler, `screens:watch` offline/online/Abweichung, Hub-Baukasten mit Rasterprüfung,
+Vorschau und Verlauf), `tests/Feature/ScreensHubTest.php` (Hub-Seite, Office als Standort, Foto der
+Kundenstimme). Swift: `DashboardPagerTests` (Seitenschnitt, Pager, Zahlenformat, Tendenz, Karten-Medium),
+`PagePagerTests` (Blättern, Auto-Wechsel, Seite bleibt bei neuen Daten, Einbrennschutz). Konventionstests: `CronScheduleCoverageTest`, `PermissionCatalogTest`,
 `AdminNavigationGroupTest`, `EnvExampleConventionTest`.
 
 ## Changelog
 
+- **25.09.2026** — Seiten-Baukasten des Kennzahlen-Modus (`screen_pages`, `/api/tv/pages`, Hub-Baukasten mit Ziehen und Ablegen, native Kacheln mit Swift Charts, Einbrennschutz je Bildschirm), Überwachung (`screen_events`, `POST /api/tv/events`, `screens:watch`, vier Anlässe), Office als Standort, Fotos für Kundenstimmen im Hub; TestFlight-Build 4.
 - **25.09.2026** — Hub-Seite „Bildschirme“ (`/hub/screens`, Recht `manage_screens_hub`): Geräte, Playlist-Editor mit Ziehen und Ablegen und Live-Vorschau, Medien, Kundenstimmen im Hub-Frontend; Admin-Resources bleiben als Fallback.
 - **25.09.2026** — Textanpassung je Feld (Schriftfaktor im Manifest), Zeilennetz und Schutzzonen für QR-Codes, Logo-Verlauf auf Fotos, Slogan „Keep it glattt“; TestFlight-Build 3.
 - **25.09.2026** — Playlist-Editor als Drei-Spalten-Ansicht mit Ziehen und Ablegen und Palette (eigene Repeater-View), eigene Admin-Gruppe „Bildschirme“, Upload-Seite auf Theme-Klassen (vorher nackte Tailwind-Klassen ohne Wirkung).
