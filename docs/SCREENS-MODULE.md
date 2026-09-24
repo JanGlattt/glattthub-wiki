@@ -465,9 +465,10 @@ Jan: „Können wir überwachen, dass der Apple TV das Ganze abspielt?" — ja, 
   (`screens.offline_notified_at`), und wieder online beim nächsten Heartbeat; vergleicht „Läuft gerade"
   (Heartbeat `playing`) mit dem Ergebnis des `ScreenScheduleResolver` und meldet ab 15 Minuten
   Abweichung (`screens.mismatch_since`) `screens.mismatch`. Die Karte zeigt die Abweichung als
-  Hinweis. **Offen (25.09.2026):** der Cloud-Scheduler-Job `watch-screens` (`*/5 * * * *`,
-  `/api/cron/watch-screens`, `--max-retry-attempts=3`) muss noch angelegt werden — die
-  gcloud-Anmeldung war abgelaufen; `cron:audit` meldet ihn bis dahin als fehlend.
+  Hinweis. Der Cloud-Scheduler-Job `watch-screens` (`*/5 * * * *`, `/api/cron/watch-screens`,
+  3 Wiederholungen, 120 s) ist seit 25.09.2026 angelegt und **pausiert**, bis der Stand auf `main`
+  ist — danach im Scheduler fortsetzen (`gcloud scheduler jobs resume watch-screens
+  --location=europe-west3`), sonst meldet `cron:audit` ihn als pausiert.
 - **Anlässe** im Benachrichtigungs-Katalog (`HubEventRegistry`, Modul Bildschirme):
   `screens.offline`, `screens.online`, `screens.mismatch`, `screens.media_failed` — Icons nur aus
   `HubEventRegistry::ICONS` (`alert`/`success`/`warning`), Link `/hub/screens`.
