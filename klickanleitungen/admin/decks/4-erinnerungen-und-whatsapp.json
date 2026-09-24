@@ -1,278 +1,278 @@
 {
- "out": "../pdf/Admin-4-erinnerungen-und-whatsapp",
- "meta": "../meta.json",
- "shots": "../shots",
- "series": "Admin",
- "nr": 4,
- "of": 8,
- "audience": "admin",
- "title": [
-  "Erinnerungen",
-  "und WhatsApp"
- ],
- "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Erinnerungen, WhatsApp und die Benachrichtigungen an das Team",
- "eyebrow": "Admin · Nachrichten",
- "footerArea": "Admin-Panel",
- "stand": "19.09.2026",
- "version": "1.3",
- "notes": [
-  "Hier wird eingestellt, **was der Hub von selbst verschickt** — an Kundinnen, ohne dass jemand tippt.",
-  "**Jede Änderung wirkt sofort** auf alle künftigen Nachrichten; es gibt keinen Testversand an alle.",
-  "Zustellfehler stehen in den Protokollen — ein Teil der WhatsApp-Nachrichten kommt nie an.",
-  "**Jede Team-Benachrichtigung ist ein Anlass im Katalog** — unter System → Benachrichtigungen steht, was an wen auf welchem Weg geht."
- ],
- "pages": [
-  {
-   "h1": "Terminerinnerungen",
-   "sub": "Regeln dafür, wann vor einem Termin erinnert wird.",
-   "card": {
-    "title": "Terminerinnerungen",
-    "text": "Regeln, Zeitpunkt, Kanal"
-   },
-   "left": {
-    "shot": "a4-erinnerungen"
-   },
-   "leftCaption": "Die Erinnerungs-Regeln.",
-   "steps": [
+  "out": "../pdf/Admin-4-erinnerungen-und-whatsapp",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "Admin",
+  "nr": 4,
+  "of": 8,
+  "audience": "admin",
+  "title": [
+    "Erinnerungen",
+    "und WhatsApp"
+  ],
+  "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Erinnerungen, WhatsApp und die Benachrichtigungen an das Team",
+  "eyebrow": "Admin · Nachrichten",
+  "footerArea": "Admin-Panel",
+  "stand": "25.09.2026",
+  "version": "1.4",
+  "notes": [
+    "Hier wird eingestellt, **was der Hub von selbst verschickt** — an Kundinnen, ohne dass jemand tippt.",
+    "**Jede Änderung wirkt sofort** auf alle künftigen Nachrichten; es gibt keinen Testversand an alle.",
+    "Zustellfehler stehen in den Protokollen — ein Teil der WhatsApp-Nachrichten kommt nie an.",
+    "**Jede Team-Benachrichtigung ist ein Anlass im Katalog** — unter System → Benachrichtigungen steht, was an wen auf welchem Weg geht."
+  ],
+  "pages": [
     {
-     "n": 1,
-     "title": "Regel anlegen",
-     "text": "Vorlaufzeit, Kanal und Text — je Terminart eigene Regeln möglich."
+      "h1": "Terminerinnerungen",
+      "sub": "Regeln dafür, wann vor einem Termin erinnert wird.",
+      "card": {
+        "title": "Terminerinnerungen",
+        "text": "Regeln, Zeitpunkt, Kanal"
+      },
+      "left": {
+        "shot": "a4-erinnerungen"
+      },
+      "leftCaption": "Die Erinnerungs-Regeln.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Regel anlegen",
+          "text": "Vorlaufzeit, Kanal und Text — je Terminart eigene Regeln möglich."
+        },
+        {
+          "n": 2,
+          "title": "Kanal",
+          "text": "E-Mail oder Nachricht aufs Handy; beides setzt die Einwilligung voraus („Kundenverwaltung 2“)."
+        },
+        {
+          "n": 3,
+          "title": "Zeitpunkt",
+          "text": "Zu früh wird vergessen, zu spät kommt zu spät. Ein bis zwei Tage haben sich bewährt."
+        },
+        {
+          "n": 4,
+          "title": "Aktiv",
+          "text": "Nur aktive Regeln verschicken."
+        }
+      ],
+      "hint": {
+        "text": "**Erinnerungen wirken messbar** auf die Storno- und No-Show-Quote — ihre Wirkung lässt sich in „Berichte 4“ ablesen."
+      }
     },
     {
-     "n": 2,
-     "title": "Kanal",
-     "text": "E-Mail oder Nachricht aufs Handy; beides setzt die Einwilligung voraus („Kundenverwaltung 2“)."
+      "h1": "Beratungs-WhatsApp",
+      "sub": "Die Nachricht zur ersten Beratungsbuchung.",
+      "card": {
+        "title": "Beratungs-WhatsApp",
+        "text": "Einstellungen und Gutschein-Link"
+      },
+      "left": {
+        "shot": "a4-bg-whatsapp"
+      },
+      "leftCaption": "Einstellungen der Beratungs-WhatsApp.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Auslöser",
+          "text": "Die **allererste** Beratungsbuchung einer Kundin — nicht jede weitere."
+        },
+        {
+          "n": 2,
+          "title": "Vorlage",
+          "text": "Der Text ist eine geprüfte Vorlage; frei formulieren geht nicht."
+        },
+        {
+          "n": 3,
+          "title": "Gutschein-Link",
+          "text": "Optional. Seine Wirkung misst „Berichte 12“."
+        },
+        {
+          "n": 4,
+          "title": "Protokoll",
+          "text": "Jeder Versand wird mitgeschrieben — samt Fehlern."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "**Ein Teil der Nachrichten kommt nicht an** — falsche Nummer, kein WhatsApp. Das ist normal; auffällig wird es erst, wenn die Fehlerquote deutlich steigt."
+      }
     },
     {
-     "n": 3,
-     "title": "Zeitpunkt",
-     "text": "Zu früh wird vergessen, zu spät kommt zu spät. Ein bis zwei Tage haben sich bewährt."
+      "h1": "Bewertungsanfragen",
+      "sub": "Die Bitte um eine Google-Bewertung nach der Behandlung.",
+      "card": {
+        "title": "Bewertungsanfragen",
+        "text": "Wann gefragt wird, an wen"
+      },
+      "left": {
+        "shot": "a4-bewertung"
+      },
+      "leftCaption": "Einstellungen der Bewertungsanfrage.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Auslöser",
+          "text": "Nach einem abgeschlossenen Termin, ausgelöst aus der Terminansicht."
+        },
+        {
+          "n": 2,
+          "title": "Text",
+          "text": "Kurz und ohne Druck — eine Bitte, keine Aufforderung."
+        },
+        {
+          "n": 3,
+          "title": "Häufigkeit",
+          "text": "Nicht nach jedem Termin. Wer zu oft fragt, bekommt schlechtere Bewertungen."
+        },
+        {
+          "n": 4,
+          "title": "Wirkung",
+          "text": "Der Google-Saldo je Institut steht im Bonus-Board („Bonus-Board 5“)."
+        }
+      ],
+      "hint": {
+        "text": "**Nicht nach einem schwierigen Termin fragen.** Die Bitte um eine Bewertung ist ein Verstärker — sie verstärkt auch Unzufriedenheit."
+      }
     },
     {
-     "n": 4,
-     "title": "Aktiv",
-     "text": "Nur aktive Regeln verschicken."
+      "h1": "Benachrichtigungen an das Team",
+      "sub": "Unter System → Benachrichtigungen steht der Katalog aller Anlässe: was der Hub wann an wen meldet — im Hub, per Push oder gar nicht.",
+      "card": {
+        "title": "Anlässe & Regeln",
+        "text": "Je Anlass: an, aus, Kanäle, Zielgruppe, Häufigkeit"
+      },
+      "left": {
+        "shot": "a4-anlaesse"
+      },
+      "right": {
+        "shot": "a4-anlass-regel"
+      },
+      "leftCaption": "Der Reiter „Anlässe & Regeln“ — je Zeile ein Anlass mit den Schaltern Aktiv, Im Hub, Push, Dringlich.",
+      "rightCaption": "Eine Regel im Formular: Kanäle, Text mit Platzhaltern und Zielgruppe.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Reiter wählen",
+          "text": "**„Anlässe & Regeln“** zeigt den Katalog, nach Modul gruppiert (Verkauf, Beratung, Forderungen, SEPA, Laser …). **„Versendet“** listet, was tatsächlich rausging — mit Herkunft."
+        },
+        {
+          "n": 2,
+          "title": "Schnell schalten",
+          "text": "Direkt in der Zeile: **Aktiv** (aus = der Anlass meldet gar nicht), **Im Hub** (Glocke), **Push** (Geräte) und **Dringlich** (rot). Die Änderung gilt sofort."
+        },
+        {
+          "n": 3,
+          "title": "Regel öffnen",
+          "text": "**„Bearbeiten“** zeigt im Block **Aktiv & Kanäle** zusätzlich, ob Mitarbeiterinnen den Anlass für sich stummschalten dürfen — für Pflichtmeldungen aus. Im Block **Details** liegen **Dringlich** (zeitkritisch auf dem iPhone, bleibend im Hub und Browser — für Störungen und Sperren, nicht für Tagesmeldungen) und ein optionales **Bild**, das mit dem Push und in der Glocke erscheint."
+        },
+        {
+          "n": 4,
+          "title": "Zielgruppe und Text",
+          "text": "Wer die Meldung bekommt: alle, ein **Recht**, das **Institut des Ereignisses**, die **betroffene Person** (z.B. Verkäuferin) oder feste Personen. Der Text nutzt die **Platzhalter** aus der Liste darüber."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Sofort oder Tages-Zusammenfassung",
+          "text": "Häufige Anlässe (Beratungsbuchungen, Verkäufe, Gutscheine) laufen als **Digest** einmal täglich zur eingestellten Uhrzeit — sonst stumpft das Team ab und schaltet Push ganz aus."
+        },
+        {
+          "title": "GoCardless",
+          "text": "Geplatzte Lastschriften, Rücklastschriften und widerrufene Mandate sind Anlässe im Modul **SEPA & GoCardless** — mit Kundin, Vertrag, Rate und Ursache in Worten. Massen-Ereignisse (angelegt, eingezogen, ausgezahlt) stehen im Katalog, sind aber aus."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "**Der Katalog ist vollständig.** Ein Anlass, der hier nicht steht, existiert im Hub nicht — neue Anlässe kommen mit einem Update, nicht über „Erstellen“. „Erstellen“ ist für einmalige Mitteilungen von Hand."
+      }
+    },
+    {
+      "h1": "Test-Benachrichtigung senden",
+      "sub": "Prüfen, ob eine Meldung ankommt — an sich selbst, eine Kollegin, eine Rolle oder alle; im Hub, per Push oder beides.",
+      "card": {
+        "title": "Testversand",
+        "text": "Freier Text oder Probe einer Regel"
+      },
+      "left": {
+        "shot": "a4-test-frei"
+      },
+      "right": {
+        "shot": "a4-test-regel"
+      },
+      "leftCaption": "„Test senden“: eigener Text, Kanäle und Empfänger frei wählbar.",
+      "rightCaption": "„Testen“ an einer Regel: der Regeltext mit Beispielwerten, Kanäle wie im Echtbetrieb.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Freier Test",
+          "text": "**„Test senden“** oben rechts. Titel und Nachricht sind vorbelegt, **Kanäle** (Im Hub, Push) und **Empfänger** frei wählbar — vorbelegt bist du selbst."
+        },
+        {
+          "n": 2,
+          "title": "Empfänger",
+          "text": "Einzelne Nutzer, **Rollen**, alle mit einem **Recht**, ein **Institut** (Heimatfiliale) oder **alle**. Der freie Test erreicht genau die Gewählten — auch wer den Anlass stummgeschaltet hat."
+        },
+        {
+          "n": 3,
+          "title": "Regel testen",
+          "text": "In der Zeile einer Regel **„Testen“**: Die Vorschau zeigt Titel und Text mit **Beispielwerten**. Kanäle, Stummschaltung und Kanal-Wahl gelten wie bei einem echten Ereignis — auch wenn die Regel aus ist."
+        },
+        {
+          "n": 4,
+          "title": "Rückmeldung lesen",
+          "text": "Nach dem Senden steht oben rechts, wer es **im Hub** bekam, wer **per Push** — und wer **kein Gerät** angemeldet hat oder wegen Stummschaltung leer ausging."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Wo der Test landet",
+          "text": "Bei den Empfängern in der Glocke, mit **„[Test]“** vor dem Titel; unter **„Versendet“** mit Herkunft „Test“. Als Auslösung der Regel zählt er nicht."
+        },
+        {
+          "title": "Push braucht ein Gerät",
+          "text": "Push kommt nur an, wo der Hub als App mit erlaubten Mitteilungen läuft („Grundlagen 2“). Die Rückmeldung nennt, wem das Gerät fehlt."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "**Ein Test ist ein echter Versand.** „An alle aktiven Nutzer“ erreicht das ganze Team — zum Ausprobieren erst an sich selbst schicken."
+      }
+    },
+    {
+      "h1": "Einwilligungen und Protokolle",
+      "sub": "Was rechtlich gilt und wo man nachsieht.",
+      "card": {
+        "title": "Einwilligungen",
+        "text": "Zustimmung, Protokolle, Fehlersuche"
+      },
+      "layout": "text",
+      "table": {
+        "head": [
+          "Frage",
+          "Wo nachsehen"
+        ],
+        "rows": [
+          [
+            "Hat die Kundin etwas bekommen?",
+            "Kundenprofil, Reiter Nachrichten („Kundenverwaltung 5“)"
+          ],
+          [
+            "Warum kam nichts an?",
+            "Protokolle im Admin-Panel — dort steht der Fehlergrund"
+          ],
+          [
+            "Darf die Kundin angeschrieben werden?",
+            "Einwilligungen im Reiter Kundeninfos"
+          ],
+          [
+            "Wie wirkt die Aktion?",
+            "„Berichte 12“ für die Gutschein-Aktion"
+          ]
+        ]
+      },
+      "hint": {
+        "text": "**Ohne Einwilligung kein Versand.** Die Schalter dafür stehen an der Kundin („Kundenverwaltung 2“); hier wird nur eingestellt, was verschickt würde."
+      }
     }
-   ],
-   "hint": {
-    "text": "**Erinnerungen wirken messbar** auf die Storno- und No-Show-Quote — ihre Wirkung lässt sich in „Berichte 4“ ablesen."
-   }
-  },
-  {
-   "h1": "Beratungs-WhatsApp",
-   "sub": "Die Nachricht zur ersten Beratungsbuchung.",
-   "card": {
-    "title": "Beratungs-WhatsApp",
-    "text": "Einstellungen und Gutschein-Link"
-   },
-   "left": {
-    "shot": "a4-bg-whatsapp"
-   },
-   "leftCaption": "Einstellungen der Beratungs-WhatsApp.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Auslöser",
-     "text": "Die **allererste** Beratungsbuchung einer Kundin — nicht jede weitere."
-    },
-    {
-     "n": 2,
-     "title": "Vorlage",
-     "text": "Der Text ist eine geprüfte Vorlage; frei formulieren geht nicht."
-    },
-    {
-     "n": 3,
-     "title": "Gutschein-Link",
-     "text": "Optional. Seine Wirkung misst „Berichte 12“."
-    },
-    {
-     "n": 4,
-     "title": "Protokoll",
-     "text": "Jeder Versand wird mitgeschrieben — samt Fehlern."
-    }
-   ],
-   "hint": {
-    "kind": "warn",
-    "text": "**Ein Teil der Nachrichten kommt nicht an** — falsche Nummer, kein WhatsApp. Das ist normal; auffällig wird es erst, wenn die Fehlerquote deutlich steigt."
-   }
-  },
-  {
-   "h1": "Bewertungsanfragen",
-   "sub": "Die Bitte um eine Google-Bewertung nach der Behandlung.",
-   "card": {
-    "title": "Bewertungsanfragen",
-    "text": "Wann gefragt wird, an wen"
-   },
-   "left": {
-    "shot": "a4-bewertung"
-   },
-   "leftCaption": "Einstellungen der Bewertungsanfrage.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Auslöser",
-     "text": "Nach einem abgeschlossenen Termin, ausgelöst aus der Terminansicht."
-    },
-    {
-     "n": 2,
-     "title": "Text",
-     "text": "Kurz und ohne Druck — eine Bitte, keine Aufforderung."
-    },
-    {
-     "n": 3,
-     "title": "Häufigkeit",
-     "text": "Nicht nach jedem Termin. Wer zu oft fragt, bekommt schlechtere Bewertungen."
-    },
-    {
-     "n": 4,
-     "title": "Wirkung",
-     "text": "Der Google-Saldo je Institut steht im Bonus-Board („Bonus-Board 5“)."
-    }
-   ],
-   "hint": {
-    "text": "**Nicht nach einem schwierigen Termin fragen.** Die Bitte um eine Bewertung ist ein Verstärker — sie verstärkt auch Unzufriedenheit."
-   }
-  },
-  {
-   "h1": "Benachrichtigungen an das Team",
-   "sub": "Unter System → Benachrichtigungen steht der Katalog aller Anlässe: was der Hub wann an wen meldet — im Hub, per Push oder gar nicht.",
-   "card": {
-    "title": "Anlässe & Regeln",
-    "text": "Je Anlass: an, aus, Kanäle, Zielgruppe, Häufigkeit"
-   },
-   "left": {
-    "shot": "a4-anlaesse"
-   },
-   "right": {
-    "shot": "a4-anlass-regel"
-   },
-   "leftCaption": "Der Reiter „Anlässe & Regeln“ — je Zeile ein Anlass mit den Schaltern Aktiv, Im Hub, Push.",
-   "rightCaption": "Eine Regel im Formular: Kanäle, Text mit Platzhaltern und Zielgruppe.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Reiter wählen",
-     "text": "**„Anlässe & Regeln“** zeigt den Katalog, nach Modul gruppiert (Verkauf, Beratung, Forderungen, SEPA, Laser …). **„Versendet“** listet, was tatsächlich rausging — mit Herkunft."
-    },
-    {
-     "n": 2,
-     "title": "Schnell schalten",
-     "text": "Direkt in der Zeile: **Aktiv** (aus = der Anlass meldet gar nicht), **Im Hub** (Glocke) und **Push** (Geräte). Die Änderung gilt sofort."
-    },
-    {
-     "n": 3,
-     "title": "Regel öffnen",
-     "text": "**„Bearbeiten“** zeigt im Block **Aktiv & Kanäle** zusätzlich, ob Mitarbeiterinnen den Anlass für sich stummschalten dürfen — für Pflichtmeldungen aus."
-    },
-    {
-     "n": 4,
-     "title": "Zielgruppe und Text",
-     "text": "Wer die Meldung bekommt: alle, ein **Recht**, das **Institut des Ereignisses**, die **betroffene Person** (z.B. Verkäuferin) oder feste Personen. Der Text nutzt die **Platzhalter** aus der Liste darüber."
-    }
-   ],
-   "notes": [
-    {
-     "title": "Sofort oder Tages-Zusammenfassung",
-     "text": "Häufige Anlässe (Beratungsbuchungen, Verkäufe, Gutscheine) laufen als **Digest** einmal täglich zur eingestellten Uhrzeit — sonst stumpft das Team ab und schaltet Push ganz aus."
-    },
-    {
-     "title": "GoCardless",
-     "text": "Geplatzte Lastschriften, Rücklastschriften und widerrufene Mandate sind Anlässe im Modul **SEPA & GoCardless** — mit Kundin, Vertrag, Rate und Ursache in Worten. Massen-Ereignisse (angelegt, eingezogen, ausgezahlt) stehen im Katalog, sind aber aus."
-    }
-   ],
-   "hint": {
-    "kind": "warn",
-    "text": "**Der Katalog ist vollständig.** Ein Anlass, der hier nicht steht, existiert im Hub nicht — neue Anlässe kommen mit einem Update, nicht über „Erstellen“. „Erstellen“ ist für einmalige Mitteilungen von Hand."
-   }
-  },
-  {
-   "h1": "Test-Benachrichtigung senden",
-   "sub": "Prüfen, ob eine Meldung ankommt — an sich selbst, eine Kollegin, eine Rolle oder alle; im Hub, per Push oder beides.",
-   "card": {
-    "title": "Testversand",
-    "text": "Freier Text oder Probe einer Regel"
-   },
-   "left": {
-    "shot": "a4-test-frei"
-   },
-   "right": {
-    "shot": "a4-test-regel"
-   },
-   "leftCaption": "„Test senden“: eigener Text, Kanäle und Empfänger frei wählbar.",
-   "rightCaption": "„Testen“ an einer Regel: der Regeltext mit Beispielwerten, Kanäle wie im Echtbetrieb.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Freier Test",
-     "text": "**„Test senden“** oben rechts. Titel und Nachricht sind vorbelegt, **Kanäle** (Im Hub, Push) und **Empfänger** frei wählbar — vorbelegt bist du selbst."
-    },
-    {
-     "n": 2,
-     "title": "Empfänger",
-     "text": "Einzelne Nutzer, **Rollen**, alle mit einem **Recht**, ein **Institut** (Heimatfiliale) oder **alle**. Der freie Test erreicht genau die Gewählten — auch wer den Anlass stummgeschaltet hat."
-    },
-    {
-     "n": 3,
-     "title": "Regel testen",
-     "text": "In der Zeile einer Regel **„Testen“**: Die Vorschau zeigt Titel und Text mit **Beispielwerten**. Kanäle, Stummschaltung und Kanal-Wahl gelten wie bei einem echten Ereignis — auch wenn die Regel aus ist."
-    },
-    {
-     "n": 4,
-     "title": "Rückmeldung lesen",
-     "text": "Nach dem Senden steht oben rechts, wer es **im Hub** bekam, wer **per Push** — und wer **kein Gerät** angemeldet hat oder wegen Stummschaltung leer ausging."
-    }
-   ],
-   "notes": [
-    {
-     "title": "Wo der Test landet",
-     "text": "Bei den Empfängern in der Glocke, mit **„[Test]“** vor dem Titel; unter **„Versendet“** mit Herkunft „Test“. Als Auslösung der Regel zählt er nicht."
-    },
-    {
-     "title": "Push braucht ein Gerät",
-     "text": "Push kommt nur an, wo der Hub als App mit erlaubten Mitteilungen läuft („Grundlagen 2“). Die Rückmeldung nennt, wem das Gerät fehlt."
-    }
-   ],
-   "hint": {
-    "kind": "warn",
-    "text": "**Ein Test ist ein echter Versand.** „An alle aktiven Nutzer“ erreicht das ganze Team — zum Ausprobieren erst an sich selbst schicken."
-   }
-  },
-  {
-   "h1": "Einwilligungen und Protokolle",
-   "sub": "Was rechtlich gilt und wo man nachsieht.",
-   "card": {
-    "title": "Einwilligungen",
-    "text": "Zustimmung, Protokolle, Fehlersuche"
-   },
-   "layout": "text",
-   "table": {
-    "head": [
-     "Frage",
-     "Wo nachsehen"
-    ],
-    "rows": [
-     [
-      "Hat die Kundin etwas bekommen?",
-      "Kundenprofil, Reiter Nachrichten („Kundenverwaltung 5“)"
-     ],
-     [
-      "Warum kam nichts an?",
-      "Protokolle im Admin-Panel — dort steht der Fehlergrund"
-     ],
-     [
-      "Darf die Kundin angeschrieben werden?",
-      "Einwilligungen im Reiter Kundeninfos"
-     ],
-     [
-      "Wie wirkt die Aktion?",
-      "„Berichte 12“ für die Gutschein-Aktion"
-     ]
-    ]
-   },
-   "hint": {
-    "text": "**Ohne Einwilligung kein Versand.** Die Schalter dafür stehen an der Kundin („Kundenverwaltung 2“); hier wird nur eingestellt, was verschickt würde."
-   }
-  }
- ]
+  ]
 }

@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für den glatttHub — die drei Werkzeuge am Kopf der Seitenleiste und die eigenen Benachrichtigungs-Einstellungen",
   "eyebrow": "Grundlagen · Werkzeuge",
   "footerArea": "Grundlagen",
-  "stand": "24.09.2026",
-  "version": "1.2",
+  "stand": "25.09.2026",
+  "version": "1.3",
   "notes": [
     "Der **Standort wirkt auf fast jede Seite** — Termine, Berichte, Verträge richten sich danach.",
     "Die **Suche findet nicht nur Seiten**, sondern auch Kundinnen, Verträge und Gutscheine.",
@@ -183,12 +183,12 @@
         {
           "n": 3,
           "title": "Weglegen",
-          "text": "Das **×** schließt die Karte, ohne die Mitteilung als gelesen zu markieren. Ohne Tippen verschwindet sie nach ein paar Sekunden von selbst; solange der Zeiger darauf liegt, bleibt sie."
+          "text": "Das **×** schließt die Karte, ohne die Mitteilung als gelesen zu markieren. Ohne Tippen verschwindet sie nach ein paar Sekunden von selbst; solange der Zeiger darauf liegt, bleibt sie. **Dringliche** Meldungen (rote Kante, Kennzeichen „Dringlich“, kurzer Ton) bleiben stehen, bis du sie antippst oder schließt."
         },
         {
           "n": 4,
           "title": "Auf dem Handy und in der App",
-          "text": "Wer Push erlaubt hat, bekommt dieselbe Meldung als Mitteilung des Geräts — auf dem iPhone auch mit Bild auf dem Sperrbildschirm. In der glatttHub-App zeigt ein eigenes Banner am oberen Rand die Meldung."
+          "text": "Wer Push erlaubt hat, bekommt dieselbe Meldung als Mitteilung des Geräts — auf dem iPhone auch mit Bild auf dem Sperrbildschirm. Dringliche Meldungen kommen dort auch bei „Nicht stören“ durch. In der glatttHub-App zeigt ein eigenes Banner am oberen Rand die Meldung."
         }
       ],
       "hint": {

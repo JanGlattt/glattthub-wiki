@@ -288,6 +288,13 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   je Anlass-Regel oder individuelles Bild je Meldung, abgelegt im öffentlichen Bucket, damit
   die Erweiterung ohne IAP und ohne Hub-Sitzung laden kann — siehe
   [Notifications](NOTIFICATIONS.md), Abschnitt „Bilder in Benachrichtigungen".
+- **Delegate-Rückrufe nur über den MainActor (Befund 48, 25.09.2026):** Die `async`-Fassungen
+  von `willPresent`/`didReceive` rufen den Abschluss-Rückruf dort auf, wo die Funktion endet —
+  nach `await MainActor.run` ist das der Hintergrund, UIKit bricht mit einer Assertion ab
+  (Absturz beim Tippen auf eine Mitteilung). `NotificationDelegate` nutzt deshalb die
+  Fassungen mit `withCompletionHandler` und ruft sie aus `Task { @MainActor in … }`.
+- **Dringlich:** `PushPayload.urgent` (Hub-Schlüssel `urgent` oder Interruption Level),
+  `HubNotice.urgent` → rote Kante, 12 s, Warn-Haptik; Entitlement time-sensitive seit Build 19.
 - **`glattt:push-received` löst im WebView einen stummen Abgleich der Glocke aus**
   (`hub-notices.js`) — die Web-Hinweis-Karte bleibt in der App aus, das native Banner
   übernimmt.

@@ -658,6 +658,24 @@ wacht darüber; die Erweiterung selbst prüft `NotificationServiceImageTests` in
 echten Bucket-Bild (ein `simctl push` scheitert im Simulator an der fehlenden Berechtigung, solange
 die App nie `requestAuthorization` gerufen hat).
 
+### Dringliche Meldungen (seit 25.09.2026)
+
+Jede Regel hat den Schalter **Dringlich** (`notifications.is_urgent`, Admin-Formular und
+Tabellen-Spalte, Katalog-Standard `defaults.urgent` — ab Werk nur „Laser-Störung gemeldet";
+`NotificationService::urgent()` und der freie Testversand setzen es je Meldung). Die versendete
+Meldung trägt die Kopie, `sendPush()` gibt `urgent` an `PushNotificationService::sendToUsers()`.
+
+| Kanal | Dringlich |
+|---|---|
+| iOS-Push | `interruption-level: time-sensitive` + `relevance-score: 1` — durchbricht Fokus-Modi, bleibt oben; Entitlement `com.apple.developer.usernotifications.time-sensitive` (Build 19). **Nicht** `critical` (Ton trotz Stummschaltung): dafür wäre ein Antrag bei Apple nötig, bewusst nicht gestellt |
+| Browser-Push | `requireInteraction: true`, Vibrationsmuster, `urgency: high` |
+| Hub-Karte | rote Kante, bleibt bis Klick/×, kurzer Hinweiston (Web Audio; ohne vorherige Nutzer-Geste bleibt der Browser stumm), `role="alert"` |
+| Glocke, Mehr-Sheet, Mitteilungsseite | Kennzeichen „Dringlich" und rote Kante (`notification-urgent`, `is-urgent`) |
+| App (Banner/Liste) | rote Kante, 12 s statt 5 s, Warn-Haptik; Liste mit Kennzeichen (`HubNotificationItem.urgent`) |
+| Desktop-App | `urgency: critical`, `timeoutType: never` (Electron: nur Linux wirksam) |
+
+Feed: `GET /phorest/notifications` liefert `urgent`. Tests: `tests/Feature/NotificationUrgencyTest.php`.
+
 ### Hinweis-Karte im Hub (seit 24.09.2026)
 
 `public/js/hub-notices.js` (`window.GlatttNotices`), eingebunden im Hub-Layout. Die Glocke
@@ -757,6 +775,8 @@ tail -f storage/logs/laravel.log | grep -i "notification\|push"
 
 ## Changelog
 
+- **25.09.2026 — Dringlich:** Schalter je Regel; iOS zeitkritisch, Browser-Push bleibend,
+  Hub-Karte rot und bleibend mit Ton, App-Banner/Liste rot; Standard Laser-Störung.
 - **25.09.2026 — APNs-Kopfzeilen:** `apns-push-type: alert` + Priorität 10, damit iOS die
   Bild-Erweiterung startet; native Mitteilungsliste der App zeigt Vorschaubilder (Build 18).
 - **24.09.2026 — Hinweis-Karte, Bilder, Testversand-Fix:** Neue Mitteilungen erscheinen im
