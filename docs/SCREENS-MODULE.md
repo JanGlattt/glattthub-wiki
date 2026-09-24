@@ -334,7 +334,45 @@ Playfair-Überschrift bekam Lato. Deshalb erbt `.screen-canvas .sc-pf > span` Sc
 ausdrücklich. Auf dem TV ist die Playfair-Zeilenhöhe etwas größer als im Browser; Spalten mit festem
 Rahmen brauchen dort Luft nach oben (QR-Foto-Spalte beginnt bei 220 statt 260).
 
-### Admin-Resources (Phase 2)
+### Hub-Seite „Bildschirme" (seit 25.09.2026)
+
+**Entscheidung Jan (25.09.2026):** Die Verwaltung der Apple-TV-Bildschirme wandert aus dem
+Admin-Backend ins Hub-Frontend — dort ist die Gestaltung freier, und die Playlist lässt sich wie im
+Editor-Prototyp per Ziehen und Ablegen zusammenstellen. Die Admin-Resources bleiben als Fallback
+bestehen (Kennzahlen-Seiten je Bildschirm werden bis zum Seiten-Baukasten weiterhin dort konfiguriert).
+
+- **Recht:** `manage_screens_hub` (eigenes Recht, Gruppe Institute/Bildschirme; Migration erbt die
+  Rollen von `manage_screens`). Route-Gruppe `/hub/screens` mit `can:manage_screens_hub`, Menüpunkt in
+  der Gruppe **Betrieb** (Sidebar, Mehr-Menü, globale Suche).
+- **Seite `/hub/screens`** (`Hub\Screens\ScreenHubController`, View `hub/screens/index.blade.php`,
+  Logik `public/js/screens-hub.js`): vier Reiter — **Bildschirme** (Karten mit Online-Status, „Läuft
+  gerade" aus dem Heartbeat, „Laut Plan" aus dem Resolver; Kopplung per Code; Einstellungen mit
+  Standby-Layout/-Texten und Live-Vorschau; Befehle Neu laden/Neustart/Cache leeren; Deaktivieren,
+  Trennen), **Playlists** (Karten mit Zeitplan-Zusammenfassung; Neu, Duplizieren, Löschen, Vorschau,
+  „Jetzt zeigen"), **Medien** (Direkt-Upload wie im Admin, Raster mit Poster, Titel inline, Standort
+  und Rolle je Medium, Verwendung, Neu verarbeiten, Löschschutz bei Verwendung), **Kundenstimmen**
+  (anlegen/bearbeiten, Freigabe umschalten, Google-Import mit Suche; Einwilligungsregel wie im Admin).
+  Ein Aufruf `GET /hub/screens/data` liefert alles für die vier Reiter.
+- **Playlist-Editor `/hub/screens/playlists/{id}`** (`PlaylistHubController`, View
+  `hub/screens/playlist.blade.php`, Logik `public/js/screens-playlist-editor.js`): links Reihenfolge
+  (SortableJS, Klick wählt) und Palette, Mitte das gewählte Element (Layout-Kacheln, Medium mit
+  Bildraster, Foto-Wahl, Bewertungsquelle, Texte, QR, Dauer, Aktiv), rechts die klebende Vorschau
+  (`POST /hub/screens/playlists/preview` liefert den `<x-screen-canvas>`-HTML, Chips für Quer/Hoch
+  und Standort); darunter Playlist-Einstellungen und Zeitpläne (Wochentage/Standorte/Zonen als Chips,
+  Bildschirme als Liste, Uhrzeiten, Gültigkeit mit flatpickr, Priorität). **Speichern in einem
+  Rutsch** über `PUT /hub/screens/playlists/{id}` → `ScreenPlaylistEditorService::save()`: Stammdaten,
+  Elemente in Reihenfolge (bestehende per `id`, neue ohne, fehlende werden gelöscht), Zeitpläne
+  genauso; Werte werden gegen die Kataloge geprüft (Typ, Layout, Medien „bereit", Stimmen,
+  Uhrzeit-Format, Gültigkeitsfenster). Zeitpläne heißen wie die Playlist. `beforeunload` warnt bei
+  ungespeicherten Änderungen. Browser-Vorschau der ganzen Playlist: `/vorschau` (wie im Admin).
+- **Uploads:** die Endpunkte des Admin-Uploads (`ScreenMediaUploadController`) hängen zusätzlich unter
+  `/hub/screens/media/*`; beim lokalen Weg (Disk `public`) wählt der Controller die Upload-Route nach
+  der aufrufenden Route (`hub.screens.media.begin` → `hub.screens.media.upload`), damit das Recht passt.
+- **Tests:** `tests/Feature/ScreensHubTest.php` (Recht, Daten, Editor-Rundlauf mit Umsortieren und
+  Zeitplan-Ersatz, Abweisung unvollständiger Elemente, Vorschau, Einstellungen/Befehle/„Jetzt zeigen",
+  Medien-Zuordnung und Löschschutz, Kundenstimmen-Einwilligung, Anlegen/Duplizieren/Löschen).
+- **Klickanleitung:** Serie „Bildschirme" entsteht mit Phase 5 (Abdeckung: `geplant`).
+
 
 Alle fünf Resources hängen seit 25.09.2026 in der eigenen Admin-Gruppe **Bildschirme**
 (`AdminNavigationGroups::BILDSCHIRME`, zwischen Betrieb und System, Symbol Fernseher) — vorher als
@@ -481,6 +519,7 @@ Render-Seite und Proxy nur mit Ticket, Render-Job ohne Chromium, Admin-Formular 
 
 ## Changelog
 
+- **25.09.2026** — Hub-Seite „Bildschirme“ (`/hub/screens`, Recht `manage_screens_hub`): Geräte, Playlist-Editor mit Ziehen und Ablegen und Live-Vorschau, Medien, Kundenstimmen im Hub-Frontend; Admin-Resources bleiben als Fallback.
 - **25.09.2026** — Textanpassung je Feld (Schriftfaktor im Manifest), Zeilennetz und Schutzzonen für QR-Codes, Logo-Verlauf auf Fotos, Slogan „Keep it glattt“; TestFlight-Build 3.
 - **25.09.2026** — Playlist-Editor als Drei-Spalten-Ansicht mit Ziehen und Ablegen und Palette (eigene Repeater-View), eigene Admin-Gruppe „Bildschirme“, Upload-Seite auf Theme-Klassen (vorher nackte Tailwind-Klassen ohne Wirkung).
 - **24.09.2026** — Phase 4b (Layouts) auf `develop`: Layout-Katalog, Texte, Bildwahl, Bewertungsquelle, Videolaufzeit, Institutsfotos mit Rollen, Admin-Vorschau, Zeitpläne im Playlist-Formular, native Layouts in der TV-App.
