@@ -307,6 +307,33 @@ fester Dauer (`fixedDuration`). Standby = `InstituteLayoutView(standby.asItem)`.
 Buchstaben (grauer Fleck hinter „4,9“) — Schatten auf die Hintergrundform legen
 (`RoundedRectangle().fill().shadow()`), nicht auf den Container.
 
+### Textanpassung, Logo-Verlauf, Slogan (25.09.2026)
+
+**Befund Jan (25.09.2026):** Lange Überschriften liefen über QR-Codes, aus der goldenen Wand und aus
+der Textspalte, lange Wörter wurden am Rand abgeschnitten, das Logo verschwand auf hellen Fotos.
+Drei Maßnahmen, jeweils in Browser-Vorschau **und** TV-App identisch:
+
+- **Schriftfaktor je Textfeld** (`ScreenLayouts::FIT`): bequeme Zeichenzahl je Layout und Ausrichtung,
+  Faktor `sqrt(bequem / Länge)` in den Stufen 1 · 0,9 · 0,8 · 0,7 · 0,6 · 0,55 (`ScreenLayouts::fit`).
+  Der Hub rechnet ihn einmal (`ScreenLayouts::scales`) und liefert ihn als `scales` je Element und im
+  `standby` des Manifests; die Vorschau setzt ihn als Klasse `sc-fit-80` auf einem inneren `<span>`, der
+  Fernseher multipliziert die Schriftgröße (`PlaylistItem.scale("headline")`). Kundenstimmen rechnen
+  beide Seiten selbst nach derselben Regel (`FIT_QUOTE` ↔ `Theme.quoteScale`). Darunter ein Zeilennetz
+  (`-webkit-line-clamp` ↔ `lineLimit`) je Layout, damit nichts mehr überläuft; keine Silbentrennung,
+  lange Wörter brechen nur als letzte Rettung (`overflow-wrap: anywhere`).
+- **Schutzzonen:** „Aufforderung vor Foto" hat Text und QR-Zeile in einer Spalte (können sich nicht mehr
+  überlappen), Panorama-Unterzeile höchstens 900 px breit, Typografisch-CTA höchstens 700 px.
+- **Logo-Verlauf** (`.sc-scrim-tl` ↔ `WordmarkScrim`): weicher dunkler Radialverlauf oben links auf
+  allen Foto-Layouts, dazu ein Schlagschatten auf der Wortmarke.
+- **Slogan „Keep it glattt"** (`ScreenLayouts::SLOGAN`, Manifest `standby.slogan`, `Theme.slogan`):
+  dezent in Lato Light mit weitem Laufabstand unter der Wortmarke auf Institut-Layouts und der goldenen
+  QR-Wand (Jan: nicht kursiv, fein).
+
+**Fallstrick:** Das Theme hat eine globale `* { font-family }`-Regel — ein `<span>` in einer
+Playfair-Überschrift bekam Lato. Deshalb erbt `.screen-canvas .sc-pf > span` Schrift und Schnitt
+ausdrücklich. Auf dem TV ist die Playfair-Zeilenhöhe etwas größer als im Browser; Spalten mit festem
+Rahmen brauchen dort Luft nach oben (QR-Foto-Spalte beginnt bei 220 statt 260).
+
 ### Admin-Resources (Phase 2)
 
 Alle fünf Resources hängen seit 25.09.2026 in der eigenen Admin-Gruppe **Bildschirme**
@@ -454,6 +481,7 @@ Render-Seite und Proxy nur mit Ticket, Render-Job ohne Chromium, Admin-Formular 
 
 ## Changelog
 
+- **25.09.2026** — Textanpassung je Feld (Schriftfaktor im Manifest), Zeilennetz und Schutzzonen für QR-Codes, Logo-Verlauf auf Fotos, Slogan „Keep it glattt“; TestFlight-Build 3.
 - **25.09.2026** — Playlist-Editor als Drei-Spalten-Ansicht mit Ziehen und Ablegen und Palette (eigene Repeater-View), eigene Admin-Gruppe „Bildschirme“, Upload-Seite auf Theme-Klassen (vorher nackte Tailwind-Klassen ohne Wirkung).
 - **24.09.2026** — Phase 4b (Layouts) auf `develop`: Layout-Katalog, Texte, Bildwahl, Bewertungsquelle, Videolaufzeit, Institutsfotos mit Rollen, Admin-Vorschau, Zeitpläne im Playlist-Formular, native Layouts in der TV-App.
 - **24.09.2026** — Phase 4 (Kennzahlen-Modus) auf `develop`: Seiten aus Eigenen Dashboards, technischer Bildschirm-Nutzer, `GET /api/tv/dashboards`, Karten-Renderer mit headless Chromium (Weg A, Ticket statt Freigabe-Link), Admin-Formular, Dashboard-Blätterer in der TV-App.
