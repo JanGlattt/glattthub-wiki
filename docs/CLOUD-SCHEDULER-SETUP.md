@@ -477,7 +477,7 @@ Beide Jobs auf `hub.glattt.com`, Zeitzone Europe/Berlin, Retries 3 / Backoff 30 
 | `snapshot-office-kpis` | `30 23 * * *` | `/api/cron/snapshot-office-kpis` | 600 s | Forderungsbestand je Institut einfrieren — der letzte Lauf eines Monats ist der Monatsend-Stand |
 | `cleanup-screens` | `30 3 * * *` | `/api/cron/cleanup-screens` | 300 s | Apple-TV-App: abgelaufene Kopplungscodes und erledigte Befehle aufräumen |
 | `render-screen-cards` | `*/15 * * * *` | `/api/cron/render-screen-cards` | 300 s | Apple-TV-App: Statistik-Karten der Bildschirme im Kennzahlen-Modus rendern (Job je Bildschirm) |
-| `watch-screens` | `*/5 * * * *` | `/api/cron/watch-screens` | 120 s | Apple-TV-App: Bildschirme überwachen — offline, wieder online, Abweichung vom Plan (`screens:watch`). Angelegt 25.09.2026, **pausiert bis zum Prod-Merge**, dann `resume` |
+| `watch-screens` | `*/5 * * * *` | `/api/cron/watch-screens` | 120 s | Apple-TV-App: Bildschirme überwachen — offline, wieder online, Abweichung vom Plan (`screens:watch`). Angelegt 25.09.2026, aktiv seit dem Prod-Merge |
 
 ## 4. Jobs testen
 

@@ -466,9 +466,7 @@ Jan: „Können wir überwachen, dass der Apple TV das Ganze abspielt?" — ja, 
   (Heartbeat `playing`) mit dem Ergebnis des `ScreenScheduleResolver` und meldet ab 15 Minuten
   Abweichung (`screens.mismatch_since`) `screens.mismatch`. Die Karte zeigt die Abweichung als
   Hinweis. Der Cloud-Scheduler-Job `watch-screens` (`*/5 * * * *`, `/api/cron/watch-screens`,
-  3 Wiederholungen, 120 s) ist seit 25.09.2026 angelegt und **pausiert**, bis der Stand auf `main`
-  ist — danach im Scheduler fortsetzen (`gcloud scheduler jobs resume watch-screens
-  --location=europe-west3`), sonst meldet `cron:audit` ihn als pausiert.
+  3 Wiederholungen, 120 s) läuft seit dem Prod-Merge am 25.09.2026.
 - **Anlässe** im Benachrichtigungs-Katalog (`HubEventRegistry`, Modul Bildschirme):
   `screens.offline`, `screens.online`, `screens.mismatch`, `screens.media_failed` — Icons nur aus
   `HubEventRegistry::ICONS` (`alert`/`success`/`warning`), Link `/hub/screens`.
@@ -608,7 +606,7 @@ Kundenstimme). Swift: `DashboardPagerTests` (Seitenschnitt, Pager, Zahlenformat,
 
 ## Changelog
 
-- **25.09.2026** — Seiten-Baukasten des Kennzahlen-Modus (`screen_pages`, `/api/tv/pages`, Hub-Baukasten mit Ziehen und Ablegen, native Kacheln mit Swift Charts, Einbrennschutz je Bildschirm), Überwachung (`screen_events`, `POST /api/tv/events`, `screens:watch`, vier Anlässe), Office als Standort, Fotos für Kundenstimmen im Hub; TestFlight-Build 4.
+- **25.09.2026** — Seiten-Baukasten des Kennzahlen-Modus (`screen_pages`, `/api/tv/pages`, Hub-Baukasten mit Ziehen und Ablegen, native Kacheln mit Swift Charts, Einbrennschutz je Bildschirm), Überwachung (`screen_events`, `POST /api/tv/events`, `screens:watch`, vier Anlässe), Office als Standort, Fotos für Kundenstimmen im Hub; TestFlight-Build 4. Zusammen mit der Hub-Seite am 25.09.2026 nach Prod gemergt (7e820001).
 - **25.09.2026** — Hub-Seite „Bildschirme“ (`/hub/screens`, Recht `manage_screens_hub`): Geräte, Playlist-Editor mit Ziehen und Ablegen und Live-Vorschau, Medien, Kundenstimmen im Hub-Frontend; Admin-Resources bleiben als Fallback.
 - **25.09.2026** — Textanpassung je Feld (Schriftfaktor im Manifest), Zeilennetz und Schutzzonen für QR-Codes, Logo-Verlauf auf Fotos, Slogan „Keep it glattt“; TestFlight-Build 3.
 - **25.09.2026** — Playlist-Editor als Drei-Spalten-Ansicht mit Ziehen und Ablegen und Palette (eigene Repeater-View), eigene Admin-Gruppe „Bildschirme“, Upload-Seite auf Theme-Klassen (vorher nackte Tailwind-Klassen ohne Wirkung).
