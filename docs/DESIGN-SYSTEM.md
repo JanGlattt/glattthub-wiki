@@ -98,6 +98,24 @@ Analogisch zum GLATTT Gold. Warmer Akzent für Betonung.
 
 ---
 
+## 📱 Native iOS-/iPadOS-Seiten — dieselben Tokens in Swift
+
+Seit 25.09.2026 wird jede neue Hub-Seite auch nativ gebaut ([IOS-APP.md](IOS-APP.md)). Der Look ist
+derselbe, die Bausteine liegen in `ios/glatttHub/Start/HubComponents.swift` und `HubFont.swift`:
+
+| Web | Nativ |
+|---|---|
+| `var(--font-primary)` (Lato) | `HubFont.title / cardTitle / body / footnote / caption / number` — `relativeTo:` Textstil, damit Dynamic Type greift |
+| `--bg-primary` / Karte | `HubColor.page` / `HubColor.card` (Asset-Farben `HubBackground`/`HubCard`, Slate im Dunkelmodus) |
+| `.card-glattt` | `CockpitCard` (16 pt Radius, optionale Kopfzeile) |
+| `.stat-strip-glattt` | `StatTile` (Wert Gold, Beschriftung, Zusatzzeile) |
+| `.badge-glattt`, Instituts-Chip | `BranchPill`, `SessionChip` — Farbe und Kürzel vom Server |
+| `<x-stat-skeleton>` | `Skeleton` |
+| Modal / Info-Panel | `.sheet` (iPhone) bzw. `.popover` am Knopf (iPad) |
+
+Nie `Font.system` oder `systemGroupedBackground` direkt, keine eigene Karte je Seite. Regeln und
+Fallstricke: `.github/instructions/ios.instructions.md`.
+
 ## 🔘 Buttons
 
 ### Primary Button

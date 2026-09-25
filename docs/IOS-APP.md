@@ -28,6 +28,9 @@ Schema `glatttScreens`) — siehe [Bildschirme](SCREENS-MODULE.md).
     Kamera für Laser-Fotos, Face ID auf persönlichen Geräten, Kennzahlen als Widget auf dem Home-Bildschirm.
     Die Klickanleitung entsteht mit dem Pilot (Abdeckung: `status: "geplant"`).
 
+Seit 25.09.2026 gilt: **Jede neue Funktion des Hubs erscheint in der App als native Seite**, nicht
+als eingebettete Web-Seite — Bedienung, Schrift und Farben wie auf den bestehenden App-Seiten.
+
 Warum keine PWA: Eine PWA kann jede Mitarbeiterin löschen, sie lässt sich nicht zentral verwalten und
 Push funktioniert nur unter Bedingungen. Die native App wird über Miradore als Pflicht-App verteilt,
 fern konfiguriert (Kiosk-Modus für Instituts-iPads) und bei Bedarf fern entfernt.
@@ -1172,6 +1175,74 @@ Kundenübersicht** den zuletzt geladenen Stand mit „Kein Netz · Stand 14:32 U
   `WidgetAPI.perform`) lässt jeden Hub-Aufruf scheitern; UI-Test `testOfflineFallback` lädt erst
   mit Netz und startet dann ohne (Bildbeweis `pad-offline-start.png`). Unit-Tests: `OfflineStoreTests`.
 
+### Jede neue Seite auch nativ — Bauplan (seit 25.09.2026)
+
+**Entscheidung Jan, 25.09.2026:** Jede **neue Hub-Seite** wird **auch nativ für iPhone und iPad**
+gebaut — im Design der bestehenden nativen Seiten und nach Apples Human Interface Guidelines. Eine
+Seite, die in der App nur im WebView läuft, ist nicht fertig. Die Regel ist dreistufig:
+
+| Stufe | Bedeutung | Beispiele |
+|---|---|---|
+| **nativ** (Standard) | Einstieg der Seite ist eine native Ansicht; einzelne Web-Detailseiten im nativen Tab sind erlaubt und werden benannt | Cockpit, Terminseite + Terminansicht, Kundenliste + Kundenübersicht, Laser-Wartung, Bonus-Board, Mitteilungen |
+| **eingebettet** (nur mit Begründung) | Web-Blatt `?shell=native` in nativem Rahmen — ausschließlich für Editor-Engines, die es bewusst genau einmal gibt | Formular-Ausfüllen (`form-fill.js`), Livewire-Modal „Direkt behandeln" |
+| **bestand** / **entfaellt** | Web-Seiten von vor der Regel (Nachzug offen) bzw. reine Verwaltung am Schreibtisch | Verträge, Widerrufe, Berichte (bestand); Formular-Editor, Bildschirme, Audit (entfaellt) |
+
+**Warum:** Die App ist für die Institute die Hauptoberfläche geworden. Bis zum 25.09.2026 entstand
+die native Fassung jeweils *nach* der Web-Seite — doppelte Arbeit mit Nacharbeiten (Terminansicht,
+Laser, Bonus). Die Regel zieht die native Seite in den Bauplan jeder Seite, wie es 08/2026 mit den
+Statistik-Karten und dem Eigenen Dashboard gemacht wurde: einmal definieren statt nachportieren.
+
+**Abgesichert:** `tests/Unit/NativeAppCoverageTest.php` verlangt für jede Seite aus
+`GlobalSearchService::PAGES` und jeden Bericht aus `ReportRegistry` einen Eintrag in
+`.github/app-abdeckung.json` (Status, Swift-Dateien, Hinweis). `bestand` ist nur für die im Test
+festgeschriebenen Alt-Seiten erlaubt — eine neue Seite kann nicht als Bestand durchrutschen. Die
+Antwort auf einen roten Lauf ist nie, den Test zu lockern, sondern die Seite nativ zu bauen oder
+bewusst mit `geplant` + Begründung zu vertagen.
+
+**Die fünf Schritte** (verbindlich in `.github/copilot-instructions.md`, ausgeführt mit
+Komponentenkatalog in `.github/instructions/ios.instructions.md`):
+
+1. **Endpunkt teilen, nicht doppeln.** Dieselben JSON-Endpunkte wie das Web über
+   `HubSession.json()` (Web-Sitzung); ein eigener `/api/app/*`-Endpunkt nur, wenn das Web die Daten
+   nicht braucht. Gleiches Recht wie das Routen-Gate, `BranchVisibility` + `allowed_branch_ids`,
+   Cache nie je Nutzer außer bei nutzerspezifischen Daten, Swift-Felder optional, wo der Hub
+   `null` liefern kann.
+2. **Einhängen nach Ort:** Haupttab → `nativeFactories` über den Initializer von
+   `HubTabBarController`; Detailseite → `nativeDetailFactories` + `detail_prefixes`; Mehr-Bereich →
+   `NativeMorePage`; Ablauf → Sheet/`fullScreenCover` aus `AppState`. Web-Pfad in `bridge.js` und
+   `WebCoordinator` abfangen, SF Symbol in `MobileNavigation::SYMBOLS`.
+3. **Design aus dem Bestand:** `HubFont` (Lato, Dynamic Type), `HubColor` (Slate im Dunkelmodus),
+   `CockpitCard`/`SectionTitle`/`StatTile`, Institutsfarben und Kürzel vom Server, `de_DE`, hell und
+   dunkel, iPhone kompakt und iPad regulär, `scrollsUnderSafeArea()`, Skelett statt Spinner, kein
+   Refresh-Timer.
+4. **Apple-Vorgaben:** 44 pt Tippflächen, Dynamic Type, VoiceOver-Beschriftungen, Reduce Motion,
+   Zurück per Wischen, `NumericKeypadField`, Popover am Knopf, Offline-Stand für lesende Seiten.
+5. **Nachweis:** Snapshot-Test hell/dunkel für iPhone und iPad (liefert die Bilder der
+   Klickanleitung), UI-Test, PHP-Feature-Test, Eintrag in `app-abdeckung.json`, Abschnitt hier +
+   Zeile im App-Inventar, Deck in der Serie „App", TestFlight-Build mit Zeile in
+   `ios/TESTFLIGHT-BEFUNDE.md`, Abnahme auf dem Gerät.
+
+**Lebenszyklus:** Der Hub wird vor der App ausgeliefert — die Web-Seite bleibt für ältere Builds
+lauffähig, Endpunkte rückwärtskompatibel, bis `IOS_APP_MIN_VERSION` steigt. Jedes Layout, das die
+App lädt, trägt `<meta name="glattthub-app">`. Kiosk-iPads haben keine nativen Seiten.
+
+### App-Inventar (Stand 25.09.2026)
+
+Quelle ist `.github/app-abdeckung.json` im Hub-Repo (dort führend, hier die Lesefassung).
+
+| Seite | Stand | Was nativ ist / warum nicht |
+|---|---|---|
+| Start | nativ | Cockpit je Rolle, `GET /api/app/start`; iPad als Raster |
+| Termine | nativ | Terminseite + Terminansicht Stufen 1–4; Formular-Ausfüllen und „Direkt behandeln" eingebettet (Editor-Engine) |
+| Kunden | nativ | Liste + Übersicht (`/api/app/clients`); neun Registerkarten als Web-Detailseite im Tab |
+| Benachrichtigungen | nativ | Mitteilungsliste im Mehr-Sheet / iPad-Popover, In-App-Banner |
+| Laser | nativ | Wartungsliste, Assistent, Störung melden; Gerätedetail/Reparaturen/Reports Web |
+| Bonus-Board | nativ | Mehr-Seite, beide Sichten, Export per Teilen-Blatt |
+| Termin buchen | bestand | Slot-Suche Web; Folgetermin/Verlegen aus der Terminansicht nativ |
+| Verträge, Freunde werben, Widerrufe, Gutscheine, Zufriedenheit, Forderungen, Personal, Institute, App-Geräte, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — Kandidaten: Vertragsliste + -übersicht, Reisekosten |
+| Berichte + 16 Berichtsseiten | bestand | WebView im Tab Berichte (ECharts, Registry-Karten); Kennzahlen nativ über Cockpit/Widgets/Siri |
+| Formulare, Bildschirme, Services, Unternehmensverträge, Report-Mails, Audit, Einstellungen, Conversion-Upload, Bonus-Verwaltung | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
+
 ### Verteilung
 
 Apple Business Manager **Custom App** (App Store Connect → „Privat — nur für bestimmte Organisationen"
@@ -1262,6 +1333,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 25.09.2026 | — | Regel „jede neue Seite auch nativ" (Jan): dreistufig nativ/eingebettet/bestand, Bauplan in fünf Schritten, App-Inventar, `.github/app-abdeckung.json` + `NativeAppCoverageTest`, `.github/instructions/ios.instructions.md` als Komponentenkatalog |
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |
 | 21.09.2026 | 0.1 (dev) | Widgets III: Tagesübersicht-Widget, Sparklines im Kennzahlen-Widget, Körperzonen mit Prognose-Balken und Tages-Chart im großen Widget, Extra-Large-Portrait (iOS 27) |

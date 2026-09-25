@@ -221,6 +221,16 @@ Inhalt ist dann trotzdem abgeschnitten. Deshalb nicht nur
 und davon die ausblenden, die in einem Container mit `overflow-x: auto|scroll`
 liegen (die scrollen absichtlich).
 
+### Native App: jede neue Seite auch nativ (seit 25.09.2026)
+
+Die Mobil-Regeln dieser Seite gelten für das Web im Browser **und** für Web-Seiten im WebView der
+iOS-App. Seit 25.09.2026 kommt dazu: **Jede neue Hub-Seite wird auch nativ für iPhone und iPad
+gebaut** — dieselben JSON-Endpunkte, Design aus `HubFont`/`HubColor`/`CockpitCard`, Apple-Vorgaben,
+Eintrag in `.github/app-abdeckung.json` (`NativeAppCoverageTest`). Bauplan und Inventar:
+[IOS-APP.md](IOS-APP.md), Abschnitt „Jede neue Seite auch nativ"; Komponentenkatalog
+`.github/instructions/ios.instructions.md`. Das mobile Web-Layout bleibt trotzdem Pflicht: Es ist
+der Rückfall für ältere App-Builds und der Stand im Browser.
+
 ### Bewusst offen (Stand 17.08.2026)
 
 - Ranking-Tabellen (erste Spalte `#`) hätten von einer `sticky-second`-Variante
