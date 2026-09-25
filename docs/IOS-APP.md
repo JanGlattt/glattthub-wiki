@@ -1199,6 +1199,11 @@ festgeschriebenen Alt-Seiten erlaubt — eine neue Seite kann nicht als Bestand 
 Antwort auf einen roten Lauf ist nie, den Test zu lockern, sondern die Seite nativ zu bauen oder
 bewusst mit `geplant` + Begründung zu vertagen.
 
+**Schritt 0 — drei Varianten im Browser (Jan, 25.09.2026):** Vor dem ersten Swift-Code entstehen
+drei Entwürfe als Artefakt (scrollbare Geräterahmen mit Beispieldaten, Plus/Minus, Aufwand,
+Empfehlung). Jan wählt aus oder kombiniert, erst dann wird gebaut — für jede native Seite, auch
+kleine. Vorbilder: Startseite (sechs Entwürfe), Login und iPad-Seitenleiste (je drei).
+
 **Die fünf Schritte** (verbindlich in `.github/copilot-instructions.md`, ausgeführt mit
 Komponentenkatalog in `.github/instructions/ios.instructions.md`):
 
@@ -1229,6 +1234,12 @@ App lädt, trägt `<meta name="glattthub-app">`. Kiosk-iPads haben keine nativen
 ### App-Inventar (Stand 25.09.2026)
 
 Quelle ist `.github/app-abdeckung.json` im Hub-Repo (dort führend, hier die Lesefassung).
+
+**Nachzug-Reihenfolge (Jan, 25.09.2026):** 1 Verträge (Liste + Vertragsübersicht nach dem
+Kunden-Muster) · 2 Zufriedenheit · 3 Reisekosten (einreichen, dann Freigabe) · 4 App-Geräte
+(Code ausstellen) · 5 Termin buchen (Slot-Suche) · 6 Berichte-Tab als eigenes Projekt. Forderungen,
+Widerrufe, Gutscheine und Institute bleiben hinten, Google-Bewertungen bleibt Bestand. Die
+Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum aus).
 
 | Seite | Stand | Was nativ ist / warum nicht |
 |---|---|---|
