@@ -555,12 +555,42 @@ Apple TV im Team entsteht kein Entwicklungsprofil, deshalb bleibt das Archiv uns
 signiert mit „Apple Distribution". Erster Build `1.0.0 (1)` am 24.09.2026, App-ID 6815394429. Details:
 `.github/knowledge/ios-testflight-verteilung.md`.
 
+### Vorschau ohne Kopplung (seit 25.09.2026)
+
+Der Kopplungsbildschirm trägt den Knopf **„Vorschau ansehen“**: `ScreenState.startDemo()` setzt
+ein festes Manifest aus `App/DemoContent.swift` (fünf Elemente — Institut, Kundenstimmen,
+Bewertung, Aktionsbild mit Bauchbinde, QR-Code — mit drei mitgelieferten Fotos unter
+`Resources/Demo/`) und spielt es über den normalen `PlayerView`. Nichts verlässt das Gerät:
+Medien mit `file://`-URL liefert der `MediaStore` direkt aus dem Bundle (kein Download, kein
+Cache), Heartbeat und Ereignisse laufen nur für gekoppelte Bildschirme. Die Kopplung läuft
+währenddessen im Hintergrund weiter — ordnet der Hub den Code zu, setzt `sync()` `demoActive`
+zurück und das echte Programm ersetzt die Vorschau. Die Menü-Taste (`onExitCommand`) kehrt zum
+Code zurück. Zweck: App Review kann die App ohne Hub-Zugang vollständig prüfen (Prüfhinweise:
+`ios/APP-STORE-TEXTE-TV.md`), und ein neues Gerät zeigt sofort, was es später spielt.
+Prüfstand: Umgebungsvariable `SCREENS_DEMO=1` (`SIMCTL_CHILD_SCREENS_DEMO=1` beim `simctl launch`)
+startet die Vorschau direkt — so entstehen die App-Store-Screenshots. `DemoContentTests`
+sichern, dass das Manifest in sich geschlossen ist.
+
+### Einreichung und Verteilung (Custom App)
+
+Eintrag „glattt Screen“ (App-ID 6815394429) in App Store Connect, seit 25.09.2026 per API
+befüllt — Stand, Texte und die offenen Web-Schritte (Datenschutz-Fragebogen, Vertriebsart
+„Privat“, Einreichen) stehen in `ios/APP-STORE-TEXTE-TV.md`. Verteilung ohne MDM: nach der
+Freigabe Einlösecodes je Standort aus Apple Business Manager („Apps und Bücher“); der
+tvOS-App-Store löst keine Codes ein, der Weg über iPhone/Mac mit der Standort-Apple-ID und
+„Gekauft“ am Apple TV ist am ersten Gerät zu bestätigen. Privacy-Manifest:
+`glatttHubTV/PrivacyInfo.xcprivacy` (UserDefaults `CA92.1`, Datei-Zeitstempel `C617.1`,
+Datenarten Geräte-ID und Diagnose, kein Tracking) — die iOS-App und die Widget-Erweiterung
+haben seit 25.09.2026 ebenfalls eins. Name der App ist **glattt Screen** (Singular,
+`CFBundleDisplayName`); Produkt, Schema und User-Agent heißen weiter `glatttScreens`.
+
 ### Fallstricke
 
 - **Custom-Views im Admin kennen keine Tailwind-Klassen.** Das Panel nutzt kein kompiliertes
   Filament-Theme; `hidden`, `rounded-lg`, `px-4` in `resources/views/filament/…` bleiben wirkungslos
   (die Upload-Seite stand so bis 25.09.2026 nackt da, nativer Datei-Input sichtbar). Nur Theme-Klassen
   aus `theme_glattt.css` oder `.fi-body`-Regeln dort verwenden.
+- **Vorschau startet aus der Umgebungsvariable nicht, wenn im Simulator ein altes Geheimnis liegt** — `startDemo()` verweigert nur bei zugeordnetem Bildschirm, aber ein gespeicherter Bildschirm aus früheren Läufen zählt als zugeordnet. Vor Screenshot-Läufen die App deinstallieren (`simctl uninstall`).
 - **tvOS-Simulator: Keychain überlebt keinen Neustart.** Jeder Start bekam eine neue Geräte-ID und koppelte neu
   (drei verwaiste Bildschirme im lokalen Hub). Geheimnis und Geräte-ID liegen deshalb zusätzlich in
   UserDefaults; auf dem Gerät gilt die Keychain. Der Test-Host läuft die App mit — `ScreenState.start()`
@@ -606,6 +636,7 @@ Kundenstimme). Swift: `DashboardPagerTests` (Seitenschnitt, Pager, Zahlenformat,
 
 ## Changelog
 
+- **25.09.2026** — Einreichung vorbereitet: Vorschau ohne Kopplung (Knopf „Vorschau ansehen“, `DemoContent`, `file://`-Medien aus dem Bundle), Privacy-Manifeste für TV-App, iOS-App und Widgets, Name „glattt Screen“, App-Store-Eintrag per API befüllt (Texte, Screenshots, Altersfreigabe, Preis, Verfügbarkeit, Prüfhinweise), TestFlight-Build 5 an Version 1.0.0 gehängt; offen bei Jan: Datenschutz-Fragebogen, Vertriebsart „Privat“, Einreichen.
 - **25.09.2026** — Seiten-Baukasten des Kennzahlen-Modus (`screen_pages`, `/api/tv/pages`, Hub-Baukasten mit Ziehen und Ablegen, native Kacheln mit Swift Charts, Einbrennschutz je Bildschirm), Überwachung (`screen_events`, `POST /api/tv/events`, `screens:watch`, vier Anlässe), Office als Standort, Fotos für Kundenstimmen im Hub; TestFlight-Build 4. Zusammen mit der Hub-Seite am 25.09.2026 nach Prod gemergt (7e820001).
 - **25.09.2026** — Hub-Seite „Bildschirme“ (`/hub/screens`, Recht `manage_screens_hub`): Geräte, Playlist-Editor mit Ziehen und Ablegen und Live-Vorschau, Medien, Kundenstimmen im Hub-Frontend; Admin-Resources bleiben als Fallback.
 - **25.09.2026** — Textanpassung je Feld (Schriftfaktor im Manifest), Zeilennetz und Schutzzonen für QR-Codes, Logo-Verlauf auf Fotos, Slogan „Keep it glattt“; TestFlight-Build 3.
