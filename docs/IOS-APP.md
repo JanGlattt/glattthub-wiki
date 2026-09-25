@@ -1250,9 +1250,64 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Laser | nativ | Wartungsliste, Assistent, Störung melden; Gerätedetail/Reparaturen/Reports Web |
 | Bonus-Board | nativ | Mehr-Seite, beide Sichten, Export per Teilen-Blatt |
 | Termin buchen | bestand | Slot-Suche Web; Folgetermin/Verlegen aus der Terminansicht nativ |
-| Verträge, Freunde werben, Widerrufe, Gutscheine, Zufriedenheit, Forderungen, Personal, Institute, App-Geräte, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — Kandidaten: Vertragsliste + -übersicht, Reisekosten |
+| Verträge | nativ | Liste + Vertragsseite mit vier Reitern (seit 25.09.2026); GoCardless/Ratenplan/Bearbeiten als Web-Blatt; Preislisten, Freunde werben, Mappings Web |
+| Freunde werben, Widerrufe, Gutscheine, Zufriedenheit, Forderungen, Personal, Institute, App-Geräte, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — nächste: Zufriedenheit, Reisekosten |
 | Berichte + 16 Berichtsseiten | bestand | WebView im Tab Berichte (ECharts, Registry-Karten); Kennzahlen nativ über Cockpit/Widgets/Siri |
 | Formulare, Bildschirme, Services, Unternehmensverträge, Report-Mails, Audit, Einstellungen, Conversion-Upload, Bonus-Verwaltung | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
+
+### Native Verträge (Mehr-Seite, seit 25.09.2026 — Nachzug 1)
+
+**Für Endanwender:** „Verträge" ist in der App nativ: Suchfeld (Vertragsnummer, Kundin, Kunden-Nr.),
+Filterchips (Alle, Aktiv, SEPA ausstehend, Geplatzt, Widerruf, Abgeschlossen), Liste nach Monaten der
+Unterschrift mit Institutsfarbe, Kundin, Zonen, Zahlungsart, Gesamtwert und Status. Ein Tipp öffnet die
+**Vertragsseite** mit vier Reitern wie im Hub — **Übersicht** (Paket, Zahlungsstand, SEPA-Mandat,
+Notiz), **Zahlungen** (Raten mit Status, Gebühren, Blöcke für Pausen, Altbestand, Gutscheine, Freunde
+werben), **Verlauf** (Zeitleiste, Widerrufe) und **E-Mails** (mit Vorschau). Nativ lassen sich die
+Notiz ändern, eine eingegangene Zahlung verbuchen und eine geplatzte Rate als beglichen markieren.
+Alles rund um GoCardless, Ratenplan, Pausen und das Bearbeiten öffnet die vertraute Hub-Seite als
+Blatt und schließt sich danach wieder. Auf dem iPad steht die Liste links, der Vertrag rechts. Langes
+Drücken auf einen Vertrag zeigt Zahlungen, Verlauf, Kundin und Kopieren der Nummern.
+
+!!! nutzerhandbuch "Bedienung: App 8 – Verträge in der App"
+    [https://hilfe.hub.glattt.com/app/8/](https://hilfe.hub.glattt.com/app/8/)
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 25.09.2026, aus drei Entwürfen):** Entwurf 1 „Kunden-Muster" plus die Chips
+  „SEPA ausstehend"/„Geplatzt" (Entwurf 2) und die Kundin-Gruppierung der Suchtreffer (Entwurf 3);
+  **alle Detailseiten nativ**, Schreibaktionen dreistufig (einfach nativ, GoCardless eingebettet),
+  iPad als Split. Entwürfe: https://claude.ai/artifact/X7fCY7FFTQq67tFjQKEt56
+- **Endpunkte — dieselben wie das Web** über `HubSession.json()` (Web-Sitzung): `GET /hub/contracts/list/data`
+  (Filter `status`, `mandate_status=pending`, neu `bounced=1`, `search`, `branch_id`, Sortierung Unterschrift,
+  50 je Seite, `with_clients=0`) + zweite Runde `GET /hub/contracts/clients?ids=` für Kundennamen —
+  exakt wie `contractsList()` im Blade; `GET /hub/contracts/{id}/data` liefert seit 25.09.2026 zusätzlich
+  `summary` (`App\Services\Contracts\ContractSummary` — dieselbe Rechnung wie die Summary-Sidebar, die das
+  Blade jetzt ebenfalls nutzt), `history` (alle Änderungen mit Label/Farbe/Nutzerin), `cancellations`,
+  `email_logs`, `installment_mode(_label)`, `source`, Widerrufsfrist, Vorgänger/Nachfolger und `can`
+  (edit_contract_data, manage_gocardless, view_client_detail); `GET /hub/contracts/{id}/payments` für die
+  Raten (Statusmodell wie `contract-detail.js`: `paid_out`, `pending_submission`, `failed`, `on_site` …).
+  Schreiben: `PATCH …/notes` (Begründung ≥ 10 Zeichen), `POST …/payments/record-external` (Sondertilgung
+  von den letzten offenen Raten), `POST …/payments/{payment}/settle`. Test `ContractNativeDetailTest`.
+- **Eingebettete Web-Fassung:** `GET /hub/contracts/{id}?shell=native#sepa|zahlungen|uebersicht` — die
+  Vertragsseite trägt `contract-v2-page--native-shell`; `theme_glattt.css` blendet damit Sidebar,
+  Kopf, Menüleiste, glatttBert, Seitenkopf, Reiter und Summary-Spalte aus, der Anker wählt den Reiter.
+  Die App zeigt sie als `AppointmentWebSheet` und ruft danach `reloadAfterWeb()`.
+- **App:** `Contracts/ContractModels.swift` (`ContractTarget` für `/hub/contracts/{id}[#reiter]` —
+  erkennt `?shell=native` bewusst nicht; `ContractTab` mit den Slugs aus `tabSlugs`; Modelle mit
+  `init(json:)` über die jetzt `nonisolated` JSON-Helfer), `ContractsViewModel` (entprellte Suche,
+  Chips, Monatsgruppen, Offline-Stand der ersten Seite), `ContractDetailViewModel` (Detail, Raten lazy,
+  Aktionen mit 422-Feldfehlern über `jsonBody`), `ContractsView` (iPhone: Push, iPad: Split 400 pt),
+  `ContractDetailView`/`ContractTabsView`/`ContractSheets`. Einhängung: `NativeMorePage.contracts`
+  mit **eigenem `NativeTabNavigationController`** (`makeController`), `AppContainer.openContract`,
+  `pushMoreDetail`/`popMoreDetail`, `AppState.contractRoute` (Deep-Link, den die Liste verbraucht),
+  `presentedContract` (Rückfall ohne Navigation); Abfangen in `AppContainer.open`, `WebCoordinator`
+  und `bridge.js` (`NATIVE_PATTERNS`, Anker wandert mit). Kundenübersicht: Tipp auf den Vertrag öffnet
+  die native Seite; Long-Press-Menü (`HubObject`) führt zu Zahlungen/Verlauf/E-Mails. Preislisten,
+  Freunde werben und die Mapping-Seiten bleiben Web (Pfade passen nicht auf das Muster).
+- **Nachweis:** `ContractsSnapshotTests` (Liste, vier Reiter, iPad-Split, hell/dunkel — im
+  Snapshot-Modus ersetzen statische Nachbauten Textfeld, Segment und Menü, die `ImageRenderer` nicht
+  rastert), `ContractsUITests` (Mehr → Verträge → Suche → Vertrag → Reiter, gegen den lokalen Hub),
+  Hub `ContractNativeDetailTest`. Version 1.2.0 (Build 20).
 
 ### Verteilung
 
@@ -1281,6 +1336,7 @@ Apps-&-Bücher-Token in Miradore.
 | G (22.09.) | Native Login-Seite „Schlüssel", native Kundenliste + Kundenübersicht (Web-Registerkarten als Detailseite im Tab), `/api/app/clients` | ✅ auf dem iPad abgenommen (Jan, 22.09.; Name + Kundennummer kleben in der Kundenübersicht oben) |
 | H (22.09.) | Native Terminansicht komplett: Stufe 1 (Split-View iPad quer, Übersicht, Sitzungssteuerung, Beenden-Ablauf), Stufe 2 (Einstellungszettel nativ), Stufe 3 (Formularliste/Kette nativ, Ausfüllen als eingebettete Web-Engine), Stufe 4 (Direkt behandeln als Web-Blatt + nativer Abschluss, Kasse, Minderjährige) | ✅ Stufen 1–4 auf dem iPad abgenommen (Jan, 22.09.; inkl. geplante Zonen im Zettel, Skintel-Sperre, Direktzahler ohne SEPA, „Termin verlegen" nativ) |
 | J (23.09.) | Native Laser-Wartung (Liste + Assistent, `hub/laser/api`, gemeinsamer Entwurf mit dem Web-Fenster) und natives Bonus-Board (Mehr-Seite, beide Sichten, Export) | ✅ gebaut (Abschnitt „Native Laser-Wartung und Bonus-Board"); Abnahme auf dem Gerät offen |
+| K (25.09.) | Native Verträge (Mehr-Seite, Liste + Vertragsseite mit vier Reitern, einfache Schreibaktionen nativ, GoCardless als Web-Blatt, iPad-Split) — erster Nachzug nach der Regel „jede neue Seite auch nativ" | ✅ gebaut, Version 1.2.0 (20) in TestFlight; Abnahme auf dem Gerät offen |
 | I (22.09.) | iPad: native Seitenleiste (quer fest, hoch Symbol-Spalte + Überlagerung) ersetzt das Web-Menü; native Startseite als Raster | ✅ auf dem iPad abgenommen (Jan, 22.09.; Standort/Mitteilungen als Popover, Spotlight-Suche, Dunkelmodus in Slate) |
 | 3 | Härtung Weg B (App-Host ohne IAP, Google Sign-In nativ, App Attest) | offen |
 | 4 | Native Prozesse nach Pilot-Entscheidung (Tageserfassung 4–6 Wochen, Laser-Wartung 2–3 Wochen) | offen |
@@ -1344,6 +1400,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 25.09.2026 | 1.2.0 (20) | Native Verträge: Liste (Suche, Chips, Monate) und Vertragsseite mit Übersicht/Zahlungen/Verlauf/E-Mails, Notiz/Zahlung verbuchen/Rate begleichen nativ, GoCardless als `?shell=native`-Blatt, iPad-Split; `ContractSummary`, `bounced`-Filter, `history`/`email_logs` im Detail-JSON |
 | 25.09.2026 | — | Regel „jede neue Seite auch nativ" (Jan): dreistufig nativ/eingebettet/bestand, Bauplan in fünf Schritten, App-Inventar, `.github/app-abdeckung.json` + `NativeAppCoverageTest`, `.github/instructions/ios.instructions.md` als Komponentenkatalog |
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |
 | 20.09.2026 | 0.1 (dev) | Native Tab-Leiste (Liquid Glass) statt Web-Bottom-Nav, `MobileNavigation` als gemeinsame Quelle, `GET /api/app/navigation`, natives Mehr-Sheet und Suche |

@@ -1,0 +1,166 @@
+{
+  "out": "../pdf/App-8-Vertraege",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "App",
+  "of": 8,
+  "audience": "leitung",
+  "footerArea": "App",
+  "stand": "25.09.2026",
+  "version": "1.0",
+  "nr": 8,
+  "title": [
+    "Verträge nachschlagen",
+    "und Zahlungen im Blick"
+  ],
+  "subtitle": "Klickanleitung für die glatttHub-App — die native Vertragsliste mit Suche und Filtern, die Vertragsseite mit Übersicht, Zahlungen, Verlauf und E-Mails, was direkt in der App geht und wofür sich die Hub-Seite öffnet",
+  "eyebrow": "App · Verträge",
+  "notes": [
+    "**Verträge** findest du im Menü **Mehr** (iPhone) bzw. in der Seitenleiste (iPad). Liste und Vertragsseite sind nativ — schnell, mit Zurück per Wischen, und die letzte Liste bleibt auch ohne Netz lesbar.",
+    "Direkt in der App: **Notiz ändern, Zahlung verbuchen, geplatzte Rate begleichen**. Alles rund um **GoCardless, Ratenplan und Pausen** öffnet die vertraute Hub-Seite in einem Blatt — nach dem Schließen ist die App wieder aktuell."
+  ],
+  "pages": [
+    {
+      "h1": "Die Vertragsliste",
+      "sub": "Suchfeld oben, darunter Filterchips und die Verträge nach Monat der Unterschrift — mit Institutsfarbe, Kundin, Zonen, Zahlungsart, Gesamtwert und Status.",
+      "card": {
+        "title": "Vertragsliste",
+        "text": "Suchen, filtern, öffnen"
+      },
+      "left": {
+        "shot": "contracts-list-light"
+      },
+      "leftCaption": "Die Liste auf dem iPhone: **Vertragsnummer** klein über dem Namen, rechts Gesamtwert und Status.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Suchen",
+          "text": "Vertragsnummer, Kundin oder **Kunden-Nr.** eintippen — Treffer kommen beim Tippen, wie in der Kundenliste."
+        },
+        {
+          "n": 2,
+          "title": "Filtern",
+          "text": "Die Chips wechseln die Sicht: **Aktiv**, **SEPA ausstehend** (Mandat fehlt noch), **Geplatzt** (eine Rate ist zurückgekommen), Widerruf, Abgeschlossen."
+        },
+        {
+          "n": 3,
+          "title": "Standort",
+          "text": "Die Liste folgt dem Standortfilter der App — „Alle Standorte“ zeigt alle Institute."
+        },
+        {
+          "n": 4,
+          "title": "Öffnen",
+          "text": "Ein Tipp öffnet die Vertragsseite. Auf dem iPad bleibt die Liste links stehen, der Vertrag erscheint rechts."
+        }
+      ],
+      "hint": {
+        "text": "**Lange drücken** auf einen Vertrag: Zahlungen, Verlauf, Kundin öffnen, Vertrags- oder Kunden-Nr. kopieren — wie das Rechtsklick-Menü der Desktop-App."
+      }
+    },
+    {
+      "h1": "Übersicht des Vertrags",
+      "sub": "Kopfkarte mit Kundin, Kunden-Nr. und Status, darunter vier Reiter: Übersicht, Zahlungen, Verlauf, E-Mails. Die Übersicht zeigt Paket, Zahlungsstand, SEPA-Mandat und Notiz.",
+      "card": {
+        "title": "Übersicht",
+        "text": "Paket, Stand, Mandat, Notiz"
+      },
+      "left": {
+        "shot": "contract-uebersicht-light"
+      },
+      "leftCaption": "Der Reiter **Übersicht**: Zonen als Chips, Zahlungsbalken, Mandat mit maskierter IBAN.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Kundin",
+          "text": "Ein Tipp auf den Namen öffnet die **Kundenübersicht** („App 4“). Beim Scrollen bleiben Name und Vertragsnummer oben stehen."
+        },
+        {
+          "n": 2,
+          "title": "Zahlungsstand",
+          "text": "Balken und Zahlen wie in der Summary-Spalte des Hubs: bezahlt, offen, nächste Rate, Ratenplan."
+        },
+        {
+          "n": 3,
+          "title": "Notiz",
+          "text": "Der Stift öffnet die Notiz zum Ändern. Wie im Hub braucht es eine **Begründung** (mindestens 10 Zeichen), sie landet im Verlauf."
+        },
+        {
+          "n": 4,
+          "title": "Mehr",
+          "text": "Die drei Punkte oben rechts: Kundin öffnen, Nummer kopieren, **Im Hub bearbeiten** (öffnet die Hub-Seite als Blatt), Vorgänger-/Nachfolgevertrag."
+        }
+      ]
+    },
+    {
+      "h1": "Zahlungen und Raten",
+      "sub": "Kennzahlen oben, darunter alle Raten mit Fälligkeit, Betrag und Status — geplatzte Raten rot mit Grund und RLS-Gebühr.",
+      "card": {
+        "title": "Zahlungen",
+        "text": "Raten, verbuchen, begleichen"
+      },
+      "left": {
+        "shot": "contract-zahlungen-light"
+      },
+      "leftCaption": "Der Reiter **Zahlungen**: Rate 1 vor Ort, Lastschriften, eine geplatzte Rate mit Menü.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Zahlung verbuchen",
+          "text": "Überweisung, bar oder Karte eingegangen? Betrag, Datum, Zahlungsweg eintragen — der Hub zieht den Betrag von den **letzten offenen Raten** ab und storniert dafür offene Einzüge."
+        },
+        {
+          "n": 2,
+          "title": "Geplatzte Rate",
+          "text": "Das Menü an einer roten Rate bietet **Als beglichen markieren**: Datum, Zahlungsweg, optional die RLS-Gebühr."
+        },
+        {
+          "n": 3,
+          "title": "Ratenplan & SEPA",
+          "text": "Alles andere — Ratenplan anpassen, pausieren, Mandat, Bankverbindung, Einzüge — öffnet die **Hub-Seite als Blatt**. „Fertig“ schließt es, die App lädt neu."
+        },
+        {
+          "n": 4,
+          "title": "Stornierte Raten",
+          "text": "Sind stornierte Raten dabei, blendet der Link rechts oben sie ein oder aus."
+        }
+      ],
+      "hint": {
+        "text": "Auf dem **iPad** stehen Liste und Vertrag nebeneinander; das Blatt für GoCardless legt sich über den Vertrag."
+      }
+    },
+    {
+      "h1": "Verlauf und E-Mails",
+      "sub": "Der Verlauf zeigt jede Änderung als Zeitleiste — wer, wann, was; darunter Widerrufe. Der Reiter E-Mails listet die SEPA-Mails an die Kundin mit Vorschau.",
+      "card": {
+        "title": "Verlauf & E-Mails",
+        "text": "Nachvollziehen, was passiert ist"
+      },
+      "left": {
+        "shot": "contract-verlauf-light"
+      },
+      "leftCaption": "Der Reiter **Verlauf**: farbige Punkte nach Art der Änderung, Nutzerin darunter.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Verlauf",
+          "text": "Neueste zuerst: Vertrag erstellt, Mandat, Zahlungen, Notizen, Änderungen mit alt → neu und Begründung."
+        },
+        {
+          "n": 2,
+          "title": "Widerruf",
+          "text": "Gibt es einen Widerruf, steht er mit Grund, Reaktion und Zendesk-Ticket über dem Verlauf."
+        },
+        {
+          "n": 3,
+          "title": "E-Mails",
+          "text": "Willkommen, Mandat aktiviert, Zahlungsplan aktualisiert … — ein Tipp öffnet die **gesendete Mail** so, wie die Kundin sie bekommen hat."
+        },
+        {
+          "n": 4,
+          "title": "Aktualisieren",
+          "text": "Nach unten ziehen lädt Vertrag und Raten frisch aus dem Hub."
+        }
+      ]
+    }
+  ]
+}

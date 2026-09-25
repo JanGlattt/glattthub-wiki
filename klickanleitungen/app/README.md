@@ -1,6 +1,6 @@
 # Klickanleitungen App — Quellen
 
-Quellen der Serie **App 1–7** (die glatttHub-App auf iPad und iPhone). Standard und
+Quellen der Serie **App 1–8** (die glatttHub-App auf iPad und iPhone). Standard und
 Deck-Format: `klickanleitungen/README.md` und Wiki `docs/KLICKANLEITUNGEN.md`; die Technik der
 App steht im Wiki `IOS-APP.md`.
 
@@ -13,8 +13,9 @@ App steht im Wiki `IOS-APP.md`.
 | **5 — Laser-Wartung in der App** | Geräte mit Fälligkeit, Countdown, Laser-Fotos, Anbauteile, Abschluss, Entwurf |
 | **6 — Das Bonus-Board in der App** | Mein Board, Monat/Sicht, Management-Sicht mit Export |
 | **7 — Widgets, Siri, Scanner & Hilfe** | Widgets einrichten, Siri-Sätze, Scanner in Upload-Feldern, Einstellungen, Diagnose, Update, Kiosk |
+| **8 — Verträge in der App** | Native Vertragsliste (Suche, Chips), Vertragsseite mit Übersicht/Zahlungen/Verlauf/E-Mails, Notiz/Zahlung/Rate nativ, GoCardless als Hub-Blatt, iPad-Split (seit 25.09.2026) |
 
-Alle sieben richten sich an **die Institute**; 6 (Management-Sicht) zusätzlich an Leitung und Büro.
+Die ersten sieben richten sich an **die Institute**; 6 (Management-Sicht) zusätzlich an Leitung und Büro, 8 (Verträge) an Leitung und Büro.
 
 ## Screenshots — nicht mit Playwright
 

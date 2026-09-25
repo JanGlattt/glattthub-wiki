@@ -346,7 +346,7 @@
    ]
   },
   "App": {
-   "beschreibung": "Der glatttHub als App auf iPad und iPhone: anmelden mit Google, PIN und Face ID, die native Startseite und Seitenleiste, Standort, Suche und Mitteilungen, Termine und Terminansicht mit Einstellungszettel und Formularen, Kunden, die Laser-Wartung in vier Schritten, das Bonus-Board — dazu Widgets, Siri, Scanner und Diagnose.",
+   "beschreibung": "Der glatttHub als App auf iPad und iPhone: anmelden mit Google, PIN und Face ID, die native Startseite und Seitenleiste, Standort, Suche und Mitteilungen, Termine und Terminansicht mit Einstellungszettel und Formularen, Kunden, die Laser-Wartung in vier Schritten, das Bonus-Board, die Verträge mit Zahlungen — dazu Widgets, Siri, Scanner und Diagnose.",
    "fuer": "Für alle, die den Hub auf dem Institut-iPad oder dem eigenen Handy nutzen.",
    "stichworte": [
     "app",
@@ -377,7 +377,13 @@
     "einstellungszettel",
     "offline",
     "update",
-    "diagnose"
+    "diagnose",
+    "vertrag",
+    "verträge",
+    "vertragsliste",
+    "raten",
+    "zahlung verbuchen",
+    "sepa ausstehend"
    ]
   }
  }

@@ -1,202 +1,202 @@
 {
- "out": "../pdf/App-6-Bonus-Board",
- "meta": "../meta.json",
- "shots": "../shots",
- "series": "App",
- "of": 7,
- "audience": "institut",
- "footerArea": "App",
- "stand": "23.09.2026",
- "version": "1.0",
- "nr": 6,
- "title": [
-  "Das Bonus-Board",
-  "in der App"
- ],
- "subtitle": "Klickanleitung für die glatttHub-App — Mein Board mit Zielen, Balken und Hochrechnung, Challenges, das Team; für Leitung und Büro die Management-Sicht mit Instituten, Personen, Widerrufen und Export",
- "eyebrow": "App · Bonus-Board",
- "notes": [
-  "Das Bonus-Board ist in der App **nativ** — Team → Bonus-Board (iPad-Seitenleiste) bzw. Mehr → Team → Bonus-Board (iPhone). Die Zahlen sind dieselben wie im Hub.",
-  "**Mein Board** zeigt deine Ziele mit Balken und Zielmarke; gesichert voll, KPZ unter Vorbehalt in Orange. Beim Wiederkommen feiert die App Fortschritte.",
-  "Mit Leitungs- oder Büro-Recht gibt es den Umschalter **Management** bzw. **Mein Institut**. Die Verwaltung der Regeln bleibt eine Hub-Seite."
- ],
- "pages": [
-  {
-   "h1": "Mein Board",
-   "sub": "Oben die vier Beträge: gesichert, aktueller Stand, Hochrechnung, Abwesenheitstage. Darunter Challenges, je Ziel eine Karte, zuletzt dein Institut.",
-   "card": {
-    "title": "Mein Board",
-    "text": "Beträge, Ziel-Karten, Balken lesen"
-   },
-   "left": {
-    "shot": "bonus-own-ipad",
-    "marks": [
-     {
-      "kind": "badge",
-      "n": 1,
-      "at": "l",
-      "pct": {
-       "x": 3,
-       "y": 5,
-       "w": 10,
-       "h": 5
-      }
-     },
-     {
-      "kind": "badge",
-      "n": 3,
-      "at": "l",
-      "pct": {
-       "x": 3,
-       "y": 41,
-       "w": 14,
-       "h": 4
-      }
-     },
-     {
-      "kind": "frame",
-      "pct": {
-       "x": 19,
-       "y": 42,
-       "w": 78,
-       "h": 4
-      }
-     }
-    ]
-   },
-   "leftCaption": "Mein Board auf dem iPad: Zusammenfassung, Ranking-Challenge, Ziel-Karten mit **Balken und Zielmarke**.",
-   "steps": [
+  "out": "../pdf/App-6-Bonus-Board",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "App",
+  "of": 8,
+  "audience": "institut",
+  "footerArea": "App",
+  "stand": "23.09.2026",
+  "version": "1.0",
+  "nr": 6,
+  "title": [
+    "Das Bonus-Board",
+    "in der App"
+  ],
+  "subtitle": "Klickanleitung für die glatttHub-App — Mein Board mit Zielen, Balken und Hochrechnung, Challenges, das Team; für Leitung und Büro die Management-Sicht mit Instituten, Personen, Widerrufen und Export",
+  "eyebrow": "App · Bonus-Board",
+  "notes": [
+    "Das Bonus-Board ist in der App **nativ** — Team → Bonus-Board (iPad-Seitenleiste) bzw. Mehr → Team → Bonus-Board (iPhone). Die Zahlen sind dieselben wie im Hub.",
+    "**Mein Board** zeigt deine Ziele mit Balken und Zielmarke; gesichert voll, KPZ unter Vorbehalt in Orange. Beim Wiederkommen feiert die App Fortschritte.",
+    "Mit Leitungs- oder Büro-Recht gibt es den Umschalter **Management** bzw. **Mein Institut**. Die Verwaltung der Regeln bleibt eine Hub-Seite."
+  ],
+  "pages": [
     {
-     "n": 1,
-     "title": "Beträge",
-     "text": "**Schon gesichert** (ohne Vorbehalts-KPZ), **Aktueller Stand** (mit), **Hochrechnung** bei gleichem Tempo, **Abwesenheitstage** aus dem Dienstplan."
+      "h1": "Mein Board",
+      "sub": "Oben die vier Beträge: gesichert, aktueller Stand, Hochrechnung, Abwesenheitstage. Darunter Challenges, je Ziel eine Karte, zuletzt dein Institut.",
+      "card": {
+        "title": "Mein Board",
+        "text": "Beträge, Ziel-Karten, Balken lesen"
+      },
+      "left": {
+        "shot": "bonus-own-ipad",
+        "marks": [
+          {
+            "kind": "badge",
+            "n": 1,
+            "at": "l",
+            "pct": {
+              "x": 3,
+              "y": 5,
+              "w": 10,
+              "h": 5
+            }
+          },
+          {
+            "kind": "badge",
+            "n": 3,
+            "at": "l",
+            "pct": {
+              "x": 3,
+              "y": 41,
+              "w": 14,
+              "h": 4
+            }
+          },
+          {
+            "kind": "frame",
+            "pct": {
+              "x": 19,
+              "y": 42,
+              "w": 78,
+              "h": 4
+            }
+          }
+        ]
+      },
+      "leftCaption": "Mein Board auf dem iPad: Zusammenfassung, Ranking-Challenge, Ziel-Karten mit **Balken und Zielmarke**.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Beträge",
+          "text": "**Schon gesichert** (ohne Vorbehalts-KPZ), **Aktueller Stand** (mit), **Hochrechnung** bei gleichem Tempo, **Abwesenheitstage** aus dem Dienstplan."
+        },
+        {
+          "n": 2,
+          "title": "Status-Badge",
+          "text": "Rechts an jeder Karte: **Erreicht**, **Auf Kurs**, **Offen** — oder „unter Vorbehalt“, wenn ein Widerruf offen ist."
+        },
+        {
+          "n": 3,
+          "title": "Balken lesen",
+          "text": "Gold = gesichert, **Orange** = KPZ unter Vorbehalt, der Strich ist das **Ziel**. Rechts davon bleibt Platz, damit ein Überschuss sichtbar wird."
+        },
+        {
+          "n": 4,
+          "title": "Hinweise",
+          "text": "Unter dem Balken: Rest bis zum Ziel, Prämie, Vorbehalt, geparkte KPZ, Hochrechnung, **Serie** (Punkte bis zum nächsten Meilenstein)."
+        }
+      ],
+      "hint": {
+        "text": "**Celebration:** Ist ein Wert seit deinem letzten Besuch gestiegen, erscheint oben ein Lob-Banner mit Konfetti — ein Tipp schließt es."
+      }
     },
     {
-     "n": 2,
-     "title": "Status-Badge",
-     "text": "Rechts an jeder Karte: **Erreicht**, **Auf Kurs**, **Offen** — oder „unter Vorbehalt“, wenn ein Widerruf offen ist."
+      "h1": "Monat, Sicht und Team",
+      "sub": "Über den Karten: der Monat (die letzten zwölf), der Umschalter Mein Board / Management und die Knöpfe zur Verwaltung — je nach Recht.",
+      "card": {
+        "title": "Monat & Sicht",
+        "text": "Umschalten, Vormonat, Institut"
+      },
+      "left": {
+        "shot": "pad-bonus-own",
+        "marks": [
+          {
+            "kind": "badge",
+            "n": 1,
+            "at": "l",
+            "pct": {
+              "x": 21,
+              "y": 15,
+              "w": 9,
+              "h": 4
+            }
+          },
+          {
+            "kind": "badge",
+            "n": 2,
+            "at": "l",
+            "pct": {
+              "x": 32,
+              "y": 15,
+              "w": 14,
+              "h": 4
+            }
+          }
+        ]
+      },
+      "leftCaption": "Das Board neben der iPad-Seitenleiste — **Team → Bonus-Board** ist markiert; oben Monat, Umschalter, Verwaltung.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Monat wählen",
+          "text": "Der Kalender-Knopf zeigt die letzten zwölf Monate. Ein **beendeter Monat** zeigt nur den Endstand — keine Hochrechnung mehr."
+        },
+        {
+          "n": 2,
+          "title": "Sicht umschalten",
+          "text": "**Mein Board / Management** (Büro: alle Institute) oder **Mein Institut** (Standortleitung: nur das eigene). Ohne das Recht fehlt der Umschalter."
+        },
+        {
+          "n": 3,
+          "title": "Dein Institut",
+          "text": "Die letzte Karte: KPZ des Instituts gegen das **Minimalziel**, Vorbehalt und Google-Saldo."
+        },
+        {
+          "n": 4,
+          "title": "Verwaltung",
+          "text": "**„Verwaltung“** und **„Google-Bewertungen“** öffnen die Hub-Seiten (Regeln, Ziele, Freeze, Widerruf-Entscheidungen)."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Info-Knopf",
+          "text": "Das ⓘ oben rechts erklärt Hochrechnung, Abwesenheitsregel, Vorbehalt, geparkte KPZ und Serien."
+        }
+      ]
     },
     {
-     "n": 3,
-     "title": "Balken lesen",
-     "text": "Gold = gesichert, **Orange** = KPZ unter Vorbehalt, der Strich ist das **Ziel**. Rechts davon bleibt Platz, damit ein Überschuss sichtbar wird."
-    },
-    {
-     "n": 4,
-     "title": "Hinweise",
-     "text": "Unter dem Balken: Rest bis zum Ziel, Prämie, Vorbehalt, geparkte KPZ, Hochrechnung, **Serie** (Punkte bis zum nächsten Meilenstein)."
+      "h1": "Management-Sicht",
+      "sub": "Institute gegen Minimalziele, dann Boni je Mitarbeiterin nach Institut gruppiert — Person antippen zeigt ihre Ziele — und die offenen Widerrufe mit Bonus-Relevanz.",
+      "card": {
+        "title": "Management",
+        "text": "Institute, Personen, Widerrufe, Export"
+      },
+      "left": {
+        "shot": "bonus-management-ipad-institute"
+      },
+      "leftCaption": "**Institute vs. Minimalziele:** Balken mit Zielmarke, darunter Ist, Vorbehalt, gesichert, Ziel, Hochrechnung, Google-Saldo und die Ampel.",
+      "right": {
+        "shot": "bonus-management-ipad-personen"
+      },
+      "rightCaption": "**Boni je Mitarbeiterin:** Institut aufklappen, Person antippen — die Ziele mit Status und Prämie; unten die offenen Widerrufe.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Institute",
+          "text": "Zeile grün = Minimalziel erreicht, hellgrün = Hochrechnung auf Kurs. „erreicht — unter Vorbehalt“, wenn es nur mit offenen Widerrufen reicht."
+        },
+        {
+          "n": 2,
+          "title": "Personen",
+          "text": "Gruppen je Institut mit Summen (erreichte Ziele, Hochrechnung, **Bonus gesichert** und daneben der Vorbehalt). Leitung steht zuerst."
+        },
+        {
+          "n": 3,
+          "title": "Ziele einer Person",
+          "text": "Person antippen: je Ziel Wert/Ziel, Balken, Hinweis (persönlich, Instituts-Ziel, Vorbehalt, geparkt), Status und Prämie. **„kein Arbeitstag“** = keine Bonusberechtigung."
+        },
+        {
+          "n": 4,
+          "title": "Widerrufe",
+          "text": "Vertrag, Kundin, Verkäuferin, Institut, KPZ und die Entscheidung je **Team** und **persönlich** (zählt / zählt nicht / geparkt / offen). Der Vertrag öffnet als Hub-Seite."
+        },
+        {
+          "n": 5,
+          "title": "Export",
+          "text": "**CSV** (eine Zeile je Person und Ziel) und **PDF** — die App öffnet das Teilen-Blatt: AirDrop, Mail, Dateien."
+        }
+      ]
     }
-   ],
-   "hint": {
-    "text": "**Celebration:** Ist ein Wert seit deinem letzten Besuch gestiegen, erscheint oben ein Lob-Banner mit Konfetti — ein Tipp schließt es."
-   }
-  },
-  {
-   "h1": "Monat, Sicht und Team",
-   "sub": "Über den Karten: der Monat (die letzten zwölf), der Umschalter Mein Board / Management und die Knöpfe zur Verwaltung — je nach Recht.",
-   "card": {
-    "title": "Monat & Sicht",
-    "text": "Umschalten, Vormonat, Institut"
-   },
-   "left": {
-    "shot": "pad-bonus-own",
-    "marks": [
-     {
-      "kind": "badge",
-      "n": 1,
-      "at": "l",
-      "pct": {
-       "x": 21,
-       "y": 15,
-       "w": 9,
-       "h": 4
-      }
-     },
-     {
-      "kind": "badge",
-      "n": 2,
-      "at": "l",
-      "pct": {
-       "x": 32,
-       "y": 15,
-       "w": 14,
-       "h": 4
-      }
-     }
-    ]
-   },
-   "leftCaption": "Das Board neben der iPad-Seitenleiste — **Team → Bonus-Board** ist markiert; oben Monat, Umschalter, Verwaltung.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Monat wählen",
-     "text": "Der Kalender-Knopf zeigt die letzten zwölf Monate. Ein **beendeter Monat** zeigt nur den Endstand — keine Hochrechnung mehr."
-    },
-    {
-     "n": 2,
-     "title": "Sicht umschalten",
-     "text": "**Mein Board / Management** (Büro: alle Institute) oder **Mein Institut** (Standortleitung: nur das eigene). Ohne das Recht fehlt der Umschalter."
-    },
-    {
-     "n": 3,
-     "title": "Dein Institut",
-     "text": "Die letzte Karte: KPZ des Instituts gegen das **Minimalziel**, Vorbehalt und Google-Saldo."
-    },
-    {
-     "n": 4,
-     "title": "Verwaltung",
-     "text": "**„Verwaltung“** und **„Google-Bewertungen“** öffnen die Hub-Seiten (Regeln, Ziele, Freeze, Widerruf-Entscheidungen)."
-    }
-   ],
-   "notes": [
-    {
-     "title": "Info-Knopf",
-     "text": "Das ⓘ oben rechts erklärt Hochrechnung, Abwesenheitsregel, Vorbehalt, geparkte KPZ und Serien."
-    }
-   ]
-  },
-  {
-   "h1": "Management-Sicht",
-   "sub": "Institute gegen Minimalziele, dann Boni je Mitarbeiterin nach Institut gruppiert — Person antippen zeigt ihre Ziele — und die offenen Widerrufe mit Bonus-Relevanz.",
-   "card": {
-    "title": "Management",
-    "text": "Institute, Personen, Widerrufe, Export"
-   },
-   "left": {
-    "shot": "bonus-management-ipad-institute"
-   },
-   "leftCaption": "**Institute vs. Minimalziele:** Balken mit Zielmarke, darunter Ist, Vorbehalt, gesichert, Ziel, Hochrechnung, Google-Saldo und die Ampel.",
-   "right": {
-    "shot": "bonus-management-ipad-personen"
-   },
-   "rightCaption": "**Boni je Mitarbeiterin:** Institut aufklappen, Person antippen — die Ziele mit Status und Prämie; unten die offenen Widerrufe.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Institute",
-     "text": "Zeile grün = Minimalziel erreicht, hellgrün = Hochrechnung auf Kurs. „erreicht — unter Vorbehalt“, wenn es nur mit offenen Widerrufen reicht."
-    },
-    {
-     "n": 2,
-     "title": "Personen",
-     "text": "Gruppen je Institut mit Summen (erreichte Ziele, Hochrechnung, **Bonus gesichert** und daneben der Vorbehalt). Leitung steht zuerst."
-    },
-    {
-     "n": 3,
-     "title": "Ziele einer Person",
-     "text": "Person antippen: je Ziel Wert/Ziel, Balken, Hinweis (persönlich, Instituts-Ziel, Vorbehalt, geparkt), Status und Prämie. **„kein Arbeitstag“** = keine Bonusberechtigung."
-    },
-    {
-     "n": 4,
-     "title": "Widerrufe",
-     "text": "Vertrag, Kundin, Verkäuferin, Institut, KPZ und die Entscheidung je **Team** und **persönlich** (zählt / zählt nicht / geparkt / offen). Der Vertrag öffnet als Hub-Seite."
-    },
-    {
-     "n": 5,
-     "title": "Export",
-     "text": "**CSV** (eine Zeile je Person und Ziel) und **PDF** — die App öffnet das Teilen-Blatt: AirDrop, Mail, Dateien."
-    }
-   ]
-  }
- ]
+  ]
 }
