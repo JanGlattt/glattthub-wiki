@@ -1,0 +1,167 @@
+{
+ "out": "../pdf/App-9-Gutscheine",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "App",
+ "of": 9,
+ "audience": "institute",
+ "footerArea": "App",
+ "stand": "26.09.2026",
+ "version": "1.0",
+ "nr": 9,
+ "title": [
+  "Gutscheine am Tresen",
+  "prüfen und berichtigen"
+ ],
+ "subtitle": "Klickanleitung für die glatttHub-App — Gutschein per Seriennummer, Scan oder Kundin finden, die Gutscheinkarte mit Restguthaben lesen, Restwert, Gültigkeit und Kundin berichtigen, einen neuen Gutschein anlegen und das Guthaben in der Kundenübersicht sehen",
+ "eyebrow": "App · Gutscheine",
+ "notes": [
+  "**Gutscheine** findest du im Menü **Mehr** (iPhone) bzw. in der Seitenleiste (iPad). Die Seite beginnt mit der Suche: Seriennummer eintippen, **Karte scannen** oder Kundin suchen — Treffer erscheinen beim Tippen.",
+  "Phorest bleibt die einzige Wahrheit: **Einlösen bucht weiterhin die Kasse in Phorest.** In der App wird nachgeschaut und berichtigt — Restwert, Gültigkeit, Kundin — und ein neuer Gutschein angelegt, der sofort in Phorest liegt."
+ ],
+ "pages": [
+  {
+   "h1": "Gutschein finden",
+   "sub": "Großes Suchfeld, darunter der Scanner. Acht Ziffern sind eine Seriennummer, alles andere sucht die Kundin (Name oder Kunden-Nr.) und zeigt ihre Gutscheine.",
+   "card": {
+    "title": "Suche",
+    "text": "Nummer, Scan oder Kundin"
+   },
+   "left": {
+    "shot": "vouchers-search-light"
+   },
+   "leftCaption": "Treffer als **Gutscheinkarte**: Seriennummer, Institut und Kundin, Restguthaben von Originalwert, Balken, Gültigkeit und Status.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Seriennummer",
+     "text": "Die acht Ziffern von der Karte eintippen — Leerzeichen oder Strich stören nicht. Ein Treffer kommt direkt aus Phorest."
+    },
+    {
+     "n": 2,
+     "title": "Karte scannen",
+     "text": "Der goldene Knopf öffnet die Kamera. Ein Code mit der Nummer wird sofort gesucht; ist keine Nummer im Code, sagt die App das und du tippst sie ein."
+    },
+    {
+     "n": 3,
+     "title": "Kundin",
+     "text": "Name oder **Kunden-Nr.** eintippen: Die App findet die Kundin und zeigt alle ihre Gutscheine — auch aufgebrauchte."
+    },
+    {
+     "n": 4,
+     "title": "Status",
+     "text": "**Aktiv** (grün), **Läuft bald ab** (orange, unter 90 Tagen), **Aufgebraucht** (grau), **Abgelaufen** (rot)."
+    }
+   ],
+   "hint": {
+    "text": "**Zuletzt geöffnet** merkt sich die letzten acht Gutscheine — sie bleiben auch ohne Netz lesbar. **Lange drücken** kopiert die Seriennummer oder öffnet die Kundin."
+   }
+  },
+  {
+   "h1": "Die Gutscheinkarte",
+   "sub": "Restguthaben groß, darunter Originalwert, Ausstellung und Institut. Dann Gültigkeit, Kundin, zuletzt bebucht und Notiz — und die drei Berichtigungen.",
+   "card": {
+    "title": "Gutscheinkarte",
+    "text": "Lesen und berichtigen"
+   },
+   "left": {
+    "shot": "voucher-detail-light"
+   },
+   "leftCaption": "Die Karte: **Restguthaben** mit Balken, Kundin als Link in die Kundenübersicht, darunter die Aktionen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Restwert korrigieren",
+     "text": "Neuen Restwert mit Komma eingeben, zum Beispiel nach einer Kassen-Panne. **Nie mehr als der Originalwert** — die App lässt es nicht zu."
+    },
+    {
+     "n": 2,
+     "title": "Gültigkeit verlängern",
+     "text": "Datum wählen; „Fünf Jahre ab heute“ setzt den Standard. Das neue Datum steht sofort in Phorest."
+    },
+    {
+     "n": 3,
+     "title": "Kundin zuordnen",
+     "text": "Kundin suchen und antippen — ein Geschenkgutschein bekommt so seine Besitzerin. Danach zeigt die Kundenübersicht das Guthaben."
+    },
+    {
+     "n": 4,
+     "title": "Zuletzt bebucht",
+     "text": "Der Stand aus Phorest: jede Einlösung an der Kasse, aber auch jede Berichtigung zählt. „Unberührt“ heißt: seit der Anlage nichts passiert."
+    }
+   ],
+   "hint": {
+    "text": "Die Berichtigungen brauchen das Recht **Gutscheine bearbeiten**; ohne Recht meldet die App das beim Speichern. Einlösen bleibt Sache der Kasse in Phorest.",
+    "kind": "info"
+   }
+  },
+  {
+   "h1": "Neuer Gutschein und Guthaben der Kundin",
+   "sub": "Unter der Suche steht „Neuer Gutschein“: Institut, Wert, gewürfelte Seriennummer, optional Kundin, Gültigkeit und Notiz. In der Kundenübersicht zeigt die Karte „Guthaben“ alle Gutscheine der Kundin.",
+   "card": {
+    "title": "Anlegen",
+    "text": "Und das Guthaben im Kundenkontext"
+   },
+   "left": {
+    "shot": "vouchers-start-light"
+   },
+   "leftCaption": "Die Startansicht ohne Suche: **Zuletzt geöffnet** und der Eintrag **Neuer Gutschein**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Institut und Wert",
+     "text": "Das ausstellende Institut ist dein Standort; der Wert kommt mit Komma. Die Seriennummer würfelt die App — der Würfel erzeugt eine neue."
+    },
+    {
+     "n": 2,
+     "title": "Kundin und Gültigkeit",
+     "text": "Kundin ist optional (Geschenkgutschein ohne Kundin), die Gültigkeit steht auf fünf Jahren. **Anlegen** schickt den Gutschein nach Phorest und öffnet seine Karte."
+    },
+    {
+     "n": 3,
+     "title": "Guthaben in der Kundenübersicht",
+     "text": "Bei einer Kundin mit Gutscheinen zeigt die Kundenübersicht die Karte **Guthaben**: Summe des Restguthabens und die Gutscheine — ein Tipp öffnet die Karte."
+    },
+    {
+     "n": 4,
+     "title": "Recht",
+     "text": "„Neuer Gutschein“ braucht das Recht **Gutscheine anlegen**; die Karte „Guthaben“ sieht nur, wer Gutscheine sehen darf."
+    }
+   ]
+  },
+  {
+   "h1": "Auf dem iPad",
+   "sub": "Suche links, Gutscheinkarte rechts — wie Termine und Verträge. Formulare öffnen als Blatt in der Mitte.",
+   "card": {
+    "title": "iPad",
+    "text": "Suche und Karte nebeneinander"
+   },
+   "left": {
+    "shot": "vouchers-ipad-light"
+   },
+   "leftCaption": "Der geteilte Bildschirm: links die Treffer, rechts die gewählte Gutscheinkarte mit den Aktionen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Auswählen",
+     "text": "Ein Tipp links zeigt die Karte rechts; die Suche bleibt stehen, der nächste Treffer ist einen Tipp entfernt."
+    },
+    {
+     "n": 2,
+     "title": "Berichtigen",
+     "text": "Restwert, Gültigkeit und Kundin öffnen als Blatt über der Karte — Abbrechen schließt ohne Änderung."
+    },
+    {
+     "n": 3,
+     "title": "Seitenleiste",
+     "text": "„Gutscheine“ steht in der Seitenleiste unter Verkauf; der Standort der App gilt als Vorgabe für neue Gutscheine."
+    },
+    {
+     "n": 4,
+     "title": "Ohne Netz",
+     "text": "Zuletzt geöffnete Gutscheine bleiben lesbar („Kein Netz · Stand HH:MM“); Berichtigungen und Anlegen brauchen Verbindung."
+    }
+   ]
+  }
+ ]
+}

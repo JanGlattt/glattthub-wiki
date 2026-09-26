@@ -161,6 +161,19 @@ Paginierte Liste von Gutscheinen.
 }
 ```
 
+#### GET /hub/vouchers/search und GET /hub/vouchers/{voucherId}/data (seit 26.09.2026)
+
+JSON der **nativen Gutschein-Seite der iOS-App** (Wiki `IOS-APP.md`, Abschnitt „Native
+Gutscheine"), Recht `view_vouchers`, Web-Sitzung. `search?q=` sucht acht Ziffern (auch „4471
+2093") als Seriennummer in Phorest, alles andere als Kundin (Name, Kunden-Nr., lokaler Spiegel,
+höchstens acht Treffer) und liefert deren Gutscheine; `{voucherId}/data` einen Gutschein.
+Beide geben Gutscheine im Bild der App zurück (`App\Services\App\AppVoucherService::present()`):
+`original_cents`/`remaining_cents` in **Cent**, `status` `active`/`used`/`expired` mit
+`status_label`, `expires_soon` (90 Tage), `last_used_at` (nil = unberührt), Kundin
+(`client_name`, `client_external_id`), Institut (`branch_short`, `branch_color`). Die
+Kundenübersicht der App (`/api/app/clients/{id}`) trägt dieselben Gutscheine als `vouchers`.
+Schreiben läuft weiter über die Proxy-Endpunkte unten. Test `tests/Feature/AppVouchersTest.php`.
+
 #### GET /phorest/vouchers/all
 
 Lädt alle Gutscheine (automatische Pagination durch alle Seiten).

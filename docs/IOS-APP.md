@@ -1251,6 +1251,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Bonus-Board | nativ | Mehr-Seite, beide Sichten, Export per Teilen-Blatt |
 | Termin buchen | bestand | Slot-Suche Web; Folgetermin/Verlegen aus der Terminansicht nativ |
 | Verträge | nativ | Liste + Vertragsseite mit vier Reitern (seit 25.09.2026); GoCardless/Ratenplan/Bearbeiten als Web-Blatt; Preislisten, Freunde werben, Mappings Web |
+| Gutscheine | nativ | Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin-Korrektur, neuer Gutschein, Guthaben-Karte in der Kundenübersicht (seit 26.09.2026); Bestand mit Kennzahlen bleibt Web |
 | Freunde werben, Widerrufe, Gutscheine, Zufriedenheit, Forderungen, Personal, Institute, App-Geräte, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — nächste: Zufriedenheit, Reisekosten |
 | Berichte + 16 Berichtsseiten | bestand | WebView im Tab Berichte (ECharts, Registry-Karten); Kennzahlen nativ über Cockpit/Widgets/Siri |
 | Formulare, Bildschirme, Services, Unternehmensverträge, Report-Mails, Audit, Einstellungen, Conversion-Upload, Bonus-Verwaltung | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
@@ -1312,6 +1313,55 @@ Drücken auf einen Vertrag zeigt Zahlungen, Verlauf, Kundin und Kopieren der Num
   rastert), `ContractsUITests` (Mehr → Verträge → Suche → Vertrag → Reiter, gegen den lokalen Hub),
   Hub `ContractNativeDetailTest`. Version 1.2.0 (Build 20).
 
+### Native Gutscheine (Mehr-Seite, seit 26.09.2026 — Nachzug 2)
+
+**Für Endanwender:** „Gutscheine" ist in der App nativ und beginnt mit der Suche, nicht mit
+einer Liste: Seriennummer eintippen (acht Ziffern, auch mit Leerzeichen), **Karte scannen**
+oder Kundin bzw. Kunden-Nr. suchen — Treffer erscheinen als Gutscheinkarten mit Restguthaben,
+Originalwert, Gültigkeit und Status (Aktiv, Aufgebraucht, Abgelaufen, „Läuft bald ab" bei unter
+90 Tagen). Die Gutscheinkarte zeigt Restwert groß, Kundin, „zuletzt bebucht" und Notiz; drei
+Korrekturen laufen direkt in der App: **Restwert korrigieren** (nie über dem Originalwert),
+**Gültigkeit verlängern**, **Kundin zuordnen**. „Neuer Gutschein" legt einen Gutschein mit
+Institut, Wert, gewürfelter Seriennummer, optionaler Kundin und Gültigkeit (fünf Jahre) an —
+er landet sofort in Phorest. Zuletzt geöffnete Gutscheine bleiben ohne Netz lesbar. In der
+**Kundenübersicht** zeigt die Karte „Guthaben" die Gutscheine der Kundin mit Summe. Einlösen
+bucht weiterhin die Kasse in Phorest. Auf dem iPad steht die Suche links, die Karte rechts.
+
+!!! nutzerhandbuch "Bedienung: App 9 – Gutscheine in der App"
+    [https://hilfe.hub.glattt.com/app/9/](https://hilfe.hub.glattt.com/app/9/)
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 26.09.2026, aus drei Entwürfen):** Entwurf 1 „Tresen-Suche" plus die
+  Karte „Guthaben" aus Entwurf 3 und die Status-Chips aus Entwurf 2 auf den Treffern; **kein
+  Bestand** in der App (der Web-Seite bleibt das Laden aller Gutscheine). Entwürfe:
+  https://claude.ai/artifact/TVE696eftAjZRAR9om21io
+- **Endpunkte:** neu `GET /hub/vouchers/search?q=` und `GET /hub/vouchers/{voucherId}/data`
+  (`VoucherController`, Recht `view_vouchers`, JSON über die Web-Sitzung) —
+  `App\Services\App\AppVoucherService` sucht acht Ziffern als `serialNumber` in Phorest, sonst
+  Kundinnen über `ClientSearchService` (höchstens acht) und deren Gutscheine je `clientId`
+  (`getAllVouchers`, 60 s Cache je Filter); `present()` bringt Phorest-Gutscheine ins Bild der
+  App: **Cent** statt Euro-Gleitkomma, `status` (`active`/`used`/`expired`), `expires_soon`
+  (90 Tage), `last_used_at` (Phorests `updatedAt`, nil innerhalb von fünf Minuten nach der
+  Anlage — Regel der Web-Seite), Kundin aus `client_statistics`, Institut mit Kürzel und Farbe.
+  Schreiben bleibt beim Phorest-Proxy: `PUT /phorest/voucher/{id}` (`remainingBalance`,
+  `expiryDate`, `clientId`; Recht `edit_vouchers`), `POST /phorest/voucher` (Recht
+  `create_vouchers`). Die Kundenübersicht (`/api/app/clients/{id}`) liefert `vouchers`
+  (`count`, `active_count`, `remaining_cents`, bis zu fünf `items`) und `can_view_vouchers`.
+  Tests `AppVouchersTest`, `AppClientsTest`.
+- **App:** `Vouchers/VouchersView.swift` (Seite + `VouchersContent` für Snapshots, iPad-Split),
+  `VoucherDetailView.swift` (Karte, drei Blätter, `VoucherClientPicker` über die Kundensuche
+  der App), `NewVoucherSheet.swift`, `VouchersViewModel.swift` (Suche entprellt, „Zuletzt" im
+  `OfflineStore`, Scanner → `handleScanned`), `VoucherModels.swift` (`VoucherRow`,
+  `VoucherFormat`). Eingehängt als `NativeMorePage.vouchers` (`/hub/vouchers`; Deep-Link
+  `?search=` → `AppState.voucherQuery`, Gutschein-ID aus der Guthaben-Karte →
+  `AppState.voucherRoute` über `AppContainer.openVoucher`). Scanner: `CodeScannerView` (QR)
+  — ein Code mit acht Ziffern oder ein Link mit Nummer wird gesucht, alles andere sagt „Kein
+  Gutschein-Code erkannt".
+- **Nachweis:** `VouchersTests` (Seriennummer, Modell), `VouchersSnapshotTests` (Start, Suche,
+  Karte, iPad — hell/dunkel; liefert die Bilder der Klickanleitung), `VouchersUITests` (Mehr →
+  Gutscheine → Suche → Karte → Formular, gegen den lokalen Hub).
+
 ### Verteilung
 
 Apple Business Manager **Custom App** (App Store Connect → „Privat — nur für bestimmte Organisationen"
@@ -1340,6 +1390,7 @@ Apps-&-Bücher-Token in Miradore.
 | H (22.09.) | Native Terminansicht komplett: Stufe 1 (Split-View iPad quer, Übersicht, Sitzungssteuerung, Beenden-Ablauf), Stufe 2 (Einstellungszettel nativ), Stufe 3 (Formularliste/Kette nativ, Ausfüllen als eingebettete Web-Engine), Stufe 4 (Direkt behandeln als Web-Blatt + nativer Abschluss, Kasse, Minderjährige) | ✅ Stufen 1–4 auf dem iPad abgenommen (Jan, 22.09.; inkl. geplante Zonen im Zettel, Skintel-Sperre, Direktzahler ohne SEPA, „Termin verlegen" nativ) |
 | J (23.09.) | Native Laser-Wartung (Liste + Assistent, `hub/laser/api`, gemeinsamer Entwurf mit dem Web-Fenster) und natives Bonus-Board (Mehr-Seite, beide Sichten, Export) | ✅ gebaut (Abschnitt „Native Laser-Wartung und Bonus-Board"); Abnahme auf dem Gerät offen |
 | K (25.09.) | Native Verträge (Mehr-Seite, Liste + Vertragsseite mit vier Reitern, einfache Schreibaktionen nativ, GoCardless als Web-Blatt, iPad-Split) — erster Nachzug nach der Regel „jede neue Seite auch nativ" | ✅ gebaut, Version 1.2.0 (20) in TestFlight; Abnahme auf dem Gerät offen |
+| L (26.09.) | Native Gutscheine (Tresen-Suche mit Scanner, Gutscheinkarte mit drei Korrekturen, neuer Gutschein, Guthaben-Karte der Kundin) — Nachzug 2 | ✅ gebaut, Version 1.2.0 (23) in TestFlight; Abnahme auf dem Gerät offen |
 | I (22.09.) | iPad: native Seitenleiste (quer fest, hoch Symbol-Spalte + Überlagerung) ersetzt das Web-Menü; native Startseite als Raster | ✅ auf dem iPad abgenommen (Jan, 22.09.; Standort/Mitteilungen als Popover, Spotlight-Suche, Dunkelmodus in Slate) |
 | 3 | Härtung Weg B (App-Host ohne IAP, Google Sign-In nativ, App Attest) | offen |
 | 4 | Native Prozesse nach Pilot-Entscheidung (Tageserfassung 4–6 Wochen, Laser-Wartung 2–3 Wochen) | offen |
@@ -1403,6 +1454,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 26.09.2026 | 1.2.0 (23) | Native Gutscheine: Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin-Korrektur, neuer Gutschein, Guthaben-Karte in der Kundenübersicht; Hub `GET /hub/vouchers/search`, `/hub/vouchers/{id}/data`, `vouchers` in `/api/app/clients/{id}` |
 | 25.09.2026 | 1.2.0 (20) | Native Verträge: Liste (Suche, Chips, Monate) und Vertragsseite mit Übersicht/Zahlungen/Verlauf/E-Mails, Notiz/Zahlung verbuchen/Rate begleichen nativ, GoCardless als `?shell=native`-Blatt, iPad-Split; `ContractSummary`, `bounced`-Filter, `history`/`email_logs` im Detail-JSON |
 | 25.09.2026 | — | Regel „jede neue Seite auch nativ" (Jan): dreistufig nativ/eingebettet/bestand, Bauplan in fünf Schritten, App-Inventar, `.github/app-abdeckung.json` + `NativeAppCoverageTest`, `.github/instructions/ios.instructions.md` als Komponentenkatalog |
 | 20.09.2026 | — | Bauplan beschlossen (WKWebView-Hülle, IAP-Login Weg A/B, Custom App via ABM/Miradore, Widgets) |

@@ -388,5 +388,45 @@
   },
   "ratio": 0.721875,
   "marks": []
+ },
+ "vouchers-start-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1180
+  },
+  "ratio": 1.5128205128205128,
+  "marks": []
+ },
+ "vouchers-search-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 644
+  },
+  "ratio": 0.8256410256410256,
+  "marks": []
+ },
+ "voucher-detail-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1376
+  },
+  "ratio": 1.764102564102564,
+  "marks": []
+ },
+ "vouchers-ipad-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1920,
+   "height": 1288
+  },
+  "ratio": 0.6708333333333333,
+  "marks": []
  }
 }
