@@ -38,12 +38,17 @@ muss.
 - **Belege sind Pflicht, wo Geld fließt:** Bahnticket bei Selbstzahlung, jeder Posten der
   zusätzlichen Kosten, Hotelbeleg bei selbst gezahlter Übernachtung.
 - **Eingereicht ist die Grenze.** Eine eingereichte Abrechnung ist für die Mitarbeiterin
-  gesperrt; erst eine Ablehnung gibt sie zur Korrektur und erneuten Einreichung frei.
-  Genehmigte Abrechnungen sind endgültig.
+  gesperrt; sie kann sie **zurückziehen** (wird wieder Entwurf) oder auf die Entscheidung
+  warten. Eine Ablehnung gibt sie zur Korrektur und erneuten Einreichung frei. Genehmigte
+  Abrechnungen sind endgültig.
+- **Eigene Reisekosten sind eigene** (seit 26.09.2026). Das Hub-Konto ist über die
+  Personalübersicht mit der Mitarbeiterin im Dienstplan verknüpft; die Seite zeigt direkt
+  die eigenen Anspruchstage. Wer Reisekosten freigeben darf, kann stellvertretend für andere
+  erfassen (Auswahl im Seitenkopf). Die eigene Abrechnung gibt niemand selbst frei.
 
 **Zustände einer Abrechnung:** *Entwurf* (angelegt, bearbeitbar) → *Eingereicht* (wartet auf
-Freigabe) → *Genehmigt* (keine Änderungen mehr) oder *Abgelehnt* (mit Grund; kann angepasst
-und erneut eingereicht werden). Details im [Status-Modell](#status-modell).
+Freigabe, gesperrt, zurückziehbar) → *Genehmigt* (keine Änderungen mehr) oder *Abgelehnt*
+(mit Grund; wird angepasst und erneut eingereicht). Details im [Status-Modell](#status-modell).
 
 **Wo was erledigt wird:**
 
@@ -63,20 +68,46 @@ und erneut eingereicht werden). Details im [Status-Modell](#status-modell).
 ### Workflow
 
 ```
-Mitarbeiter auswählen → Anspruchstage laden → Reisekostenabrechnung erstellen → Belege hochladen → Einreichen → (Genehmigung)
+„Wer bin ich?" (/travel-expenses/me) → Anspruchstage laden → Abrechnung erstellen → Belege hochladen → Einreichen → (Freigabe)
 ```
+
+### Eigentum und Rechte (seit 26.09.2026)
+
+Reisekosten hängen an der **askDANTE-Mitarbeiterin**; das Konto kennt sie über
+`users.hr_employee_id → hr_employees.askdante_user_id`. Regelwerk in
+`App\Services\TravelExpenses\TravelExpenseIdentity` und `App\Policies\TravelExpensePolicy`:
+
+| Wer | Darf |
+|---|---|
+| `manage_own_travel_expenses` | Anspruchstage, Abrechnungen, Belege, Einreichen, Zurückziehen, Löschen — **nur für die eigene askDANTE-ID** |
+| `approve_travel_expenses` | zusätzlich **für jede Mitarbeiterin** (stellvertretend erfassen) und die Freigabe — **nie die eigene Abrechnung** (`decide`) |
+| Konto ohne Zuordnung | sieht einen Hinweis („Konto nicht zugeordnet"), keine Personenliste |
+
+Jeder Endpunkt prüft das serverseitig (403 mit Meldung); die Seite liest zuerst
+`GET /travel-expenses/me` (`askdante_user_id`, `name`, `can_pick_others`, `can_approve`) und
+zeigt die Personenauswahl nur mit `can_pick_others`. Bis zum 26.09.2026 fehlte diese Prüfung
+vollständig — jede Person mit dem Recht konnte beliebige Abrechnungen lesen, ändern und
+einreichen.
 
 ### Status-Modell
 
 | Status | DB-Wert | Bedeutung |
 |--------|---------|-----------|
-| **Entwurf** | `draft` | Abrechnung angelegt, kann weiter bearbeitet werden |
-| **Eingereicht** | `submitted` | Abrechnung eingereicht, wartet auf Genehmigung; für die Mitarbeiterin gesperrt |
-| **Genehmigt** | `approved` | Abrechnung genehmigt, keine Änderungen mehr möglich |
-| **Abgelehnt** | `rejected` | Abrechnung abgelehnt (mit `rejection_reason`), kann angepasst und erneut eingereicht werden |
+| **Entwurf** | `draft` | Angelegt, bearbeitbar, löschbar, einreichbar |
+| **Eingereicht** | `submitted` | Wartet auf Freigabe; **gesperrt** (Bearbeiten, Belege, Löschen → 403), **zurückziehbar** (→ `draft`) |
+| **Genehmigt** | `approved` | Endgültig, `approved_by/at`, optionale `approval_notes` |
+| **Abgelehnt** | `rejected` | `rejection_reason`, `rejected_by/at`; bearbeitbar und **erneut einreichbar** (`resubmitted_at`, der Grund bleibt bis zur Entscheidung lesbar) |
 
-Nach dem Einreichen kann die Abrechnung nicht mehr bearbeitet werden (bis zur Ablehnung).
-Genehmigung und Ablehnung: siehe [Reisekosten – Freigabe](REISEKOSTEN-FREIGABE.md).
+```
+draft ──submit──▶ submitted ──approve──▶ approved
+  ▲                  │   │
+  └────withdraw──────┘   └──reject──▶ rejected ──submit──▶ submitted
+```
+
+`TravelExpense::isEditable()` (draft|rejected) ist die einzige Quelle für „darf ändern".
+Bis 26.09.2026 galt das Gegenteil: eingereicht war änderbar, abgelehnt eine Sackgasse
+(`submit()` verlangte `draft`). Genehmigung und Ablehnung: siehe
+[Reisekosten – Freigabe](REISEKOSTEN-FREIGABE.md).
 
 ### Fachregeln
 
@@ -104,9 +135,13 @@ nicht editierbar:
 Beispiel: Bei 6 Stunden und 22 Minuten → 22 Minuten Pause. Die Gesamtzeit aller Tage wird
 summiert (`total_work_minutes`).
 
-**Verpflegungspauschale (gesetzliche Regeln):**
+**Verpflegungspauschale (gesetzliche Regeln):** — nur, wenn die Abwesenheitsart
+`meal_allowance` erlaubt (`TravelExpense::allowsMealAllowance()`, serverseitig seit
+26.09.2026; vorher rechnete der Server die Pauschale immer, das Web setzte sie auf 0 — die
+Summen wichen ab).
 
-- **Eintägige Reise:** 14 € bei mindestens 8 Stunden Arbeitszeit
+- **Eintägige Reise:** 14 € bei mindestens 8 Stunden Arbeitszeit (Carbon 3 liefert
+  `diffInDays` als Float — ohne `(int)`-Cast bekam jede eintägige Reise den Mehrtagessatz)
 - **Mehrtägige Reise:** An- und Abreisetag je 14 €, volle Zwischentage je 28 €
 - **Gewährte Mahlzeiten** werden je Reisetag als Kürzung abgezogen (Mahlzeiten-Matrix):
 
@@ -141,7 +176,9 @@ zusätzliche Kosten = Gesamtbetrag (Beispiel: 120,00 + 89,00 + 42,00 + 15,50 = 2
 `hotel`.
 
 **Einreichen** prüft: alle Pflichtfelder (Datum, Arbeitszeiten für alle Tage, Reisedaten)
-und Belege, wo erforderlich (Bahnticket bei Selbstzahlung, Belege bei zusätzlichen Kosten).
+und Belege, wo erforderlich (Bahnticket bei Selbstzahlung, Hotelbeleg bei selbst bezahlter
+Übernachtung, Belege bei zusätzlichen Kosten). **Überlappende Zeiträume** derselben
+Mitarbeiterin werden beim Anlegen und Ändern abgewiesen (422).
 
 ---
 
@@ -155,8 +192,14 @@ app/Http/Controllers/
 └── TravelExpenseController.php        # API-Controller
 
 app/Models/
-├── TravelExpense.php                  # Hauptmodell
+├── TravelExpense.php                  # Hauptmodell (Status-Konstanten, isEditable, allowsMealAllowance)
 └── TravelExpenseReceipt.php           # Belegmodell
+
+app/Policies/TravelExpensePolicy.php               # view/manage (Eigentum), decide (nie die eigene)
+app/Services/TravelExpenses/TravelExpenseIdentity.php  # askDANTE-ID des Kontos, canActFor, userIdsFor
+
+tests/Feature/TravelExpenseCalculationTest.php     # Pause, Pauschale, Kürzungen, Hotel/Bahn
+tests/Feature/TravelExpenseApiTest.php             # Routen, Eigentum, Zustände, Belege, Freigabe
 
 database/migrations/
 ├── 2026_03_11_135314_create_travel_expenses_table.php
@@ -177,12 +220,15 @@ database/migrations/
 ```
 Browser (Alpine.js)
     │
+    ├── GET  /travel-expenses/me                       → me()
     ├── GET  /travel-expenses/qualifying/{userId}     → qualifyingDays()
     ├── GET  /travel-expenses/user/{userId}            → index()
     ├── POST /travel-expenses                          → store()
     ├── GET  /travel-expenses/{id}                     → show()
     ├── PUT  /travel-expenses/{id}                     → update()
+    ├── DELETE /travel-expenses/{id}                   → destroy()
     ├── POST /travel-expenses/{id}/submit              → submit()
+    ├── POST /travel-expenses/{id}/withdraw            → withdraw()
     ├── POST /travel-expenses/{id}/receipts            → uploadReceipt()
     ├── DELETE /travel-expenses/receipts/{id}           → deleteReceipt()
     └── GET  /travel-expenses/institutes               → institutes()
@@ -202,15 +248,23 @@ Das Frontend ist ein **Alpine.js**-Component (`reisekostenComponent`), das als S
 
 | Method | URL | Name | Controller-Methode |
 |--------|-----|------|--------------------|
+| GET | `/travel-expenses/me` | `travel-expenses.me` | `me()` — eigene Zuordnung und Rechte |
 | GET | `/travel-expenses/institutes` | `travel-expenses.institutes` | `institutes()` |
 | GET | `/travel-expenses/qualifying/{userId}` | `travel-expenses.qualifying` | `qualifyingDays()` |
 | GET | `/travel-expenses/user/{userId}` | `travel-expenses.index` | `index()` |
 | POST | `/travel-expenses` | `travel-expenses.store` | `store()` |
 | GET | `/travel-expenses/{travelExpense}` | `travel-expenses.show` | `show()` |
 | PUT | `/travel-expenses/{travelExpense}` | `travel-expenses.update` | `update()` |
-| POST | `/travel-expenses/{travelExpense}/submit` | `travel-expenses.submit` | `submit()` |
+| DELETE | `/travel-expenses/{travelExpense}` | `travel-expenses.destroy` | `destroy()` — nur draft/rejected |
+| POST | `/travel-expenses/{travelExpense}/submit` | `travel-expenses.submit` | `submit()` — aus draft oder rejected |
+| POST | `/travel-expenses/{travelExpense}/withdraw` | `travel-expenses.withdraw` | `withdraw()` — submitted → draft |
 | POST | `/travel-expenses/{travelExpense}/receipts` | `travel-expenses.receipts.upload` | `uploadReceipt()` |
 | DELETE | `/travel-expenses/receipts/{receipt}` | `travel-expenses.receipts.delete` | `deleteReceipt()` |
+
+!!! warning "Reihenfolge der Routen"
+    `/travel-expenses/approval` und `/me` stehen **vor** den `{travelExpense}`-Routen, die
+    zusätzlich `whereNumber` tragen. Bis 26.09.2026 fing `show()` den Aufruf
+    `/travel-expenses/approval` ab (404) — die Freigabe-Liste war nie erreichbar.
 
 ---
 
@@ -266,8 +320,12 @@ Das Frontend ist ein **Alpine.js**-Component (`reisekostenComponent`), das als S
 | `submitted_at` | timestamp | null | Einreichungsdatum |
 | `approved_by` | FK → users | null | Genehmigt von |
 | `approved_at` | timestamp | null | Genehmigungsdatum |
-| `rejection_reason` | text | null | Ablehnungsgrund |
-| `notes` | text | null | Notizen |
+| `rejection_reason` | text | null | Ablehnungsgrund (bleibt bei erneuter Einreichung bis zur Entscheidung) |
+| `approval_notes` | text | null | Anmerkung der Freigabe (seit 26.09.2026; vorher in `notes` als „[Freigabe-Anmerkung]") |
+| `rejected_by` | FK → users | null | Abgelehnt von (seit 26.09.2026; vorher zweckentfremdet `approved_by`) |
+| `rejected_at` | timestamp | null | Ablehnungsdatum |
+| `resubmitted_at` | timestamp | null | Erneut eingereicht nach Ablehnung |
+| `notes` | text | null | Notizen der Mitarbeiterin |
 | `created_at` | timestamp | | |
 | `updated_at` | timestamp | | |
 
@@ -370,19 +428,30 @@ Validierung, Erstellen/Aktualisieren, `recalculate()`, Speichern.
 'round_trip'        => 'nullable|boolean',
 ```
 
+Beide prüfen `TravelExpenseIdentity::canActFor` bzw. die Policy (`manage`) und den
+Zustand (`isEditable()`); überlappende Zeiträume derselben Mitarbeiterin → 422.
+
 #### `submit(TravelExpense $travelExpense)`
 
 Einreichung mit Prüfungen:
 
-- Status muss `draft` sein
+- Status muss `draft` oder `rejected` sein (abgelehnt → `resubmitted_at`)
 - Bei `additional_costs > 0` müssen Belege vom Typ `additional_cost` vorhanden sein
 - Bei Bahn + Selbstzahlung muss ein Beleg vom Typ `train_ticket` vorhanden sein
+- Bei Übernachtung + Selbstzahlung muss ein Beleg vom Typ `hotel` vorhanden sein
+
+#### `withdraw()` / `destroy()`
+
+`withdraw` setzt eine eingereichte Abrechnung auf `draft` zurück (Einreichungsfelder leer);
+`destroy` löscht Entwurf oder abgelehnte Abrechnung samt Belegdateien.
 
 #### `uploadReceipt(Request $request, TravelExpense $travelExpense)`
 
 - Max. 10 MB, Formate: PDF, JPG, JPEG, PNG
 - Speicherort: `travel-expense-receipts/{expense_id}/` (GCS oder public disk)
-- Beleg-Typen: `additional_cost` (default), `train_ticket`, `hotel`
+- Beleg-Typen: `additional_cost` (default), `train_ticket`, `hotel` (`TravelExpense::RECEIPT_TYPES`;
+  `hotel` fehlte bis 26.09.2026 in der Validierung — der Hotelbeleg kam als 422 zurück)
+- Nur in bearbeitbarem Zustand (draft/rejected), sonst 403
 
 ---
 
@@ -429,6 +498,15 @@ setWorkTime(day, field, value) {
 ```
 
 ---
+
+### Meldungen
+
+Katalog-Anlässe `travel_expenses.submitted|approved|rejected` (siehe
+[Benachrichtigungen](NOTIFICATIONS.md)). Empfängerinnen von
+„freigegeben"/„abgelehnt" sind die **Hub-Konten der Mitarbeiterin**
+(`TravelExpenseIdentity::userIdsFor`) plus die einreichende Person, falls das jemand
+anderes war — bis 26.09.2026 ging die Meldung nur an `submitted_by`. „Eingereicht" verlinkt
+auf `/hub/staff/reisekosten/freigabe` (Migration hängt bestehende Regeln um).
 
 ### Externe Dienste
 
@@ -501,3 +579,12 @@ ALTER TABLE travel_expenses
 
 !!! warning "Hinweis zur Datenmigration"
     Das SQL für Migration 8 setzt bei mehrtägigen Reisen nur den Starttag mit den alten Arbeitszeiten. Die Laravel-Migration (`php artisan migrate`) übernimmt automatisch alle Tage. Wenn möglich, Laravel-Migrationen direkt auf PROD verwenden.
+
+---
+
+## Changelog
+
+| Datum | Änderung |
+|---|---|
+| 26.09.2026 | Überarbeitung Stufe 1 (Jan): Freigabe-Route repariert, Hotelbeleg, Pauschale nur bei erlaubter Abwesenheitsart (serverseitig), eintägige Reise korrekt (Carbon-Float), Statusübergänge (eingereicht gesperrt/zurückziehen, abgelehnt erneut einreichen, Entwurf löschen), Eigentum am Konto mit Policy, `me`-Endpunkt, Meldungen an die Mitarbeiterin, eigene Ablehnungs-/Anmerkungsfelder, Tests. Befunde und native Entwürfe: [Artefakt](https://claude.ai/artifact/5EgnPnbSoKDnsfbxUZdEqW) |
+| 03/2026 | Modul erstellt (mehrtägige Arbeitszeit, Hotel/Verpflegung, Hin-/Rückfahrt), Freigabe |

@@ -1,132 +1,132 @@
 {
- "out": "../pdf/Team-3-Reisekosten-freigeben",
- "meta": "../meta.json",
- "shots": "../shots",
- "series": "Team",
- "nr": 3,
- "of": 3,
- "audience": "buero",
- "title": [
-  "Reisekosten",
-  "freigeben"
- ],
- "subtitle": "Klickanleitung für den glatttHub — eingereichte Abrechnungen prüfen, freigeben oder begründet ablehnen",
- "eyebrow": "Team · Freigabe",
- "footerArea": "Team",
- "stand": "15.09.2026",
- "version": "1.0",
- "notes": [
-  "Freigegeben wird, was **sachlich richtig** ist — die rechnerische Prüfung macht der Hub.",
-  "**Eine Ablehnung braucht immer einen Grund** — er ist das Einzige, was die Kollegin zu sehen bekommt.",
-  "Freigegebene Abrechnungen gehen in die **Auszahlung**; danach ist eine Korrektur aufwendig."
- ],
- "pages": [
-  {
-   "h1": "Die Freigabe-Liste",
-   "sub": "Alle eingereichten Abrechnungen, filterbar nach Person, Zeitraum und Abwesenheitsart.",
-   "card": {
-    "title": "Die Liste",
-    "text": "Eingereichte Abrechnungen filtern und sichten"
-   },
-   "left": {
-    "shot": "p9-freigabe"
-   },
-   "leftCaption": "Die Freigabe-Übersicht mit Filtern.",
-   "steps": [
+  "out": "../pdf/Team-3-Reisekosten-freigeben",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "Team",
+  "nr": 3,
+  "of": 3,
+  "audience": "buero",
+  "title": [
+    "Reisekosten",
+    "freigeben"
+  ],
+  "subtitle": "Klickanleitung für den glatttHub — eingereichte Abrechnungen prüfen, freigeben oder begründet ablehnen",
+  "eyebrow": "Team · Freigabe",
+  "footerArea": "Team",
+  "stand": "26.09.2026",
+  "version": "1.1",
+  "notes": [
+    "Freigegeben wird, was **sachlich richtig** ist — die rechnerische Prüfung macht der Hub.",
+    "**Eine Ablehnung braucht immer einen Grund** — er ist das Einzige, was die Kollegin zu sehen bekommt. Die **eigene** Abrechnung gibt niemand selbst frei.",
+    "Freigegebene Abrechnungen gehen in die **Auszahlung**; danach ist eine Korrektur aufwendig."
+  ],
+  "pages": [
     {
-     "n": 1,
-     "title": "Filter setzen",
-     "text": "**Alle Mitarbeiter** und **Alle Abwesenheitsarten** lassen sich eingrenzen — hilfreich am Monatsende."
+      "h1": "Die Freigabe-Liste",
+      "sub": "Alle eingereichten Abrechnungen, filterbar nach Person, Zeitraum und Abwesenheitsart.",
+      "card": {
+        "title": "Die Liste",
+        "text": "Eingereichte Abrechnungen filtern und sichten"
+      },
+      "left": {
+        "shot": "p9-freigabe"
+      },
+      "leftCaption": "Die Freigabe-Übersicht mit Filtern.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Filter setzen",
+          "text": "**Alle Mitarbeiter** und **Alle Abwesenheitsarten** lassen sich eingrenzen — hilfreich am Monatsende."
+        },
+        {
+          "n": 2,
+          "title": "Zeile lesen",
+          "text": "Person, Tag, Abwesenheitsart, Abfahrt und Ziel, Summe."
+        },
+        {
+          "n": 3,
+          "title": "Öffnen",
+          "text": "Zeigt die vollständige Abrechnung mit allen Positionen und Belegen."
+        }
+      ],
+      "hint": {
+        "text": "**Reihenfolge hilft:** erst nach Abwesenheitsart filtern, dann prüfen. Gleichartige Fälle hintereinander zu sehen macht Abweichungen sichtbar, die einzeln nicht auffallen."
+      }
     },
     {
-     "n": 2,
-     "title": "Zeile lesen",
-     "text": "Person, Tag, Abwesenheitsart, Abfahrt und Ziel, Summe."
+      "h1": "Eine Abrechnung prüfen",
+      "sub": "Der Hub rechnet richtig — zu prüfen ist, ob die Angaben stimmen.",
+      "card": {
+        "title": "Prüfen",
+        "text": "Plausibilität, Belege, Mahlzeiten"
+      },
+      "left": {
+        "shot": "p10-pruefen"
+      },
+      "leftCaption": "Eine geöffnete Abrechnung mit Positionen und Belegen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Tag und Dienstplan",
+          "text": "Passt der Einsatz zum Dienstplan? Der Hub lässt nur anspruchsberechtigte Tage zu — aber die Art kann falsch gewählt sein."
+        },
+        {
+          "n": 2,
+          "title": "Fahrt",
+          "text": "Abfahrt und Ziel plausibel? Bei Bahnfahrten den **Beleg** öffnen und mit dem Betrag vergleichen."
+        },
+        {
+          "n": 3,
+          "title": "Mahlzeiten",
+          "text": "Wurden gestellte Mahlzeiten abgezogen? Bei Schulungen ist Verpflegung oft enthalten."
+        },
+        {
+          "n": 4,
+          "title": "Anmerkung",
+          "text": "Auch bei einer Freigabe möglich — etwa als Hinweis für das nächste Mal. Die Kollegin sieht sie an ihrer Abrechnung."
+        }
+      ],
+      "hint": {
+        "text": "**Belege wirklich öffnen.** Ein angehängtes Bild ist noch kein passender Beleg — der häufigste Fund sind Tickets für einen anderen Tag oder eine andere Strecke. Steht oben **„Erneut eingereicht“**, war die Abrechnung schon einmal abgelehnt — der alte Grund steht dabei."
+      }
     },
     {
-     "n": 3,
-     "title": "Öffnen",
-     "text": "Zeigt die vollständige Abrechnung mit allen Positionen und Belegen."
+      "h1": "Freigeben oder ablehnen",
+      "sub": "Zwei Wege — beide endgültig genug, um sie bewusst zu gehen.",
+      "card": {
+        "title": "Entscheiden",
+        "text": "Freigeben oder mit Grund ablehnen"
+      },
+      "left": {
+        "shot": "p11-entscheiden"
+      },
+      "leftCaption": "Die Entscheidung mit Pflicht-Ablehnungsgrund.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Freigeben",
+          "text": "Die Abrechnung geht in die Auszahlung. Eine spätere Korrektur ist möglich, aber aufwendig."
+        },
+        {
+          "n": 2,
+          "title": "Ablehnen",
+          "text": "Braucht den **Ablehnungsgrund** — er ist Pflicht und wird der Kollegin angezeigt."
+        },
+        {
+          "n": 3,
+          "title": "Grund formulieren",
+          "text": "Konkret schreiben, was fehlt: **„Bahnticket fehlt“** hilft, **„nicht korrekt“** nicht."
+        },
+        {
+          "n": 4,
+          "title": "Danach",
+          "text": "Die Kollegin korrigiert und reicht erneut ein — der Vorgang bleibt derselbe. Eine eingereichte Abrechnung kann sie außerdem selbst **zurückziehen**, solange nicht entschieden ist."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "**Nicht stillschweigend liegen lassen.** Eine ungeprüfte Abrechnung ist für die Kollegin nicht von einer abgelehnten zu unterscheiden — sie sieht nur, dass kein Geld kommt. Lieber zügig ablehnen mit klarem Grund als wochenlang offen lassen."
+      }
     }
-   ],
-   "hint": {
-    "text": "**Reihenfolge hilft:** erst nach Abwesenheitsart filtern, dann prüfen. Gleichartige Fälle hintereinander zu sehen macht Abweichungen sichtbar, die einzeln nicht auffallen."
-   }
-  },
-  {
-   "h1": "Eine Abrechnung prüfen",
-   "sub": "Der Hub rechnet richtig — zu prüfen ist, ob die Angaben stimmen.",
-   "card": {
-    "title": "Prüfen",
-    "text": "Plausibilität, Belege, Mahlzeiten"
-   },
-   "left": {
-    "shot": "p10-pruefen"
-   },
-   "leftCaption": "Eine geöffnete Abrechnung mit Positionen und Belegen.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Tag und Dienstplan",
-     "text": "Passt der Einsatz zum Dienstplan? Der Hub lässt nur anspruchsberechtigte Tage zu — aber die Art kann falsch gewählt sein."
-    },
-    {
-     "n": 2,
-     "title": "Fahrt",
-     "text": "Abfahrt und Ziel plausibel? Bei Bahnfahrten den **Beleg** öffnen und mit dem Betrag vergleichen."
-    },
-    {
-     "n": 3,
-     "title": "Mahlzeiten",
-     "text": "Wurden gestellte Mahlzeiten abgezogen? Bei Schulungen ist Verpflegung oft enthalten."
-    },
-    {
-     "n": 4,
-     "title": "Anmerkung",
-     "text": "Auch bei einer Freigabe möglich — etwa als Hinweis für das nächste Mal."
-    }
-   ],
-   "hint": {
-    "text": "**Belege wirklich öffnen.** Ein angehängtes Bild ist noch kein passender Beleg — der häufigste Fund sind Tickets für einen anderen Tag oder eine andere Strecke."
-   }
-  },
-  {
-   "h1": "Freigeben oder ablehnen",
-   "sub": "Zwei Wege — beide endgültig genug, um sie bewusst zu gehen.",
-   "card": {
-    "title": "Entscheiden",
-    "text": "Freigeben oder mit Grund ablehnen"
-   },
-   "left": {
-    "shot": "p11-entscheiden"
-   },
-   "leftCaption": "Die Entscheidung mit Pflicht-Ablehnungsgrund.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Freigeben",
-     "text": "Die Abrechnung geht in die Auszahlung. Eine spätere Korrektur ist möglich, aber aufwendig."
-    },
-    {
-     "n": 2,
-     "title": "Ablehnen",
-     "text": "Braucht den **Ablehnungsgrund** — er ist Pflicht und wird der Kollegin angezeigt."
-    },
-    {
-     "n": 3,
-     "title": "Grund formulieren",
-     "text": "Konkret schreiben, was fehlt: **„Bahnticket fehlt“** hilft, **„nicht korrekt“** nicht."
-    },
-    {
-     "n": 4,
-     "title": "Danach",
-     "text": "Die Kollegin korrigiert und reicht erneut ein — der Vorgang bleibt derselbe."
-    }
-   ],
-   "hint": {
-    "kind": "warn",
-    "text": "**Nicht stillschweigend liegen lassen.** Eine ungeprüfte Abrechnung ist für die Kollegin nicht von einer abgelehnten zu unterscheiden — sie sieht nur, dass kein Geld kommt. Lieber zügig ablehnen mit klarem Grund als wochenlang offen lassen."
-   }
-  }
- ]
+  ]
 }

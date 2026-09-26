@@ -33,10 +33,21 @@ const mitarbeiterWaehlen = ['fn', async (page, L) => {
 
 // Beispiel-Reisetage in die Alpine-Daten der Seite legen (window.RK = Komponente)
 const beispielTage = ['fn', async (page, L) => {
+  // Erst warten, bis der echte askDANTE-Abruf durch ist — sonst überschreibt seine (leere)
+  // Antwort die Beispieltage wieder (12 Monatsabrufe, lokal gern > 3,5 s).
+  for (let i = 0; i < 60; i++) {
+    const busy = await page.evaluate(() => { const r = [...document.querySelectorAll('[x-data]')].find(e => { try { return Alpine.$data(e).qualifyingDays !== undefined; } catch (err) { return false; } }); return r ? Alpine.$data(r).loading : false; });
+    if (!busy) break;
+    await L.wait(page, 500);
+  }
   const ok = await page.evaluate(() => {
     const root = [...document.querySelectorAll('[x-data]')].find(e => { try { return Alpine.$data(e).qualifyingDays !== undefined; } catch (err) { return false; } });
     if (!root) return false;
     const d = Alpine.$data(root); window.RK = d;
+    // Echte Namen aus askDANTE maskieren (Personenliste im Seitenkopf + Untertitel)
+    const vor = ['Anna', 'Lena', 'Marie', 'Sofia', 'Mira'], nach = ['Musterfrau', 'Beispiel', 'Schneider', 'Krüger', 'Adler'];
+    d.staffList = (d.staffList || []).map((u, i) => ({ ...u, firstName: vor[i % vor.length], lastName: nach[i % nach.length] }));
+    d.selectedUserName = 'Lena Beispiel';
     const tag = (date, label, claim) => ({ date, reason: 'CUSTOM', name: label, api_key: 'CUSTOM:' + label, absence_type_id: 1, absence_type_label: label, allows_meal_allowance: true, ratio: 1, approval_state: 'APPROVED', claim });
     const fall = (id, status, total, ziel, km, date) => ({ id, status, total_amount: total, destination: ziel, distance_km: km, travel_date_start: date, travel_date_end: date });
     d.qualifyingDays = [

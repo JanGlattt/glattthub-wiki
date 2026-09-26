@@ -31,11 +31,15 @@ und endet mit einer von zwei Entscheidungen: **Genehmigen** oder **Ablehnen**.
 - **Korrigieren statt zurückschicken.** Kleinere Abweichungen (Kilometer, Hin & Rück,
   Arbeitszeiten, zusätzliche Kosten) korrigiert die prüfende Person direkt bei der
   Genehmigung; die korrigierten Werte ersetzen die Originalwerte, alle Beträge werden
-  serverseitig neu berechnet. Eine optionale Anmerkung wird an die Notizen angehängt.
+  serverseitig neu berechnet. Eine optionale Anmerkung steht als eigenes Feld an der
+  Abrechnung und ist für die Mitarbeiterin sichtbar.
 - **Ablehnen braucht einen Grund.** Der Ablehnungsgrund ist Pflicht und bleibt an der
-  Abrechnung sichtbar; die Mitarbeiterin kann sie danach anpassen und erneut einreichen.
+  Abrechnung sichtbar; die Mitarbeiterin passt sie an und reicht sie erneut ein — in der
+  Liste dann als „Erneut eingereicht" mit dem alten Grund markiert.
 - **Entschieden ist entschieden.** Genehmigte und abgelehnte Abrechnungen sind nur noch
   Ansicht („Details"), nicht mehr änderbar.
+- **Nie die eigene.** Wer selbst Reisekosten hat, sieht die eigene Abrechnung in der Liste,
+  kann sie aber nicht freigeben oder ablehnen (seit 26.09.2026).
 
 **Wo was erledigt wird:**
 
@@ -62,13 +66,20 @@ Mitarbeiter reicht ein → Freigabe-Übersicht → Antrag prüfen → Genehmigen
 | **Ablehnen** | Status wechselt auf `rejected`, Ablehnungsgrund (Pflicht) wird gespeichert |
 
 - **Nur `submitted` ist entscheidbar** — Genehmigen/Ablehnen auf anderem Status → HTTP 422.
+- **Nie die eigene Abrechnung** — `TravelExpensePolicy::decide` (askDANTE-ID des Kontos ≠
+  `askdante_user_id`) → HTTP 403; `approvalIndex`/`approvalShow` liefern `is_own`, die Seite
+  blendet die Entscheidung dann aus.
+- **Erneute Einreichung** nach Ablehnung: `resubmitted_at` gesetzt, `rejection_reason` noch da
+  — die Seite zeigt beides als Hinweis über der Prüfung.
 - **Korrigierbar bei der Genehmigung:** Kilometer (einfache Strecke), Hin & Rück
   (Checkbox), Arbeitszeiten (Beginn/Ende pro Tag), zusätzliche Kosten (Betrag) — im UI;
   der Endpoint akzeptiert darüber hinaus Hotel-/Bahnkosten und Mahlzeiten-Matrix (siehe
   `approve()`). Korrigierte Werte ersetzen die Originalwerte; die Neuberechnung
   (Verpflegungspauschale, Arbeitszeit, Fahrtkosten, Gesamt) erfolgt serverseitig über
   `recalculate()`.
-- **Anmerkung** (optional) wird als „[Freigabe-Anmerkung]" an `notes` angehängt.
+- **Anmerkung** (optional) steht in `approval_notes` (seit 26.09.2026; vorher als
+  „[Freigabe-Anmerkung]" an `notes` angehängt). Ablehnungen schreiben `rejected_by/at`,
+  nicht mehr `approved_by/at`.
 - **Filter** (kombinierbar): Monat des Reise-Beginns (`JJJJ-MM`), Abwesenheitsart (nur Typen
   mit `travel_expenses = true`), Mitarbeiter; „Zurücksetzen" leert alle.
 - **KPIs** über der Tabelle (bezogen auf die gefilterten Anträge): Offen = `submitted`,
@@ -137,7 +148,7 @@ Browser (Alpine.js: reisekostenFreigabe)
 | Method | URL | Controller-Methode | Beschreibung |
 |--------|-----|--------------------|-------------|
 | GET | `/travel-expenses/absence-types` | `absenceTypes()` | Abwesenheitsarten mit `travel_expenses=true` |
-| GET | `/travel-expenses/approval` | `approvalIndex()` | Liste aller eingereichten/genehmigten/abgelehnten Anträge |
+| GET | `/travel-expenses/approval` | `approvalIndex()` | Liste aller eingereichten/genehmigten/abgelehnten Anträge (Filter `month`, `absence_type_id`, `user_id`, `status`) — steht vor den `{travelExpense}`-Routen, sonst fängt `show()` sie ab (Fehler bis 26.09.2026) |
 | GET | `/travel-expenses/approval/{travelExpense}` | `approvalShow()` | Einzelnen Antrag mit Details laden |
 | POST | `/travel-expenses/approval/{travelExpense}/approve` | `approve()` | Antrag genehmigen (mit optionalen Korrekturen) |
 | POST | `/travel-expenses/approval/{travelExpense}/reject` | `reject()` | Antrag ablehnen (mit Pflicht-Begründung) |
@@ -316,3 +327,12 @@ protected $appends = ['display_name'];
     - **`.input-glattt`** hat `width: 100% !important` — Inline-Inputs im Modal verwenden daher `width: Xpx !important` oder verzichten auf die Klasse
     - **`.checkbox-glattt-box`** hat `position: absolute; inset: 0` und `backdrop-filter: blur(8px)` — innerhalb von `modal-glattt-section` (die durch `backdrop-filter` einen neuen Stacking-Kontext bildet) überdeckt dies die gesamte Section. Deshalb werden im Modal native Checkboxen mit `accent-color` verwendet
     - **`.input-glattt-floating-wrapper`** hat `width: 100%` — nicht für kompakte Inline-Inputs geeignet
+
+---
+
+## Changelog
+
+| Datum | Änderung |
+|---|---|
+| 26.09.2026 | Liste wieder erreichbar (Routen-Reihenfolge), keine Selbstfreigabe, `approval_notes`/`rejected_by`/`rejected_at`, Hinweis „Erneut eingereicht", Meldungen an die Mitarbeiterin |
+| 20.03.2026 | Freigabe erstellt |
