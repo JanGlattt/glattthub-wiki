@@ -135,6 +135,23 @@ Browser (Alpine.js: reisekostenFreigabe)
 
 ---
 
+### Auszahlung
+
+Seit Stufe 3 (26.09.2026) steht oben auf der Freigabe-Seite die Karte **Auszahlung**
+(`TravelPayoutService`, Recht `approve_travel_expenses`):
+
+| Endpunkt | Zweck |
+|---|---|
+| `GET /travel-expenses/approval/payout?month=JJJJ-MM` | genehmigte, nicht ausgezahlte Abrechnungen mit `approved_at` bis Monatsende: Anzahl, Summe, IDs |
+| `GET /travel-expenses/approval/payout/export?month=` | CSV (Semikolon, Dezimalkomma, BOM): Personalnummer (aus `hr_employees`), Name, Zeitraum, Art, Fahrt, Hotel, Verpflegung, Zusatzkosten, Gesamt, genehmigt am/von, ID; Summenzeile |
+| `POST /travel-expenses/approval/payout` `{ids}` | genau diese IDs auf `paid` (`paid_by/at`); was nicht mehr genehmigt/offen ist, wird übersprungen und gezählt |
+
+Maßgeblich ist der **Tag der Genehmigung**, nicht der Reisetag — so fällt nichts zwischen zwei
+Läufe. Die Seite markiert die IDs aus der Vorschau, nicht „alles Offene“: was zwischen Export und
+Markieren genehmigt wird, bleibt für den nächsten Lauf. Belege öffnen sich über
+`/travel-expenses/receipts/{id}/file` (gestreamt, Rechte geprüft) — vorher waren sie in der
+Freigabe nur aufgelistet.
+
 ### Routes
 
 #### Seiten-Route
@@ -334,5 +351,6 @@ protected $appends = ['display_name'];
 
 | Datum | Änderung |
 |---|---|
+| 26.09.2026 | Stufe 2/3: Seite in Partials + `public/js/reisekosten-freigabe.js`, Filter als Dropdowns (Reisemonat, Status, Art, Mitarbeiterin), Stat-Strip, Belege öffnen, Karte „Auszahlung“ mit CSV und Markieren, Status „ausgezahlt“ |
 | 26.09.2026 | Liste wieder erreichbar (Routen-Reihenfolge), keine Selbstfreigabe, `approval_notes`/`rejected_by`/`rejected_at`, Hinweis „Erneut eingereicht", Meldungen an die Mitarbeiterin |
 | 20.03.2026 | Freigabe erstellt |

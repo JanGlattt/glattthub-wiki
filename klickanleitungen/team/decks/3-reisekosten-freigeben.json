@@ -14,16 +14,16 @@
   "eyebrow": "Team · Freigabe",
   "footerArea": "Team",
   "stand": "26.09.2026",
-  "version": "1.1",
+  "version": "1.2",
   "notes": [
     "Freigegeben wird, was **sachlich richtig** ist — die rechnerische Prüfung macht der Hub.",
     "**Eine Ablehnung braucht immer einen Grund** — er ist das Einzige, was die Kollegin zu sehen bekommt. Die **eigene** Abrechnung gibt niemand selbst frei.",
-    "Freigegebene Abrechnungen gehen in die **Auszahlung**; danach ist eine Korrektur aufwendig."
+    "Genehmigte Abrechnungen gehen über die **Lohnbuchhaltung** in die Auszahlung — die Freigabe gibt ihr die CSV und markiert danach genau diese Abrechnungen als ausgezahlt."
   ],
   "pages": [
     {
       "h1": "Die Freigabe-Liste",
-      "sub": "Alle eingereichten Abrechnungen, filterbar nach Person, Zeitraum und Abwesenheitsart.",
+      "sub": "Alle eingereichten Abrechnungen, filterbar nach Reisemonat, Status, Abwesenheitsart und Mitarbeiterin.",
       "card": {
         "title": "Die Liste",
         "text": "Eingereichte Abrechnungen filtern und sichten"
@@ -36,7 +36,7 @@
         {
           "n": 1,
           "title": "Filter setzen",
-          "text": "**Alle Mitarbeiter** und **Alle Abwesenheitsarten** lassen sich eingrenzen — hilfreich am Monatsende."
+          "text": "**Reisemonat**, **Status**, **Abwesenheitsart** und **Mitarbeiterin** lassen sich eingrenzen — „Zu prüfen“ zeigt nur, was auf dich wartet."
         },
         {
           "n": 2,
@@ -46,7 +46,7 @@
         {
           "n": 3,
           "title": "Öffnen",
-          "text": "Zeigt die vollständige Abrechnung mit allen Positionen und Belegen."
+          "text": "Ein Klick auf die Zeile zeigt die vollständige Abrechnung mit allen Positionen — **Belege öffnen sich mit einem Klick** in einem neuen Tab."
         }
       ],
       "hint": {
@@ -126,6 +126,44 @@
       "hint": {
         "kind": "warn",
         "text": "**Nicht stillschweigend liegen lassen.** Eine ungeprüfte Abrechnung ist für die Kollegin nicht von einer abgelehnten zu unterscheiden — sie sieht nur, dass kein Geld kommt. Lieber zügig ablehnen mit klarem Grund als wochenlang offen lassen."
+      }
+    },
+    {
+      "h1": "Auszahlen über die Lohnbuchhaltung",
+      "sub": "Oben auf der Freigabe-Seite steht, was genehmigt, aber noch nicht ausgezahlt ist — mit Summe, CSV und Markieren.",
+      "card": {
+        "title": "Auszahlung",
+        "text": "CSV, dann markieren"
+      },
+      "left": {
+        "shot": "p12-auszahlung"
+      },
+      "leftCaption": "Die Karte **Auszahlung**: genehmigte, offene Abrechnungen bis Ende des gewählten Monats und der Betrag, darunter die beiden Schritte.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Monat wählen",
+          "text": "„Genehmigt bis Ende“ legt fest, welche Abrechnungen in den Lauf kommen — maßgeblich ist der Tag der Genehmigung, nicht der Reisetag."
+        },
+        {
+          "n": 2,
+          "title": "CSV herunterladen",
+          "text": "**CSV für die Lohnbuchhaltung**: Personalnummer, Name, Zeitraum, Fahrt, Hotel, Verpflegung, Zusatzkosten und Gesamt je Abrechnung, unten die Summe. Die Datei öffnet sich in Excel."
+        },
+        {
+          "n": 3,
+          "title": "Als ausgezahlt markieren",
+          "text": "Erst wenn die Datei bei der Lohnbuchhaltung ist: **Als ausgezahlt markieren** und bestätigen. Markiert werden genau die Abrechnungen der Datei — was danach genehmigt wird, bleibt für den nächsten Lauf offen."
+        },
+        {
+          "n": 4,
+          "title": "Danach",
+          "text": "Die Abrechnungen stehen auf **Ausgezahlt**; die Mitarbeiterin sieht das in ihrer Liste und in der App."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "**Nicht doppelt auszahlen.** Markieren gehört zum Export wie der Stempel zur Überweisung — sonst landen dieselben Abrechnungen im nächsten Monat erneut in der CSV."
       }
     }
   ]

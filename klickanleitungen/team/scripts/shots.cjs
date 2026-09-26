@@ -17,6 +17,16 @@ const erstePerson = ['fn', async (page, L) => {
   await L.wait(page, 3500); await L.waitLoaded(page);
 }];
 const mitarbeiterWaehlen = ['fn', async (page, L) => {
+  // Seit 26.09.2026 Dropdown-Komponente statt <select>: Auswahl direkt in der Alpine-Komponente setzen
+  const viaAlpine = await page.evaluate(() => {
+    const root = [...document.querySelectorAll('[x-data]')].find(e => { try { return Alpine.$data(e).staffList !== undefined; } catch (err) { return false; } });
+    if (!root) return false;
+    const d = Alpine.$data(root);
+    if (!d.staffList?.length) return !!d.selectedUserId;
+    d.selectedUserId = String(d.staffList[1]?.id ?? d.staffList[0].id);
+    return true;
+  });
+  if (viaAlpine) { await L.wait(page, 3500); await L.waitLoaded(page); return; }
   // Natives Select im Seitenkopf (nicht das versteckte in der Seitenleiste): zweite Option wählen
   const ok = await page.evaluate(() => {
     const sel = [...document.querySelectorAll('main select, .page-header-glattt select, .page-header-glattt-actions select, select')].find(s => s.offsetParent !== null && s.options.length > 1);
@@ -105,7 +115,7 @@ const PLAN = [
   { name: 'p5-reisekosten', url: '/hub/staff/reisekosten', steps: [['loaded'], mitarbeiterWaehlen, beispielTage, ['wait', 1200]], marks: [
     { id: 'tag', kind: 'badge', n: 1, sel: 'tbody tr', at: 'l' },
     { id: 'art', kind: 'badge', n: 2, ...L.byText('th', 'Abwesenheitsart'), at: 't' },
-    { id: 'erfassen', kind: 'badge', n: 3, ...L.byText('tbody button', 'Erfassen'), at: 'r' },
+    { id: 'erfassen', kind: 'badge', n: 3, ...L.byText('tbody .badge-glattt', 'Offen'), at: 'r' },
   ] },
   { name: 'p6-fahrt', url: '/hub/staff/reisekosten', steps: [['loaded'], mitarbeiterWaehlen, beispielTage, fensterOeffnen, zeitenUndMahlzeit, imFenster('An- und Abreise')], clip: '.modal-glattt', marks: [
     { id: 'abfahrt', kind: 'badge', n: 1, ...L.byText('.modal-glattt .input-glattt-floating-label', 'Adresse suchen'), at: 'l' },
@@ -113,23 +123,29 @@ const PLAN = [
     { id: 'verkehrsmittel', kind: 'frame', color: 'teal', sel: '.modal-glattt .segmented-control-glattt, .modal-glattt .btn-group-glattt, .modal-glattt .toggle-group-glattt' },
   ] },
   { name: 'p7-verpflegung', url: '/hub/staff/reisekosten', steps: [['loaded'], mitarbeiterWaehlen, beispielTage, fensterOeffnen, zeitenUndMahlzeit, imFenster('Übernachtung & Verpflegung')], clip: '.modal-glattt', marks: [
-    { id: 'mahlzeiten', kind: 'badge', n: 1, ...L.byText('.modal-glattt p', 'Von glattt bezahlte Mahlzeiten'), at: 'l' },
+    { id: 'mahlzeiten', kind: 'badge', n: 1, ...L.byText('.modal-glattt span', 'Von glattt bezahlte Mahlzeiten'), at: 'l' },
     { id: 'abzug', kind: 'badge', n: 2, ...L.byText('.modal-glattt span', 'Abzug Mahlzeiten'), at: 'l' },
-    { id: 'pauschale', kind: 'badge', n: 4, ...L.byText('.modal-glattt span', 'Verpflegungspauschale:'), at: 'l' },
+    { id: 'pauschale', kind: 'badge', n: 4, ...L.byText('.modal-glattt .travel-sum-glattt-row span', 'Verpflegungspauschale'), at: 'l' },
   ] },
   { name: 'p8-einreichen', url: '/hub/staff/reisekosten', steps: [['loaded'], mitarbeiterWaehlen, beispielTage, ['wait', 1200]], marks: [
     { id: 'entwurf', kind: 'badge', n: 1, ...L.byText('tbody .badge-glattt', 'Entwurf'), at: 'l' },
     { id: 'status', kind: 'badge', n: 2, ...L.byText('th', 'Status'), at: 't' },
     { id: 'abgelehnt', kind: 'badge', n: 3, ...L.byText('tbody .badge-glattt', 'Abgelehnt'), at: 'l' },
-    { id: 'bearbeiten', kind: 'badge', n: 4, ...L.byText('tbody button span', 'Bearbeiten'), at: 'r' },
+    { id: 'bearbeiten', kind: 'badge', n: 4, ...L.byText('tbody .badge-glattt', 'Entwurf'), at: 'r' },
   ] },
   // ── Team 3: Freigabe
   { name: 'p9-freigabe', url: '/hub/staff/reisekosten', steps: [['loaded'], ['click', 'a.btn-glattt-primary, a', 'Freigabe', 3500], ['loaded']] },
   { name: 'p10-pruefen', url: '/hub/staff/reisekosten', steps: [['loaded'], ['click', 'a.btn-glattt-primary, a', 'Freigabe', 3500], ['loaded'],
-    ['fn', async (page, L) => { await page.evaluate(() => { const b = [...document.querySelectorAll('button, a, tbody tr')].find(e => e.offsetParent !== null && /Prüfen|Öffnen|Details|Ansehen/.test(e.textContent)); if (b) b.click(); }); await L.wait(page, 3000); }]] },
+    ['fn', async (page, L) => { await page.evaluate(() => { const r = [...document.querySelectorAll('tbody tr')].find(e => e.offsetParent !== null && /Zu prüfen/.test(e.textContent)); if (r) r.click(); }); await L.wait(page, 3000); }]] },
   { name: 'p11-entscheiden', url: '/hub/staff/reisekosten', steps: [['loaded'], ['click', 'a.btn-glattt-primary, a', 'Freigabe', 3500], ['loaded'],
-    ['fn', async (page, L) => { await page.evaluate(() => { const b = [...document.querySelectorAll('button, a, tbody tr')].find(e => e.offsetParent !== null && /Prüfen|Öffnen|Details|Ansehen/.test(e.textContent)); if (b) b.click(); }); await L.wait(page, 3000); }],
+    ['fn', async (page, L) => { await page.evaluate(() => { const r = [...document.querySelectorAll('tbody tr')].find(e => e.offsetParent !== null && /Zu prüfen/.test(e.textContent)); if (r) r.click(); }); await L.wait(page, 3000); }],
     ['scroll', 'button, h3, h4', 'Ablehnen', 300]] },
+  // Auszahlung (Stufe 3, 26.09.2026): Karte oben auf der Freigabe-Seite
+  { name: 'p12-auszahlung', url: '/hub/staff/reisekosten/freigabe', steps: [['loaded'], ['wait', 2500]], marks: [
+    { id: 'offen', kind: 'badge', n: 1, ...L.byText('.stat-strip-glattt-label', 'Genehmigt, offen'), at: 'l' },
+    { id: 'csv', kind: 'badge', n: 2, ...L.byText('a.btn-glattt', 'CSV für die Lohnbuchhaltung'), at: 't' },
+    { id: 'markieren', kind: 'badge', n: 3, ...L.byText('button.btn-glattt', 'Als ausgezahlt markieren'), at: 't' },
+  ] },
 ];
 
 P.run(PLAN, L, { nur: process.argv.slice(2) });

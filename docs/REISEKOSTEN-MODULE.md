@@ -47,8 +47,9 @@ muss.
   erfassen (Auswahl im Seitenkopf). Die eigene Abrechnung gibt niemand selbst frei.
 
 **Zustände einer Abrechnung:** *Entwurf* (angelegt, bearbeitbar) → *Eingereicht* (wartet auf
-Freigabe, gesperrt, zurückziehbar) → *Genehmigt* (keine Änderungen mehr) oder *Abgelehnt*
-(mit Grund; wird angepasst und erneut eingereicht). Details im [Status-Modell](#status-modell).
+Freigabe, gesperrt, zurückziehbar) → *Genehmigt* (keine Änderungen mehr) → *Ausgezahlt*
+(über die Lohnbuchhaltung, seit 26.09.2026) — oder *Abgelehnt* (mit Grund; wird angepasst und
+erneut eingereicht). Details im [Status-Modell](#status-modell).
 
 **Wo was erledigt wird:**
 
@@ -96,12 +97,15 @@ einreichen.
 | **Entwurf** | `draft` | Angelegt, bearbeitbar, löschbar, einreichbar |
 | **Eingereicht** | `submitted` | Wartet auf Freigabe; **gesperrt** (Bearbeiten, Belege, Löschen → 403), **zurückziehbar** (→ `draft`) |
 | **Genehmigt** | `approved` | Endgültig, `approved_by/at`, optionale `approval_notes` |
+| **Ausgezahlt** | `paid` | Über die Lohnbuchhaltung ausgezahlt (`paid_by/at`), endgültig wie genehmigt — siehe [Freigabe → Auszahlung](REISEKOSTEN-FREIGABE.md#auszahlung) |
 | **Abgelehnt** | `rejected` | `rejection_reason`, `rejected_by/at`; bearbeitbar und **erneut einreichbar** (`resubmitted_at`, der Grund bleibt bis zur Entscheidung lesbar) |
 
 ```
 draft ──submit──▶ submitted ──approve──▶ approved
   ▲                  │   │
-  └────withdraw──────┘   └──reject──▶ rejected ──submit──▶ submitted
+  └────withdraw──────┘   │                  │
+                         │                  └──payout──▶ paid
+                         └──reject──▶ rejected ──submit──▶ submitted
 ```
 
 `TravelExpense::isEditable()` (draft|rejected) ist die einzige Quelle für „darf ändern".
@@ -182,11 +186,43 @@ Mitarbeiterin werden beim Anlegen und Ändern abgewiesen (422).
 
 ---
 
+### Aufbau der Seiten (seit 26.09.2026 nach Konvention)
+
+Beide Seiten bestehen aus einem schlanken Rahmen plus Partials; die Alpine-Komponenten liegen in
+eigenen Dateien, die Optik im Abschnitt **„REISEKOSTEN“** von `theme_glattt.css` (`.travel-*-glattt`).
+Keine Inline-Styles, keine nativen `<select>` (Personenwahl, Institut und Filter über
+`x-dropdown-glattt` mit `optionsVar`, Änderungen per `$watch`), Kennzahlen als
+`.stat-strip-glattt` mit `x-stat-skeleton`, sanftes Neuladen (`refreshable-glattt`), Belege über
+`.file-upload-glattt` (Klick oder Ziehen), Zeiten über Flatpickr im 24-Stunden-Format (das native
+Zeitfeld zeigte auf englisch eingestellten Rechnern „AM/PM“), Flatpickr-Optik zentral aus dem Theme.
+`TravelExpenseApiTest::test_seiten_rendern_nach_dem_umbau` bricht bei `<select` oder `style="`
+in den Reisekosten-Views.
+
+Mitgefundene Altfehler: Der Übernachtungs-Schalter nutzte `toggle-glattt-slider` (gibt es im
+Theme nicht — der Schalter war unsichtbar), Belege ließen sich erst nach manuellem Sichern
+hochladen (jetzt sichert der Hub den Entwurf dafür selbst).
+
+### Adresssuche und Strecke über den Hub
+
+`GET /travel-expenses/geocode?q=` und `GET /travel-expenses/route?from_lat&from_lon&to_lat&to_lon`
+(`App\Services\TravelExpenses\TravelRouteService`, 30 Tage Cache je Anfrage, eigener
+User-Agent, `throttle:60,1`). Vorher fragten Browser und App Nominatim/OSRM direkt; jetzt nutzen
+Web und App dieselben Endpunkte, und die Koordinaten (`departure_lat/lon`, `destination_lat/lon`)
+werden mitgespeichert. Institute liefern ihre Koordinaten aus Phorest.
+
 ### Dateistruktur
 
 ```
 resources/views/hub/staff/
-└── reisekosten.blade.php              # Komplette Seite (Alpine.js SPA)
+├── reisekosten.blade.php              # Rahmen (Erfassung)
+├── reisekosten/                       # header, list, modal, modal-*, address-search, receipt-upload
+├── reisekosten-freigabe.blade.php     # Rahmen (Freigabe)
+└── reisekosten-freigabe/              # header, payout, list, modal, modal-*
+
+public/js/reisekosten.js               # Alpine-Komponente reisekostenPage()
+public/js/reisekosten-freigabe.js      # Alpine-Komponente reisekostenFreigabe()
+app/Services/TravelExpenses/TravelRouteService.php   # Adresssuche + Strecke
+app/Services/TravelExpenses/TravelPayoutService.php  # Auszahlung (CSV, markieren)
 
 app/Http/Controllers/
 └── TravelExpenseController.php        # API-Controller
@@ -260,6 +296,9 @@ Das Frontend ist ein **Alpine.js**-Component (`reisekostenComponent`), das als S
 | POST | `/travel-expenses/{travelExpense}/withdraw` | `travel-expenses.withdraw` | `withdraw()` — submitted → draft |
 | POST | `/travel-expenses/{travelExpense}/receipts` | `travel-expenses.receipts.upload` | `uploadReceipt()` |
 | DELETE | `/travel-expenses/receipts/{receipt}` | `travel-expenses.receipts.delete` | `deleteReceipt()` |
+| GET | `/travel-expenses/receipts/{receipt}/file` | `travel-expenses.receipts.file` | `showReceipt()` — Beleg ansehen (Eigentümerin oder Freigaberecht) |
+| GET | `/travel-expenses/geocode` | `travel-expenses.geocode` | `geocode()` |
+| GET | `/travel-expenses/route` | `travel-expenses.route` | `route()` |
 
 !!! warning "Reihenfolge der Routen"
     `/travel-expenses/approval` und `/me` stehen **vor** den `{travelExpense}`-Routen, die
@@ -508,14 +547,23 @@ Katalog-Anlässe `travel_expenses.submitted|approved|rejected` (siehe
 anderes war — bis 26.09.2026 ging die Meldung nur an `submitted_by`. „Eingereicht" verlinkt
 auf `/hub/staff/reisekosten/freigabe` (Migration hängt bestehende Regeln um).
 
+### Nächtlicher Abgleich der Abwesenheitsarten
+
+`askdante:sync-absence-types --months=1` läuft täglich um 04:45 (Scheduler, Cloud Scheduler →
+`/api/cron/sync-absence-types`; der Cloud-Scheduler-Job wurde am 26.09.2026 **nicht** angelegt —
+`cron:audit` meldet ihn, bis er mit `--max-retry-attempts=3` existiert). `--months=N` scannt die
+letzten N Monate plus zwei voraus statt ganzer Jahre (80 Personen × 36 Monate wären zu viel für
+die Nacht). Neue Arten kommen **ohne** Reisekosten-Flag an; das setzt das Büro im Admin
+(Stammdaten → Abwesenheiten). Test `TravelExpenseAbsenceTypeSyncTest`.
+
 ### Externe Dienste
 
 | Dienst | Verwendung | Endpoint |
 |--------|-----------|----------|
 | **askDANTE API** | Mitarbeiterliste, Abwesenheiten | `my.askdante.com` |
 | **Phorest API** | Institut-/Filialliste für Zielauswahl | Branches-Endpoint |
-| **Nominatim** | Geocoding für Abfahrtsort und freie Zieladresse | `nominatim.openstreetmap.org` |
-| **OSRM** | Routenberechnung (Entfernung in km) | `router.project-osrm.org` |
+| **Nominatim** | Geocoding für Abfahrtsort und freie Zieladresse — seit 26.09.2026 nur noch über den Hub | `nominatim.openstreetmap.org` |
+| **OSRM** | Routenberechnung (Entfernung in km) — seit 26.09.2026 nur noch über den Hub | `router.project-osrm.org` |
 
 ---
 
@@ -586,5 +634,6 @@ ALTER TABLE travel_expenses
 
 | Datum | Änderung |
 |---|---|
+| 26.09.2026 | Überarbeitung Stufe 2 und 3: Seiten in Partials + eigene JS-Dateien, Theme-Klassen statt ~360 Inline-Styles, Dropdown-/Flatpickr-Komponenten (auch Uhrzeiten), Stat-Strip, Skeletons, Adresssuche/Strecke über den Hub mit gespeicherten Koordinaten, Beleg-Abruf, Status „ausgezahlt“ mit CSV für die Lohnbuchhaltung, nächtlicher Abgleich der Abwesenheitsarten; Übernachtungs-Schalter war unsichtbar |
 | 26.09.2026 | Überarbeitung Stufe 1 (Jan): Freigabe-Route repariert, Hotelbeleg, Pauschale nur bei erlaubter Abwesenheitsart (serverseitig), eintägige Reise korrekt (Carbon-Float), Statusübergänge (eingereicht gesperrt/zurückziehen, abgelehnt erneut einreichen, Entwurf löschen), Eigentum am Konto mit Policy, `me`-Endpunkt, Meldungen an die Mitarbeiterin, eigene Ablehnungs-/Anmerkungsfelder, Tests. Befunde und native Entwürfe: [Artefakt](https://claude.ai/artifact/5EgnPnbSoKDnsfbxUZdEqW) |
 | 03/2026 | Modul erstellt (mehrtägige Arbeitszeit, Hotel/Verpflegung, Hin-/Rückfahrt), Freigabe |

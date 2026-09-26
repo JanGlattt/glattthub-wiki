@@ -7,9 +7,12 @@
   "audience": "institute",
   "footerArea": "App",
   "stand": "26.09.2026",
-  "version": "1.0",
+  "version": "1.1",
   "nr": 11,
-  "title": ["Reisekosten in der App", "erfassen und freigeben"],
+  "title": [
+    "Reisekosten in der App",
+    "erfassen und freigeben"
+  ],
   "subtitle": "Klickanleitung für die glatttHub-App — die eigenen Anspruchstage aus dem Dienstplan sehen, eine Reise auf der Reisekarte erfassen, Belege fotografieren oder scannen, einreichen, zurückziehen oder nach einer Ablehnung erneut einreichen, und mit Freigaberecht Abrechnungen prüfen, berichtigen und entscheiden",
   "eyebrow": "App · Reisekosten",
   "notes": [
@@ -20,70 +23,185 @@
     {
       "h1": "Deine Anspruchstage",
       "sub": "Oben die Kennzahlen des Jahres, darunter offene Anspruchstage zum Anlegen, laufende Reisen mit ihrem Stand und das Genehmigte.",
-      "card": { "title": "Reisekosten", "text": "Anspruchstage und laufende Reisen" },
-      "left": { "shot": "travel-list-light" },
+      "card": {
+        "title": "Reisekosten",
+        "text": "Anspruchstage und laufende Reisen"
+      },
+      "left": {
+        "shot": "travel-list-light"
+      },
       "leftCaption": "Die Liste: **Jetzt abrechnen** (gerahmt), **Laufend** mit Zustandsverlauf, **Genehmigt** mit Summe. Das Jahr wechselst du oben rechts.",
       "steps": [
-        { "n": 1, "title": "Anlegen", "text": "Ein gerahmter Anspruchstag hat noch keine Reisekarte — **Anlegen** öffnet sie mit dem Tag als Reisebeginn." },
-        { "n": 2, "title": "Stand lesen", "text": "Der Verlauf zeigt **Entwurf → Eingereicht → Genehmigt** mit Datum. Eine Ablehnung steht rot mit ihrem Grund direkt an der Karte." },
-        { "n": 3, "title": "Ziehen zum Aktualisieren", "text": "Die Liste holt beim Herunterziehen den neuesten Stand; ohne Netz bleibt der letzte Stand lesbar („Kein Netz · Stand HH:MM“)." },
-        { "n": 4, "title": "Konto nicht zugeordnet?", "text": "Dann steht das so auf der Seite: Dein Hub-Konto ist noch nicht mit deinem Dienstplan-Eintrag verknüpft — das Büro erledigt das in der Personalübersicht." }
+        {
+          "n": 1,
+          "title": "Anlegen",
+          "text": "Ein gerahmter Anspruchstag hat noch keine Reisekarte — **Anlegen** öffnet sie mit dem Tag als Reisebeginn."
+        },
+        {
+          "n": 2,
+          "title": "Stand lesen",
+          "text": "Der Verlauf zeigt **Entwurf → Eingereicht → Genehmigt** mit Datum, nach der Lohnabrechnung **Ausgezahlt**. Eine Ablehnung steht rot mit ihrem Grund direkt an der Karte."
+        },
+        {
+          "n": 3,
+          "title": "Ziehen zum Aktualisieren",
+          "text": "Die Liste holt beim Herunterziehen den neuesten Stand; ohne Netz bleibt der letzte Stand lesbar („Kein Netz · Stand HH:MM“)."
+        },
+        {
+          "n": 4,
+          "title": "Konto nicht zugeordnet?",
+          "text": "Dann steht das so auf der Seite: Dein Hub-Konto ist noch nicht mit deinem Dienstplan-Eintrag verknüpft — das Büro erledigt das in der Personalübersicht."
+        }
       ],
-      "hint": { "text": "Wer Reisekosten freigeben darf, sieht oben das Register **Freigabe** und kann außerdem **stellvertretend** für Kolleginnen erfassen (Personenwahl über der Liste)." }
+      "hint": {
+        "text": "Wer Reisekosten freigeben darf, sieht oben das Register **Freigabe** und kann außerdem **stellvertretend** für Kolleginnen erfassen (Personenwahl über der Liste)."
+      }
     },
     {
       "h1": "Die Reisekarte",
       "sub": "Summe oben, darunter fünf Abschnitte mit Einzeiler und Häkchen oder Warnung — ein Tipp klappt den Abschnitt auf.",
-      "card": { "title": "Reisekarte", "text": "Ausfüllen, Summe läuft mit" },
-      "left": { "shot": "travel-card-light" },
+      "card": {
+        "title": "Reisekarte",
+        "text": "Ausfüllen, Summe läuft mit"
+      },
+      "left": {
+        "shot": "travel-card-light"
+      },
       "leftCaption": "Die Karte: **Gesamt** mit Aufschlüsselung, dann Reise & Zeiten, Fahrt, Übernachtung & Verpflegung, Belege & zusätzliche Kosten, Notizen. Unten **Sichern** und **Einreichen**.",
       "steps": [
-        { "n": 1, "title": "Reise & Zeiten", "text": "Reiseende wählen (bei mehrtägigen Reisen), Beginn und Ende je Tag über das Zeitrad. Die **Pause** rechnet die App nach Arbeitszeitgesetz selbst." },
-        { "n": 2, "title": "Fahrt", "text": "**Auto**: Abfahrtsadresse eintippen, Ziel-Institut wählen, der Knopf daneben berechnet die Strecke — du kannst sie anpassen. **Bahn**: Ticket von glattt oder selbst bezahlt (dann Kosten und Beleg)." },
-        { "n": 3, "title": "Übernachtung & Verpflegung", "text": "Hotel von glattt oder selbst bezahlt (dann Name, Kosten, Beleg). Gestellte Mahlzeiten im Raster antippen — sie kürzen die Pauschale, der Abzug steht offen dabei." },
-        { "n": 4, "title": "Einreichen", "text": "Ist alles da, wird **Einreichen** aktiv. Fehlt etwas, steht es rot unter dem Abschnitt und unten in der Leiste — zum Beispiel „Fehlt: Hotelbeleg“." }
+        {
+          "n": 1,
+          "title": "Reise & Zeiten",
+          "text": "Reiseende wählen (bei mehrtägigen Reisen), Beginn und Ende je Tag über das Zeitrad. Die **Pause** rechnet die App nach Arbeitszeitgesetz selbst."
+        },
+        {
+          "n": 2,
+          "title": "Fahrt",
+          "text": "**Auto**: Abfahrtsadresse eintippen, Ziel-Institut wählen, der Knopf daneben berechnet die Strecke über den Hub — du kannst sie anpassen. **Bahn**: Ticket von glattt oder selbst bezahlt (dann Kosten und Beleg)."
+        },
+        {
+          "n": 3,
+          "title": "Übernachtung & Verpflegung",
+          "text": "Hotel von glattt oder selbst bezahlt (dann Name, Kosten, Beleg). Gestellte Mahlzeiten im Raster antippen — sie kürzen die Pauschale, der Abzug steht offen dabei."
+        },
+        {
+          "n": 4,
+          "title": "Einreichen",
+          "text": "Ist alles da, wird **Einreichen** aktiv. Fehlt etwas, steht es rot unter dem Abschnitt und unten in der Leiste — zum Beispiel „Fehlt: Hotelbeleg“."
+        }
       ],
-      "hint": { "kind": "warn", "text": "**Eingereicht ist gesperrt.** Willst du noch etwas ändern, hol die Abrechnung mit **Zurückziehen** in den Entwurf zurück — solange noch nicht entschieden ist. Genehmigt ist endgültig." }
+      "hint": {
+        "kind": "warn",
+        "text": "**Eingereicht ist gesperrt.** Willst du noch etwas ändern, hol die Abrechnung mit **Zurückziehen** in den Entwurf zurück — solange noch nicht entschieden ist. Genehmigt ist endgültig."
+      }
     },
     {
       "h1": "Belege fotografieren oder scannen",
       "sub": "Im Abschnitt Belege steht die Kamera zuerst — ein Foto vom Handy genügt, der Scanner macht aus mehreren Seiten ein PDF.",
-      "card": { "title": "Belege", "text": "Foto, Scan, Mediathek oder Datei" },
-      "left": { "shot": "travel-card-light" },
+      "card": {
+        "title": "Belege",
+        "text": "Foto, Scan, Mediathek oder Datei"
+      },
+      "left": {
+        "shot": "travel-card-light"
+      },
       "leftCaption": "Der Abschnitt zeigt, welche **Pflichtbelege** die Reise braucht (Hotelbeleg, Bahnticket) und ob sie da sind; darunter die zusätzlichen Kosten mit Betrag und Bezeichnung.",
       "steps": [
-        { "n": 1, "title": "Beleg hinzufügen", "text": "**Beleg fotografieren oder scannen** öffnet das Blatt: Belegart (Hotel, Bahnticket, Beleg), Betrag und Bezeichnung, dann die Quelle." },
-        { "n": 2, "title": "Quelle wählen", "text": "**Fotografieren** (Kamera), **Dokument scannen** (Kanten werden erkannt, Ergebnis als PDF), **Mediathek** oder eine **Datei** (PDF, JPG, PNG, bis 10 MB)." },
-        { "n": 3, "title": "Hochladen", "text": "Der Beleg hängt sofort an der Abrechnung; ein neuer Entwurf wird dafür vorher gesichert. Der Papierkorb entfernt einen Beleg wieder." },
-        { "n": 4, "title": "Zusätzliche Kosten", "text": "Betrag mit Komma und wofür (Parkhaus, Taxi). Ab einem Cent braucht die Position einen Beleg, sonst lässt sich nicht einreichen." }
+        {
+          "n": 1,
+          "title": "Beleg hinzufügen",
+          "text": "**Beleg fotografieren oder scannen** öffnet das Blatt: Belegart (Hotel, Bahnticket, Beleg), Betrag und Bezeichnung, dann die Quelle."
+        },
+        {
+          "n": 2,
+          "title": "Quelle wählen",
+          "text": "**Fotografieren** (Kamera), **Dokument scannen** (Kanten werden erkannt, Ergebnis als PDF), **Mediathek** oder eine **Datei** (PDF, JPG, PNG, bis 10 MB)."
+        },
+        {
+          "n": 3,
+          "title": "Hochladen",
+          "text": "Der Beleg hängt sofort an der Abrechnung; ein neuer Entwurf wird dafür vorher gesichert. Der Papierkorb entfernt einen Beleg wieder."
+        },
+        {
+          "n": 4,
+          "title": "Zusätzliche Kosten",
+          "text": "Betrag mit Komma und wofür (Parkhaus, Taxi). Ab einem Cent braucht die Position einen Beleg, sonst lässt sich nicht einreichen."
+        }
       ],
-      "hint": { "text": "**Das Original aufheben.** Die Buchhaltung braucht später den Papierbeleg; das Foto in der App belegt die Abrechnung, ersetzt aber nicht das Original." }
+      "hint": {
+        "text": "**Das Original aufheben.** Die Buchhaltung braucht später den Papierbeleg; das Foto in der App belegt die Abrechnung, ersetzt aber nicht das Original."
+      }
     },
     {
       "h1": "Freigabe in der App",
       "sub": "Mit Freigaberecht zeigt das Register Freigabe alle zu prüfenden Abrechnungen — dieselbe Reisekarte, jetzt zum Berichtigen und Entscheiden.",
-      "card": { "title": "Freigabe", "text": "Prüfen, berichtigen, entscheiden" },
-      "left": { "shot": "travel-review-light" },
+      "card": {
+        "title": "Freigabe",
+        "text": "Prüfen, berichtigen, entscheiden"
+      },
+      "left": {
+        "shot": "travel-review-light"
+      },
       "leftCaption": "Die Freigabe-Karte: Summe wie eingereicht und wie berichtigt, ein Hinweis bei **erneuter Einreichung** mit dem alten Grund, unten **Ablehnen** und **Freigeben** mit Betrag.",
       "steps": [
-        { "n": 1, "title": "Zu prüfen", "text": "Die Liste zeigt Name, Zeitraum, Art, Ziel und Betrag; **eigene** Abrechnungen sind markiert und lassen sich nicht selbst freigeben." },
-        { "n": 2, "title": "Berichtigen", "text": "Abschnitte aufklappen und Strecke, Hin und Rück, Zeiten, Mahlzeiten, Hotel oder Zusatzkosten ändern — die Summe oben zeigt eingereicht und berichtigt." },
-        { "n": 3, "title": "Belege öffnen", "text": "Im Abschnitt Belege stehen alle Anhänge mit Art und Betrag. Ein angehängtes Bild ist noch kein passender Beleg — Datum und Strecke vergleichen." },
-        { "n": 4, "title": "Entscheiden", "text": "**Freigeben** fragt nach einer Anmerkung (optional), **Ablehnen** nach dem Grund (Pflicht). Die Kollegin bekommt beides als Mitteilung." }
+        {
+          "n": 1,
+          "title": "Zu prüfen",
+          "text": "Die Liste zeigt Name, Zeitraum, Art, Ziel und Betrag; **eigene** Abrechnungen sind markiert und lassen sich nicht selbst freigeben."
+        },
+        {
+          "n": 2,
+          "title": "Berichtigen",
+          "text": "Abschnitte aufklappen und Strecke, Hin und Rück, Zeiten, Mahlzeiten, Hotel oder Zusatzkosten ändern — die Summe oben zeigt eingereicht und berichtigt."
+        },
+        {
+          "n": 3,
+          "title": "Belege öffnen",
+          "text": "Im Abschnitt Belege stehen alle Anhänge mit Art und Betrag — **ein Tipp öffnet den Beleg** in der Vorschau. Ein angehängtes Bild ist noch kein passender Beleg: Datum und Strecke vergleichen."
+        },
+        {
+          "n": 4,
+          "title": "Entscheiden",
+          "text": "**Freigeben** fragt nach einer Anmerkung (optional), **Ablehnen** nach dem Grund (Pflicht). Die Kollegin bekommt beides als Mitteilung."
+        }
       ],
-      "hint": { "kind": "warn", "text": "**Nicht liegen lassen.** Eine ungeprüfte Abrechnung sieht für die Kollegin aus wie eine abgelehnte — lieber zügig mit klarem Grund ablehnen als wochenlang offen lassen." }
+      "hint": {
+        "kind": "warn",
+        "text": "**Nicht liegen lassen.** Eine ungeprüfte Abrechnung sieht für die Kollegin aus wie eine abgelehnte — lieber zügig mit klarem Grund ablehnen als wochenlang offen lassen."
+      }
     },
     {
       "h1": "Auf dem iPad",
       "sub": "Liste links, Reisekarte rechts — wie Verträge und Gutscheine. Abschnitte klappen an Ort und Stelle auf.",
-      "card": { "title": "iPad", "text": "Liste und Karte nebeneinander" },
-      "left": { "shot": "travel-ipad-light" },
+      "card": {
+        "title": "iPad",
+        "text": "Liste und Karte nebeneinander"
+      },
+      "left": {
+        "shot": "travel-ipad-light"
+      },
       "leftCaption": "Der geteilte Bildschirm: links Anspruchstage und Reisen, rechts die gewählte Reisekarte mit Summe, Abschnitten und der Leiste unten.",
       "steps": [
-        { "n": 1, "title": "Auswählen", "text": "Ein Tipp links öffnet die Karte rechts; die Liste bleibt stehen, die nächste Reise ist einen Tipp entfernt." },
-        { "n": 2, "title": "Bearbeiten", "text": "Abschnitte klappen in der Karte auf; Belege kommen über dasselbe Blatt wie auf dem iPhone, der Scanner nutzt die iPad-Kamera." },
-        { "n": 3, "title": "Freigabe", "text": "Das Register Freigabe steht über der Liste; Freigeben und Ablehnen fragen in einem Dialog nach Anmerkung bzw. Grund." },
-        { "n": 4, "title": "Seitenleiste", "text": "„Reisekosten“ steht in der Seitenleiste unter Team; Mitteilungen zu Freigabe und Ablehnung öffnen direkt die betroffene Karte." }
+        {
+          "n": 1,
+          "title": "Auswählen",
+          "text": "Ein Tipp links öffnet die Karte rechts; die Liste bleibt stehen, die nächste Reise ist einen Tipp entfernt."
+        },
+        {
+          "n": 2,
+          "title": "Bearbeiten",
+          "text": "Abschnitte klappen in der Karte auf; Belege kommen über dasselbe Blatt wie auf dem iPhone, der Scanner nutzt die iPad-Kamera."
+        },
+        {
+          "n": 3,
+          "title": "Freigabe",
+          "text": "Das Register Freigabe steht über der Liste; Freigeben und Ablehnen fragen in einem Dialog nach Anmerkung bzw. Grund."
+        },
+        {
+          "n": 4,
+          "title": "Seitenleiste",
+          "text": "„Reisekosten“ steht in der Seitenleiste unter Team; Mitteilungen zu Freigabe und Ablehnung öffnen direkt die betroffene Karte."
+        }
       ]
     }
   ]

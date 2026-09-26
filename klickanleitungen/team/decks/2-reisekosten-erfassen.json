@@ -14,7 +14,7 @@
   "eyebrow": "Team · Reisekosten",
   "footerArea": "Team",
   "stand": "26.09.2026",
-  "version": "1.2",
+  "version": "1.3",
   "notes": [
     "Der Anspruch ergibt sich aus dem **Dienstplan in askDANTE** — der Hub weiß, an welchen Tagen eine Abrechnung möglich ist. Die Seite zeigt **deine eigenen** Anspruchstage; stellvertretend für Kolleginnen erfasst nur, wer auch freigeben darf.",
     "**Ohne Beleg keine Erstattung**, wo ein Beleg vorgeschrieben ist — der Hub weist darauf hin.",
@@ -31,7 +31,7 @@
       "left": {
         "shot": "p5-reisekosten"
       },
-      "leftCaption": "Die Reisekosten-Seite mit deinen Tagen aus dem Dienstplan — offen, Entwurf, eingereicht, genehmigt, abgelehnt.",
+      "leftCaption": "Die Reisekosten-Seite: Kennzahlen des Jahres, darunter deine Tage aus dem Dienstplan — offen, Entwurf, eingereicht, genehmigt, ausgezahlt, abgelehnt.",
       "steps": [
         {
           "n": 1,
@@ -45,8 +45,8 @@
         },
         {
           "n": 3,
-          "title": "Erfassen",
-          "text": "Öffnet das Fenster zum Tag. **Arbeitsbeginn und -ende** stehen dort ganz oben — zusammen mit der Abwesenheitsart ergibt sich daraus die Verpflegungspauschale."
+          "title": "Zeile antippen",
+          "text": "Ein Klick auf die Zeile öffnet das Fenster zum Tag — **Offen** heißt: noch keine Abrechnung. Arbeitsbeginn und -ende stehen dort ganz oben, die Uhrzeit wählst du im 24-Stunden-Format."
         }
       ],
       "hint": {
@@ -68,12 +68,12 @@
         {
           "n": 1,
           "title": "Abfahrtsort",
-          "text": "Über **„Adresse suchen“** — so stimmen die Kilometer und niemand muss schätzen."
+          "text": "Über **„Adresse suchen“** — Straße mit Hausnummer eintippen und einen Vorschlag wählen. So stimmen die Kilometer und niemand muss schätzen."
         },
         {
           "n": 2,
           "title": "Ziel",
-          "text": "In der Regel das andere Institut. Auch hier über die Adresssuche."
+          "text": "In der Regel ein Institut aus der Liste, sonst „Anderes Ziel“ mit Adresssuche. Sobald Abfahrt und Ziel feststehen, **rechnet der Hub die Strecke** und trägt sie ein — du kannst sie anpassen."
         },
         {
           "n": 3,
@@ -111,7 +111,7 @@
         {
           "n": 3,
           "title": "Belege anhängen",
-          "text": "Foto oder PDF direkt an die Position. Ein lesbares Handyfoto genügt. Bei selbst bezahltem Hotel gehört der **Hotelbeleg** dazu, bei selbst gekauftem Ticket das **Bahnticket** — ohne beide lässt sich nicht einreichen."
+          "text": "Foto oder PDF direkt an die Position — per Klick oder Datei auf die Fläche ziehen. Ein lesbares Handyfoto genügt. Ein neuer Entwurf wird dafür automatisch gesichert."
         },
         {
           "n": 4,
@@ -152,8 +152,8 @@
         },
         {
           "n": 4,
-          "title": "Genehmigt",
-          "text": "Endgültig. Eine Anmerkung der Freigabe steht oben im Fenster. Entwürfe lassen sich jederzeit ändern oder **löschen**."
+          "title": "Genehmigt und ausgezahlt",
+          "text": "Genehmigt ist endgültig; eine Anmerkung der Freigabe steht oben im Fenster. Nach der Lohnabrechnung wechselt die Abrechnung auf **Ausgezahlt**. Entwürfe lassen sich jederzeit ändern oder **löschen**."
         }
       ],
       "hint": {
