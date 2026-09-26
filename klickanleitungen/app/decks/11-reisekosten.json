@@ -6,14 +6,14 @@
   "of": 11,
   "audience": "institute",
   "footerArea": "App",
-  "stand": "26.09.2026",
-  "version": "1.1",
+  "stand": "27.09.2026",
+  "version": "1.2",
   "nr": 11,
   "title": [
     "Reisekosten in der App",
     "erfassen und freigeben"
   ],
-  "subtitle": "Klickanleitung für die glatttHub-App — die eigenen Anspruchstage aus dem Dienstplan sehen, eine Reise auf der Reisekarte erfassen, Belege fotografieren oder scannen, einreichen, zurückziehen oder nach einer Ablehnung erneut einreichen, und mit Freigaberecht Abrechnungen prüfen, berichtigen und entscheiden",
+  "subtitle": "Klickanleitung für die glatttHub-App — die eigenen Anspruchstage aus dem Dienstplan sehen, eine Reise mit dem Assistenten anlegen — auch über mehrere Tage mit Übernachtung oder täglicher Fahrt —, auf der Reisekarte korrigieren, Belege fotografieren oder scannen, einreichen, zurückziehen oder nach einer Ablehnung erneut einreichen, und mit Freigaberecht Abrechnungen prüfen, berichtigen und entscheiden",
   "eyebrow": "App · Reisekosten",
   "notes": [
     "**Reisekosten** findest du im Menü **Mehr** unter **Team** (iPhone) bzw. in der Seitenleiste (iPad). Die Seite zeigt **deine eigenen** Anspruchstage — Tage, die im Dienstplan (askDANTE) als Dienstreise, Schulung oder Springereinsatz stehen. Fehlt ein Tag, klärt das die Leitung im Dienstplan.",
@@ -35,7 +35,7 @@
         {
           "n": 1,
           "title": "Anlegen",
-          "text": "Ein gerahmter Anspruchstag hat noch keine Reisekarte — **Anlegen** öffnet sie mit dem Tag als Reisebeginn."
+          "text": "Ein gerahmter Anspruchstag hat noch keine Reise — ein Tipp startet den **Assistenten** für die neue Reise (nächste Seite)."
         },
         {
           "n": 2,
@@ -55,6 +55,81 @@
       ],
       "hint": {
         "text": "Wer Reisekosten freigeben darf, sieht oben das Register **Freigabe** und kann außerdem **stellvertretend** für Kolleginnen erfassen (Personenwahl über der Liste)."
+      }
+    },
+    {
+      "h1": "Neue Reise mit dem Assistenten",
+      "sub": "Vier kurze Schritte führen durch die Reise: Tage & Ort, Nächte, Fahrten & Belege, Zeiten & Übersicht. Bei einem einzelnen Tag entfallen die Nächte.",
+      "card": {
+        "title": "Assistent",
+        "text": "Schritt für Schritt zur fertigen Reise"
+      },
+      "left": {
+        "shot": "trip-assistant-1-ort-light"
+      },
+      "leftCaption": "Schritt 1: Folgen Anspruchstage direkt aufeinander, fragt die App zuerst **„21. – 22.01. – ist das eine Dienstreise zu ein und demselben Ort?“** Darunter Ziel und Abfahrt mit **Strecke berechnen**.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Die Frage beantworten",
+          "text": "**Ja, zusammen**, wenn du an allen Tagen am selben Ort warst — dann wird eine Reise über alle Tage abgerechnet. **Nein**, wenn es verschiedene Orte waren: dann nur der angetippte Tag, die anderen Tage bekommen eigene Reisen."
+        },
+        {
+          "n": 2,
+          "title": "Wo warst du nachts?",
+          "text": "**Übernachtet** (Hotel, gefahren wird nur am ersten und letzten Tag) oder **jeden Abend nach Hause** (Fahrt an jedem Tag). Bei mehr als zwei Tagen geht auch **Gemischt** — je Nacht ein Schalter."
+        },
+        {
+          "n": 3,
+          "title": "Fahrten & Belege",
+          "text": "Die App legt die Fahrten aus den Nächten selbst an. Je Tag **Auto** (Strecke steht schon drin) oder **Bahn** (Ticket selbst bezahlt? Kosten eintragen und **Ticket scannen**). Bei Übernachtung darunter das Hotel und **Frühstück im Hotel**."
+        },
+        {
+          "n": 4,
+          "title": "Zeiten & Übersicht",
+          "text": "Arbeitszeiten je Tag, darunter die Erstattung. **Speichern und Reisekarte öffnen** sichert den Entwurf — was fürs Einreichen noch fehlt, steht dabei."
+        }
+      ],
+      "hint": {
+        "text": "**Abbrechen** geht jederzeit — gespeichert wird erst im letzten Schritt (oder sobald du einen Beleg hochlädst, weil Belege an der Reise hängen)."
+      }
+    },
+    {
+      "h1": "Tage & Nächte korrigieren",
+      "sub": "Nach dem Assistenten öffnet sich die Reisekarte mit dem Abschnitt „Tage & Nächte“. Jede Korrektur ist dort ein Schalter oder ein Feld — der Assistent muss nicht noch einmal durchlaufen werden.",
+      "card": {
+        "title": "Tage & Nächte",
+        "text": "Nächte, Verkehrsmittel und Start je Tag"
+      },
+      "left": {
+        "shot": "trip-card-heimgefahren-light"
+      },
+      "leftCaption": "Die Tage untereinander, dazwischen der Schalter **Übernachtet / Heimgefahren**. Jeder Tag zeigt, welche Fahrten anfallen, und rechnet seinen Betrag.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Nacht umstellen",
+          "text": "Schalter aus heißt **heimgefahren**: Rückfahrt am Abend und Hinfahrt am Morgen kommen dazu, das Hotel entfällt für diese Nacht. Übernachten und tägliche Fahrt gehen nie gleichzeitig."
+        },
+        {
+          "n": 2,
+          "title": "Auto oder Bahn je Tag",
+          "text": "Der Umschalter gilt nur für diesen Tag — etwa Hinfahrt mit dem Auto, am zweiten Tag mit der Bahn."
+        },
+        {
+          "n": 3,
+          "title": "Anderer Start",
+          "text": "**Ändern** neben „ab …“ trägt einen anderen Start für diesen Tag ein (z. B. vom Institut statt von zu Hause); die Strecke rechnet der Hub neu."
+        },
+        {
+          "n": 4,
+          "title": "Verpflegung",
+          "text": "Die Pauschale folgt den Nächten: ganzer Tag unterwegs 28 €, An- und Abreisetag je 14 €, ein Tag ohne Übernachtung 14 € ab 8 Stunden."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "Die Reise muss **zu ein und demselben Ort** gehen. Warst du an zwei Tagen an verschiedenen Orten, beantworte die Frage mit **Nein** und lege je Tag eine eigene Reise an."
       }
     },
     {
@@ -129,7 +204,7 @@
         }
       ],
       "hint": {
-        "text": "**Das Original aufheben.** Die Buchhaltung braucht später den Papierbeleg; das Foto in der App belegt die Abrechnung, ersetzt aber nicht das Original."
+        "text": "**Ein Foto genügt.** Die Buchhaltung braucht kein Papieroriginal, aber ein PDF — Fotos wandelt der Hub beim Hochladen selbst in ein PDF um."
       }
     },
     {
@@ -178,9 +253,9 @@
         "text": "Liste und Karte nebeneinander"
       },
       "left": {
-        "shot": "travel-ipad-light"
+        "shot": "trip-ipad-assistent-light"
       },
-      "leftCaption": "Der geteilte Bildschirm: links Anspruchstage und Reisen, rechts die gewählte Reisekarte mit Summe, Abschnitten und der Leiste unten.",
+      "leftCaption": "Der geteilte Bildschirm: links Anspruchstage und Reisen, rechts der Assistent mit Schrittliste und Summe; nach dem Speichern steht dort die Reisekarte.",
       "steps": [
         {
           "n": 1,
@@ -189,8 +264,8 @@
         },
         {
           "n": 2,
-          "title": "Bearbeiten",
-          "text": "Abschnitte klappen in der Karte auf; Belege kommen über dasselbe Blatt wie auf dem iPhone, der Scanner nutzt die iPad-Kamera."
+          "title": "Neue Reise",
+          "text": "Der Assistent läuft rechts, links daneben stehen die Schritte mit ihrem Stand und die bisherige Summe — ein Tipp auf einen erledigten Schritt springt zurück."
         },
         {
           "n": 3,

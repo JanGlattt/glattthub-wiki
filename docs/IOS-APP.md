@@ -1301,7 +1301,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Termin buchen | bestand | Slot-Suche Web; Folgetermin/Verlegen aus der Terminansicht nativ |
 | Verträge | nativ | Liste + Vertragsseite mit vier Reitern (seit 25.09.2026); GoCardless/Ratenplan/Bearbeiten als Web-Blatt; Preislisten, Freunde werben, Mappings Web |
 | Gutscheine | nativ | Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin-Korrektur, neuer Gutschein, Guthaben-Karte in der Kundenübersicht (seit 26.09.2026); Bestand mit Kennzahlen bleibt Web |
-| Reisekosten | nativ | Anspruchstage aus askDANTE, Reisekarte mit Live-Summe und fünf Abschnitten, Belege mit Kamera/Scanner, Einreichen/Zurückziehen/Löschen, Register Freigabe mit Berichtigen und Entscheidung (seit 26.09.2026); Web-Freigabeseite bleibt Web |
+| Reisekosten | nativ | Anspruchstage aus askDANTE, Assistent für neue Reisen (auch mehrtägig mit Tagen & Nächten, seit 27.09.2026), Reisekarte mit Live-Summe und fünf Abschnitten, Belege mit Kamera/Scanner, Einreichen/Zurückziehen/Löschen, Register Freigabe mit Berichtigen und Entscheidung (seit 26.09.2026); Web-Freigabeseite bleibt Web |
 | App-Geräte | nativ | Liste mit Suche, Chips, Kennzahlen, offene Codes und Geräte nach Institut; Code ausstellen in drei Schritten mit QR und Teilen-Blatt (AirDrop), Code zurückziehen, Gerät widerrufen im Steckbrief; iPad-Split, Ausstellen als Popover (seit 26.09.2026); Einlösen bleibt `EnrollmentSheet` |
 | Freunde werben, Widerrufe, Zufriedenheit, Forderungen, Personal, Institute, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — nächste: Zufriedenheit |
 | Berichte + 16 Berichtsseiten | bestand | WebView im Tab Berichte (ECharts, Registry-Karten); Kennzahlen nativ über Cockpit/Widgets/Siri |
@@ -1483,6 +1483,17 @@ solange etwas fehlt; eingereichte Abrechnungen lassen sich zurückziehen, abgele
 Freigeben (mit Anmerkung) oder Ablehnen (mit Grund); die eigene Abrechnung gibt niemand selbst
 frei. Ohne Netz bleiben Liste und zuletzt geöffnete Karten lesbar. Auf dem iPad steht die
 Liste links, die Reisekarte rechts.
+
+**Neue Reise per Assistent (seit 27.09.2026, TestFlight-Befund 68):** Ein offener Anspruchstag
+öffnet `TravelAssistantView` statt der leeren Karte — Tage & Ort (mit der Frage „ist das eine
+Dienstreise zu ein und demselben Ort?“ bei aufeinanderfolgenden Tagen), Nächte, Fahrten & Belege,
+Zeiten & Übersicht; auf dem iPad mit Schrittliste und Zwischensumme links. Nach dem Speichern
+wechselt `TravelCardView` auf die Reisekarte mit dem Abschnitt **Tage & Nächte**
+(`TravelDaysView`: Tageskarten, Nacht-Schalter, Start je Tag). Rechenspiegel `TravelExpense.plan`;
+Snapshot-Test `TravelTripSnapshotTests` (Assistent 4 Schritte, Karte übernachtet/heimgefahren,
+iPad). Snapshot-feste Bausteine `TravelSegmented`, `TravelSwitch`, `TravelTextField` — der
+`ImageRenderer` rastert weder segmentierte Picker noch Toggles oder Textfelder. Fachlich:
+[Reisekosten-Modul](REISEKOSTEN-MODULE.md#mehrtagige-dienstreise-tage-nachte-seit-27092026).
 
 !!! nutzerhandbuch "Bedienung: App 11 – Reisekosten in der App"
     [https://hilfe.hub.glattt.com/app/11/](https://hilfe.hub.glattt.com/app/11/)

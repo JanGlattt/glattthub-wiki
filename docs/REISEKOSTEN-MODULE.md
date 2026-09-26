@@ -31,6 +31,17 @@ Kosten mit Belegen und Notizen. Der Hub berechnet daraus Pausen, Verpflegungspau
 Fahrtkosten und den Gesamtbetrag — nach den gesetzlichen Regeln, ohne dass jemand nachrechnen
 muss.
 
+**Mehrtägige Dienstreise (seit 27.09.2026).** Folgen Anspruchstage direkt aufeinander, fragt
+der Hub beim Anlegen: „21. – 22.01. – ist das eine Dienstreise zu ein und demselben Ort?“ Bei
+**Ja** entsteht eine Abrechnung über alle Tage, in der je Nacht gewählt wird, ob vor Ort
+übernachtet oder heimgefahren wurde, und je Tag, ob mit Auto oder Bahn — beides schließt sich
+je Nacht aus, deshalb gibt es keine Reise-weite Einstellung mehr. In der App führt ein
+**Assistent** in vier Schritten durch die neue Reise (Entscheidung Jan, 26.09.2026); danach
+steht jede Korrektur als Schalter oder Feld im Abschnitt „Tage & Nächte“ der Reisekarte.
+
+!!! nutzerhandbuch "Bedienung: App 11 – Reisekosten in der App"
+    [hilfe.hub.glattt.com/app/11/](https://hilfe.hub.glattt.com/app/11/) — Assistent und „Tage & Nächte“; im Web: [Team 2](https://hilfe.hub.glattt.com/team/2/)
+
 **Grundsätze:**
 
 - **Anspruch nur aus dem Dienstplan.** Welche Abwesenheitsarten Reisekosten (und ob sie eine
@@ -56,6 +67,7 @@ erneut eingereicht). Details im [Status-Modell](#status-modell).
 | Vorgang | Anleitung |
 |---|---|
 | Mitarbeiterin und Jahr wählen, Anspruchstage lesen, Abrechnung beginnen | Team 2 |
+| Mehrere Tage als eine Dienstreise, Nächte und Fahrten je Tag | Team 2, App 11 |
 | Reisezeitraum, Arbeitszeiten, Fahrt (Auto/Bahn) und Ziel erfassen | Team 2 |
 | Übernachtung, Mahlzeiten, zusätzliche Kosten, Belege hochladen | Team 2 |
 | Einreichen, Status verfolgen, nach Ablehnung korrigieren | Team 2 |
@@ -183,6 +195,70 @@ zusätzliche Kosten = Gesamtbetrag (Beispiel: 120,00 + 89,00 + 42,00 + 15,50 = 2
 und Belege, wo erforderlich (Bahnticket bei Selbstzahlung, Hotelbeleg bei selbst bezahlter
 Übernachtung, Belege bei zusätzlichen Kosten). **Überlappende Zeiträume** derselben
 Mitarbeiterin werden beim Anlegen und Ändern abgewiesen (422).
+
+### Mehrtägige Dienstreise: Tage & Nächte (seit 27.09.2026)
+
+TestFlight-Befund 68, Entwürfe im [Artefakt](https://claude.ai/artifact/2cRajwSz2t8cTJ4xc5CpWm);
+Entscheidung Jan (26.09.2026): **Assistent** für die Eingabe, danach **Tage & Nächte** als
+Ansicht zum Korrigieren („wenn was zu korrigieren ist, muss das trotzdem einfach bleiben“).
+
+**Datenmodell:** Spalte `travel_expenses.trip_days` (JSON, nullable), Schlüssel = Kalendertag:
+
+```json
+{
+  "2026-01-21": { "night": "home", "travel_mode": "car", "distance_km": 145.6 },
+  "2026-01-22": { "travel_mode": "train", "train_paid_by": "self", "train_cost": 49.8,
+                  "departure_city": "Bielefeld", "departure_lat": 52.02, "departure_lon": 8.53 }
+}
+```
+
+- `night` beschreibt die **Nacht nach** dem Tag: `stay` (vor Ort übernachtet) oder `home`
+  (abends nach Hause); fehlt der Wert, gilt `stay`. Am letzten Tag wird er ignoriert.
+- `travel_mode`, `distance_km` (einfach), `train_cost`/`train_paid_by` je Tag; fehlende Werte
+  erben den Kopf der Abrechnung. `departure_*` nur, wenn der Tag woanders startet (App:
+  „Start ändern“ → Geocoding + Route zum gemeinsamen Ziel).
+- Das **Ziel ist für alle Tage gleich** — genau das fragt die Einstiegsfrage ab. Verschiedene
+  Orte = je Tag eine eigene Abrechnung.
+
+**Rechnung (`TravelExpense::tripPlan()` / `recalculate()`):** greift nur mehrtägig mit
+Tagesangaben (`usesTripDays()`); eintägige und ältere mehrtägige Abrechnungen ohne
+`trip_days` rechnen unverändert (Vorgabe `stay` für alle Nächte ergibt genau die alte Rechnung).
+
+| je Tag | Regel |
+|---|---|
+| Fahrten | Hinfahrt, wenn die Nacht davor `home` war (oder erster Tag); Rückfahrt, wenn die Nacht danach `home` ist (oder letzter Tag) → `legs` 0–2 |
+| Auto | `distance_km × legs × km_rate` |
+| Bahn | `train_cost`, wenn selbst bezahlt (ein Ticket deckt die Fahrten des Tags) |
+| Verpflegung | Nacht davor **und** danach unterwegs 28 €; eine davon 14 € (An-/Abreisetag); keine 14 € ab 8 Std. Netto-Arbeitszeit des Tags; Mahlzeiten-Kürzung wie bisher |
+
+`has_overnight` wird aus den Nächten abgeleitet (mindestens eine `stay`), `travel_mode` und
+`distance_km` im Kopf spiegeln den ersten Tag (Listen, Freigabe-Übersicht). Beispiel aus den
+Entwürfen (Osnabrück, 145,6 km, Hotel 89 €): übernachtet 198,76 €, heimgefahren mit Bahn am
+zweiten Tag 165,16 € — dieselben Zahlen prüfen `TravelExpenseTripDaysTest` (PHP),
+`TravelTripSnapshotTests` (Swift) und der Web-Spiegel in `reisekosten.js`.
+
+**Endpunkte:** keine neuen — `trip_days.*` in `store`/`update` und als Berichtigung in
+`approval/{id}/approve` (gemeinsame Regeln `tripDayRules()`, sonst verwirft `validated()` die
+Startorte). `approvalShow` liefert zusätzlich `trip_plan` für die Web-Freigabe (nur Anzeige;
+berichtigt wird in der App). Einreichen verlangt einen Bahnticket-Beleg, sobald an einem Tag
+selbst bezahlt wurde.
+
+**Einstiegsfrage:** App und Web suchen die lückenlose Folge offener Anspruchstage um den
+angetippten Tag (`consecutiveOpenRun`, beide Richtungen, max. 14). Ab zwei Tagen erscheint die
+Frage im Wortlaut „21. – 22.01. – ist das eine Dienstreise zu ein und demselben Ort?“
+(Monat nur hinten, bei Monatswechsel an beiden Daten).
+
+**App:** `TravelAssistantView` (Tage & Ort → Nächte → Fahrten & Belege → Zeiten & Übersicht;
+eintägig ohne Nächte; iPad mit Schrittliste links), `TravelDaysView` (Tageskarte, Nacht-Schalter,
+„Start ändern“ — genutzt von Schritt 3 und vom Abschnitt „Tage & Nächte“), Rechenspiegel
+`TravelExpense.plan` in `TravelExpenseModels.swift`. **Web:** Frage in `modal-dates`, Abschnitt
+`modal-days` (Nacht-Schalter, Auto/Bahn je Tag), „An- und Abreise“ heißt mehrtägig „Ziel & Start“
+und verliert Verkehrsmittel/Hin-Rück (steht je Tag). Einen anderen Start je Tag gibt es bisher
+nur in der App; das Web zeigt ihn an.
+
+**Fallstricke:** `validated()` mit `trip_days.*.x`-Regeln liefert nur Schlüssel, die eine Regel
+haben — jede Tagesangabe braucht eine Regel. Ein leeres Swift-Wörterbuch geht als `{}` raus und
+kommt in PHP als `[]` an: das schaltet die Tagesrechnung bewusst ab (eintägig).
 
 ---
 
@@ -635,6 +711,7 @@ ALTER TABLE travel_expenses
 
 | Datum | Änderung |
 |---|---|
+| 27.09.2026 | Mehrtägige Dienstreise (TestFlight-Befund 68): Einstiegsfrage „ist das eine Dienstreise zu ein und demselben Ort?“, `trip_days` mit Nacht je Tag (übernachtet/heimgefahren), Verkehrsmittel, Strecke, Ticket und Start je Tag; Rechnung je Tag; App mit Assistent + „Tage & Nächte“, Web mit Frage + Abschnitt, Web-Freigabe zeigt den Ablauf |
 | 26.09.2026 | Überarbeitung Stufe 2 und 3: Seiten in Partials + eigene JS-Dateien, Theme-Klassen statt ~360 Inline-Styles, Dropdown-/Flatpickr-Komponenten (auch Uhrzeiten), Stat-Strip, Skeletons, Adresssuche/Strecke über den Hub mit gespeicherten Koordinaten, Beleg-Abruf, Status „ausgezahlt“ mit CSV für die Lohnbuchhaltung, nächtlicher Abgleich der Abwesenheitsarten; Übernachtungs-Schalter war unsichtbar |
 | 26.09.2026 | Überarbeitung Stufe 1 (Jan): Freigabe-Route repariert, Hotelbeleg, Pauschale nur bei erlaubter Abwesenheitsart (serverseitig), eintägige Reise korrekt (Carbon-Float), Statusübergänge (eingereicht gesperrt/zurückziehen, abgelehnt erneut einreichen, Entwurf löschen), Eigentum am Konto mit Policy, `me`-Endpunkt, Meldungen an die Mitarbeiterin, eigene Ablehnungs-/Anmerkungsfelder, Tests. Befunde und native Entwürfe: [Artefakt](https://claude.ai/artifact/5EgnPnbSoKDnsfbxUZdEqW) |
 | 03/2026 | Modul erstellt (mehrtägige Arbeitszeit, Hotel/Verpflegung, Hin-/Rückfahrt), Freigabe |

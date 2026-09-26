@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für den glatttHub — Fahrten und Verpflegung abrechnen, Belege anhängen, einreichen",
   "eyebrow": "Team · Reisekosten",
   "footerArea": "Team",
-  "stand": "26.09.2026",
-  "version": "1.3",
+  "stand": "27.09.2026",
+  "version": "1.4",
   "notes": [
     "Der Anspruch ergibt sich aus dem **Dienstplan in askDANTE** — der Hub weiß, an welchen Tagen eine Abrechnung möglich ist. Die Seite zeigt **deine eigenen** Anspruchstage; stellvertretend für Kolleginnen erfasst nur, wer auch freigeben darf.",
     "**Ohne Beleg keine Erstattung**, wo ein Beleg vorgeschrieben ist — der Hub weist darauf hin.",
@@ -51,6 +51,43 @@
       ],
       "hint": {
         "text": "**Kein Tag wählbar?** Dann sieht der Dienstplan für diesen Zeitraum keinen Anspruch vor. Das klärt man mit der Leitung über askDANTE — nicht durch Eintragen eines anderen Tages. **Zwei Abrechnungen für denselben Tag** lässt der Hub nicht zu."
+      }
+    },
+    {
+      "h1": "Mehrere Tage: eine Dienstreise?",
+      "sub": "Folgen Anspruchstage direkt aufeinander, fragt das Fenster zuerst, ob es eine Dienstreise zu ein und demselben Ort war. Dann legst du Nächte und Fahrten je Tag fest.",
+      "card": {
+        "title": "Mehrtägige Reise",
+        "text": "Frage, Nächte und Fahrten je Tag"
+      },
+      "left": {
+        "shot": "p5a-frage"
+      },
+      "leftCaption": "Oben die Frage **„21. – 22.01. – ist das eine Dienstreise zu ein und demselben Ort?“** — **Ja, zusammen** übernimmt alle Tage als Reisezeitraum, **Nein** nur den angeklickten Tag.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Frage beantworten",
+          "text": "Ja nur, wenn du an allen Tagen am selben Ort warst. Verschiedene Orte: **Nein** und je Tag eine eigene Abrechnung."
+        },
+        {
+          "n": 2,
+          "title": "Tage & Nächte",
+          "text": "Im Abschnitt **Tage & Nächte** steht zwischen zwei Tagen der Schalter **Übernachtet / Heimgefahren**. Heimgefahren fügt Rück- und Hinfahrt hinzu, übernachtet braucht das Hotel."
+        },
+        {
+          "n": 3,
+          "title": "Auto oder Bahn je Tag",
+          "text": "Je Tag Auto (Entfernung einfach) oder Bahn (von glattt oder selbst gekauft, dann Ticketkosten und Beleg)."
+        },
+        {
+          "n": 4,
+          "title": "Ziel & Start",
+          "text": "Abfahrtsort, Ziel und Strecke trägst du einmal unter **Ziel & Start** ein — sie gelten für jeden Autotag."
+        }
+      ],
+      "hint": {
+        "text": "Die Verpflegung folgt den Nächten: ganzer Tag unterwegs 28 €, An- und Abreisetag je 14 €, Tag ohne Übernachtung 14 € ab 8 Stunden. Einen anderen Start je Tag trägst du in der App ein."
       }
     },
     {
