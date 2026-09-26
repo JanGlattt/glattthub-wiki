@@ -1282,7 +1282,10 @@ Drücken auf einen Vertrag zeigt Zahlungen, Verlauf, Kundin und Kopieren der Num
   50 je Seite, `with_clients=0`) + zweite Runde `GET /hub/contracts/clients?ids=` für Kundennamen —
   exakt wie `contractsList()` im Blade; `GET /hub/contracts/{id}/data` liefert seit 25.09.2026 zusätzlich
   `summary` (`App\Services\Contracts\ContractSummary` — dieselbe Rechnung wie die Summary-Sidebar, die das
-  Blade jetzt ebenfalls nutzt), `history` (alle Änderungen mit Label/Farbe/Nutzerin), `cancellations`,
+  Blade jetzt ebenfalls nutzt), `history` (alle Änderungen mit Label/Farbe/Nutzerin und seit 25.09.2026
+  `summary` — ein deutscher Satz je Änderung aus `App\Services\ContractChangeSummary`, denselben zeigt die
+  Web-Zeitleiste; die App zeigt nie mehr die rohe JSON-Nutzlast, Grund nur, wenn er nicht schon der Satz
+  ist — TestFlight-Befund 52), `cancellations`,
   `email_logs`, `installment_mode(_label)`, `source`, Widerrufsfrist, Vorgänger/Nachfolger und `can`
   (edit_contract_data, manage_gocardless, view_client_detail); `GET /hub/contracts/{id}/payments` für die
   Raten (Statusmodell wie `contract-detail.js`: `paid_out`, `pending_submission`, `failed`, `on_site` …).
