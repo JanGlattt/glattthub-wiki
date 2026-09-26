@@ -538,5 +538,55 @@
   },
   "ratio": 0.788135593220339,
   "marks": []
+ },
+ "booking-finder-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1400
+  },
+  "ratio": 1.794871794871795,
+  "marks": []
+ },
+ "booking-finder-slots-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1124
+  },
+  "ratio": 1.441025641025641,
+  "marks": []
+ },
+ "booking-finder-booked-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 760
+  },
+  "ratio": 0.9743589743589743,
+  "marks": []
+ },
+ "booking-finder-empty-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1080
+  },
+  "ratio": 1.3846153846153846,
+  "marks": []
+ },
+ "booking-finder-ipad-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2048,
+   "height": 1553
+  },
+  "ratio": 0.75830078125,
+  "marks": []
  }
 }

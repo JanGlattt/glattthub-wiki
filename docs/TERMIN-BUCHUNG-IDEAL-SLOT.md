@@ -67,6 +67,11 @@ Institut und Leistungen sind darin fest vorgegeben, auf Wunsch nur lückenlose S
   vorausgewähltem Kunden, Institut und den `appointmentIds` des Termins.
 - **Buchungsseite** `Hub → Termin buchen` (`hub.booking`): existiert im Code, ist aber aus der
   Navigation entfernt. Der primäre Weg ist das Modal auf der Kundenseite.
+- **iOS-/iPadOS-App** (seit 26.09.2026): `/hub/booking` ist dort eine **native Seite** („Slot-Finder")
+  im Termine-Tab — Plus in der Terminliste, Knopf „Termin" in der Kundenübersicht, ⌘N, jeder Web-Link
+  auf die Buchungsseite. Sie nutzt `booking/api/{services|suggestions|book|reschedule}` und bucht mit
+  `kind: new` (Phorest-Vermerk „Neubuchung"). Details: `IOS-APP.md`, Abschnitt „Native Seite
+  ‚Termin buchen'".
 - **Folgetermin nach „Termin beenden"** (`FollowUpBookingModal`, `mode=new`): siehe
   `FOLGETERMIN-BEWERTUNGSLINK.md`.
 

@@ -1298,12 +1298,12 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Benachrichtigungen | nativ | Mitteilungsliste im Mehr-Sheet / iPad-Popover, In-App-Banner |
 | Laser | nativ | Raum-Sicht des Instituts, Werkbank „Alle“, Geräteakte mit acht Reitern, Teile-Akte, Reparatur/STK/Behörde nativ, Wartungsassistent, Störung melden (seit 26.09.2026); Inventarisieren, Stammdaten, Verbrauchsmaterial, Berichte Web |
 | Bonus-Board | nativ | Mehr-Seite, beide Sichten, Export per Teilen-Blatt |
-| Termin buchen | bestand | Slot-Suche Web; Folgetermin/Verlegen aus der Terminansicht nativ |
+| Termin buchen | nativ | Slot-Finder als Detailseite im Termine-Tab: Kundin, Institut, ab wann, Paket-Leistungen, Vorschläge je Tag, Rückfrage am Slot, iPad-Raster (seit 26.09.2026); Einstiege Plus in der Terminliste, Kundenübersicht, ⌘N; Folgetermin/Verlegen aus der Terminansicht bleiben im Blatt |
 | Verträge | nativ | Liste + Vertragsseite mit vier Reitern (seit 25.09.2026); GoCardless/Ratenplan/Bearbeiten als Web-Blatt; Preislisten, Freunde werben, Mappings Web |
 | Gutscheine | nativ | Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin-Korrektur, neuer Gutschein, Guthaben-Karte in der Kundenübersicht (seit 26.09.2026); Bestand mit Kennzahlen bleibt Web |
 | Reisekosten | nativ | Anspruchstage aus askDANTE, Assistent für neue Reisen (auch mehrtägig mit Tagen & Nächten, seit 27.09.2026), Reisekarte mit Live-Summe und fünf Abschnitten, Belege mit Kamera/Scanner, Einreichen/Zurückziehen/Löschen, Register Freigabe mit Berichtigen und Entscheidung (seit 26.09.2026); Web-Freigabeseite bleibt Web |
 | App-Geräte | nativ | Liste mit Suche, Chips, Kennzahlen, offene Codes und Geräte nach Institut; Code ausstellen in drei Schritten mit QR und Teilen-Blatt (AirDrop), Code zurückziehen, Gerät widerrufen im Steckbrief; iPad-Split, Ausstellen als Popover (seit 26.09.2026); Einlösen bleibt `EnrollmentSheet` |
-| Freunde werben, Widerrufe, Zufriedenheit, Forderungen, Personal, Institute, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — nächste: Zufriedenheit |
+| Freunde werben, Widerrufe, Zufriedenheit, Forderungen, Personal, Institute, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — Zufriedenheit zurückgestellt, weil die Befragung noch nicht genutzt wird (Jan, 26.09.2026) |
 | Berichte + 16 Berichtsseiten | bestand | WebView im Tab Berichte (ECharts, Registry-Karten); Kennzahlen nativ über Cockpit/Widgets/Siri |
 | Formulare, Bildschirme, Services, Unternehmensverträge, Report-Mails, Audit, Einstellungen, Conversion-Upload, Bonus-Verwaltung | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
 
@@ -1463,6 +1463,63 @@ die Liste links, der Steckbrief rechts, das Ausstellen öffnet als Fenster am Pl
   Modelle mit `null`, Gruppierung, Pfad-Erkennung), `AppDevicesUITests` (Mehr → App-Geräte → Chips →
   Code ausstellen bis zum QR → zurückziehen → Steckbrief, gegen den lokalen Hub),
   `AppDevicesNativeTest` (Hub).
+
+### Native Seite „Termin buchen" (Detailseite im Termine-Tab, seit 26.09.2026)
+
+**Für Endanwender:** „Termin buchen" ist in der App nativ. Man öffnet die Seite über das goldene **+**
+oben in der Terminliste, über **Termin** in der Kundenübersicht (die Kundin ist dann schon
+eingetragen) oder auf dem iPad mit **⌘N**. Oben stehen Kundin, Institut und „ab wann“ (nächste
+Woche, in 6/8/10 Wochen oder ein eigenes Datum), darunter die Leistungen aus ihren Paketen mit
+Dauer und Resteinheiten. Jede Änderung sucht sofort neu; die Vorschläge stehen je Tag als Kacheln
+mit Uhrzeit und Raum, **grün** heißt ohne Lücke. Ein Tipp auf eine Kachel fragt mit Tag, Uhrzeit,
+Raum, Kundin und Leistungen nach und bucht in Phorest. Danach geht es **zum Termin** oder zum
+**nächsten Termin** für dieselbe Kundin. Auf dem iPad stehen die Eingaben links und alle
+Vorschlagstage nebeneinander rechts. Folgetermin und Verlegen aus einem laufenden Termin bleiben
+wie bisher in der Terminansicht.
+
+!!! nutzerhandbuch "Bedienung: App 12 – Termin buchen in der App"
+    [https://hilfe.hub.glattt.com/app/12/](https://hilfe.hub.glattt.com/app/12/)
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 26.09.2026, aus drei Entwürfen):** Entwurf 2 „Slot-Finder" — eigene Seite
+  ohne Blatt, Sofort-Suche, iPad-Raster aller Tage. Verworfen: Entwurf 1 „Aus der Kundin" (nur das
+  Folgetermin-Blatt ohne alten Termin; zu eng für acht Tage) und Entwurf 3 „Raum-Kalender"
+  (Tagesplan je Raum; kann später als zweite Ansicht dazukommen, dann braucht `suggestions` den
+  `calendar` aus `BookingService::findSuggestions`). Entwürfe:
+  https://claude.ai/artifact/JpCBYHMLnbNkp9qWEXdcqS
+- **Einhängen:** Die Web-Seite hat keinen Menüpunkt, deshalb ist die native Seite eine
+  **Detailseite des Termine-Tabs**: `MobileNavigation::PRIMARY['hub.appointments']['detail']`
+  enthält `/hub/booking`, `nativeDetailFactories["hub.appointments"]` baut `BookingFinderView` aus
+  `BookingTarget(url:)`. `detailPath` ist Pfad **samt Abfrage** (`BookingTarget.path`) —
+  `openDetail` vergleicht seit 26.09.2026 mit der Kennung der neuen Seite statt nur mit dem Pfad,
+  damit zweimal Plus nicht zwei Seiten stapelt, eine andere Kundin aber eine neue Seite ist.
+  Ohne nativen Termine-Tab (Recht fehlt, Kiosk) öffnet `AppState.presentedBooking` ein Vollbild.
+  Web-Links fangen `bridge.js` (`NATIVE_WITH_QUERY`, die Abfrage wandert mit) und der
+  `WebCoordinator` ab; `AppContainer.open()` erkennt `BookingTarget` vor den Mehr-Seiten.
+- **Abfrage wie im Web:** `branchId`, `clientId`, `clientName`, dazu `clientNumber` (nur App) und
+  `appointmentIds` (kommagetrennt → Verlegen über `booking/api/reschedule`, Schnellwahl ab heute).
+- **Endpunkte — dieselben wie Web und Folgetermin-Blatt:** `GET booking/api/services`,
+  `POST booking/api/suggestions`, `POST booking/api/book`, `POST booking/api/reschedule`, Recht
+  `view_booking`. **Hub-Änderung:** `book` nimmt optional `kind: new` → Phorest-Vermerk
+  „Über glatttHub gebucht (Neubuchung)." und Meldung „Termin am … gebucht."; ohne Angabe bleibt es
+  der Folgetermin (ältere Builds). `GET /api/app/navigation` liefert `user.can_book` — das Plus und
+  der Kunden-Knopf erscheinen nur damit. Die Institutsauswahl nutzt `navigation.branches`
+  (Reihenfolge, Kürzel, Farbe aus dem Institut-Modul; ausgeblendete nur, wenn gerade gewählt).
+- **Suche:** Vorgewählt sind wie im Web nur die Zusatzzeiten (`preselected`, Extrazeit); gesucht
+  wird erst, wenn eine echte Behandlung dabei ist (`hasTreatment`). Leistungen tippen entprellt
+  450 ms, Zeitraum/Datum sofort; ein Generationszähler verwirft veraltete Antworten, die alten
+  Vorschläge bleiben gedimmt stehen (sanftes Neuladen).
+- **App:** `Booking/BookingTarget.swift`, `Booking/BookingFinderModel.swift` (Slot/Day vom
+  `FollowUpBookingModel`), `Booking/BookingFinderView.swift` (`BookingFinderContent` mit `wide`
+  für Snapshots, `SlotTile` mit `confirmationDialog` am Knopf → auf dem iPad Popover an der
+  Kachel, Raster ohne Lazy-Grid, weil `ImageRenderer` es nicht rastert). Wiederverwendet:
+  `ServiceRow`, `flashBox`, `infoBox` aus `BookingSheets.swift` (nicht mehr `private`),
+  `VoucherClientPicker` als Kundensuche. Einstiege: `AppointmentsView` (Plus), `ClientDetailView`
+  (Aktion „Termin", Institut = gewählter Standort, sonst Stamm-Institut der Kundin), `HubCommands` (⌘N).
+- **Nachweis:** `BookingFinderSnapshotTests` (Seite, leer, gebucht, iPad — hell/dunkel; Adresse
+  erkennen, Suche erst mit Behandlung, Beschriftungen), `BookingApiTest::…neubuchung…`,
+  `MobileNavigationTest::booking_page_is_a_native_detail_of_the_appointments_tab`.
 
 ### Native Reisekosten (Mehr-Seite, seit 26.09.2026 — Nachzug 5)
 
@@ -1627,6 +1684,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 26.09.2026 | 1.2.1 (nächster Build) | Native Seite „Termin buchen" (Slot-Finder): Detailseite im Termine-Tab, Plus in der Terminliste, Knopf in der Kundenübersicht, ⌘N, Web-Links nativ; iPad-Raster; Hub: `kind: new` an `booking/api/book`, `user.can_book`, `/hub/booking` als Detail-Präfix |
 | 26.09.2026 | 1.2.1 (27) | Reisekosten Stufe 2/3 in der App: Status „Ausgezahlt“, Belege per QuickLook (`/travel-expenses/receipts/{id}/file`), Adresssuche und Strecke über den Hub mit gespeicherten Koordinaten |
 | 26.09.2026 | 1.2.0 (26) | Native Reisekosten (Nachzug 5): Anspruchstage, Reisekarte (Live-Summe, fünf Abschnitte, Streckenberechnung, Belege mit Kamera/Scanner/Datei), Einreichen/Zurückziehen/Löschen, Freigabe mit Berichtigen und Entscheidung, iPad-Split; Hub: Stufe 1 der Reisekosten-Überarbeitung (`/travel-expenses/me`, Eigentum, Statusübergänge, Freigabe-Route), `upload(fields:)` |
 | 26.09.2026 | 1.2.0 (24) | Native App-Geräte (Nachzug 4): Liste mit Chips/Kennzahlen, Code ausstellen in drei Schritten mit QR (CoreImage) und Teilen-Blatt, Code zurückziehen, Steckbrief mit Widerruf, iPad-Split; keine Hub-Änderung, Feldvertrag `AppDevicesNativeTest` |

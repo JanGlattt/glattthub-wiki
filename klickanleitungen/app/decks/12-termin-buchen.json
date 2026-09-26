@@ -1,0 +1,164 @@
+{
+ "out": "../pdf/App-12-Termin-buchen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "App",
+ "of": 12,
+ "audience": "institut",
+ "footerArea": "App",
+ "stand": "26.09.2026",
+ "version": "1.0",
+ "nr": 12,
+ "title": [
+  "Termin buchen",
+  "in der App"
+ ],
+ "subtitle": "Klickanleitung für die glatttHub-App — eine Kundin wählen, Institut, Zeitraum und Leistungen aus ihrem Paket antippen, einen der vorgeschlagenen Termine buchen und direkt zum neuen Termin springen",
+ "eyebrow": "App · Termine",
+ "notes": [
+  "**Termin buchen** öffnest du über das goldene **+** oben in der Terminliste oder über **Termin** in der Kundenübersicht — dann ist die Kundin schon eingetragen. Auf dem iPad mit Tastatur geht es auch mit **⌘N**. Die Seite sehen alle mit dem Recht, Termine zu buchen.",
+  "Folgetermin und Verlegen aus einem laufenden Termin heraus bleiben wie gewohnt in der Terminansicht (App 3). Diese Seite ist für alles andere: die Kundin ruft an, steht am Tresen oder hat gerade keinen Termin."
+ ],
+ "pages": [
+  {
+   "h1": "Kundin und Zeitraum",
+   "sub": "Ohne Kundin öffnet sich zuerst die Suche. Danach stehen oben Kundin, Institut und „ab wann“, darunter die Leistungen aus ihrem Paket.",
+   "card": {
+    "title": "Eingaben",
+    "text": "Alles auf einer Seite"
+   },
+   "left": {
+    "shot": "booking-finder-light"
+   },
+   "leftCaption": "Die Extrazeit aus der Kundeneinstellung ist schon angehakt. Sobald eine Zone dazukommt, sucht die App die Termine von selbst.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kundin",
+     "text": "Name, Kunden-Nr. oder E-Mail eintippen und antippen. Mit **Ändern** wählst du eine andere Kundin."
+    },
+    {
+     "n": 2,
+     "title": "Institut",
+     "text": "Vorgewählt ist dein Standort. Ein Tipp auf das Feld wechselt das Institut — die Leistungen laden dann neu."
+    },
+    {
+     "n": 3,
+     "title": "Ab wann",
+     "text": "**nächste Woche**, **in 6**, **8** oder **10 Wochen** — oder **Datum …** für einen eigenen Tag. Gesucht wird ab diesem Tag, bis zu acht Tage mit je drei Vorschlägen."
+    },
+    {
+     "n": 4,
+     "title": "Leistungen",
+     "text": "Die Zonen aus ihrem Paket mit Dauer und Resteinheiten. Antippen zum An- und Abwählen — die Desinfektion zählt automatisch zur Dauer."
+    }
+   ],
+   "hint": {
+    "text": "Steht bei den Leistungen nichts, hat die Kundin in diesem Institut kein aktives Paket. Dann das Institut prüfen oder im Büro nachfragen.",
+    "kind": "info"
+   }
+  },
+  {
+   "h1": "Einen Vorschlag buchen",
+   "sub": "Unter den Eingaben stehen die Vorschläge je Tag. Jede Änderung oben sucht neu — die alten Vorschläge bleiben blass stehen, bis die neuen da sind.",
+   "card": {
+    "title": "Vorschläge",
+    "text": "Antippen, prüfen, buchen"
+   },
+   "left": {
+    "shot": "booking-finder-slots-light"
+   },
+   "leftCaption": "Jede Kachel: Uhrzeit und Raum. **Grün** heißt ohne Lücke — der Termin schließt direkt an einen anderen an.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Auswählen",
+     "text": "Eine Kachel antippen. Es erscheint die Rückfrage mit Tag, Uhrzeit von–bis, Raum, Kundin und Leistungen."
+    },
+    {
+     "n": 2,
+     "title": "Buchen",
+     "text": "**Termin buchen** trägt den Termin in Phorest ein. Mit **Abbrechen** bleibt alles, wie es war."
+    },
+    {
+     "n": 3,
+     "title": "Grün bevorzugen",
+     "text": "Wenn es der Kundin egal ist, einen grünen Vorschlag nehmen — so entstehen keine Lücken im Raum."
+    },
+    {
+     "n": 4,
+     "title": "Nichts dabei?",
+     "text": "Einen anderen Zeitraum antippen oder **Datum …** wählen. Findet die App gar nichts, steht der Grund in einer gelben Karte."
+    }
+   ]
+  },
+  {
+   "h1": "Gebucht",
+   "sub": "Nach dem Buchen zeigt die Seite die Bestätigung mit Datum und Uhrzeit.",
+   "card": {
+    "title": "Bestätigung",
+    "text": "Weiter zum Termin oder den nächsten buchen"
+   },
+   "left": {
+    "shot": "booking-finder-booked-light"
+   },
+   "leftCaption": "**Zum Termin** öffnet die Terminansicht des neuen Termins, **Weiteren Termin buchen** sucht für dieselbe Kundin neu.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zum Termin",
+     "text": "Springt in die Terminansicht — dort siehst du Leistungen, Raum und kannst den Termin wie gewohnt bearbeiten."
+    },
+    {
+     "n": 2,
+     "title": "Weiterer Termin",
+     "text": "Für Kundinnen, die gleich mehrere Termine ausmachen. Der gerade gebuchte Slot taucht nicht mehr auf."
+    },
+    {
+     "n": 3,
+     "title": "Zurück",
+     "text": "**‹ Termine** oben links oder vom linken Rand wischen führt zurück zur Terminliste."
+    },
+    {
+     "n": 4,
+     "title": "Hat nicht geklappt?",
+     "text": "Eine rote Karte oben nennt den Grund, meist ist der Slot inzwischen belegt. Einfach einen anderen Vorschlag nehmen."
+    }
+   ]
+  },
+  {
+   "h1": "Auf dem iPad",
+   "sub": "Eingaben links, alle Vorschlagstage rechts nebeneinander — gut, wenn die Kundin am Tresen zwischen Vormittag und Abend überlegt.",
+   "card": {
+    "title": "iPad",
+    "text": "Acht Tage auf einen Blick"
+   },
+   "left": {
+    "shot": "booking-finder-ipad-light"
+   },
+   "leftCaption": "Jede Spalte ist ein Tag. Die Rückfrage erscheint als kleines Fenster direkt an der angetippten Kachel.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Eingaben links",
+     "text": "Kundin, Institut, ab wann und Leistungen — genau wie auf dem iPhone."
+    },
+    {
+     "n": 2,
+     "title": "Tage rechts",
+     "text": "Bis zu acht Tage, vier je Reihe. Die Uhrzeit steht links in der Kachel, der Raum rechts."
+    },
+    {
+     "n": 3,
+     "title": "Tastatur",
+     "text": "Mit angeschlossener Tastatur öffnet **⌘N** die Seite von überall."
+    },
+    {
+     "n": 4,
+     "title": "Ziehen",
+     "text": "Nach unten ziehen sucht sofort neu — praktisch, wenn nebenan gerade jemand gebucht hat."
+    }
+   ]
+  }
+ ]
+}
