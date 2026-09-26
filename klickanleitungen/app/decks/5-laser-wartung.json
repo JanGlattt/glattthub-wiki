@@ -1,236 +1,386 @@
 {
-  "out": "../pdf/App-5-Laser-Wartung",
-  "meta": "../meta.json",
-  "shots": "../shots",
-  "series": "App",
-  "of": 8,
-  "audience": "institut",
-  "footerArea": "App",
-  "stand": "23.09.2026",
-  "version": "1.0",
-  "nr": 5,
-  "title": [
-    "Laser-Wartung",
-    "in der App"
-  ],
-  "subtitle": "Klickanleitung für die glatttHub-App — Geräte mit Fälligkeit, der Wartungs-Assistent in vier Schritten: Countdown, Laser-Fotos, Anbauteile, Abschluss; Entwurf und Fortsetzen",
-  "eyebrow": "App · Laser-Wartung",
-  "notes": [
-    "Die wöchentliche Wartung läuft in der App **nativ**: Kamera direkt an der Kachel, Ziffernblock für Impulse, der Countdown zählt sichtbar mit.",
-    "Es gelten **dieselben Regeln** wie im Hub: Der Server zählt die fünf Minuten, **jede Foto-Kachel ist Pflicht**, Impulse dürfen nicht sinken, Skintel-Tests 0–50.",
-    "Der **Entwurf** ist derselbe wie im Hub — im Browser begonnen, in der App fortgesetzt oder umgekehrt."
-  ],
-  "pages": [
-    {
-      "h1": "Geräte und Fälligkeit",
-      "sub": "Der Schnellzugriff „Laser-Wartung“ öffnet alle Geräte: überfällig zuerst, dann aktuell, dann Geräte ohne Wochenwartung. Ein Tipp startet den Assistenten.",
-      "card": {
-        "title": "Laser-Liste",
-        "text": "Überfällig, aktuell, Entwurf"
-      },
-      "left": {
-        "shot": "pad-laser-list",
-        "marks": [
-          {
-            "kind": "frame",
-            "pct": {
-              "x": 22,
-              "y": 9,
-              "w": 51,
-              "h": 27
-            }
-          },
-          {
-            "kind": "badge",
-            "n": 3,
-            "at": "r",
-            "pct": {
-              "x": 24,
-              "y": 74,
-              "w": 12,
-              "h": 7
-            }
-          }
-        ]
-      },
-      "leftCaption": "Die Laser-Liste über der Startseite: Seriennummer, Modell, Standort, Status — und ob ein **Entwurf** wartet.",
-      "steps": [
-        {
-          "n": 1,
-          "title": "Öffnen",
-          "text": "Startseite → Schnellzugriff **„Laser-Wartung“** (nur mit dem Recht, Wartungen durchzuführen)."
-        },
-        {
-          "n": 2,
-          "title": "Gruppen lesen",
-          "text": "**Wartung überfällig** (rot): in dieser Kalenderwoche fehlt die Wartung. **Wartung aktuell** (grün). **Ohne Wochenwartung**: Geräte im Lager, in Reparatur oder außer Betrieb."
-        },
-        {
-          "n": 3,
-          "title": "Entwurf · Schritt N",
-          "text": "Das blaue Etikett heißt: Du hast diese Wartung schon begonnen — ein Tipp setzt genau dort fort."
-        },
-        {
-          "n": 4,
-          "title": "Im Hub öffnen",
-          "text": "Der Kompass oben rechts wechselt zur Laser-Seite des Hubs (Gerätedetails, Reparaturen, Reports)."
-        }
-      ]
-    },
-    {
-      "h1": "Schritt 1: Flow Maintenance",
-      "sub": "Fünf Minuten Countdown — nicht pausierbar, nicht überspringbar. Die Zeit läuft auf dem Server weiter, auch wenn du die Ansicht schließt.",
-      "card": {
-        "title": "Countdown",
-        "text": "Starten, warten, weiter"
-      },
-      "left": {
-        "shot": "pad-laser-step1-done",
-        "marks": [
-          {
-            "kind": "frame",
-            "pct": {
-              "x": 1.5,
-              "y": 15,
-              "w": 15,
-              "h": 60
-            }
-          }
-        ]
-      },
-      "leftCaption": "Schritt 1 nach abgelaufenem Countdown: der grüne Hinweis, links die Schritte mit Haken — der Entwurf ist als **„Fortgesetzte Wartung“** markiert.",
-      "steps": [
-        {
-          "n": 1,
-          "title": "Countdown starten",
-          "text": "Der goldene Knopf **„Countdown starten“**. Ab jetzt keine Arbeiten am Display des Lasers — die Reinigung erfolgt parallel."
-        },
-        {
-          "n": 2,
-          "title": "Warten",
-          "text": "Die große Zahl zählt herunter. Der Bildschirm bleibt an, die App lässt sich nicht wegwischen. **Schließen** ist erlaubt — die Zeit läuft trotzdem weiter."
-        },
-        {
-          "n": 3,
-          "title": "Weiter",
-          "text": "Nach fünf Minuten bestätigt der Server, der Hinweis wird grün und **„Weiter“** wird frei. Ein zu frühes „Fertig“ des Geräts nimmt der Server nicht an."
-        },
-        {
-          "n": 4,
-          "title": "Schritte links",
-          "text": "Erledigte Schritte lassen sich in der Seitenleiste jederzeit nochmal öffnen (iPhone: nur über Zurück)."
-        }
-      ],
-      "hint": {
-        "text": "**„Wartung verwerfen“** (Menü ⋯ oben rechts) löscht Entwurf, Countdown und alle Fotos — nur, wenn die Wartung wirklich nicht zählen soll.",
-        "kind": "warn"
+ "out": "../pdf/App-5-Laser-Wartung",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "App",
+ "of": 8,
+ "audience": "institut",
+ "footerArea": "App",
+ "stand": "26.09.2026",
+ "version": "1.1",
+ "nr": 5,
+ "title": [
+  "Laser",
+  "in der App"
+ ],
+ "subtitle": "Klickanleitung für die glatttHub-App — Räume des Instituts mit Laser und Aufgaben von heute, Werkbank über alle Institute, Geräteakte mit Reparatur, STK und Behördenanzeige; der Wartungs-Assistent in vier Schritten",
+ "eyebrow": "App · Laser",
+ "notes": [
+  "Die Laser-Seite beginnt beim **Raum**: Das iPad zeigt die Räume des eigenen Instituts, in jedem Raum seinen Laser und rechts, was heute daran zu tun ist.",
+  "**„Alle“** ist die Werkbank fürs Büro: vier Kennzahlen, alle offenen Fälle über alle Institute, Kurzberichte.",
+  "Die **Geräteakte** hat dieselben acht Reiter wie der Hub; Reparatur, STK und Behördenanzeige werden dort **nativ** erfasst — mit Rechnung oder Protokoll aus Kamera, Fotos oder Datei.",
+  "Die wöchentliche Wartung läuft in der App **nativ**: Kamera direkt an der Kachel, Ziffernblock für Impulse, der Countdown zählt sichtbar mit.",
+  "Es gelten **dieselben Regeln** wie im Hub: Der Server zählt die fünf Minuten, **jede Foto-Kachel ist Pflicht**, Impulse dürfen nicht sinken, Skintel-Tests 0–50.",
+  "Der **Entwurf** ist derselbe wie im Hub — im Browser begonnen, in der App fortgesetzt oder umgekehrt."
+ ],
+ "pages": [
+  {
+   "h1": "Räume des Instituts",
+   "sub": "Mehr → Laser öffnet das eigene Institut (Standortfilter der App): je Raum eine Karte mit dem Laser, daneben die Aufgaben von heute mit direktem Knopf.",
+   "card": {
+    "title": "Raum-Sicht",
+    "text": "Räume, Aufgaben, Wochenwartung"
+   },
+   "left": {
+    "shot": "laser-ipad-light",
+    "marks": [
+     {
+      "kind": "badge",
+      "n": 1,
+      "at": "l",
+      "pct": {
+       "x": 1,
+       "y": 19,
+       "w": 33,
+       "h": 15
       }
+     },
+     {
+      "kind": "badge",
+      "n": 2,
+      "at": "l",
+      "pct": {
+       "x": 37,
+       "y": 8,
+       "w": 60,
+       "h": 30
+      }
+     },
+     {
+      "kind": "frame",
+      "pct": {
+       "x": 37,
+       "y": 70,
+       "w": 60,
+       "h": 18
+      }
+     }
+    ]
+   },
+   "leftCaption": "iPad: links die Räume mit Laser (Wartung der Kalenderwoche, Handstück-Impulse, Anbauteile, Störungen, nächste STK), rechts **„Heute in …“** mit Knopf je Aufgabe und die **Wochenwartung** der letzten 13 Wochen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Raum-Karte lesen",
+     "text": "**Raum BI.03 · 35-1949**: rot heißt Wartung in dieser KW noch offen. Darunter Handstück-Impulse und ob ein Anbauteil zu beobachten ist. Etiketten: Status, offene Störung, Reparatur läuft, nächste STK. Ein Tipp auf die Karte öffnet die **Geräteakte**."
     },
     {
-      "h1": "Schritt 2: Laser — Impulse und Fotos",
-      "sub": "Impulse der Maschine und FLOW (LMP) erfassen, dann alle acht Kacheln fotografieren: Systeminfo, Filter dreimal, Handstückhalterung, Gummiband, Kalibrierungsport, Sauberkeit.",
-      "card": {
-        "title": "Laser-Fotos",
-        "text": "Impulse, FLOW, acht Kacheln"
-      },
-      "left": {
-        "shot": "pad-laser-step2",
-        "marks": [
-          {
-            "kind": "badge",
-            "n": 1,
-            "at": "l",
-            "pct": {
-              "x": 23.5,
-              "y": 26,
-              "w": 25,
-              "h": 8
-            }
-          },
-          {
-            "kind": "badge",
-            "n": 2,
-            "at": "tl",
-            "pct": {
-              "x": 23.5,
-              "y": 36,
-              "w": 50,
-              "h": 5
-            }
-          }
-        ]
-      },
-      "leftCaption": "Schritt 2: Felder oben, die **acht Foto-Kacheln** darunter — leer gestrichelt, mit Foto grün umrandet.",
-      "right": {
-        "shot": "pad-laser-step2-errors"
-      },
-      "rightCaption": "**„Weiter“ ohne Fotos:** Der Server nennt die Lücke, jede fehlende Kachel bekommt einen roten Rand.",
-      "steps": [
-        {
-          "n": 1,
-          "title": "Impulse",
-          "text": "**„Pulses Maschine“** antippen — der Ziffernblock erscheint. Der letzte Wert steht darunter; ein kleinerer Wert wird abgelehnt."
-        },
-        {
-          "n": 2,
-          "title": "Foto-Kachel antippen",
-          "text": "**„Foto aufnehmen“** öffnet die Kamera, **„Aus Fotos wählen“** die Mediathek. Das Foto landet sofort im Entwurf (grüner Haken)."
-        },
-        {
-          "n": 3,
-          "title": "Ersetzen oder entfernen",
-          "text": "Kachel nochmal antippen: **Neu aufnehmen** oder **Foto entfernen**."
-        },
-        {
-          "n": 4,
-          "title": "Weiter",
-          "text": "Erst wenn alle Kacheln gefüllt sind, geht es zu den Anbauteilen — sonst zeigt die App, was fehlt."
-        }
-      ]
+     "n": 2,
+     "title": "Aufgaben von heute",
+     "text": "**Starten** öffnet den Wartungs-Assistenten, **Ansehen/Erfassen** die Akte im passenden Reiter, **Bestand** die Materialseite. Reihenfolge: Wartung, Störung, Reparatur, STK, Material."
     },
     {
-      "h1": "Schritt 3 und 4: Anbauteile, Lager, Abschluss",
-      "sub": "Vier Anbauteile nacheinander — Handstück, Laserkopf groß, Laserkopf klein, Skintel — je Zustand, Impulse bzw. Tests und Fotos. Dann Chiller-Fluid und Kommentar.",
-      "card": {
-        "title": "Anbauteile & Abschluss",
-        "text": "Zustand, Tests, Fotos, Chiller-Fluid"
-      },
-      "steps": [
-        {
-          "n": 1,
-          "title": "Zustand wählen",
-          "text": "Chips **Gut, Kleine Risse, Große Risse, Defekt**. Bei **Defekt** legt die App beim Abschluss automatisch einen Reparatur-Vorgang an."
-        },
-        {
-          "n": 2,
-          "title": "Handstück",
-          "text": "Zusätzlich **„Pulses Handstück“** (nicht unter dem letzten Wert) und vier Fotos: Display, links, rechts, Dioden."
-        },
-        {
-          "n": 3,
-          "title": "Köpfe",
-          "text": "Je zwei Fotos: innen und außen. Ein Teil, das **nicht montiert** ist, braucht keine Fotos — die App sagt es."
-        },
-        {
-          "n": 4,
-          "title": "Skintel",
-          "text": "Testwerte **Handfläche** und **Unterarm** (0–50), Schalter **„Skintel-Probleme“** mit Pflicht-Beschreibung, drei Fotos."
-        },
-        {
-          "n": 5,
-          "title": "Lager & Abschluss",
-          "text": "Anzahl verbrauchter **Chiller-Fluid-Flaschen** (mindert den Bestand am Standort), Kommentar, Zusammenfassung — **„Wartung abschließen“**."
-        },
-        {
-          "n": 6,
-          "title": "Fertig",
-          "text": "Die App bestätigt „Wartung gespeichert“, der Entwurf ist weg, das Protokoll steht in der Geräteseite des Hubs. Die Geräteseite im Hub lädt sich neu."
-        }
-      ],
-      "hint": {
-        "text": "**Entwurf:** Jede Änderung wird still gesichert. Schließt du die Ansicht, steht die Wartung in der Liste als **„Entwurf · Schritt N“** und im Hub als „Fortgesetzte Wartung“ — beide öffnen denselben Stand."
-      },
-      "layout": "text"
+     "n": 3,
+     "title": "Grafik antippen",
+     "text": "Ein Tipp auf einen Bereich des Lasers (Top-Unit, Handstück, Center-Unit, Köpfe, Bottom-Unit) zeigt die Teile dieses Bereichs mit Zustand — ein orangener Rahmen heißt: hier ist ein Teil zu beobachten."
+    },
+    {
+     "n": 4,
+     "title": "Institut wechseln",
+     "text": "Die Chips über den Räumen wechseln das Institut; rote Zahlen sind fällige Wartungen. **Alle** öffnet die Werkbank, **Zentrallager** die Geräte im Lager. iPhone: Aufgaben oben, Räume darunter."
     }
-  ]
+   ],
+   "hint": {
+    "text": "**Lager**-Karten (gestrichelt) zeigen Ersatzteile und Material des Instituts; Bestände unter Mindestbestand stehen rot."
+   }
+  },
+  {
+   "h1": "Geräteakte und Werkbank",
+   "sub": "Die Akte eines Lasers mit acht Reitern wie im Hub — und „Alle“ als Werkbank mit allen offenen Fällen über alle Institute.",
+   "card": {
+    "title": "Akte & Werkbank",
+    "text": "Acht Reiter, alle Fälle"
+   },
+   "left": {
+    "shot": "laser-detail-light",
+    "marks": [
+     {
+      "kind": "badge",
+      "n": 1,
+      "at": "l",
+      "pct": {
+       "x": 3,
+       "y": 12,
+       "w": 94,
+       "h": 5
+      }
+     },
+     {
+      "kind": "badge",
+      "n": 2,
+      "at": "l",
+      "pct": {
+       "x": 3,
+       "y": 17,
+       "w": 94,
+       "h": 4
+      }
+     }
+    ]
+   },
+   "leftCaption": "Geräteakte: Kopf mit Status und Wartungsstand, **Werkzeugleiste** (1) und **Reiter** (2); die Übersicht fasst letzte Wartung, nächste STK, Anbauteile und Fehler zusammen.",
+   "right": {
+    "shot": "laser-workbench-light",
+    "marks": [
+     {
+      "kind": "frame",
+      "pct": {
+       "x": 3,
+       "y": 9,
+       "w": 94,
+       "h": 9
+      }
+     }
+    ]
+   },
+   "rightCaption": "**Werkbank „Alle“:** vier Kennzahlen, offene Fälle mit Institut, darunter Reparaturkosten, Wartungstreue je Institut und die Berichte im Hub.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Werkzeugleiste",
+     "text": "**Wartung starten** (oder fortsetzen), **Störung melden**, **Reparatur**, **STK**, **Behörde** — die drei letzten nur mit dem Recht, Reparaturen zu verwalten."
+    },
+    {
+     "n": 2,
+     "title": "Reiter",
+     "text": "Übersicht, **Teile** (große Grafik, Bereich antippen filtert die Liste), Wartungen, Reparaturen (Versenden / Rückkehr verbuchen), Fehler, Historie, Anschaffung, STK & Behörde. Ein Teil antippen öffnet seine eigene Akte."
+    },
+    {
+     "n": 3,
+     "title": "Reparatur",
+     "text": "**Anlegen:** Teil des Lasers und Defekt. **Versenden:** Datum, Dienstleister, Sendungsnummer, Kostenvoranschlag. **Rückkehr verbuchen:** Ergebnis, Kosten, **Rechnung ist Pflicht** — fotografieren, aus Fotos wählen oder Datei (PDF)."
+    },
+    {
+     "n": 4,
+     "title": "STK und Behördenanzeige",
+     "text": "STK: Prüfdatum, Prüfer, Ergebnis, Protokoll — die nächste Fälligkeit steht ein Jahr später vorbelegt. Behördenanzeige: Behörde, Datum, Aktenzeichen, Nachweis."
+    }
+   ],
+   "hint": {
+    "text": "Inventarisieren, Stammdaten, Verbrauchsmaterial und die sechs Berichte bleiben Seiten im Hub (Menü ⋯ oben rechts).",
+    "kind": "info"
+   }
+  },
+  {
+   "h1": "Geräte und Fälligkeit",
+   "sub": "Der Schnellzugriff „Laser-Wartung“ öffnet alle Geräte: überfällig zuerst, dann aktuell, dann Geräte ohne Wochenwartung. Ein Tipp startet den Assistenten.",
+   "card": {
+    "title": "Laser-Liste",
+    "text": "Überfällig, aktuell, Entwurf"
+   },
+   "left": {
+    "shot": "pad-laser-list",
+    "marks": [
+     {
+      "kind": "frame",
+      "pct": {
+       "x": 22,
+       "y": 9,
+       "w": 51,
+       "h": 27
+      }
+     },
+     {
+      "kind": "badge",
+      "n": 3,
+      "at": "r",
+      "pct": {
+       "x": 24,
+       "y": 74,
+       "w": 12,
+       "h": 7
+      }
+     }
+    ]
+   },
+   "leftCaption": "Die Laser-Liste über der Startseite: Seriennummer, Modell, Standort, Status — und ob ein **Entwurf** wartet.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Öffnen",
+     "text": "Startseite → Schnellzugriff **„Laser-Wartung“** (nur mit dem Recht, Wartungen durchzuführen)."
+    },
+    {
+     "n": 2,
+     "title": "Gruppen lesen",
+     "text": "**Wartung überfällig** (rot): in dieser Kalenderwoche fehlt die Wartung. **Wartung aktuell** (grün). **Ohne Wochenwartung**: Geräte im Lager, in Reparatur oder außer Betrieb."
+    },
+    {
+     "n": 3,
+     "title": "Entwurf · Schritt N",
+     "text": "Das blaue Etikett heißt: Du hast diese Wartung schon begonnen — ein Tipp setzt genau dort fort."
+    },
+    {
+     "n": 4,
+     "title": "Im Hub öffnen",
+     "text": "Der Kompass oben rechts wechselt zur Laser-Seite des Hubs (Gerätedetails, Reparaturen, Reports)."
+    }
+   ]
+  },
+  {
+   "h1": "Schritt 1: Flow Maintenance",
+   "sub": "Fünf Minuten Countdown — nicht pausierbar, nicht überspringbar. Die Zeit läuft auf dem Server weiter, auch wenn du die Ansicht schließt.",
+   "card": {
+    "title": "Countdown",
+    "text": "Starten, warten, weiter"
+   },
+   "left": {
+    "shot": "pad-laser-step1-done",
+    "marks": [
+     {
+      "kind": "frame",
+      "pct": {
+       "x": 1.5,
+       "y": 15,
+       "w": 15,
+       "h": 60
+      }
+     }
+    ]
+   },
+   "leftCaption": "Schritt 1 nach abgelaufenem Countdown: der grüne Hinweis, links die Schritte mit Haken — der Entwurf ist als **„Fortgesetzte Wartung“** markiert.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Countdown starten",
+     "text": "Der goldene Knopf **„Countdown starten“**. Ab jetzt keine Arbeiten am Display des Lasers — die Reinigung erfolgt parallel."
+    },
+    {
+     "n": 2,
+     "title": "Warten",
+     "text": "Die große Zahl zählt herunter. Der Bildschirm bleibt an, die App lässt sich nicht wegwischen. **Schließen** ist erlaubt — die Zeit läuft trotzdem weiter."
+    },
+    {
+     "n": 3,
+     "title": "Weiter",
+     "text": "Nach fünf Minuten bestätigt der Server, der Hinweis wird grün und **„Weiter“** wird frei. Ein zu frühes „Fertig“ des Geräts nimmt der Server nicht an."
+    },
+    {
+     "n": 4,
+     "title": "Schritte links",
+     "text": "Erledigte Schritte lassen sich in der Seitenleiste jederzeit nochmal öffnen (iPhone: nur über Zurück)."
+    }
+   ],
+   "hint": {
+    "text": "**„Wartung verwerfen“** (Menü ⋯ oben rechts) löscht Entwurf, Countdown und alle Fotos — nur, wenn die Wartung wirklich nicht zählen soll.",
+    "kind": "warn"
+   }
+  },
+  {
+   "h1": "Schritt 2: Laser — Impulse und Fotos",
+   "sub": "Impulse der Maschine und FLOW (LMP) erfassen, dann alle acht Kacheln fotografieren: Systeminfo, Filter dreimal, Handstückhalterung, Gummiband, Kalibrierungsport, Sauberkeit.",
+   "card": {
+    "title": "Laser-Fotos",
+    "text": "Impulse, FLOW, acht Kacheln"
+   },
+   "left": {
+    "shot": "pad-laser-step2",
+    "marks": [
+     {
+      "kind": "badge",
+      "n": 1,
+      "at": "l",
+      "pct": {
+       "x": 23.5,
+       "y": 26,
+       "w": 25,
+       "h": 8
+      }
+     },
+     {
+      "kind": "badge",
+      "n": 2,
+      "at": "tl",
+      "pct": {
+       "x": 23.5,
+       "y": 36,
+       "w": 50,
+       "h": 5
+      }
+     }
+    ]
+   },
+   "leftCaption": "Schritt 2: Felder oben, die **acht Foto-Kacheln** darunter — leer gestrichelt, mit Foto grün umrandet.",
+   "right": {
+    "shot": "pad-laser-step2-errors"
+   },
+   "rightCaption": "**„Weiter“ ohne Fotos:** Der Server nennt die Lücke, jede fehlende Kachel bekommt einen roten Rand.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Impulse",
+     "text": "**„Pulses Maschine“** antippen — der Ziffernblock erscheint. Der letzte Wert steht darunter; ein kleinerer Wert wird abgelehnt."
+    },
+    {
+     "n": 2,
+     "title": "Foto-Kachel antippen",
+     "text": "**„Foto aufnehmen“** öffnet die Kamera, **„Aus Fotos wählen“** die Mediathek. Das Foto landet sofort im Entwurf (grüner Haken)."
+    },
+    {
+     "n": 3,
+     "title": "Ersetzen oder entfernen",
+     "text": "Kachel nochmal antippen: **Neu aufnehmen** oder **Foto entfernen**."
+    },
+    {
+     "n": 4,
+     "title": "Weiter",
+     "text": "Erst wenn alle Kacheln gefüllt sind, geht es zu den Anbauteilen — sonst zeigt die App, was fehlt."
+    }
+   ]
+  },
+  {
+   "h1": "Schritt 3 und 4: Anbauteile, Lager, Abschluss",
+   "sub": "Vier Anbauteile nacheinander — Handstück, Laserkopf groß, Laserkopf klein, Skintel — je Zustand, Impulse bzw. Tests und Fotos. Dann Chiller-Fluid und Kommentar.",
+   "card": {
+    "title": "Anbauteile & Abschluss",
+    "text": "Zustand, Tests, Fotos, Chiller-Fluid"
+   },
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zustand wählen",
+     "text": "Chips **Gut, Kleine Risse, Große Risse, Defekt**. Bei **Defekt** legt die App beim Abschluss automatisch einen Reparatur-Vorgang an."
+    },
+    {
+     "n": 2,
+     "title": "Handstück",
+     "text": "Zusätzlich **„Pulses Handstück“** (nicht unter dem letzten Wert) und vier Fotos: Display, links, rechts, Dioden."
+    },
+    {
+     "n": 3,
+     "title": "Köpfe",
+     "text": "Je zwei Fotos: innen und außen. Ein Teil, das **nicht montiert** ist, braucht keine Fotos — die App sagt es."
+    },
+    {
+     "n": 4,
+     "title": "Skintel",
+     "text": "Testwerte **Handfläche** und **Unterarm** (0–50), Schalter **„Skintel-Probleme“** mit Pflicht-Beschreibung, drei Fotos."
+    },
+    {
+     "n": 5,
+     "title": "Lager & Abschluss",
+     "text": "Anzahl verbrauchter **Chiller-Fluid-Flaschen** (mindert den Bestand am Standort), Kommentar, Zusammenfassung — **„Wartung abschließen“**."
+    },
+    {
+     "n": 6,
+     "title": "Fertig",
+     "text": "Die App bestätigt „Wartung gespeichert“, der Entwurf ist weg, das Protokoll steht in der Geräteseite des Hubs. Die Geräteseite im Hub lädt sich neu."
+    }
+   ],
+   "hint": {
+    "text": "**Entwurf:** Jede Änderung wird still gesichert. Schließt du die Ansicht, steht die Wartung in der Liste als **„Entwurf · Schritt N“** und im Hub als „Fortgesetzte Wartung“ — beide öffnen denselben Stand."
+   },
+   "layout": "text"
+  }
+ ]
 }

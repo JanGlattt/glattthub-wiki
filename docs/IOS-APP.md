@@ -1092,6 +1092,55 @@ keine zweite Logik im Backend:
   UI-Tests `testIpadLaserMaintenance` (braucht einen vorbereiteten Entwurf mit abgeschlossenem
   Countdown, Rezept im Test) und `testIpadBonusBoard` im Schema „glatttHub UI".
 
+### Native Laser-Seite: Raum-Sicht, Werkbank, Geräteakte (Mehr-Seite, seit 26.09.2026 — Nachzug 3)
+
+**Entscheidung (Jan, 26.09.2026):** Aus drei Entwürfen (Geräteakte, Raum-Sicht, Werkbank — Artefakt
+„Laser im Institut“, erstmals mit iPad-Rahmen je Entwurf) die Empfehlung: **Entwurf 2 „Raum-Sicht“**
+als Einstieg, die **Geräteakte aus Entwurf 1** als Detail und die **Werkbank aus Entwurf 3** als Sicht
+„Alle“. Begründung: Der Alltag im Institut beginnt beim Raum, nicht bei der Seriennummer; das iPad
+kennt seinen Standort; das Büro braucht die Fallliste über alle Institute.
+
+`/hub/laser` ist `NativeMorePage.laser` (`ios/glatttHub/Laser/LaserHomeView.swift`,
+`LaserHomeModel.swift`, `LaserAppModels.swift`); Geräte- und Teile-Seiten sind `LaserTarget`
+(`/hub/laser/devices/{sn}[#reiter]`, `/hub/laser/components/{sn}`, `/hub/laser/attachments/{sn}`)
+und öffnen `LaserDetailView.swift` — aus Raum-Karte, Aufgabe, Web-Link (WebCoordinator fängt sie ab),
+Push oder Universal Link (`AppContainer.openLaser`). Die Vectus-Grafik (`VectusGraphic`, Asset
+`Vectus`) hat fünf tippbare Bereiche wie die klickbare Grafik der Web-Geräteliste.
+
+- **Raum-Sicht:** Institutswahl als Chips (Vorwahl = Standortfilter der App, `AppState.selectedBranch`;
+  „Alle“ und Zentrallager dahinter), je Raum eine Karte mit dem Laser (Wartung „KW 39 erledigt/fällig“,
+  Handstück-Impulse, Anbauteile beobachten, Fehler offen, Reparatur läuft, nächste STK), Lagerorte mit
+  Ersatzteilen und Beständen; Tipp auf die Grafik zeigt die Teile des Bereichs als Popover. **iPad:**
+  Räume links (420 pt), rechts „Heute in …“ (Aufgaben mit Knopf: Wartung startet den Assistenten,
+  Fehler/STK/Reparatur öffnen die Akte im Reiter, Material die Web-Bestandsseite), „Zuletzt hier“ und
+  die Wartungstreue der letzten 13 Wochen — oder die Akte, sobald ein Gerät gewählt ist. **iPhone:**
+  Aufgaben oben, Räume darunter, Akte gepusht.
+- **Werkbank („Alle“):** vier Kennzahlen (`StatTile`), alle offenen Fälle über alle Institute mit
+  Institutskürzel, Kurzberichte (Reparaturkosten je Gerät, Wartungstreue je Institut, Asset-Wert,
+  Fehler, Defekte) und die sechs Web-Berichte als Links.
+- **Geräteakte:** Kopf mit Grafik, Werkzeugleiste (Wartung starten/fortsetzen → `LaserMaintenanceView`,
+  Störung → `LaserErrorView`, Reparatur, STK, Behörde), acht Reiter wie das Web (Übersicht mit
+  Kennzahlen-Streifen, Teile mit großer Grafik und Bereichsfilter, Wartungen, Reparaturen mit
+  Versenden/Rückkehr, Fehler, Historie, Anschaffung, STK & Behörde). Teile-Akte mit Stammdaten,
+  Wartungen, Reparaturen, Verlauf und Standortbewegungen.
+- **Schreibblätter** (`LaserActionSheets.swift`, Recht `manage_laser_repairs`): Reparatur anlegen
+  (Teil des Lasers + Defekt), versenden (Datum, Dienstleister, Sendung, Kostenvoranschlag), Rückkehr
+  verbuchen (Ergebnis, Kosten, **Rechnung Pflicht**), STK (nächste Fälligkeit +1 Jahr vorbelegt,
+  Protokoll), Behördenanzeige (Nachweis). Dokumente aus Kamera, Fotos (HEIC → JPEG) oder Datei (PDF);
+  Upload über `HubSession.upload(..., fields:)`.
+- **Endpunkte** (`LaserAppService`, `LaserAppApiController`): `GET hub/laser/api/app/rooms?institute=`,
+  `GET …/lasers/{id|sn}`, `GET …/parts/{sn}`, `POST …/lasers/{id}/repairs`, `POST …/repairs/{id}/ship`,
+  `POST …/repairs/{id}/return`, `POST …/lasers/{id}/stk`, `POST …/lasers/{id}/authority`. Institute aus
+  `LaserLocation.branch_id` über `AppBranchList`; Standorte ohne Institut = `zentrallager`. Offline:
+  letzter Stand je Institut und je Akte im `OfflineStore` („Kein Netz · Stand HH:MM“).
+- **Bleibt Web/eingebettet mit Begründung:** Inventarisieren (zwei Assistenten), Stammdaten,
+  Verbrauchsmaterial, die sechs Berichte (Büro-Editoren, seltener als monatlich); Fehler-Status setzt
+  nur das Web. Der Cockpit-Schnellzugriff „Laser-Wartung“ öffnet weiter die Wartungsliste.
+- **Nachweis:** `LaserAppSnapshotTests` (Raum-Sicht, Werkbank, Akte, Teile, iPad-Split hell/dunkel →
+  Bilder der Klickanleitung App 5), `LaserAppUITests` (Mehr → Laser → Raum → Akte → Reiter → „Alle“),
+  `tests/Feature/Laser/LaserAppApiTest.php` (9 Tests: Räume, Werkbank, Akte, Teile, Reparatur-Kette
+  mit Rechnung, STK/Behörde, Rechte).
+
 ### Laser-Störung melden (seit 23.09.2026)
 
 `ios/glatttHub/Laser/LaserErrorView.swift` — Schnellzugriff „Laser-Fehler" im Cockpit
@@ -1247,13 +1296,14 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Termine | nativ | Terminseite + Terminansicht Stufen 1–4; Formular-Ausfüllen und „Direkt behandeln" eingebettet (Editor-Engine) |
 | Kunden | nativ | Liste + Übersicht (`/api/app/clients`); neun Registerkarten als Web-Detailseite im Tab |
 | Benachrichtigungen | nativ | Mitteilungsliste im Mehr-Sheet / iPad-Popover, In-App-Banner |
-| Laser | nativ | Wartungsliste, Assistent, Störung melden; Gerätedetail/Reparaturen/Reports Web |
+| Laser | nativ | Raum-Sicht des Instituts, Werkbank „Alle“, Geräteakte mit acht Reitern, Teile-Akte, Reparatur/STK/Behörde nativ, Wartungsassistent, Störung melden (seit 26.09.2026); Inventarisieren, Stammdaten, Verbrauchsmaterial, Berichte Web |
 | Bonus-Board | nativ | Mehr-Seite, beide Sichten, Export per Teilen-Blatt |
 | Termin buchen | bestand | Slot-Suche Web; Folgetermin/Verlegen aus der Terminansicht nativ |
 | Verträge | nativ | Liste + Vertragsseite mit vier Reitern (seit 25.09.2026); GoCardless/Ratenplan/Bearbeiten als Web-Blatt; Preislisten, Freunde werben, Mappings Web |
 | Gutscheine | nativ | Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin-Korrektur, neuer Gutschein, Guthaben-Karte in der Kundenübersicht (seit 26.09.2026); Bestand mit Kennzahlen bleibt Web |
+| Reisekosten | nativ | Anspruchstage aus askDANTE, Reisekarte mit Live-Summe und fünf Abschnitten, Belege mit Kamera/Scanner, Einreichen/Zurückziehen/Löschen, Register Freigabe mit Berichtigen und Entscheidung (seit 26.09.2026); Web-Freigabeseite bleibt Web |
 | App-Geräte | nativ | Liste mit Suche, Chips, Kennzahlen, offene Codes und Geräte nach Institut; Code ausstellen in drei Schritten mit QR und Teilen-Blatt (AirDrop), Code zurückziehen, Gerät widerrufen im Steckbrief; iPad-Split, Ausstellen als Popover (seit 26.09.2026); Einlösen bleibt `EnrollmentSheet` |
-| Freunde werben, Widerrufe, Zufriedenheit, Forderungen, Personal, Institute, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — nächste: Zufriedenheit, Reisekosten |
+| Freunde werben, Widerrufe, Zufriedenheit, Forderungen, Personal, Institute, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — nächste: Zufriedenheit |
 | Berichte + 16 Berichtsseiten | bestand | WebView im Tab Berichte (ECharts, Registry-Karten); Kennzahlen nativ über Cockpit/Widgets/Siri |
 | Formulare, Bildschirme, Services, Unternehmensverträge, Report-Mails, Audit, Einstellungen, Conversion-Upload, Bonus-Verwaltung | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
 
@@ -1414,6 +1464,64 @@ die Liste links, der Steckbrief rechts, das Ausstellen öffnet als Fenster am Pl
   Code ausstellen bis zum QR → zurückziehen → Steckbrief, gegen den lokalen Hub),
   `AppDevicesNativeTest` (Hub).
 
+### Native Reisekosten (Mehr-Seite, seit 26.09.2026 — Nachzug 5)
+
+**Für Endanwender:** „Reisekosten" (Team) ist in der App nativ und beginnt mit den eigenen
+**Anspruchstagen** aus dem Dienstplan: offene Tage stehen gerahmt mit „Anlegen" oben, laufende
+Reisen als Karten mit Zustandsverlauf (Entwurf → Eingereicht → Genehmigt/Abgelehnt, mit Grund),
+Genehmigtes kompakt darunter; das Jahr lässt sich wechseln. Die **Reisekarte** zeigt die Summe
+oben und rechnet bei jeder Änderung live; darunter fünf aufklappbare Abschnitte mit Einzeiler
+und Häkchen bzw. Warnung: Reise & Zeiten (Ende, Beginn/Ende je Tag über das Zeitrad, Pause
+automatisch), Fahrt (Auto mit Adresse, Institut oder anderem Ziel und Streckenberechnung, oder
+Bahn mit Ticket), Übernachtung & Verpflegung (Hotel, gestellte Mahlzeiten als Raster),
+Belege & zusätzliche Kosten (**Foto zuerst**: Kamera, Dokumentenscanner als PDF, Mediathek,
+Datei; Pflichtbelege werden angezeigt) und Notizen. Unten Sichern und Einreichen — gesperrt,
+solange etwas fehlt; eingereichte Abrechnungen lassen sich zurückziehen, abgelehnte
+überarbeiten und erneut einreichen, Entwürfe löschen. Wer freigeben darf, sieht das Register
+**Freigabe**: zu prüfende Abrechnungen mit Betrag, dieselbe Reisekarte zum Berichtigen
+(Strecke, Hin und Rück, Zeiten, Mahlzeiten, Hotel, Zusatzkosten) und die Entscheidung
+Freigeben (mit Anmerkung) oder Ablehnen (mit Grund); die eigene Abrechnung gibt niemand selbst
+frei. Ohne Netz bleiben Liste und zuletzt geöffnete Karten lesbar. Auf dem iPad steht die
+Liste links, die Reisekarte rechts.
+
+!!! nutzerhandbuch "Bedienung: App 11 – Reisekosten in der App"
+    [https://hilfe.hub.glattt.com/app/11/](https://hilfe.hub.glattt.com/app/11/)
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 26.09.2026, aus drei Entwürfen):** Entwurf C „Reisekarte" plus der
+  Belege-Abschnitt aus Entwurf B (Kamera zuerst, Scanner); Entwürfe und Befunde am Web-Modul:
+  https://claude.ai/artifact/5EgnPnbSoKDnsfbxUZdEqW. Vorher lief Stufe 1 der
+  Web-Überarbeitung (siehe [Reisekosten-Modul](REISEKOSTEN-MODULE.md)), weil die App sonst die
+  tote Freigabe-Route, das fehlende Eigentum und die Status-Sackgasse geerbt hätte.
+- **Endpunkte — dieselben wie das Web:** `GET /travel-expenses/me` (askDANTE-ID des Kontos,
+  `can_pick_others`, `can_approve`), `GET /travel-expenses/qualifying/{id}?year=`,
+  `GET /travel-expenses/institutes`, `GET|POST|PUT|DELETE /travel-expenses[/{id}]`,
+  `POST …/submit|withdraw`, `POST …/receipts` (multipart, `type`/`amount`/`description` als
+  Felder — `HubSession.upload(fields:)`), `DELETE /travel-expenses/receipts/{id}`,
+  `GET /travel-expenses/approval[/{id}]`, `POST …/approve|reject`, für die Personenwahl
+  `GET /askdante/staff`. Streckenberechnung wie im Web direkt gegen Nominatim und OSRM
+  (bis Stufe 2 sie in den Hub holt). Keine App-eigenen Endpunkte.
+- **App:** `TravelExpenses/TravelExpensesView.swift` (Seite + `TravelExpensesContent` für
+  Snapshots, iPad-Split, Zeilen/Karten/Zustandsverlauf), `TravelCardView.swift` (Reisekarte mit
+  `TravelSummaryCard` und den fünf Abschnitten, Entscheidung als Alert), `ReceiptCaptureSheet.swift`
+  (Belegart, Betrag, Quelle: `MediaCameraPicker`, `DocumentScanner`, `PhotosPicker`,
+  `fileImporter`; Fotos als JPEG), `TravelExpensesViewModel.swift` (`TravelExpensesViewModel`
+  Liste/Freigabe mit `OfflineStore`, `TravelCardViewModel` Laden/Sichern/Belege/Entscheiden),
+  `TravelExpenseModels.swift` (`TravelExpense` mit `body()` und Live-Rechnung `TravelCalc` als
+  Spiegel von `recalculate()`, `TravelFormat`). Eingehängt als `NativeMorePage.travelExpenses`
+  (`/hub/staff/reisekosten`; `/freigabe` bleibt Web), Push/Link `/hub/staff/reisekosten/{id}`
+  und `/freigabe/{id}` → `AppState.travelRoute` über `AppContainer.openTravel`. Menüpunkt
+  `hub.staff.reisekosten` in `MobileNavigation::MORE` (Team, Symbol `car`) und Sidebar.
+- **Fallstricke:** deutsche Anführungszeichen in Swift-Strings (`„Belege"` beendet den
+  String — immer `“`); `TravelDay`/`TravelClaimSummary` müssen `Hashable` sein, weil
+  `TravelTarget` als `.id()` des Splits dient; Zeitfelder als `DatePicker(.hourAndMinute)`
+  mit `de_DE`, sonst AM/PM.
+- **Nachweis:** `TravelExpensesSnapshotTests` (Liste, Freigabe, Karte, Freigabe-Karte, iPad —
+  hell/dunkel; Modell- und Rechenregeln), `TravelExpensesUITests` (Mehr → Reisekosten → Freigabe →
+  Karte, gegen den lokalen Hub, ohne Schreiben), PHP `TravelExpenseApiTest` und
+  `TravelExpenseCalculationTest`.
+
 ### Verteilung
 
 Apple Business Manager **Custom App** (App Store Connect → „Privat — nur für bestimmte Organisationen"
@@ -1443,6 +1551,8 @@ Apps-&-Bücher-Token in Miradore.
 | J (23.09.) | Native Laser-Wartung (Liste + Assistent, `hub/laser/api`, gemeinsamer Entwurf mit dem Web-Fenster) und natives Bonus-Board (Mehr-Seite, beide Sichten, Export) | ✅ gebaut (Abschnitt „Native Laser-Wartung und Bonus-Board"); Abnahme auf dem Gerät offen |
 | K (25.09.) | Native Verträge (Mehr-Seite, Liste + Vertragsseite mit vier Reitern, einfache Schreibaktionen nativ, GoCardless als Web-Blatt, iPad-Split) — erster Nachzug nach der Regel „jede neue Seite auch nativ" | ✅ gebaut, Version 1.2.0 (20) in TestFlight; Abnahme auf dem Gerät offen |
 | L (26.09.) | Native Gutscheine (Tresen-Suche mit Scanner, Gutscheinkarte mit drei Korrekturen, neuer Gutschein, Guthaben-Karte der Kundin) — Nachzug 2 | ✅ gebaut, Version 1.2.0 (23) in TestFlight; Abnahme auf dem Gerät offen |
+| M (26.09.) | Native Laser-Seite (Raum-Sicht des Instituts, Werkbank „Alle“, Geräteakte mit acht Reitern, Teile-Akte, Reparatur/STK/Behörde nativ mit Dokument-Upload) — Nachzug 3, Entwurf 2 + 1 + 3 | ✅ gebaut, Version 1.2.0 (25) in TestFlight; Abnahme auf dem Gerät offen |
+| N (26.09.) | Native Reisekosten (Anspruchstage, Reisekarte mit Live-Summe, Belege mit Kamera/Scanner, Freigabe mit Berichtigen) — Nachzug 5, Entwurf C + Belege aus B; davor Stufe 1 der Web-Überarbeitung | ✅ gebaut, Version 1.2.0 (26); TestFlight-Upload und Abnahme auf dem Gerät offen |
 | I (22.09.) | iPad: native Seitenleiste (quer fest, hoch Symbol-Spalte + Überlagerung) ersetzt das Web-Menü; native Startseite als Raster | ✅ auf dem iPad abgenommen (Jan, 22.09.; Standort/Mitteilungen als Popover, Spotlight-Suche, Dunkelmodus in Slate) |
 | 3 | Härtung Weg B (App-Host ohne IAP, Google Sign-In nativ, App Attest) | offen |
 | 4 | Native Prozesse nach Pilot-Entscheidung (Tageserfassung 4–6 Wochen, Laser-Wartung 2–3 Wochen) | offen |
@@ -1506,6 +1616,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 26.09.2026 | 1.2.0 (26) | Native Reisekosten (Nachzug 5): Anspruchstage, Reisekarte (Live-Summe, fünf Abschnitte, Streckenberechnung, Belege mit Kamera/Scanner/Datei), Einreichen/Zurückziehen/Löschen, Freigabe mit Berichtigen und Entscheidung, iPad-Split; Hub: Stufe 1 der Reisekosten-Überarbeitung (`/travel-expenses/me`, Eigentum, Statusübergänge, Freigabe-Route), `upload(fields:)` |
 | 26.09.2026 | 1.2.0 (24) | Native App-Geräte (Nachzug 4): Liste mit Chips/Kennzahlen, Code ausstellen in drei Schritten mit QR (CoreImage) und Teilen-Blatt, Code zurückziehen, Steckbrief mit Widerruf, iPad-Split; keine Hub-Änderung, Feldvertrag `AppDevicesNativeTest` |
 | 26.09.2026 | 1.2.0 (23) | Native Gutscheine: Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin-Korrektur, neuer Gutschein, Guthaben-Karte in der Kundenübersicht; Hub `GET /hub/vouchers/search`, `/hub/vouchers/{id}/data`, `vouchers` in `/api/app/clients/{id}` |
 | 25.09.2026 | 1.2.0 (20) | Native Verträge: Liste (Suche, Chips, Monate) und Vertragsseite mit Übersicht/Zahlungen/Verlauf/E-Mails, Notiz/Zahlung verbuchen/Rate begleichen nativ, GoCardless als `?shell=native`-Blatt, iPad-Split; `ContractSummary`, `bounced`-Filter, `history`/`email_logs` im Detail-JSON |

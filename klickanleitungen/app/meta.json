@@ -478,5 +478,65 @@
   },
   "ratio": 0.78125,
   "marks": []
+ },
+ "laser-rooms-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 2426
+  },
+  "ratio": 3.1102564102564103,
+  "marks": []
+ },
+ "laser-ipad-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2360,
+   "height": 1609
+  },
+  "ratio": 0.6817796610169492,
+  "marks": []
+ },
+ "laser-detail-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1963
+  },
+  "ratio": 2.5166666666666666,
+  "marks": []
+ },
+ "laser-detail-parts-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1421
+  },
+  "ratio": 1.8217948717948718,
+  "marks": []
+ },
+ "laser-workbench-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 3057
+  },
+  "ratio": 3.919230769230769,
+  "marks": []
+ },
+ "laser-ipad-detail-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2360,
+   "height": 1860
+  },
+  "ratio": 0.788135593220339,
+  "marks": []
  }
 }

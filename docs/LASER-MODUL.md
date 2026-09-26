@@ -54,6 +54,11 @@ Wert, mit Rechnung, plus jede Bewegung, Statusänderung, Wartung, jeder Fehler u
 Die Landing-Seite ist ein Dashboard mit vier Warn-Kennzahlen (überfällige Wartungen, anstehende
 STKs, Geräte in Reparatur, Lager-Unterschreitungen) und den zugehörigen Listen.
 
+**In der App** (seit 26.09.2026) beginnt das Modul beim **Raum**: Das iPad zeigt die Räume des eigenen
+Instituts mit dem Laser darin, Wartungsstand, Anbauteilen und Störungen, daneben die Aufgaben von
+heute mit direktem Knopf; „Alle“ ist die Werkbank über alle Institute. Geräteakte, Reparatur, STK und
+Behördenanzeige laufen dort nativ — Anleitung App 5.
+
 **Grundsätze, die überall gelten:**
 
 - **Die Top-Unit-Seriennummer ist die führende Geräte-ID** — in Inventar, Behörde, STK, Wartung
@@ -327,6 +332,20 @@ Alle Tabellen mit Prefix `laser_` (bzw. `lasers`). Migrationen: `database/migrat
 ### Routen
 
 Prefix `hub/laser`, Namen `hub.laser.*`: `dashboard`, `master-data`, `consumables`, `devices.index`, `devices.show` ({laser} = `top_unit_serial`), `components.show` ({serial}), `attachments.show` ({serial}), `reports.{index,overdue-maintenance,stk,repairs,defects,asset-value,repair-history}`.
+
+**JSON-Endpunkte der nativen App** (seit 26.09.2026, `LaserAppApiController` + `LaserAppService`,
+Web-Sitzung): lesend mit `view_laser` — `GET hub/laser/api/app/rooms?institute=<branch|zentrallager|all>`
+(Räume eines Instituts mit Laser, Ersatzteilen und Beständen, Aufgaben von heute, letzte Ereignisse,
+Wartungstreue der letzten 13 ISO-Wochen; `all` liefert die Werkbank: vier Kennzahlen, alle offenen
+Fälle, Kurzberichte), `GET …/lasers/{id|top_unit_serial}` (Geräteakte mit allen acht Reitern in einer
+Antwort, `repair_assets` und `providers` für die Blätter), `GET …/parts/{serial}` (Komponente oder
+Anbauteil). Schreibend mit `manage_laser_repairs` — `POST …/lasers/{id}/repairs`
+(`asset_ref` = `laser:ID|component:ID|attachment:ID`, `defektbeschreibung`), `POST …/repairs/{id}/ship`,
+`POST …/repairs/{id}/return` (multipart, `rechnung` Pflicht), `POST …/lasers/{id}/stk` (`protokoll`
+optional), `POST …/lasers/{id}/authority` (`nachweis` optional) — dieselben Regeln wie `RepairForm`
+und `ComplianceForm`, Antwort 422 mit `errors`. Institute entstehen aus `LaserLocation.branch_id`
+(Phorest-Branch-ID) über `AppBranchList`; Standorte ohne Institut bilden `zentrallager`. Details der
+App-Seite: `IOS-APP.md`, Abschnitt „Native Laser-Seite“.
 
 ### Tests
 
