@@ -1,6 +1,6 @@
 # Klickanleitungen App — Quellen
 
-Quellen der Serie **App 1–9** (die glatttHub-App auf iPad und iPhone). Standard und
+Quellen der Serie **App 1–10** (die glatttHub-App auf iPad und iPhone). Standard und
 Deck-Format: `klickanleitungen/README.md` und Wiki `docs/KLICKANLEITUNGEN.md`; die Technik der
 App steht im Wiki `IOS-APP.md`.
 
@@ -15,8 +15,9 @@ App steht im Wiki `IOS-APP.md`.
 | **7 — Widgets, Siri, Scanner & Hilfe** | Widgets einrichten, Siri-Sätze, Scanner in Upload-Feldern, Einstellungen, Diagnose, Update, Kiosk |
 | **8 — Verträge in der App** | Native Vertragsliste (Suche, Chips), Vertragsseite mit Übersicht/Zahlungen/Verlauf/E-Mails, Notiz/Zahlung/Rate nativ, GoCardless als Hub-Blatt, iPad-Split (seit 25.09.2026) |
 | **9 — Gutscheine in der App** | Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin berichtigen, neuer Gutschein, Guthaben-Karte der Kundin, iPad-Split (seit 26.09.2026) |
+| **10 — App-Geräte in der App** | Geräteliste mit Chips und Kennzahlen, Code ausstellen (Art, Angaben, QR/Teilen), Code zurückziehen, Steckbrief mit Widerruf, iPad-Split (seit 26.09.2026) |
 
-Die ersten sieben und 9 (Gutscheine) richten sich an **die Institute**; 6 (Management-Sicht) zusätzlich an Leitung und Büro, 8 (Verträge) an Leitung und Büro.
+Die ersten sieben und 9 (Gutscheine) richten sich an **die Institute**; 6 (Management-Sicht) zusätzlich an Leitung und Büro, 8 (Verträge) und 10 (App-Geräte) an Leitung und Büro.
 
 ## Screenshots — nicht mit Playwright
 

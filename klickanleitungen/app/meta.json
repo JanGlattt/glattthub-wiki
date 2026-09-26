@@ -428,5 +428,55 @@
   },
   "ratio": 0.6708333333333333,
   "marks": []
+ },
+ "app-devices-list-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1400
+  },
+  "ratio": 1.794871794871795,
+  "marks": []
+ },
+ "app-devices-codes-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1267
+  },
+  "ratio": 1.6243589743589744,
+  "marks": []
+ },
+ "app-devices-issued-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1157
+  },
+  "ratio": 1.4833333333333334,
+  "marks": []
+ },
+ "app-device-detail-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1250
+  },
+  "ratio": 1.6025641025641026,
+  "marks": []
+ },
+ "app-devices-ipad-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1920,
+   "height": 1500
+  },
+  "ratio": 0.78125,
+  "marks": []
  }
 }

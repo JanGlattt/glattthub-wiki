@@ -17,9 +17,13 @@ den Code, und meldet sich danach wie gewohnt mit ihrer PIN an. Ein Code gilt ein
 derselben Seite, das Gerät braucht danach einen neuen Code. Institut-iPads bekommen ihren
 Schlüssel über Miradore und schalten sich beim ersten Start selbst frei.
 
-!!! nutzerhandbuch "Bedienung: App-Geräte — Klickanleitung geplant"
-    Die Klickanleitung entsteht mit dem Abschluss des App-Teils (Eintrag `hub.app-devices`
-    in `.github/klickanleitungen-abdeckung.json`, Status „geplant").
+Seit 26.09.2026 gibt es die Seite auch **nativ in der App** (Mehr → Team → App-Geräte bzw.
+iPad-Seitenleiste): Liste mit Filtern und Kennzahlen, Code ausstellen in drei Schritten mit QR-Code
+und Teilen-Blatt (AirDrop auf das Gerät daneben), Codes zurückziehen, Geräte im Steckbrief widerrufen.
+
+!!! nutzerhandbuch "Bedienung: App 10 – App-Geräte in der App"
+    [https://hilfe.hub.glattt.com/app/10/](https://hilfe.hub.glattt.com/app/10/) — die
+    Web-Seite im Hub folgt denselben Abläufen; ein eigenes Deck mit Web-Screenshots steht noch aus.
 
 ## Für Entwickler
 
@@ -97,6 +101,14 @@ nichts außer dem Code, den die Mail ohnehin enthält, und löst nichts ein.
 | Universal Link | `AppContainer.open(_:)` erkennt `/shared/app/freischalten/<CODE>` vor allem anderen — auch gesperrt oder abgemeldet |
 | MDM | `ManagedConfig.enrollmentKey`; `autoEnrollFromManagedConfig()` löst ihn beim Start und beim Aktivieren still ein, solange das Gerät nicht freigeschaltet ist |
 | Diagnose / Bridge | Zeile „Freischaltung" im Diagnosebericht; `deviceEnrolled` in `glatttNative.info()` |
+
+**Native Seite in der App (seit 26.09.2026, Nachzug 4):** Die App stellt Codes selbst aus und
+verwaltet Geräte — über **dieselben vier Endpunkte** wie die Web-Seite (`GET data`, `POST tokens`,
+`DELETE tokens/{id}`, `DELETE devices/{id}`), ohne Hub-Änderung. Den QR-Code zeichnet die App aus dem
+Link (`CIFilter.qrCodeGenerator`), das `qr_svg` des Hubs braucht nur das Web. Welche Felder die App
+liest und welche `null` sein dürfen, hält `tests/Feature/AppDevicesNativeTest.php` fest — wer
+`toDisplay()` ändert, ändert das Bild der App. Details: [IOS-APP.md](IOS-APP.md), Abschnitt
+„Native App-Geräte".
 
 ### Fallstricke
 

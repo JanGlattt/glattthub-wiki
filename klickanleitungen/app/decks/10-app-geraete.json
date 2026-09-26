@@ -1,0 +1,167 @@
+{
+ "out": "../pdf/App-10-App-Geraete",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "App",
+ "of": 10,
+ "audience": "office",
+ "footerArea": "App",
+ "stand": "26.09.2026",
+ "version": "1.0",
+ "nr": 10,
+ "title": [
+  "App-Geräte freischalten",
+  "und im Blick behalten"
+ ],
+ "subtitle": "Klickanleitung für die glatttHub-App — einen Freischalt-Code für ein iPhone, ein Institut-iPad oder Miradore ausstellen, den QR-Code zeigen oder den Link per AirDrop teilen, offene Codes zurückziehen und ein Gerät bei Verlust oder Austritt widerrufen",
+ "eyebrow": "App · App-Geräte",
+ "notes": [
+  "**App-Geräte** findest du im Menü **Mehr** unter **Team** (iPhone) bzw. in der Seitenleiste (iPad). Die Seite sehen nur Kolleginnen mit dem Recht, Hub-Konten anzulegen — im Büro und in der Leitung.",
+  "Ein Freischalt-Code bringt die glatttHub-App auf ein neues Gerät: Die Kollegin scannt ihn, tippt ihn ab oder öffnet den Link — danach meldet sie sich wie gewohnt mit ihrer PIN an. **Der Code wird genau einmal angezeigt.** Wer ihn nicht mehr hat, stellt einen neuen aus."
+ ],
+ "pages": [
+  {
+   "h1": "Die Geräteliste",
+   "sub": "Oben Suche und Filter, darunter die Kennzahlen, dann offene Codes und alle freigeschalteten Geräte nach Institut — persönliche iPhones am Ende.",
+   "card": {
+    "title": "Übersicht",
+    "text": "Codes und Geräte auf einen Blick"
+   },
+   "left": {
+    "shot": "app-devices-list-light"
+   },
+   "leftCaption": "Jede Zeile: Gerät, Institut-Kürzel, Marke **attestiert**, wer zuletzt angemeldet war, App-Version. Offene Codes stehen darüber mit Ablauf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Filter",
+     "text": "**Aktiv** zeigt alle Geräte im Einsatz, **Codes** alle Codes nach Status, **Nicht attestiert** Geräte mit altem Build, **MDM** die Institut-iPads aus Miradore, **Widerrufen** die abgeschalteten."
+    },
+    {
+     "n": 2,
+     "title": "Suche",
+     "text": "Gerätename, Kollegin, Bezeichnung oder Institut eintippen — die Liste filtert beim Tippen."
+    },
+    {
+     "n": 3,
+     "title": "Kennzahlen",
+     "text": "Aktive Geräte (Institut und persönlich), offene Codes mit dem ältesten Ablauf, und rot: Geräte, die Apple noch nicht beglaubigt hat."
+    },
+    {
+     "n": 4,
+     "title": "Code zurückziehen",
+     "text": "Einen offenen Code nach links wischen oder lange drücken → **Zurückziehen**. Danach lässt er sich nicht mehr einlösen."
+    }
+   ],
+   "hint": {
+    "text": "**Nicht attestiert** heißt: Das Gerät hat sich noch nicht bei Apple beglaubigen lassen (Build vor 21). Nach dem Update der App holt es das beim nächsten Anmelden von selbst nach.",
+    "kind": "info"
+   }
+  },
+  {
+   "h1": "Code ausstellen",
+   "sub": "Das goldene **+** oben rechts öffnet das Blatt. Erst die Art wählen, dann die Angaben — nach „Code erzeugen“ erscheint der Code mit QR.",
+   "card": {
+    "title": "Ausstellen",
+    "text": "Drei Schritte bis zum Code"
+   },
+   "left": {
+    "shot": "app-devices-issued-light"
+   },
+   "leftCaption": "Das Ergebnis: **QR-Code** zum Scannen vom Gerät daneben, der Code zum Abtippen, darunter **Teilen** — AirDrop, Mail oder Nachrichten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Art wählen",
+     "text": "**Persönliches Gerät** für das iPhone einer Kollegin, **Institut-Gerät** für ein iPad, an dem sich alle mit PIN anmelden, **MDM-Schlüssel** für Miradore (läuft nicht ab, beliebig oft einlösbar)."
+    },
+    {
+     "n": 2,
+     "title": "Angaben",
+     "text": "Gültigkeit (Standard fünf Tage), bei Institut-Geräten das Institut, optional eine E-Mail-Adresse und eine Bezeichnung wie „iPad Empfang“ — sie steht später als Besitzerin in der Liste."
+    },
+    {
+     "n": 3,
+     "title": "Zeigen oder teilen",
+     "text": "Steht die Kollegin daneben: **QR groß zeigen** — der Bildschirm wird hell, sie scannt aus der App. Sonst **Teilen** und den Link per AirDrop auf ihr iPhone schicken."
+    },
+    {
+     "n": 4,
+     "title": "Fertig",
+     "text": "Mit **Fertig** ist der Code weg — er wird nirgends mehr angezeigt. In der Liste bleibt nur der Anfang (7K4M-····-····) mit Status."
+    }
+   ],
+   "hint": {
+    "text": "Die Mail ist der schwächste Weg. Wo jemand daneben steht, ist der QR-Code auf dem Bildschirm die bessere Wahl. Den MDM-Schlüssel **nie per Mail** — er gehört in Miradore in die Managed App Configuration."
+   }
+  },
+  {
+   "h1": "Ein Gerät prüfen und widerrufen",
+   "sub": "Ein Tipp auf eine Gerätezeile öffnet den Steckbrief: Besitzerin, Institut, letzte Anmeldung, App-Version, Freischaltung und Apple-Beglaubigung.",
+   "card": {
+    "title": "Steckbrief",
+    "text": "Alles zu einem Gerät"
+   },
+   "left": {
+    "shot": "app-device-detail-light"
+   },
+   "leftCaption": "Unten der rote Knopf **Gerät widerrufen** — mit Rückfrage. Danach bleibt das Gerät grau in der Liste.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Wem gehört es",
+     "text": "Die Bezeichnung des Codes, sonst die zuletzt angemeldete Kollegin, sonst die Mail-Empfängerin. Auf dem geteilten Institut-iPad steht die letzte Anmeldung darunter."
+    },
+    {
+     "n": 2,
+     "title": "Zuletzt gesehen",
+     "text": "Wann das Gerät zuletzt mit dem Hub gesprochen hat — ein iPad, das seit Wochen nicht gesehen wurde, ist ein Kandidat für den Widerruf."
+    },
+    {
+     "n": 3,
+     "title": "Widerrufen",
+     "text": "Bei Verlust oder Austritt: **Gerät widerrufen** → **Widerrufen**. Das Vertrauen endet sofort; die App verlangt beim nächsten Anmelden einen neuen Code."
+    },
+    {
+     "n": 4,
+     "title": "Kein Ablauf",
+     "text": "Geräte laufen bewusst nicht von selbst ab. Was nicht mehr gebraucht wird, widerrufst du hier — die Widerrufenen bleiben zur Nachvollziehbarkeit sichtbar."
+    }
+   ]
+  },
+  {
+   "h1": "Auf dem iPad",
+   "sub": "Liste links, Steckbrief rechts — wie Verträge und Gutscheine. „Code ausstellen“ öffnet als Fenster am Plus-Knopf.",
+   "card": {
+    "title": "iPad",
+    "text": "Liste und Steckbrief nebeneinander"
+   },
+   "left": {
+    "shot": "app-devices-ipad-light"
+   },
+   "leftCaption": "Der geteilte Bildschirm: links Codes und Geräte, rechts das gewählte Gerät mit dem Widerrufen-Knopf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Auswählen",
+     "text": "Ein Tipp links zeigt den Steckbrief rechts; die Liste bleibt stehen, das nächste Gerät ist einen Tipp entfernt."
+    },
+    {
+     "n": 2,
+     "title": "Ausstellen",
+     "text": "Das Plus öffnet ein Fenster über der Liste — dieselben drei Schritte wie auf dem iPhone. Zum Scannen vom Gerät daneben **QR groß zeigen**."
+    },
+    {
+     "n": 3,
+     "title": "Seitenleiste",
+     "text": "„App-Geräte“ steht in der Seitenleiste unter **Team**; die Seite gilt für alle Institute, der Standort-Filter der App spielt hier keine Rolle."
+    },
+    {
+     "n": 4,
+     "title": "Ohne Netz",
+     "text": "Die Liste bleibt lesbar („Kein Netz · Stand HH:MM“); Ausstellen, Zurückziehen und Widerrufen brauchen Verbindung."
+    }
+   ]
+  }
+ ]
+}

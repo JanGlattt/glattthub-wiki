@@ -1231,7 +1231,7 @@ Komponentenkatalog in `.github/instructions/ios.instructions.md`):
 lauffähig, Endpunkte rückwärtskompatibel, bis `IOS_APP_MIN_VERSION` steigt. Jedes Layout, das die
 App lädt, trägt `<meta name="glattthub-app">`. Kiosk-iPads haben keine nativen Seiten.
 
-### App-Inventar (Stand 25.09.2026)
+### App-Inventar (Stand 26.09.2026)
 
 Quelle ist `.github/app-abdeckung.json` im Hub-Repo (dort führend, hier die Lesefassung).
 
@@ -1252,7 +1252,8 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Termin buchen | bestand | Slot-Suche Web; Folgetermin/Verlegen aus der Terminansicht nativ |
 | Verträge | nativ | Liste + Vertragsseite mit vier Reitern (seit 25.09.2026); GoCardless/Ratenplan/Bearbeiten als Web-Blatt; Preislisten, Freunde werben, Mappings Web |
 | Gutscheine | nativ | Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin-Korrektur, neuer Gutschein, Guthaben-Karte in der Kundenübersicht (seit 26.09.2026); Bestand mit Kennzahlen bleibt Web |
-| Freunde werben, Widerrufe, Gutscheine, Zufriedenheit, Forderungen, Personal, Institute, App-Geräte, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — nächste: Zufriedenheit, Reisekosten |
+| App-Geräte | nativ | Liste mit Suche, Chips, Kennzahlen, offene Codes und Geräte nach Institut; Code ausstellen in drei Schritten mit QR und Teilen-Blatt (AirDrop), Code zurückziehen, Gerät widerrufen im Steckbrief; iPad-Split, Ausstellen als Popover (seit 26.09.2026); Einlösen bleibt `EnrollmentSheet` |
+| Freunde werben, Widerrufe, Zufriedenheit, Forderungen, Personal, Institute, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — nächste: Zufriedenheit, Reisekosten |
 | Berichte + 16 Berichtsseiten | bestand | WebView im Tab Berichte (ECharts, Registry-Karten); Kennzahlen nativ über Cockpit/Widgets/Siri |
 | Formulare, Bildschirme, Services, Unternehmensverträge, Report-Mails, Audit, Einstellungen, Conversion-Upload, Bonus-Verwaltung | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
 
@@ -1362,6 +1363,57 @@ bucht weiterhin die Kasse in Phorest. Auf dem iPad steht die Suche links, die Ka
   Karte, iPad — hell/dunkel; liefert die Bilder der Klickanleitung), `VouchersUITests` (Mehr →
   Gutscheine → Suche → Karte → Formular, gegen den lokalen Hub).
 
+### Native App-Geräte (Mehr-Seite, seit 26.09.2026 — Nachzug 4)
+
+**Für Endanwender:** „App-Geräte" (Team, Recht Hub-Konten anlegen) ist in der App nativ: Suche,
+Filterchips (Aktiv, Codes, Nicht attestiert, MDM, Widerrufen) mit Zählern, ein Kennzahlen-Streifen
+(aktive Geräte, offene Codes, nicht attestiert), darunter die offenen Codes und die Geräte nach
+Institut, persönliche iPhones am Ende. Das **+** stellt einen Freischalt-Code in drei Schritten aus —
+Art (persönlich, Institut-iPad, MDM-Schlüssel), Angaben (Gültigkeit, Institut, E-Mail, Bezeichnung),
+Ergebnis mit **QR-Code**, Code zum Abtippen, **Teilen** (AirDrop auf das Gerät daneben, Mail,
+Nachrichten) und „QR groß zeigen" mit voller Helligkeit. Der Code wird genau einmal angezeigt. Offene
+Codes lassen sich per Wischen oder langem Druck zurückziehen; der Steckbrief eines Geräts zeigt
+Besitzerin, letzte Anmeldung, zuletzt gesehen, App-Version, Freischaltung und Apple-Beglaubigung und
+**widerruft** das Gerät mit Rückfrage. Ohne Netz bleibt der letzte Stand lesbar. Auf dem iPad steht
+die Liste links, der Steckbrief rechts, das Ausstellen öffnet als Fenster am Plus-Knopf. Das
+**Einlösen** eines Codes auf dem neuen Gerät bleibt der bekannte Dialog „Gerät freischalten".
+
+!!! nutzerhandbuch "Bedienung: App 10 – App-Geräte in der App"
+    [https://hilfe.hub.glattt.com/app/10/](https://hilfe.hub.glattt.com/app/10/)
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 26.09.2026, aus drei Entwürfen):** Entwurf 2 „Geräte-Liste" (Kunden-Muster:
+  Suche, Chips, Gruppen je Institut, Steckbrief, iPad-Split) plus die **Art-Kacheln** aus Entwurf 1
+  „Werkbank" als erster Schritt des Ausstell-Blatts; Entwurf 3 „Institut-Karten" vertagt, bis
+  deutlich mehr Institut-iPads im Umlauf sind. Entwürfe:
+  https://claude.ai/artifact/JGzMQqQ9QaF5irgdQ1Dxjc
+- **Endpunkte — dieselben wie das Web, keine Hub-Änderung:** `GET /hub/app-devices/data` (Codes,
+  Geräte, Institute aus `BranchVisibility::allBranchNames()` **mit** ausgeblendeten Instituten,
+  `validity_hours`), `POST /hub/app-devices/tokens` (201 mit `code`, `link`, `token`; 422 mit
+  `message` bei fehlendem Institut, unbekanntem Institut oder ungültiger E-Mail),
+  `DELETE …/tokens/{id}` und `DELETE …/devices/{id}` (liefern die aktualisierte Zeile). Recht
+  `create_users` wie das Routen-Gate. Welche Felder die App liest und welche `null` sein dürfen,
+  hält `tests/Feature/AppDevicesNativeTest.php` fest (Feldvertrag).
+- **App:** `AppDevices/AppDevicesView.swift` (Seite + `AppDevicesContent` für Snapshots,
+  Zeilen `EnrollmentTokenRowView`/`EnrolledDeviceRowView`, iPad-Split), `AppDeviceDetailView.swift`
+  (Steckbrief, Widerruf mit `confirmationDialog`), `IssueCodeSheet.swift` (drei Schritte, `QRCodeView`
+  aus `CIFilter.qrCodeGenerator` — der Hub liefert SVG, die App zeichnet selbst; `ShareLink` mit dem
+  Freischalt-Link; `CodeShowcaseView` setzt die Helligkeit auf 1 und stellt sie zurück),
+  `AppDevicesViewModel.swift` (lokale Filter/Suche auf dem geladenen Stand, Gruppierung nach der
+  Institutsreihenfolge des Hubs, Offline-Stand `app-devices` im `OfflineStore`), `AppDeviceModels.swift`
+  (`EnrollmentTokenRow`, `EnrolledDeviceRow`, `AppDevicesPage`, `EnrollmentKind`, `IssuedCode`,
+  `AppDeviceFormat`). Eingehängt als `NativeMorePage.appDevices` (`/hub/app-devices`, exakt — `/data`
+  wird nie navigiert); Steckbrief per `pushMoreDetail` (Pfad `/hub/app-devices/geraete/{id}`), iPad
+  `.popover` am Plus-Knopf (auf dem iPhone automatisch ein Blatt).
+- **Fallstricke:** statische `ISO8601DateFormatter` sind nicht Sendable (Fehler) — `Date(_,
+  strategy: .iso8601)`; deutsche Anführungszeichen in Strings als Paar „…“; nach neuen Testdateien
+  `xcodegen generate`, sonst führt `-only-testing` still 0 Tests aus.
+- **Nachweis:** `AppDevicesSnapshotTests` (Liste, Codes-Chip, Steckbrief, Ergebnis, iPad — hell/dunkel;
+  Modelle mit `null`, Gruppierung, Pfad-Erkennung), `AppDevicesUITests` (Mehr → App-Geräte → Chips →
+  Code ausstellen bis zum QR → zurückziehen → Steckbrief, gegen den lokalen Hub),
+  `AppDevicesNativeTest` (Hub).
+
 ### Verteilung
 
 Apple Business Manager **Custom App** (App Store Connect → „Privat — nur für bestimmte Organisationen"
@@ -1454,6 +1506,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 26.09.2026 | 1.2.0 (24) | Native App-Geräte (Nachzug 4): Liste mit Chips/Kennzahlen, Code ausstellen in drei Schritten mit QR (CoreImage) und Teilen-Blatt, Code zurückziehen, Steckbrief mit Widerruf, iPad-Split; keine Hub-Änderung, Feldvertrag `AppDevicesNativeTest` |
 | 26.09.2026 | 1.2.0 (23) | Native Gutscheine: Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin-Korrektur, neuer Gutschein, Guthaben-Karte in der Kundenübersicht; Hub `GET /hub/vouchers/search`, `/hub/vouchers/{id}/data`, `vouchers` in `/api/app/clients/{id}` |
 | 25.09.2026 | 1.2.0 (20) | Native Verträge: Liste (Suche, Chips, Monate) und Vertragsseite mit Übersicht/Zahlungen/Verlauf/E-Mails, Notiz/Zahlung verbuchen/Rate begleichen nativ, GoCardless als `?shell=native`-Blatt, iPad-Split; `ContractSummary`, `bounced`-Filter, `history`/`email_logs` im Detail-JSON |
 | 25.09.2026 | — | Regel „jede neue Seite auch nativ" (Jan): dreistufig nativ/eingebettet/bestand, Bauplan in fünf Schritten, App-Inventar, `.github/app-abdeckung.json` + `NativeAppCoverageTest`, `.github/instructions/ios.instructions.md` als Komponentenkatalog |
