@@ -6,8 +6,8 @@
   "of": 8,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "23.09.2026",
-  "version": "1.0",
+  "stand": "26.09.2026",
+  "version": "1.1",
   "nr": 3,
   "title": [
     "Termine und die",
@@ -35,7 +35,7 @@
       "right": {
         "shot": "appointments-calendar"
       },
-      "rightCaption": "Der **Kalender** zeigt die Kabinen nebeneinander; ein Tipp auf einen Block öffnet den Termin.",
+      "rightCaption": "Der **Kalender** zeigt die Räume nebeneinander; ein Tipp auf einen Block öffnet den Termin.",
       "steps": [
         {
           "n": 1,
@@ -50,7 +50,7 @@
         {
           "n": 3,
           "title": "Karte lesen",
-          "text": "Zeit, Kundin, Services, Kabine, Status-Kante (grün = bezahlt/erledigt, gold = läuft). **Antippen** öffnet die Terminansicht."
+          "text": "Zeit, Kundin, Services, Raum, Status-Kante (grün = bezahlt/erledigt, gold = läuft). **Antippen** öffnet die Terminansicht."
         },
         {
           "n": 4,
@@ -155,7 +155,7 @@
       "right": {
         "shot": "booking-direct"
       },
-      "rightCaption": "**Direkt behandeln:** Kundin, Kabine, Startzeit und die Paket-Services — buchen, und der Termin läuft weiter.",
+      "rightCaption": "**Direkt behandeln:** Kundin, Raum, Startzeit und die Paket-Services — buchen, und der Termin läuft weiter.",
       "steps": [
         {
           "n": 1,
@@ -175,7 +175,7 @@
         {
           "n": 4,
           "title": "Direkt behandeln",
-          "text": "Knopf in der Sitzungssteuerung. Kabine und Services prüfen, **buchen** — die App wechselt in den neuen Behandlungstermin."
+          "text": "Knopf in der Sitzungssteuerung. Raum und Services prüfen, **buchen** — die App wechselt in den neuen Behandlungstermin."
         }
       ],
       "notes": [
@@ -209,7 +209,7 @@
         {
           "n": 2,
           "title": "Zeitraum",
-          "text": "Schnellwahl antippen oder das Datum setzen; **„Vorschläge laden“** holt freie Zeiten aus Phorest — Kabine und Mitarbeiterin passend zum Paket."
+          "text": "Schnellwahl antippen oder das Datum setzen; **„Vorschläge laden“** holt freie Zeiten aus Phorest — Raum und Mitarbeiterin passend zum Paket."
         },
         {
           "n": 3,
@@ -219,7 +219,7 @@
         {
           "n": 4,
           "title": "Wenn nichts kommt",
-          "text": "„Keine buchbaren Räume“: Die Kabine ist in Phorest nicht für alle Services freigeschaltet — Hinweis ans Büro (Phorest → Mitarbeiter → Raum → Services)."
+          "text": "„Keine buchbaren Räume“: Der Raum ist in Phorest nicht für alle Services freigeschaltet — Hinweis ans Büro (Phorest → Mitarbeiter → Raum → Services)."
         }
       ]
     }

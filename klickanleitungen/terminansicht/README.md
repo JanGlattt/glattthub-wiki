@@ -26,7 +26,7 @@ Aufnahmelauf einmal komplett durchlaufen.
 ## Screenshots neu aufnehmen
 
 Voraussetzungen: Staging-Testuser (Rolle Institute MA, Magdeburg), ein **gebuchter Beratungstermin**
-für eine Magdeburg-Testkundin (MD000001–MD000004) in Kabine MD 1, Staging über die `*.run.app`-Adresse
+für eine Magdeburg-Testkundin (MD000001–MD000004) in Raum MD 1, Staging über die `*.run.app`-Adresse
 (umgeht IAP; `gcloud run services describe glattthub-web-staging --region=europe-west3 --format='value(status.url)'`).
 
 ```bash

@@ -301,7 +301,7 @@ Erfolgs-Modal mit „PDF herunterladen", E-Mail-Versand („Senden" → „Gesen
 
 **„Direkt behandeln":** Einstieg per Kachel oder im Beenden-Ablauf („Direkt behandeln?" →
 „Ja, direkt behandeln"). Modal lädt Paket-Services aus Phorest (alle vorausgewählt), bucht in
-derselben Kabine ab Ende des BG (5-Min-Raster, Desinfektion angehängt): „Termin buchen &
+demselben Raum ab Ende des BG (5-Min-Raster, Desinfektion angehängt): „Termin buchen &
 behandeln" → „Behandlungstermin um HH:MM Uhr gebucht." → „Weiter" → BG wird beendet
 (Folgetermin-Frage entfällt) → Sprung in den neuen Termin mit `?start=1`. Warnungen: Abos noch
 nicht abrufbar → „Neu laden"; SEPA nicht unterschrieben; Kauf gescheitert → **„Kauf jetzt
@@ -362,7 +362,7 @@ stehen am 08./09.09. die Test-Termine (PAID, nicht stornierbar — Phorest-Cance
   Räume (z.B. BI 1, BI 2) in diesem Institut gefunden." (`BookingService.php:95/109`) — Folgetermin planen ist in
   Magdeburg damit nicht möglich; „Direkt behandeln" bucht ohne Desinfektion. Ursache liegt in der **Phorest-Konfiguration
   Magdeburgs**, nicht im Code: Es gibt keinen Service „Desinfektion" (Erkennung über den Namen,
-  `BookingCalendarService::isDisinfection`), und die Kabinen „MD 1"/„MD 2" passen zwar zum Raum-Muster
+  `BookingCalendarService::isDisinfection`), und die Räume „MD 1"/„MD 2" passen zwar zum Raum-Muster
   (`config/booking.php: room_name_pattern`), haben in Phorest aber die Behandlungs-Services nicht zugewiesen
   (`resolveRooms()` filtert nach angebotenen Services). **Stand 22.09.2026:** Desinfektion existiert
   inzwischen („...Desinfektion", qualifiziert); MD 1/MD 2 sind weiterhin für alle Behandlungs-Services
@@ -866,7 +866,7 @@ Platzhalter.
 ## Testdaten (Staging / Magdeburg)
 
 - **Staging-Testuser** `claude-dev@example.com` (User 36, Rolle Institute MA, Stamm-Institut Magdeburg,
-  Phorest-User der Kabine „MD 1"); Einführungstouren als erledigt markiert. Das Passwort steht **nirgends
+  Phorest-User des Raums „MD 1"); Einführungstouren als erledigt markiert. Das Passwort steht **nirgends
   im Repo** — es gehört in die lokale `.env` des Aufnahmeordners (`klickanleitungen/terminansicht/.env.example`).
 - **Preisliste 6** „glattt-Preise Magdeburg (alle Raten SEPA)" — Kopie von Liste 1, `all_sepa`, nur Magdeburg,
   aktiv ab 07.09.2026 (gesperrt). Im Vertragsformular erscheint dadurch das Dropdown „Preisliste wählen".
@@ -888,7 +888,7 @@ Platzhalter.
   „Gratis Beratungsgespräch und erste Sitzung" (`RClvDn4yYNwha7X5_Y-EfA`) — vor dem Buchen gegen
   `getServices(<Magdeburg>)` prüfen, welche in Magdeburg existieren.
 - Termine entstehen nur über `BookingService::book()` / `PhorestApiService::createBooking()`
-  (`staffId` = Kabine „MD 1", „MD 2" …); es gibt keinen Seeder oder Artisan-Command dafür.
+  (`staffId` = Raum „MD 1", „MD 2" …); es gibt keinen Seeder oder Artisan-Command dafür.
 - Preislisten-Duplikat für den Test „alle Raten per SEPA": Kopie der aktiven Liste mit
   `installment_mode = all_sepa`, per `syncBranches([Magdeburg])` zugeordnet, danach aktivieren
   (ab dann gesperrt). Der UI-Duplizierer kopiert weder Filialzuordnung noch Rabatt-Zeiträume.

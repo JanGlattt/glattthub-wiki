@@ -18,7 +18,7 @@ Projektwissen `.github/knowledge/tvos-app-bauplan.md`.
 !!! nutzerhandbuch "Bedienung: Serie „Bildschirme" — Klickanleitung entsteht mit Phase 5"
     Ein Apple TV zeigt beim ersten Start einen sechsstelligen Code. Im Hub unter **Betrieb →
     Bildschirme → Bildschirm koppeln** wird der Code eingetragen und der Bildschirm einem Institut
-    (oder „Office (Zentrale)" für Bildschirme im Büro), einer Zone (Schaufenster, Empfang, Kabine,
+    (oder „Office (Zentrale)" für Bildschirme im Büro), einer Zone (Schaufenster, Empfang, Raum,
     Büro) und einer Ausrichtung zugeordnet. Danach
     läuft der Fernseher ohne Anmeldung. Die Liste zeigt je Bildschirm, ob er online ist und was gerade
     läuft; über das Menü lassen sich „Neu laden", „Neustart" und „Cache leeren" senden, ein Bildschirm

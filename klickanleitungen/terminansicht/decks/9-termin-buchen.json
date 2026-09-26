@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — Termin für eine Kundin buchen, ideale Zeiten finden, Link weitergeben",
  "eyebrow": "Terminansicht · Buchung",
  "footerArea": "Terminansicht",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "26.09.2026",
+ "version": "1.1",
  "notes": [
   "Gebucht wird **direkt in Phorest** — der Termin steht sofort im Kalender des Instituts.",
   "**„Ideale Slots finden“** schlägt Zeiten vor, die den Tag nicht zerreißen — es ist kein Zwang, aber meist die bessere Wahl.",
@@ -87,12 +87,12 @@
      "text": "Ein Termin mitten in einem freien Vormittag zerschneidet ihn in zwei unbuchbare Hälften. Die Vorschläge legen Termine an bestehende an — das schafft über den Monat spürbar mehr Kapazität."
     },
     {
-     "title": "Kabine und Personal",
-     "text": "Der Hub bucht auf eine freie **Kabine**. Wer eine bestimmte Mitarbeiterin braucht, prüft das im Kalender von Phorest."
+     "title": "Raum und Personal",
+     "text": "Der Hub bucht auf eine freien **Raum**. Wer eine bestimmte Mitarbeiterin braucht, prüft das im Kalender von Phorest."
     }
    ],
    "hint": {
-    "text": "**Magdeburg:** Dort fehlen in Phorest der Desinfektions-Service und die Zuordnung der Behandlungen zu den Kabinen — Folgetermine lassen sich deshalb aktuell nicht planen. Termine dort von Hand in Phorest legen."
+    "text": "**Magdeburg:** Dort fehlen in Phorest der Desinfektions-Service und die Zuordnung der Behandlungen zu den Räume — Folgetermine lassen sich deshalb aktuell nicht planen. Termine dort von Hand in Phorest legen."
    }
   },
   {

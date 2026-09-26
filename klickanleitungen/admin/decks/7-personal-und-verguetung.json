@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Gehälter, Bonus-Auszahlungen und Personalzuordnungen",
  "eyebrow": "Admin · Personal & Vergütung",
  "footerArea": "Admin-Panel",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "26.09.2026",
+ "version": "1.1",
  "notes": [
   "Hier stehen die **sensibelsten Daten des Hubs** — Gehälter und Auszahlungen.",
   "Zugang hat nur, wer ihn wirklich braucht; die Rechte dafür sind eng gefasst („Admin 1“).",
@@ -111,7 +111,7 @@
     {
      "n": 1,
      "title": "Phorest-Personal",
-     "text": "Die Kabinen und Personen aus Phorest."
+     "text": "Die Räume und Personen aus Phorest."
     },
     {
      "n": 2,

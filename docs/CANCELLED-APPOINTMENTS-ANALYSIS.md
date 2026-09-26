@@ -31,7 +31,7 @@ wie stark es die Beratungsgespräche trifft. Unterschieden werden zwei Arten von
 2. **Gelöschte Termine** (rot): komplett aus dem System entfernt (`deleted = true`).
 
 **Was als *ein* Termin zählt.** Alle Einträge einer Kundin am selben Tag beim selben Institut gelten
-als ein Termin — die Kabinen-Doppelzeilen aus Phorest blähen die Zahlen also nicht auf.
+als ein Termin — den Raum-Doppelzeilen aus Phorest blähen die Zahlen also nicht auf.
 **Teilstornierungen zählen nicht:** Hat die Kundin am selben Tag noch einen aktiven Termin, war es
 eine Umbuchung innerhalb des Tages und kein Ausfall.
 

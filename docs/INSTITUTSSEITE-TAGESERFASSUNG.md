@@ -210,7 +210,7 @@ stellen (Hinweis steht auch auf der Seite).
 - Kundennamen: `client_statistics` → Fallback `getClientBatch()` (Neukunden
   fehlen im nächtlichen Sync!). Mitarbeiternamen aus `phorest_staff`;
   Absage-/No-Show-Spalten werden ausgefiltert, Nicht-Personen-Spalten
-  (Kabinen etc., `HrStaffLinkService::isNonPerson`) fehlen im
+  (Räume etc., `HrStaffLinkService::isNonPerson`) fehlen im
   Mitarbeiter-Dropdown.
 - Erfassungsstatus über vorhandene `ConsultationRecord` (per `appointment_id`).
 - **Kundennummern-Automatik** (`attachClientNumbers()`): Für heutige Gruppen

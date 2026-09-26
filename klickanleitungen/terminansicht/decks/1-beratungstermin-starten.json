@@ -9,8 +9,8 @@
  "subtitle": "Klickanleitung für die Terminansicht im glatttHub — vom Tagesplan bis zum laufenden Termin",
  "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
- "stand": "08.09.2026",
- "version": "1.1",
+ "stand": "26.09.2026",
+ "version": "1.2",
  "notes": [
   "Gilt für **jedes Beratungsgespräch**: Der Termin wird im Hub gestartet, alle Formulare laufen direkt im Termin.",
   "Bei Problemen oder Fehlermeldungen: **Asana-Task ans Büro** — siehe Dokument „Probleme & Fehlermeldungen“."
@@ -29,7 +29,7 @@
    "right": {
     "shot": "a3-liste-aufgeklappt"
    },
-   "leftCaption": "Tagesplan mit aktivem Filter „Beratung“ — die Karte zeigt Uhrzeit, Kundin, Kabine und Status.",
+   "leftCaption": "Tagesplan mit aktivem Filter „Beratung“ — die Karte zeigt Uhrzeit, Kundin, Raum und Status.",
    "rightCaption": "Aufgeklappte Karte: Terminnotiz aus Phorest und Details zur Kundin.",
    "steps": [
     {
@@ -109,7 +109,7 @@
      "text": "Alle Terminnotizen aus Phorest, die neueste oben."
     }
    ],
-   "rightHtml": "<div class='steps cols-1' style='margin-top:0'><div class='step'><div class='num'>i</div><div><div class='t'>Termin-Infos</div><div class='d'>Datum, Uhrzeit mit Dauer, Institut und Kabine (Mitarbeiterin) stehen in der Mitte der linken Spalte.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Navigation</div><div class='d'><b>„Übersicht“</b> ist diese Seite. <b>„Formulare“</b> und <b>„Einstellungszettel“</b> zeigen die Historie der Kundin — die aktuellen Formulare gibt es erst im laufenden Termin (nächste Seite).</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Nur vor dem Start</div><div class='d'>Kunden-Karte, Termin-Infos und Navigation sieht man <b>nur, solange der Termin nicht läuft</b>. Sobald er gestartet ist, zeigt die linke Spalte allein die Sitzungs-Karte (Seite 4).</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Rotes Banner</div><div class='d'>Erscheint, wenn die Kundin noch einen offenen Betrag auf dem Kundenkonto hat. Er muss beim Verlassen kassiert werden.</div></div></div></div>",
+   "rightHtml": "<div class='steps cols-1' style='margin-top:0'><div class='step'><div class='num'>i</div><div><div class='t'>Termin-Infos</div><div class='d'>Datum, Uhrzeit mit Dauer, Institut und Raum (Mitarbeiterin) stehen in der Mitte der linken Spalte.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Navigation</div><div class='d'><b>„Übersicht“</b> ist diese Seite. <b>„Formulare“</b> und <b>„Einstellungszettel“</b> zeigen die Historie der Kundin — die aktuellen Formulare gibt es erst im laufenden Termin (nächste Seite).</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Nur vor dem Start</div><div class='d'>Kunden-Karte, Termin-Infos und Navigation sieht man <b>nur, solange der Termin nicht läuft</b>. Sobald er gestartet ist, zeigt die linke Spalte allein die Sitzungs-Karte (Seite 4).</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Rotes Banner</div><div class='d'>Erscheint, wenn die Kundin noch einen offenen Betrag auf dem Kundenkonto hat. Er muss beim Verlassen kassiert werden.</div></div></div></div>",
    "hint": {
     "text": "**„Termine“** oben links führt zurück zum Tagesplan — aber nur, solange der Termin **noch nicht begonnen** wurde."
    }

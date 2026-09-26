@@ -10,8 +10,8 @@
  "subtitle": "Klickanleitung für den Abschluss des Beratungsgesprächs — Behandlung sofort anschließen, Kasse, Folgetermin, Terminnotiz",
  "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
- "stand": "08.09.2026",
- "version": "1.1",
+ "stand": "26.09.2026",
+ "version": "1.2",
  "notes": [
   "**Jeder** Beratungstermin wird über **„Termin beenden“** abgeschlossen — auch ohne Verkauf. Erst dann gilt er in Phorest als erledigt.",
   "Die **Terminnotiz ist Pflicht** und wandert automatisch nach Phorest."
@@ -19,7 +19,7 @@
  "pages": [
   {
    "h1": "Direkt behandeln",
-   "sub": "Hat die Kundin einen Vertrag abgeschlossen, kann die erste Behandlung sofort in derselben Kabine gebucht und gestartet werden.",
+   "sub": "Hat die Kundin einen Vertrag abgeschlossen, kann die erste Behandlung sofort im selben Raum gebucht und gestartet werden.",
    "card": {
     "title": "Direkt behandeln",
     "text": "Kachel antippen, Behandlungen bestätigen, „Termin buchen & behandeln“"
@@ -43,7 +43,7 @@
     ]
    },
    "leftCaption": "Die dritte Kachel erscheint erst nach Vertrag (und SEPA-Mandat bei Ratenzahlung).",
-   "rightCaption": "Dialog „Direkt behandeln“: Startzeit, Kabine und die Behandlungen aus dem Paket.",
+   "rightCaption": "Dialog „Direkt behandeln“: Startzeit, Raum und die Behandlungen aus dem Paket.",
    "steps": [
     {
      "n": 1,
@@ -53,7 +53,7 @@
     {
      "n": 2,
      "title": "„Termin buchen & behandeln“",
-     "text": "Bucht den Behandlungstermin in Phorest **direkt im Anschluss** in dieser Kabine (Desinfektion inklusive)."
+     "text": "Bucht den Behandlungstermin in Phorest **direkt im Anschluss** in diesem Raum (Desinfektion inklusive)."
     }
    ],
    "hint": {

@@ -350,7 +350,7 @@ bewusst zweimal wählbar (Label trägt dann den Standort).
   (`is_reliable = false`). Solche Zeilen bleiben in der Tabelle, werden dort aber
   blass/kursiv dargestellt (`.table-glattt-row-thin`) und ans Ende sortiert.
   Vorher führten 100-%-Quoten aus ein bis zwei Gesprächen die Bestenliste an —
-  darunter auch Phorest-Platzhalter wie Kabinen- oder Absage-Profile.
+  darunter auch Phorest-Platzhalter wie Raum- oder Absage-Profile.
 
 **Tabellen-Lasche:** sortierbare Tabelle aller Mitarbeiter mit:
 
@@ -483,7 +483,7 @@ die Gesamtzeile im Fuß.
 - **Alle Nutzer werden gezeigt** (seit 07/2026). Den früheren Toggle „Nur
   Hub-Nutzer" gibt es nicht mehr — die Trennung Hub-Konto / kein Hub-Konto ist für
   die Tagesmessung ohne Bedeutung. In der Liste stehen dadurch auch
-  Phorest-Platzhalter (Kabinen-, Absage-Spalten) und Profile, die im
+  Phorest-Platzhalter (Raum-, Absage-Spalten) und Profile, die im
   Stammdaten-Abgleich fehlen und als „Unbekannt" erscheinen
 - Sortierung innerhalb der Gruppe nach Beratungsvolumen der Monatsblöcke
 - Mobil bricht der Kartenkopf um, die fixierten Spalten schrumpfen mit
@@ -974,7 +974,7 @@ wird verworfen, ebenso Slots mit Start = Ende).
   (Schichtzeit − Beratungszeit − Desinfektionszeit); „mögliche Termine" =
   verfügbare Zeit ÷ tatsächliche Ø-Termindauer des Monats. Ohne Schichtdaten
   bleiben die Auslastungs-Felder `null` (Lücke im Chart, „–" in der Tabelle).
-- **Phorest-Platzhalter ausgeschlossen** (`getNonPersonStaffIds()`): Kabinen-,
+- **Phorest-Platzhalter ausgeschlossen** (`getNonPersonStaffIds()`): Raum-,
   Sammel-, Absage- und Zugangs-Spalten haben Dienstpläne über die kompletten
   Öffnungszeiten (14 h/Tag) und verfälschten dadurch jede Auslastung — die
   Gesamtzeile stand vor dem Fix bei 23 % statt 39 % (08/2026). Der Filter greift

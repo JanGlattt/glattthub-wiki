@@ -153,7 +153,7 @@ Offline-Buchungen?
   `consultation_services.is_online` geht — Prod-Abgleich 08/2026:
   Mitarbeiter-Buchungen (`INTERNAL`) haben 0 Trackings, die Kanal-Heuristik
   ist belastbar.)
-- **Deduplizierung**: eine Buchung je Kundin und Tag (Kabinen-Doppelzeilen
+- **Deduplizierung**: eine Buchung je Kundin und Tag (Raum-Doppelzeilen
   zählen nicht doppelt).
 
 

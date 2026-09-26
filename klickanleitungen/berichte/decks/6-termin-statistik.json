@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für die Berichte im glatttHub — alle Termine: Beratungen, Behandlungen und Kombinationen",
  "eyebrow": "Berichte · Termine",
  "footerArea": "Berichte",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "26.09.2026",
+ "version": "1.1",
  "notes": [
   "Der Bericht zeigt **alle Termine**, nicht nur Beratungen — und wie sie sich zusammensetzen.",
   "Gezählt werden **durchgeführte** Termine; gebuchte und abgesagte gehören in „Berichte 4“.",
@@ -58,7 +58,7 @@
    "sub": "Wie voll die Tage tatsächlich waren.",
    "card": {
     "title": "Auslastung",
-    "text": "Termine je Tag, Woche und Kabine"
+    "text": "Termine je Tag, Woche und Raum"
    },
    "left": {
     "shot": "r6-auslastung"
@@ -77,8 +77,8 @@
     },
     {
      "n": 3,
-     "title": "Kabinen",
-     "text": "Mehr Termine als Kabinen geht nicht; hier endet jede Planung."
+     "title": "Räume",
+     "text": "Mehr Termine als Räume geht nicht; hier endet jede Planung."
     },
     {
      "n": 4,

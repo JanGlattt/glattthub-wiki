@@ -9,8 +9,8 @@
  "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — Terminhistorie, Extrazeit und gekaufte Pakete",
  "eyebrow": "Kundenverwaltung · Termine & Pakete",
  "footerArea": "Kundenverwaltung",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "26.09.2026",
+ "version": "1.1",
  "notes": [
   "Termine und Pakete kommen **live aus Phorest** — der Hub zeigt sie nur an, geführt wird der Kalender dort.",
   "Behandelt wird immer über die **Terminansicht** (Dokumente „Terminansicht 1–8“), nicht über das Kundenprofil.",
@@ -114,7 +114,7 @@
     {
      "n": 1,
      "title": "Grunddaten",
-     "text": "**Datum**, **Uhrzeit**, **Filiale**, **Status** und die zugeordnete **Mitarbeiterin** bzw. Kabine."
+     "text": "**Datum**, **Uhrzeit**, **Filiale**, **Status** und die zugeordnete **Mitarbeiterin** bzw. Raum."
     },
     {
      "n": 2,
@@ -160,7 +160,7 @@
     }
    ],
    "hint": {
-    "text": "**Sparsam einsetzen:** Extrazeit blockiert bei **jedem** Termin Kabine und Zeit. Für einen einmaligen Sonderfall lieber den konkreten Termin verlängern, statt die Kundin dauerhaft umzustellen."
+    "text": "**Sparsam einsetzen:** Extrazeit blockiert bei **jedem** Termin Raum und Zeit. Für einen einmaligen Sonderfall lieber den konkreten Termin verlängern, statt die Kundin dauerhaft umzustellen."
    }
   },
   {

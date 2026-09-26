@@ -259,7 +259,7 @@ Zwei Fallstricke:
    und in Phorest „Sheyla Dzananovic". Deshalb wird der erste Vorname mit *jedem*
    Nachnamen-Bestandteil kombiniert. Mehrdeutige Treffer werden nicht automatisch
    zugeordnet, sondern gemeldet.
-2. **Phorest führt Spalten ohne Person dahinter:** Kabinen (`H 1`, `BI 2`),
+2. **Phorest führt Spalten ohne Person dahinter:** Räume (`H 1`, `BI 2`),
    Sammelspalten (`OS Nur für Beratungen`), No-Show-Spalten
    (`… Absage weniger als 24 std/Nicht gekommen`) und Gerätezugänge
    (`Zugang Büro …`, `Ü App …`). Sie dürfen nie einer Person zugeordnet werden.
@@ -273,7 +273,7 @@ Auswertungen.
 Für jede Leistungsauswertung gilt `state = 'PAID'` **plus**
 `activation_state = 'ACTIVE'` **plus** `deleted = 0`. Wer ungefiltert über
 `stats_historic_appointments` aggregiert, zählt rund ein Viertel nie
-stattgefundene Buchungen mit: Kabinen-Spalten stehen zu 100 % auf `BOOKED` und
+stattgefundene Buchungen mit: Raum-Spalten stehen zu 100 % auf `BOOKED` und
 kein einziges Mal auf `PAID` — dasselbe Statusprofil wie die No-Show-Spalte. Auf
 `PAID`-Basis liegt die Personen-Zuordnung bei 99,9 %.
 

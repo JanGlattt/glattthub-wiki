@@ -920,14 +920,14 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   (`directTreatmentAvailable`), und wird im Beenden-Ablauf nach der Kasse als Frage angeboten
   (`showDirectOffer`, wie im Web vor der Folgetermin-Frage; als `.alert`, weil das iPad-Popover
   eines `confirmationDialog` die Abbrechen-Rolle weglässt und nichts abdunkelt). **Seit 21.09.2026
-  nativ:** `DirectTreatmentSheet`/`DirectTreatmentModel` (gleiche Kabine, Paket-Services zum
+  nativ:** `DirectTreatmentSheet`/`DirectTreatmentModel` (gleicher Raum, Paket-Services zum
   An-/Abwählen, „Kauf nachholen", „Neu laden") und `FollowUpBookingSheet`/`FollowUpBookingModel`
   (Terminabstand-Schnellwahl + freie Wochen, Institut, Datum, Services, Slot-Pillen je Tag mit
   „ohne Lücke" grün, Buchen mit Rückfrage, „Überspringen") in `BookingSheets.swift`. Beide sprechen
   JSON-Endpunkte des `Hub\BookingApiController`: `GET/POST hub/appointment/{b}/{id}/direct-treatment
   [/book|/retry-purchase]` (Recht `view_appointment_detail`) und `hub/booking/api/{services|
   suggestions|book}` (Recht `view_booking`). Die Logik von „Direkt behandeln" liegt seitdem in
-  `App\Services\Booking\DirectTreatmentService` (Kabine/Startzeit aus dem Beratungstermin,
+  `App\Services\Booking\DirectTreatmentService` (Raum/Startzeit aus dem Beratungstermin,
   Optionen, Erklärung fehlender Services, Kauf nachholen, Buchen mit Desinfektion) — das Livewire-
   Modal `DirectTreatmentModal` nutzt denselben Service. **Termin verlegen (seit 22.09.2026 nativ):**
   dasselbe Blatt im Modus `FollowUpBookingModel.Mode.reschedule(appointmentId:currentLabel:)` —
