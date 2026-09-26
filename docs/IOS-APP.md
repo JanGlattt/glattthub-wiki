@@ -1552,7 +1552,7 @@ Apps-&-Bücher-Token in Miradore.
 | K (25.09.) | Native Verträge (Mehr-Seite, Liste + Vertragsseite mit vier Reitern, einfache Schreibaktionen nativ, GoCardless als Web-Blatt, iPad-Split) — erster Nachzug nach der Regel „jede neue Seite auch nativ" | ✅ gebaut, Version 1.2.0 (20) in TestFlight; Abnahme auf dem Gerät offen |
 | L (26.09.) | Native Gutscheine (Tresen-Suche mit Scanner, Gutscheinkarte mit drei Korrekturen, neuer Gutschein, Guthaben-Karte der Kundin) — Nachzug 2 | ✅ gebaut, Version 1.2.0 (23) in TestFlight; Abnahme auf dem Gerät offen |
 | M (26.09.) | Native Laser-Seite (Raum-Sicht des Instituts, Werkbank „Alle“, Geräteakte mit acht Reitern, Teile-Akte, Reparatur/STK/Behörde nativ mit Dokument-Upload) — Nachzug 3, Entwurf 2 + 1 + 3 | ✅ gebaut, Version 1.2.0 (25) in TestFlight; Abnahme auf dem Gerät offen |
-| N (26.09.) | Native Reisekosten (Anspruchstage, Reisekarte mit Live-Summe, Belege mit Kamera/Scanner, Freigabe mit Berichtigen) — Nachzug 5, Entwurf C + Belege aus B; davor Stufe 1 der Web-Überarbeitung | ✅ gebaut, Version 1.2.0 (26); TestFlight-Upload und Abnahme auf dem Gerät offen |
+| N (26.09.) | Native Reisekosten (Anspruchstage, Reisekarte mit Live-Summe, Belege mit Kamera/Scanner, Freigabe mit Berichtigen) — Nachzug 5, Entwurf C + Belege aus B; davor Stufe 1 der Web-Überarbeitung | ✅ in TestFlight als 1.2.1 (27); Abnahme auf dem Gerät offen |
 | I (22.09.) | iPad: native Seitenleiste (quer fest, hoch Symbol-Spalte + Überlagerung) ersetzt das Web-Menü; native Startseite als Raster | ✅ auf dem iPad abgenommen (Jan, 22.09.; Standort/Mitteilungen als Popover, Spotlight-Suche, Dunkelmodus in Slate) |
 | 3 | Härtung Weg B (App-Host ohne IAP, Google Sign-In nativ, App Attest) | offen |
 | 4 | Native Prozesse nach Pilot-Entscheidung (Tageserfassung 4–6 Wochen, Laser-Wartung 2–3 Wochen) | offen |
@@ -1616,6 +1616,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 26.09.2026 | 1.2.1 (27) | Reisekosten Stufe 2/3 in der App: Status „Ausgezahlt“, Belege per QuickLook (`/travel-expenses/receipts/{id}/file`), Adresssuche und Strecke über den Hub mit gespeicherten Koordinaten |
 | 26.09.2026 | 1.2.0 (26) | Native Reisekosten (Nachzug 5): Anspruchstage, Reisekarte (Live-Summe, fünf Abschnitte, Streckenberechnung, Belege mit Kamera/Scanner/Datei), Einreichen/Zurückziehen/Löschen, Freigabe mit Berichtigen und Entscheidung, iPad-Split; Hub: Stufe 1 der Reisekosten-Überarbeitung (`/travel-expenses/me`, Eigentum, Statusübergänge, Freigabe-Route), `upload(fields:)` |
 | 26.09.2026 | 1.2.0 (24) | Native App-Geräte (Nachzug 4): Liste mit Chips/Kennzahlen, Code ausstellen in drei Schritten mit QR (CoreImage) und Teilen-Blatt, Code zurückziehen, Steckbrief mit Widerruf, iPad-Split; keine Hub-Änderung, Feldvertrag `AppDevicesNativeTest` |
 | 26.09.2026 | 1.2.0 (23) | Native Gutscheine: Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin-Korrektur, neuer Gutschein, Guthaben-Karte in der Kundenübersicht; Hub `GET /hub/vouchers/search`, `/hub/vouchers/{id}/data`, `vouchers` in `/api/app/clients/{id}` |

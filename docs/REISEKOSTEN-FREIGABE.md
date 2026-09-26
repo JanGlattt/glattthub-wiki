@@ -138,7 +138,7 @@ Browser (Alpine.js: reisekostenFreigabe)
 ### Auszahlung
 
 Seit Stufe 3 (26.09.2026) steht oben auf der Freigabe-Seite die Karte **Auszahlung**
-(`TravelPayoutService`, Recht `approve_travel_expenses`):
+(`TravelPayoutService`, eigenes Recht `pay_travel_expenses` „Reisekosten auszahlen“ — die Migration gibt es allen Rollen mit Freigaberecht; die Karte fehlt ohne Recht):
 
 | Endpunkt | Zweck |
 |---|---|
