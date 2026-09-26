@@ -209,6 +209,31 @@ Challenge des Hubs. Der Schlüssel verlässt das Gerät nie.
 (neuer Code → neuer Schlüssel). Im Simulator ist App Attest nicht verfügbar; das Gerät
 bleibt dann unattestiert freigeschaltet.
 
+**Die Attestierung darf nie blockieren und nie in die Sackgasse führen (seit 25.09.2026,
+App 1.2.0 Build 21).** Beim App-Review am 24.09.2026 löste das Prüfgerät den Code ein
+(`201`), danach kam vom Gerät nie wieder eine Anfrage — die App stand in
+`DCAppAttestService` (`generateKey`/`attestKey` haben kein Zeitlimit) und der Prüfer sah
+nie die PIN-Seite. Wäre sie weitergelaufen, hätte der App-Host das unattestierte Gerät mit
+`attestation_required` abgewiesen, und die einzige Antwort darauf war ein **neuer Code**.
+Zwei Änderungen:
+
+1. **Zeitlimit:** `AppAttest.attest(challenge:timeout:)` (`withTimeout`, 15 s, in
+   `App/Timeout.swift`) — Apples Dienst reagiert nicht auf Abbruch, deshalb kehrt der Aufruf
+   über eine einmalig auslösbare Fortsetzung zurück, nicht über eine Task-Gruppe (die wartet
+   auf alle Kinder). Nach Ablauf geht es unattestiert weiter.
+2. **Nachholen statt neuer Code:** `GET /api/app/challenge` liefert einem **unattestierten**
+   Gerät zusätzlich eine `attest_challenge` (derselbe Cache-Schlüssel wie nach dem
+   Einlösen). Antwortet der Hub bei der Anmeldung mit `attestation_required`, ruft
+   `AppContainer.attempt` → `attestIfNeeded()` die Challenge, attestiert und wiederholt die
+   Anmeldung genau einmal; die Freischaltung bleibt dabei bestehen. Ein bereits
+   attestiertes Gerät bekommt **keine** neue Challenge — sonst könnte ein kopiertes
+   Geheimnis ein fremdes Gerät nachträglich binden; für den verlorenen Schlüssel
+   (`assertion_required`) bleibt es beim neuen Code.
+
+Der Text zu `attestation_required` („noch nicht beglaubigt … Anmeldung erneut versuchen")
+gilt für beide App-Generationen: Builds vor 21 verwerfen die Freischaltung und fragen nach
+einem Code.
+
 **CBOR:** eigener Mini-Decoder `App\Support\Cbor` (Ganzzahlen, Byte-/Textstrings,
 Arrays, Maps; Floats/Tags/unbestimmte Längen werden abgewiesen) — kein Paket nötig.
 
@@ -248,3 +273,9 @@ Cookie), `ManagedConfigTests::enrollmentKey`.
 - **23.09.2026, spät** — Nach dem ersten Gerätetest: IAP zählt für die App nicht mehr als
   Nachweis; Vollbild „Gerät freischalten" vor der PIN (Variante A von drei Entwürfen, Jan);
   Seitenskript über `@assets` (Konsolenfehler nach Livewire-Navigation).
+- **25.09.2026** — App-Review-Ablehnung 1.1.0 (15) ausgewertet (Prod-Logs, Prod-DB): drei
+  Prüfgeräte gegen einen Einmal-Code, und das Gerät, das ihn einlöste, blieb in der
+  Attestierung hängen. Folgen: Zeitlimit für App Attest, Attestierung nachholbar über
+  `attest_challenge` in `GET /api/app/challenge`, Prüf-Code als Mehrfach-Code (Art `mdm`,
+  Bezeichnung „Apple App Review", `app:review-account --issue-code`, `--revoke` zieht Code
+  und Geräte zurück). Details: Wissen `app-review-ablehnung-einmal-code-attest-haenger`.
