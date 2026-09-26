@@ -550,8 +550,9 @@ auf `/hub/staff/reisekosten/freigabe` (Migration hängt bestehende Regeln um).
 ### Nächtlicher Abgleich der Abwesenheitsarten
 
 `askdante:sync-absence-types --months=1` läuft täglich um 04:45 (Scheduler, Cloud Scheduler →
-`/api/cron/sync-absence-types`; der Cloud-Scheduler-Job wurde am 26.09.2026 **nicht** angelegt —
-`cron:audit` meldet ihn, bis er mit `--max-retry-attempts=3` existiert). `--months=N` scannt die
+`/api/cron/sync-absence-types`; Jobs `sync-absence-types-staging` aktiv und `sync-absence-types`
+für Prod seit 26.09.2026 angelegt, Prod **pausiert** bis zum Merge nach main, beide mit drei
+Wiederholungen). `--months=N` scannt die
 letzten N Monate plus zwei voraus statt ganzer Jahre (80 Personen × 36 Monate wären zu viel für
 die Nacht). Neue Arten kommen **ohne** Reisekosten-Flag an; das setzt das Büro im Admin
 (Stammdaten → Abwesenheiten). Test `TravelExpenseAbsenceTypeSyncTest`.
