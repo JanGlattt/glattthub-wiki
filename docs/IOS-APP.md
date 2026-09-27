@@ -1311,7 +1311,8 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Zukünftige/Vergangene Beratungsgespräche, Stornierte und gelöschte Termine, Terminstatistik | nativ | Berichtsseiten „Wie im Hub“, alle 21 Karten nativ (seit 27.09.2026) |
 | Alle 11 weiteren Berichtsseiten (Mitarbeiterperformance bis Office-Teammeeting) | nativ | Berichtsseiten „Wie im Hub“, jede Registry-Karte nativ (seit 27.09.2026) |
 | Eigene Dashboards | nativ | Kacheln, KPI-Zeile, Zeitraum wie im Web (seit 27.09.2026); Anlegen im eingebetteten Assistenten, Bearbeiten/Teilen in der Hub-Fassung |
-| Formulare, Bildschirme, Services, Unternehmensverträge, Report-Mails, Audit, Einstellungen, Conversion-Upload, Bonus-Verwaltung | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
+| Formulare, Bildschirme, Services, Unternehmensverträge, Report-Mails, Audit, Conversion-Upload, Bonus-Verwaltung | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
+| Einstellungen | nativ | Eine Seite (seit 27.09.2026): Darstellung, Diese App, Beratungs-Cache, API-Zugänge; iPad Abschnitte links |
 
 ### Native Verträge (Mehr-Seite, seit 25.09.2026 — Nachzug 1)
 
@@ -1695,6 +1696,40 @@ gehen über ⋯ in die Hub-Fassung, ein neues Dashboard entsteht wie bisher übe
   bei neuen Spalten neu aufgebaut.
 - **Nachweis:** `AppointmentReportsUITests.testCustomDashboardPage` (lokales „App-Prüfdashboard“ des
   Testnutzers, Zeitraumwechsel, keine Web-Karte), PHP `AppReportsTest::dashboard_page_lists_visible_tiles_in_order_and_width`.
+
+### Native Einstellungen (Mehr-Seite, seit 27.09.2026)
+
+**Für Endanwender:** „Einstellungen“ ist in App und Hub eine Seite mit Abschnitten. **Darstellung**:
+Farbschema Hell/Dunkel/System (gilt für dieses Gerät — in der App für native und Web-Seiten zugleich) und
+das Standort-Hintergrundbild (im Profil, auf allen Geräten). In der App folgt **Diese App** (Face ID,
+Mitteilungen, Gerätefreischaltung, Umgebung, Hilfe, Abmelden). Wer das Recht hat, sieht den
+**Beratungs-Cache** (Status, „Jetzt aktualisieren“ im Hintergrund, Leeren) und die **API-Zugänge**
+(Liste inkl. widerrufener, Bearbeiten, Rate-Limit, Anlegen mit einmalig angezeigtem Schlüssel).
+„Phorest API“ und „Webhooks“ sind entfallen.
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 27.09.2026):** Entwurf 1 „Eine Seite“ (verworfen: Übersicht + Unterseiten,
+  Status-Kacheln). Farbschema bleibt je Gerät; Rate-Limit-Standard 180/Minute, je Zugang wirksam.
+- **Web:** `resources/views/hub/settings.blade.php` + `partials/{appearance,cache,api}`,
+  `public/js/settings-page.js`, CSS-Block „EINSTELLUNGEN“ in `theme_glattt.css`. Alte Routen
+  `hub.settings.general|cache|api` (GET) leiten auf `#darstellung|#cache|#api` um.
+- **Endpunkte (Web und App):** `GET /hub/settings/data` (Hintergrundbild + `can.edit|cache|api`),
+  `POST /hub/settings/general`, `/hub/settings/cache/status|start|clear|clear-all|reset-status`,
+  `GET /hub/settings/api/data`, `POST|PUT|DELETE /hub/settings/api[/{id}]`.
+- **Cache im Hintergrund:** `start` legt `consultation_cache_meta.status = queued` an und stellt
+  `stats:cache-consultations` per `Artisan::queue` ein (202); `queued` zählt als laufend, nach 10 Minuten
+  ohne Start wird daraus ein verständlicher Fehler. Vorher blockierte der Aufruf 60–90 s.
+- **App:** `Settings/HubSettingsView.swift` (iPhone eine `Form`, iPad Abschnitte links),
+  `HubSettingsModel.swift`; die App-Abschnitte stecken seit 27.09.2026 in `AppSettingsSections`
+  (`Screens/SettingsSheet.swift`) und werden vom Blatt und von der Seite genutzt. Farbschema:
+  `AppTheme` setzt `overrideUserInterfaceStyle` aller Fenster und schickt `glattt:sync-theme` an alle
+  WebViews; ein Wechsel per Mond-Knopf im Web kommt über `themeChanged` zurück.
+- **Fallstrick:** `.sheet`, `.confirmationDialog` und `.task` an einem `Section` innerhalb einer `Form`
+  verteilt SwiftUI auf die Zeilen — das Blatt „Neuer Zugang“ öffnete nie. Solche Modifier gehören an die
+  `Form` (`HubSettingsModifiers`).
+- **Nachweis:** PHP `SettingsPageTest` (Abschnitte je Recht, Umleitungen, Datenendpunkt, Hintergrund-Lauf,
+  widerrufene Zugänge, Rate-Limit 180/je Zugang), `SettingsUITests`, `HubSettingsTests`.
 
 ### Native Seite „Institute" (Mehr-Seite, seit 27.09.2026)
 

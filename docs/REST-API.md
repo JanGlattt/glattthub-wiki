@@ -44,7 +44,8 @@ Die API nutzt die bestehende Datenbankverbindung und benötigt keine externen Se
 | `app/Http/Resources/Api/V1/ClientStatisticResource.php` | JSON-Resource für Kundenstatistiken |
 | `app/Http/Resources/Api/V1/BookingTrackingResource.php` | JSON-Resource für Booking-Tracking |
 | `app/Models/BookingTracking.php` | Eloquent-Model für Booking-Tracking-Daten |
-| `resources/views/hub/settings/api.blade.php` | Verwaltungs-UI für API-Zugänge |
+| `resources/views/hub/settings/partials/api.blade.php` + `public/js/settings-page.js` | Abschnitt „API-Zugänge“ der Einstellungsseite (seit 27.09.2026 eine Seite) |
+| `app/Http/Controllers/ApiClientController.php` | `data()` (Liste inkl. widerrufener), `store`, `update`, `destroy` — auch von der App genutzt |
 | `routes/api.php` | API-Routen (`/api/v1/`) |
 | `database/migrations/2026_03_30_100000_create_api_clients_table.php` | Datenbank-Migration |
 | `tests/Unit/Models/ApiClientTest.php` | Unit-Tests für ApiClient-Model |
@@ -135,7 +136,8 @@ Interaktive Oberfläche mit Server-Auswahl (Staging / Produktion / Lokal), Authe
 
 ### Zugriff
 
-*Hub → Einstellungen → API-Zugänge*
+*Hub → Einstellungen → Abschnitt „API-Zugänge“* (`/hub/settings#api`; die alte Adresse `/hub/settings/api`
+leitet dorthin um). In der App: Mehr → Einstellungen → API-Zugänge (nativ, dieselben Endpunkte).
 
 Berechtigung: `manage_api_clients` (standardmäßig für Admins)
 
@@ -144,7 +146,11 @@ Berechtigung: `manage_api_clients` (standardmäßig für Admins)
 - **Neuen API-Zugang erstellen**: Name, Beschreibung, Scopes auswählen → Token wird einmalig angezeigt
 - **Übersicht**: Alle API-Zugänge mit Status, Ersteller, letzte Nutzung, Anfrage-Anzahl
 - **Bearbeiten**: Name, Beschreibung, Scopes ändern, Zugang aktivieren/deaktivieren
-- **Widerrufen**: Zugang permanent deaktivieren (Soft-Delete)
+- **Widerrufen**: Zugang permanent deaktivieren (Soft-Delete). Widerrufene bleiben seit 27.09.2026 grau in der Liste
+  (`GET /hub/settings/api/data` liest `withTrashed()`), vorher verschwanden sie spurlos.
+- **Rate-Limit je Zugang**: Standard **180 Anfragen/Minute** (`ApiClient::DEFAULT_RATE_LIMIT`, Entscheidung Jan
+  27.09.2026), je Zugang 10–1000 einstellbar. Bis 27.09.2026 standen drei Zahlen nebeneinander (Hinweis 60,
+  Formular 180, wirksam 360 für alle) und das Feld am Zugang wurde ignoriert.
 
 ## 🏗️ Architektur
 
@@ -158,7 +164,7 @@ ForceJsonResponse → AuthenticateApiClient → ThrottleRequests → CheckApiSco
 
 1. **ForceJsonResponse**: Setzt `Accept: application/json` und `Cache-Control: no-store`
 2. **AuthenticateApiClient**: Validiert Bearer-Token, setzt `api_client` Attribut auf Request
-3. **ThrottleRequests**: Rate Limiting (60/min) per API-Client-ID
+3. **ThrottleRequests** (`api-v1`): `rate_limit_per_minute` des Zugangs, sonst 180/min — je API-Client-ID
 4. **CheckApiScope**: Prüft ob der Client den erforderlichen Scope besitzt
 
 ### Datenbank-Schema
