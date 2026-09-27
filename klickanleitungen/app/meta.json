@@ -654,9 +654,9 @@
    "x": 0,
    "y": 0,
    "width": 780,
-   "height": 1260
+   "height": 1450
   },
-  "ratio": 1.6153846153846154,
+  "ratio": 1.858974358974359,
   "marks": []
  },
  "reports-loading-light": {
@@ -664,9 +664,9 @@
    "x": 0,
    "y": 0,
    "width": 780,
-   "height": 1040
+   "height": 1150
   },
-  "ratio": 1.3333333333333333,
+  "ratio": 1.4743589743589745,
   "marks": []
  },
  "reports-ipad-light": {
@@ -674,9 +674,9 @@
    "x": 0,
    "y": 0,
    "width": 2048,
-   "height": 1440
+   "height": 1500
   },
-  "ratio": 0.703125,
+  "ratio": 0.732421875,
   "marks": []
  }
 }

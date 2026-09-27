@@ -1550,6 +1550,13 @@ Dashboard mit dem Assistenten des Hubs.
   Berichtsseiten und Dashboards als Web-Detailseite im Tab öffnen. **+** öffnet
   `/hub/reports?shell=native` als `AppointmentWebSheet` — die Web-Übersicht rendert dann nur den
   Dashboard-Assistenten und öffnet ihn sofort (`nativeShell` im `ReportController`).
+- **Nachbesserung (Build 46, TestFlight-Befunde 92–95):** Diagramme immer mit Achse und Werten —
+  die Verkaufsstatistik bringt über `values` `body_zones` mit (KPZ je Monat nach Standort, dieselben
+  Daten wie Cockpit/Widget, `ZonesChart`), alle anderen Verläufe als Monatsbalken
+  (`ReportHistoryChart`). Kennzahlen, die dem Zeitraum nicht folgen, tragen `period`
+  („Bestand", „lfd. Monat"; `AppReportsService::PERIOD_BY_SOURCE`/`PERIOD_BY_KPI`, Mitarbeiterperformance
+  rechnet ganze Monate), die Tendenz nennt ihren Vergleich („ggü. VM"). Neue KPI-Quelle
+  `termine-cancelled` (Stornierte Termine, Storno-Quote, Gelöschte Termine — laufender Monat).
 - **Nachweis:** `ReportsSnapshotTests` (Übersicht, Nachladen, iPad — hell/dunkel; Suche über
   Analysen, `null`-Felder), `ReportsUITests` (Tab, Zeitraum, Suche, Bericht öffnen, zurück), PHP
   `AppReportsTest`, `ReportRegistryTest`.
@@ -1787,6 +1794,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 27.09.2026 | 1.2.1 (46) | Berichte-Übersicht: Diagramme mit Achse und Werten, Verkaufsstatistik mit KPZ nach Standort, Zeitraum-Marken („Bestand“, „lfd. Monat“), Vergleich an der Tendenz, Storno-Kennzahlen, Zukünftige BG mit Heute/28 Tage/Monatsende |
 | 27.09.2026 | 1.2.1 (45) | Personalakte: Überblick als Kontakt (Nummer wählbar und formatiert, E-Mail, Adresse mit Karte) und Anstellung (Vertrag + Befristung in einer Zeile) statt Anstellung/Stammdaten; Hub: Teamliste-Import ergänzt die führende Null von Telefonnummern |
 | 27.09.2026 | 1.2.1 (43) | Native Berichte-Übersicht (Nachzug 6, Entwurf 2): Standort, Zeitraum, Suche, Dashboards mit Kennzahlen, Berichte nach Bereich mit Leitkennzahlen und Verlauf, iPad-Raster, Assistent als Blatt; Hub: `ReportRegistry` `area`/`kpis`, `GET /api/app/reports` + `/values`, `/hub/reports?shell=native` |
 | 27.09.2026 | 1.2.1 (41) | Checklisten Eintritt/Austritt ausgeblendet (Karte nur, wenn der Hub sie ausliefert) |

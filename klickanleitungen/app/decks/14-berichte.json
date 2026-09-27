@@ -7,7 +7,7 @@
  "audience": "leitung",
  "footerArea": "App",
  "stand": "27.09.2026",
- "version": "1.0",
+ "version": "1.1",
  "nr": 14,
  "title": [
   "Berichte",
@@ -30,7 +30,7 @@
    "left": {
     "shot": "reports-overview-light"
    },
-   "leftCaption": "Grüne Pfeile zeigen eine gute, rote eine schlechte Entwicklung — bei Forderungen oder Rücklastschriften ist **weniger** gut.",
+   "leftCaption": "Grüne Pfeile zeigen eine gute, rote eine schlechte Entwicklung, „ggü. VM“ heißt gegenüber dem Vormonat. Bei Forderungen oder Rücklastschriften ist **weniger** gut.",
    "steps": [
     {
      "n": 1,
@@ -40,7 +40,7 @@
     {
      "n": 2,
      "title": "Zeitraum",
-     "text": "**Woche**, **Monat** oder **Jahr** — die Kennzahlen aller Karten wechseln mit. Die Linie unter der ersten Kennzahl zeigt immer die letzten sechs Monate."
+     "text": "**Woche**, **Monat** oder **Jahr** — die Kennzahlen wechseln mit. Was dem Zeitraum nicht folgt, trägt eine Marke: **Bestand** oder **lfd. Monat**. Das Diagramm darunter zeigt die letzten sechs Monate."
     },
     {
      "n": 3,
