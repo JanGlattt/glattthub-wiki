@@ -7,7 +7,7 @@
   "audience": "institut",
   "footerArea": "App",
   "stand": "26.09.2026",
-  "version": "1.1",
+  "version": "1.2",
   "nr": 3,
   "title": [
     "Termine und die",
@@ -199,7 +199,7 @@
       "right": {
         "shot": "booking-reschedule"
       },
-      "rightCaption": "**Termin verlegen:** oben der bisherige Termin (wird storniert), darunter der neue — ab heute, 1, 2 oder 4 Wochen.",
+      "rightCaption": "**Termin verlegen:** oben der bisherige Termin (wird storniert), darunter der neue — ab heute, 1, 2 oder 4 Wochen. Vorgewählt sind die Leistungen des Termins.",
       "steps": [
         {
           "n": 1,
@@ -214,7 +214,7 @@
         {
           "n": 3,
           "title": "Buchen",
-          "text": "Vorschlag antippen, **„Buchen“** bzw. **„Verlegen“**. Die App bestätigt mit Datum und Uhrzeit und öffnet den neuen Termin."
+          "text": "Vorschlag antippen, **„Buchen“** bzw. **„Verlegen“**. Passt keiner, zeigt **„Andere Uhrzeit …“** unter dem Tag alle freien Zeiten, nach Tageszeit sortiert. Die App bestätigt mit Datum und Uhrzeit und öffnet den neuen Termin."
         },
         {
           "n": 4,

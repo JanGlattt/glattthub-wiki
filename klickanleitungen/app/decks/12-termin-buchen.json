@@ -7,7 +7,7 @@
  "audience": "institut",
  "footerArea": "App",
  "stand": "26.09.2026",
- "version": "1.0",
+ "version": "1.1",
  "nr": 12,
  "title": [
   "Termin buchen",
@@ -87,8 +87,42 @@
     },
     {
      "n": 4,
-     "title": "Nichts dabei?",
-     "text": "Einen anderen Zeitraum antippen oder **Datum …** wählen. Findet die App gar nichts, steht der Grund in einer gelben Karte."
+     "title": "Passt keine Zeit?",
+     "text": "**Andere Uhrzeit …** unter dem Tag zeigt alle freien Zeiten dieses Tages, nach Vormittag, Mittag, Nachmittag und Abend sortiert. Anderer Tag: Zeitraum oder **Datum …** oben ändern."
+    }
+   ]
+  },
+  {
+   "h1": "Andere Uhrzeit",
+   "sub": "Die Vorschläge zeigen je Tag die Zeiten, die am besten in den Plan passen. Alle übrigen freien Zeiten des Tages holt „Andere Uhrzeit …“.",
+   "card": {
+    "title": "Ganzer Tag",
+    "text": "Jede freie Uhrzeit eines Tages"
+   },
+   "left": {
+    "shot": "booking-day-slots-light"
+   },
+   "leftCaption": "Nach Tageszeit sortiert, darunter der Raum. **Grün** schließt direkt an einen Termin an.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Öffnen",
+     "text": "Unter einem Tag **Andere Uhrzeit …** antippen."
+    },
+    {
+     "n": 2,
+     "title": "Wählen",
+     "text": "Die gewünschte Uhrzeit antippen. Das Blatt schließt sich und fragt wie bei den Vorschlägen nach."
+    },
+    {
+     "n": 3,
+     "title": "Buchen",
+     "text": "**Termin buchen** trägt den Termin in Phorest ein, beim Verlegen **Termin verlegen**."
+    },
+    {
+     "n": 4,
+     "title": "Warum nicht alles sofort?",
+     "text": "Die Vorschläge bevorzugen Zeiten ohne Lücke im Raum. Andere Zeiten gehen genauso, lassen aber eher Leerlauf entstehen."
     }
    ]
   },

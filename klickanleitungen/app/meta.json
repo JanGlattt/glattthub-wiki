@@ -554,9 +554,9 @@
    "x": 0,
    "y": 0,
    "width": 780,
-   "height": 1124
+   "height": 1556
   },
-  "ratio": 1.441025641025641,
+  "ratio": 1.994871794871795,
   "marks": []
  },
  "booking-finder-booked-light": {
@@ -587,6 +587,16 @@
    "height": 1553
   },
   "ratio": 0.75830078125,
+  "marks": []
+ },
+ "booking-day-slots-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 871
+  },
+  "ratio": 1.1166666666666667,
   "marks": []
  }
 }

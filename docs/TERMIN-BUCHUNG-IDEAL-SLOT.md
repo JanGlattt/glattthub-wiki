@@ -77,6 +77,23 @@ Institut und Leistungen sind darin fest vorgegeben, auf Wunsch nur lückenlose S
 
 > **Wichtig – Stornierung per appointmentId:** Bestehende Phorest-Termine besitzen **keine abrufbare `bookingId`** (diese wird nur beim Erstellen einer Buchung einmalig zurückgegeben und ist später nirgends abrufbar). Das Verlegen storniert daher jeden Service-Termin einzeln über seine `appointmentId` (`appointment/cancel?appointment_id=…`) und legt anschließend eine neue Buchung an. Ein im Profil gruppierter Termin kann aus mehreren `appointmentIds` bestehen (mehrere aufeinanderfolgende Services) – es werden alle storniert.
 
+### „Andere Uhrzeit …" und Untergrenze „jetzt" (seit 26.09.2026)
+
+- **Andere Uhrzeit:** Die Vorschläge zeigen je Tag höchstens `booking.max_per_day` Zeiten und
+  bevorzugen Anschlüsse; auf freien Tagen kam deshalb nur der Vormittag plus Tagesende. Unter jedem
+  Tag öffnet „Andere Uhrzeit …" **alle** freien Startzeiten: `BookingService::freeSlotsForDay()` →
+  `SlotFinderService::allSlotsForDay()` → `RoomSchedule::freeStarts()` (Raster
+  `booking.free_start_step_minutes` = 15 plus Anschlusszeiten, dieselben Lückenregeln, je Uhrzeit
+  ein Raum — lückenlos vor weniger ausgelastet). Endpunkt `POST hub/booking/api/day-slots`
+  (`view_booking`). Web über den Trait `App\Livewire\Hub\Booking\Concerns\HasOtherTimes` und die
+  Partials `livewire/hub/booking/partials/other-times-{button,panel}` in Buchungsseite,
+  Folgetermin- und Verlegen-Modal; die gewählte Zeit wird an `$suggestions` angehängt und über das
+  vorhandene `book($index)` gebucht. Der Selbstbuchungs-Link bekommt das bewusst nicht (dort nur
+  lückenlose Zeiten).
+- **Untergrenze:** Vorschläge und freie Zeiten beginnen frühestens jetzt + `booking.min_lead_minutes`
+  (15 Min); ein Startdatum vor heute rückt auf heute. Tests mit festen Beispieldaten halten deshalb
+  die Uhr fest (`Carbon::setTestNow`).
+
 ### Self-Service-Link: Fachregeln
 
 Zusätzlich zur Buchung durch Mitarbeiter kann ein **Self-Service-Link** an die Kundin geschickt werden, über den sie sich **ohne Login** selbst einen Termin aussucht.

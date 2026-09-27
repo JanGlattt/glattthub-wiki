@@ -1506,6 +1506,19 @@ wie bisher in der Terminansicht.
   der Folgetermin (ältere Builds). `GET /api/app/navigation` liefert `user.can_book` — das Plus und
   der Kunden-Knopf erscheinen nur damit. Die Institutsauswahl nutzt `navigation.branches`
   (Reihenfolge, Kürzel, Farbe aus dem Institut-Modul; ausgeblendete nur, wenn gerade gewählt).
+- **„Andere Uhrzeit …" (Befund 84, 26.09.2026):** Die Vorschläge zeigen je Tag höchstens
+  `booking.max_per_day` Zeiten und bevorzugen Anschlüsse — auf freien Tagen fehlte der Nachmittag.
+  Unter jedem Tag öffnet `DaySlotsSheet` alle freien Startzeiten (`POST booking/api/day-slots`,
+  `BookingService::freeSlotsForDay`: Raster `booking.free_start_step_minutes` plus Anschlusszeiten,
+  dieselben Lückenregeln, je Uhrzeit ein Raum), gruppiert nach Vormittag/Mittag/Nachmittag/Abend.
+  Gilt auch im Folgetermin- und Verlegen-Blatt. Die Rückfrage kommt erst nach dem Schließen des
+  Blatts (`onDismiss`), sonst überlagern sich Blatt und Dialog. Web: Trait `HasOtherTimes` in
+  `AppointmentBookingForm`, `FollowUpBookingModal`, `RescheduleSlotModal` — die gewählte Zeit wird an
+  `$suggestions` angehängt und über `book($index)` gebucht, der Buchungsweg bleibt je einmal.
+- **Verlegen (Befund 82):** Das Blatt wählt die Leistungen des Termins vor (plus Extrazeit), nicht
+  mehr das ganze Paket (`Mode.reschedule(serviceIds:)`); liegt keine davon im Paket, bleibt es bei allen.
+- **Nie in der Vergangenheit (Befund 83):** Die Suche beginnt frühestens jetzt + `booking.min_lead_minutes`
+  (15), ein Startdatum vor heute rückt auf heute — `SlotFinderService(notBefore:)`.
 - **Suche:** Vorgewählt sind wie im Web nur die Zusatzzeiten (`preselected`, Extrazeit); gesucht
   wird erst, wenn eine echte Behandlung dabei ist (`hasTreatment`). Leistungen tippen entprellt
   450 ms, Zeitraum/Datum sofort; ein Generationszähler verwirft veraltete Antworten, die alten
@@ -1684,7 +1697,8 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
-| 26.09.2026 | 1.2.1 (nächster Build) | Native Seite „Termin buchen" (Slot-Finder): Detailseite im Termine-Tab, Plus in der Terminliste, Knopf in der Kundenübersicht, ⌘N, Web-Links nativ; iPad-Raster; Hub: `kind: new` an `booking/api/book`, `user.can_book`, `/hub/booking` als Detail-Präfix |
+| 26.09.2026 | 1.2.1 (38) | „Andere Uhrzeit …" je Tag (alle freien Startzeiten, `booking/api/day-slots`) in Termin buchen, Folgetermin und Verlegen — App und Web (Befund 84); Verlegen wählt die Leistungen des Termins vor und steht in voller Breite (Befund 82, Build 37); keine vergangenen Zeiten mehr (Befund 83, Hub); Standort-Pille mit eigenem Blatt (Befund 81, Build 36) |
+| 26.09.2026 | 1.2.1 (35) | Native Seite „Termin buchen" (Slot-Finder): Detailseite im Termine-Tab, Plus in der Terminliste, Knopf in der Kundenübersicht, ⌘N, Web-Links nativ; iPad-Raster; Hub: `kind: new` an `booking/api/book`, `user.can_book`, `/hub/booking` als Detail-Präfix |
 | 26.09.2026 | 1.2.1 (27) | Reisekosten Stufe 2/3 in der App: Status „Ausgezahlt“, Belege per QuickLook (`/travel-expenses/receipts/{id}/file`), Adresssuche und Strecke über den Hub mit gespeicherten Koordinaten |
 | 26.09.2026 | 1.2.0 (26) | Native Reisekosten (Nachzug 5): Anspruchstage, Reisekarte (Live-Summe, fünf Abschnitte, Streckenberechnung, Belege mit Kamera/Scanner/Datei), Einreichen/Zurückziehen/Löschen, Freigabe mit Berichtigen und Entscheidung, iPad-Split; Hub: Stufe 1 der Reisekosten-Überarbeitung (`/travel-expenses/me`, Eigentum, Statusübergänge, Freigabe-Route), `upload(fields:)` |
 | 26.09.2026 | 1.2.0 (24) | Native App-Geräte (Nachzug 4): Liste mit Chips/Kennzahlen, Code ausstellen in drei Schritten mit QR (CoreImage) und Teilen-Blatt, Code zurückziehen, Steckbrief mit Widerruf, iPad-Split; keine Hub-Änderung, Feldvertrag `AppDevicesNativeTest` |
