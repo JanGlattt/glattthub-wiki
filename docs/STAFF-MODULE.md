@@ -54,6 +54,24 @@ Admin-Backend. Der Austritt einer Person wird über die
 
 ## Für Entwickler
 
+### Seit 27.09.2026: Vergütung, Teamliste, App
+
+- **Reiter „Vergütung"** der Detailseite (Recht `manage_payroll`): Gehaltsverlauf, laufende Bezüge,
+  Dienstwagen, letzte Lohnmonate — Anpassung immer als neuer Eintrag ab Datum. Die Detailseite löst
+  dafür die Person im Abbild auf (`hr_employees.askdante_user_id` → `hrEmployeeId`); der Anker
+  `#verguetung` öffnet den Reiter direkt. Fachlich: [Lohnliste](LOHNLISTE.md).
+- **Startseite** `/hub/staff` hat drei Karten (Partial `hub.staff.partials.hub-card`, Klassen
+  `.staff-hub-*`, keine Inline-Styles mehr) — neu „Lohnmonat".
+- **Native App:** `/hub/staff`, `/hub/staff/overview` und `/hub/staff/payroll` öffnen die native
+  Personalseite (Entwurf 2 „Akte und Lohnmonat", siehe [IOS-APP](IOS-APP.md)). Sie liest das
+  askDANTE-Abbild über `GET /hub/staff/api/people[/{id}]` statt askDANTE live und legt Hub-Konten
+  über dieselben Endpunkte wie der Wizard an.
+- **Stammdaten aus der Teamliste** (`hr_employee_profiles`) ergänzen, was askDANTE nicht liefert —
+  DATEV-Personalnummer, Adresse, Vertragsart, Krankenkasse, Elternzeit. Import auf der Seite Lohnmonat.
+- Offen: Die askDANTE-Endpunkte der Web-Seiten (`/askdante/staff*`) hängen am Recht
+  `manage_own_travel_expenses` statt `view_staff` — bewusst nicht geändert, weil die Reisekosten
+  sie mitnutzen.
+
 ### Fachregeln der Übersicht und Detailseite
 
 - **Datenquelle askDANTE, kein Schreiben.** Alle Personendaten kommen aus der askDANTE REST

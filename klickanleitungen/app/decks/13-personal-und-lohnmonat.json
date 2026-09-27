@@ -1,0 +1,77 @@
+{
+ "out": "../pdf/App-13-Personal-und-Lohnmonat",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "App",
+ "of": 13,
+ "audience": "leitung",
+ "footerArea": "App",
+ "stand": "27.09.2026",
+ "version": "1.0",
+ "nr": 13,
+ "title": [
+  "Personal und Lohnmonat",
+  "in der App"
+ ],
+ "subtitle": "Klickanleitung für die glatttHub-App — Personen nachschlagen, Vergütung anpassen, Hub-Konten anlegen und den Lohnmonat mit Brief und TXT-Liste an die Steuerberatung übergeben",
+ "eyebrow": "App · Team",
+ "notes": [
+  "**Personal** findest du im Menü **Mehr** unter **Team** (iPhone) bzw. in der Seitenleiste (iPad). Die Vergütung und den Lohnmonat sehen nur Kolleginnen mit dem Recht **Lohnliste** — Geschäftsführung und Büro.",
+  "Steuerklasse, Sozialversicherung und Bankverbindung bleiben in DATEV bei der Steuerberatung. Der Hub liefert, was im Monat zu zahlen ist: Gehalt, Zulagen, Sachbezüge, Dienstwagen, Bonus, Reisekosten, Stunden."
+ ],
+ "pages": [
+  {
+   "h1": "Personen und Akte",
+   "sub": "Die Liste zeigt alle Personen nach Institut. Ein Tipp öffnet die Akte mit den Reitern Überblick, Vergütung, Zeit und Konto.",
+   "card": { "title": "Übersicht", "text": "Wer arbeitet wo, seit wann" },
+   "left": { "shot": "staff-list-light" },
+   "leftCaption": "Marken zeigen **Probezeit**, **ohne Konto** und ein bekanntes **Ende**. Die Nummer ist die DATEV-Personalnummer.",
+   "steps": [
+    { "n": 1, "title": "Suchen", "text": "Name, Personalnummer oder Institut eintippen." },
+    { "n": 2, "title": "Filter", "text": "**Aktiv**, **Probezeit**, **Ohne Konto** (noch kein Hub-Zugang) und **Austritte**." },
+    { "n": 3, "title": "Akte", "text": "Überblick mit Anstellung und Stammdaten aus der Teamliste, **Zeit** mit Stunden und Abwesenheiten laut askDANTE." },
+    { "n": 4, "title": "Hub-Konto", "text": "Das Symbol oben rechts oder **Konto → Hub-Konto anlegen**: fünf Schritte wie im Hub, Einladung per Mail, PIN optional." }
+   ]
+  },
+  {
+   "h1": "Vergütung anpassen",
+   "sub": "Der Reiter Vergütung zeigt Grundgehalt, laufende Bezüge und Dienstwagen. Jede Änderung ist ein neuer Eintrag ab Datum — der Verlauf bleibt.",
+   "card": { "title": "Vergütung", "text": "Gehalt, Zulagen, Dienstwagen" },
+   "left": { "shot": "staff-person-pay-light" },
+   "leftCaption": "Oben Grundgehalt und alles, was monatlich läuft. Über **…** endet ein Bezug oder Dienstwagen zu einem Tag.",
+   "steps": [
+    { "n": 1, "title": "Gehalt ab …", "text": "**Anpassung ab …**: neues Monatsbrutto und das Datum, ab dem es gilt. Der alte Satz bleibt im Verlauf." },
+    { "n": 2, "title": "Laufender Bezug", "text": "**Hinzufügen**: Lohnart (z. B. Funktionszulage, Jobticket, Sachbezug, Hansefit), Betrag, ab wann. Gibt es ihn schon, endet der alte am Vortag." },
+    { "n": 3, "title": "Dienstwagen", "text": "Fahrzeug, Bruttolistenpreis, Antrieb und Kilometer zur Arbeit — die App rechnet den geldwerten Vorteil." },
+    { "n": 4, "title": "Lohnarten", "text": "Neue Lohnarten und DATEV-Nummern legt das Büro im Hub auf der Seite **Lohnmonat** an." }
+   ]
+  },
+  {
+   "h1": "Der Lohnmonat",
+   "sub": "Umschalter **Lohnmonat**: alle Personen des Monats mit Summe und Status. Oben steht, was vor dem Versand zu prüfen ist.",
+   "card": { "title": "Lohnmonat", "text": "Prüfen, abschließen, übergeben" },
+   "left": { "shot": "staff-payroll-light" },
+   "leftCaption": "**fertig**, **prüfen** oder **fehlt** je Person — ein Tipp zeigt Posten und Hinweise.",
+   "steps": [
+    { "n": 1, "title": "Anlegen", "text": "Zieht Gehälter, Bezüge, Dienstwagen, den Bonus des festgeschriebenen Vormonats, genehmigte Reisekosten, Stunden und Geburtstags-Gutscheine." },
+    { "n": 2, "title": "Einmalzahlung", "text": "Sonderbonus, Urlaubsgeld, Abzug — mit Hinweis für die Steuerberatung, z. B. „pauschalversteuert“." },
+    { "n": 3, "title": "Brief", "text": "Der Brief an die Steuerberatung entsteht im gewohnten Aufbau. Ergänzen, **Sichern**, über das Teilen-Symbol per Mail schicken." },
+    { "n": 4, "title": "Abschließen und übergeben", "text": "**Abschließen** sperrt den Monat, **Übergeben** erzeugt die TXT-Liste — **TXT teilen** schickt sie an die Steuerberatung. Die Reisekosten gelten danach als ausgezahlt." }
+   ],
+   "hint": { "text": "Fehlt ein Bonus, ist der Vormonat im Bonus-Board noch nicht festgeschrieben — danach **Neu aufbauen**.", "kind": "info" }
+  },
+  {
+   "h1": "Auf dem iPad",
+   "sub": "Liste links, Akte rechts — wie bei Verträgen und Gutscheinen. Der Lohnmonat nutzt die volle Breite.",
+   "card": { "title": "iPad", "text": "Liste und Akte nebeneinander" },
+   "left": { "shot": "staff-ipad-light" },
+   "leftCaption": "Ein Tipp links zeigt die Akte rechts, der gewählte Reiter bleibt beim Blättern stehen.",
+   "steps": [
+    { "n": 1, "title": "Auswählen", "text": "Person links antippen, rechts erscheint die Akte." },
+    { "n": 2, "title": "Umschalten", "text": "Oben **Personen | Lohnmonat**." },
+    { "n": 3, "title": "Ohne Netz", "text": "Die Personenliste bleibt lesbar; Ändern und Übergeben brauchen Verbindung." },
+    { "n": 4, "title": "Datenschutz", "text": "Gehälter erscheinen nie in Mitteilungen oder Widgets." }
+   ]
+  }
+ ]
+}

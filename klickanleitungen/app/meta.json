@@ -598,5 +598,55 @@
   },
   "ratio": 1.1166666666666667,
   "marks": []
+ },
+ "staff-list-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 974
+  },
+  "ratio": 1.2487179487179487,
+  "marks": []
+ },
+ "staff-person-overview-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1261
+  },
+  "ratio": 1.6166666666666667,
+  "marks": []
+ },
+ "staff-person-pay-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1696
+  },
+  "ratio": 2.174358974358974,
+  "marks": []
+ },
+ "staff-payroll-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1152
+  },
+  "ratio": 1.476923076923077,
+  "marks": []
+ },
+ "staff-ipad-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2048,
+   "height": 1624
+  },
+  "ratio": 0.79296875,
+  "marks": []
  }
 }
