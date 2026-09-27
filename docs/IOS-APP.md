@@ -1307,7 +1307,8 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Freunde werben, Widerrufe, Zufriedenheit, Forderungen, Institute, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — Zufriedenheit zurückgestellt, weil die Befragung noch nicht genutzt wird (Jan, 26.09.2026) |
 | Berichte | nativ | Übersicht mit Standort, Zeitraum, Suche, eigenen/geteilten Dashboards und Berichten nach Bereich mit drei Leitkennzahlen (seit 27.09.2026, Nachzug 6 Schritt 1); Dashboard-Assistent eingebettet (Editor-Engine) |
 | Verkaufsstatistik | nativ | Berichtsseite „Wie im Hub“ mit KPI-Zeile und allen zwölf Karten nativ (seit 27.09.2026, Build 48) |
-| 15 weitere Berichtsseiten, Dashboards | bestand | Web-Detailseite im nativen Tab Berichte; folgen dem Muster „Wie im Hub“ ohne neue Entwürfe |
+| Zukünftige/Vergangene Beratungsgespräche, Stornierte und gelöschte Termine, Terminstatistik | nativ | Berichtsseiten „Wie im Hub“, alle 21 Karten nativ (seit 27.09.2026) |
+| Alle 11 weiteren Berichtsseiten (Mitarbeiterperformance bis Office-Teammeeting) | nativ | Berichtsseiten „Wie im Hub“, jede Registry-Karte nativ (seit 27.09.2026); eigene Dashboards bleiben Web-Detailseite |
 | Formulare, Bildschirme, Services, Unternehmensverträge, Report-Mails, Audit, Einstellungen, Conversion-Upload, Bonus-Verwaltung | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
 
 ### Native Verträge (Mehr-Seite, seit 25.09.2026 — Nachzug 1)
@@ -1606,6 +1607,63 @@ Tipp auf eine Säule zeigt die Werte je Institut, bei den Körperzonen auch die 
 - **Nachweis:** `ReportPageSnapshotTests` (Kopf, vier Karten, iPad — hell/dunkel; Routen, Monatsnamen),
   `ReportsUITests` (Übersicht → Verkaufsstatistik nativ, Web-Karten, zurück), PHP `AppReportsTest`
   (Rahmen, Embed), `ReportRegistryTest` (`statisticsOf`, Bausteine).
+
+### Native Berichtsseiten: Termine & Beratung (seit 27.09.2026)
+
+**Für Endanwender:** Auch „Zukünftige Beratungsgespräche", „Vergangene Beratungsgespräche",
+„Stornierte und gelöschte Termine" und die „Terminstatistik" sind in der App eigene Seiten wie im Hub —
+jede Auswertung mit Diagramm und Tabelle, Heatmaps mit Zahlen in jeder Zelle, Kalender zum Antippen.
+
+**Für Entwickler:**
+
+- Nach dem Muster „Wie im Hub" ohne neue Entwürfe (Wissen `statistikseiten-app-muster`); die vier
+  Pfade stehen in `ReportPageModel.nativePages`.
+- **Neue Bausteine** (`ReportChartKit2.swift`): `ReportHeatmap` (Wochentag × Uhrzeit, Wert in jeder
+  Zelle), `ReportCalendarGrid` (Mo–So, Tagesraster), `ReportRanking` (waagrechte Balken für Top-Services
+  und Kombinationen), `ReportDateLineChart` (lange Zeitreihen über echte Daten, wöchentlich ausgedünnt).
+- **Karten** (`UpcomingConsultationCards.swift`, `AppointmentReportCards.swift`): Buchungsstand je
+  Zeitfenster und Institut, Kalender der nächsten 28 Tage, freie Slots (alle/Prime Time), Entwicklung
+  geplanter BGs (1/3/7/28 Tage), historischer Vergleich mit Stichtag (`date`), Buchungsstand-Verlauf,
+  freie Slots und Wochentag × Uhrzeit als Heatmap, Buchungsvorlauf (Verteilung/Heatmap, `period`),
+  Buchungseingangsmatrix (aus Tagesblöcken zu Wochentag × 3-Stunden-Block summiert); Beratungen je
+  Monat (Anzahl/No-Show-Quote), No-show-Matrix (`granularity`/`offset`), Vorlauf & Termin-Erfolg
+  (online/offline), Buchungseingänge (`weeks`); storniert/gelöscht je Monat (`consultation_filter`);
+  Termine nach Art, Dauer, behandelte KPZ, Top-Services, Service-Kombinationen.
+- **Fallstricke:** Mehrere Termin-Endpunkte antworten **ohne** `{success, data}` oder mit Monaten
+  **absteigend** — die Karten sortieren selbst; die Buchungseingänge liefern `days` als Objekt je Datum.
+  Die Belegliste „Stornierte Beratungstermine der nächsten 14 Tage" ist eine bewusste Einzelposten-Liste
+  ohne Diagramm und bleibt über ⋯ „Hub-Fassung öffnen" erreichbar.
+- **Nachweis:** `AppointmentReportsUITests` (alle vier Seiten gegen den lokalen Hub, keine Web-Karte),
+  PHP `AppReportsTest` (jede Karte der vier Seiten hat einen Baustein).
+
+### Native Berichtsseiten: alle übrigen Berichte (seit 27.09.2026)
+
+**Für Endanwender:** Seit 27.09.2026 ist **jeder** feste Bericht in der App eine eigene Seite wie
+im Hub: Mitarbeiterperformance, glattt-Pakete, glattt-KPIs, Widerruf-Statistik, Schulden,
+Gutschein-Aktion, Der glattt-Kunde, HR-Kennzahlen, Ads-Analyse, Besucher & Buchungs-Funnel und
+Office-Teammeeting. Jede Karte hat Diagramm und Tabelle, die Umschalter sitzen wie im Hub in der
+Karte. Was die App nicht nachbaut, öffnet ⋯ „Hub-Fassung öffnen".
+
+**Für Entwickler:**
+
+- Muster „Wie im Hub" ohne neue Entwürfe; Pfade in `ReportPageModel.nativePages`. **Achtung:** Drei
+  Berichte haben deutsche Pfade (`/hub/reports/schulden`, `/gutscheinaktion`, `/hr-kennzahlen`). Mit
+  dem Routennamen als Pfad öffnete die App still die Web-Seite (UI-Test fing es ab).
+- **Karten-Dateien:** `MoreReportCards.swift` (Mitarbeiterperformance, Pakete, glattt-KPIs,
+  Widerrufe, Schulden, Gutschein-Aktion), `ClientHrReportCards.swift` (Kundenstatistik mit
+  `ReportRing` und PLZ-Karte als `MapCircle`, HR-Kennzahlen mit `HrMonthlyCard` für Monatsreihen mit
+  wählbarer Kennzahl), `MarketingOfficeReportCards.swift` (Ads-Analyse, Besucher-Funnel, eigene
+  Office-Karten mit `OfficeMonthlyCard`). Das Office-Teammeeting nutzt die Verkaufs-, Termin-,
+  Widerruf- und Ads-Karten wieder; sie laufen über denselben Schalter in `ReportStatisticCard`.
+- **Bewusste Abweichungen:** Die Suchbegriff-Wortwolke ist eine Rangliste. Die Besucher-Listen
+  (Funnel-Vergleich, Herkunft, Geräte, Top-Unterseiten) teilen sich `VisitorListCard`, deren Tabelle
+  alle Zahlenfelder zeigt. „Ads vs. Organisch" ist eine Gegenüberstellung ohne Tabellen-Seite.
+- **Mehr-Endpoint-Karten** (`ads.sources` mit `entry`, `besucher.timeseries` mit `series`) bekommen
+  die Zusatzdaten über `card.extra` → `_extra.<name>` im `ReportCardLoader`.
+- **Nachweis:** `AppointmentReportsUITests` (`testFurtherReportPages`,
+  `testMarketingOfficeReportPages`, keine Web-Karte). PHP `AppReportsTest` prüft, dass **jede** Karte
+  **jedes** Berichts aus der `ReportRegistry` einen Baustein hat; eine neue Statistik ohne
+  `native`-Feld bricht den Lauf.
 
 ### Native Seite „Termin buchen" (Detailseite im Termine-Tab, seit 26.09.2026)
 
