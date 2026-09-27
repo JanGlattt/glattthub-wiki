@@ -13,10 +13,10 @@
  "subtitle": "Klickanleitung für das Personalbüro im glatttHub — Vergütung pflegen, Lohnliste prüfen und an die Steuerberatung übergeben",
  "eyebrow": "Team · Lohn",
  "footerArea": "Team",
- "stand": "27.09.2026",
- "version": "1.1",
+ "stand": "28.09.2026",
+ "version": "1.2",
  "notes": [
-  "Der Hub sagt der Steuerberatung, **was** im Monat zu zahlen ist. Steuerklasse, Sozialversicherung und Bank bleiben in **DATEV**.",
+  "Der Hub sagt der Steuerberatung, **was** im Monat zu zahlen ist. Steuerklasse, Sozialversicherung und Bank bleiben in **DATEV**. Den Startstand liefert die **Lohnliste des Büros** (CSV).",
   "**Boni kommen aus dem Vormonat** — der Bonus September steht in der Liste Oktober, sobald er im Bonus-Board festgeschrieben ist.",
   "Alles hier braucht das Recht **Lohnliste**. Die Beispiele in den Bildern sind erfundene Personen."
  ],
@@ -179,6 +179,43 @@
    ],
    "hint": {
     "text": "Auch in der **App** unter Personal → Lohnmonat → **Lohnarten**."
+   }
+  },
+  {
+   "h1": "Die Lohnliste übernehmen",
+   "sub": "Die monatliche Lohnliste des Büros (Google Tabellen) füllt Gehälter, laufende Bezüge, Dienstwagen und Vertragsdaten im Hub.",
+   "card": {
+    "title": "Lohnliste übernehmen",
+    "text": "CSV prüfen, dann übernehmen"
+   },
+   "left": {
+    "shot": "p19-lohnliste-import"
+   },
+   "leftCaption": "Unten auf der Seite **Lohnmonat**: die Vorschau je Person, bevor etwas gespeichert wird.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Datei wählen",
+     "text": "In Google Tabellen **Datei → Herunterladen → CSV**, dann hier ablegen und **Prüfen**. Gespeichert wird dabei noch nichts."
+    },
+    {
+     "n": 2,
+     "title": "Vorschau lesen",
+     "text": "Je Person steht, was sich ändert. **(Stand, ab …)** heißt: Der Wert fehlte im Hub und gilt ab Eintritt. **ab 01.09.2026 (bisher …)** heißt: Er hat sich geändert. Gelbe Hinweise bitte von Hand prüfen."
+    },
+    {
+     "n": 3,
+     "title": "Übernehmen",
+     "text": "**Änderungen übernehmen** schreibt alles auf einmal. Danach den Lohnmonat **Neu aufbauen**."
+    },
+    {
+     "n": 4,
+     "title": "Was draußen bleibt",
+     "text": "Sonderbonus, Geschenke, Geburtstag und Übernahmen sind Monatswerte — sie kommen aus dem Bonus-Board oder als Einmalzahlung. Personen, die nicht in askDANTE stehen oder zweimal in der Liste, werden ausgelassen."
+    }
+   ],
+   "hint": {
+    "text": "**Zweimal dieselbe Liste** ändert nichts — der Hub übernimmt nur, was abweicht. Gelöscht wird nie etwas: Läuft im Hub ein Bezug, der in der Liste fehlt, steht das als Hinweis da."
    }
   },
   {

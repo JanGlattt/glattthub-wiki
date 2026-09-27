@@ -29,6 +29,11 @@ die Bewegungsdaten des Monats und rechnet keine Lohnsteuer.
 **Boni.** Der Bonus eines Monats kommt im Folgemonat in die Liste, sobald er im Bonus-Board
 festgeschrieben ist (September → Oktober).
 
+**Startstand aus der Lohnliste des Büros.** Die monatliche Google-Tabelle (eine Zeile je Person,
+Spaltenköpfe mit DATEV-Lohnart) lässt sich als CSV im Lohnmonat übernehmen: Grundgehalt, laufende
+Bezüge, Dienstwagen, Befristung, Probezeit, Mutterschutz und Elternzeit. Monatswerte (Sonderbonus,
+Geschenke, Geburtstag) bleiben draußen.
+
 **Checklisten Eintritt/Austritt — vorerst ausgeblendet.** Gebaut am 27.09.2026 aus den Blättern
 „MA EINTRITT"/„MA AUSTRITT" der Teamliste, am selben Tag wieder ausgeblendet (Jan: die Schritte
 sind nicht mehr aktuell). Sie kommen zurück, sobald die Vorlage überarbeitet ist.
@@ -123,9 +128,43 @@ Zeile 1140 formatiert — der Leser filtert auf Spalten A–AG und 600 Zeilen, s
 | GET/POST | `/employees/{hrEmployee}`, `/salaries`, `/recurring`, `/recurring/{id}/end`, `/cars`, `/cars/{id}/end` | Vergütung einer Person |
 | GET/POST/PUT | `/wage-types`, `/wage-types/{id}` | Lohnarten |
 | POST | `/master-data` | Teamliste prüfen/übernehmen |
+| POST | `/payroll-sheet` | Lohnliste des Büros (CSV) prüfen/übernehmen |
 
 Dazu `GET /hub/staff/api/people[/{id}]` (Recht `view_staff_overview`): Personen aus dem
 askDANTE-Abbild für die App.
+
+### Lohnliste des Büros übernehmen (`PayrollSheetImporter`)
+
+Seit 28.09.2026. Die Lohnliste des Büros (Google Tabellen → CSV, Kopfzeile in Zeile 1) trägt die
+DATEV-Lohnart im Spaltenkopf („010 - Grundgehalt brutto", „30 - Fahrgeld …"). Der Importer liest
+die Spalten über die **Nummer am Kopfanfang**, nicht über die Position — neue Spalten in der
+Tabelle brechen ihn nicht.
+
+| Spalte (Lohnart) | Im Hub |
+|---|---|
+| 010 Grundgehalt | `hr_salaries` |
+| 15 Aushilfslohn | laufender Bezug `casual_wage` (ersetzt das Grundgehalt, keine „Kein Gehalt"-Meldung) |
+| 013/014 Hansefit, 016 Ladekosten, 20 Bonus/Zulage, 204 Auto-Bonus, 811 Firmenrad, 008 Fitness, 2 Kindergarten, 30 Jobticket, 869 Sachbezug, 901 VL, 911/891 bAV | laufende Bezüge (Abzüge als positiver Betrag) |
+| 873/874 Dienstwagen | `payroll_company_cars`: Bemessung = 873 × 100, Satz 1 %, km = 874 ÷ (0,03 % × Bemessung) — bei E-Autos ist die Grundlage in der Liste schon gemindert |
+| Entfristet, Probezeit, Befristung, Mutterschutz, Elternzeit | `hr_employee_profiles` |
+| 21, 3, 032, 033, 034, 041 … | Monatswerte — nur in der Vorschau gemeldet |
+
+- **Zuordnung:** DATEV-Nummer der Stammdaten → askDANTE-Personalnummer (nur mit gleichem
+  Vornamen) → Name (ohne „(ehem. …)", Bindestrich-Varianten, erster Vorname). Dieselbe Person
+  zweimal (zwei Verträge) wird ausgelassen, nie geraten.
+- **Datum:** Fehlt ein Wert im Hub, gilt er ab **Eintritt** (Liste, sonst askDANTE) — sonst stünde
+  im ersten Brief jede Person unter „Vertragsänderungen". Weicht ein Wert ab, gilt der neue ab dem
+  **Monat der Liste** („Aktueller Monat"), der alte endet am Vortag. Dieselbe Liste zweimal ändert nichts.
+- **Nichts wird gelöscht:** Laufende Bezüge, die in der Liste fehlen, und abweichende
+  DATEV-Nummern erscheinen als Hinweis. „Gekündigt zum" ebenso — der Austritt gehört nach askDANTE.
+- **Endpunkt:** `POST /hub/staff/payroll/api/payroll-sheet {file, apply}` (Recht `manage_payroll`),
+  Vorschau ohne die internen Schritte. Die Datei wird nie gespeichert.
+- **Lohnarten dazu:** Migration `2026_09_28_090000_payroll_wage_types_from_payroll_sheet` legt 15, 016,
+  008, 911, 891 an und trägt fehlende DATEV-Nummern nach (nur wo noch keine steht).
+- **Erster Lauf lokal (28.09.2026):** 34 von 43 Zeilen zugeordnet, 7 ohne Treffer (nicht in askDANTE:
+  Minijobs, Elternzeit, Neueintritte nach dem letzten Abgleich), 1 Person doppelt (zwei Verträge).
+  Summen je Person stimmen mit „Gehalt brutto total" der Liste überein — bis auf eine Zeile, in
+  der die Tabellenformel das Jobticket nicht mitzählt.
 
 ### Checklisten Eintritt/Austritt (`StaffChecklistService`) — ausgeblendet
 
@@ -187,6 +226,7 @@ App: `ios/glatttHub/Staff/*`. Tests: `tests/Feature/Payroll/*` (inkl. `StaffChec
 
 | Datum | Änderung |
 |---|---|
+| 28.09.2026 | Lohnliste des Büros als CSV übernehmen (Gehalt, Bezüge, Dienstwagen, Vertragsdaten); Lohnarten 15, 016, 008, 911, 891 und fehlende DATEV-Nummern |
 | 27.09.2026 | Checklisten per Schalter ausgeblendet (Vorlage nicht mehr aktuell); Team 4 heißt jetzt „Lohnmonat und Vergütung" |
 | 27.09.2026 | Checklisten Eintritt/Austritt (Web + App), Lohnarten in der App, Nutzerhandbuch Team 4 mit erfundenen Personen |
 | 27.09.2026 | Erste Fassung: Lohnarten, laufende Bezüge, Dienstwagen, Lohnmonat mit Abschluss, TXT, Brief an die Steuerberatung, Teamliste-Import, Web und App |
