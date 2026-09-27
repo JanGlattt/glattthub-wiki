@@ -60,15 +60,15 @@ Admin-Backend. Der Austritt einer Person wird über die
   Dienstwagen, letzte Lohnmonate — Anpassung immer als neuer Eintrag ab Datum. Die Detailseite löst
   dafür die Person im Abbild auf (`hr_employees.askdante_user_id` → `hrEmployeeId`); der Anker
   `#verguetung` öffnet den Reiter direkt. Fachlich: [Lohnliste](LOHNLISTE.md).
-- **Startseite** `/hub/staff` hat drei Karten und darunter die Checklisten-Übersicht (Partial `hub.staff.partials.hub-card`, Klassen
+- **Startseite** `/hub/staff` hat drei Karten, darunter die (ausgeblendete) Checklisten-Übersicht (Partial `hub.staff.partials.hub-card`, Klassen
   `.staff-hub-*`, keine Inline-Styles mehr) — neu „Lohnmonat".
 - **Native App:** `/hub/staff`, `/hub/staff/overview` und `/hub/staff/payroll` öffnen die native
   Personalseite (Entwurf 2 „Akte und Lohnmonat", siehe [IOS-APP](IOS-APP.md)). Sie liest das
   askDANTE-Abbild über `GET /hub/staff/api/people[/{id}]` statt askDANTE live und legt Hub-Konten
   über dieselben Endpunkte wie der Wizard an.
-- **Checklisten Eintritt/Austritt** (Recht `manage_payroll`): Reiter „Checklisten" der Detailseite
-  (`#checklisten`) und eine Karte auf `/hub/staff` mit offenen Listen und anstehenden Ein- und
-  Austritten. Vorlage aus den Blättern „MA EINTRITT"/„MA AUSTRITT" der Teamliste; Details in
+- **Checklisten Eintritt/Austritt — vorerst ausgeblendet** (Schalter `hr.payroll.checklists_enabled`):
+  Reiter „Checklisten" der Detailseite (`#checklisten`) und eine Karte auf `/hub/staff` mit offenen
+  Listen und anstehenden Ein- und Austritten; die Vorlage aus der Teamliste gilt als veraltet. Details in
   [Lohnliste](LOHNLISTE.md#checklisten-eintrittaustritt-staffchecklistservice).
 - **Stammdaten aus der Teamliste** (`hr_employee_profiles`) ergänzen, was askDANTE nicht liefert —
   DATEV-Personalnummer, Adresse, Vertragsart, Krankenkasse, Elternzeit. Import auf der Seite Lohnmonat.

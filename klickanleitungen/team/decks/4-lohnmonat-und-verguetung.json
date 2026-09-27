@@ -1,0 +1,214 @@
+{
+ "out": "../pdf/Team-4-Lohnmonat-und-Verguetung",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Team",
+ "nr": 4,
+ "of": 4,
+ "audience": "buero",
+ "title": [
+  "Lohnmonat",
+  "und Vergütung"
+ ],
+ "subtitle": "Klickanleitung für das Personalbüro im glatttHub — Vergütung pflegen, Lohnliste prüfen und an die Steuerberatung übergeben",
+ "eyebrow": "Team · Lohn",
+ "footerArea": "Team",
+ "stand": "27.09.2026",
+ "version": "1.1",
+ "notes": [
+  "Der Hub sagt der Steuerberatung, **was** im Monat zu zahlen ist. Steuerklasse, Sozialversicherung und Bank bleiben in **DATEV**.",
+  "**Boni kommen aus dem Vormonat** — der Bonus September steht in der Liste Oktober, sobald er im Bonus-Board festgeschrieben ist.",
+  "Alles hier braucht das Recht **Lohnliste**. Die Beispiele in den Bildern sind erfundene Personen."
+ ],
+ "pages": [
+  {
+   "h1": "Der Lohnmonat",
+   "sub": "Je Person alles, was im Monat zu zahlen ist — Gehalt, Bezüge, Dienstwagen, Bonus, Reisekosten, Einmalzahlungen.",
+   "card": {
+    "title": "Lohnmonat",
+    "text": "Personal → Lohnmonat"
+   },
+   "left": {
+    "shot": "p13-lohnmonat"
+   },
+   "leftCaption": "Der **Lohnmonat** im Entwurf: Kennzahlen, Hinweise, darunter die Personen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Monat wählen",
+     "text": "Beim ersten Öffnen **Lohnliste anlegen** — der Hub zieht Gehälter, laufende Bezüge, Dienstwagen, den festgeschriebenen Bonus des Vormonats, genehmigte Reisekosten, Stunden und Geburtstage."
+    },
+    {
+     "n": 2,
+     "title": "Hinweise lesen",
+     "text": "Gelb heißt prüfen: Bonus noch nicht festgeschrieben, Gehalt lange nicht angepasst, Lohnart ohne DATEV-Nummer. Nach einer Korrektur **Neu aufbauen**."
+    },
+    {
+     "n": 3,
+     "title": "Einmalzahlung ergänzen",
+     "text": "Sonderbonus, Urlaubs- oder Weihnachtsgeld, Provision oder ein Abzug — nur für diesen Monat."
+    },
+    {
+     "n": 4,
+     "title": "Abschließen",
+     "text": "Sperrt die Liste. Wer danach noch etwas ändern muss, öffnet sie wieder."
+    }
+   ],
+   "hint": {
+    "text": "**Bonus fehlt?** Dann ist er im Bonus-Board noch nicht festgeschrieben. Erst festschreiben, dann hier **Neu aufbauen**."
+   }
+  },
+  {
+   "h1": "Eine Person im Monat",
+   "sub": "Ein Klick auf die Zeile zeigt jeden Posten mit Lohnart und DATEV-Nummer.",
+   "card": {
+    "title": "Posten ansehen",
+    "text": "Zeile aufklappen"
+   },
+   "left": {
+    "shot": "p14-person-im-monat"
+   },
+   "leftCaption": "Aufgeklappt: Grundgehalt, Funktionszulage (LA 20), Sachbezug (LA 869), Jobticket (LA 30).",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Posten prüfen",
+     "text": "Jede Zeile nennt Lohnart, DATEV-Nummer und Hinweis — so wie sie auch im Brief stehen."
+    },
+    {
+     "n": 2,
+     "title": "Vergütung ändern",
+     "text": "Führt in die Personalakte, Reiter **Vergütung**. Dort geänderte Beträge gelten ab ihrem Datum; danach **Neu aufbauen**."
+    },
+    {
+     "n": 3,
+     "title": "Einmalzahlung",
+     "text": "Direkt für diese Person, ohne sie im Fenster suchen zu müssen."
+    }
+   ]
+  },
+  {
+   "h1": "Einmalzahlung erfassen",
+   "sub": "Was nur in diesem Monat gezahlt oder abgezogen wird.",
+   "card": {
+    "title": "Einmalzahlung",
+    "text": "Person, Lohnart, Betrag"
+   },
+   "left": {
+    "shot": "p15-einmalzahlung"
+   },
+   "leftCaption": "Das Fenster **Einmalzahlung**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Person und Lohnart",
+     "text": "Die Lohnart entscheidet, unter welcher Überschrift der Posten im Brief steht, z. B. **Sonderbonus (21)**."
+    },
+    {
+     "n": 2,
+     "title": "Betrag",
+     "text": "Mit Komma, z. B. 150,00. Abzüge als positiver Betrag — die Lohnart zieht ihn ab."
+    },
+    {
+     "n": 3,
+     "title": "Hinweis",
+     "text": "Steht so im Brief an die Steuerberatung, z. B. „pauschalversteuert“."
+    }
+   ]
+  },
+  {
+   "h1": "Der Brief an die Steuerberatung",
+   "sub": "Der Hub schreibt die monatliche Nachricht im gewohnten Aufbau — Neuverträge, Änderungen, Kündigungen, je Lohnart mit Nummer.",
+   "card": {
+    "title": "Brief",
+    "text": "Erzeugen, prüfen, kopieren"
+   },
+   "left": {
+    "shot": "p16-brief"
+   },
+   "leftCaption": "Oben **Vor dem Versand prüfen**, darunter der Text zum Bearbeiten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Erzeugen",
+     "text": "**Neu erzeugen** schreibt den Text aus der Liste. Eigene Änderungen gehen dabei verloren — der Hub fragt vorher."
+    },
+    {
+     "n": 2,
+     "title": "Prüfen und ergänzen",
+     "text": "Der Text ist frei bearbeitbar, z. B. für Nachberechnungen. **Speichern** hält ihn am Monat fest."
+    },
+    {
+     "n": 3,
+     "title": "Kopieren",
+     "text": "In die E-Mail an die Steuerberatung einfügen."
+    },
+    {
+     "n": 4,
+     "title": "Übergeben",
+     "text": "Nach dem Abschließen: **Übergeben** lädt die TXT-Liste für DATEV und markiert enthaltene Reisekosten als ausgezahlt. Die Datei hängt an dieselbe E-Mail."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Übergeben erst, wenn alles stimmt.** Danach gilt der Monat als an die Steuerberatung gegeben; Korrekturen laufen im Folgemonat als Nachberechnung."
+   }
+  },
+  {
+   "h1": "Lohnarten",
+   "sub": "Die Liste der Lohnarten mit der DATEV-Nummer der Steuerberatung — neue lassen sich jederzeit anlegen.",
+   "card": {
+    "title": "Lohnarten",
+    "text": "Anlegen und Nummer pflegen"
+   },
+   "left": {
+    "shot": "p17-lohnarten"
+   },
+   "leftCaption": "Unten auf der Seite: alle Lohnarten, wie oft sie genutzt werden, und ihre Nummer.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Lohnart hinzufügen",
+     "text": "Name, DATEV-Nummer von der Steuerberatung, **laufend** (ab Datum, jeden Monat) oder **einmalig**, steuerfrei ja/nein."
+    },
+    {
+     "n": 2,
+     "title": "Bearbeiten",
+     "text": "Nummer nachtragen, Hinweis ändern oder eine Lohnart stilllegen. Gebuchte Posten bleiben erhalten."
+    }
+   ],
+   "hint": {
+    "text": "Auch in der **App** unter Personal → Lohnmonat → **Lohnarten**."
+   }
+  },
+  {
+   "h1": "Vergütung in der Personalakte",
+   "sub": "Gehalt, laufende Bezüge und Dienstwagen einer Person — mit Verlauf.",
+   "card": {
+    "title": "Vergütung",
+    "text": "Personalakte → Reiter Vergütung"
+   },
+   "left": {
+    "shot": "p18-verguetung"
+   },
+   "leftCaption": "Der Reiter **Vergütung**: oben die Summen, darunter Gehalt und laufende Bezüge.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Gehalt anpassen",
+     "text": "**Anpassung ab …** legt einen neuen Betrag ab einem Datum an. Der alte bleibt im Verlauf; im Brief steht die Änderung unter **Vertragsänderungen**."
+    },
+    {
+     "n": 2,
+     "title": "Laufende Bezüge",
+     "text": "Zulagen, Sachbezüge, Jobticket, Zuschüsse — **Bezug hinzufügen**, später **Beenden** oder **Anpassen**."
+    },
+    {
+     "n": 3,
+     "title": "Dienstwagen",
+     "text": "Listenpreis, Versteuerung (1 %, 0,5 %, 0,25 %) und Entfernung: der Hub rechnet den geldwerten Vorteil."
+    }
+   ]
+  }
+ ]
+}

@@ -1,4 +1,4 @@
-/* Aufnahmelauf „Team 4 — Lohnmonat, Vergütung, Checklisten".
+/* Aufnahmelauf „Team 4 — Lohnmonat und Vergütung".
    Lohnzahlen gehören nie in öffentliche Bilder (das Wiki-Repo ist öffentlich). Deshalb liefert
    dieser Lauf die Antworten der Lohn- und Checklisten-Endpunkte aus `fixtures/` — erfundene
    Personen (Anna Musterfrau, Lena Beispiel …), erzeugt mit dem echten Hub-Code gegen eine leere
@@ -57,8 +57,6 @@ const PLAN = [
     { id: 'neu', kind: 'badge', n: 1, ...L.byText('.card-glattt-header button', 'Lohnart hinzufügen'), at: 'l' },
   ] },
   { name: 'p18-verguetung', url: `/hub/staff/${STAFF}#verguetung`, steps: [['loaded'], ['wait', 2500]], clip: '[x-data^="payrollCompensation"]' },
-  { name: 'p19-checklisten', url: '/hub/staff', steps: [['loaded'], ['wait', 2000]], clip: 'card:Checklisten Eintritt' },
-  { name: 'p20-checkliste', url: `/hub/staff/${STAFF}#checklisten`, steps: [['loaded'], ['wait', 2500]], clip: '[x-data^="staffChecklists("]' },
 ];
 
 P.run(PLAN, L, { nur: process.argv.slice(2), before: mocks });

@@ -7,7 +7,7 @@
  "audience": "leitung",
  "footerArea": "App",
  "stand": "27.09.2026",
- "version": "1.1",
+ "version": "1.2",
  "nr": 13,
  "title": [
   "Personal und Lohnmonat",
@@ -119,46 +119,17 @@
      "n": 4,
      "title": "Abschließen und übergeben",
      "text": "**Abschließen** sperrt den Monat, **Übergeben** erzeugt die TXT-Liste — **TXT teilen** schickt sie an die Steuerberatung. Die Reisekosten gelten danach als ausgezahlt."
+    },
+    {
+     "n": 5,
+     "title": "Lohnarten",
+     "text": "Knopf **Lohnarten**: neue anlegen mit **+**, antippen, um die DATEV-Nummer zu ändern oder eine Lohnart stillzulegen."
     }
    ],
    "hint": {
     "text": "Fehlt ein Bonus, ist der Vormonat im Bonus-Board noch nicht festgeschrieben — danach **Neu aufbauen**.",
     "kind": "info"
    }
-  },
-  {
-   "h1": "Checklisten und Lohnarten",
-   "sub": "Ein- und Austritte abhaken und Lohnarten pflegen — direkt in der App.",
-   "card": {
-    "title": "Checklisten",
-    "text": "Akte → Überblick → Checklisten"
-   },
-   "left": {
-    "shot": "staff-checklist-light"
-   },
-   "leftCaption": "Die Checkliste **Eintritt** einer Person: erledigt, entfällt, offen mit Notiz.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Übersicht",
-     "text": "Oben in der Personenliste stehen offene Checklisten und anstehende Ein- und Austritte ohne Liste. Ein Tipp öffnet die Akte."
-    },
-    {
-     "n": 2,
-     "title": "Starten",
-     "text": "In der Akte unter **Überblick → Checklisten**: **Eintritt starten** oder **Austritt starten**."
-    },
-    {
-     "n": 3,
-     "title": "Abhaken",
-     "text": "Kreis antippen. Über **…** eine Notiz ergänzen oder den Schritt als **Entfällt** auslassen, auch per Wischen."
-    },
-    {
-     "n": 4,
-     "title": "Lohnarten",
-     "text": "Im Lohnmonat **Lohnarten**: neue anlegen mit **+**, antippen zum Ändern der DATEV-Nummer oder zum Stilllegen."
-    }
-   ]
   },
   {
    "h1": "Auf dem iPad",

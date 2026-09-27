@@ -7,7 +7,7 @@ Minijob-/Werkstudentinnen-Stunden. Nach dem Abschluss geht er als **TXT-Liste** 
 **Brief an die Steuerberatung** raus. Diese Seite beschreibt Fachregeln, Datenmodell, Endpunkte
 und Fallstricke; die Bedienung steht im Nutzerhandbuch.
 
-!!! nutzerhandbuch "Bedienung: Team 4 – Lohnmonat und Checklisten"
+!!! nutzerhandbuch "Bedienung: Team 4 – Lohnmonat und Vergütung"
     [https://hilfe.hub.glattt.com/team/4/](https://hilfe.hub.glattt.com/team/4/)
 
 !!! nutzerhandbuch "Bedienung: App 13 – Personal und Lohnmonat in der App"
@@ -29,9 +29,9 @@ die Bewegungsdaten des Monats und rechnet keine Lohnsteuer.
 **Boni.** Der Bonus eines Monats kommt im Folgemonat in die Liste, sobald er im Bonus-Board
 festgeschrieben ist (September → Oktober).
 
-**Checklisten Eintritt/Austritt.** Die Arbeitsschritte des Büros bei jedem Ein- und Austritt
-(bis 09/2026 die Blätter „MA EINTRITT"/„MA AUSTRITT" der Teamliste) stehen als Checkliste in der
-Personalakte und auf der Seite Personal — abhaken, auslassen, Notiz. Web und App.
+**Checklisten Eintritt/Austritt — vorerst ausgeblendet.** Gebaut am 27.09.2026 aus den Blättern
+„MA EINTRITT"/„MA AUSTRITT" der Teamliste, am selben Tag wieder ausgeblendet (Jan: die Schritte
+sind nicht mehr aktuell). Sie kommen zurück, sobald die Vorlage überarbeitet ist.
 
 ---
 
@@ -127,7 +127,16 @@ Zeile 1140 formatiert — der Leser filtert auf Spalten A–AG und 600 Zeilen, s
 Dazu `GET /hub/staff/api/people[/{id}]` (Recht `view_staff_overview`): Personen aus dem
 askDANTE-Abbild für die App.
 
-### Checklisten Eintritt/Austritt (`StaffChecklistService`)
+### Checklisten Eintritt/Austritt (`StaffChecklistService`) — ausgeblendet
+
+!!! warning "Seit 27.09.2026 ausgeschaltet"
+    Schalter `hr.payroll.checklists_enabled` (`HR_PAYROLL_CHECKLISTS_ENABLED`, Standard `false`).
+    Aus: Reiter und Übersichtskarte fehlen, die Endpunkte antworten 404, die App zeigt ihre
+    Karten nur, wenn der Endpunkt antwortet. Code und Tabellen bleiben. Vor dem Einschalten die
+    Vorlage `hr_checklist_steps` mit dem Büro neu fassen (per Migration) und das Kapitel in den
+    Klickanleitungen Team 4 und App 13 wieder aufnehmen — die Aufnahme dafür liegt in
+    `ios/glatttHubTests/StaffSnapshotTests.swift` (`staff-checklist`, `staff-list-checklists`).
+
 
 - **Vorlage:** `hr_checklist_steps` (`type` = `onboarding`/`offboarding`, `position`, `title`,
   `hint`, `active`), gesät von der Migration `2026_09_27_110000_create_hr_checklists_tables`
@@ -178,5 +187,6 @@ App: `ios/glatttHub/Staff/*`. Tests: `tests/Feature/Payroll/*` (inkl. `StaffChec
 
 | Datum | Änderung |
 |---|---|
+| 27.09.2026 | Checklisten per Schalter ausgeblendet (Vorlage nicht mehr aktuell); Team 4 heißt jetzt „Lohnmonat und Vergütung" |
 | 27.09.2026 | Checklisten Eintritt/Austritt (Web + App), Lohnarten in der App, Nutzerhandbuch Team 4 mit erfundenen Personen |
 | 27.09.2026 | Erste Fassung: Lohnarten, laufende Bezüge, Dienstwagen, Lohnmonat mit Abschluss, TXT, Brief an die Steuerberatung, Teamliste-Import, Web und App |

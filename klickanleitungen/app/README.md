@@ -16,7 +16,7 @@ App steht im Wiki `IOS-APP.md`.
 | **8 — Verträge in der App** | Native Vertragsliste (Suche, Chips), Vertragsseite mit Übersicht/Zahlungen/Verlauf/E-Mails, Notiz/Zahlung/Rate nativ, GoCardless als Hub-Blatt, iPad-Split (seit 25.09.2026) |
 | **9 — Gutscheine in der App** | Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin berichtigen, neuer Gutschein, Guthaben-Karte der Kundin, iPad-Split (seit 26.09.2026) |
 | **11 — Reisekosten in der App** | Anspruchstage, Reisekarte mit Live-Summe und Abschnitten, Belege fotografieren/scannen, einreichen/zurückziehen, Freigabe mit Berichtigen, iPad-Split (seit 26.09.2026) |
-| **13 — Personal und Lohnmonat in der App** | Personen nach Institut, Akte mit Vergütung (Gehalt ab, Bezüge, Dienstwagen), Hub-Konto anlegen, Lohnmonat mit Einmalzahlung, Brief und TXT-Übergabe an die Steuerberatung, Lohnarten, Checklisten Ein-/Austritt, iPad-Split (seit 27.09.2026, v1.1) |
+| **13 — Personal und Lohnmonat in der App** | Personen nach Institut, Akte mit Vergütung (Gehalt ab, Bezüge, Dienstwagen), Hub-Konto anlegen, Lohnmonat mit Einmalzahlung, Brief und TXT-Übergabe an die Steuerberatung, Lohnarten, iPad-Split (seit 27.09.2026, v1.2) |
 | **12 — Termin buchen in der App** | Kundin wählen, Institut und „ab wann“, Paket-Leistungen, Vorschläge je Tag (grün = ohne Lücke), Rückfrage und Buchen, Zum Termin / Weiterer Termin, iPad mit allen Tagen nebeneinander (seit 26.09.2026) |
 | **10 — App-Geräte in der App** | Geräteliste mit Chips und Kennzahlen, Code ausstellen (Art, Angaben, QR/Teilen), Code zurückziehen, Steckbrief mit Widerruf, iPad-Split (seit 26.09.2026) |
 

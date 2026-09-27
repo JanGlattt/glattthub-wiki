@@ -8,7 +8,7 @@ Deck-Format: `klickanleitungen/README.md` und Wiki `docs/KLICKANLEITUNGEN.md`.
 | **1 — Personalübersicht und Hub-Konten** | Liste, Person im Detail, Konto-Assistent, Archivieren | Büro | v1.0, Screenshots offen |
 | **2 — Reisekosten erfassen** | Anspruchstage, Fahrt, Verpflegung, Einreichen | Institute | v1.0, Screenshots offen |
 | **3 — Reisekosten freigeben** | Eingänge prüfen, Belege ansehen, entscheiden | Büro | v1.0, Screenshots offen |
-| **4 — Lohnmonat und Checklisten** | Lohnliste, Einmalzahlung, Brief an die Steuerberatung, Lohnarten, Vergütung, Checklisten Ein-/Austritt | Büro | v1.0 (27.09.2026), Bilder mit erfundenen Personen |
+| **4 — Lohnmonat und Vergütung** | Lohnliste, Einmalzahlung, Brief an die Steuerberatung, Lohnarten, Vergütung | Büro | v1.1 (27.09.2026), Bilder mit erfundenen Personen |
 
 Dokument 2 richtet sich an die Institute — jede reicht ihre eigenen Reisekosten ein. 1 und 3
 sind Büro-Arbeit.
@@ -55,7 +55,7 @@ Er **liest nur**. Ausdrücklich nicht gedrückt werden:
 ### Team 4: erfundene Personen statt Maskierung
 
 Lohnzahlen gehören nie in öffentliche Bilder. `scripts/lohn.cjs` beantwortet deshalb die
-Endpunkte `hub/staff/payroll/api/*` und `hub/staff/checklists/api*` aus `fixtures/` —
+Endpunkte `hub/staff/payroll/api/*` (und die vorerst ausgeblendeten Checklisten) aus `fixtures/` —
 erzeugt mit dem echten Hub-Code gegen eine leere Test-Datenbank (Anna Musterfrau, Lena
 Beispiel, Mira Neumann …). Schreibende Aufrufe werden verworfen. Aufnahme lokal:
 
