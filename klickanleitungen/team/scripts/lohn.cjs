@@ -1,0 +1,64 @@
+/* Aufnahmelauf „Team 4 — Lohnmonat, Vergütung, Checklisten".
+   Lohnzahlen gehören nie in öffentliche Bilder (das Wiki-Repo ist öffentlich). Deshalb liefert
+   dieser Lauf die Antworten der Lohn- und Checklisten-Endpunkte aus `fixtures/` — erfundene
+   Personen (Anna Musterfrau, Lena Beispiel …), erzeugt mit dem echten Hub-Code gegen eine leere
+   Test-Datenbank. Seiten, Komponenten und Fenster sind echt; gespeichert wird nichts
+   (schreibende Aufrufe werden abgefangen und verworfen).
+
+   Aufruf:  KLICK_STAFF_ID=<askDANTE-ID einer Person mit Personalakte> node scripts/lohn.cjs [name …]
+   Die Person liefert nur den Rahmen der Akte; fotografiert wird ausschließlich der Reiter-Inhalt. */
+const fs = require('fs');
+const path = require('path');
+const L = require('./lib.cjs');
+const P = require('../../shared/lib/plan.cjs');
+
+const FIX = (n) => fs.readFileSync(path.join(__dirname, '..', 'fixtures', n + '.json'), 'utf8');
+const STAFF = process.env.KLICK_STAFF_ID || '114423';
+
+async function mocks(page) {
+  const json = (route, body) => route.fulfill({ status: 200, contentType: 'application/json', body });
+  await page.route(/\/hub\/staff\/(payroll|checklists)\/api(\/|$|\?)/, (route) => {
+    const req = route.request();
+    const u = new URL(req.url()).pathname;
+    if (req.method() !== 'GET') return json(route, '{}'); // nichts speichern
+    if (/payroll\/api\/months$/.test(u)) return json(route, FIX('months'));
+    if (/payroll\/api\/months\/\d{4}-\d{2}$/.test(u)) return json(route, FIX('month'));
+    if (/payroll\/api\/wage-types$/.test(u)) return json(route, FIX('wage-types'));
+    if (/payroll\/api\/employees\/\d+$/.test(u)) return json(route, FIX('employee'));
+    if (/checklists\/api\/?$/.test(u)) return json(route, FIX('checklists-overview'));
+    if (/checklists\/api\/employees\/\d+$/.test(u)) return json(route, FIX('checklists-employee'));
+    return route.continue();
+  });
+}
+
+// Die Seite startet im laufenden Monat — auf den Beispielmonat der Fixtures stellen
+const oktober = ['fn', async (page, L) => {
+  await page.evaluate(() => {
+    const r = [...document.querySelectorAll('[x-data]')].find(e => { try { return Alpine.$data(e).monthOptions !== undefined; } catch (err) { return false; } });
+    if (r) Alpine.$data(r).month = '2026-10';
+  });
+  await L.wait(page, 1500);
+}];
+
+const PLAN = [
+  { name: 'p13-lohnmonat', url: '/hub/staff/payroll', steps: [['loaded'], oktober], marks: [
+    { id: 'monat', kind: 'badge', n: 1, sel: '.page-header-glattt .dropdown-glattt-trigger, .page-header-glattt select', at: 'l' },
+    { id: 'hinweise', kind: 'badge', n: 2, sel: '.payroll-warnings-glattt', at: 'l' },
+    { id: 'tabelle', kind: 'frame', color: 'teal', sel: '.table-glattt' },
+    { id: 'einmal', kind: 'badge', n: 3, ...L.byText('.page-header-glattt button', 'Einmalzahlung'), at: 'b' },
+    { id: 'abschliessen', kind: 'badge', n: 4, ...L.byText('.page-header-glattt button', 'Abschließen'), at: 'b' },
+  ] },
+  { name: 'p14-person-im-monat', url: '/hub/staff/payroll', steps: [['loaded'], oktober,
+    ['fn', async (page, L) => { await page.evaluate(() => { const r = [...document.querySelectorAll('.payroll-row-glattt')].find(e => /Musterfrau/.test(e.textContent)); if (r) r.click(); }); await L.wait(page, 1200); }],
+    ['scrollSel', '.payroll-detail-glattt']], clip: '.table-glattt' },
+  { name: 'p15-einmalzahlung', url: '/hub/staff/payroll', steps: [['loaded'], oktober, ['click', '.page-header-glattt button', 'Einmalzahlung', 1500]], clip: '.modal-glattt' },
+  { name: 'p16-brief', url: '/hub/staff/payroll', steps: [['loaded'], oktober, ['scroll', '.card-glattt-title', 'Brief an die Steuerberatung']], clip: 'card:Brief an die Steuerberatung' },
+  { name: 'p17-lohnarten', url: '/hub/staff/payroll', steps: [['loaded'], oktober, ['scroll', '.card-glattt-title', 'Lohnarten', 40]], clip: { x: 292, y: 16, width: 1128, height: 884 }, marks: [
+    { id: 'neu', kind: 'badge', n: 1, ...L.byText('.card-glattt-header button', 'Lohnart hinzufügen'), at: 'l' },
+  ] },
+  { name: 'p18-verguetung', url: `/hub/staff/${STAFF}#verguetung`, steps: [['loaded'], ['wait', 2500]], clip: '[x-data^="payrollCompensation"]' },
+  { name: 'p19-checklisten', url: '/hub/staff', steps: [['loaded'], ['wait', 2000]], clip: 'card:Checklisten Eintritt' },
+  { name: 'p20-checkliste', url: `/hub/staff/${STAFF}#checklisten`, steps: [['loaded'], ['wait', 2500]], clip: '[x-data^="staffChecklists("]' },
+];
+
+P.run(PLAN, L, { nur: process.argv.slice(2), before: mocks });

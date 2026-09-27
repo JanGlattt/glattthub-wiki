@@ -7,6 +7,9 @@ Minijob-/Werkstudentinnen-Stunden. Nach dem Abschluss geht er als **TXT-Liste** 
 **Brief an die Steuerberatung** raus. Diese Seite beschreibt Fachregeln, Datenmodell, Endpunkte
 und Fallstricke; die Bedienung steht im Nutzerhandbuch.
 
+!!! nutzerhandbuch "Bedienung: Team 4 – Lohnmonat und Checklisten"
+    [https://hilfe.hub.glattt.com/team/4/](https://hilfe.hub.glattt.com/team/4/)
+
 !!! nutzerhandbuch "Bedienung: App 13 – Personal und Lohnmonat in der App"
     [https://hilfe.hub.glattt.com/app/13/](https://hilfe.hub.glattt.com/app/13/)
 
@@ -25,6 +28,10 @@ die Bewegungsdaten des Monats und rechnet keine Lohnsteuer.
 
 **Boni.** Der Bonus eines Monats kommt im Folgemonat in die Liste, sobald er im Bonus-Board
 festgeschrieben ist (September → Oktober).
+
+**Checklisten Eintritt/Austritt.** Die Arbeitsschritte des Büros bei jedem Ein- und Austritt
+(bis 09/2026 die Blätter „MA EINTRITT"/„MA AUSTRITT" der Teamliste) stehen als Checkliste in der
+Personalakte und auf der Seite Personal — abhaken, auslassen, Notiz. Web und App.
 
 ---
 
@@ -120,19 +127,50 @@ Zeile 1140 formatiert — der Leser filtert auf Spalten A–AG und 600 Zeilen, s
 Dazu `GET /hub/staff/api/people[/{id}]` (Recht `view_staff_overview`): Personen aus dem
 askDANTE-Abbild für die App.
 
+### Checklisten Eintritt/Austritt (`StaffChecklistService`)
+
+- **Vorlage:** `hr_checklist_steps` (`type` = `onboarding`/`offboarding`, `position`, `title`,
+  `hint`, `active`), gesät von der Migration `2026_09_27_110000_create_hr_checklists_tables`
+  aus den Excel-Spalten: 20 Schritte Eintritt, 16 Austritt. „Ein Vertrag per Einschreiben" ist
+  inaktiv — der Schritt entfällt seit dem digitalen Rückversand.
+- **Liste je Person:** `hr_checklists` (eindeutig je `hr_employee_id` + `type`) mit
+  `hr_checklist_items`. Beim Start werden die Schritte **kopiert** (Titel, Hinweis) — spätere
+  Änderungen an der Vorlage verändern laufende Listen nicht; inaktive Schritte kommen als
+  „entfällt" mit.
+- **Zustände je Schritt:** `done` (`done_at`, `done_by_user_id`), `skipped`, `open`. Sind alle
+  erledigt oder ausgelassen, setzt `mark()` `completed_at`; ein wieder geöffneter Schritt hebt es auf.
+- **Vorschläge der Übersicht:** Eintritt (`entry_date`) 30 Tage zurück bis 60 voraus,
+  Austritt (`contractEndsOn()`, also `exit_date` oder Ende der Beschäftigungsperiode) 30 zurück
+  bis 90 voraus — jeweils nur ohne vorhandene Liste; technische Konten ausgenommen.
+- **Endpunkte** (Recht `manage_payroll`, `/hub/staff/checklists/api`): `GET /` (offen +
+  Vorschläge), `GET|POST /employees/{hrEmployee}` (Listen der Person / `{type}` anlegen, 422 bei
+  Doppel), `POST /items/{item}` (`{state, note?}`, liefert die ganze Liste zurück).
+- **Oberflächen:** Web-Reiter „Checklisten" der Akte (`#checklisten`) und Karte auf `/hub/staff`
+  (`staffChecklists()` in `staff-payroll.js`), App: Karte im Überblick der Akte + Blatt
+  `StaffChecklistSheet`, Übersicht oben in der Personenliste.
+
+### Lohnarten in der App
+
+`PayrollWageTypesSheet` im Lohnmonat (Knopf „Lohnarten"): dieselben Endpunkte wie das Web.
+Neu mit Name, DATEV-Nummer, Art (einmalig/laufend), steuerfrei; bestehende ändern Name, Nummer,
+Hinweis, steuerfrei und aktiv — automatische Lohnarten bleiben aktiv, ihr Name ist gesperrt.
+
 ### Dateien
 
 `app/Services/Payroll/{PayrollService,CompensationService,PayrollLetterService,TeamSheetImporter}.php`,
 `app/Http/Controllers/Hub/{PayrollController,StaffDirectoryController}.php`, `app/Models/Payroll/*`,
 `app/Models/HrEmployeeProfile.php`, `resources/views/hub/staff/payroll*.blade.php`,
 `resources/views/hub/staff/partials/detail-compensation.blade.php`, `public/js/staff-payroll.js`,
-`resources/views/components/currency-input-glattt.blade.php`, App: `ios/glatttHub/Staff/*`.
-Tests: `tests/Feature/Payroll/*`, `ios/glatttHubTests/StaffSnapshotTests.swift`.
+`resources/views/components/currency-input-glattt.blade.php`, Checklisten:
+`app/Services/Payroll/StaffChecklistService.php`, `app/Http/Controllers/Hub/StaffChecklistController.php`,
+`app/Models/Checklist/*`, `resources/views/hub/staff/partials/{detail-checklists,checklist-overview}.blade.php`.
+App: `ios/glatttHub/Staff/*`. Tests: `tests/Feature/Payroll/*` (inkl. `StaffChecklistApiTest`),
+`ios/glatttHubTests/StaffSnapshotTests.swift`, `ios/glatttHubUITests/StaffUITests.swift` (nur lesend).
 
 ### Fallstricke
 
 - Tests mit festen Beispieldaten halten die Uhr fest — Neuverträge und Kündigungen hängen am Monat.
-- Die lokale Datenbank ist eine Prod-Kopie: Screenshots der Web-Seite zeigen echte Namen und Gehälter und taugen nicht fürs Nutzerhandbuch.
+- Die lokale Datenbank ist eine Prod-Kopie: Screenshots der Web-Seite zeigen echte Namen und Gehälter. Das Deck Team 4 entsteht deshalb mit **Fixtures** (`klickanleitungen/team/fixtures/`, erzeugt mit dem echten Hub-Code gegen eine leere Test-Datenbank), die `team/scripts/lohn.cjs` per Request-Abfang ausliefert. Achtung beim Muster: `/checklists/api` hat keinen Schrägstrich am Ende.
 - Bonus ohne `users.hr_employee_id` fehlt in der Liste — der Monat meldet die Namen.
 - Die Reisekosten-Auszahlung (`/travel-expenses/approval/payout`) und die Lohnliste markieren beide „ausgezahlt"; was eine schon markiert hat, zieht die andere nicht mehr.
 
@@ -140,4 +178,5 @@ Tests: `tests/Feature/Payroll/*`, `ios/glatttHubTests/StaffSnapshotTests.swift`.
 
 | Datum | Änderung |
 |---|---|
+| 27.09.2026 | Checklisten Eintritt/Austritt (Web + App), Lohnarten in der App, Nutzerhandbuch Team 4 mit erfundenen Personen |
 | 27.09.2026 | Erste Fassung: Lohnarten, laufende Bezüge, Dienstwagen, Lohnmonat mit Abschluss, TXT, Brief an die Steuerberatung, Teamliste-Import, Web und App |

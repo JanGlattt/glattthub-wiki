@@ -7,7 +7,7 @@
  "audience": "leitung",
  "footerArea": "App",
  "stand": "27.09.2026",
- "version": "1.0",
+ "version": "1.1",
  "nr": 13,
  "title": [
   "Personal und Lohnmonat",
@@ -23,54 +23,175 @@
   {
    "h1": "Personen und Akte",
    "sub": "Die Liste zeigt alle Personen nach Institut. Ein Tipp öffnet die Akte mit den Reitern Überblick, Vergütung, Zeit und Konto.",
-   "card": { "title": "Übersicht", "text": "Wer arbeitet wo, seit wann" },
-   "left": { "shot": "staff-list-light" },
+   "card": {
+    "title": "Übersicht",
+    "text": "Wer arbeitet wo, seit wann"
+   },
+   "left": {
+    "shot": "staff-list-light"
+   },
    "leftCaption": "Marken zeigen **Probezeit**, **ohne Konto** und ein bekanntes **Ende**. Die Nummer ist die DATEV-Personalnummer.",
    "steps": [
-    { "n": 1, "title": "Suchen", "text": "Name, Personalnummer oder Institut eintippen." },
-    { "n": 2, "title": "Filter", "text": "**Aktiv**, **Probezeit**, **Ohne Konto** (noch kein Hub-Zugang) und **Austritte**." },
-    { "n": 3, "title": "Akte", "text": "Überblick mit Anstellung und Stammdaten aus der Teamliste, **Zeit** mit Stunden und Abwesenheiten laut askDANTE." },
-    { "n": 4, "title": "Hub-Konto", "text": "Das Symbol oben rechts oder **Konto → Hub-Konto anlegen**: fünf Schritte wie im Hub, Einladung per Mail, PIN optional." }
+    {
+     "n": 1,
+     "title": "Suchen",
+     "text": "Name, Personalnummer oder Institut eintippen."
+    },
+    {
+     "n": 2,
+     "title": "Filter",
+     "text": "**Aktiv**, **Probezeit**, **Ohne Konto** (noch kein Hub-Zugang) und **Austritte**."
+    },
+    {
+     "n": 3,
+     "title": "Akte",
+     "text": "Überblick mit Anstellung und Stammdaten aus der Teamliste, **Zeit** mit Stunden und Abwesenheiten laut askDANTE."
+    },
+    {
+     "n": 4,
+     "title": "Hub-Konto",
+     "text": "Das Symbol oben rechts oder **Konto → Hub-Konto anlegen**: fünf Schritte wie im Hub, Einladung per Mail, PIN optional."
+    }
    ]
   },
   {
    "h1": "Vergütung anpassen",
    "sub": "Der Reiter Vergütung zeigt Grundgehalt, laufende Bezüge und Dienstwagen. Jede Änderung ist ein neuer Eintrag ab Datum — der Verlauf bleibt.",
-   "card": { "title": "Vergütung", "text": "Gehalt, Zulagen, Dienstwagen" },
-   "left": { "shot": "staff-person-pay-light" },
+   "card": {
+    "title": "Vergütung",
+    "text": "Gehalt, Zulagen, Dienstwagen"
+   },
+   "left": {
+    "shot": "staff-person-pay-light"
+   },
    "leftCaption": "Oben Grundgehalt und alles, was monatlich läuft. Über **…** endet ein Bezug oder Dienstwagen zu einem Tag.",
    "steps": [
-    { "n": 1, "title": "Gehalt ab …", "text": "**Anpassung ab …**: neues Monatsbrutto und das Datum, ab dem es gilt. Der alte Satz bleibt im Verlauf." },
-    { "n": 2, "title": "Laufender Bezug", "text": "**Hinzufügen**: Lohnart (z. B. Funktionszulage, Jobticket, Sachbezug, Hansefit), Betrag, ab wann. Gibt es ihn schon, endet der alte am Vortag." },
-    { "n": 3, "title": "Dienstwagen", "text": "Fahrzeug, Bruttolistenpreis, Antrieb und Kilometer zur Arbeit — die App rechnet den geldwerten Vorteil." },
-    { "n": 4, "title": "Lohnarten", "text": "Neue Lohnarten und DATEV-Nummern legt das Büro im Hub auf der Seite **Lohnmonat** an." }
+    {
+     "n": 1,
+     "title": "Gehalt ab …",
+     "text": "**Anpassung ab …**: neues Monatsbrutto und das Datum, ab dem es gilt. Der alte Satz bleibt im Verlauf."
+    },
+    {
+     "n": 2,
+     "title": "Laufender Bezug",
+     "text": "**Hinzufügen**: Lohnart (z. B. Funktionszulage, Jobticket, Sachbezug, Hansefit), Betrag, ab wann. Gibt es ihn schon, endet der alte am Vortag."
+    },
+    {
+     "n": 3,
+     "title": "Dienstwagen",
+     "text": "Fahrzeug, Bruttolistenpreis, Antrieb und Kilometer zur Arbeit — die App rechnet den geldwerten Vorteil."
+    },
+    {
+     "n": 4,
+     "title": "Lohnarten",
+     "text": "Neue Lohnarten und DATEV-Nummern legt das Büro im Hub auf der Seite **Lohnmonat** an."
+    }
    ]
   },
   {
    "h1": "Der Lohnmonat",
    "sub": "Umschalter **Lohnmonat**: alle Personen des Monats mit Summe und Status. Oben steht, was vor dem Versand zu prüfen ist.",
-   "card": { "title": "Lohnmonat", "text": "Prüfen, abschließen, übergeben" },
-   "left": { "shot": "staff-payroll-light" },
+   "card": {
+    "title": "Lohnmonat",
+    "text": "Prüfen, abschließen, übergeben"
+   },
+   "left": {
+    "shot": "staff-payroll-light"
+   },
    "leftCaption": "**fertig**, **prüfen** oder **fehlt** je Person — ein Tipp zeigt Posten und Hinweise.",
    "steps": [
-    { "n": 1, "title": "Anlegen", "text": "Zieht Gehälter, Bezüge, Dienstwagen, den Bonus des festgeschriebenen Vormonats, genehmigte Reisekosten, Stunden und Geburtstags-Gutscheine." },
-    { "n": 2, "title": "Einmalzahlung", "text": "Sonderbonus, Urlaubsgeld, Abzug — mit Hinweis für die Steuerberatung, z. B. „pauschalversteuert“." },
-    { "n": 3, "title": "Brief", "text": "Der Brief an die Steuerberatung entsteht im gewohnten Aufbau. Ergänzen, **Sichern**, über das Teilen-Symbol per Mail schicken." },
-    { "n": 4, "title": "Abschließen und übergeben", "text": "**Abschließen** sperrt den Monat, **Übergeben** erzeugt die TXT-Liste — **TXT teilen** schickt sie an die Steuerberatung. Die Reisekosten gelten danach als ausgezahlt." }
+    {
+     "n": 1,
+     "title": "Anlegen",
+     "text": "Zieht Gehälter, Bezüge, Dienstwagen, den Bonus des festgeschriebenen Vormonats, genehmigte Reisekosten, Stunden und Geburtstags-Gutscheine."
+    },
+    {
+     "n": 2,
+     "title": "Einmalzahlung",
+     "text": "Sonderbonus, Urlaubsgeld, Abzug — mit Hinweis für die Steuerberatung, z. B. „pauschalversteuert“."
+    },
+    {
+     "n": 3,
+     "title": "Brief",
+     "text": "Der Brief an die Steuerberatung entsteht im gewohnten Aufbau. Ergänzen, **Sichern**, über das Teilen-Symbol per Mail schicken."
+    },
+    {
+     "n": 4,
+     "title": "Abschließen und übergeben",
+     "text": "**Abschließen** sperrt den Monat, **Übergeben** erzeugt die TXT-Liste — **TXT teilen** schickt sie an die Steuerberatung. Die Reisekosten gelten danach als ausgezahlt."
+    }
    ],
-   "hint": { "text": "Fehlt ein Bonus, ist der Vormonat im Bonus-Board noch nicht festgeschrieben — danach **Neu aufbauen**.", "kind": "info" }
+   "hint": {
+    "text": "Fehlt ein Bonus, ist der Vormonat im Bonus-Board noch nicht festgeschrieben — danach **Neu aufbauen**.",
+    "kind": "info"
+   }
+  },
+  {
+   "h1": "Checklisten und Lohnarten",
+   "sub": "Ein- und Austritte abhaken und Lohnarten pflegen — direkt in der App.",
+   "card": {
+    "title": "Checklisten",
+    "text": "Akte → Überblick → Checklisten"
+   },
+   "left": {
+    "shot": "staff-checklist-light"
+   },
+   "leftCaption": "Die Checkliste **Eintritt** einer Person: erledigt, entfällt, offen mit Notiz.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Übersicht",
+     "text": "Oben in der Personenliste stehen offene Checklisten und anstehende Ein- und Austritte ohne Liste. Ein Tipp öffnet die Akte."
+    },
+    {
+     "n": 2,
+     "title": "Starten",
+     "text": "In der Akte unter **Überblick → Checklisten**: **Eintritt starten** oder **Austritt starten**."
+    },
+    {
+     "n": 3,
+     "title": "Abhaken",
+     "text": "Kreis antippen. Über **…** eine Notiz ergänzen oder den Schritt als **Entfällt** auslassen, auch per Wischen."
+    },
+    {
+     "n": 4,
+     "title": "Lohnarten",
+     "text": "Im Lohnmonat **Lohnarten**: neue anlegen mit **+**, antippen zum Ändern der DATEV-Nummer oder zum Stilllegen."
+    }
+   ]
   },
   {
    "h1": "Auf dem iPad",
    "sub": "Liste links, Akte rechts — wie bei Verträgen und Gutscheinen. Der Lohnmonat nutzt die volle Breite.",
-   "card": { "title": "iPad", "text": "Liste und Akte nebeneinander" },
-   "left": { "shot": "staff-ipad-light" },
+   "card": {
+    "title": "iPad",
+    "text": "Liste und Akte nebeneinander"
+   },
+   "left": {
+    "shot": "staff-ipad-light"
+   },
    "leftCaption": "Ein Tipp links zeigt die Akte rechts, der gewählte Reiter bleibt beim Blättern stehen.",
    "steps": [
-    { "n": 1, "title": "Auswählen", "text": "Person links antippen, rechts erscheint die Akte." },
-    { "n": 2, "title": "Umschalten", "text": "Oben **Personen | Lohnmonat**." },
-    { "n": 3, "title": "Ohne Netz", "text": "Die Personenliste bleibt lesbar; Ändern und Übergeben brauchen Verbindung." },
-    { "n": 4, "title": "Datenschutz", "text": "Gehälter erscheinen nie in Mitteilungen oder Widgets." }
+    {
+     "n": 1,
+     "title": "Auswählen",
+     "text": "Person links antippen, rechts erscheint die Akte."
+    },
+    {
+     "n": 2,
+     "title": "Umschalten",
+     "text": "Oben **Personen | Lohnmonat**."
+    },
+    {
+     "n": 3,
+     "title": "Ohne Netz",
+     "text": "Die Personenliste bleibt lesbar; Ändern und Übergeben brauchen Verbindung."
+    },
+    {
+     "n": 4,
+     "title": "Datenschutz",
+     "text": "Gehälter erscheinen nie in Mitteilungen oder Widgets."
+    }
    ]
   }
  ]

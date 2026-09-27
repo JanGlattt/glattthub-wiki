@@ -1303,7 +1303,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Gutscheine | nativ | Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin-Korrektur, neuer Gutschein, Guthaben-Karte in der Kundenübersicht (seit 26.09.2026); Bestand mit Kennzahlen bleibt Web |
 | Reisekosten | nativ | Anspruchstage aus askDANTE, Assistent für neue Reisen (auch mehrtägig mit Tagen & Nächten, seit 27.09.2026), Reisekarte mit Live-Summe und fünf Abschnitten, Belege mit Kamera/Scanner, Einreichen/Zurückziehen/Löschen, Register Freigabe mit Berichtigen und Entscheidung (seit 26.09.2026); Web-Freigabeseite bleibt Web |
 | App-Geräte | nativ | Liste mit Suche, Chips, Kennzahlen, offene Codes und Geräte nach Institut; Code ausstellen in drei Schritten mit QR und Teilen-Blatt (AirDrop), Code zurückziehen, Gerät widerrufen im Steckbrief; iPad-Split, Ausstellen als Popover (seit 26.09.2026); Einlösen bleibt `EnrollmentSheet` |
-| Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild, Akte (Überblick, Vergütung, Zeit, Konto), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung (seit 27.09.2026); Lohnarten und Teamliste-Import bleiben Web |
+| Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild, Akte (Überblick, Vergütung, Zeit, Konto), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten, Checklisten Eintritt/Austritt (seit 27.09.2026); Teamliste-Import bleibt Web |
 | Freunde werben, Widerrufe, Zufriedenheit, Forderungen, Institute, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — Zufriedenheit zurückgestellt, weil die Befragung noch nicht genutzt wird (Jan, 26.09.2026) |
 | Berichte + 16 Berichtsseiten | bestand | WebView im Tab Berichte (ECharts, Registry-Karten); Kennzahlen nativ über Cockpit/Widgets/Siri |
 | Formulare, Bildschirme, Services, Unternehmensverträge, Report-Mails, Audit, Einstellungen, Conversion-Upload, Bonus-Verwaltung | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
@@ -1472,7 +1472,9 @@ die Liste links, der Steckbrief rechts, das Ausstellen öffnet als Fenster am Pl
 Konto. Das Symbol oben rechts legt ein Hub-Konto an — dieselben fünf Schritte wie im Web. Mit dem
 Recht Lohnliste gibt es den Umschalter **Lohnmonat**: Monat wählen, anlegen, Einmalzahlung,
 abschließen, übergeben (die TXT-Liste geht über das Teilen-Blatt an die Steuerberatung) und den
-Brief an die Steuerberatung lesen, ändern und teilen.
+Brief an die Steuerberatung lesen, ändern und teilen. **Lohnarten** lassen sich im Lohnmonat anlegen
+und mit DATEV-Nummer pflegen; **Checklisten** für Ein- und Austritt stehen oben in der Liste und im
+Überblick der Akte.
 
 !!! nutzerhandbuch "Bedienung: App 13 – Personal und Lohnmonat in der App"
     [https://hilfe.hub.glattt.com/app/13/](https://hilfe.hub.glattt.com/app/13/)
@@ -1491,9 +1493,12 @@ Brief an die Steuerberatung lesen, ändern und teilen.
 - **App:** `Staff/StaffView.swift` (Umschalter, Liste, iPad-Split), `StaffPersonView.swift` (Akte,
   Blätter für Gehalt/Bezug/Dienstwagen/Beenden mit `NumericKeypadField`), `PayrollMonthView.swift`
   (Lohnmonat, Einmalzahlung, Brief, TXT als Windows-1252-Datei für `ShareLink`),
-  `HubAccountWizard.swift`, `StaffViewModel.swift` (Offline-Stand `staff-people`), `StaffModels.swift`.
-- **Nachweis:** `StaffSnapshotTests` (Liste, Akte Überblick/Vergütung, Lohnmonat, iPad — hell/dunkel;
-  Pfad-Erkennung, Filter, Beträge, `null`-Felder), PHP `tests/Feature/Payroll/*`.
+  `HubAccountWizard.swift`, `StaffViewModel.swift` (Offline-Stand `staff-people`), `StaffModels.swift`,
+  `PayrollWageTypesSheet.swift` (Lohnarten), `StaffChecklistSheet.swift` (Checkliste; `ChecklistBar`
+  statt `ProgressView`, weil der im `ImageRenderer` als Platzhalter erscheint).
+- **Nachweis:** `StaffSnapshotTests` (Liste, Akte Überblick/Vergütung, Checkliste, Lohnmonat, iPad —
+  hell/dunkel; Pfad-Erkennung, Filter, Beträge, `null`-Felder), `StaffUITests` (nur lesend: Mehr →
+  Personal, Filter, alle Reiter der Akte, Lohnmonat, Lohnarten), PHP `tests/Feature/Payroll/*`.
 
 ### Native Seite „Termin buchen" (Detailseite im Termine-Tab, seit 26.09.2026)
 
@@ -1728,7 +1733,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
-| 27.09.2026 | 1.2.1 (40) | Native Personalseite (Entwurf 2): Personen, Akte mit Vergütung, Hub-Konto anlegen, Lohnmonat mit TXT-Übergabe und Brief an die Steuerberatung; Hub: Lohnliste (Lohnarten, Bezüge, Dienstwagen, Lohnmonat, Teamliste-Import) |
+| 27.09.2026 | 1.2.1 (40) | Native Personalseite (Entwurf 2): Personen, Akte mit Vergütung, Hub-Konto anlegen, Lohnmonat mit TXT-Übergabe, Brief an die Steuerberatung und Lohnarten, Checklisten Eintritt/Austritt in Akte und Liste; Hub: Lohnliste (Lohnarten, Bezüge, Dienstwagen, Lohnmonat, Teamliste-Import) |
 | 26.09.2026 | 1.2.1 (38) | „Andere Uhrzeit …" je Tag (alle freien Startzeiten, `booking/api/day-slots`) in Termin buchen, Folgetermin und Verlegen — App und Web (Befund 84); Verlegen wählt die Leistungen des Termins vor und steht in voller Breite (Befund 82, Build 37); keine vergangenen Zeiten mehr (Befund 83, Hub); Standort-Pille mit eigenem Blatt (Befund 81, Build 36) |
 | 26.09.2026 | 1.2.1 (35) | Native Seite „Termin buchen" (Slot-Finder): Detailseite im Termine-Tab, Plus in der Terminliste, Knopf in der Kundenübersicht, ⌘N, Web-Links nativ; iPad-Raster; Hub: `kind: new` an `booking/api/book`, `user.can_book`, `/hub/booking` als Detail-Präfix |
 | 26.09.2026 | 1.2.1 (27) | Reisekosten Stufe 2/3 in der App: Status „Ausgezahlt“, Belege per QuickLook (`/travel-expenses/receipts/{id}/file`), Adresssuche und Strecke über den Hub mit gespeicherten Koordinaten |
