@@ -7,7 +7,7 @@
  "audience": "leitung",
  "footerArea": "App",
  "stand": "27.09.2026",
- "version": "1.0",
+ "version": "1.1",
  "nr": 15,
  "title": [
   "Die Verkaufsstatistik",
@@ -17,7 +17,7 @@
  "eyebrow": "App · Berichte",
  "notes": [
   "Die Verkaufsstatistik öffnest du im Reiter **Berichte** über die Karte **Verkaufsstatistik**. Sie ist aufgebaut wie im Hub — dieselben Auswertungen in derselben Reihenfolge.",
-  "Einige Auswertungen zeigt die App noch als Karte aus dem Hub (Marke **Web**). Sie funktionieren genauso, sehen nur etwas anders aus und ziehen nach und nach in die App um."
+  "Alle zwölf Auswertungen des Hubs sind in der App — jede mit Diagramm und Tabelle. Was die App nicht zeigt (Vergleichsreihen, einzelne Filter), öffnet **⋯ → Hub-Fassung öffnen**."
  ],
  "pages": [
   {
@@ -104,6 +104,40 @@
      "n": 3,
      "title": "Absolut / Anteil",
      "text": "Anteil zeigt jede Säule als 100 % — gut, um Verschiebungen im Mix zu sehen."
+    }
+   ]
+  },
+  {
+   "h1": "Zahlungen und Laufzeiten",
+   "sub": "Lastschriften-Bestand, Rücklastschriften, Zahlungsausfälle und Laufzeiten — dieselben Karten wie im Hub, weiter unten auf der Seite.",
+   "card": {
+    "title": "Zahlungen",
+    "text": "Einzug, Ausfälle, Laufzeiten"
+   },
+   "left": {
+    "shot": "report-card-mrr-light"
+   },
+   "leftCaption": "Blasse Säulen sind die Prognose der nächsten Monate aus den vereinbarten Raten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Lastschriften-Bestand",
+     "text": "**Gesamt** zeigt eingezogen, nachgezahlt, offen und Rücklastschriften; **Institute** das Volumen je Standort. **Prognose** blendet die Zukunft ein oder aus."
+    },
+    {
+     "n": 2,
+     "title": "Rücklastschriften",
+     "text": "**Quote** als Linien nach Anzahl und Wert, **Anzahl** als Säulen je Monat."
+    },
+    {
+     "n": 3,
+     "title": "Zahlungsausfälle",
+     "text": "Nach **Viertel** der Laufzeit oder je **Ratenmonat**, als **%** oder **Anzahl**."
+    },
+    {
+     "n": 4,
+     "title": "Laufzeiten",
+     "text": "**laut Vertrag**, **Reale Raten** oder **Monate**; **Nur aktive** blendet beendete Verträge aus."
     }
    ]
   },

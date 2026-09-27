@@ -704,9 +704,9 @@
    "x": 0,
    "y": 0,
    "width": 780,
-   "height": 745
+   "height": 804
   },
-  "ratio": 0.9551282051282052,
+  "ratio": 1.0307692307692307,
   "marks": []
  },
  "report-page-ipad-light": {
@@ -717,6 +717,16 @@
    "height": 1329
   },
   "ratio": 0.64892578125,
+  "marks": []
+ },
+ "report-card-mrr-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 754
+  },
+  "ratio": 0.9666666666666667,
   "marks": []
  }
 }
