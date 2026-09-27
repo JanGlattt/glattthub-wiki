@@ -1304,7 +1304,8 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Reisekosten | nativ | Anspruchstage aus askDANTE, Assistent für neue Reisen (auch mehrtägig mit Tagen & Nächten, seit 27.09.2026), Reisekarte mit Live-Summe und fünf Abschnitten, Belege mit Kamera/Scanner, Einreichen/Zurückziehen/Löschen, Register Freigabe mit Berichtigen und Entscheidung (seit 26.09.2026); Web-Freigabeseite bleibt Web |
 | App-Geräte | nativ | Liste mit Suche, Chips, Kennzahlen, offene Codes und Geräte nach Institut; Code ausstellen in drei Schritten mit QR und Teilen-Blatt (AirDrop), Code zurückziehen, Gerät widerrufen im Steckbrief; iPad-Split, Ausstellen als Popover (seit 26.09.2026); Einlösen bleibt `EnrollmentSheet` |
 | Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild, Akte (Überblick, Vergütung, Zeit, Konto), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten (seit 27.09.2026); Teamliste- und Lohnliste-Import bleiben Web (Datei-Upload im Büro), Checklisten Eintritt/Austritt vorerst ausgeblendet |
-| Freunde werben, Widerrufe, Zufriedenheit, Forderungen, Institute, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — Zufriedenheit zurückgestellt, weil die Befragung noch nicht genutzt wird (Jan, 26.09.2026) |
+| Institute | nativ | Karte zuerst (seit 27.09.2026): Nadeln in Hub-Farbe, Blatt mit Liste/Institut, Unterseiten Kennzahlen, Team, Verwaltung |
+| Freunde werben, Widerrufe, Zufriedenheit, Forderungen, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — Zufriedenheit zurückgestellt, weil die Befragung noch nicht genutzt wird (Jan, 26.09.2026) |
 | Berichte | nativ | Übersicht mit Standort, Zeitraum, Suche, eigenen/geteilten Dashboards und Berichten nach Bereich mit drei Leitkennzahlen (seit 27.09.2026, Nachzug 6 Schritt 1); Dashboard-Assistent eingebettet (Editor-Engine) |
 | Verkaufsstatistik | nativ | Berichtsseite „Wie im Hub“ mit KPI-Zeile und allen zwölf Karten nativ (seit 27.09.2026, Build 48) |
 | Zukünftige/Vergangene Beratungsgespräche, Stornierte und gelöschte Termine, Terminstatistik | nativ | Berichtsseiten „Wie im Hub“, alle 21 Karten nativ (seit 27.09.2026) |
@@ -1694,6 +1695,44 @@ gehen über ⋯ in die Hub-Fassung, ein neues Dashboard entsteht wie bisher übe
   bei neuen Spalten neu aufgebaut.
 - **Nachweis:** `AppointmentReportsUITests.testCustomDashboardPage` (lokales „App-Prüfdashboard“ des
   Testnutzers, Zeitraumwechsel, keine Web-Karte), PHP `AppReportsTest::dashboard_page_lists_visible_tiles_in_order_and_width`.
+
+### Native Seite „Institute" (Mehr-Seite, seit 27.09.2026)
+
+**Für Endanwender:** „Institute“ öffnet in der App eine Karte mit allen Standorten als farbige Nadeln
+(BI, H, OS, HB, BS; ausgeblendete wie Magdeburg blasser). Unten liegt ein Blatt wie in Apple Karten:
+ohne Auswahl die Liste mit „Geöffnet bis …“ bzw. „Geschlossen · öffnet …“, nach einem Tipp auf Nadel
+oder Zeile das Institut mit **Anrufen**, **Mobil**, **WhatsApp** und **Route**, den Beratungen von
+heute, den Verträgen im Monat, Ø KPZ und den Öffnungszeiten. Das Blatt lässt sich hochziehen.
+**Kennzahlen**, **Team** und **Verwaltung** (Kontakt, Google-Wertung, Öffnungszeiten, Bild und Icon,
+Steckbrief, Bank, Tablet-Link, je nach Recht) sind eigene Seiten. Auf dem iPad schwebt das Blatt
+links über der Karte.
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 27.09.2026, aus drei Entwürfen):** Entwurf 3 „Karte zuerst“. Verworfen:
+  Entwurf 1 „Wie im Hub“ (Menüband 1:1) und Entwurf 2 „Lagebild“ (eine Seite mit Kennzahlen zuerst).
+- **Endpunkte wie im Web:** `/phorest/branches` (Liste mit Koordinaten, Reihenfolge, ausgeblendet),
+  `/phorest/institute/{id}/contact|kpis|staff|color|image|icon|bank-account|access-token` samt
+  Schreib-Endpunkten. Die Kontakt-Antwort trägt seit 27.09.2026 `can.edit|bank|access` (dieselben
+  Rechte wie die Routen-Gates), danach blendet die App Verwaltung und Abschnitte ein.
+- **Kennzahlen-Karten** mit festem Standort über `GET /api/app/reports/page?keys=termine.booking-status,sales.body-zones-daily`
+  und `ReportPageModel.fixedBranch` — dieselben nativen Bausteine wie in den Berichten.
+- **Navigation:** `NativeMorePage.institutes` (`/hub/branches`); `/hub/branches/{id}` wählt das
+  Institut über `AppState.instituteFocus`. Unterseiten per `pushMoreDetail`.
+- **Blatt (iPhone)** ist ein eigenes Overlay mit drei Stufen statt eines System-Sheets — ein Sheet
+  läge über der Tab-Leiste und bliebe beim Tab-Wechsel stehen. Inhalt endet 110 pt über dem unteren
+  Rand, weil die schwebende Tab-Leiste darüberliegt.
+- **„Geöffnet“** rechnet in Europe/Berlin aus den Öffnungszeiten (ISO-Wochentag 1–7).
+- **Fallstricke (gefunden beim Bau):** `upcoming-consultations-data` antwortet mit gewähltem Standort
+  nur mit `branch_stats` — Buchungsstand und Beratungskalender blieben dann leer, auch in den
+  Berichten (`upcomingNormalized`). „Körperzonen pro Tag“ beschriftete bei unter 31 Tagen jeden Tag,
+  solange die Scroll-Einstellung aktiv war.
+- **Nachweis:** `InstitutesUITests` (iPhone gegen den lokalen Hub), `InstitutesSnapshotTests`
+  (Liste, Institut, iPad-Blatt; Öffnungsstatus, WhatsApp-Link, Pfade), PHP
+  `InstituteDetailPageTest::test_contact_endpoint_reports_edit_rights`,
+  `AppReportsTest::statistics_page_returns_requested_cards_the_user_may_see`. Ein iPad-UI-Test ist
+  vorerst zurückgestellt (Jan, 27.09.2026): Die Anmeldehilfe kann einen frischen iPad-Simulator noch
+  nicht zuverlässig freischalten.
 
 ### Native Seite „Termin buchen" (Detailseite im Termine-Tab, seit 26.09.2026)
 
