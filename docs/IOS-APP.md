@@ -1299,13 +1299,14 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Laser | nativ | Raum-Sicht des Instituts, Werkbank „Alle“, Geräteakte mit acht Reitern, Teile-Akte, Reparatur/STK/Behörde nativ, Wartungsassistent, Störung melden (seit 26.09.2026); Inventarisieren, Stammdaten, Verbrauchsmaterial, Berichte Web |
 | Bonus-Board | nativ | Mehr-Seite, beide Sichten, Export per Teilen-Blatt |
 | Termin buchen | nativ | Slot-Finder als Detailseite im Termine-Tab: Kundin, Institut, ab wann, Paket-Leistungen, Vorschläge je Tag, Rückfrage am Slot, iPad-Raster (seit 26.09.2026); Einstiege Plus in der Terminliste, Kundenübersicht, ⌘N; Folgetermin/Verlegen aus der Terminansicht bleiben im Blatt |
-| Verträge | nativ | Liste + Vertragsseite mit vier Reitern (seit 25.09.2026); GoCardless/Ratenplan/Bearbeiten als Web-Blatt; Preislisten, Freunde werben, Mappings Web |
+| Verträge | nativ | Liste + Vertragsseite mit vier Reitern (seit 25.09.2026); GoCardless/Ratenplan/Bearbeiten als Web-Blatt; Preislisten, Mappings Web; Freunde werben nativ (27.09.2026) |
 | Gutscheine | nativ | Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin-Korrektur, neuer Gutschein, Guthaben-Karte in der Kundenübersicht (seit 26.09.2026); Bestand mit Kennzahlen bleibt Web |
 | Reisekosten | nativ | Anspruchstage aus askDANTE, Assistent für neue Reisen (auch mehrtägig mit Tagen & Nächten, seit 27.09.2026), Reisekarte mit Live-Summe und fünf Abschnitten, Belege mit Kamera/Scanner, Einreichen/Zurückziehen/Löschen, Register Freigabe mit Berichtigen und Entscheidung (seit 26.09.2026); Web-Freigabeseite bleibt Web |
 | App-Geräte | nativ | Liste mit Suche, Chips, Kennzahlen, offene Codes und Geräte nach Institut; Code ausstellen in drei Schritten mit QR und Teilen-Blatt (AirDrop), Code zurückziehen, Gerät widerrufen im Steckbrief; iPad-Split, Ausstellen als Popover (seit 26.09.2026); Einlösen bleibt `EnrollmentSheet` |
 | Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild, Akte (Überblick, Vergütung, Zeit, Konto), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten (seit 27.09.2026); Teamliste- und Lohnliste-Import bleiben Web (Datei-Upload im Büro), Checklisten Eintritt/Austritt vorerst ausgeblendet |
 | Institute | nativ | Karte zuerst (seit 27.09.2026): Nadeln in Hub-Farbe, Blatt mit Liste/Institut, Unterseiten Kennzahlen, Team, Verwaltung |
-| Freunde werben, Zufriedenheit, Forderungen, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — Zufriedenheit zurückgestellt, weil die Befragung noch nicht genutzt wird (Jan, 26.09.2026) |
+| Zufriedenheit, Forderungen | bestand | Web im Mehr-Pool, Nachzug offen — Zufriedenheit zurückgestellt, weil die Befragung noch nicht genutzt wird (Jan, 26.09.2026) |
+| Freunde werben, Google-Bewertungen | nativ | „Aufgabe zuerst“ (seit 27.09.2026): Überweisungsstapel mit Kopier-Knöpfen; Bewertungen schnell erfassen |
 | Widerrufe | nativ | Fallakte mit Reitern (seit 27.09.2026): Liste, Fall, Notiz, Status, Abschließen, Erfassen, Upload, RA-Vorgang, Forderungsübergabe; SEPA-Storno/Fernabsatz/Downgrade im Hub-Blatt |
 | Berichte | nativ | Übersicht mit Standort, Zeitraum, Suche, eigenen/geteilten Dashboards und Berichten nach Bereich mit drei Leitkennzahlen (seit 27.09.2026, Nachzug 6 Schritt 1); Dashboard-Assistent eingebettet (Editor-Engine) |
 | Verkaufsstatistik | nativ | Berichtsseite „Wie im Hub“ mit KPI-Zeile und allen zwölf Karten nativ (seit 27.09.2026, Build 48) |
@@ -1697,6 +1698,29 @@ gehen über ⋯ in die Hub-Fassung, ein neues Dashboard entsteht wie bisher übe
   bei neuen Spalten neu aufgebaut.
 - **Nachweis:** `AppointmentReportsUITests.testCustomDashboardPage` (lokales „App-Prüfdashboard“ des
   Testnutzers, Zeitraumwechsel, keine Web-Karte), PHP `AppReportsTest::dashboard_page_lists_visible_tiles_in_order_and_width`.
+
+### Native Freunde werben und Google-Bewertungen (seit 27.09.2026)
+
+**Für Endanwender:** **Freunde werben** (Verträge → Geschenk-Symbol) zeigt oben „Jetzt überweisen“:
+je auszahlbarer Prämie eine Karte mit IBAN, Inhaber, Betrag und Zweck zum Kopieren und „Überweisung
+erfolgt“. Darunter die übrigen Werbungen (Wartet, Ausgezahlt, Blockiert). Ein Tipp öffnet die Einzelheiten
+mit Bankdaten, Werber und Vertrag korrigieren und „50 € Rabatt verrechnen“. **Google-Bewertungen**
+(Bonus-Board → ⋯) erfasst eine Bewertung mit Institut, Sternen und „Text einfügen“; darunter stehen der
+Positiv-Saldo je Institut und die Bewertungen des Monats (Entfernen per langem Druck).
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 27.09.2026):** Entwurf 2 „Aufgabe zuerst“ für beide Seiten.
+- **Endpunkte wie im Web:** `/hub/contracts/referrals/list` und die Korrektur-Endpunkte
+  (`bank-details`, `referrer`, `contract`, `contract-options`, `apply-discount`, `confirm-payout`),
+  `/hub/contracts/referrers/search`; `/hub/bonus/google-bewertungen/data`, `POST`, `DELETE …/{id}`.
+- **Leistung:** Die Liste lädt `contract.payments` vor; `ContractReferralService::firstSepaPayment()`
+  filtert dann im Speicher statt je Werbung abzufragen.
+- **Verwendungszweck** der Überweisung ohne Namen der Geworbenen (landet beim Konto des Werbers).
+- **Web-Brücke:** `bridge.js` `NATIVE_PAGES` war seit dem Laser nicht mehr gepflegt — SPA-Links auf Laser,
+  App-Geräte, Institute, Einstellungen und Widerrufe öffneten die Web-Fassung. Seit 27.09.2026 abgeglichen;
+  jede neue native Mehr-Seite gehört dort mit hinein.
+- **Nachweis:** `ReferralsReviewsUITests`, PHP `ContractReferralTest`, `BonusBoardPageTest`.
 
 ### Native Widerrufe (Mehr-Seite, seit 27.09.2026)
 
