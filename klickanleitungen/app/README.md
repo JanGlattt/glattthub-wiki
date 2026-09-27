@@ -1,6 +1,6 @@
 # Klickanleitungen App — Quellen
 
-Quellen der Serie **App 1–14** (die glatttHub-App auf iPad und iPhone). Standard und
+Quellen der Serie **App 1–15** (die glatttHub-App auf iPad und iPhone). Standard und
 Deck-Format: `klickanleitungen/README.md` und Wiki `docs/KLICKANLEITUNGEN.md`; die Technik der
 App steht im Wiki `IOS-APP.md`.
 
@@ -20,6 +20,7 @@ App steht im Wiki `IOS-APP.md`.
 | **12 — Termin buchen in der App** | Kundin wählen, Institut und „ab wann“, Paket-Leistungen, Vorschläge je Tag (grün = ohne Lücke), Rückfrage und Buchen, Zum Termin / Weiterer Termin, iPad mit allen Tagen nebeneinander (seit 26.09.2026) |
 | **10 — App-Geräte in der App** | Geräteliste mit Chips und Kennzahlen, Code ausstellen (Art, Angaben, QR/Teilen), Code zurückziehen, Steckbrief mit Widerruf, iPad-Split (seit 26.09.2026) |
 | **14 — Berichte in der App** | Native Übersicht: Standort, Zeitraum, Suche über die Analysen, eigene und geteilte Dashboards mit Kennzahlen, Berichte nach Bereich mit drei Leitkennzahlen und Verlauf, Laden Karte für Karte, iPad-Raster (seit 27.09.2026) |
+| **15 — Die Verkaufsstatistik in der App** | Native Berichtsseite „Wie im Hub“: Standort, Brutto/Netto, Kennzahlen, KPZ pro Institut mit Prognose und Verkäuferinnen, Neukunden, Sales-Mix mit Schaltern, Tabelle hinter jedem Diagramm, Web-Karten im Übergang, iPad (seit 27.09.2026) |
 
 Die ersten sieben, 9 (Gutscheine) und 12 (Termin buchen) richten sich an **die Institute**; 6 (Management-Sicht) zusätzlich an Leitung und Büro, 8 (Verträge) und 10 (App-Geräte) an Leitung und Büro.
 

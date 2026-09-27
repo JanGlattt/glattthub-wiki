@@ -678,5 +678,45 @@
   },
   "ratio": 0.732421875,
   "marks": []
+ },
+ "report-page-head-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1250
+  },
+  "ratio": 1.6025641025641026,
+  "marks": []
+ },
+ "report-card-zones-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 714
+  },
+  "ratio": 0.9153846153846154,
+  "marks": []
+ },
+ "report-card-sales-mix-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 745
+  },
+  "ratio": 0.9551282051282052,
+  "marks": []
+ },
+ "report-page-ipad-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2048,
+   "height": 1329
+  },
+  "ratio": 0.64892578125,
+  "marks": []
  }
 }

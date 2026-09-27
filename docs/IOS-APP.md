@@ -1306,7 +1306,8 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild, Akte (Überblick, Vergütung, Zeit, Konto), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten (seit 27.09.2026); Teamliste- und Lohnliste-Import bleiben Web (Datei-Upload im Büro), Checklisten Eintritt/Austritt vorerst ausgeblendet |
 | Freunde werben, Widerrufe, Zufriedenheit, Forderungen, Institute, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — Zufriedenheit zurückgestellt, weil die Befragung noch nicht genutzt wird (Jan, 26.09.2026) |
 | Berichte | nativ | Übersicht mit Standort, Zeitraum, Suche, eigenen/geteilten Dashboards und Berichten nach Bereich mit drei Leitkennzahlen (seit 27.09.2026, Nachzug 6 Schritt 1); Dashboard-Assistent eingebettet (Editor-Engine) |
-| 16 Berichtsseiten, Dashboards | bestand | Web-Detailseite im nativen Tab Berichte; native Registry-Karten mit Swift Charts folgen (Schritt 2: Verkauf, Termine & Beratungen) |
+| Verkaufsstatistik | nativ | Berichtsseite „Wie im Hub“ mit KPI-Zeile und zwölf Karten; vier Karten nativ (KPZ, Neukunden, Sales-Mix, Bestandskunden), acht als Web-Karte (seit 27.09.2026) |
+| 15 weitere Berichtsseiten, Dashboards | bestand | Web-Detailseite im nativen Tab Berichte; folgen dem Muster „Wie im Hub“ ohne neue Entwürfe |
 | Formulare, Bildschirme, Services, Unternehmensverträge, Report-Mails, Audit, Einstellungen, Conversion-Upload, Bonus-Verwaltung | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
 
 ### Native Verträge (Mehr-Seite, seit 25.09.2026 — Nachzug 1)
@@ -1561,6 +1562,45 @@ Dashboard mit dem Assistenten des Hubs.
   Analysen, `null`-Felder), `ReportsUITests` (Tab, Zeitraum, Suche, Bericht öffnen, zurück), PHP
   `AppReportsTest`, `ReportRegistryTest`.
 
+### Native Berichtsseiten: Verkaufsstatistik (seit 27.09.2026 — Nachzug 6, Schritt 2)
+
+**Für Endanwender:** Die Verkaufsstatistik ist in der App eine eigene Seite, aufgebaut wie im Hub:
+oben Standort und Brutto/Netto, darunter die Kennzahlen, dann alle zwölf Auswertungen in derselben
+Reihenfolge. Jede Karte zeigt ihr Diagramm mit Achse und Werten und hat dahinter die Tabelle; ein
+Tipp auf eine Säule zeigt die Werte je Institut, bei den Körperzonen auch die Verkäuferinnen.
+
+!!! nutzerhandbuch "Bedienung: App 15 – Die Verkaufsstatistik in der App"
+    [https://hilfe.hub.glattt.com/app/15/](https://hilfe.hub.glattt.com/app/15/)
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 27.09.2026):** Entwurf 1 „Wie im Hub" (https://claude.ai/artifact/D3yrRgTP9a1HrUnxKz1G2x)
+  — und zwar **für alle Statistikseiten**: keine neuen drei Entwürfe je Berichtsseite, sondern dieses
+  Muster (`.github/instructions/ios.instructions.md` 3a, Wissen `statistikseiten-app-muster`).
+- **Rahmen:** `GET /api/app/reports/page?route=…&branch=` (`AppReportsService::page`) liefert Kopf,
+  KPI-Zeile (Portfolio der Quelle der ersten Leitkennzahl über `WidgetKpiService`) und die Karten in
+  der Reihenfolge der Web-Seite. Die Reihenfolge liest `ReportRegistry::statisticsOf()` aus der
+  Blade-Datei (`<x-statistic statistic="…">`) — sie wird nur dort gepflegt.
+- **Karten:** Registry-Feld `native` (Baustein A–H). Die App zeichnet bekannte Schlüssel nativ und holt
+  die Daten über **dieselben Endpunkte wie das Web** (`/hub/reports/sales-statistics/*`, Web-Sitzung).
+  Nativ seit Build 47: `sales.body-zones-monthly` (A), `sales.new-customers` (A), `sales.sales-mix` (B),
+  `sales.existing-customer-flex` (G). Alle anderen erscheinen als **Web-Karte**: `GET
+  /hub/reports/statistic/{key}/embed?branch_id=&value_mode=` rendert eine Statistik ohne Hub-Rahmen
+  (Vorlage `shared/screen-card`), die App bettet sie in einen `makeTransientWebView()` ohne eigenes
+  Scrollen und fragt die Höhe per JavaScript ab (`[data-statistic-embed]`).
+- **App:** `Reports/ReportPageView.swift` (Kopf, KPI-Zeile, Karten, ⋯ mit Sprungliste und „Hub-Fassung
+  öffnen" = `?view=web`), `ReportPageModel.swift` (Rahmen, Brutto/Netto, `nativePages`,
+  `ReportCardLoader` mit sanftem Neuladen), `ReportChartKit.swift` (`StackedColumnsChart` mit Y-Achse,
+  Wert über jeder Säule, Wischen durch die Monate, Auswahl per Tipp; `ReportMonthTable` Jahr → Monat;
+  `ReportStatFrame` mit Diagramm | Tabelle), `SalesStatisticCards.swift` (die vier Karten und
+  `EmbeddedStatisticCard`). Eingehängt als `nativeDetailFactories["hub.reports"]` für die Pfade aus
+  `ReportPageModel.nativePages`; andere Berichte bleiben Web-Detailseite.
+- **Nächste Schritte:** Bausteine C (Monatswert + Quote), D (Tage), E (Linien), F (Verteilung) für die
+  übrigen acht Karten, dann weitere Berichtsseiten in `nativePages` — ohne neue Entwürfe.
+- **Nachweis:** `ReportPageSnapshotTests` (Kopf, vier Karten, iPad — hell/dunkel; Routen, Monatsnamen),
+  `ReportsUITests` (Übersicht → Verkaufsstatistik nativ, Web-Karten, zurück), PHP `AppReportsTest`
+  (Rahmen, Embed), `ReportRegistryTest` (`statisticsOf`, Bausteine).
+
 ### Native Seite „Termin buchen" (Detailseite im Termine-Tab, seit 26.09.2026)
 
 **Für Endanwender:** „Termin buchen" ist in der App nativ. Man öffnet die Seite über das goldene **+**
@@ -1794,6 +1834,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 27.09.2026 | 1.2.1 (47) | Native Verkaufsstatistik (Muster „Wie im Hub“): KPI-Zeile, zwölf Karten in Web-Reihenfolge, vier davon nativ mit Swift Charts, Rest als Web-Karte; Hub: `/api/app/reports/page`, `/hub/reports/statistic/{key}/embed`, Registry-Feld `native`, `ReportRegistry::statisticsOf()` |
 | 27.09.2026 | 1.2.1 (46) | Berichte-Übersicht: Diagramme mit Achse und Werten, Verkaufsstatistik mit KPZ nach Standort, Zeitraum-Marken („Bestand“, „lfd. Monat“), Vergleich an der Tendenz, Storno-Kennzahlen, Zukünftige BG mit Heute/28 Tage/Monatsende |
 | 27.09.2026 | 1.2.1 (45) | Personalakte: Überblick als Kontakt (Nummer wählbar und formatiert, E-Mail, Adresse mit Karte) und Anstellung (Vertrag + Befristung in einer Zeile) statt Anstellung/Stammdaten; Hub: Teamliste-Import ergänzt die führende Null von Telefonnummern |
 | 27.09.2026 | 1.2.1 (43) | Native Berichte-Übersicht (Nachzug 6, Entwurf 2): Standort, Zeitraum, Suche, Dashboards mit Kennzahlen, Berichte nach Bereich mit Leitkennzahlen und Verlauf, iPad-Raster, Assistent als Blatt; Hub: `ReportRegistry` `area`/`kpis`, `GET /api/app/reports` + `/values`, `/hub/reports?shell=native` |
