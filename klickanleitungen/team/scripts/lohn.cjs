@@ -69,7 +69,7 @@ const lohnlisteVorschau = ['fn', async (page, L) => {
 }];
 
 const PLAN = [
-  // Team 1: Personal zeigt seit 28.09.2026 direkt die Liste (askDANTE + Stammdaten + Hub-Konto)
+  // Team 1: Personal zeigt seit 27.09.2026 direkt die Liste (askDANTE + Stammdaten + Hub-Konto)
   { name: 'p1-personal', url: '/hub/staff', steps: [['loaded'], ['wait', 1500]], marks: [
     { id: 'suche', kind: 'badge', n: 1, sel: '.page-header-glattt .search-glattt', at: 'l' },
     { id: 'filter', kind: 'badge', n: 2, sel: '.tab-band-glattt', at: 'l' },

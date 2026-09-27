@@ -135,7 +135,7 @@ askDANTE-Abbild für die App.
 
 ### Lohnliste des Büros übernehmen (`PayrollSheetImporter`)
 
-Seit 28.09.2026. Die Lohnliste des Büros (Google Tabellen → CSV, Kopfzeile in Zeile 1) trägt die
+Seit 27.09.2026. Die Lohnliste des Büros (Google Tabellen → CSV, Kopfzeile in Zeile 1) trägt die
 DATEV-Lohnart im Spaltenkopf („010 - Grundgehalt brutto", „30 - Fahrgeld …"). Der Importer liest
 die Spalten über die **Nummer am Kopfanfang**, nicht über die Position — neue Spalten in der
 Tabelle brechen ihn nicht.
@@ -161,7 +161,7 @@ Tabelle brechen ihn nicht.
   Vorschau ohne die internen Schritte. Die Datei wird nie gespeichert.
 - **Lohnarten dazu:** Migration `2026_09_28_090000_payroll_wage_types_from_payroll_sheet` legt 15, 016,
   008, 911, 891 an und trägt fehlende DATEV-Nummern nach (nur wo noch keine steht).
-- **Erster Lauf lokal (28.09.2026):** 34 von 43 Zeilen zugeordnet, 7 ohne Treffer (nicht in askDANTE:
+- **Erster Lauf lokal (27.09.2026):** 34 von 43 Zeilen zugeordnet, 7 ohne Treffer (nicht in askDANTE:
   Minijobs, Elternzeit, Neueintritte nach dem letzten Abgleich), 1 Person doppelt (zwei Verträge).
   Summen je Person stimmen mit „Gehalt brutto total" der Liste überein — bis auf eine Zeile, in
   der die Tabellenformel das Jobticket nicht mitzählt.
@@ -226,7 +226,7 @@ App: `ios/glatttHub/Staff/*`. Tests: `tests/Feature/Payroll/*` (inkl. `StaffChec
 
 | Datum | Änderung |
 |---|---|
-| 28.09.2026 | Lohnliste des Büros als CSV übernehmen (Gehalt, Bezüge, Dienstwagen, Vertragsdaten); Lohnarten 15, 016, 008, 911, 891 und fehlende DATEV-Nummern |
+| 27.09.2026 | Lohnliste des Büros als CSV übernehmen (Gehalt, Bezüge, Dienstwagen, Vertragsdaten); Lohnarten 15, 016, 008, 911, 891 und fehlende DATEV-Nummern |
 | 27.09.2026 | Checklisten per Schalter ausgeblendet (Vorlage nicht mehr aktuell); Team 4 heißt jetzt „Lohnmonat und Vergütung" |
 | 27.09.2026 | Checklisten Eintritt/Austritt (Web + App), Lohnarten in der App, Nutzerhandbuch Team 4 mit erfundenen Personen |
 | 27.09.2026 | Erste Fassung: Lohnarten, laufende Bezüge, Dienstwagen, Lohnmonat mit Abschluss, TXT, Brief an die Steuerberatung, Teamliste-Import, Web und App |

@@ -7,7 +7,7 @@
 const L = require('./lib.cjs');
 const P = require('../../shared/lib/plan.cjs');
 
-// Seit 28.09.2026 zeigt /hub/staff direkt die Liste — kein Klick auf eine Einstiegskachel mehr
+// Seit 27.09.2026 zeigt /hub/staff direkt die Liste — kein Klick auf eine Einstiegskachel mehr
 const erstePerson = ['fn', async (page, L) => {
   const ok = await page.evaluate(() => {
     const el = [...document.querySelectorAll('tbody tr a.staff-table-glattt-name, tbody tr a[href*="/hub/staff/"]')].find(e => e.offsetParent !== null && !/reisekosten/.test(e.getAttribute('href') || ''));

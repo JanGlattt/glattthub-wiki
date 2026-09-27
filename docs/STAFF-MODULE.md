@@ -60,7 +60,7 @@ Admin-Backend. Der Austritt einer Person wird über die
   Dienstwagen, letzte Lohnmonate — Anpassung immer als neuer Eintrag ab Datum. Die Detailseite löst
   dafür die Person im Abbild auf (`hr_employees.askdante_user_id` → `hrEmployeeId`); der Anker
   `#verguetung` öffnet den Reiter direkt. Fachlich: [Lohnliste](LOHNLISTE.md).
-- **„Personal" ist seit 28.09.2026 direkt die Liste** (Jan: die Einstiegskacheln ergaben keinen Sinn,
+- **„Personal" ist seit 27.09.2026 direkt die Liste** (Jan: die Einstiegskacheln ergaben keinen Sinn,
   Reisekosten und Lohnmonat stehen im Menü unter Team). `/hub/staff/overview` leitet auf `/hub/staff`
   um; ohne `view_staff_overview` führt `/hub/staff` zur ersten erlaubten Seite (Lohnmonat, Reisekosten).
 - **Eine Liste aus drei Quellen:** Die Web-Liste liest nicht mehr askDANTE live (`/askdante/staff`),
@@ -213,7 +213,7 @@ Cache::remember('askdante_staff_archived', 300, fn () => $this->askDante->getUse
 
 | Method | URL | Name | Beschreibung |
 |--------|-----|------|-------------|
-| GET | `/hub/staff` | `hub.staff` | Personalübersicht (Liste, seit 28.09.2026 ohne Einstiegsseite) |
+| GET | `/hub/staff` | `hub.staff` | Personalübersicht (Liste, seit 27.09.2026 ohne Einstiegsseite) |
 | GET | `/hub/staff/overview` | `hub.staff.overview` | Umleitung auf `/hub/staff` |
 | GET | `/hub/staff/api/people` | `hub.staff.api.people` | Liste aus Abbild + Stammdaten + Hub-Konto (Web und App) |
 | GET | `/hub/staff/{staffId}` | `hub.staff.detail` | Mitarbeiter-Detail |

@@ -13,7 +13,7 @@
  "subtitle": "Klickanleitung für das Personalbüro im glatttHub — Vergütung pflegen, Lohnliste prüfen und an die Steuerberatung übergeben",
  "eyebrow": "Team · Lohn",
  "footerArea": "Team",
- "stand": "28.09.2026",
+ "stand": "27.09.2026",
  "version": "1.2",
  "notes": [
   "Der Hub sagt der Steuerberatung, **was** im Monat zu zahlen ist. Steuerklasse, Sozialversicherung und Bank bleiben in **DATEV**. Den Startstand liefert die **Lohnliste des Büros** (CSV).",
