@@ -1306,7 +1306,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild, Akte (Überblick, Vergütung, Zeit, Konto), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten (seit 27.09.2026); Teamliste- und Lohnliste-Import bleiben Web (Datei-Upload im Büro), Checklisten Eintritt/Austritt vorerst ausgeblendet |
 | Institute | nativ | Karte zuerst (seit 27.09.2026): Nadeln in Hub-Farbe, Blatt mit Liste/Institut, Unterseiten Kennzahlen, Team, Verwaltung |
 | Freunde werben, Zufriedenheit, Forderungen, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — Zufriedenheit zurückgestellt, weil die Befragung noch nicht genutzt wird (Jan, 26.09.2026) |
-| Widerrufe | nativ | Fallakte mit Reitern (seit 27.09.2026, Schritt 1): Liste, Fall, Notiz, Status, Abschließen, Erfassen; Upload/RA/SEPA im Hub-Blatt |
+| Widerrufe | nativ | Fallakte mit Reitern (seit 27.09.2026): Liste, Fall, Notiz, Status, Abschließen, Erfassen, Upload, RA-Vorgang, Forderungsübergabe; SEPA-Storno/Fernabsatz/Downgrade im Hub-Blatt |
 | Berichte | nativ | Übersicht mit Standort, Zeitraum, Suche, eigenen/geteilten Dashboards und Berichten nach Bereich mit drei Leitkennzahlen (seit 27.09.2026, Nachzug 6 Schritt 1); Dashboard-Assistent eingebettet (Editor-Engine) |
 | Verkaufsstatistik | nativ | Berichtsseite „Wie im Hub“ mit KPI-Zeile und allen zwölf Karten nativ (seit 27.09.2026, Build 48) |
 | Zukünftige/Vergangene Beratungsgespräche, Stornierte und gelöschte Termine, Terminstatistik | nativ | Berichtsseiten „Wie im Hub“, alle 21 Karten nativ (seit 27.09.2026) |
@@ -1707,8 +1707,10 @@ Verträgen: oben Status, Frist („Fristgerecht · Tag 3“), Wiedervorlage und 
 Zendesk, Mails, WhatsApp, Systemeinträge), **Dokumente** (Vorschau), **Umsetzung** und – sobald ein
 Anwalt beteiligt ist – **Anwalt**. Aktionen: Abschließen mit Ergebnis (bei Down-/Upgrade mit
 Folgevertrag), An Rechtsanwalt abgeben bzw. zurück, Fall bearbeiten. „+“ erfasst einen neuen Widerruf in
-vier Schritten. SEPA-Storno, Forderungsfall, Fernabsatz, Downgrade vor Ort, Upload und RA-Kosten öffnen
-die Hub-Fassung als Blatt.
+vier Schritten. Dokumente lassen sich fotografieren, aus Fotos oder Dateien hochladen und löschen; im
+Reiter „Anwalt“ werden Ergebnis, Kosten und Schriftwechsel (mit Anhang) festgehalten, in „Umsetzung“ geht
+die Restsumme ans Forderungsmanagement. SEPA-Storno, Fernabsatz und Downgrade vor Ort öffnen die
+Hub-Fassung als Blatt.
 
 !!! nutzerhandbuch "Bedienung: Widerrufe 1–5"
     [https://hilfe.hub.glattt.com/widerrufe/1/](https://hilfe.hub.glattt.com/widerrufe/1/)
@@ -1729,7 +1731,11 @@ die Hub-Fassung als Blatt.
   `AppState.cancellationFocus` den Fall (Suche, Push, Kontextmenü, Vertragsseite).
 - **GoCardless nie automatisch** (Wissen `kein-automatischer-zahlungsplan`): Abschließen setzt nur den
   Status; das Mandat storniert der Schritt „Umsetzung“ in der Hub-Fassung.
-- **Offen (Schritt 2):** Dokumente hochladen, RA-Kosten und Schriftwechsel nativ.
+- **Schritt 2 (27.09.2026):** Upload `POST …/documents` (`files[]`, je Datei ein Aufruf; HEIC wird vorher
+  JPEG), Löschen `DELETE …/documents/{doc}`, `POST …/costs`, `POST …/correspondence` (multipart mit
+  Anhang oder JSON), RA-Ergebnis über `PUT` (`ra_outcome`, `ra_recovered_amount_cents`), Übergabe
+  `POST …/receivables`. Auswahllisten (`cost_types`, `ra_parties`, `ra_outcomes`) liefert der Fall-Endpunkt.
+  Bei fünf Reitern zeigt die Leiste Symbole mit VoiceOver-Beschriftung.
 - **Nachweis:** `CancellationsUITests`, PHP `CancellationCasePageTest` (Datenendpunkt, Knopf-Recht).
 
 ### Native Einstellungen (Mehr-Seite, seit 27.09.2026)
