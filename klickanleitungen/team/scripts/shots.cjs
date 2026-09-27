@@ -7,10 +7,10 @@
 const L = require('./lib.cjs');
 const P = require('../../shared/lib/plan.cjs');
 
-const uebersicht = ['click', 'a, button, .card-glattt', 'Personalübersicht', 3500];
+// Seit 28.09.2026 zeigt /hub/staff direkt die Liste — kein Klick auf eine Einstiegskachel mehr
 const erstePerson = ['fn', async (page, L) => {
   const ok = await page.evaluate(() => {
-    const el = [...document.querySelectorAll('tbody tr a[href], tbody tr, .staff-card-glattt a, a[href*="/hub/staff/"]')].find(e => e.offsetParent !== null && !/reisekosten/.test(e.getAttribute('href') || ''));
+    const el = [...document.querySelectorAll('tbody tr a.staff-table-glattt-name, tbody tr a[href*="/hub/staff/"]')].find(e => e.offsetParent !== null && !/reisekosten/.test(e.getAttribute('href') || ''));
     if (!el) return false; el.click(); return true;
   });
   if (!ok) console.log('PERSON FEHLT');
@@ -101,13 +101,10 @@ const imFenster = (titel) => ['fn', async (page, L) => {
 
 const PLAN = [
   // ── Team 1: Personal
-  { name: 'p1-personal', url: '/hub/staff', steps: [['loaded'], uebersicht, ['loaded']], marks: [
-    { id: 'suche', kind: 'badge', n: 1, sel: '.search-glattt, input[type=search]', at: 'l' },
-    { id: 'tabelle', kind: 'frame', color: 'teal', sel: '.table-glattt' },
-  ] },
-  { name: 'p2-person', url: '/hub/staff', steps: [['loaded'], uebersicht, ['loaded'], erstePerson] },
-  { name: 'p3-konto-wizard', url: '/hub/staff', steps: [['loaded'], uebersicht, ['loaded'], ['click', 'button, a', 'Konto', 2000]], clip: '.modal-glattt' },
-  { name: 'p4-archivieren', url: '/hub/staff', steps: [['loaded'], uebersicht, ['loaded'], erstePerson, ['click', 'button', 'Archivieren', 1800]], clip: '.modal-glattt' },
+  // p1-personal nimmt scripts/lohn.cjs auf (erfundene Personen statt Maske)
+  { name: 'p2-person', url: '/hub/staff', steps: [['loaded'], erstePerson] },
+  { name: 'p3-konto-wizard', url: '/hub/staff', steps: [['loaded'], ['click', 'button.hub-account-glattt-btn', 'Konto', 2000]], clip: '.modal-glattt' },
+  { name: 'p4-archivieren', url: '/hub/staff', steps: [['loaded'], erstePerson, ['click', 'button', 'Archivieren', 1800]], clip: '.modal-glattt' },
   // ── Team 2: Reisekosten
   // Kein Konto hat 2026 einen qualifizierenden askDANTE-Tag (Prod und Staging geprüft, 18.09.2026).
   // Deshalb werden Beispiel-Reisetage nur im Browser in die Seite gespeist (Alpine-Daten) — die

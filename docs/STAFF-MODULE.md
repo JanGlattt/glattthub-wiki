@@ -42,7 +42,7 @@ Admin-Backend. Der Austritt einer Person wird über die
 
 | Vorgang | Anleitung |
 |---|---|
-| Personalübersicht lesen, suchen, sortieren, Archivierte einblenden | Team 1 |
+| Personalübersicht lesen, suchen, filtern, Stand im Hub prüfen | Team 1 |
 | Detailseite einer Person (Stammdaten, Kontakt, Beschäftigung, Organisationseinheiten) | Team 1 |
 | Hub-Konto anlegen, vorhandenes Konto verknüpfen, Einladung senden | Team 1 |
 | Austritt: Konto archivieren | Team 1 |
@@ -60,8 +60,18 @@ Admin-Backend. Der Austritt einer Person wird über die
   Dienstwagen, letzte Lohnmonate — Anpassung immer als neuer Eintrag ab Datum. Die Detailseite löst
   dafür die Person im Abbild auf (`hr_employees.askdante_user_id` → `hrEmployeeId`); der Anker
   `#verguetung` öffnet den Reiter direkt. Fachlich: [Lohnliste](LOHNLISTE.md).
-- **Startseite** `/hub/staff` hat drei Karten, darunter die (ausgeblendete) Checklisten-Übersicht (Partial `hub.staff.partials.hub-card`, Klassen
-  `.staff-hub-*`, keine Inline-Styles mehr) — neu „Lohnmonat".
+- **„Personal" ist seit 28.09.2026 direkt die Liste** (Jan: die Einstiegskacheln ergaben keinen Sinn,
+  Reisekosten und Lohnmonat stehen im Menü unter Team). `/hub/staff/overview` leitet auf `/hub/staff`
+  um; ohne `view_staff_overview` führt `/hub/staff` zur ersten erlaubten Seite (Lohnmonat, Reisekosten).
+- **Eine Liste aus drei Quellen:** Die Web-Liste liest nicht mehr askDANTE live (`/askdante/staff`),
+  sondern `GET /hub/staff/api/people` wie die App — askDANTE-Abbild (`hr_employees`, nächtlicher
+  Abgleich) + Stammdaten aus Teamliste/Lohnliste (`hr_employee_profiles`: DATEV-Nummer, Vertragsart,
+  Befristung, Elternzeit, Mobilnummer) + Hub-Konto (`UserProvisioningService::accountsByAskdanteId`).
+  Mit `manage_payroll` kommt `has_salary` dazu (nur ob ein Gehalt hinterlegt ist, nie der Betrag).
+  Filter-Menüband: Aktiv, Probezeit, Befristet, Elternzeit & Mutterschutz, Ohne Konto, Ohne
+  Stammdaten, Ohne Gehalt (Lohn-Recht), Austritte. Weichen askDANTE-Ende und Befristung der
+  Stammdaten ab, zeigt die Vertragsspalte „Enddatum weicht ab". Logik `public/js/staff-overview.js`,
+  Tabelle `hub.staff.partials.table`; die Detailseite `/hub/staff/{askdanteId}` bleibt unverändert.
 - **Native App:** `/hub/staff`, `/hub/staff/overview` und `/hub/staff/payroll` öffnen die native
   Personalseite (Entwurf 2 „Akte und Lohnmonat", siehe [IOS-APP](IOS-APP.md)). Sie liest das
   askDANTE-Abbild über `GET /hub/staff/api/people[/{id}]` statt askDANTE live und legt Hub-Konten
@@ -203,7 +213,9 @@ Cache::remember('askdante_staff_archived', 300, fn () => $this->askDante->getUse
 
 | Method | URL | Name | Beschreibung |
 |--------|-----|------|-------------|
-| GET | `/hub/staff` | `hub.staff` | Personalübersicht |
+| GET | `/hub/staff` | `hub.staff` | Personalübersicht (Liste, seit 28.09.2026 ohne Einstiegsseite) |
+| GET | `/hub/staff/overview` | `hub.staff.overview` | Umleitung auf `/hub/staff` |
+| GET | `/hub/staff/api/people` | `hub.staff.api.people` | Liste aus Abbild + Stammdaten + Hub-Konto (Web und App) |
 | GET | `/hub/staff/{staffId}` | `hub.staff.detail` | Mitarbeiter-Detail |
 
 #### API Routes (askdante-Prefix)

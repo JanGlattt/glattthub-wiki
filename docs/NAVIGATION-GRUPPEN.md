@@ -26,7 +26,7 @@ Anzahl der Einträge, die man sehen darf:
 |---|---|
 | **Verkauf** | Verträge, Widerrufe, Gutscheine, Zufriedenheit |
 | **Finanzen** | Forderungen, Schulden, Unternehmensverträge |
-| **Team** | Personal, Bonus-Board |
+| **Team** | Personal, Reisekosten, Lohnmonat, Bonus-Board, App-Geräte |
 | **Betrieb** | Institute, Laser, Services, Formulare |
 | **System** | Report-Mails, Audit, Einstellungen, Admin Panel |
 

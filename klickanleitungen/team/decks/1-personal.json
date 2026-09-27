@@ -13,44 +13,49 @@
  "subtitle": "Klickanleitung für die Personalverwaltung im glatttHub — Mitarbeiterinnen finden, Konto anlegen, archivieren",
  "eyebrow": "Team · Personal",
  "footerArea": "Team",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "28.09.2026",
+ "version": "1.1",
  "notes": [
-  "Die Personalliste kommt aus **askDANTE** — eingestellt und ausgetragen wird dort, nicht im Hub.",
+  "Die Personalliste kommt aus **askDANTE** — eingestellt und ausgetragen wird dort. Der Hub ergänzt sie um die **Stammdaten** aus Teamliste und Lohnliste und das **Hub-Konto**.",
   "Das **Hub-Konto** ist etwas anderes als der Personaldatensatz: Es entscheidet, wer sich anmelden darf.",
   "**Archivieren immer zum 1. des Folgemonats** — so bleiben Auswertungen des laufenden Monats vollständig."
  ],
  "pages": [
   {
    "h1": "Die Personalübersicht",
-   "sub": "Alle Mitarbeiterinnen aus askDANTE, mit ihrem Stand im Hub.",
+   "sub": "„Personal“ im Menü zeigt direkt alle Mitarbeiterinnen: askDANTE, Stammdaten und Hub-Konto in einer Liste.",
    "card": {
     "title": "Personalübersicht",
-    "text": "Alle Mitarbeiterinnen aus askDANTE finden"
+    "text": "Alle Mitarbeiterinnen mit Vertrag und Stand im Hub"
    },
    "left": {
     "shot": "p1-personal"
    },
-   "leftCaption": "Die Personalübersicht mit Suche und Archiv-Schalter.",
+   "leftCaption": "Die Liste mit Suche, Filtern und dem Stand im Hub (Beispielpersonen).",
    "steps": [
     {
      "n": 1,
      "title": "Suchen",
-     "text": "Über den Namen. Die Liste stammt aus **askDANTE** und wird von dort aktuell gehalten."
+     "text": "Nach Name, Personalnummer oder Institut."
     },
     {
      "n": 2,
-     "title": "Archivierte einbeziehen",
-     "text": "Der Schalter nimmt ausgeschiedene Personen dazu — nötig, wenn man alte Auswertungen nachvollzieht."
+     "title": "Filtern",
+     "text": "**Aktiv**, **Probezeit**, **Befristet**, **Elternzeit & Mutterschutz**, **Ohne Konto**, **Ohne Stammdaten**, **Austritte** — die Zahl zeigt, wie viele es sind. Mit dem Recht Lohnliste zusätzlich **Ohne Gehalt**."
     },
     {
      "n": 3,
-     "title": "Detailseite öffnen",
-     "text": "Zeigt Stammdaten, Institut, Hub-Konto und den Stand der Reisekosten."
+     "title": "Vertrag lesen",
+     "text": "Vertragsart, Stunden und Befristung aus den Stammdaten. **Enddatum weicht ab** heißt: askDANTE und Teamliste/Lohnliste nennen ein anderes Ende — bitte klären."
+    },
+    {
+     "n": 4,
+     "title": "Stand im Hub",
+     "text": "**Stammdaten**, **Gehalt** und **Konto** in Grün sind vollständig, Gelb fehlt. **Konto** mit Plus legt ein Hub-Konto an. Ein Klick auf den Namen öffnet die Akte."
     }
    ],
    "hint": {
-    "text": "**Person fehlt?** Dann steht sie noch nicht in askDANTE — oder ist dort schon ausgetragen. Der Hub legt keine Mitarbeiterinnen an, er übernimmt sie."
+    "text": "**Reisekosten** und **Lohnmonat** stehen im Menü unter **Team**. **Person fehlt?** Dann steht sie noch nicht in askDANTE — der Hub legt keine Mitarbeiterinnen an, er übernimmt sie."
    }
   },
   {

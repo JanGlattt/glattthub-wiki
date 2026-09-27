@@ -1,4 +1,4 @@
-/* Aufnahmelauf „Team 4 — Lohnmonat und Vergütung".
+/* Aufnahmelauf „Team 4 — Lohnmonat und Vergütung" (dazu das Listenbild p1 von Team 1).
    Lohnzahlen gehören nie in öffentliche Bilder (das Wiki-Repo ist öffentlich). Deshalb liefert
    dieser Lauf die Antworten der Lohn- und Checklisten-Endpunkte aus `fixtures/` — erfundene
    Personen (Anna Musterfrau, Lena Beispiel …), erzeugt mit dem echten Hub-Code gegen eine leere
@@ -17,6 +17,8 @@ const STAFF = process.env.KLICK_STAFF_ID || '114423';
 
 async function mocks(page) {
   const json = (route, body) => route.fulfill({ status: 200, contentType: 'application/json', body });
+  // Personalliste (/hub/staff) mit erfundenen Personen
+  await page.route(/\/hub\/staff\/api\/people(\?|$)/, (route) => json(route, FIX('people')));
   await page.route(/\/hub\/staff\/(payroll|checklists)\/api(\/|$|\?)/, (route) => {
     const req = route.request();
     const u = new URL(req.url()).pathname;
@@ -67,6 +69,13 @@ const lohnlisteVorschau = ['fn', async (page, L) => {
 }];
 
 const PLAN = [
+  // Team 1: Personal zeigt seit 28.09.2026 direkt die Liste (askDANTE + Stammdaten + Hub-Konto)
+  { name: 'p1-personal', url: '/hub/staff', steps: [['loaded'], ['wait', 1500]], marks: [
+    { id: 'suche', kind: 'badge', n: 1, sel: '.page-header-glattt .search-glattt', at: 'l' },
+    { id: 'filter', kind: 'badge', n: 2, sel: '.tab-band-glattt', at: 'l' },
+    { id: 'vertrag', kind: 'badge', n: 3, ...L.byText('th', 'Vertrag'), at: 't' },
+    { id: 'imhub', kind: 'badge', n: 4, ...L.byText('th', 'Im Hub'), at: 't' },
+  ] },
   { name: 'p13-lohnmonat', url: '/hub/staff/payroll', steps: [['loaded'], oktober], marks: [
     { id: 'monat', kind: 'badge', n: 1, sel: '.page-header-glattt .dropdown-glattt-trigger, .page-header-glattt select', at: 'l' },
     { id: 'hinweise', kind: 'badge', n: 2, ...L.byText('.alert-glattt-message', 'Der Bonus September'), at: 'l' },
