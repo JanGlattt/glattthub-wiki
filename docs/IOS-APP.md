@@ -1308,7 +1308,8 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Berichte | nativ | Übersicht mit Standort, Zeitraum, Suche, eigenen/geteilten Dashboards und Berichten nach Bereich mit drei Leitkennzahlen (seit 27.09.2026, Nachzug 6 Schritt 1); Dashboard-Assistent eingebettet (Editor-Engine) |
 | Verkaufsstatistik | nativ | Berichtsseite „Wie im Hub“ mit KPI-Zeile und allen zwölf Karten nativ (seit 27.09.2026, Build 48) |
 | Zukünftige/Vergangene Beratungsgespräche, Stornierte und gelöschte Termine, Terminstatistik | nativ | Berichtsseiten „Wie im Hub“, alle 21 Karten nativ (seit 27.09.2026) |
-| Alle 11 weiteren Berichtsseiten (Mitarbeiterperformance bis Office-Teammeeting) | nativ | Berichtsseiten „Wie im Hub“, jede Registry-Karte nativ (seit 27.09.2026); eigene Dashboards bleiben Web-Detailseite |
+| Alle 11 weiteren Berichtsseiten (Mitarbeiterperformance bis Office-Teammeeting) | nativ | Berichtsseiten „Wie im Hub“, jede Registry-Karte nativ (seit 27.09.2026) |
+| Eigene Dashboards | nativ | Kacheln, KPI-Zeile, Zeitraum wie im Web (seit 27.09.2026); Anlegen im eingebetteten Assistenten, Bearbeiten/Teilen in der Hub-Fassung |
 | Formulare, Bildschirme, Services, Unternehmensverträge, Report-Mails, Audit, Einstellungen, Conversion-Upload, Bonus-Verwaltung | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
 
 ### Native Verträge (Mehr-Seite, seit 25.09.2026 — Nachzug 1)
@@ -1664,6 +1665,35 @@ Karte. Was die App nicht nachbaut, öffnet ⋯ „Hub-Fassung öffnen".
   `testMarketingOfficeReportPages`, keine Web-Karte). PHP `AppReportsTest` prüft, dass **jede** Karte
   **jedes** Berichts aus der `ReportRegistry` einen Baustein hat; eine neue Statistik ohne
   `native`-Feld bricht den Lauf.
+
+### Native eigene Dashboards (seit 27.09.2026)
+
+**Für Endanwender:** Eigene und geteilte Dashboards öffnen in der App als eigene Seite: oben Name,
+„Eigenes Dashboard“ bzw. „Geteilt von …“, Standort und **Zeitraum** (Gesamter Zeitraum, letzter Monat,
+3/6/12/24 Monate — je Dashboard gemerkt), darunter die gewählten Kennzahlen und alle Kacheln in der
+Reihenfolge des Dashboards; auf dem iPad stehen halbe Kacheln nebeneinander. Bearbeiten und Teilen
+gehen über ⋯ in die Hub-Fassung, ein neues Dashboard entsteht wie bisher über den Assistenten.
+
+**Für Entwickler:**
+
+- **Endpunkt:** `GET /api/app/reports/page?dashboard=<id>` (`AppReportsService::dashboardPage`) —
+  dieselbe Form wie der Berichtsrahmen, gebaut aus `CustomDashboard::visibleTiles()` (Kacheln ohne Recht
+  fallen weg), `route` = `dashboard:<id>`, zusätzlich `dashboard {id, shared_by, can_edit}`; nur eigene
+  oder mit mir geteilte Dashboards, sonst 404. Karten tragen jetzt `filters` (gemeinsamer Baustein
+  `card()` für Bericht und Dashboard).
+- **Zeitraum:** wie `_presetDateFrom` im Web (erster Tag des Startmonats inkl. laufendem Monat,
+  `ReportPageModel.dateFrom`), als `date_from` **nur** an Endpunkte von Karten mit Filter `range`
+  (samt Zusatz-Endpunkten). Freier Zeitraum bleibt in der Hub-Fassung.
+- **Navigation:** `ReportPageModel.route(for:)` erkennt `/hub/reports/custom-dashboard/{id}`;
+  Unterseiten (`/share`) und `?view=web` bleiben Web.
+- **Rankings** `sales.branch-ranking`/`sales.seller-ranking` (nur Dashboard-Kacheln) als
+  `SalesRankingCard`. `AppReportsTest` verlangt seitdem für **jede** Statistik der Registry einen Baustein.
+- **Fallstrick Swift Charts:** Ein scrollbares Diagramm, dessen Spalten sich ändern (anderer Zeitraum:
+  40 → 3 Monate), stürzte mit dem alten Scroll-Zustand ab (`FixedWidthInteger.init` in
+  `OnScrollGeometryChangeModifier`). Alle Scroll-Diagramme tragen deshalb `.id(<Spalten>)` und werden
+  bei neuen Spalten neu aufgebaut.
+- **Nachweis:** `AppointmentReportsUITests.testCustomDashboardPage` (lokales „App-Prüfdashboard“ des
+  Testnutzers, Zeitraumwechsel, keine Web-Karte), PHP `AppReportsTest::dashboard_page_lists_visible_tiles_in_order_and_width`.
 
 ### Native Seite „Termin buchen" (Detailseite im Termine-Tab, seit 26.09.2026)
 
