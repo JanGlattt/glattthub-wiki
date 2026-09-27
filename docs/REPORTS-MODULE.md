@@ -317,8 +317,15 @@ zweites Mal in der Such-Registry. Beides kommt jetzt aus
     'keywords' => 'umsatz verkäufe sales statistik …',
     'permission' => 'view_report_sales_statistics',   // identisch mit dem Routen-Gate
     'card' => 'hub.reports.partials.overview-cards.verkaufsstatistik-card',
+    'area' => 'verkauf',                                 // Bereich in der App (ReportRegistry::AREAS)
+    'kpis' => ['sales.contract_count', 'sales.avg_body_zones', 'sales.total_revenue'],
 ],
 ```
+
+- **`area` und `kpis` (seit 27.09.2026)** speisen die native Berichte-Übersicht der App: Bereich
+  zum Gruppieren und bis zu drei Leitkennzahlen aus der `KpiRegistry` (die erste mit Verlauf).
+  Ohne Kennzahl-Quelle bleibt `kpis` leer, die App zeigt dann den Untertitel. Details:
+  [iOS-App, Abschnitt „Native Berichte-Übersicht"](IOS-APP.md).
 
 - Die Übersicht rendert die Karten in der Reihenfolge der Registry und
   überspringt, wofür die Berechtigung fehlt (`ReportRegistry::forUser()`)
@@ -330,8 +337,8 @@ zweites Mal in der Such-Registry. Beides kommt jetzt aus
   Doppelpflege.
 
 !!! danger "Neuer Bericht = ein Eintrag in der ReportRegistry"
-    Karte und Sucheintrag entstehen daraus. `ReportRegistryTest` bricht, wenn
-    eine Definition unvollständig ist, das Karten-Partial fehlt, die Übersicht
+    Karte, Sucheintrag und Karte in der App entstehen daraus. `ReportRegistryTest` bricht, wenn
+    eine Definition unvollständig ist (auch ohne gültigen Bereich oder mit unbekannter Kennzahl), das Karten-Partial fehlt, die Übersicht
     wieder Karten fest einbindet oder Berichte zurück in
     `GlobalSearchService::PAGES` wandern.
 

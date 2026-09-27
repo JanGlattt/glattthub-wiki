@@ -1,0 +1,149 @@
+{
+ "out": "../pdf/App-14-Berichte",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "App",
+ "of": 14,
+ "audience": "leitung",
+ "footerArea": "App",
+ "stand": "27.09.2026",
+ "version": "1.0",
+ "nr": 14,
+ "title": [
+  "Berichte",
+  "in der App"
+ ],
+ "subtitle": "Klickanleitung für die glatttHub-App — die wichtigsten Kennzahlen aller Berichte und eigenen Dashboards auf einen Blick, nach Standort und Zeitraum",
+ "eyebrow": "App · Berichte",
+ "notes": [
+  "**Berichte** ist der vierte Reiter unten (iPhone) bzw. der Eintrag in der Seitenleiste (iPad). Du siehst nur die Berichte, für die du ein Recht hast — und in jeder Karte nur die Kennzahlen, die du auch im Hub sehen darfst.",
+  "Die Berichtsseiten selbst und die Dashboards öffnen vorerst in ihrer Hub-Fassung im selben Reiter. Die Diagramme dort ziehen nach und nach in die App um."
+ ],
+ "pages": [
+  {
+   "h1": "Die Übersicht",
+   "sub": "Oben Standort, Zeitraum und Suche. Darunter deine Dashboards und alle Berichte nach Bereich — jede Karte mit drei Kennzahlen und dem Vergleich zur Vorperiode.",
+   "card": {
+    "title": "Übersicht",
+    "text": "Wie läuft es gerade?"
+   },
+   "left": {
+    "shot": "reports-overview-light"
+   },
+   "leftCaption": "Grüne Pfeile zeigen eine gute, rote eine schlechte Entwicklung — bei Forderungen oder Rücklastschriften ist **weniger** gut.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Standort",
+     "text": "Die Pille links wählt das Institut für alle Karten, wie auf der Startseite."
+    },
+    {
+     "n": 2,
+     "title": "Zeitraum",
+     "text": "**Woche**, **Monat** oder **Jahr** — die Kennzahlen aller Karten wechseln mit. Die Linie unter der ersten Kennzahl zeigt immer die letzten sechs Monate."
+    },
+    {
+     "n": 3,
+     "title": "Suchen",
+     "text": "Findet Berichte auch über ihre Analysen: „MRR“ zeigt die Verkaufsstatistik, „Rücklastschrift“ auch Schulden."
+    },
+    {
+     "n": 4,
+     "title": "Öffnen",
+     "text": "Ein Tipp auf eine Karte öffnet den Bericht oder das Dashboard. Zurück mit Wischen oder einem Tipp auf **Berichte**."
+    }
+   ]
+  },
+  {
+   "h1": "Laden und Aktualisieren",
+   "sub": "Jede Karte holt ihre Zahlen selbst. Was schon da ist, bleibt stehen — eine langsame Karte hält die anderen nicht auf.",
+   "card": {
+    "title": "Laden",
+    "text": "Karte für Karte"
+   },
+   "left": {
+    "shot": "reports-loading-light"
+   },
+   "leftCaption": "Grau: die Karte lädt zum ersten Mal. Blass: die Karte zeigt noch den alten Stand, die neuen Zahlen kommen gleich.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Nach unten ziehen",
+     "text": "Lädt alle Karten neu."
+    },
+    {
+     "n": 2,
+     "title": "Langsame Berichte",
+     "text": "Mitarbeiterperformance und HR-Kennzahlen rechnen länger. Danach sind die Zahlen 15 Minuten zwischengespeichert."
+    },
+    {
+     "n": 3,
+     "title": "Ohne Netz",
+     "text": "Die App zeigt den letzten Stand mit Uhrzeit („Kein Netz · Stand …“)."
+    }
+   ]
+  },
+  {
+   "h1": "Eigene Dashboards",
+   "sub": "Deine Dashboards und die mit dir geteilten stehen oben — mit den Kennzahlen, die im Assistenten für die Kurzanzeige gewählt wurden.",
+   "card": {
+    "title": "Dashboards",
+    "text": "Bauen, ansehen, teilen"
+   },
+   "left": {
+    "shot": "reports-overview-light"
+   },
+   "leftCaption": "Auf dem iPhone blätterst du seitlich durch die Dashboards. Geteilte zeigen, von wem sie kommen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Neues Dashboard",
+     "text": "Der goldene **+**-Knopf oben rechts öffnet den Assistenten des Hubs — vier Schritte wie im Browser. Mit **Fertig** geht es zurück."
+    },
+    {
+     "n": 2,
+     "title": "Ansehen",
+     "text": "Ein Tipp öffnet das Dashboard mit allen Karten."
+    },
+    {
+     "n": 3,
+     "title": "Ändern und teilen",
+     "text": "Auf der Dashboard-Seite über **Bearbeiten** bzw. **Teilen** — wie im Hub."
+    }
+   ],
+   "hint": {
+    "text": "Den **+**-Knopf sieht nur, wer eigene Dashboards bauen darf.",
+    "kind": "info"
+   }
+  },
+  {
+   "h1": "Auf dem iPad",
+   "sub": "Drei Karten nebeneinander (quer), zwei im Hochformat. Dashboards stehen in derselben Rasterung darüber.",
+   "card": {
+    "title": "iPad",
+    "text": "Alles auf einen Blick"
+   },
+   "left": {
+    "shot": "reports-ipad-light"
+   },
+   "leftCaption": "Standort, Zeitraum und Suche wirken auf alle Karten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Standort",
+     "text": "Öffnet ein kleines Fenster direkt an der Pille."
+    },
+    {
+     "n": 2,
+     "title": "Bericht öffnen",
+     "text": "Karte antippen — der Bericht füllt die Fläche neben der Seitenleiste."
+    },
+    {
+     "n": 3,
+     "title": "Zurück",
+     "text": "Wischen vom linken Rand oder **Berichte** in der Seitenleiste."
+    }
+   ]
+  }
+ ]
+}

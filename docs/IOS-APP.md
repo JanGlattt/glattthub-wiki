@@ -1280,7 +1280,7 @@ Komponentenkatalog in `.github/instructions/ios.instructions.md`):
 lauffähig, Endpunkte rückwärtskompatibel, bis `IOS_APP_MIN_VERSION` steigt. Jedes Layout, das die
 App lädt, trägt `<meta name="glattthub-app">`. Kiosk-iPads haben keine nativen Seiten.
 
-### App-Inventar (Stand 26.09.2026)
+### App-Inventar (Stand 27.09.2026)
 
 Quelle ist `.github/app-abdeckung.json` im Hub-Repo (dort führend, hier die Lesefassung).
 
@@ -1305,7 +1305,8 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | App-Geräte | nativ | Liste mit Suche, Chips, Kennzahlen, offene Codes und Geräte nach Institut; Code ausstellen in drei Schritten mit QR und Teilen-Blatt (AirDrop), Code zurückziehen, Gerät widerrufen im Steckbrief; iPad-Split, Ausstellen als Popover (seit 26.09.2026); Einlösen bleibt `EnrollmentSheet` |
 | Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild, Akte (Überblick, Vergütung, Zeit, Konto), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten (seit 27.09.2026); Teamliste- und Lohnliste-Import bleiben Web (Datei-Upload im Büro), Checklisten Eintritt/Austritt vorerst ausgeblendet |
 | Freunde werben, Widerrufe, Zufriedenheit, Forderungen, Institute, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — Zufriedenheit zurückgestellt, weil die Befragung noch nicht genutzt wird (Jan, 26.09.2026) |
-| Berichte + 16 Berichtsseiten | bestand | WebView im Tab Berichte (ECharts, Registry-Karten); Kennzahlen nativ über Cockpit/Widgets/Siri |
+| Berichte | nativ | Übersicht mit Standort, Zeitraum, Suche, eigenen/geteilten Dashboards und Berichten nach Bereich mit drei Leitkennzahlen (seit 27.09.2026, Nachzug 6 Schritt 1); Dashboard-Assistent eingebettet (Editor-Engine) |
+| 16 Berichtsseiten, Dashboards | bestand | Web-Detailseite im nativen Tab Berichte; native Registry-Karten mit Swift Charts folgen (Schritt 2: Verkauf, Termine & Beratungen) |
 | Formulare, Bildschirme, Services, Unternehmensverträge, Report-Mails, Audit, Einstellungen, Conversion-Upload, Bonus-Verwaltung | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
 
 ### Native Verträge (Mehr-Seite, seit 25.09.2026 — Nachzug 1)
@@ -1499,6 +1500,52 @@ und mit DATEV-Nummer pflegen.
 - **Nachweis:** `StaffSnapshotTests` (Liste, Akte Überblick/Vergütung, Checkliste, Lohnmonat, iPad —
   hell/dunkel; Pfad-Erkennung, Filter, Beträge, `null`-Felder), `StaffUITests` (nur lesend: Mehr →
   Personal, Filter, alle Reiter der Akte, Lohnmonat, Lohnarten), PHP `tests/Feature/Payroll/*`.
+
+### Native Berichte-Übersicht (Tab „Berichte", seit 27.09.2026 — Nachzug 6, Schritt 1)
+
+**Für Endanwender:** Der Reiter **Berichte** zeigt auf einen Blick, wie es läuft: oben Standort,
+Zeitraum (Woche, Monat, Jahr) und eine Suche, darunter die eigenen und geteilten Dashboards mit ihren
+Kennzahlen und alle erlaubten Berichte nach Bereich — je Karte drei Kennzahlen mit Vergleich zur
+Vorperiode und, wo die Quelle es hergibt, dem Verlauf der letzten sechs Monate. Ein Tipp öffnet den
+Bericht bzw. das Dashboard (vorerst in der Hub-Fassung im selben Reiter), **+** baut ein neues
+Dashboard mit dem Assistenten des Hubs.
+
+!!! nutzerhandbuch "Bedienung: App 14 – Berichte in der App"
+    [https://hilfe.hub.glattt.com/app/14/](https://hilfe.hub.glattt.com/app/14/)
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 27.09.2026):** Entwurf 2 „Kennzahlen-Übersicht" aus drei Entwürfen
+  (https://claude.ai/artifact/44dxmwZ3jU6WsjWUPApQRz). Reihenfolge: erst die Übersicht, dann native
+  Registry-Karten für Verkaufsstatistik und Termine & Beratungen; Karten ohne nativen Bauplan zeigen
+  im Übergang die Web-Karte.
+- **Registry:** `ReportRegistry` hat zwei neue Felder — `area` (Schlüssel aus `ReportRegistry::AREAS`:
+  Verkauf, Termine & Beratung, Kunden & Marketing, Finanzen, Team & Büro) und `kpis` (max. drei IDs
+  aus der `KpiRegistry`, die erste bekommt den Verlauf). `ReportRegistryTest` prüft beides. Ein
+  neuer Bericht ist damit ohne App-Änderung in der Übersicht.
+- **Endpunkte (Session, `view_reports`):** `GET /api/app/reports` liefert sofort den Rahmen
+  (Bereiche mit Berichten nach Recht inkl. `keywords` für die Suche, Dashboards eigene + geteilte,
+  `kpi_count` nur für erlaubte Kennzahlen). `GET /api/app/reports/values?report=<route>|dashboard=<id>
+  &branch=&range=week|month|year` liefert die Kennzahlen **einer** Karte über `WidgetKpiService`
+  (KpiValueService mit Rechteprüfung, `BranchVisibility`, 15 Minuten Cache) — `AppReportsService`,
+  `AppReportsController`, Test `AppReportsTest`.
+- **Warum zwei Schritte:** Alles in einem Aufruf dauerte lokal ohne Cache 92 s. Einzelne Quellen sind
+  langsam (Mitarbeiterperformance ~10–16 s, HR ~8 s, zukünftige Beratungen ~4–6 s), der Verlauf
+  rechnet eine Quelle sechsmal. Jetzt steht der Rahmen nach ~0,04 s, die Karten laden einzeln nach
+  (App: höchstens vier gleichzeitig, `AsyncLimiter`), den Verlauf gibt es nur für Quellen aus
+  `AppReportsService::HISTORY_SOURCES` (Messung 27.09.2026).
+- **App:** `Reports/ReportsView.swift` (Kopf mit `BranchPill`, segmentiertem Zeitraum, Suche;
+  Dashboard-Karten zum Blättern bzw. im Raster; Berichtskarten mit `ReportKpiCell` und
+  `CockpitSparkline(zeroBased: false)`; iPad zwei/drei Spalten), `ReportsViewModel.swift` (Rahmen, Werte
+  je Karte mit Lauf-Zähler gegen veraltete Antworten, sanftes Neuladen, Offline-Stand
+  `reports-<standort>`), `ReportModels.swift`. Eingehängt als nativer Tab `hub.reports` über den
+  Initializer (`TabBarHost`); `MobileNavigation::PRIMARY` meldet `/hub/reports/` als `detail`, damit
+  Berichtsseiten und Dashboards als Web-Detailseite im Tab öffnen. **+** öffnet
+  `/hub/reports?shell=native` als `AppointmentWebSheet` — die Web-Übersicht rendert dann nur den
+  Dashboard-Assistenten und öffnet ihn sofort (`nativeShell` im `ReportController`).
+- **Nachweis:** `ReportsSnapshotTests` (Übersicht, Nachladen, iPad — hell/dunkel; Suche über
+  Analysen, `null`-Felder), `ReportsUITests` (Tab, Zeitraum, Suche, Bericht öffnen, zurück), PHP
+  `AppReportsTest`, `ReportRegistryTest`.
 
 ### Native Seite „Termin buchen" (Detailseite im Termine-Tab, seit 26.09.2026)
 
@@ -1733,6 +1780,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 27.09.2026 | 1.2.1 (43) | Native Berichte-Übersicht (Nachzug 6, Entwurf 2): Standort, Zeitraum, Suche, Dashboards mit Kennzahlen, Berichte nach Bereich mit Leitkennzahlen und Verlauf, iPad-Raster, Assistent als Blatt; Hub: `ReportRegistry` `area`/`kpis`, `GET /api/app/reports` + `/values`, `/hub/reports?shell=native` |
 | 27.09.2026 | 1.2.1 (41) | Checklisten Eintritt/Austritt ausgeblendet (Karte nur, wenn der Hub sie ausliefert) |
 | 27.09.2026 | 1.2.1 (40) | Native Personalseite (Entwurf 2): Personen, Akte mit Vergütung, Hub-Konto anlegen, Lohnmonat mit TXT-Übergabe, Brief an die Steuerberatung und Lohnarten, Checklisten Eintritt/Austritt in Akte und Liste; Hub: Lohnliste (Lohnarten, Bezüge, Dienstwagen, Lohnmonat, Teamliste-Import) |
 | 26.09.2026 | 1.2.1 (38) | „Andere Uhrzeit …" je Tag (alle freien Startzeiten, `booking/api/day-slots`) in Termin buchen, Folgetermin und Verlegen — App und Web (Befund 84); Verlegen wählt die Leistungen des Termins vor und steht in voller Breite (Befund 82, Build 37); keine vergangenen Zeiten mehr (Befund 83, Hub); Standort-Pille mit eigenem Blatt (Befund 81, Build 36) |

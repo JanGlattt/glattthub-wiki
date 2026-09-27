@@ -648,5 +648,35 @@
   },
   "ratio": 0.79296875,
   "marks": []
+ },
+ "reports-overview-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1260
+  },
+  "ratio": 1.6153846153846154,
+  "marks": []
+ },
+ "reports-loading-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1040
+  },
+  "ratio": 1.3333333333333333,
+  "marks": []
+ },
+ "reports-ipad-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2048,
+   "height": 1440
+  },
+  "ratio": 0.703125,
+  "marks": []
  }
 }
