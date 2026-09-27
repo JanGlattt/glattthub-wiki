@@ -100,6 +100,13 @@ Widerruf abgelehnt, Upgrade, Downgrade, Korrektur oder Laufzeitanpassung. Der fr
 
 ## Für Entwickler
 
+!!! info "Native App und JSON (27.09.2026)"
+    Die App zeigt Widerrufe nativ als Fallakte (Wiki `IOS-APP.md`, Abschnitt „Native Widerrufe“).
+    Dafür gibt es `GET /hub/cancellations/{id}/data` (Fall als JSON, Recht `view_revocations`); die
+    Liste `/hub/cancellations/data` liefert zusätzlich `can.manage` und `reasons`. Der Knopf „Neuer
+    Widerruf“ erscheint seitdem nur mit `manage_revocations` (vorher `create_revocations`, Speichern
+    lief dann auf 403). Karten der Stapel und die Fallseite tragen `data-ctx="cancellation"`.
+
 ### Fachregeln
 
 #### Status-Modell

@@ -1305,7 +1305,8 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | App-Geräte | nativ | Liste mit Suche, Chips, Kennzahlen, offene Codes und Geräte nach Institut; Code ausstellen in drei Schritten mit QR und Teilen-Blatt (AirDrop), Code zurückziehen, Gerät widerrufen im Steckbrief; iPad-Split, Ausstellen als Popover (seit 26.09.2026); Einlösen bleibt `EnrollmentSheet` |
 | Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild, Akte (Überblick, Vergütung, Zeit, Konto), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten (seit 27.09.2026); Teamliste- und Lohnliste-Import bleiben Web (Datei-Upload im Büro), Checklisten Eintritt/Austritt vorerst ausgeblendet |
 | Institute | nativ | Karte zuerst (seit 27.09.2026): Nadeln in Hub-Farbe, Blatt mit Liste/Institut, Unterseiten Kennzahlen, Team, Verwaltung |
-| Freunde werben, Widerrufe, Zufriedenheit, Forderungen, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — Zufriedenheit zurückgestellt, weil die Befragung noch nicht genutzt wird (Jan, 26.09.2026) |
+| Freunde werben, Zufriedenheit, Forderungen, Google-Bewertungen | bestand | Web im Mehr-Pool, Nachzug offen — Zufriedenheit zurückgestellt, weil die Befragung noch nicht genutzt wird (Jan, 26.09.2026) |
+| Widerrufe | nativ | Fallakte mit Reitern (seit 27.09.2026, Schritt 1): Liste, Fall, Notiz, Status, Abschließen, Erfassen; Upload/RA/SEPA im Hub-Blatt |
 | Berichte | nativ | Übersicht mit Standort, Zeitraum, Suche, eigenen/geteilten Dashboards und Berichten nach Bereich mit drei Leitkennzahlen (seit 27.09.2026, Nachzug 6 Schritt 1); Dashboard-Assistent eingebettet (Editor-Engine) |
 | Verkaufsstatistik | nativ | Berichtsseite „Wie im Hub“ mit KPI-Zeile und allen zwölf Karten nativ (seit 27.09.2026, Build 48) |
 | Zukünftige/Vergangene Beratungsgespräche, Stornierte und gelöschte Termine, Terminstatistik | nativ | Berichtsseiten „Wie im Hub“, alle 21 Karten nativ (seit 27.09.2026) |
@@ -1696,6 +1697,40 @@ gehen über ⋯ in die Hub-Fassung, ein neues Dashboard entsteht wie bisher übe
   bei neuen Spalten neu aufgebaut.
 - **Nachweis:** `AppointmentReportsUITests.testCustomDashboardPage` (lokales „App-Prüfdashboard“ des
   Testnutzers, Zeitraumwechsel, keine Web-Karte), PHP `AppReportsTest::dashboard_page_lists_visible_tiles_in_order_and_width`.
+
+### Native Widerrufe (Mehr-Seite, seit 27.09.2026)
+
+**Für Endanwender:** „Widerrufe“ ist in der App eine Liste mit Suche und Chips (Offen, Fällig, Beim RA,
+Abgeschlossen); fällige Wiedervorlagen stehen oben. Ein Tipp öffnet die **Fallakte** wie bei den
+Verträgen: oben Status, Frist („Fristgerecht · Tag 3“), Wiedervorlage und Liegezeit, darunter die Reiter
+**Überblick** (Grund, Behandlungsstand, Fall, Verknüpfungen, Aktionen), **Verlauf** (Notiz schreiben,
+Zendesk, Mails, WhatsApp, Systemeinträge), **Dokumente** (Vorschau), **Umsetzung** und – sobald ein
+Anwalt beteiligt ist – **Anwalt**. Aktionen: Abschließen mit Ergebnis (bei Down-/Upgrade mit
+Folgevertrag), An Rechtsanwalt abgeben bzw. zurück, Fall bearbeiten. „+“ erfasst einen neuen Widerruf in
+vier Schritten. SEPA-Storno, Forderungsfall, Fernabsatz, Downgrade vor Ort, Upload und RA-Kosten öffnen
+die Hub-Fassung als Blatt.
+
+!!! nutzerhandbuch "Bedienung: Widerrufe 1–5"
+    [https://hilfe.hub.glattt.com/widerrufe/1/](https://hilfe.hub.glattt.com/widerrufe/1/)
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 27.09.2026):** Entwurf 2 „Fallakte mit Reitern“ (verworfen: Postfach, Board).
+  „Neuer Widerruf“ erscheint im Web seitdem nur mit `manage_revocations` — dem Recht, das das Speichern
+  verlangt (vorher mit `create_revocations` → 403).
+- **Endpunkte:** neu `GET /hub/cancellations/{id}/data` (Fall als JSON inkl. Frist, Behandlungsstand,
+  Vertrag, RA-Summen, Dokumente, `can.manage|gocardless`, Auswahllisten Gründe/Ergebnisse); die Liste
+  `GET /hub/cancellations/data` trägt zusätzlich `can.manage` und `reasons`. Sonst dieselben wie das Web
+  (`PUT /hub/cancellations/{id}`, `…/notes`, `…/conversation`, `search-contracts`,
+  `/hub/contracts/{id}/cancellation-data`, `POST /hub/contracts/{id}/cancellation`).
+- **App:** `Cancellations/` — `CancellationsView` (Liste, iPad: Liste + Akte), `CancellationCaseView`
+  (Akte, Blätter an der Wurzel), `CancellationSheets` (Bearbeiten, Abschließen, Erfassen),
+  `CancellationsModel`, `CancellationModels`. `/hub/cancellations/{id}` öffnet über
+  `AppState.cancellationFocus` den Fall (Suche, Push, Kontextmenü, Vertragsseite).
+- **GoCardless nie automatisch** (Wissen `kein-automatischer-zahlungsplan`): Abschließen setzt nur den
+  Status; das Mandat storniert der Schritt „Umsetzung“ in der Hub-Fassung.
+- **Offen (Schritt 2):** Dokumente hochladen, RA-Kosten und Schriftwechsel nativ.
+- **Nachweis:** `CancellationsUITests`, PHP `CancellationCasePageTest` (Datenendpunkt, Knopf-Recht).
 
 ### Native Einstellungen (Mehr-Seite, seit 27.09.2026)
 
