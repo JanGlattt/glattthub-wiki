@@ -1787,7 +1787,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
-| 27.09.2026 | 1.2.1 (44) | Personalakte: Überblick als Kontakt (Nummer wählbar und formatiert, E-Mail, Adresse mit Karte) und Anstellung (Vertrag + Befristung in einer Zeile) statt Anstellung/Stammdaten; Hub: Teamliste-Import ergänzt die führende Null von Telefonnummern |
+| 27.09.2026 | 1.2.1 (45) | Personalakte: Überblick als Kontakt (Nummer wählbar und formatiert, E-Mail, Adresse mit Karte) und Anstellung (Vertrag + Befristung in einer Zeile) statt Anstellung/Stammdaten; Hub: Teamliste-Import ergänzt die führende Null von Telefonnummern |
 | 27.09.2026 | 1.2.1 (43) | Native Berichte-Übersicht (Nachzug 6, Entwurf 2): Standort, Zeitraum, Suche, Dashboards mit Kennzahlen, Berichte nach Bereich mit Leitkennzahlen und Verlauf, iPad-Raster, Assistent als Blatt; Hub: `ReportRegistry` `area`/`kpis`, `GET /api/app/reports` + `/values`, `/hub/reports?shell=native` |
 | 27.09.2026 | 1.2.1 (41) | Checklisten Eintritt/Austritt ausgeblendet (Karte nur, wenn der Hub sie ausliefert) |
 | 27.09.2026 | 1.2.1 (40) | Native Personalseite (Entwurf 2): Personen, Akte mit Vergütung, Hub-Konto anlegen, Lohnmonat mit TXT-Übergabe, Brief an die Steuerberatung und Lohnarten, Checklisten Eintritt/Austritt in Akte und Liste; Hub: Lohnliste (Lohnarten, Bezüge, Dienstwagen, Lohnmonat, Teamliste-Import) |
