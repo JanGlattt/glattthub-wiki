@@ -15,9 +15,9 @@ und Changelog**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
     Export): [Berichte 0 – So funktionieren die Berichte](https://hilfe.hub.glattt.com/berichte/0/).
     Angrenzend: [Berichte 2 – Zukünftige Beratungsgespräche](https://hilfe.hub.glattt.com/berichte/2/),
     [Berichte 3 – Vergangene Beratungsgespräche](https://hilfe.hub.glattt.com/berichte/3/),
-    [Berichte 4 – Stornierte und gelöschte Termine](https://hilfe.hub.glattt.com/berichte/4/),
-    [Betrieb 5 – Services und Körperzonen](https://hilfe.hub.glattt.com/betrieb/5/) (dort wird
-    gepflegt, was als Beratung zählt und wie viele Körperzonen ein Service hat).
+    [Berichte 4 – Stornierte und gelöschte Termine](https://hilfe.hub.glattt.com/berichte/4/).
+    Was als Beratung zählt und wie viele Körperzonen ein Service hat, wird im Admin-Backend gepflegt
+    ([Admin 5 – Stammdaten](https://hilfe.hub.glattt.com/admin/5/)).
 
 ---
 

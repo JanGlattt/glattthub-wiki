@@ -1,242 +1,242 @@
 {
- "out": "../pdf/Betrieb-3-Formulare-erstellen",
- "meta": "../meta.json",
- "shots": "../shots",
- "series": "Betrieb",
- "nr": 3,
- "of": 5,
- "audience": "buero",
- "title": [
-  "Formulare",
-  "erstellen"
- ],
- "subtitle": "Klickanleitung für den Formular-Editor im glatttHub — Felder anordnen, Regeln setzen, Vertrag und SEPA einbauen",
- "eyebrow": "Betrieb · Formular-Editor",
- "footerArea": "Betrieb",
- "stand": "19.09.2026",
- "version": "1.4",
- "notes": [
-  "Die Formulare sind **Daten, kein Code** — Kundeninformation, Behandlungsvertrag und SEPA-Mandat entstehen alle hier.",
-  "Ein Formular mit **Vertrags- oder SEPA-Feld** löst echte Vorgänge aus: Vertrag anlegen, Mandat einrichten, Kauf in Phorest.",
-  "**Zuordnung über Dienstleistungen:** Welches Formular im Termin erscheint, entscheidet der gebuchte Service — oder der Schalter „Nur bei minderjährigen Kundinnen“.",
-  "**Zwei neue Schalter seit 19.09.2026:** „Nur bei minderjährigen Kundinnen“ und die Card „Mitunterzeichner“ für Formulare mit zwei Unterschriften.",
-  "Seit 19.09.2026 stehen alle Einstellungen im **Fenster hinter „Einstellungen“**; die Zeile darunter zeigt den Stand als Chips."
- ],
- "pages": [
-  {
-   "h1": "Formular anlegen",
-   "sub": "Die Übersicht zeigt alle Formulare mit ihren Feldern und Einreichungen.",
-   "card": {
-    "title": "Formular anlegen",
-    "text": "Übersicht, neues Formular, Einreichungen"
-   },
-   "left": {
-    "shot": "b8-formulare"
-   },
-   "leftCaption": "Die Formular-Übersicht.",
-   "steps": [
+  "out": "../pdf/Betrieb-3-Formulare-erstellen",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "Betrieb",
+  "nr": 3,
+  "of": 4,
+  "audience": "buero",
+  "title": [
+    "Formulare",
+    "erstellen"
+  ],
+  "subtitle": "Klickanleitung für den Formular-Editor im glatttHub — Felder anordnen, Regeln setzen, Vertrag und SEPA einbauen",
+  "eyebrow": "Betrieb · Formular-Editor",
+  "footerArea": "Betrieb",
+  "stand": "19.09.2026",
+  "version": "1.4",
+  "notes": [
+    "Die Formulare sind **Daten, kein Code** — Kundeninformation, Behandlungsvertrag und SEPA-Mandat entstehen alle hier.",
+    "Ein Formular mit **Vertrags- oder SEPA-Feld** löst echte Vorgänge aus: Vertrag anlegen, Mandat einrichten, Kauf in Phorest.",
+    "**Zuordnung über Dienstleistungen:** Welches Formular im Termin erscheint, entscheidet der gebuchte Service — oder der Schalter „Nur bei minderjährigen Kundinnen“.",
+    "**Zwei neue Schalter seit 19.09.2026:** „Nur bei minderjährigen Kundinnen“ und die Card „Mitunterzeichner“ für Formulare mit zwei Unterschriften.",
+    "Seit 19.09.2026 stehen alle Einstellungen im **Fenster hinter „Einstellungen“**; die Zeile darunter zeigt den Stand als Chips."
+  ],
+  "pages": [
     {
-     "n": 1,
-     "title": "„Neues Formular“",
-     "text": "Legt ein leeres Formular an und öffnet den Editor."
+      "h1": "Formular anlegen",
+      "sub": "Die Übersicht zeigt alle Formulare mit ihren Feldern und Einreichungen.",
+      "card": {
+        "title": "Formular anlegen",
+        "text": "Übersicht, neues Formular, Einreichungen"
+      },
+      "left": {
+        "shot": "b8-formulare"
+      },
+      "leftCaption": "Die Formular-Übersicht.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "„Neues Formular“",
+          "text": "Legt ein leeres Formular an und öffnet den Editor."
+        },
+        {
+          "n": 2,
+          "title": "Felder und Einreichungen",
+          "text": "Je Formular steht dabei, wie viele **Felder** es hat und wie viele **Einreichungen** es schon gibt."
+        },
+        {
+          "n": 3,
+          "title": "Löschen",
+          "text": "Nur, solange keine Einreichungen dranhängen — sonst verschwände die Historie mit."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "**Ein Formular im Einsatz nie umbauen, sondern kopieren.** Wer Felder eines laufenden Formulars ändert, ändert nichts an den alten Einreichungen — aber deren Darstellung kann danach unvollständig aussehen."
+      }
     },
     {
-     "n": 2,
-     "title": "Felder und Einreichungen",
-     "text": "Je Formular steht dabei, wie viele **Felder** es hat und wie viele **Einreichungen** es schon gibt."
+      "h1": "Felder anordnen",
+      "sub": "Oben Name und Beschreibung des Formulars, daneben **Entwurf | Veröffentlicht**, Vorschau und Speichern. Darunter die Felder.",
+      "card": {
+        "title": "Felder anordnen",
+        "text": "Bausteine ziehen, Beschriftung und Breite setzen"
+      },
+      "left": {
+        "shot": "b9-editor"
+      },
+      "leftCaption": "Der Formular-Editor mit Bausteinen, Arbeitsfläche und Einstellungsspalte.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Baustein ziehen",
+          "text": "**„Elemente hierher ziehen“** — Eingabefeld, Auswahl, Datum, Dokument, Unterschrift und weitere."
+        },
+        {
+          "n": 2,
+          "title": "Beschriftung",
+          "text": "Was die Kundin liest. Dazu **Beschreibung / Hilfetext**, wenn eine Erklärung nötig ist."
+        },
+        {
+          "n": 3,
+          "title": "Breite",
+          "text": "Bestimmt, ob Felder nebeneinander stehen. Zwei halbe Felder in einer Zeile lesen sich auf dem iPad besser als zwei ganze."
+        },
+        {
+          "n": 4,
+          "title": "Aus PDF ausschließen",
+          "text": "Für Felder, die nur der Steuerung dienen und im fertigen PDF nichts zu suchen haben."
+        }
+      ],
+      "hint": {
+        "text": "**Reihenfolge ist Gesprächsführung.** Das Formular wird im Beratungsgespräch gemeinsam ausgefüllt — die Reihenfolge der Felder gibt vor, worüber in welcher Reihenfolge gesprochen wird."
+      }
     },
     {
-     "n": 3,
-     "title": "Löschen",
-     "text": "Nur, solange keine Einreichungen dranhängen — sonst verschwände die Historie mit."
+      "h1": "Regeln und Bedingungen",
+      "sub": "Felder lassen sich abhängig von anderen Antworten ein- und ausblenden — und in ihrer Gültigkeit begrenzen.",
+      "card": {
+        "title": "Regeln setzen",
+        "text": "Bedingte Anzeige, Datum-Regeln, Pflichtangaben"
+      },
+      "left": {
+        "shot": "b10-bedingungen"
+      },
+      "leftCaption": "Die Einstellungen eines Feldes mit **„Bedingte Anzeige“**.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Bedingte Anzeige",
+          "text": "Das Feld erscheint nur, wenn eine andere Antwort passt — etwa eine Rückfrage nur bei „Ja“."
+        },
+        {
+          "n": 2,
+          "title": "Mehrere Bedingungen",
+          "text": "**„Alle Bedingungen“** heißt: Sie müssen zusammen zutreffen. Sonst genügt eine."
+        },
+        {
+          "n": 3,
+          "title": "Zusatzangabe",
+          "text": "Bei Ja/Nein-Fragen lässt sich eine **Pflicht-Zusatzangabe** verlangen — die Erklärung zum „Ja“."
+        },
+        {
+          "n": 4,
+          "title": "Datum-Regeln",
+          "text": "Grenzen ein, welche Daten wählbar sind — etwa nur die Vergangenheit beim Geburtsdatum."
+        }
+      ],
+      "hint": {
+        "text": "**Nach jeder Regel einmal selbst durchklicken.** Bedingte Felder sind der häufigste Grund dafür, dass ein Formular „nicht absendbar“ ist: Ein verstecktes Pflichtfeld blockiert unsichtbar."
+      }
+    },
+    {
+      "h1": "Einstellungen: Zuordnung, Vertrag, SEPA",
+      "sub": "Die folgenreichsten Einstellungen stehen im Fenster „Einstellungen“ — die Chip-Zeile unter dem Kopf zeigt, was gilt.",
+      "card": {
+        "title": "Einstellungen",
+        "text": "Chip-Zeile, Fenster mit Menüband, Zuordnung, Vertrag, SEPA"
+      },
+      "left": {
+        "shot": "b11-einstellungen"
+      },
+      "leftCaption": "Die Chip-Zeile unter dem Kopf: jeder Chip nennt eine Einstellung und öffnet das Fenster am richtigen Bereich.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "„Bearbeiten“ oder Chip",
+          "text": "Die Chip-Zeile unter dem Kopf zeigt den Stand; **„Bearbeiten“** oder ein Tipp auf einen Chip öffnet das Fenster mit vier Bereichen: **Zuordnung**, **Vertrag & SEPA**, **Mitunterzeichner**, **Mail & Download**."
+        },
+        {
+          "n": 2,
+          "title": "Dienstleistungen",
+          "text": "Entscheidet, bei welchen Services das Formular im Termin angeboten wird — die Zuordnung, nach der die Terminansicht sortiert."
+        },
+        {
+          "n": 3,
+          "title": "Pflicht und Gültigkeit",
+          "text": "**„Pflichtformular vor Behandlung“** sperrt den Einstellungszettel. Gültigkeit **„Einmalig pro Kunde“** oder **„Bei jedem Termin neu“**."
+        },
+        {
+          "n": 4,
+          "title": "Vertrags-Feld",
+          "text": "Bereich „Vertrag & SEPA“: Macht aus dem Formular einen **Behandlungsvertrag** — mit Preisliste, Zonen, Rabatt und Gutschein („Terminansicht 3“)."
+        },
+        {
+          "n": 5,
+          "title": "SEPA-Feld",
+          "text": "Richtet das **Lastschriftmandat** ein. Es gehört immer hinter den Vertrag, nie davor („Terminansicht 4“)."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Rechtsdokumente",
+          "text": "Über den Baustein **Dokument** werden AGB und Widerrufsbelehrung eingebunden — die Kundin bestätigt sie einzeln beim Absenden."
+        },
+        {
+          "title": "E-Mail an die Kundin",
+          "text": "Zum Formular gehört ein **E-Mail-Text**, der beim Absenden mit dem PDF verschickt wird."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "**Die Reihenfolge der Formular-Kette ist erzwungen:** Kundeninformation → Behandlungsvertrag → SEPA-Mandat. Wer ein neues Vertrags- oder SEPA-Formular baut, ordnet es denselben Dienstleistungen zu — sonst erscheint es im Termin an der falschen Stelle oder gar nicht."
+      },
+      "right": {
+        "shot": "b11b-einstellungen-fenster"
+      },
+      "rightCaption": "Bereich „Zuordnung“ im Einstellungsfenster: Dienstleistungen, Pflicht vor Behandlung, Gültigkeit.",
+      "rightHint": {
+        "text": "„Vertrag & SEPA“ im Bild: „Betrieb 3“, Bild b11c. Beide Schalter sind bei den meisten Formularen aus — nur Behandlungsvertrag und SEPA-Mandat brauchen sie."
+      }
+    },
+    {
+      "h1": "Minderjährige und Mitunterzeichner",
+      "sub": "Formulare nur für Kundinnen unter 18 — und Formulare, die eine zweite Person mitunterschreibt.",
+      "card": {
+        "title": "Minderjährige, zweite Person",
+        "text": "Schalter „Nur bei minderjährigen Kundinnen“, Card „Mitunterzeichner“, Feld-Schalter"
+      },
+      "left": {
+        "shot": "b17-minderjaehrig-schalter"
+      },
+      "leftCaption": "Bereich „Zuordnung“ mit dem Schalter „Nur bei minderjährigen Kundinnen“ — keine Dienstleistung nötig.",
+      "right": {
+        "shot": "b18-mitunterzeichner"
+      },
+      "rightCaption": "Bereich „Mitunterzeichner“: Auslöser-Frage, Auslöser-Antwort, E-Mail- und Handy-Feld der zweiten Person.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "„Nur bei minderjährigen Kundinnen“",
+          "text": "Bereich **Zuordnung**: erscheint bei **jedem** Termin einer Kundin unter 18 (Alter aus Phorest) und muss vor dem Einstellungszettel ausgefüllt sein."
+        },
+        {
+          "n": 2,
+          "title": "Mitunterzeichner aktivieren",
+          "text": "Bereich **Mitunterzeichner** — für Formulare mit **zwei Unterschriften**. Dann Auslöser-Frage und -Antwort wählen, z. B. „Sorge steht zu“ → „beiden gemeinsam“."
+        },
+        {
+          "n": 3,
+          "title": "E-Mail- und Handy-Feld",
+          "text": "Link per Mail an die E-Mail-Adresse, per **WhatsApp oder SMS** an die Handynummer. Beide Felder gehören zum Hauptteil; eines ist Pflicht."
+        },
+        {
+          "n": 4,
+          "title": "Felder der zweiten Person",
+          "text": "Jedes Feld, das sie ausfüllt, bekommt den Schalter **„Gehört zur zweiten Person“**. Bekommt sie einen Link, sind diese Angaben vorausfüllbar — nur ihre Unterschrift bleibt ihr."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "**E-Mail- und Handy-Feld nie als „zweite Person“ markieren** — sie füllt die erste Person aus."
+      },
+      "notes": [
+        {
+          "title": "WhatsApp einrichten",
+          "text": "**Admin → Formular-Links (WhatsApp/SMS)**: Superchat-Kanal, genehmigte Vorlage, SMS-Texte je Standort."
+        }
+      ]
     }
-   ],
-   "hint": {
-    "kind": "warn",
-    "text": "**Ein Formular im Einsatz nie umbauen, sondern kopieren.** Wer Felder eines laufenden Formulars ändert, ändert nichts an den alten Einreichungen — aber deren Darstellung kann danach unvollständig aussehen."
-   }
-  },
-  {
-   "h1": "Felder anordnen",
-   "sub": "Oben Name und Beschreibung des Formulars, daneben **Entwurf | Veröffentlicht**, Vorschau und Speichern. Darunter die Felder.",
-   "card": {
-    "title": "Felder anordnen",
-    "text": "Bausteine ziehen, Beschriftung und Breite setzen"
-   },
-   "left": {
-    "shot": "b9-editor"
-   },
-   "leftCaption": "Der Formular-Editor mit Bausteinen, Arbeitsfläche und Einstellungsspalte.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Baustein ziehen",
-     "text": "**„Elemente hierher ziehen“** — Eingabefeld, Auswahl, Datum, Dokument, Unterschrift und weitere."
-    },
-    {
-     "n": 2,
-     "title": "Beschriftung",
-     "text": "Was die Kundin liest. Dazu **Beschreibung / Hilfetext**, wenn eine Erklärung nötig ist."
-    },
-    {
-     "n": 3,
-     "title": "Breite",
-     "text": "Bestimmt, ob Felder nebeneinander stehen. Zwei halbe Felder in einer Zeile lesen sich auf dem iPad besser als zwei ganze."
-    },
-    {
-     "n": 4,
-     "title": "Aus PDF ausschließen",
-     "text": "Für Felder, die nur der Steuerung dienen und im fertigen PDF nichts zu suchen haben."
-    }
-   ],
-   "hint": {
-    "text": "**Reihenfolge ist Gesprächsführung.** Das Formular wird im Beratungsgespräch gemeinsam ausgefüllt — die Reihenfolge der Felder gibt vor, worüber in welcher Reihenfolge gesprochen wird."
-   }
-  },
-  {
-   "h1": "Regeln und Bedingungen",
-   "sub": "Felder lassen sich abhängig von anderen Antworten ein- und ausblenden — und in ihrer Gültigkeit begrenzen.",
-   "card": {
-    "title": "Regeln setzen",
-    "text": "Bedingte Anzeige, Datum-Regeln, Pflichtangaben"
-   },
-   "left": {
-    "shot": "b10-bedingungen"
-   },
-   "leftCaption": "Die Einstellungen eines Feldes mit **„Bedingte Anzeige“**.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Bedingte Anzeige",
-     "text": "Das Feld erscheint nur, wenn eine andere Antwort passt — etwa eine Rückfrage nur bei „Ja“."
-    },
-    {
-     "n": 2,
-     "title": "Mehrere Bedingungen",
-     "text": "**„Alle Bedingungen“** heißt: Sie müssen zusammen zutreffen. Sonst genügt eine."
-    },
-    {
-     "n": 3,
-     "title": "Zusatzangabe",
-     "text": "Bei Ja/Nein-Fragen lässt sich eine **Pflicht-Zusatzangabe** verlangen — die Erklärung zum „Ja“."
-    },
-    {
-     "n": 4,
-     "title": "Datum-Regeln",
-     "text": "Grenzen ein, welche Daten wählbar sind — etwa nur die Vergangenheit beim Geburtsdatum."
-    }
-   ],
-   "hint": {
-    "text": "**Nach jeder Regel einmal selbst durchklicken.** Bedingte Felder sind der häufigste Grund dafür, dass ein Formular „nicht absendbar“ ist: Ein verstecktes Pflichtfeld blockiert unsichtbar."
-   }
-  },
-  {
-   "h1": "Einstellungen: Zuordnung, Vertrag, SEPA",
-   "sub": "Die folgenreichsten Einstellungen stehen im Fenster „Einstellungen“ — die Chip-Zeile unter dem Kopf zeigt, was gilt.",
-   "card": {
-    "title": "Einstellungen",
-    "text": "Chip-Zeile, Fenster mit Menüband, Zuordnung, Vertrag, SEPA"
-   },
-   "left": {
-    "shot": "b11-einstellungen"
-   },
-   "leftCaption": "Die Chip-Zeile unter dem Kopf: jeder Chip nennt eine Einstellung und öffnet das Fenster am richtigen Bereich.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "„Bearbeiten“ oder Chip",
-     "text": "Die Chip-Zeile unter dem Kopf zeigt den Stand; **„Bearbeiten“** oder ein Tipp auf einen Chip öffnet das Fenster mit vier Bereichen: **Zuordnung**, **Vertrag & SEPA**, **Mitunterzeichner**, **Mail & Download**."
-    },
-    {
-     "n": 2,
-     "title": "Dienstleistungen",
-     "text": "Entscheidet, bei welchen Services das Formular im Termin angeboten wird — die Zuordnung, nach der die Terminansicht sortiert."
-    },
-    {
-     "n": 3,
-     "title": "Pflicht und Gültigkeit",
-     "text": "**„Pflichtformular vor Behandlung“** sperrt den Einstellungszettel. Gültigkeit **„Einmalig pro Kunde“** oder **„Bei jedem Termin neu“**."
-    },
-    {
-     "n": 4,
-     "title": "Vertrags-Feld",
-     "text": "Bereich „Vertrag & SEPA“: Macht aus dem Formular einen **Behandlungsvertrag** — mit Preisliste, Zonen, Rabatt und Gutschein („Terminansicht 3“)."
-    },
-    {
-     "n": 5,
-     "title": "SEPA-Feld",
-     "text": "Richtet das **Lastschriftmandat** ein. Es gehört immer hinter den Vertrag, nie davor („Terminansicht 4“)."
-    }
-   ],
-   "notes": [
-    {
-     "title": "Rechtsdokumente",
-     "text": "Über den Baustein **Dokument** werden AGB und Widerrufsbelehrung eingebunden — die Kundin bestätigt sie einzeln beim Absenden."
-    },
-    {
-     "title": "E-Mail an die Kundin",
-     "text": "Zum Formular gehört ein **E-Mail-Text**, der beim Absenden mit dem PDF verschickt wird."
-    }
-   ],
-   "hint": {
-    "kind": "warn",
-    "text": "**Die Reihenfolge der Formular-Kette ist erzwungen:** Kundeninformation → Behandlungsvertrag → SEPA-Mandat. Wer ein neues Vertrags- oder SEPA-Formular baut, ordnet es denselben Dienstleistungen zu — sonst erscheint es im Termin an der falschen Stelle oder gar nicht."
-   },
-   "right": {
-    "shot": "b11b-einstellungen-fenster"
-   },
-   "rightCaption": "Bereich „Zuordnung“ im Einstellungsfenster: Dienstleistungen, Pflicht vor Behandlung, Gültigkeit.",
-   "rightHint": {
-    "text": "„Vertrag & SEPA“ im Bild: „Betrieb 3“, Bild b11c. Beide Schalter sind bei den meisten Formularen aus — nur Behandlungsvertrag und SEPA-Mandat brauchen sie."
-   }
-  },
-  {
-   "h1": "Minderjährige und Mitunterzeichner",
-   "sub": "Formulare nur für Kundinnen unter 18 — und Formulare, die eine zweite Person mitunterschreibt.",
-   "card": {
-    "title": "Minderjährige, zweite Person",
-    "text": "Schalter „Nur bei minderjährigen Kundinnen“, Card „Mitunterzeichner“, Feld-Schalter"
-   },
-   "left": {
-    "shot": "b17-minderjaehrig-schalter"
-   },
-   "leftCaption": "Bereich „Zuordnung“ mit dem Schalter „Nur bei minderjährigen Kundinnen“ — keine Dienstleistung nötig.",
-   "right": {
-    "shot": "b18-mitunterzeichner"
-   },
-   "rightCaption": "Bereich „Mitunterzeichner“: Auslöser-Frage, Auslöser-Antwort, E-Mail- und Handy-Feld der zweiten Person.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "„Nur bei minderjährigen Kundinnen“",
-     "text": "Bereich **Zuordnung**: erscheint bei **jedem** Termin einer Kundin unter 18 (Alter aus Phorest) und muss vor dem Einstellungszettel ausgefüllt sein."
-    },
-    {
-     "n": 2,
-     "title": "Mitunterzeichner aktivieren",
-     "text": "Bereich **Mitunterzeichner** — für Formulare mit **zwei Unterschriften**. Dann Auslöser-Frage und -Antwort wählen, z. B. „Sorge steht zu“ → „beiden gemeinsam“."
-    },
-    {
-     "n": 3,
-     "title": "E-Mail- und Handy-Feld",
-     "text": "Link per Mail an die E-Mail-Adresse, per **WhatsApp oder SMS** an die Handynummer. Beide Felder gehören zum Hauptteil; eines ist Pflicht."
-    },
-    {
-     "n": 4,
-     "title": "Felder der zweiten Person",
-     "text": "Jedes Feld, das sie ausfüllt, bekommt den Schalter **„Gehört zur zweiten Person“**. Bekommt sie einen Link, sind diese Angaben vorausfüllbar — nur ihre Unterschrift bleibt ihr."
-    }
-   ],
-   "hint": {
-    "kind": "warn",
-    "text": "**E-Mail- und Handy-Feld nie als „zweite Person“ markieren** — sie füllt die erste Person aus."
-   },
-   "notes": [
-    {
-     "title": "WhatsApp einrichten",
-     "text": "**Admin → Formular-Links (WhatsApp/SMS)**: Superchat-Kanal, genehmigte Vorlage, SMS-Texte je Standort."
-    }
-   ]
-  }
- ]
+  ]
 }

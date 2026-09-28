@@ -5,9 +5,11 @@ Blade-Komponente mit Grafik, Zonenliste und Datenbank-Anbindung. Diese Seite ist
 **Komponenten-Referenz für Entwickler** (Parameter, Events, Model, Phorest-Zuordnung,
 Grafiken, Styling); die Bedienung der Körperzonen-Verwaltung steht im Nutzerhandbuch.
 
-!!! nutzerhandbuch "Bedienung: Betrieb 5 – Services und Körperzonen"
-    [hilfe.hub.glattt.com/betrieb/5/](https://hilfe.hub.glattt.com/betrieb/5/) — Service-Übersicht,
-    Beratung oder Behandlung, Zuordnungen pflegen.
+!!! warning "Seite „Services" ausgebaut am 28.09.2026"
+    Die Vorschau-Seite `/hub/services` (Menü Betrieb → Services) gibt es in Hub und App nicht mehr —
+    Entscheidung Jan (TestFlight-Befund 129). Der Körperzonen-Wähler selbst bleibt als Komponente in
+    Terminansicht, Formularen und Verträgen; die Anleitung „Betrieb 5 – Services und Körperzonen"
+    ist entfallen. Das Recht `view_services` wurde per Migration entfernt.
 
     Angrenzend: [Admin 5 – Stammdaten](https://hilfe.hub.glattt.com/admin/5/) (Körperzonen im
     Admin-Panel).
@@ -18,7 +20,7 @@ Die Körperzonen sind die Preis- und Buchungseinheit der glattt-Pakete; welche Z
 welche Phorest-Services dazugehören, wird zentral gepflegt und wirkt danach überall gleich — im
 Behandlungsvertrag, im Einstellungszettel und in jeder Auswertung. Die hier beschriebene
 Auswahl-Komponente hat selbst keine Verwaltungsoberfläche; die Pflege der Zonen und ihrer
-Zuordnungen ist in [Betrieb 5](https://hilfe.hub.glattt.com/betrieb/5/) und
+Zuordnungen ist in
 [Admin 5](https://hilfe.hub.glattt.com/admin/5/) beschrieben.
 
 ## Übersicht
