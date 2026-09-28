@@ -1,169 +1,179 @@
 {
- "out": "../pdf/App-15-Verkaufsstatistik",
- "meta": "../meta.json",
- "shots": "../shots",
- "series": "App",
- "of": 15,
- "audience": "leitung",
- "footerArea": "App",
- "stand": "27.09.2026",
- "version": "1.1",
- "nr": 15,
- "title": [
-  "Die Verkaufsstatistik",
-  "in der App"
- ],
- "subtitle": "Klickanleitung für die glatttHub-App — Kennzahlen, Körperzonen nach Standort, Neukunden und Paket-Mix wie im Hub, mit Diagramm und Tabelle",
- "eyebrow": "App · Berichte",
- "notes": [
-  "Die Verkaufsstatistik öffnest du im Reiter **Berichte** über die Karte **Verkaufsstatistik**. Sie ist aufgebaut wie im Hub — dieselben Auswertungen in derselben Reihenfolge.",
-  "Alle zwölf Auswertungen des Hubs sind in der App — jede mit Diagramm und Tabelle. Was die App nicht zeigt (Vergleichsreihen, einzelne Filter), öffnet **⋯ → Hub-Fassung öffnen**."
- ],
- "pages": [
-  {
-   "h1": "Kopf und Kennzahlen",
-   "sub": "Oben Standort und Brutto/Netto, darunter die Kennzahlen des laufenden Monats — jede mit dem Vergleich zum Vormonat.",
-   "card": {
-    "title": "Kopf",
-    "text": "Standort, Beträge, Kennzahlen"
-   },
-   "left": {
-    "shot": "report-page-head-light"
-   },
-   "leftCaption": "**ggü. VM** heißt gegenüber dem Vormonat. Netto teilt alle Beträge durch 1,19.",
-   "steps": [
+  "out": "../pdf/App-15-Verkaufsstatistik",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "App",
+  "of": 15,
+  "audience": "leitung",
+  "footerArea": "App",
+  "stand": "28.09.2026",
+  "version": "1.2",
+  "nr": 15,
+  "title": [
+    "Die Verkaufsstatistik",
+    "in der App"
+  ],
+  "subtitle": "Klickanleitung für die glatttHub-App — Kennzahlen, Körperzonen nach Standort, Neukunden und Paket-Mix wie im Hub, mit Diagramm und Tabelle",
+  "eyebrow": "App · Berichte",
+  "notes": [
+    "Die Verkaufsstatistik öffnest du im Reiter **Berichte** über die Karte **Verkaufsstatistik**. Sie ist aufgebaut wie im Hub — dieselben Auswertungen in derselben Reihenfolge.",
+    "Alle zwölf Auswertungen des Hubs sind in der App — jede mit Diagramm und Tabelle. Was die App nicht zeigt (Vergleichsreihen, einzelne Filter), öffnet **⋯ → Hub-Fassung öffnen**."
+  ],
+  "pages": [
     {
-     "n": 1,
-     "title": "Standort",
-     "text": "Die Pille wählt das Institut für die ganze Seite."
+      "h1": "Kopf und Kennzahlen",
+      "sub": "Oben Standort und Brutto/Netto, darunter die Kennzahlen des laufenden Monats — jede mit dem Vergleich zum Vormonat.",
+      "card": {
+        "title": "Kopf",
+        "text": "Standort, Beträge, Kennzahlen"
+      },
+      "left": {
+        "shot": "report-page-head-light"
+      },
+      "leftCaption": "**ggü. VM** heißt gegenüber dem Vormonat. Netto teilt alle Beträge durch 1,19.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Standort",
+          "text": "Die Pille wählt das Institut für die ganze Seite."
+        },
+        {
+          "n": 2,
+          "title": "Brutto / Netto",
+          "text": "Schaltet alle Beträge um, ohne neu zu laden."
+        },
+        {
+          "n": 3,
+          "title": "Springen",
+          "text": "**⋯** oben rechts listet alle Auswertungen — ein Tipp springt hin. Dort gibt es auch die **Hub-Fassung** der Seite."
+        }
+      ]
     },
     {
-     "n": 2,
-     "title": "Brutto / Netto",
-     "text": "Schaltet alle Beträge um, ohne neu zu laden."
+      "h1": "Körperzonen pro Institut",
+      "sub": "Verkaufte KPZ je Monat, gestapelt nach Institut, mit der Prognose für den laufenden Monat als blasse Säule.",
+      "card": {
+        "title": "KPZ",
+        "text": "Monate, Institute, Prognose"
+      },
+      "left": {
+        "shot": "report-card-zones-light"
+      },
+      "leftCaption": "Über jeder Säule steht die Summe, links die Achse. Die Leiste darunter zeigt, wo das Fenster in der ganzen Historie liegt — Griff ziehen oder nach links wischen zeigt frühere Monate, zwei Finger zoomen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Säule antippen",
+          "text": "Zeigt die KPZ je Institut und die Verkäuferinnen dieses Monats."
+        },
+        {
+          "n": 2,
+          "title": "Zurück in der Zeit",
+          "text": "Nach links wischen, den Griff der **Bereichsleiste** ziehen oder mit **zwei Fingern** zoomen — von zwei Monaten bis zur ganzen Historie."
+        },
+        {
+          "n": 3,
+          "title": "Reihe ausblenden",
+          "text": "Ein Tipp auf einen Eintrag der **Legende** blendet das Institut aus und wieder ein; Summen zählen nur die sichtbaren."
+        },
+        {
+          "n": 4,
+          "title": "Widerrufe",
+          "text": "**Widerrufen** und **Mögl. Widerruf** zeigen die betroffenen KPZ — mögliche Widerrufe als Teil der Säule, die Summe bleibt gleich."
+        },
+        {
+          "n": 5,
+          "title": "Tabelle",
+          "text": "Das Tabellen-Symbol oben rechts zeigt dieselben Zahlen je Monat, nach Jahren aufklappbar."
+        }
+      ]
     },
     {
-     "n": 3,
-     "title": "Springen",
-     "text": "**⋯** oben rechts listet alle Auswertungen — ein Tipp springt hin. Dort gibt es auch die **Hub-Fassung** der Seite."
+      "h1": "Neukunden und Paket-Mix",
+      "sub": "Neukunden je Monat nach Institut und der Sales-Mix nach Paket-Umfang — mit den Schaltern aus dem Hub.",
+      "card": {
+        "title": "Mix",
+        "text": "Stück, Umsatz, Anteil"
+      },
+      "left": {
+        "shot": "report-card-sales-mix-light"
+      },
+      "leftCaption": "Gold ist Ganzkörper, die Grüntöne 1 bis 5+ KPZ.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Verkauft / Laufend",
+          "text": "Neu verkaufte Pakete oder alle, die im Monat liefen."
+        },
+        {
+          "n": 2,
+          "title": "Stück / Umsatz",
+          "text": "Anzahl der Pakete oder ihr Wert."
+        },
+        {
+          "n": 3,
+          "title": "Absolut / Anteil",
+          "text": "Anteil zeigt jede Säule als 100 % — gut, um Verschiebungen im Mix zu sehen."
+        }
+      ]
+    },
+    {
+      "h1": "Zahlungen und Laufzeiten",
+      "sub": "Lastschriften-Bestand, Rücklastschriften, Zahlungsausfälle und Laufzeiten — dieselben Karten wie im Hub, weiter unten auf der Seite.",
+      "card": {
+        "title": "Zahlungen",
+        "text": "Einzug, Ausfälle, Laufzeiten"
+      },
+      "left": {
+        "shot": "report-card-mrr-light"
+      },
+      "leftCaption": "Blasse Säulen sind die Prognose der nächsten Monate aus den vereinbarten Raten.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Lastschriften-Bestand",
+          "text": "**Gesamt** zeigt eingezogen, nachgezahlt, offen und Rücklastschriften; **Institute** das Volumen je Standort. **Prognose** blendet die Zukunft ein oder aus."
+        },
+        {
+          "n": 2,
+          "title": "Rücklastschriften",
+          "text": "**Quote** als Linien nach Anzahl und Wert, **Anzahl** als Säulen je Monat."
+        },
+        {
+          "n": 3,
+          "title": "Zahlungsausfälle",
+          "text": "Nach **Viertel** der Laufzeit oder je **Ratenmonat**, als **%** oder **Anzahl**."
+        },
+        {
+          "n": 4,
+          "title": "Laufzeiten",
+          "text": "**laut Vertrag**, **Reale Raten** oder **Monate**; **Nur aktive** blendet beendete Verträge aus."
+        }
+      ]
+    },
+    {
+      "h1": "Auf dem iPad",
+      "sub": "Kennzahlen als vier Kacheln, kleinere Karten nebeneinander, große über die volle Breite — wie im Hub.",
+      "card": {
+        "title": "iPad",
+        "text": "Mehr auf einen Blick"
+      },
+      "left": {
+        "shot": "report-page-ipad-light"
+      },
+      "leftCaption": "Bestandskunden & Flex und Neukunden nebeneinander, darunter die Körperzonen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Zurück",
+          "text": "**‹ Berichte** oben links oder vom linken Rand wischen."
+        },
+        {
+          "n": 2,
+          "title": "Aktualisieren",
+          "text": "Nach unten ziehen lädt alle Karten neu; die alten Zahlen bleiben so lange blass stehen."
+        }
+      ]
     }
-   ]
-  },
-  {
-   "h1": "Körperzonen pro Institut",
-   "sub": "Verkaufte KPZ je Monat, gestapelt nach Institut, mit der Prognose für den laufenden Monat als blasse Säule.",
-   "card": {
-    "title": "KPZ",
-    "text": "Monate, Institute, Prognose"
-   },
-   "left": {
-    "shot": "report-card-zones-light"
-   },
-   "leftCaption": "Über jeder Säule steht die Summe, links die Achse. Nach links wischen zeigt frühere Monate.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Säule antippen",
-     "text": "Zeigt die KPZ je Institut und die Verkäuferinnen dieses Monats."
-    },
-    {
-     "n": 2,
-     "title": "Widerrufe",
-     "text": "**Widerrufen** und **Mögl. Widerruf** legen die betroffenen KPZ oben auf die Säule."
-    },
-    {
-     "n": 3,
-     "title": "Tabelle",
-     "text": "Das Tabellen-Symbol oben rechts zeigt dieselben Zahlen je Monat, nach Jahren aufklappbar."
-    }
-   ]
-  },
-  {
-   "h1": "Neukunden und Paket-Mix",
-   "sub": "Neukunden je Monat nach Institut und der Sales-Mix nach Paket-Umfang — mit den Schaltern aus dem Hub.",
-   "card": {
-    "title": "Mix",
-    "text": "Stück, Umsatz, Anteil"
-   },
-   "left": {
-    "shot": "report-card-sales-mix-light"
-   },
-   "leftCaption": "Gold ist Ganzkörper, die Grüntöne 1 bis 5+ KPZ.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Verkauft / Laufend",
-     "text": "Neu verkaufte Pakete oder alle, die im Monat liefen."
-    },
-    {
-     "n": 2,
-     "title": "Stück / Umsatz",
-     "text": "Anzahl der Pakete oder ihr Wert."
-    },
-    {
-     "n": 3,
-     "title": "Absolut / Anteil",
-     "text": "Anteil zeigt jede Säule als 100 % — gut, um Verschiebungen im Mix zu sehen."
-    }
-   ]
-  },
-  {
-   "h1": "Zahlungen und Laufzeiten",
-   "sub": "Lastschriften-Bestand, Rücklastschriften, Zahlungsausfälle und Laufzeiten — dieselben Karten wie im Hub, weiter unten auf der Seite.",
-   "card": {
-    "title": "Zahlungen",
-    "text": "Einzug, Ausfälle, Laufzeiten"
-   },
-   "left": {
-    "shot": "report-card-mrr-light"
-   },
-   "leftCaption": "Blasse Säulen sind die Prognose der nächsten Monate aus den vereinbarten Raten.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Lastschriften-Bestand",
-     "text": "**Gesamt** zeigt eingezogen, nachgezahlt, offen und Rücklastschriften; **Institute** das Volumen je Standort. **Prognose** blendet die Zukunft ein oder aus."
-    },
-    {
-     "n": 2,
-     "title": "Rücklastschriften",
-     "text": "**Quote** als Linien nach Anzahl und Wert, **Anzahl** als Säulen je Monat."
-    },
-    {
-     "n": 3,
-     "title": "Zahlungsausfälle",
-     "text": "Nach **Viertel** der Laufzeit oder je **Ratenmonat**, als **%** oder **Anzahl**."
-    },
-    {
-     "n": 4,
-     "title": "Laufzeiten",
-     "text": "**laut Vertrag**, **Reale Raten** oder **Monate**; **Nur aktive** blendet beendete Verträge aus."
-    }
-   ]
-  },
-  {
-   "h1": "Auf dem iPad",
-   "sub": "Kennzahlen als vier Kacheln, kleinere Karten nebeneinander, große über die volle Breite — wie im Hub.",
-   "card": {
-    "title": "iPad",
-    "text": "Mehr auf einen Blick"
-   },
-   "left": {
-    "shot": "report-page-ipad-light"
-   },
-   "leftCaption": "Bestandskunden & Flex und Neukunden nebeneinander, darunter die Körperzonen.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Zurück",
-     "text": "**‹ Berichte** oben links oder vom linken Rand wischen."
-    },
-    {
-     "n": 2,
-     "title": "Aktualisieren",
-     "text": "Nach unten ziehen lädt alle Karten neu; die alten Zahlen bleiben so lange blass stehen."
-    }
-   ]
-  }
- ]
+  ]
 }

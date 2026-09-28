@@ -8,8 +8,8 @@ vorauswertet. Nicht zu verwechseln mit den Kundenverträgen (`Contract`, siehe
 Datenmodell, Routen, Services und Fallstricke**; die Bedienung Schritt für Schritt steht im
 Nutzerhandbuch.
 
-!!! nutzerhandbuch "Bedienung: Finanzen 2 – Unternehmensverträge"
-    [hilfe.hub.glattt.com/finanzen/2/](https://hilfe.hub.glattt.com/finanzen/2/) — Die Übersicht,
+!!! nutzerhandbuch "Bedienung: Finanzen 1 – Unternehmensverträge"
+    [hilfe.hub.glattt.com/finanzen/1/](https://hilfe.hub.glattt.com/finanzen/1/) — Die Übersicht,
     einen Vertrag erfassen (Wizard inkl. KI-Vorschlägen), Fristen im Blick behalten.
 
 ---

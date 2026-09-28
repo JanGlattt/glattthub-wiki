@@ -1,5 +1,15 @@
 # Schulden (Kundenschulden)
 
+!!! warning "Ausgebaut am 28.09.2026"
+    Die Seite **Schulden** (`/hub/debts`, „Geplatzte Lastschriften") gibt es in Hub und App nicht
+    mehr — Entscheidung Jan (TestFlight-Befund 125, 1.3.0): „Wir nutzen nur noch Forderungen".
+    Entfernt: Routen, `DebtController`, Views, Menüpunkt (Sidebar, Mehr-Sheet, App), das Recht
+    `view_debts` (Migration `2026_09_28_120000_remove_view_debts_permission`); die Benachrichtigung
+    „Offener Betrag beim Termin nicht kassiert" zeigt jetzt aufs
+    [Forderungsmanagement](FORDERUNGSMANAGEMENT.md). Der **Schuldenbericht** unter Berichte bleibt
+    (er wertet die Forderungsfälle aus). Der Rest dieser Seite ist Historie.
+
+
 Das Schulden-Modul ist die zentrale **Datenansicht** über Geld, das Kunden schulden — in der
 ersten Ausbaustufe ausschließlich aus **geplatzten GoCardless-Lastschriften** (nicht eingelöste
 oder zurückgebuchte SEPA-Einzüge). Es legt kein eigenes Datenmodell an, sondern wertet die per
@@ -8,11 +18,9 @@ Webhook gespeicherten Raten in `contract_payments` aus; der geführte Mahnprozes
 „Was zählt als Schuld?", Datenquelle, Routen und Bausteine**; die Bedienung der Listen und des
 Schuldenberichts steht im Nutzerhandbuch.
 
-!!! nutzerhandbuch "Bedienung: Finanzen 1 – Schulden im Überblick · Berichte 10 – Schuldenbericht"
-    [hilfe.hub.glattt.com/finanzen/1/](https://hilfe.hub.glattt.com/finanzen/1/) — die Gesamtsicht,
-    die Kundenliste und die Liste der geplatzten Lastschriften lesen, und was daraus folgt.
-    [hilfe.hub.glattt.com/berichte/10/](https://hilfe.hub.glattt.com/berichte/10/) — der
-    Schuldenbericht unter *Berichte*: Rücklastschriften, Bestand und Rückfluss.
+!!! note "Nutzerhandbuch"
+    Die Anleitung „Finanzen 1 – Schulden im Überblick" ist mit der Seite entfallen; der
+    Schuldenbericht steht weiter unter [Berichte 10 – Schuldenbericht](https://hilfe.hub.glattt.com/berichte/10/).
 
     Angrenzend: [Verträge 4 – Zahlungen nachtragen und korrigieren](https://hilfe.hub.glattt.com/vertraege/4/)
     (eine geplatzte Lastschrift ausgleichen),

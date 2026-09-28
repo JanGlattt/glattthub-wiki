@@ -1614,6 +1614,42 @@ Tipp auf eine Säule zeigt die Werte je Institut, bei den Körperzonen auch die 
   `ReportsUITests` (Übersicht → Verkaufsstatistik nativ, Web-Karten, zurück), PHP `AppReportsTest`
   (Rahmen, Embed), `ReportRegistryTest` (`statisticsOf`, Bausteine).
 
+### Zeit-Diagramme: Fenster, Zoom, Legende (seit 28.09.2026)
+
+**Für Endanwender:** Jedes Diagramm über Monate, Tage oder ein Datum zeigt zuerst die jüngsten
+Werte. Wischen nach links blättert in die Vergangenheit, zwei Finger zoomen, und die **Bereichsleiste**
+unter dem Diagramm zeigt, wo das Fenster in der ganzen Historie liegt („Feb – Sep 2026 · 8 von 44");
+ihr Griff lässt sich ziehen. Ein Tipp auf einen Legenden-Eintrag blendet die Reihe aus und wieder
+ein — wie im Hub. Heatmaps tragen Summen je Zeile und Spalte.
+
+!!! nutzerhandbuch "Bedienung: App 15 – Die Verkaufsstatistik in der App"
+    [hilfe.hub.glattt.com/app/15/](https://hilfe.hub.glattt.com/app/15/)
+
+**Für Entwickler** (TestFlight-Befunde 109–123 zu 1.3.0, Entscheidung Jan: „Pinch + Wischen +
+Bereichsleiste" für alle nativen Zeit-Diagramme):
+
+- Bausteine in `Reports/ChartWindowKit.swift`: `CategoryWindow` (sichtbare Anzahl + linker Rand als
+  Index, `zoom(to:)` hält den rechten Rand, `move(toFraction:)`, `page(_:)`), `CategoryPinch`,
+  `ChartRangeBar`/`CategoryRangeBar`, `CategoryWindowModifier`/`DateWindowModifier`/`IntWindowModifier`
+  (`chartScrollableAxes` + `chartXVisibleDomain` + `chartScrollPosition(x:)`), `ChartPinch`
+  (`MagnifyGesture` als `simultaneousGesture`), `hiddenChartSeries` (Umgebung, Zustand im `ReportStatFrame`).
+- **Kategorie-Achsen liegen auf einer Zahlen-Achse 0…n** (Kategorie i belegt i…i+1, Säulen als
+  `BarMark(xStart:xEnd:yStart:yEnd:)` mit selbst gerechnetem Stapel, Auswahl über `Int(x)`),
+  Wischen rastet mit `valueAligned(unit: 1)` ein. Grund: Swift Charts richtet bei String-Achsen die
+  Bandmitte am Rand aus — die Bereichsleiste stand nach dem Ziehen eine Kategorie daneben.
+- Tages-Diagramme sind echte Datumsachsen (`unit: .day`); der Kalendertag wird im Kalender des
+  Geräts geparst und beschriftet (Wochentag stimmt auch auf US-Zeit). `AxisMarks(values: [String])`
+  greift auf wischbaren Kategorie-Achsen **nicht** — alle Tage wurden beschriftet (Befund 110).
+- `StackedColumnsChart.axisLabel` kürzt nur echte Monatsnamen („Rate 10" blieb sonst „Rate", Befund 112).
+- Legende (`ReportLegend`) ist im Kartenrahmen antippbar; Stapel und Summe zählen nur sichtbare
+  Reihen. „Mögl. Widerruf" wird wie im Web aus dem Institut herausgeschnitten (Teilmenge, Befund 122).
+- Typprüfer-Falle: Achsenwerte als `PlottableValue` vorab bauen und das Diagramm in eine eigene
+  Funktion legen, sonst „unable to type-check this expression in reasonable time".
+- Nachweis: `ChartWindowTests` (Fensterlogik, Zeitraumtext, Achsenkürzung),
+  `ReportsUITests.testSalesChartsHistory` (Wischen, Pinch, Leiste, Legende, Tagesachse, Ratenachse) und
+  `testStaffAndConsultationCards` (Tagesmessung-Matrix, Ranking, Buchungsstand-Tabelle, Heatmap-Summen,
+  gleitender Durchschnitt) gegen den lokalen Hub in der Zeitzone Los Angeles.
+
 ### Native Berichtsseiten: Termine & Beratung (seit 27.09.2026)
 
 **Für Endanwender:** Auch „Zukünftige Beratungsgespräche", „Vergangene Beratungsgespräche",
@@ -2164,6 +2200,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 28.09.2026 | 1.3.0 (develop) | TestFlight-Runde zu Build 49 (Befunde 109–125): Zeit-Diagramme mit Pinch-Zoom, Wischen und Bereichsleiste, antippbare Legende, Tagesachse mit Montagen, Heatmap-Summen, Tagesmessung als Web-Matrix mit Zeitraum-Chip, Beratungs-Ranking mit Zeitraum und zwei Nachkommastellen, Buchungsstand-Tabelle über volle Breite, gleitender Durchschnitt, Brief-Vorschau ohne Weißraum, Wartezeit für Berichtskarten 90 s; Hub: Cache für die vier Termin-Endpunkte, Seite Schulden ausgebaut |
 | 27.09.2026 | 1.3.0 | Native Zufriedenheit (Entwurf 1 „Drei Stapel“ + Kanal-Hinweis): Aufgaben, Kandidatinnen, Verlauf, Detailkarte, iPad drei Spalten; Hub: `hints=1` und `can` im Datenendpunkt — damit ist die letzte Bestandsseite nativ |
 | 27.09.2026 | 1.3.0 | Native Forderungen (Entwurf 1 „Arbeitsliste und Akte“ + Schritt-Blatt + Stufenleiter als „Bestand“): Arbeitsliste, Fallakte mit allen Aktionen, Schreiben-Vorschau; Hub: `GET /hub/receivables/{case}/data` aus `caseContext()`, Kundenseite mit nächstem Schritt; Widerrufe: Snapshot-Test und App-Deck nachgezogen |
 | 27.09.2026 | 1.2.1 (48) | Verkaufsstatistik vollständig nativ: KPZ pro Tag, Standort-Vergleich, Laufzeiten, Zahlungsausfälle, Lastschriften-Bestand, Rücklastschriften, Direktzahler, Monatsübersicht; Bausteine C–F, Liniendiagramm, Tages- und flache Tabellen |

@@ -29,7 +29,7 @@ mit Prozess-Visualisierung).
     (Rücklastschrift anhängen), [Kundenverwaltung 4 – Vertrag, Zahlung & offene Forderungen](https://hilfe.hub.glattt.com/kundenverwaltung/4/)
     (Fälle im Kundenprofil), [Widerrufe 4 – Die Abwicklung](https://hilfe.hub.glattt.com/widerrufe/4/)
     (Abgabe ans Forderungsmanagement), [Betrieb 2 – Ein Institut pflegen](https://hilfe.hub.glattt.com/betrieb/2/)
-    (Bankverbindung des Standorts), [Finanzen 1 – Schulden im Überblick](https://hilfe.hub.glattt.com/finanzen/1/)
+    (Bankverbindung des Standorts)
     und [Berichte 10 – Schuldenbericht](https://hilfe.hub.glattt.com/berichte/10/).
 
 ## Inhaltsverzeichnis
