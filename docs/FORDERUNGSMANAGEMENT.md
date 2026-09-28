@@ -11,6 +11,11 @@ Services, Briefbogen, Mail-Rahmen, UI, Cron, Tests und Importe**; die Bedienung 
 Schritt steht im Nutzerhandbuch. Spezifikation: Asana-Task „Forderungsmanagement" (User Story
 mit Prozess-Visualisierung).
 
+!!! nutzerhandbuch "Bedienung in der App: App 16 – Forderungen in der App"
+    [https://hilfe.hub.glattt.com/app/16/](https://hilfe.hub.glattt.com/app/16/) — seit 27.09.2026
+    ist das Forderungsmanagement auch nativ auf iPhone und iPad (Arbeitsliste, Bestand, Fallakte,
+    Schreiben); Technik im Wiki `IOS-APP.md`, Abschnitt „Native Forderungen“.
+
 !!! nutzerhandbuch "Bedienung: Serie „Forderungen" 1–6 im Nutzerhandbuch"
     [Forderungen 1 – Übersicht und Fall anlegen](https://hilfe.hub.glattt.com/forderungen/1/) ·
     [2 – Der Fall im Detail](https://hilfe.hub.glattt.com/forderungen/2/) ·
@@ -1108,6 +1113,13 @@ dafür ist `personalized_replies`. Offene Punkte dazu im Asana-Subtask
   dem farbigen Gradient und das „×" unformatiert. Rückfragen laufen über das
   Bestätigungs-Modal (`askConfirm()`), Rückmeldungen über `window.showToast()`;
   kein `confirm()`/`alert()`/`prompt()`.
+- **Fallakte als JSON (seit 27.09.2026, native App):** `GET /hub/receivables/{case}/data`
+  (`ReceivablesController::data()`, Recht `view_receivables`). Alles, was die Fallseite neben dem
+  Fall braucht, rechnet seither **einmal** `caseContext()` — für `show()` und `data()`; die
+  Beschriftungen des Einstiegs, der Verlaufsfarben, Zahlungsarten und Gerichts-Datumsfelder
+  liegen in `DebtCase::ENTRY_LABELS`, `DebtCaseEvent::COLORS` und den Controller-Konstanten,
+  nicht mehr im Blade. `getForClient()` übergibt den nächsten Schritt, damit die Kundenseite
+  dieselbe Kategorie und Beschriftung zeigt wie die Übersicht. Test `ReceivablesAppDataTest`.
 - Kunden-Tab: `resources/views/hub/clients/partials/claims.blade.php`
   (Endpoint `/hub/receivables/client/{clientId}`).
 - **Kundenkonto-Modal** auf der Übersicht: Liste aus

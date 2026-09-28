@@ -728,5 +728,225 @@
   },
   "ratio": 0.9666666666666667,
   "marks": []
+ },
+ "cancellation-overview-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 2350
+  },
+  "ratio": 3.0128205128205128,
+  "marks": []
+ },
+ "cancellation-overview-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 2350
+  },
+  "ratio": 3.0128205128205128,
+  "marks": []
+ },
+ "cancellation-settlement-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1396
+  },
+  "ratio": 1.7897435897435898,
+  "marks": []
+ },
+ "cancellation-settlement-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1396
+  },
+  "ratio": 1.7897435897435898,
+  "marks": []
+ },
+ "cancellations-ipad-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1920,
+   "height": 1520
+  },
+  "ratio": 0.7916666666666666,
+  "marks": []
+ },
+ "cancellations-ipad-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1920,
+   "height": 1520
+  },
+  "ratio": 0.7916666666666666,
+  "marks": []
+ },
+ "cancellations-list-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1688
+  },
+  "ratio": 2.164102564102564,
+  "marks": []
+ },
+ "cancellations-list-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1688
+  },
+  "ratio": 2.164102564102564,
+  "marks": []
+ },
+ "receivable-gericht-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1390
+  },
+  "ratio": 1.7820512820512822,
+  "marks": []
+ },
+ "receivable-gericht-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1390
+  },
+  "ratio": 1.7820512820512822,
+  "marks": []
+ },
+ "receivable-ratenzahlung-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1850
+  },
+  "ratio": 2.371794871794872,
+  "marks": []
+ },
+ "receivable-ratenzahlung-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1850
+  },
+  "ratio": 2.371794871794872,
+  "marks": []
+ },
+ "receivable-uebersicht-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 2559
+  },
+  "ratio": 3.2807692307692307,
+  "marks": []
+ },
+ "receivable-uebersicht-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 2559
+  },
+  "ratio": 3.2807692307692307,
+  "marks": []
+ },
+ "receivable-verlauf-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1948
+  },
+  "ratio": 2.4974358974358974,
+  "marks": []
+ },
+ "receivable-verlauf-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1948
+  },
+  "ratio": 2.4974358974358974,
+  "marks": []
+ },
+ "receivables-board-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1204
+  },
+  "ratio": 1.5435897435897437,
+  "marks": []
+ },
+ "receivables-board-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1204
+  },
+  "ratio": 1.5435897435897437,
+  "marks": []
+ },
+ "receivables-ipad-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1920,
+   "height": 1520
+  },
+  "ratio": 0.7916666666666666,
+  "marks": []
+ },
+ "receivables-ipad-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1920,
+   "height": 1520
+  },
+  "ratio": 0.7916666666666666,
+  "marks": []
+ },
+ "receivables-list-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1688
+  },
+  "ratio": 2.164102564102564,
+  "marks": []
+ },
+ "receivables-list-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1688
+  },
+  "ratio": 2.164102564102564,
+  "marks": []
  }
 }

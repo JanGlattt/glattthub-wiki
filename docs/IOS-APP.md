@@ -1305,7 +1305,8 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | App-Geräte | nativ | Liste mit Suche, Chips, Kennzahlen, offene Codes und Geräte nach Institut; Code ausstellen in drei Schritten mit QR und Teilen-Blatt (AirDrop), Code zurückziehen, Gerät widerrufen im Steckbrief; iPad-Split, Ausstellen als Popover (seit 26.09.2026); Einlösen bleibt `EnrollmentSheet` |
 | Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild, Akte (Überblick, Vergütung, Zeit, Konto), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten (seit 27.09.2026); Teamliste- und Lohnliste-Import bleiben Web (Datei-Upload im Büro), Checklisten Eintritt/Austritt vorerst ausgeblendet |
 | Institute | nativ | Karte zuerst (seit 27.09.2026): Nadeln in Hub-Farbe, Blatt mit Liste/Institut, Unterseiten Kennzahlen, Team, Verwaltung |
-| Zufriedenheit, Forderungen | bestand | Web im Mehr-Pool, Nachzug offen — Zufriedenheit zurückgestellt, weil die Befragung noch nicht genutzt wird (Jan, 26.09.2026) |
+| Zufriedenheit | bestand | Web im Mehr-Pool, Nachzug offen — zurückgestellt, weil die Befragung noch nicht genutzt wird (Jan, 26.09.2026) |
+| Forderungen | nativ | Arbeitsliste und Akte (seit 27.09.2026): Kennzahlen, drei Register, Bestand nach Stufe, gerichtliche Fälle, Fallakte mit nächstem Schritt, Schreiben-Vorschau, alle Aktionen der Seitenspalte; neues SEPA-Mandat eingebettet, Vorlagen Web |
 | Freunde werben, Google-Bewertungen | nativ | „Aufgabe zuerst“ (seit 27.09.2026): Überweisungsstapel mit Kopier-Knöpfen; Bewertungen schnell erfassen |
 | Widerrufe | nativ | Fallakte mit Reitern (seit 27.09.2026): Liste, Fall, Notiz, Status, Abschließen, Erfassen, Upload, RA-Vorgang, Forderungsübergabe; SEPA-Storno/Fernabsatz/Downgrade im Hub-Blatt |
 | Berichte | nativ | Übersicht mit Standort, Zeitraum, Suche, eigenen/geteilten Dashboards und Berichten nach Bereich mit drei Leitkennzahlen (seit 27.09.2026, Nachzug 6 Schritt 1); Dashboard-Assistent eingebettet (Editor-Engine) |
@@ -1760,7 +1761,68 @@ Hub-Fassung als Blatt.
   Anhang oder JSON), RA-Ergebnis über `PUT` (`ra_outcome`, `ra_recovered_amount_cents`), Übergabe
   `POST …/receivables`. Auswahllisten (`cost_types`, `ra_parties`, `ra_outcomes`) liefert der Fall-Endpunkt.
   Bei fünf Reitern zeigt die Leiste Symbole mit VoiceOver-Beschriftung.
-- **Nachweis:** `CancellationsUITests`, PHP `CancellationCasePageTest` (Datenendpunkt, Knopf-Recht).
+- **Nachweis:** `CancellationsUITests`, `CancellationsSnapshotTests` (nachgezogen 27.09.2026, Bilder der
+  Klickanleitung App 17), PHP `CancellationCasePageTest` (Datenendpunkt, Knopf-Recht).
+
+### Native Forderungen (Mehr-Seite, seit 27.09.2026)
+
+**Für Endanwender:** „Forderungen“ ist in der App die Arbeitsliste des Büros: oben die Kennzahlen
+(offen, zu erledigen, Zahlung prüfen, läuft, ruhend, gerichtlich), darunter Suche und die drei
+Register **Zu erledigen**, **Zahlung prüfen** und **Läuft** — Überfälliges steht zuerst. Das ⋯ führt
+zum **Bestand nach Stufe** (die Stufenleiter des Webs mit Anzahl, Summe und aufklappbaren Fällen), zu
+den **gerichtlichen Fällen**, zum **Kundenkonto-Fall** und zu den Vorlagen (Hub). Ein Tipp öffnet die
+**Fallakte**: Name, Fall, Vertrag, Einstieg; Status, Weg und Frist als Marken; Hinweise bei ruhendem
+Fall, offener RLS-Entscheidung und offenem Kundenkonto; die Karte **Nächster Schritt** mit genau
+einem Knopf; die Reiter **Überblick** (Forderungsaufstellung mit Positionen, Kosten, Zahlungen,
+angehängte Lastschriften, Fall, Verknüpfungen), **Ratenzahlung** und **Gericht** (nur wenn es sie
+gibt) und **Verlauf** (Notiz, Zeitleiste, das Schreiben am Eintrag mit Wortlaut, PDF und Zendesk).
+Der Schritt öffnet das **Schreiben in echter Optik**: Betreff (E-Mail), „Text anpassen“, „Gesamtsumme
+fällig stellen“ (wo das Web es anbietet), Anschrift korrigieren (Brief) und ein Knopf — E-Mail per
+Zendesk oder PDF mit Vorschau zum Drucken und Teilen. Unten die Leiste Zahlung · Notiz · RZV · Mehr
+(extern nachtragen, Kosten mit Beleg, Bezahllink, ruhend stellen/fortsetzen, Phorest archivieren,
+SEPA pausieren/fortsetzen, Anschrift, abschreiben). Auf dem iPad stehen Liste und Akte nebeneinander.
+
+!!! nutzerhandbuch "Bedienung: App 16 – Forderungen in der App"
+    [https://hilfe.hub.glattt.com/app/16/](https://hilfe.hub.glattt.com/app/16/)
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 27.09.2026):** Entwurf 1 „Arbeitsliste und Akte“ mit dem Schritt-Blatt aus
+  Entwurf 3 und der Stufenleiter aus Entwurf 2 als Seite „Bestand“ (verworfen als Einstieg: Stufenleiter,
+  Schritt-Stapel). Artefakt: https://claude.ai/artifact/LCx1jowjK9Wwh3jHsyCASn.
+- **Endpunkte:** neu `GET /hub/receivables/{case}/data` (Recht `view_receivables`) — die ganze Akte
+  aus `ReceivablesController::caseContext()`, den seither auch `show()` nutzt: `casePayload` + `client`,
+  `balance` (mit `appended_pending_cents`, `open_excl_appended_cents`), `principal_items`, `costs`,
+  `payments` (`can_void`), `appended_payments`, `next_action`, `full_balance_option`,
+  `discardable_message_id`, `allocatable`, `rzv` (Vereinbarung, Raten, offene GC-Einzüge, Mandatsstand),
+  `judicial`, `events` (Schreiben am Eintrag mit `pdf_url`, `zendesk_url`, `discardable`),
+  `zendesk_tickets`, `contract`, `sepa_paused`, `phorest_archived`, `account_balance`, `can`
+  (manage/write_off/contracts/clients), `options` (Zahlungsarten, Kostenarten, Ruhegründe,
+  Gerichtsstufen, Datumsfelder). Sonst dieselben wie das Web: `data` (jetzt mit `can`), `clients?ids=`,
+  `action-preview`, `action`, `mark-external`, `messages/{m}/discard`, `rls-decision`, `payments`,
+  `payments/{p}/void`, `costs` (multipart mit Beleg), `payment-link`, `hold`, `resume-hold`, `notes`,
+  `sepa-pause`, `sepa-resume`, `archive-phorest`, `judicial`, `rzv`, `rzv/{a}`, `client-address`,
+  `write-off`, `account-balances`, `POST /hub/receivables`, `messages/{m}/pdf`.
+- **Web gleich mit:** `getForClient()` liefert den nächsten Schritt (Kundenseite zeigte fällige Fälle
+  als „Zahlung prüfen“), `casePayload` trägt `entry_label`, `is_hard_path`, `deadline_iso`,
+  `appended_pending_cents`; Beschriftungen in `DebtCase::ENTRY_LABELS`, `DebtCaseEvent::COLORS`,
+  `PAYMENT_METHOD_LABELS`, `JUDICIAL_DATE_FIELDS`. Objektmenü der App: Anker `uebersicht`,
+  `ratenzahlung`, `verlauf` (statt des nie vorhandenen `zahlungen`).
+- **App:** `Receivables/` — `ReceivablesView` (Liste, iPad: Liste + Akte; Blätter Bestand, Gericht,
+  Kundenkonto-Fall), `ReceivableCaseView` (Akte, Rückfragen und Blätter an der Wurzel),
+  `ReceivableActionSheet` (Schritt-Blatt mit `LetterPreviewView` = WKWebView ohne Scrollen, Höhe aus
+  `scrollHeight`, Zoom wie `resizeFrame()`; angepasster Text wird per JS in `#editable-body` gesetzt),
+  `ReceivableSheets` (extern, Zahlung mit Zuordnung, Grund-Dialog, Kosten mit Kamera/Fotos/Dateien,
+  Ruhend, SEPA fortsetzen, Gericht, RZV mit Ratenzeilen, Anschrift, Bezahllink), `ReceivablesModel`,
+  `ReceivableModels`. `NativeMorePage.receivables`, `/hub/receivables/{id}` über
+  `AppState.receivableFocus` (Suche, Push, Kontextmenü, Vertrag, Widerruf), `bridge.js`
+  `NATIVE_PAGES`/`NATIVE_PATTERNS`. Offline: letzter Stand der Übersicht je Standort (`OfflineStore`).
+- **GoCardless nie automatisch** (Wissen `kein-automatischer-zahlungsplan`): Pausieren, Fortsetzen,
+  Einzug per GoCardless und Verknüpfen sind Rückfragen bzw. Schalter; das **neue SEPA-Mandat** im
+  RZV-Dialog bleibt eingebettet (`?shell=native#ratenzahlung`).
+- **Nachweis:** `ReceivablesSnapshotTests` (Liste, Stufenleiter, vier Reiter, iPad-Split, dazu Pfad-,
+  Format- und Arbeitslisten-Tests), `ReceivablesUITests`, PHP `ReceivablesAppDataTest`
+  (Datenendpunkt, Rechte, Schreiben im Verlauf, Kundenseite).
 
 ### Native Einstellungen (Mehr-Seite, seit 27.09.2026)
 
@@ -2067,6 +2129,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 27.09.2026 | 1.3.0 | Native Forderungen (Entwurf 1 „Arbeitsliste und Akte“ + Schritt-Blatt + Stufenleiter als „Bestand“): Arbeitsliste, Fallakte mit allen Aktionen, Schreiben-Vorschau; Hub: `GET /hub/receivables/{case}/data` aus `caseContext()`, Kundenseite mit nächstem Schritt; Widerrufe: Snapshot-Test und App-Deck nachgezogen |
 | 27.09.2026 | 1.2.1 (48) | Verkaufsstatistik vollständig nativ: KPZ pro Tag, Standort-Vergleich, Laufzeiten, Zahlungsausfälle, Lastschriften-Bestand, Rücklastschriften, Direktzahler, Monatsübersicht; Bausteine C–F, Liniendiagramm, Tages- und flache Tabellen |
 | 27.09.2026 | 1.2.1 (47) | Native Verkaufsstatistik (Muster „Wie im Hub“): KPI-Zeile, zwölf Karten in Web-Reihenfolge, vier davon nativ mit Swift Charts, Rest als Web-Karte; Hub: `/api/app/reports/page`, `/hub/reports/statistic/{key}/embed`, Registry-Feld `native`, `ReportRegistry::statisticsOf()` |
 | 27.09.2026 | 1.2.1 (46) | Berichte-Übersicht: Diagramme mit Achse und Werten, Verkaufsstatistik mit KPZ nach Standort, Zeitraum-Marken („Bestand“, „lfd. Monat“), Vergleich an der Tendenz, Storno-Kennzahlen, Zukünftige BG mit Heute/28 Tage/Monatsende |

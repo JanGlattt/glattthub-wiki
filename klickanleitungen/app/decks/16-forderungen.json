@@ -1,0 +1,198 @@
+{
+  "out": "../pdf/App-16-Forderungen",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "App",
+  "of": 16,
+  "audience": "leitung",
+  "footerArea": "App",
+  "stand": "27.09.2026",
+  "version": "1.0",
+  "nr": 16,
+  "title": [
+    "Forderungen",
+    "in der App"
+  ],
+  "subtitle": "Klickanleitung für die glatttHub-App — die Arbeitsliste des Mahnwesens, der Bestand nach Stufe, die Fallakte mit dem nächsten Schritt, das Schreiben prüfen und senden, Zahlungen, Kosten, Ratenzahlung und Ruhend stellen",
+  "eyebrow": "App · Finanzen",
+  "notes": [
+    "**Forderungen** findest du im Menü **Mehr** unter **Finanzen** (iPhone) bzw. in der Seitenleiste (iPad). Die Seite ist nativ — schnell, mit Zurück per Wischen; die letzte Arbeitsliste bleibt auch ohne Netz lesbar.",
+    "Alles, was die Seitenspalte im Hub kann, geht direkt in der App: Schreiben prüfen und senden, Zahlung erfassen, Kosten mit Beleg, Ratenzahlung, Ruhend stellen, Abschreiben. Nur ein **neues SEPA-Mandat** öffnet die Hub-Seite als Blatt. GoCardless wird nie von allein angefasst."
+  ],
+  "pages": [
+    {
+      "h1": "Die Arbeitsliste",
+      "sub": "Oben die Kennzahlen, darunter Suche und die drei Register: Zu erledigen, Zahlung prüfen, Läuft. Überfälliges steht zuerst — je Fall Kundin, Vertrag, nächster Schritt, offener Betrag und die Frist.",
+      "card": {
+        "title": "Arbeitsliste",
+        "text": "Was heute ansteht"
+      },
+      "left": {
+        "shot": "receivables-list-light"
+      },
+      "leftCaption": "Register **Zu erledigen** auf dem iPhone: Überfälliges zuerst, rot ab 14 Tagen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Register",
+          "text": "**Zu erledigen** sind echte Schritte (Schreiben, Entscheid, Wiedervorlage). **Zahlung prüfen** sind Fälle, bei denen nur der Eingang zu prüfen ist (RZV-Rate, angehängte Lastschrift). **Läuft** wartet auf Frist oder Wartefenster."
+        },
+        {
+          "n": 2,
+          "title": "Suchen",
+          "text": "Name, **Kunden-Nr.** oder Vertragsnummer eintippen — die Liste filtert beim Tippen."
+        },
+        {
+          "n": 3,
+          "title": "Standort",
+          "text": "Die Liste folgt dem Standortfilter der App; die Kennzahlen zählen genau diesen Standort."
+        },
+        {
+          "n": 4,
+          "title": "Mehr",
+          "text": "Die drei Punkte oben rechts: **Bestand nach Stufe**, **Gerichtliche Fälle**, **Kundenkonto-Fall anlegen** (Fall ohne Vertrag aus einem offenen Phorest-Kundenkonto) und die Vorlagen im Hub."
+        }
+      ],
+      "hint": {
+        "text": "**Lange drücken** auf einen Fall: Vertrag oder Kundin öffnen, Kunden-Nr. oder Vertragsnummer kopieren — wie das Rechtsklick-Menü der Desktop-App."
+      }
+    },
+    {
+      "h1": "Bestand nach Stufe",
+      "sub": "Die Stufen des Prozesses untereinander wie im Hub: je Stufe Anzahl, offene Summe und ein Balken. Ein Tipp klappt die Fälle der Stufe auf; Ruhend steht ganz unten.",
+      "card": {
+        "title": "Bestand",
+        "text": "Wo wie viel Geld hängt"
+      },
+      "left": {
+        "shot": "receivables-board-light"
+      },
+      "leftCaption": "Stufe **1. postalische Mahnung** aufgeklappt — Fälle mit Frist und Weg.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Stufe öffnen",
+          "text": "Ein Tipp auf die Zeile zeigt die Fälle der Stufe mit Bezug, Frist und Weg; ein Tipp auf den Fall öffnet die Akte."
+        },
+        {
+          "n": 2,
+          "title": "Ruhend",
+          "text": "Geparkte Fälle und Fälle beim Anwalt stehen in der letzten Zeile — mit „seit“, Stand der Stufe und Wiedervorlage."
+        },
+        {
+          "n": 3,
+          "title": "Gericht",
+          "text": "Fälle im gerichtlichen Verfahren haben ihre eigene Liste im Menü der drei Punkte."
+        }
+      ]
+    },
+    {
+      "h1": "Die Fallakte",
+      "sub": "Kopf mit Kundin, Fall, Vertrag und Einstieg; Marken für Stufe, Weg und SEPA; die Karte Nächster Schritt mit genau einem Knopf; darunter die Reiter Überblick, Ratenzahlung, Gericht und Verlauf.",
+      "card": {
+        "title": "Fallakte",
+        "text": "Nächster Schritt, Aufstellung, Verlauf"
+      },
+      "left": {
+        "shot": "receivable-uebersicht-light"
+      },
+      "right": {
+        "shot": "receivable-verlauf-light"
+      },
+      "leftCaption": "Reiter **Überblick**: Forderungsaufstellung mit Positionen, Kosten, Zahlungen, Fall und Verknüpfungen.",
+      "rightCaption": "Reiter **Verlauf**: Notiz, Zeitleiste, das Schreiben am Eintrag mit Wortlaut, PDF und Zendesk.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Nächster Schritt",
+          "text": "Die Karte zeigt, was ansteht: Schreiben und Kanal, Fall fortsetzen, RLS-Entscheid (von vorne oder weiter), Rate anhängen (am Vertrag) — oder „Keine Aktion offen“."
+        },
+        {
+          "n": 2,
+          "title": "Überblick",
+          "text": "Hauptforderung, Kosten, Zahlungen, Offen — dazu die Positionen, angehängte Lastschriften und die Fall-Angaben. Eine Zahlung lässt sich per langem Druck **stornieren** (mit Grund)."
+        },
+        {
+          "n": 3,
+          "title": "Verlauf",
+          "text": "Notiz schreiben (Zendesk-Nummern werden verlinkt), Zeitleiste neueste zuerst; das versendete Schreiben klappt auf, **PDF** öffnet die Vorschau."
+        },
+        {
+          "n": 4,
+          "title": "Leiste unten",
+          "text": "**Zahlung** erfassen (mit Zuordnung geplatzter Raten), **Notiz**, **RZV** festhalten und **Mehr**: extern nachtragen, Kosten mit Beleg, Bezahllink, ruhend stellen, Phorest archivieren, SEPA pausieren, Anschrift, abschreiben."
+        }
+      ],
+      "hint": {
+        "text": "Ratenzahlung und Gericht erscheinen als Reiter nur, wenn es eine Vereinbarung bzw. ein Verfahren gibt — RZV-Fälle starten dort, gerichtliche im Reiter Gericht."
+      }
+    },
+    {
+      "h1": "Schreiben prüfen und senden",
+      "sub": "Der Knopf in der Karte Nächster Schritt öffnet das Schreiben in echter Optik — Brief oder E-Mail. Der Text lässt sich anpassen, bei Briefen die Gesamtsumme fällig stellen und die Anschrift korrigieren.",
+      "card": {
+        "title": "Schreiben",
+        "text": "Prüfen, anpassen, senden"
+      },
+      "left": {
+        "shot": "receivable-ratenzahlung-light"
+      },
+      "leftCaption": "Reiter **Ratenzahlung**: Vereinbarung, Raten, Zahlungsplan ändern, Zahlung verbuchen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Vorschau",
+          "text": "Das Blatt zeigt das komplette Schreiben mit Forderungsaufstellung, Frist und Bezahl-Hinweis — genau so geht es raus."
+        },
+        {
+          "n": 2,
+          "title": "Text anpassen",
+          "text": "Nur der Fließtext ist änderbar; „Vorlage wiederherstellen“ setzt zurück. Angepasste Texte tragen im Verlauf die Marke **Text angepasst**. Bei E-Mails ist auch der Betreff änderbar."
+        },
+        {
+          "n": 3,
+          "title": "Fälligstellen",
+          "text": "Bei postalischen Mahnungen an Rücklastschrift-Fällen: der Schalter **Gesamtsumme fällig stellen** nimmt die ganze Restsumme in die Forderung; die Vorschau rechnet sofort neu."
+        },
+        {
+          "n": 4,
+          "title": "Senden",
+          "text": "**Jetzt per Zendesk senden** (E-Mail) oder **PDF erzeugen und Fall weiterschalten** (Brief) — das PDF öffnet zum Drucken oder Teilen, der Fall rückt in die nächste Stufe."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "Fehlt die Anschrift in Phorest, steht das rot im Kopf des Blatts — erst **Anschrift korrigieren**, dann erzeugen. Der Brief trägt immer die Live-Anschrift."
+      }
+    },
+    {
+      "h1": "Auf dem iPad",
+      "sub": "Arbeitsliste links, Fallakte rechts — die Liste bleibt beim Wechsel stehen, die Karten der Akte nutzen die Breite. Blätter legen sich über die Akte.",
+      "card": {
+        "title": "iPad",
+        "text": "Liste und Akte nebeneinander"
+      },
+      "left": {
+        "shot": "receivables-ipad-light"
+      },
+      "leftCaption": "iPad quer: Arbeitsliste, daneben die Akte mit Forderungsaufstellung.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Auswählen",
+          "text": "Ein Tipp links öffnet den Fall rechts; der gewählte Fall ist gold hinterlegt."
+        },
+        {
+          "n": 2,
+          "title": "Blätter",
+          "text": "Schreiben, Zahlung, Kosten, Ruhend und RZV öffnen als Blatt über der Akte; „Abbrechen“ schließt ohne zu speichern."
+        },
+        {
+          "n": 3,
+          "title": "Aktualisieren",
+          "text": "Nach unten ziehen lädt Liste und Akte frisch aus dem Hub; nach jeder Aktion passiert das von selbst."
+        }
+      ]
+    }
+  ]
+}

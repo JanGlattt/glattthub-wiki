@@ -1,0 +1,124 @@
+{
+  "out": "../pdf/App-17-Widerrufe",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "App",
+  "of": 17,
+  "audience": "leitung",
+  "footerArea": "App",
+  "stand": "27.09.2026",
+  "version": "1.0",
+  "nr": 17,
+  "title": [
+    "Widerrufe",
+    "in der App"
+  ],
+  "subtitle": "Klickanleitung für die glatttHub-App — die Widerrufsliste mit Chips und Wiedervorlagen, die Fallakte mit Überblick, Verlauf, Dokumenten, Umsetzung und Anwalt, Abschließen, Erfassen in vier Schritten",
+  "eyebrow": "App · Verkauf",
+  "notes": [
+    "**Widerrufe** findest du im Menü **Mehr** unter **Verkauf** (iPhone) bzw. in der Seitenleiste (iPad). Liste und Fallakte sind nativ; die Fallakte ist wie bei den Verträgen und Forderungen aufgebaut.",
+    "Direkt in der App: Notiz, Fall bearbeiten, An Rechtsanwalt abgeben, Abschließen mit Ergebnis, Dokumente hochladen, RA-Kosten und Schriftwechsel, Übergabe ans Forderungsmanagement. **SEPA-Storno, Fernabsatz und Downgrade vor Ort** öffnen die Hub-Seite als Blatt — GoCardless wird nie von allein angefasst."
+  ],
+  "pages": [
+    {
+      "h1": "Die Widerrufsliste",
+      "sub": "Suche oben, darunter die Chips Offen, Fällig, Beim RA und Abgeschlossen. Fällige Wiedervorlagen stehen in einem eigenen Abschnitt ganz oben.",
+      "card": {
+        "title": "Liste",
+        "text": "Offen, fällig, beim Anwalt"
+      },
+      "left": {
+        "shot": "cancellations-list-light"
+      },
+      "leftCaption": "Chip **Offen** auf dem iPhone: Wiedervorlage zuerst, dann die übrigen Fälle mit Grund und Zonen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Chips",
+          "text": "**Offen** und **Beim RA** sind die Stapel des Hubs, **Fällig** zeigt erreichte Wiedervorlagen, **Abgeschlossen** lädt seitenweise nach."
+        },
+        {
+          "n": 2,
+          "title": "Suchen",
+          "text": "Kundin, Vertrag, Grund, Standort oder Zendesk-Nummer — die Liste filtert beim Tippen."
+        },
+        {
+          "n": 3,
+          "title": "Neuer Widerruf",
+          "text": "Das **Plus** erfasst einen Widerruf in vier Schritten: Vertrag suchen, Datum/Ticket/Grund, Prüfung mit Behandlungsstand aus Phorest, Zusammenfassung."
+        },
+        {
+          "n": 4,
+          "title": "Öffnen",
+          "text": "Ein Tipp öffnet die Fallakte. Auf dem iPad bleibt die Liste links stehen, die Akte erscheint rechts."
+        }
+      ]
+    },
+    {
+      "h1": "Die Fallakte",
+      "sub": "Kopf mit Status, Frist („Fristgerecht · Tag 3“), Wiedervorlage und Liegezeit; Reiter Überblick, Verlauf, Dokumente, Umsetzung — und Anwalt, sobald ein RA-Vorgang läuft.",
+      "card": {
+        "title": "Fallakte",
+        "text": "Grund, Behandlungsstand, Aktionen"
+      },
+      "left": {
+        "shot": "cancellation-overview-light"
+      },
+      "right": {
+        "shot": "cancellation-settlement-light"
+      },
+      "leftCaption": "Reiter **Überblick**: Widerrufsgrund, Behandlungsstand, Fall, Verknüpfungen und die Aktionen.",
+      "rightCaption": "Reiter **Umsetzung**: Stand von SEPA und Phorest, Übergabe ans Forderungsmanagement, Hub-Schritte.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Frist",
+          "text": "Die Fristprüfung ist eine Entscheidungshilfe: fristgerecht, Grenzfall oder verspätet — gerechnet ab Unterschrift oder abweichendem Fristbeginn."
+        },
+        {
+          "n": 2,
+          "title": "Aktionen",
+          "text": "Am Ende des Überblicks: **Abschließen …** (Ergebnis, bei Down-/Upgrade mit Folgevertrag), **An Rechtsanwalt abgeben** bzw. zurück zu Offen, **Fall bearbeiten**."
+        },
+        {
+          "n": 3,
+          "title": "Verlauf & Dokumente",
+          "text": "Notiz schreiben, Zendesk, Mails, WhatsApp und Systemeinträge in einer Zeitleiste; Dokumente fotografieren, aus Fotos oder Dateien hochladen, ansehen und löschen."
+        },
+        {
+          "n": 4,
+          "title": "Anwalt",
+          "text": "Ergebnis festhalten, Kostenposition erfassen, Schriftwechsel mit Anhang — der Reiter erscheint, sobald der Fall beim Anwalt ist."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "Abschließen setzt nur den Status. Das SEPA-Mandat storniert der Schritt **Umsetzung im Hub öffnen** — mit denselben Rückfragen wie im Hub."
+      }
+    },
+    {
+      "h1": "Auf dem iPad",
+      "sub": "Liste links, Fallakte rechts. Erfassen, Abschließen und die Anwalt-Blätter legen sich über die Akte.",
+      "card": {
+        "title": "iPad",
+        "text": "Liste und Akte nebeneinander"
+      },
+      "left": {
+        "shot": "cancellations-ipad-light"
+      },
+      "leftCaption": "iPad quer: Widerrufsliste, daneben die Akte mit Grund und Behandlungsstand.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Auswählen",
+          "text": "Ein Tipp links öffnet den Fall rechts; der gewählte Fall ist gold hinterlegt."
+        },
+        {
+          "n": 2,
+          "title": "Aktualisieren",
+          "text": "Nach unten ziehen lädt Liste und Akte frisch aus dem Hub; nach jeder Aktion passiert das von selbst."
+        }
+      ]
+    }
+  ]
+}
