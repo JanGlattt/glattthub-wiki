@@ -9,7 +9,7 @@ App steht im Wiki `IOS-APP.md`.
 | **1 — Anmelden & Face ID** | Erste Anmeldung (Google, PIN), Gerät verknüpfen, Face ID, geteiltes Institut-iPad |
 | **2 — Startseite, Menü, Standort & Suche** | Native Startseite, iPad-Seitenleiste (quer/hoch), Standort, Spotlight-Suche, Mitteilungen, Abmelden, iPhone-Tab-Leiste |
 | **3 — Termine und die Terminansicht** | Liste/Kalender, Termin beginnen, Einstellungszettel mit geplanten Zonen, Formulare, Direkt behandeln, Folgetermin, Verlegen |
-| **4 — Kunden** | Kundenliste mit Suche, native Kundenübersicht, Reiter als Hub-Seite, Kontextmenü |
+| **4 — Kunden** | Kundenliste mit Suche, native Kundenübersicht, die neun Bereiche der Kundenakte nativ (Kundeninfos bearbeiten, Termine, Pakete, Dokumente, Behandlung, Vertrag, Forderungen, Service, Nachrichten mit Composer), iPad-Split (v1.1, 28.09.2026) |
 | **5 — Laser-Wartung in der App** | Geräte mit Fälligkeit, Countdown, Laser-Fotos, Anbauteile, Abschluss, Entwurf |
 | **6 — Das Bonus-Board in der App** | Mein Board, Monat/Sicht, Management-Sicht mit Export |
 | **7 — Widgets, Siri, Scanner & Hilfe** | Widgets einrichten, Siri-Sätze, Scanner in Upload-Feldern, Einstellungen, Diagnose, Update, Kiosk |

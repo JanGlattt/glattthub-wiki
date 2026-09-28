@@ -460,6 +460,16 @@ Die Treatment-Settings-Styles sind komplett inline im Partial (`<style>`-Block),
 
 ---
 
+### Native App (seit 28.09.2026)
+
+Alle Registerkarten dieser Seite gibt es in der iOS-App nativ (Wiki `IOS-APP.md`, Abschnitt „Native
+Registerkarten der Kundenakte“). Sie rufen dieselben Endpunkte wie die Web-Reiter auf — mit einer
+Ergänzung: `GET /hub/clients/{clientId}/appointments/data` (`ClientAppointmentsController`, Recht
+`view_client_detail`) liefert die Terminhistorie aus `ClientAppointmentHistoryService::history()`
+**mit** `staffName` aus dem Staff-Cache und `upcoming_count`, statt der Kette Liste → je Termin
+Details → `POST /phorest/staff/batch`. Die Web-Registerkarte „Termine“ kann darauf umziehen.
+Rechte gelten weiterhin nur serverseitig; der Anker `#slug` öffnet in der App den nativen Bereich.
+
 ## Verwandte Dokumentation
 
 - [CLIENT-COURSES-MODULE.md](CLIENT-COURSES-MODULE.md) — Tab „glattt Pakete" (Phorest Client Courses)
@@ -484,6 +494,10 @@ Die Treatment-Settings-Styles sind komplett inline im Partial (`<style>`-Block),
 ---
 
 ## Chronik der Änderungen (neueste zuerst)
+
+### Update 28.09.2026 — Native App
+
+Neun Registerkarten nativ in der iOS-App (Entwurf 3 „Karten öffnen Seiten“); neuer Endpunkt `GET /hub/clients/{clientId}/appointments/data` (gebündelte Terminhistorie mit Mitarbeiterinnen-Namen). Details in `IOS-APP.md`.
 
 Die Update-Blöcke in der Reihenfolge ihres Entstehens — jeweils mit Anlass und Wirkung. Neue
 Erkenntnisse werden **nicht** hier, sondern oben an der thematisch passenden Stelle

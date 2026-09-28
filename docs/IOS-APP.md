@@ -797,6 +797,62 @@ neun. Diese Registerkarten öffnen als Web-Seite **im Kunden-Tab mit Zurück** z
   „incomplete headers" (500) — Cache per `tinker` vorwärmen, dann läuft der UI-Test durch; in CLI
   und auf Staging ist der Endpunkt sauber.
 
+### Native Registerkarten der Kundenakte (seit 28.09.2026)
+
+**Für Endanwender:** Die neun Registerkarten der Kundenseite sind in der App native Bereiche. Jede
+Karte der Kundenübersicht (und „Alle Bereiche“) öffnet ihren Bereich als Unterseite; oben trägt sie
+eine **Reiter-Leiste** zum seitlichen Wechseln, der Pfeil links führt zur Übersicht zurück. Auf dem
+iPad steht der Bereich rechts neben der Übersicht. **Kundeninfos** zeigt Stammdaten, Kontakt,
+Adresse, Einwilligungen und die Phorest-Notiz; „Bearbeiten“ macht alle Felder änderbar, „Speichern“
+schreibt nach Phorest. **Termine** listet Extrazeiten (mit Bearbeiten), künftige und vergangene
+Termine mit Detailblatt und Sprung in die Terminansicht. **glattt Pakete** zeigt die Kurse mit
+Einheiten und Status, archivierte aufklappbar. **Dokumente** listet eingereichte Formulare mit
+Status; das Blatt zeigt die Angaben und die PDF-Vorschau. **Behandlung** hat die Zonen als Chips und
+je Zone die Sitzungen mit Einstellungen, Notizen und Fotos. **Vertrag & Zahlungen** zeigt die
+Vertragskarten (Rate, Laufzeit, Mandat) mit Sprung zur Vertragsseite und „Widerruf erfassen“ im
+nativen Ablauf der Widerrufe. **Forderungen** listet die Fälle mit Sprung in die Fallakte,
+**Kundenservice** die Zendesk-Tickets mit Verlauf, **Nachrichten** die WhatsApp-Unterhaltung mit
+Composer (Text im 24-h-Fenster, Vorlage mit Platzhaltern, Foto, neue Unterhaltung — jeder Versand
+fragt nach) und darunter die Zeitleiste automatischer Nachrichten.
+
+!!! nutzerhandbuch "Bedienung: App 4 – Kunden finden und die Kundenakte"
+    [https://hilfe.hub.glattt.com/app/4/](https://hilfe.hub.glattt.com/app/4/)
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 28.09.2026):** Entwurf 3 „Karten öffnen Seiten“ mit der Reiter-Leiste aus
+  Entwurf 1 (verworfen: Reiter-Leiste in der Übersicht, „Akte in einem Zug“). Artefakt:
+  https://claude.ai/artifact/Ty3LVKrnL1JGQ9ay4bitVm.
+- **Endpunkte wie das Web**, über die Web-Sitzung (`HubSession.json`, Cookies + XSRF):
+  `GET/PUT /phorest/client/{id}` (Bearbeiten schickt nur geänderte Felder plus `version`),
+  `GET/POST /hub/clients/{id}/extra-times`, `GET /phorest/client/{id}/courses`,
+  `GET /api/forms/submissions/client/{id}` + `/api/forms/submission/{id}` (PDF über
+  `HubSession.download` + QuickLook), `GET /hub/treatment-settings/client/{id}` +
+  `/hub/treatment-settings/{id}/photos`, `GET /hub/contracts/client/{id}`,
+  `GET /hub/receivables/client/{id}` (dieselben Zeilen wie die Arbeitsliste, `DebtCaseRow`),
+  `GET /zendesk/customer-tickets` + `/zendesk/tickets/{id}/comments`,
+  `GET /phorest/client/{id}/messages`, `/superchat/client-conversations|channels|templates|send|upload|start-conversation`.
+  **Neu:** `GET /hub/clients/{id}/appointments/data` (`ClientAppointmentsController`, Recht
+  `view_client_detail`) bündelt `ClientAppointmentHistoryService::history()` mit den Namen der
+  Mitarbeiterinnen aus dem Staff-Cache — statt 1 + N + 1 Aufrufen im Browser; die Web-Registerkarte
+  kann darauf umziehen. Rechte prüft nur der Server (wie im Web); die App zeigt bei 403 „Keine
+  Berechtigung für diesen Bereich“.
+- **App:** `Clients/ClientTabs.swift` (`ClientTab` mit Slug/Symbol, `ClientTabPage` als Unterseite
+  mit Zurück, `ClientTabChips`, `ClientTabContent`, `ClientTabFrame` für Laden/Fehler/403),
+  `ClientTabModels.swift` (alle Modelle, `JSONHelp` für leere PHP-Arrays statt Objekten,
+  `ClientTabFormat`), je Bereich eine View (`ClientInfoTab`, `ClientAppointmentsTab`,
+  `ClientRecordsTabs` = Pakete/Dokumente/Behandlung, `ClientFinanceTabs` = Vertrag/Forderungen/Service,
+  `ClientMessagesTab` mit `ClientTemplateSheet`). `TabBarHost`: `/hub/clients/{id}#slug` → iPhone
+  `ClientTabPage`, iPad `ClientDetailView(initialTab:)`; `ClientDetailView` hält auf dem iPad
+  `padTab` und markiert die Karte. Nach „Speichern“ in den Kundeninfos setzt die App
+  `AppState.clientOverviewDirty`, die Übersicht lädt mit `fresh=1` neu. „Widerruf erfassen“ nutzt
+  `CancellationCreateSheet` mit vorgewähltem Vertrag; Verlegen/Buchungslink laufen in der
+  Terminansicht. Kein Web-Fallback mehr für Anker-URLs.
+- **Nachweis:** `ClientTabsSnapshotTests` (neun Bereiche + iPad, Bilder der Klickanleitung App 4;
+  Bausteine Slug, Änderungs-Body, Paket-Status, Vorlagen-Vorschau), `ClientTabsUITests`
+  (Übersicht → Termine → Reiter → Bearbeiten abbrechen → Nachrichten → zurück), PHP
+  `ClientAppointmentsDataTest`.
+
 ### Native Terminansicht (Stufe 1, seit 22.09.2026)
 
 Die Terminansicht ist die am häufigsten benutzte Seite des Tages — Hauptfokus **iPad im
@@ -1304,7 +1360,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 |---|---|---|
 | Start | nativ | Cockpit je Rolle, `GET /api/app/start`; iPad als Raster |
 | Termine | nativ | Terminseite + Terminansicht Stufen 1–4; Formular-Ausfüllen und „Direkt behandeln" eingebettet (Editor-Engine) |
-| Kunden | nativ | Liste + Übersicht (`/api/app/clients`); neun Registerkarten als Web-Detailseite im Tab |
+| Kunden | nativ | Liste + Übersicht (`/api/app/clients`); seit 28.09.2026 alle neun Registerkarten nativ als Unterseiten mit Reiter-Leiste (iPad rechts neben der Übersicht), Kundeninfos bearbeiten, Superchat-Composer |
 | Benachrichtigungen | nativ | Mitteilungsliste im Mehr-Sheet / iPad-Popover, In-App-Banner |
 | Laser | nativ | Raum-Sicht des Instituts, Werkbank „Alle“, Geräteakte mit acht Reitern, Teile-Akte, Reparatur/STK/Behörde nativ, Wartungsassistent, Störung melden (seit 26.09.2026); Inventarisieren, Stammdaten, Verbrauchsmaterial, Berichte Web |
 | Bonus-Board | nativ | Mehr-Seite, beide Sichten, Export per Teilen-Blatt |
@@ -2259,7 +2315,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
-| 28.09.2026 | 1.3.0 (develop) | TestFlight-Runde zu Build 49 (Befunde 109–125): Zeit-Diagramme mit Pinch-Zoom, Wischen und Bereichsleiste, antippbare Legende, Tagesachse mit Montagen, Heatmap-Summen, Tagesmessung als Web-Matrix mit Zeitraum-Chip, Beratungs-Ranking mit Zeitraum und zwei Nachkommastellen, Buchungsstand-Tabelle über volle Breite, gleitender Durchschnitt, Brief-Vorschau ohne Weißraum, Wartezeit für Berichtskarten 90 s; Zufriedenheit lädt erst den Stand und sucht Kandidatinnen im Hintergrund (Befunde 127/128); Mehr-Menü ohne Kachel „App“, Farbschema als Dreier-Schalter (130/132); Hub: Cache für die vier Termin-Endpunkte, Seiten Schulden und Services ausgebaut (125/129); Entwürfe für Mitteilungszentrale und Unternehmensverträge nativ vorgelegt (126/131); iPad-Runde 133–142: Hülle nach dem Freischalten neu laden, Onboarding holt den Push-Dialog, einheitliche Auswahl in Listen, Umsetzungs-Blatt (eingebettete Web-Fassung nie nativ abfangen), „Text anpassen“ über der Vorschau, Seitenleiste folgt dem Lohnmonat, KPZ Monat, Öffnungszeiten-Zeile, Einstellungen-Spalte; Mitteilungszentrale „Heute zuerst“ mit Chips, Dringlich, Tagesgruppen und Kennzahlen-Zeile (131); Unternehmensverträge nativ „Fristen zuerst“ mit Kosten, Fristen-Ampel, Gruppen nach Typ, Vertragsseite und eingebettetem Wizard, neue Endpunkte `/data` (126); Bonus-Challenge zeigt abgezogene geparkte KPZ (139/143) |
+| 28.09.2026 | 1.3.0 (develop) | TestFlight-Runde zu Build 49 (Befunde 109–125): Zeit-Diagramme mit Pinch-Zoom, Wischen und Bereichsleiste, antippbare Legende, Tagesachse mit Montagen, Heatmap-Summen, Tagesmessung als Web-Matrix mit Zeitraum-Chip, Beratungs-Ranking mit Zeitraum und zwei Nachkommastellen, Buchungsstand-Tabelle über volle Breite, gleitender Durchschnitt, Brief-Vorschau ohne Weißraum, Wartezeit für Berichtskarten 90 s; Zufriedenheit lädt erst den Stand und sucht Kandidatinnen im Hintergrund (Befunde 127/128); Mehr-Menü ohne Kachel „App“, Farbschema als Dreier-Schalter (130/132); Hub: Cache für die vier Termin-Endpunkte, Seiten Schulden und Services ausgebaut (125/129); Entwürfe für Mitteilungszentrale und Unternehmensverträge nativ vorgelegt (126/131); iPad-Runde 133–142: Hülle nach dem Freischalten neu laden, Onboarding holt den Push-Dialog, einheitliche Auswahl in Listen, Umsetzungs-Blatt (eingebettete Web-Fassung nie nativ abfangen), „Text anpassen“ über der Vorschau, Seitenleiste folgt dem Lohnmonat, KPZ Monat, Öffnungszeiten-Zeile, Einstellungen-Spalte; Mitteilungszentrale „Heute zuerst“ mit Chips, Dringlich, Tagesgruppen und Kennzahlen-Zeile (131); Unternehmensverträge nativ „Fristen zuerst“ mit Kosten, Fristen-Ampel, Gruppen nach Typ, Vertragsseite und eingebettetem Wizard, neue Endpunkte `/data` (126); Bonus-Challenge zeigt abgezogene geparkte KPZ (139/143); die neun Registerkarten der Kundenakte nativ (Entwurf 3 mit Reiter-Leiste), neuer Endpunkt `/hub/clients/{id}/appointments/data` |
 | 27.09.2026 | 1.3.0 | Native Zufriedenheit (Entwurf 1 „Drei Stapel“ + Kanal-Hinweis): Aufgaben, Kandidatinnen, Verlauf, Detailkarte, iPad drei Spalten; Hub: `hints=1` und `can` im Datenendpunkt — damit ist die letzte Bestandsseite nativ |
 | 27.09.2026 | 1.3.0 | Native Forderungen (Entwurf 1 „Arbeitsliste und Akte“ + Schritt-Blatt + Stufenleiter als „Bestand“): Arbeitsliste, Fallakte mit allen Aktionen, Schreiben-Vorschau; Hub: `GET /hub/receivables/{case}/data` aus `caseContext()`, Kundenseite mit nächstem Schritt; Widerrufe: Snapshot-Test und App-Deck nachgezogen |
 | 27.09.2026 | 1.2.1 (48) | Verkaufsstatistik vollständig nativ: KPZ pro Tag, Standort-Vergleich, Laufzeiten, Zahlungsausfälle, Lastschriften-Bestand, Rücklastschriften, Direktzahler, Monatsübersicht; Bausteine C–F, Liniendiagramm, Tages- und flache Tabellen |
