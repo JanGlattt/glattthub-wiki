@@ -7,6 +7,12 @@ Auffrisch-Anfrage und der Freunde-werben-Hinweis. Diese Seite beschreibt **Fachr
 Kandidaten-Erkennung, Versand, Datenmodell und Gotchas**; die Bedienung Schritt für Schritt steht
 im Nutzerhandbuch.
 
+!!! nutzerhandbuch "Bedienung in der App: App 18 – Zufriedenheit in der App"
+    [https://hilfe.hub.glattt.com/app/18/](https://hilfe.hub.glattt.com/app/18/) — seit 27.09.2026
+    ist die Arbeitsliste auch nativ auf iPhone und iPad (drei Stapel, Detailkarte, Anrufen aus dem
+    Rückruf); der Datenendpunkt liefert mit `hints=1` den voraussichtlichen Kanal je Kandidatin
+    (`SatisfactionSurveySender::channelPreview()`). Technik im Wiki `IOS-APP.md`.
+
 !!! nutzerhandbuch "Bedienung: Verkauf 4 – Zufriedenheit nach Paketende"
     [hilfe.hub.glattt.com/verkauf/4/](https://hilfe.hub.glattt.com/verkauf/4/) — offene
     Kandidatinnen sichten, Befragung senden oder überspringen, Folgeaufgaben abarbeiten.

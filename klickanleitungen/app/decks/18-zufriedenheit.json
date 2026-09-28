@@ -1,0 +1,141 @@
+{
+  "out": "../pdf/App-18-Zufriedenheit",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "App",
+  "of": 18,
+  "audience": "leitung",
+  "footerArea": "App",
+  "stand": "27.09.2026",
+  "version": "1.0",
+  "nr": 18,
+  "title": [
+    "Zufriedenheit",
+    "in der App"
+  ],
+  "subtitle": "Klickanleitung für die glatttHub-App — Rückrufe und Auffrisch-Wünsche erledigen, Kundinnen nach dem Paketende befragen, den Verlauf lesen",
+  "eyebrow": "App · Verkauf",
+  "notes": [
+    "**Zufriedenheit** findest du im Menü **Mehr** unter **Verkauf** (iPhone) bzw. in der Seitenleiste (iPad). Die Seite ist nativ; der letzte Stand bleibt auch ohne Netz lesbar.",
+    "Eine Befragung zu senden ist echter Kundenkontakt (WhatsApp oder E-Mail). Die App fragt deshalb immer nach und sagt vorher, welcher Kanal greift — oder warum keiner greift."
+  ],
+  "pages": [
+    {
+      "h1": "Aufgaben: Rückruf und Auffrischung",
+      "sub": "Der erste Stapel zeigt, was Kundinnen nach der Befragung wünschen: einen Rückruf (bei drei Sternen oder weniger) oder eine Auffrischung. Anrufen und Erledigt stehen direkt in der Karte.",
+      "card": {
+        "title": "Aufgaben",
+        "text": "Rückruf, Auffrischung"
+      },
+      "left": {
+        "shot": "satisfaction-followUps-light"
+      },
+      "leftCaption": "Stapel **Aufgaben**: Sterne, Feedback, Rückrufnummer, Anrufen und Erledigt.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Anrufen",
+          "text": "**Anrufen** wählt die hinterlegte Rückrufnummer. Danach **Erledigt** — die Aufgabe verschwindet, der Vermerk bleibt am Verlauf."
+        },
+        {
+          "n": 2,
+          "title": "Termin buchen",
+          "text": "Bei einem Auffrisch-Wunsch öffnet **Termin buchen** den Slot-Finder mit der Kundin; **Erledigt** hakt den Wunsch ab."
+        },
+        {
+          "n": 3,
+          "title": "Kennzahlen",
+          "text": "Oben stehen Folgeaufgaben, Kandidatinnen, versendet und beantwortet — für den gewählten Standort."
+        },
+        {
+          "n": 4,
+          "title": "Detail",
+          "text": "Ein Tipp auf den Namen öffnet die Detailkarte mit allem, was zur Befragung gehört."
+        }
+      ],
+      "hint": {
+        "text": "Rückruf- und Auffrisch-Wünsche kommen auch als Mitteilung — ein Tipp darauf öffnet diesen Stapel."
+      }
+    },
+    {
+      "h1": "Kandidatinnen befragen",
+      "sub": "Kundinnen, deren Paket aufgebraucht ist und deren letzte Sitzung 28 bis 120 Tage zurückliegt. Der Knopf am Rand nennt den voraussichtlichen Kanal; Wischen nach links überspringt.",
+      "card": {
+        "title": "Kandidatinnen",
+        "text": "Senden oder überspringen"
+      },
+      "left": {
+        "shot": "satisfaction-candidates-light"
+      },
+      "right": {
+        "shot": "satisfaction-detail-light"
+      },
+      "leftCaption": "Stapel **Kandidatinnen**: Paket, Paketende, Hinweise; rechts der Kanal-Knopf.",
+      "rightCaption": "Die **Detailkarte**: Paket, voraussichtlicher Kanal mit Gründen, Aktionen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Senden",
+          "text": "Der Knopf **WhatsApp** oder **E-Mail** fragt nach und sendet dann. Steht dort **Senden** mit der Marke „Kein Kanal“, nennt die Rückfrage die Gründe (Einwilligung, Nummer, Vorlage)."
+        },
+        {
+          "n": 2,
+          "title": "Überspringen",
+          "text": "Nach links wischen oder lange drücken: **Überspringen** verlangt einen Grund — er erklärt später, warum die Kundin keine Befragung bekam."
+        },
+        {
+          "n": 3,
+          "title": "Neue Kandidatinnen",
+          "text": "Nach unten ziehen lässt den Hub neue Paketenden suchen — wie „Liste auffrischen“ im Web."
+        },
+        {
+          "n": 4,
+          "title": "Hinweise",
+          "text": "**Widerruf** in der Historie und **verfallen** (nicht aufgebraucht) stehen als Marken an der Zeile."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "WhatsApp geht nur mit SMS-Marketing-Einwilligung, Handynummer und freigegebener Vorlage des Standorts; sonst E-Mail mit Einwilligung. Beides pflegt Phorest, die Vorlage das Admin-Backend."
+      }
+    },
+    {
+      "h1": "Verlauf und iPad",
+      "sub": "Der dritte Stapel zeigt versendete Befragungen mit Kanal, Sternen und Status. Übersprungene und fehlgeschlagene lassen sich zurückholen. Auf dem iPad stehen alle drei Stapel nebeneinander.",
+      "card": {
+        "title": "Verlauf & iPad",
+        "text": "Nachlesen, zurückholen"
+      },
+      "left": {
+        "shot": "satisfaction-history-light"
+      },
+      "right": {
+        "shot": "satisfaction-ipad-light"
+      },
+      "leftCaption": "Stapel **Verlauf** mit den Chips Alle, Versendet, Beantwortet, Übersprungen, Fehlgeschlagen.",
+      "rightCaption": "iPad quer: Aufgaben, Kandidatinnen und Verlauf nebeneinander.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Filtern",
+          "text": "Die Chips wechseln die Sicht; die Suche oben findet Kundin, Paket, Grund oder Fehlertext."
+        },
+        {
+          "n": 2,
+          "title": "Zurückholen",
+          "text": "Übersprungene oder fehlgeschlagene Einträge nach links wischen: **Zurückholen** legt sie wieder zu den Kandidatinnen."
+        },
+        {
+          "n": 3,
+          "title": "Sterne",
+          "text": "Rot sind drei Sterne oder weniger — dort wartet meist ein Rückruf im Stapel Aufgaben."
+        },
+        {
+          "n": 4,
+          "title": "Statistik",
+          "text": "Ø Sterne, Antwortquote und Sterneverteilung stehen im Bericht „Der glattt-Kunde“ (drei Punkte → Statistik im Bericht)."
+        }
+      ]
+    }
+  ]
+}

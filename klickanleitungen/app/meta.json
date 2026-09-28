@@ -948,5 +948,105 @@
   },
   "ratio": 2.164102564102564,
   "marks": []
+ },
+ "satisfaction-candidates-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 961
+  },
+  "ratio": 1.2320512820512821,
+  "marks": []
+ },
+ "satisfaction-candidates-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 961
+  },
+  "ratio": 1.2320512820512821,
+  "marks": []
+ },
+ "satisfaction-detail-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1520
+  },
+  "ratio": 1.9487179487179487,
+  "marks": []
+ },
+ "satisfaction-detail-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1520
+  },
+  "ratio": 1.9487179487179487,
+  "marks": []
+ },
+ "satisfaction-followUps-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1018
+  },
+  "ratio": 1.3051282051282052,
+  "marks": []
+ },
+ "satisfaction-followUps-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1018
+  },
+  "ratio": 1.3051282051282052,
+  "marks": []
+ },
+ "satisfaction-history-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1278
+  },
+  "ratio": 1.6384615384615384,
+  "marks": []
+ },
+ "satisfaction-history-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1278
+  },
+  "ratio": 1.6384615384615384,
+  "marks": []
+ },
+ "satisfaction-ipad-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1920,
+   "height": 1400
+  },
+  "ratio": 0.7291666666666666,
+  "marks": []
+ },
+ "satisfaction-ipad-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1920,
+   "height": 1400
+  },
+  "ratio": 0.7291666666666666,
+  "marks": []
  }
 }

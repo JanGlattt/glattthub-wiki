@@ -1305,7 +1305,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | App-Geräte | nativ | Liste mit Suche, Chips, Kennzahlen, offene Codes und Geräte nach Institut; Code ausstellen in drei Schritten mit QR und Teilen-Blatt (AirDrop), Code zurückziehen, Gerät widerrufen im Steckbrief; iPad-Split, Ausstellen als Popover (seit 26.09.2026); Einlösen bleibt `EnrollmentSheet` |
 | Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild, Akte (Überblick, Vergütung, Zeit, Konto), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten (seit 27.09.2026); Teamliste- und Lohnliste-Import bleiben Web (Datei-Upload im Büro), Checklisten Eintritt/Austritt vorerst ausgeblendet |
 | Institute | nativ | Karte zuerst (seit 27.09.2026): Nadeln in Hub-Farbe, Blatt mit Liste/Institut, Unterseiten Kennzahlen, Team, Verwaltung |
-| Zufriedenheit | bestand | Web im Mehr-Pool, Nachzug offen — zurückgestellt, weil die Befragung noch nicht genutzt wird (Jan, 26.09.2026) |
+| Zufriedenheit | nativ | Drei Stapel (seit 27.09.2026): Folgeaufgaben mit Anrufen/Termin buchen, Kandidatinnen mit Senden (Rückfrage, Kanal-Hinweis) und Überspringen, Verlauf mit Chips, Detailkarte; Standort-Einstellungen bleiben im Admin |
 | Forderungen | nativ | Arbeitsliste und Akte (seit 27.09.2026): Kennzahlen, drei Register, Bestand nach Stufe, gerichtliche Fälle, Fallakte mit nächstem Schritt, Schreiben-Vorschau, alle Aktionen der Seitenspalte; neues SEPA-Mandat eingebettet, Vorlagen Web |
 | Freunde werben, Google-Bewertungen | nativ | „Aufgabe zuerst“ (seit 27.09.2026): Überweisungsstapel mit Kopier-Knöpfen; Bewertungen schnell erfassen |
 | Widerrufe | nativ | Fallakte mit Reitern (seit 27.09.2026): Liste, Fall, Notiz, Status, Abschließen, Erfassen, Upload, RA-Vorgang, Forderungsübergabe; SEPA-Storno/Fernabsatz/Downgrade im Hub-Blatt |
@@ -1824,6 +1824,41 @@ SEPA pausieren/fortsetzen, Anschrift, abschreiben). Auf dem iPad stehen Liste un
   Format- und Arbeitslisten-Tests), `ReceivablesUITests`, PHP `ReceivablesAppDataTest`
   (Datenendpunkt, Rechte, Schreiben im Verlauf, Kundenseite).
 
+### Native Zufriedenheit (Mehr-Seite, seit 27.09.2026)
+
+**Für Endanwender:** „Zufriedenheit“ zeigt oben die Kennzahlen (Folgeaufgaben, Kandidatinnen, versendet,
+beantwortet) und drei Stapel. **Aufgaben** listet Rückrufwünsche (Sterne, Text, Nummer, „Anrufen“,
+„Erledigt“) und Auffrisch-Wünsche („Termin buchen“ in den Slot-Finder, „Erledigt“). **Kandidatinnen**
+zeigt je Kundin Paket, Paketende und Hinweise (Widerruf, verfallen, kein Kanal); der Knopf am Rand nennt
+den voraussichtlichen Kanal (WhatsApp, E-Mail) und fragt vor dem Senden nach; Wischen nach links
+überspringt mit Grund. **Verlauf** filtert wie im Web (Versendet, Beantwortet, Übersprungen,
+Fehlgeschlagen), Zurückholen per Wischen. Ein Tipp öffnet die **Detailkarte** (Paket, Versand mit
+Kanal oder Gründen, Sterne, Feedback, Folgeaufgaben, Kundin öffnen). Nach unten ziehen sucht neue
+Kandidatinnen. Auf dem iPad stehen die drei Stapel nebeneinander.
+
+!!! nutzerhandbuch "Bedienung: App 18 – Zufriedenheit in der App"
+    [https://hilfe.hub.glattt.com/app/18/](https://hilfe.hub.glattt.com/app/18/)
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 27.09.2026):** Entwurf 1 „Drei Stapel“ mit dem Kanal-Hinweis aus Entwurf 3
+  (verworfen: Stimmungsbild, Durchgehen). Artefakt: https://claude.ai/artifact/E7m7xyJsXEp4CxZtXkghD6.
+- **Endpunkte wie im Web:** `GET /hub/zufriedenheit/data` — neu `hints=1` (je Kandidatin `channel_hint
+  {channel, blockers}` aus `SatisfactionSurveySender::channelPreview()`, dieselbe Kanalwahl wie beim
+  Senden, nur lesend) und `can {manage, book}`; `refresh=1` beim Ziehen zum Aktualisieren. Aktionen
+  `senden`, `ueberspringen`, `zurueckholen`, `folgeaufgabe-erledigt`. Kein neuer Endpunkt.
+- **App:** `Satisfaction/` — `SatisfactionView` (iPhone: `SatisfactionList` mit Segment, iPad:
+  `SatisfactionPadView` mit drei Spalten), Stapel-Bausteine, `SatisfactionActions` als ein ViewModifier
+  (Rückfragen, Überspringen-Blatt, Detailkarte, Meldungen), `SatisfactionModel`, `SatisfactionModels`.
+  `NativeMorePage.satisfaction`, `bridge.js`, Mitteilungen „Rückruf/Auffrischung gewünscht“ führen in
+  die native Seite. Offline: letzter Stand je Standort.
+- **Senden ist Kundenkontakt:** immer Rückfrage; nennt Kanal oder die Gründe, warum der Versand
+  scheitern würde. Kein Wischen zum Senden.
+- **Offen (Jan):** Befragung je Standort einschalten (Meta-Vorlage, Admin-Einstellung, Google-Link);
+  nächtlicher Lauf, der Kandidatinnen nur anlegt. Bis dahin: Ziehen zum Aktualisieren.
+- **Nachweis:** `SatisfactionSnapshotTests`, `SatisfactionUITests`, PHP `SatisfactionSurveyTest`
+  (Kanal-Hinweis und Rechte, Gründe ohne Versand).
+
 ### Native Einstellungen (Mehr-Seite, seit 27.09.2026)
 
 **Für Endanwender:** „Einstellungen“ ist in App und Hub eine Seite mit Abschnitten. **Darstellung**:
@@ -2129,6 +2164,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 27.09.2026 | 1.3.0 | Native Zufriedenheit (Entwurf 1 „Drei Stapel“ + Kanal-Hinweis): Aufgaben, Kandidatinnen, Verlauf, Detailkarte, iPad drei Spalten; Hub: `hints=1` und `can` im Datenendpunkt — damit ist die letzte Bestandsseite nativ |
 | 27.09.2026 | 1.3.0 | Native Forderungen (Entwurf 1 „Arbeitsliste und Akte“ + Schritt-Blatt + Stufenleiter als „Bestand“): Arbeitsliste, Fallakte mit allen Aktionen, Schreiben-Vorschau; Hub: `GET /hub/receivables/{case}/data` aus `caseContext()`, Kundenseite mit nächstem Schritt; Widerrufe: Snapshot-Test und App-Deck nachgezogen |
 | 27.09.2026 | 1.2.1 (48) | Verkaufsstatistik vollständig nativ: KPZ pro Tag, Standort-Vergleich, Laufzeiten, Zahlungsausfälle, Lastschriften-Bestand, Rücklastschriften, Direktzahler, Monatsübersicht; Bausteine C–F, Liniendiagramm, Tages- und flache Tabellen |
 | 27.09.2026 | 1.2.1 (47) | Native Verkaufsstatistik (Muster „Wie im Hub“): KPI-Zeile, zwölf Karten in Web-Reihenfolge, vier davon nativ mit Swift Charts, Rest als Web-Karte; Hub: `/api/app/reports/page`, `/hub/reports/statistic/{key}/embed`, Registry-Feld `native`, `ReportRegistry::statisticsOf()` |
