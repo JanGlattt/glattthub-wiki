@@ -214,7 +214,17 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   Institute mit Farbkreis und Kürzel, „Ausgeblendet"-Kennzeichen) und `NotificationsView`
   (`GET /phorest/notifications?branch_id=`, Tippen markiert gelesen + öffnet das Ziel, „Alle
   gelesen", Link zur Mitteilungsseite — dieselben Endpunkte wie Glocke und Web-Sheet, aufgerufen
-  mit den WebView-Cookies inkl. IAP). Die Standort-Kachel zeigt Farbe und Kürzel des gewählten
+  mit den WebView-Cookies inkl. IAP). **Seit 28.09.2026 als Mitteilungszentrale** (TestFlight-Befund
+  131, Jan wählte Entwurf 1 „Heute zuerst“ plus Kennzahlen-Zeile und angepinnte dringliche Meldungen
+  aus Entwurf 2; Artefakt https://claude.ai/artifact/SobVHJ6aHK1g1AmYteXFMF): Chips Alle / Ungelesen /
+  Wichtig, dringliche ungelesene Meldungen als Abschnitt „Dringlich“ oben, Tagesgruppen Heute /
+  Gestern / Diese Woche / Früher aus `created_at` (`NotificationDayGroup`), je Meldung ein
+  Farb-Symbol nach Anlass (`NotificationLook`, Titel-Schlüsselwörter, sonst `icon_type`), ungelesen
+  gold hinterlegt, die tägliche Beratungs-Meldung als Kennzahlen-Zeile (`NotificationKpis` liest
+  „Heute … 17 | 7 Tage: 56 | 14 Tage: 75 | 28 Tage: 82“), Wischen markiert gelesen. Dieselbe
+  Ansicht im iPad-Popover (`PadNotificationsPopover`). Snapshot `NotificationsSnapshotTests` (im
+  statischen Zweig ohne `List`, `ScrollView` und `NavigationStack` — `ImageRenderer` rastert die
+  leer bzw. als Platzhalter). Die Standort-Kachel zeigt Farbe und Kürzel des gewählten
   Instituts. **Der Hub bleibt die Wahrheit für den Standortfilter:** bridge.js meldet
   `localStorage.selectedBranch` (`branchChanged`), die App schreibt die Wahl per
   `glattt:set-branch` zurück, `bottom-nav.blade.php` ruft daraufhin `pickBranch()` (localStorage +
@@ -1314,7 +1324,8 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Zukünftige/Vergangene Beratungsgespräche, Stornierte und gelöschte Termine, Terminstatistik | nativ | Berichtsseiten „Wie im Hub“, alle 21 Karten nativ (seit 27.09.2026) |
 | Alle 11 weiteren Berichtsseiten (Mitarbeiterperformance bis Office-Teammeeting) | nativ | Berichtsseiten „Wie im Hub“, jede Registry-Karte nativ (seit 27.09.2026) |
 | Eigene Dashboards | nativ | Kacheln, KPI-Zeile, Zeitraum wie im Web (seit 27.09.2026); Anlegen im eingebetteten Assistenten, Bearbeiten/Teilen in der Hub-Fassung |
-| Formulare, Bildschirme, Services, Unternehmensverträge, Report-Mails, Audit, Conversion-Upload, Bonus-Verwaltung | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
+| Unternehmensverträge | nativ | Fristen zuerst (seit 28.09.2026): Kennzahlen, Kosten nach Typ/Standort, Kündigungsfristen mit Ampel, Verträge nach Typ, Vertragsseite mit Dokumenten und Historie; Anlegen/Bearbeiten als eingebettetes Hub-Blatt (Wizard mit KI-Analyse) |
+| Formulare, Bildschirme, Report-Mails, Audit, Conversion-Upload, Bonus-Verwaltung | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
 | Einstellungen | nativ | Eine Seite (seit 27.09.2026): Darstellung, Diese App, Beratungs-Cache, API-Zugänge; iPad Abschnitte links |
 
 ### Native Verträge (Mehr-Seite, seit 25.09.2026 — Nachzug 1)
@@ -1895,6 +1906,54 @@ Kandidatinnen. Auf dem iPad stehen die drei Stapel nebeneinander.
 - **Nachweis:** `SatisfactionSnapshotTests`, `SatisfactionUITests`, PHP `SatisfactionSurveyTest`
   (Kanal-Hinweis und Rechte, Gründe ohne Versand).
 
+### Native Unternehmensverträge (Mehr-Seite, seit 28.09.2026)
+
+**Für Endanwender:** „Unt.-Verträge“ zeigt in der App zuerst, worum es dem Modul geht: die
+**Kündigungsfrist**. Oben vier Kennzahlen (monatlich netto mit Jahreswert, nächste Frist mit Vertrag,
+Verträge aktiv mit Anteil firmenweit, verstrichene Fristen), darunter die aufklappbare Sektion
+**Kosten** (nach Vertragstyp und nach Standort — die Karten der Web-Seite), die Karte
+**Kündigungsfristen** mit den drei nächsten Fristen (Datum, Resttage, Ampel: rot verstrichen, orange
+binnen 30 Tagen, grün läuft) und dem Blatt „Alle N“, dann die Verträge **nach Typ gruppiert** mit
+Monatssumme je Gruppe; Register Aktiv/Gekündigt/Abgelaufen, Suche über Name, Anbieter und
+Vertragsnummer. Die **Vertragsseite** hat ein Fristband, Marken für Typ und Standort, dann Laufzeit &
+Kündigung, Kosten (Intervall, je Monat, je Jahr, Preisanpassung), Anbieter mit Links, Notizen,
+Dokumente (Vorschau mit Teilen) und die Änderungshistorie. Anlegen und Bearbeiten öffnen den
+Hub-Assistenten als Blatt. Auf dem iPad stehen Liste und Vertrag nebeneinander.
+
+!!! nutzerhandbuch "Bedienung: App 19 – Unternehmensverträge in der App"
+    [https://hilfe.hub.glattt.com/app/19/](https://hilfe.hub.glattt.com/app/19/)
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 28.09.2026, TestFlight-Befund 126):** Entwurf 1 „Fristen zuerst“ mit den
+  Kostenkarten aus Entwurf 3 unter „Kosten“ (verworfen: Kostenbild mit Diagramm, Spiegel der
+  Web-Seite). Artefakt: https://claude.ai/artifact/6EtQeXP7Y6p9ofYcLCnKG9.
+- **Endpunkte (neu, Recht `view_company_contracts`, dieselbe Sichtbarkeit wie `index()`/`show()`):**
+  `GET /hub/company-contracts/data` — `contracts` (je Vertrag `presentForApp()`: Typ-Labels,
+  `branch_name`, `cancellation_deadline`, `days_until_deadline`, `deadline_level`
+  none/expired/soon/ok, `monthly_cents`), `costs` (`total_monthly_cents`, `by_type`, `by_branch` je
+  mit `monthly_cents` — `buildCostStats()` liefert dafür zusätzlich `by_type_cents`), `types`,
+  `branch_names`, `can.manage`, `sees_all`; `GET /hub/company-contracts/{id}/data` — dieselbe
+  Zeile plus `vendor`, Verlängerung, `price_increase`, Erinnerung, `notes`, `documents` (mit
+  `serveDocument`-URL) und `changes`. Eingeschränkte Sicht (`data_scope_branch`) sieht firmenweite
+  plus eigene Standort-Verträge, fremde `{id}` → 403.
+- **App:** `CompanyContracts/` — `CompanyContractsView` (iPhone Liste, iPad Split 400 pt + Vertrag),
+  `CompanyContractsList` (Kopf, Register, Kennzahlen, Kosten, Fristen, Suche, Gruppen mit
+  `collapsed`), `CompanyContractDetailView` (`embedded` für den iPad-Split, Dokumente über
+  `HubSession.download` + `QuickLookPreview`), `CompanyContractsModel` (Filter, Suche, `deadlines`,
+  `groups`, Offline-Stand `company-contracts`), `CompanyContractModels`. `NativeMorePage.companyContracts`
+  (`/hub/company-contracts`, `companyContractId()` für `/hub/company-contracts/{id}` →
+  `AppState.companyContractFocus`), `bridge.js` NATIVE_PAGES/NATIVE_PATTERNS, Banner-Symbol
+  `briefcase`.
+- **Eingebettet bleibt die Editor-Engine:** Anlegen `…?shell=native&wizard=1`, Bearbeiten
+  `…/{id}?shell=native&edit=1` als `AppointmentWebSheet`; `company-contract-wizard.js` liest die
+  Parameter in `init()` (Bearbeiten klickt den Knopf `data-wizard-edit`). Nach „Fertig“ laden Liste
+  und Vertragsseite neu. Dokument-Upload läuft über den Wizard, nicht nativ.
+- **Nachweis:** `CompanyContractsSnapshotTests` (Liste, Vertrag, iPad — Bilder der Klickanleitung
+  App 19; Fristen-Reihenfolge, Gruppen, Pfade), `CompanyContractsUITests` (Mehr → Unt.-Verträge,
+  Kosten, Vertrag, Bearbeiten-Blatt), PHP `CompanyContractAppEndpointTest` (Ampel, Kosten, Detail,
+  eingeschränkte Sicht, Recht).
+
 ### Native Einstellungen (Mehr-Seite, seit 27.09.2026)
 
 **Für Endanwender:** „Einstellungen“ ist in App und Hub eine Seite mit Abschnitten. **Darstellung**:
@@ -2200,7 +2259,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
-| 28.09.2026 | 1.3.0 (develop) | TestFlight-Runde zu Build 49 (Befunde 109–125): Zeit-Diagramme mit Pinch-Zoom, Wischen und Bereichsleiste, antippbare Legende, Tagesachse mit Montagen, Heatmap-Summen, Tagesmessung als Web-Matrix mit Zeitraum-Chip, Beratungs-Ranking mit Zeitraum und zwei Nachkommastellen, Buchungsstand-Tabelle über volle Breite, gleitender Durchschnitt, Brief-Vorschau ohne Weißraum, Wartezeit für Berichtskarten 90 s; Zufriedenheit lädt erst den Stand und sucht Kandidatinnen im Hintergrund (Befunde 127/128); Mehr-Menü ohne Kachel „App“, Farbschema als Dreier-Schalter (130/132); Hub: Cache für die vier Termin-Endpunkte, Seiten Schulden und Services ausgebaut (125/129); Entwürfe für Mitteilungszentrale und Unternehmensverträge nativ vorgelegt (126/131); iPad-Runde 133–142: Hülle nach dem Freischalten neu laden, Onboarding holt den Push-Dialog, einheitliche Auswahl in Listen, Umsetzungs-Blatt (eingebettete Web-Fassung nie nativ abfangen), „Text anpassen“ über der Vorschau, Seitenleiste folgt dem Lohnmonat, KPZ Monat, Öffnungszeiten-Zeile, Einstellungen-Spalte |
+| 28.09.2026 | 1.3.0 (develop) | TestFlight-Runde zu Build 49 (Befunde 109–125): Zeit-Diagramme mit Pinch-Zoom, Wischen und Bereichsleiste, antippbare Legende, Tagesachse mit Montagen, Heatmap-Summen, Tagesmessung als Web-Matrix mit Zeitraum-Chip, Beratungs-Ranking mit Zeitraum und zwei Nachkommastellen, Buchungsstand-Tabelle über volle Breite, gleitender Durchschnitt, Brief-Vorschau ohne Weißraum, Wartezeit für Berichtskarten 90 s; Zufriedenheit lädt erst den Stand und sucht Kandidatinnen im Hintergrund (Befunde 127/128); Mehr-Menü ohne Kachel „App“, Farbschema als Dreier-Schalter (130/132); Hub: Cache für die vier Termin-Endpunkte, Seiten Schulden und Services ausgebaut (125/129); Entwürfe für Mitteilungszentrale und Unternehmensverträge nativ vorgelegt (126/131); iPad-Runde 133–142: Hülle nach dem Freischalten neu laden, Onboarding holt den Push-Dialog, einheitliche Auswahl in Listen, Umsetzungs-Blatt (eingebettete Web-Fassung nie nativ abfangen), „Text anpassen“ über der Vorschau, Seitenleiste folgt dem Lohnmonat, KPZ Monat, Öffnungszeiten-Zeile, Einstellungen-Spalte; Mitteilungszentrale „Heute zuerst“ mit Chips, Dringlich, Tagesgruppen und Kennzahlen-Zeile (131); Unternehmensverträge nativ „Fristen zuerst“ mit Kosten, Fristen-Ampel, Gruppen nach Typ, Vertragsseite und eingebettetem Wizard, neue Endpunkte `/data` (126); Bonus-Challenge zeigt abgezogene geparkte KPZ (139/143) |
 | 27.09.2026 | 1.3.0 | Native Zufriedenheit (Entwurf 1 „Drei Stapel“ + Kanal-Hinweis): Aufgaben, Kandidatinnen, Verlauf, Detailkarte, iPad drei Spalten; Hub: `hints=1` und `can` im Datenendpunkt — damit ist die letzte Bestandsseite nativ |
 | 27.09.2026 | 1.3.0 | Native Forderungen (Entwurf 1 „Arbeitsliste und Akte“ + Schritt-Blatt + Stufenleiter als „Bestand“): Arbeitsliste, Fallakte mit allen Aktionen, Schreiben-Vorschau; Hub: `GET /hub/receivables/{case}/data` aus `caseContext()`, Kundenseite mit nächstem Schritt; Widerrufe: Snapshot-Test und App-Deck nachgezogen |
 | 27.09.2026 | 1.2.1 (48) | Verkaufsstatistik vollständig nativ: KPZ pro Tag, Standort-Vergleich, Laufzeiten, Zahlungsausfälle, Lastschriften-Bestand, Rücklastschriften, Direktzahler, Monatsübersicht; Bausteine C–F, Liniendiagramm, Tages- und flache Tabellen |

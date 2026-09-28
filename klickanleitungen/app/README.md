@@ -1,6 +1,6 @@
 # Klickanleitungen App — Quellen
 
-Quellen der Serie **App 1–18** (die glatttHub-App auf iPad und iPhone). Standard und
+Quellen der Serie **App 1–19** (die glatttHub-App auf iPad und iPhone). Standard und
 Deck-Format: `klickanleitungen/README.md` und Wiki `docs/KLICKANLEITUNGEN.md`; die Technik der
 App steht im Wiki `IOS-APP.md`.
 
@@ -23,9 +23,10 @@ App steht im Wiki `IOS-APP.md`.
 | **16 — Forderungen in der App** | Arbeitsliste mit Kennzahlen und drei Registern, Bestand nach Stufe, Fallakte mit nächstem Schritt und vier Reitern, Schreiben prüfen und senden/erzeugen, Zahlung, Kosten, RZV, Ruhend, iPad-Split (seit 27.09.2026) |
 | **18 — Zufriedenheit in der App** | Kennzahlen, Stapel Aufgaben (Anrufen, Termin buchen, Erledigt), Kandidatinnen (Senden mit Kanal-Hinweis, Überspringen mit Grund), Verlauf mit Chips und Zurückholen, Detailkarte, iPad drei Spalten (seit 27.09.2026) |
 | **17 — Widerrufe in der App** | Liste mit Chips und Wiedervorlagen, Fallakte mit Überblick/Verlauf/Dokumente/Umsetzung/Anwalt, Notiz, Abschließen, Erfassen in vier Schritten, Dokumente hochladen, iPad-Split (seit 27.09.2026) |
+| **19 — Unternehmensverträge in der App** | Kennzahlen, Kosten nach Typ und Standort, Kündigungsfristen mit Ampel und Blatt „Alle“, Verträge nach Typ mit Summe, Vertragsseite mit Fristband/Laufzeit/Kosten/Anbieter/Dokumenten/Historie, Anlegen und Bearbeiten als Hub-Blatt, iPad-Split (seit 28.09.2026) |
 | **15 — Die Verkaufsstatistik in der App** | Native Berichtsseite „Wie im Hub“: Standort, Brutto/Netto, Kennzahlen, KPZ pro Institut mit Prognose und Verkäuferinnen, Neukunden, Sales-Mix mit Schaltern, Tabelle hinter jedem Diagramm, Web-Karten im Übergang, iPad (seit 27.09.2026) |
 
-Die ersten sieben, 9 (Gutscheine) und 12 (Termin buchen) richten sich an **die Institute**; 6 (Management-Sicht) zusätzlich an Leitung und Büro, 8 (Verträge), 10 (App-Geräte), 16 (Forderungen), 17 (Widerrufe) und 18 (Zufriedenheit) an Leitung und Büro.
+Die ersten sieben, 9 (Gutscheine) und 12 (Termin buchen) richten sich an **die Institute**; 6 (Management-Sicht) zusätzlich an Leitung und Büro, 8 (Verträge), 10 (App-Geräte), 16 (Forderungen), 17 (Widerrufe), 18 (Zufriedenheit) und 19 (Unternehmensverträge) an Leitung und Büro.
 
 ## Screenshots — nicht mit Playwright
 

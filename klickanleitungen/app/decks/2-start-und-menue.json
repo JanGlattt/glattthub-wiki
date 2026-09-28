@@ -6,8 +6,8 @@
   "of": 8,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "23.09.2026",
-  "version": "1.0",
+  "stand": "28.09.2026",
+  "version": "1.1",
   "nr": 2,
   "title": [
     "Startseite, Menü,",
@@ -218,12 +218,16 @@
     },
     {
       "h1": "Mitteilungen und Abmelden",
-      "sub": "Die Glocke zeigt ungelesene Mitteilungen als rote Zahl; das Fenster listet sie, ein Tipp öffnet das Ziel. Abmelden sitzt unten links.",
+      "sub": "Die Glocke zeigt ungelesene Mitteilungen als rote Zahl; die Mitteilungszentrale bündelt sie nach Tagen, hebt Dringliches hervor und zeigt die tägliche Beratungs-Meldung als Kennzahlen-Zeile. Abmelden sitzt unten links.",
       "card": {
         "title": "Mitteilungen",
-        "text": "Lesen, öffnen, alle gelesen — und abmelden"
+        "text": "Heute zuerst, Dringliches oben — und abmelden"
       },
       "left": {
+        "shot": "notifications-light"
+      },
+      "leftCaption": "Die **Mitteilungszentrale** (seit 28.09.2026): Chips Alle / Ungelesen / Wichtig, Dringliches oben, dann Heute, Gestern, Diese Woche, Früher.",
+      "right": {
         "shot": "pad-land-logout-popover",
         "marks": [
           {
@@ -239,17 +243,17 @@
           }
         ]
       },
-      "leftCaption": "**Abmelden** fragt in einem Fenster direkt am Knopf nach — kein Versehen möglich.",
+      "rightCaption": "**Abmelden** fragt in einem Fenster direkt am Knopf nach — kein Versehen möglich.",
       "steps": [
         {
           "n": 1,
           "title": "Glocke antippen",
-          "text": "Das Mitteilungs-Fenster hängt an der Glocke. Ungelesene haben einen **goldenen Punkt**; der Haken oben rechts markiert alle als gelesen."
+          "text": "Das Fenster hängt an der Glocke (iPhone: Mehr → Mitteilungen). Jede Meldung trägt ein **Farb-Symbol** nach Anlass, ungelesene sind gold hinterlegt mit Punkt; **dringliche** stehen oben in Rot. Die tägliche Beratungs-Meldung zeigt heute, 7, 14 und 28 Tage als Kacheln."
         },
         {
           "n": 2,
-          "title": "Mitteilung öffnen",
-          "text": "Ein Tipp springt zum Ziel — Termin, Vertrag, Bericht. Push-Mitteilungen auf dem Sperrbildschirm öffnen dieselben Ziele."
+          "title": "Öffnen, filtern, wischen",
+          "text": "Ein Tipp springt zum Ziel — Termin, Vertrag, Bericht. Die Chips **Alle / Ungelesen / Wichtig** filtern; nach links wischen markiert gelesen, der Haken oben rechts alle. Push-Mitteilungen auf dem Sperrbildschirm öffnen dieselben Ziele."
         },
         {
           "n": 3,

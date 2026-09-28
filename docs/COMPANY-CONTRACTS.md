@@ -47,6 +47,14 @@ hat, ist als „KI-Vorschlag — bitte überprüfen" markiert und muss geprüft 
 
 ---
 
+**In der App** ist die Seite seit 28.09.2026 nativ („Fristen zuerst“: Kennzahlen, Kosten, Kündigungsfristen
+mit Ampel, Verträge nach Typ, Vertragsseite mit Dokumenten); Anlegen und Bearbeiten öffnen den Assistenten
+als Blatt (`?shell=native&wizard=1` bzw. `&edit=1`). Technik im Wiki `IOS-APP.md`, Abschnitt „Native
+Unternehmensverträge“.
+
+!!! nutzerhandbuch "Bedienung: App 19 – Unternehmensverträge in der App"
+    [https://hilfe.hub.glattt.com/app/19/](https://hilfe.hub.glattt.com/app/19/)
+
 ## Für Entwickler
 
 ### Fachregeln (Fristen, Status, Erinnerungen)
@@ -223,6 +231,8 @@ Alle Routen unter `/hub/` mit Middleware `can:view_company_contracts`:
 | GET | `/hub/company-contracts/{id}` | `hub.company-contracts.show` | `view_company_contracts` |
 | GET | `/hub/company-contracts/{contractId}/documents/{documentId}` | `hub.company-contracts.documents.serve` | `view_company_contracts` |
 | GET | `/hub/company-contracts/types` | `hub.company-contracts.types` | `view_company_contracts` |
+| GET | `/hub/company-contracts/data` | `hub.company-contracts.data` | `view_company_contracts` — JSON für die native App (seit 28.09.2026) |
+| GET | `/hub/company-contracts/{id}/data` | `hub.company-contracts.detail` | `view_company_contracts` — Vertrag als JSON mit Dokumenten und Historie |
 | POST | `/hub/company-contracts` | `hub.company-contracts.store` | `manage_company_contracts` |
 | PUT | `/hub/company-contracts/{id}` | `hub.company-contracts.update` | `manage_company_contracts` |
 | POST | `/hub/company-contracts/types` | `hub.company-contracts.types.store` | `manage_company_contracts` |
@@ -241,6 +251,7 @@ Alle Routen unter `/hub/` mit Middleware `can:view_company_contracts`:
 | `serveDocument(Request, $contractId, $documentId)` | Datei aus Storage streamen (inline oder download) |
 | `analyzeDocument(Request)` | Claude KI-Analyse, gibt JSON zurück |
 | `getTypes()` | Alle verfügbaren Typen (Standard + Custom) |
+| `data()` / `detail($id)` | JSON für die native iOS-App (seit 28.09.2026): Liste mit Frist-Ampel (`deadline_level`), Kosten in Cents je Typ/Standort, Typen, Rechte; Vertrag mit Anbieter, Preisanpassung, Dokumenten (`serveDocument`-URL) und Historie — dieselbe Sichtbarkeit wie `index()`/`show()`, `presentForApp()` als gemeinsame Zeile |
 | `storeType(Request)` | Neuen Custom-Typ anlegen |
 
 **Zugriffssteuerung**:
@@ -400,4 +411,5 @@ php artisan test --filter=CompanyContract
 
 Test-Dateien:
 - `tests/Feature/CompanyContractControllerTest.php`
+- `tests/Feature/CompanyContractAppEndpointTest.php` — JSON-Endpunkte der App (Ampel, Kosten, Detail, eingeschränkte Sicht, Recht)
 - `tests/Unit/CompanyContractServiceTest.php`
