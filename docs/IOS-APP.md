@@ -254,7 +254,11 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   Befund 170): Sie kommt und geht immer unter dem Ladeschirm, der weich ausblendet. Mit einer
   Opacity-Überblendung schien im Video-Prüfstand nach dem Abmelden die Web-Login-Seite der Hülle
   und nach der PIN die PIN-Seite als Geist über dem Cockpit durch; zusätzlich bleibt die Hülle
-  verborgen, solange `showLogin` gilt (`TabBarHost.setShellVisible`). Zahnrad oben
+  verborgen, solange `showLogin` gilt (`TabBarHost.setShellVisible`). **Und es gibt nur einen
+  Ladeschirm** (`RootView.showsLoading` = erste Seite lädt **oder** Hub bereit ohne Navigation):
+  Als zwei Ansichten blendete bei `ready` die eine aus und die andere ein — Jans Video (Build 53)
+  zeigte in der Mitte das alte Cockpit; als ein Zustand bleibt der Schirm deckend, bis die
+  Navigation geladen ist, und blendet dann weich ins Cockpit. Zahnrad oben
   rechts, Umgebungs-Badge unten außer auf Produktion. Der Google-/IAP-Schritt davor bleibt im
   WebView; `LoginHintView` legt dort einen Kopf „Schritt 1 von 2 · Google-Anmeldung" darüber.
   Reine Ansicht `LoginScreen` (Snapshots `LoginSnapshotTests`), UI-Tests `LaunchFlashUITests`
@@ -625,7 +629,11 @@ hergeben, fehlt still.
 persönlichen Bonus hat, sieht ihn **groß** (Abschnitt `bonus_hero`, im Standard-Layout statt der
 kleinen Karte): Stufe (**Bronze ab 100 %**, Silber 120 %, Gold 135 %, Diamant 150 % der
 Zielerreichung), was bis zur nächsten Stufe fehlt, Serie (Monate in Folge am Ziel), Tagesziel und
-Ring, darunter die Abzeichen. Die Rollen **Institute MA** und **Institute Leitung** bekommen per
+Ring — **eine Karte je Ziel** (Befund 172, 29.09.2026): auf dem iPhone wischbar mit Punkten
+darunter, auf dem iPad im Raster; offene Ziele zuerst, erreichte dahinter, **nicht mehr erreichbare
+Ziele** (ab 11 Fehltagen im Monat, Abwesenheitsfaktor 0) ausgegraut und zuletzt mit „Nicht mehr
+erreichbar · Fehltage". Die Abzeichen-Zeile bleibt auf der Startseite vorerst weg, bis Abzeichen
+produktiv genutzt werden (auf dem Bonus-Board bleibt die Karte). Die Rollen **Institute MA** und **Institute Leitung** bekommen per
 Migration ein eigenes Layout ohne Kennzahlen-Karussell und KPZ-Chart; die Leitung sieht zusätzlich
 **Team · Tagesmessung** (`team_today`: je Mitarbeiterin Beratungen, Abschlussrate, KPZ je BG,
 verkaufte KPZ — laufender Monat und Vormonat, nur eigenes Institut) und beide den Schnellzugriff
@@ -658,7 +666,8 @@ verkaufte KPZ — laufender Monat und Vormonat, nur eigenes Institut) und beide 
   `bonus_rule_achievements`), `progress_pct_uncapped` (der alte `progress_pct` bleibt bei 100
   gedeckelt); je Nutzerin `level` und `badges[]` (Katalog `BADGES` mit `earned`, `tier`, `hint`;
   Ganzkörper/„10 KPZ an einem Tag" aus einer Contract-Query je Board). `AppStartService::bonus()`
-  reicht alles durch (`bonus.level`, `bonus.badges`). Tests `BonusEngineTest`.
+  reicht alles durch (`bonus.level`, `bonus.badges`) und je Regel `absence_factor`, `reachable`
+  (Faktor > 0) und `unreachable_reason` (`absence`). Tests `BonusEngineTest`, `AppStartTest`.
 - **Rollen-Layouts und Team:** `AppStartLayout::SECTIONS` um `bonus_hero` (Recht
   `view_bonus_board`) und `team_today` (`view_report_sales_statistics`) erweitert, Spalte
   `quicklinks_mode` (`all`|`laser`, Admin-Select) → `layout.quicklinks_mode`; Migration
@@ -669,7 +678,8 @@ verkaufte KPZ — laufender Monat und Vormonat, nur eigenes Institut) und beide 
   `months[]` + `staff[].periods{YYYY-MM}` — getrennt vom Rahmen, weil die Tagesmessung Sekunden
   braucht. Tests `AppStartTeamTest`.
 - **App:** `Start/CockpitBonusHero.swift` (`BonusLevel`, `BonusHeroCard`, `BonusBadgeRow`,
-  `TeamTodayCard`, `LaserQuicklinks`), `StartModels` (Level-Felder, `StartTeam`), `StartViewModel`
+  `BonusGoalPager`, `TeamTodayCard`, `LaserQuicklinks`), `StartModels` (Level-Felder, `goalRules`,
+  `isReachable`, `StartTeam`), `StartViewModel`
   lädt `team` nur bei Abschnitt `team_today` und sichert es im Offline-Stand; `CockpitView`
   Abschnitte `bonus_hero`/`team_today`, Laser-Modus im Schnellzugriff. Bonus-Board:
   `BonusLevelStrip` im Kopf, Level-Chip/Serie/Tagesziel je Ziel, Level-Marken am Balken

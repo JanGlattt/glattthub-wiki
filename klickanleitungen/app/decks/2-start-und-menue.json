@@ -7,7 +7,7 @@
   "audience": "institut",
   "footerArea": "App",
   "stand": "29.09.2026",
-  "version": "1.2",
+  "version": "1.3",
   "nr": 2,
   "title": [
     "Startseite, Menü,",
@@ -60,7 +60,7 @@
     },
     {
       "h1": "Startseite für Mitarbeiterin und Leitung",
-      "sub": "Wer einen persönlichen Bonus hat, sieht ihn groß: Level, Serie, Tagesziel und Abzeichen. Die Leitung sieht darunter ihr Team aus der Tagesmessung. Kennzahlen-Karussell und KPZ-Chart gibt es für diese Rollen nicht mehr.",
+      "sub": "Wer einen persönlichen Bonus hat, sieht ihn groß: eine Karte je Ziel mit Level, Serie und Tagesziel. Die Leitung sieht darunter ihr Team aus der Tagesmessung. Kennzahlen-Karussell und KPZ-Chart gibt es für diese Rollen nicht mehr.",
       "card": {
         "title": "Bonus zuerst",
         "text": "Level, Serie, Tagesziel, Team"
@@ -68,17 +68,17 @@
       "left": {
         "shot": "cockpit-leitung-light"
       },
-      "leftCaption": "Startseite einer Leitung: die goldene Bonus-Karte mit Ring, darunter die Abzeichen, das Team mit laufendem Monat (gold) und Vormonat (grau), unten Laser-Wartung und Laser-Fehler.",
+      "leftCaption": "Startseite einer Leitung: je Ziel eine goldene Bonus-Karte mit Ring (ein nicht mehr erreichbares Ziel grau), das Team mit laufendem Monat (gold) und Vormonat (grau), unten Laser-Wartung und Laser-Fehler.",
       "steps": [
         {
           "n": 1,
           "title": "Bonus-Karte",
-          "text": "Zeigt dein wichtigstes offenes Ziel: **Ist / Ziel**, die Stufe (**Bronze ab 100 %, Silber 120 %, Gold 135 %, Diamant 150 %**), was bis zur nächsten Stufe fehlt, die **Serie** (Monate in Folge am Ziel) und das **Tagesziel** — so viel pro verbleibendem Arbeitstag bis 100 %. Tipp öffnet das Bonus-Board."
+          "text": "Je Ziel eine Karte — auf dem iPhone **wischen**, Punkte darunter zeigen die Position: **Ist / Ziel**, die Stufe (**Bronze ab 100 %, Silber 120 %, Gold 135 %, Diamant 150 %**), was bis zur nächsten Stufe fehlt, die **Serie** (Monate in Folge am Ziel) und das **Tagesziel** — so viel pro verbleibendem Arbeitstag bis 100 %. Tipp öffnet das Bonus-Board."
         },
         {
           "n": 2,
-          "title": "Abzeichen",
-          "text": "Erreichte Abzeichen in Farbe, offene grau: Monatsziel, die vier Stufen, Serie 3 und 6, Qualität, Ganzkörper, 10 KPZ an einem Tag. Antippen auf dem Board erklärt, wie man sie bekommt."
+          "title": "Nicht mehr erreichbar",
+          "text": "Ab **11 Fehltagen** im Monat gibt es für ein Ziel keinen Bonus mehr — die Karte wird **grau** und steht zuletzt („Nicht mehr erreichbar · Fehltage“). Die übrigen Ziele laufen normal weiter."
         },
         {
           "n": 3,
