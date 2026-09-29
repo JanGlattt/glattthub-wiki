@@ -72,7 +72,18 @@ einzelnen Feld.
   der Rest der Karte bleibt fürs Auswählen reserviert; alternativ die
   **Pfeil-Buttons** (hoch/runter) im Feldkopf
 - **Touch-Geräte**: Drag & Drop funktioniert auch auf Tablets (SortableJS,
-  150 ms Halte-Verzögerung gegen versehentliche Drags beim Scrollen)
+  150 ms Halte-Verzögerung gegen versehentliche Drags beim Scrollen). Seit 28.09.2026 mit
+  `forceFallback` bei `pointer: coarse` (natives HTML5-Drag ist im WKWebView der App
+  unzuverlässig: Ablage bricht ab, Seite scrollt mit) und Auto-Scroll am Rand des Canvas
+- **Element hinzufügen (seit 28.09.2026)**: Knopf unter der Feldliste öffnet die vier
+  Kategorien der Palette als Fenster und hängt das gewählte Element ans Ende — der einzige
+  Weg auf iPad hochkant und am Handy (dort fehlt die Palette unter 768 px), am Schreibtisch
+  eine Abkürzung neben dem Ziehen
+- **⌘S / Strg+S** speichert sofort (iPad mit Tastatur, Schreibtisch) statt die Seite zu sichern
+- **iPad in der App**: der Editor öffnet aus der nativen Formulare-Liste als eingebettetes
+  Web-Blatt mit `?shell=native` — Rücksprung zur Übersicht verschwindet, das Blatt hat „Fertig";
+  Griff und Zeilenknöpfe sind dort 44 pt hoch (`pointer: coarse`). Nur iPad, nicht iPhone.
+  Entscheidung 28.09.2026: kein nativer Nachbau des Editors (Wissen `formulare-web-engine-bleibt`)
 - **Löschen mit Rückgängig**: Nach dem Löschen erscheint 8 Sekunden lang eine
   Undo-Leiste über dem Canvas
 - **Ungespeicherte Änderungen**: Beim Verlassen der Seite (Navigation oder
@@ -554,6 +565,40 @@ Die DomPDF-Konfiguration befindet sich in `config/dompdf.php`:
 - `font_cache` → `storage/fonts`
 - `temp_dir` → `storage/fonts`
 - `chroot` → Projektverzeichnis
+
+## Ausfüllen am iPad (seit 28.09.2026)
+
+Die Kundin füllt Formulare am iPad aus — in der App als eingebettetes Web-Blatt der
+Terminansicht (`?view=forms&shell=native&form={id}`) oder eigenständig über
+`/hub/forms/fill/{id}?shell=native` aus der nativen Formulare-Liste. Die Web-Engine bleibt
+bewusst die einzige Engine (Entscheidung Jan 28.09.2026, Wissen `formulare-web-engine-bleibt`);
+für das iPad wurde sie an vier Stellen nachgezogen:
+
+- **Unterschrift** (`public/js/components/signature-pad.js`): Pointer-Events statt Maus- und
+  Touch-Handlern. Apple Pencil liefert Zwischenpunkte (`getCoalescedEvents`), sonst wirken
+  schnelle Schwünge im WKWebView eckig; während ein Stift-Strich läuft, werden Finger ignoriert
+  (aufgelegter Handballen); `setPointerCapture` hält den Strich auch über den Rand hinaus;
+  `pointercancel` beendet ihn sauber. Ausgabe unverändert als SVG mit `currentColor`.
+  Theme: `touch-action: none`, `user-select: none`, `-webkit-touch-callout: none` am Canvas.
+- **Fußleiste „Was fehlt noch"** (`partials/form-fields/_fill-footer.blade.php`, in
+  `fill.blade.php` und `appointment-unified/partials/form-fill-inline.blade.php`): klebt am
+  unteren Rand (`position: sticky`, Abstand `--mobile-bottom-nav-space` + `--safe-area-bottom`,
+  in der App also über der Tab-Leiste) und zählt offene Pflichtangaben live
+  (`missingRequiredFieldNames()` in `form-fill.js`, dieselbe Leer-Logik wie `validate()`).
+  „Zur Stelle" scrollt zum ersten Feld (`scrollToField`, Wrapper tragen `data-field-name`)
+  und fokussiert es. Nach einem gescheiterten Absenden zählt die Leiste die konkreten Fehler
+  („3 Angaben prüfen", auch Formatfehler wie eine ungültige E-Mail), und `submitForm()`
+  springt selbst zum ersten Fehler in Formularreihenfolge. Rechts stehen Abbrechen und Absenden.
+- **Tastatur je Feld** (`_field-renderer.blade.php`): E-Mail mit `inputmode="email"`,
+  `autocomplete="email"`, ohne Autokorrektur und Großschreibung; Zahl mit
+  `inputmode="decimal"`; IBAN mit `autocapitalize="characters"` ohne Autokorrektur;
+  Text mit `enterkeyhint="next"`. Die Eingabefelder haben 1 rem Schrift, deshalb zoomt
+  WebKit beim Fokus nicht.
+- **Tippflächen** (`pointer: coarse` im Theme): Checkbox-, Radio- und Toggle-Zeilen mindestens
+  44 pt hoch, die Kästchen bleiben 1,25 rem.
+
+`FormsNativeShellTest` prüft, dass Ausfüllen, Editor und Einreichung mit `?shell=native`
+ihre Rücksprünge verlieren und die Fußleiste in beiden Ausfüll-Fassungen liegt.
 
 ## Bedingte Anzeige (Conditional Fields)
 

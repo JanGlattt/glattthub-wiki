@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für den Formular-Editor im glatttHub — Felder anordnen, Regeln setzen, Vertrag und SEPA einbauen",
   "eyebrow": "Betrieb · Formular-Editor",
   "footerArea": "Betrieb",
-  "stand": "19.09.2026",
-  "version": "1.4",
+  "stand": "28.09.2026",
+  "version": "1.5",
   "notes": [
     "Die Formulare sind **Daten, kein Code** — Kundeninformation, Behandlungsvertrag und SEPA-Mandat entstehen alle hier.",
     "Ein Formular mit **Vertrags- oder SEPA-Feld** löst echte Vorgänge aus: Vertrag anlegen, Mandat einrichten, Kauf in Phorest.",
@@ -58,7 +58,7 @@
     },
     {
       "h1": "Felder anordnen",
-      "sub": "Oben Name und Beschreibung des Formulars, daneben **Entwurf | Veröffentlicht**, Vorschau und Speichern. Darunter die Felder.",
+      "sub": "Oben Name und Beschreibung des Formulars, daneben **Entwurf | Veröffentlicht**, Vorschau und Speichern. Darunter die Felder — gezogen aus der Palette oder über **„Element hinzufügen“** am Ende der Liste.",
       "card": {
         "title": "Felder anordnen",
         "text": "Bausteine ziehen, Beschriftung und Breite setzen"
@@ -70,8 +70,8 @@
       "steps": [
         {
           "n": 1,
-          "title": "Baustein ziehen",
-          "text": "**„Elemente hierher ziehen“** — Eingabefeld, Auswahl, Datum, Dokument, Unterschrift und weitere."
+          "title": "Baustein ziehen oder hinzufügen",
+          "text": "**„Elemente hierher ziehen“** — Eingabefeld, Auswahl, Datum, Dokument, Unterschrift und weitere. Ohne Palette (iPad hochkant, Handy): **„Element hinzufügen“** unter der Liste öffnet die Bausteine als Fenster und hängt den gewählten ans Ende."
         },
         {
           "n": 2,
@@ -90,8 +90,12 @@
         }
       ],
       "hint": {
-        "text": "**Reihenfolge ist Gesprächsführung.** Das Formular wird im Beratungsgespräch gemeinsam ausgefüllt — die Reihenfolge der Felder gibt vor, worüber in welcher Reihenfolge gesprochen wird."
-      }
+        "text": "**Reihenfolge ist Gesprächsführung.** Das Formular wird im Beratungsgespräch gemeinsam ausgefüllt — die Reihenfolge der Felder gibt vor, worüber in welcher Reihenfolge gesprochen wird. Am iPad verschiebst du am Griff ☰; mit Tastatur speichert **⌘S**."
+      },
+      "right": {
+        "shot": "b9b-element-hinzufuegen"
+      },
+      "rightCaption": "„Element hinzufügen“: dieselben Bausteine als Fenster — der Weg am iPad hochkant, wo die Palette fehlt."
     },
     {
       "h1": "Regeln und Bedingungen",

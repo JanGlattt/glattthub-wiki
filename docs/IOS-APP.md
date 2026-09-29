@@ -937,7 +937,13 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   **Prüfstand-Schalter:** Startargument `-glatttNoPhorestWrites`
   (`AppointmentDetailModel.phorestWritesDisabled`) lässt Check-in, Beenden und Zusatzbuchung aus —
   Pflicht für UI-Tests gegen den lokalen Hub, der die echte Phorest-API ruft.
-- **Stufe 3 — Formulare (seit 22.09.2026, Entscheidung Jan: eingebettet statt nachgebaut):**
+- **Stufe 3 — Formulare (seit 22.09.2026, Entscheidung Jan: eingebettet statt nachgebaut; am
+  28.09.2026 nach einer Bestandsaufnahme bestätigt — ein nativer Nachbau hätte rund 18 Tage
+  gekostet und dauerhaft doppelte Pflege bedeutet, Wissen `formulare-web-engine-bleibt`; stattdessen
+  wurde die Web-Engine fürs iPad nachgezogen: Unterschrift über Pointer-Events mit Apple Pencil,
+  Fußleiste „Was fehlt noch" mit Sprung zum ersten Fehler, Tastatur je Feld, Tippflächen 44 pt,
+  Editor mit „Element hinzufügen" und Touch-Fallback fürs Ziehen — Details `FORM-EDITOR.md`,
+  Abschnitt „Ausfüllen am iPad"):**
   Die Formular-Engine `form-fill.js` (3.000 Zeilen, 25 Feldtypen, Preise/Gutscheine/SEPA/
   Rechtsdokumente/Phorest-Abgleich, Validierung bewusst nur in PHP + JS) wird **nicht** in Swift
   dupliziert. Nativ sind Liste und Kette (`formsPane`: Reihenfolge Kundeninformation → Vertrag →
@@ -1382,7 +1388,8 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Eigene Dashboards | nativ | Kacheln, KPI-Zeile, Zeitraum wie im Web (seit 27.09.2026); Anlegen im eingebetteten Assistenten, Bearbeiten/Teilen in der Hub-Fassung |
 | Unternehmensverträge | nativ | Fristen zuerst (seit 28.09.2026): Kennzahlen, Kosten nach Typ/Standort, Kündigungsfristen mit Ampel, Verträge nach Typ, Vertragsseite mit Dokumenten und Historie; Anlegen/Bearbeiten als eingebettetes Hub-Blatt (Wizard mit KI-Analyse) |
 | Bonus-Verwaltung | nativ | Monat im Griff (seit 28.09.2026): Abschluss-Checkliste, offene Widerrufe mit Segmented Control je Fall und Bereich, Minimalziele, Wert-Korrekturen, Zwischenstand/Final einfrieren (final ab Folgemonat, Warnung bei offenen Fällen), Unterseite Regelwerk mit Chips und Regel-Akte, Regel-Assistent in vier Schritten nativ, Sichtbarkeit je Nutzerin; iPad Abschnitte links |
-| Formulare, Bildschirme, Report-Mails, Audit, Conversion-Upload | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
+| Formulare | nativ | Liste und Akte (seit 28.09.2026): Suche, Chips, Marken, Erscheint bei, Beim Absenden, Aufbau, letzte Einreichungen mit PDF; Ausfüllen und Editor als eingebettete Hub-Blätter (`?shell=native`), Editor nur am iPad — Entscheidung Jan 28.09.2026: Web-Engine bleibt, kein nativer Nachbau |
+| Bildschirme, Report-Mails, Audit, Conversion-Upload | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
 | Einstellungen | nativ | Eine Seite (seit 27.09.2026): Darstellung, Diese App, Beratungs-Cache, API-Zugänge; iPad Abschnitte links |
 
 ### Native Verträge (Mehr-Seite, seit 25.09.2026 — Nachzug 1)
@@ -2067,6 +2074,42 @@ Abschnitte links, der Inhalt rechts.
   Kurzfassungen, Payload-Rundreise des Assistenten), `BonusAdminUITests` (Board → ⋯ → Verwaltung,
   Blatt Einfrieren, Regelwerk, Regel-Akte, Assistent), PHP `BonusBoardPageTest`
   (`test_verwaltungs_katalog_fuer_die_app`), Klickanleitung App 20.
+
+
+### Native Formulare (Mehr-Seite, seit 28.09.2026)
+
+**Für Endanwender:** **Mehr → Formulare** zeigt alle Formulare mit Suche und Chips (Alle,
+Veröffentlicht, Entwürfe, Pflicht). Die **Akte** eines Formulars sagt, was es auslöst (Marken
+„erzeugt Vertrag", „SEPA-Mandat", „Mitunterzeichner", „nur unter 18"), wo es erscheint, wie es
+aufgebaut ist (Felder unter ihren Überschriften mit Pflicht und ½) und wer es zuletzt eingereicht
+hat (mit PDF). **Ausfüllen** öffnet das Hub-Formular als Blatt mit „Fertig", **Bearbeiten** den
+Editor bildschirmfüllend — nur am iPad; am iPhone steht dort der Hinweis auf iPad und Schreibtisch.
+
+!!! nutzerhandbuch "Bedienung: App 21 – Formulare in der App"
+    https://hilfe.hub.glattt.com/app/21/
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 28.09.2026):** kein nativer Nachbau von Ausfüllen und Editor (Bestandsaufnahme:
+  rund 18 Tage plus dauerhaft doppelte Pflege; Entwürfe https://claude.ai/artifact/E6PGyBHM12ywzrmXeWLKNJ).
+  Nativ ist nur die Liste mit Akte (Entwurf A2); die Web-Engine wurde stattdessen fürs iPad nachgezogen
+  (`FORM-EDITOR.md`, „Ausfüllen am iPad"). Wissen `formulare-web-engine-bleibt`.
+- **Dateien:** `ios/glatttHub/Forms/FormModels.swift` (Codable, alle Felder optional; `FormSettings`
+  akzeptiert `{}` und `[]`), `FormsModel.swift` (Laden, Chips, Suche, Duplizieren, Löschen,
+  PDF: `POST api/forms/submission/{id}/pdf`, dann `session.download`), `FormsView.swift` (iPad
+  Liste 400 pt | Akte, iPhone Push), `FormDetailView.swift` (Akte), `NativeMorePage.forms`
+  (`/hub/forms`, exakter Pfad — `/hub/forms/editor|fill|submission/…` und `?shell=native` bleiben
+  Web), `bridge.js` `NATIVE_PAGES`.
+- **Endpunkte wie im Web:** `GET api/forms` (Liste mit `submissions_count`, `fields_count`,
+  `creator`), `GET api/forms/{id}` (Felder), `GET api/forms/{id}/submissions` (Recht
+  `view_form_submissions`, 403 blendet die Karte still aus), `POST api/forms/{id}/duplicate`,
+  `DELETE api/forms/{id}`. Ausfüllen `/hub/forms/fill/{id}?shell=native`, Editor
+  `/hub/forms/editor/{id}?shell=native` (fullScreenCover, iPad), Einreichung
+  `/hub/forms/submission/{id}?shell=native` — `FormController` reicht `nativeShell` an die Views,
+  die Rücksprünge verschwinden (`FormsNativeShellTest`).
+- **Nachweis:** `FormsSnapshotTests` (iPhone Liste und Akte, iPad Split, hell/dunkel — Bilder der
+  Klickanleitung App 21; Pfad-Erkennung, bridge.js-Abgleich, Modell-Toleranz),
+  `.github/app-abdeckung.json` `hub.forms` auf „nativ".
 
 ### Native Einstellungen (Mehr-Seite, seit 27.09.2026)
 

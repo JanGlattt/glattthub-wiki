@@ -60,6 +60,10 @@ const PLAN = [
     { id: 'karte', kind: 'frame', color: 'teal', sel: '.card-glattt' },
   ] },
   { name: 'b9-editor', url: '/hub/forms', steps: [['loaded'], editor, ['wait', 2500]] },
+  // Fenster „Element hinzufügen" (seit 28.09.2026): Ersatz für die Palette am iPad hochkant
+  { name: 'b9b-element-hinzufuegen', url: '/hub/forms', steps: [['loaded'], editor, ['wait', 2500],
+    ['fn', async (page, L) => { await page.evaluate(() => { document.querySelector('[data-editor-add-element]')?.click(); }); await L.wait(page, 1200); }]],
+    clip: '.form-editor-add-modal' },
   { name: 'b10-bedingungen', url: '/hub/forms', steps: [['loaded'], editor, ['wait', 2500],
     ['fn', async (page, L) => {
       // Erstes Feld auf der Arbeitsfläche anklicken, damit die Einstellungsspalte es zeigt

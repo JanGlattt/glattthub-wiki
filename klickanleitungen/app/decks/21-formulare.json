@@ -1,0 +1,52 @@
+{
+  "out": "../pdf/App-21-Formulare",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "App",
+  "nr": 21,
+  "of": 21,
+  "audience": "buero",
+  "title": ["Formulare", "in der App"],
+  "subtitle": "Klickanleitung für die glatttHub-App — Formulare finden, die Akte lesen, ein Formular mit einer Kundin ausfüllen und am iPad bearbeiten",
+  "eyebrow": "App · Betrieb",
+  "footerArea": "App",
+  "stand": "28.09.2026",
+  "version": "1.0",
+  "notes": [
+    "**Formulare** öffnest du über **Mehr → Formulare** (iPhone und iPad). Du brauchst das Recht **Formulare ansehen**; Ausfüllen, Bearbeiten und Einreichungen hängen an denselben Rechten wie am Schreibtisch.",
+    "Die Liste und die **Akte** eines Formulars sind in der App nativ. Das **Ausfüllen** und der **Editor** sind dieselben Seiten wie im Hub und öffnen als Blatt mit **Fertig** oben — so gibt es Feldtypen, Regeln und Preise genau einmal.",
+    "Der **Editor** ist nur am iPad erreichbar. Am iPhone zeigt die Akte den Hinweis „Bearbeiten am iPad oder am Schreibtisch“."
+  ],
+  "pages": [
+    {
+      "h1": "Liste und Akte",
+      "sub": "Links alle Formulare mit Suche und Chips, rechts die Akte des gewählten Formulars: was es auslöst, wo es erscheint, wie es aufgebaut ist und wer es zuletzt eingereicht hat.",
+      "card": { "title": "Formulare", "text": "Suche, Chips, Akte" },
+      "left": { "shot": "forms-list-light" },
+      "right": { "shot": "forms-ipad-light" },
+      "leftCaption": "iPhone: die Liste mit Status-Pille je Formular; ein Tipp öffnet die Akte als Unterseite.",
+      "rightCaption": "iPad: Liste links, Akte rechts — mit **Ausfüllen**, **Bearbeiten** und dem ⋯-Menü.",
+      "steps": [
+        { "n": 1, "title": "Suchen und filtern", "text": "Das Suchfeld findet Name und Beschreibung. Die Chips **Alle · Veröffentlicht · Entwürfe · Pflicht** grenzen ein; „Pflicht“ zeigt die Formulare, die vor der Behandlung vorliegen müssen." },
+        { "n": 2, "title": "Akte lesen", "text": "Oben die Marken (**erzeugt Vertrag**, **SEPA-Mandat**, **Mitunterzeichner**, **nur unter 18**), darunter **Erscheint bei** (Dienstleistungen, Pflicht, Alter) und **Beim Absenden** (Vertrag anlegen, Mandat einrichten, PDF, E-Mail)." },
+        { "n": 3, "title": "Aufbau", "text": "Alle Felder unter ihren Überschriften mit den Chips **Pflicht** und **½** (halbe Breite) — so siehst du ohne den Editor, was die Kundin ausfüllt." },
+        { "n": 4, "title": "Letzte Einreichungen", "text": "Die zehn jüngsten Einreichungen mit Kundin, Zeit, Mitarbeiterin und Status (**Eingereicht**, **Geprüft**, **Wartet auf 2. Unterschrift**). Ein Tipp öffnet die Einreichung, das PDF-Symbol das PDF." }
+      ],
+      "hint": { "text": "**Kein Netz?** Die Liste zeigt den letzten Stand mit Uhrzeit. Ausfüllen und Bearbeiten brauchen eine Verbindung." }
+    },
+    {
+      "h1": "Ausfüllen und Bearbeiten",
+      "sub": "Beides öffnet aus der Akte als Blatt: das Ausfüllen mit einer Kundin auf iPhone und iPad, der Editor nur am iPad. Oben rechts schließt **Fertig** das Blatt, danach lädt die Akte neu.",
+      "card": { "title": "Ausfüllen, Bearbeiten", "text": "Blatt mit Fertig, Fußleiste, Editor am iPad" },
+      "left": { "shot": "form-detail-light" },
+      "leftCaption": "iPhone: die Akte mit **Ausfüllen**; Bearbeiten gibt es hier nicht, dafür den Hinweis auf iPad und Schreibtisch.",
+      "steps": [
+        { "n": 1, "title": "Ausfüllen", "text": "Öffnet das Formular ohne Termin — zuerst die Kundin über die Suche zuordnen, dann ausfüllen wie in der Terminansicht. Unten bleibt die **Fußleiste** stehen: „3 Pflichtangaben fehlen · Zur Stelle“ springt zur nächsten offenen Angabe; „Alle Pflichtangaben vorhanden“ heißt: absenden." },
+        { "n": 2, "title": "Unterschrift", "text": "Die Kundin unterschreibt mit dem Finger oder dem **Apple Pencil**. Während der Stift zeichnet, wird der aufgelegte Handballen ignoriert. **Löschen** setzt das Feld zurück." },
+        { "n": 3, "title": "Bearbeiten (iPad)", "text": "Öffnet den Editor bildschirmfüllend. Elemente ziehst du aus der Palette oder fügst sie über **Element hinzufügen** unter der Feldliste ein; verschoben wird am Griff ☰. Mit Tastatur speichert **⌘S**, sonst **Speichern** oben rechts." },
+        { "n": 4, "title": "⋯-Menü", "text": "**Duplizieren** legt eine Kopie als Entwurf an, **Löschen** fragt nach — Einreichungen des Formulars werden mit gelöscht. Beides nur mit dem passenden Recht." }
+      ],
+      "hint": { "kind": "warn", "text": "**Entwürfe** lassen sich nicht ausfüllen — erst im Editor auf **Veröffentlicht** stellen." }
+    }
+  ]
+}
