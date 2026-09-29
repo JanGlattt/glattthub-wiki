@@ -145,6 +145,16 @@ und die Kunden-Sperre laufen unter `view_appointment_detail`.
   `staff_first_name`, `branch_name`, `feedback_link`, `feedback_token`, `static`), SMS-Text,
   E-Mail-Betreff/-Text, Anrede-Text der Seite, Google-Link, Trinkgeld an/aus, Vorauswahl (€),
   Mindestbetrag.
+- **Testversand** (Abschnitt in derselben Seite, seit 29.09.2026, TestFlight-Befund 201):
+  „Test-WhatsApp", „Test-SMS", „Test-E-Mail" an eine frei eingegebene Nummer bzw. Adresse —
+  mit dem aktuellen Formularstand (auch ungespeichert, auf einer `replicate()`-Kopie) und
+  Beispieldaten (Anna Muster, Behandlerin = Vorname der Absenderin). `TreatmentFeedbackSender::sendTest()`
+  legt **keine** Anfrage an, prüft keine Einwilligungen und verknüpft den Superchat-Kontakt der
+  Testnummer mit keiner Kundin; E-Mail-Betreff mit `[TEST]`. Link (auch der Abmeldelink) zeigt
+  auf die **Vorschau** `GET /shared/danke/vorschau/{branch}` — relativ signiert
+  (`signed:relative`, 7 Tage), damit der WhatsApp-URL-Button den Pfad als „Link-Token" an
+  `/shared/danke/` hängen kann. Die Vorschau rendert die echte Seite im gespeicherten Stand mit
+  Hinweis-Banner; Absenden, Trinkgeld-Kasse (kein Mollie-Skript) und Abmelden sind ohne Wirkung.
 - **Benutzer → Mitarbeiter-Verknüpfung:** „Von Trinkgeld & Qualität ausschließen", „Profilfoto auf
   der Bewertungsseite zeigen", „Persönlicher Satz".
 - **Protokolle → Trinkgeld & Qualität – Protokoll** (`TreatmentFeedbackRequestResource`, nur lesen):
