@@ -613,6 +613,16 @@ Ziehen aktualisiert. Welche Abschnitte in welcher Reihenfolge und welche Kennzah
 legt das Admin-Backend **je Rolle** fest (System → „App-Startseite je Rolle"); was die Rechte nicht
 hergeben, fehlt still.
 
+**Seit 29.09.2026 (Jan, TestFlight-Befunde 162–164, Entwurf „Level und Serie"):** Wer einen
+persönlichen Bonus hat, sieht ihn **groß** (Abschnitt `bonus_hero`, im Standard-Layout statt der
+kleinen Karte): Stufe (**Bronze ab 100 %**, Silber 120 %, Gold 135 %, Diamant 150 % der
+Zielerreichung), was bis zur nächsten Stufe fehlt, Serie (Monate in Folge am Ziel), Tagesziel und
+Ring, darunter die Abzeichen. Die Rollen **Institute MA** und **Institute Leitung** bekommen per
+Migration ein eigenes Layout ohne Kennzahlen-Karussell und KPZ-Chart; die Leitung sieht zusätzlich
+**Team · Tagesmessung** (`team_today`: je Mitarbeiterin Beratungen, Abschlussrate, KPZ je BG,
+verkaufte KPZ — laufender Monat und Vormonat, nur eigenes Institut) und beide den Schnellzugriff
+**nur Laser** (Wartung hervorgehoben, Laser-Fehler daneben, eine Reihe). Alles im Admin änderbar.
+
 !!! nutzerhandbuch "Bedienung: App 7 – Widgets, Siri, Scanner & Hilfe"
     [https://hilfe.hub.glattt.com/app/7/](https://hilfe.hub.glattt.com/app/7/)
 
@@ -633,6 +643,30 @@ hergeben, fehlt still.
   `BonusBoardController::tile()`, dem Kachel-Endpunkt ohne Besuchs-Snapshot), Bonus-Regeln
   (max. 6: Name, Wert, Ziel, Fortschritt, erreicht), Schnellzugriff aus den Haupttabs plus Suche
   und glatttBert. Tests `AppStartTest`, `AppStartLayoutAdminTest`.
+- **Level, Serie, Tagesziel, Abzeichen (29.09.2026):** `BonusCalculationService` liefert je Regel
+  `level`/`secured_level` (`LEVELS` = bronze 100, silber 120, gold 135, diamant 150 %),
+  `next_level{key,pct,missing}`, `scale_pct` 150, `daily_target` (Rest ÷ verbleibende Arbeitstage
+  aus `hr_daily_times`, sonst Mo–Fr), `series{months,includes_current}` (für alle Regeln aus
+  `bonus_rule_achievements`), `progress_pct_uncapped` (der alte `progress_pct` bleibt bei 100
+  gedeckelt); je Nutzerin `level` und `badges[]` (Katalog `BADGES` mit `earned`, `tier`, `hint`;
+  Ganzkörper/„10 KPZ an einem Tag" aus einer Contract-Query je Board). `AppStartService::bonus()`
+  reicht alles durch (`bonus.level`, `bonus.badges`). Tests `BonusEngineTest`.
+- **Rollen-Layouts und Team:** `AppStartLayout::SECTIONS` um `bonus_hero` (Recht
+  `view_bonus_board`) und `team_today` (`view_report_sales_statistics`) erweitert, Spalte
+  `quicklinks_mode` (`all`|`laser`, Admin-Select) → `layout.quicklinks_mode`; Migration
+  `seed_institute_app_start_layouts` legt die Layouts für „Institute MA"/„Institute Leitung" an,
+  wenn die Rollen existieren und noch keins haben. **`GET /api/app/start/team`**
+  (`AppStartController::team`, Recht `view_report_sales_statistics`, 404 ohne Heimat-Institut) rechnet
+  über `StaffPerformanceService::getStaffOverview` (Vormonatsanfang bis heute, Cache 1 h) und liefert
+  `months[]` + `staff[].periods{YYYY-MM}` — getrennt vom Rahmen, weil die Tagesmessung Sekunden
+  braucht. Tests `AppStartTeamTest`.
+- **App:** `Start/CockpitBonusHero.swift` (`BonusLevel`, `BonusHeroCard`, `BonusBadgeRow`,
+  `TeamTodayCard`, `LaserQuicklinks`), `StartModels` (Level-Felder, `StartTeam`), `StartViewModel`
+  lädt `team` nur bei Abschnitt `team_today` und sichert es im Offline-Stand; `CockpitView`
+  Abschnitte `bonus_hero`/`team_today`, Laser-Modus im Schnellzugriff. Bonus-Board:
+  `BonusLevelStrip` im Kopf, Level-Chip/Serie/Tagesziel je Ziel, Level-Marken am Balken
+  (`targetPosition` = 2/3, Skala bis Diamant), Karte „Abzeichen". Snapshots `cockpit-ma-*`,
+  `cockpit-leitung-*` (`CockpitSnapshotTests`), `bonus-own-*` mit Level-Daten.
 - **App:** `Start/StartModels.swift` (Rahmen), `StartViewModel` (lädt Rahmen und Mitteilungen
   über die Session, die Zahlen über `WidgetAPI` mit dem Widget-Token — derselbe 15-Min-Cache wie die
   Widgets; jeder Teil unabhängig, Standortwechsel/Vordergrund/5 Minuten lösen ein sanftes Neuladen

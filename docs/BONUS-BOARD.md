@@ -119,6 +119,16 @@ Was `/hub/bonus` je Nutzerin zeigt und wie die Werte zu lesen sind:
   dort „Endstand".
 - **Serien**: Regeln mit Serien-Bonus zeigen die erreichten Monate in Folge als
   Punkte und was beim nächsten Meilenstein extra winkt (z.B. 3 bzw. 6 Monate).
+- **Level (seit 29.09.2026, Entscheidung Jan):** Stufen gibt es erst ab Zielerreichung,
+  weil es erst ab da Boni gibt — **Bronze 100 %, Silber 120 %, Gold 135 %, Diamant 150 %**
+  der Zielerreichung (Ist inkl. Vorbehalt; `secured_level` ohne). Jedes Ziel nennt die nächste
+  Stufe und was dafür fehlt („Silber · noch 12 KPZ bis Gold"); Balken haben hinter dem Ziel
+  Platz bis Diamant. **Serie** gibt es für alle Regeln (Monate in Folge am Ziel aus den
+  eingefrorenen Vormonaten), **Tagesziel** für Summen-Ziele (Rest ÷ verbleibende Arbeitstage
+  aus dem Dienstplan, sonst Werktage). **Abzeichen** je Nutzerin: Monatsziel, Bronze, Silber,
+  Gold, Diamant (kumulativ), Serie 3/6, Qualität (KPZ je BG erreicht), Ganzkörper (Vertrag mit
+  ≥ 6 Zonen im Monat), 10 KPZ an einem Tag. Gezeigt in der App (Startseite groß, Board);
+  das Web-Board bekommt die Felder mit, zeigt sie aber noch nicht (offen).
 - **Celebration**: Hat die Nutzerin seit ihrem letzten Besuch zu einer Verbesserung
   beigetragen, gibt es Konfetti und eine persönliche Lob-Nachricht.
 - **Abwesenheitsregel**: bis 5 Abwesenheitstage im Monat → voller Bonus, 6 bis 10
@@ -422,6 +432,13 @@ Das Standard-Bonussystem wird per Migration
   Prämie ist bis zur Auflösung 0. `freeze($month, $user, $final, $note)` persistiert
   Payload + Achievements; ein finaler Freeze sperrt den Monat (RuntimeException
   bei weiteren Versuchen; Controller sperren auch Korrekturen/Entscheidungen).
+  **Level-Felder (29.09.2026):** `LEVELS`/`LEVEL_SCALE_PCT`/`BADGES` in der Klasse;
+  `levelFields()` je Regel (`level`, `secured_level`, `next_level`, `scale_pct`, `daily_target`,
+  `series`, `progress_pct_uncapped`), `badgesFor()` je Nutzerin nach allen Regeln,
+  `sellerSales()` (eine Contract-Query je Board für Ganzkörper/Tag-10), `remainingWorkdays()`
+  mit Cache je Lauf. Ranking- und %-Aufschlag-Zeilen tragen die Felder mit null (Serie
+  gerechnet). `blindfold()` maskiert `series.includes_current` nicht — bei blinden Rankings
+  kann es die Platzierung verraten (bewusst offen gelassen).
 
 ### HTTP-Schicht
 

@@ -6,8 +6,8 @@
   "of": 8,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "23.09.2026",
-  "version": "1.0",
+  "stand": "29.09.2026",
+  "version": "1.1",
   "nr": 6,
   "title": [
     "Das Bonus-Board",
@@ -90,6 +90,40 @@
       "hint": {
         "text": "**Celebration:** Ist ein Wert seit deinem letzten Besuch gestiegen, erscheint oben ein Lob-Banner mit Konfetti — ein Tipp schließt es."
       }
+    },
+    {
+      "h1": "Level, Serie und Abzeichen",
+      "sub": "Seit dem 29.09.2026 ist das Board ein Spiel: Jede Zielerreichung hat eine Stufe, jedes Ziel ein Tagesziel, und Abzeichen halten fest, was du schon geschafft hast.",
+      "card": {
+        "title": "Level & Abzeichen",
+        "text": "Bronze bis Diamant, Serie, Tagesziel"
+      },
+      "left": {
+        "shot": "bonus-own-iphone"
+      },
+      "leftCaption": "Oben die Stufe mit dem nächsten Schritt, Serie und Tagesziel; am Balken die Marken für Silber, Gold und Diamant hinter der Zielmarke; die Karte „Abzeichen“ zählt erreichte und offene.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Stufen",
+          "text": "Boni gibt es ab dem Ziel — deshalb beginnt **Bronze bei 100 %**. Darüber **Silber 120 %, Gold 135 %, Diamant 150 %**. Der Balken hat hinter dem Ziel Platz bis Diamant, die kleinen Marken zeigen die Stufen."
+        },
+        {
+          "n": 2,
+          "title": "Nächste Stufe",
+          "text": "Der Chip am Ziel sagt, was fehlt: „Silber · noch 12 KPZ bis Gold“. Bei Schnitten (KPZ je BG) steht der fehlende Schnitt."
+        },
+        {
+          "n": 3,
+          "title": "Serie und Tagesziel",
+          "text": "**Serie** = Monate in Folge am Ziel (aus den eingefrorenen Vormonaten). **Tagesziel** = was pro verbleibendem Arbeitstag bis 100 % fehlt, Arbeitstage aus dem Dienstplan."
+        },
+        {
+          "n": 4,
+          "title": "Abzeichen",
+          "text": "Monatsziel, Bronze, Silber, Gold, Diamant, Serie 3, Serie 6, Qualität (KPZ je BG), Ganzkörper (Vertrag mit sechs Zonen), 10 KPZ an einem Tag. Erreichte in Farbe, offene grau — antippen zeigt den Weg dahin."
+        }
+      ]
     },
     {
       "h1": "Monat, Sicht und Team",

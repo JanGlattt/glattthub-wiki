@@ -6,8 +6,8 @@
   "of": 8,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "28.09.2026",
-  "version": "1.1",
+  "stand": "29.09.2026",
+  "version": "1.2",
   "nr": 2,
   "title": [
     "Startseite, Menü,",
@@ -57,6 +57,40 @@
       "hint": {
         "text": "**Je Rolle anders:** Was auf der Startseite steht, legt das Büro im Admin-Backend fest („App-Startseite je Rolle“). Fehlt dir eine Kachel, frag dort nach."
       }
+    },
+    {
+      "h1": "Startseite für Mitarbeiterin und Leitung",
+      "sub": "Wer einen persönlichen Bonus hat, sieht ihn groß: Level, Serie, Tagesziel und Abzeichen. Die Leitung sieht darunter ihr Team aus der Tagesmessung. Kennzahlen-Karussell und KPZ-Chart gibt es für diese Rollen nicht mehr.",
+      "card": {
+        "title": "Bonus zuerst",
+        "text": "Level, Serie, Tagesziel, Team"
+      },
+      "left": {
+        "shot": "cockpit-leitung-light"
+      },
+      "leftCaption": "Startseite einer Leitung: die goldene Bonus-Karte mit Ring, darunter die Abzeichen, das Team mit laufendem Monat (gold) und Vormonat (grau), unten Laser-Wartung und Laser-Fehler.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Bonus-Karte",
+          "text": "Zeigt dein wichtigstes offenes Ziel: **Ist / Ziel**, die Stufe (**Bronze ab 100 %, Silber 120 %, Gold 135 %, Diamant 150 %**), was bis zur nächsten Stufe fehlt, die **Serie** (Monate in Folge am Ziel) und das **Tagesziel** — so viel pro verbleibendem Arbeitstag bis 100 %. Tipp öffnet das Bonus-Board."
+        },
+        {
+          "n": 2,
+          "title": "Abzeichen",
+          "text": "Erreichte Abzeichen in Farbe, offene grau: Monatsziel, die vier Stufen, Serie 3 und 6, Qualität, Ganzkörper, 10 KPZ an einem Tag. Antippen auf dem Board erklärt, wie man sie bekommt."
+        },
+        {
+          "n": 3,
+          "title": "Team (Leitung)",
+          "text": "Je Mitarbeiterin **Beratungen, Abschlussrate, KPZ je BG und verkaufte KPZ** — obere Zahl laufender Monat, untere Vormonat. Tipp öffnet die Mitarbeiterperformance."
+        },
+        {
+          "n": 4,
+          "title": "Schnellzugriff",
+          "text": "Für Mitarbeiterin und Leitung nur **Laser-Wartung** (gold) und **Laser-Fehler** in einer Reihe. Büro und Admin behalten alle Kacheln. Der Zuschnitt je Rolle steht im Admin unter „App-Startseite je Rolle“."
+        }
+      ]
     },
     {
       "h1": "Seitenleiste auf dem iPad",
