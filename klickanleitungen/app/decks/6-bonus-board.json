@@ -7,7 +7,7 @@
   "audience": "institut",
   "footerArea": "App",
   "stand": "29.09.2026",
-  "version": "1.2",
+  "version": "1.3",
   "nr": 6,
   "title": [
     "Das Bonus-Board",
@@ -92,16 +92,16 @@
       }
     },
     {
-      "h1": "Level und Serie",
-      "sub": "Seit dem 29.09.2026 ist das Board ein Spiel: Jede Zielerreichung hat eine Stufe und jedes Ziel ein Tagesziel.",
+      "h1": "Stufen und Tagesziel",
+      "sub": "Seit dem 29.09.2026 ist das Board ein Spiel: Jede Zielerreichung hat eine Stufe, jedes Ziel ein Tagesziel. Auf dem Board sichtbar sind vorerst nur die Stufen-Marken am Balken und das Tagesziel.",
       "card": {
-        "title": "Level & Serie",
-        "text": "Bronze bis Diamant, Serie, Tagesziel"
+        "title": "Stufen & Tagesziel",
+        "text": "Bronze bis Diamant am Balken, Tagesziel"
       },
       "left": {
         "shot": "bonus-own-iphone"
       },
-      "leftCaption": "Oben die Stufe mit dem nächsten Schritt, Serie und Tagesziel; am Balken die Marken für Silber, Gold und Diamant hinter der Zielmarke.",
+      "leftCaption": "Am Balken die Marken für Silber, Gold und Diamant hinter der Zielmarke, darunter das Tagesziel; Stufen-Pillen und Serien-Flammen sind ausgeblendet (Stand 29.09.2026).",
       "steps": [
         {
           "n": 1,
@@ -110,18 +110,18 @@
         },
         {
           "n": 2,
-          "title": "Nächste Stufe",
-          "text": "Der Chip am Ziel sagt, was fehlt: „Silber · noch 12 KPZ bis Gold“. Bei Schnitten (KPZ je BG) steht der fehlende Schnitt."
+          "title": "Tagesziel",
+          "text": "**Tagesziel** = was pro verbleibendem Arbeitstag bis 100 % fehlt, Arbeitstage aus dem Dienstplan. Steht als Chip am Ziel."
         },
         {
           "n": 3,
-          "title": "Serie und Tagesziel",
-          "text": "**Serie** = Monate in Folge am Ziel (aus den eingefrorenen Vormonaten). **Tagesziel** = was pro verbleibendem Arbeitstag bis 100 % fehlt, Arbeitstage aus dem Dienstplan."
+          "title": "Serie",
+          "text": "Zählt eine Regel eine **Serie** (Monate in Folge am Ziel mit Extra-Prämie), stehen die Punkte bis zum nächsten Meilenstein unter dem Balken — wie bisher."
         },
         {
           "n": 4,
-          "title": "Abzeichen kommen später",
-          "text": "Abzeichen (Monatsziel, Stufen, Serien, Qualität, Ganzkörper) sind vorbereitet, aber noch nicht in Gebrauch — sie erscheinen weder auf der Startseite noch auf dem Board, bis sie freigeschaltet werden."
+          "title": "Pillen und Abzeichen kommen später",
+          "text": "Stufen-Pillen („Bronze · noch 12 KPZ bis Silber“), Serien-Flammen und Abzeichen (Monatsziel, Stufen, Serien, Qualität, Ganzkörper) sind vorbereitet, aber noch nicht in Gebrauch — sie erscheinen nicht auf dem Board, bis sie freigeschaltet werden (Entscheidung Jan, 29.09.2026)."
         }
       ]
     },
