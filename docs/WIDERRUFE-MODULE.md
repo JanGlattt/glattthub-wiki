@@ -103,7 +103,12 @@ Widerruf abgelehnt, Upgrade, Downgrade, Korrektur oder Laufzeitanpassung. Der fr
 !!! info "Native App und JSON (27.09.2026)"
     Die App zeigt Widerrufe nativ als Fallakte (Wiki `IOS-APP.md`, Abschnitt „Native Widerrufe“).
     Dafür gibt es `GET /hub/cancellations/{id}/data` (Fall als JSON, Recht `view_revocations`); die
-    Liste `/hub/cancellations/data` liefert zusätzlich `can.manage` und `reasons`. Der Knopf „Neuer
+    Liste `/hub/cancellations/data` liefert zusätzlich `can.manage` und `reasons`. **Standortfilter
+    (seit 29.09.2026, TestFlight-Befund 176):** `branch_id` filtert über den Vertrag
+    (`visibleBranch`, ein Filter außerhalb der Sichtbarkeit wird ignoriert), zusätzlich gelten die
+    erlaubten Institute der Datensicht (`data_scope_branch` → `allowed_branch_ids`/Stamm-Institut) —
+    dieselbe Regel wie bei der Zufriedenheits-Liste. Web-Seite und App senden den gewählten Standort
+    und laden bei Wechsel neu; Test `CancellationStatusBucketsTest`. Der Knopf „Neuer
     Widerruf“ erscheint seitdem nur mit `manage_revocations` (vorher `create_revocations`, Speichern
     lief dann auf 403). Karten der Stapel und die Fallseite tragen `data-ctx="cancellation"`.
 

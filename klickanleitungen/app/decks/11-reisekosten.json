@@ -6,8 +6,8 @@
   "of": 11,
   "audience": "institute",
   "footerArea": "App",
-  "stand": "27.09.2026",
-  "version": "1.2",
+  "stand": "29.09.2026",
+  "version": "1.3",
   "nr": 11,
   "title": [
     "Reisekosten in der App",
@@ -35,7 +35,7 @@
         {
           "n": 1,
           "title": "Anlegen",
-          "text": "Ein gerahmter Anspruchstag hat noch keine Reise — ein Tipp startet den **Assistenten** für die neue Reise (nächste Seite)."
+          "text": "Ein gerahmter Anspruchstag hat noch keine Reise — ein Tipp startet den **Assistenten** für die neue Reise (nächste Seite). Anspruchstage, die noch in der Zukunft liegen, stehen grau unter **Geplant** — anlegen geht erst, wenn der Tag da ist."
         },
         {
           "n": 2,
@@ -72,7 +72,7 @@
         {
           "n": 1,
           "title": "Die Frage beantworten",
-          "text": "**Ja, zusammen**, wenn du an allen Tagen am selben Ort warst — dann wird eine Reise über alle Tage abgerechnet. **Nein**, wenn es verschiedene Orte waren: dann nur der angetippte Tag, die anderen Tage bekommen eigene Reisen."
+          "text": "**Ja, zusammen**, wenn du an allen Tagen am selben Ort warst — dann wird eine Reise über alle Tage abgerechnet. **Nein**, wenn es verschiedene Orte waren: dann nur der angetippte Tag, die anderen Tage bekommen eigene Reisen. Als **Ziel** stehen **Institut**, **Büro** (Hannover), **Akademie** (Laser-Akademie Hannover) oder **Anderes Ziel** zur Wahl — Büro und Akademie bringen Adresse und Strecke gleich mit. Unter **Abfahrt** trägt **„Adresse aus der Personal-Akte“** deine Wohnadresse ein, ohne zu tippen."
         },
         {
           "n": 2,
@@ -152,7 +152,7 @@
         {
           "n": 2,
           "title": "Fahrt",
-          "text": "**Auto**: Abfahrtsadresse eintippen, Ziel-Institut wählen, der Knopf daneben berechnet die Strecke über den Hub — du kannst sie anpassen. **Bahn**: Ticket von glattt oder selbst bezahlt (dann Kosten und Beleg)."
+          "text": "**Auto**: Abfahrtsadresse eintippen oder mit **„Adresse aus der Personal-Akte“** übernehmen, Ziel-Institut wählen, der Knopf daneben berechnet die Strecke über den Hub — du kannst sie anpassen. **Bahn**: Ticket von glattt oder selbst bezahlt (dann Kosten und Beleg)."
         },
         {
           "n": 3,

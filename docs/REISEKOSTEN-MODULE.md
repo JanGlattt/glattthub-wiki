@@ -286,6 +286,23 @@ User-Agent, `throttle:60,1`). Vorher fragten Browser und App Nominatim/OSRM dire
 Web und App dieselben Endpunkte, und die Koordinaten (`departure_lat/lon`, `destination_lat/lon`)
 werden mitgespeichert. Institute liefern ihre Koordinaten aus Phorest.
 
+**Abfahrt aus der Personal-Akte (seit 29.09.2026, TestFlight-Befund 179):**
+`GET /travel-expenses/address/{askdanteUserId}` liefert Straße, PLZ und Ort aus `HrEmployeeProfile`
+(verschlüsselte Spalten) als `address` — nur für sich selbst oder stellvertretend
+(`denyUnlessActsFor`), ohne Stammdaten `null`. Die App bietet unter dem Abfahrtsfeld den Knopf „Adresse aus
+der Personal-Akte". Test `TravelExpenseApiTest`.
+
+**Feste Ziele (seit 29.09.2026, Befund 180):** `config/travel.php` führt Büro (Scharnhorststraße 15,
+30175 Hannover) und Laser-Akademie (Jakobistraße/Ecke Kranckestraße, 30161 Hannover) mit Koordinaten;
+`GET /travel-expenses/institutes` hängt sie mit `kind` = `office`/`academy` an die Institute
+(`kind` = `institute`). Die App zeigt vier Ziel-Umschalter (Institut · Büro · Akademie · Anderes
+Ziel), das Web führt sie in der Institut-Auswahl. Gespeichert wird wie ein Institut
+(`destination_type` = `institute`, `destination_branch_id` = `office`/`academy`).
+
+**Künftige Anspruchstage (seit 29.09.2026, Befund 177):** Die App trennt offene Anspruchstage in
+„Jetzt abrechnen" (bis heute, `dueDays`) und „Geplant" (`plannedDays`, `TravelDay.isFuture`): grau,
+ohne „Anlegen", nicht anklickbar; Kennzahl „Offen" und der Mehrtages-Vorschlag zählen nur bis heute.
+
 ### Dateistruktur
 
 ```
@@ -362,6 +379,7 @@ Das Frontend ist ein **Alpine.js**-Component (`reisekostenComponent`), das als S
 |--------|-----|------|--------------------|
 | GET | `/travel-expenses/me` | `travel-expenses.me` | `me()` — eigene Zuordnung und Rechte |
 | GET | `/travel-expenses/institutes` | `travel-expenses.institutes` | `institutes()` |
+| GET | `/travel-expenses/address/{userId}` | `travel-expenses.address` | `departureAddress()` — Wohnadresse aus der Personal-Akte (seit 29.09.2026) |
 | GET | `/travel-expenses/qualifying/{userId}` | `travel-expenses.qualifying` | `qualifyingDays()` |
 | GET | `/travel-expenses/user/{userId}` | `travel-expenses.index` | `index()` |
 | POST | `/travel-expenses` | `travel-expenses.store` | `store()` |

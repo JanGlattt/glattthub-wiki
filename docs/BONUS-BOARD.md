@@ -141,6 +141,12 @@ Was `/hub/bonus` je Nutzerin zeigt und wie die Werte zu lesen sind:
 
 ### Sichtstufen und Management-Sicht
 
+!!! note "Prod-Rechte der Standortleitung (29.09.2026, TestFlight-Befund 174)"
+    Die Rolle „Institute Leitung" hatte in Prod `manage_bonus_rules` (geerbt über `manage_settings`)
+    und damit `view_bonus_board_all` — sie sah die Management-Sicht aller Institute. Migration
+    `2026_09_29_120000_limit_institute_leitung_bonus_board_to_branch` entzieht beides und gewährt
+    `view_bonus_board_branch`; der Umschalter heißt für sie „Mein Institut".
+
 Das Board kennt seit 17.09.2026 **drei Sichtstufen**, jede an ein eigenes Recht
 gebunden (Rechteverwaltung → Zweig „Bonus-Board"):
 
