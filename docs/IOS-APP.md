@@ -633,7 +633,7 @@ Ring — **eine Karte je Ziel** (Befund 172, 29.09.2026): auf dem iPhone wischba
 darunter, auf dem iPad im Raster; offene Ziele zuerst, erreichte dahinter, **nicht mehr erreichbare
 Ziele** (ab 11 Fehltagen im Monat, Abwesenheitsfaktor 0) ausgegraut und zuletzt mit „Nicht mehr
 erreichbar · Fehltage". Die Abzeichen-Zeile bleibt auf der Startseite vorerst weg, bis Abzeichen
-produktiv genutzt werden (auf dem Bonus-Board bleibt die Karte). Die Rollen **Institute MA** und **Institute Leitung** bekommen per
+produktiv genutzt werden; seit Befund 185 auch auf dem Bonus-Board ausgeblendet (`BonusEmployeeView.showsBadges`, Code bleibt). Die Rollen **Institute MA** und **Institute Leitung** bekommen per
 Migration ein eigenes Layout ohne Kennzahlen-Karussell und KPZ-Chart; die Leitung sieht zusätzlich
 **Team · Tagesmessung** (`team_today`: je Mitarbeiterin Beratungen, Abschlussrate, KPZ je BG,
 verkaufte KPZ — laufender Monat und Vormonat, nur eigenes Institut) und beide den Schnellzugriff
@@ -686,7 +686,7 @@ verkaufte KPZ — laufender Monat und Vormonat, nur eigenes Institut) und beide 
   lädt `team` nur bei Abschnitt `team_today` und sichert es im Offline-Stand; `CockpitView`
   Abschnitte `bonus_hero`/`team_today`, Laser-Modus im Schnellzugriff. Bonus-Board:
   `BonusLevelStrip` im Kopf, Level-Chip/Serie/Tagesziel je Ziel, Level-Marken am Balken
-  (`targetPosition` = 2/3, Skala bis Diamant), Karte „Abzeichen". Snapshots `cockpit-ma-*`,
+  (`targetPosition` = 2/3, Skala bis Diamant), Karte „Abzeichen" (seit 29.09.2026 ausgeblendet, Befund 185). Snapshots `cockpit-ma-*`,
   `cockpit-leitung-*` (`CockpitSnapshotTests`), `bonus-own-*` mit Level-Daten.
 - **App:** `Start/StartModels.swift` (Rahmen), `StartViewModel` (lädt Rahmen und Mitteilungen
   über die Session, die Zahlen über `WidgetAPI` mit dem Widget-Token — derselbe 15-Min-Cache wie die

@@ -7,7 +7,7 @@
   "audience": "institut",
   "footerArea": "App",
   "stand": "29.09.2026",
-  "version": "1.1",
+  "version": "1.2",
   "nr": 6,
   "title": [
     "Das Bonus-Board",
@@ -92,16 +92,16 @@
       }
     },
     {
-      "h1": "Level, Serie und Abzeichen",
-      "sub": "Seit dem 29.09.2026 ist das Board ein Spiel: Jede Zielerreichung hat eine Stufe, jedes Ziel ein Tagesziel, und Abzeichen halten fest, was du schon geschafft hast.",
+      "h1": "Level und Serie",
+      "sub": "Seit dem 29.09.2026 ist das Board ein Spiel: Jede Zielerreichung hat eine Stufe und jedes Ziel ein Tagesziel.",
       "card": {
-        "title": "Level & Abzeichen",
+        "title": "Level & Serie",
         "text": "Bronze bis Diamant, Serie, Tagesziel"
       },
       "left": {
         "shot": "bonus-own-iphone"
       },
-      "leftCaption": "Oben die Stufe mit dem nächsten Schritt, Serie und Tagesziel; am Balken die Marken für Silber, Gold und Diamant hinter der Zielmarke; die Karte „Abzeichen“ zählt erreichte und offene.",
+      "leftCaption": "Oben die Stufe mit dem nächsten Schritt, Serie und Tagesziel; am Balken die Marken für Silber, Gold und Diamant hinter der Zielmarke.",
       "steps": [
         {
           "n": 1,
@@ -120,8 +120,8 @@
         },
         {
           "n": 4,
-          "title": "Abzeichen",
-          "text": "Monatsziel, Bronze, Silber, Gold, Diamant, Serie 3, Serie 6, Qualität (KPZ je BG), Ganzkörper (Vertrag mit sechs Zonen), 10 KPZ an einem Tag. Erreichte in Farbe, offene grau — antippen zeigt den Weg dahin."
+          "title": "Abzeichen kommen später",
+          "text": "Abzeichen (Monatsziel, Stufen, Serien, Qualität, Ganzkörper) sind vorbereitet, aber noch nicht in Gebrauch — sie erscheinen weder auf der Startseite noch auf dem Board, bis sie freigeschaltet werden."
         }
       ]
     },
