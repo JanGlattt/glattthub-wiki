@@ -251,7 +251,10 @@ Sichtbarkeit.
   Werte der anderen hält — nie besser als der aktuelle Platz.
   **Blind-Challenge** (Häkchen in Schritt 3): Teilnehmerinnen sehen im
   laufenden Monat nur den eigenen Wert, keine Platzierung und keine Prämie;
-  die Management-Sicht sieht alles, nach Monatsende auch die Teilnehmerinnen.
+  die Management-Sicht **aller Institute** sieht alles, nach Monatsende auch die
+  Teilnehmerinnen. Die **Instituts-Sicht** der Standortleitung gilt als Teilnehmerin:
+  nur die eigene Team-Zeile ohne Platz (`BonusBoardController::blindfoldForBranch`,
+  seit 29.09.2026, TestFlight-Befund 182).
   Jedes Ranking bekommt eine eigene Karte oben auf dem Board (beide Sichten)
   und erscheint zusätzlich als Zeile in der Bonusliste jeder Teilnehmerin
   („Platz 2 von 5 · Preis …"). Im PDF gibt es einen Abschnitt

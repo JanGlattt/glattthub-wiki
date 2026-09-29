@@ -676,7 +676,10 @@ verkaufte KPZ — laufender Monat und Vormonat, nur eigenes Institut) und beide 
   (`AppStartController::team`, Recht `view_report_sales_statistics`, 404 ohne Heimat-Institut) rechnet
   über `StaffPerformanceService::getStaffOverview` (Vormonatsanfang bis heute, Cache 1 h) und liefert
   `months[]` + `staff[].periods{YYYY-MM}` — getrennt vom Rahmen, weil die Tagesmessung Sekunden
-  braucht. Tests `AppStartTeamTest`.
+  braucht. Seit 29.09.2026 (Befund 184) rechnet `stats:cache-consultations` alle 15 Minuten die
+  Übersicht je Institut vor (`AppStartService::warmTeamCache`), damit die Karte aus dem Cache kommt.
+  Tests `AppStartTeamTest`. **Ring der Bonus-Karte (Befund 183):** außen das Ziel (100 % =
+  geschlossen), innen ein dünner Stufen-Ring von Bronze bis Diamant mit Marken bei Silber und Gold.
 - **App:** `Start/CockpitBonusHero.swift` (`BonusLevel`, `BonusHeroCard`, `BonusBadgeRow`,
   `BonusGoalPager`, `TeamTodayCard`, `LaserQuicklinks`), `StartModels` (Level-Felder, `goalRules`,
   `isReachable`, `StartTeam`), `StartViewModel`
