@@ -88,6 +88,14 @@ Admin-Backend. Der Austritt einer Person wird über die
 
 ### Fachregeln der Übersicht und Detailseite
 
+- **Institut einer Mitarbeiterin (seit 29.09.2026, TestFlight-Befund 173):** die askDANTE-**Einheit**
+  („glaTTT Osnabrück" → Phorest-Institut über den Stadtnamen) hat Vorrang vor dem Standort der
+  Beschäftigungsperiode; ohne passende Einheit (Office, Regional Coach) gilt der Standort.
+  Zentral in `HrEmployee::branchOn()` / `branchIdFromUnit()`, genutzt von Personalliste
+  (`branch_id`/`branch_name`), Lohnmonat und dem Instituts-Vorschlag des Konto-Wizards.
+  Entscheidung Jan, nachdem Alishia Yilmaz in askDANTE am Standort Bielefeld geführt wurde.
+  Test `StaffBranchAssignmentTest`.
+
 - **Datenquelle askDANTE, kein Schreiben.** Alle Personendaten kommen aus der askDANTE REST
   API (siehe [Datenquelle](#datenquelle)); der Hub cacht sie 5 Minuten und ändert sie nicht.
 - **Suche** läuft clientseitig (debounced, 300 ms) über Name, Personalnummer, E-Mail,
