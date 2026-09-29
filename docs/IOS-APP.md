@@ -717,7 +717,17 @@ verkaufte KPZ — laufender Monat und Vormonat, nur eigenes Institut) und beide 
   Web-Startseite mit Sidebar). glatttBert vom Cockpit aus wechselt auf den ersten Web-Tab und öffnet
   dort (`bridge.onReady` holt die wartende Schnellaktion nach). Zweiter Tipp auf einen nativen Tab →
   `onReselectNative` (Start: `state.startScrollToTop`). Kein Cockpit im Kiosk-Modus.
-- **Ladeschirm & Skeleton (22.09.):** `LoadingView` zeigt Logo (leichtes Atmen) und einen schmalen
+- **Ladeschirm seit 29.09.2026 (Jan, Entwurf „Logo nachgezeichnet" + Durchflug, drei Entwürfe als
+  Artefakt):** Die Marke steht **ohne Kachel** direkt auf dem Verlauf und wird nachgezeichnet —
+  `LogoMark` ist der SVG-Pfad aus `public/images/glattt_Alle.svg` als `Shape` (`SVGPathParser`, Tests
+  `LogoMarkTests`), `TracedLogo` zeichnet die Kontur per `trim` (0,1–1,5 s), füllt (1,4–1,9 s) und
+  schiebt die „Hub"-Plakette ein (1,7–2,2 s). Bei `ready` fliegt der Schirm durch die Öffnung der
+  Marke ins Cockpit: `FlyThroughModifier` als Removal-Transition in `RootView` (Skalierung ×35 um
+  `LoadingView.flyAnchor(in:)`, dabei durchsichtig; 0,85 s), bei „Bewegung reduzieren" nur ausblenden.
+  Der Launch-Screen zeigt seither nur die Hintergrundfarbe (kein `UIImageName`), damit die Marke
+  nicht erst steht und dann neu gezeichnet wird. Snapshots `loading-trace-*`/`loading-ready-*`
+  (`LoginSnapshotTests`).
+- **Ladeschirm & Skeleton (22.09., Balken weiterhin gültig):** `LoadingView` zeigt einen schmalen
   Gold-Balken, der den Ladephasen folgt (`AppState.loadingPhase`: `connecting` beim Start,
   `signingIn`/`loadingHub` bei der ersten Antwort je nach Host, `finishing` bei `didFinish`, `ready`
   durch die Bridge) — mit Lauflicht und Phasentext; er bleibt bis `ready` und geht dann weich
