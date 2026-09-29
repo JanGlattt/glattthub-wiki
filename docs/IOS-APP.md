@@ -1628,7 +1628,10 @@ Dashboard mit dem Assistenten des Hubs.
   Dashboard-Karten zum Blättern bzw. im Raster; Berichtskarten mit `ReportKpiCell` und
   `CockpitSparkline(zeroBased: false)`; iPad zwei/drei Spalten), `ReportsViewModel.swift` (Rahmen, Werte
   je Karte mit Lauf-Zähler gegen veraltete Antworten, sanftes Neuladen, Offline-Stand
-  `reports-<standort>`), `ReportModels.swift`. Eingehängt als nativer Tab `hub.reports` über den
+  `reports-<standort>`; „Kein Netz · Stand HH:MM" kommt beim Kaltstart aus dem gesicherten Stand
+  und verschwindet, sobald der **Rahmen** vom Server ist — nicht erst nach der letzten
+  Kennzahlen-Karte, sonst steht der Hinweis bis zu 90 s bei bestehender Verbindung, Befund 156),
+  `ReportModels.swift`. Eingehängt als nativer Tab `hub.reports` über den
   Initializer (`TabBarHost`); `MobileNavigation::PRIMARY` meldet `/hub/reports/` als `detail`, damit
   Berichtsseiten und Dashboards als Web-Detailseite im Tab öffnen. **+** öffnet
   `/hub/reports?shell=native` als `AppointmentWebSheet` — die Web-Übersicht rendert dann nur den
@@ -1708,10 +1711,20 @@ Bereichsleiste" für alle nativen Zeit-Diagramme):
   `ChartRangeBar`/`CategoryRangeBar`, `CategoryWindowModifier`/`DateWindowModifier`/`IntWindowModifier`
   (`chartScrollableAxes` + `chartXVisibleDomain` + `chartScrollPosition(x:)`), `ChartPinch`
   (`MagnifyGesture` als `simultaneousGesture`), `hiddenChartSeries` (Umgebung, Zustand im `ReportStatFrame`).
-- **Kategorie-Achsen liegen auf einer Zahlen-Achse 0…n** (Kategorie i belegt i…i+1, Säulen als
-  `BarMark(xStart:xEnd:yStart:yEnd:)` mit selbst gerechnetem Stapel, Auswahl über `Int(x)`),
-  Wischen rastet mit `valueAligned(unit: 1)` ein. Grund: Swift Charts richtet bei String-Achsen die
-  Bandmitte am Rand aus — die Bereichsleiste stand nach dem Ziehen eine Kategorie daneben.
+- **Kategorie-Achsen liegen auf einer Zahlen-Achse** (Kategorie i mittig auf dem ganzzahligen Wert i,
+  Säulen als `RectangleMark` von i−0,32 bis i+0,32 mit selbst gerechnetem Stapel, Auswahl über
+  `Int(x.rounded())`), Wischen rastet mit `valueAligned(unit: 1)` ein. Grund: Swift Charts richtet
+  bei String-Achsen die Bandmitte am Rand aus — die Bereichsleiste stand nach dem Ziehen eine
+  Kategorie daneben. **Achsenbeschriftung über `CategoryAxis`:** Marken auf den Rubrik-Grenzen
+  (−0,5 · 0,5 · 1,5 …) und `AxisValueLabel(centered: true)` — der Anker `anchor: .top` allein hielt im
+  wischbaren Diagramm nicht, die Monatsnamen standen rechts neben der Säule (Befunde 149 und 155;
+  Prüfstand `testSalesChartsHistory`, Bild `history-before.png`).
+- **Tipp wählt die Stelle über `ChartTapSelect`** (`ChartWindowKit.swift`), nicht über
+  `chartXSelection`: Im wischbaren Diagramm reagierte die eingebaute Auswahl nur auf ein kurzes
+  Halten (≈ 0,25 s), ein normaler Tipp verpuffte — „sehr schwer so genau zu klicken" (Befund 157,
+  Prüfstand `testColumnTapShowsValues`). Die `SpatialTapGesture` hängt als `simultaneousGesture` am
+  Diagramm (eine Deckschicht würde das Wischen schlucken); Punkt → Wert rechnet der `ChartProxy`,
+  den die Deckschicht bei jeder Auswertung festhält. Erneuter Tipp auf dieselbe Rubrik hebt auf.
 - Tages-Diagramme sind echte Datumsachsen (`unit: .day`); der Kalendertag wird im Kalender des
   Geräts geparst und beschriftet (Wochentag stimmt auch auf US-Zeit). `AxisMarks(values: [String])`
   greift auf wischbaren Kategorie-Achsen **nicht** — alle Tage wurden beschriftet (Befund 110).
@@ -1721,7 +1734,8 @@ Bereichsleiste" für alle nativen Zeit-Diagramme):
 - Typprüfer-Falle: Achsenwerte als `PlottableValue` vorab bauen und das Diagramm in eine eigene
   Funktion legen, sonst „unable to type-check this expression in reasonable time".
 - Nachweis: `ChartWindowTests` (Fensterlogik, Zeitraumtext, Achsenkürzung),
-  `ReportsUITests.testSalesChartsHistory` (Wischen, Pinch, Leiste, Legende, Tagesachse, Ratenachse) und
+  `ReportsUITests.testSalesChartsHistory` (Wischen, Pinch, Leiste, Legende, Tagesachse, Ratenachse),
+  `testColumnTapShowsValues` (Tipp auf und neben die Säule zeigt die Werte, Wischen blättert danach weiter) und
   `testStaffAndConsultationCards` (Tagesmessung-Matrix, Ranking, Buchungsstand-Tabelle, Heatmap-Summen,
   gleitender Durchschnitt) gegen den lokalen Hub in der Zeitzone Los Angeles.
 
