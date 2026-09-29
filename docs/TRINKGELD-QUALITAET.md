@@ -139,7 +139,7 @@ und die Kunden-Sperre laufen unter `view_appointment_detail`.
 
 ### Admin-Konfiguration
 
-- **Verkauf → Trinkgeld & Qualität** (`TreatmentFeedbackSettingResource`, „Standorte laden"):
+- **Team → Trinkgeld & Qualität** (`TreatmentFeedbackSettingResource`, „Standorte laden"):
   Modul an/aus, Verzögerung, Link-Gültigkeit, Sendefenster, Kanal-Reihenfolge (Repeater, ziehbar),
   Superchat-Kanal und Meta-Vorlage mit Variablen-Zuordnung (`first_name`, `full_name`,
   `staff_first_name`, `branch_name`, `feedback_link`, `feedback_token`, `static`), SMS-Text,
