@@ -254,7 +254,8 @@ Sichtbarkeit.
   die Management-Sicht **aller Institute** sieht alles, nach Monatsende auch die
   Teilnehmerinnen. Die **Instituts-Sicht** der Standortleitung gilt als Teilnehmerin:
   nur die eigene Team-Zeile ohne Platz (`BonusBoardController::blindfoldForBranch`,
-  seit 29.09.2026, TestFlight-Befund 182).
+  seit 29.09.2026, TestFlight-Befund 182), und die Ziel-Zeilen ihrer Mitarbeiterinnen
+  sind wie in der eigenen Sicht entblindet — kein Platz, keine Prämie (Befund 186).
   Jedes Ranking bekommt eine eigene Karte oben auf dem Board (beide Sichten)
   und erscheint zusätzlich als Zeile in der Bonusliste jeder Teilnehmerin
   („Platz 2 von 5 · Preis …"). Im PDF gibt es einen Abschnitt
