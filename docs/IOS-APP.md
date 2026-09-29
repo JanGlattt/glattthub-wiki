@@ -222,7 +222,11 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   Farb-Symbol nach Anlass (`NotificationLook`, Titel-Schlüsselwörter, sonst `icon_type`), ungelesen
   gold hinterlegt, die tägliche Beratungs-Meldung als Kennzahlen-Zeile (`NotificationKpis` liest
   „Heute … 17 | 7 Tage: 56 | 14 Tage: 75 | 28 Tage: 82“), Wischen markiert gelesen. Dieselbe
-  Ansicht im iPad-Popover (`PadNotificationsPopover`). Snapshot `NotificationsSnapshotTests` (im
+  Ansicht im iPad-Popover (`PadNotificationsPopover`). Die Chips stehen als eigene Zeile **über**
+  der `List` (`VStack`), nicht als `safeAreaInset(edge: .top)`: In der geschobenen Ansicht des
+  Mehr-Blatts lag der Inset unter der Liste — ein leeres Band statt der Filter (TestFlight-Befund
+  190, 29.09.2026; `LaunchFlashUITests/testNotificationsSheetScreens` prüft den Abstand zur
+  Leiste). Snapshot `NotificationsSnapshotTests` (im
   statischen Zweig ohne `List`, `ScrollView` und `NavigationStack` — `ImageRenderer` rastert die
   leer bzw. als Platzhalter). Die Standort-Kachel zeigt Farbe und Kürzel des gewählten
   Instituts. **Der Hub bleibt die Wahrheit für den Standortfilter:** bridge.js meldet
@@ -1247,7 +1251,12 @@ kennt seinen Standort; das Büro braucht die Fallliste über alle Institute.
 (`/hub/laser/devices/{sn}[#reiter]`, `/hub/laser/components/{sn}`, `/hub/laser/attachments/{sn}`)
 und öffnen `LaserDetailView.swift` — aus Raum-Karte, Aufgabe, Web-Link (WebCoordinator fängt sie ab),
 Push oder Universal Link (`AppContainer.openLaser`). Die Vectus-Grafik (`VectusGraphic`, Asset
-`Vectus`) hat fünf tippbare Bereiche wie die klickbare Grafik der Web-Geräteliste.
+`Vectus`) hat fünf tippbare Bereiche wie die klickbare Grafik der Web-Geräteliste. Tippfläche und
+Bedienungshilfen-Kennung (`laser-zone-<bereich>`) werden **vor** dem `.offset` gesetzt — dahinter
+nähme `.contentShape` den unversetzten Rahmen, alle Bereiche lägen oben links übereinander und ein
+Tipp auf „Handstück“ träfe die Bottom-Unit (TestFlight-Befund 195, 29.09.2026; Wissen
+`swiftui-offset-vor-contentshape`, UI-Test `LaserAppUITests/testLaserScreens`). Power Supply zählt
+wie im Hub (`KomponentenTyp::parentTyp()`) zur Top-Unit, die Pumpe zur Bottom-Unit.
 
 - **Raum-Sicht:** Institutswahl als Chips (Vorwahl = Standortfilter der App, `AppState.selectedBranch`;
   „Alle“ und Zentrallager dahinter), je Raum eine Karte mit dem Laser (Wartung „KW 39 erledigt/fällig“,
@@ -1778,6 +1787,10 @@ Bereichsleiste" für alle nativen Zeit-Diagramme):
 
 - Bausteine in `Reports/ChartWindowKit.swift`: `CategoryWindow` (sichtbare Anzahl + linker Rand als
   Index, `zoom(to:)` hält den rechten Rand, `move(toFraction:)`, `page(_:)`), `CategoryPinch`,
+  **Titel in der Leiste** der Berichtsseite (zwischen „‹ Berichte" und ⋯, seit 29.09.2026,
+  Befund 189), **Achsenbeschriftung dünnt beim Herauszoomen aus** (`CategoryAxis.labelStep(visible:regular:)`,
+  seit 29.09.2026, TestFlight-Befund 188: iPhone ≈ 7 Beschriftungen, iPad 12; dazwischen leere
+  Marken, damit Datumsangaben nicht ineinanderlaufen),
   `ChartRangeBar`/`CategoryRangeBar`, `CategoryWindowModifier`/`DateWindowModifier`/`IntWindowModifier`
   (`chartScrollableAxes` + `chartXVisibleDomain` + `chartScrollPosition(x:)`), `ChartPinch`
   (`MagnifyGesture` als `simultaneousGesture`), `hiddenChartSeries` (Umgebung, Zustand im `ReportStatFrame`).
@@ -2520,6 +2533,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 29.09.2026 | 1.3.0 (57) | TestFlight-Runde 168–195: Abmelden ohne Face-ID-Auto-Anmeldung, Startseite lädt Teil für Teil, Bonus-Karten als Wischer je Ziel mit Stufen-Ring und Abzeichen „Ziel erreicht“, Ladeschirm „Logo nachgezeichnet“ mit Durchflug ins Cockpit (Marke wie das App-Icon, kein Balken), Achsenbeschriftung dünnt beim Zoomen aus, Berichtstitel in der Leiste, Mitteilungs-Chips über der Liste statt `safeAreaInset` (190), Laser-Listen folgen dem Standortfilter (`branch_id` an `hub/laser/api/lasers` und `error-lasers`, 193/194), Tippflächen der Vectus-Grafik vor dem `.offset` (195); Hub: Team-Tagesmessung alle 15 Min. vorgewärmt, Institute-Leitung sieht das Bonus-Board nur für den eigenen Standort. Build 56 ging trotz Abbruch ohne 188–195 hoch |
 | 28.09.2026 | 1.3.0 | Native Bonus-Verwaltung (Entwurf 1 „Monat im Griff“ + Regel-Liste/Regel-Akte aus Entwurf 3): Abschluss-Checkliste, offene Widerrufe mit Entscheidung je Bereich, Minimalziele, Wert-Korrekturen, Zwischenstand/Final einfrieren (final ab Folgemonat), Regelwerk mit Chips, Regel-Akte, Regel-Assistent in vier Schritten nativ, Sichtbarkeit je Nutzerin, iPad mit Seitenleiste; Hub: `GET /hub/bonus/verwaltung/data` |
 | 28.09.2026 | 1.3.0 (51) | TestFlight-Runde zu Build 49 (Befunde 109–125): Zeit-Diagramme mit Pinch-Zoom, Wischen und Bereichsleiste, antippbare Legende, Tagesachse mit Montagen, Heatmap-Summen, Tagesmessung als Web-Matrix mit Zeitraum-Chip, Beratungs-Ranking mit Zeitraum und zwei Nachkommastellen, Buchungsstand-Tabelle über volle Breite, gleitender Durchschnitt, Brief-Vorschau ohne Weißraum, Wartezeit für Berichtskarten 90 s; Zufriedenheit lädt erst den Stand und sucht Kandidatinnen im Hintergrund (Befunde 127/128); Mehr-Menü ohne Kachel „App“, Farbschema als Dreier-Schalter (130/132); Hub: Cache für die vier Termin-Endpunkte, Seiten Schulden und Services ausgebaut (125/129); Entwürfe für Mitteilungszentrale und Unternehmensverträge nativ vorgelegt (126/131); iPad-Runde 133–142: Hülle nach dem Freischalten neu laden, Onboarding holt den Push-Dialog, einheitliche Auswahl in Listen, Umsetzungs-Blatt (eingebettete Web-Fassung nie nativ abfangen), „Text anpassen“ über der Vorschau, Seitenleiste folgt dem Lohnmonat, KPZ Monat, Öffnungszeiten-Zeile, Einstellungen-Spalte; Mitteilungszentrale „Heute zuerst“ mit Chips, Dringlich, Tagesgruppen und Kennzahlen-Zeile (131); Unternehmensverträge nativ „Fristen zuerst“ mit Kosten, Fristen-Ampel, Gruppen nach Typ, Vertragsseite und eingebettetem Wizard, neue Endpunkte `/data` (126); Bonus-Challenge zeigt abgezogene geparkte KPZ (139/143); die neun Registerkarten der Kundenakte nativ (Entwurf 3 mit Reiter-Leiste), neuer Endpunkt `/hub/clients/{id}/appointments/data` |
 | 27.09.2026 | 1.3.0 | Native Zufriedenheit (Entwurf 1 „Drei Stapel“ + Kanal-Hinweis): Aufgaben, Kandidatinnen, Verlauf, Detailkarte, iPad drei Spalten; Hub: `hints=1` und `can` im Datenendpunkt — damit ist die letzte Bestandsseite nativ |

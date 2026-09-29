@@ -254,6 +254,9 @@ Laser + Nutzer, Payload-Schlüssel = Livewire-Eigenschaften). Endpunkte: `GET �
 422 mit `errors` Feld → Meldung, Foto-Lücken als `photos.<slot>`), `POST …/photos/{slot}`
 (multipart `photo`, ersetzt das alte Foto der Kachel), `DELETE …/photos/{slot}`, `POST …/complete`,
 `DELETE …/draft`; dazu `GET hub/laser/api/lasers` für die native Laser-Liste (Fälligkeit, letzte
+  **Standortfilter (seit 29.09.2026, TestFlight-Befunde 193/194):** `GET hub/laser/api/lasers` und
+  `GET hub/laser/api/error-lasers` nehmen `branch_id` (über `LaserLocation.branch_id`, `visibleBranch`);
+  die App schickt ihren Standortfilter mit, das Web ruft sie weiter ohne Filter.
 Wartung, Entwurfs-Schritt). In der App öffnet der Web-Knopf „Wartung durchführen" der Geräteseite
 den nativen Assistenten (Bridge fängt `open-maintenance-wizard` ab), nach dem Abschluss lädt die
 Web-Seite sich über `glattt:laser-maintenance-saved` neu. Tests: `tests/Feature/Laser/MaintenanceApiTest.php`.
