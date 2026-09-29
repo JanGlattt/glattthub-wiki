@@ -2066,6 +2066,26 @@ Hub-Assistenten als Blatt. Auf dem iPad stehen Liste und Vertrag nebeneinander.
   Kosten, Vertrag, Bearbeiten-Blatt), PHP `CompanyContractAppEndpointTest` (Ampel, Kosten, Detail,
   eingeschränkte Sicht, Recht).
 
+### Zugangsdaten aus der Akte und Selfservice „Zugang einrichten" (seit 29.09.2026)
+
+**Für Endanwender:** Im Konto-Reiter der Personal-Akte steht mit dem Recht „Zugangsdaten setzen
+und senden" die Karte **Zugang**: PIN und/oder Passwort setzen und per E-Mail, WhatsApp
+(Superchat) oder „WhatsApp auf dem Handy öffnen" senden, oder einen Selfservice-Link schicken.
+Der Link öffnet auf einem Gerät mit App den nativen Bildschirm **Zugang einrichten** (PIN mit
+Ziffernblock, dann Passwort). Wer Erstzugänge bekommen hat, muss sie nach der Anmeldung sofort
+ändern — die App zeigt dafür denselben Bildschirm.
+
+!!! nutzerhandbuch "Bedienung: App 13 – Personal und Lohnmonat"
+    [https://hilfe.hub.glattt.com/app/13/](https://hilfe.hub.glattt.com/app/13/)
+
+**Für Entwickler:** Technik im Wiki `USER-INVITATION-SYSTEM.md` (Abschnitt „Zugangsdaten aus der
+Akte"). App: `StaffAccessCard.swift` (Modell + Karte + Blätter, Endpunkte
+`hub/staff/{id}/access…` über `jsonBody` wegen 422-Feldfehlern), `AccessSetupView.swift`
+(`AccessSetupRequest.token(from:)` für `/zugang/{token}`, `AppContainer.open` vor dem Login-Gate,
+Sheets in `RootView` und `LoginView`; `CredentialChangeRequest` aus der Login-Antwort in
+`HubSession.postCredentials`, Sheet in `RootView` nicht wegwischbar). Snapshots rendern
+`AccessSetupContent` ohne NavigationStack.
+
 ### Native Bonus-Verwaltung (Mehr-Seite, seit 28.09.2026)
 
 **Für Endanwender:** Die Bonus-Verwaltung (Bonus-Board → ⋯ → Verwaltung) stellt in der App den

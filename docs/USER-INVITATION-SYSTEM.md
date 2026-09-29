@@ -52,6 +52,24 @@ weitergeben.
 
 ---
 
+## Zugangsdaten aus der Personal-Akte (seit 29.09.2026)
+
+**Für Endanwender:** Wer das Recht „Zugangsdaten setzen und senden" hat (Admin, Büro), findet in
+der Personal-Akte (Web: Reiter „Kontakt", App: Reiter „Konto") die Karte **Zugang**. Zwei Wege:
+**Zugangsdaten setzen** vergibt eine neue PIN und/oder ein neues Passwort (generiert oder
+eingetippt) und schickt sie per E-Mail, per WhatsApp über Superchat oder über **„WhatsApp auf
+dem Handy öffnen"** (WhatsApp öffnet mit fertigem Text, abgeschickt wird dort) — oder zeigt sie
+nur an. Gesendete Werte sind Erstzugänge: „Beim ersten Anmelden ändern" ist vorgewählt, die App
+und der Hub verlangen dann sofort eigene Werte. **Selbst einrichten lassen** schickt einen Link
+(7 Tage, einmal nutzbar), mit dem die Person PIN, Passwort oder beides selbst setzt — auf dem
+Handy mit App öffnet der Link die native Seite „Zugang einrichten", sonst die Web-Seite. Der
+Verlauf in der Karte zeigt, was wann über welchen Kanal ging und ob es genutzt wurde. Damit
+brauchen die 19 von 21 Nutzerinnen ohne E-Mail-Adresse keine mündliche PIN mehr.
+
+!!! nutzerhandbuch "Bedienung: Team 1 – Personal und App 13 – Personal und Lohnmonat"
+    [https://hilfe.hub.glattt.com/team/1/](https://hilfe.hub.glattt.com/team/1/) ·
+    [https://hilfe.hub.glattt.com/app/13/](https://hilfe.hub.glattt.com/app/13/)
+
 ## Für Entwickler
 
 ### Ablauf im Überblick
@@ -426,3 +444,33 @@ php artisan migrate
 **Version**: 1.0
 **Autor**: glatttHub Development Team
 **Status**: ✅ Produktionsbereit
+
+### Zugangsdaten aus der Akte — Technik (29.09.2026)
+
+- **Recht** `manage_user_access` (Katalog + Migration mit Zuordnung wie `create_users` + Gate).
+- **Tabellen** `user_access_dispatches` (kind credentials|link, scope pin|password|both, channel
+  email|whatsapp|whatsapp_app|shown|copy, token nur bei link, expires_at/used_at, status
+  sent|failed|open|used|expired, sent_by), `users.must_change_pin`/`must_change_password`,
+  `access_message_settings` (Singleton: Superchat-Kanal, Template für Zugangsdaten und für den
+  Link, Ansprechperson — Admin-Seite „Zugangsdaten-Nachrichten", Templates legt Jan in Superchat an).
+- **Service** `App\Services\UserAccessService`: `generatePin()` (4 Ziffern, eindeutig per
+  `Hash::check` gegen alle Nutzer, keine 1234/1111), `generatePassword()`, `setCredentials()`,
+  `issueLink()`, `messageText()`, `whatsappAppUrl()` (`https://wa.me/<Ziffern>?text=…`),
+  `dispatch()` je Kanal (Mail-Vorlagen `emails.user-access-*`, Superchat wie die
+  Beratungs-WhatsApp mit Kontakt über die Handynummer aus `hr_employee_profiles.mobile`),
+  Drossel 5 je Person und Stunde, nie PIN/Passwort im Log.
+- **Endpunkte** `GET/POST /hub/staff/{employee}/access[/credentials|/link]`
+  (`UserAccessController`, HrEmployee-Binding, 404 ohne Hub-Konto), öffentlich
+  `GET /zugang/{token}` (Web-Seite), `GET /zugang/{token}/data` und `POST /zugang/{token}` (JSON
+  für die App), authentifiziert `POST /hub/profile/credentials` (eigene Werte, setzt die
+  Pflicht-Flags zurück). `POST /login/pin` und `/login/credentials` liefern
+  `must_change_pin`/`must_change_password` mit; das Web leitet nach dem PIN-Login auf das Profil.
+- **Web-Karte** `resources/views/hub/staff/partials/detail-access.blade.php` +
+  `public/js/staff-access.js` (Alpine `staffAccessCard(hrEmployeeId)`, zwei Modale, Verlauf).
+- **App** `Staff/StaffAccessCard.swift` (Karte, zwei Blätter, Ergebnis mit Klartext genau einmal,
+  „WhatsApp öffnen" über `UIApplication.open(wa.me)`), `Screens/AccessSetupView.swift`
+  (Universal Link `/zugang/{token}` → `AppState.accessSetup`, Ziffernblock der Anmeldeseite,
+  Passwort-Schritt; derselbe Bildschirm als Pflicht-Änderung nach dem Login über
+  `AppState.credentialChange`), AASA-Komponente `/zugang/*`. Snapshots `staff-person-account-*`,
+  `access-setup-pin-*`, `access-change-pin-*`.
+- **Tests** `UserAccessTest` (Hub), `StaffAccessCardTest` (Web-Karte), `StaffSnapshotTests` (App).
