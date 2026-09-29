@@ -317,8 +317,9 @@ Liefert die Organisationseinheiten, denen ein Mitarbeiter zugeordnet ist.
   Wizard: `create()` (User, Rollen mit Standardrollen-Fallback, `phorest_staff_ids`
   + `phorest_staff.glatthub_user_id`, `hr_employee_id` + `kpi_relevant`,
   `user_bonus_classes`; ohne Passwort ein Zufallspasswort, Zugang über die
-  Einladung), `link()`, `prefill()` (Institut über `hr_employment_periods` →
-  `hr_locations.branch_id`, Rückfall Team-Name; Namens-Schlüssel aus
+  Einladung), `link()`, `prefill()` (Institut aus dem Team-Namen (`HrEmployee::branchIdFromUnit`),
+  Rückfall `hr_employment_periods` → `hr_locations.branch_id` — seit 29.09.2026 in dieser
+  Reihenfolge; Namens-Schlüssel aus
   `HrStaffLinkService::nameKeys()`), `accountsByAskdanteId()` für die Spalte,
   `userSummary()` mit `archived` + `archive_label`. Verknüpfungs-Kandidaten
   (`existingCandidates`) sind nur aktive Konten (`User::active()`).
