@@ -1456,6 +1456,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | App-Geräte | nativ | Liste mit Suche, Chips, Kennzahlen, offene Codes und Geräte nach Institut; Code ausstellen in drei Schritten mit QR und Teilen-Blatt (AirDrop), Code zurückziehen, Gerät widerrufen im Steckbrief; iPad-Split, Ausstellen als Popover (seit 26.09.2026); Einlösen bleibt `EnrollmentSheet` |
 | Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild, Akte (Überblick, Vergütung, Zeit, Konto), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten (seit 27.09.2026); Teamliste- und Lohnliste-Import bleiben Web (Datei-Upload im Büro), Checklisten Eintritt/Austritt vorerst ausgeblendet |
 | Institute | nativ | Karte zuerst (seit 27.09.2026): Nadeln in Hub-Farbe, Blatt mit Liste/Institut, Unterseiten Kennzahlen, Team, Verwaltung |
+| Trinkgeld | nativ | Rangliste mit meiner Zeile (seit 29.09.2026): Kennzahlen, Segment Trinkgeld/Sterne/Auszahlung, Zeitraum-Chips, Person als Blatt (iPad daneben), Kommentare nur mit Recht; Startseiten-Karte „Meine Bewertungen“, Beenden-Schalter, Kunden-Sperre |
 | Zufriedenheit | nativ | Drei Stapel (seit 27.09.2026): Folgeaufgaben mit Anrufen/Termin buchen, Kandidatinnen mit Senden (Rückfrage, Kanal-Hinweis) und Überspringen, Verlauf mit Chips, Detailkarte; Standort-Einstellungen bleiben im Admin |
 | Forderungen | nativ | Arbeitsliste und Akte (seit 27.09.2026): Kennzahlen, drei Register, Bestand nach Stufe, gerichtliche Fälle, Fallakte mit nächstem Schritt, Schreiben-Vorschau, alle Aktionen der Seitenspalte; neues SEPA-Mandat eingebettet, Vorlagen Web |
 | Freunde werben, Google-Bewertungen | nativ | „Aufgabe zuerst“ (seit 27.09.2026): Überweisungsstapel mit Kopier-Knöpfen; Bewertungen schnell erfassen |
@@ -2067,6 +2068,44 @@ Kandidatinnen. Auf dem iPad stehen die drei Stapel nebeneinander.
 - **Nachweis:** `SatisfactionSnapshotTests`, `SatisfactionUITests`, PHP `SatisfactionSurveyTest`
   (Kanal-Hinweis und Rechte, Gründe ohne Versand).
 
+### Native Trinkgeld (Mehr-Seite, seit 29.09.2026)
+
+**Für Endanwender:** „Trinkgeld“ (Team) zeigt oben vier Kennzahlen (Trinkgeld, Ø Behandlung,
+Ø Ergebnis, Bewertungen), darunter das Segment **Trinkgeld | Sterne | Auszahlung** und
+Zeitraum-Chips (Monat, letzter Monat, 3 Monate, Jahr). Die **Rangliste** nennt je Behandlerin
+Platz, Initialen oder Foto, Sterne-Zeile und Betrag mit Trend zum Vorzeitraum — die eigene Zeile
+ist gold hervorgehoben; wer nur sich sehen darf, sieht seinen Platz im Verhältnis zum Team. Ein
+Tipp öffnet die **Person** (Sterne beider Skalen, Trinkgeld, Bewertungen mit Kommentaren — nur
+mit Recht). **Auszahlung** listet je Monat brutto, Gebühr (vorläufig oder endgültig), netto und ob
+der Monat über den Lohnmonat ausgezahlt ist. Auf dem iPad stehen Liste und Person nebeneinander.
+Die **Startseite** zeigt nach „Mein Bonus“ die Karte „Meine Bewertungen“ (Trinkgeld diesen Monat
+mit Abstand zum nächsten Platz, Bewertung diesen Monat, Platz im Team, letzter Kommentar).
+Beim **Beenden eines Termins** gibt es den Schalter „Diesmal keine Nachricht senden“ (nur dieses
+Mal / dauerhaft) bzw. bei gesperrter Kundin „Diesmal trotzdem senden“; die **Kundenakte** (Reiter
+Info) trägt die Sperre „Nachrichten nach der Behandlung“.
+
+!!! nutzerhandbuch "Bedienung: App 22 – Trinkgeld in der App"
+    [https://hilfe.hub.glattt.com/app/22/](https://hilfe.hub.glattt.com/app/22/) (in Arbeit)
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 29.09.2026):** Entwurf 1 „Rangliste mit meiner Zeile“ mit dem Abstand zum
+  nächsten Platz aus Entwurf 2 (verworfen: Podium, Meine Seite zuerst); Startseite erst Bonus,
+  dann Bewertungen. Artefakt: https://claude.ai/artifact/1nY15PXvRcRtb6BHNtdMgT.
+- **Endpunkte wie im Web:** `GET /hub/staff/trinkgeld/data|bewertungen|auszahlung` mit
+  `date_from`/`date_to`/`branch_id`; Startseite über `tips` im Rahmen `GET /api/app/start`
+  (`TipStatisticsService::me()`, fehlt ohne je eine Anfrage als Behandlerin);
+  Terminansicht `GET /hub/treatment-feedback/appointment/{branch}/{id}/status` und
+  `feedback_decision` im Beenden-POST; Kundenakte `GET/POST /hub/treatment-feedback/client/{id}/preference`.
+- **App:** `Tips/` — `TipsView` (iPhone `TipsList`, iPad `TipsPadView`), `TipsRankingRows`,
+  `TipsPersonSheet`/`TipsPersonContent`, `TipsPayoutRows`, `TipsModel` (Segment, Zeitraum,
+  Offline-Stand `TipsSnapshot`), `TipsModels` (`TipsRanking`, `TipsRatingRow`, `TipsPayoutMonth`,
+  `TipsSummary`, `TreatmentFeedbackStatus`). `NativeMorePage.tips`, `bridge.js`,
+  `CockpitView.tipsSection` (Abschnitt `tips`, `StartFrame.tips`), `TreatmentFeedbackChoice` im
+  Beenden-Blatt, `ClientFeedbackPreferenceCard` im Reiter Info.
+- **Nachweis:** `TipsSnapshotTests` (Segmente, Person, eigene Sicht, iPad, Modell-Prüfungen),
+  Cockpit-Fixture `frameStaff` mit `tips`; PHP `TipsPageTest`, `TreatmentFeedbackTest`.
+
 ### Native Unternehmensverträge (Mehr-Seite, seit 28.09.2026)
 
 **Für Endanwender:** „Unt.-Verträge“ zeigt in der App zuerst, worum es dem Modul geht: die
@@ -2536,6 +2575,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | 29.09.2026 | 1.3.0 (58) | Bonus-Board ohne Stufen-Pillen und Serien-Flammen (Befund 196, Jan): bleiben mit der Abzeichen-Karte hinter `BonusEmployeeView.showsBadges`, bis Level und Serie produktiv sind; Stufen-Marken am Balken und Tagesziel bleiben |
 | 29.09.2026 | 1.3.0 (57) | TestFlight-Runde 168–195: Abmelden ohne Face-ID-Auto-Anmeldung, Startseite lädt Teil für Teil, Bonus-Karten als Wischer je Ziel mit Stufen-Ring und Abzeichen „Ziel erreicht“, Ladeschirm „Logo nachgezeichnet“ mit Durchflug ins Cockpit (Marke wie das App-Icon, kein Balken), Achsenbeschriftung dünnt beim Zoomen aus, Berichtstitel in der Leiste, Mitteilungs-Chips über der Liste statt `safeAreaInset` (190), Laser-Listen folgen dem Standortfilter (`branch_id` an `hub/laser/api/lasers` und `error-lasers`, 193/194), Tippflächen der Vectus-Grafik vor dem `.offset` (195); Hub: Team-Tagesmessung alle 15 Min. vorgewärmt, Institute-Leitung sieht das Bonus-Board nur für den eigenen Standort. Build 56 ging trotz Abbruch ohne 188–195 hoch |
 | 28.09.2026 | 1.3.0 | Native Bonus-Verwaltung (Entwurf 1 „Monat im Griff“ + Regel-Liste/Regel-Akte aus Entwurf 3): Abschluss-Checkliste, offene Widerrufe mit Entscheidung je Bereich, Minimalziele, Wert-Korrekturen, Zwischenstand/Final einfrieren (final ab Folgemonat), Regelwerk mit Chips, Regel-Akte, Regel-Assistent in vier Schritten nativ, Sichtbarkeit je Nutzerin, iPad mit Seitenleiste; Hub: `GET /hub/bonus/verwaltung/data` |
+| 29.09.2026 | 1.3.0 | Modul Trinkgeld & Qualität: native Seite „Trinkgeld“ (Entwurf 1), Startseiten-Abschnitt `tips` nach dem Bonus, Schalter „Diesmal keine Nachricht“ im Beenden-Blatt, Sperre in der Kundenakte; Hub: Nachricht nach der Behandlung, Bewertungsseite mit Trinkgeld (Mollie), Seite Trinkgeld, Berichte, Admin je Standort |
 | 28.09.2026 | 1.3.0 (51) | TestFlight-Runde zu Build 49 (Befunde 109–125): Zeit-Diagramme mit Pinch-Zoom, Wischen und Bereichsleiste, antippbare Legende, Tagesachse mit Montagen, Heatmap-Summen, Tagesmessung als Web-Matrix mit Zeitraum-Chip, Beratungs-Ranking mit Zeitraum und zwei Nachkommastellen, Buchungsstand-Tabelle über volle Breite, gleitender Durchschnitt, Brief-Vorschau ohne Weißraum, Wartezeit für Berichtskarten 90 s; Zufriedenheit lädt erst den Stand und sucht Kandidatinnen im Hintergrund (Befunde 127/128); Mehr-Menü ohne Kachel „App“, Farbschema als Dreier-Schalter (130/132); Hub: Cache für die vier Termin-Endpunkte, Seiten Schulden und Services ausgebaut (125/129); Entwürfe für Mitteilungszentrale und Unternehmensverträge nativ vorgelegt (126/131); iPad-Runde 133–142: Hülle nach dem Freischalten neu laden, Onboarding holt den Push-Dialog, einheitliche Auswahl in Listen, Umsetzungs-Blatt (eingebettete Web-Fassung nie nativ abfangen), „Text anpassen“ über der Vorschau, Seitenleiste folgt dem Lohnmonat, KPZ Monat, Öffnungszeiten-Zeile, Einstellungen-Spalte; Mitteilungszentrale „Heute zuerst“ mit Chips, Dringlich, Tagesgruppen und Kennzahlen-Zeile (131); Unternehmensverträge nativ „Fristen zuerst“ mit Kosten, Fristen-Ampel, Gruppen nach Typ, Vertragsseite und eingebettetem Wizard, neue Endpunkte `/data` (126); Bonus-Challenge zeigt abgezogene geparkte KPZ (139/143); die neun Registerkarten der Kundenakte nativ (Entwurf 3 mit Reiter-Leiste), neuer Endpunkt `/hub/clients/{id}/appointments/data` |
 | 27.09.2026 | 1.3.0 | Native Zufriedenheit (Entwurf 1 „Drei Stapel“ + Kanal-Hinweis): Aufgaben, Kandidatinnen, Verlauf, Detailkarte, iPad drei Spalten; Hub: `hints=1` und `can` im Datenendpunkt — damit ist die letzte Bestandsseite nativ |
 | 27.09.2026 | 1.3.0 | Native Forderungen (Entwurf 1 „Arbeitsliste und Akte“ + Schritt-Blatt + Stufenleiter als „Bestand“): Arbeitsliste, Fallakte mit allen Aktionen, Schreiben-Vorschau; Hub: `GET /hub/receivables/{case}/data` aus `caseContext()`, Kundenseite mit nächstem Schritt; Widerrufe: Snapshot-Test und App-Deck nachgezogen |

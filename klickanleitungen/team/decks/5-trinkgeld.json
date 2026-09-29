@@ -1,0 +1,172 @@
+{
+ "out": "../pdf/Team-5-Trinkgeld-und-Bewertungen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Team",
+ "nr": 5,
+ "of": 5,
+ "audience": "institut",
+ "title": [
+  "Trinkgeld",
+  "und Bewertungen"
+ ],
+ "subtitle": "Klickanleitung für das Institut im glatttHub — was die Kundin nach der Behandlung bekommt, wie du die Nachricht beim Beenden steuerst und wo Trinkgeld und Sterne stehen",
+ "eyebrow": "Team · Trinkgeld",
+ "footerArea": "Team",
+ "stand": "29.09.2026",
+ "version": "1.0",
+ "notes": [
+  "Nach jeder **beendeten Behandlung** bekommt die Kundin verzögert eine Nachricht mit ihrem Bewertungslink — per WhatsApp, SMS oder E-Mail, je nachdem, was am Standort eingestellt ist und wozu sie eingewilligt hat.",
+  "Das **Trinkgeld kommt zu 100 % bei dir an**, nur die Gebühr des Zahlungsanbieters wird abgezogen. Ausgezahlt wird es mit dem Lohn des Folgemonats.",
+  "**Kommentare** der Kundinnen sehen nur Personen mit dem Recht „Kommentare lesen“ — ob es einen Kommentar gibt, sieht jede."
+ ],
+ "pages": [
+  {
+   "h1": "Die Nachricht nach der Behandlung",
+   "sub": "Wird ein Behandlungstermin beendet, plant der Hub die Nachricht an die Kundin von selbst. Du musst nichts tun — außer, wenn die Kundin sie nicht bekommen soll.",
+   "card": {
+    "title": "Automatisch",
+    "text": "Termin beenden → Nachricht nach 15 Minuten"
+   },
+   "left": {
+    "shot": "t1-beenden-schalter"
+   },
+   "leftCaption": "Der Beenden-Dialog der Terminansicht mit dem Schalter zur Bewertungs-Nachricht.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Schalter im Beenden-Dialog",
+     "text": "Unter der Terminnotiz steht **„Bewertungs- und Trinkgeld-Nachricht“**. Lässt du alles so, geht die Nachricht nach dem Beenden verzögert raus."
+    },
+    {
+     "n": 2,
+     "title": "Diesmal keine Nachricht",
+     "text": "Hake **„Diesmal keine Nachricht senden“** an, wenn die Kundin heute nichts bekommen soll — zum Beispiel nach einem schwierigen Termin."
+    },
+    {
+     "n": 3,
+     "title": "Nur dieses Mal oder dauerhaft",
+     "text": "Danach fragt der Hub: **nur dieses Mal** oder **dauerhaft**. Dauerhaft sperrt die Kundin für alle künftigen Nachrichten — das lässt sich im Kundenprofil wieder ändern."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Kein Schalter zu sehen?",
+     "text": "Dann löst dieser Termin keine Nachricht aus: reine Beratung, Standort ohne aktives Modul oder keine Behandlerin mit Hub-Konto am Termin."
+    },
+    {
+     "title": "Kundin ist gesperrt",
+     "text": "Dann heißt der Schalter **„Diesmal trotzdem senden“** — mit der Wahl „nur dieses Mal“ oder **„dauerhaft wieder einschalten“**."
+    }
+   ],
+   "hint": {
+    "text": "Die Nachricht geht **nicht sofort** raus, sondern nach der am Standort eingestellten Zeit (Standard 15 Minuten) und nur im Sendefenster — abends nach 21 Uhr erst am nächsten Morgen."
+   }
+  },
+  {
+   "h1": "Was die Kundin sieht",
+   "sub": "Der Link führt auf eine persönliche Seite: dein Foto und dein Vorname, ein kurzer Text, zwei Sterne-Fragen und das Trinkgeld.",
+   "card": {
+    "title": "Bewertungsseite",
+    "text": "Foto, Text, Sterne heute, Sterne Ergebnis, Trinkgeld"
+   },
+   "left": {
+    "shot": "t2-kundenseite"
+   },
+   "leftCaption": "Die Bewertungsseite der Kundin (Beispiel).",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Dein Foto und dein Satz",
+     "text": "Oben steht die Begrüßung mit **deinem Vornamen**. Dein **Profilfoto** erscheint nur, wenn das Büro die Freigabe in deinem Konto gesetzt hat; sonst deine Initialen. Einen **persönlichen Satz** kann das Büro ebenfalls in deinem Konto hinterlegen."
+    },
+    {
+     "n": 2,
+     "title": "Zwei Sterne-Fragen",
+     "text": "**„Wie war deine Behandlung heute?“** und **„Wie zufrieden bist du mit deinem Ergebnis bisher?“** — je 1 bis 5 Sterne mit optionalem Kommentar. Alles ist freiwillig."
+    },
+    {
+     "n": 3,
+     "title": "Trinkgeld",
+     "text": "Nach der Bewertung wählt die Kundin einen Betrag (Vorauswahl oder frei) und zahlt mit Karte, Apple Pay oder PayPal. Bei 5 Sternen wird ihr zusätzlich der **Google-Bewertungslink** des Instituts angeboten."
+    }
+   ],
+   "hint": {
+    "text": "Unten auf der Seite kann sich die Kundin selbst **abmelden** — dann bekommt sie keine Nachrichten nach Behandlungen mehr, an keinem Standort."
+   }
+  },
+  {
+   "h1": "Sperre im Kundenprofil",
+   "sub": "Möchte eine Kundin grundsätzlich keine solchen Nachrichten, schaltest du sie im Kundenprofil ab — und dort auch wieder an.",
+   "card": {
+    "title": "Kundenprofil",
+    "text": "Kunden → Kundin → Reiter Info → Nachrichten nach der Behandlung"
+   },
+   "left": {
+    "shot": "t3-kundenprofil-sperre"
+   },
+   "leftCaption": "Der Schalter im Reiter Info des Kundenprofils.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Reiter Info",
+     "text": "Im Kundenprofil den Reiter **Info** öffnen. Der Abschnitt **„Nachrichten nach der Behandlung“** steht über den Einwilligungen."
+    },
+    {
+     "n": 2,
+     "title": "Schalter",
+     "text": "Ist der Schalter **aus**, bekommt die Kundin nach keiner Behandlung mehr eine Nachricht. Darunter steht, seit wann und ob die Kundin sich selbst abgemeldet hat."
+    },
+    {
+     "n": 3,
+     "title": "Abzeichen in der Übersicht",
+     "text": "Gesperrte Kundinnen tragen in der Übersicht bei den Einwilligungen das Abzeichen **„Keine Nachricht nach Behandlung“**."
+    }
+   ]
+  },
+  {
+   "h1": "Die Seite Trinkgeld",
+   "sub": "Unter Team → Trinkgeld stehen Ranking, Verlauf und Auszahlung. Du siehst deine eigenen Zahlen — die Leitung das ganze Institut.",
+   "card": {
+    "title": "Seite Trinkgeld",
+    "text": "Team → Trinkgeld"
+   },
+   "left": {
+    "shot": "t4-seite-trinkgeld"
+   },
+   "leftCaption": "Kennzahlen, Zeitraum und das Ranking je Behandlerin — die eigene Zeile hervorgehoben.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum",
+     "text": "Oben rechts den **Zeitraum** wählen (dieser Monat, letzter Monat, 3 Monate, Jahr). Der **Standortfilter** der Seitenleiste gilt wie überall."
+    },
+    {
+     "n": 2,
+     "title": "Kennzahlen",
+     "text": "Trinkgeld, Ø Sterne für die Behandlung, Ø Sterne für das Ergebnis, Bewertungen — je mit Vergleich zum Vorzeitraum. Die Zeile lässt sich per Ziehen personalisieren."
+    },
+    {
+     "n": 3,
+     "title": "Ranking",
+     "text": "Die Karte **„Trinkgeld & Sterne je Behandlerin“** zeigt als Diagramm Balken (Trinkgeld) und Punkte (Sterne), als Tabelle das vollständige Ranking. Deine Zeile ist hervorgehoben; wer nur sich sieht, sieht trotzdem seinen Platz im Team."
+    },
+    {
+     "n": 4,
+     "title": "Verlauf und Auszahlung",
+     "text": "Darunter der **Verlauf je Monat** und die **Auszahlungen** (brutto, Gebühr, netto, ausgezahlt). „Vorläufig“ heißt: Der Zahlungsanbieter hat die Gebühr noch nicht endgültig gebucht."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Bewertungen und Kommentare",
+     "text": "Ganz unten stehen die **Einzelbewertungen** mit Datum, Kundin, Behandlung, Sternen und Trinkgeld. Den Kommentar sieht nur, wer das Recht **„Kommentare lesen“** hat — alle anderen sehen „Kommentar vorhanden“."
+    },
+    {
+     "title": "Startseite und App",
+     "text": "Die Karte **„Meine Bewertungen“** auf der Startseite zeigt Trinkgeld und Bewertung diesen Monat, deinen Platz und den letzten Kommentar. In der App steht die Seite unter Mehr → Trinkgeld („App 22“)."
+    }
+   ]
+  }
+ ]
+}
