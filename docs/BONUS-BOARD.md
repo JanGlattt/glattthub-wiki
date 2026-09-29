@@ -481,8 +481,15 @@ Das Standard-Bonussystem wird per Migration
   Teilen-Blatt), `BonusBoardView` die Mitarbeiterinnen- und Management-Sicht. Die App fängt
   jede Navigation auf genau `/hub/bonus` ab (`NativeMorePage`, Bridge `openPage`) und zeigt die
   Seite im „Mehr"-Bereich: iPad neben der Seitenleiste (Menüpunkt markiert), iPhone im Mehr-Tab.
-  Verwaltung und Google-Bewertungen bleiben Web-Seiten. Snapshot-/Helfer-Tests:
-  `ios/glatttHubTests/BonusBoardSnapshotTests.swift`. **Änderungen an den Anzeige-Regeln in
+  Google-Bewertungen sind seit 27.09.2026 nativ, die **Verwaltung seit 28.09.2026**
+  (`BonusAdminModel`/`BonusAdminView`/`BonusRulesView`/`BonusRuleWizard`, Entwurf 1 „Monat im
+  Griff“): Abschluss-Checkliste, Widerrufs-Entscheidungen, Minimalziele, Korrekturen, Einfrieren
+  (final erst ab dem Folgemonat), Regelwerk mit Regel-Akte und nativem Vier-Schritt-Assistenten
+  (`BonusRuleForm` = Port von `buildPayload()` aus `bonus-admin.js`). Dafür gibt es den
+  Katalog-Endpunkt `GET /hub/bonus/verwaltung/data` (Kennzahlen, Klassen, Institute,
+  Nutzerinnen, Rechte, Labels) — dieselben Listen wie `BonusAdminController::index()`. Details:
+  `IOS-APP.md`, Abschnitt „Native Bonus-Verwaltung“. Snapshot-/Helfer-Tests:
+  `ios/glatttHubTests/BonusBoardSnapshotTests.swift`, `BonusAdminSnapshotTests.swift`. **Änderungen an den Anzeige-Regeln in
   `bonus-board.js` müssen im Swift-Modell nachgezogen werden** — die Daten sind eine Wahrheit,
   die Darstellung zweimal.
 

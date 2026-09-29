@@ -1140,7 +1140,7 @@ keine zweite Logik im Backend:
   Minimalziele, Boni je Mitarbeiterin gruppiert nach Institut mit aufklappbaren Zielen, offene
   Widerrufe, CSV/PDF über das Teilen-Blatt), Monatswahl, Umschalter „Mein Board / Management bzw.
   Mein Institut" (Rechte kommen jetzt mit der `data`-Antwort: `can_switch_view`, `can_manage`,
-  `can_manage_reviews`, `scope`). Verwaltung und Google-Bewertungen bleiben Web.
+  `can_manage_reviews`, `scope`). Google-Bewertungen sind seit 27.09.2026 nativ, die Verwaltung seit 28.09.2026 (Abschnitt „Native Bonus-Verwaltung“).
 - **Native Mehr-Seiten** (`Bonus/NativeMorePage.swift`): Pfade, die die App selbst rendert statt sie im
   Pool-WebView zu laden — Erkennung an genau dem Pfad (`/hub/bonus`; Unterseiten bleiben Web).
   `AppContainer.open()` und der `WebCoordinator` (harte Navigationen) leiten dorthin,
@@ -1300,7 +1300,7 @@ Seite, die in der App nur im WebView läuft, ist nicht fertig. Die Regel ist dre
 |---|---|---|
 | **nativ** (Standard) | Einstieg der Seite ist eine native Ansicht; einzelne Web-Detailseiten im nativen Tab sind erlaubt und werden benannt | Cockpit, Terminseite + Terminansicht, Kundenliste + Kundenübersicht, Laser-Wartung, Bonus-Board, Mitteilungen |
 | **eingebettet** (nur mit Begründung) | Web-Blatt `?shell=native` in nativem Rahmen — ausschließlich für Editor-Engines, die es bewusst genau einmal gibt | Formular-Ausfüllen (`form-fill.js`), Livewire-Modal „Direkt behandeln" |
-| **bestand** / **entfaellt** | Web-Seiten von vor der Regel (Nachzug offen) bzw. reine Verwaltung am Schreibtisch | Verträge, Widerrufe, Berichte (bestand); Formular-Editor, Bildschirme, Audit (entfaellt) |
+| **bestand** / **entfaellt** | Web-Seiten von vor der Regel (Nachzug offen) bzw. reine Verwaltung am Schreibtisch | seit 28.09.2026 keine Bestandsseite mehr; Formular-Editor, Bildschirme, Report-Mails, Audit, Conversion-Upload (entfaellt) |
 
 **Warum:** Die App ist für die Institute die Hauptoberfläche geworden. Bis zum 25.09.2026 entstand
 die native Fassung jeweils *nach* der Web-Seite — doppelte Arbeit mit Nacharbeiten (Terminansicht,
@@ -1381,7 +1381,8 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Alle 11 weiteren Berichtsseiten (Mitarbeiterperformance bis Office-Teammeeting) | nativ | Berichtsseiten „Wie im Hub“, jede Registry-Karte nativ (seit 27.09.2026) |
 | Eigene Dashboards | nativ | Kacheln, KPI-Zeile, Zeitraum wie im Web (seit 27.09.2026); Anlegen im eingebetteten Assistenten, Bearbeiten/Teilen in der Hub-Fassung |
 | Unternehmensverträge | nativ | Fristen zuerst (seit 28.09.2026): Kennzahlen, Kosten nach Typ/Standort, Kündigungsfristen mit Ampel, Verträge nach Typ, Vertragsseite mit Dokumenten und Historie; Anlegen/Bearbeiten als eingebettetes Hub-Blatt (Wizard mit KI-Analyse) |
-| Formulare, Bildschirme, Report-Mails, Audit, Conversion-Upload, Bonus-Verwaltung | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
+| Bonus-Verwaltung | nativ | Monat im Griff (seit 28.09.2026): Abschluss-Checkliste, offene Widerrufe mit Segmented Control je Fall und Bereich, Minimalziele, Wert-Korrekturen, Zwischenstand/Final einfrieren (final ab Folgemonat, Warnung bei offenen Fällen), Unterseite Regelwerk mit Chips und Regel-Akte, Regel-Assistent in vier Schritten nativ, Sichtbarkeit je Nutzerin; iPad Abschnitte links |
+| Formulare, Bildschirme, Report-Mails, Audit, Conversion-Upload | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
 | Einstellungen | nativ | Eine Seite (seit 27.09.2026): Darstellung, Diese App, Beratungs-Cache, API-Zugänge; iPad Abschnitte links |
 
 ### Native Verträge (Mehr-Seite, seit 25.09.2026 — Nachzug 1)
@@ -2010,6 +2011,63 @@ Hub-Assistenten als Blatt. Auf dem iPad stehen Liste und Vertrag nebeneinander.
   Kosten, Vertrag, Bearbeiten-Blatt), PHP `CompanyContractAppEndpointTest` (Ampel, Kosten, Detail,
   eingeschränkte Sicht, Recht).
 
+### Native Bonus-Verwaltung (Mehr-Seite, seit 28.09.2026)
+
+**Für Endanwender:** Die Bonus-Verwaltung (Bonus-Board → ⋯ → Verwaltung) stellt in der App den
+**Monat** in den Mittelpunkt. Oben der Monat mit Pfeilen, darunter die Karte **Monatsabschluss** als
+Checkliste: offene Widerrufe, Minimalziele, Wert-Korrekturen und „Final einfrieren“ mit dem Hinweis,
+ab wann das geht. Ein Tipp auf eine Zeile springt zum Abschnitt. Die **offenen Widerrufe** stehen
+direkt darunter: je Fall Vertrag, Kundin, BG-Person und KPZ, dazu zwei Zeilen **Team** und
+**Persönlich** mit den Knöpfen zählt / zählt nicht / parken (langer Druck: Begründung, Vertrag oder
+Widerruf öffnen). **Minimalziele** zeigen Team, Leitung und Google je Institut (grau = aus dem
+Vormonat übernommen) und werden über „Bearbeiten“ im Blatt geändert. **Wert-Korrekturen** listen
+Kennzahl, Bezug, alt → neu und Begründung; „Neue“ öffnet das Blatt, langer Druck entfernt.
+**Zwischenstand einfrieren** geht jederzeit, **Final einfrieren** erst ab dem Folgemonat und mit
+Warnung, wenn noch Fälle offen sind. Unter **Regelwerk** liegen Bonus-Regeln, Challenges und die
+Sichtbarkeit je Nutzerin: eine Liste mit Suche und Chips (Alle, Aktiv, Regeln, Challenges, Serie,
+Ranking, Inaktiv), Challenges nach Monat; ein Tipp öffnet die **Regel-Akte** mit den Abschnitten des
+Assistenten und Bearbeiten / Deaktivieren / Löschen; „+“ startet den **Assistenten** in vier Schritten
+(Grundlagen, Empfängerinnen, Kennzahl & Bedingung, Prämie & Extras). Auf dem iPad stehen die
+Abschnitte links, der Inhalt rechts.
+
+!!! nutzerhandbuch "Bedienung: App 20 – Bonus-Verwaltung in der App"
+    https://hilfe.hub.glattt.com/app/20/
+
+**Für Entwickler:**
+
+- **Entscheidung (Jan, 28.09.2026):** Entwurf 1 „Monat im Griff“ mit der Regel-Liste und Regel-Akte
+  aus Entwurf 3 als Unterseite „Regelwerk“ (Entwürfe:
+  https://claude.ai/artifact/CqJi9swiuCv4N36VwXVqaj). „Final einfrieren“ ist erst ab dem Folgemonat
+  freigegeben (`monthEnded`), bei offenen Widerrufen mit Warnung und Rückfrage statt Sperre. Der
+  Regel-Assistent ist nativ, weil er ein Formular ist und kein Editor.
+- **Dateien:** `ios/glatttHub/Bonus/BonusAdminModel.swift` (Katalog, Regeln, Ziele, Stände,
+  Korrekturen, offene Fälle, Sichtbarkeit; Aktionen; Checkliste; Kurzfassungen als Port von
+  `bonus-admin.js`), `BonusAdminView.swift` (iPhone-Seite, iPad mit Seitenleiste, Karten,
+  Blätter Einfrieren/Ziele/Korrektur), `BonusRulesView.swift` (Regelwerk mit Chips, Regel-Akte,
+  Sichtbarkeit), `BonusRuleWizard.swift` (`BonusRuleForm` + vier Schritte), `NativeMorePage.bonusAdmin`
+  (`/hub/bonus/verwaltung`), `bridge.js` `NATIVE_PAGES`.
+- **Endpunkte wie im Web** plus ein neuer Katalog: `GET /hub/bonus/verwaltung/data` liefert
+  Kennzahlen (`metricCatalog()`), Bonus-Klassen, Institute, aktive Nutzerinnen, `can.manage_rules` /
+  `can.manage_challenges` und die Labels der Bedingungs-/Prämientypen — dieselben Listen, die
+  `BonusAdminController::index()` in die Blade-Seite schreibt. Danach `hub/bonus/rules/data`,
+  `targets`, `freezes`, `overrides`, `visibility` und `hub/bonus/data?view=management` (offene
+  Widerrufe, Timeout 90 s); schreibend `POST/PUT/DELETE hub/bonus/rules`, `POST targets`, `POST
+  freeze`, `POST/DELETE overrides`, `POST revocation-decisions`, `POST visibility`.
+- **Rechte:** Seite mit `manage_bonus_rules` oder `manage_challenges`; ohne `manage_bonus_rules`
+  lädt das Modell nur die Regeln und zeigt das Regelwerk mit Challenges (der Board-Endpunkt gäbe sonst
+  keine Management-Sicht). Nach einem finalen Stand sind Ziele, Entscheidungen, Korrekturen und
+  Einfrieren gesperrt (Banner).
+- **Navigation:** Einstieg über das ⋯-Menü des Bonus-Boards (`container.navigate(toPath:)` →
+  `NativeMorePage(url:)`). Regelwerk und Sichtbarkeit sind App-Pfade (`/hub/bonus/verwaltung/regeln`,
+  `…/sichtbarkeit`) über `pushMoreDetail`; Regel-Akte, Assistent, Ziele und Korrektur sind Blätter,
+  Einfrieren ein `.popover` am Knopf (iPhone: Blatt).
+- **Swift-6-Falle:** `async let` mit `[String: Any]`-Antworten kompiliert nicht (non-Sendable) — die
+  Endpunkte werden nacheinander geladen, `loaded` wird vor der langsamen Board-Antwort gesetzt.
+- **Nachweis:** `BonusAdminSnapshotTests` (Bilder hell/dunkel iPhone und iPad, Checkliste, Gruppen,
+  Kurzfassungen, Payload-Rundreise des Assistenten), `BonusAdminUITests` (Board → ⋯ → Verwaltung,
+  Blatt Einfrieren, Regelwerk, Regel-Akte, Assistent), PHP `BonusBoardPageTest`
+  (`test_verwaltungs_katalog_fuer_die_app`), Klickanleitung App 20.
+
 ### Native Einstellungen (Mehr-Seite, seit 27.09.2026)
 
 **Für Endanwender:** „Einstellungen“ ist in App und Hub eine Seite mit Abschnitten. **Darstellung**:
@@ -2315,6 +2373,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 28.09.2026 | 1.3.0 | Native Bonus-Verwaltung (Entwurf 1 „Monat im Griff“ + Regel-Liste/Regel-Akte aus Entwurf 3): Abschluss-Checkliste, offene Widerrufe mit Entscheidung je Bereich, Minimalziele, Wert-Korrekturen, Zwischenstand/Final einfrieren (final ab Folgemonat), Regelwerk mit Chips, Regel-Akte, Regel-Assistent in vier Schritten nativ, Sichtbarkeit je Nutzerin, iPad mit Seitenleiste; Hub: `GET /hub/bonus/verwaltung/data` |
 | 28.09.2026 | 1.3.0 (51) | TestFlight-Runde zu Build 49 (Befunde 109–125): Zeit-Diagramme mit Pinch-Zoom, Wischen und Bereichsleiste, antippbare Legende, Tagesachse mit Montagen, Heatmap-Summen, Tagesmessung als Web-Matrix mit Zeitraum-Chip, Beratungs-Ranking mit Zeitraum und zwei Nachkommastellen, Buchungsstand-Tabelle über volle Breite, gleitender Durchschnitt, Brief-Vorschau ohne Weißraum, Wartezeit für Berichtskarten 90 s; Zufriedenheit lädt erst den Stand und sucht Kandidatinnen im Hintergrund (Befunde 127/128); Mehr-Menü ohne Kachel „App“, Farbschema als Dreier-Schalter (130/132); Hub: Cache für die vier Termin-Endpunkte, Seiten Schulden und Services ausgebaut (125/129); Entwürfe für Mitteilungszentrale und Unternehmensverträge nativ vorgelegt (126/131); iPad-Runde 133–142: Hülle nach dem Freischalten neu laden, Onboarding holt den Push-Dialog, einheitliche Auswahl in Listen, Umsetzungs-Blatt (eingebettete Web-Fassung nie nativ abfangen), „Text anpassen“ über der Vorschau, Seitenleiste folgt dem Lohnmonat, KPZ Monat, Öffnungszeiten-Zeile, Einstellungen-Spalte; Mitteilungszentrale „Heute zuerst“ mit Chips, Dringlich, Tagesgruppen und Kennzahlen-Zeile (131); Unternehmensverträge nativ „Fristen zuerst“ mit Kosten, Fristen-Ampel, Gruppen nach Typ, Vertragsseite und eingebettetem Wizard, neue Endpunkte `/data` (126); Bonus-Challenge zeigt abgezogene geparkte KPZ (139/143); die neun Registerkarten der Kundenakte nativ (Entwurf 3 mit Reiter-Leiste), neuer Endpunkt `/hub/clients/{id}/appointments/data` |
 | 27.09.2026 | 1.3.0 | Native Zufriedenheit (Entwurf 1 „Drei Stapel“ + Kanal-Hinweis): Aufgaben, Kandidatinnen, Verlauf, Detailkarte, iPad drei Spalten; Hub: `hints=1` und `can` im Datenendpunkt — damit ist die letzte Bestandsseite nativ |
 | 27.09.2026 | 1.3.0 | Native Forderungen (Entwurf 1 „Arbeitsliste und Akte“ + Schritt-Blatt + Stufenleiter als „Bestand“): Arbeitsliste, Fallakte mit allen Aktionen, Schreiben-Vorschau; Hub: `GET /hub/receivables/{case}/data` aus `caseContext()`, Kundenseite mit nächstem Schritt; Widerrufe: Snapshot-Test und App-Deck nachgezogen |

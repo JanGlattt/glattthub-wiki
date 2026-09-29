@@ -490,7 +490,7 @@ Abdeckungsliste im Hub-Repo steht damit auf `fertig`.
 | **Team** | 1–3 | Büro, Institute | Personalübersicht und Hub-Konten, Reisekosten erfassen und freigeben |
 | **Finanzen** | 1–2 | Büro | Schulden, Unternehmensverträge |
 | **System** | 1–2 | Leitung | Report-Mails, Audit |
-| **App** | 1–7 | Institute, Leitung, Büro | Die iPad-/iPhone-App: Anmelden & Face ID, Startseite & Menü, Termine & Terminansicht, Kunden, Laser-Wartung, Bonus-Board, Widgets/Siri/Scanner — Screenshots aus Snapshot-/UI-Tests des Simulators statt Playwright (seit 23.09.2026) |
+| **App** | 1–20 | Institute, Leitung, Büro | Die iPad-/iPhone-App: Anmelden & Face ID, Startseite & Menü, Termine & Terminansicht, Kunden, Laser-Wartung, Bonus-Board, Widgets/Siri/Scanner (1–7), danach je native Seite ein Deck (Verträge bis Unternehmensverträge, 20 = Bonus-Verwaltung, 28.09.2026) — Screenshots aus Snapshot-/UI-Tests des Simulators statt Playwright (seit 23.09.2026) |
 | **Berichte** | 0–16 | Leitung, Büro | Rahmendokument plus je eine Anleitung für die 16 Berichtsseiten |
 | **Admin** | 1–8 | Administration | Das Verwaltungspanel `/admin`, thematisch gebündelt |
 

@@ -1,0 +1,131 @@
+{
+  "out": "../pdf/App-20-Bonus-Verwaltung",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "App",
+  "of": 20,
+  "audience": "leitung",
+  "footerArea": "App",
+  "stand": "28.09.2026",
+  "version": "1.0",
+  "nr": 20,
+  "title": [
+    "Bonus-Verwaltung",
+    "in der App"
+  ],
+  "subtitle": "Klickanleitung für die glatttHub-App — den Bonus-Monat abschließen: offene Widerrufe entscheiden, Minimalziele und Korrekturen pflegen, Stand einfrieren; Regeln und Challenges im Regelwerk anlegen und ändern",
+  "eyebrow": "App · Team",
+  "notes": [
+    "Die **Bonus-Verwaltung** öffnest du über das Bonus-Board: oben rechts **⋯ → Verwaltung** (iPhone und iPad). Du brauchst das Recht **Bonus-Regeln verwalten**; mit **Challenges verwalten** siehst du nur das Regelwerk mit den Challenges.",
+    "Die App stellt den **Monat** in den Mittelpunkt: Was fehlt noch, bis dieser Monat eingefroren werden kann? Regeln und Challenges liegen eine Ebene tiefer unter **Regelwerk**, weil sie sich selten ändern."
+  ],
+  "pages": [
+    {
+      "h1": "Den Monat im Griff",
+      "sub": "Oben der Monat mit Pfeilen, darunter die Karte Monatsabschluss als Checkliste. Danach die offenen Widerrufe, die Minimalziele, die Wert-Korrekturen und die Stände dieses Monats.",
+      "card": {
+        "title": "Monat",
+        "text": "Checkliste, Widerrufe, Ziele"
+      },
+      "left": {
+        "shot": "bonus-admin-month-light"
+      },
+      "leftCaption": "Die Monatsseite: **Monatsabschluss** mit Checkliste, **Offene Widerrufe** mit Team und Persönlich, **Minimalziele** je Institut.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Monat wählen",
+          "text": "Mit den **Pfeilen** einen Monat zurück oder vor, das **Kalender-Menü** springt direkt (Vormonat bis elf Monate voraus). Alles auf der Seite gilt für den gewählten Monat."
+        },
+        {
+          "n": 2,
+          "title": "Checkliste lesen",
+          "text": "Grüner Haken = erledigt, rote Zahl = offen, grauer Kreis = noch nicht möglich. Ein Tipp auf eine Zeile springt zum Abschnitt. **Final einfrieren** wird erst ab dem Folgemonat frei."
+        },
+        {
+          "n": 3,
+          "title": "Widerruf entscheiden",
+          "text": "Je Fall zwei Zeilen: **Team** und **Persönlich**. Tippe **zählt**, **zählt nicht** oder **parken** — sofort gespeichert. Ohne Entscheidung zählen die KPZ „unter Vorbehalt“; geparkte stehen im Folgemonat erneut an. Langer Druck: **Begründung …**, **Vertrag öffnen**, **Widerruf öffnen**."
+        },
+        {
+          "n": 4,
+          "title": "Minimalziele und Korrekturen",
+          "text": "**Minimalziele**: Team, Leitung, Google je Institut, grau = aus dem Vormonat übernommen; **Bearbeiten** öffnet das Blatt mit dem Ziffernblock. **Wert-Korrekturen**: **Neue** öffnet das Blatt (Kennzahl, Bezug, alt/neu, **Begründung** Pflicht); langer Druck entfernt."
+        }
+      ],
+      "hint": {
+        "text": "Nach einem **finalen Stand** sind Ziele, Entscheidungen, Korrekturen und Einfrieren gesperrt — die Seite zeigt dann oben das Schloss."
+      }
+    },
+    {
+      "h1": "Stand einfrieren",
+      "sub": "Zwischenstände sind beliebig oft möglich, zum Beispiel vor einem Teammeeting. Ein finaler Stand ist die unveränderliche Auszahlungsbasis.",
+      "card": {
+        "title": "Einfrieren",
+        "text": "Zwischenstand, final"
+      },
+      "left": {
+        "shot": "bonus-admin-ipad-light"
+      },
+      "leftCaption": "iPad: Abschnitte links mit Zählern, rechts der **Monatsabschluss** mit Checkliste und den beiden Knöpfen; das Blatt zum Einfrieren öffnet als Popover.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Zwischenstand",
+          "text": "**Zwischenstand einfrieren** öffnet das Blatt: optional eine **Notiz** („Vor dem Teammeeting“), dann **Einfrieren**. Der Stand erscheint unter **Stände dieses Monats**."
+        },
+        {
+          "n": 2,
+          "title": "Final einfrieren",
+          "text": "Erst ab dem **Folgemonat** frei. Sind noch Widerrufe offen, warnt das Blatt mit der Liste der Fälle — besser vorher entscheiden. Nach der Rückfrage ist der Monat unveränderlich."
+        },
+        {
+          "n": 3,
+          "title": "iPad",
+          "text": "Links die Abschnitte **Monatsabschluss, Offene Widerrufe, Minimalziele, Wert-Korrekturen** und das **Regelwerk**; rechts der gewählte Abschnitt. **Zum Bonus-Board** ganz unten."
+        }
+      ]
+    },
+    {
+      "h1": "Regelwerk: Regeln, Challenges, Assistent",
+      "sub": "Unter Regelwerk stehen Bonus-Regeln und Challenges in einer Liste mit Suche und Chips. Ein Tipp öffnet die Regel-Akte, das Plus den Assistenten in vier Schritten.",
+      "card": {
+        "title": "Regelwerk",
+        "text": "Liste, Akte, Assistent"
+      },
+      "left": {
+        "shot": "bonus-admin-rules-light"
+      },
+      "right": {
+        "shot": "bonus-admin-rule-light"
+      },
+      "leftCaption": "**Regelwerk**: Suche, Chips (Alle, Aktiv, Regeln, Challenges, Serie, Ranking, Inaktiv), dauerhafte Regeln und Challenges nach Monat.",
+      "rightCaption": "Die **Regel-Akte**: Empfängerinnen, Kennzahl & Bedingung, Prämie & Extras — darunter Bearbeiten, Deaktivieren, Löschen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Suchen, filtern, Akte",
+          "text": "Die Suche findet Name, Kennzahl und Empfängerinnen; die **Chips** zeigen die Anzahl je Gruppe, Challenges stehen nach Monat (laufender Monat: „läuft“). Ein Tipp öffnet die **Regel-Akte** — **Deaktivieren** nimmt die Regel vom Board, ohne sie zu löschen."
+        },
+        {
+          "n": 2,
+          "title": "Neue Regel oder Challenge",
+          "text": "**+** oben rechts: **Neue Regel** (dauerhaft) oder **Neue Challenge** (genau ein Monat). Vier Schritte: **Grundlagen**, **Empfängerinnen**, **Kennzahl & Bedingung**, **Prämie & Extras** — **Weiter** wird erst frei, wenn der Schritt vollständig ist."
+        },
+        {
+          "n": 3,
+          "title": "Prämie und Serie",
+          "text": "Beträge mit Komma (12,50); bei Ranking-Challenges die **Preise je Platz**, bei Team-Preisen je Mitglied oder als Budget. **Serien-Boni** geben extra bei N Monaten in Folge."
+        },
+        {
+          "n": 4,
+          "title": "Sichtbarkeit je Nutzerin",
+          "text": "Zurück auf der Monatsseite unter **Regelwerk → Sichtbarkeit je Nutzerin**: Nutzerin wählen, dann je Regel **Standard**, **Sichtbar** oder **Ausgeblendet**."
+        }
+      ],
+      "hint": {
+        "text": "Der Assistent schickt dieselben Daten wie der Web-Assistent — eine in der App angelegte Regel sieht im Hub genauso aus und umgekehrt."
+      }
+    }
+  ]
+}
