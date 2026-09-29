@@ -6,8 +6,8 @@
   "of": 8,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "23.09.2026",
-  "version": "1.0",
+  "stand": "29.09.2026",
+  "version": "1.1",
   "nr": 1,
   "title": [
     "Die App auf iPad",
@@ -78,7 +78,7 @@
         {
           "n": 2,
           "title": "Beim nächsten Start",
-          "text": "Die App zeigt **„Willkommen zurück, <Vorname>“** und fragt Face ID ab — kein Google, keine PIN."
+          "text": "Die App zeigt **„Willkommen zurück, <Vorname>“** und fragt Face ID von selbst ab — kein Google, keine PIN. Nur direkt nach einem bewussten **Abmelden** wartet sie: Dann tippst du unten links auf das **Face-ID-Symbol** oder gibst die PIN ein."
         },
         {
           "n": 3,

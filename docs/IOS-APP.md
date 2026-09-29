@@ -248,7 +248,13 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   (422 → `errors.pin`, 429 → Wartehinweis). **Zweitweg E-Mail** als Sheet (`EmailLoginSheet`,
   Fortify `POST /login` JSON, `remember`; 2FA ist im Hub aus). Face-ID-Angebot nach der ersten
   Anmeldung als Sheet (`BiometryOfferSheet`). Nach dem Login übernimmt `finishLogin()` den
-  Ladeschirm (`isLoading = true`, Phase „Hub wird geladen") bis `ready` → Cockpit. Zahnrad oben
+  Ladeschirm (`isLoading = true`, Phase „Hub wird geladen") bis `ready` → Cockpit — genau einmal,
+  auch nach Face ID (die Anmeldeseite ruft ihn über `finish()`, der Container nicht mehr selbst).
+  **Die Anmeldeseite hat keine eigene Überblendung** (`transition(.identity)`, seit 29.09.2026,
+  Befund 170): Sie kommt und geht immer unter dem Ladeschirm, der weich ausblendet. Mit einer
+  Opacity-Überblendung schien im Video-Prüfstand nach dem Abmelden die Web-Login-Seite der Hülle
+  und nach der PIN die PIN-Seite als Geist über dem Cockpit durch; zusätzlich bleibt die Hülle
+  verborgen, solange `showLogin` gilt (`TabBarHost.setShellVisible`). Zahnrad oben
   rechts, Umgebungs-Badge unten außer auf Produktion. Der Google-/IAP-Schritt davor bleibt im
   WebView; `LoginHintView` legt dort einen Kopf „Schritt 1 von 2 · Google-Anmeldung" darüber.
   Reine Ansicht `LoginScreen` (Snapshots `LoginSnapshotTests`), UI-Tests `LaunchFlashUITests`
@@ -397,7 +403,9 @@ verlangt die App dort wieder die PIN. Abmelden in der App hebt Face ID **nicht**
   Threads), ein neu registriertes Gesicht macht den Eintrag ungültig. Unverschlüsselt liegen nur
   Name/E-Mail (Anzeige „Als … anmelden") und die Geräte-ID des Hubs. `LoginView` hat drei
   Phasen: `enter` (PIN, mit Face-ID-Taste falls eingerichtet — beim Erscheinen wird Face ID einmal
-  von selbst abgefragt), `biometric` (Overlay „Anmeldung mit Face ID …"), `offer` (Sheet nach
+  von selbst abgefragt; **nicht** direkt nach einem bewussten Abmelden: `logout()` setzt
+  `AppState.skipAutoBiometricsOnce`, die Seite verbraucht den Merker beim Erscheinen, die Taste
+  bleibt — Jan, 29.09.2026, Befund 168), `biometric` (Overlay „Anmeldung mit Face ID …"), `offer` (Sheet nach
   PIN/E-Mail: aktivieren / später / nicht mehr fragen); das Laden bis `ready` zeigt der Ladeschirm.
   `AppContainer.loginWithBiometrics()` → Token → `/api/app/session` → Cookies → Hub laden; bei 401/403
   wird der Keychain-Eintrag gelöscht und die PIN angeboten. Einstellungen zeigen, für wen die
@@ -669,7 +677,9 @@ verkaufte KPZ — laufender Monat und Vormonat, nur eigenes Institut) und beide 
   `cockpit-leitung-*` (`CockpitSnapshotTests`), `bonus-own-*` mit Level-Daten.
 - **App:** `Start/StartModels.swift` (Rahmen), `StartViewModel` (lädt Rahmen und Mitteilungen
   über die Session, die Zahlen über `WidgetAPI` mit dem Widget-Token — derselbe 15-Min-Cache wie die
-  Widgets; jeder Teil unabhängig, Standortwechsel/Vordergrund/5 Minuten lösen ein sanftes Neuladen
+  Widgets; jeder Teil unabhängig **und sichtbar, sobald er da ist** — Task-Gruppe in `load`, die
+  Karten ohne Zahlen bleiben Platzhalter, statt dass alles auf den langsamsten Endpunkt wartet
+  und dann auf einmal erscheint (Befund 171, 29.09.2026); Standortwechsel/Vordergrund/5 Minuten lösen ein sanftes Neuladen
   aus), `CockpitView`/`CockpitSections` (SwiftUI, Swift Charts für das KPZ-Chart, Sparkline nach
   Hub-Konvention). Das Widget-Token wird vor dem ersten Laden sichergestellt
   (`ensureWidgetToken`).
@@ -698,7 +708,10 @@ verkaufte KPZ — laufender Monat und Vormonat, nur eigenes Institut) und beide 
   Gold-Balken, der den Ladephasen folgt (`AppState.loadingPhase`: `connecting` beim Start,
   `signingIn`/`loadingHub` bei der ersten Antwort je nach Host, `finishing` bei `didFinish`, `ready`
   durch die Bridge) — mit Lauflicht und Phasentext; er bleibt bis `ready` und geht dann weich
-  (Opacity + leichtes Zoom, 0,45 s) ins Cockpit über. Das Cockpit zeigt vor den Daten ein Skeleton:
+  (Opacity + leichtes Zoom, 0,45 s) ins Cockpit über. Das Lauflicht zieht über die **ganze Spur**
+  (Kapsel beschneidet), nicht nur über den gefüllten Teil — so stand es bis 29.09.2026 bei 18 %
+  Fortschritt als „Glühen ganz links" (Befund 169); `LoadingBar(shimmerPhase:)` erlaubt eine feste
+  Position, `LoadingBarTests` misst Pixel rechts vom gefüllten Teil. Das Cockpit zeigt vor den Daten ein Skeleton:
   `View.skeleton(_:)` (redacted + grau + `Shimmer`-Lauflicht, `SkeletonBlock` für Charts/Listen), vor
   dem ersten Rahmen die Standardseite als Platzhalter. Beide respektieren „Bewegung reduzieren".
   Snapshot `cockpit-skeleton.png` im `CockpitSnapshotTests`.
