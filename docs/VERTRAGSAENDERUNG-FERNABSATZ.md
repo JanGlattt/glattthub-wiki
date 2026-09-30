@@ -105,6 +105,17 @@ Fernabsatz-Widerrufsrecht, der Vertrag entsteht sofort aktiv.
   Anrechnung läuft über die Abschluss-Kaskade: Rate 1, dann Rate 2, 3 … bis zum 1-€-Minimum
   je SEPA-Rate. Übersteigt das Guthaben den Wert des neuen Vertrags, weist der Assistent den
   **Überschuss** aus — Erstattung von Hand.
+- **Flexible Preislisten (seit 30.09.2026):** Für flexible Pakete wählt das Büro im Assistenten
+  Laufzeit (Regler), Monatsrate (volle Euro) oder Einmalzahlung (mit Nachlass, Zahlung direkt).
+  `quote()` rechnet nur über `FlexiblePriceCalculator` (Rabatt auf den Gesamtpreis), das Angebot
+  liegt mit Modus und Wert in `context_data['contract_change']` des Share-Tokens.
+  `acceptSubmission()` rechnet beim Unterschreiben aus Preisliste, Paket, Modus, Wert und Rabatt
+  nach und setzt am Folgevertrag `pricing_model`, `base_total_cents`, `regular_total_cents`,
+  `discount_cents`, `last_installment_cents`. Weicht die Nachrechnung ab (Paketpreis zwischen
+  Angebot und Unterschrift geändert), **gilt das unterschriebene Angebot** und es wird eine Warnung
+  geloggt (`recheckFlexibleQuote()`). Mail, PDF und Kundenseite nennen „N Raten à X €, letzte Rate
+  Y €“ und den Normalpreis durchgestrichen. Vorher erzeugte eine flexible Liste still einen
+  Folgevertrag über 0 €. Rechtstexte des Formulars nennen noch keine freien Laufzeiten.
 - **Schwebende Verträge in Listen und Statistiken:** Status **„Schwebend"** (`pending`,
   Badge Info-Blau) zählt in **keiner** Verkaufs-, MRR-, Bonus-, Gamification- oder
   Widerrufsstatistik, hat keinen Phorest-Kauf und keine Raten. In der Vertragsliste ist er

@@ -1,12 +1,11 @@
 # Flexible Preise
 
-!!! info "Stand 30.09.2026: Etappe 2 von 3"
-    Preismodell, Rechner, Preislisten-Editor und der Verkaufsweg (Vertragsformular im Hub,
-    Formular-Link, Institutsseite, Vertragsanlage, Zahlungsplan, PDF) sind auf Staging. Solange
-    keine flexible Preisliste aktiv ist, verkauft niemand zu flexiblen Preisen. Vor dem Verkauf:
-    Rechtstexte der Formulare anpassen. Offen (Etappe 3): Preisfolie der Beratung, Statistik-Bereiche,
-    Fernabsatz-Änderung, App-Anzeige, Klickanleitungen. Plan und Entscheidungen: Claude-Doc
-    „Flexible Preise — Plan“.
+!!! info "Stand 30.09.2026: Etappe 3 von 3"
+    Preismodell, Rechner, Editor, Verkaufsweg (Formular, Formular-Link, Institutsseite, Vertragsanlage,
+    Zahlungsplan, PDF) und Etappe 3 (Preisfolie der Beratung, Vertragsänderung im Fernabsatz,
+    Statistik, App-Anzeige, Vertragspflege) sind auf Staging. Solange keine flexible Preisliste aktiv
+    ist, verkauft niemand zu flexiblen Preisen. Vor dem Verkauf: Rechtstexte der Formulare
+    (Vertrag, Vertragsänderung) anpassen. Klickanleitungen folgen nach der Abnahme auf Staging.
 
 ## Für Endanwender
 
@@ -113,9 +112,35 @@ Anlage 1 auch bei ungleicher letzter Rate.
 - Tests: `FlexibleContractCreationTest`, `SharedInstitutePageTest`, `FlexiblePriceListTest`,
   `Unit/Pricing/FlexiblePriceCalculatorTest`.
 
+### Etappe 3 — alle weiteren Stellen
+
+- **Beratung:** Regler auf der Paketfolie, Vorbelegung im Vertragsformular — Wiki
+  `BEGLEITETE-BERATUNG.md`, Abschnitt „Paketempfehlung“.
+- **Vertragsänderung im Fernabsatz:** flexible Pakete mit Laufzeit, Rate oder Einmalzahlung,
+  Nachrechnen beim Unterschreiben — Wiki `VERTRAGSAENDERUNG-FERNABSATZ.md`, „Fachregeln“.
+- **Statistik:** Zahlungsausfälle nach Fortschritt der eigenen Laufzeit (Viertel / 10 %-Schritte,
+  `group=decile`), Laufzeit-Filter 18/19/24 entfallen (auch in der App-Karte); MRR-Prognose rechnet
+  die letzte Rate mit dem Rest — Wiki `SALES-STATISTICS.md`.
+- **Anzeige:** `getContract`, `getClientContracts` und `AppClientService` liefern `pricing_model` und
+  `last_installment_cents`; App (Vertrag, Kundenakte, Kundenübersicht) und Web-Vertragsseite zeigen
+  „23 × 99,00 € + letzte Rate 43,00 €“ (`ContractFormat.plan`).
+- **Vertragspflege:** `updateContractOverview` rechnet bei flexiblen SEPA-Verträgen Rate/Laufzeit
+  und letzte Rate im Hub neu (`FlexiblePriceCalculator::recalculate()`, ohne Min/Max-Grenzen, weil
+  das Büro einen unterschriebenen Vertrag korrigiert); der Browser rechnet nicht mehr
+  (`recalcInstallment()` ist für flexible Verträge aus). `PriceList::calculatePrice` liefert bei
+  flexiblen Listen den Paketpreis; der Rückfall auf die erste Gruppe der Zonenzahl filterte durch
+  eine wiederverwendete Query bisher mit und lieferte immer 0 — jetzt mit `clone` (wirkt auch bei
+  festen Listen: eine Laufzeit ohne eigene Gruppe bekommt einen Vorschlag statt 0).
+- **Kleinere Stellen:** SEPA-Vorabankündigung ohne Raten-Zeilen, `CompleteContractPlan`,
+  `ContractPaymentRebuildService` nutzen `installmentAmountCents()`; der Legacy-Import meldet
+  flexible Listen nur im Log.
+- Tests: `GuidedConsultationFlexPriceTest`, `ContractChangeOfferTest` (flexibel),
+  `FlexibleContractMaintenanceTest`, `SalesStatisticsTest::test_payment_failures_grouped_by_decile_of_own_term`.
+
 ## Changelog
 
 | Datum | Änderung |
 | --- | --- |
 | 30.09.2026 | Etappe 1: Preismodell, Rechner, Editor mit Beispielrechnung |
 | 30.09.2026 | Etappe 2: Verkaufsweg — Formular, Formular-Link, Institutsseite, flex-quote, Nachrechnen, Zahlungsplan, PDF |
+| 30.09.2026 | Etappe 3: Beratung, Fernabsatz, Statistik, App-Anzeige, Vertragspflege |

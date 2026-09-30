@@ -109,6 +109,18 @@ Aus den gewünschten Zonen und der gültigen Preisliste des Instituts
 Den Gesamtpreis zeigt der Fernseher nur, wenn die Beraterin ihn einblendet (Leitfaden: nie ohne
 Notwendigkeit den Gesamtpreis nennen).
 
+**Flexible Preislisten (seit 30.09.2026, Wiki `FLEXIBLE-PREISE.md`):** Im Presenter erscheint ein
+Regler für die Laufzeit bzw. ein Feld für die Monatsrate (Umschalter „Laufzeit | Monatsrate“). Die
+Eingabe geht entprellt als Befehl `{type: 'package', flex_mode, flex_value}` an den Hub,
+`packageOffer()` rechnet mit `FlexiblePriceCalculator::option()`; Fernseher (Web und Apple TV) zeigen
+nur an: Rate, Laufzeit, letzte Rate (wenn kleiner), Normalpreis durchgestrichen, Gesamt und
+Einmalzahlung auf Knopfdruck, Rabatte (Ersparnis auf den Gesamtpreis) in der rechten Spalte.
+Ändert sich der Umfang (Preisfolie oder Körperkarte), gilt wieder die Mitte der Laufzeit-Skala.
+`end()` legt die Wahl in `result.package` ab. Das eingebettete Vertragsformular bekommt beim ersten
+Öffnen `&flex_group=…&flex_mode=…&flex_value=…`; `flexApplyGuidedPrefill()` (flex-price-mixin.js)
+übernimmt die Wahl, sobald im Formular dasselbe Paket (gleiche Zonenzahl) in den Preisen steht.
+Tests: `GuidedConsultationFlexPriceTest`.
+
 ### Apple TV und iPad
 
 - Fernseher der Zone „Raum“ bekommen im Heartbeat `consultation: {active, poll_seconds: 1}` und fragen
@@ -168,5 +180,6 @@ Notwendigkeit den Gesamtpreis nennen).
 
 | Datum | Änderung |
 | --- | --- |
+| 30.09.2026 | Flexible Preise: Regler auf der Paketfolie, Vorbelegung im Vertragsformular, Rabatte rechts neben dem Preis |
 | 30.09.2026 | Etappe 2: Animationen, Rechner, Medien, Kundenstimmen, Vorher/Nachher, Ersttermin, Vergleich, Rabatte, Einwände, Unterschrift live, Reverb |
 | 30.09.2026 | Erster Aufschlag auf Staging: Presenter Variante A, Fernseher im Browser, Decks je Institut, Vorlage nach Leitfaden, Formular-Spiegel, Protokoll-Vorschlag, Apple-TV-Endpunkt, nur Super-Admin |

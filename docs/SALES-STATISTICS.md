@@ -133,7 +133,7 @@ Der **Laufzeit-Modus-Schalter** wechselt zwischen drei Sichten:
 
 „Reale Raten" und „Monate" basieren auf dem Hub-Zahlungsplan: Verträge **ohne** Zahlungsplan (v.a. Legacy-Altbestand) werden dort ausgeblendet — die Anzahl steht als Hinweis unter dem Diagramm. Bei migrierten Altverträgen kann der Plan zudem erst ab der Migration beginnen (zeigt dann nur die Rest-Laufzeit). Generell gilt: Detaildaten auf Raten-Ebene gibt es erst seit Einführung von **GoCardless** — davor ist nur die festgesetzte Ratenanzahl bekannt.
 
-**Ausreißer-Laufzeiten:** Angeboten werden nur 18/19/24 Monate; andere Werte im „Festgesetzt"-Modus stammen ausnahmslos aus dem Legacy-Altbestand (Analyse Juli 2026, 66 aktive GK-Fälle): (1) individuell verlängerte Ratenzahlung (Alt-System „länger", häufigster Fall), (2) beim Import übernommene *Rest*-Laufzeit teilbezahlter Verträge, (3) Import-Artefakt „25 statt 24" (v1-Formel `sepa_months + 1`), (4) alte Angebote (12-Monats-Pakete, 9er-Karten). Dokumentiert auch im Info-Panel der Card.
+**Ausreißer-Laufzeiten:** Feste Preislisten bieten 18/19/24 Monate an; Verträge aus **flexiblen Preislisten** haben jede gewählte Laufzeit (keine Ausreißer). Andere Werte bei festen Listen im „Festgesetzt"-Modus stammen ausnahmslos aus dem Legacy-Altbestand (Analyse Juli 2026, 66 aktive GK-Fälle): (1) individuell verlängerte Ratenzahlung (Alt-System „länger", häufigster Fall), (2) beim Import übernommene *Rest*-Laufzeit teilbezahlter Verträge, (3) Import-Artefakt „25 statt 24" (v1-Formel `sepa_months + 1`), (4) alte Angebote (12-Monats-Pakete, 9er-Karten). Dokumentiert auch im Info-Panel der Card.
 
 Über den **Körperzonen-Filter** im Card-Header lässt sich die Auswertung einschränken:
 
@@ -147,19 +147,21 @@ Damit lässt sich z.B. direkt ablesen, wie viele Ganzkörper-Kunden in 24 bzw. 1
 
 Beantwortet die Frage: **Platzen Lastschriften häufiger, je weiter der Vertrag fortgeschritten ist** (z.B. wenn die Behandlung bereits abgeschlossen ist)?
 
-Zwei Ansichten (Segmented-Control „Viertel / Ratenmonat"):
+Zwei Ansichten (Segmented-Control „Viertel / 10 %-Schritte"). Der Fortschritt wird immer an der
+**eigenen Laufzeit** des Vertrags gemessen — seit den flexiblen Preisen (30.09.2026) gibt es beliebige
+Laufzeiten, ein fester Laufzeit-Filter ergäbe keinen Sinn mehr (Entscheidung Jan):
 
 - **Viertel** — die Laufzeit jedes Ratenvertrags wird in vier gleiche Viertel geteilt; jede verarbeitete Rate wird ihrem Viertel zugeordnet (bei 24 Raten: Rate 1–6 → 1. Viertel, Rate 19–24 → 4. Viertel). Balkendiagramm; die Zahlen dahinter stehen im Register **Tabelle**
-- **Ratenmonat** — Liniendiagramm mit der Ausfallquote **je einzelner Ratennummer** (Rate 1, 2, 3 …) zur **Kipppunkt-Suche**: gibt es einen Monat, ab dem die Quote sprunghaft steigt? Am besten mit dem Laufzeit-Filter kombinieren, damit „Rate N" überall denselben Fortschritt bedeutet
+- **10 %-Schritte** — zehn gleiche Abschnitte der eigenen Laufzeit (0–10 %, 10–20 % …) zur **Kipppunkt-Suche**: ab welchem Fortschritt steigt die Quote sprunghaft? Ein 14- und ein 31-Monats-Vertrag sind nach der Hälfte ihrer Raten beide bei 50 %. Raten hinter dem Planende (angehängte RLS) zählen zum letzten Abschnitt
 
 Je Ansicht zwei Quoten:
 
 - **Geplatzt (offen)** — Raten, die aktuell auf `failed`/`chargedback` stehen
 - **Jemals geplatzt** — zusätzlich Raten, die nach einer Rücklastschrift im Wiederholungsversuch doch noch bezahlt wurden (`retry_count > 0`)
 
-**Filter:** Körperzonen (z.B. „Nur Ganzkörper") **und Laufzeit** (18 / 19 / 18,19 / 24 festgesetzte Raten) — damit lässt sich z.B. gezielt „Ganzkörper · 24 Raten" auswerten. Der Schalter **„% / Anzahl"** wechselt das Diagramm zwischen Ausfallquote und absoluter Anzahl geplatzter Raten (reine Anzeige-Umschaltung, kein Server-Request).
+**Filter:** Körperzonen (z.B. „Nur Ganzkörper"). Der frühere Laufzeit-Filter (18/19/24 Raten) ist seit 30.09.2026 entfallen. Der Schalter **„% / Anzahl"** wechselt das Diagramm zwischen Ausfallquote und absoluter Anzahl geplatzter Raten (reine Anzeige-Umschaltung, kein Server-Request).
 
-**Vergleichsmodus:** Die Checkbox „Vergleichen" blendet eine zweite Filter-Kombination als Serie B ein (eigene KPZ-/Laufzeit-Dropdowns, Farben blau/gold). Typische Vergleiche: „3 KPZ" vs. „Ganzkörper · 18/19 Raten", oder „Ganzkörper · 24 Raten" vs. Gesamtmenge (Serie B auf „Alle" lassen). In der Viertel-Ansicht erscheint eine Vergleichstabelle mit beiden Serien.
+**Vergleichsmodus:** Die Checkbox „Vergleichen" blendet eine zweite Filter-Kombination als Serie B ein (eigenes KPZ-Dropdown, Farben blau/gold). Typische Vergleiche: „3 KPZ" vs. „Ganzkörper", oder „Ganzkörper" vs. Gesamtmenge (Serie B auf „Alle Verträge" lassen). In der Viertel-Ansicht erscheint eine Vergleichstabelle mit beiden Serien.
 
 **Zu beachten:** Späte Viertel bzw. hohe Ratennummern haben weniger Raten (viele Verträge sind noch nicht so weit) — kleine Grundmengen machen die Quote empfindlicher für Ausreißer.
 
@@ -366,7 +368,7 @@ SalesStatisticsService (app/Services/)
 └── getDirectPayTrend()            → Direktzahler je Abschlussmonat (payment_method = direct)
 ```
 
-**Filter:** Alle Endpoints akzeptieren `branch_id`, `date_from`, `date_to`, `seller_id` sowie `body_zones` (`full` = Ganzkörper via `is_full_body`, numerisch = exakte KPZ-Anzahl). Der KPZ-Filter wird von den Sektionen „Vertragslaufzeiten" und „Zahlungsausfälle" genutzt. `contract-terms` kennt zusätzlich `only_active=1` (nur Status `active`) und `term_mode` (`actual` = reale Raten aus `contract_payments`, `months` = Kalendermonate erste↔letzte Rate + 1, berechnet in PHP via Carbon — portabel für SQLite-Tests; ohne Parameter: festgesetzte Ratenanzahl). Bei `actual`/`months` liefert die Antwort `excluded_without_plan` (Verträge ohne Zahlungsplan, die ausgeblendet wurden). `payment-failures` kennt zusätzlich `installments` (kommaseparierte Laufzeiten, z.B. `18,19`) und `group=installment` (Buckets je Ratennummer statt Viertel; Antwort-Feld `group`). Der Vergleichsmodus ist rein clientseitig: das Frontend ruft den Endpoint zweimal mit unterschiedlichen Filtern auf.
+**Filter:** Alle Endpoints akzeptieren `branch_id`, `date_from`, `date_to`, `seller_id` sowie `body_zones` (`full` = Ganzkörper via `is_full_body`, numerisch = exakte KPZ-Anzahl). Der KPZ-Filter wird von den Sektionen „Vertragslaufzeiten" und „Zahlungsausfälle" genutzt. `contract-terms` kennt zusätzlich `only_active=1` (nur Status `active`) und `term_mode` (`actual` = reale Raten aus `contract_payments`, `months` = Kalendermonate erste↔letzte Rate + 1, berechnet in PHP via Carbon — portabel für SQLite-Tests; ohne Parameter: festgesetzte Ratenanzahl). Bei `actual`/`months` liefert die Antwort `excluded_without_plan` (Verträge ohne Zahlungsplan, die ausgeblendet wurden). `payment-failures` kennt zusätzlich `group=decile` (zehn Abschnitte der eigenen Laufzeit, Karte und App), `group=installment` (Buckets je Ratennummer, nur noch API) und `installments` (kommaseparierte Laufzeiten, nur noch API — die Karte sendet ihn seit 30.09.2026 nicht mehr); Antwort-Feld `group`. Der Vergleichsmodus ist rein clientseitig: das Frontend ruft den Endpoint zweimal mit unterschiedlichen Filtern auf.
 
 **Charts:** Seit Juli 2026 laufen **alle** Diagramme der Seite auf **Apache ECharts** (Migration von Chart.js abgeschlossen, siehe `charts.instructions.md`):
 
