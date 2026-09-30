@@ -54,6 +54,16 @@
 
     <small>Nutzerhandbuch: Serie *Laser*</small>
 
+- :material-cash-register: **Kasse**
+
+    ---
+
+    Kassenabschluss je Standort: zählen, mit Phorest „Erwartet“ abgleichen, Tresor, Bankeinzahlung, Kommentar fürs Büro.
+
+    [:octicons-arrow-right-24: Kasse](../KASSE.md)
+
+    <small>Nutzerhandbuch: Betrieb 5, App 23</small>
+
 - :material-store: **Institute & Personal**
 
     ---
