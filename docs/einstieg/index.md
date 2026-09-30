@@ -16,9 +16,9 @@
 
     ---
 
-    Cloud Run, Cloud SQL, IAP, Scheduler, Storage, Queue-Worker. Push auf `develop` deployt Staging, Push auf `main` Prod; Migrationen laufen beim Container-Start.
+    Cloud Run, Cloud SQL, IAP, Scheduler, Storage, Queue-Worker, Echtzeit-Dienst. Push auf `develop` deployt Staging, Push auf `main` Prod; Migrationen laufen beim Container-Start.
 
-    [:octicons-arrow-right-24: Cloud-Infrastruktur](../CLOUD-INFRASTRUKTUR.md) · [Scheduler](../CLOUD-SCHEDULER-SETUP.md) · [Queue-Worker](../QUEUE-WORKER.md)
+    [:octicons-arrow-right-24: Cloud-Infrastruktur](../CLOUD-INFRASTRUKTUR.md) · [Scheduler](../CLOUD-SCHEDULER-SETUP.md) · [Queue-Worker](../QUEUE-WORKER.md) · [Echtzeit (Reverb)](../REVERB-ECHTZEIT.md)
 
 - :material-shield-check: **Sicherheit**
 

@@ -130,6 +130,7 @@ nav:
       - Cloud Scheduler (Cronjobs): CLOUD-SCHEDULER-SETUP.md
       - Cloud Storage: CLOUD-STORAGE-SETUP.md
       - Queue-Worker: QUEUE-WORKER.md
+      - Echtzeit (Laravel Reverb): REVERB-ECHTZEIT.md
       - Security-Hardening: SECURITY-HARDENING.md
     - Performance:
       - Performance-Optimierung: PERFORMANCE-OPTIMIZATION.md

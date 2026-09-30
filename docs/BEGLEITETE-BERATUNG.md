@@ -116,6 +116,35 @@ Notwendigkeit den Gesamtpreis nennen).
   Logo, Körperkarte aus `body_graphic`).
 - iPad: Knopf in der nativen Terminansicht, Raumauswahl als Popover, Presenter eingebettet.
 
+### Etappe 2 (30.09.2026)
+
+| Folientyp | Inhalt | Presenter | Payload |
+| --- | --- | --- | --- |
+| `laser`, `growth` | `headline`, `steps` | Schritt vor/zurück („Weiter“ schaltet erst die Schritte) | `step` |
+| `calculator` | `headline` | Alter, Methode, Rechnen (Zonen aus der Körperkarte) | `state.calculator` (`ShavingCalculator`) |
+| `media` | `media_id`, `caption` | Abspielen/Pause | `media` (signierte URL der Mediathek) |
+| `testimonials` | `headline` | — | `testimonials`, `rating` (Bildschirm-Modul) |
+| `gallery` | `headline` | Bild wählen | `gallery` (Tag `vorher-nachher` + Zone; Paare mit `vorher`/`nachher`), `state.gallery_index` |
+| `appointment` | `headline` | Vorschläge „in 3 Tagen/3 Wochen“, Slot antippen = buchen | `state.appointment` |
+| `compare` | `headline`, `columns`, `rows` | — | Zeilen im Editor als „Kriterium \| ja: Notiz \| nein \| teils: Notiz“ |
+
+- **Einwand-Folien:** `consultation_deck_slides.is_hidden`; `next`/`prev` überspringen sie, Befehl
+  `objection` schiebt ein und merkt `state.return_index`, `return` springt zurück.
+- **Preisfolie:** `package_offer.discounts` aus `PriceList::getApplicableDiscounts()` mit
+  `discountCentsForRate()` (Prozent auf eine Rate). Ein durchgestrichener Normalpreis existiert im
+  Datenmodell nicht — kommt mit der Preis-Neugestaltung.
+- **Rasierer-Rechner:** `App\Services\GuidedConsultation\ShavingCalculator`, Port von WPglatttRechner
+  (Werte in `config/shaving_calculator.php`, 16 Paritätsfälle in `ShavingCalculatorTest`). Näherungen:
+  Epilieren rechnet wie Waxing, Enthaarungscreme wie Rasieren, Frauenwerte, Hochrechnung bis 60.
+- **Unterschrift live:** `form-fill.js` schickt viewBox und Pfade aus dem SVG von `signature-pad.js`;
+  der Hub lässt nur Pfadzeichen durch. In SVG funktioniert `<template x-for>` nicht — alle Striche
+  als ein Pfad.
+- **Echtzeit:** Reverb, siehe [Echtzeit mit Reverb](REVERB-ECHTZEIT.md). Hub sendet nach jedem Befehl
+  `guided.changed` (nur `rev` und `uuid`); Presenter fragt mit Socket nur noch alle 10 s ab. Ohne
+  eingerichteten Dienst bleibt alles bei der Sekunden-Abfrage.
+- Interne Zustandswerte beginnen mit `_` (z. B. `_appointment_services`) und gehen nie an Presenter
+  oder Fernseher.
+
 ### Fallstricke
 
 - `ClientStatistic` heißt die Kunden-ID `phorest_client_id`, nicht `client_id`.
@@ -139,4 +168,5 @@ Notwendigkeit den Gesamtpreis nennen).
 
 | Datum | Änderung |
 | --- | --- |
+| 30.09.2026 | Etappe 2: Animationen, Rechner, Medien, Kundenstimmen, Vorher/Nachher, Ersttermin, Vergleich, Rabatte, Einwände, Unterschrift live, Reverb |
 | 30.09.2026 | Erster Aufschlag auf Staging: Presenter Variante A, Fernseher im Browser, Decks je Institut, Vorlage nach Leitfaden, Formular-Spiegel, Protokoll-Vorschlag, Apple-TV-Endpunkt, nur Super-Admin |
