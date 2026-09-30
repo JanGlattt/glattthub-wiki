@@ -1,9 +1,12 @@
 # Flexible Preise
 
-!!! info "Stand 30.09.2026: Etappe 1 von 3"
-    Preismodell, Rechner und Preislisten-Editor sind auf Staging. Vertragsformular, Institutsseite,
-    Vertragsanlage und Zahlungsplan nutzen das Modell erst mit Etappe 2 — bis dahin verkauft niemand
-    zu flexiblen Preisen. Plan und Entscheidungen: Claude-Doc „Flexible Preise — Plan“.
+!!! info "Stand 30.09.2026: Etappe 2 von 3"
+    Preismodell, Rechner, Preislisten-Editor und der Verkaufsweg (Vertragsformular im Hub,
+    Formular-Link, Institutsseite, Vertragsanlage, Zahlungsplan, PDF) sind auf Staging. Solange
+    keine flexible Preisliste aktiv ist, verkauft niemand zu flexiblen Preisen. Vor dem Verkauf:
+    Rechtstexte der Formulare anpassen. Offen (Etappe 3): Preisfolie der Beratung, Statistik-Bereiche,
+    Fernabsatz-Änderung, App-Anzeige, Klickanleitungen. Plan und Entscheidungen: Claude-Doc
+    „Flexible Preise — Plan“.
 
 ## Für Endanwender
 
@@ -62,18 +65,57 @@ Gesamtpreise, fest weiter Laufzeit und Rate), Speichern, Duplizieren und Sperrpr
 Grenzen, Gesamt-/Normalpreis sind preisrelevant). Beispielrechnung je Paket über
 `POST /hub/contracts/prices/quote-preview` — der Editor rechnet nie selbst.
 
-### Etappe 2 (Verkaufsweg) — Fallstricke aus der Analyse
+### Verkaufsweg (Etappe 2)
 
-- `Contract::signingDiscountCents()` leitet den Rabatt aus Rate × Laufzeit − Vertragswert ab und
-  würde den Rest der letzten Rate als Rabatt lesen → für flexible Verträge `discount_cents`.
-- Zahlungsplan (`GoCardlessPaymentPlanService`), Kaskade, Rebuild, Pausen-Fallback und PDF-Anlage 1
-  setzen gleiche Raten voraus → `last_installment_cents`.
-- Hub- und Link-Formular prüfen den Preis heute serverseitig nicht nach; die Hub-Preisberechnung
-  liefert den Zahlungsmodus nicht mit (Formular zeigt bei „alle per SEPA“ „1. Rate vor Ort“).
-- Rechtstexte der Formulare nennen Laufzeiten → vor dem Verkauf anpassen.
+**Preisberechnung.** `calculate-price` (Hub `ContractPriceController`, Link `SharedFormController`,
+Institut `SharedInstitutePageController`) liefert je Preisliste zusätzlich `pricing_model` und
+`installment_mode` (Bugfix: im Hub fehlte der Zahlungsmodus, das Formular zeigte bei „alle per SEPA“
+„1. Rate vor Ort“). Flexible Listen liefern **eine Option je passendem Paket**, erzeugt von
+`FlexiblePriceCalculator::option()` über `App\Services\Pricing\PriceOptionsService`: Vorbelegung,
+erlaubter Bereich (`range`), Normalpreis, Einmalzahlung, formatierte Texte.
+
+**Angebot für eine Wahl.** `POST /hub/contracts/flex-quote`, `POST /api/shared/form/{token}/flex-quote`,
+`POST /api/shared/institut/{token}/flex-quote` — Body `{price_group_id, mode: months|rate, value,
+discount_id}` (Rate in Cent, volle Euro). Geprüft wird: Paket in aktiver, heute gültiger flexibler Liste
+für den Standort (Link/Institut: Standort des Tokens), Rabatt aus derselben Liste. Antwort ist die Option
+mit eingerechnetem Rabatt. Die öffentlichen Seiten laufen über den Limiter `shared-page`, seit Etappe 2
+je echter Client-Adresse **und** Token (`ClientIp::of()`), weil der Regler zusätzlich anfragt.
+
+**Formular.** `public/js/components/flex-price-mixin.js` (`window.glatttFlexPriceMixin`) wird in
+`form-fill.js` und `shared-form-fill.js` eingemischt (nur Werte/Methoden, keine Getter — Spread friert
+sie ein). Der Browser rechnet nicht: Regler (Laufzeit) oder Eingabe (Rate) → 250 ms entprellt →
+`flex-quote` → Option ersetzt die Auswahl, das Ratenfeld zeigt danach immer die tatsächlich gerechnete
+Rate. Markup im `_field-renderer` (`.flex-price-*` im Theme), Skript-Include in
+`hub/forms/fill`, `forms/shared-fill` und der Terminansicht. Zusätzliche Schlüssel im Feldwert:
+`pricing_model`, `flex_mode`, `flex_value`, `last_installment_cents`, `discount_cents`,
+`regular_total_cents`, `upfront_total_cents`; `final_total_cents` = Betrag bei Ratenzahlung.
+
+**Institutsseite.** `institute-page.js` + `modal-sale.blade.php` mit derselben Bedienung;
+`storeSale` rechnet über `resolveFlexibleSelection()`/`verifyPricePayload()` nach, Abweichung → 422 mit
+deutscher Meldung (ValidationException wird im Controller abgefangen).
+
+**Vertragsanlage.** `ContractCreationService` rechnet flexible Preise aus (Paket, Modus, Wert, Rabatt)
+neu — bei Einmalzahlung Modus `upfront` — und lehnt Abweichungen ab („Der Preis hat sich geändert …“).
+Die Validierungsregel des Feldtyps `contract_price` (`FormField`) prüft die Pflichtschlüssel. Feste
+Listen werden weiter nur geloggt. Gespeichert: `pricing_model`, `base_total_cents`,
+`regular_total_cents`, `discount_cents`, `last_installment_cents`.
+
+**Zahlungsplan & PDF.** `Contract::installmentAmountCents($n)` liefert je Rate den Betrag (letzte Rate
+= `last_installment_cents`); `GoCardlessPaymentPlanService` und `YearEndReportService` nutzen ihn.
+`signingDiscountCents()` ist bei flexiblen Verträgen 0 — der Rabatt steckt schon im Gesamtpreis.
+`hub/forms/pdf.blade.php` zeigt „N Raten à X €, letzte Rate Y €“, den Normalpreis durchgestrichen und
+Anlage 1 auch bei ungleicher letzter Rate.
+
+**Fallstricke.**
+
+- Rechtstexte der Formulare nennen feste Laufzeiten → vor dem ersten Verkauf anpassen.
+- Neue Stelle, die Raten liest? Immer `installmentAmountCents()`, nie `monthly_amount_cents` × Anzahl.
+- Tests: `FlexibleContractCreationTest`, `SharedInstitutePageTest`, `FlexiblePriceListTest`,
+  `Unit/Pricing/FlexiblePriceCalculatorTest`.
 
 ## Changelog
 
 | Datum | Änderung |
 | --- | --- |
 | 30.09.2026 | Etappe 1: Preismodell, Rechner, Editor mit Beispielrechnung |
+| 30.09.2026 | Etappe 2: Verkaufsweg — Formular, Formular-Link, Institutsseite, flex-quote, Nachrechnen, Zahlungsplan, PDF |
