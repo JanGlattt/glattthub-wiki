@@ -250,6 +250,13 @@ Team-Sicht entscheidet `TipStatisticsService` anhand von `view_team_tips`.
 
 ### Gotchas
 
+- **Kundenlinks nie mit `url()`:** `url()` übernimmt den Host der Anfrage — ein Testversand aus
+  der App erzeugte Links auf `app.hub.glattt.com`. Alle /shared/*-Links laufen seit 30.09.2026 über
+  `App\Support\PublicUrl::to()` mit `config('app.public_url')` (`PUBLIC_URL`, Prod
+  `https://hub.glattt.com`, gesetzt in `cloudbuild*.yaml`) — auch Bezahlseite, Gutschein,
+  Formular- und Buchungslinks, Zufriedenheit.
+- **`{institut}` vs. `{stadt}`:** `{institut}` ist der volle Name („glattt Bielefeld“), `{stadt}`
+  nur der Ort. Die Standardtexte nutzen `{stadt}`.
 - **`appointment_date` ist eine Datum-Spalte mit date-Cast:** SQLite speichert „YYYY-MM-DD
   00:00:00"; Bereiche immer gegen volle Zeitstempel (`startOfDay`/`endOfDay`) vergleichen, sonst
   fehlt der letzte Tag.
@@ -276,4 +283,5 @@ Team-Sicht entscheidet `TipStatisticsService` anhand von `view_team_tips`.
 
 | Datum | Änderung |
 |---|---|
+| 30.09.2026 | Kundenlinks über `PublicUrl`, Mail mit Logo und Behandlerin (Foto/Initiale, Vorname), Knopf an der Stelle des Links, Platzhalter `{stadt}`, Bewertungsseite überarbeitet (Abstände, Wort-Rückmeldung zu Sternen, Kommentar klappt auf, Einblenden) |
 | 29.09.2026 | Modul angelegt (Etappen 1–4): Nachricht nach der Behandlung, Bewertungsseite mit Trinkgeld, Admin je Standort, Seite „Trinkgeld", Berichte, Startseite, Terminansicht, Kundenprofil, native App |
