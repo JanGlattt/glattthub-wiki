@@ -584,6 +584,18 @@ Datenarten Geräte-ID und Diagnose, kein Tracking) — die iOS-App und die Widge
 haben seit 25.09.2026 ebenfalls eins. Name der App ist **glattt Screen** (Singular,
 `CFBundleDisplayName`); Produkt, Schema und User-Agent heißen weiter `glatttScreens`.
 
+### Beratungsmodus (seit 30.09.2026, erster Aufschlag)
+
+Bildschirme der Zone „Raum“ bekommen im Heartbeat `consultation: {active, poll_seconds: 1}`. Dann
+fragt `ScreenState` in einer eigenen Schleife `GET /api/tv/consultation?rev=N` ab (Bremse `tv-live`,
+240/min; 204 ohne Änderung, bei Fehlern bleibt die letzte Folie stehen, Rückzug bis 10 s). Läuft ein
+Gespräch, pausiert das Programm und `ConsultationView` zeigt die Folien nativ: weiß mit Logo, Maße
+in Prozent der Breite wie die Web-Vorschau, Körperkarte aus den Hub-Ebenen (`body_graphic`, Bilder
+auf 1400 px verkleinert und zwischengespeichert). Heartbeat meldet nur „Beratungsgespräch“, nie den
+Gastnamen; Ereignisse `consultation_started`/`consultation_ended`. Die Revision zählt je Fernseher
+fortlaufend, damit ein neues Gespräch nie die Revision des alten trägt. Details:
+`BEGLEITETE-BERATUNG.md`.
+
 ### Fallstricke
 
 - **Custom-Views im Admin kennen keine Tailwind-Klassen.** Das Panel nutzt kein kompiliertes

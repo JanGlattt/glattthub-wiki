@@ -1375,6 +1375,20 @@ Kundenübersicht** den zuletzt geladenen Stand mit „Kein Netz · Stand 14:32 U
   `WidgetAPI.perform`) lässt jeden Hub-Aufruf scheitern; UI-Test `testOfflineFallback` lädt erst
   mit Netz und startet dann ohne (Bildbeweis `pad-offline-start.png`). Unit-Tests: `OfflineStoreTests`.
 
+### Begleitetes Beratungsgespräch in der Terminansicht (seit 30.09.2026, erster Aufschlag)
+
+Knopf „Begleitetes Beratungsgespräch“ (SF Symbol `tv`) in der nativen Terminansicht, nur wenn
+`GET /hub/beratung/begleitet/check` einen Beratungstermin meldet (403 ohne Recht
+`run_guided_consultation` → kein Knopf; erneute Prüfung, wenn zusammengeführte Services nachladen).
+Raumauswahl als Popover am Knopf (iPhone: Blatt), offline-Räume gesperrt. Nach
+`POST /hub/beratung/begleitet` öffnet der Presenter als `fullScreenCover` im kurzlebigen WebView
+(`?shell=native`, Web-Sitzung). Navigiert die Seite zurück auf `/hub/appointment/{b}/{a}` („Termin“
+oder Ende von „Beenden“), fängt `WebCoordinator` das ab (`HubWKWebView.onAppointmentPage`), schließt
+den Rahmen und lädt die Terminansicht neu. Lädt der Presenter nicht (Fehler, HTTP ≥ 400, 15 s),
+zeigt der Rahmen „Die Beratung konnte nicht geladen werden.“ mit „Erneut laden“ und „Schließen“.
+Status laut `.github/app-abdeckung.json`: die Decks-Seite ist `geplant`, der Presenter ist bewusst
+eingebettet (Formular-Engine im iframe). Technik: Wiki `BEGLEITETE-BERATUNG.md`.
+
 ### Jede neue Seite auch nativ — Bauplan (seit 25.09.2026)
 
 **Entscheidung Jan, 25.09.2026:** Jede **neue Hub-Seite** wird **auch nativ für iPhone und iPad**

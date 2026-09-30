@@ -10,7 +10,7 @@
 
     Terminübersicht und Terminansicht (Split-View am Tablet), Folgetermin, ideale Slot-Findung, Behandlungseinstellungen.
 
-    [:octicons-arrow-right-24: Terminansicht](../APPOINTMENT-VIEW.md) · [Terminübersicht](../APPOINTMENTS-OVERVIEW.md)
+    [:octicons-arrow-right-24: Terminansicht](../APPOINTMENT-VIEW.md) · [Terminübersicht](../APPOINTMENTS-OVERVIEW.md) · [Begleitetes Beratungsgespräch](../BEGLEITETE-BERATUNG.md)
 
     <small>Nutzerhandbuch: Serie *Terminansicht*</small>
 
