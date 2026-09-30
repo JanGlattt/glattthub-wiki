@@ -34,8 +34,9 @@ Janine (Büro) informieren. Der frühere Hinweis „nicht vor 20:50“ ist auf J
 |---|---|
 | `counts` | JSON `{"50000": 0, …, "1": 0}` — Stückzahl je Stückelung (`CashClosing::DENOMINATIONS`) |
 | `drawer_cents` | Kasse = Σ Stückzahl × Stückelung (Server rechnet, Client nur zur Anzeige) |
-| `safe_cents` | Tresor **nach** der Bankeinzahlung des Tages (Vorbelegung für den nächsten Tag) |
-| `bank_deposit_cents` | Bankeinzahlung des Tages |
+| `safe_cents` | Tresor **nach** den Bewegungen des Tages (Bank, Kasse) — Vorbelegung für den nächsten Tag |
+| `bank_deposit_cents` | Bankeinzahlung des Tages („→ zur Bank“) |
+| `safe_withdrawal_cents` | Aus dem Tresor in die Kasse gelegt („→ in die Kasse“, seit 29.09.2026, Befund 213) |
 | `total_cents` | Gezählt gesamt = Kasse + Tresor (Spalte „Total gezählt“ der Excel) |
 | `expected_cents` / `difference_cents` | Phorest „Erwartet“ und `total − expected` (beide nullable) |
 | `change_pending_cents` | Wechselgeld-Merker, mit Vorzeichen |
@@ -88,4 +89,5 @@ Standorte kein Abschluss vorliegt; im Laser-Modus steht er vorne. Snapshot-Test 
 
 | Datum | Änderung |
 |---|---|
-| 29.09.2026 | Modul angelegt (Hub + App), Entwürfe: Mischung aus „Tag für Tag“ und „Waage“ |
+| 29.09.2026 | Modul angelegt (Hub + App), Entwürfe: Mischung aus „Tag für Tag“ und „Waage“; vorerst nur Rolle Super-Admin |
+| 29.09.2026 | Tresor-Bewegungen direkt am Tresor: „→ zur Bank“ und „→ in die Kasse“ (Befund 213) |
