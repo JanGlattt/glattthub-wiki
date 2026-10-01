@@ -131,6 +131,30 @@ Ver-/Entschlüsselung ab, statt still den Portal-App-Key zu nehmen.
 - `customer_accounts`: Das Portal darf nur Anmelde-Spalten ändern (Spalten-GRANT), nie
   `phorest_client_id` — sonst ließe sich ein Konto auf einen fremden Kunden umbiegen.
 
+### Kunden-App „My glattt“ (iOS/iPadOS)
+
+Erster Aufschlag 01.10.2026 nach Entwurf A (gleiche fünf Reiter wie das Web). Ziel `MyGlattt` im
+iOS-Projekt (`ios/MyGlattt/`, Bundle `com.glattt.app`), vollständig nativ: Anmeldung mit Face ID,
+Zustimmung, Start mit Körper-Illustration der Vertragszonen (`zone-<key>` wie im Hub), Termine mit
+nativem Verlegen, Vertrag mit Einmalzahlung (Vorschau „von hinten“), Kasse im schlichten WebView
+(Apple Pay), neues Mandat mit Unterschrift (PencilKit), Unterlagen als PDF (QuickLook), Kontakt,
+Profil mit Passwort und Konto löschen.
+
+| Endpunkt (Portal-Host) | Zweck |
+|---|---|
+| `POST /api/app/v1/anmelden` | Token ausstellen (`portal_access_tokens`, nur Hash, 90 Tage gleitend) |
+| `GET /api/app/v1/ich`, `POST …/zustimmung` | Konto, fehlende Zustimmungen |
+| `GET …/uebersicht`, `…/termine`, `…/zahlungen`, `…/unterlagen`, `…/kontakt` | Daten wie im Web |
+| `POST …/termine/{id}/verlegen` | Übergabe → Hub `/api/shared/kundenportal/{uuid}` → `/api/shared/booking/{token}` |
+| `POST …/vertrag/{id}/einmalzahlung`, `GET …/zahlung/{uuid}` | Kasse starten, Status abfragen |
+| `GET …/vertrag/{id}/mandat`, `POST …/bankverbindung` | Mandatstext, neues Mandat |
+
+Die App-Gruppe läuft ohne `web`-Middleware (keine Sitzung, kein CSRF), Name `portal.app.*`.
+`/api/shared/booking/{token}/buchen` prüft den gewählten Slot frisch gegen die Suche; die Raum-ID
+verlässt den Hub nur verschlüsselt im Slot-Schlüssel. Staging-Builds melden sich einmal per Google
+(IAP) im WebView an. TestFlight: `ios/scripts/testflight-upload.sh myglattt` (Staging) bzw.
+`myglattt-prod`; der App-Datensatz in App Store Connect wird einmal von Hand angelegt.
+
 ## Betrieb: Einrichtung
 
 Einmalig, von Jan im Terminal (der Claude-Klassifizierer blockt Infrastruktur-Änderungen):
