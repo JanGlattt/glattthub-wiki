@@ -150,8 +150,8 @@ Profil mit Passwort und Konto löschen.
 | `GET …/vertrag/{id}/mandat`, `POST …/bankverbindung` | Mandatstext, neues Mandat |
 
 Die App-Gruppe läuft ohne `web`-Middleware (keine Sitzung, kein CSRF), Name `portal.app.*`.
-`/api/shared/booking/{token}/buchen` prüft den gewählten Slot frisch gegen die Suche; die Raum-ID
-verlässt den Hub nur verschlüsselt im Slot-Schlüssel. Staging-Builds melden sich einmal per Google
+`/api/shared/booking/{token}/buchen` prüft den gewählten Slot frisch gegen die Suche; die Raum-ID steht
+nur kodiert im Slot-Schlüssel und wird beim Buchen gegen die Suche geprüft. Staging-Builds melden sich einmal per Google
 (IAP) im WebView an. TestFlight: `ios/scripts/testflight-upload.sh myglattt` (Staging) bzw.
 `myglattt-prod`; der App-Datensatz in App Store Connect wird einmal von Hand angelegt.
 
