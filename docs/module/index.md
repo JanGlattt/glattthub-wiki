@@ -18,9 +18,9 @@
 
     ---
 
-    Kundenprofil mit zehn Reitern über Phorest-Daten, glattt-Pakete live und als nächtlicher Sync.
+    Kundenprofil mit zehn Reitern über Phorest-Daten, glattt-Pakete live und als nächtlicher Sync, Kundenportal my.glattt.com als eigener Dienst.
 
-    [:octicons-arrow-right-24: Kundenprofil](../CLIENT-DETAIL-MODULE.md) · [Pakete](../CLIENT-COURSES-MODULE.md)
+    [:octicons-arrow-right-24: Kundenprofil](../CLIENT-DETAIL-MODULE.md) · [Pakete](../CLIENT-COURSES-MODULE.md) · [Kundenportal](../KUNDENPORTAL.md)
 
     <small>Nutzerhandbuch: Serie *Kundenverwaltung*</small>
 

@@ -183,6 +183,7 @@ nav:
     - Kunden:
       - Kundenprofil: CLIENT-DETAIL-MODULE.md
       - glattt-Pakete (Client Courses): CLIENT-COURSES-MODULE.md
+      - Kundenportal (my.glattt.com): KUNDENPORTAL.md
     - Formulare:
       - Formular-Editor: FORM-EDITOR.md
       - Rechtsdokumente: LEGAL-DOCUMENTS.md
