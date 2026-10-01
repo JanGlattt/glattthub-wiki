@@ -266,10 +266,18 @@ SendAppointmentReminderJob
   (Migration `2026_08_27_120000`).
 - **RCS als konfigurierbarer Ausbau** (27.08.): sobald ein verifizierter
   Twilio-RCS-Absender existiert (Marken-Profil mit Logo, „Überprüft von
-  <Carrier>" — Verifizierung über Twilio/Google nötig), wird nur
-  `TWILIO_RCS_SENDER` gesetzt: Nachrichten gehen dann als RCS raus und
-  fallen bei Empfängern ohne RCS automatisch auf die SMS mit Absender
-  „glattt" zurück (`FallbackFrom`). Kein Code-Änderungsbedarf.
+  <Carrier>" — Verifizierung über Twilio/Google nötig), wird
+  `TWILIO_RCS_SENDER` auf die SID eines **Messaging Service** (`MG…`)
+  gesetzt, in dessen Absender-Pool der RCS-Absender und die Sender ID
+  „glattt" liegen. Versand dann mit `MessagingServiceSid` + `FallbackFrom`:
+  Twilio versucht RCS zuerst und fällt bei Empfängern ohne RCS auf die SMS
+  zurück. **Fallstrick (01.10.2026):** `FallbackFrom` wirkt laut Twilio nur
+  über einen Messaging Service — mit dem RCS-Absender (`rcs:…`) direkt im
+  `From` gibt es keinen Rückfall (der erste Stand bis 01.10.2026 tat genau
+  das). Ein `rcs:…`-Wert bleibt als reiner RCS-Testversand möglich.
+  Freigabe Google/Twilio für DE am 01.10.2026 erteilt; Service
+  „glattt | Termine", eingehende Nachrichten per Webhook auf
+  `/api/webhooks/twilio`.
 - **RCS-Karten im Backend gestaltbar** (28.08.): je Erinnerungsstufe eine
   Rich Card — Bild-URL, Titel (Platzhalter), bis zu 2 Buttons (Verlege-Link
   oder feste URL) und bis zu 3 Antwort-Chips. Beim Speichern synchronisiert
@@ -363,7 +371,7 @@ Variablen-Zuordnung im Admin: 1 = Vorname, 2 = Standort-Name, 3 = Termin-Datum,
   bewusst noch kein Retry/429-Handling — bei Skalierungsproblemen dort ansetzen.
 - **Twilio-Konfiguration** (Cloud-Run-Env bzw. `.env`): `TWILIO_ACCOUNT_SID`,
   `TWILIO_AUTH_TOKEN`, `TWILIO_SMS_SENDER_ID` (Default `glattt`, max. 11
-  Zeichen), optional `TWILIO_RCS_SENDER`. Ohne Credentials wird der SMS-Kanal
+  Zeichen), optional `TWILIO_RCS_SENDER` (Messaging-Service-SID `MG…`). Ohne Credentials wird der SMS-Kanal
   mit klarem Grund übersprungen. Alphanumeric Sender IDs funktionieren nur
   auf bezahlten Twilio-Accounts.
 
