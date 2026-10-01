@@ -29,6 +29,7 @@ Fallstricke**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
     - [Trinkgeld, Gebühr und Auszahlung](#trinkgeld-gebuhr-und-auszahlung)
     - [Auswertungen](#auswertungen)
     - [Terminansicht, Kundenprofil, Startseite](#terminansicht-kundenprofil-startseite)
+    - [Dank nach dem Trinkgeld (My glattt)](#dank-nach-dem-trinkgeld-my-glattt)
     - [Dateien](#dateien)
     - [Gotchas](#gotchas)
     - [Verweise](#verweise)
@@ -229,6 +230,33 @@ Team-Sicht entscheidet `TipStatisticsService` anhand von `view_team_tips`.
   `bonus_hero`), `AppStartService` liefert `tips` aus `TipStatisticsService::me()` — ohne je eine
   Anfrage als Behandlerin fehlt der Abschnitt still.
 
+### Dank nach dem Trinkgeld (My glattt)
+
+Entwurf 5 von Jan (01.10.2026, TestFlight M52): Ist ein Trinkgeld in der Kunden-App **vom Hub
+als bezahlt bestätigt**, öffnet sich einmal je Anfrage ein Vollbild-Dank. Mit Foto-Freigabe
+(`feedback_photo_consent`) fällt ein Polaroid herein, auf das sich „Danke“ schreibt; ohne Foto
+springt ein großes goldenes Herz auf, darunter „Danke“ und „von {Vorname}“. Herzen steigen auf,
+danach Betrag, Dankestext als Notiz und „Fertig“ (rund 3 s, „Bewegung reduzieren“ = sofort fertig).
+Lief die Zahlung über „wird verarbeitet“, kommt der Dank, sobald `tip_paid_cents` im Datenstand
+steht (gemerkt in `UserDefaults` `tipThanked.<uuid>`).
+
+- **Text:** `TreatmentFeedbackSetting::thankYouText()` — zuerst `users.tip_thank_you_text`
+  (die Mitarbeiterin selbst), sonst `treatment_feedback_settings.thank_you_text` (Standort,
+  Admin), sonst `DEFAULT_THANK_YOU_TEXT`. Platzhalter `{kundin}`, `{behandlerin}` (alt:
+  `{vorname}`, `{stadt}`); ohne Vornamen bleibt kein „Liebe ,“ stehen. Höchstens 300 Zeichen.
+  Der Hub schreibt den fertigen Text als `feedback.thank_you_text` in den Portal-Datenstand.
+- **Pflege:** Web-Profil-Karte „Dein Dank fürs Trinkgeld“ (`hub/profile/partials/thank-you-text`,
+  nur für Phorest-verknüpfte Konten), glatttHub-App Einstellungen → Darstellung → „Trinkgeld“
+  und einmaliger Schritt auf der Startseite (`should_prompt`, „Später“ setzt
+  `tip_thank_you_prompted_at`). Endpunkte `GET|PUT /hub/profile/thank-you`,
+  `POST /hub/profile/thank-you/prompted` (`ProfileThankYouController`, für Web und App).
+- **Schrift:** „Danke“ ist keine Schrift-Darstellung, sondern ein nachgezeichneter Pfad in der
+  Form von Dancing Script, gezeichnet wie „Pfad trimmen“ mit Pinselstift-Breite (abwärts dick,
+  aufwärts dünn, in Kurven langsamer). Native Umsetzung `PenInk`/`PenWriting`
+  (`ios/MyGlattt/Design/DankeWriting.swift`); dasselbe Verfahren schreibt seit 01.10.2026 das
+  „My“ im Startbild. Die Web-Vorschau im Profil nutzt die Schrift selbst
+  (`public/fonts/DancingScript-Regular.ttf`, OFL).
+
 ### Dateien
 
 - Services: `app/Services/TreatmentFeedback/` (`TreatmentFeedbackScheduler`,
@@ -283,5 +311,6 @@ Team-Sicht entscheidet `TipStatisticsService` anhand von `view_team_tips`.
 
 | Datum | Änderung |
 |---|---|
+| 01.10.2026 | Dank nach dem Trinkgeld in My glattt (Polaroid/Herz, geschriebenes „Danke“), eigener Dankestext am Hub-Konto, Standardtext je Standort |
 | 30.09.2026 | Kundenlinks über `PublicUrl`, Mail mit Logo und Behandlerin (Foto/Initiale, Vorname), Knopf an der Stelle des Links, Platzhalter `{stadt}`, Bewertungsseite überarbeitet (Abstände, Wort-Rückmeldung zu Sternen, Kommentar klappt auf, Einblenden) |
 | 29.09.2026 | Modul angelegt (Etappen 1–4): Nachricht nach der Behandlung, Bewertungsseite mit Trinkgeld, Admin je Standort, Seite „Trinkgeld", Berichte, Startseite, Terminansicht, Kundenprofil, native App |

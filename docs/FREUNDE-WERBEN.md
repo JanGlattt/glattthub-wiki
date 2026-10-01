@@ -30,6 +30,7 @@ Aktion; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
     - [Frontend](#frontend)
     - [Push-Benachrichtigung (Automation)](#push-benachrichtigung-automation)
     - [Tests](#tests)
+    - [Kunden-App „My glattt“](#kunden-app-my-glattt)
 - [Chronik der Änderungen](#chronik-der-anderungen-neueste-zuerst)
 
 ---
@@ -161,6 +162,7 @@ Direktzahlungs-Beleg) bzw. bei Direktzahlerinnen auf dem Vertragsabschluss:
 | *Auszahlbar* (`ready`) | `payout_ready_at` gesetzt, `payout_confirmed_at` leer | Zeile grün hervorgehoben |
 | *Ausgezahlt* (`paid_out`) | `payout_confirmed_at` gesetzt | mit Datum und bestätigendem Benutzer; ggf. Kennzeichnung „Rückbuchung nach Auszahlung" (`chargeback_after_payout_at`) |
 | *Blockiert* (`blocked`) | erster Einzug geplatzt oder Vertrag storniert — vor der Auszahlung | — |
+| *Abgelehnt* (`rejected`) | vom Büro „Endgültig ablehnen“ (`rejected_at`, optional `rejected_reason`) — keine Auszahlung, der nächtliche Lauf gibt nicht mehr frei | Knopf im Auszahlungs-Dialog, „Ablehnung zurücknehmen“ möglich (Recht `manage_referral_payouts`) |
 
 - `confirmed`/`paid` + 7 Tage Karenz (ab `paid_at`, Fallback Fälligkeit) → Scheduler setzt
   `payout_ready_at` mit **normalem `save()`** → Notification-Automation („updated") feuert
@@ -222,12 +224,49 @@ Benachrichtigungen** festgelegt (aktionsbasierte Automation, siehe `NOTIFICATION
 
 ---
 
+### Kunden-App „My glattt“
+
+Seit 01.10.2026 (Jan) eigener Reiter **Freunde** in der Mitte der Tab-Leiste — goldenes Geschenk,
+„Neu“ bis zum ersten Öffnen, danach der freigegebene Betrag als Kennzeichen; der aktive Reiter ist
+dunkel. Das Profil sitzt dafür als Initiale oben rechts auf der Startseite (`CustomerAvatar`, für
+ein späteres Profilbild vorbereitet: `photo_url`).
+
+- **Werbe-Code:** `customer_accounts.referral_code` (6 Zeichen ohne 0/O/1/I/L), vergibt der Hub
+  beim Anlegen des Kontos (`CustomerAccount::booted`), Bestand per Migration. Der
+  **Einladungslink** `PortalAppController::referralLink()` → `https://glattt.com/?w=CODE&utm_*…#termin`
+  (Basis `portal.referral_link` / `PORTAL_REFERRAL_LINK`) ist zugleich Inhalt des QR-Codes.
+- **Werbe-Karte** im Kreditkarten-Format (Entwurf 3): Antippen zeigt den Code groß, Helligkeit auf
+  100 %. „Einladen mit Link“ teilt Bild + Text mit Link, „Nur QR-Code“ nur das Bild (Freundin hat
+  schon gebucht). Onboarding als **Stories** beim ersten Öffnen (`ReferralOnboarding`, vier Szenen,
+  nativ gezeichneter 50-€-Schein `EuroNote50`).
+- **Scan im Formular:** Werber-Block unter dem Preis-Element → „Karte scannen“ (derselbe
+  html5-qrcode-Scanner wie die Gutscheine); `GET /api/forms/referrer-by-code?code=` →
+  `ContractReferralService::referrerByCode()` liest `?w=` aus dem Link oder den nackten Code und
+  liefert den Werber im Format der Suche. Erkennt der Gutschein-Scanner einen Werbe-Link, geht
+  er ebenfalls an den Werber. Die Suche nach **Name und Kundennummer** bleibt unverändert.
+- **Stand für die App:** `PortalSnapshotService::referrals()` schreibt `snapshot.referrals`
+  (Freundinnen als „Lisa M.“, Status `referred|ready|paid_out|review|rejected`, Freigabe-Datum,
+  geworben von, maskierte Prämien-IBAN). Der Portal-Dienst liest nur die Kopie:
+  `GET /api/app/v1/freunde` (`?aktualisieren=1` holt frisch).
+- **Prämien-IBAN aus der App:** `POST /api/app/v1/freunde/bankverbindung` → Auftragsbuch
+  `referral_iban` (IBAN mit `PortalCrypt` verschlüsselt) → Hub schreibt sie an
+  `customer_accounts.referral_payout_iban` und an alle **nicht ausgezahlten** Werbungen;
+  neue Werbungen übernehmen sie beim Anlegen (`ContractReferral::booted`).
+- **Testdaten:** Migration `seed_referral_test_data_for_test_client` legt nur auf Staging/lokal für
+  das Testkonto (Phorest `3ruXMx…`) je einen Fall pro Status an (`TEST-FW-1…6`, Magdeburg).
+- Tests: `PortalReferralsTest`.
+
 ## Chronik der Änderungen (neueste zuerst)
 
 Die Update-Blöcke in der Reihenfolge ihres Entstehens — jeweils mit Anlass, fachlicher Wirkung
 und technischer Umsetzung. Das aktuell gültige Verhalten ist oben in den [Fachregeln](#fachregeln)
 eingearbeitet; neue Erkenntnisse werden dort ergänzt, die Chronik wächst nur um den Verweis.
 Bedienung: Nutzerhandbuch, Verkauf 2.
+
+### Update 01.10.2026 — Freunde werben in „My glattt“
+
+Eigener Reiter in der Kunden-App mit Werbe-Karte, Onboarding, Verlauf und Prämien-IBAN; Scan
+der Werbe-Karte im Formular; Status „Abgelehnt“ fürs Büro. Siehe [Kunden-App](#kunden-app-my-glattt).
 
 ### Update 30.07.2026 (2) — Werber ohne Hub-Vertrag & klickbare Liste
 
