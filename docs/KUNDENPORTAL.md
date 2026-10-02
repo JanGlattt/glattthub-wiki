@@ -24,7 +24,31 @@ nicht zugestellte Nachrichten erneut senden, Konten sperren und Einladungen neu 
 Auftrag kommt eine Mitteilung (Modul „Kundenportal“ im Benachrichtigungs-Katalog). GoCardless wird
 dabei nie automatisch angefasst.
 
+Seit 02.10.2026 ist die Büro-Seite ein **Posteingang mit Kontext** (Entwurf A). Er steht im Web und
+nativ in der glatttHub-App auf iPhone und iPad. Zu jedem Auftrag zeigt die Seite Restbetrag, nächste
+Rate und offene Forderungen. Bei Bankverbindungen steht die bisherige neben der neuen, dazu kommen
+automatische Prüfpunkte. Abgelehnt wird mit Grund, und die Kundin erfährt ihn auf Wunsch per E-Mail
+und Mitteilung. Erledigtes bleibt 30 Tage im Reiter „Erledigt“ sichtbar, Konten lassen sich durchsuchen.
+Die Zahl offener Aufträge steht am Menüpunkt.
+
 ## Für Entwickler
+
+### Büro-Seite „Posteingang mit Kontext“ (02.10.2026)
+
+- **Endpunkte** (Recht `manage_customer_portal`, Übernehmen/Verteilen zusätzlich `manage_gocardless`):
+  `GET /hub/kundenportal/data` (Aufträge mit `context`, `previous`, `checks`, dazu `reject_reasons`),
+  `GET /hub/kundenportal/verlauf?q=` (30 Tage), `GET /hub/kundenportal/konten?q=&status=&page=` (50 je Seite).
+  Dieselben Endpunkte nutzt die native Seite (`ios/glatttHub/CustomerPortal/`).
+- **Prüfpunkte** (`PortalOfficeService::mandateChecks`): IBAN-Prüfsumme, gleiche IBAN wie bisher,
+  Kontoinhaber:in = Kundin bzw. abweichender Zahler, Unterschrift vorhanden, Rate in den nächsten 5 Tagen
+  (könnte noch übers alte Konto laufen). Die Punkte sind nur Hinweise und sperren nichts.
+- **Ablehnen**: `reason` (`signature`/`holder`/`iban`/`other`) + optional `note`; Text aus
+  `PortalOfficeService::REJECT_REASONS` geht an die Kundin, wenn `notify` gesetzt ist — Mail-Vorlage
+  `bank_rejected` (Admin „Kunden-App · E-Mails“) und Push-Anlass `bank_rejected` (wichtig, kommt
+  immer; wie alle Anlässe zunächst **aus**).
+- **Zahl am Menüpunkt**: `PortalOfficeService::openCount()` (60 s Cache, nach jeder Aktion verworfen),
+  als Komponente `<x-customer-portal-badge />` — ein `@if` im Gruppen-Markup der Seitenleiste bricht
+  `SidebarNavGroupTest`.
 
 ### Architektur: eigener Dienst ohne Fremdschlüssel
 
@@ -217,6 +241,9 @@ Prüfen nach der Einrichtung: `https://my.glattt.com/anmelden` zeigt die Portal-
 
 - **01.10.2026** — Eigener Dienst ohne Fremdschlüssel (Architektur B): Portal-Modus, Auftragsbuch,
   Übergaben, Kopie am Konto, eigener Datenschlüssel, DB-Benutzer mit Minimalrechten.
+- **02.10.2026** — Büro-Seite als Posteingang mit Kontext (Web und nativ), Ablehnen mit Grund an die
+  Kundin, Verlauf, Kontensuche, Zahl am Menüpunkt. Ratenplan: geteilte Rate als eine Zeile, Karte
+  „Einmalzahlungen“ (M91).
 - **01.10.2026** — Büro-Seite „Kundenportal“ (Aufgabenliste) und drei Anlässe im
   Benachrichtigungs-Katalog.
 - **30.09.–01.10.2026** — Etappen 1–4: Zugang, Start/Termine/Vertrag, Verlegen und Kontakt,

@@ -1481,6 +1481,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Zukünftige/Vergangene Beratungsgespräche, Stornierte und gelöschte Termine, Terminstatistik | nativ | Berichtsseiten „Wie im Hub“, alle 21 Karten nativ (seit 27.09.2026) |
 | Alle 11 weiteren Berichtsseiten (Mitarbeiterperformance bis Office-Teammeeting) | nativ | Berichtsseiten „Wie im Hub“, jede Registry-Karte nativ (seit 27.09.2026) |
 | Eigene Dashboards | nativ | Kacheln, KPI-Zeile, Zeitraum wie im Web (seit 27.09.2026); Anlegen im eingebetteten Assistenten, Bearbeiten/Teilen in der Hub-Fassung |
+| Kundenportal (Büro) | nativ | Posteingang mit Kontext (seit 02.10.2026): Aufträge nach Art, Auftrag mit Restbetrag/nächster Rate/Forderungen, Bankverbindung alt → neu, Unterschrift, Prüfpunkte, Übernehmen/Verteilen mit Rückfrage, Ablehnen mit Grund; Erledigt, Konten mit Suche |
 | Unternehmensverträge | nativ | Fristen zuerst (seit 28.09.2026): Kennzahlen, Kosten nach Typ/Standort, Kündigungsfristen mit Ampel, Verträge nach Typ, Vertragsseite mit Dokumenten und Historie; Anlegen/Bearbeiten als eingebettetes Hub-Blatt (Wizard mit KI-Analyse) |
 | Bonus-Verwaltung | nativ | Monat im Griff (seit 28.09.2026): Abschluss-Checkliste, offene Widerrufe mit Segmented Control je Fall und Bereich, Minimalziele, Wert-Korrekturen, Zwischenstand/Final einfrieren (final ab Folgemonat, Warnung bei offenen Fällen), Unterseite Regelwerk mit Chips und Regel-Akte, Regel-Assistent in vier Schritten nativ, Sichtbarkeit je Nutzerin; iPad Abschnitte links |
 | Formulare | nativ | Liste und Akte (seit 28.09.2026): Suche, Chips, Marken, Erscheint bei, Beim Absenden, Aufbau, letzte Einreichungen mit PDF; Ausfüllen und Editor als eingebettete Hub-Blätter (`?shell=native`), Editor nur am iPad — Entscheidung Jan 28.09.2026: Web-Engine bleibt, kein nativer Nachbau |
@@ -2120,6 +2121,16 @@ Info) trägt die Sperre „Nachrichten nach der Behandlung“.
   Beenden-Blatt, `ClientFeedbackPreferenceCard` im Reiter Info.
 - **Nachweis:** `TipsSnapshotTests` (Segmente, Person, eigene Sicht, iPad, Modell-Prüfungen),
   Cockpit-Fixture `frameStaff` mit `tips`; PHP `TipsPageTest`, `TreatmentFeedbackTest`.
+
+### Native Büro-Seite „Kundenportal“ (Mehr-Seite, seit 02.10.2026)
+
+Entwurf A „Posteingang mit Kontext“ (Jan, 02.10.2026). `NativeMorePage.customerPortal` für den exakten
+Pfad `/hub/kundenportal`. Die Dateien liegen in `glatttHub/CustomerPortal/`: `CustomerPortalModel` (Laden,
+Aktionen über `jsonBody`, Offline-Stand), `CustomerPortalModels` (Zeilen aus `[String: Any]`,
+`nonisolated` + `Sendable` für den `OfflineStore`) und `CustomerPortalView` (Liste, Auftrag,
+Ablehnen-Blatt). Die Unterschrift lädt die App über `session.download` mit der Web-Sitzung und legt sie
+nicht ab. Übernehmen und Verteilen fragen per `confirmationDialog` am Knopf nach (Jan: gleiche Rechte
+wie im Web, kein Face ID). Snapshots: `CustomerPortalSnapshotTests` (Liste, Auftrag, Konten, iPad).
 
 ### Native Unternehmensverträge (Mehr-Seite, seit 28.09.2026)
 
