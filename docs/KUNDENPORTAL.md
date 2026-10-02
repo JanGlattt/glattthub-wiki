@@ -33,6 +33,25 @@ Die Zahl offener Aufträge steht am Menüpunkt.
 
 ## Für Entwickler
 
+### Web-Portal im Look der App (02.10.2026)
+
+Entwurf A (Jan, 02.10.2026). Ab 900 px Seitenleiste wie die iPad-Fassung von My glattt (Profil mit Punkt
+für ungelesene Mitteilungen unten), darunter genau die App mit schwebender Tab-Leiste: Start, Termine,
+Freunde, Paket, Kontakt.
+
+- **Farben** als Variablen `--mg-*` auf `.portal-app` (Abschnitt „KUNDENPORTAL im Look der App“ in
+  `theme_glattt.css`), Werte aus `ios/MyGlattt/Design/Theme.swift`, Dunkelmodus über `.dark`.
+- **Startseite**: Begrüßung mit Profilbild (`portal.partials.avatar`), dunkle Terminkarte mit „Verlegen“
+  (Schalter `reschedule_enabled`) und „In Kalender“ (`webcal://`-Abo, Schalter `calendar_enabled`),
+  Paket-Karte aus `PortalPaymentService::overview`, Körperfigur `portal.partials.body-zones`. Die Figur
+  nutzt die Hub-Grafiken `public/images/koerperzonen` als CSS-Masken in Gold (je Zone eine Klasse
+  `portal-body-zone-<key>`), der Ring ist ein SVG mit `stroke-dasharray`.
+- **Freunde werben im Web** (`/freunde`, `PortalFriendsController`): dieselben Daten wie die App über
+  `PortalReferralData`, QR-Code serverseitig mit `chillerlan/php-qrcode` (kommt mit Filament), Zustimmung
+  zu den Teilnahmebedingungen vor dem Werben (M92), Prämienkonto über das Auftragsbuch.
+- **Hinweis auf die App** im Handy-Browser nur, wenn `PORTAL_IOS_APP_URL` gesetzt ist; ausgeblendet per
+  `localStorage` (`mg-app-banner-hidden`).
+
 ### Büro-Seite „Posteingang mit Kontext“ (02.10.2026)
 
 - **Endpunkte** (Recht `manage_customer_portal`, Übernehmen/Verteilen zusätzlich `manage_gocardless`):
