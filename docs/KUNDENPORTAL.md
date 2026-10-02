@@ -204,6 +204,8 @@ Prüfen nach der Einrichtung: `https://my.glattt.com/anmelden` zeigt die Portal-
 
 ## Changelog
 
+- 02.10.2026: Admin „Kunden-App“ — Schalter, Mail-Texte, Mitteilungen ([Kunden-App im Admin](KUNDEN-APP-ADMIN.md))
+
 - 01.10.2026: App-Onboarding (Kartenstapel), Profilbild in App und Hub, Push-Token, Freunde werben mit Teilnahmebedingungen
 
 - **01.10.2026** — Eigener Dienst ohne Fremdschlüssel (Architektur B): Portal-Modus, Auftragsbuch,

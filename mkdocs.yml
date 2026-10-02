@@ -184,6 +184,7 @@ nav:
       - Kundenprofil: CLIENT-DETAIL-MODULE.md
       - glattt-Pakete (Client Courses): CLIENT-COURSES-MODULE.md
       - Kundenportal (my.glattt.com): KUNDENPORTAL.md
+      - Kunden-App im Admin: KUNDEN-APP-ADMIN.md
     - Formulare:
       - Formular-Editor: FORM-EDITOR.md
       - Rechtsdokumente: LEGAL-DOCUMENTS.md
