@@ -14,6 +14,11 @@ einzelne Kundinnen oder ad hoc an eine Zielgruppe aus kombinierbaren Regeln.
 Fünf Unterseiten: **Kunden-App** (Einstellungen), **E-Mails**, **Push-Anlässe**, **Push senden**
 (mit Protokoll), **Geräte & Kennzahlen**.
 
+Kundinnen finden jede Mitteilung im **Profil unter „Mitteilungen“** wieder, in der App und im
+Web-Portal. Das gilt auch für weggewischte Pushes und für Kundinnen ohne App oder ohne
+Push-Erlaubnis. Dort stellen sie außerdem ein, zu welchen Themen sie Pushes bekommen wollen
+(Termine, Bewertung & Trinkgeld, Freunde werben, Paket & Zahlungen).
+
 ## Für Entwickler
 
 ### Einstellungen: eine Regel für App und Portal
@@ -81,6 +86,36 @@ Platzhalter in `{…}`. Anrede, Knopf und Fußzeile bleiben in der Vorlage.
 - **Ziel in der App** (`target`): start, appointments, friends, contract, contact, profile — die App
   wechselt den Reiter (`PushRouter`).
 
+### Mitteilungs-Übersicht im Profil (02.10.2026)
+
+Entwurf B aus drei Varianten (Jan, 02.10.2026). Die Liste steht im Profil, nicht auf der Startseite.
+Ein roter Punkt am Profilbild (App) bzw. am Menüpunkt „Profil“ (Portal) zeigt Ungelesenes.
+
+- **Speicher am Konto**: `customer_accounts.push_inbox` (JSON, 90 Tage, höchstens 50) und
+  `push_topics_off`. Grund: Der Portal-Dienst darf nur `customer_accounts` lesen
+  (Wissen `kundenportal-eigener-dienst`); die Push-Tabellen bleiben ohne Portal-Rechte.
+  `App\Support\CustomerApp\CustomerInbox` ist die einzige Stelle, die beides liest und schreibt.
+- **Schreiben nur im Hub**: `CustomerPushService::deliver()` reiht je Konto einmal ein
+  (`CustomerInbox::add`, unter `lockForUpdate`), **Testmitteilungen nicht**. Die Zahl ungelesener geht
+  als `badge` an APNs (Zahl am App-Symbol). `markOpened()` markiert auch in der Liste als gelesen.
+- **Ohne Gerät nur Liste**: `fire()` verlangt kein Gerät mehr. Konten ohne Gerät bekommen eine
+  Zustellung `skipped` / „Kein Gerät“, abgeschaltete Themen `skipped` / „Thema abgeschaltet“.
+  Ad-hoc-Zielgruppen zählen weiter nur Konten mit Gerät.
+- **Themen** in `CustomerPushCatalog::TOPICS`, je Anlass `topic`. `essential: true`
+  (`bank_applied`, `payment_failed`) kommt immer als Push. Ad-hoc-Mitteilungen haben kein Thema und
+  lassen sich nicht abschalten.
+- **Gelesen und Schalter aus dem Portal** über das Auftragsbuch: `push_read` (`ids`, ohne = alle) und
+  `push_topics` (`off`). `CustomerInbox::payload()` legt noch offene Aufträge über den gespeicherten
+  Stand, damit App und Seite sofort stimmen.
+- **Endpunkte** (App, Bearer, nach Zustimmung): `GET /api/app/v1/mitteilungen`,
+  `POST …/mitteilungen/gelesen`, `POST …/mitteilungen/themen` (`topics: {thema: bool}`).
+  Web-Portal: Abschnitt `#mitteilungen` auf `/profil`, `GET /profil/mitteilungen/{id}` (gelesen + Sprung
+  zum Bereich), `POST /profil/mitteilungen/gelesen`, `POST /profil/mitteilungen/themen`.
+- **App**: `MessagesView` (Profil → Mitteilungen) mit Alle/Ungelesen, Kontextmenü „Als gelesen
+  markieren“, Themen-Schalter. Auf dem iPad stehen Liste und Schalter nebeneinander. Tippen geht über
+  `PushRouter` wie ein Push; das Profil-Blatt schließt dabei (`lastOpened`). Kommt bei geöffneter App
+  ein Push an, lädt die App die Liste neu (`PushRouter.received`).
+
 ### App-Seite (My glattt)
 
 `ServerAppSettings` am `Account`: ausgeschaltete Reiter (Freunde, Kontakt) und Knöpfe (Kalender,
@@ -99,4 +134,6 @@ App `/ich` neu.
 
 ## Changelog
 
+- **02.10.2026** — Mitteilungs-Übersicht im Profil (App und Web-Portal) mit Themen-Schaltern,
+  Zahl am App-Symbol, Mitteilungen auch ohne Gerät.
 - **02.10.2026** — Erste Fassung: Einstellungen, E-Mails, Push-Anlässe, Push senden, Geräte & Kennzahlen.
