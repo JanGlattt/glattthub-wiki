@@ -233,7 +233,7 @@ ein späteres Profilbild vorbereitet: `photo_url`).
 
 - **Werbe-Code:** `customer_accounts.referral_code` (6 Zeichen ohne 0/O/1/I/L), vergibt der Hub
   beim Anlegen des Kontos (`CustomerAccount::booted`), Bestand per Migration. Der
-  **Einladungslink** `PortalAppController::referralLink()` → `https://glattt.com/?w=CODE&utm_*…#termin`
+  **Einladungslink** `PortalAppController::referralLink()` → `https://glattt.com/?werbecode=CODE&utm_*…#termin` (nicht `?w=` — in WordPress reserviert, ergab 404; alte `w=`-Links erkennt der Scan weiter)
   (Basis `portal.referral_link` / `PORTAL_REFERRAL_LINK`) ist zugleich Inhalt des QR-Codes.
 - **Werbe-Karte** im Kreditkarten-Format (Entwurf 3): Antippen zeigt den Code groß, Helligkeit auf
   100 %. „Einladen mit Link“ teilt Bild + Text mit Link, „Nur QR-Code“ nur das Bild (Freundin hat
@@ -241,7 +241,7 @@ ein späteres Profilbild vorbereitet: `photo_url`).
   nativ gezeichneter 50-€-Schein `EuroNote50`).
 - **Scan im Formular:** Werber-Block unter dem Preis-Element → „Karte scannen“ (derselbe
   html5-qrcode-Scanner wie die Gutscheine); `GET /api/forms/referrer-by-code?code=` →
-  `ContractReferralService::referrerByCode()` liest `?w=` aus dem Link oder den nackten Code und
+  `ContractReferralService::referrerByCode()` liest `?werbecode=` (bzw. alt `?w=`) aus dem Link oder den nackten Code und
   liefert den Werber im Format der Suche. Erkennt der Gutschein-Scanner einen Werbe-Link, geht
   er ebenfalls an den Werber. Die Suche nach **Name und Kundennummer** bleibt unverändert.
 - **Stand für die App:** `PortalSnapshotService::referrals()` schreibt `snapshot.referrals`
