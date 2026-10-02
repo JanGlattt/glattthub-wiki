@@ -170,8 +170,13 @@ aufrufbar. Danach startet die App mit Token und Face ID direkt in die Sperre (ke
 - **Anzeige:** App über signierte Links `/shared/kundenfoto/{uuid}` (30 Tage, in `snapshot.profile_photo_url`
   und `referrals.referred_by.photo_url` — geworbene Freundinnen sehen das Bild ihrer Werberin). Hub über
   `/hub/clients/{id}/foto` (Recht `view_clients`): Terminansicht, Vertrag (Übersicht + Seitenleiste),
+  globale Suche (Kunden-Treffer, rund statt Symbol), Kundenübersicht (Avatar vor dem Namen),
+  Kunden-Detailseite (Avatar im Seitenkopf, antippen öffnet die Lightbox `lightbox-glattt`),
   glatttHub-App Kundenliste/Kundenakte/Termin/Vertrag/Terminsuche (`clientPhoto()`); überall bleiben
   die Initialen der Rückfall. Felder: `photo_url` (App-Schnittstellen) bzw. `photoUrl` (Phorest-nahe JSONs).
+  Listen holen die Links **gesammelt** (`ClientProfilePhoto::hubUrls()`, ein Query je Antwort):
+  `ClientSearchService::withPhotoUrls()` hängt `photoUrl` an `/hub/clients/search` (auch Live-Rückfall)
+  und `/phorest/clients`, `GlobalSearchService` an lokale und Phorest-Kundentreffer.
 - **Mitteilungen:** Erlaubnis erst nach Erklärung; Token per `POST /geraet` → Auftrag `device` →
   `customer_devices` (Debug `development`, sonst `production`). Welche Anlässe senden, plant Jan später
   ([[my-glattt-push-ideen]] im Projektwissen).
@@ -203,6 +208,8 @@ Prüfen nach der Einrichtung: `https://my.glattt.com/anmelden` zeigt die Portal-
 `portal:outbox`-Zeilen.
 
 ## Changelog
+
+- 02.10.2026: Profilbild auch in globaler Suche, Kundenübersicht und Kunden-Detailseite (vergrößerbar)
 
 - 02.10.2026: Admin „Kunden-App“ — Schalter, Mail-Texte, Mitteilungen ([Kunden-App im Admin](KUNDEN-APP-ADMIN.md))
 
