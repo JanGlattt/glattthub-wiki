@@ -155,6 +155,27 @@ nur kodiert im Slot-Schlüssel und wird beim Buchen gegen die Suche geprüft. St
 (IAP) im WebView an. TestFlight: `ios/scripts/testflight-upload.sh myglattt` (Staging) bzw.
 `myglattt-prod`; der App-Datensatz in App Store Connect wird einmal von Hand angelegt.
 
+#### Onboarding, Profilbild und Mitteilungen (01.10.2026)
+
+Einmal für alle (Entwurf 1 „Kartenstapel“, `AppOnboarding`): Willkommen → Face ID → Mitteilungen →
+Profilbild → Fertig, jeder Schritt freiwillig, im Profil als „Einrichtung fortsetzen“ wieder
+aufrufbar. Danach startet die App mit Token und Face ID direkt in die Sperre (kein Login-Bildschirm).
+
+- **Profilbild:** Frontkamera mit runder Maske und Vision-Gesichtserkennung (`CameraCapture`),
+  3-2-1 und Blitz, oder aus den Fotos; Zustimmung als Kästchen (Wortlaut
+  `ClientProfilePhotoService::CONSENT_TEXT`, auch in `client_profile_photos.consent_text`
+  gespeichert). Upload `POST /api/app/v1/profil/foto` (multipart, JPEG 900 px) → Auftragsbuch
+  `profile_photo` (Base64, nach Ablage geleert) → Hub schneidet quadratisch auf 800 px, legt es auf
+  `gcs-private` ab. Löschen `DELETE /profil/foto`.
+- **Anzeige:** App über signierte Links `/shared/kundenfoto/{uuid}` (30 Tage, in `snapshot.profile_photo_url`
+  und `referrals.referred_by.photo_url` — geworbene Freundinnen sehen das Bild ihrer Werberin). Hub über
+  `/hub/clients/{id}/foto` (Recht `view_clients`): Terminansicht, Vertrag (Übersicht + Seitenleiste),
+  glatttHub-App Kundenliste/Kundenakte/Termin/Vertrag/Terminsuche (`clientPhoto()`); überall bleiben
+  die Initialen der Rückfall. Felder: `photo_url` (App-Schnittstellen) bzw. `photoUrl` (Phorest-nahe JSONs).
+- **Mitteilungen:** Erlaubnis erst nach Erklärung; Token per `POST /geraet` → Auftrag `device` →
+  `customer_devices` (Debug `development`, sonst `production`). Welche Anlässe senden, plant Jan später
+  ([[my-glattt-push-ideen]] im Projektwissen).
+
 ## Betrieb: Einrichtung
 
 Einmalig, von Jan im Terminal (der Claude-Klassifizierer blockt Infrastruktur-Änderungen):
@@ -182,6 +203,8 @@ Prüfen nach der Einrichtung: `https://my.glattt.com/anmelden` zeigt die Portal-
 `portal:outbox`-Zeilen.
 
 ## Changelog
+
+- 01.10.2026: App-Onboarding (Kartenstapel), Profilbild in App und Hub, Push-Token, Freunde werben mit Teilnahmebedingungen
 
 - **01.10.2026** — Eigener Dienst ohne Fremdschlüssel (Architektur B): Portal-Modus, Auftragsbuch,
   Übergaben, Kopie am Konto, eigener Datenschlüssel, DB-Benutzer mit Minimalrechten.
