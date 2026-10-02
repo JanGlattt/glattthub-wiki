@@ -34,6 +34,18 @@ Fünf Unterseiten: **Kunden-App** (Einstellungen), **E-Mails**, **Push-Anlässe*
   im Zeitraum und für das Heimat-Institut), `min_app_version`, `min_app_message`, `onboarding_version`.
   Fehlende Schalter gelten in der App als **an** (ältere Hub-Stände).
 
+### Institut wechseln beim Verlegen (02.10.2026)
+
+Schalter `reschedule_branch_switch_enabled` (Admin „Kunden-App“ → Funktionen). `App\Services\Booking\BranchSwitchService`
+liefert die wählbaren Institute (alle sichtbaren laut `BranchVisibility` plus das des Termins), übersetzt die Leistungen
+über den Namen in den Katalog des Ziel-Instituts (Service-IDs unterscheiden sich je Institut) und sperrt Institute, in
+denen eine Leistung fehlt. Die Buchungs-API (`/api/shared/booking/{token}?branch=…`, `…/buchen` mit `branch_id`) und
+die Livewire-Buchungsseite (Web-Portal, Erinnerungslink) nutzen denselben Dienst. `BookingService::reschedule()`
+storniert im alten Institut (`$cancelBranchId`) und bucht im neuen; `booking_result` trägt dann `branch_id`/`branch_name`,
+die Termin-Kopie im Portal wird umgeschrieben. Meldungen: neues Institut wie gewohnt, altes über
+`HubNotificationDispatcher::selfServiceMovedAway()` (gleicher Anlass, Aktion „zu … verlegt“). Vorgewählt ist immer das
+Institut des Termins — nichts wird gemerkt.
+
 ### E-Mails
 
 `App\Support\CustomerApp\CustomerAppMails::TYPES`: Einladung, Passwort vergessen (beide Pflicht),
