@@ -265,6 +265,15 @@ Gezählt werden **Verkaufstage** (alles außer Sonn- und Feiertagen), nicht Kale
 allein die Lage der Wochenenden den Vergleich. Mit Standort-Filter zählen die regionalen Feiertage des
 Bundeslandes, ohne Filter nur die bundesweiten — dieselbe Regel wie bei der Hochrechnung.
 
+**Erster Vergleich: Ø 12 Monate** (Entscheidung Jan, 02.10.2026, TestFlight #235/#236). Vor dem
+Vormonat steht der Vergleich gegen den **Durchschnitt der letzten zwölf Monate**, jeweils bis zum gleichen
+Verkaufstag (`comparisonWindows()['last_12']`, `getAverageAggregates()`). Ein einzelner starker
+Vormonatsanfang ließ sonst jede Kennzahl tiefrot aussehen (am 02.10.2026: 13 Verträge gegen 22 am
+01.–02.09. = −40,9 %). Mengen werden gemittelt, Quoten aus den Summen gerechnet; Monate ganz ohne Verträge
+(vor Datenbeginn oder Eröffnung) zählen nicht mit. App-Kachel, Berichte-Übersicht und Web-Startseite
+zeigen den ersten Vergleich, also „vs. Ø 12 Monate“ (App: „ggü. Ø 12 M“); Vormonat und Vorjahr bleiben
+in der Verkaufsstatistik dahinter erhalten.
+
 Die Logik steht **einmal** in `App\Support\SellingDays`:
 
 - `count($from, $to, $branchId)` — Verkaufstage in einer Spanne
