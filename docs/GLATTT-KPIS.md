@@ -33,7 +33,7 @@ einer Zahlenbasis, die für alle Abteilungen dieselbe ist: Wie viele Beratungsge
 durchgeführt, wie viele davon führten **noch am selben Tag** zu einem Vertrag (Abschluss pro BG),
 was ist eine Neukundin im Schnitt wert, und wie groß ist der Bestand an aktiven Paketen samt
 ausstehenden Behandlungen. Die Kennzahlen stehen als personalisierbare KPI-Zeile (laufender Monat
-mit Vormonats- und Vorjahresvergleich), als Zeitraum-Übersicht über feste Zeiträume und als
+mit Vergleich gegen den Ø der letzten 12 Monate, Vormonat und Vorjahr), als Zeitraum-Übersicht über feste Zeiträume und als
 Institut-Vergleich mit Summenzeile „glattt gesamt" bereit.
 
 **Grundsätze:** Ein Abschluss zählt nur, wenn der Vertrag am Tag des Beratungsgesprächs vom selben
@@ -74,7 +74,7 @@ Definitionen stehen unten unter [Kennzahlen-Definitionen](#kennzahlen-definition
 
 ### Aufbau der Seite
 
-1. **KPI-Zeile** (personalisierbar per „Anpassen", Drag & Drop — `components/kpi-dashboard`): Kennzahlen des laufenden Monats mit Vergleichen zum Vormonat und Vorjahresmonat (jeweils anteilig bis zum selben Tag).
+1. **KPI-Zeile** (personalisierbar per „Anpassen", Drag & Drop — `components/kpi-dashboard`): Kennzahlen des laufenden Monats mit Vergleichen gegen den Ø der letzten 12 Monate (zuerst), den Vormonat und den Vorjahresmonat — jeweils bis zum gleichen **Verkaufstag** (seit 02.10.2026; vorher Kalendertag, TestFlight #238). Mengen (BGs, Abschlüsse, Abschlusswert) stehen gegen den Schnitt der zwölf Monatsanfänge, Abschluss pro BG (in PP) und Neukundenwert gegen die vollen zwölf Monate.
 2. **Zeitraum-Übersicht**: alle Kennzahlen über die festen Zeiträume *Letzte 7 Tage*, *Dieser Monat*, *Letzte 3 Monate*, *Dieses Jahr* und *Vorjahr (gleicher Zeitraum)*.
 3. **Institut-Vergleich**: dieselben Kennzahlen je Institut inkl. Summenzeile „glattt gesamt", Zeitraum wählbar; Institute in der konfigurierten Reihenfolge (Frontend „Institute").
 

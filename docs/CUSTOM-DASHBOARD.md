@@ -339,6 +339,21 @@ Jetzt beschreibt die `KpiRegistry` jede Kennzahl genau einmal:
 (`list` = fertige KPI-Liste im Alt-Format, `map` = roher Kennzahl-Schlüssel,
 `report` = verschachtelte Antwort des `ReportController`).
 
+**Erster Vergleich: „vs. Ø 12 Monate“** (Entscheidung Jan, 02.10.2026, TestFlight #235–#238).
+Im laufenden Monat (1. bis heute) stellt `KpiValueService::withAverage()` jeder Kennzahl einer
+`list`-/`map`-Quelle diesen Vergleich voran — App-Kacheln, Berichte-Übersicht und Web-KPI-Zeilen
+zeigen den ersten Vergleich. Regeln in `App\Services\Statistics\KpiAverage`:
+
+- **Mengen** gegen den Durchschnitt der letzten zwölf Monate, je vom 1. bis zum gleichen
+  **Verkaufstag** (`SellingDays`, Sonn- und Feiertage zählen nicht); Monate mit 0/leer
+  (vor Datenbeginn) zählen nicht mit.
+- **Quoten** (`format` = `percent`) gegen den Wert der vollen zwölf Monate, in Prozentpunkten.
+- Die 13 Fenster rechnet `WarmKpiAverageJob` im Worker vor (Cache `kpi-avg:*`, 2 Tage) — die
+  Quellen brauchen je Aufruf Sekunden. Bis der Job durch ist, fehlt der Vergleich still.
+- Quellen, die den Ø selbst liefern (Verkauf: `SalesStatisticsService`, glatttKPIs:
+  `GlatttKpiService`), erkennt `withAverage()` am Label und lässt sie unangetastet.
+- Andere Zeiträume (Woche, Jahr, frei) und `report`-Quellen behalten ihren Vorperioden-Vergleich.
+
 !!! warning "Die IDs der Report-Seiten bleiben kurz"
     `portfolioForSource()` liefert die **kurze ID ohne Quellen-Präfix** —
     also denselben Schlüssel wie vor der Zusammenführung. Grund: Die KPI-Zeile
