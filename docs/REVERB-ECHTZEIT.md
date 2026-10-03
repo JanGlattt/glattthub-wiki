@@ -1,6 +1,9 @@
 # Echtzeit mit Laravel Reverb
 
-Stand: 30.09.2026 — Code auf `develop`, Cloud-Einrichtung durch Jan ausstehend (Anleitung unten).
+Stand: 03.10.2026 — Code auf `develop`, Cloud-Einrichtung durch Jan ausstehend (Anleitung unten).
+Genutzt vom begleiteten Beratungsgespräch und seit 03.10.2026 von **allen Bildschirmen**
+(Änderungen, Befehle, Live-Überwachung, Bildschirmfoto — Wiki [Bildschirme](SCREENS-MODULE.md),
+Abschnitt „Echtzeit und Bildschirmfoto“).
 
 ## Für Endanwender
 
@@ -8,6 +11,10 @@ Beim begleiteten Beratungsgespräch folgt der Fernseher im Raum der Beraterin oh
 Verzögerung: Tippt sie auf „Weiter“, wechselt die Folie am Fernseher sofort. Ohne Echtzeit
 fragen Fernseher und Presenter jede Sekunde nach, das funktioniert weiterhin als Rückfallebene,
 ist aber träger und erzeugt ständige Last.
+
+Bei den Bildschirmen in den Instituten kommen gespeicherte Änderungen und Befehle („Neu laden“,
+„Bildschirmfoto“ …) nach wenigen Sekunden an, und die Seite „Bildschirme“ zeigt sofort, ob ein
+Fernseher verbunden ist und was er gerade zeigt.
 
 ## Für Entwickler
 
@@ -30,7 +37,8 @@ ist aber träger und erzeugt ständige Last.
 | Kanal | Wer | Anmeldung |
 |---|---|---|
 | `private-guided.{uuid}` | Presenter (Beraterin) | `POST /broadcasting/auth` über die Web-Sitzung (Laravel-Standard, `withBroadcasting()` in `bootstrap/app.php`); Recht `run_guided_consultation` **und** Standort der Sitzung in `allowed_branch_ids` (leer = alle), Callback in `routes/channels.php` |
-| `private-screen.{screenId}` | Apple TV / Browser-Fernseher | `POST /api/tv/broadcasting/auth` mit `X-Hub-Device` (Middleware `screen.device`, Bremse `tv-live`), `TvBroadcastAuthController` signiert **nur** den eigenen Kanal (sonst 403, ohne Reverb 503) |
+| `private-screen.{screenId}` | Apple TV / Browser-Fernseher | `POST /api/tv/broadcasting/auth` mit `X-Hub-Device` (Middleware `screen.device`, Bremse `tv-live`), `TvBroadcastAuthController` signiert **nur** den eigenen Kanal (sonst 403, ohne Reverb 503). Ereignisse: `guided.changed` und seit 03.10.2026 `screen.changed` `{reason}` |
+| `private-screens.monitor` | Hub-Seite „Bildschirme“ | `POST /broadcasting/auth` über die Web-Sitzung, Recht `manage_screens_hub`. Ereignis `screens.changed` `{screen_ids, reason}` — auch direkt aus dem Reverb-Prozess (Verbindung auf/zu) |
 
 Antwort beider Anmeldungen: `{"auth": "<key>:<hmac_sha256("socket_id:channel_name", secret)>"}`.
 `screen.{id}` ist in `routes/channels.php` bewusst **nicht** registriert — über eine Web-Sitzung
@@ -41,12 +49,14 @@ bekommt man ihn nicht.
 `App\Support\LiveConfig::forClient()` liefert `{enabled, key, host, port, scheme}` oder `null`
 (= Echtzeit aus). Clients hartkodieren nichts.
 
-- Apple TV: Feld `live` in `GET /api/tv/consultation` und im Heartbeat-Block `consultation`.
+- Apple TV: Feld `live` in `GET /api/tv/consultation`, im Heartbeat-Block `consultation` und seit 03.10.2026 auf oberster Ebene der Heartbeat-Antwort (alle Bildschirme).
 - Web: Blade setzt `window.GlatttLiveConfig`; `public/js/guided-live.js` stellt
   `GlatttLive.watch({channel, authEndpoint, headers, onChange, onStatus})` bereit (liefert eine
   Abmelde-Funktion; Status `live` | `connecting` | `off`). pusher-js kommt per CDN
   (`https://cdn.jsdelivr.net/npm/pusher-js@8.4.0/dist/web/pusher.min.js`); fehlt es oder die
   Konfiguration, meldet `watch` sofort `off`.
+  Mit `event` lässt sich ein anderes Ereignis abonnieren (Hub-Seite „Bildschirme“:
+  `event: 'screens.changed'`).
 
 ### Konfiguration
 
@@ -88,6 +98,12 @@ bekommt man ihn nicht.
   Cloud-Run-Zeitlimit (3600 s).
 
 ### Einrichtung (Jan, einmalig) — erst Staging, dann Prod
+
+!!! tip "Kurzweg: `scripts/reverb-setup.sh` im Hub-Repo (seit 03.10.2026)"
+    Fasst die Schritte 1–6 zusammen und ist wiederholbar (vorhandene Secrets, NEG, Backend,
+    Host-Regel und Zertifikat werden übersprungen): `bash scripts/reverb-setup.sh staging setup`,
+    nach dem DNS-Eintrag `… staging check` bis `101 Switching Protocols`, dann
+    `… staging activate`; danach dasselbe mit `prod`.
 
 Voraussetzung: Dieser Stand ist auf `develop` deployt (das Image enthält `/entrypoint-reverb.sh`).
 Befehle mit Jans eigenem Konto (das Dienstkonto `claude-automation` darf weder Secrets noch IAM
@@ -236,6 +252,9 @@ In `.env`: `REVERB_APP_ID/KEY/SECRET` beliebig, `REVERB_HOST=localhost`, `REVERB
 ### Relevante Dateien
 
 - `app/Events/GuidedConsultationChanged.php` — Anstoß, Kanäle, `dispatchFor()`
+- `app/Events/ScreenChanged.php`, `app/Events/ScreensMonitorChanged.php`, `app/Services/Screens/ScreenLive.php`,
+  `app/Observers/ScreenLiveObserver.php` — Bildschirme (gebündelt per `defer()`)
+- `app/Listeners/TrackScreenLiveConnection.php` — läuft im Reverb-Prozess (Verbindungsstatus)
 - `routes/channels.php` — Anmeldung `guided.{uuid}`
 - `app/Http/Controllers/Tv/TvBroadcastAuthController.php`, `routes/tv.php` — Anmeldung des Fernsehers
 - `app/Support/LiveConfig.php` — Verbindungsdaten für Clients
@@ -247,6 +266,9 @@ In `.env`: `REVERB_APP_ID/KEY/SECRET` beliebig, `REVERB_HOST=localhost`, `REVERB
 Verwandt: [Cloud-Infrastruktur](CLOUD-INFRASTRUKTUR.md) · [Queue-Worker](QUEUE-WORKER.md)
 
 ## Changelog
+
+- 03.10.2026 — Bildschirme nutzen den Dienst mit: `screen.changed`, Kanal `private-screens.monitor`,
+  Verbindungsstatus aus dem Reverb-Prozess. Einrichtungsskript wie unten (Schritte unverändert).
 
 - 30.09.2026 — Reverb für das begleitete Beratungsgespräch (Etappe 2): Anstoß-Event, Kanal-Anmeldung
   Web und Apple TV, `LiveConfig`, Web-Client, bedingter Deploy-Step, Einrichtungsanleitung.

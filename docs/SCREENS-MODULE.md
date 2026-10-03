@@ -57,6 +57,13 @@ Projektwissen `.github/knowledge/tvos-app-bauplan.md`.
     eine Meldung (Bildschirm offline / wieder online / zeigt nicht das Geplante / Medium konnte nicht
     abgespielt werden). „Verlauf" auf der Karte listet, was Hub und Fernseher zuletzt gemeldet haben.
 
+    **Echtzeit (seit 03.10.2026):** Steht auf der Karte **live**, hält der Fernseher eine
+    Echtzeit-Verbindung zum Hub: Gespeicherte Änderungen an Playlists, Medien, Kundenstimmen, Seiten
+    und Einstellungen sowie Befehle kommen nach wenigen Sekunden an statt nach bis zu einer Minute.
+    Die Seite selbst aktualisiert Status, „Läuft gerade" und Verlauf ohne Neuladen; eine getrennte
+    Verbindung ist sofort sichtbar. Über die Kamera auf der Karte lässt sich ein **Bildschirmfoto**
+    anfordern — es zeigt, was der Fernseher gerade anzeigt (laufende Videos als Standbild bzw. schwarz).
+
 ---
 
 ## Für Entwickler
@@ -471,6 +478,66 @@ Jan: „Können wir überwachen, dass der Apple TV das Ganze abspielt?" — ja, 
   `screens.offline`, `screens.online`, `screens.mismatch`, `screens.media_failed` — Icons nur aus
   `HubEventRegistry::ICONS` (`alert`/`success`/`warning`), Link `/hub/screens`.
 
+### Echtzeit und Bildschirmfoto (seit 03.10.2026)
+
+Jan: „Können wir darauf auch das Live-Monitoring und das Ändern zu den Bildschirmen machen, sodass
+Anpassungen in Echtzeit vollzogen werden?" — ja, über denselben Reverb-Dienst wie das begleitete
+Beratungsgespräch (Wiki [Echtzeit mit Laravel Reverb](REVERB-ECHTZEIT.md)). Prinzip unverändert:
+**Anstoß statt Daten** — über den Socket kommt nur „hier hat sich etwas geändert“, geholt wird
+über die bestehenden Endpunkte.
+
+**Richtung Fernseher — `screen.changed` auf `private-screen.{id}`** (`App\Events\ScreenChanged`,
+Daten `{reason}`):
+
+| Grund | Auslöser | Fernseher tut |
+|---|---|---|
+| `content` | Playlist, Element, Zeitplan, Medium, Kundenstimme (an **alle aktiven** Bildschirme — das Manifest-ETag entscheidet), Seiten/Dashboards (nur der eine) | Heartbeat + Manifest/Seiten sofort |
+| `settings` | Spalten aus `ScreenLiveObserver::SCREEN_SETTINGS` (Name, Standort, Zone, Ausrichtung, Modus, Nutzer, Standard-Playlist, `settings`, `disabled_at`) — **nie** der Heartbeat | wie `content` |
+| `command` | neuer `ScreenCommand` | Heartbeat → `has_commands` → Befehle |
+
+- Ausgelöst wird ausschließlich über **`ScreenLiveObserver`** (registriert für alle Modelle in
+  `MODELS`, damit auch Admin-Änderungen wirken) und gesammelt in **`ScreenLive`** (scoped): Ein
+  Playlist-Speichern mit 30 Elementen ergibt einen Anstoß, gesendet per `defer()` nach der Antwort.
+  Ohne Reverb (`broadcasting.default` ≠ `reverb`) wird nichts gesammelt.
+- Heartbeat-Antwort trägt seit 03.10.2026 `live` (LiveConfig, für **alle** Bildschirme, nicht nur
+  Räume) und `content_poll_seconds` (300). Der Fernseher verbindet sich, sobald `live` gesetzt ist;
+  mit Verbindung holt er Manifest und Seiten nur noch auf Anstoß, nach Befehlen, bei
+  Modus-/Ausrichtungswechsel und als Sicherheitsnetz alle 300 s. Der **Heartbeat bleibt 60 s** —
+  davon leben „online“ und `screens:watch`. Er meldet `live: true|false`; `false` räumt
+  `screens.live_connected_at` (nach einem Neustart des Reverb-Dienstes kommt kein `ChannelRemoved`).
+- Ältere TV-Builds ignorieren `live` auf oberster Ebene und den Befehl `screenshot` (wird nur
+  bestätigt) — alles bleibt rückwärtskompatibel.
+
+**Richtung Hub-Seite — `screens.changed` auf `private-screens.monitor`**
+(`App\Events\ScreensMonitorChanged`, Daten `{screen_ids, reason}`, Anmeldung über die Web-Sitzung,
+Recht `manage_screens_hub` in `routes/channels.php`). Gründe: `online` (Heartbeat nach Pause),
+`current_item` (anderes Element), `event` (neuer `ScreenEvent`), `screenshot`, `connected`/
+`disconnected`, dazu alle TV-Gründe. `screens-hub.js` lädt daraufhin gebündelt (400 ms) **nur die
+Geräte** nach (`refreshScreens()` — offene Medien-Zuordnungen und Formulare bleiben), den offenen
+Verlauf ebenfalls. Ohne Socket lädt die Seite alle 30 s auf dem Reiter „Bildschirme“ nach. Anzeige
+im Seitenkopf: „Live“ / „Verbinde …“ / „Aktualisiert alle 30 s“; Karten zeigen **live** (Socket +
+Heartbeat), **online**, **offline**.
+
+**Verbindungsstatus aus dem Reverb-Prozess:** `App\Listeners\TrackScreenLiveConnection` hört auf
+`Laravel\Reverb\Events\ChannelCreated/ChannelRemoved` für `private-screen.{id}` und setzt
+`screens.live_connected_at`. Zwei Fallen dieses Prozesses (er endet nie): `defer()` liefe nie,
+deshalb Query-Builder statt Model (kein Observer); und eine Veröffentlichung per HTTP an Reverb
+selbst würde die Ereignisschleife blockieren — die Hub-Seite wird über
+`Laravel\Reverb\Protocols\Pusher\EventDispatcher::dispatch` im eigenen Prozess angestoßen.
+`ChannelCreated` kommt **vor** der Signaturprüfung; ob wirklich jemand abonniert hat, wird erst im
+nächsten Takt der Schleife (`Loop::futureTick`) geprüft. `Screen::isLive()` verlangt zusätzlich
+einen frischen Heartbeat.
+
+**Bildschirmfoto:** Befehl `screenshot` (`ScreenCommand::TYPE_SCREENSHOT`). Die TV-App zeichnet ihr
+Fenster mit `drawHierarchy` in 1920 × 1080 (Skalierung 1) und schickt ein JPEG (Qualität 0,6) an
+**`POST /api/tv/screenshot`** (`TvScreenshotController`, `screen.device`, nur JPEG bis 4 MB). Je
+Bildschirm gibt es nur das **letzte** Bild (`screens/screenshots/screen-{id}.jpg` auf
+`ScreenMedia::defaultDisk()`, Cloud: `gcs-private`; Spalten `screenshot_disk/_path/_at`). Im Hub:
+Kamera-Knopf → Fenster „Bildschirmfoto“ → „Neu aufnehmen“; Bild über
+`GET /hub/screens/devices/{screen}/screenshot` (Seitenrecht, `no-store`). Laufende Videos
+(`AVPlayerLayer`) gibt tvOS für `drawHierarchy` nicht frei — sie erscheinen schwarz bzw. als
+Standbild; das Fenster sagt das dazu.
+
 ### Office als Standort, Fotos für Kundenstimmen (25.09.2026)
 
 - **`Screen::BRANCH_OFFICE = 'office'`** ist ein Pseudo-Institut („Office (Zentrale)") für Bildschirme
@@ -647,6 +714,8 @@ Kundenstimme). Swift: `DashboardPagerTests` (Seitenschnitt, Pager, Zahlenformat,
 `AdminNavigationGroupTest`, `EnvExampleConventionTest`.
 
 ## Changelog
+
+- **03.10.2026** — Echtzeit für alle Bildschirme über Reverb: Anstoß `screen.changed` bei Inhalten, Einstellungen und Befehlen (`ScreenLiveObserver` + `ScreenLive`), Inhalte mit Socket nur noch auf Anstoß bzw. alle 5 min, Hub-Seite live über `private-screens.monitor` (Status, Verbindung, Verlauf), Verbindungsstatus aus dem Reverb-Prozess (`TrackScreenLiveConnection`, `screens.live_connected_at`), Bildschirmfoto auf Befehl (`POST /api/tv/screenshot`). Braucht den eingerichteten Reverb-Dienst und einen neuen TV-Build.
 
 - **25.09.2026** — Einreichung vorbereitet: Vorschau ohne Kopplung (Knopf „Vorschau ansehen“, `DemoContent`, `file://`-Medien aus dem Bundle), Privacy-Manifeste für TV-App, iOS-App und Widgets, Name „glattt Screen“, App-Store-Eintrag per API befüllt (Texte, Screenshots, Altersfreigabe, Preis, Verfügbarkeit, Prüfhinweise), TestFlight-Build 5 an Version 1.0.0 gehängt; offen bei Jan: Datenschutz-Fragebogen, Vertriebsart „Privat“, Einreichen.
 - **25.09.2026** — Seiten-Baukasten des Kennzahlen-Modus (`screen_pages`, `/api/tv/pages`, Hub-Baukasten mit Ziehen und Ablegen, native Kacheln mit Swift Charts, Einbrennschutz je Bildschirm), Überwachung (`screen_events`, `POST /api/tv/events`, `screens:watch`, vier Anlässe), Office als Standort, Fotos für Kundenstimmen im Hub; TestFlight-Build 4. Zusammen mit der Hub-Seite am 25.09.2026 nach Prod gemergt (7e820001).
