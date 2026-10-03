@@ -2132,6 +2132,25 @@ Ablehnen-Blatt). Die Unterschrift lädt die App über `session.download` mit der
 nicht ab. Übernehmen und Verteilen fragen per `confirmationDialog` am Knopf nach (Jan: gleiche Rechte
 wie im Web, kein Face ID). Snapshots: `CustomerPortalSnapshotTests` (Liste, Auftrag, Konten, iPad).
 
+### Native Kundenservice (Mehr-Seite, seit 02.10.2026)
+
+Postfach für die Kundenservice-Tickets (`ios/glatttHub/Support/`), dieselben Endpunkte wie das Web.
+**iPhone:** Liste → gepushtes Ticket; Kundenkarte, Vorgänge und Zuständigkeit stehen im Verlauf.
+
+**iPad — „Gespräch mit Inspektor“** (TestFlight #240, Jan 02.10.2026, Entwurf 1 aus
+https://claude.ai/artifact/G7rW9QTdSoi6rocVBfu8zT): Vorher standen Liste, Gespräch und Details
+nebeneinander, dem Gespräch blieben ≈ 280 pt. Jetzt höchstens zwei Inhaltsspalten (Regel aus #223):
+
+- **Liste · Gespräch.** Anliegen, Team und Zuständig sind Menü-Chips im Kopf des Gesprächs
+  (`responsibilityChips`), die Kundin steht als einzeilige Leiste darüber (Restbetrag, Forderung,
+  nächster Termin — `clientStrip`, Tipp öffnet den Inspektor).
+- **Inspektor** (`.inspector`, Knopf ⓘ, ⌘⌥I): Kundenkarte und Vorgänge (`aside`). Der Zustand
+  gehört `SupportView`; ist er offen, weicht die Liste, damit das Gespräch breit bleibt.
+- **Schmal** (Inhalt < 900 pt — Hochformat, geteilter Bildschirm): Die Liste lässt sich über den
+  Knopf links ein- und ausblenden und klappt nach der Auswahl eines Tickets selbst weg.
+- Snapshots `support-ipad` (Liste · Gespräch, 920 pt) und `support-ipad-inspector`; der
+  ImageRenderer zeichnet keinen Inspektor, im Snapshot steht er deshalb als feste Spalte.
+
 ### Native Unternehmensverträge (Mehr-Seite, seit 28.09.2026)
 
 **Für Endanwender:** „Unt.-Verträge“ zeigt in der App zuerst, worum es dem Modul geht: die
