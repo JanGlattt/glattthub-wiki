@@ -274,6 +274,13 @@ Vormonatsanfang ließ sonst jede Kennzahl tiefrot aussehen (am 02.10.2026: 13 Ve
 zeigen den ersten Vergleich, also „vs. Ø 12 Monate“ (App: „ggü. Ø 12 M“); Vormonat und Vorjahr bleiben
 in der Verkaufsstatistik dahinter erhalten.
 
+**Schnitte und Quoten gegen die vollen 12 Monate** (TestFlight #237, 02.10.2026): Ø Körperzonen,
+Ø Vertragswert, Ganzkörper-Anteil und Stornoquote hängen nicht an der Monatslänge — sie stehen gegen den
+Schnitt der zwölf vollen Vormonate (`comparisonWindows()['last_12_full']`), nicht gegen gleich viele
+Verkaufstage. Quoten werden in **Prozentpunkten** verglichen (`unit: 'PP'`): 61,5 % gegen 41 % sind
++20,5 PP, nicht „+50 %“. Die Prognose „→ N“ der App-Kacheln (`WidgetKpiService::slim`) rechnet seit
+demselben Tag nach Verkaufstagen wie die Hochrechnung hier, nicht mehr nach Kalendertagen.
+
 Die Logik steht **einmal** in `App\Support\SellingDays`:
 
 - `count($from, $to, $branchId)` — Verkaufstage in einer Spanne
