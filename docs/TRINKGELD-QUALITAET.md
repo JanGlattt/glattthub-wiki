@@ -284,6 +284,13 @@ https://claude.ai/artifact/LYTdRBZdTH1mqWYsnSvp6a). Ziel: eine Frage je Schritt,
   `feedback_issues`, Admin „Kunden-App“ → „Bewertung nach dem Termin“), an die App über `/ich`
   (`app.feedback`). Der Hub speichert nur bekannte Schlüssel (`cleanCompliments()`). Die Seite
   „Trinkgeld“ zeigt sie als Badges an der Bewertung, dazu „Rückruf gewünscht“.
+- **Web-Seite `/shared/danke` (seit 04.10.2026):** dieselben Karten unter den Sternen der heutigen
+  Behandlung, ein- und ausgeblendet rein per CSS (`:has` auf den gewählten Stern, Klassen
+  `.feedback-cards-positive`/`-issues`, Pillen `.feedback-chip`), Rückruf als Theme-Checkbox in der
+  Problem-Gruppe. `SharedTreatmentFeedbackController::withCards()` behält nur die Gruppe, die zur
+  Sternzahl passt (eine vorher angetippte, jetzt versteckte Gruppe zählt nicht); mit Sternen wird
+  `compliments` mindestens `[]`. Falle: Die Bewertungsworte unter den Sternen reagierten auf jedes
+  angehakte `input[value="1"]` — seit dem Rückruf-Häkchen auf `type="radio"` beschränkt.
 - **Rückruf:** nur bis 3 Sterne und wenn `feedback_callback_enabled`; Anlass
   `treatment_feedback.callback_requested` an `view_team_tips` (Institutsleitung), Platzhalter
   `{karten}` steht in allen Trinkgeld-Anlässen.
@@ -344,6 +351,7 @@ https://claude.ai/artifact/LYTdRBZdTH1mqWYsnSvp6a). Ziel: eine Frage je Schritt,
 
 | Datum | Änderung |
 |---|---|
+| 04.10.2026 | Bewertungsseite im Browser: Lob-/Problem-Karten und Rückruf wie in der App |
 | 03.10.2026 | My glattt: Bewertung wie bei Uber (Sterne, Lob-/Problem-Karten, Rückruf, Trinkgeld bei jeder Sternzahl), Schnellbewertung aus der Mitteilung, Karten auf der Seite „Trinkgeld“, Anlass „Rückruf nach Bewertung gewünscht“ |
 | 01.10.2026 | Dank nach dem Trinkgeld in My glattt (Polaroid/Herz, geschriebenes „Danke“), eigener Dankestext am Hub-Konto, Standardtext je Standort |
 | 30.09.2026 | Kundenlinks über `PublicUrl`, Mail mit Logo und Behandlerin (Foto/Initiale, Vorname), Knopf an der Stelle des Links, Platzhalter `{stadt}`, Bewertungsseite überarbeitet (Abstände, Wort-Rückmeldung zu Sternen, Kommentar klappt auf, Einblenden) |
