@@ -38,6 +38,11 @@ Push-Erlaubnis. Dort stellen sie außerdem ein, zu welchen Themen sie Pushes bek
 - Die App bekommt unter `/ich` das Feld `app` (`appPayload()`): `features`, `banner` (nur wenn aktiv,
   im Zeitraum und für das Heimat-Institut), `min_app_version`, `min_app_message`, `onboarding_version`.
   Fehlende Schalter gelten in der App als **an** (ältere Hub-Stände).
+- Seit 03.10.2026 zusätzlich: `feedback_compliments`/`feedback_issues` (Lob- und Problem-Karten der
+  Bewertung, Schlüssel nie mehr ändern, sobald Bewertungen dazu da sind), `feedback_callback_enabled`
+  (Rückruf-Angebot bis 3 Sterne), `voucher_enabled`/`voucher_url` („Gutschein verschenken“ im Profil,
+  leer = `/shared/gutscheine`). In `/ich` als `app.feedback`, `app.voucher_url`, `features.voucher`.
+  Details: [Trinkgeld & Qualität](TRINKGELD-QUALITAET.md).
 
 ### Institut wechseln beim Verlegen (02.10.2026)
 
@@ -134,6 +139,8 @@ App `/ich` neu.
 
 ## Changelog
 
+- **03.10.2026** — Bewertungs-Karten, Rückruf-Angebot, Gutschein-Knopf; Mitteilungen tragen Zusatzdaten
+  (`customer_push_messages.data`, iOS-Kategorie `FEEDBACK_RATE` für die Schnellbewertung).
 - **02.10.2026** — Mitteilungs-Übersicht im Profil (App und Web-Portal) mit Themen-Schaltern,
   Zahl am App-Symbol, Mitteilungen auch ohne Gerät.
 - **02.10.2026** — Erste Fassung: Einstellungen, E-Mails, Push-Anlässe, Push senden, Geräte & Kennzahlen.

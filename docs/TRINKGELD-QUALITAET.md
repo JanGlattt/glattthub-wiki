@@ -124,7 +124,7 @@ Migration `2026_09_29_200000_create_treatment_feedback_tables`:
 | Tabelle | Zweck |
 |---|---|
 | `treatment_feedback_settings` | Je Standort: `enabled`, `delay_minutes`, `send_from`/`send_until`, `channel_order` (json), Superchat `channel_id`/`template_id`/`variable_mapping`, `sms_body`, `email_subject`/`email_body`, `page_intro`, `tips_enabled`, `tip_presets_cents`, `tip_min_cents`, `google_review_enabled`, `token_ttl_days` |
-| `treatment_feedback_requests` | Je beendetem Termin: Termin-Gruppe, Kundin, Behandlerin (`staff_user_id`), `status` (scheduled/sent/skipped/failed/cancelled), `decision`, `scheduled_for`, Versand (`channel`, `channel_attempts`, `channel_error`), Token, Antwort (`stars_today`, `stars_overall`, `comment_today`, `comment_overall`, `responded_at`, `google_link_shown`, `opted_out_at`) |
+| `treatment_feedback_requests` | Je beendetem Termin: Termin-Gruppe, Kundin, Behandlerin (`staff_user_id`), `status` (scheduled/sent/skipped/failed/cancelled), `decision`, `scheduled_for`, Versand (`channel`, `channel_attempts`, `channel_error`), Token, Antwort (`stars_today`, `stars_overall`, `comment_today`, `comment_overall`, `compliments` (json, seit 03.10.2026), `callback_requested_at`, `responded_at`, `google_link_shown`, `opted_out_at`) |
 | `treatment_tips` | Je Mollie-Zahlung: Betrag, `fee_cents`/`fee_source` (estimated/mollie), `net_cents`, `status` (open/paid/failed/canceled/expired/refunded), Mollie-IDs, `paid_method`, `paid_at`, `payout_month`, `paid_out_at` |
 | `client_contact_preferences` | Je Phorest-Kunden-ID: `feedback_blocked`, seit wann, von wem, Quelle (`hub`/`customer`) |
 | `users` (neu) | `treatment_feedback_excluded`, `feedback_photo_consent`, `feedback_personal_text` |
@@ -257,6 +257,39 @@ steht (gemerkt in `UserDefaults` `tipThanked.<uuid>`).
   „My“ im Startbild. Die Web-Vorschau im Profil nutzt die Schrift selbst
   (`public/fonts/DancingScript-Regular.ttf`, OFL).
 
+### Bewertung wie bei Uber (My glattt, 03.10.2026)
+
+Jan wählte Entwurf A plus Schnellbewertung in der Mitteilung (Entwurfsseite
+https://claude.ai/artifact/LYTdRBZdTH1mqWYsnSvp6a). Ziel: eine Frage je Schritt, ein Tipp reicht.
+
+- **Ablauf (App, `ios/MyGlattt/Features/Start/FeedbackFlow.swift`):** Sterne → Lob-Karten (ab 4
+  Sternen) bzw. Problem-Karten (bis 3) mit „Ergebnis bisher“, Kommentar und — bis 3 Sterne — Schalter
+  „Sollen wir uns melden?“ → Trinkgeld (bei **jeder** Sternzahl, Entscheidung Jan) → bestehender Dank.
+  Öffnet sich nach dem Termin **einmal von selbst** (`@AppStorage feedbackFlowShown`), sonst über
+  Banner, Tageskarte (Sterne antippen) oder Mitteilung. iPhone Vollbild, iPad Form-Sheet.
+- **Sterne sofort, Rest als Ergänzung:** Der Sterne-Tipp schickt `stars_today` sofort; Schritt 2
+  schickt Karten, Kommentar, `stars_overall`, `callback`. `TreatmentFeedbackResponder::respond()` füllt
+  bei einer schon beantworteten Anfrage **nur leere Felder** (`supplement()`), überschreibt nie.
+  `compliments = null` heißt „Schritt 2 offen“, `[]` „übersprungen“ — die App liest das aus
+  `snapshot.feedback.compliments`.
+- **Schnellbewertung aus der Mitteilung:** Der Anlass `feedback_request` (Admin „Kunden-App“, muss
+  eingeschaltet sein) trägt `category = FEEDBACK_RATE` und `feedback_id` (Spalte
+  `customer_push_messages.data`, `CustomerApnsClient` setzt die Kategorie). Die App registriert fünf
+  Aktionen (`QuickRating` in `App/PushSupport.swift`): 4–5 Sterne werden im Hintergrund gesendet,
+  1–3 öffnen die App bei „Was war los?“. Damit das Portal die Anfrage sicher kennt, schreibt
+  `TreatmentFeedbackSender` vor der Mitteilung die Anfrage in die Konten-Kopie
+  (`PortalSnapshotService::refreshFeedback()`); zusätzlich frischt `PortalAppController::feedback()`
+  bei unbekannter ID einmal auf.
+- **Karten:** Schlüssel und Texte in `CustomerAppSettings` (`feedback_compliments`,
+  `feedback_issues`, Admin „Kunden-App“ → „Bewertung nach dem Termin“), an die App über `/ich`
+  (`app.feedback`). Der Hub speichert nur bekannte Schlüssel (`cleanCompliments()`). Die Seite
+  „Trinkgeld“ zeigt sie als Badges an der Bewertung, dazu „Rückruf gewünscht“.
+- **Rückruf:** nur bis 3 Sterne und wenn `feedback_callback_enabled`; Anlass
+  `treatment_feedback.callback_requested` an `view_team_tips` (Institutsleitung), Platzhalter
+  `{karten}` steht in allen Trinkgeld-Anlässen.
+- **Bezahlen:** über die App-Kasse (`?kasse=app`, siehe [Kundenportal](KUNDENPORTAL.md),
+  Abschnitt „App-Kasse“).
+
 ### Dateien
 
 - Services: `app/Services/TreatmentFeedback/` (`TreatmentFeedbackScheduler`,
@@ -311,6 +344,7 @@ steht (gemerkt in `UserDefaults` `tipThanked.<uuid>`).
 
 | Datum | Änderung |
 |---|---|
+| 03.10.2026 | My glattt: Bewertung wie bei Uber (Sterne, Lob-/Problem-Karten, Rückruf, Trinkgeld bei jeder Sternzahl), Schnellbewertung aus der Mitteilung, Karten auf der Seite „Trinkgeld“, Anlass „Rückruf nach Bewertung gewünscht“ |
 | 01.10.2026 | Dank nach dem Trinkgeld in My glattt (Polaroid/Herz, geschriebenes „Danke“), eigener Dankestext am Hub-Konto, Standardtext je Standort |
 | 30.09.2026 | Kundenlinks über `PublicUrl`, Mail mit Logo und Behandlerin (Foto/Initiale, Vorname), Knopf an der Stelle des Links, Platzhalter `{stadt}`, Bewertungsseite überarbeitet (Abstände, Wort-Rückmeldung zu Sternen, Kommentar klappt auf, Einblenden) |
 | 29.09.2026 | Modul angelegt (Etappen 1–4): Nachricht nach der Behandlung, Bewertungsseite mit Trinkgeld, Admin je Standort, Seite „Trinkgeld", Berichte, Startseite, Terminansicht, Kundenprofil, native App |

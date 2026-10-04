@@ -198,6 +198,30 @@ nur kodiert im Slot-Schlüssel und wird beim Buchen gegen die Suche geprüft. St
 (IAP) im WebView an. TestFlight: `ios/scripts/testflight-upload.sh myglattt` (Staging) bzw.
 `myglattt-prod`; der App-Datensatz in App Store Connect wird einmal von Hand angelegt.
 
+#### App-Kasse K2 (03.10.2026)
+
+Trinkgeld, Einmalzahlung und Forderungen öffnen in der App kein Vollbild mit Mollie mehr, sondern ein
+**natives Blatt** mit Zweck und Betrag; darunter lädt ein WebView die **App-Kasse des Hubs** — dieselben
+Seiten wie im Browser mit `?kasse=app` (Vorlage `shared/app-checkout`, Inhalt
+`livewire/shared/partials/app-checkout`): Apple Pay oben, Karte aufklappbar (Mollie Components),
+übrige Zahlarten mit vorgewählter Methode direkt zum Anbieter. Kein Logo, durchsichtiger Grund, Gold
+der App, Hell/Dunkel nach Gerät.
+
+| Zahlung | Einstieg (`checkout_url` aus der App-API) | Rücksprung, den die App abfängt | Status |
+|---|---|---|---|
+| Trinkgeld | `/shared/danke/{token}?betrag=…&app=1&kasse=app` → `TipPaymentPage(appCheckout)` | `/shared/danke/trinkgeld/{uuid}` | `…/status` |
+| Einmalzahlung | `/shared/kundenportal/zahlung/{uuid}?kasse=app` → `PortalPaymentCheckoutPage` | `my.glattt.com/zahlung/{uuid}` | `GET /api/app/v1/zahlung/{uuid}` |
+| Forderungen | `/shared/kundenportal/{uuid}?kasse=app` → Bezahllink `/shared/pay/{token}?kasse=app` → `DebtPaymentPage(appCheckout)` | `/shared/pay/return/{uuid}` | `…/status` |
+
+- Die Einmalzahlung legt die Mollie-Zahlung jetzt erst beim Klick an
+  (`PortalHandoffService::startPayment()` mit Karte, Apple-Pay-Token oder Methode; Lastschrift nie);
+  ohne `kasse=app` bleibt der alte Weg (Mollies Auswahlseite) für das Web-Portal und ältere Builds.
+- **Apple Pay im WebView** funktioniert nur, solange die App **kein Skript einschleust** (kein
+  `WKUserScript`, kein `evaluateJavaScript`). Deshalb erkennt die App das Ende nur am Rücksprung
+  und fragt den Status nativ ab.
+- Tests: `PortalPaymentsTest::test_app_kasse_der_einmalzahlung_mit_vorgewaehlter_zahlart`,
+  `DebtPaymentLinkTest::test_app_kasse_…`, `TreatmentFeedbackTest::test_app_kasse_trinkgeld_…`.
+
 #### Onboarding, Profilbild und Mitteilungen (01.10.2026)
 
 Einmal für alle (Entwurf 1 „Kartenstapel“, `AppOnboarding`): Willkommen → Face ID → Mitteilungen →
