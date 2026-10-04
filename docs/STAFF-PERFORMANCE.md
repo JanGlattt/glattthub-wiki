@@ -111,7 +111,8 @@ Fall sichtbar markiert („Vertrag widerrufen").
 
 Ein **Klick auf einen Wert der Tagesmessung** öffnet die Liste der
 Beratungsgespräche dahinter — je Termin: Datum/Uhrzeit, Kunde (Name +
-Kundennummer), Service, Ergebnis-Status und Körperzonen. Zusätzliche Hinweise:
+Kundennummer), Service mit dem **Terminkommentar aus Phorest** (seit 04.10.2026 — hilft beim
+Entscheiden, ob ein Termin ausgeschlossen wird), Ergebnis-Status und Körperzonen. Zusätzliche Hinweise:
 
 - **„Vertrag widerrufen"** — am BG-Tag wurde unterschrieben, der Vertrag wurde
   aber storniert; er zählt nicht (mehr).
@@ -1160,7 +1161,12 @@ fahren, die SQLite-Suiten decken diese Pfade nicht ab.
   `StaffPerformanceService::getCellConsultations()`. Bewusst **ungecacht**;
   liefert je Termin Korrektur-Status, Widerruf-Hinweis (tagesgleicher
   stornierter Vertrag), ±7-Tage-Vertragshinweis und Zuordnungs-Kandidaten
-  (±45 Tage). Die Perioden-Metadaten der Overview tragen dafür seit Schema 5
+  (±45 Tage) und seit 04.10.2026 `notes` (Terminkommentar aus
+  `stats_historic_appointments.notes`, leer → `null`). **Fallstrick:** Die Phorest-Terminliste
+  liefert Notizen nur mit `fetch_notes=true`; `includeNotes` (wie beim Einzelabruf) ignoriert sie
+  still — deshalb war `notes` bis dahin immer leer. `sync:appointments` und
+  `SyncHistoricAppointmentsJob` fragen sie jetzt mit an, ältere Termine füllt erst ein Nachlauf.
+  Die Perioden-Metadaten der Overview tragen dafür seit Schema 5
   `from`/`to` (`MATRIX_SCHEMA`-Bump).
 - **Zell-Markierung**: `buildAdjustedPeriodMap()` bildet aus der
   Korrektur-Tabelle (nicht aus den Aggregat-Zeilen — ein ausgeschlossener BG

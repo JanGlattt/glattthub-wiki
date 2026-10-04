@@ -28,7 +28,9 @@ Schema `glatttScreens`) — siehe [Bildschirme](SCREENS-MODULE.md).
     Kamera für Laser-Fotos, Face ID auf persönlichen Geräten, Kennzahlen als Widget auf dem Home-Bildschirm.
     Seit 1.4.0 gehört eine **Apple-Watch-App** dazu: verkaufte KPZ gegen das Standortziel der Bonus-Seite,
     Standorte, der heutige Tag, Bonus und die nächste Beratung — in der App und als Widgets auf dem
-    Ziffernblatt. Die Uhr verbindet sich von selbst, sobald man am iPhone angemeldet ist.
+    Ziffernblatt. Seit Oktober 2026 gibt es dazu sechs runde Widgets (KPZ im Monat, Prognose,
+    Beratungen heute mit den noch offenen und den No-Shows, Abschlüsse, Ø KPZ je Beratung, nächste
+    Beratung). Die Uhr verbindet sich von selbst, sobald man am iPhone angemeldet ist.
     Die Klickanleitung entsteht mit dem Pilot (Abdeckung: `status: "geplant"`).
 
 Seit 25.09.2026 gilt: **Jede neue Funktion des Hubs erscheint in der App als native Seite**, nicht
@@ -627,6 +629,22 @@ iPhone-Widgets, Platzhalter = letzter Stand):
 | KPZ je Standort | Rechteck, Textzeile | Balken je Institut in den Hausfarben |
 | Bonus | rund, Ecke, Textzeile | Fortschritt mit Level-Verlauf Bronze → Diamant |
 | Mein Tag | Rechteck, Ecke, Textzeile | nächste Beratung mit Countdown und Raum; abends offener Kassenabschluss |
+| KPZ im Monat | rund | KPZ im Monat, Ring = Stand zum Ziel der Bonus-Seite |
+| Prognose | rund | Hochrechnung zum Monatsende; Ring orange bis 100 % des Ziels, dann grün |
+| Beratungen heute | rund, Textzeile | Mitte = **wirklich noch offen** (`planned`); Ring in Abschnitten durchgeführt (grün) / laufend (gold) / No-Show (rot) / offen (weiß) |
+| Abschlüsse heute | rund | Verkäufe heute wie die Startseite, Ring = Abschlussquote der durchgeführten Beratungen |
+| Ø KPZ je Beratung | rund | Bogen mit der Ampel der Staff-Performance (`StaffPerformanceTarget`-Standard: gelb bis 2,0, grün ab 3,0) |
+| Nächste Beratung | rund | Uhrzeit und Institut; der Ring läuft in der Stunde davor von selbst ab (`ProgressView(timerInterval:)`) |
+
+Die sechs runden Widgets (Ring-Sammlung, Entwurf A, Jan 04.10.2026, TestFlight 244) liegen in
+`glatttHubWatchWidgets/WatchRoundWidgets.swift`; der Abschnitt-Ring wird auch auf der Uhr-Seite
+„Heute“ gebraucht und steht deshalb in `WatchShared/ConsultationSegmentRing.swift`. Ein
+`WidgetBundle` nimmt höchstens zehn Widgets — mit diesen sechs ist es voll; weitere brauchen ein
+zweites Bundle oder eine Konfiguration (Entwurf B, Kennzahl nach Wahl).
+**„Offen“** ist `today.planned`: geplante Beratungen, deren Ende noch keine 30 Minuten vorbei ist —
+überfällige zählt `WidgetDayService::state()` schon als No-Show. Der Endpunkt liefert dafür seit
+04.10.2026 zusätzlich `today.contracts`, `kpz.open_days_left`, `kpz.needed_per_day` (KPZ je
+Öffnungstag bis zum Ziel, Uhr-Seite „Monat“) und `kpz.per_consultation_target|green|yellow`.
 
 „Mein Tag" legt je Beratung Einträge an (rückt ohne Netz nach) und setzt
 `TimelineEntryRelevance`: 15 Minuten vor Beginn Score 80, offener Kassenabschluss ab 19 Uhr
@@ -2697,6 +2715,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 04.10.2026 | 1.4.x | **Apple Watch: Ring-Sammlung** — sechs runde Ziffernblatt-Widgets (KPZ im Monat, Prognose, Beratungen heute mit offen/No-Show, Abschlüsse, Ø KPZ je Beratung, nächste Beratung); Uhr-Seiten „Heute“ und „Monat“ erweitert; „Mehr“ bleibt in der Tab-Leiste markiert, solange das Mehr-Blatt offen ist (TestFlight 243/244) |
 | 03.10.2026 | 1.4.0 | **Apple-Watch-App** mit Ziffernblatt-Widgets (Kombination der Entwürfe KPZ-Ring, Standorte, Mein Tag): KPZ gegen das Standortziel der Bonus-Seite, Standortvergleich, Heute, Bonus-Ring, nächste Beratung und Kassen-Erinnerung im Smart Stack; Uhr als eigenes Gerät (`watchos`), Token per WatchConnectivity; Hub: `GET /api/app/widgets/watch` |
 | 29.09.2026 | 1.3.0 (61) | Kasse: Tresor-Bewegungen „→ zur Bank“ und „→ in die Kasse“ direkt am Tresor (213); Kennzahl-Kachel „Beratungen heute“ mit Tendenz und Wochentags-Schnitt (`comparison.reference`, 214) |
 | 29.09.2026 | 1.3.0 (60) | Neue native Seite **Kasse** (Kassenabschluss, [KASSE.md](KASSE.md)): `NativeMorePage.cash`, Monatsliste und Waage, Schnellzugriff „Kassenabschluss“ im Cockpit, solange heute offen (212) |

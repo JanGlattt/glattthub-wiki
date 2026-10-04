@@ -203,9 +203,14 @@ nur kodiert im Slot-Schlüssel und wird beim Buchen gegen die Suche geprüft. St
 Trinkgeld, Einmalzahlung und Forderungen öffnen in der App kein Vollbild mit Mollie mehr, sondern ein
 **natives Blatt** mit Zweck und Betrag; darunter lädt ein WebView die **App-Kasse des Hubs** — dieselben
 Seiten wie im Browser mit `?kasse=app` (Vorlage `shared/app-checkout`, Inhalt
-`livewire/shared/partials/app-checkout`): Apple Pay oben, Karte aufklappbar (Mollie Components),
-übrige Zahlarten mit vorgewählter Methode direkt zum Anbieter. Kein Logo, durchsichtiger Grund, Gold
-der App, Hell/Dunkel nach Gerät.
+`livewire/shared/partials/app-checkout`). Seit 04.10.2026 (TestFlight M96/M97, Jan) in der Bauart
+der Gutscheinseite: Zahlarten als **2×2-Kacheln** (`.payment-method-grid` in den App-Farben),
+Apple Pay vorgewählt, wenn das Gerät es kann, darunter **ein** Bezahlknopf passend zur Wahl
+(„Mit  Pay bezahlen“ bzw. „… € bezahlen“), Kartenfelder (Mollie Components) klappen über dem
+Knopf auf; alles am **unteren Rand** des Blatts. Kein Logo, durchsichtiger Grund, Gold der App,
+Hell/Dunkel nach Gerät. **Fallstrick:** Das Theme färbt `html` mit `--bg-primary` — ohne
+`html:has(> .app-checkout-body) { background: transparent }` stand die Kasse weiß im beigen Blatt,
+obwohl WebView und `body` durchsichtig waren.
 
 | Zahlung | Einstieg (`checkout_url` aus der App-API) | Rücksprung, den die App abfängt | Status |
 |---|---|---|---|
