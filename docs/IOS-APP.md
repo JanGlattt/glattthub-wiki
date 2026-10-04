@@ -26,6 +26,9 @@ Schema `glatttScreens`) — siehe [Bildschirme](SCREENS-MODULE.md).
     ([Serie „Grundlagen"](https://hilfe.hub.glattt.com/grundlagen/)). Zusätzlich: Mitteilungen als echte
     Push-Nachrichten mit Zähler auf dem App-Symbol, Hub-Links aus E-Mail/WhatsApp öffnen direkt die App,
     Kamera für Laser-Fotos, Face ID auf persönlichen Geräten, Kennzahlen als Widget auf dem Home-Bildschirm.
+    Seit 1.4.0 gehört eine **Apple-Watch-App** dazu: verkaufte KPZ gegen das Standortziel der Bonus-Seite,
+    Standorte, der heutige Tag, Bonus und die nächste Beratung — in der App und als Widgets auf dem
+    Ziffernblatt. Die Uhr verbindet sich von selbst, sobald man am iPhone angemeldet ist.
     Die Klickanleitung entsteht mit dem Pilot (Abdeckung: `status: "geplant"`).
 
 Seit 25.09.2026 gilt: **Jede neue Funktion des Hubs erscheint in der App als native Seite**, nicht
@@ -562,6 +565,83 @@ genau die Kennzahlen, die die zuletzt in der App angemeldete Person auch im Hub 
   (Xcode legt sie bei automatischer Signierung selbst an). Widgets bekommen keine Push-Auslöser —
   die App ruft `WidgetCenter.shared.reloadAllTimelines()` nach Login, Katalog-Refresh und
   Gerät-Entfernen.
+
+### Apple Watch (seit 1.4.0, Oktober 2026)
+
+**Absicht (Jan, 03.10.2026):** die wichtigsten Kennzahlen immer am Handgelenk, vor allem als
+**Widgets auf dem Ziffernblatt**. Leitkennzahl sind die **verkauften KPZ**, nicht die Zahl der
+Verträge (Wissen `kpz-vor-vertragsanzahl`). Ziel ist **immer das KPZ-Ziel des Standorts von der
+Bonus-Seite** (`BonusMonthlyTarget::kpz_target`). Gebaut als Kombination der drei Entwürfe vom
+03.10.2026: „KPZ-Ring" (A) als Grundgerüst, „Standorte im Blick" (B) für alle mit mehreren
+Instituten, „Mein Tag" (C) für die nächste Beratung und den offenen Kassenabschluss.
+Reine Anzeige — alles Schreibende bleibt auf dem iPhone.
+
+**Endpunkt:** `GET /api/app/widgets/watch` (`AppWidgetController::watch` → `WatchSummaryService`),
+Bearer-Widget-Token wie alle Widget-Endpunkte, je Nutzerin 5 Minuten gecacht. Eine Antwort für App
+und Ziffernblatt, weil die Uhr wenig Akku und ein knappes Aktualisierungs-Budget hat. Jeder Block
+hängt an seinem Recht und fehlt still (`null`):
+
+| Block | Recht | Quelle |
+|---|---|---|
+| `kpz` | Recht der Kennzahl `sales.total_body_zones` (KpiRegistry) | heute: `WidgetDayService::dailySales`; Monat: `BonusMetricResolver` (`kpz_sold`, Scope `branch`, geparkte Widerrufe eingerechnet) — dieselbe Stelle wie die Instituts-Zeilen der Bonus-Seite; Hochrechnung linear wie `BonusCalculationService::elapsedFraction`; Tagesziel = Monatsziel / Öffnungstage (Mo–Sa); `daily` = KPZ je Tag (nur Verlaufsform) |
+| `branches` | wie `kpz`, nur ab zwei sichtbaren Instituten | je Institut KPZ heute/Monat, Ziel, Hochrechnung, Beratungen des Tages; Reihenfolge/Farben wie im Hub, ausgeblendete Institute nur bei Bindung an genau diese |
+| `today` | `view_appointments` | `WidgetDayService::today` (Regeln der Terminübersicht) |
+| `bonus` | `view_bonus_board` + eigene Regeln | `AppStartService::bonusFor()` — Leitziel = erste KPZ-Regel, sonst höchster Fortschritt |
+| `day` | `view_appointments` + Heimat-Institut, oder offener Kassenabschluss | nächste Beratungen aus `AppAppointmentsService::day` (geteilter Cache), eigene zuerst über `phorest_staff_id(s)`; **ohne Kundennamen** — Uhrzeit, Spalte (Raum/Mitarbeiterin), Institut; `cash_open` aus `AppStartService::cashClosingOpenFor()` |
+
+**Seitenfolge je Rolle** (`pages`, ohne Rollennamen): Steht im Startseiten-Layout der Rolle
+(`AppStartLayout`, Admin) ein Bonus-Abschnitt vor den Kennzahl-Abschnitten, beginnt die Uhr mit dem
+Bonus-Ring; wer mehrere Standorte sieht, mit dem Standortvergleich; alle anderen mit dem KPZ-Ring.
+Die Uhr zeigt unbekannte Seiten-Schlüssel nicht (neuerer Hub, ältere Uhr).
+
+**Kopplung:** Die Uhr ist ein **eigenes Gerät** im Hub (`platform: watchos`,
+`native_device_id` = iPhone-ID + `.watch`, sichtbar im Profil unter „App-Geräte"). Das iPhone
+registriert sie über die Web-Sitzung (`HubSession.registerWatch`) und übergibt den Widget-Token per
+WatchConnectivity (`PhoneWatchBridge` → `updateApplicationContext`, Schlüssel in
+`Shared/WatchLink.swift`). Registriert wird nur mit gekoppelter Uhr **und** installierter Watch-App
+und nur einmal je Person (jede Registrierung stellt einen neuen Token aus). Abmelden am iPhone
+widerruft das Uhr-Gerät und lässt die Uhr Token und Stand vergessen. Lehnt der Hub den Token ab
+(401), bittet die Uhr das iPhone um einen neuen. Danach lädt die Uhr **selbst** (WLAN/Mobilfunk)
+über `hub.glattt.com/api/…` — dort gilt kein IAP und kein Gerätenachweis, die Prüfung macht
+`RequiresAppToken` am Gerät hinter dem Token.
+
+**Uhr-Projekt** (`ios/project.yml`): `glatttHubWatch` (watchOS 10+, in die iPhone-App eingebettet,
+`WKCompanionAppBundleIdentifier com.glattt.hub`, Bundle `com.glattt.hub.watchkitapp`, App-Icon aus
+derselben Icon-Composer-Datei mit watchOS-Variante), `glatttHubWatchWidgets` (Ziffernblatt-Widgets),
+`glatttHubWatchTests`; gemeinsamer Code in `ios/WatchShared/` (Farben, Ring, Zahlenformat) und
+`ios/Shared/` (Token-Ablage, `WidgetAPI.watchSummary()`, Modell `WatchSummary` — alle Felder
+optional). Schema „glatttHub Watch".
+
+**Watch-App:** senkrecht geblätterte Seiten (Krone): KPZ-Ring (außen heute/Tagesziel, innen
+Monat/Monatsziel), Monat (Hochrechnung, KPZ je Tag als Balken), Standorte (Zahl = heute, Balken =
+Monat zum Ziel, Antippen → Detail), Heute, Bonus-Ring (voller Ring = 100 %, zweite Runde bis
+Diamant), Mein Tag. Schrift Lato, große Zahlen SF Rounded. Lädt beim Öffnen, wenn der Stand älter
+als 2 Minuten ist; veraltet → „Kein Netz · Stand HH:mm".
+
+**Ziffernblatt-Widgets** (alle aus einem Zeitstrahl, Takt nach Öffnungszeiten wie die
+iPhone-Widgets, Platzhalter = letzter Stand):
+
+| Widget | Größen | Inhalt |
+|---|---|---|
+| KPZ | rund, Ecke, Rechteck, Textzeile | KPZ heute; Ring/Balken = Monat zum Ziel; Rechteck mit Prognose |
+| KPZ je Standort | Rechteck, Textzeile | Balken je Institut in den Hausfarben |
+| Bonus | rund, Ecke, Textzeile | Fortschritt mit Level-Verlauf Bronze → Diamant |
+| Mein Tag | Rechteck, Ecke, Textzeile | nächste Beratung mit Countdown und Raum; abends offener Kassenabschluss |
+
+„Mein Tag" legt je Beratung Einträge an (rückt ohne Netz nach) und setzt
+`TimelineEntryRelevance`: 15 Minuten vor Beginn Score 80, offener Kassenabschluss ab 19 Uhr
+Score 60 — damit hebt der **Smart Stack** die Karte an. Alle Widgets `privacySensitive`, nie
+Kundennamen.
+
+**Prüfen:** `php artisan test --filter=AppWatchSummaryTest` (KPZ gegen Bonus-Ziel, Teilziel,
+Seitenfolge, Rechte, Plattform `watchos`); Uhr: `xcodebuild -scheme "glatttHub Watch" test` mit
+`TEST_RUNNER_WATCH_SNAPSHOT_DIR=…` rastert alle Widgets als PNG; App-Seiten mit Beispieldaten über
+das Startargument `-watchPreview`.
+
+**Fallstricke:** `xcodegen generate` schreibt alle Schemata neu (auch `glatttScreens`). Der
+Simulator braucht die watchOS-Plattform (`xcodebuild -downloadPlatform watchOS`). Für die Uhr
+braucht es im Developer-Portal die App-IDs `com.glattt.hub.watchkitapp(.widgets)` mit App-Gruppe —
+die automatische Signierung legt sie beim ersten Archiv an.
 
 ### Phase D — Versionsprüfung, Siri, Scanner, Diagnose, Tastatur (seit 22.09.2026)
 
@@ -2617,6 +2697,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 03.10.2026 | 1.4.0 | **Apple-Watch-App** mit Ziffernblatt-Widgets (Kombination der Entwürfe KPZ-Ring, Standorte, Mein Tag): KPZ gegen das Standortziel der Bonus-Seite, Standortvergleich, Heute, Bonus-Ring, nächste Beratung und Kassen-Erinnerung im Smart Stack; Uhr als eigenes Gerät (`watchos`), Token per WatchConnectivity; Hub: `GET /api/app/widgets/watch` |
 | 29.09.2026 | 1.3.0 (61) | Kasse: Tresor-Bewegungen „→ zur Bank“ und „→ in die Kasse“ direkt am Tresor (213); Kennzahl-Kachel „Beratungen heute“ mit Tendenz und Wochentags-Schnitt (`comparison.reference`, 214) |
 | 29.09.2026 | 1.3.0 (60) | Neue native Seite **Kasse** (Kassenabschluss, [KASSE.md](KASSE.md)): `NativeMorePage.cash`, Monatsliste und Waage, Schnellzugriff „Kassenabschluss“ im Cockpit, solange heute offen (212) |
 | 29.09.2026 | 1.3.0 (60) | iPad-Cockpit: Bonus-Karten in einer Zeile oder wischbar (`BonusGoalPager` mit `fraction`), unvollständige Raster-Zeilen verteilen ihren Rest (`CockpitSections.pack`) (206); PIN-/Passwort-Wechsel als Vollbild vor dem Hub, kurze Bestätigung nach vier Ziffern, `DrawnCheckmark` bei Erfolg (208); Profilbild-Blatt zeigt das aktuelle Bild (210); Behandlungs-Ranking schickt 4 Monate wie das Web statt der ganzen Historie (211). Hub (live): Blind-Challenges auch in PDF/CSV verdeckt (207), 419-Seite übergibt an die native Anmeldung (209), Behandlungs-Intervalle je Aufruf nur einmal abgefragt (211) |
