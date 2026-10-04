@@ -37,6 +37,7 @@ meldet später nur „neue Revision“; die Endpunkte bleiben gleich, die Abfrag
 
 | Teil | Datei |
 | --- | --- |
+| 04.10.2026 | Hotel-Test: Körperkarte im Dunkelmodus (Masken) und ohne Überlauf, Zonen und Laufzeit-Schalter auf der Paketfolie, Körperkarte am Fernseher auf der Paketfolie (Ganzkörper zart, sonst pulsierend), Formular am Fernseher im Wortlaut; Echtzeit-Socket erkennt Abriss (TV 1.1.0 Build 7/8) |
 | Sitzungslogik | `app/Services/GuidedConsultation/GuidedConsultationService.php` |
 | Folientypen | `app/Services/GuidedConsultation/ConsultationSlideTypes.php` |
 | Vorlage nach Leitfaden | `app/Services/GuidedConsultation/ConsultationDeckTemplate.php` |
@@ -102,6 +103,19 @@ Das Formular bleibt die Hub-Engine: Der Presenter bettet
 als Befehl `form` weiter. Der Fernseher rechnet keine Bedingungen selbst. Die Einführungstour ist
 im eingebetteten Formular abgeschaltet (`onboarding-tour.blade.php`).
 
+**Wortlaut am Fernseher (seit 04.10.2026, Jan: „Nur dann kann der Kunde das wirklich
+nachvollziehen“):** Der Spiegel trägt jetzt auch Absätze und Hinweise (ohne Text; Schlüssel
+`mirrorKey()` = `field_name` oder `f{id}`). Den Wortlaut — Absätze, Ja/Nein-Fragen mit Nummer,
+Optionen, Einwilligungen, Rechtsdokumente im Volltext, Platzhalter schon ersetzt, als Klartext —
+schickt `form-fill.js` **einmal je Stand** (`mirrorTexts()`, Nachricht `glattt-form-texts`, erneut
+nach dem Laden der Kontextdaten). Der Presenter reicht ihn als Befehl `form_texts` weiter; der Hub
+legt ihn 12 h in den Cache (`guided-form-texts:{uuid}:{form_id}`), der Zustand trägt nur den
+Fingerabdruck (`state.form_texts[form_id]`). `tvPayload()` liefert `form_texts` auf Formularfolien:
+Elemente nur, wenn der Fernseher mit `?texts=<hash>` einen anderen Stand meldet — so geht der lange
+Text einmal übers Netz, nicht bei jedem Tastendruck. Apple TV (`ConsultationFormSlide`) und Fernseher
+im Browser zeigen damit das Formular im Wortlaut; das aktive Feld rückt nach oben (Versatz statt
+ScrollView, wegen des Fokus).
+
 ### Paketempfehlung
 
 Aus den gewünschten Zonen und der gültigen Preisliste des Instituts
@@ -120,6 +134,24 @@ Einmalzahlung auf Knopfdruck, Rabatte (Ersparnis auf den Gesamtpreis) in der rec
 Öffnen `&flex_group=…&flex_mode=…&flex_value=…`; `flexApplyGuidedPrefill()` (flex-price-mixin.js)
 übernimmt die Wahl, sobald im Formular dasselbe Paket (gleiche Zonenzahl) in den Preisen steht.
 Tests: `GuidedConsultationFlexPriceTest`.
+
+**Seit 04.10.2026 (Hotel-Test Jan):**
+- **Zonen auf der Paketfolie anpassen:** Die Körperkarte steht rechts neben dem Angebot und ist
+  antippbar wie auf „Körperzonen“ (Befehl `zone`), der Preis rechnet sofort neu.
+- **Laufzeit-Schalter fester Preislisten:** `packageOffer()` liefert `terms` (alle Laufzeiten des
+  Umfangs, z. B. Ganzkörper 19/24 Monate), Befehl `{type: 'package', months}` wählt;
+  `null` = Vorbelegung **kürzeste** Laufzeit. Achtung: Die Relation `priceGroups()` sortiert nach
+  Zonen und Monaten — ein angehängtes `orderByDesc` greift erst nach `reorder()`; die frühere
+  „längste Laufzeit“ war deshalb in Wahrheit immer die kürzeste. Das Vertragsformular bekommt die
+  Wahl als `&price_group=…` (`flexApplyGuidedPrefill`).
+- **Körperkarte am Fernseher auf der Paketfolie:** `body_graphic` auch für `package`. Ganzkörper
+  färbt die übrigen Zonen zart (0,28), sonst pulsieren die gewünschten; mehr KPZ als gewünscht
+  (Rabattstaffel) — nur die gewünschten pulsieren. Rabatte rücken unter den Preis.
+- **Körperkarte im Dunkelmodus:** eingefärbte CSS-Masken statt `<img>` (wie My glattt): Linien in
+  `--text-primary`, Zonen im Verlauf der Legende; Masken je Zone in `theme_glattt.css`
+  (`.gc-zone-mask[data-zone]`, Pfade wie `BodyZoneAreas::LAYERS`). Die Fernseher-Folie bleibt hell
+  (`.gc-tv-map .gc-zone-base` in `--gc-tv-ink`). `.gc-center > .gc-control` schrumpft nicht mehr —
+  vorher ragte die Karte aus der Karte.
 
 ### Apple TV und iPad
 
