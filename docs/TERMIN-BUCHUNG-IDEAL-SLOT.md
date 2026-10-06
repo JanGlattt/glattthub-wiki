@@ -60,8 +60,9 @@ Institut und Leistungen sind darin fest vorgegeben, auf Wunsch nur lückenlose S
   stornierten Termin öffnet das `RescheduleSlotModal` mit der vollständigen Slot-Logik — Institut
   (bestehende Filiale vorausgewählt) und erstes mögliches Datum oben, Services des Kunden (alle aktiven
   Paket-Services + Desinfektion) automatisch übernommen und als Badges angezeigt, darunter die idealen
-  Slots gruppiert pro Tag. Ein Klick auf einen Slot storniert die alten Termine und legt den neuen an;
-  die Terminliste lädt neu, Erfolgsmeldung. Bei stornierten oder vergangenen Terminen werden „Verlegen"
+  Slots gruppiert pro Tag. Ein Klick markiert den Slot, gebucht wird über die Bestätigungsleiste
+  (siehe „Slot wählen und bestätigen"): Sie storniert die alten Termine und legt den neuen an. Die
+  Terminliste lädt danach sanft neu, die Erfolgsmeldung nennt den neuen Termin. Bei stornierten oder vergangenen Terminen werden „Verlegen"
   und „Link" ausgeblendet – ein stornierter Termin kann nicht mehr verlegt werden.
 - **Terminansicht:** Button **„Verlegen"** in der Sidebar öffnet das Buchungsmodul (`hub.booking`) mit
   vorausgewähltem Kunden, Institut und den `appointmentIds` des Termins.
@@ -93,6 +94,51 @@ Institut und Leistungen sind darin fest vorgegeben, auf Wunsch nur lückenlose S
 - **Untergrenze:** Vorschläge und freie Zeiten beginnen frühestens jetzt + `booking.min_lead_minutes`
   (15 Min); ein Startdatum vor heute rückt auf heute. Tests mit festen Beispieldaten halten deshalb
   die Uhr fest (`Carbon::setTestNow`).
+
+### Slot wählen und bestätigen (seit 06.10.2026)
+
+Alle Buchungsfenster — Buchungsseite (Kalender und Liste), Verlegen-Modal, Folgetermin-Modal und
+„Andere Uhrzeit …" — buchen **nicht mehr per Klick plus Browser-Dialog** (`wire:confirm`). Der Dialog
+kam vom Browser (englisches „Cancel"), danach gab es bis zur Antwort von Phorest keine Rückmeldung.
+
+- **Slot-Knopf** `livewire/hub/booking/partials/slot-pill.blade.php` markiert nur
+  (`pickSlot({ method, index, key, when, time, room })`, Klasse `is-selected`). Die
+  Kalender-Blöcke der Buchungsseite tragen dieselben Attribute inline.
+- **Leiste** `livewire/hub/booking/partials/slot-confirm-bar.blade.php` nennt Tag, Uhrzeit und Raum mit
+  „Abbrechen" und „Verlegen"/„Buchen". In Modalen sitzt sie als Fuß unter dem Body, auf der
+  Buchungsseite klebt sie am unteren Rand (`slot-confirm-bar--sticky`, rechnet mit
+  `--safe-area-bottom` und `--mobile-bottom-nav-space`).
+- **Logik** in der Alpine-Komponente `slotConfirm` (`public/js/components/slot-confirm.js`, im
+  Hub-Layout geladen). `x-data="slotConfirm"` sitzt auf `.modal-glattt` bzw. einer Hülle um die
+  Vorschlagskarte; Slots und Leiste müssen darin liegen. `confirmSlot()` ruft
+  `$wire.call(method, index)` und hält währenddessen `slotBusy` — die Leiste zeigt „Wird verlegt …"
+  bzw. „Wird gebucht …", alle übrigen Slots sind gedimmt und gesperrt (`.is-slot-busy`).
+- **Veralteter Index:** `$index` gehört zum Stand beim Klick. Vor dem Buchen prüft `confirmSlot()`, dass
+  ein Knopf mit derselben `data-slot-pick`/`data-slot-key`-Kombination noch existiert. Nach einer neuen
+  Suche (Datum, Institut) verfällt die Auswahl, statt einen anderen Slot zu buchen. Schließen eines
+  Modals (`open` → false) verwirft sie ebenfalls.
+- **Meldungen:** `BookingService::reschedule()` reicht die Meldung von `book()` durch („Termin
+  erfolgreich gebucht."). Verlegen-Modal und Buchungsseite formulieren deshalb selbst: „Neuer Termin:
+  Do., 08.10.2026 um 13:25 Uhr · Raum MD 1."
+
+### Terminliste im Kundenprofil: sanftes Neuladen (seit 06.10.2026)
+
+Nach `appointment-rescheduled` leerte `reloadAppointments()` früher die Liste („Lade alle Termine…")
+und baute sie in drei Stufen wieder auf. Zwischendurch zeigten stornierte Termine „Nicht zugewiesen"
+und die Knöpfe Link/Verlegen, bis Status (`/phorest/appointment/{branch}/{id}/details`) und
+Mitarbeiter (`/phorest/staff/batch`) da waren. Jetzt gilt:
+
+- Die alte Liste bleibt gedimmt stehen (`refreshable-glattt` + `is-refreshing` über
+  `appointmentsRefreshing`). Ausgetauscht wird einmal, wenn Status und Mitarbeiter **aller** Termine
+  vorliegen.
+- Details werden nur für **neue** Termine und für die **verlegten** IDs (`rescheduledAppointmentIds`,
+  gemerkt in `openRescheduleModal()`) neu geholt. Alle anderen übernehmen ihren bekannten Stand,
+  bekannte Mitarbeiter-Namen werden wiederverwendet.
+- Die `x-for`-Keys tragen `appointmentsVersion` (siehe Projektwissen „Alpine x-for behält alte
+  Item-Scopes").
+- Auch beim Erstaufbau zeigen Zeilen mit noch ladendem Status keine Knöpfe und als Mitarbeiter „…"
+  statt „Nicht zugewiesen". Helfer: `fetchAppointmentDetails()`, `mergeAppointmentDetails()`,
+  `fetchStaffNames()`.
 
 ### Self-Service-Link: Fachregeln
 
@@ -139,6 +185,9 @@ app/Services/Booking/
 | View | `resources/views/livewire/hub/booking/reschedule-slot-modal.blade.php` | Modal-UI (Institut + Datum + Slot-Liste) |
 | Hub-Seite | `resources/views/hub/booking.blade.php` | Bindet die Buchungs-Komponente ein |
 | Profil | `resources/views/hub/clients/partials/appointments.blade.php` | „Verlegen"-Button je zukünftigem Termin |
+| Partial | `resources/views/livewire/hub/booking/partials/slot-pill.blade.php` | Slot-Knopf aller Buchungsfenster (markiert nur) |
+| Partial | `resources/views/livewire/hub/booking/partials/slot-confirm-bar.blade.php` | Bestätigungsleiste „Abbrechen / Verlegen · Buchen" |
+| JS | `public/js/components/slot-confirm.js` | Alpine-Komponente `slotConfirm` (Auswahl, Sperre während der Buchung) |
 | Route | `routes/web.php` → `hub.booking` (`can:view_booking`) | Buchungsseite (technisch vorhanden, aus Sidebar entfernt) |
 | Route | `routes/web.php` → `shared.booking.show` (öffentlich, kein Auth) | Self-Service-Buchungsseite `/shared/booking/{token}` |
 | Config | `config/booking.php` | Schwellen, Geschäftszeiten, Raum-Pattern, Lücken-Regel |

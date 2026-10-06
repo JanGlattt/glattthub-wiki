@@ -9,8 +9,8 @@
  "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — Terminhistorie, Extrazeit und gekaufte Pakete",
  "eyebrow": "Kundenverwaltung · Termine & Pakete",
  "footerArea": "Kundenverwaltung",
- "stand": "26.09.2026",
- "version": "1.1",
+ "stand": "06.10.2026",
+ "version": "1.2",
  "notes": [
   "Termine und Pakete kommen **live aus Phorest** — der Hub zeigt sie nur an, geführt wird der Kalender dort.",
   "Behandelt wird immer über die **Terminansicht** (Dokumente „Terminansicht 1–8“), nicht über das Kundenprofil.",
@@ -87,7 +87,7 @@
     {
      "n": 2,
      "title": "„Verlegen“",
-     "text": "Öffnet die Terminverlegung mit freien Zeiten. Nach dem Verlegen aktualisiert sich die Liste von selbst."
+     "text": "Öffnet die Terminverlegung mit freien Zeiten. Zeit anklicken, in der Leiste unten prüfen und **„Verlegen“** wählen. Danach aktualisiert sich die Liste von selbst — bis dahin bleibt sie leicht abgeblendet stehen."
     },
     {
      "n": 3,

@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — Termin für eine Kundin buchen, ideale Zeiten finden, Link weitergeben",
  "eyebrow": "Terminansicht · Buchung",
  "footerArea": "Terminansicht",
- "stand": "26.09.2026",
- "version": "1.1",
+ "stand": "06.10.2026",
+ "version": "1.2",
  "notes": [
   "Gebucht wird **direkt in Phorest** — der Termin steht sofort im Kalender des Instituts.",
   "**„Ideale Slots finden“** schlägt Zeiten vor, die den Tag nicht zerreißen — es ist kein Zwang, aber meist die bessere Wahl.",
@@ -78,7 +78,7 @@
     {
      "n": 3,
      "title": "Zeit wählen",
-     "text": "Ein Tippen übernimmt den Vorschlag. Steht dort **„Keine freien Termine an diesem Tag“**, hilft ein anderer Tag oder eine kürzere Behandlung."
+     "text": "Ein Klick markiert die Zeit, unten erscheint eine Leiste mit Tag, Uhrzeit und Raum. Steht dort **„Keine freien Termine an diesem Tag“**, hilft ein anderer Tag oder eine kürzere Behandlung."
     }
    ],
    "notes": [
@@ -97,35 +97,35 @@
   },
   {
    "h1": "Buchen und bestätigen",
-   "sub": "Zum Schluss prüft man die Zusammenfassung und bucht — danach steht der Termin in Phorest.",
+   "sub": "Zum Schluss prüft man die Leiste unten und bucht — danach steht der Termin in Phorest.",
    "card": {
     "title": "Buchen",
-    "text": "Zusammenfassung prüfen, buchen, Bestätigung"
+    "text": "Leiste prüfen, buchen, Bestätigung"
    },
    "left": {
     "shot": "t3-buchen"
    },
-   "leftCaption": "Die Zusammenfassung vor dem Buchen.",
+   "leftCaption": "Die gewählte Zeit in der Leiste vor dem Buchen.",
    "steps": [
     {
      "n": 1,
-     "title": "Zusammenfassung prüfen",
-     "text": "Kundin, Institut, Datum, Uhrzeit, Behandlungen. Danach ist die Änderung aufwendiger."
+     "title": "Leiste prüfen",
+     "text": "Tag, Uhrzeit und Raum der gewählten Zeit. **„Abbrechen“** hebt die Auswahl auf, ein Klick auf eine andere Zeit tauscht sie. Nach dem Buchen ist eine Änderung aufwendiger."
     },
     {
      "n": 2,
      "title": "Buchen",
-     "text": "Der Hub legt den Termin **in Phorest** an — während des Vorgangs steht **„Buche in Phorest …“**."
+     "text": "**„Buchen“** in der Leiste legt den Termin **in Phorest** an — währenddessen steht dort **„Wird gebucht …“** und die übrigen Zeiten sind gesperrt."
     },
     {
      "n": 3,
      "title": "Bestätigung",
-     "text": "Danach erscheint der Termin in der Terminübersicht des Tages („Terminansicht 1“)."
+     "text": "Oben steht, wann und in welchem Raum der Termin gebucht wurde. Er erscheint in der Terminübersicht des Tages („Terminansicht 1“)."
     }
    ],
    "hint": {
     "kind": "warn",
-    "text": "**Nicht zweimal buchen.** Bleibt die Anzeige lange bei „Buche …“, zuerst die Terminübersicht prüfen — oft ist der Termin längst angelegt und ein zweiter Versuch erzeugt einen doppelten Eintrag."
+    "text": "**Nicht zweimal buchen.** Bleibt die Anzeige lange bei „Wird gebucht …“, zuerst die Terminübersicht prüfen — oft ist der Termin längst angelegt und ein zweiter Versuch erzeugt einen doppelten Eintrag."
    }
   },
   {

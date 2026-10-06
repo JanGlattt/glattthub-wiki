@@ -2008,28 +2008,40 @@
   },
   "marks": [
    {
-    "id": "zusammenfassung",
+    "id": "zeit",
+    "kind": "frame",
+    "color": "gold",
+    "sel": ".day-schedule__slot.is-selected",
+    "pct": {
+     "x": 33.220338983050844,
+     "y": 47.92682926829268,
+     "w": 61.694915254237294,
+     "h": 4.024390243902439
+    }
+   },
+   {
+    "id": "leiste",
     "kind": "frame",
     "color": "teal",
-    "sel": ".booking-summary, .card-glattt",
+    "sel": ".slot-confirm-bar",
     "pct": {
      "x": 25.76271186440678,
-     "y": 15.609756097560975,
+     "y": 85.76028963414633,
      "w": 71.52542372881356,
-     "h": 42.7515243902439
+     "h": 12.288490853658535
     }
    },
    {
     "id": "buchen",
     "kind": "chip",
     "label": "Erst jetzt buchen",
-    "sel": "button.btn-glattt-primary",
+    "sel": ".slot-confirm-bar .btn-glattt-primary",
     "at": "l",
     "pct": {
-     "x": 27.881355932203387,
-     "y": 49.85137195121951,
-     "w": 13.798993644067798,
-     "h": 5.461128048780488
+     "x": 82.96610169491525,
+     "y": 89.1482469512195,
+     "w": 12.203389830508476,
+     "h": 5.510670731707317
     }
    }
   ],

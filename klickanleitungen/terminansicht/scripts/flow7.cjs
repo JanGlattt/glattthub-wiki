@@ -1,7 +1,8 @@
 /* Terminansicht 9 — Termin buchen (t1–t4)
 
    Der Lauf geht die Buchungsseite bis zur Bestätigung durch und **bucht standardmäßig nicht**:
-   `t3-buchen` zeigt die ausgefüllte Zusammenfassung, der Knopf wird nur markiert.
+   `t3-buchen` sucht Zeiten für die Testkundin, markiert eine und zeigt die Bestätigungsleiste
+   (seit 06.10.2026 statt Browser-Dialog); „Buchen" in der Leiste wird nur markiert.
 
    Wer ein echtes Beispiel braucht, setzt `KLICK_BOOK=1` — dann wird gebucht. Das ist nur mit
    einer Magdeburg-Testkundin (MD000001–MD000004) erlaubt; der Termin landet im **echten**
@@ -12,6 +13,9 @@
 const L = require('./lib.cjs');
 const KUNDE = process.env.KLICK_BOOK_CLIENT || 'MD000002';
 const BUCHEN = process.env.KLICK_BOOK === '1';
+// Phorest-ID und Name der Testkundin für t3 (MD000004 „Test Testererer" in Magdeburg)
+const KUNDE_ID = process.env.KLICK_BOOK_CLIENT_ID || '3ruXMxdWALJrFvm-xOVg6w';
+const KUNDE_NAME = process.env.KLICK_BOOK_CLIENT_NAME || 'Test Testererer';
 
 (async () => {
   const nur = process.argv.slice(2);
@@ -39,19 +43,39 @@ const BUCHEN = process.env.KLICK_BOOK === '1';
     ]});
   }
 
-  // ── t3 Buchen und bestätigen
+  // ── t3 Buchen und bestätigen: Zeit markieren → Leiste mit Tag, Uhrzeit, Raum
   if (will('t3-buchen')) {
-    await L.wait(page, 1200);
-    await L.shot(page, 't3-buchen', { marks: [
-      { id: 'zusammenfassung', kind: 'frame', color: 'teal', sel: '.booking-summary, .card-glattt' },
-      { id: 'buchen', kind: 'chip', label: 'Erst jetzt buchen', sel: 'button.btn-glattt-primary', at: 'l' },
-    ]});
-    if (BUCHEN) {
-      await page.click('button.btn-glattt-primary').catch(() => {});
-      await L.wait(page, 4000);
-      console.log('ACHTUNG: Termin wirklich gebucht — in Phorest wieder stornieren!');
-    } else {
-      console.log('Nicht gebucht (KLICK_BOOK ist nicht 1).');
+    await L.goto(page, `/hub/booking?branchId=${L.MD}&clientId=${KUNDE_ID}&clientName=${encodeURIComponent(KUNDE_NAME)}`, 3000);
+    // Alle Paket-Leistungen der Kundin wählen, dann Zeiten suchen
+    await page.evaluate(async () => {
+      const w = Livewire.all().find(c => c.name === 'hub.booking.appointment-booking-form').$wire;
+      await w.set('selectedServiceIds', (w.serviceOptions || []).map(o => o.service_id));
+      await w.findSlots();
+    });
+    let n = 0;
+    for (let i = 0; i < 60 && !n; i++) {
+      await L.wait(page, 500);
+      n = await page.evaluate(() => [...document.querySelectorAll('.day-schedule__slot')].filter(b => b.offsetParent).length);
+    }
+    if (!n) { console.log('KEINE SLOTS — t3 nicht aufgenommen'); }
+    else {
+      await page.evaluate(() => [...document.querySelectorAll('.day-schedule__slot')].filter(b => b.offsetParent)[1].click());
+      await L.wait(page, 800);
+      // Markierte Zeit mittig, die Leiste klebt am unteren Rand
+      await page.evaluate(() => document.querySelector('.day-schedule__slot.is-selected').scrollIntoView({ block: 'center' }));
+      await L.wait(page, 500);
+      await L.shot(page, 't3-buchen', { noScroll: true, marks: [
+        { id: 'zeit', kind: 'frame', color: 'gold', sel: '.day-schedule__slot.is-selected' },
+        { id: 'leiste', kind: 'frame', color: 'teal', sel: '.slot-confirm-bar' },
+        { id: 'buchen', kind: 'chip', label: 'Erst jetzt buchen', sel: '.slot-confirm-bar .btn-glattt-primary', at: 'l' },
+      ]});
+      if (BUCHEN) {
+        await page.click('.slot-confirm-bar .btn-glattt-primary').catch(() => {});
+        await L.wait(page, 6000);
+        console.log('ACHTUNG: Termin wirklich gebucht — in Phorest wieder stornieren!');
+      } else {
+        console.log('Nicht gebucht (KLICK_BOOK ist nicht 1).');
+      }
     }
   }
 
