@@ -3,8 +3,10 @@
 **glatttBert** ist der interne KI-Assistent von glatttHub. Er beantwortet Fragen zu Kunden,
 Verträgen, Statistiken, internen Prozessen und der Wissensdatenbank — direkt im Hub,
 angedockt neben der Seitenleiste (mobil über das Mehr-Sheet). Technisch ist er eine
-Livewire-Komponente über der OpenAI Assistants API v2 mit File-Search auf einem Vector Store,
-der nächtlich aus Google Drive befüllt wird, plus Hub-Tools für Kunden- und Kennzahlen-Abfragen.
+Livewire-Komponente über der **Claude Messages API** (Anthropic, seit 06.10.2026) mit einem
+eigenen hybriden Suchindex über die Wissensdatenbank (Volltext + Embeddings von Google
+Vertex AI), der nächtlich aus Google Drive und dem Wiki befüllt wird, plus Hub-Werkzeuge für
+Kunden- und Kennzahlen-Abfragen.
 Diese Seite beschreibt **Architektur, Datenmodell, Sync, Chat-Flow, Tool-Logik und
 Einschränkungen**; die Bedienung steht im Nutzerhandbuch.
 
@@ -61,37 +63,45 @@ im Rollen-Editor, siehe [Berechtigungssystem](BERECHTIGUNGSSYSTEM.md)).
 │  resources/views/livewire/hub/ai-assistant.blade.php    │
 │  app/Livewire/Hub/AiAssistant.php                       │
 └────────────┬────────────────────────────────────────────┘
-             │
              ▼
 ┌─────────────────────────────────────────────────────────┐
-│  Service-Layer                                          │
-│  app/Services/OpenAiAssistantService.php (Chat-Runs)    │
-│  app/Services/KnowledgeBaseSyncService.php (Indexing)   │
-└────────────┬────────────────────────────────────────────┘
-             │
-             ▼
-┌─────────────────────────────────────────────────────────┐
-│  OpenAI Assistants API v2                               │
-│  • Assistant: asst_... (Modell: gpt-4o)                 │
-│  • Vector Store: vs_... (File-Search)                   │
-│  • Threads: 1 Thread pro AiConversation                 │
-└─────────────────────────────────────────────────────────┘
-             │
-             ▲
-┌─────────────────────────────────────────────────────────┐
-│  Knowledge-Base-Sync                                    │
-│  Google Drive  →  KnowledgeArticle  →  Vector Store     │
-│  Cloud Scheduler täglich 03:00 Europe/Berlin            │
+│  GlatttBertService (app/Services/Ai/)                   │
+│  Verlauf aus ai_messages → Claude → Werkzeug-Schleife   │
+│   • search_knowledge  → KnowledgeSearchService          │
+│   • 12 Hub-Werkzeuge  → HubToolExecutor                 │
+└────────────┬───────────────────────────┬────────────────┘
+             ▼                           ▼
+┌───────────────────────────┐  ┌──────────────────────────┐
+│  Claude API (Anthropic)   │  │  Suchindex (MySQL)       │
+│  Sonnet 5.5, ClaudeClient │  │  knowledge_chunks:       │
+│  (offizielles PHP-SDK)    │  │  FULLTEXT + Vektoren     │
+└───────────────────────────┘  └───────────▲──────────────┘
+                                           │
+┌──────────────────────────────────────────┴──────────────┐
+│  Knowledge-Base-Sync (nächtlich 03:00) + Wiki-Sync      │
+│  Drive/Wiki → KnowledgeArticle → KnowledgeIndexer       │
+│  Text: Docs-Export, pdftotext/OOXML, Claude (Bilder,    │
+│  Scan-PDFs), Google Speech-to-Text (Videos)             │
+│  Vektoren: Vertex AI gemini-embedding-001 (768 Dim.)    │
 └─────────────────────────────────────────────────────────┘
 ```
+
+**Warum kein gehosteter Vector Store mehr?** glatttBert lief bis Oktober 2026 auf der OpenAI
+Assistants API mit File Search. OpenAI hat diese Schnittstelle am **26.08.2026 abgeschaltet**;
+Entscheidung Jan (06.10.2026): ein einziger KI-Dienstleister im Hub, also Claude. Claude
+bietet keinen gehosteten Vector Store — die Suche liegt deshalb im Hub selbst. Die Texte
+lagen ohnehin in `knowledge_articles`; dazu kommen Abschnitte mit Volltext-Index und
+Embeddings. Embeddings und Transkription kommen aus dem eigenen GCP-Projekt (EU-Regionen),
+damit kein dritter Dienstleister dazukommt.
 
 ### Datenmodell
 
 | Tabelle | Zweck |
 |---|---|
-| `ai_conversations` | Eine Konversation pro Nutzer-Chat. Felder: `id`, `user_id`, `title`, `openai_thread_id`, `is_pinned`, `last_activity_at`, `created_at`, `updated_at` |
-| `ai_messages` | Einzelne Nachrichten (User + Assistant). Felder: `conversation_id`, `role`, `content`, `embeds` (JSON: Quellen-Referenzen) |
-| `knowledge_articles` | Synchronisierte Drive-Inhalte. Felder: `id`, `source_type`, `source_id`, `title`, `content`, `mime_type`, `openai_file_id`, `last_synced_at` |
+| `ai_conversations` | Eine Konversation pro Nutzer-Chat (`user_id`, `title`, `title_manually_set`, `pinned_at`, `last_activity_at`). |
+| `ai_messages` | Nachrichten (User + Assistant): `content`, `sources` (Quellen-Karten), `embeds` (Kunden-/Vertragskarten), Telemetrie `model`, `latency_ms`, `prompt_tokens`, `completion_tokens`, `cache_read_tokens`, `cache_write_tokens`, `total_tokens`, **`cost_usd`** (je Antwort berechnet), `tool_calls`, Feedback |
+| `knowledge_articles` | Wissensartikel aus Drive (`drive`, `site_page`, `site_index`), Wiki (`wiki`) und Admin (`manual`). Neu: `index_hash` (SHA1 aus Titel + Inhalt des zuletzt indexierten Stands), `indexed_at`. |
+| `knowledge_chunks` | Suchindex: Abschnitte eines Artikels (`chunk_index`, `heading`, `content`, `content_hash`), Vektor als gepackter float32-BLOB (`embedding`, 768 Dimensionen = 3 KB), `embedding_model`. FULLTEXT über `heading, content`. |
 
 Berechtigung: Spatie Permission `use_ai_assistant`.
 
@@ -101,15 +111,23 @@ Berechtigung: Spatie Permission `use_ai_assistant`.
 
 | Datei | Zweck |
 |---|---|
-| `app/Livewire/Hub/AiAssistant.php` | Livewire-Komponente, hält State, ruft Service auf |
-| `app/Services/OpenAiAssistantService.php` | OpenAI-Run-Orchestrierung, Thread-Handling |
-| `app/Services/KnowledgeBaseSyncService.php` | Drive → DB → Vector Store Sync |
-| `app/Console/Commands/SyncKnowledgeBase.php` | Artisan-Command `knowledge-base:sync` |
-| `app/Jobs/GenerateConversationTitleJob.php` | Async-Job für Auto-Titel via `gpt-4o-mini` |
-| `app/Http/Controllers/CronController.php` | `syncKnowledgeBase()` Endpoint für Cloud Scheduler |
-| `app/Models/AiConversation.php` | Eloquent-Model |
-| `app/Models/AiMessage.php` | Eloquent-Model |
-| `app/Models/KnowledgeArticle.php` | Eloquent-Model |
+| `app/Livewire/Hub/AiAssistant.php` | Livewire-Komponente, hält State, ruft den Service auf |
+| `app/Services/Ai/GlatttBertService.php` | Chat: Verlauf, Werkzeug-Schleife, Zitate → `[n]` + Quellen-Karten, Telemetrie/Kosten |
+| `app/Services/Ai/GlatttBertInstructions.php` | Systemanweisung (unveränderlich, gecacht) + Tagesdatum als eigener Block |
+| `app/Services/Ai/HubToolExecutor.php` | Die 12 Hub-Werkzeuge (`definitions()` im Claude-Format, `execute()`) |
+| `app/Services/Ai/ClaudeClient.php` | **Einziger** Zugang zur Claude API (SDK `anthropic-ai/sdk`), inkl. Ausweich-Modell bei Ablehnung; `ClaudeClient::fake()` für Tests |
+| `app/Services/Ai/ClaudeCost.php` | Kosten je Antwort aus `config/anthropic.php`; Schätzung alter OpenAI-Zeilen |
+| `app/Services/Knowledge/KnowledgeChunker.php` | Zerlegt Text in Abschnitte (~3.000 Zeichen, Überschriften, Überlappung) |
+| `app/Services/Knowledge/KnowledgeIndexer.php` | Hält `knowledge_chunks` aktuell, verwendet Embeddings unveränderter Abschnitte wieder |
+| `app/Services/Knowledge/KnowledgeSearchService.php` | Hybride Suche (Volltext + Kosinus, Reciprocal Rank Fusion) |
+| `app/Services/Knowledge/DocumentTextExtractor.php` | Text aus PDF (`pdftotext`), DOCX, PPTX, XLSX |
+| `app/Services/Google/VertexEmbeddingService.php` | Embeddings über Vertex AI (`europe-west3`) |
+| `app/Services/Google/SpeechToTextService.php` | Transkription über Speech-to-Text v2, Chirp 2 (`europe-west4`) |
+| `app/Services/KnowledgeBaseSyncService.php` | Drive → `knowledge_articles` → Index |
+| `app/Services/WikiSyncService.php` | Wiki (GitHub) → `knowledge_articles` → Index |
+| `app/Console/Commands/IndexKnowledgeBase.php` | `glatttbert:index` — Erstaufbau / fehlende Vektoren nachholen |
+| `app/Jobs/GenerateConversationTitleJob.php` | Auto-Titel über Claude Haiku 4.5 |
+| `app/Http/Controllers/CronController.php` | `syncKnowledgeBase()` für Cloud Scheduler |
 
 #### Frontend
 
@@ -123,10 +141,17 @@ Berechtigung: Spatie Permission `use_ai_assistant`.
 
 | Variable | Zweck |
 |---|---|
-| `OPENAI_API_KEY` | API-Key für OpenAI |
-| `OPENAI_ASSISTANT_ID` | ID des Assistants (in OpenAI angelegt) |
-| `OPENAI_VECTOR_STORE_ID` | ID des Vector-Stores für File-Search |
-| `CRON_TOKEN` (`config/services.php`) | Auth für `/api/sync-knowledge-base` |
+| `ANTHROPIC_API_KEY` | API-Schlüssel für Claude (gleicher Schlüssel für alle KI-Stellen im Hub) |
+| `ANTHROPIC_MODEL` | Standardmodell für Einzelaufgaben (Bildanalyse, Scan-PDFs, Vertragsanalyse), Standard `claude-sonnet-5-5` |
+| `ANTHROPIC_SMALL_MODEL` | Kleines Modell für Titel und Namensklassifizierung, Standard `claude-haiku-4-5` |
+| `GLATTTBERT_MODEL` / `GLATTTBERT_EFFORT` | Chat-Modell (Standard `claude-sonnet-5-5`) und Aufwand (`medium`) |
+| `GOOGLE_SERVICE_ACCOUNT_JSON(_CONTENT)` | Service-Konto `glatttbert-knowledge-base@glattthub` — Drive, Vertex AI, Speech-to-Text |
+| `GOOGLE_EMBEDDING_MODEL` / `GOOGLE_VERTEX_LOCATION` | Embedding-Modell (`gemini-embedding-001`) und Region (`europe-west3`) |
+| `GOOGLE_SPEECH_MODEL` / `GOOGLE_SPEECH_LOCATION` | Transkription (`chirp_2`, `europe-west4` — Chirp gibt es nicht in Frankfurt) |
+| `CRON_TOKEN` (`config/services.php`) | Auth für `/api/cron/sync-knowledge-base` |
+
+Rechte des Service-Kontos im Projekt `glattthub`: **Vertex AI User** (`roles/aiplatform.user`)
+und **Cloud Speech Client** (`roles/speech.client`); API `speech.googleapis.com` muss aktiv sein.
 
 ### UI-Verhalten und Tastenkürzel (Referenz)
 
@@ -213,21 +238,30 @@ php artisan knowledge-base:sync --limit=30
 
 # Mehrere Batches mit GC dazwischen
 php artisan knowledge-base:sync --limit=100 --batches=3
+
+# Suchindex komplett neu aufbauen bzw. fehlende Vektoren nachholen
+php artisan glatttbert:index --fresh
+php artisan glatttbert:index --embed-only
 ```
 
 Der Service:
 
-1. Lädt Datei-Liste aus Google Drive (rekursiv, gefiltert nach erlaubten MIMEs)
-2. Pro Datei:
-   - Google Docs/Sheets → Export als Markdown/CSV
-   - PDF/DOCX → direkter Upload zu OpenAI
-   - Bilder/Audio/Video → Vision/Whisper-Transkription
-3. Speichert/aktualisiert `KnowledgeArticle` in DB
-4. Lädt zu Vector Store hoch (`openai_file_id`)
-5. Löscht veraltete Files aus Vector Store
+1. Lädt Datei-Liste aus Google Drive (rekursiv)
+2. Pro Datei den Text:
+   - Google Docs/Sheets/Slides/Sites → Export als Text (Sites in Unterseiten zerlegt)
+   - PDF/DOCX/PPTX/XLSX → Download + `DocumentTextExtractor`; **Scan-PDFs ohne Textebene liest Claude**
+   - Bilder → Claude beschreibt das Bild und schreibt sichtbaren Text ab (HEIC/TIFF/BMP vorher per ImageMagick zu JPEG, max. 3,5 MB)
+   - Audio/Video → ffmpeg zieht die Tonspur als Mono-FLAC heraus und schneidet sie in 55-s-Stücke, die einzeln an Speech-to-Text gehen (kein Umweg über Cloud Storage)
+3. Speichert/aktualisiert `KnowledgeArticle`
+4. `KnowledgeIndexer::index()` zerlegt geänderte Artikel und holt die Vektoren
+5. Artikel ohne Text oder inaktive Artikel fliegen aus dem Index
 
-Memory-Schutz: `ini_set('memory_limit', '512M')` + `gc_collect_cycles()`
-nach jeder Datei. Pre-Checks: Vision ≤ 20 MB, Whisper ≤ 25 MB.
+Ein Artikel ohne Text wird beim nächsten Lauf erneut versucht (z. B. nach einem Download-Fehler).
+Schlägt Vertex AI fehl, bleiben die Abschnitte **ohne Vektor** stehen — der Volltext findet sie
+trotzdem, `glatttbert:index --embed-only` holt die Vektoren nach.
+
+Memory-Schutz: `ini_set('memory_limit', '1024M')` + `gc_collect_cycles()` nach jeder Datei.
+`pdftotext` kommt über `poppler-utils` ins Docker-Image.
 
 #### Produktion (Cloud Scheduler)
 
@@ -243,37 +277,43 @@ Setup-Details: siehe [Cloud Scheduler Setup](CLOUD-SCHEDULER-SETUP.md).
 
 ```
 User tippt → sendMessage()
-  ├── User-Nachricht in $messages pushen
-  ├── isLoading = true
-  ├── chat-message-sent dispatchen → Auto-Scroll
+  ├── User-Nachricht in $messages pushen, isLoading = true
   └── $wire.js('generateResponse')   ← zweiter Roundtrip
         ↓
 generateResponse($message)
   ├── getOrCreateConversation()
-  │     └── neuer Thread, falls nötig (POST /threads)
-  ├── OpenAiAssistantService::chat()
-  │     ├── Message anhängen (POST /threads/{id}/messages)
-  │     ├── Run starten (POST /threads/{id}/runs)
-  │     ├── Polling bis completed
-  │     └── Letzte Assistant-Message zurückgeben
-  ├── Response in $messages pushen (mit fresh:true → Typewriter)
-  ├── Falls $conversation->title leer:
-  │     └── GenerateConversationTitleJob::dispatch()
-  └── chat-response-received dispatchen → Auto-Scroll
+  ├── GlatttBertService::chat()
+  │     ├── Verlauf: letzte 20 Nachrichten (nur Text) + neue Frage
+  │     ├── Claude: system = [Anweisung (gecacht), Tagesdatum], tools = search_knowledge + 12 Hub-Werkzeuge
+  │     ├── stop_reason tool_use → Werkzeuge ausführen, Ergebnisse zurück (max. 10 Runden)
+  │     │     • search_knowledge → 8 Abschnitte als search_result-Blöcke mit citations
+  │     │     • Hub-Werkzeug → JSON; __embeds gehen nur ans Frontend
+  │     ├── Zitate (search_result_location) → " [n]" im Text + Quellen-Karten
+  │     └── Antwort + Telemetrie + cost_usd speichern
+  ├── Antwort in $messages pushen (fresh:true → Typewriter)
+  └── GenerateConversationTitleJob::dispatchSync()
 ```
+
+**Caching:** Systemanweisung + Werkzeuge (~9.000 Tokens) tragen einen Cache-Punkt und kommen
+ab der zweiten Anfrage für ein Zehntel des Preises aus dem Cache. Den Verlauf **nicht**
+mitcachen: Die Suchtreffer ändern sich je Runde, der Cache würde nur teuer geschrieben
+(Messung 06.10.2026: 0,11 $ statt 0,03 $ je Antwort).
+
+**Thinking:** Sonnet 5.5 denkt adaptiv (`effort: medium`). In der Werkzeug-Schleife wird
+deshalb immer der vollständige `content` der Antwort (inkl. Thinking-Blöcken) zurückgegeben.
+
+**Ablehnung:** Alle Anfragen laufen mit `fallbacks: "default"` (Beta
+`server-side-fallback-2026-07-01`). Lehnt die ganze Kette ab (`stop_reason: refusal`),
+sieht die Nutzerin „Diese Anfrage kann glatttBert leider nicht beantworten."
 
 ### Auto-Titel (`GenerateConversationTitleJob`)
 
-Nach der ersten Antwort vergibt Bert automatisch einen passenden Titel (maximal 6 Wörter)
-für die Konversation — generiert über `gpt-4o-mini` als Hintergrund-Job. Bestehende Titel
-werden nicht überschrieben.
+Nach jeder Antwort vergibt Bert einen Titel (maximal 6 Wörter) aus dem gesamten Verlauf,
+solange die Nutzerin den Titel nicht selbst umbenannt hat.
 
-- Queue: **`push`**, tries 2, timeout 30 s
-- Modell: `gpt-4o-mini`, temperature 0.3, max 30 Tokens
-- Eingabe: **Voller Kontext** — erste User-Nachricht **plus** erste Assistant-Antwort (vorher: nur User-Frage). Damit treffen Titel den tatsächlichen Inhalt der Konversation.
-- System-Prompt: deutsch, max 6 Wörter, ohne Anführungszeichen
-- Strippt smart-quotes (`„“” ‘`), trailing periods, mb_substr 80
-- Wird **nur dispatched, wenn `$conversation->title` leer ist**
+- Modell: `ANTHROPIC_SMALL_MODEL` (Haiku 4.5), temperature 0.3
+- Eingabe: Verlauf, je Nachricht auf 600 Zeichen gekürzt, gesamt max. 6.000 Zeichen
+- Strippt Anführungszeichen (`„“” ‘`), Punkte am Ende, kürzt auf 80 Zeichen
 
 ### Personen-Suche (search_client)
 
@@ -282,7 +322,7 @@ Wenn in einer Nachricht ein Vor- und/oder Nachname vorkommt, geht Bert in **zwei
 1. **`search_client`** — durchsucht zuerst die lokale DB + Phorest nach einem Kunden mit diesem Namen.
    - Bei Treffer → `get_client_details` + `get_client_notes` parallel, Notizen-Zusammenfassung oben
    - Kein Treffer → weiter mit Schritt 2
-2. **`file_search`** — durchsucht die Wissensdatenbank (Mitarbeiter, Vermieter, interne Kontakte).
+2. **`search_knowledge`** — durchsucht die Wissensdatenbank (Mitarbeiter, Vermieter, interne Kontakte).
    - Bei Treffer → daraus antworten
    - Kein Treffer → „Person nicht gefunden"
 
@@ -308,7 +348,7 @@ Wenn ein Nutzer das Wort **„debug"** oder **„developer mode"** in einer Nach
 - Falls `debug_info` fehlt (Tool erfolgreich) → antwortet Bert: „Tool erfolgreich — kein Fehler aufgetreten."
 - Bert erfindet **niemals** Fehlermeldungen, wenn `debug_info` nicht vorhanden ist
 
-`debug_info` ist ein **flacher String** (kein JSON-Objekt), da OpenAI bei verschachtelten Objekten in Tool-Outputs einen `ValueError` wirft:
+`debug_info` ist ein **flacher String** (kein JSON-Objekt) — historisch, weil OpenAI bei verschachtelten Objekten in Tool-Outputs einen `ValueError` warf; das Format ist geblieben:
 
 ```
 "LocalDB-Error: ... | Phorest-API-Errors: 2x | HTTP-Status: 500 | Searched-Params: [...]"
@@ -316,7 +356,7 @@ Wenn ein Nutzer das Wort **„debug"** oder **„developer mode"** in einer Nach
 
 ### Branch-ID-Auflösung in AI-Tool-Calls
 
-Wenn Bert ein Tool aufruft, das einen `branch_id`-Parameter erwartet, akzeptiert die Tool-Implementierung sowohl die interne ID als auch den Standortnamen (z.B. `"München"`, `"Hamburg"`). Der Resolver in `OpenAiAssistantService` mappt frei eingegebene Standortbezeichnungen automatisch auf die korrekte `branches.id`. So kann Bert auch dann antworten, wenn er den Standortnamen aus dem Kontext bezieht statt die ID zu kennen.
+Wenn Bert ein Tool aufruft, das einen `branch_id`-Parameter erwartet, akzeptiert die Tool-Implementierung sowohl die interne ID als auch den Standortnamen (z.B. `"München"`, `"Hamburg"`). Der Resolver in `HubToolExecutor::execute()` mappt frei eingegebene Standortbezeichnungen automatisch auf die korrekte `branches.id`. So kann Bert auch dann antworten, wenn er den Standortnamen aus dem Kontext bezieht statt die ID zu kennen.
 
 ### Markdown-Rendering
 
@@ -376,34 +416,33 @@ wird nur `top` — **kein** `transform`, den bespielt bereits `x-transition`.
 
 Abgesichert durch `tests/Feature/BertSidebarEntryTest.php`.
 
-### Migration für Produktion
+### Umstieg OpenAI → Claude (Oktober 2026)
 
-`database/sql/glatttbert-prod-migration.sql` enthält:
+Beim ersten Deploy laufen die Migrationen `knowledge_chunks` und `ai_messages`
+(Cache-Tokens, `cost_usd`) automatisch. Danach einmal:
 
-- `CREATE TABLE` für `ai_conversations`, `ai_messages`, `knowledge_articles`
-- `INSERT` für die Permission `use_ai_assistant`
-- Updates auf `migrations`-Tabelle
+1. Rechte des Service-Kontos prüfen (siehe Konfiguration)
+2. `php artisan knowledge-base:sync` — holt für PDF/Office-Dateien jetzt den Text (vorher
+   las OpenAI sie selbst, `content` war leer)
+3. `php artisan glatttbert:index` — zerlegt alle Artikel, berechnet die Vektoren
 
-Wird wegen Größe/Vorsicht **nicht** automatisch via `php artisan migrate`
-ausgeführt — manuell durch den User in PROD eingespielt.
-
-`knowledge_articles`-Daten werden separat als SQL-Dump (lokaler Sync →
-`mysqldump knowledge_articles`) in PROD importiert.
+Vorhandene Bildbeschreibungen und Video-Transkripte aus der OpenAI-Zeit bleiben unverändert.
+Die OpenAI-Spalten (`openai_thread_id`, `openai_file_id`) entfernt die Migration `drop_openai_columns`; Vector Store und alle 1.835 Dateien bei OpenAI wurden am 06.10.2026 gelöscht, der Assistant war mit der API bereits verschwunden.
 
 ### Bekannte Einschränkungen
 
-- **OpenAI-Run-Polling** ist sequenziell und blockiert PHP-Worker während der
-  Wartezeit. Bei langen Antworten kann das einen FPM-Worker bis zu 60 s
-  belegen. Bei Last: ggf. auf Server-Sent-Events / Streaming umstellen.
-- **MAMP-Timeout (lokal):** MAMP nutzt FastCGI — daher ignoriert Apache `php_value` aus der `.htaccess` und `set_time_limit()` ist wirkungslos. Fix: **direkt in der MAMP php.ini** `max_execution_time = 300` setzen:
-  ```
-  /Applications/MAMP/bin/php/php/conf/php.ini
-  ```
-  Danach MAMP-Apache neu starten. Die `.htaccess` enthält die Einstellung trotzdem als Fallback für mod_php-Umgebungen.
-- **Vector-Store-Limit:** OpenAI erlaubt max. 10 000 Files pro Vector Store.
-  Aktuell deutlich unter dem Limit.
-- **Token-Costs:** Auto-Title-Job ≈ 0,0001 € pro Konversation. Chat-Run mit
-  File-Search variiert stark — typisch 0,005–0,03 € pro Antwort.
+- **Keine Streaming-Ausgabe:** Die Antwort kommt am Stück (Livewire-Roundtrip), der
+  Typewriter-Effekt simuliert das Tippen. Eine Antwort mit Suche dauert 8–15 s.
+- **MAMP-Timeout (lokal):** MAMP nutzt FastCGI — `set_time_limit()` ist wirkungslos. Fix: in
+  `/Applications/MAMP/bin/php/php/conf/php.ini` `max_execution_time = 300` setzen, Apache neu starten.
+- **Semantische Suche im Speicher:** Die Vektoren (lokal ~3.800 Abschnitte, 11 MB) werden je
+  Anfrage geladen und in PHP verglichen (~0,3 s). Ab ~50.000 Abschnitten auf eine
+  Vektor-Datenbank umsteigen.
+- **Alte Office-Formate** (`.doc`, `.xls`, `.ppt`) werden nicht gelesen.
+- **Kosten** (Messung 06.10.2026): 3–6 Cent je Antwort mit Suche (Sonnet 5.5), Titel < 0,1 Cent.
+  Das ist etwa doppelt so viel wie mit gpt-4o — Haupttreiber sind Suchtreffer (~6.000 Tokens)
+  und das Nachdenken des Modells. Stellschrauben: `GLATTTBERT_EFFORT=low`, `search_results` in
+  `config/anthropic.php`.
 
 ---
 
@@ -411,7 +450,7 @@ ausgeführt — manuell durch den User in PROD eingespielt.
 
 | Datum | Feature |
 |---|---|
-| 2026-05 | Initiale Version (Livewire-Component, OpenAI Assistants v2) |
+| 2026-05 | Initiale Version (Livewire-Component, OpenAI Assistants v2 — abgelöst 10/2026) |
 | 2026-05 | Knowledge-Base-Sync (Drive → DB → Vector Store) |
 | 2026-05 | Batched-Sync mit GC + Cloud-Scheduler-Endpoint |
 | 2026-05 | Beispiel-Prompts in Welcome-View (E13) |
@@ -439,6 +478,8 @@ ausgeführt — manuell durch den User in PROD eingespielt.
 | 2026-05 | Developer-Mode: `debug_info` als flacher String (kein nested JSON), KI halluziniert keine Fehler |
 | 2026-05 | MAMP-Timeout-Fix korrigiert: `php.ini` direkt (FastCGI ignoriert `.htaccess` `php_value`) |
 | 2026-08 | Fester Platz in der Seitenleiste statt schwebender Blase; Chat dockt neben der Leiste an, mobiler Einstieg im Mehr-Sheet (19.08.2026) |
+| 2026-08 | OpenAI schaltet die Assistants API ab (26.08.2026), auf der glatttBert lief |
+| 2026-10 | Umstieg auf Claude (Sonnet 5.5) mit eigenem hybriden Suchindex (Volltext + Vertex-Embeddings), PDF/Office-Text im Hub, Bilder über Claude, Videos über Google Speech-to-Text, Kosten je Antwort im Bert-Dashboard (06.10.2026) |
 
 ---
 

@@ -11,7 +11,8 @@
 | [Zendesk](../ZENDESK-API.md) | Support-Tickets, verknüpft mit Widerrufen | `ZendeskApiService` |
 | Meta Ads / Google Ads | Kampagnen-Kosten und Conversion-Upload | `MetaAdsService`, `GoogleAdsService` — siehe [Ads-Analyse](../ADS-ANALYSE.md), [Conversion-Upload](../CONVERSION-UPLOAD.md) |
 | [askDANTE](../ASKDANTE-API.md) | Dienstplan/Abwesenheiten (Reisekosten-Anspruch) | `AskDanteApiService` |
-| OpenAI / Gemini / Vertex AI | glatttBert, Namensherkunft, Embeddings der Portal-Suche | `OpenAiAssistantService`, `GeminiNameClassifier` |
+| Anthropic (Claude) | einziger KI-Dienstleister: glatttBert, Bildanalyse der Wissensdatenbank, Namensherkunft, Vertragsanalyse | `ClaudeClient`, `GlatttBertService` |
+| Google Vertex AI / Speech-to-Text | Embeddings der glatttBert-Suche und der Portal-Suche, Transkription von Videos | `VertexEmbeddingService`, `SpeechToTextService` |
 
 <div class="grid cards" markdown>
 

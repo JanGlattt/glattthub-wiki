@@ -223,13 +223,13 @@ Analyse der vermuteten kulturellen Herkunft der Kunden basierend auf Vor- und Na
 - **Detailtabelle** mit Anzahl, Anteil, Verträge, Conversion-Rate und Widerrufsquote pro Herkunft
 - **Zweistufige Klassifizierung:**
     1. **Lokaler Klassifizierer** (Wörterbuch mit 3.000+ Vornamen + Nachnamen-Pattern) — läuft automatisch bei jedem Sync
-    2. **KI-Optimierung** (Google Gemini AI, Free Tier) — optionaler Button zum Nachklassifizieren der verbleibenden „Sonstige"
+    2. **KI-Optimierung** (Claude, seit 10/2026) — optionaler Button zum Nachklassifizieren der verbleibenden „Sonstige"
 - Untertitel zeigt „X von Y Kunden klassifiziert"
 - Widerrufsquote ist farbcodiert: grün (≤10%), gelb (10–20%), rot (>20%)
 
 **KI-Optimierung:**
 
-Über den Button „KI-Optimierung" werden die verbleibenden „Sonstige"-Einträge per Google Gemini AI nachklassifiziert. Die Verarbeitung erfolgt Batch für Batch (30 Namen pro Anfrage), um das kostenlose Rate-Limit (15 Anfragen/Minute) einzuhalten. Ein Fortschrittsbalken zeigt den aktuellen Status.
+Über den Button „KI-Optimierung" werden die verbleibenden „Sonstige"-Einträge per Claude nachklassifiziert — Batch für Batch (50 Namen pro Anfrage), jeder „Sonstige"-Eintrag genau einmal. Ein Fortschrittsbalken zeigt den aktuellen Status. Bis 10/2026 lief das über Gemini im Free Tier; dort durfte Google die übermittelten Namen zum Training verwenden.
 
 ### Filter der Seite
 
@@ -304,7 +304,7 @@ Die Statistiken basieren auf einer **vorberechneten Tabelle** (`client_statistic
 | `app/Http/Controllers/ClientStatisticsController.php` | API-Controller mit 13 Endpoints |
 | `app/Services/ClientStatisticsService.php` | Abfragen & Aggregation mit Cache |
 | `app/Services/NameOriginClassifier.php` | Lokaler Namens-Klassifizierer (Wörterbuch + Muster) |
-| `app/Services/GeminiNameClassifier.php` | Google Gemini AI Batch-Klassifizierer |
+| `app/Services/Ai/NameOriginAiClassifier.php` | KI-Batch-Klassifizierer (Claude, JSON-Schema) |
 | `app/Console/Commands/AiClassifyNameOriginsCommand.php` | Artisan-Befehl für KI-Klassifizierung |
 | `database/data/name_origins.json` | Kuratiertes Namenswörterbuch (3.000+ Vornamen) |
 | `app/Services/ClientStatisticsSyncService.php` | Sync-Logik: Phorest + Verträge → Tabelle |
@@ -643,10 +643,10 @@ Sync-Prozess / Button "Herkunft klassifizieren"
            │ verbleibende → 'other'
            ▼
 ┌───────────────────────────────┐
-│ GeminiNameClassifier (KI)     │ ← 2. Stufe: Optional
-│ • Google Gemini 2.0 Flash     │
-│ • Free Tier (15 RPM, 1.500/d) │
-│ • 30 Namen pro Batch          │
+│ NameOriginAiClassifier (KI)   │ ← 2. Stufe: Optional
+│ • Claude Haiku 4.5            │
+│ • Antwort per JSON-Schema     │
+│ • 50 Namen pro Batch          │
 │ • Reduziert 'Sonstige' um     │
 │   ca. 30-50% zusätzlich       │
 └───────────────────────────────┘
@@ -684,30 +684,26 @@ Sync-Prozess / Button "Herkunft klassifizieren"
 - Enthält auch moderne/internationale Namen (Michelle, Kristina, Lara etc.) als deutsch eingestuft
 - Nachnamen-Pattern mit Suffixen, Präfixen und häufigen Namen pro Herkunft
 
-#### KI-Klassifizierer (`GeminiNameClassifier`)
+#### KI-Klassifizierer (`NameOriginAiClassifier`)
 
-**Konfiguration** (`.env` + `config/google.php`):
-
-| Einstellung | Wert | Beschreibung |
-|-------------|------|--------------|
-| `GEMINI_API_KEY` | `.env` | API-Schlüssel (Google AI Studio) |
-| `gemini.model` | `gemini-2.0-flash` | Modell (schnell, kostenlos) |
-| `gemini.batch_size` | `30` | Namen pro API-Anfrage |
-| `gemini.rpm_limit` | `14` | Max. Anfragen/Minute |
-| `gemini.daily_limit` | `1.400` | Max. Anfragen/Tag |
-| `gemini.timeout` | `25` | Timeout in Sekunden |
+Läuft über den zentralen `ClaudeClient` (Modell `ANTHROPIC_SMALL_MODEL`, Standard
+`claude-haiku-4-5`). Die Antwort ist per JSON-Schema auf die 10 Kategorien festgelegt; unbekannte
+IDs oder Kategorien werden verworfen.
 
 **API-Flow (pro Batch):**
 
-1. 30 „Sonstige"-Kunden als Liste „ID: Vorname Nachname" zusammenstellen
-2. Prompt an Gemini mit den 10 gültigen Kategorien + Anweisungen
-3. Antwort parsen: Format `ID|kategorie` pro Zeile
-4. Nur nicht-„other"-Ergebnisse in DB aktualisieren
-5. 4 Sekunden Pause bis zum nächsten Batch (15 RPM einhalten)
+1. 50 „Sonstige"-Kunden **ab `after_id`** (nach ID sortiert) als Liste `ID|Vorname Nachname`
+2. Claude antwortet mit `{"results": [{"id": …, "origin": …}]}`
+3. Nur nicht-„other"-Ergebnisse in die DB schreiben
+4. Antwort enthält `last_id` und `done`
 
 **Frontend-Integration:**
 
-Der „KI-Optimierung"-Button ruft den Endpoint iterativ auf (1 Batch pro HTTP-Request). Das Frontend loopt in einer `while`-Schleife bis `remaining === 0` oder ein Fehler auftritt. Zwischen den Requests wird 4 Sekunden gewartet.
+Der „KI-Optimierung"-Button ruft den Endpoint iterativ auf und reicht dabei `last_id` als
+`after_id` weiter, bis `done` oder `remaining === 0`. Bis 10/2026 holte der Endpoint immer die
+ersten „Sonstige" — blieben die auch nach der KI „Sonstige", lief die Schleife endlos.
+
+Artisan-Variante: `php artisan stats:ai-classify-origins [--dry-run] [--limit=N]`.
 
 ### Bekannte Gotchas
 
