@@ -13,13 +13,13 @@
   "subtitle": "Klickanleitung für den glatttHub — die drei Werkzeuge am Kopf der Seitenleiste und die eigenen Benachrichtigungs-Einstellungen",
   "eyebrow": "Grundlagen · Werkzeuge",
   "footerArea": "Grundlagen",
-  "stand": "25.09.2026",
-  "version": "1.3",
+  "stand": "06.10.2026",
+  "version": "1.4",
   "notes": [
     "Der **Standort wirkt auf fast jede Seite** — Termine, Berichte, Verträge richten sich danach.",
     "Die **Suche findet nicht nur Seiten**, sondern auch Kundinnen, Verträge und Gutscheine.",
     "Die Standortwahl bleibt gespeichert, bis sie geändert wird — auch nach dem Abmelden.",
-    "**Jede Mitteilung lässt sich für dich abschalten** — getrennt für den Hub und für Push auf dem Handy, unten auf der Mitteilungsseite.",
+    "**Jede Mitteilung lässt sich für dich abschalten** — getrennt für den Hub und für Push auf dem Handy, im Reiter „Einstellungen“ der Mitteilungsseite.",
     "**Neue Mitteilungen melden sich als Karte** am Bildschirmrand — antippen öffnet den Vorgang, das × legt sie weg."
   ],
   "pages": [
@@ -196,8 +196,56 @@
       }
     },
     {
+      "h1": "Die Mitteilungsseite",
+      "sub": "Alle Mitteilungen auf einer Seite — nach Tagen sortiert, Wichtiges oben. Daneben im zweiten Reiter deine Einstellungen.",
+      "card": {
+        "title": "Mitteilungsseite",
+        "text": "Alle Meldungen nach Tagen, filtern, alles gelesen"
+      },
+      "left": {
+        "shot": "h8-posteingang"
+      },
+      "leftCaption": "Der Reiter „Posteingang“: Filter oben, Meldungen nach Tagen gruppiert, ungelesene mit Punkt.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Posteingang öffnen",
+          "text": "In der Mitteilungsliste ganz unten **„Alle anzeigen“**. Der Reiter **„Posteingang“** ist schon gewählt, die Zahl daneben sind die ungelesenen."
+        },
+        {
+          "n": 2,
+          "title": "Filtern",
+          "text": "**„Ungelesen“** zeigt nur Neues, die Bereiche daneben (z. B. Gutscheine, Zahlungen) nur deren Meldungen. Nochmal tippen hebt den Filter auf."
+        },
+        {
+          "n": 3,
+          "title": "Meldung öffnen",
+          "text": "Ein Klick auf die Zeile öffnet den Vorgang und markiert sie als gelesen. Ungelesene erkennst du am **Punkt** links und am fetten Titel."
+        },
+        {
+          "n": 4,
+          "title": "Alles gelesen",
+          "text": "**„Alle als gelesen“** oben rechts leert den Zähler an der Glocke auf einen Schlag."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Wichtiges oben",
+          "text": "**Dringliche** Meldungen, die du noch nicht gelesen hast, stehen immer ganz oben — egal wie alt."
+        },
+        {
+          "title": "Ältere Meldungen",
+          "text": "Die Seite zeigt zuerst 30 Meldungen. **„Weitere laden“** am Ende holt die nächsten."
+        }
+      ],
+      "hint": {
+        "kind": "info",
+        "text": "Die tägliche Meldung **„Beratungsgespräche“** zeigt ihre Zahlen als kleine Kacheln: heute, 7, 14 und 28 Tage."
+      }
+    },
+    {
       "h1": "Meine Benachrichtigungen",
-      "sub": "Unten auf der Mitteilungsseite steht, welche Anlässe dich erreichen — und du entscheidest je Anlass, ob im Hub, per Push oder gar nicht.",
+      "sub": "Im Reiter „Einstellungen“ der Mitteilungsseite steht, welche Anlässe dich erreichen — und du entscheidest je Anlass, ob im Hub, per Push oder gar nicht.",
       "card": {
         "title": "Meine Benachrichtigungen",
         "text": "Je Anlass wählen: im Hub, per Push, beides oder stumm"
@@ -205,22 +253,22 @@
       "left": {
         "shot": "h6-meine-benachrichtigungen"
       },
-      "leftCaption": "Die Karte „Meine Benachrichtigungen“ mit den Anlässen nach Bereichen und den beiden Schaltern je Zeile.",
+      "leftCaption": "Der Reiter „Einstellungen“: Anlässe nach Bereichen zum Aufklappen, je Zeile die beiden Schalter.",
       "steps": [
         {
           "n": 1,
-          "title": "Mitteilungsseite öffnen",
-          "text": "In der Mitteilungsliste ganz unten **„Alle anzeigen“** — oder auf der Startseite in der Karte „Mitteilungen“."
+          "title": "Reiter „Einstellungen“",
+          "text": "Auf der Mitteilungsseite oben rechts von **„Posteingang“** auf **„Einstellungen“** wechseln."
         },
         {
           "n": 2,
-          "title": "Nach unten scrollen",
-          "text": "Unter der Liste liegt die Karte **„Meine Benachrichtigungen“**. Die Anlässe sind nach Bereichen sortiert (Termine, Gutscheine, Forderungen …)."
+          "title": "Bereich aufklappen",
+          "text": "Die Anlässe sind nach Bereichen sortiert (Verträge, Gutscheine, Forderungen …). Rechts steht, wie viele davon aktiv sind. Die **Suche** oben findet einen Anlass direkt."
         },
         {
           "n": 3,
           "title": "„Im Hub“ schalten",
-          "text": "Aus = die Meldung erscheint nicht mehr an der Glocke und nicht in der Liste."
+          "text": "Aus = die Meldung erscheint nicht mehr an der Glocke und nicht im Posteingang."
         },
         {
           "n": 4,

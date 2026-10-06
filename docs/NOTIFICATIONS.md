@@ -37,10 +37,17 @@ legt sie weg. Bilder gehen auch auf den Sperrbildschirm des iPhones, in den Brow
 (Chrome/Edge) und in das Banner der Desktop-App: je Anlass ein festes Bild im Admin, oder ein
 individuelles Bild aus dem Code (z.B. ein Foto zum Vorgang).
 
-Jede Mitarbeiterin entscheidet zusätzlich **für sich**, welche Anlässe sie erreichen: Unten auf
-der Mitteilungsseite („Meine Benachrichtigungen") gibt es je Anlass die Schalter „Im Hub" und
-„Push" — sofern der Admin den Anlass zur Stummschaltung freigegeben hat (Pflichtmeldungen wie
-eine fehlgeschlagene Gutschein-Anlage bleiben immer an).
+**Seit 06.10.2026 hat die Mitteilungsseite zwei Reiter:** *Posteingang* zeigt die Meldungen nach
+Tagen gruppiert (Heute, Gestern, Diese Woche, Früher), dringliche ungelesene oben angepinnt, mit
+einem Symbol je Anlass und je 30 Meldungen mit „Weitere laden" — vorher standen alle Meldungen
+(über 500) in einer Tabelle und die Einstellungen erst darunter. Filter: Ungelesen und je Modul;
+„Alle als gelesen" im Seitenkopf.
+
+Jede Mitarbeiterin entscheidet zusätzlich **für sich**, welche Anlässe sie erreichen: Im Reiter
+*Einstellungen* („Meine Benachrichtigungen", direkt verlinkbar über `#einstellungen`) gibt es je
+Anlass die Schalter „Im Hub" und „Push", nach Modul aufklappbar mit Zähler und Suche — sofern der
+Admin den Anlass zur Stummschaltung freigegeben hat (Pflichtmeldungen wie eine fehlgeschlagene
+Gutschein-Anlage bleiben immer an).
 
 Bedienung (Mitteilungen lesen, Hinweis-Karte, eigene Kanäle je Anlass einstellen) siehe den
 Nutzerhandbuch-Verweis am Seitenanfang, Grundlagen 2, Seiten „Hinweis auf neue Mitteilungen"
@@ -444,6 +451,7 @@ app/
 ├── Listeners/
 │   └── NotifyOnFailedCommand.php           # CommandFinished mit Exit ≠ 0 → system.command_failed
 ├── Http/Controllers/
+│   ├── NotificationInboxController.php     # Posteingang der Mitteilungsseite (GET hub/notifications/data)
 │   └── NotificationPreferenceController.php  # „Meine Benachrichtigungen" (GET/PUT hub/notifications/preferences)
 ├── Models/
 │   └── NotificationRulePreference.php      # persönliche Kanal-Wahl je Regel und Nutzer
@@ -562,6 +570,23 @@ Nutzer + Regel, Cascade beim Löschen von Nutzer oder Regel.
 | `/push/unsubscribe/native` | POST | APNs-Token entfernen (Desktop-App, iOS-App) |
 | `/push/mark-read` | POST | Aktion „Als gelesen markieren" der iOS-App: `log_id` → Klick verbuchen, verknüpfte In-App-Meldung (`data.notification_id`) für den Nutzer lesen, Antwort `unread_count` für den Badge; nur eigene Push-Logs (sonst 404) |
 | `/push/test` | POST | Test-Push senden |
+
+### Mitteilungsseite (`/hub/notifications`)
+
+Seite `hub/notifications.blade.php` + `public/js/notifications-page.js` (Alpine `notificationsPage`),
+Zeile `hub/partials/notification-inbox-row.blade.php`, Einstellungen `hub/partials/notification-preferences.blade.php`.
+
+| Endpoint | Methode | Beschreibung |
+|----------|---------|--------------|
+| `/hub/notifications/data` | GET | Posteingang: `page` (je 30), `status` (`all`/`unread`), `module` (Modul-Label oder `Mitteilungen` für Meldungen ohne Regel), `branch_id`. Antwort `pinned` (dringlich + ungelesen, nur Seite 1, nicht doppelt in `items`), `items`, `has_more`, `remaining`, `unread_count`, `modules` (Filter-Chips mit Anzahl, nur Seite 1). Je Meldung `look` (Symbol-Schlüssel, dieselbe Zuordnung wie `NotificationLook` der App), `kpis` (Beratungs-Meldung zerlegt), `module`. |
+| `/hub/notifications/preferences` | GET/PUT | Kanal-Wahl je Anlass (siehe oben) |
+
+Sichtbarkeit wie die Glocke (`Notification::forUser`), aber nur **versendete** Meldungen
+(`sent()`): Regeln/Vorlagen gehören nicht in den Posteingang. Gelesen/Alle gelesen laufen über die
+bestehenden `/phorest/notifications/*`-Routen; danach feuert die Seite
+`glattt:notifications-refresh`, damit Glocke und App-Badges nachziehen. Die Zeilen sind echte
+Links (`<a href>`), ⌘-Klick und „In neuem Tab öffnen" funktionieren. Die native App behält ihre
+eigene Ansicht („Heute zuerst") auf `/phorest/notifications`.
 
 !!! info "Accept-Header erforderlich"
     Alle `/phorest/*`-Routen erfordern den Header `Accept: application/json`, sonst greift die `RedirectDirectApiAccess`-Middleware und gibt HTML zurück statt JSON.
@@ -784,6 +809,10 @@ tail -f storage/logs/laravel.log | grep -i "notification\|push"
   ein Bild (`notifications.image`, festes Regelbild im Admin oder individuelles Bild aus dem
   Code) — auf iOS-Sperrbildschirm, Web-Push, Desktop-App und in der Glocke; der Regel-Test
   rendert zeitbasierte Automatisierungen mit Live-Werten statt roher `{{…}}`-Platzhalter.
+- **06.10.2026 — Mitteilungsseite neu:** Reiter Posteingang | Einstellungen statt Tabelle mit
+  Einstellungen darunter; Tagesgruppen, angepinnte dringliche Meldungen, Symbol je Anlass,
+  Beratungs-Kennzahlen als Zeile, je 30 Meldungen, Filter Ungelesen/Modul, „Alle als gelesen";
+  Einstellungen nach Modul aufklappbar mit Suche. Neuer Endpunkt `hub/notifications/data`.
 - **19.09.2026 — Testversand:** „Test senden" (freier Text, Empfänger und Kanäle frei) und
   „Testen" je Anlass-Regel (Beispielwerte, Kanäle/Stummschaltung wie im Echtbetrieb);
   Meldungen mit `is_test`, Präfix „[Test]", Herkunft „Test", zählen nicht als Auslösung.

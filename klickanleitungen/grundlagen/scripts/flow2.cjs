@@ -56,28 +56,33 @@ const SEARCH = process.env.KLICK_SEARCH || 'Verträge';
     console.log('Keine Mitteilung vorhanden — h5 fehlt. Konto mit Mitteilungen wählen.');
   }
 
-  // ── h6 Meine Benachrichtigungen (Mitteilungsseite, Karte unter der Liste)
+  // ── h8 Posteingang (Mitteilungsseite, Reiter „Posteingang“ — seit 06.10.2026)
   await L.goto(page, '/hub/notifications', 2500);
+  await page.waitForFunction(() => {
+    const root = document.querySelector('.notif-page-glattt');
+    return root && !Alpine.$data(root).loading;
+  }, null, { timeout: 15000 }).catch(() => console.log('Hinweis: Posteingang lud nicht'));
+  await L.shot(page, 'h8-posteingang', { marks: [
+    { id: 'reiter', kind: 'badge', n: 1, sel: '.notif-page-glattt .segmented-control-glattt', at: 'l' },
+    { id: 'filter', kind: 'badge', n: 2, sel: '.notif-inbox-filters', at: 'l' },
+    { id: 'zeile', kind: 'badge', n: 3, sel: '.notif-inbox-row', at: 'l' },
+    { id: 'alle', kind: 'badge', n: 4, fn: () => { const b = [...document.querySelectorAll('.notif-page-glattt .page-header-glattt-actions button')].find(e => e.textContent.includes('Alle als gelesen')); if (!b) return null; const r = b.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; }, at: 'b' },
+  ] });
+
+  // ── h6 Meine Benachrichtigungen (Reiter „Einstellungen“ der Mitteilungsseite)
+  await page.evaluate(() => document.querySelectorAll('input[name=notif-tab]')[1]?.click());
   await page.waitForFunction(() => {
     const card = document.querySelector('#notification-preferences');
     return card && !Alpine.$data(card).loading;
   }, null, { timeout: 15000 }).catch(() => console.log('Hinweis: Karte „Meine Benachrichtigungen“ lud nicht'));
-  // Die Karte ist höher als der Bildschirm: Kartenkopf an den oberen Rand, Ausschnitt bis unten
-  await L.scrollTo(page, '#notification-preferences', 'start');
-  await L.shot(page, 'h6-meine-benachrichtigungen', {
-    clip: await page.evaluate(() => {
-      const b = document.querySelector('#notification-preferences').getBoundingClientRect();
-      return { x: Math.max(0, b.x - 12), y: Math.max(0, b.y - 12), width: Math.min(window.innerWidth - Math.max(0, b.x - 12), b.width + 24), height: window.innerHeight - Math.max(0, b.y - 12) };
-    }),
-    noScroll: true,
-    marks: [
-      { id: 'titel', kind: 'badge', n: 2, sel: '#notification-preferences .card-glattt-title', at: 'r' },
-      { id: 'hub', kind: 'badge', n: 3, fn: () => { const l = [...document.querySelectorAll('#notification-preferences .toggle-glattt-label')].find(e => e.textContent.trim() === 'Im Hub' && e.offsetParent !== null); if (!l) return null; const b = l.closest('.toggle-glattt-wrapper').getBoundingClientRect(); return { x: b.x, y: b.y, w: b.width, h: b.height }; }, at: 'l' },
-      { id: 'push', kind: 'badge', n: 4, fn: () => { const l = [...document.querySelectorAll('#notification-preferences .toggle-glattt-label')].find(e => e.textContent.trim() === 'Push' && e.offsetParent !== null); if (!l) return null; const b = l.closest('.toggle-glattt-wrapper').getBoundingClientRect(); return { x: b.x, y: b.y, w: b.width, h: b.height }; }, at: 'r' },
-      // Der Bereichstitel ist ein Blockelement über die ganze Breite — nur den Text vermessen
-      { id: 'bereich', kind: 'chip', label: 'Nach Bereichen', fn: () => { const t = [...document.querySelectorAll('#notification-preferences .notif-pref-glattt-group-title')].find(e => e.offsetParent !== null); if (!t) return null; const r = document.createRange(); r.selectNodeContents(t); const b = r.getBoundingClientRect(); return { x: b.x, y: b.y, w: b.width, h: b.height }; }, at: 'r' },
-    ],
-  });
+  await L.wait(page, 600);
+  const toggle = (label) => { const l = [...document.querySelectorAll('#notification-preferences .toggle-glattt-label')].find(e => e.textContent.trim() === label && e.offsetParent !== null); if (!l) return null; const b = l.closest('.toggle-glattt-wrapper').getBoundingClientRect(); return { x: b.x, y: b.y, w: b.width, h: b.height }; };
+  await L.shot(page, 'h6-meine-benachrichtigungen', { marks: [
+    { id: 'reiter', kind: 'badge', n: 1, fn: () => { const l = document.querySelectorAll('.notif-page-glattt .segmented-control-glattt-option')[1]; if (!l) return null; const r = l.getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height }; }, at: 'b' },
+    { id: 'modul', kind: 'badge', n: 2, sel: '#notification-preferences .notif-pref-glattt-group-head', at: 'l' },
+    { id: 'hub', kind: 'badge', n: 3, fn: toggle, fnArg: 'Im Hub', at: 'l' },
+    { id: 'push', kind: 'badge', n: 4, fn: toggle, fnArg: 'Push', at: 'r' },
+  ] });
 
   await browser.close();
 })();
