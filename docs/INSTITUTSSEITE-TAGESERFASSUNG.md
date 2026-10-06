@@ -82,6 +82,12 @@ laufende Nummer, z. B. `MD000001`.
   **Einstellungen → Kundennummern** den Nummernkreis an (Präfix + erste
   Nummer, abgestimmt oberhalb des manuellen Bestands). Ohne Nummernkreis
   vergibt die Seite nichts — alles läuft wie bisher.
+- **Schon beim Terminstart (seit 06.10.2026, zunächst nur Magdeburg):** Trägt
+  der Nummernkreis den Schalter **„Schon beim Terminstart vergeben"**, bekommt
+  der Kunde seine Nummer bereits, wenn in der **Terminansicht** „Termin
+  beginnen" oder das **begleitete Beratungsgespräch** gestartet wird — bei
+  jedem Termin, im Hub und in der App. Die Institutsseite vergibt daneben
+  unverändert weiter.
 
 ### Verkauf
 
@@ -222,6 +228,13 @@ stellen (Hinweis steht auch auf der Seite).
   werden übersprungen), schreibt sie als `externalId` nach Phorest und zieht
   `client_statistics` sofort nach (Kollisionsprüfung + Upsell-Suche kennen
   die Nummer damit sofort; Neukunden bekommen eine Spiegel-Zeile).
+  Früher Auslöser je Institut (Spalte `assign_on_session_start`, Jan
+  06.10.2026): `ClientNumberService::assignOnSessionStart()` hängt an
+  `AppointmentViewController::logSessionStart()` (Web **und** native App rufen
+  `session/log-start`, Client-ID per `getAppointment`) und an
+  `GuidedConsultationService::start()` (nach dem Fernseher-Anstoß). Ohne
+  Schalter kein Phorest-Aufruf; Fehler werden geloggt und brechen den
+  Terminstart nie (`ClientNumberOnSessionStartTest`).
   Sicherheitsnetze: `clientDetails()` (Daten-Check) und `storeSale()` vergeben
   ebenfalls, damit die Vertragsnummer nie auf das Client-ID-Fragment
   zurückfällt. Ohne `client_number_sequences`-Eintrag ist die Automatik für
