@@ -65,6 +65,10 @@ Freunde, Paket, Kontakt.
   `PortalOfficeService::REJECT_REASONS` geht an die Kundin, wenn `notify` gesetzt ist — Mail-Vorlage
   `bank_rejected` (Admin „Kunden-App · E-Mails“) und Push-Anlass `bank_rejected` (wichtig, kommt
   immer; wie alle Anlässe zunächst **aus**).
+- **Passwort-Link senden** (06.10.2026, M100): `POST /hub/kundenportal/konten/{account}/passwort-link`
+  schickt aktiven Konten einen Link an die Login-Adresse — ohne Geburtsdatum, weil das Büro die
+  Kundin kennt (`PortalPasswordResetService::sendByOffice`, frischt dabei das Profil auf und hebt die
+  Rücksetz-Sperre auf). Web-Knopf in der Kontenliste, nativ im ⋯-Menü der Konten.
 - **Zahl am Menüpunkt**: `PortalOfficeService::openCount()` (60 s Cache, nach jeder Aktion verworfen),
   als Komponente `<x-customer-portal-badge />` — ein `@if` im Gruppen-Markup der Seitenleiste bricht
   `SidebarNavGroupTest`.
@@ -118,6 +122,7 @@ lokal und auf Staging liefert der Hub das Portal zum Testen selbst aus.
     |---|---|---|
     | `contact` | Nachricht senden | Zendesk-Ticket; bei Fehler Aufgabe + Mitteilung fürs Büro |
     | `password_reset` | „Passwort vergessen“ mit passendem Geburtsdatum | Mail mit Link; Klartext-Link danach aus der Zeile gelöscht |
+    | `password_reset_check` | „Passwort vergessen“ **ohne** Treffer (höchstens eine offene je Konto) | Geburtsdatum frisch aus Phorest (`refreshProfile`), Vergleich mit dem Prüfwert im `payload`; bei Treffer Link anlegen und Mail schicken, sonst still |
     | `refresh` | Kopie älter als 10 Minuten | Profil + Termine aus Phorest, maskierte IBAN, fehlende PDFs |
     | `pdf` | PDF fehlt noch | PDF erzeugen |
     | `mandate_requested` | neue Bankverbindung | Mitteilung ans Büro |
@@ -171,6 +176,13 @@ Ver-/Entschlüsselung ab, statt still den Portal-App-Key zu nehmen.
 - **Tests, die nach einem Portal-Aufruf den Hub aufrufen**, brauchen den vollen Host
   (`http://localhost/shared/…`): Laravel hängt relative Pfade an den zuletzt benutzten Host, und das
   Tor sperrt Hub-Routen auf dem Portal-Host.
+- **Geburtsdatum kommt nur über den Abgleich ans Konto** (`refreshProfile` beim Einladen und bei jeder
+  Auffrischung der angemeldeten App). Ein Konto, dessen Geburtsdatum erst später in Phorest
+  eingetragen wurde und das sich nicht mehr anmelden kann, konnte deshalb bis 06.10.2026 nie
+  zurücksetzen (Henne-Ei, App-Review-Prüfkonto, M100). Seitdem bestellt jeder Fehlversuch die
+  Nachprüfung `password_reset_check`; die Antwort an die Kundin bleibt neutral.
+- **Login-Adresse ≠ Phorest-Adresse**: `customer_accounts.email` ist die Anmeldung. Der Abgleich
+  überschreibt sie nie; nur vor der Aktivierung zieht die Einladung die Phorest-Adresse nach.
 - `customer_accounts`: Das Portal darf nur Anmelde-Spalten ändern (Spalten-GRANT), nie
   `phorest_client_id` — sonst ließe sich ein Konto auf einen fremden Kunden umbiegen.
 
@@ -280,6 +292,9 @@ Prüfen nach der Einrichtung: `https://my.glattt.com/anmelden` zeigt die Portal-
 `portal:outbox`-Zeilen.
 
 ## Changelog
+
+- **06.10.2026** — „Passwort vergessen“ holt ein fehlendes oder veraltetes Geburtsdatum selbst nach
+  (Nachprüfung im Hub-Worker), Büro-Knopf „Passwort-Link senden“ (Web und nativ), TestFlight M100.
 
 - 02.10.2026: Profilbild auch in globaler Suche, Kundenübersicht und Kunden-Detailseite (vergrößerbar)
 
