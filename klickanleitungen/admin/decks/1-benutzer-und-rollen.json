@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Konten, Rollen und Rechte verwalten",
  "eyebrow": "Admin · Benutzer & Rollen",
  "footerArea": "Admin-Panel",
- "stand": "19.09.2026",
- "version": "1.1",
+ "stand": "07.10.2026",
+ "version": "1.2",
  "notes": [
   "**Rollen entscheiden über alles**, was jemand im Hub sieht und darf — sie sind die wichtigste Einstellung überhaupt.",
   "Angelegt werden Konten über die **Personalübersicht** („Team 1“); hier werden sie verwaltet.",
@@ -110,7 +110,7 @@
     {
      "n": 1,
      "title": "Rolle wählen",
-     "text": "Die Rollen des Unternehmens — Verwaltung, Büro, Institutsleitung, Institutsmitarbeiterin."
+     "text": "Die Rollen des Unternehmens — Verwaltung, Büro, Institutsleitung, Institutsmitarbeiterin. Die Liste nennt je Rolle die Zahl der Rechte, die Datensichtbarkeit und die abgedeckten Bereiche; auf dem Handy ist jede Rolle eine Karte mit **„Bearbeiten“** darunter."
     },
     {
      "n": 2,

@@ -162,6 +162,18 @@ Hover hebt die Zeile an (kein Farbwechsel, Hub-Regel seit 15.09.2026); Zebra üb
 `.fi-striped` auf `--bg-secondary`; Kopfzellen klein, versal, tertiär wie
 `.table-glattt th`.
 
+**Listen im Spalten-Layout (seit 07.10.2026):** Liegen die Spalten einer Tabelle in
+`Split`/`Stack`, rendert Filament keinen `<thead>` mehr — jede Zeile ist ein
+`.fi-ta-record`. Das Theme stylt diese Listen zentral (Abschnitt „Listen im
+Spalten-Layout"): ab 768 px Zeilen mit Trennlinie und Zebra wie
+`.table-glattt-striped`, mobil **eine Karte je Datensatz** mit Rand, Radius und der
+Zeilen-Aktion als Knopf über die volle Breite (mind. 44 px). Das ist das Mittel der
+Wahl, wenn eine Liste mobil als Tabelle nicht mehr lesbar ist — erste Seite: die
+Rollenliste (`RolesTable`, `Split::make([...])->from('md')`, Aktion mit
+`->button()->outlined()`). Wer so umbaut, verliert Spaltensortierung per Kopfzeile;
+sortierbare Spalten erzeugen stattdessen Filaments Sortier-Dropdown im Inhaltskopf.
+Siehe [Berechtigungssystem → Rollenliste](BERECHTIGUNGSSYSTEM.md#rollenliste-seit-07102026).
+
 ### Fallstricke
 
 - **`DisableBladeIconComponents`** steht in der Middleware des Panels: In
@@ -192,6 +204,9 @@ Jan, 19.09.2026: Stufe 1 + 2 jetzt, Stufe 3 fallweise.
 
 ## Changelog
 
+- **07.10.2026** — Rollenliste auf Split-Layout umgestellt (Karte je Rolle mobil, verdichtete
+  Angaben statt 134 Rechte-Badges); Theme-Abschnitt „Listen im Spalten-Layout" für alle
+  layout-basierten Admin-Listen; Rechte-Baum mobil mit 44-px-Tippflächen. Test `RolesListTest`.
 - **19.09.2026** — Hub-Look: Türkis-Primärfarbe, Lato, Hub-Gruppen als Akkordeon,
   Glas-Sidebar ohne Kopfleiste, Karten/Tabellen/Knöpfe wie im Theme, Hub-Verlauf
   als Hintergrund, Dark-Mode-Kopplung, 50er-Tabellen global, „Zurück zum Hub“,

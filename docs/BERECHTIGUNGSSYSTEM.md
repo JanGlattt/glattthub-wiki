@@ -516,6 +516,29 @@ Auf den einzelnen Seiten werden Action-Buttons und Bereiche mit `@can`-Direktive
 Der Rollen-Editor zeigt die Rechte seit 08/2026 als **Baum entlang der Hub-Struktur**. Er ersetzt
 die frueheren 20 Gruppen-Karten mit je einer CheckboxList.
 
+#### Rollenliste (seit 07.10.2026)
+
+Die Liste unter `/admin/roles` ist **keine klassische Tabelle mit Kopfzeile**, sondern nutzt
+Filaments Spalten-Layout (`Split`, `from('md')`): ab 768 px eine Zeile je Rolle, darunter
+**eine Karte je Rolle** mit „Bearbeiten" als Knopf über die volle Breite. Grund: Die frühere
+Spalte „Berechtigungen" rendete alle Rechte als Badges — bei der Rolle `admin` 134 Stück — und
+machte jede Zeile auf dem Handy bildschirmfüllend.
+
+Je Rolle stehen stattdessen drei verdichtete Angaben, alle aus der eager geladenen
+`permissions`-Relation (`modifyQueryUsing`, keine Zusatzabfrage je Zeile):
+
+| Angabe | Quelle | Bemerkung |
+|---|---|---|
+| **Rechte** (`134 Rechte`) | Rechte ohne die drei `data_scope_*` | gleicher Zähler wie „x von y Rechten" im Editor |
+| **Datensichtbarkeit** | weiteste vergebene Stufe, sonst „Alle Daten" | dieselbe Regel wie `EditRole::mutateFormDataBeforeFill()` |
+| **Bereiche** | Ebene-1-Knoten (`page_key`) in Sidebar-Reihenfolge, höchstens sechs sichtbar, Rest aufklappbar | „Alle Bereiche", wenn die Rolle jeden Knoten abdeckt, der in der DB Rechte trägt (`once()` je Request); „Keine Rechte" bei leerer Rolle |
+
+Sortierung fest nach Name, keine Seitenumbrüche (`paginated(false)`), Suche nach Rollenname
+bleibt. Die Spalten „Erstellt am"/„Aktualisiert am" (vorher standardmäßig ausgeblendet)
+entfielen bewusst. Die Optik der layout-basierten Listen (Trennlinien, Zebra, mobil Karten)
+kommt zentral aus `theme_glattt.css`, Abschnitt „Listen im Spalten-Layout" im Admin-Block —
+siehe [Admin-Backend](ADMIN-BACKEND.md#tabellen).
+
 #### Aufbau des Formulars
 
 1. **Rollen-Informationen** -- Rollenname (eindeutig) und Guard
@@ -592,6 +615,7 @@ Auswahl gilt "Alle Daten"; hat ein Benutzer mehrere Rollen, gewinnt die weiteste
 
 - `app/Support/PermissionCatalog.php` -- Stammdaten aller Rechte und die 20 Zweige
 - `app/Filament/Resources/Roles/Schemas/RoleForm.php` -- Baumaufbau und Formular
+- `app/Filament/Resources/Roles/Tables/RolesTable.php` -- Rollenliste (Split-Layout, verdichtete Angaben)
 - `app/Filament/Resources/Roles/Pages/EditRole.php` -- Hydration + Sync
 - `app/Filament/Resources/Roles/Pages/CreateRole.php` -- Sync beim Anlegen
 - `resources/views/filament/forms/components/permission-tree.blade.php` -- Baum-View
