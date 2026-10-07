@@ -229,6 +229,15 @@ Die Datumsauswahl verwendet **Flatpickr** mit deutscher Lokalisierung und bietet
 | `»»` | 1 Woche vor |
 | `Heute` | Zurück zum heutigen Tag (nur sichtbar bei anderem Tag) |
 
+#### Schneller Tageswechsel (seit 07.10.2026)
+
+Jeder Ladevorgang (`loadAppointments()`) bekommt eine laufende Nummer (`_loadSeq`) und bricht den
+vorherigen per `AbortController` ab; Antworten mit veralteter Nummer werden verworfen — auch in
+`loadContractStats()` und `loadAdditionalData()` (Kundennamen, Mitarbeiterinnen, Erinnerungsstatus).
+Vorher stand am Anfang `if (this.isLoading) return;`: Ein Wechsel während des Ladens wurde still
+verworfen, Datum und Liste liefen auseinander. Weil der Abruf ein eigenes Signal trägt, greift
+`nav-abort.js` nicht mehr — beim `livewire:navigate` bricht die Seite ihn selbst ab.
+
 #### "Heute"-Button
 
 Rechts neben den Pfeilen erscheint ein **"Heute"**-Button (`#date-today`, Klasse `.date-nav__today`) — aber nur, wenn ein anderer Tag als heute ausgewählt ist. Ein Klick springt zurück zu heute (`goToToday()`), aktualisiert den Datepicker und lädt Termine + KPIs neu. Die Sichtbarkeit steuert `updateTodayButton()`, zentral aufgerufen in `loadAppointments()`, sodass jeder Navigationsweg (Pfeile, Wochensprung, Datepicker) abgedeckt ist.
