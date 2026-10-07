@@ -7,7 +7,7 @@
  "audience": "institut",
  "footerArea": "App",
  "stand": "07.10.2026",
- "version": "1.2",
+ "version": "1.3",
  "nr": 12,
  "title": [
   "Termin buchen",
@@ -50,11 +50,11 @@
     {
      "n": 4,
      "title": "Terminart",
-     "text": "**Beratung** oder **Behandlung aus Paket**. Hat die Kundin ein Paket, ist die Behandlung vorgewählt: die Zonen mit Dauer und Resteinheiten antippen — die Desinfektion zählt automatisch zur Dauer."
+     "text": "**Beratung** oder **Behandlung**. Bei der Behandlung stehen die Zonen aus ihrem Paket mit Dauer und Resteinheiten, darunter die **FLEX-Einzelsitzungen** mit Preis (Bezahlung vor Ort, auch ohne Paket). Antippen zum An- und Abwählen — die Desinfektion zählt automatisch zur Dauer."
     }
    ],
    "hint": {
-    "text": "Steht bei den Leistungen nichts, hat die Kundin in diesem Institut kein aktives Paket. Dann das Institut prüfen oder im Büro nachfragen.",
+    "text": "Steht bei den Leistungen kein Paket, hat die Kundin in diesem Institut keins — FLEX-Sitzungen gehen trotzdem. Magdeburg hat in Phorest noch keine FLEX-Leistungen.",
     "kind": "info"
    }
   },

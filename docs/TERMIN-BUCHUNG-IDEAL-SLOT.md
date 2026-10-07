@@ -133,6 +133,15 @@ danach die Behandlungsräume. Für Behandlungen bleiben diese Spalten außen vor
 Beratungs-Spalte in Phorest für den Service gesperrt (`disqualifiedServices`, z. B. Magdeburg),
 fällt sie wie jeder Raum heraus.
 
+**FLEX-Einzelsitzungen.** Bei Bestandskunden bietet „Behandlung" zusätzlich zu den Abo-Leistungen
+die FLEX-Leistungen des Instituts an — Einzelsitzungen je Zone, die vor Ort bezahlt werden, auch
+ohne aktives Paket (Jan, 07.10.2026). `BookingService::getFlexOptions()` nimmt alle nicht archivierten
+Phorest-Services mit Dauer, deren Name auf `booking.flex_service_pattern` passt („Flex ACHSELN"
+usw.; die archivierten „1.Sitz Flex"/„DL.Flex" fallen heraus), mit Preis in Cents; `services` liefert
+sie als `flex_options` nur mit `client_id`. Eine gewählte FLEX-Sitzung zählt als echte Behandlung
+(Extrazeit allein weiterhin nicht), die Desinfektion wird wie bei jeder Behandlung angehängt.
+Stand 07.10.2026: 20 je Institut, **Magdeburg hat keine** (Phorest-Katalog).
+
 **Neukunde.** `BookingClientService::create()` legt den Kunden **erst beim Buchen** an
 (`POST /business/{id}/client` mit `firstName`, `lastName`, `mobile` im Phorest-Format ohne „+",
 `email`, `birthDate`, `gender` FEMALE/MALE/NON_BINARY, `creatingBranchId`) — abgebrochene Buchungen

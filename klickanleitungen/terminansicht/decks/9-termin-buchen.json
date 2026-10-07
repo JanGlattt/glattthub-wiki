@@ -14,7 +14,7 @@
  "eyebrow": "Terminansicht · Buchung",
  "footerArea": "Terminansicht",
  "stand": "07.10.2026",
- "version": "1.3",
+ "version": "1.4",
  "notes": [
   "Gebucht wird **direkt in Phorest** — der Termin steht sofort im Kalender des Instituts.",
   "Der schnellste Weg ist **„Termin buchen“ oben in der Terminübersicht** — auch für Neukunden, dort reicht der Name.",
@@ -95,7 +95,7 @@
   },
   {
    "h1": "Bestandskunde: Beratung oder Behandlung",
-   "sub": "Bei Bestandskunden gibt es zusätzlich die Behandlung aus dem Paket.",
+   "sub": "Bei Bestandskunden gibt es zusätzlich die Behandlung — aus dem Paket oder als FLEX-Einzelsitzung.",
    "card": {
     "title": "Bestandskunde",
     "text": "Terminart Beratung oder Behandlung"
@@ -103,21 +103,26 @@
    "left": {
     "shot": "t7-panel-bestandskunde"
    },
-   "leftCaption": "Ein Bestandskunde ist gewählt, die Terminart steht darunter.",
+   "leftCaption": "Behandlung für einen Bestandskunden: ohne Paket stehen die FLEX-Sitzungen zur Wahl.",
    "steps": [
     {
      "n": 1,
      "title": "Terminart",
-     "text": "**„Beratung“** oder **„Behandlung aus Paket“**. Bei der Behandlung erscheinen die Leistungen aus den Paketen des Kunden, die Extrazeit ist schon vorgewählt."
+     "text": "**„Beratung“** oder **„Behandlung“**. Bei der Behandlung stehen oben die Leistungen aus den Paketen des Kunden, die Extrazeit ist schon vorgewählt."
     },
     {
      "n": 2,
+     "title": "FLEX-Sitzungen",
+     "text": "Darunter die **FLEX-Einzelsitzungen** je Zone mit Preis — sie werden **vor Ort bezahlt** und lassen sich mit Paket-Leistungen kombinieren oder ohne Paket allein buchen."
+    },
+    {
+     "n": 3,
      "title": "Ab wann",
      "text": "Behandlungen suchen standardmäßig **in 6 Wochen**, Beratungen **ab heute**."
     }
    ],
    "hint": {
-    "text": "Die eigene Seite „Termin buchen“ (nächste Seiten) bleibt für Folgetermine und Links zur Selbstbuchung erhalten."
+    "text": "**Magdeburg** hat in Phorest noch keine FLEX-Leistungen — dort erscheinen nur die Paket-Leistungen."
    }
   },
   {

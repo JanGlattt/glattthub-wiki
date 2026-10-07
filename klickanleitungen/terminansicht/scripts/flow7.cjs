@@ -144,10 +144,19 @@ const KUNDE_NAME = process.env.KLICK_BOOK_CLIENT_NAME || 'Test Testererer';
       const d = Alpine.$data(document.querySelector('.booking-panel-glattt'));
       d.selectBranch(md);
       d.selectClient({ client_id: id, name, number: 'MD000004', mobile: null });
-    }, [L.MD, KUNDE_ID, KUNDE_NAME]);
+    }, [process.env.KLICK_FLEX_BRANCH || 'xcsxL7OJZie5KvhsWdSc8w', KUNDE_ID, KUNDE_NAME]);  // Bremen: Magdeburg hat keine FLEX-Leistungen
     await L.wait(page, 4000);
+    // Behandlung zeigt Abo-Leistungen und darunter die FLEX-Einzelsitzungen (seit 07.10.2026)
+    await page.evaluate((sel) => {
+      const d = Alpine.$data(document.querySelector('.booking-panel-glattt'));
+      d.setKind('treatment');
+      const f = d.flexOptions[0]; if (f) d.togglePackageService(f.service_id);
+    }, body);
+    await L.wait(page, 1500);
+    await page.evaluate((sel) => { const b = document.querySelector(sel); const t = [...b.querySelectorAll('.booking-panel-glattt-title')].find(e => e.textContent.trim() === 'Terminart'); if (t) b.scrollTop += t.getBoundingClientRect().top - b.getBoundingClientRect().top - 12; }, body);
+    await L.wait(page, 500);
     await L.shot(page, 't7-panel-bestandskunde', { noScroll: true, clip: await L.clipOf(page, '.booking-panel-glattt'), marks: [
-      { id: 'kunde', kind: 'frame', color: 'teal', sel: '.booking-panel-glattt .booking-panel-glattt-picked' },
+      { id: 'flex', kind: 'badge', n: 2, fn: () => { const t = [...document.querySelectorAll('.booking-panel-glattt-title')].find(e => e.textContent.trim().startsWith('FLEX')); const b = t?.getBoundingClientRect(); return b ? { x: b.x, y: b.y, w: b.width, h: b.height } : null; }, at: 'l' },
       { id: 'art', kind: 'badge', n: 1, fn: () => { const t = [...document.querySelectorAll('.booking-panel-glattt-title')].find(e => e.textContent.trim() === 'Terminart'); const b = t?.parentElement.getBoundingClientRect(); return b ? { x: b.x, y: b.y, w: b.width, h: b.height } : null; }, at: 'l' },
     ]});
   }
