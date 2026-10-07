@@ -142,8 +142,9 @@ const KUNDE_NAME = process.env.KLICK_BOOK_CLIENT_NAME || 'Test Testererer';
     await openPanel();
     await page.evaluate(([md, id, name]) => {
       const d = Alpine.$data(document.querySelector('.booking-panel-glattt'));
-      d.selectBranch(md);
+      // Kundennummer belegt Magdeburg vor; Bremen danach ausdrücklich wählen (Magdeburg hat kein FLEX)
       d.selectClient({ client_id: id, name, number: 'MD000004', mobile: null });
+      d.pickBranch(md);
     }, [process.env.KLICK_FLEX_BRANCH || 'xcsxL7OJZie5KvhsWdSc8w', KUNDE_ID, KUNDE_NAME]);  // Bremen: Magdeburg hat keine FLEX-Leistungen
     await L.wait(page, 4000);
     // Behandlung zeigt Abo-Leistungen und darunter die FLEX-Einzelsitzungen (seit 07.10.2026)

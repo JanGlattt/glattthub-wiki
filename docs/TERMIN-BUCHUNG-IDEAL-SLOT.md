@@ -133,6 +133,14 @@ danach die Behandlungsräume. Für Behandlungen bleiben diese Spalten außen vor
 Beratungs-Spalte in Phorest für den Service gesperrt (`disqualifiedServices`, z. B. Magdeburg),
 fällt sie wie jeder Raum heraus.
 
+**Institut aus der Kundennummer.** Steht die Seitenleiste bzw. die App auf „Alle Standorte",
+übernimmt das Blatt beim Wählen eines Bestandskunden das Institut aus dem Kürzel seiner
+Kundennummer (`BS000126` → Braunschweig; Kürzel `code` aus `AppBranchList`, Konvention von
+`ClientNumberService`). Ein vorgegebenes Institut (Seitenleiste, Ziel-Link) und ein selbst gewähltes
+bleiben stehen. Die Auswahl selbst ist ein Raster gleich großer Kacheln
+(`.booking-panel-glattt-branches`, drei Spalten). Der Seitenkopf der Terminübersicht ist kompakt:
+alle Werkzeuge 2,5 rem hoch, Abstand 0,5 rem, Datumsfeld 9,5 rem breit.
+
 **FLEX-Einzelsitzungen.** Bei Bestandskunden bietet „Behandlung" zusätzlich zu den Abo-Leistungen
 die FLEX-Leistungen des Instituts an — Einzelsitzungen je Zone, die vor Ort bezahlt werden, auch
 ohne aktives Paket (Jan, 07.10.2026). `BookingService::getFlexOptions()` nimmt alle nicht archivierten

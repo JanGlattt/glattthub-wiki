@@ -47,7 +47,7 @@
     {
      "n": 3,
      "title": "Institut",
-     "text": "Steht die Seitenleiste auf **„Alle Standorte“**, wird hier das Institut gewählt. Ist dort schon ein Institut gewählt, steht es fest — **„Ändern“** wählt ein anderes."
+     "text": "Steht die Seitenleiste auf **„Alle Standorte“**, wird das Institut hier gewählt — bei Bestandskunden ist es schon **aus der Kundennummer vorbelegt** (BS… → Braunschweig). Ist in der Seitenleiste ein Institut gewählt, steht es fest — **„Ändern“** wählt ein anderes."
     }
    ],
    "hint": {
