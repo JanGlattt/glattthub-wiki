@@ -273,6 +273,22 @@ Defaults: `limit=100, batches=3` (max ~5–10 Min Laufzeit, weit unter dem
 
 Setup-Details: siehe [Cloud Scheduler Setup](CLOUD-SCHEDULER-SETUP.md).
 
+### Klickanleitungen als Wissensquelle (seit 07.10.2026)
+
+`KlickanleitungSyncService` holt die Decks des Nutzerhandbuchs aus dem Wiki-Repo
+(`klickanleitungen/<serie>/decks/*.json`, über die GitHub-API wie der Wiki-Sync) — läuft im
+nächtlichen `wiki:sync` mit. Je **Vorgang** (Seite eines Decks) entsteht ein Artikel
+(`source_type = klickanleitung`, Schlüssel `klick:<pfad>#v<i>`) mit Überschrift, Untertitel,
+Schritten, Hinweisen und Warnungen als Markdown; der erste Vorgang trägt zusätzlich die Notizen
+des Decks. Link: `https://hilfe.hub.glattt.com/<slug(serie)>/<nr>/#v<i>` — gleiche Slug-Regel wie
+`shared/build-web.cjs`; ohne `KLICKANLEITUNGEN_URL` gilt das Portal als Standard. Änderungen
+erkennt der Sync am Git-Blob-SHA des Decks (`drive_url`), entfernte Decks/Vorgänge werden
+deaktiviert. Stand 07.10.2026: 126 Decks → 521 Vorgänge.
+
+**Anzeige:** Zitiert Bert eine Klickanleitung, hängt `GlatttBertService::guideEmbeds()` eine
+Karte vom Typ `guide` vor die übrigen Embeds (eine je Anleitung, Link auf den ersten zitierten
+Vorgang, öffnet im neuen Tab). Die Systemanweisung verbietet Portal-Adressen im Fließtext.
+
 ### Chat-Flow
 
 ```
@@ -283,7 +299,7 @@ User tippt → sendMessage()
 generateResponse($message)
   ├── getOrCreateConversation()
   ├── GlatttBertService::chat()
-  │     ├── Verlauf: letzte 20 Nachrichten (nur Text) + neue Frage
+  │     ├── Verlauf: letzte 20 Nachrichten (nur Text, nach id — die Relation sortiert nach created_at!) + neue Frage
   │     ├── Claude: system = [Anweisung (gecacht), Tagesdatum], tools = search_knowledge + 12 Hub-Werkzeuge
   │     ├── stop_reason tool_use → Werkzeuge ausführen, Ergebnisse zurück (max. 10 Runden)
   │     │     • search_knowledge → 8 Abschnitte als search_result-Blöcke mit citations
@@ -479,6 +495,7 @@ Die OpenAI-Spalten (`openai_thread_id`, `openai_file_id`) entfernt die Migration
 | 2026-05 | MAMP-Timeout-Fix korrigiert: `php.ini` direkt (FastCGI ignoriert `.htaccess` `php_value`) |
 | 2026-08 | Fester Platz in der Seitenleiste statt schwebender Blase; Chat dockt neben der Leiste an, mobiler Einstieg im Mehr-Sheet (19.08.2026) |
 | 2026-08 | OpenAI schaltet die Assistants API ab (26.08.2026), auf der glatttBert lief |
+| 2026-10 | Klickanleitungen als Wissensquelle (je Vorgang ein Artikel, Anleitungs-Karte im Chat); Verlauf-Fix: Berts frühere Antworten fehlten im Kontext, er beantwortete deshalb alte Fragen erneut (07.10.2026) |
 | 2026-10 | Umstieg auf Claude (Sonnet 5.5) mit eigenem hybriden Suchindex (Volltext + Vertex-Embeddings), PDF/Office-Text im Hub, Bilder über Claude, Videos über Google Speech-to-Text, Kosten je Antwort im Bert-Dashboard (06.10.2026) |
 
 ---
