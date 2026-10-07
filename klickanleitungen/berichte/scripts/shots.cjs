@@ -21,7 +21,12 @@ const karte = (name, url, titel, extra = {}) => ({ name, url, wait: 5000,
   clip: 'card:' + titel, marks: extra.marks || [] });
 
 const PLAN = [
-  // ── Berichte 0: So funktionieren die Berichte (Beispiel Verkaufsstatistik)
+  // ── Berichte 0: So funktionieren die Berichte (Übersicht + Beispiel Verkaufsstatistik)
+  { name: 'r0-uebersicht', url: '/hub/reports', wait: 9000, steps: [['loaded'], ['wait', 6000], ['scrollSel', '[data-area="verkauf"]', 'start'], ['wait', 800]],
+    marks: [
+      { id: 'zeitraum', kind: 'badge', n: 3, sel: '.reports-range-glattt', at: 'l' },
+      { id: 'info', kind: 'badge', n: 4, sel: '.report-card-compact-info-glattt', at: 'r' },
+    ] },
   kopf('r0-kopf', '/hub/reports/sales-statistics', [
     { id: 'zeitraum', kind: 'frame', color: 'teal', sel: '.stats-page-header-glattt' },
     { id: 'export', kind: 'badge', n: 1, sel: '.btn-glattt-export', at: 'l' },

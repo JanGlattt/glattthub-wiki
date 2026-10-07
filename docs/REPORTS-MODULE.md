@@ -327,59 +327,42 @@ zweites Mal in der Such-Registry. Beides kommt jetzt aus
   Ohne Kennzahl-Quelle bleibt `kpis` leer, die App zeigt dann den Untertitel. Details:
   [iOS-App, Abschnitt „Native Berichte-Übersicht"](IOS-APP.md).
 
-- Die Übersicht rendert die Karten in der Reihenfolge der Registry und
-  überspringt, wofür die Berechtigung fehlt (`ReportRegistry::forUser()`)
+- Die Übersicht gruppiert die Berichte **nach Bereich** (`ReportRegistry::AREAS`: Verkauf,
+  Termine & Beratung, Kunden & Marketing, Finanzen, Team & Büro) in Registry-Reihenfolge und
+  überspringt, wofür die Berechtigung fehlt (`ReportRegistry::byArea()`) — dieselbe Ordnung wie
+  die native Berichte-Übersicht der App.
 - `GlobalSearchService::pages()` mischt `ReportRegistry::searchEntries()` unter
   die App-Seiten — in `PAGES` stehen **keine Berichte mehr**
-- Die **Vorschau je Karte** bleibt ein eigenes Partial unter
-  `resources/views/hub/reports/partials/overview-cards/`: Jede Karte zeigt
-  etwas anderes und lädt sich selbst. Das ist der Inhalt der Karte, keine
-  Doppelpflege.
+- **Eine Kompaktkarte für alle Berichte** (seit 08.10.2026, TestFlight 254, Jan: „nach dem
+  Vorbild der App“): `resources/views/hub/reports/partials/report-card.blade.php` zeigt
+  Bereichs-Symbol, Titel, das ⓘ „Woher kommen die Vergleiche?“, bis zu drei Leitkennzahlen
+  (`kpis`) als Stat-Strip mit Vergleich und ein Mini-Diagramm (Verkaufsstatistik: Körperzonen je
+  Monat nach Standort, sonst der Monatsverlauf der ersten Kennzahl). Berichte ohne `kpis` zeigen
+  ihren Untertitel. Die 17 handgebauten Vorschau-Partials unter `overview-cards/` sind entfallen.
+- **Werte aus denselben Endpunkten wie die App:** jede Karte holt ihre Kennzahlen einzeln über
+  `GET /api/app/reports/values?report=…&branch=…&range=…` (`AppReportsService::values()`,
+  Web-Sitzung). Die Seite steht sofort, eine langsame Quelle bremst nur ihre Karte
+  (`refreshable-glattt` + `is-refreshing` beim Nachladen). Zeitraum (Woche/Monat/Jahr) steht
+  oben rechts und wird im `localStorage` gemerkt (`reportsOverviewRange`), der Standort folgt
+  dem Sidebar-Filter (`selectedBranch`, Ereignis `branchChanged`). Logik:
+  `public/js/reports-overview.js` (`reportsOverview()`, `reportOverviewCard()`).
+- **Erklärung der Vergleiche:** der Hub liefert an jedem Vergleich einen Satz (`hint`,
+  `KpiComparisonHint`) — das ⓘ der Karte öffnet ein Info-Panel mit allen Kennzahlen der Karte,
+  die KPI-Zeile der Berichtsseiten zeigt denselben Text als Tooltip, die App im Popover.
 
 !!! danger "Neuer Bericht = ein Eintrag in der ReportRegistry"
-    Karte, Sucheintrag und Karte in der App entstehen daraus. `ReportRegistryTest` bricht, wenn
-    eine Definition unvollständig ist (auch ohne gültigen Bereich oder mit unbekannter Kennzahl), das Karten-Partial fehlt, die Übersicht
-    wieder Karten fest einbindet oder Berichte zurück in
-    `GlobalSearchService::PAGES` wandern.
+    Karte im Web, Karte in der App und Sucheintrag entstehen daraus. `ReportRegistryTest` bricht, wenn
+    eine Definition unvollständig ist (auch ohne gültigen Bereich oder mit unbekannter Kennzahl), die Übersicht
+    wieder Karten fest einbindet, Vorschau-Partials zurückkehren oder Berichte zurück in
+    `GlobalSearchService::PAGES` wandern. `ReportsOverviewPageTest` prüft Bereiche, Karten je Recht,
+    Zeitraum-Schalter und Tour-Anker der Seite.
 
-#### KPI-Vorschauen der Standard-Karten
+#### Leitkennzahlen der Karten
 
-##### Zukünftige Beratungsgespräche
-- **Heute**: Termine am aktuellen Tag
-- Termine in 7/14/28 Tagen
-- Standort-Breakdown mit Heute-Spalte
-- ⚡ Optimierter KPI-Endpoint `/upcoming-consultations-kpi`
-
-##### Vergangene Beratungsgespräche
-- Beratungen diesen Monat
-- Prognose
-- No-Show Rate
-- Beliebtester Tag
-
-##### Stornierte und gelöschte Termine
-| KPI | Beschreibung |
-|-----|--------------|
-| Stornoquote | % der stornierten Termine vs. Vormonat/Vorjahr (PP) |
-| Löschquote | % der gelöschten Termine vs. Vormonat/Vorjahr (PP) |
-| Stornierte Termine | Absolute Anzahl vs. Vormonat/Vorjahr (%) |
-| Höchste Stornoquote* | Standort mit höchster Rate + Vergleich zu anderen |
-| Gesamt ausgefallen** | Storniert + Gelöscht |
-
-\* Nur bei "Alle Institute"  
-\** Nur bei einzelnem Standort
-
-##### Terminstatistik
-| KPI | Beschreibung |
-|-----|-------------|
-| Behandlungen | Stattgefundene Behandlungen (ohne Beratung) vs. Vormonat |
-| Termindauer gesamt | Gesamte Dauer aller Termine vs. Vormonat |
-| Ø Termine/Tag | Durchschnittliche Termine pro Tag vs. Vormonat (gesamt) |
-| Ø Termindauer | Durchschnittliche Dauer pro Termin vs. Vormonat (gesamt) |
-
-> ℹ️ Diese KPIs zeigen nur **stattgefundene Termine** (COMPLETED/PAID).
-
-##### Fallback-Logik
-Wenn für den aktuellen Monat noch keine Daten vorliegen (z.B. am 1. Februar), werden automatisch die Daten des Vormonats angezeigt. Das Monatslabel passt sich entsprechend an (z.B. "Jan '26").
+Welche drei Kennzahlen eine Karte zeigt, steht im Feld `kpis` ihrer Registry-Definition (IDs aus der
+`KpiRegistry`, die erste bekommt den Monatsverlauf). Die früheren Sonderlogiken je Karte (eigene
+KPI-Endpunkte, Ampeln, Monats-Fallbacks) sind mit den Partials entfallen; Berechnung und Vergleich
+kommen aus dem `KpiValueService` wie überall sonst.
 
 ---
 
@@ -426,7 +409,7 @@ app/Http/Controllers/ReportController.php
 
 ```
 public/js/
-├── reports.js                          # Reports-Übersichtsseite
+├── reports-overview.js                 # Reports-Übersichtsseite (Kompaktkarten, seit 08.10.2026)
 ├── consultation-stats.js               # Kalenderübersicht (Alpine.js)
 ├── past-consultation-stats.js          # Vergangene Beratungen inkl. Buchungseingangs-Kalender
 ├── cancelled-appointments-page.js      # KPI-Dashboard für Stornierte
@@ -503,6 +486,12 @@ Alle Reports unterstützen den systemweiten Dark Mode mit angepassten Farbschema
 ---
 
 ## Changelog
+
+### 08.10.2026 — Übersicht nach dem Vorbild der App
+- Berichte nach Bereich (`ReportRegistry::byArea()`), eine Kompaktkarte je Bericht mit drei
+  Leitkennzahlen, Vergleich, ⓘ-Erklärung und Mini-Diagramm aus `GET /api/app/reports/values`
+- Zeitraum-Schalter Woche/Monat/Jahr, Standort aus der Seitenleiste
+- 17 Vorschau-Partials, `report-card-header`, `sales-preview-charts.js`, `reports-kpi-preview.js` entfernt
 
 ### v1.11.0 (August 2026) - KPI-Zeilen einheitlich als Stat-Strip
 - ⭐ **Alle Übersichtskarten auf `.stat-strip-glattt` umgebaut** — vorher zeigten 11 der
