@@ -544,9 +544,9 @@
    "x": 0,
    "y": 0,
    "width": 780,
-   "height": 1400
+   "height": 1700
   },
-  "ratio": 1.794871794871795,
+  "ratio": 2.1794871794871793,
   "marks": []
  },
  "booking-finder-slots-light": {
@@ -564,9 +564,9 @@
    "x": 0,
    "y": 0,
    "width": 780,
-   "height": 760
+   "height": 800
   },
-  "ratio": 0.9743589743589743,
+  "ratio": 1.0256410256410255,
   "marks": []
  },
  "booking-finder-empty-light": {
@@ -574,9 +574,9 @@
    "x": 0,
    "y": 0,
    "width": 780,
-   "height": 1080
+   "height": 1086
   },
-  "ratio": 1.3846153846153846,
+  "ratio": 1.3923076923076922,
   "marks": []
  },
  "booking-finder-ipad-light": {
@@ -584,9 +584,9 @@
    "x": 0,
    "y": 0,
    "width": 2048,
-   "height": 1553
+   "height": 1773
   },
-  "ratio": 0.75830078125,
+  "ratio": 0.86572265625,
   "marks": []
  },
  "booking-day-slots-light": {
@@ -1127,6 +1127,26 @@
    "height": 1700
   },
   "ratio": 2.1794871794871793,
+  "marks": []
+ },
+ "booking-finder-new-client-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1700
+  },
+  "ratio": 2.1794871794871793,
+  "marks": []
+ },
+ "booking-finder-new-client-ipad-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2048,
+   "height": 2273
+  },
+  "ratio": 1.10986328125,
   "marks": []
  }
 }

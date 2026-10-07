@@ -2495,6 +2495,14 @@ Raum, Kundin und Leistungen nach und bucht in Phorest. Danach geht es **zum Term
 Vorschlagstage nebeneinander rechts. Folgetermin und Verlegen aus einem laufenden Termin bleiben
 wie bisher in der Terminansicht.
 
+**Seit 07.10.2026 (Entwurf 1 „Slot-Finder mit ‚Wer?' davor"):** Oben steht **Bestandskunde |
+Neukunde**. Für einen Neukunden genügen Vor- und Nachname (Mobilnummer, E-Mail, Geburtsdatum,
+Geschlecht freiwillig); passt jemand Bestehendes, schlägt die Karte „Gibt es den Kunden schon?" ihn
+zum Übernehmen vor. Neukunden bekommen ein **Beratungsgespräch**, Bestandskunden wählen **Beratung**
+oder **Behandlung aus Paket**. Steht die App auf „Alle Standorte", ist das Institut leer und muss
+gewählt werden. Technik, Endpunkte und Fallstricke: `TERMIN-BUCHUNG-IDEAL-SLOT.md`, Abschnitt
+„Termin buchen aus der Terminübersicht".
+
 !!! nutzerhandbuch "Bedienung: App 12 – Termin buchen in der App"
     [https://hilfe.hub.glattt.com/app/12/](https://hilfe.hub.glattt.com/app/12/)
 

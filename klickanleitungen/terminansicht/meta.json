@@ -2799,5 +2799,137 @@
    }
   ],
   "ratio": 0.6949152542372882
+ },
+ "t5-panel-neukunde": {
+  "box": {
+   "x": 700,
+   "y": 0,
+   "width": 480,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "art",
+    "kind": "badge",
+    "n": 1,
+    "sel": ".booking-panel-glattt .segmented-control-glattt",
+    "at": "l",
+    "pct": {
+     "x": 5.208333333333334,
+     "y": 18.852896341463417,
+     "w": 89.79166666666667,
+     "h": 5.731707317073171
+    }
+   },
+   {
+    "id": "name",
+    "kind": "badge",
+    "n": 2,
+    "sel": ".booking-panel-glattt .booking-panel-glattt-row",
+    "at": "l",
+    "pct": {
+     "x": 5.208333333333334,
+     "y": 26.04801829268293,
+     "w": 89.79166666666667,
+     "h": 6.097560975609756
+    }
+   },
+   {
+    "id": "institut",
+    "kind": "badge",
+    "n": 3,
+    "at": "l",
+    "pct": {
+     "x": 5.208333333333334,
+     "y": 56.413871951219505,
+     "w": 89.79166666666667,
+     "h": 14.390243902439023
+    }
+   }
+  ],
+  "ratio": 1.7083333333333333
+ },
+ "t6-panel-zeit": {
+  "box": {
+   "x": 700,
+   "y": 0,
+   "width": 480,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "zeit",
+    "kind": "frame",
+    "color": "gold",
+    "sel": ".booking-panel-glattt .slot-pill.is-selected",
+    "pct": {
+     "x": 7.415364583333334,
+     "y": 45.474466463414636,
+     "w": 39.231770833333336,
+     "h": 6.72827743902439
+    }
+   },
+   {
+    "id": "zusammenfassung",
+    "kind": "frame",
+    "color": "teal",
+    "sel": ".booking-panel-glattt-summary",
+    "pct": {
+     "x": 5.208333333333334,
+     "y": 85.95274390243902,
+     "w": 89.79166666666667,
+     "h": 5.365853658536586
+    }
+   },
+   {
+    "id": "buchen",
+    "kind": "chip",
+    "label": "Erst jetzt buchen",
+    "sel": ".booking-panel-glattt-submit",
+    "at": "l",
+    "pct": {
+     "x": 5.208333333333334,
+     "y": 92.78201219512195,
+     "w": 89.79166666666667,
+     "h": 5.266768292682927
+    }
+   }
+  ],
+  "ratio": 1.7083333333333333
+ },
+ "t7-panel-bestandskunde": {
+  "box": {
+   "x": 700,
+   "y": 0,
+   "width": 480,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "kunde",
+    "kind": "frame",
+    "color": "teal",
+    "sel": ".booking-panel-glattt .booking-panel-glattt-picked",
+    "pct": {
+     "x": 5.208333333333334,
+     "y": 26.04801829268293,
+     "w": 89.79166666666667,
+     "h": 8.231707317073171
+    }
+   },
+   {
+    "id": "art",
+    "kind": "badge",
+    "n": 1,
+    "at": "l",
+    "pct": {
+     "x": 5.208333333333334,
+     "y": 54.523628048780495,
+     "w": 89.79166666666667,
+     "h": 17.4390243902439
+    }
+   }
+  ],
+  "ratio": 1.7083333333333333
  }
 }

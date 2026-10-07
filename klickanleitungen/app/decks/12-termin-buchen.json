@@ -6,23 +6,23 @@
  "of": 23,
  "audience": "institut",
  "footerArea": "App",
- "stand": "26.09.2026",
- "version": "1.1",
+ "stand": "07.10.2026",
+ "version": "1.2",
  "nr": 12,
  "title": [
   "Termin buchen",
   "in der App"
  ],
- "subtitle": "Klickanleitung für die glatttHub-App — eine Kundin wählen, Institut, Zeitraum und Leistungen aus ihrem Paket antippen, einen der vorgeschlagenen Termine buchen und direkt zum neuen Termin springen",
+ "subtitle": "Klickanleitung für die glatttHub-App — Bestandskunde oder Neukunde, Institut, Beratung oder Behandlung aus dem Paket, einen der vorgeschlagenen Termine buchen und direkt zum neuen Termin springen",
  "eyebrow": "App · Termine",
  "notes": [
-  "**Termin buchen** öffnest du über das goldene **+** oben in der Terminliste oder über **Termin** in der Kundenübersicht — dann ist die Kundin schon eingetragen. Auf dem iPad mit Tastatur geht es auch mit **⌘N**. Die Seite sehen alle mit dem Recht, Termine zu buchen.",
+  "**Termin buchen** öffnest du über das goldene **+** oben in der Terminliste oder über **Termin** in der Kundenübersicht — dann ist die Kundin schon eingetragen. Auf dem iPad mit Tastatur geht es auch mit **⌘N**. Die Seite sehen alle mit dem Recht, Termine zu buchen; **Neukunden** anlegen darf, wer Kunden anlegen darf.",
   "Folgetermin und Verlegen aus einem laufenden Termin heraus bleiben wie gewohnt in der Terminansicht (App 3). Diese Seite ist für alles andere: die Kundin ruft an, steht am Tresen oder hat gerade keinen Termin."
  ],
  "pages": [
   {
    "h1": "Kundin und Zeitraum",
-   "sub": "Ohne Kundin öffnet sich zuerst die Suche. Danach stehen oben Kundin, Institut und „ab wann“, darunter die Leistungen aus ihrem Paket.",
+   "sub": "Oben wählst du Bestandskunde oder Neukunde. Darunter stehen Institut und „ab wann“, dann die Terminart mit den Leistungen.",
    "card": {
     "title": "Eingaben",
     "text": "Alles auf einer Seite"
@@ -35,12 +35,12 @@
     {
      "n": 1,
      "title": "Kundin",
-     "text": "Name, Kunden-Nr. oder E-Mail eintippen und antippen. Mit **Ändern** wählst du eine andere Kundin."
+     "text": "**Bestandskunde**: über **Kundin wählen** nach Name, Kunden-Nr. oder E-Mail suchen. Mit **Ändern** wählst du eine andere Kundin."
     },
     {
      "n": 2,
      "title": "Institut",
-     "text": "Vorgewählt ist dein Standort. Ein Tipp auf das Feld wechselt das Institut — die Leistungen laden dann neu."
+     "text": "Vorgewählt ist dein Standort. Steht die App auf **„Alle Standorte“**, wählst du das Institut hier aus — vorher gibt es keine Vorschläge."
     },
     {
      "n": 3,
@@ -49,12 +49,50 @@
     },
     {
      "n": 4,
-     "title": "Leistungen",
-     "text": "Die Zonen aus ihrem Paket mit Dauer und Resteinheiten. Antippen zum An- und Abwählen — die Desinfektion zählt automatisch zur Dauer."
+     "title": "Terminart",
+     "text": "**Beratung** oder **Behandlung aus Paket**. Hat die Kundin ein Paket, ist die Behandlung vorgewählt: die Zonen mit Dauer und Resteinheiten antippen — die Desinfektion zählt automatisch zur Dauer."
     }
    ],
    "hint": {
     "text": "Steht bei den Leistungen nichts, hat die Kundin in diesem Institut kein aktives Paket. Dann das Institut prüfen oder im Büro nachfragen.",
+    "kind": "info"
+   }
+  },
+  {
+   "h1": "Neukunde zur Beratung",
+   "sub": "Für jemanden, den es in Phorest noch nicht gibt: Name eintragen, Institut wählen, Beratung buchen.",
+   "card": {
+    "title": "Neukunde",
+    "text": "Name genügt"
+   },
+   "left": {
+    "shot": "booking-finder-new-client-light"
+   },
+   "leftCaption": "Neukunde mit Mobilnummer, darunter der Hinweis auf einen möglichen Bestandskunden.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Neukunde",
+     "text": "Oben **Neukunde** antippen. Pflicht sind nur **Vor- und Nachname**; Mobilnummer, E-Mail, Geburtsdatum und Geschlecht sind freiwillig."
+    },
+    {
+     "n": 2,
+     "title": "Gibt es den Kunden schon?",
+     "text": "Passt Name, Nummer oder E-Mail zu einem Bestandskunden, erscheint er orange darunter. **Übernehmen** bucht für ihn, statt einen doppelten anzulegen."
+    },
+    {
+     "n": 3,
+     "title": "Beratung",
+     "text": "Neukunden bekommen immer ein **Beratungsgespräch** (45 Min) — gesucht wird ab heute, zuerst in der Beratungs-Spalte des Instituts."
+    },
+    {
+     "n": 4,
+     "title": "Buchen",
+     "text": "Vorschlag antippen, **Beratung buchen** bestätigen. Erst jetzt entsteht der Kunde in Phorest."
+    }
+   ],
+   "hint": {
+    "text": "Mit Mobilnummer bekommt der Neukunde die **Beratungs-WhatsApp** wie nach einer Online-Buchung.",
     "kind": "info"
    }
   },
@@ -175,7 +213,7 @@
     {
      "n": 1,
      "title": "Eingaben links",
-     "text": "Kundin, Institut, ab wann und Leistungen — genau wie auf dem iPhone."
+     "text": "Bestandskunde oder Neukunde, Institut, ab wann und Terminart — genau wie auf dem iPhone."
     },
     {
      "n": 2,

@@ -9,8 +9,10 @@ Livewire-Komponenten, Token-Modell und Tests; die Bedienung Schritt für Schritt
 Nutzerhandbuch.
 
 !!! nutzerhandbuch "Bedienung: Terminansicht 9 – Termin buchen"
-    [hilfe.hub.glattt.com/terminansicht/9/](https://hilfe.hub.glattt.com/terminansicht/9/) — Kundin und
-    Institut wählen, Zeit finden, buchen und bestätigen, Link zur Selbstbuchung erstellen.
+    [hilfe.hub.glattt.com/terminansicht/9/](https://hilfe.hub.glattt.com/terminansicht/9/) — aus der
+    Terminübersicht buchen (Bestandskunde oder Neukunde), Kundin und Institut wählen, Zeit finden,
+    buchen und bestätigen, Link zur Selbstbuchung erstellen. In der App:
+    [App 12 – Termin buchen](https://hilfe.hub.glattt.com/app/12/).
 
     Angrenzend: [Kundenverwaltung 3 – Termine & Pakete](https://hilfe.hub.glattt.com/kundenverwaltung/3/)
     (Verlegen und Link aus dem Kundenprofil),
@@ -29,6 +31,12 @@ Kundenprofil (Reiter „Termine", Knopf „Verlegen") oder aus der Terminansicht
 die Kundin einen **Self-Service-Link** (48 Stunden gültig, einmalig nutzbar) und wählt selbst –
 Institut und Leistungen sind darin fest vorgegeben, auf Wunsch nur lückenlose Slots.
 
+**Seit 07.10.2026 auch direkt aus der Terminübersicht** – Knopf „Termin buchen" oben rechts, im
+Web als Blatt von rechts, in der App über das goldene Plus. Damit lässt sich auch ein
+**Neukunde** zum **Beratungsgespräch** einbuchen (Pflicht ist nur der Name; angelegt wird er erst
+beim Buchen) und ein Bestandskunde wahlweise zur Beratung oder zur Behandlung aus seinem Paket.
+Steht die Seitenleiste auf „Alle Standorte", wird das Institut im Blatt gewählt.
+
 **Die Regeln, die das Modul umsetzt:**
 
 1. **Erst einen Raum füllen** – Termine werden zuerst komplett in **Raum 1** (z.B. `BI 1`) gelegt,
@@ -45,6 +53,7 @@ Institut und Leistungen sind darin fest vorgegeben, auf Wunsch nur lückenlose S
 
 | Vorgang | Anleitung |
 |---|---|
+| Aus der Terminübersicht buchen – Bestandskunde oder Neukunde, Beratung oder Behandlung | Terminansicht 9, App 12 |
 | Termin buchen: Kundin und Institut, Zeit finden, buchen und bestätigen | Terminansicht 9 |
 | Link zur Selbstbuchung erstellen und per WhatsApp senden | Terminansicht 9 |
 | Termin aus dem Kundenprofil verlegen, Link zum Verlegen | Kundenverwaltung 3 |
@@ -66,6 +75,8 @@ Institut und Leistungen sind darin fest vorgegeben, auf Wunsch nur lückenlose S
   und „Link" ausgeblendet – ein stornierter Termin kann nicht mehr verlegt werden.
 - **Terminansicht:** Button **„Verlegen"** in der Sidebar öffnet das Buchungsmodul (`hub.booking`) mit
   vorausgewähltem Kunden, Institut und den `appointmentIds` des Termins.
+- **Terminübersicht → „Termin buchen"** (seit 07.10.2026): Seitenblatt für Bestands- und
+  Neukunden, Beratung oder Behandlung — siehe nächster Abschnitt.
 - **Buchungsseite** `Hub → Termin buchen` (`hub.booking`): existiert im Code, ist aber aus der
   Navigation entfernt. Der primäre Weg ist das Modal auf der Kundenseite.
 - **iOS-/iPadOS-App** (seit 26.09.2026): `/hub/booking` ist dort eine **native Seite** („Slot-Finder")
@@ -77,6 +88,75 @@ Institut und Leistungen sind darin fest vorgegeben, auf Wunsch nur lückenlose S
   `FOLGETERMIN-BEWERTUNGSLINK.md`.
 
 > **Wichtig – Stornierung per appointmentId:** Bestehende Phorest-Termine besitzen **keine abrufbare `bookingId`** (diese wird nur beim Erstellen einer Buchung einmalig zurückgegeben und ist später nirgends abrufbar). Das Verlegen storniert daher jeden Service-Termin einzeln über seine `appointmentId` (`appointment/cancel?appointment_id=…`) und legt anschließend eine neue Buchung an. Ein im Profil gruppierter Termin kann aus mehreren `appointmentIds` bestehen (mehrere aufeinanderfolgende Services) – es werden alle storniert.
+
+### Termin buchen aus der Terminübersicht (seit 07.10.2026)
+
+**Absicht.** Am Telefon oder Tresen soll ein Termin ohne Umweg gebucht werden — auch für jemanden,
+den es in Phorest noch nicht gibt. Entschieden von Jan am 07.10.2026 nach drei Entwürfen je Plattform:
+Web **A „Seitenblatt von rechts"**, App **1 „Slot-Finder mit ‚Wer?' davor"**. Beides nutzt dieselben
+Endpunkte und dieselbe Slot-Engine wie der Folgetermin.
+
+**Web.** Knopf `.appointments-book-btn` im Seitenkopf von `hub/appointments` (nur mit `view_booking`,
+steht vor der mobilen Zustandszeile und bleibt dadurch auch auf dem Handy sichtbar). Er feuert
+`open-appointment-booking`; das Partial `hub/partials/appointment-booking-panel.blade.php`
+(Info-Panel-Gerüst, `x-teleport`) mit der Alpine-Komponente `public/js/appointment-booking-panel.js`
+zeigt Kunde → Institut → Terminart → Vorschläge. Nach dem Buchen lädt
+`window.aptPage.loadAppointments()` die Liste neu. Styles: Abschnitt „Termin buchen aus der
+Terminübersicht" in `theme_glattt.css` (`.booking-panel-glattt-*`), Slots über die vorhandenen
+`.slot-calendar`/`.slot-pill`.
+
+**App.** `BookingFinderModel`/`BookingFinderView`: oben „Bestandskunde | Neukunde" (nur mit
+`can_create_clients` aus `booking/api/services`), Neukunden-Formular, Dubletten-Karte, Institut ist
+bei „Alle Standorte" leer und Pflicht (vorher wurde still das erste sichtbare Institut genommen),
+Terminart „Beratung | Behandlung aus Paket" (Kundin mit Paket → Behandlung vorgewählt). Die
+Kundensuche öffnet nicht mehr von selbst. Auf dem iPad bleibt die zweispaltige Detailseite.
+
+**Endpunkte** (`hub/booking/api/*`, `view_booking`):
+
+| Endpunkt | Neu/geändert |
+|---|---|
+| `GET services` | `branch_id`/`client_id` optional; zusätzlich `consultation_options`, `can_create_clients` und `branches` aus `AppBranchList::forUser()` (erlaubte Institute, Hub-Reihenfolge, Kürzel, Farbe, `hidden`) |
+| `GET clients?q` | Bestandskunden über `ClientSearchService` (lokaler Spiegel, Phorest-Fallback) |
+| `GET client-matches` | Dubletten: gleiche Mobilnummer, gleiche E-Mail, exakt gleicher Vor- und Nachname — höchstens fünf |
+| `POST suggestions`, `day-slots` | `client_id` optional, `kind=consultation` |
+| `POST book` | `client_id` **oder** `new_client{first_name, last_name, mobile?, email?, birth_date?, gender?}`; `kind=consultation`; prüft `allowed_branch_ids` |
+
+**Beratungsgespräch.** `BookingService::getConsultationOptions()` nimmt die online buchbaren
+Beratungs-Services aus `consultation_services` (`is_active`, `is_consultation`, `is_online`), die im
+Phorest-Katalog des Instituts stehen und nicht archiviert sind — dieselben wie im Buchungswidget
+(Stand 07.10.2026: „Nur gratis Beratungsgespräch" 45 Min, „Behandlung & Beratung (Booking)" 90 Min;
+die Service-IDs sind in allen Instituten gleich). Mit `consultation: true` hängt die Slot-Suche
+**keine Desinfektion** an und bezieht die Beratungs-Spalten ein:
+`BookingCalendarService::resolveRooms(…, withConsultationRooms: true)` erkennt sie über
+`booking.consultation_room_pattern` („XX Nur für Beratungen") und füllt sie **zuerst** (Ordnung 0),
+danach die Behandlungsräume. Für Behandlungen bleiben diese Spalten außen vor. Ist eine
+Beratungs-Spalte in Phorest für den Service gesperrt (`disqualifiedServices`, z. B. Magdeburg),
+fällt sie wie jeder Raum heraus.
+
+**Neukunde.** `BookingClientService::create()` legt den Kunden **erst beim Buchen** an
+(`POST /business/{id}/client` mit `firstName`, `lastName`, `mobile` im Phorest-Format ohne „+",
+`email`, `birthDate`, `gender` FEMALE/MALE/NON_BINARY, `creatingBranchId`) — abgebrochene Buchungen
+hinterlassen keine leeren Profile. Recht zusätzlich `create_clients`, sonst 403. Scheitert danach die
+Buchung (Zeit inzwischen belegt), merkt sich der Hub den neuen Kunden 30 Minuten je Nutzer und
+Angaben (Cache `booking-new-client:{user}:{md5}`) — ein zweiter Versuch nimmt ihn wieder statt eine
+Dublette anzulegen; das Web schaltet zusätzlich über die zurückgegebene `client_id` auf
+„Bestandskunde". Phorest-Vermerk: „Über glatttHub gebucht (Beratungsgespräch, Neukunde)."
+
+**Beratungs-WhatsApp.** Nach einer Beratung stößt `book` sofort
+`RegisterConsultationBookingJob::forHubBooking()` an (zweiter Einstieg ohne `booking_trackings`,
+damit die Ads-Attribution sauber bleibt). Der Job legt `upcoming_consultations` an, der Observer
+verschickt wie bei Online-Buchungen; „erste Beratung" und Handynummer prüft
+`SendConsultationWhatsappJob` selbst. Ohne den Live-Anstoß hätte der nächtliche Sync es ebenfalls
+getan — nur später.
+
+**Fallstricke.**
+
+- `x-teleport` auf einer Seite ohne Alpine-Wurzel rendert nichts — die Terminübersicht ist reines
+  JS, deshalb der leere `x-data`-Rahmen um das Partial.
+- `.form-glattt-row-2-cols` allein ist kein Raster; immer zusammen mit `.form-glattt-row`
+  (`FormRowGridConventionTest`).
+- Das Blatt zeigt je Tag höchstens vier Zeiten und vier Tage; „Andere Uhrzeit …" zeigt den ganzen
+  Tag. Raumnamen „XX Nur für Beratungen" werden in Kacheln zu „XX Beratung" gekürzt (Web und App).
 
 ### „Andere Uhrzeit …" und Untergrenze „jetzt" (seit 26.09.2026)
 
@@ -331,6 +411,8 @@ Recht `view_booking` (Migration `2026_06_28_100000_add_view_booking_permission.p
 - `tests/Feature/Booking/BookingServiceTest.php` – End-to-End mit gemocktem `PhorestApiService` (Slot-Findung, Buchungs-Payload mit allen Services + Desinfektion, `onlyAdjacentSlots`-Filter).
 - `tests/Feature/Booking/RescheduleSlotModalTest.php` – Verlegen-Modal (Öffnen lädt Services + Slots, Buchen storniert per `cancelAppointment` und feuert `appointment-rescheduled`).
 - `tests/Feature/Booking/BookingShareLinkModalTest.php` – Link-Erstellen-Modal (Token-Felder, wa.me-Link-Generierung, Service-Vorauswahl, manuelles Ab-/Zubuchen, Validierung bei leerer Auswahl).
+- `tests/Feature/Booking/AppointmentBookingPanelTest.php` – Termin buchen aus der Terminübersicht (Institute ohne Auswahl, Beratung ohne Kunde, Neukunde beim Buchen angelegt + WhatsApp-Job, Wiederholschutz bei gescheiterter Buchung, Pflicht Vor-/Nachname und `create_clients`, fremdes Institut, Dublettenprüfung, Knopf nur mit `view_booking`).
+- `ios/glatttHubTests/BookingFinderSnapshotTests.swift` – App: Neukunde + Beratung (`testNewClientConsultation`), Snapshots `booking-finder-new-client{,-ipad}`; UI-Test `BookingFinderUITests.testNewClientConsultationPath`.
 - `tests/Feature/Booking/SharedBookingPageTest.php` – Öffentliche Buchungsseite (ungültig/abgelaufen/eingelöst, Slot-Filter, erfolgreiche Buchung markiert Token als eingelöst, `.ics`-Download enthält Ort/Dauer aber keine Servicenamen und keine doppelten Inhalte, `downloadIcs()` liefert `null` vor abgeschlossener Buchung).
 
 ```bash

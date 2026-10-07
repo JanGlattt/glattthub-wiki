@@ -10,17 +10,116 @@
   "Termin",
   "buchen"
  ],
- "subtitle": "Klickanleitung für den glatttHub — Termin für eine Kundin buchen, ideale Zeiten finden, Link weitergeben",
+ "subtitle": "Klickanleitung für den glatttHub — Termin direkt aus der Terminübersicht buchen (auch für Neukunden), ideale Zeiten finden, Link weitergeben",
  "eyebrow": "Terminansicht · Buchung",
  "footerArea": "Terminansicht",
- "stand": "06.10.2026",
- "version": "1.2",
+ "stand": "07.10.2026",
+ "version": "1.3",
  "notes": [
   "Gebucht wird **direkt in Phorest** — der Termin steht sofort im Kalender des Instituts.",
+  "Der schnellste Weg ist **„Termin buchen“ oben in der Terminübersicht** — auch für Neukunden, dort reicht der Name.",
   "**„Ideale Slots finden“** schlägt Zeiten vor, die den Tag nicht zerreißen — es ist kein Zwang, aber meist die bessere Wahl.",
   "Für Folgetermine im laufenden Termin gibt es den kürzeren Weg über die Terminansicht („Terminansicht 6“)."
  ],
  "pages": [
+  {
+   "h1": "Aus der Terminübersicht buchen",
+   "sub": "Oben rechts in der Terminübersicht öffnet „Termin buchen“ ein Blatt von rechts — für Bestands- und Neukunden.",
+   "card": {
+    "title": "Termin buchen",
+    "text": "Blatt öffnen, Kunde, Institut"
+   },
+   "left": {
+    "shot": "t5-panel-neukunde"
+   },
+   "leftCaption": "Das Blatt „Termin buchen“ mit einem Neukunden.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bestandskunde oder Neukunde",
+     "text": "**Bestandskunde** sucht über Name, Kundennummer, Telefon oder E-Mail. **Neukunde** fragt die Kontaktdaten ab — Pflicht sind nur **Vor- und Nachname**, Mobilnummer, E-Mail, Geburtsdatum und Geschlecht sind freiwillig."
+    },
+    {
+     "n": 2,
+     "title": "Name eintragen",
+     "text": "Gibt es schon jemanden mit demselben Namen, derselben Nummer oder E-Mail, erscheint **„Gibt es den Kunden schon?“** — ein Klick übernimmt den Bestandskunden statt einen doppelten anzulegen."
+    },
+    {
+     "n": 3,
+     "title": "Institut",
+     "text": "Steht die Seitenleiste auf **„Alle Standorte“**, wird hier das Institut gewählt. Ist dort schon ein Institut gewählt, steht es fest — **„Ändern“** wählt ein anderes."
+    }
+   ],
+   "hint": {
+    "text": "Der Neukunde wird **erst beim Buchen** in Phorest angelegt. Wer das Blatt vorher schließt, hinterlässt keinen leeren Kunden."
+   }
+  },
+  {
+   "h1": "Beratung buchen",
+   "sub": "Für das Beratungsgespräch sucht der Hub freie Zeiten — zuerst in der Beratungs-Spalte des Instituts.",
+   "card": {
+    "title": "Zeit wählen",
+    "text": "Terminart, Vorschlag, buchen"
+   },
+   "left": {
+    "shot": "t6-panel-zeit"
+   },
+   "leftCaption": "Vorschläge für das Beratungsgespräch, eine Zeit ist gewählt.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Terminart",
+     "text": "**„Nur gratis Beratungsgespräch“** (45 Min) ist vorgewählt. Bei Bedarf **„Behandlung & Beratung“** wählen."
+    },
+    {
+     "n": 2,
+     "title": "Zeit wählen",
+     "text": "**„Ab heute“** oder später, dann eine Zeit antippen. Grün heißt: schließt ohne Lücke an. **„Andere Uhrzeit …“** zeigt alle freien Zeiten des Tages."
+    },
+    {
+     "n": 3,
+     "title": "Beratung buchen",
+     "text": "Unten stehen Kunde, Tag, Uhrzeit und Raum. **„Beratung buchen“** legt den Termin in Phorest an; er erscheint sofort in der Liste."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Beratungs-WhatsApp",
+     "text": "Ist eine Mobilnummer da und ist es die erste Beratung des Kunden, verschickt der Hub die **Beratungs-WhatsApp** wie bei einer Online-Buchung."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Nicht zweimal buchen.** Bleibt es lange bei „Wird gebucht …“, zuerst die Terminübersicht prüfen."
+   }
+  },
+  {
+   "h1": "Bestandskunde: Beratung oder Behandlung",
+   "sub": "Bei Bestandskunden gibt es zusätzlich die Behandlung aus dem Paket.",
+   "card": {
+    "title": "Bestandskunde",
+    "text": "Terminart Beratung oder Behandlung"
+   },
+   "left": {
+    "shot": "t7-panel-bestandskunde"
+   },
+   "leftCaption": "Ein Bestandskunde ist gewählt, die Terminart steht darunter.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Terminart",
+     "text": "**„Beratung“** oder **„Behandlung aus Paket“**. Bei der Behandlung erscheinen die Leistungen aus den Paketen des Kunden, die Extrazeit ist schon vorgewählt."
+    },
+    {
+     "n": 2,
+     "title": "Ab wann",
+     "text": "Behandlungen suchen standardmäßig **in 6 Wochen**, Beratungen **ab heute**."
+    }
+   ],
+   "hint": {
+    "text": "Die eigene Seite „Termin buchen“ (nächste Seiten) bleibt für Folgetermine und Links zur Selbstbuchung erhalten."
+   }
+  },
   {
    "h1": "Kundin und Institut",
    "sub": "Die Buchungsseite fragt der Reihe nach: für wen, wo, was, wann.",
@@ -50,7 +149,7 @@
     }
    ],
    "hint": {
-    "text": "**Kundin nicht gefunden?** Dann gibt es sie in Phorest noch nicht. Neu angelegt wird sie über Phorest oder die Institutsseite — nicht hier."
+    "text": "**Kundin nicht gefunden?** Dann gibt es sie in Phorest noch nicht — angelegt wird sie über **„Termin buchen“ in der Terminübersicht** als Neukunde (erste Seiten)."
    }
   },
   {

@@ -75,6 +75,11 @@ einen Block im Kalender) führt in die Terminansicht.
 
 ---
 
+**Termin buchen (seit 07.10.2026):** Oben rechts öffnet **„Termin buchen"** ein Blatt von rechts —
+Bestandskunde oder Neukunde, Institut (bei „Alle Standorte"), Beratung oder Behandlung aus dem Paket.
+Technik: `TERMIN-BUCHUNG-IDEAL-SLOT.md`, Abschnitt „Termin buchen aus der Terminübersicht";
+Bedienung: [Terminansicht 9](https://hilfe.hub.glattt.com/terminansicht/9/).
+
 ## Für Entwickler
 
 ### Funktionsumfang
