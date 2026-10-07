@@ -1,112 +1,112 @@
 {
- "out": "../pdf/App-22-Trinkgeld",
- "meta": "../meta.json",
- "shots": "../shots",
- "series": "App",
- "nr": 22,
- "of": 23,
- "audience": "institut",
- "title": [
-  "Trinkgeld",
-  "in der App"
- ],
- "subtitle": "Klickanleitung für die glatttHub-App auf iPhone und iPad — Rangliste, Sterne, Auszahlung, die Karte auf der Startseite und der Schalter beim Beenden",
- "eyebrow": "App · Trinkgeld",
- "footerArea": "App",
- "stand": "29.09.2026",
- "version": "1.0",
- "notes": [
-  "Die App zeigt **dieselben Zahlen wie die Web-Seite** (Team → Trinkgeld) — Ranking, Sterne, Auszahlung, Kommentare je Recht.",
-  "Nach unten ziehen lädt neu. Ohne Netz zeigt die Seite den **letzten Stand** mit Uhrzeit.",
-  "Die Bilder sind aus dem Simulator mit erfundenen Namen."
- ],
- "pages": [
-  {
-   "h1": "Rangliste mit deiner Zeile",
-   "sub": "Mehr → Trinkgeld. Oben die Kennzahlen, dann Trinkgeld | Sterne | Auszahlung und die Zeitraum-Chips.",
-   "card": {
-    "title": "Trinkgeld",
-    "text": "Mehr → Trinkgeld"
-   },
-   "left": {
-    "shot": "tips-tips-light"
-   },
-   "leftCaption": "Segment „Trinkgeld“: Platz, Name, Sterne-Zeile, Betrag mit Trend — deine Zeile gold.",
-   "steps": [
+  "out": "../pdf/App-22-Trinkgeld",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "App",
+  "nr": 22,
+  "of": 24,
+  "audience": "institut",
+  "title": [
+    "Trinkgeld",
+    "in der App"
+  ],
+  "subtitle": "Klickanleitung für die glatttHub-App auf iPhone und iPad — Rangliste, Sterne, Auszahlung, die Karte auf der Startseite und der Schalter beim Beenden",
+  "eyebrow": "App · Trinkgeld",
+  "footerArea": "App",
+  "stand": "29.09.2026",
+  "version": "1.0",
+  "notes": [
+    "Die App zeigt **dieselben Zahlen wie die Web-Seite** (Team → Trinkgeld) — Ranking, Sterne, Auszahlung, Kommentare je Recht.",
+    "Nach unten ziehen lädt neu. Ohne Netz zeigt die Seite den **letzten Stand** mit Uhrzeit.",
+    "Die Bilder sind aus dem Simulator mit erfundenen Namen."
+  ],
+  "pages": [
     {
-     "n": 1,
-     "title": "Segment",
-     "text": "**Trinkgeld** sortiert nach Betrag, **Sterne** nach Ø Sternen der heutigen Behandlung, **Auszahlung** zeigt die Monate."
+      "h1": "Rangliste mit deiner Zeile",
+      "sub": "Mehr → Trinkgeld. Oben die Kennzahlen, dann Trinkgeld | Sterne | Auszahlung und die Zeitraum-Chips.",
+      "card": {
+        "title": "Trinkgeld",
+        "text": "Mehr → Trinkgeld"
+      },
+      "left": {
+        "shot": "tips-tips-light"
+      },
+      "leftCaption": "Segment „Trinkgeld“: Platz, Name, Sterne-Zeile, Betrag mit Trend — deine Zeile gold.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Segment",
+          "text": "**Trinkgeld** sortiert nach Betrag, **Sterne** nach Ø Sternen der heutigen Behandlung, **Auszahlung** zeigt die Monate."
+        },
+        {
+          "n": 2,
+          "title": "Zeitraum-Chips",
+          "text": "Dieser Monat, letzter Monat, 3 Monate, Jahr — der **Standortfilter** der App gilt wie überall."
+        },
+        {
+          "n": 3,
+          "title": "Deine Zeile",
+          "text": "Deine Zeile ist **gold hervorgehoben**. Siehst du nur dich, steht darüber dein Platz im Verhältnis zum Team."
+        }
+      ]
     },
     {
-     "n": 2,
-     "title": "Zeitraum-Chips",
-     "text": "Dieser Monat, letzter Monat, 3 Monate, Jahr — der **Standortfilter** der App gilt wie überall."
+      "h1": "Person und Kommentare",
+      "sub": "Ein Tipp auf eine Zeile öffnet die Person: Sterne beider Skalen, Trinkgeld, Bewertungen.",
+      "card": {
+        "title": "Person",
+        "text": "Zeile antippen"
+      },
+      "left": {
+        "shot": "tips-person-light"
+      },
+      "leftCaption": "Die Person: Platz, Sterne, drei Kacheln und die Bewertungen mit Kommentaren.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Kacheln",
+          "text": "**Trinkgeld** (mit netto), **Trinkgelder** (Anzahl, Ø je Trinkgeld) und **Bewertungen** (mit Antwortquote)."
+        },
+        {
+          "n": 2,
+          "title": "Bewertungen",
+          "text": "Je Bewertung Sterne für die Behandlung, Trinkgeld, Kundin, Behandlung und Ergebnis-Sterne. Den **Kommentar** sieht nur, wer das Recht dafür hat — sonst „Kommentar nur mit Freigabe sichtbar“."
+        },
+        {
+          "n": 3,
+          "title": "iPad",
+          "text": "Auf dem iPad steht die Person **rechts neben der Liste** — ein Tipp wechselt sie, kein Blatt geht auf."
+        }
+      ]
     },
     {
-     "n": 3,
-     "title": "Deine Zeile",
-     "text": "Deine Zeile ist **gold hervorgehoben**. Siehst du nur dich, steht darüber dein Platz im Verhältnis zum Team."
+      "h1": "Auszahlung, Startseite und Beenden",
+      "sub": "Das Segment Auszahlung, die Karte „Meine Bewertungen“ auf der Startseite und der Schalter im Beenden-Blatt.",
+      "card": {
+        "title": "Rundum",
+        "text": "Auszahlung · Startseite · Termin beenden"
+      },
+      "left": {
+        "shot": "tips-payouts-light"
+      },
+      "leftCaption": "Segment „Auszahlung“: je Monat brutto, Gebühr, netto und der Stand der Auszahlung.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Auszahlung",
+          "text": "Je Monat **netto** groß, darunter brutto, Gebühr (vorläufig oder endgültig) und ob der Monat schon **ausgezahlt** ist. Antippen klappt die Behandlerinnen auf."
+        },
+        {
+          "n": 2,
+          "title": "Startseite",
+          "text": "Nach „Mein Bonus“ steht **„Meine Bewertungen“**: Trinkgeld diesen Monat mit dem Abstand zum nächsten Platz, Bewertung diesen Monat, dein Platz und der letzte Kommentar. Antippen öffnet die Seite."
+        },
+        {
+          "n": 3,
+          "title": "Termin beenden",
+          "text": "Im Beenden-Blatt steht unter der Notiz der Schalter **„Diesmal keine Nachricht senden“** mit „nur dieses Mal“ oder „dauerhaft“ — bei gesperrten Kundinnen **„Diesmal trotzdem senden“**. In der Kundenakte (Reiter Info) steht die Sperre „Nachrichten nach der Behandlung“."
+        }
+      ]
     }
-   ]
-  },
-  {
-   "h1": "Person und Kommentare",
-   "sub": "Ein Tipp auf eine Zeile öffnet die Person: Sterne beider Skalen, Trinkgeld, Bewertungen.",
-   "card": {
-    "title": "Person",
-    "text": "Zeile antippen"
-   },
-   "left": {
-    "shot": "tips-person-light"
-   },
-   "leftCaption": "Die Person: Platz, Sterne, drei Kacheln und die Bewertungen mit Kommentaren.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Kacheln",
-     "text": "**Trinkgeld** (mit netto), **Trinkgelder** (Anzahl, Ø je Trinkgeld) und **Bewertungen** (mit Antwortquote)."
-    },
-    {
-     "n": 2,
-     "title": "Bewertungen",
-     "text": "Je Bewertung Sterne für die Behandlung, Trinkgeld, Kundin, Behandlung und Ergebnis-Sterne. Den **Kommentar** sieht nur, wer das Recht dafür hat — sonst „Kommentar nur mit Freigabe sichtbar“."
-    },
-    {
-     "n": 3,
-     "title": "iPad",
-     "text": "Auf dem iPad steht die Person **rechts neben der Liste** — ein Tipp wechselt sie, kein Blatt geht auf."
-    }
-   ]
-  },
-  {
-   "h1": "Auszahlung, Startseite und Beenden",
-   "sub": "Das Segment Auszahlung, die Karte „Meine Bewertungen“ auf der Startseite und der Schalter im Beenden-Blatt.",
-   "card": {
-    "title": "Rundum",
-    "text": "Auszahlung · Startseite · Termin beenden"
-   },
-   "left": {
-    "shot": "tips-payouts-light"
-   },
-   "leftCaption": "Segment „Auszahlung“: je Monat brutto, Gebühr, netto und der Stand der Auszahlung.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Auszahlung",
-     "text": "Je Monat **netto** groß, darunter brutto, Gebühr (vorläufig oder endgültig) und ob der Monat schon **ausgezahlt** ist. Antippen klappt die Behandlerinnen auf."
-    },
-    {
-     "n": 2,
-     "title": "Startseite",
-     "text": "Nach „Mein Bonus“ steht **„Meine Bewertungen“**: Trinkgeld diesen Monat mit dem Abstand zum nächsten Platz, Bewertung diesen Monat, dein Platz und der letzte Kommentar. Antippen öffnet die Seite."
-    },
-    {
-     "n": 3,
-     "title": "Termin beenden",
-     "text": "Im Beenden-Blatt steht unter der Notiz der Schalter **„Diesmal keine Nachricht senden“** mit „nur dieses Mal“ oder „dauerhaft“ — bei gesperrten Kundinnen **„Diesmal trotzdem senden“**. In der Kundenakte (Reiter Info) steht die Sperre „Nachrichten nach der Behandlung“."
-    }
-   ]
-  }
- ]
+  ]
 }

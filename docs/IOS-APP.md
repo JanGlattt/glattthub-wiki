@@ -237,8 +237,9 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   Instituts. **Der Hub bleibt die Wahrheit für den Standortfilter:** bridge.js meldet
   `localStorage.selectedBranch` (`branchChanged`), die App schreibt die Wahl per
   `glattt:set-branch` zurück, `bottom-nav.blade.php` ruft daraufhin `pickBranch()` (localStorage +
-  `selectedBranchUser` + Event `branchChanged` für alle Karten). Nur Rundgang, Design und glatttBert
-  delegieren noch an den Hub (`glattt:start-tour`, `glattt:toggle-theme`, `glattt-bert-toggle`) —
+  `selectedBranchUser` + Event `branchChanged` für alle Karten). Nur Rundgang und Design
+  delegieren noch an den Hub (`glattt:start-tour`, `glattt:toggle-theme`); glatttBert ist seit
+  08.10.2026 ein natives Blatt (siehe „Natives glatttBert-Blatt") —
   **das Web-Sheet geht in der App nie mehr auf.** Die Lupe im mobilen Scroll-Header (`open-mobile-
   search`) fängt bridge.js ab (Capture + `stopImmediatePropagation`) und öffnet stattdessen das
   native Mehr mit fokussiertem Suchfeld (`openMore { focusSearch }`).
@@ -1556,6 +1557,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Seite | Stand | Was nativ ist / warum nicht |
 |---|---|---|
 | Start | nativ | Cockpit je Rolle, `GET /api/app/start`; iPad als Raster |
+| glatttBert | nativ | Chat-Blatt von überall (Schnellzugriff, Mehr, Siri, ⌘K), `/api/app/bert/*`; seit 08.10.2026 |
 | Termine | nativ | Terminseite + Terminansicht Stufen 1–4; Formular-Ausfüllen und „Direkt behandeln" eingebettet (Editor-Engine) |
 | Kunden | nativ | Liste + Übersicht (`/api/app/clients`); seit 28.09.2026 alle neun Registerkarten nativ als Unterseiten mit Reiter-Leiste (iPad rechts neben der Übersicht), Kundeninfos bearbeiten, Superchat-Composer |
 | Benachrichtigungen | nativ | Mitteilungsliste im Mehr-Sheet / iPad-Popover, In-App-Banner |
@@ -2629,6 +2631,55 @@ iPad). Snapshot-feste Bausteine `TravelSegmented`, `TravelSwitch`, `TravelTextFi
   Karte, gegen den lokalen Hub, ohne Schreiben), PHP `TravelExpenseApiTest` und
   `TravelExpenseCalculationTest`.
 
+### Natives glatttBert-Blatt (seit 08.10.2026 — TestFlight 252)
+
+**Befund:** Der glatttBert-Knopf (Schnellzugriff, Mehr-Kachel, Siri) tat nichts mehr. Der Chat lebt im
+Hub-Layout jeder Web-Seite; die App suchte deshalb einen **Web**-Tab, schaltete dorthin und sandte
+`glattt-bert-toggle`. Seit alle vier Tabs nativ sind, gab es keinen — das Ereignis landete im
+unsichtbaren Hüllen-WebView. Jan wählte den nativen Chat, Entwurf 1 „Blatt von überall"
+(https://claude.ai/artifact/2cEyQ6YdhgXzbj6Hh2rrgu).
+
+- **Für Anwender:** glatttBert öffnet von jeder Seite als Blatt über der App — aus dem Schnellzugriff
+  der Startseite, der Kachel im Mehr-Menü, per Siri („Frag glatttBert …") und auf dem iPad mit ⌘K.
+  Beim Öffnen stehen Fragen bereit, die zur Seite passen, von der man kommt. Antworten mit Tabellen,
+  Quellen aus der Wissensbasis, Karten zu Kundin/Vertrag/Klickanleitung (öffnen die native Seite bzw.
+  das Nutzerhandbuch), Daumen hoch/runter, Kopieren. Verlauf als Menü (iPhone) bzw. Spalte (iPad):
+  öffnen, umbenennen, anpinnen, löschen.
+
+!!! nutzerhandbuch "Bedienung: App 24 – glatttBert in der App"
+    [hilfe.hub.glattt.com/app/24/](https://hilfe.hub.glattt.com/app/24/)
+
+- **Hub:** `App\Services\Ai\BertConversations` ist die gemeinsame Schicht hinter Web-Chat (Livewire
+  `hub.ai-assistant` nutzt sie für Verlauf und Nachrichten) und App: Verlauf gruppiert (Angepinnt,
+  Heute, Gestern, Diese Woche, Älter), Nachrichten-Form (`id, role, content, sources, embeds,
+  feedback`), Senden mit Auto-Titel (`GenerateConversationTitleJob`), Feedback, Vorschläge je
+  Seitenpfad (`suggestions()`). Endpunkte (`routes/app.php`, Web-Sitzung, Recht `use_ai_assistant`,
+  `AppBertController`):
+
+  | Endpunkt | Zweck |
+  |---|---|
+  | `GET /api/app/bert/conversations?search=&page=` | Verlauf + Vorschläge zur Seite + Begrüßung |
+  | `GET /api/app/bert/conversations/{id}` | Nachrichten einer Unterhaltung |
+  | `POST /api/app/bert/conversations/messages` · `…/{id}/messages` | Frage senden (neu bzw. Folgefrage); Antwort als Ganzes — auch der Web-Chat streamt nicht, der Tipp-Effekt ist dort nur Optik; 502 mit `message` bei Fehler |
+  | `PATCH /api/app/bert/conversations/{id}` | `title` (setzt `title_manually_set`), `pinned` |
+  | `DELETE /api/app/bert/conversations/{id}` | Löschen |
+  | `POST /api/app/bert/messages/{id}/feedback` | `type` up/down/leer (zurücknehmen), `comment` |
+
+- **App:** `ios/glatttHub/Bert/` — `BertModels` (Codable, `Embed.id` ist je Karte Zahl oder Text),
+  `BertChatModel` (@Observable, Senden mit 180 s Timeout, Siri-Frage aus `pendingBertQuestion`),
+  `BertMarkdown` (Absätze, Listen, Pipe-Tabellen als `Grid`; Inline-Markdown über
+  `AttributedString`), `BertChatSheet`/`BertChatContent` (iPhone: Verlauf-Menü, iPad:
+  Verlaufsspalte 260 pt, `presentationSizing(.page)`). Einstiege: `AppState.showBert`,
+  `AppContainer.perform(shortcut: "com.glattt.hub.bert")`, Mehr-Kachel, ⌘K in `KeyboardCommands`,
+  `.sheet` in `RootView`. Hub-Links in Karten öffnen über `navigate(toPath:)` die native Seite,
+  externe (Nutzerhandbuch) den Browser. Die Bridge-Ereignisse `glattt-bert-toggle`/`-ask` sendet die
+  App nicht mehr; die Web-Listener bleiben für den Browser.
+- **Fallstricke:** `store.active.url` braucht `import WebKit` in der Datei (MemberImportVisibility);
+  Hilfs-Enums, die Tests synchron aufrufen, müssen `nonisolated` sein (Voreinstellung MainActor).
+- **Nachweis:** `BertSnapshotTests` (Begrüßung, Unterhaltung mit Tabelle/Karten/Quellen, Antwort
+  läuft, iPad — hell/dunkel; Markdown-Blöcke, Embed-IDs), PHP `AppBertTest` (Verlauf, Senden,
+  Fehler, Umbenennen/Anpinnen/Löschen/Feedback, Recht).
+
 ### Verteilung
 
 Apple Business Manager **Custom App** (App Store Connect → „Privat — nur für bestimmte Organisationen"
@@ -2723,6 +2774,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 08.10.2026 | 1.4.1 | **glatttBert nativ** (TestFlight 252, Entwurf 1 „Blatt von überall“): Chat-Blatt aus Schnellzugriff, Mehr, Siri und ⌘K mit Vorschlägen zur Seite, Tabellen, Quellen, Karten, Feedback, Verlauf (Menü/iPad-Spalte); Hub: `BertConversations` + `/api/app/bert/*`. Dazu Info-i zu den Vergleichszahlen (250/251, `comparison.hint`), Mitteilungen einzeilig mit Symbol (253) |
 | 04.10.2026 | 1.4.x | **Apple Watch: Ring-Sammlung** — sechs runde Ziffernblatt-Widgets (KPZ im Monat, Prognose, Beratungen heute mit offen/No-Show, Abschlüsse, Ø KPZ je Beratung, nächste Beratung); Uhr-Seiten „Heute“ und „Monat“ erweitert; „Mehr“ bleibt in der Tab-Leiste markiert, solange das Mehr-Blatt offen ist (TestFlight 243/244) |
 | 03.10.2026 | 1.4.0 | **Apple-Watch-App** mit Ziffernblatt-Widgets (Kombination der Entwürfe KPZ-Ring, Standorte, Mein Tag): KPZ gegen das Standortziel der Bonus-Seite, Standortvergleich, Heute, Bonus-Ring, nächste Beratung und Kassen-Erinnerung im Smart Stack; Uhr als eigenes Gerät (`watchos`), Token per WatchConnectivity; Hub: `GET /api/app/widgets/watch` |
 | 29.09.2026 | 1.3.0 (61) | Kasse: Tresor-Bewegungen „→ zur Bank“ und „→ in die Kasse“ direkt am Tresor (213); Kennzahl-Kachel „Beratungen heute“ mit Tendenz und Wochentags-Schnitt (`comparison.reference`, 214) |

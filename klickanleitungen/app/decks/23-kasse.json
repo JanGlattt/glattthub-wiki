@@ -1,141 +1,141 @@
 {
- "out": "../pdf/App-23-Kasse",
- "meta": "../meta.json",
- "shots": "../shots",
- "series": "App",
- "nr": 23,
- "of": 23,
- "audience": "institut",
- "title": [
-  "Kasse",
-  "in der App"
- ],
- "subtitle": "Klickanleitung für die glatttHub-App auf iPhone und iPad — Kassenabschluss: zählen, mit Phorest abgleichen, Tresor und Bankeinzahlung",
- "eyebrow": "App · Kasse",
- "footerArea": "App",
- "stand": "29.09.2026",
- "version": "1.0",
- "notes": [
-  "Die App zeigt **dieselben Abschlüsse wie die Web-Seite** (Betrieb → Kasse) — was du hier speicherst, sieht das Büro sofort.",
-  "**Genau zählen, genau eintragen** — auch wenn ein Fehler drin ist. Wechselgeld-Cents und Trinkgeld gehören **nie** in die Kasse.",
-  "Die Bilder sind aus dem Simulator mit erfundenen Zahlen."
- ],
- "pages": [
-  {
-   "h1": "Tag für Tag",
-   "sub": "Mehr → Kasse (oder die Kachel „Kassenabschluss“ auf der Startseite). Oben „Heute noch offen“, darunter der Monat.",
-   "card": {
-    "title": "Kasse",
-    "text": "Mehr → Kasse"
-   },
-   "left": {
-    "shot": "cash-list-light"
-   },
-   "leftCaption": "Jeder Tag mit gezähltem Betrag und Unterschied: grün 0,00 €, rot bei einer Differenz, gelb „offen“.",
-   "steps": [
+  "out": "../pdf/App-23-Kasse",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "App",
+  "nr": 23,
+  "of": 24,
+  "audience": "institut",
+  "title": [
+    "Kasse",
+    "in der App"
+  ],
+  "subtitle": "Klickanleitung für die glatttHub-App auf iPhone und iPad — Kassenabschluss: zählen, mit Phorest abgleichen, Tresor und Bankeinzahlung",
+  "eyebrow": "App · Kasse",
+  "footerArea": "App",
+  "stand": "29.09.2026",
+  "version": "1.0",
+  "notes": [
+    "Die App zeigt **dieselben Abschlüsse wie die Web-Seite** (Betrieb → Kasse) — was du hier speicherst, sieht das Büro sofort.",
+    "**Genau zählen, genau eintragen** — auch wenn ein Fehler drin ist. Wechselgeld-Cents und Trinkgeld gehören **nie** in die Kasse.",
+    "Die Bilder sind aus dem Simulator mit erfundenen Zahlen."
+  ],
+  "pages": [
     {
-     "n": 1,
-     "title": "Heute noch offen",
-     "text": "Die dunkle Karte öffnet das **Zählen für heute**. Sie verschwindet, sobald der Abschluss gespeichert ist."
+      "h1": "Tag für Tag",
+      "sub": "Mehr → Kasse (oder die Kachel „Kassenabschluss“ auf der Startseite). Oben „Heute noch offen“, darunter der Monat.",
+      "card": {
+        "title": "Kasse",
+        "text": "Mehr → Kasse"
+      },
+      "left": {
+        "shot": "cash-list-light"
+      },
+      "leftCaption": "Jeder Tag mit gezähltem Betrag und Unterschied: grün 0,00 €, rot bei einer Differenz, gelb „offen“.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Heute noch offen",
+          "text": "Die dunkle Karte öffnet das **Zählen für heute**. Sie verschwindet, sobald der Abschluss gespeichert ist."
+        },
+        {
+          "n": 2,
+          "title": "Kennzahlen",
+          "text": "**abgeschlossen**, **Tage mit Differenz** und was diesen Monat **zur Bank** ging."
+        },
+        {
+          "n": 3,
+          "title": "Monat und Standort",
+          "text": "Mit ‹ › blätterst du durch die Monate. Arbeitest du an mehreren Standorten, wechselst du oben rechts."
+        }
+      ]
     },
     {
-     "n": 2,
-     "title": "Kennzahlen",
-     "text": "**abgeschlossen**, **Tage mit Differenz** und was diesen Monat **zur Bank** ging."
+      "h1": "Zählen mit der Waage",
+      "sub": "Oben steht, was du gezählt hast, gegen das, was Phorest erwartet. Darunter Tresor, Scheine und Münzen.",
+      "card": {
+        "title": "Zählen",
+        "text": "Zeile antippen, Ziffern tippen"
+      },
+      "left": {
+        "shot": "cash-entry-light"
+      },
+      "leftCaption": "Die aktive Zeile ist gold umrandet. „Weiter“ springt zur nächsten Stückelung.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Tresor",
+          "text": "Steht schon da — **wie beim letzten Abschluss**. Nur ändern, wenn Geld dazu kam oder raus ging."
+        },
+        {
+          "n": 2,
+          "title": "Scheine und Münzen",
+          "text": "Zeile antippen und die **Anzahl** tippen (4 × 20 € → **4**). Die Summe rechnet die App."
+        },
+        {
+          "n": 3,
+          "title": "Phorest „Erwartet“",
+          "text": "In Phorest: Manager → Kassenabschluss → heute. Den Betrag bei **Bar · Erwartet** oben rechts in der Waage eintragen."
+        }
+      ]
     },
     {
-     "n": 3,
-     "title": "Monat und Standort",
-     "text": "Mit ‹ › blätterst du durch die Monate. Arbeitest du an mehreren Standorten, wechselst du oben rechts."
+      "h1": "Abschließen",
+      "sub": "Stimmt die Kasse, zeigt die Waage „Kasse stimmt · 0,00 €“. Sonst steht dort, wie viel fehlt oder zu viel ist.",
+      "card": {
+        "title": "Speichern",
+        "text": "oben rechts „Speichern“"
+      },
+      "left": {
+        "shot": "cash-closed-light"
+      },
+      "leftCaption": "Ein gespeicherter Tag mit Differenz: Kommentar, wer gezählt hat und wann.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Bankeinzahlung",
+          "text": "Geld zur Bank gebracht? Betrag eintragen — der **Tresor sinkt** automatisch."
+        },
+        {
+          "n": 2,
+          "title": "Kommentar",
+          "text": "Bei einem Unterschied **Pflicht**: was passiert ist, z. B. „0,17 € zu wenig, Wechselgeld nicht herausgegeben“. Dann **Leitung informieren**."
+        },
+        {
+          "n": 3,
+          "title": "Wechselgeld offen",
+          "text": "Cents, die morgen noch aus der Kasse müssen — der Merker steht am nächsten Tag wieder da."
+        }
+      ]
+    },
+    {
+      "h1": "Auf dem iPad",
+      "sub": "Liste links, der gewählte Tag rechts — mit großem Ziffernblock neben den Zeilen.",
+      "card": {
+        "title": "iPad",
+        "text": "Tag antippen"
+      },
+      "left": {
+        "shot": "cash-ipad-light"
+      },
+      "leftCaption": "Links der Monat, in der Mitte Tresor, Scheine und Münzen, rechts Waage, Ziffernblock und Abschluss.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Tag wählen",
+          "text": "Ein Tipp links öffnet den Tag rechts — ein offener Tag zum Zählen, ein gespeicherter zum Ansehen."
+        },
+        {
+          "n": 2,
+          "title": "Korrigieren",
+          "text": "Einen gespeicherten Tag ändern nur **Leitung und Büro** — dann steht dort „Korrigieren“."
+        },
+        {
+          "n": 3,
+          "title": "Gespeichert",
+          "text": "Nach dem Speichern zeichnet sich ein **Haken**, der Tag steht in der Liste."
+        }
+      ]
     }
-   ]
-  },
-  {
-   "h1": "Zählen mit der Waage",
-   "sub": "Oben steht, was du gezählt hast, gegen das, was Phorest erwartet. Darunter Tresor, Scheine und Münzen.",
-   "card": {
-    "title": "Zählen",
-    "text": "Zeile antippen, Ziffern tippen"
-   },
-   "left": {
-    "shot": "cash-entry-light"
-   },
-   "leftCaption": "Die aktive Zeile ist gold umrandet. „Weiter“ springt zur nächsten Stückelung.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Tresor",
-     "text": "Steht schon da — **wie beim letzten Abschluss**. Nur ändern, wenn Geld dazu kam oder raus ging."
-    },
-    {
-     "n": 2,
-     "title": "Scheine und Münzen",
-     "text": "Zeile antippen und die **Anzahl** tippen (4 × 20 € → **4**). Die Summe rechnet die App."
-    },
-    {
-     "n": 3,
-     "title": "Phorest „Erwartet“",
-     "text": "In Phorest: Manager → Kassenabschluss → heute. Den Betrag bei **Bar · Erwartet** oben rechts in der Waage eintragen."
-    }
-   ]
-  },
-  {
-   "h1": "Abschließen",
-   "sub": "Stimmt die Kasse, zeigt die Waage „Kasse stimmt · 0,00 €“. Sonst steht dort, wie viel fehlt oder zu viel ist.",
-   "card": {
-    "title": "Speichern",
-    "text": "oben rechts „Speichern“"
-   },
-   "left": {
-    "shot": "cash-closed-light"
-   },
-   "leftCaption": "Ein gespeicherter Tag mit Differenz: Kommentar, wer gezählt hat und wann.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Bankeinzahlung",
-     "text": "Geld zur Bank gebracht? Betrag eintragen — der **Tresor sinkt** automatisch."
-    },
-    {
-     "n": 2,
-     "title": "Kommentar",
-     "text": "Bei einem Unterschied **Pflicht**: was passiert ist, z. B. „0,17 € zu wenig, Wechselgeld nicht herausgegeben“. Dann **Leitung informieren**."
-    },
-    {
-     "n": 3,
-     "title": "Wechselgeld offen",
-     "text": "Cents, die morgen noch aus der Kasse müssen — der Merker steht am nächsten Tag wieder da."
-    }
-   ]
-  },
-  {
-   "h1": "Auf dem iPad",
-   "sub": "Liste links, der gewählte Tag rechts — mit großem Ziffernblock neben den Zeilen.",
-   "card": {
-    "title": "iPad",
-    "text": "Tag antippen"
-   },
-   "left": {
-    "shot": "cash-ipad-light"
-   },
-   "leftCaption": "Links der Monat, in der Mitte Tresor, Scheine und Münzen, rechts Waage, Ziffernblock und Abschluss.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Tag wählen",
-     "text": "Ein Tipp links öffnet den Tag rechts — ein offener Tag zum Zählen, ein gespeicherter zum Ansehen."
-    },
-    {
-     "n": 2,
-     "title": "Korrigieren",
-     "text": "Einen gespeicherten Tag ändern nur **Leitung und Büro** — dann steht dort „Korrigieren“."
-    },
-    {
-     "n": 3,
-     "title": "Gespeichert",
-     "text": "Nach dem Speichern zeichnet sich ein **Haken**, der Tag steht in der Liste."
-    }
-   ]
-  }
- ]
+  ]
 }

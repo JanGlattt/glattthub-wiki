@@ -1,0 +1,134 @@
+{
+  "out": "../pdf/App-24-glatttBert",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "App",
+  "nr": 24,
+  "of": 24,
+  "audience": "institut",
+  "title": [
+    "glatttBert",
+    "in der App"
+  ],
+  "subtitle": "Klickanleitung für die glatttHub-App auf iPhone und iPad — den Assistenten öffnen, fragen, Antworten mit Quellen und Karten nutzen, Verlauf pflegen",
+  "eyebrow": "App · glatttBert",
+  "footerArea": "App",
+  "stand": "08.10.2026",
+  "version": "1.0",
+  "notes": [
+    "glatttBert kennt **dieselben Unterhaltungen wie im Web-Hub** — was du am Rechner gefragt hast, findest du in der App im Verlauf.",
+    "Antworten mit Zahlen nennen ihre **Quelle** — die Karte darunter öffnet den Bericht oder die Kundin direkt in der App.",
+    "Die Bilder sind aus dem Simulator mit erfundenen Zahlen."
+  ],
+  "pages": [
+    {
+      "h1": "Öffnen und fragen",
+      "sub": "glatttBert ist von jeder Seite aus erreichbar — und schlägt Fragen vor, die zu dieser Seite passen.",
+      "card": {
+        "title": "Einstieg",
+        "text": "Schnellzugriff, Mehr-Menü, Siri"
+      },
+      "left": {
+        "shot": "bert-welcome-light"
+      },
+      "leftCaption": "Das Blatt direkt nach dem Öffnen: Begrüßung und drei Vorschläge zur Startseite.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Öffnen",
+          "text": "Auf der Startseite die Kachel **glatttBert** im Schnellzugriff, im Mehr-Menü die Kachel oben — oder „Frag glatttBert …“ zu Siri sagen. Auf dem iPad **⌘K**."
+        },
+        {
+          "n": 2,
+          "title": "Vorschlag antippen",
+          "text": "Die Fragen passen zur Seite, von der du kommst. Ein Tipp stellt die Frage sofort."
+        },
+        {
+          "n": 3,
+          "title": "Eigene Frage",
+          "text": "Unten eintippen und mit dem Pfeil senden. Die Antwort braucht ein paar Sekunden — solange zeigen drei Punkte, dass glatttBert arbeitet."
+        },
+        {
+          "n": 4,
+          "title": "Schließen",
+          "text": "**Fertig** oben rechts oder das Blatt nach unten wischen. Die Unterhaltung bleibt im Verlauf."
+        }
+      ],
+      "hint": {
+        "text": "**Siri:** „Frag glatttBert in glatttHub, wie viele Beratungen heute sind“ — die App öffnet das Blatt und stellt die Frage."
+      }
+    },
+    {
+      "h1": "Antworten lesen",
+      "sub": "Zahlen kommen als Tabelle, Quellen aus der Wissensbasis stehen darunter, Karten führen weiter.",
+      "card": {
+        "title": "Antwort",
+        "text": "Tabelle, Quellen, Karten, Daumen"
+      },
+      "left": {
+        "shot": "bert-chat-light"
+      },
+      "leftCaption": "Eine Antwort mit Tabelle, einer Quelle aus der Wissensbasis, einer Klickanleitungs-Karte und einer Kundinnen-Karte.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Tabelle",
+          "text": "Auswertungen kommen als Tabelle — bei vielen Spalten seitlich wischen."
+        },
+        {
+          "n": 2,
+          "title": "Quellen",
+          "text": "„1 Quelle aus der Wissensbasis“ aufklappen: Ein Tipp öffnet die Wiki-Seite oder den Bericht."
+        },
+        {
+          "n": 3,
+          "title": "Karten",
+          "text": "Karten zu Kundin, Vertrag oder Bericht öffnen die **native Seite** in der App; Klickanleitungen öffnen das Nutzerhandbuch im Browser."
+        },
+        {
+          "n": 4,
+          "title": "Daumen",
+          "text": "👍 oder 👎 unter der Antwort — das hilft, glatttBert besser zu machen. Derselbe Daumen nochmal nimmt es zurück. Daneben: Antwort kopieren."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "**Zahlen immer mit Zeitraum lesen.** glatttBert nennt den Stand („bis heute“) — die Prognose aufs Monatsende ist eine Hochrechnung nach Verkaufstagen, kein Ist."
+      }
+    },
+    {
+      "h1": "Verlauf und iPad",
+      "sub": "Alle Unterhaltungen bleiben erhalten — in der App wie im Web-Hub.",
+      "card": {
+        "title": "Verlauf",
+        "text": "Öffnen, anpinnen, umbenennen, löschen"
+      },
+      "left": {
+        "shot": "bert-ipad-light"
+      },
+      "leftCaption": "Auf dem iPad steht der Verlauf links neben der Unterhaltung; auf dem iPhone öffnet ihn das Uhr-Symbol oben links.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Verlauf öffnen",
+          "text": "iPhone: Uhr-Symbol oben links zeigt Angepinnt, Heute, Gestern, Diese Woche, Älter. iPad: die Spalte links."
+        },
+        {
+          "n": 2,
+          "title": "Neue Unterhaltung",
+          "text": "Das **+** oben beginnt neu — die alte bleibt im Verlauf."
+        },
+        {
+          "n": 3,
+          "title": "Pflegen",
+          "text": "iPad: Unterhaltung gedrückt halten für **Umbenennen**, **Anpinnen** (steht dann oben) oder **Löschen**."
+        },
+        {
+          "n": 4,
+          "title": "Gleich wie im Web",
+          "text": "Verlauf, Titel und Daumen sind dieselben wie im Web-Hub — am Rechner geht es nahtlos weiter."
+        }
+      ]
+    }
+  ]
+}

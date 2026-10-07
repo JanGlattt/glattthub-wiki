@@ -3,13 +3,16 @@
   "meta": "../meta.json",
   "shots": "../shots",
   "series": "App",
-  "of": 23,
+  "of": 24,
   "audience": "leitung",
   "footerArea": "App",
   "stand": "28.09.2026",
   "version": "1.0",
   "nr": 19,
-  "title": ["Unternehmensverträge", "in der App"],
+  "title": [
+    "Unternehmensverträge",
+    "in der App"
+  ],
   "subtitle": "Klickanleitung für die glatttHub-App — Kündigungsfristen im Blick behalten, Kosten nach Typ und Standort lesen, die Vertragsseite mit Dokumenten öffnen, anlegen und bearbeiten",
   "eyebrow": "App · Finanzen",
   "notes": [
@@ -20,46 +23,116 @@
     {
       "h1": "Fristen zuerst",
       "sub": "Oben vier Kennzahlen, darunter die nächsten Kündigungsfristen als Zeitleiste mit Ampel, dann die Verträge nach Typ gruppiert — jede Gruppe mit ihrer Monatssumme.",
-      "card": { "title": "Liste", "text": "Kennzahlen, Fristen, Gruppen" },
-      "left": { "shot": "company-contracts-list-light" },
+      "card": {
+        "title": "Liste",
+        "text": "Kennzahlen, Fristen, Gruppen"
+      },
+      "left": {
+        "shot": "company-contracts-list-light"
+      },
       "leftCaption": "Die Liste: **Aktiv / Gekündigt / Abgelaufen**, Kennzahlen, **Kosten** (aufklappbar), **Kündigungsfristen** und die Gruppen nach Typ.",
       "steps": [
-        { "n": 1, "title": "Kennzahlen lesen", "text": "**Monatlich netto** (mit Jahreswert), **nächste Frist** mit dem Vertrag, **Verträge aktiv** (davon firmenweit) und **Fristen verstrichen** — die zählen rot, sobald eine Frist ohne Kündigung vorbei ist." },
-        { "n": 2, "title": "Fristen", "text": "Die Karte zeigt die drei nächsten Fristen mit Datum, Resttagen und Marke (**handeln**, **läuft**, **verstrichen**). **Alle N ›** öffnet die vollständige Liste; ein Tipp öffnet den Vertrag." },
-        { "n": 3, "title": "Gruppen", "text": "Verträge stehen nach **Typ** (Software, Mietvertrag, Mobilfunk …) mit der Summe je Monat. Ein Tipp auf die Gruppenzeile klappt sie zu; die Suche findet Name, Anbieter und Vertragsnummer." },
-        { "n": 4, "title": "Status wechseln", "text": "**Gekündigt** und **Abgelaufen** zeigen die übrigen Verträge — die Fristen-Karte gibt es nur unter Aktiv." }
+        {
+          "n": 1,
+          "title": "Kennzahlen lesen",
+          "text": "**Monatlich netto** (mit Jahreswert), **nächste Frist** mit dem Vertrag, **Verträge aktiv** (davon firmenweit) und **Fristen verstrichen** — die zählen rot, sobald eine Frist ohne Kündigung vorbei ist."
+        },
+        {
+          "n": 2,
+          "title": "Fristen",
+          "text": "Die Karte zeigt die drei nächsten Fristen mit Datum, Resttagen und Marke (**handeln**, **läuft**, **verstrichen**). **Alle N ›** öffnet die vollständige Liste; ein Tipp öffnet den Vertrag."
+        },
+        {
+          "n": 3,
+          "title": "Gruppen",
+          "text": "Verträge stehen nach **Typ** (Software, Mietvertrag, Mobilfunk …) mit der Summe je Monat. Ein Tipp auf die Gruppenzeile klappt sie zu; die Suche findet Name, Anbieter und Vertragsnummer."
+        },
+        {
+          "n": 4,
+          "title": "Status wechseln",
+          "text": "**Gekündigt** und **Abgelaufen** zeigen die übrigen Verträge — die Fristen-Karte gibt es nur unter Aktiv."
+        }
       ],
-      "hint": { "text": "**Kosten** klappt zwei Karten auf: **Nach Vertragstyp** und **Nach Standort** — dieselben Zahlen wie die Karten der Hub-Seite, nur aktive Verträge, auf den Monat gerechnet." }
+      "hint": {
+        "text": "**Kosten** klappt zwei Karten auf: **Nach Vertragstyp** und **Nach Standort** — dieselben Zahlen wie die Karten der Hub-Seite, nur aktive Verträge, auf den Monat gerechnet."
+      }
     },
     {
       "h1": "Die Vertragsseite",
       "sub": "Fristband mit Ampel, Name und Marken, dann die Abschnitte wie im Hub: Laufzeit & Kündigung, Kosten, Anbieter, Notizen, Dokumente, Änderungshistorie.",
-      "card": { "title": "Vertrag", "text": "Alles auf einer Seite" },
-      "left": { "shot": "company-contract-detail-light" },
+      "card": {
+        "title": "Vertrag",
+        "text": "Alles auf einer Seite"
+      },
+      "left": {
+        "shot": "company-contract-detail-light"
+      },
       "leftCaption": "Die Vertragsseite: oben das **Fristband**, darunter Laufzeit, Kosten, Anbieter, Dokumente und Historie.",
       "steps": [
-        { "n": 1, "title": "Frist und Status", "text": "Das Band nennt die Kündigungsfrist in Tagen mit Datum; rechts der Status. Darunter Typ, Standort (oder firmenweit), Anbieter, Verantwortliche und Vertragsnummer." },
-        { "n": 2, "title": "Laufzeit & Kosten", "text": "**Laufzeit**, **Kündigungsfrist**, **Kündigen bis**, **Verlängerung** und **Erinnerung**; unter Kosten der Nettobetrag im Intervall, je Monat und je Jahr, dazu eine geplante Preisanpassung." },
-        { "n": 3, "title": "Dokumente ansehen", "text": "Ein Tipp auf ein Dokument öffnet die Vorschau — teilen oder drucken über das Symbol oben rechts. Hochladen geht über **Bearbeiten**." },
-        { "n": 4, "title": "Anbieter anrufen", "text": "Telefon, E-Mail und Website des Anbieters sind Links; die Änderungshistorie zeigt, wer wann was geändert hat." }
+        {
+          "n": 1,
+          "title": "Frist und Status",
+          "text": "Das Band nennt die Kündigungsfrist in Tagen mit Datum; rechts der Status. Darunter Typ, Standort (oder firmenweit), Anbieter, Verantwortliche und Vertragsnummer."
+        },
+        {
+          "n": 2,
+          "title": "Laufzeit & Kosten",
+          "text": "**Laufzeit**, **Kündigungsfrist**, **Kündigen bis**, **Verlängerung** und **Erinnerung**; unter Kosten der Nettobetrag im Intervall, je Monat und je Jahr, dazu eine geplante Preisanpassung."
+        },
+        {
+          "n": 3,
+          "title": "Dokumente ansehen",
+          "text": "Ein Tipp auf ein Dokument öffnet die Vorschau — teilen oder drucken über das Symbol oben rechts. Hochladen geht über **Bearbeiten**."
+        },
+        {
+          "n": 4,
+          "title": "Anbieter anrufen",
+          "text": "Telefon, E-Mail und Website des Anbieters sind Links; die Änderungshistorie zeigt, wer wann was geändert hat."
+        }
       ],
       "notes": [
-        { "title": "Zurück", "text": "Der Pfeil oben links oder Wischen vom linken Rand führt zur Liste." }
+        {
+          "title": "Zurück",
+          "text": "Der Pfeil oben links oder Wischen vom linken Rand führt zur Liste."
+        }
       ]
     },
     {
       "h1": "Anlegen, bearbeiten, iPad",
       "sub": "Neue Verträge entstehen im Hub-Assistenten als Blatt über der Liste — mit Dokument-Upload und KI-Analyse. Bearbeiten öffnet dasselbe Blatt ab Schritt 2. Auf dem iPad stehen Liste und Vertrag nebeneinander.",
-      "card": { "title": "Anlegen & iPad", "text": "Assistent als Blatt, Split-Ansicht" },
-      "left": { "shot": "company-contracts-ipad-light" },
+      "card": {
+        "title": "Anlegen & iPad",
+        "text": "Assistent als Blatt, Split-Ansicht"
+      },
+      "left": {
+        "shot": "company-contracts-ipad-light"
+      },
       "leftCaption": "iPad quer: links die Liste mit markiertem Vertrag, rechts die Vertragsseite.",
       "steps": [
-        { "n": 1, "title": "Neuen Vertrag anlegen", "text": "Das **+** oben rechts oder der Knopf am Listenende öffnet den Assistenten: Dokument hochladen (KI liest Anbieter, Laufzeit, Betrag), dann Details, Zuordnung, Laufzeit, Kosten, Erinnerung. **Fertig** schließt das Blatt, die Liste lädt neu." },
-        { "n": 2, "title": "Bearbeiten", "text": "Auf der Vertragsseite **Bearbeiten** (Stift oben rechts) — der Assistent startet mit den gespeicherten Werten. Nur mit dem Recht *Unternehmensverträge verwalten*." },
-        { "n": 3, "title": "iPad", "text": "Links wählen, rechts lesen; das Bearbeiten-Blatt legt sich über beide Spalten. Die Kosten-Karten stehen nebeneinander." },
-        { "n": 4, "title": "Aktualisieren", "text": "Nach unten ziehen lädt Liste oder Vertragsseite neu. Ohne Netz bleibt der letzte Stand mit Zeitstempel sichtbar." }
+        {
+          "n": 1,
+          "title": "Neuen Vertrag anlegen",
+          "text": "Das **+** oben rechts oder der Knopf am Listenende öffnet den Assistenten: Dokument hochladen (KI liest Anbieter, Laufzeit, Betrag), dann Details, Zuordnung, Laufzeit, Kosten, Erinnerung. **Fertig** schließt das Blatt, die Liste lädt neu."
+        },
+        {
+          "n": 2,
+          "title": "Bearbeiten",
+          "text": "Auf der Vertragsseite **Bearbeiten** (Stift oben rechts) — der Assistent startet mit den gespeicherten Werten. Nur mit dem Recht *Unternehmensverträge verwalten*."
+        },
+        {
+          "n": 3,
+          "title": "iPad",
+          "text": "Links wählen, rechts lesen; das Bearbeiten-Blatt legt sich über beide Spalten. Die Kosten-Karten stehen nebeneinander."
+        },
+        {
+          "n": 4,
+          "title": "Aktualisieren",
+          "text": "Nach unten ziehen lädt Liste oder Vertragsseite neu. Ohne Netz bleibt der letzte Stand mit Zeitstempel sichtbar."
+        }
       ],
-      "hint": { "text": "Aus der **Suche** (Lupe) öffnen Treffer unter „Unternehmensverträge“ direkt die native Vertragsseite; Erinnerungs-Mitteilungen zur Frist ebenfalls." }
+      "hint": {
+        "text": "Aus der **Suche** (Lupe) öffnen Treffer unter „Unternehmensverträge“ direkt die native Vertragsseite; Erinnerungs-Mitteilungen zur Frist ebenfalls."
+      }
     }
   ]
 }
