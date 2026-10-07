@@ -104,7 +104,9 @@ kleinsten Vorlauf gesendet (die anderen erscheinen als „übersprungen").
 ### Konfiguration und Sichtbarkeit im Hub
 
 - **Terminübersicht** (`/hub/appointments`): Terminkarten zeigen Badges
-  „Vom Kunden bestätigt", „Vom Kunden abgesagt" bzw. „Erinnert".
+  „Zugesagt", „Abgesagt" bzw. „Erinnert" — seit 07.10.2026 als umrandete Pille mit Symbol
+  (Häkchen, Kreuz, Glocke) neben dem gefüllten Terminstatus; mehrere Pillen halten Abstand und
+  stehen bei mittlerer Breite untereinander (`.apt-card__badge--outline` in `theme_glattt.css`).
 - **Admin-Backend → Integrationen**:
     - **Terminerinnerungen** — Regeln anlegen: Standort (oder alle),
       Terminart (Beratung/Behandlung/Sonstige oder alle), Sendefenster
