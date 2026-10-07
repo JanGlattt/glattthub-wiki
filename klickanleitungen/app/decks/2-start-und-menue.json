@@ -6,8 +6,8 @@
   "of": 24,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "29.09.2026",
-  "version": "1.4",
+  "stand": "08.10.2026",
+  "version": "1.5",
   "nr": 2,
   "title": [
     "Startseite, Menü,",
@@ -31,12 +31,12 @@
       "left": {
         "shot": "cockpit-ipad-land"
       },
-      "leftCaption": "Die Startseite im iPad-Querformat: Kennzahlen als Raster, darunter Beratungsgespräche und Mitteilungen.",
+      "leftCaption": "Die Startseite im iPad-Querformat: Kennzahlen als Raster mit ⓘ, darunter Beratungsgespräche und die Mitteilungen — je Meldung eine Zeile mit Symbol nach Anlass.",
       "steps": [
         {
           "n": 1,
           "title": "Kennzahlen lesen",
-          "text": "Jede Kachel zeigt den Wert, den **Trend** (Pfeil und Prozent zur Vorwoche) und eine kleine Verlaufslinie. Antippen öffnet den passenden Bericht."
+          "text": "Jede Kachel zeigt den Wert, den **Trend** (Pfeil und Prozent) und eine kleine Verlaufslinie. Das **ⓘ** neben „Kennzahlen“ erklärt je Kennzahl, womit verglichen wird — Vorperiode, Schnitt der letzten 12 Monate oder Prognose — und für welchen Zeitraum. Antippen einer Kachel öffnet den passenden Bericht."
         },
         {
           "n": 2,
@@ -50,6 +50,11 @@
         },
         {
           "n": 4,
+          "title": "Mitteilungen",
+          "text": "Die letzten fünf Meldungen, je eine Zeile: **Symbol** nach Anlass (Lastschrift, Widerruf, Laser …), Titel · Kurztext, rechts die Uhrzeit; ungelesene tragen einen blauen Ring am Symbol. **Alle ›** öffnet die Mitteilungszentrale."
+        },
+        {
+          "n": 5,
           "title": "Aktualisieren",
           "text": "Nach unten ziehen lädt alles neu. Unten steht, von wann der Stand ist."
         }

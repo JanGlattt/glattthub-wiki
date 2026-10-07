@@ -6,8 +6,8 @@
   "of": 24,
   "audience": "leitung",
   "footerArea": "App",
-  "stand": "27.09.2026",
-  "version": "1.1",
+  "stand": "08.10.2026",
+  "version": "1.2",
   "nr": 14,
   "title": [
     "Berichte",
@@ -30,7 +30,7 @@
       "left": {
         "shot": "reports-overview-light"
       },
-      "leftCaption": "Grüne Pfeile zeigen eine gute, rote eine schlechte Entwicklung, „ggü. VM“ heißt gegenüber dem Vormonat. Bei Forderungen oder Rücklastschriften ist **weniger** gut.",
+      "leftCaption": "Grüne Pfeile zeigen eine gute, rote eine schlechte Entwicklung, „ggü. VM“ heißt gegenüber dem Vormonat. Bei Forderungen oder Rücklastschriften ist **weniger** gut. Das **ⓘ** im Kartenkopf erklärt die Vergleiche.",
       "steps": [
         {
           "n": 1,
@@ -44,11 +44,16 @@
         },
         {
           "n": 3,
+          "title": "Vergleich verstehen",
+          "text": "Das **ⓘ** rechts im Kopf einer Karte öffnet eine Erklärung je Kennzahl: womit verglichen wird (Vorperiode, Schnitt der letzten 12 Monate, Prognose) und für welchen Zeitraum die Karte gerade rechnet."
+        },
+        {
+          "n": 4,
           "title": "Suchen",
           "text": "Findet Berichte auch über ihre Analysen: „MRR“ zeigt die Verkaufsstatistik, „Rücklastschrift“ auch Schulden."
         },
         {
-          "n": 4,
+          "n": 5,
           "title": "Öffnen",
           "text": "Ein Tipp auf eine Karte öffnet den Bericht oder das Dashboard. Zurück mit Wischen oder einem Tipp auf **Berichte**."
         }
