@@ -900,6 +900,16 @@ Wenn ein Formular mit Phorest-Kontext geöffnet wird (z.B. aus der Terminansicht
 - **Datenfluss (Standalone)**: `loadContextData()` in `form-fill.js` speichert `result.raw.client` direkt als `phorestRawClient`
 - **API-Endpoint**: `PUT /phorest/client/{clientId}` → `PhorestController@updateClientData`
 - **Pflichtfelder im Payload**: `clientId`, `version`, `firstName`, `lastName` (immer gesendet, auch wenn nicht geändert)
+- **Versionskonflikt (409)**: Phorest lehnt ein PUT ab, sobald `version` nicht mehr aktuell ist — der
+  Kontext kommt aus `getCachedClient()` (10 Minuten Cache), und während das Formular offen ist, kann
+  der Kunde in Phorest oder im Hub geändert werden (Prod-Befund 08.10.2026). `updateClientData()`
+  liest den Kunden dann frisch, setzt die aktuelle Version ein und wiederholt **genau einmal**;
+  Vor-/Nachname kommen dabei aus dem frischen Datensatz, sofern sie laut `changedFields` nicht
+  bewusst geändert wurden (das JS schickt die Liste der geänderten API-Felder mit, sie geht nicht
+  an Phorest). Scheitert auch die Wiederholung, antwortet der Endpunkt mit einer deutschen
+  Meldung (`message`), die das Modal anzeigt; ebenso bei 400/422 (Eingaben) und 5xx (Phorest
+  nicht erreichbar). Ein 403 (fehlendes Recht „Kunden bearbeiten") erkennt das JS vor dem
+  JSON-Parsen. Test: `tests/Feature/PhorestClientUpdateConflictTest.php`.
 
 #### Beteiligte Dateien
 
