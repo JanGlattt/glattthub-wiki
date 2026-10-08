@@ -105,6 +105,8 @@ damit kein dritter Dienstleister dazukommt.
 
 Berechtigung: Spatie Permission `use_ai_assistant`.
 
+**`ai_usage_log`** (seit 08.10.2026): eine Zeile je Claude-Aufruf — `purpose` (`bert.chat`, `bert.titel`, `wissen.bild`, `wissen.scan-pdf`, `vertrag.analyse`, `namen.herkunft`, sonst `unbekannt`), `model`, Tokens (Input, Output, Cache gelesen/geschrieben), `cost_usd`, `context` (z. B. Dateiname). Nur angehängt, Auswertung über `php artisan ai:usage`.
+
 ### Wichtige Dateien
 
 #### Backend
@@ -117,6 +119,9 @@ Berechtigung: Spatie Permission `use_ai_assistant`.
 | `app/Services/Ai/HubToolExecutor.php` | Die 12 Hub-Werkzeuge (`definitions()` im Claude-Format, `execute()`) |
 | `app/Services/Ai/ClaudeClient.php` | **Einziger** Zugang zur Claude API (SDK `anthropic-ai/sdk`), inkl. Ausweich-Modell bei Ablehnung; `ClaudeClient::fake()` für Tests |
 | `app/Services/Ai/ClaudeCost.php` | Kosten je Antwort aus `config/anthropic.php`; Schätzung alter OpenAI-Zeilen |
+| `app/Services/Ai/ClaudeUsage.php` | Token-Protokoll: jeder Aufruf → `ai_usage_log` (Zweck, Modell, Tokens, Kosten, Kontext) |
+| `app/Services/Ai/ClaudeAvailability.php` | Erkennt Guthaben-/Schlüssel-/Limit-/Überlastungsfehler, bei denen ein Stapellauf anhält |
+| `app/Console/Commands/AiUsageCommand.php` | `ai:usage --days=7 [--purpose=…]`: Verbrauch je Tag und Zweck |
 | `app/Services/Knowledge/KnowledgeChunker.php` | Zerlegt Text in Abschnitte (~3.000 Zeichen, Überschriften, Überlappung) |
 | `app/Services/Knowledge/KnowledgeIndexer.php` | Hält `knowledge_chunks` aktuell, verwendet Embeddings unveränderter Abschnitte wieder |
 | `app/Services/Knowledge/KnowledgeSearchService.php` | Hybride Suche (Volltext + Kosinus, Reciprocal Rank Fusion) |
@@ -143,6 +148,8 @@ Berechtigung: Spatie Permission `use_ai_assistant`.
 |---|---|
 | `ANTHROPIC_API_KEY` | API-Schlüssel für Claude (gleicher Schlüssel für alle KI-Stellen im Hub) |
 | `ANTHROPIC_MODEL` | Standardmodell für Einzelaufgaben (Bildanalyse, Scan-PDFs, Vertragsanalyse), Standard `claude-sonnet-5-5` |
+| `KNOWLEDGE_SYNC_BUDGET_SECONDS` | Zeitbudget eines Abgleich-Laufs (Standard 1200) |
+| `KNOWLEDGE_MEDIA_MAX_ATTEMPTS` | Fehlversuche je Bild/Scan-PDF, bevor es liegen bleibt (Standard 3) |
 | `ANTHROPIC_SMALL_MODEL` | Kleines Modell für Titel und Namensklassifizierung, Standard `claude-haiku-4-5` |
 | `GLATTTBERT_MODEL` / `GLATTTBERT_EFFORT` | Chat-Modell (Standard `claude-sonnet-5-5`) und Aufwand (`medium`) |
 | `GOOGLE_SERVICE_ACCOUNT_JSON(_CONTENT)` | Service-Konto `glatttbert-knowledge-base@glattthub` — Drive, Vertex AI, Speech-to-Text |
@@ -256,9 +263,29 @@ Der Service:
 4. `KnowledgeIndexer::index()` zerlegt geänderte Artikel und holt die Vektoren
 5. Artikel ohne Text oder inaktive Artikel fliegen aus dem Index
 
-Ein Artikel ohne Text wird beim nächsten Lauf erneut versucht (z. B. nach einem Download-Fehler).
+Ein Artikel ohne Text wird beim nächsten Lauf erneut versucht (z. B. nach einem Download-Fehler) —
+**höchstens `KNOWLEDGE_MEDIA_MAX_ATTEMPTS`-mal (3)**, gezählt in `knowledge_articles.sync_attempts`.
+Danach bleibt er mit `sync_status = error` und `last_sync_error` liegen, bis
+`knowledge-base:sync --retry-failed` oder der Admin-Re-Sync den Zähler zurücksetzt.
 Schlägt Vertex AI fehl, bleiben die Abschnitte **ohne Vektor** stehen — der Volltext findet sie
 trotzdem, `glatttbert:index --embed-only` holt die Vektoren nach.
+
+#### Schutzmechanismen (seit 08.10.2026)
+
+Anlass war die Nacht zum 08.10.2026: Der Abgleich traf auf ein leeres Anthropic-Guthaben und
+schickte 304 Bilder hintereinander in denselben Fehler, der Scheduler-Job lief dreimal parallel in
+die 30-Minuten-Grenze, und wegen eines Zeitzonen-Fehlers galt jede Datei jede Nacht als geändert
+(Wissen `claude-guthaben-nacht-2026-10-08`). Seitdem:
+
+| Mechanismus | Wirkung |
+|---|---|
+| **Sperre** `Cache::lock('knowledge-base:sync')` | Ein zweiter Aufruf (Scheduler-Wiederholung, Hand-Start) endet sofort mit Erfolg statt parallel dasselbe zu tun |
+| **Zeitbudget** `--budget` (`KNOWLEDGE_SYNC_BUDGET_SECONDS`, 1200 s) | Nach Ablauf wird keine Datei mehr begonnen; der Cron-Endpunkt gibt den Rest der halben Stunde den Embeddings (`glatttbert:index --budget`). Kein 504, keine Wiederholung |
+| **Claude-Pause** (`ClaudeAvailability::blockingReason()`) | Nach Guthaben-, Schlüssel-, Limit- oder Überlastungsfehler gehen im selben Lauf keine Bilder/Scan-PDFs mehr an Claude; die Dateien zählen nicht als Versuch, eine Warnung statt hunderter |
+| **Wiederholungsgrenze** `sync_attempts` | siehe oben |
+| **Zeitzone** | `modifiedTime` aus Drive wird vor Vergleich und Speichern in `app.timezone` umgerechnet — vorher 2 h Versatz, jede Datei „geändert" |
+
+Der Befehl druckt am Ende den Claude-Verbrauch des Laufs (aus dem Token-Protokoll, Zweck `wissen.*`).
 
 Memory-Schutz: `ini_set('memory_limit', '1024M')` + `gc_collect_cycles()` nach jeder Datei.
 `pdftotext` kommt über `poppler-utils` ins Docker-Image.
@@ -268,8 +295,10 @@ Memory-Schutz: `ini_set('memory_limit', '1024M')` + `gc_collect_cycles()` nach j
 Täglich **03:00 Europe/Berlin** läuft Job `glattthub-sync-knowledge-base`,
 der `POST /api/sync-knowledge-base` mit `X-Cron-Token` aufruft.
 
-Defaults: `limit=100, batches=3` (max ~5–10 Min Laufzeit, weit unter dem
-30-Min-Cap von Cloud Scheduler).
+Defaults: `limit=100, batches=3, budget=1200` — der Abgleich endet spätestens nach 20 Minuten,
+die Embeddings bekommen den Rest bis 28 Minuten; was nicht fertig wird, holt die nächste Nacht
+nach. Der Scheduler-Job hat `retryCount: 3` und wiederholt nach einem 504 — dank Sperre läuft die
+Wiederholung ins Leere statt parallel.
 
 Setup-Details: siehe [Cloud Scheduler Setup](CLOUD-SCHEDULER-SETUP.md).
 
@@ -496,6 +525,7 @@ Die OpenAI-Spalten (`openai_thread_id`, `openai_file_id`) entfernt die Migration
 | 2026-08 | Fester Platz in der Seitenleiste statt schwebender Blase; Chat dockt neben der Leiste an, mobiler Einstieg im Mehr-Sheet (19.08.2026) |
 | 2026-08 | OpenAI schaltet die Assistants API ab (26.08.2026), auf der glatttBert lief |
 | 2026-10 | Klickanleitungen als Wissensquelle (je Vorgang ein Artikel, Anleitungs-Karte im Chat); Verlauf-Fix: Berts frühere Antworten fehlten im Kontext, er beantwortete deshalb alte Fragen erneut (07.10.2026) |
+| 2026-10 | Token-Protokoll `ai_usage_log` für jeden Claude-Aufruf (`ai:usage`), Wiederholungsgrenze je Medium, Claude-Pause bei Guthaben-/Limit-Fehlern, Sperre + Zeitbudget im nächtlichen Abgleich, Zeitzonen-Fix der Drive-Änderungszeit (08.10.2026) |
 | 2026-10 | Umstieg auf Claude (Sonnet 5.5) mit eigenem hybriden Suchindex (Volltext + Vertex-Embeddings), PDF/Office-Text im Hub, Bilder über Claude, Videos über Google Speech-to-Text, Kosten je Antwort im Bert-Dashboard (06.10.2026) |
 
 ---

@@ -381,7 +381,7 @@ gcloud scheduler jobs create http sync-staff-shifts \
   --attempt-deadline="1800s" \
   --max-retry-attempts=3 --min-backoff=10s
 
-# Job 10: Sync Knowledge Base (Nightly Delta-Sync Drive → OpenAI Vector Store)
+# Job 10: Sync Knowledge Base (nächtlicher Delta-Sync Drive → Suchindex; seit 08.10.2026 mit Sperre und Zeitbudget, siehe GLATTTBERT-AI-ASSISTENT.md)
 gcloud scheduler jobs create http sync-knowledge-base \
   --location=europe-west3 \
   --schedule="0 3 * * *" \
