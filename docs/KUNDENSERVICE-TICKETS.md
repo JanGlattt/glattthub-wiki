@@ -276,8 +276,20 @@ Nummer darauf. **Stichtag:** Import ab dem letzten Lauf nachziehen,
   Importlauf ihn nach (`zendesk_updated_at` = null).
 - Mails nur mit HTML-Teil (web.de-App): `body_text` entsteht aus `plainText()` plus
   `stripQuotedReply()` (zitierte Vorgeschichte ab „Am … schrieb“, „On … wrote“, „Von:/Gesendet:“,
-  „>“-Zeilen); ältere Nachrichten ohne Klartext leitet `detail()` beim Lesen ab. Die ganze Mail
-  bleibt über „Als E-Mail anzeigen“ und die Rohmail erreichbar.
+  „>“-Zeilen und — seit 09.10.2026 abends — jeder Gmail-Einleitung „… Name <adresse>:“ in
+  beliebiger Sprache, auch über zwei Zeilen umbrochen; der Absatz vor der ersten „>“-Zeile fällt
+  mit, wenn er auf „:“ endet oder eine Adresse enthält). `detail()` wendet das beim Lesen auf
+  **jede** Kundinnen-Mail an, auch auf importierte. Die ganze Mail bleibt über
+  „Als E-Mail anzeigen“ und die Rohmail erreichbar.
+- **Auszeichnung in der Blase (seit 09.10.2026 abends):** `SupportMessageHtml::sanitize()` macht
+  aus dem HTML der Kundin eingeschränktes HTML (`body_rich`: p/br/div, b/strong, i/em, u, s, a mit
+  http/mailto, Listen, Überschriften, Tabellen, pre/code, hr; alle Attribute weg, `javascript:`
+  wird entschärft, fremde Bilder fliegen, `cid:`-Bilder zeigen auf den Anhang) und entfernt
+  Zitate (`blockquote`, `gmail_quote`, `yahoo_quoted`, `moz-cite-prefix`, Outlooks
+  `divRplyFwdMsg` samt Rest, zuletzt der Block mit Zitat-Einleitung und alles danach). Das Web
+  rendert `body_rich` per `x-html` in `.support-msg-rich`, Rückfall ist `body_text`. Die App bekommt
+  `body_markdown` (`SupportMessageHtml::markdown()`, SwiftUI `AttributedString(markdown:)`, Text-
+  Sonderzeichen maskiert) — für Kundinnen-Mails wie für eigene Antworten.
 - Ein Element zwischen zwei `.form-glattt-group` bricht den Geschwister-Abstand — Knöpfe unter
   einem Feld gehören in dessen Gruppe.
 - Zwei Test-Mails gleicher Adresse und gleichen Betreffs landen im selben Ticket (Zuordnung über
@@ -307,7 +319,8 @@ Nummer darauf. **Stichtag:** Import ab dem letzten Lauf nachziehen,
 
 - **09.10.2026 (abends)** — Zuordnung über die Vertragsnummer, Schattenbetrieb schreibt in
   übernommene Tickets, Import erkennt vorhandene Mails, `support:reattach-shadow` räumt
-  Schatten-Tickets auf.
+  Schatten-Tickets auf. Kundinnen-Mails mit Auszeichnung (`body_rich`/`body_markdown`) und ohne
+  zitierte Vorgeschichte in jeder Sprache.
 - **09.10.2026** — glatttBert im Ticket (Antwortvorschlag, Zusammenfassung, Anliegen; nur auf
   Knopf), Rückkanal aus den Vorgängen, Zufriedenheitsumfrage 24 Std. nach „gelöst“ (Start: aus),
   App: Anhänge, neues Ticket, Einstellungen. Diese Seite angelegt.
