@@ -254,6 +254,20 @@ Zusammenfassung über dem Verlauf. Snapshot-Test `SupportSnapshotTests` (hell/du
 iPad, auch die Blätter). Push-Link `?ticket=` über `AppState.supportTicketFocus`
 (`bridge.js` → `NATIVE_WITH_QUERY`).
 
+### Kundinnen sehen ihre Anfragen (Portal und My glattt, seit 09.10.2026)
+
+Im Kundenportal und in My glattt steht unter **Kontakt** jede Anfrage der Kundin als Chat-Verlauf,
+mit Antwortfeld; abgeschlossene eine Seite dahinter. Sichtbar sind nur `inbound`/`outbound` —
+**nie** Notizen, Ereignisse, Teams, Prüfungen, Zuständige; von Kolleginnen nur der Vorname.
+Ausgeschlossen: Forderungsmanagement (Team-Slug und Kanal `receivables`), Schattenbetrieb,
+zusammengeführte Tickets, Zendesk-Importe ohne eigene Nachricht der Kundin. Technisch ist das
+eine Kopie, die der Hub am Kundenkonto ablegt (`PortalSupportSnapshot`, Beobachter
+`PortalSupportSyncObserver`) — der Portal-Dienst liest `support_*` nie. Eine Antwort der Kundin
+kommt als Eingang mit `message_id = portal-<id>@glattt.com` (Kanal `portal`); auf „gelöst“
+öffnet sie wieder, auf „geschlossen“ entsteht ein Folgeticket. Die Mitteilung „Antwort vom
+Kundenservice“ trägt `data.ticket`. Alles erst, wenn das Postfach auf **live** steht. Details:
+`KUNDENPORTAL.md`, Abschnitt „Anfragen an den Kundenservice“.
+
 ### Zendesk-Umschalter und Stichtag
 
 `SupportMode::usesHub()` (Postfach „live“, 60 s zwischengespeichert) stellt Kundenakte,
@@ -317,6 +331,8 @@ Nummer darauf. **Stichtag:** Import ab dem letzten Lauf nachziehen,
 
 ## Changelog
 
+- **09.10.2026 (nachts)** — Kundinnen sehen ihre Anfragen in Portal und My glattt (Kopie ohne
+  Notizen, Antwort als Eingang, Folgeticket bei geschlossen, Push mit Ticketnummer).
 - **09.10.2026 (abends)** — Zuordnung über die Vertragsnummer, Schattenbetrieb schreibt in
   übernommene Tickets, Import erkennt vorhandene Mails, `support:reattach-shadow` räumt
   Schatten-Tickets auf. Kundinnen-Mails mit Auszeichnung (`body_rich`/`body_markdown`) und ohne

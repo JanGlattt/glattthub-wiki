@@ -15,7 +15,9 @@ fest, stimmen Nutzungsbedingungen und Datenschutzhinweisen zu und sehen danach:
 - **Termine:** kommende und vergangene Termine mit Sitzungsbestätigung; verlegen bis 24 Stunden vorher
 - **Vertrag:** bezahlt/offen je Vertrag, Raten, Einmalzahlung (beliebiger Betrag, auch Apple Pay),
   neue Bankverbindung mit unterschriebenem SEPA-Mandat, offene Forderungen bezahlen, Unterlagen als PDF
-- **Kontakt:** Nachricht an den Kundenservice (Zendesk) oder WhatsApp ans Institut
+- **Kontakt:** eigene Anfragen an den Kundenservice mit Verlauf und Antwortfeld (seit 09.10.2026,
+  nach dem Stichtag der Zendesk-Ablösung), neue Nachricht, abgeschlossene Anfragen eine Seite dahinter,
+  WhatsApp ans Institut
 - **Profil:** Zustimmungsbelege, Passwort ändern, Konto löschen
 
 Im Hub erledigt das Büro unter **Betrieb → Kundenportal** die Aufträge, die daraus entstehen:
@@ -147,6 +149,54 @@ lokal und auf Staging liefert der Hub das Portal zum Testen selbst aus.
    Geburtsdatums mit dem Datenschlüssel — das Portal vergleicht nur Prüfwerte) und `snapshot`
    (Termine, `iban_masked` je Vertrag). Beim Einladen wird das Profil sofort angelegt.
 
+### Anfragen an den Kundenservice — „Kontakt wird Postfach“ (09.10.2026)
+
+Entscheidung Jan (Entwurf 1, Umfang „App/Portal + E-Mail“): Die Kundin sieht im Web und in My
+glattt ihre Tickets — alle mit ihrer Kunden-ID **oder** ihrer E-Mail-Adresse, ohne
+Forderungsmanagement, ohne Schattenbetrieb, aus dem Zendesk-Import nur Tickets mit eigener
+Nachricht. Sie sieht **nur** Nachrichten von ihr und an sie: nie interne Notizen, Ereignisse,
+Teams, Prüfungen oder Zuständige; von Kolleginnen nur den Vornamen.
+
+**Architektur — Hub schreibt, Portal liest.** Der Portal-Dienst hat keine Rechte auf
+`support_*` (Architektur B). Der Hub baut mit `PortalSupportSnapshot` eine bereinigte Kopie
+`snapshot.support` am Kundenkonto (`items` mit `number`, `subject`, `state`, `messages` →
+`direction` in/out, `author`, `body`, `attachments` mit signierten Links
+`/shared/kundenservice/anhang/{id}` über 30 Tage). `PortalSupportSyncObserver` zieht sie nach
+jeder Nachricht und jeder Statusänderung sofort nach; `PortalSnapshotService::refresh` baut sie
+bei jeder Zehn-Minuten-Auffrischung mit. Vor dem Stichtag (`SupportMode::usesHub()` falsch) ist
+`support` `null`, und Web wie App zeigen nur das Formular wie bisher.
+
+**Zustände für die Kundin** (`PortalSupportSnapshot::STATE_*`): `received` Eingegangen,
+`in_progress` In Bearbeitung, `replied` Antwort erhalten (Hub `pending` oder letzte Nachricht
+von uns), `solved` Gelöst, `closed` Abgeschlossen. Offen = die ersten drei; Abgeschlossen
+(höchstens 50 in der Kopie) liegt eine Seite dahinter.
+
+**Antwort der Kundin.** `portal_contact_requests` mit `support_ticket_number` → Auftrag
+`contact` → `PortalContactService::replyInHub()`: Eingang ans Ticket (gelöst öffnet wieder, wie
+eine Mail), bei geschlossen ein Folgeticket (`follow_up_of_id`), bei einem Ticket, das der
+Kundin nicht gehört, eine neue Anfrage — nie an ein fremdes Ticket. `PortalSupportData` (läuft im
+Portal) legt noch nicht zugestellte Nachrichten über die Kopie: eine neue Nachricht erscheint
+sofort als Anfrage „Eingegangen“ (`key` = `p<id>`), eine Antwort sofort im Verlauf („wird
+gesendet“); Zuordnung über `message_id = portal-<id>@glattt.com` → `portal_request_id`. Dieselbe
+Bremse wie beim Formular (5 je Stunde), gleiche Sperre über `contact_enabled`.
+
+| Endpunkt | Zweck |
+|---|---|
+| `GET /kontakt` (Web) | Kontakt-Seite: offene Anfragen, Formular, WhatsApp |
+| `GET /kontakt/anfragen/{key}`, `POST …/{nr}/antwort` (Web) | Verlauf als Chat, Antwort |
+| `GET /kontakt/anfragen/abgeschlossen` (Web) | Abgeschlossene nach Jahr |
+| `GET /api/app/v1/kontakt` | wie bisher, plus `requests` (offene Anfragen, `closed_count`) |
+| `GET …/kontakt/anfragen` (`?aktualisieren=1`) | offene Anfragen frisch vom Hub |
+| `GET …/kontakt/anfragen/{key}`, `POST …/{nr}/antwort` | Verlauf, Antwort (liefert den Verlauf zurück) |
+| `GET …/kontakt/anfragen/abgeschlossen` | abgeschlossene Anfragen |
+| `GET /shared/kundenservice/anhang/{id}` (Hub, signiert, ohne IAP) | Anhang einer Antwort |
+
+Die Mitteilung „Antwort vom Kundenservice“ trägt `data.ticket`; die App öffnet damit direkt den
+Verlauf (`PushRouter.Opened.ticket`). App: `ContactView` (Liste, iPad mit Verlauf rechts),
+`SupportRequestView` (Chat, Antwortzeile, Anhänge), `ClosedRequestsView`,
+`NewContactMessageSheet`. Bewusst weggelassen: Anhänge **von** der Kundin (Portal-Dienst ohne
+Bucket-Schreibzugriff). Tests: `PortalSupportRequestsTest`.
+
 ### Datenmodell
 
 | Tabelle | Zweck |
@@ -155,7 +205,7 @@ lokal und auf Staging liefert der Hub das Portal zum Testen selbst aus.
 | `customer_invitations` | Einladungslinks (Hash), 14 Tage, einmalig |
 | `customer_password_resets` | Reset-Links (Hash), 30 Minuten |
 | `portal_legal_documents` / `customer_consents` | Fassungen der Rechtstexte und Zustimmungsbelege |
-| `portal_contact_requests` | Nachrichten an den Kundenservice |
+| `portal_contact_requests` | Nachrichten an den Kundenservice; mit `support_ticket_number` eine Antwort auf eine bestehende Anfrage |
 | `portal_payments` | Einmalzahlungen (Mollie), `applied_at` = vom Büro verteilt |
 | `portal_mandate_requests` | neue Bankverbindungen; IBAN, Inhaber, Unterschrift mit `PortalEncrypted` |
 | `portal_outbox` | Auftragsbuch Portal → Hub |
@@ -293,6 +343,9 @@ Prüfen nach der Einrichtung: `https://my.glattt.com/anmelden` zeigt die Portal-
 
 ## Changelog
 
+- **09.10.2026** — Anfragen an den Kundenservice im Kontakt (Entwurf 1 „Kontakt wird Postfach“):
+  Ticket-Kopie am Konto ohne Notizen, Verlauf als Chat mit Antwort, Abgeschlossene dahinter, Push
+  öffnet den Verlauf; Web und App.
 - **06.10.2026** — „Passwort vergessen“ holt ein fehlendes oder veraltetes Geburtsdatum selbst nach
   (Nachprüfung im Hub-Worker), Büro-Knopf „Passwort-Link senden“ (Web und nativ), TestFlight M100.
 
