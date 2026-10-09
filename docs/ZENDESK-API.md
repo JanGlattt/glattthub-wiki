@@ -1,5 +1,11 @@
 # 🎫 Zendesk API
 
+!!! warning "Ablösung läuft"
+    Seit 10/2026 arbeitet der Kundenservice mit Tickets im Hub — siehe
+    [Kundenservice-Tickets](KUNDENSERVICE-TICKETS.md). Diese Anbindung bleibt bis zum Stichtag
+    (Postfach „live“) aktiv; danach antworten die `/zendesk/*`-Endpunkte aus Hub-Tickets
+    (`ZendeskCompat`), und der Zugang wird gekündigt.
+
 Anbindung des Hub an Zendesk (Support-Tickets). Genutzt wird sie an drei Stellen:
 im **Kundenprofil** (Reiter Kundenservice: Tickets der Kundin inkl. Kommentar-Verlauf),
 im **Widerrufs-Modal** (Ticket-Suche/-Verknüpfung, Feld `zendesk_ticket_number`

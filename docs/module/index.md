@@ -80,7 +80,7 @@
 
     E-Mail, Push, Superchat/WhatsApp, automatische Beratungs-WhatsApp, Terminerinnerungen, Zufriedenheitsbefragung.
 
-    [:octicons-arrow-right-24: Benachrichtigungen](../NOTIFICATIONS.md) · [Superchat](../SUPERCHAT-WHATSAPP.md)
+    [:octicons-arrow-right-24: Kundenservice-Tickets](../KUNDENSERVICE-TICKETS.md) · [Benachrichtigungen](../NOTIFICATIONS.md) · [Superchat](../SUPERCHAT-WHATSAPP.md)
 
     <small>Nutzerhandbuch: *Admin 4*, *Kundenverwaltung 5*</small>
 
