@@ -50,6 +50,13 @@ const T = () => Alpine.$data(document.querySelector('[x-data^="treatmentSettings
   await L.wait(page, 6000);
   const flow = await page.evaluate(() => { const s = S(); return { bal: s.showBalanceScreen, end: s.showEndSessionModal, modals: [...document.querySelectorAll('.modal-glattt')].filter(e => e.offsetParent !== null).map(e => e.innerText.replace(/\n+/g, ' | ').slice(0, 120)) }; });
   console.log('endflow', JSON.stringify(flow));
+  // Offener Betrag (1. Rate vor Ort nach der Behandlung): Kassen-Bildschirm bestätigen, dann weiter
+  if (flow.bal) {
+    await L.shot(page, 'i1-kasse', { noScroll: true, marks: [ { id: 'ok', kind: 'chip', label: 'Hier tippen', sel: '.balance-alert-screen-actions .balance-alert-screen-button', at: 'l' } ]});
+    await page.click('.balance-alert-screen-actions .balance-alert-screen-button');
+    await L.wait(page, 6000);
+    flow.modals = await page.evaluate(() => [...document.querySelectorAll('.modal-glattt')].filter(e => e.offsetParent !== null).map(e => e.innerText.replace(/\n+/g, ' | ').slice(0, 120)));
+  }
   if (flow.modals.some(m => m.includes('Folgetermin'))) {
     await L.shot(page, 'l1-folgetermin', { noScroll: true });
     await page.evaluate(() => { const c = [...document.querySelectorAll('.modal-glattt-header-close')].find(e => e.offsetParent !== null); c?.click(); });
