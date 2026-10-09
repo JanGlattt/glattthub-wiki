@@ -56,8 +56,13 @@ async function evaluate(conn, expression) {
 }
 
 async function capture(conn, width, height) {
-  await conn.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: DPR, mobile: false });
-  await sleep(350);
+  // Gerätemaße nur setzen, wenn sie sich ändern: Jede Übersteuerung löst ein resize aus,
+  // und darauf schließt sich ein offenes Kontextmenü (Befund 09.10.2026).
+  if (!conn.__metrics || conn.__metrics.width !== width || conn.__metrics.height !== height) {
+    await conn.send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: DPR, mobile: false });
+    conn.__metrics = { width, height };
+    await sleep(350);
+  }
   const r = await conn.send('Page.captureScreenshot', { format: 'png', clip: { x: 0, y: 0, width, height, scale: 1 }, captureBeyondViewport: false });
   return Buffer.from(r.result.data, 'base64');
 }
@@ -65,8 +70,14 @@ async function capture(conn, width, height) {
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 async function rightClick(conn, x, y) {
-  await conn.send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'right', clickCount: 1 });
-  await conn.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'right', clickCount: 1 });
+  // contextmenu direkt im DOM auslösen statt über Input.dispatchMouseEvent: Seiten in einer
+  // WebContentsView, die versteckt erzeugt wurde, melden document.visibilityState = hidden,
+  // auch wenn der Tab längst aktiv ist — Chromium verwirft dann die Eingabe und das Menü
+  // erscheint nie (Befund 09.10.2026). Das Preload hört auf das Ereignis am Dokument.
+  await evaluate(conn, `(() => {
+    const el = document.elementFromPoint(${x}, ${y}) || document.body;
+    el.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true, clientX: ${x}, clientY: ${y}, button: 2 }));
+  })()`);
   await sleep(450);
 }
 
@@ -188,6 +199,14 @@ const MASK_CLIENTS = `(() => {
     await sleep(700);
   };
   await activateByTitle('Kundenübersicht');
+  // Aufnahmemaße VOR dem ersten Rechtsklick setzen: capture() überschreibt die Gerätemaße,
+  // und ist das Fenster kleiner als 1440 × 900, löst das ein resize aus — darauf schließt
+  // sich das Kontextmenü, das Bild zeigt dann nur die Liste (Befund 09.10.2026).
+  for (const [conn, height] of [[strip, STRIP], [kunden, PAGE_H], [kundin, PAGE_H]]) {
+    await conn.send('Emulation.setDeviceMetricsOverride', { width: W, height, deviceScaleFactor: DPR, mobile: false });
+    conn.__metrics = { width: W, height };
+  }
+  await sleep(600);
   console.log('Tabs:', JSON.stringify(await stripState()));
   console.log('maskiert:', await evaluate(kunden, MASK_CLIENTS), 'Zeilen');
   await sleep(300);
@@ -210,18 +229,30 @@ const MASK_CLIENTS = `(() => {
   // ── d2 Rechtsklick auf eine Kundenzeile
   if (will('d2-kontextmenu-kunde')) {
     const row = await evaluate(kunden, RECT('tbody tr .table-glattt-cell-primary', 2));
+    // Menü während der Aufnahme festhalten: Page.captureScreenshot löst in der (als hidden
+    // geltenden) View blur/resize aus, worauf das Menü sich schließt. Die Sperren werden VOR
+    // dem Rechtsklick registriert und stehen damit vor den Schließ-Listenern des Menüs.
+    await evaluate(kunden, `(() => { window.__holdMenu = true; ['blur', 'resize'].forEach(t => window.addEventListener(t, e => { if (window.__holdMenu) e.stopImmediatePropagation(); })); document.addEventListener('scroll', e => { if (window.__holdMenu) e.stopImmediatePropagation(); }, true); })()`);
     await rightClick(kunden, row.x + 60, row.y + row.h / 2);
-    const s = await capture(strip, W, STRIP);
-    const p = await capture(kunden, W, PAGE_H);
+    console.log('d2 Rechtsklick', JSON.stringify(row), 'Menü offen:', await evaluate(kunden, "!!document.querySelector('.glattt-ctx')"),
+      'sichtbar:', await evaluate(kunden, 'document.visibilityState'), 'Fokus:', await evaluate(kunden, 'document.hasFocus()'));
     const CROP = { x: 0, y: 0, w: 1040, h: 620 }; // Leiste, Seitenleiste, Zeilen und das Menü
-    await compose(s, p, path.join(ROOT, 'shots/d2-kontextmenu-kunde.png'), CROP);
-    saveMeta('d2-kontextmenu-kunde', [
+    // Erst vermessen, dann fotografieren: Die Aufnahme kann das Menü schließen (blur/resize)
+    const marks = [
       mark({ id: 'kopf', kind: 'badge', n: 1, at: 'l' }, await evaluate(kunden, RECT('.glattt-ctx-head')), STRIP, CROP),
       mark({ id: 'neuertab', kind: 'badge', n: 2, at: 'l' }, await evaluate(kunden, RECT_TEXT('.glattt-ctx-item', 'In neuem Tab öffnen')), STRIP, CROP),
       mark({ id: 'direkt', kind: 'badge', n: 3, at: 'l' }, await evaluate(kunden, RECT_TEXT('.glattt-ctx-item', 'Termine')), STRIP, CROP),
       mark({ id: 'kopieren', kind: 'badge', n: 4, at: 'l' }, await evaluate(kunden, RECT_TEXT('.glattt-ctx-item', 'Kunden-Nr. kopieren')), STRIP, CROP),
       mark({ id: 'seite', kind: 'frame', color: 'teal' }, union(await evaluate(kunden, RECT_TEXT('.glattt-ctx-item', 'Zurück')), await evaluate(kunden, RECT_TEXT('.glattt-ctx-item', 'Seite in neuem Tab'))), STRIP, CROP),
-    ], CROP);
+    ];
+    // Profilbild im Kopf fertig laden lassen (kommt vom Foto-Endpunkt)
+    for (let i = 0; i < 10 && !(await evaluate(kunden, "(() => { const i = document.querySelector('.glattt-ctx-avatar-img'); return !i || i.complete; })()")); i++) await sleep(150);
+    const p = await capture(kunden, W, PAGE_H);
+    console.log('d2 Menü im Bild:', await evaluate(kunden, "!!document.querySelector('.glattt-ctx')"));
+    const s = await capture(strip, W, STRIP);
+    await compose(s, p, path.join(ROOT, 'shots/d2-kontextmenu-kunde.png'), CROP);
+    saveMeta('d2-kontextmenu-kunde', marks, CROP);
+    await evaluate(kunden, 'window.__holdMenu = false');
     await kunden.send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape' });
     await sleep(300);
   }

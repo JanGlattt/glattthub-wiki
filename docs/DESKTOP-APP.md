@@ -27,16 +27,17 @@ Die glatttHub Desktop-App ist eine native macOS-Anwendung, die die Web-App (`htt
 | **Eigenes Fenster** | Unabhängig vom Browser, eigenes Dock-Icon |
 | **Tabs** (seit 1.1.0) | Mehrere Hub-Seiten nebeneinander in einem Fenster, Tab-Leiste in der Titelzeile — neuer Tab per ⌘T oder „+", Wechsel per Klick, ⌃Tab oder ⌘1…9, schließen per ⌘W oder Kreuz. Rechtsklick auf einen Link (oder eine Kundenzeile) → „Link in neuem Tab öffnen", ⌘-Klick ebenso. Alles, was bisher ein neues Fenster öffnete (Admin-Panel, Formular-Vorschau, PDFs), wird zum Tab |
 | **Zurück / Vor / Neu laden** (seit 1.1.0) | Drei Knöpfe links in der Tab-Leiste, wirken auf den aktiven Tab (jeder Tab hat seinen eigenen Verlauf); Kürzel ⌘[ ⌘] ⌘R |
-| **Rechtsklick-Menü** (seit 1.1.1) | Eigenes Menü im glattt-Look statt Browser-Menü. Auf einem Kunden, Vertrag oder Forderungsfall (Zeile, Karte, Link oder die Detailseite selbst) zeigt es oben, worum es geht, und bietet: öffnen, in neuem Tab öffnen, direkt zu einem Reiter (Termine, Pakete, Zahlungen, Ratenzahlung …), Kunde/Vertrag öffnen, Kunden-/Vertragsnummer kopieren. In Eingabefeldern Ausschneiden/Kopieren/Einsetzen, überall Zurück/Vorwärts/Neu laden. Rechtsklick auf einen Tab: Neu laden, Duplizieren, Tab/andere Tabs/Tabs rechts schließen |
+| **Rechtsklick-Menü** (seit 1.1.1) | Eigenes Menü im glattt-Look statt Browser-Menü. Auf einem Kunden, Vertrag oder Forderungsfall (Zeile, Karte, Link oder die Detailseite selbst) zeigt es oben, worum es geht (bei Kunden seit 1.1.6 mit **Profilbild** aus „My glattt", sonst Initialen), und bietet: öffnen, in neuem Tab öffnen, direkt zu einem Reiter (Termine, Pakete, Zahlungen, Ratenzahlung …), Kunde/Vertrag öffnen, Kunden-/Vertragsnummer kopieren. In Eingabefeldern Ausschneiden/Kopieren/Einsetzen, überall Zurück/Vorwärts/Neu laden. Rechtsklick auf einen Tab: Neu laden, Duplizieren, Tab/andere Tabs/Tabs rechts schließen |
 | **Tabs sortieren** (seit 1.1.1) | Tabs in der Leiste per Drag & Drop verschieben; die Reihenfolge gilt auch für ⌘1…9 |
 | **Overlay-Titelleiste** | Schlankes Design mit macOS Traffic Lights (Schließen/Minimieren/Maximieren) |
 | **Spotlight-Suche** | „glatttHub" eingeben → App öffnen |
 | **Cmd+Tab** | Eigenes Icon in der App-Umschaltung |
-| **Deutsche Menüleiste** | glatttHub, Bearbeiten, Darstellung, Fenster, Hilfe |
+| **Deutsche Menüleiste** (ausgebaut in 1.1.6) | glatttHub, Bearbeiten, Darstellung (mit **Farbschema** und **Standort**), **Gehe zu** (alle Hub-Seiten nach Rechten, Suche, glatttBert), Tabs (mit Seitennamen, geschlossenen Tab zurückholen), Fenster, Hilfe (Nutzerhandbuch, Rundgang dieser Seite) |
+| **Dock-Menü** (seit 1.1.6) | Rechtsklick auf das Dock-Symbol: offene Tabs mit Häkchen am aktiven, Neuer Tab, Termine heute, Kunde suchen |
 | **Tray-Icon** | Schnellzugriff über die macOS-Menüleiste |
 | **Admin-Panel** | Eigener Tab für das Filament Admin-Panel (Cmd+Shift+A) |
 | **Push-Benachrichtigungen** | Native macOS-Benachrichtigungen (Opt-in beim ersten Start) |
-| **Tastenkürzel** | Cmd+T = Neuer Tab, Cmd+W = Tab schließen, Cmd+Shift+W = Fenster schließen, Cmd+[ / Cmd+] = Zurück/Vor, Cmd+R = Neu laden, Cmd+Shift+A = Admin-Panel, Cmd+Q = Beenden |
+| **Tastenkürzel** | Cmd+T = Neuer Tab, Cmd+Shift+T = geschlossenen Tab zurückholen, Cmd+W = Tab schließen, Cmd+Shift+W = Fenster schließen, Cmd+[ / Cmd+] = Zurück/Vor, Cmd+R = Neu laden, Cmd+Shift+1…4 = Start/Termine/Kunden/Berichte, Cmd+Shift+F = Suche, Alt+Cmd+B = glatttBert, Cmd+Shift+A = Admin-Panel, Cmd+Q = Beenden |
 | **Immer aktuell** | Die Website wird live geladen — Inhalte sind immer aktuell |
 
 ### Menüleiste
@@ -45,10 +46,18 @@ Die glatttHub Desktop-App ist eine native macOS-Anwendung, die die Web-App (`htt
 |------|---------|
 | **glatttHub** | Über glatttHub, Ausblenden, Andere ausblenden, Alle einblenden, Beenden |
 | **Bearbeiten** | Widerrufen, Wiederholen, Ausschneiden, Kopieren, Einsetzen, Alles auswählen |
-| **Darstellung** | Zurück (Cmd+[), Vorwärts (Cmd+]), Neu laden (Cmd+R), Vergrößern, Verkleinern, Originalgröße, Vollbild |
-| **Tabs** | Neuer Tab (Cmd+T), Tab schließen (Cmd+W), Nächster/Vorheriger Tab (Ctrl+Tab / Ctrl+Shift+Tab), Tab 1–8 (Cmd+1…8), Letzter Tab (Cmd+9), Admin-Panel öffnen (Cmd+Shift+A) |
+| **Darstellung** | Zurück (Cmd+[), Vorwärts (Cmd+]), Neu laden (Cmd+R), **Farbschema** (Wie das System / Hell / Dunkel), **Standort** (Alle Standorte + Institute, wie der Standortfilter der Sidebar), Vergrößern, Verkleinern, Originalgröße, Vollbild |
+| **Gehe zu** (seit 1.1.6) | Start, Termine, Kunden, Berichte (Cmd+Shift+1…4), darunter die Gruppen Verkauf, Finanzen, Team, Betrieb, System mit genau den Seiten, die die Nutzerin sehen darf; Suchen … (Cmd+Shift+F), glatttBert fragen (Alt+Cmd+B, nur mit Recht). Vor der Anmeldung steht hier nur „Nach der Anmeldung verfügbar" |
+| **Tabs** | Neuer Tab (Cmd+T), Geschlossenen Tab wiederherstellen (Cmd+Shift+T), Tab schließen (Cmd+W), Nächster/Vorheriger Tab (Ctrl+Tab / Ctrl+Shift+Tab), die offenen Tabs **mit ihren Seitennamen** und Häkchen am aktiven (Cmd+1…8; Letzter Tab Cmd+9 ab neun Tabs), Admin-Panel öffnen (Cmd+Shift+A) |
 | **Fenster** | Minimieren, Maximieren, Fenster schließen (Cmd+Shift+W), Alle nach vorne |
-| **Hilfe** | glatttHub Wiki (öffnet im Browser) |
+| **Hilfe** | Nutzerhandbuch (hilfe.hub.glattt.com), Rundgang dieser Seite (nur auf Seiten mit Tour), Technisches Wiki, Entwicklertools |
+
+### Dock-Menü
+
+Rechtsklick auf das glatttHub-Symbol im Dock (seit 1.1.6): oben die **offenen Tabs** mit
+Seitennamen (Häkchen am aktiven, ein Klick holt den Tab und das Fenster nach vorn), darunter
+**Neuer Tab**, **Termine heute** und **Kunde suchen …** — auch dann, wenn das Fenster hinter
+anderen liegt oder geschlossen ist (dann öffnet es sich wieder).
 
 ### Push-Benachrichtigungen
 
@@ -334,6 +343,7 @@ Das Preload-Script (läuft in jedem Tab) hat vier Aufgaben:
 2. **Electron-Erkennung**: Setzt `document.body.classList.add('electron-app')` und `electron-tabs-visible` am `<html>` — so früh wie möglich, und ein `MutationObserver` stellt sie wieder her, sobald Livewire sie bei `wire:navigate` entfernt (seit 1.1.4; serverseitig kommt sie zusätzlich aus dem User-Agent-Token, siehe „User-Agent")
 3. **Farbschema melden**: `html.dark` → `electron-theme:changed` für die Tab-Leiste
 4. **⌘-Klick**: Links und `[data-href]`-Zeilen mit Meta/Ctrl in einem neuen Tab öffnen
+5. **Menüzustand & Befehle** (seit 1.1.6): meldet dem Hauptprozess, was die Menüleiste braucht (`electron-menu:state`), und führt dessen Befehle aus (`electron-command`) — siehe „Menüleiste & Dock-Menü" unten
 
 Die Drag-Region wird bei drei Events neu erstellt (Sicherheit gegen SPA-Navigation):
 
@@ -359,6 +369,64 @@ Wird aktuell für Push-Notifications genutzt:
 - Ohne Erkennung würde direkt subscribed werden (kein Opt-in-Dialog)
 - Mit Erkennung: Modal wird trotzdem gezeigt → User entscheidet aktiv
 - Device-Name wird auf `'glatttHub Desktop App'` gesetzt
+
+### Menüleiste & Dock-Menü (seit 1.1.6)
+
+Menüleiste und Dock-Menü werden im Hauptprozess (`main.cjs`, `rebuildMenus()`) aus zwei
+Quellen gebaut und bei jeder Änderung gesammelt neu gesetzt (`scheduleMenuRebuild`, 120 ms,
+Signaturvergleich, damit offene Menüs nicht flackern):
+
+1. **Tabs** (`tabs.list()`, `tabs.onChange`): Seitennamen mit Häkchen am aktiven, höchstens
+   acht mit ⌘1…8; `closedUrls` speist „Geschlossenen Tab wiederherstellen".
+2. **Zustand der aktiven Seite** — das Preload meldet `electron-menu:state` bei
+   `DOMContentLoaded`, `livewire:navigated`, `branchChanged`, Fensterfokus und Farbwechsel:
+
+   | Feld | Quelle | Verwendung |
+   |---|---|---|
+   | `nav` | `GET /api/app/navigation` (MobileNavigation::forUser — dieselbe Liste wie Sidebar, Bottom-Nav und iOS-App, nach Rechten; Web-Sitzung, 5 Min. gecacht, ohne Anmeldung `null`) | „Gehe zu", Standort-Liste (`branches`, `has_branch_restriction`), glatttBert (`user.can_ai`), Nutzerhandbuch-URL (`klick_portal`) |
+   | `branchId` | `localStorage.selectedBranch` | Häkchen im Standort-Untermenü |
+   | `themePref` | `localStorage['glattthub-theme']` | Häkchen im Farbschema-Untermenü |
+   | `hasTour` | `[data-tour-help]` auf der Seite | „Rundgang dieser Seite" aktiv/inaktiv |
+   | `hasSidebar` | `#sidebar` vorhanden | Standort nur mit Sidebar (nicht im Admin) |
+
+   Der Hauptprozess hält den Zustand je WebContents; ein Tab ohne Zustand bekommt
+   `electron-menu:refresh`.
+
+**Befehle zurück in die Seite** gehen als `electron-command` an das Preload. Das läuft in
+einer **isolierten Welt** ohne Zugriff auf Alpine, Livewire oder `window.themeManager` und
+reicht deshalb per `window.postMessage({ type: 'glattthub-desktop', command, … },
+location.origin)` an die Brücke in der Seite weiter
+(`resources/views/partials/desktop-app-bridge.blade.php`, eingebunden in Hub- und
+Fullscreen-Layout sowie im Filament-`HEAD_END`):
+
+| Befehl | Preload | Seite |
+|---|---|---|
+| `navigate` (Gehe zu, Dock) | klickt den passenden Sidebar-Link (wire:navigate), sonst `location.href` | — |
+| `search` | mit Sidebar → postMessage; ohne (Admin) → Tab `/hub/clients` | `Alpine.$data(#sidebar).focusSearch()` |
+| `branch` | postMessage | `selectBranch(branchId)` der Sidebar (löst `branchChanged` aus) |
+| `theme` | setzt `localStorage`, postMessage | `themeManager.setTheme()` bzw. `__applyTheme()` |
+| `tour` | postMessage | `glatttTourStart()` (Seiten-Tour) |
+| `bert` | `window.dispatchEvent(new CustomEvent('glattt-bert-toggle'))` direkt | — |
+
+!!! warning "Nur Ereignisse ohne Nutzdaten darf das Preload direkt auslösen"
+    `CustomEvent.detail` überlebt den Wechsel zwischen isolierter Welt und Seite nicht
+    zuverlässig — für alles mit Parametern (Standort, Farbschema) ist `postMessage` der Weg,
+    die Brücke prüft `event.source === window` und `event.origin === location.origin`.
+
+**Prüfen:** Native Menüs sieht weder CDP noch Playwright, und UI-Scripting per `osascript`
+braucht Hilfszugriff für das aufrufende Terminal. Im Dev-Modus schreibt deshalb
+`GLATTTHUB_DEBUG_MENU=<datei>` nach jedem Neubau beide Menüs als JSON (Beschriftung, Kürzel,
+aktiv, Häkchen):
+
+```bash
+env -u ELECTRON_RUN_AS_NODE GLATTTHUB_URL=http://glattthub.local:8888 \
+  GLATTTHUB_DEBUG_MENU=/tmp/menu.json npx electron electron/main.cjs --remote-debugging-port=9333
+```
+
+**Profilbild im Kontextmenü:** `objectHeader()` gibt für Kunden `image` =
+`/hub/clients/{id}/foto` mit (fester Endpunkt, 404 ohne Foto). `context-menu.cjs` legt das
+`<img>` über die Initialen, blendet es nach `load` ein und entfernt es bei `error` — so gilt
+das Bild überall, wo ein Kunde erkannt wird, ohne neue `data-ctx`-Attribute.
 
 ### Push-Notifications (Technisch)
 
@@ -539,9 +607,9 @@ export APPLE_API_ISSUER=84f1cc63-769a-4ea0-b54f-636f28ccbbaa
 electron/dist/
 ├── mac-arm64/
 │   └── glatttHub.app               # Signierte App (intern)
-├── glatttHub-1.1.5-arm64.dmg       # Direkter Download
-├── glatttHub-1.1.5-arm64-mac.zip   # ZIP-Archiv
-└── glatttHub-1.1.5-arm64.pkg       # PKG-Installer für MDM
+├── glatttHub-1.1.6-arm64.dmg       # Direkter Download
+├── glatttHub-1.1.6-arm64-mac.zip   # ZIP-Archiv
+└── glatttHub-1.1.6-arm64.pkg       # PKG-Installer für MDM
 ```
 
 Die Versionsnummer kommt aus `package.json` (`version`) im Projekt-Root — vor jedem
@@ -631,10 +699,10 @@ Der Notarization-Hook (`electron/notarize.cjs`) wird von `electron-builder` auto
 
 | Feld | Wert |
 |------|------|
-| **File** | `electron/dist/glatttHub-1.1.5-arm64.pkg` |
+| **File** | `electron/dist/glatttHub-1.1.6-arm64.pkg` |
 | **Application name** | `glatttHub` |
 | **Bundle identifier** | `com.glattt.hub` |
-| **Version** | `1.1.5` |
+| **Version** | `1.1.6` |
 
 Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
@@ -658,7 +726,8 @@ Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 | `electron/main.cjs` | Hauptprozess: Fenster, Menü, Tray, CSS-Injection, APNs-Handler, Badge |
 | `electron/tabs.cjs` | TabManager: Views je Tab, Fenster-öffnen-Handler, Kontextmenüs, Zurück/Vor/Neu laden |
 | `electron/tabbar.html`, `electron/tabbar-preload.cjs` | Tab-Leiste (Fensterinhalt) und ihre IPC-Brücke |
-| `electron/preload.cjs` | Drag-Region, electron-app Klasse, Theme-Meldung, ⌘-Klick, electronPush Bridge, electronBadge Bridge |
+| `electron/preload.cjs` | Drag-Region, electron-app/-tabs-visible Klassen, Theme-Meldung, ⌘-Klick, Kontextmenü (mit Profilbild), Menüzustand (`electron-menu:state`) und Befehle (`electron-command`), electronPush Bridge, electronBadge Bridge |
+| `resources/views/partials/desktop-app-bridge.blade.php` | Brücke in der Seite: Wächter für `electron-tabs-visible`, Empfänger der Menü-Befehle (postMessage → Sidebar, ThemeManager, Tour) |
 | `public/js/hub.js` (`setPageTitle`) | Tab-Titel aus nachgeladenen Daten (Kunde, Vertrag, Forderungsfall) |
 | `electron/notarize.cjs` | afterSign-Hook für Notarization |
 | `electron/electron-builder.config.cjs` | Build-Konfiguration (Signing, Notarization, PKG) |
@@ -674,6 +743,7 @@ Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 09.10.2026 | 1.1.6 | Menüleiste: „Gehe zu" (Hub-Seiten nach Rechten, Suche, glatttBert), Tabs mit Seitennamen und Häkchen, „Geschlossenen Tab wiederherstellen" (⇧⌘T), Farbschema und Standort als Untermenüs, Hilfe mit Nutzerhandbuch und „Rundgang dieser Seite"; Dock-Menü mit offenen Tabs und Schnellstart; Profilbild im Rechtsklick-Menü auf Kunden; Zustand aus `/api/app/navigation`, Befehle per postMessage (`desktop-app-bridge`), Prüfung über `GLATTTHUB_DEBUG_MENU` |
 | 09.10.2026 | 1.1.5 | **1.1.4 nicht verteilen:** Der Preload-Wächter rief `classList.add()` auch bei vorhandener Klasse auf — das schreibt das Attribut neu, löst die nächste Mutation aus und friert den Renderer in einer Endlosschleife ein (Login- und Startseite reagierten auf nichts). Jetzt nur setzen, wenn die Klasse fehlt; Nachweis in der echten App per CDP |
 | 09.10.2026 | 1.1.4 | Layout-Sprung beim Seitenwechsel behoben: User-Agent-Token `glatttHub-Desktop/<version>` (Hub rendert `electron-tabs-visible` serverseitig, `NativeApp::isDesktop()`), `MutationObserver`-Wächter für die `<html>`-Klasse im Preload und im Hub (deckt 1.1.3 und das Admin-Panel ab) |
 | 20.09.2026 | 1.1.3 | Neues Icon-Set (Icon Composer `@4x`-Exporte, `icon-exports.sh`), eigenes Favicon `glatttHub_Favicon.png` für Hub, Wiki und Nutzerhandbuch (`scripts/update-favicons.sh`), iOS-Web-App-Icons vollflächig auf Weiß (keine schwarzen Ecken auf dem iPhone-Homescreen) |
