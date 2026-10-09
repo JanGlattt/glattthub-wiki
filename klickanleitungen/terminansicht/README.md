@@ -25,6 +25,13 @@ Aufnahmelauf einmal komplett durchlaufen.
 
 ## Screenshots neu aufnehmen
 
+**Stand 09.10.2026:** „Direkt behandeln" übergibt die Beratung seit dem 09.10.2026 **ohne eigene
+Terminnotiz** (nur die Kasse fragt noch); `flow5` endet deshalb mit dem Sprung in den
+Behandlungstermin, die Notiz-Bilder `i2`–`i4` nimmt `flow6` am Ende der Behandlung auf. Die Bilder
+`h3-direkt-gebucht`, `i2`–`i4` im Bucket stammen noch vom alten Ablauf — nächster Lauf nötig
+(blockiert, solange `gcloud auth login` für das IAP-Token aussteht).
+
+
 Voraussetzungen: Staging-Testuser (Rolle Institute MA, Magdeburg), ein **gebuchter Beratungstermin**
 für eine Magdeburg-Testkundin (MD000001–MD000004) in Raum MD 1, Staging über die `*.run.app`-Adresse
 (umgeht IAP; `gcloud run services describe glattthub-web-staging --region=europe-west3 --format='value(status.url)'`).

@@ -1,4 +1,5 @@
-/* Stufe 5: Direkt behandeln → Termin beenden (Terminnotiz) → Sprung in den Behandlungstermin */
+/* Stufe 5: Direkt behandeln → Übergabe (ohne eigene Notiz, nur Kasse) → Sprung in den Behandlungstermin
+   Die Terminnotiz-Bilder i2–i4 nimmt seit 09.10.2026 flow6 am Ende des Behandlungstermins auf. */
 const C = require('./common.cjs'); const L = C.L;
 const fs = require('fs');
 (async () => {
@@ -23,24 +24,16 @@ const fs = require('fs');
   console.log('gebucht →', url); fs.writeFileSync('treatment-url.txt', url || '');
   await L.shot(page, 'h3-direkt-gebucht', { noScroll: true, marks: [ { id: 'weiter', kind: 'chip', label: 'Hier tippen', fn: C.rectOfBtn, fnArg: 'Weiter', at: 'l' } ]});
   await page.evaluate(() => { const b = [...document.querySelectorAll('.modal-glattt button')].find(e => e.textContent.trim() === 'Weiter' && e.offsetParent !== null); b.click(); });
-  // Beenden-Ablauf startet automatisch: Kasse? → Terminnotiz
-  await page.waitForFunction(() => { const s = Alpine.$data(document.querySelector('.apt-detail')); return s.showBalanceScreen || s.showEndSessionModal; }, null, { timeout: 60000 });
+  // Seit 09.10.2026: „Weiter" übergibt die Beratung ohne eigene Notiz — nur die Kasse fragt noch
+  // (bei offenem Betrag), dann beendet der Hub den Beratungstermin selbst und wechselt in den
+  // Behandlungstermin. Die Terminnotiz (i2–i4) entsteht erst dort beim Beenden → flow6.
+  await page.waitForFunction(() => { const s = Alpine.$data(document.querySelector('.apt-detail')); return s.showBalanceScreen || !s.sessionActive || location.search.includes('start=1'); }, null, { timeout: 60000 });
   await L.wait(page, 800);
-  if (await page.evaluate(() => Alpine.$data(document.querySelector('.apt-detail')).showBalanceScreen)) {
+  if (await page.evaluate(() => Alpine.$data(document.querySelector('.apt-detail'))?.showBalanceScreen)) {
     await L.shot(page, 'i1-kasse', { noScroll: true, marks: [ { id: 'ok', kind: 'chip', label: 'Hier tippen', sel: '.balance-alert-screen-actions .balance-alert-screen-button', at: 'l' } ]});
     await page.click('.balance-alert-screen-actions .balance-alert-screen-button');
-    await page.waitForFunction(() => Alpine.$data(document.querySelector('.apt-detail')).showEndSessionModal, null, { timeout: 60000 });
-    await L.wait(page, 800);
   }
-  await L.shot(page, 'i2-terminnotiz-leer', { noScroll: true, marks: [ { id: 'note', kind: 'badge', n: 1, sel: '.modal-glattt textarea.input-glattt', at: 'l' } ]});
-  await page.fill('.modal-glattt textarea.input-glattt', 'Beratung durchgeführt, Vertrag 4 Zonen (Achseln, Bikini, Unterschenkel) per Ratenzahlung abgeschlossen, Behandlung direkt im Anschluss.');
-  await L.wait(page, 300);
-  await L.shot(page, 'i3-terminnotiz', { noScroll: true, marks: [ { id: 'note', kind: 'badge', n: 1, sel: '.modal-glattt textarea.input-glattt', at: 'l' }, { id: 'end', kind: 'chip', label: 'Hier tippen', sel: '.modal-glattt-footer button.btn-glattt-danger', at: 'l' } ]});
-  await page.click('.modal-glattt-footer button.btn-glattt-danger');
-  await page.waitForFunction(() => Alpine.$data(document.querySelector('.apt-detail')).endSessionStatus === 'success', null, { timeout: 60000 });
-  await L.wait(page, 500);
-  await L.shot(page, 'i4-termin-beendet', { noScroll: true });
-  await page.waitForURL(u => u.toString().includes('start=1'), { timeout: 30000 }).catch(() => console.log('kein Redirect'));
+  await page.waitForURL(u => u.toString().includes('start=1'), { timeout: 60000 }).catch(() => console.log('kein Redirect — Übergabe-Balken?'));
   await L.hideBadge(page);
   await page.waitForFunction(() => { const el = document.querySelector('.apt-detail'); return el && Alpine.$data(el).loading === false; }, null, { timeout: 30000 });
   await L.wait(page, 5000);
