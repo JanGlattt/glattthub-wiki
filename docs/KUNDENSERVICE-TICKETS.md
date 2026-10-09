@@ -182,6 +182,9 @@ nach dem Reload eine zweite Notiz.
   Antwort `{reply, hint}`; `reply` wird zu `<p>`-Absätzen und landet im Editor (leer = füllen,
   sonst anhängen). Bert schreibt **keine Grußformel**, der Hub setzt sie. Fehlende Fakten markiert
   er mit `[bitte prüfen: …]`, `hint` erscheint als Streifen über dem Editor mit den Quellen.
+- **Interne Notiz** (`mode=note`, Reiter „Interne Notiz“): dieselben Kontextblöcke, aber Einschätzung
+  und nächste Schritte für die Kolleginnen statt einer Antwort an die Kundin (Token-Zweck
+  `kundenservice.notiz`).
 - **Zusammenfassung** (Sonnet): 3–6 Zeilen, gespeichert in `ai_summary` mit
   `ai_summary_message_id` = höchste Nachrichten-ID; `aiSummaryIsStale()` markiert sie als
   veraltet, sobald eine neue Nachricht kam. Anzeige über dem Verlauf, „Erneuern“/„Ausblenden“.
@@ -253,6 +256,12 @@ tragen danach die Hub-Nummer. **Stichtag:** Import ab dem letzten Lauf nachziehe
   fehlgeschlagen“.
 - Zendesk liefert Anhänge nur mit `Accept: */*` (406 sonst); scheitert ein Anhang, holt der nächste
   Importlauf ihn nach (`zendesk_updated_at` = null).
+- Mails nur mit HTML-Teil (web.de-App): `body_text` entsteht aus `plainText()` plus
+  `stripQuotedReply()` (zitierte Vorgeschichte ab „Am … schrieb“, „On … wrote“, „Von:/Gesendet:“,
+  „>“-Zeilen); ältere Nachrichten ohne Klartext leitet `detail()` beim Lesen ab. Die ganze Mail
+  bleibt über „Als E-Mail anzeigen“ und die Rohmail erreichbar.
+- Ein Element zwischen zwei `.form-glattt-group` bricht den Geschwister-Abstand — Knöpfe unter
+  einem Feld gehören in dessen Gruppe.
 - Zwei Test-Mails gleicher Adresse und gleichen Betreffs landen im selben Ticket (Zuordnung über
   Absender und Betreff) — in Tests verschiedene Betreffe nehmen.
 - Der lokale Testnutzer hat die Rolle `super_admin`, nicht `Super-Admin`: neue Rechte dort direkt
