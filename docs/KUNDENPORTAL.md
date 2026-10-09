@@ -194,8 +194,14 @@ Bremse wie beim Formular (5 je Stunde), gleiche Sperre über `contact_enabled`.
 Die Mitteilung „Antwort vom Kundenservice“ trägt `data.ticket`; die App öffnet damit direkt den
 Verlauf (`PushRouter.Opened.ticket`). App: `ContactView` (Liste, iPad mit Verlauf rechts),
 `SupportRequestView` (Chat, Antwortzeile, Anhänge), `ClosedRequestsView`,
-`NewContactMessageSheet`. Bewusst weggelassen: Anhänge **von** der Kundin (Portal-Dienst ohne
-Bucket-Schreibzugriff). Tests: `PortalSupportRequestsTest`.
+`NewContactMessageSheet`, `AttachmentPicker`.
+
+**Anhänge der Kundin (10.10.2026, M103):** bis zu drei Bilder oder PDFs je Nachricht (je 10 MB), im Web
+als `files[]` am Formular, in der App als Multipart (`APIClient.uploadMultipart`, Galerie-Bilder vorher als
+JPEG mit 2000 px). Der Portal-Dienst darf nicht in den Bucket schreiben, deshalb reisen die Dateien als Base64
+im Auftrag `contact` mit; der Hub legt sie wie Antwort-Anhänge ab (`support/<ticket>/<message>/…` auf
+`SupportAttachment::storageDisk()`) und leert den Auftrag danach. `PortalSupportSyncObserver` reagiert auch
+auf neue Anhänge, damit die Kopie sie zeigt. Tests: `PortalSupportRequestsTest`.
 
 ### Datenmodell
 
@@ -343,6 +349,8 @@ Prüfen nach der Einrichtung: `https://my.glattt.com/anmelden` zeigt die Portal-
 
 ## Changelog
 
+- **10.10.2026** — Anhänge der Kundin in Anfragen (Web + App), Tastatur-Leiste in der Antwortzeile,
+  Zendesk-Importe ohne Doppel.
 - **09.10.2026** — Anfragen an den Kundenservice im Kontakt (Entwurf 1 „Kontakt wird Postfach“):
   Ticket-Kopie am Konto ohne Notizen, Verlauf als Chat mit Antwort, Abgeschlossene dahinter, Push
   öffnet den Verlauf; Web und App.
