@@ -605,12 +605,23 @@ export APPLE_API_ISSUER=84f1cc63-769a-4ea0-b54f-636f28ccbbaa
 
 ```
 electron/dist/
-├── mac-arm64/
-│   └── glatttHub.app               # Signierte App (intern)
-├── glatttHub-1.1.6-arm64.dmg       # Direkter Download
-├── glatttHub-1.1.6-arm64-mac.zip   # ZIP-Archiv
-└── glatttHub-1.1.6-arm64.pkg       # PKG-Installer für MDM
+├── mac-universal/
+│   └── glatttHub.app                   # Signierte App (intern), arm64 + x64
+├── glatttHub-1.1.6-universal.dmg       # Direkter Download
+├── glatttHub-1.1.6-universal-mac.zip   # ZIP-Archiv
+└── glatttHub-1.1.6-universal.pkg       # PKG-Installer für MDM
 ```
+
+!!! info "Universal-Build seit 09.10.2026"
+    Die App wird als **Universal Binary** gebaut (`arch: ['universal']` in
+    `electron-builder.config.cjs`): electron-builder baut arm64 und x64 getrennt und
+    verschmilzt sie mit `@electron/universal` zu einer App. Grund: Im Bestand laufen
+    noch Intel-Macs, und in Miradore soll **eine** Variante reichen — zwei PKGs hießen
+    zwei Einträge, zwei Zuweisungen und doppelte Pflege bei jedem Update. Preis: das
+    PKG ist etwa doppelt so groß (~250 MB statt ~130 MB), weil beide Architekturen
+    enthalten sind. Ein reiner arm64-Build (`hostArchitectures="arm64"` im PKG) bricht
+    auf Intel-Macs bei der Installation ab. Native Module gibt es nicht, deshalb braucht
+    die Verschmelzung keine `x64ArchFiles`-Ausnahmen.
 
 Die Versionsnummer kommt aus `package.json` (`version`) im Projekt-Root — vor jedem
 Release hochziehen, sonst überschreibt der Build die alte Nummer.
@@ -699,7 +710,7 @@ Der Notarization-Hook (`electron/notarize.cjs`) wird von `electron-builder` auto
 
 | Feld | Wert |
 |------|------|
-| **File** | `electron/dist/glatttHub-1.1.6-arm64.pkg` |
+| **File** | `electron/dist/glatttHub-1.1.6-universal.pkg` |
 | **Application name** | `glatttHub` |
 | **Bundle identifier** | `com.glattt.hub` |
 | **Version** | `1.1.6` |
@@ -716,7 +727,7 @@ Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 | **Kein Offline-Modus** | App braucht Internet — zeigt Fehler wenn offline |
 | **Push nur bei offener App** | Kein Background Push wie bei nativen Apps oder Browser (Service Worker) |
 | **Kein Auto-Updater** | Noch nicht implementiert — Update = neue `.pkg` per MDM verteilen |
-| **Nur macOS/arm64** | Kein Intel-Build, kein Windows/Linux (aktuell nicht benötigt) |
+| **Nur macOS** | Universal (Apple Silicon + Intel) seit 09.10.2026; kein Windows/Linux (aktuell nicht benötigt) |
 | **Neuer APNs-Token nach Neuinstallation** | Nach PKG-Reinstall muss Push-Banner neu bestätigt werden (`localStorage.removeItem('push-banner-dismissed')`) |
 
 ### Relevante Dateien
@@ -743,6 +754,7 @@ Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 09.10.2026 | 1.1.6 | **Universal-Build** (arm64 + x64 in einer App, Dateinamen `-universal`), damit ein PKG in Miradore alle Macs inkl. der Intel-Geräte versorgt |
 | 09.10.2026 | 1.1.6 | Menüleiste: „Gehe zu" (Hub-Seiten nach Rechten, Suche, glatttBert), Tabs mit Seitennamen und Häkchen, „Geschlossenen Tab wiederherstellen" (⇧⌘T), Farbschema und Standort als Untermenüs, Hilfe mit Nutzerhandbuch und „Rundgang dieser Seite"; Dock-Menü mit offenen Tabs und Schnellstart; Profilbild im Rechtsklick-Menü auf Kunden; Zustand aus `/api/app/navigation`, Befehle per postMessage (`desktop-app-bridge`), Prüfung über `GLATTTHUB_DEBUG_MENU` |
 | 09.10.2026 | 1.1.5 | **1.1.4 nicht verteilen:** Der Preload-Wächter rief `classList.add()` auch bei vorhandener Klasse auf — das schreibt das Attribut neu, löst die nächste Mutation aus und friert den Renderer in einer Endlosschleife ein (Login- und Startseite reagierten auf nichts). Jetzt nur setzen, wenn die Klasse fehlt; Nachweis in der echten App per CDP |
 | 09.10.2026 | 1.1.4 | Layout-Sprung beim Seitenwechsel behoben: User-Agent-Token `glatttHub-Desktop/<version>` (Hub rendert `electron-tabs-visible` serverseitig, `NativeApp::isDesktop()`), `MutationObserver`-Wächter für die `<html>`-Klasse im Preload und im Hub (deckt 1.1.3 und das Admin-Panel ab) |
