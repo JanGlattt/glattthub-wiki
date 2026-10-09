@@ -280,6 +280,20 @@ Nummer darauf. **Stichtag:** Import ab dem letzten Lauf nachziehen,
 `support:purge-shadow`, Modus „live“, Weiterleitung an Zendesk bei IONOS abschalten, Scheduler-Job
 `sync-zendesk-tickets` pausieren, Zendesk kündigen, Rechte den Rollen geben.
 
+**Übergang „Hub antwortet, Zendesk sieht mit“ (Weg 2, Jan 10.10.2026):** Postfach auf „live“, die
+Weiterleitung an Zendesk bleibt vorerst, und der Schalter „Antworten nach Zendesk spiegeln“ in den
+Postfach-Einstellungen ist an. `SendSupportReplyJob` reiht nach jedem erfolgreichen Versand
+`MirrorReplyToZendeskJob` ein; `ZendeskMirrorService::mirror()` legt die Antwort als **interne** Notiz
+(„Im glatttHub beantwortet von … am …“ plus Text) in das passende Zendesk-Ticket und setzt dort den
+eingestellten Status (Standard „gelöst“, wählbar „wartet“/„offen“). Passend heißt: `zendesk_id`
+(übernommen) → `zendesk_mirror_id` (schon gespiegelt) → Zendesk-Suche nach Anfragender und gleichem
+Betreff (neuestes, nicht geschlossen) → sonst neues Zendesk-Ticket mit Tags `hub`, `hub_gespiegelt`.
+Das Ergebnis steht am Ticket (`zendesk_mirrored` / `zendesk_mirror_failed`), der Job versucht es dreimal
+und spiegelt bei Wiederholung nicht doppelt. Der Import erkennt gespiegelte Hub-Tickets an
+`zendesk_mirror_id` und holt nur Kommentare dazu, ohne Nummer oder Status zu überschreiben. Nie als
+öffentlicher Kommentar spiegeln — Zendesk schickte die Antwort sonst ein zweites Mal; dasselbe gilt für
+den Zendesk-Trigger „Notify requester of solved request“, deshalb ist der Status einstellbar.
+
 ### Fallstricke
 
 - webklex quotet nicht-numerische Suchwerte: UID-Bereiche nur über `uidRangeCriteria()`
@@ -333,6 +347,8 @@ Nummer darauf. **Stichtag:** Import ab dem letzten Lauf nachziehen,
 
 - **09.10.2026 (nachts)** — Kundinnen sehen ihre Anfragen in Portal und My glattt (Kopie ohne
   Notizen, Antwort als Eingang, Folgeticket bei geschlossen, Push mit Ticketnummer).
+- **10.10.2026** — Zendesk-Spiegel (Weg 2): Hub-Antworten als interne Notiz ins Zendesk-Ticket,
+  Status einstellbar, Import erkennt gespiegelte Tickets.
 - **09.10.2026 (abends)** — Zuordnung über die Vertragsnummer, Schattenbetrieb schreibt in
   übernommene Tickets, Import erkennt vorhandene Mails, `support:reattach-shadow` räumt
   Schatten-Tickets auf. Kundinnen-Mails mit Auszeichnung (`body_rich`/`body_markdown`) und ohne
