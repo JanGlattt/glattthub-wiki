@@ -123,7 +123,7 @@ für alle Tabs.
     `-webkit-app-region: drag`-Zonen **fensterweit** über alle WebContents hinweg: Die
     Drag-Zone liegt darum nur auf `.strip` (38 px), nie auf dem `body` der Leiste, und die
     Seite blendet ihre eigene `#electron-drag-region` aus, sobald sie unter der Leiste
-    läuft (Body-Klasse `electron-tabs-visible`). Beide Befunde vom 20.09.2026, siehe
+    läuft (Klasse `electron-tabs-visible` am `<html>`). Beide Befunde vom 20.09.2026, siehe
     `.github/knowledge/electron-webcontentsview-titelleiste-klicks.md`.
 
 ### Dateistruktur
@@ -259,7 +259,7 @@ Injiziertes CSS:
 
 | CSS-Regel | Zweck |
 |-----------|-------|
-| `#electron-drag-region` | 38px Drag-Region oben (Fenster verschieben) — nur ohne Tab-Leiste; mit Leiste (`body.electron-tabs-visible`, seit 1.1.0 immer) ausgeblendet |
+| `#electron-drag-region` | 38px Drag-Region oben (Fenster verschieben) — nur ohne Tab-Leiste; mit Leiste (`html.electron-tabs-visible`, seit 1.1.0 immer) ausgeblendet |
 | `.fi-sidebar` (≥ 64rem), `.fi-sidebar-header`, `.fi-topbar` | 38px Versatz für Traffic Lights (Filament) — nur ohne Tab-Leiste |
 | `nav.hub-nav`, `.hub-topbar` | 38px Padding für Traffic Lights (Hub-Layout) — nur ohne Tab-Leiste |
 | `a, button, input, ...` | `-webkit-app-region: no-drag` für klickbare Elemente |
@@ -277,18 +277,55 @@ nacktes Standard-Fenster ohne Drag-Region. Seit 1.1.0 wird beides zum Tab (siehe
 
 #### User-Agent
 
-`Electron/X.X.X` wird aus dem User-Agent entfernt, damit Google OAuth funktioniert (Google blockiert Logins aus Electron).
+`Electron/X.X.X` wird aus dem User-Agent entfernt, damit Google OAuth funktioniert (Google
+blockiert Logins aus Electron). Seit 1.1.4 (09.10.2026) hängt die App stattdessen
+**`glatttHub-Desktop/<version>`** an — nach dem Vorbild `glatttHub-iOS/` der iOS-App. Daran
+erkennt der Hub die Desktop-App serverseitig (`App\Support\NativeApp::isDesktop()`,
+`desktopVersion()`); sie zählt dabei bewusst **nicht** als „native App" im Sinne von
+`platform()`/`isNative()`, denn das steuert die iOS-Bridge (Meta-Tags, Gerätevertrauen,
+Rückweg-Leiste im Admin).
+
+#### Die Klasse `electron-tabs-visible` muss vom Server kommen
+
+Das Theme nimmt unter der Tab-Leiste den kleinen Luftraum (`html.electron-tabs-visible
+{ --layout-top-offset: 0.5rem }` statt 2,5 rem). Bis 1.1.3 setzte nur das Preload diese
+Klasse per JavaScript. **Livewire ersetzt bei `wire:navigate` alle `<html>`-Attribute
+durch die der neuen Seite** (`replaceHtmlAttributes()`) — die Klasse fiel bei jedem
+Seitenwechsel weg, Seitenleiste und Inhalt rutschten 32 px nach unten und sprangen erst
+mit dem 1-Sekunden-Intervall des Preloads wieder hoch (Befund Jan per Bildschirmvideo,
+09.10.2026; dasselbe Muster wie das weiße Aufblitzen der `dark`-Klasse im September).
+
+Seit 09.10.2026 dreifach abgesichert:
+
+1. **Serverseitig:** Die Hub-Layouts (`hub`, `fullscreen`, `app`, `guest`) rendern
+   `NativeApp::htmlClass()` ins `<html>` und `NativeApp::bodyClass()` (`electron-app`) in
+   den `<body>` — die neue Seite bringt die Klasse also selbst mit. Braucht App ≥ 1.1.4
+   (User-Agent-Token).
+2. **Wächter im Hub:** `resources/views/partials/desktop-app-html-class.blade.php`
+   (Hub-, Fullscreen-Layout und Filament-`HEAD_END`) stellt die Klasse per
+   `MutationObserver` am `<html>` sofort wieder her — als Microtask noch vor dem nächsten
+   Zeichnen, also ohne sichtbaren Sprung. Erkennung über die Bridge-Objekte des Preloads
+   (`window.electronBadge`/`electronPush`), die jede Navigation überleben. Deckt ältere
+   App-Versionen und das Admin-Panel ab, dessen `<html>` Filament nicht erweitern lässt.
+3. **Wächter im Preload** (ab 1.1.4): derselbe Observer in `preload.cjs`, dazu
+   `applyTabStripClass()` auch auf `livewire:navigated`; das Intervall bleibt als letzte
+   Rückfallebene.
+
+Tests: `tests/Unit/NativeAppDetectionTest.php` (Erkennung, Abgrenzung zu iOS),
+`tests/Feature/DesktopAppLayoutTest.php` (Klasse im `<html>`/`<body>`, Wächter im Markup).
+Regel für alles Weitere: **Bei `wire:navigate` überlebt am `<html>` nur, was die neue Seite
+mitbringt** — siehe `.github/knowledge/html-klassen-ueberleben-wire-navigate-nicht.md`.
 
 ### Preload-Script (`preload.cjs`)
 
 Das Preload-Script (läuft in jedem Tab) hat vier Aufgaben:
 
 1. **Drag-Region**: Erstellt ein `#electron-drag-region` div am Anfang des Body (per CSS ausgeblendet, sobald die Seite unter der Tab-Leiste läuft)
-2. **Electron-Erkennung**: Setzt `document.body.classList.add('electron-app')` (und `electron-tabs-visible` auf Zuruf des Hauptprozesses)
+2. **Electron-Erkennung**: Setzt `document.body.classList.add('electron-app')` und `electron-tabs-visible` am `<html>` — so früh wie möglich, und ein `MutationObserver` stellt sie wieder her, sobald Livewire sie bei `wire:navigate` entfernt (seit 1.1.4; serverseitig kommt sie zusätzlich aus dem User-Agent-Token, siehe „User-Agent")
 3. **Farbschema melden**: `html.dark` → `electron-theme:changed` für die Tab-Leiste
 4. **⌘-Klick**: Links und `[data-href]`-Zeilen mit Meta/Ctrl in einem neuen Tab öffnen
 
-Die Drag-Region wird bei drei Events neu erstellt (Sickerheit gegen SPA-Navigation):
+Die Drag-Region wird bei drei Events neu erstellt (Sicherheit gegen SPA-Navigation):
 
 - `DOMContentLoaded` — Erster Seitenaufbau
 - `livewire:navigated` — Nach Livewire SPA-Navigation
@@ -296,11 +333,15 @@ Die Drag-Region wird bei drei Events neu erstellt (Sickerheit gegen SPA-Navigati
 
 ### Electron-Erkennung in der Web-App
 
-Die Web-App erkennt die Electron-Umgebung über die CSS-Klasse:
+Die Web-App erkennt die Electron-Umgebung clientseitig über die CSS-Klasse:
 
 ```javascript
 const isElectron = document.body.classList.contains('electron-app');
 ```
+
+Serverseitig (seit 1.1.4) über den User-Agent-Token: `\App\Support\NativeApp::isDesktop()`
+bzw. `desktopVersion()` — damit rendern die Layouts `electron-tabs-visible` und
+`electron-app` direkt ins Markup (siehe „User-Agent" oben).
 
 Wird aktuell für Push-Notifications genutzt:
 
@@ -488,9 +529,9 @@ export APPLE_API_ISSUER=84f1cc63-769a-4ea0-b54f-636f28ccbbaa
 electron/dist/
 ├── mac-arm64/
 │   └── glatttHub.app               # Signierte App (intern)
-├── glatttHub-1.1.3-arm64.dmg       # Direkter Download
-├── glatttHub-1.1.3-arm64-mac.zip   # ZIP-Archiv
-└── glatttHub-1.1.3-arm64.pkg       # PKG-Installer für MDM
+├── glatttHub-1.1.4-arm64.dmg       # Direkter Download
+├── glatttHub-1.1.4-arm64-mac.zip   # ZIP-Archiv
+└── glatttHub-1.1.4-arm64.pkg       # PKG-Installer für MDM
 ```
 
 Die Versionsnummer kommt aus `package.json` (`version`) im Projekt-Root — vor jedem
@@ -568,10 +609,10 @@ Der Notarization-Hook (`electron/notarize.cjs`) wird von `electron-builder` auto
 
 | Feld | Wert |
 |------|------|
-| **File** | `electron/dist/glatttHub-1.1.3-arm64.pkg` |
+| **File** | `electron/dist/glatttHub-1.1.4-arm64.pkg` |
 | **Application name** | `glatttHub` |
 | **Bundle identifier** | `com.glattt.hub` |
-| **Version** | `1.1.3` |
+| **Version** | `1.1.4` |
 
 Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
@@ -611,6 +652,7 @@ Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 09.10.2026 | 1.1.4 | Layout-Sprung beim Seitenwechsel behoben: User-Agent-Token `glatttHub-Desktop/<version>` (Hub rendert `electron-tabs-visible` serverseitig, `NativeApp::isDesktop()`), `MutationObserver`-Wächter für die `<html>`-Klasse im Preload und im Hub (deckt 1.1.3 und das Admin-Panel ab) |
 | 20.09.2026 | 1.1.3 | Neues Icon-Set (Icon Composer `@4x`-Exporte, `icon-exports.sh`), eigenes Favicon `glatttHub_Favicon.png` für Hub, Wiki und Nutzerhandbuch (`scripts/update-favicons.sh`), iOS-Web-App-Icons vollflächig auf Weiß (keine schwarzen Ecken auf dem iPhone-Homescreen) |
 | 20.09.2026 | 1.1.2 | Neues App-Icon (Icon Composer, „Hub"-Schriftzug), Icon-Skripte für das neue Export-Namensschema (`Default-16@1x`), `release.sh` |
 | 20.09.2026 | 1.1.1 | Eigenes Rechtsklick-Menü mit Objekt-Einträgen (Kunde/Vertrag/Forderungsfall, `data-ctx`-Konvention + Konventions-Test), Tab-Menü, Tabs per Drag & Drop sortieren, 24 px Abstand unter der Leiste, Klasse `electron-tabs-visible` auf `<html>` (kein Layout-Sprung) |
