@@ -307,9 +307,19 @@ Seit 09.10.2026 dreifach abgesichert:
    Zeichnen, also ohne sichtbaren Sprung. Erkennung über die Bridge-Objekte des Preloads
    (`window.electronBadge`/`electronPush`), die jede Navigation überleben. Deckt ältere
    App-Versionen und das Admin-Panel ab, dessen `<html>` Filament nicht erweitern lässt.
-3. **Wächter im Preload** (ab 1.1.4): derselbe Observer in `preload.cjs`, dazu
+3. **Wächter im Preload** (ab 1.1.5): derselbe Observer in `preload.cjs`, dazu
    `applyTabStripClass()` auch auf `livewire:navigated`; das Intervall bleibt als letzte
    Rückfallebene.
+
+!!! danger "Ein Observer, der die Klasse setzt, darf sie nur setzen, wenn sie fehlt"
+    `classList.add('x')` schreibt das `class`-Attribut auch dann neu, wenn `x` schon
+    enthalten ist — und jedes Schreiben erzeugt einen Mutation-Record. Ein Observer, der
+    darauf bedingungslos `add()` ruft, füttert sich selbst: Endlosschleife aus Microtasks,
+    der Renderer friert ein, nichts ist mehr klickbar. Genau das war Build 1.1.4
+    (09.10.2026): Das Theme-Skript fasst beim Laden die `dark`-Klasse an, der Preload-
+    Wächter lief daraufhin ohne Ende. Immer `contains()` vor `add()`; und ein Preload nur
+    mit der **echten** App prüfen (Dev-Modus + `--remote-debugging-port`, siehe unten),
+    nie mit einer Nachbildung im Browser.
 
 Tests: `tests/Unit/NativeAppDetectionTest.php` (Erkennung, Abgrenzung zu iOS),
 `tests/Feature/DesktopAppLayoutTest.php` (Klasse im `<html>`/`<body>`, Wächter im Markup).
@@ -529,15 +539,27 @@ export APPLE_API_ISSUER=84f1cc63-769a-4ea0-b54f-636f28ccbbaa
 electron/dist/
 ├── mac-arm64/
 │   └── glatttHub.app               # Signierte App (intern)
-├── glatttHub-1.1.4-arm64.dmg       # Direkter Download
-├── glatttHub-1.1.4-arm64-mac.zip   # ZIP-Archiv
-└── glatttHub-1.1.4-arm64.pkg       # PKG-Installer für MDM
+├── glatttHub-1.1.5-arm64.dmg       # Direkter Download
+├── glatttHub-1.1.5-arm64-mac.zip   # ZIP-Archiv
+└── glatttHub-1.1.5-arm64.pkg       # PKG-Installer für MDM
 ```
 
 Die Versionsnummer kommt aus `package.json` (`version`) im Projekt-Root — vor jedem
 Release hochziehen, sonst überschreibt der Build die alte Nummer.
 
 ### Dev-Modus
+
+Für automatische Prüfungen der echten App (echtes Preload, echter User-Agent) den
+Dev-Modus mit Debug-Port starten und per Playwright über CDP andocken:
+
+```bash
+env -u ELECTRON_RUN_AS_NODE GLATTTHUB_URL=http://glattthub.local:8888 \
+  npx electron electron/main.cjs --remote-debugging-port=9333
+# dann: chromium.connectOverCDP('http://127.0.0.1:9333') → Seite mit glattthub.local wählen
+```
+
+Reagiert `page.evaluate(() => 1)` nicht innerhalb weniger Sekunden, ist der Renderer
+blockiert (so wurde die Endlosschleife von 1.1.4 nachgewiesen).
 
 `npm run electron:dev` startet die Electron-Entwicklungsversion. Beim `npm install` wird automatisch `patch-dev.sh` ausgeführt, das:
 
@@ -609,10 +631,10 @@ Der Notarization-Hook (`electron/notarize.cjs`) wird von `electron-builder` auto
 
 | Feld | Wert |
 |------|------|
-| **File** | `electron/dist/glatttHub-1.1.4-arm64.pkg` |
+| **File** | `electron/dist/glatttHub-1.1.5-arm64.pkg` |
 | **Application name** | `glatttHub` |
 | **Bundle identifier** | `com.glattt.hub` |
-| **Version** | `1.1.4` |
+| **Version** | `1.1.5` |
 
 Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
@@ -652,6 +674,7 @@ Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 09.10.2026 | 1.1.5 | **1.1.4 nicht verteilen:** Der Preload-Wächter rief `classList.add()` auch bei vorhandener Klasse auf — das schreibt das Attribut neu, löst die nächste Mutation aus und friert den Renderer in einer Endlosschleife ein (Login- und Startseite reagierten auf nichts). Jetzt nur setzen, wenn die Klasse fehlt; Nachweis in der echten App per CDP |
 | 09.10.2026 | 1.1.4 | Layout-Sprung beim Seitenwechsel behoben: User-Agent-Token `glatttHub-Desktop/<version>` (Hub rendert `electron-tabs-visible` serverseitig, `NativeApp::isDesktop()`), `MutationObserver`-Wächter für die `<html>`-Klasse im Preload und im Hub (deckt 1.1.3 und das Admin-Panel ab) |
 | 20.09.2026 | 1.1.3 | Neues Icon-Set (Icon Composer `@4x`-Exporte, `icon-exports.sh`), eigenes Favicon `glatttHub_Favicon.png` für Hub, Wiki und Nutzerhandbuch (`scripts/update-favicons.sh`), iOS-Web-App-Icons vollflächig auf Weiß (keine schwarzen Ecken auf dem iPhone-Homescreen) |
 | 20.09.2026 | 1.1.2 | Neues App-Icon (Icon Composer, „Hub"-Schriftzug), Icon-Skripte für das neue Export-Namensschema (`Default-16@1x`), `release.sh` |
