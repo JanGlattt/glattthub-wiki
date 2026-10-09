@@ -56,9 +56,13 @@ const PLAN = [
     ['fn', async (page, L) => {
       await page.evaluate(() => { const b = [...document.querySelectorAll('button, a')].find(e => e.textContent.trim() === 'Test senden' && e.offsetParent !== null); if (b) b.click(); });
       await L.wait(page, 3000);
+      // Block „Kanäle" (Im Hub, Push, E-Mail) im Fenster nach oben holen — sonst liegt er unter dem Rand
+      await page.evaluate(() => { const h = [...document.querySelectorAll('.fi-modal-window .fi-section-header-heading')].find(e => e.textContent.trim() === 'Kanäle'); h?.closest('.fi-section')?.scrollIntoView({ block: 'start', behavior: 'instant' }); });
+      await L.wait(page, 800);
     }],
   ], marks: [
     { id: 'kanaele', kind: 'badge', n: 1, sel: '.fi-modal-window .fi-fo-field:has([id$="channel_in_app"]), .fi-modal-window .fi-section:nth-of-type(2)', at: 'l' },
+    { id: 'email', kind: 'chip', label: 'Neu: E-Mail', sel: '.fi-modal-window .fi-fo-field:has([id$="channel_email"])', at: 'r' },
   ] },
   { name: 'a4-test-regel', url: '/admin/notifications', wait: 4000, steps: [
     ['fn', async (page, L) => {

@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für den glatttHub — die drei Werkzeuge am Kopf der Seitenleiste und die eigenen Benachrichtigungs-Einstellungen",
   "eyebrow": "Grundlagen · Werkzeuge",
   "footerArea": "Grundlagen",
-  "stand": "06.10.2026",
-  "version": "1.4",
+  "stand": "09.10.2026",
+  "version": "1.5",
   "notes": [
     "Der **Standort wirkt auf fast jede Seite** — Termine, Berichte, Verträge richten sich danach.",
     "Die **Suche findet nicht nur Seiten**, sondern auch Kundinnen, Verträge und Gutscheine.",
@@ -245,15 +245,15 @@
     },
     {
       "h1": "Meine Benachrichtigungen",
-      "sub": "Im Reiter „Einstellungen“ der Mitteilungsseite steht, welche Anlässe dich erreichen — und du entscheidest je Anlass, ob im Hub, per Push oder gar nicht.",
+      "sub": "Im Reiter „Einstellungen“ der Mitteilungsseite steht, welche Anlässe dich erreichen — und du entscheidest je Anlass, ob im Hub, per Push, per E-Mail oder gar nicht.",
       "card": {
         "title": "Meine Benachrichtigungen",
-        "text": "Je Anlass wählen: im Hub, per Push, beides oder stumm"
+        "text": "Je Anlass wählen: im Hub, per Push, per E-Mail oder stumm"
       },
       "left": {
         "shot": "h6-meine-benachrichtigungen"
       },
-      "leftCaption": "Der Reiter „Einstellungen“: Anlässe nach Bereichen zum Aufklappen, je Zeile die beiden Schalter.",
+      "leftCaption": "Der Reiter „Einstellungen“: Anlässe nach Bereichen zum Aufklappen, je Zeile die Schalter — „E-Mail“ nur bei Anlässen, die der Hub per Mail verschickt.",
       "steps": [
         {
           "n": 1,
@@ -273,7 +273,12 @@
         {
           "n": 4,
           "title": "„Push“ schalten",
-          "text": "Aus = keine Mitteilung mehr auf Handy oder Rechner, auch wenn Push dort erlaubt ist. Jede Änderung wird sofort gespeichert."
+          "text": "Aus = keine Mitteilung mehr auf Handy oder Rechner, auch wenn Push dort erlaubt ist."
+        },
+        {
+          "n": 5,
+          "title": "„E-Mail“ schalten",
+          "text": "Erscheint nur bei Anlässen, die der Hub per Mail verschickt (z. B. neue Mail im Kundenservice), und nur, wenn dein Konto eine E-Mail-Adresse hat. Aus = keine Mail mehr. Jede Änderung wird sofort gespeichert."
         }
       ],
       "notes": [
@@ -288,7 +293,7 @@
       ],
       "hint": {
         "kind": "warn",
-        "text": "**Stumm heißt stumm.** Wer beide Schalter ausmacht, erfährt von diesem Anlass nichts mehr — auch nicht nachträglich. Im Zweifel nur Push aus und „Im Hub“ an lassen."
+        "text": "**Stumm heißt stumm.** Wer alle Schalter ausmacht, erfährt von diesem Anlass nichts mehr — auch nicht nachträglich. Im Zweifel nur Push aus und „Im Hub“ an lassen."
       }
     }
   ]

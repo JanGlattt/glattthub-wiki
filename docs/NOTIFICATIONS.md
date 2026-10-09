@@ -103,7 +103,7 @@ Mitteilungsseite sehen sie den Schalter gar nicht. Der Katalog-Standard ist `ema
 eingeschaltet sind „Neue Mail im Kundenservice“ (`support_tickets.created`, an die Mitglieder
 des zuständigen Teams, ersatzweise alle mit `manage_support_tickets`) und „Kundin hat
 geantwortet“ (`support_tickets.customer_replied`, an die zuständige Person). Beide feuern erst
-im Live-Betrieb des Postfachs. Der Testversand im Admin kennt den Kanal nicht (nur Hub/Push).
+im Live-Betrieb des Postfachs. Der Testversand im Admin kennt den Kanal ebenfalls (freier Test mit Schalter „E-Mail“, Regel-Test wie im Echtbetrieb; die Rückmeldung nennt, wer keine Adresse hat).
 
 **Der Katalog ist Pflicht (`NotificationDispatchConventionTest`):** Kein Modul verschickt mehr
 direkt über `NotificationService` oder `PushNotificationService::sendByType()`. Jede Meldung des

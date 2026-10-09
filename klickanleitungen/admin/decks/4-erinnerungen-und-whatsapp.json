@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Erinnerungen, WhatsApp und die Benachrichtigungen an das Team",
   "eyebrow": "Admin · Nachrichten",
   "footerArea": "Admin-Panel",
-  "stand": "25.09.2026",
-  "version": "1.4",
+  "stand": "09.10.2026",
+  "version": "1.5",
   "notes": [
     "Hier wird eingestellt, **was der Hub von selbst verschickt** — an Kundinnen, ohne dass jemand tippt.",
     "**Jede Änderung wirkt sofort** auf alle künftigen Nachrichten; es gibt keinen Testversand an alle.",
@@ -136,7 +136,7 @@
     },
     {
       "h1": "Benachrichtigungen an das Team",
-      "sub": "Unter System → Benachrichtigungen steht der Katalog aller Anlässe: was der Hub wann an wen meldet — im Hub, per Push oder gar nicht.",
+      "sub": "Unter System → Benachrichtigungen steht der Katalog aller Anlässe: was der Hub wann an wen meldet — im Hub, per Push, per E-Mail oder gar nicht.",
       "card": {
         "title": "Anlässe & Regeln",
         "text": "Je Anlass: an, aus, Kanäle, Zielgruppe, Häufigkeit"
@@ -147,7 +147,7 @@
       "right": {
         "shot": "a4-anlass-regel"
       },
-      "leftCaption": "Der Reiter „Anlässe & Regeln“ — je Zeile ein Anlass mit den Schaltern Aktiv, Im Hub, Push, Dringlich.",
+      "leftCaption": "Der Reiter „Anlässe & Regeln“ — je Zeile ein Anlass mit den Schaltern Aktiv, Im Hub, Push, E-Mail, Dringlich.",
       "rightCaption": "Eine Regel im Formular: Kanäle, Text mit Platzhaltern und Zielgruppe.",
       "steps": [
         {
@@ -158,7 +158,7 @@
         {
           "n": 2,
           "title": "Schnell schalten",
-          "text": "Direkt in der Zeile: **Aktiv** (aus = der Anlass meldet gar nicht), **Im Hub** (Glocke), **Push** (Geräte) und **Dringlich** (rot). Die Änderung gilt sofort."
+          "text": "Direkt in der Zeile: **Aktiv** (aus = der Anlass meldet gar nicht), **Im Hub** (Glocke), **Push** (Geräte), **E-Mail** (Postfach — nur Konten mit E-Mail-Adresse) und **Dringlich** (rot). Die Änderung gilt sofort."
         },
         {
           "n": 3,
@@ -179,6 +179,10 @@
         {
           "title": "GoCardless",
           "text": "Geplatzte Lastschriften, Rücklastschriften und widerrufene Mandate sind Anlässe im Modul **SEPA & GoCardless** — mit Kundin, Vertrag, Rate und Ursache in Worten. Massen-Ereignisse (angelegt, eingezogen, ausgezahlt) stehen im Katalog, sind aber aus."
+        },
+        {
+          "title": "E-Mail seit 09.10.2026",
+          "text": "Standard ist **aus**. Eingeschaltet für „Neue Mail im Kundenservice“ (an das zuständige Team) und „Kundin hat geantwortet“ (an die Zuständige) — beides erst im Live-Betrieb des Postfachs. Die meisten Institutskonten haben keine Adresse und werden still übersprungen."
         }
       ],
       "hint": {
@@ -188,7 +192,7 @@
     },
     {
       "h1": "Test-Benachrichtigung senden",
-      "sub": "Prüfen, ob eine Meldung ankommt — an sich selbst, eine Kollegin, eine Rolle oder alle; im Hub, per Push oder beides.",
+      "sub": "Prüfen, ob eine Meldung ankommt — an sich selbst, eine Kollegin, eine Rolle oder alle; im Hub, per Push, per E-Mail oder alles zusammen.",
       "card": {
         "title": "Testversand",
         "text": "Freier Text oder Probe einer Regel"
@@ -199,13 +203,13 @@
       "right": {
         "shot": "a4-test-regel"
       },
-      "leftCaption": "„Test senden“: eigener Text, Kanäle und Empfänger frei wählbar.",
+      "leftCaption": "„Test senden“: eigener Text, Kanäle (Im Hub, Push, E-Mail) und Empfänger frei wählbar.",
       "rightCaption": "„Testen“ an einer Regel: der Regeltext mit Beispielwerten, Kanäle wie im Echtbetrieb.",
       "steps": [
         {
           "n": 1,
           "title": "Freier Test",
-          "text": "**„Test senden“** oben rechts. Titel und Nachricht sind vorbelegt, **Kanäle** (Im Hub, Push) und **Empfänger** frei wählbar — vorbelegt bist du selbst."
+          "text": "**„Test senden“** oben rechts. Titel und Nachricht sind vorbelegt, **Kanäle** (Im Hub, Push, E-Mail) und **Empfänger** frei wählbar — vorbelegt bist du selbst."
         },
         {
           "n": 2,
@@ -220,7 +224,7 @@
         {
           "n": 4,
           "title": "Rückmeldung lesen",
-          "text": "Nach dem Senden steht oben rechts, wer es **im Hub** bekam, wer **per Push** — und wer **kein Gerät** angemeldet hat oder wegen Stummschaltung leer ausging."
+          "text": "Nach dem Senden steht oben rechts, wer es **im Hub** bekam, wer **per Push**, wer **per E-Mail** — und wer **kein Gerät** angemeldet hat, **keine E-Mail-Adresse** am Konto hat oder wegen Stummschaltung leer ausging."
         }
       ],
       "notes": [
@@ -229,8 +233,8 @@
           "text": "Bei den Empfängern in der Glocke, mit **„[Test]“** vor dem Titel; unter **„Versendet“** mit Herkunft „Test“. Als Auslösung der Regel zählt er nicht."
         },
         {
-          "title": "Push braucht ein Gerät",
-          "text": "Push kommt nur an, wo der Hub als App mit erlaubten Mitteilungen läuft („Grundlagen 2“). Die Rückmeldung nennt, wem das Gerät fehlt."
+          "title": "Push braucht ein Gerät, E-Mail eine Adresse",
+          "text": "Push kommt nur an, wo der Hub als App mit erlaubten Mitteilungen läuft („Grundlagen 2“); E-Mail nur bei Konten mit hinterlegter Adresse. Die Rückmeldung nennt, wem was fehlt."
         }
       ],
       "hint": {
