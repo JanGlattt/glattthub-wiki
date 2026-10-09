@@ -1174,7 +1174,19 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   suggestions|book}` (Recht `view_booking`). Die Logik von „Direkt behandeln" liegt seitdem in
   `App\Services\Booking\DirectTreatmentService` (Raum/Startzeit aus dem Beratungstermin,
   Optionen, Erklärung fehlender Services, Kauf nachholen, Buchen mit Desinfektion) — das Livewire-
-  Modal `DirectTreatmentModal` nutzt denselben Service. **Termin verlegen (seit 22.09.2026 nativ):**
+  Modal `DirectTreatmentModal` nutzt denselben Service. **Übergabe ohne eigene Notiz (seit
+  09.10.2026):** Nach „Fertig" im Buchungsblatt läuft `directTreatmentDismissed()` → Kasse
+  (`beginEndFlow()`) → `endSessionHandover()` (`POST …/note` mit `direct_treatment: true`, Hub
+  schreibt die Übergabe-Notiz, keine Bewertungs-Nachricht) → Wechsel in derselben Ansicht. Die
+  eine Terminnotiz schreibt die Mitarbeiterin am Ende der Behandlung. Scheitert die Übergabe,
+  zeigt die Beratung den goldenen Balken „Behandlungstermin gebucht … Weiter zur Behandlung"
+  (`handoverPending`). **Blatt-Kette nur über `onDismiss`:** Die Knöpfe „Fertig"/„Überspringen"
+  der Blätter Direkt behandeln und Folgetermin klappen nur zu (`closeDirectTreatment()`,
+  `closeFollowUp()`); das nächste Blatt bzw. die Übergabe startet der `onDismiss`-Handler
+  (`directTreatmentDismissed()`, `followUpDismissed()`). Vorher öffnete der Knopf das nächste
+  Blatt im selben Durchlauf, SwiftUI verwarf es während der Schließ-Animation still — die
+  Mitarbeiterin blieb im Beratungstermin und landete beim nächsten Beenden überraschend in der
+  Behandlung (Befund 256, 09.10.2026). **Termin verlegen (seit 22.09.2026 nativ):**
   dasselbe Blatt im Modus `FollowUpBookingModel.Mode.reschedule(appointmentId:currentLabel:)` —
   Schnellwahl „ab heute / in 1 / 2 / 4 Wochen", Hinweis auf den bisherigen Termin, Rückfrage
   „Termin verlegen? … wird storniert", Buchung über `POST hub/booking/api/reschedule`

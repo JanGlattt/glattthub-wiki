@@ -6,8 +6,8 @@
   "of": 24,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "26.09.2026",
-  "version": "1.2",
+  "stand": "09.10.2026",
+  "version": "1.3",
   "nr": 3,
   "title": [
     "Termine und die",
@@ -175,7 +175,7 @@
         {
           "n": 4,
           "title": "Direkt behandeln",
-          "text": "Knopf in der Sitzungssteuerung. Raum und Services prüfen, **buchen** — die App wechselt in den neuen Behandlungstermin."
+          "text": "Knopf in der Sitzungssteuerung. Raum und Services prüfen, **buchen**, **„Fertig“** — die App beendet die Beratung ohne eigene Notiz (nur die Kasse fragt bei offenem Betrag) und wechselt in den neuen Behandlungstermin. Die **eine Terminnotiz** schreibst du am Ende der Behandlung."
         }
       ],
       "notes": [

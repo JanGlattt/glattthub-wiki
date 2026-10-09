@@ -10,11 +10,11 @@
  "subtitle": "Klickanleitung für den Abschluss des Beratungsgesprächs — Behandlung sofort anschließen, Kasse, Folgetermin, Terminnotiz",
  "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
- "stand": "26.09.2026",
- "version": "1.2",
+ "stand": "09.10.2026",
+ "version": "1.3",
  "notes": [
   "**Jeder** Beratungstermin wird über **„Termin beenden“** abgeschlossen — auch ohne Verkauf. Erst dann gilt er in Phorest als erledigt.",
-  "Die **Terminnotiz ist Pflicht** und wandert automatisch nach Phorest."
+  "Die **Terminnotiz ist Pflicht** und wandert automatisch nach Phorest. Bei **Direkt behandeln** reicht **eine** Notiz — die kommt am Ende der Behandlung; die Beratung bekommt automatisch den Vermerk „Direkt im Anschluss behandelt“."
  ],
  "pages": [
   {
@@ -62,10 +62,10 @@
   },
   {
    "h1": "Behandlungstermin gebucht",
-   "sub": "Nach der Buchung wird der Beratungstermin automatisch beendet — es folgt nur noch die Terminnotiz.",
+   "sub": "Nach der Buchung wird der Beratungstermin automatisch beendet — ohne eigene Terminnotiz. Es geht sofort im Behandlungstermin weiter.",
    "card": {
     "title": "Gebucht",
-    "text": "„Weiter“ — der Beratungstermin wird beendet, Terminnotiz erfassen"
+    "text": "„Weiter“ — der Beratungstermin wird beendet, es geht in der Behandlung weiter"
    },
    "left": {
     "shot": "h3-direkt-gebucht",
@@ -88,17 +88,17 @@
     ]
    },
    "leftCaption": "Bestätigung mit Uhrzeit des neuen Termins.",
-   "rightCaption": "Dialog „Termin beenden“ — die Terminnotiz ist Pflicht.",
+   "rightCaption": "Dialog „Termin beenden“ im Behandlungstermin — dort ist die Terminnotiz Pflicht.",
    "steps": [
     {
      "n": 1,
      "title": "„Weiter“",
-     "text": "Schließt den Dialog. Der Hub startet sofort den Abschluss des Beratungstermins — die Frage nach einem Folgetermin entfällt."
+     "text": "Schließt den Dialog. Der Hub beendet den Beratungstermin sofort (nur die Kasse fragt noch, falls ein Betrag offen ist) — ohne Folgetermin-Frage und **ohne Terminnotiz**. Die Beratung bekommt automatisch den Vermerk „Direkt im Anschluss behandelt“."
     },
     {
      "n": 2,
      "title": "Terminnotiz",
-     "text": "Kurz festhalten, was besprochen wurde: Zonen, Zahlungsart, Besonderheiten. Der Text wird als **Notiz in Phorest** gespeichert."
+     "text": "Kommt erst **am Ende der Behandlung**: Dort einmal festhalten, was besprochen und behandelt wurde — Zonen, Zahlungsart, Besonderheiten. Der Text wird als **Notiz in Phorest** gespeichert."
     }
    ]
   },

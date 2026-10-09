@@ -237,7 +237,9 @@ Prüfung erst NACH dem Speichern der Notiz):
    (Permission `view_debts`); die Begründung wird zusätzlich in die
    Terminnotiz vorbefüllt.
 3. Falls ein Vertrag im Termin abgeschlossen wurde und die Kachel übersehen wurde: Frage
-   „Direkt behandeln?" (siehe unten).
+   „Direkt behandeln?" (siehe unten). Wurde die Behandlung direkt im Anschluss gebucht,
+   endet die Kette hier: **Übergabe** statt Folgetermin und Notiz (`endSessionHandover()`,
+   siehe unten).
 4. Folgetermin-Planung (bestehendes `FollowUpBookingModal`; dessen
    Schliessen dispatcht `follow-up-booking-closed`).
 5. Terminnotiz-Modal (Pflicht wie bisher) → erst jetzt ist der Termin beendet.
@@ -250,8 +252,9 @@ Seit 08/2026:
 
 - Sobald im laufenden Termin ein Vertrag abgeschlossen wurde (und der SEPA-Pflichtschritt erledigt ist), erscheint im Session-Bereich die Kachel **„Direkt behandeln"**; zusätzlich fragt der Beenden-Ablauf nach dem Kassen-Schritt „Direkt behandeln?" (vor der Folgetermin-Frage), falls die Kachel übersehen wurde.
 - Das Modal (`DirectTreatmentModal`, Event `open-direct-treatment`) bucht den Behandlungstermin **sofort im selben Raum**, Start = Ende des Beratungstermins (frühestens jetzt, 5-Minuten-Raster), ohne Slot-Suche (`force_selected_time`). Services = die aktiven Paket-Services des Kunden (der frische Vertragsabschluss hat sie über den Phorest-Purchase angelegt), vorausgewählt und abwählbar, Desinfektion automatisch am Ende. Sind die frisch gekauften Pakete per API noch nicht sichtbar, gibt es „Neu laden".
-- Nach der Buchung wird der **Beratungstermin normal beendet** (Kasse → Notiz → PAID; die Folgetermin-Frage entfällt) und die Ansicht wechselt automatisch in den neuen Behandlungstermin (`?start=1` = Session startet dort selbst, inkl. Check-in und Staff-Zuordnung). Pflichtformulare (Sitzungsbestätigung) und Einstellungszettel hängen damit automatisch am neuen Termin.
-- Ablauf aus Anwendersicht: Verkauf abschließen → Kachel „Direkt behandeln" → Behandlungen bestätigen → Beratungstermin wird beendet → es geht nahtlos im Behandlungstermin weiter.
+- Nach der Buchung wird der **Beratungstermin an die Behandlung übergeben** (seit 09.10.2026, Entscheidung Jan: *eine* Terminnotiz reicht, und die kommt am Ende der Behandlung): Kasse wie gewohnt (`beginEndSessionFlow()` → Kassen-Schritt), danach `endSessionHandover()` statt Folgetermin-Frage und Notiz-Modal — `POST /phorest/appointment/{b}/{id}/note` mit `direct_treatment: true`. Der Endpunkt verlangt dann keine `note`, schreibt die automatische Übergabe-Notiz `PhorestController::DIRECT_TREATMENT_HANDOVER_NOTE` („Direkt im Anschluss behandelt – die Terminnotiz steht beim Behandlungstermin.") auf alle Zeilen, schließt den Termin ab (PAID), protokolliert `ended` und plant **keine** Bewertungs-/Trinkgeld-Nachricht (die gehört zum Behandlungstermin). Dann wechselt die Ansicht in den neuen Behandlungstermin (`?start=1` = Session startet dort selbst, inkl. Check-in und Staff-Zuordnung). Pflichtformulare (Sitzungsbestätigung) und Einstellungszettel hängen damit automatisch am neuen Termin. Ohne laufende Session (Kachel vor „Termin beginnen") wird ohne Beenden gewechselt.
+- Scheitert die Übergabe (Netz), bleibt die Beratung stehen und zeigt den goldenen Balken **„Behandlungstermin gebucht … Weiter zur Behandlung"** (`_directTreatmentUrl && sessionActive`); der Knopf startet den Beenden-Ablauf erneut. Wird der Termin stattdessen von Hand mit Notiz beendet, springt die Ansicht trotzdem in den gebuchten Behandlungstermin.
+- Ablauf aus Anwendersicht: Verkauf abschließen → Kachel „Direkt behandeln" → Behandlungen bestätigen → „Fertig" → Beratung ist beendet, es geht nahtlos im Behandlungstermin weiter → Terminnotiz erst dort beim Beenden.
 - **Keine Paket-Services?** Seit 07.09.2026 nennt das Modal den echten Grund statt „Neu laden": Steht das SEPA-Mandat noch aus, sagt es das (die Abos werden erst nach der SEPA-Unterschrift gebucht); wurde der Phorest-Kauf übersprungen oder ist er gescheitert (z.B. „Kein Phorest-Mitarbeiter für … im Institut glattt Magdeburg hinterlegt"), erscheint **„Kauf jetzt nachholen"** — der Kauf läuft dann sofort, die Paket-Services werden neu geladen. Grundlage sind die Spalten `contracts.phorest_purchase_*` (siehe `CONTRACTS-SEPA-MODULE.md`, „Phorest-Kauf nach Vertragsabschluss").
 
 ### Zusatz-Services hinzubuchen
