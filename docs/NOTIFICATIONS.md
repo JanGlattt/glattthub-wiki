@@ -25,7 +25,7 @@ erscheinen, auf denen der Empfänger Push erlaubt hat.
 
 **Seit 19.09.2026 ist jeder Anlass an einer Stelle sichtbar und einstellbar:** Im Admin-Panel
 unter *Kommunikation → Benachrichtigungen → Anlässe & Regeln* steht der vollständige Katalog —
-je Anlass ein Schalter „Aktiv", die Kanäle „Im Hub" und „Push", die Zielgruppe (Recht, Institut des
+je Anlass ein Schalter „Aktiv", die Kanäle „Im Hub", „Push" und „E-Mail" (seit 09.10.2026), die Zielgruppe (Recht, Institut des
 Ereignisses, betroffene Person, Rollen, Institute, einzelne Personen), die Frequenz (sofort oder
 Tages-Zusammenfassung), wann er zuletzt ausgelöst hat und wie oft in den letzten 30 Tagen. Der
 Reiter *Versendet* zeigt die tatsächlich erzeugten Meldungen mit ihrer Herkunft.
@@ -88,10 +88,22 @@ Das System unterstützt vier Arten von Benachrichtigungen:
 | ⚡ Aktionsbasiert | Datenbank-Event | je Regel | je Regel |
 
 **Seit 19.09.2026 entscheidet die Regel über die Kanäle:** Jede Regel (alles außer manuellen
-Einzelmeldungen) trägt `is_active`, `channel_in_app`, `channel_push` und `user_can_mute`. Eine
-abgeschaltete Regel erzeugt nichts; ohne Kanal „Im Hub" entsteht keine `notifications`-Zeile,
-ohne „Push" kein Versand an Geräte. Persönliche Kanal-Wahl der Nutzer
-(`notification_rule_preferences`) greift, sobald `user_can_mute` erlaubt ist.
+Einzelmeldungen) trägt `is_active`, `channel_in_app`, `channel_push`, `channel_email` (seit
+09.10.2026) und `user_can_mute`. Eine abgeschaltete Regel erzeugt nichts; ohne Kanal „Im Hub"
+entsteht keine `notifications`-Zeile, ohne „Push" kein Versand an Geräte, ohne „E-Mail" keine
+Mail. Persönliche Kanal-Wahl der Nutzer (`notification_rule_preferences`) greift, sobald
+`user_can_mute` erlaubt ist.
+
+**E-Mail-Kanal (seit 09.10.2026, Jan: „immer per E-Mail, wenn eine neue Mail im Kundenservice
+eingeht“):** `HubNotificationDispatcher::deliver()` schickt je Empfängerin mit Adresse eine
+`HubNotificationMail` (Queue `push`, Vorlage `emails/hub-notification.blade.php` im Rahmen der
+übrigen Hub-Mails: Modul als Eyebrow, Titel, Text, Knopf „Im Hub öffnen“ mit absolutem Link).
+Konten ohne E-Mail — die meisten Institutskonten — werden still übersprungen, auf der
+Mitteilungsseite sehen sie den Schalter gar nicht. Der Katalog-Standard ist `email => false`;
+eingeschaltet sind „Neue Mail im Kundenservice“ (`support_tickets.created`, an die Mitglieder
+des zuständigen Teams, ersatzweise alle mit `manage_support_tickets`) und „Kundin hat
+geantwortet“ (`support_tickets.customer_replied`, an die zuständige Person). Beide feuern erst
+im Live-Betrieb des Postfachs. Der Testversand im Admin kennt den Kanal nicht (nur Hub/Push).
 
 **Der Katalog ist Pflicht (`NotificationDispatchConventionTest`):** Kein Modul verschickt mehr
 direkt über `NotificationService` oder `PushNotificationService::sendByType()`. Jede Meldung des
@@ -527,6 +539,7 @@ Tests merkt das nicht). Erlaubt ist nur `HubEventRegistry::ICONS`.
 - trigger_model, trigger_event, trigger_conditions
 - last_automation_sent_at, automation_sent_count
 - is_active, channel_in_app, channel_push, user_can_mute   -- Katalog-Schalter (seit 19.09.2026)
+- channel_email            -- E-Mail-Kanal (seit 09.10.2026, Standard aus)
 - target_permissions, target_event_branch, target_event_owners  -- erweiterte Zielgruppe
 - last_triggered_at        -- letzte Auslösung der Regel (Anzeige „Zuletzt ausgelöst")
 - source_rule_id           -- Herkunfts-Regel einer versendeten Meldung (NULL = manuell)
@@ -538,7 +551,7 @@ Tests merkt das nicht). Erlaubt ist nur `HubEventRegistry::ICONS`.
 `owner_user_ids`, `payload`, `summary`, `notification_id`, `digested_at`; Unique-Index
 über Anlass + Subject sichert die Idempotenz.
 
-**notification_rule_preferences:** `user_id`, `notification_rule_id`, `in_app`, `push`
+**notification_rule_preferences:** `user_id`, `notification_rule_id`, `in_app`, `push`, `email`
 — persönliche Kanal-Wahl; fehlt die Zeile, gelten die Kanäle der Regel. Unique je
 Nutzer + Regel, Cascade beim Löschen von Nutzer oder Regel.
 
@@ -800,6 +813,9 @@ tail -f storage/logs/laravel.log | grep -i "notification\|push"
 
 ## Changelog
 
+- **09.10.2026 — E-Mail als dritter Kanal:** `channel_email` je Regel, Nutzer-Wahl `email`,
+  `HubNotificationMail`; Kundenservice-Anlässe „Neue Mail“ (neu) und „Kundin hat geantwortet“
+  per Mail, erst im Live-Betrieb.
 - **25.09.2026 — Dringlich:** Schalter je Regel; iOS zeitkritisch, Browser-Push bleibend,
   Hub-Karte rot und bleibend mit Ton, App-Banner/Liste rot; Standard Laser-Störung.
 - **25.09.2026 — APNs-Kopfzeilen:** `apns-push-type: alert` + Priorität 10, damit iOS die
