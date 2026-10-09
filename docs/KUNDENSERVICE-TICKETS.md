@@ -86,8 +86,12 @@ Antwort der Kundin auf `solved` öffnet wieder, auf `closed` entsteht ein Folget
 1. `MailboxPoller` holt neue UIDs über `uidRangeCriteria()` (ungequotet `UID n:*`, siehe
    Wissen `imap-uid-bereich-ungequotet`), höchstens 50 je Lauf, und ruft je Mail den Processor.
 2. Zuordnung in dieser Reihenfolge: Message-ID/In-Reply-To/References einer eigenen Nachricht →
-   `[#Nummer]` im Betreff → genau **ein** offenes Ticket derselben Adresse aus 14 Tagen mit
-   gleichem Betreff (`matched_by_subject`) → neues Ticket.
+   `[#Nummer]` im Betreff → **Vertragsnummer im Betreff** (`SupportContractMatcher`: Ticket der
+   zuletzt versendeten Mahn-Mail aus `debt_case_messages.zendesk_ticket_id`, nur wenn die
+   Absenderin Anfragende des Tickets oder Kundin des Falls ist; `matched_by_contract`) → genau
+   **ein** offenes Ticket derselben Adresse aus 14 Tagen mit gleichem Betreff
+   (`matched_by_subject`) → neues Ticket. Die Vertragsregel greift auch für Antworten auf
+   Zendesk-Mahnungen, deren Original-Kennung der Hub nie gesehen hat.
 3. Weiterleitung von einer eigenen Domain (`internal_domains`): Ticket gehört der Kundin, der Text
    des Standorts wird interne Notiz, Tag `weitergeleitet`.
 4. Abwesenheitsnotizen (`Auto-Submitted`, `Precedence: bulk`) bekommen nie eine Eingangsbestätigung;
@@ -95,7 +99,18 @@ Antwort der Kundin auf `solved` öffnet wieder, auf `closed` entsteht ein Folget
 5. Anliegen aus Stichwörtern, nur bei genau einem Treffer (`SupportCategory::guess`).
 
 Im Modus `shadow` entstehen Tickets mit `is_shadow = true`, nichts wird versendet;
-`support:purge-shadow` räumt sie vor dem Stichtag weg.
+`support:purge-shadow` räumt sie vor dem Stichtag weg. Seit 09.10.2026 trifft eine Mail im
+Schattenbetrieb auch die **aus Zendesk übernommenen** Tickets (`zendesk_id`), nicht nur die
+Schatten-Tickets — Antworten auf Mahnungen und auf importierte Vorgänge liegen damit schon jetzt
+am richtigen Ticket. Damit der nächste Import sie nicht verdoppelt, erkennt
+`ZendeskImportService::alreadyInbound()` eine schon eingegangene Mail an ihrer Message-ID
+(ticketübergreifend) oder an Absenderin und Zeitpunkt (±3 Min. im selben Ticket) und trägt nur
+die Kommentar-ID nach; lag die Mail in einem Schatten-Ticket, wird es zusammengeführt
+(`reattached_shadow`). Push an die Zuständige gibt es für solche Antworten erst im Live-Betrieb.
+Vorhandene Schatten-Tickets räumt `ShadowReattachService` auf — mit jedem `support:run-rules` im
+Schattenbetrieb und von Hand per `support:reattach-shadow --dry-run`: Ziel über Kennung,
+Vertragsnummer oder Absenderin + Betreff; offenes Ziel → zusammenführen und wieder öffnen,
+geschlossenes Ziel → Schatten-Ticket wird Folgeticket und erbt Team, Kundin, Standort.
 
 ### Rechte
 
@@ -244,7 +259,10 @@ iPad, auch die Blätter). Push-Link `?ticket=` über `AppState.supportTicketFocu
 `SupportMode::usesHub()` (Postfach „live“, 60 s zwischengespeichert) stellt Kundenakte,
 Widerrufs-Suche, Widerrufs-Verlauf, Mahn-Mails, Portal-Kontakt und Office-Kennzahlen auf
 Hub-Tickets um; die Spalten `zendesk_ticket_number`/`zendesk_ticket_id` behalten ihren Namen und
-tragen danach die Hub-Nummer. **Stichtag:** Import ab dem letzten Lauf nachziehen,
+tragen danach die Hub-Nummer. Mahn-Mails aus der Zendesk-Zeit brauchen keine eigene Übernahme: Sie sind
+Zendesk-Tickets (Gruppe Zahlungen → Team Forderungsmanagement, Tags `forderungsmanagement`,
+`stufe_…`), der Import holt sie mit Verlauf, und der Forderungsfall zeigt über die unveränderte
+Nummer darauf. **Stichtag:** Import ab dem letzten Lauf nachziehen,
 `support:purge-shadow`, Modus „live“, Weiterleitung an Zendesk bei IONOS abschalten, Scheduler-Job
 `sync-zendesk-tickets` pausieren, Zendesk kündigen, Rechte den Rollen geben.
 
@@ -287,6 +305,9 @@ tragen danach die Hub-Nummer. **Stichtag:** Import ab dem letzten Lauf nachziehe
 
 ## Changelog
 
+- **09.10.2026 (abends)** — Zuordnung über die Vertragsnummer, Schattenbetrieb schreibt in
+  übernommene Tickets, Import erkennt vorhandene Mails, `support:reattach-shadow` räumt
+  Schatten-Tickets auf.
 - **09.10.2026** — glatttBert im Ticket (Antwortvorschlag, Zusammenfassung, Anliegen; nur auf
   Knopf), Rückkanal aus den Vorgängen, Zufriedenheitsumfrage 24 Std. nach „gelöst“ (Start: aus),
   App: Anhänge, neues Ticket, Einstellungen. Diese Seite angelegt.
