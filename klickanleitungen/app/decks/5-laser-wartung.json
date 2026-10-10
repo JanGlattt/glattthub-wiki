@@ -6,8 +6,8 @@
   "of": 24,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "26.09.2026",
-  "version": "1.1",
+  "stand": "10.10.2026",
+  "version": "1.2",
   "nr": 5,
   "title": [
     "Laser",
@@ -340,10 +340,10 @@
     },
     {
       "h1": "Schritt 3 und 4: Anbauteile, Lager, Abschluss",
-      "sub": "Vier Anbauteile nacheinander — Handstück, Laserkopf groß, Laserkopf klein, Skintel — je Zustand, Impulse bzw. Tests und Fotos. Dann Chiller-Fluid und Kommentar.",
+      "sub": "Vier Anbauteile nacheinander — Handstück, Laserkopf groß, Laserkopf klein, Skintel — je Zustand, Impulse bzw. Tests und Fotos. Dann Chiller-Fluid, Lux-Lotion und Kommentar.",
       "card": {
         "title": "Anbauteile & Abschluss",
-        "text": "Zustand, Tests, Fotos, Chiller-Fluid"
+        "text": "Zustand, Tests, Fotos, Lux-Lotion"
       },
       "steps": [
         {
@@ -369,7 +369,7 @@
         {
           "n": 5,
           "title": "Lager & Abschluss",
-          "text": "Anzahl verbrauchter **Chiller-Fluid-Flaschen** (mindert den Bestand am Standort), Kommentar, Zusammenfassung — **„Wartung abschließen“**."
+          "text": "Anzahl verbrauchter **Chiller-Fluid-Flaschen** (mindert den Bestand am Standort) und die **vorhandenen Lux-Lotion-Flaschen** — gezählt, nicht verbraucht; die Zahl ist mit dem Bestand laut Hub vorbelegt und wird zum neuen Bestand. Dann Kommentar, Zusammenfassung — **„Wartung abschließen“**."
         },
         {
           "n": 6,

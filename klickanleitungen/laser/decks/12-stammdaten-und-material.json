@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — Standorte, Reparaturdienstleister und Materialtypen pflegen; Bestände je Standort mit Mindestbestand führen",
  "eyebrow": "Laser · Stammdaten",
  "footerArea": "Laser",
- "stand": "18.09.2026",
- "version": "1.0",
+ "stand": "10.10.2026",
+ "version": "1.1",
  "notes": [
   "Die Stammdaten liegen unter **Laser → Stammdaten** in drei Bereichen: Standorte, Dienstleister, Verbrauchsmaterial. Die **Bestände** haben eine eigene Seite.",
   "Braucht das Recht **Laser-Stammdaten verwalten**."
@@ -104,7 +104,7 @@
   },
   {
    "h1": "Verbrauchsmaterial und Bestände",
-   "sub": "Materialtypen (etwa Chiller-Fluid, Wasserfilter) und die Bestände je Standort mit Mindestbestand.",
+   "sub": "Materialtypen (etwa Chiller-Fluid, Lux-Lotion, Wasserfilter) und die Bestände je Standort mit Mindestbestand.",
    "card": {
     "title": "Verbrauchsmaterial und Bestände",
     "text": "Typen und Bestände mit Warnung"
@@ -135,7 +135,7 @@
    },
    "rightCaption": "Das Fenster „Bestand anlegen“ auf der Bestandsseite: Material, Standort, Bestand, Mindestbestand.",
    "hint": {
-    "text": "Die Wartung zieht verbrauchtes **Chiller-Fluid** automatisch vom Bestand ab („Laser 6“) — der Rest wird hier von Hand gebucht."
+    "text": "Die Wartung zieht verbrauchtes **Chiller-Fluid** automatisch vom Bestand ab und setzt den **Lux-Lotion**-Bestand auf die gezählten Flaschen („Laser 6“) — Lieferungen und der Rest werden hier von Hand gebucht."
    }
   }
  ]

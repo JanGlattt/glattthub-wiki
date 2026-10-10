@@ -5,7 +5,7 @@
 
 Das Buchungswidget auf glattt.com (WordPress-Plugin `WPglatttBooking`) ist die zentrale Oberfläche, über die Kunden Beratungstermine buchen. Es gibt drei Startvarianten: fester Standort (Start-Hero), Standort-Auswahl (Kacheln) und seit 0.14.0 die **Schnellbuchung**, bei der jede Kachel ihren nächsten freien Termin zeigt und ein Klick direkt bucht. Dazu kommen serverseitige Slot-Ausdünnung und Verfügbarkeits-Prefetch.
 
-- **Plugin:** `WPglatttBooking`, Version 0.16.2
+- **Plugin:** `WPglatttBooking`, Version 0.16.3 (10.10.2026: Hinweis auf lichtempfindlich machende Medikamente im Fenster „Beratung + Behandlung“, gleicher Wortlaut wie im Hub)
 - **Repository:** `JanGlattt/WPglatttBooking` (privat)
 - **Ablage:** Google Drive `2. Operations/7. IT/Wordpress-Plugins/WPBooking/WPglatttBooking` (+ ZIP daneben)
 - **Deploy:** ZIP von Hand in WordPress hochladen — kein Automatismus

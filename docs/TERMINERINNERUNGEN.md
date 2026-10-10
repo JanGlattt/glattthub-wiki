@@ -125,6 +125,14 @@ kleinsten Vorlauf gesendet (die anderen erscheinen als „übersprungen").
       an-/abschaltbar, alle Texte editierbar und platzhalterfähig. Welche
       Termine welche Mail bekommen, steuert die Regel-Zuordnung (z.B.
       Vorbereitungs-Tipps nur in der Behandlungs-Regel aktivieren).
+      **Achtung bei Textänderungen am Standard:** Gespeicherte Tipp-Listen
+      ersetzen den Code-Standard komplett (`AppointmentReminderStage::emailBlocks()`).
+      Ein neuer Pflichtsatz muss deshalb per Daten-Migration in die gespeicherten
+      Stufen — so geschehen am 10.10.2026 für den Hinweis auf **lichtempfindlich
+      machende Medikamente** (`2026_10_10_171000`: alter Standardtext → neuer
+      Wortlaut, Listen ohne den Hinweis bekommen den Tipp angehängt, individuell
+      umformulierte Tipps bleiben). Der Wortlaut aller Kundenhinweise („Wir können
+      Dich nicht behandeln, wenn …") liegt zentral in `App\Support\ContraindicationHints`.
       **„Vorschau der E-Mail"** rendert den aktuellen, auch ungespeicherten
       Formularstand mit Beispieldaten im echten Versand-Template.
       **Testversand je Stufe:** „Test-E-Mail senden" (aktueller Formularstand,

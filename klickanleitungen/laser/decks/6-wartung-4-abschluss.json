@@ -13,24 +13,24 @@
  "subtitle": "Klickanleitung für den glatttHub — Schritt 4 der Wartung: Verbrauch erfassen, Kommentar, Wartung abschließen und das Protokoll wiederfinden",
  "eyebrow": "Laser · Wöchentliche Wartung",
  "footerArea": "Laser",
- "stand": "18.09.2026",
- "version": "1.0",
+ "stand": "10.10.2026",
+ "version": "1.1",
  "notes": [
-  "Der letzte Schritt schreibt das **Protokoll**: verbrauchtes Chiller-Fluid, Kommentar, dann **Wartung abschließen**.",
-  "Beim Abschluss passiert automatisch: Protokoll mit allen Fotos, Historien-Eintrag, Zustände an den Teilen, Bestand am Standort reduziert — und bei „Defekt“ ein Reparatur-Vorgang."
+  "Der letzte Schritt schreibt das **Protokoll**: verbrauchtes Chiller-Fluid, gezählte Lux-Lotion, Kommentar, dann **Wartung abschließen**.",
+  "Beim Abschluss passiert automatisch: Protokoll mit allen Fotos, Historien-Eintrag, Zustände an den Teilen, Bestände am Standort aktualisiert — und bei „Defekt“ ein Reparatur-Vorgang."
  ],
  "pages": [
   {
    "h1": "Lager-Check und Abschluss",
-   "sub": "Verbrauch und Kommentar eintragen, dann abschließen.",
+   "sub": "Verbrauch und Bestand eintragen, Kommentar, dann abschließen.",
    "card": {
     "title": "Lager-Check und Abschluss",
-    "text": "Chiller-Fluid, Kommentar, abschließen"
+    "text": "Chiller-Fluid, Lux-Lotion, Kommentar, abschließen"
    },
    "left": {
     "shot": "l20-lager-check"
    },
-   "leftCaption": "Schritt 4 mit Verbrauchsfeld, Kommentar und dem Abschluss-Knopf.",
+   "leftCaption": "Schritt 4 mit Chiller-Fluid (verbraucht), Lux-Lotion (vorhanden), Kommentar und dem Abschluss-Knopf.",
    "steps": [
     {
      "n": 1,
@@ -39,11 +39,16 @@
     },
     {
      "n": 2,
+     "title": "Lux-Lotion",
+     "text": "Hier wird **gezählt, was noch da ist** — nicht der Verbrauch. Das Feld ist mit dem Bestand laut Hub vorbelegt; trage die Flaschen ein, die im Schrank stehen. Der Hub setzt den Bestand auf diese Zahl, zeigt den Verbrauch seit der letzten Wartung und warnt unter dem Mindestbestand."
+    },
+    {
+     "n": 3,
      "title": "Kommentare",
      "text": "Alles, was ins Protokoll gehört: Auffälligkeiten, Geräusche, Hinweise für die nächste Wartung."
     },
     {
-     "n": 3,
+     "n": 4,
      "title": "Wartung abschließen",
      "text": "Speichert das Protokoll. Der Assistent prüft dabei noch einmal alle Pflichtangaben — fehlt etwas, springt er zum betroffenen Schritt."
     }

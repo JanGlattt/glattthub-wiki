@@ -229,9 +229,19 @@ Laserkopf klein: 2, Skintel: 3).
 - Wird ein Teil als **Defekt** markiert, wird automatisch ein Reparatur-Vorgang erstellt
   (`AUTO_DEFEKT`, idempotent).
 
-**Schritt 3 – Lager-Check & Abschluss.** Zubehör-Checks, Wasserfilter-Wechsel und Anzahl
-verbrauchter Chiller-Fluid-Flaschen (reduziert den Bestand am Standort). Speichern schreibt das
-Protokoll und einen Historien-Eintrag.
+**Schritt 3 – Lager-Check & Abschluss.** Zubehör-Checks, Wasserfilter-Wechsel, Anzahl
+verbrauchter Chiller-Fluid-Flaschen (reduziert den Bestand am Standort) und — seit 10.10.2026 —
+die **gezählten Lux-Lotion-Flaschen**: Das Feld ist mit dem Bestand laut Hub vorbelegt, gezählt
+wird, was noch da ist (Leitungs-Workshop, Jan 10.10.2026). Beim Abschluss wird der Bestand am
+Standort auf die gezählte Zahl **gesetzt** (`MaintenanceService::setLuxLotionStock()`), der
+Verbrauch seit der letzten Zählung wird abgeleitet (`lux_lotion_verbrauch` = Bestand vorher −
+gezählt, nie negativ) und im Protokoll gespeichert (`lux_lotion_bestand`, `lux_lotion_verbrauch`,
+beide nullable = nicht gezählt). Lux-Lotion und Chiller-Fluid sind verschiedene Produkte; der Typ
+`LUX_LOTION` (Einheit Flasche) wird von der Migration `2026_10_10_170000` angelegt, Lieferungen
+werden weiterhin unter Verbrauchsmaterial gebucht. Web und App zeigen Bestand laut Hub,
+Mindestbestand, den abgeleiteten Verbrauch und eine Warnung unter dem Mindestbestand
+(`MaintenanceApiController::state()` liefert `lux_lotion {menge, mindestbestand}` oder `null`,
+wenn der Typ fehlt). Speichern schreibt das Protokoll und einen Historien-Eintrag.
 
 **Entwurf.** Wird der Assistent zwischendurch geschlossen, bleibt der Fortschritt (inkl.
 Countdown-Status) als Entwurf erhalten und kann fortgesetzt werden. **Auch die Fotos bleiben
@@ -300,7 +310,7 @@ Alle Tabellen mit Prefix `laser_` (bzw. `lasers`). Migrationen: `database/migrat
 | `AssetHistoryService` | Zentraler Event-Logger (`record()`), von allen Flows genutzt |
 | `LaserMediaService` | Polymorpher Datei-Upload (`upload()`/`uploadMany()`), Entwurfs-Ablage (`adoptStored()`) |
 | `LaserInventoryService` | Anlage, Standortwechsel, Statuswechsel, Mount/Unmount, Anschaffung |
-| `MaintenanceService` | Wartungsabschluss; Zustände, Chiller-Fluid-Verbrauch, **AUTO_DEFEKT → Reparatur** |
+| `MaintenanceService` | Wartungsabschluss; Zustände, Chiller-Fluid-Verbrauch, Lux-Lotion-Zählung (Bestand setzen), **AUTO_DEFEKT → Reparatur** |
 | `RepairService` | Reparatur anlegen/versenden/zurücknehmen inkl. Statuslogik |
 | `ComplianceService` | STK + Behördenanzeige; `refreshStatuses()` |
 | `ConsumableService` | Bestandsführung pro Standort, Low-Stock, fällige Wechsel |
