@@ -12,8 +12,8 @@
  "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Körperzonen, Beratungs-Services, Abwesenheitsarten, Kundennummern",
  "eyebrow": "Admin · Stammdaten",
  "footerArea": "Admin-Panel",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "10.10.2026",
+ "version": "1.1",
  "notes": [
   "Stammdaten sind die **Begriffe, mit denen der Hub rechnet** — Körperzonen, Beratungs-Services, Abwesenheitsarten.",
   "Sie ändern sich selten, wirken aber **überall auf einmal**.",
@@ -89,6 +89,11 @@
      "n": 4,
      "title": "Mehrere Varianten",
      "text": "Auch „gratis Beratung“ und Kombinationen gehören gekennzeichnet."
+    },
+    {
+     "n": 5,
+     "title": "Extrazeit-Schalter",
+     "text": "**„Extrazeit der Kundin“** macht eine Leistung zur Extrazeit: in der Kundenakte wählbar, bei jeder Buchung mitgebucht, bei der Prüfung nach der Ganzkörper-Sitzung gezählt — z. B. die EXTRAZEIT-Ganzkörper-Stufen und „Tattoos/Muttermale verdecken“. **„Stufe der Ganzkörper-Frage“** nur bei den Ganzkörper-Extrazeiten: die stehen als Kacheln in der Pflichtfrage nach dem Abschluss. Die Einarbeitungszeit „Extrazeit NEUER MITARBEITER“ bekommt keinen Haken. „Zusatzbuchung erlaubt“ bleibt wie gehabt (z. B. Rasieren im Termin)."
     }
    ],
    "hint": {

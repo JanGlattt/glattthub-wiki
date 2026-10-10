@@ -224,6 +224,17 @@ Regeln und Bilder).
 
 ### Extrazeit nach dem Ganzkörper-Abschluss und Prüfung nach der Sitzung (seit 10.10.2026)
 
+**Welche Leistungen Extrazeit sind (seit 10.10.2026 abends):** nicht mehr das Wort „Extrazeit“ im
+Namen, sondern zwei Schalter je Beratungs-Service unter **Admin → Verkauf → Beratungsgespräche**:
+„Extrazeit der Kundin“ (in der Kundenakte wählbar, bei jeder Buchung mitgebucht, zählt bei der
+Prüfung nach der Sitzung — z. B. die Ganzkörper-Extrazeiten und „Tattoos/Muttermale verdecken“) und
+„Stufe der Ganzkörper-Frage“ (nur die Ganzkörper-Extrazeiten, erscheinen als Kacheln im Dialog).
+„Extrazeit NEUER MITARBEITER“ trägt keinen Haken und taucht in keinem Kundendialog mehr auf. Die
+Erkennung läuft über `App\Support\ExtraTimeCatalog` (Phorest-Service-ID, sonst normalisierter Name;
+die Namen sind in allen Instituten gleich). Das Stichwort `booking.extrazeit_keyword` ist nur noch
+Rückfall, solange kein Service markiert ist, und Vorbelegung für neue Services beim Sync
+(`SyncConsultationServices`). Migration `2026_10_11_110000` hat die Haken aus dem Stichwort gesetzt.
+
 **Absicht (Leitungs-Workshop, Jan 10.10.2026).** Wer ein Ganzkörper-Paket abschließt, braucht in
 der ersten Sitzung oft mehr Zeit — bisher wusste das nur, wer die Karte „Extrazeit" in der
 Kundenakte kannte. Jetzt stellt der Hub zwei Pflichtfragen, ohne dass die Kundin etwas davon
