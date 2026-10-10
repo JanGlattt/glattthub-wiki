@@ -169,6 +169,31 @@ Werte am Postfach (Admin → System → Kundenservice-Postfach), Lauf alle 15 Mi
 - **Fristen-Ampel** `sla` (gelb 8 / rot 24 Std. seit der letzten Mail der Kundin, nur neu/offen).
 - **Zufriedenheitsumfrage** (siehe unten).
 
+### Team-Mails: Brief mit Knöpfen (seit 10.10.2026)
+
+Die Katalog-Mails **Neues Ticket** (an das Team) und **Kundin hat geantwortet** (an die Zuständige)
+sind seit dem 10.10.2026 vollständige Arbeitsmails (Jan: Vorschlag „Brief“ plus die Knöpfe aus
+„Arbeitszettel“):
+
+- **Betreff** ohne Weiterleitungs-Präfixe („Aw:“, „Fwd:“, „[Labrado & Schlüter GmbH]“, „Betreff:“;
+  `HubNotificationDispatcher::supportSubject`) plus Kurzname der Kundin (`{kurzname}` = „Lena M.“).
+  Bestehende Regeln behalten ihren Titel, der neue Standard gilt für neu angelegte Regeln; im Admin
+  unter Benachrichtigungen lässt sich der Titel jederzeit angleichen.
+- **Vorschautext** = Anfang der Nachricht; **Fakten-Zeile** unter der Überschrift: Kundin, Institut,
+  Anliegen, Team, Zuständige, Kanal.
+- **Ganze Nachricht** ohne zitierte Vorgänger-Mail als Kasten; bei Antworten darunter der
+  **kompakte Verlauf** (letzte sechs Nachrichten, nie interne Notizen); **Anhänge** der Kundin als
+  Dateianhänge (bis 20 MB) und als Liste benannt.
+- **Knöpfe „Mir zuweisen“ und „Als gelöst markieren“** unter „Im Hub öffnen“: signierte Links je
+  Empfängerin (`mailActionLinks`, sieben Tage, nur mit `manage_support_tickets`) auf
+  `hub/kundenservice/aktion/{number}/{action}`. GET zeigt eine Bestätigungsseite
+  (`hub/support/aktion.blade.php`), erst POST führt die Aktion aus — Mail-Scanner, die Links öffnen,
+  lösen damit nichts aus. Ein fremdes Konto bekommt 403 mit Hinweis.
+
+Technisch hängt alles an `dispatch(..., mail: [...])` (siehe `NOTIFICATIONS.md`, E-Mail-Kanal);
+jede andere Regel kann dieselbe Beilage mitgeben. Tests `SupportNotificationMailTest`,
+`SupportMailActionTest`.
+
 ### Rückkanal aus den Vorgängen (seit 09.10.2026)
 
 Die Vorgänge der Detailleiste (`SupportTicketQuery::actions`) tragen `&ticket=<nr>`:
@@ -249,8 +274,13 @@ diese Aufteilung, nicht als weitere Karten oder Abzeichen in den Kopf.
 Umfrage rechts; Anliegen/Team/Zuständig als Menü-Chips). Dieselben Endpunkte über
 `HubSession.json()`; Anhänge über `HubSession.uploadMultipart` (`files[]`, Galerie-Bilder vor dem
 Upload zu JPEG). Blätter: `SupportNewTicketSheet` (Kundensuche), `SupportSettingsSheet` (Teams,
-Textbausteine, Anliegen, gesperrte Absender), `SupportReturnSheet`. Bert-Knopf im Antwortfeld,
-Zusammenfassung über dem Verlauf. Snapshot-Test `SupportSnapshotTests` (hell/dunkel, iPhone und
+Textbausteine, Anliegen, gesperrte Absender), `SupportReturnSheet`. Zusammenfassung über dem Verlauf.
+**Verlauf und Antwortzeile seit 10.10.2026 als Messenger** (Jan wählte Entwurf 2 „Kanal-Kopf“,
+Befund 258): Datums-Kapseln, Ereignisse mittig, Blasen mit Uhrzeit und Zustand unten rechts
+(Punkte = unterwegs, Haken = gesendet, rot = nicht zugestellt, grünes Zeichen = WhatsApp), Absender
+nur bei Wechsel oder nach fünf Minuten, interne Notizen gelb über die ganze Breite. Über dem Feld
+die Kopfzeile „Antwort · Kanal | Notiz“ (Kanalwahl im aktiven Reiter) mit glatttBert, Textbausteinen
+(Menü) und @-Erwähnung rechts; die Baustein-Chips erscheinen nur, solange das Feld den Fokus hat. Snapshot-Test `SupportSnapshotTests` (hell/dunkel, iPhone und
 iPad, auch die Blätter). Push-Link `?ticket=` über `AppState.supportTicketFocus`
 (`bridge.js` → `NATIVE_WITH_QUERY`).
 
@@ -356,6 +386,10 @@ damit (Jan, 10.10.2026).
 - **10.10.2026** — Zendesk-Spiegel (Weg 2): Hub-Antworten als interne Notiz ins Zendesk-Ticket,
   Status einstellbar, Import erkennt gespiegelte Tickets. Portal-/App-Anfragen bekommen im
   Live-Betrieb die Eingangsbestätigung des Hubs und melden sich beim Team.
+- **10.10.2026 (nachmittags)** — Team-Mails als Brief mit Knöpfen (ganze Nachricht, Verlauf,
+  Anhänge, Fakten, bereinigter Betreff, „Mir zuweisen“/„Als gelöst“ mit Bestätigungsseite);
+  Ticket-Seite der App als Messenger (Entwurf 2); Kundinnen sehen Anhänge schon während des
+  Sendens, Antworten zählen am Kontakt-Reiter der Kunden-App.
 - **09.10.2026 (abends)** — Zuordnung über die Vertragsnummer, Schattenbetrieb schreibt in
   übernommene Tickets, Import erkennt vorhandene Mails, `support:reattach-shadow` räumt
   Schatten-Tickets auf. Kundinnen-Mails mit Auszeichnung (`body_rich`/`body_markdown`) und ohne

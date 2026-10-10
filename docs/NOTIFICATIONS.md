@@ -105,6 +105,14 @@ des zuständigen Teams, ersatzweise alle mit `manage_support_tickets`) und „Ku
 geantwortet“ (`support_tickets.customer_replied`, an die zuständige Person). Beide feuern erst
 im Live-Betrieb des Postfachs. Der Testversand im Admin kennt den Kanal ebenfalls (freier Test mit Schalter „E-Mail“, Regel-Test wie im Echtbetrieb; die Rückmeldung nennt, wer keine Adresse hat).
 
+**Beilage je Ereignis (seit 10.10.2026):** `dispatch(..., mail: [...])` reicht nur an den E-Mail-Kanal
+zusätzliche Inhalte durch — `sections` (Überschrift + sicheres HTML, als beige Kästen unter dem
+Text), `files` (Dateien aus einer Storage-Disk als Anhang; fehlende werden still übersprungen),
+`facts` (Label/Wert-Zeile unter der Überschrift), `preheader` (Vorschautext) und `actions`
+(Aktionsangaben, die `sendEmail` je Empfängerin in signierte Links übersetzt, Zweitknöpfe unter
+„Im Hub öffnen“). Erstes Beispiel sind die Kundenservice-Mails (siehe `KUNDENSERVICE-TICKETS.md`,
+„Team-Mails“). In-App und Push bleiben davon unberührt.
+
 **Der Katalog ist Pflicht (`NotificationDispatchConventionTest`):** Kein Modul verschickt mehr
 direkt über `NotificationService` oder `PushNotificationService::sendByType()`. Jede Meldung des
 Hubs ist ein Anlass in `HubEventRegistry::events()` und wird über eine Methode des
