@@ -1,209 +1,247 @@
 {
-  "out": "../pdf/App-4-Kunden",
-  "meta": "../meta.json",
-  "shots": "../shots",
-  "series": "App",
-  "of": 24,
-  "audience": "institut",
-  "footerArea": "App",
-  "stand": "28.09.2026",
-  "version": "1.1",
-  "nr": 4,
-  "title": [
-    "Kunden finden und",
-    "die Kundenakte"
-  ],
-  "subtitle": "Klickanleitung für die glatttHub-App — Kundenliste mit Suche, die native Kundenübersicht mit Karten, die neun Bereiche der Kundenakte: Kundeninfos, Termine, Pakete, Dokumente, Behandlung, Vertrag, Forderungen, Kundenservice, Nachrichten",
-  "eyebrow": "App · Kunden",
-  "notes": [
-    "Seit 28.09.2026 sind **alle neun Bereiche** der Kundenseite nativ: Jede Karte der Übersicht öffnet ihren Bereich, die **Reiter-Leiste** oben wechselt seitlich, der Pfeil links führt zurück. Auf dem iPad steht der Bereich rechts neben der Übersicht."
-  ],
-  "pages": [
+ "out": "../pdf/App-4-Kunden",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "App",
+ "of": 24,
+ "audience": "institut",
+ "footerArea": "App",
+ "stand": "10.10.2026",
+ "version": "1.2",
+ "nr": 4,
+ "title": [
+  "Kunden finden und",
+  "die Kundenakte"
+ ],
+ "subtitle": "Klickanleitung für die glatttHub-App — Kundenliste mit Suche, die native Kundenübersicht mit Karten, die neun Bereiche der Kundenakte: Kundeninfos, Termine, Pakete, Dokumente, Behandlung, Vertrag, Forderungen, Kundenservice, Nachrichten",
+ "eyebrow": "App · Kunden",
+ "notes": [
+  "Seit 28.09.2026 sind **alle neun Bereiche** der Kundenseite nativ: Jede Karte der Übersicht öffnet ihren Bereich, die **Reiter-Leiste** oben wechselt seitlich, der Pfeil links führt zurück. Auf dem iPad steht der Bereich rechts neben der Übersicht."
+ ],
+ "pages": [
+  {
+   "h1": "Kundenliste",
+   "sub": "Suche oben, darunter die Treffer mit Name, Kunden-Nr., Institut und letztem Besuch — ohne Suche die zuletzt besuchten Kundinnen.",
+   "card": {
+    "title": "Kundenliste",
+    "text": "Suchen nach Name, Nummer, Telefon"
+   },
+   "left": {
+    "shot": "clients-list-light"
+   },
+   "leftCaption": "Die Liste auf dem iPhone: **Kunden-Nr.** unter dem Namen, rechts der letzte Besuch.",
+   "steps": [
     {
-      "h1": "Kundenliste",
-      "sub": "Suche oben, darunter die Treffer mit Name, Kunden-Nr., Institut und letztem Besuch — ohne Suche die zuletzt besuchten Kundinnen.",
-      "card": {
-        "title": "Kundenliste",
-        "text": "Suchen nach Name, Nummer, Telefon"
-      },
-      "left": {
-        "shot": "clients-list-light"
-      },
-      "leftCaption": "Die Liste auf dem iPhone: **Kunden-Nr.** unter dem Namen, rechts der letzte Besuch.",
-      "steps": [
-        {
-          "n": 1,
-          "title": "Suchen",
-          "text": "Ins Feld tippen: Name, Kunden-Nr. (z. B. **MD000123**) oder Telefon. Treffer kommen beim Tippen."
-        },
-        {
-          "n": 2,
-          "title": "Öffnen",
-          "text": "Ein Tipp auf die Zeile öffnet die Kundenübersicht. Auf dem iPad bleibt die Seitenleiste stehen."
-        },
-        {
-          "n": 3,
-          "title": "Standort",
-          "text": "Die Liste folgt dem Standortfilter — „Alle Standorte“ zeigt alle Institute."
-        }
-      ]
+     "n": 1,
+     "title": "Suchen",
+     "text": "Ins Feld tippen: Name, Kunden-Nr. (z. B. **MD000123**) oder Telefon. Treffer kommen beim Tippen."
     },
     {
-      "h1": "Die Kundenübersicht",
-      "sub": "Kopfkarte mit Kontakt und Kunden-Nr., darunter Pakete, nächste Termine, Verträge, Formulare — beim Scrollen bleiben Name und Nummer oben stehen.",
-      "card": {
-        "title": "Kundenübersicht",
-        "text": "Karten, Termine, Reiter"
-      },
-      "left": {
-        "shot": "client-detail-light"
-      },
-      "leftCaption": "Kopf mit Name, Kunden-Nr. und Kontakt; darunter die Karten der Übersicht.",
-      "steps": [
-        {
-          "n": 1,
-          "title": "Kopf",
-          "text": "Name, **Kunden-Nr.**, Telefon, E-Mail, Institut. Scrollst du weiter, kleben Name und Nummer oben in der Kopfzeile."
-        },
-        {
-          "n": 2,
-          "title": "Termine",
-          "text": "Nächste und letzte Termine als Karten — antippen öffnet die **Terminansicht** („App 3“)."
-        },
-        {
-          "n": 3,
-          "title": "Bereiche öffnen",
-          "text": "Der Pfeil oben rechts in jeder Karte öffnet den passenden **Bereich** (Termine, Pakete, Behandlung …), „Alle Bereiche“ listet alle neun. Sie sind nativ — mit **Reiter-Leiste** zum Wechseln und Pfeil zurück."
-        },
-        {
-          "n": 4,
-          "title": "Aktualisieren",
-          "text": "Nach unten ziehen lädt Kundendaten frisch aus Phorest."
-        }
-      ],
-      "hint": {
-        "text": "**Kontextmenü:** Lange auf eine Kundin drücken (Liste oder Suche) zeigt **Termine, Pakete, Kunden-Nr. kopieren** — wie das Rechtsklick-Menü der Desktop-App."
-      }
+     "n": 2,
+     "title": "Öffnen",
+     "text": "Ein Tipp auf die Zeile öffnet die Kundenübersicht. Auf dem iPad bleibt die Seitenleiste stehen."
     },
     {
-      "h1": "Kundeninfos, Termine, Pakete",
-      "sub": "Die ersten Bereiche der Kundenakte: Stammdaten bearbeiten, Termine mit Extrazeiten und Detailblatt, glattt Pakete mit Einheiten und Status.",
-      "card": {
-        "title": "Bereiche 1–3",
-        "text": "Kundeninfos, Termine, Pakete"
-      },
-      "left": {
-        "shot": "client-tab-info-light"
-      },
-      "leftCaption": "**Kundeninfos**: Stammdaten, Kontakt, Adresse, Einwilligungen — **Bearbeiten** macht alle Felder änderbar, **Speichern** schreibt nach Phorest.",
-      "right": {
-        "shot": "client-tab-appointments-light"
-      },
-      "rightCaption": "**Termine**: Extrazeiten je Leistung, künftige und vergangene Termine mit Status; ein Tipp öffnet die Termindetails.",
-      "steps": [
-        {
-          "n": 1,
-          "title": "Kundeninfos bearbeiten",
-          "text": "**Bearbeiten** oben rechts, Felder ändern, **Speichern**. Nur Geändertes geht nach Phorest; wurde die Kundin zwischenzeitlich dort geändert, bittet die App um Neuladen."
-        },
-        {
-          "n": 2,
-          "title": "Extrazeiten",
-          "text": "**Bearbeiten** in der Karte Extrazeiten: je Leistung eine Zusatzdauer wählen — sie verlängert jede Buchung dieser Kundin (Slot-Suche und Terminlänge)."
-        },
-        {
-          "n": 3,
-          "title": "Termindetails",
-          "text": "Ein Tipp auf einen Termin zeigt Leistungen, Mitarbeiterin, Notizen; **Terminansicht öffnen** führt zum Verlegen, zu Formularen und zur Behandlung."
-        },
-        {
-          "n": 4,
-          "title": "glattt Pakete",
-          "text": "Je Paket die Einheiten (genutzt / übrig) mit Balken und Status: aktiv, aufgebraucht, abgelaufen; archivierte Pakete klappen unten auf."
-        }
-      ],
-      "hint": {
-        "text": "Die **Reiter-Leiste** oben wechselt zwischen allen Bereichen, ohne zur Übersicht zurückzugehen. Ziehen nach unten lädt den Bereich neu."
-      }
-    },
-    {
-      "h1": "Dokumente, Behandlung, Vertrag",
-      "sub": "Eingereichte Formulare mit PDF-Vorschau, die Behandlungshistorie je Körperzone mit Fotos, die Vertragskarten mit Sprung zur Vertragsseite und Widerruf erfassen.",
-      "card": {
-        "title": "Bereiche 4–6",
-        "text": "Dokumente, Behandlung, Vertrag & Zahlungen"
-      },
-      "left": {
-        "shot": "client-tab-treatment-settings-light"
-      },
-      "leftCaption": "**Behandlung**: Zonen als Chips, je Zone die Sitzungen mit Laserkopf, Hauttyp, Haar, Energie, Notizen und Fotos.",
-      "right": {
-        "shot": "client-tab-payments-light"
-      },
-      "rightCaption": "**Vertrag & Zahlungen**: Produkt, Rate, Laufzeit, Mandat, Verkäuferin — Tippen öffnet die Vertragsseite.",
-      "steps": [
-        {
-          "n": 1,
-          "title": "Dokumente",
-          "text": "Die Liste zeigt Formular, Datum, Wer und Status (Eingereicht, Geprüft, Wartet auf zweite Unterschrift). Das Blatt zeigt die Angaben, **PDF ansehen** öffnet die Vorschau zum Teilen oder Drucken."
-        },
-        {
-          "n": 2,
-          "title": "Behandlung lesen",
-          "text": "Zone antippen — die Sitzungen stehen mit allen Einstellungen darunter; **Fotos** öffnet die Bilder der Sitzung. Erfasst wird weiterhin in der Terminansicht."
-        },
-        {
-          "n": 3,
-          "title": "Vertrag öffnen",
-          "text": "Ein Tipp auf die Karte öffnet die native Vertragsseite mit Zahlungen, Verlauf und E-Mails."
-        },
-        {
-          "n": 4,
-          "title": "Widerruf erfassen",
-          "text": "Der Knopf unter der Karte startet den Ablauf in vier Schritten mit vorgewähltem Vertrag — wie unter Widerrufe. Danach öffnet sich der neue Fall."
-        }
-      ]
-    },
-    {
-      "h1": "Forderungen, Service, Nachrichten",
-      "sub": "Forderungsfälle der Kundin, Zendesk-Tickets mit Verlauf und die WhatsApp-Unterhaltung mit Composer — Text, Vorlage, Foto, neue Unterhaltung.",
-      "card": {
-        "title": "Bereiche 7–9",
-        "text": "Forderungen, Kundenservice, Nachrichten"
-      },
-      "left": {
-        "shot": "client-tab-whatsapp-light"
-      },
-      "leftCaption": "**Nachrichten**: die WhatsApp-Unterhaltung mit Eingabezeile, darunter die automatisch versendeten Nachrichten (SEPA, Erinnerungen, Befragungen).",
-      "right": {
-        "shot": "client-tabs-ipad-light"
-      },
-      "rightCaption": "iPad: links die Übersicht, rechts der gewählte Bereich mit Reiter-Leiste.",
-      "steps": [
-        {
-          "n": 1,
-          "title": "Forderungen",
-          "text": "Offene und abgeschlossene Fälle mit Stufe, Frist und Betrag; ein Tipp öffnet die **Fallakte** unter Forderungen."
-        },
-        {
-          "n": 2,
-          "title": "Kundenservice",
-          "text": "Tickets mit Status und Priorität; das Blatt zeigt den Verlauf mit Kommentaren, interne Notizen sind markiert. **In Zendesk öffnen** springt in den Browser."
-        },
-        {
-          "n": 3,
-          "title": "Nachricht senden",
-          "text": "Im offenen **24-Stunden-Fenster** frei tippen und senden — die App fragt vorher nach. Ist das Fenster zu, **Vorlage senden**: Vorlage wählen, Platzhalter füllen, Vorschau, senden."
-        },
-        {
-          "n": 4,
-          "title": "Foto und neue Unterhaltung",
-          "text": "Die Büroklammer hängt ein Foto aus der Galerie an. Ohne Verknüpfung startet **Unterhaltung beginnen** mit Mobilnummer, Kanal und Vorlage."
-        }
-      ],
-      "hint": {
-        "text": "Jeder Versand ist echter Kundenkontakt über Superchat — die Rückfrage vor dem Senden lässt sich nicht abschalten. Wer keine Nachrichten senden darf, sieht die Unterhaltung nur."
-      }
+     "n": 3,
+     "title": "Standort",
+     "text": "Die Liste folgt dem Standortfilter — „Alle Standorte“ zeigt alle Institute."
     }
-  ]
+   ]
+  },
+  {
+   "h1": "Die Kundenübersicht",
+   "sub": "Kopfkarte mit Kontakt und Kunden-Nr., darunter Pakete, nächste Termine, Verträge, Formulare — beim Scrollen bleiben Name und Nummer oben stehen.",
+   "card": {
+    "title": "Kundenübersicht",
+    "text": "Karten, Termine, Reiter"
+   },
+   "left": {
+    "shot": "client-detail-light"
+   },
+   "leftCaption": "Kopf mit Name, Kunden-Nr. und Kontakt; darunter die Karten der Übersicht.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kopf",
+     "text": "Name, **Kunden-Nr.**, Telefon, E-Mail, Institut. Scrollst du weiter, kleben Name und Nummer oben in der Kopfzeile."
+    },
+    {
+     "n": 2,
+     "title": "Termine",
+     "text": "Nächste und letzte Termine als Karten — antippen öffnet die **Terminansicht** („App 3“)."
+    },
+    {
+     "n": 3,
+     "title": "Bereiche öffnen",
+     "text": "Der Pfeil oben rechts in jeder Karte öffnet den passenden **Bereich** (Termine, Pakete, Behandlung …), „Alle Bereiche“ listet alle neun. Sie sind nativ — mit **Reiter-Leiste** zum Wechseln und Pfeil zurück."
+    },
+    {
+     "n": 4,
+     "title": "Aktualisieren",
+     "text": "Nach unten ziehen lädt Kundendaten frisch aus Phorest."
+    }
+   ],
+   "hint": {
+    "text": "**Kontextmenü:** Lange auf eine Kundin drücken (Liste oder Suche) zeigt **Termine, Pakete, Kunden-Nr. kopieren** — wie das Rechtsklick-Menü der Desktop-App."
+   }
+  },
+  {
+   "h1": "Kundeninfos, Termine, Pakete",
+   "sub": "Die ersten Bereiche der Kundenakte: Stammdaten bearbeiten, Termine mit Extrazeiten und Detailblatt, glattt Pakete mit Einheiten und Status.",
+   "card": {
+    "title": "Bereiche 1–3",
+    "text": "Kundeninfos, Termine, Pakete"
+   },
+   "left": {
+    "shot": "client-tab-info-light"
+   },
+   "leftCaption": "**Kundeninfos**: Stammdaten, Kontakt, Adresse, Einwilligungen — **Bearbeiten** macht alle Felder änderbar, **Speichern** schreibt nach Phorest.",
+   "right": {
+    "shot": "client-tab-appointments-light"
+   },
+   "rightCaption": "**Termine**: Extrazeiten je Leistung, künftige und vergangene Termine mit Status; ein Tipp öffnet die Termindetails.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kundeninfos bearbeiten",
+     "text": "**Bearbeiten** oben rechts, Felder ändern, **Speichern**. Nur Geändertes geht nach Phorest; wurde die Kundin zwischenzeitlich dort geändert, bittet die App um Neuladen."
+    },
+    {
+     "n": 2,
+     "title": "Extrazeiten",
+     "text": "**Bearbeiten** in der Karte Extrazeiten: je Leistung eine Zusatzdauer wählen — sie verlängert jede Buchung dieser Kundin (Slot-Suche und Terminlänge)."
+    },
+    {
+     "n": 3,
+     "title": "Termindetails",
+     "text": "Ein Tipp auf einen Termin zeigt Leistungen, Mitarbeiterin, Notizen; **Terminansicht öffnen** führt zum Verlegen, zu Formularen und zur Behandlung."
+    },
+    {
+     "n": 4,
+     "title": "glattt Pakete",
+     "text": "Je Paket die Einheiten (genutzt / übrig) mit Balken und Status: aktiv, aufgebraucht, abgelaufen; archivierte Pakete klappen unten auf."
+    }
+   ],
+   "hint": {
+    "text": "Die **Reiter-Leiste** oben wechselt zwischen allen Bereichen, ohne zur Übersicht zurückzugehen. Ziehen nach unten lädt den Bereich neu."
+   }
+  },
+  {
+   "h1": "Dokumente, Behandlung, Vertrag",
+   "sub": "Eingereichte Formulare mit PDF-Vorschau, die Behandlungshistorie je Körperzone mit Fotos, die Vertragskarten mit Sprung zur Vertragsseite und Widerruf erfassen.",
+   "card": {
+    "title": "Bereiche 4–6",
+    "text": "Dokumente, Behandlung, Vertrag & Zahlungen"
+   },
+   "left": {
+    "shot": "client-tab-treatment-settings-light"
+   },
+   "leftCaption": "**Behandlung**: Zonen als Chips, je Zone die Sitzungen mit Laserkopf, Hauttyp, Haar, Energie, Notizen und Fotos.",
+   "right": {
+    "shot": "client-tab-payments-light"
+   },
+   "rightCaption": "**Vertrag & Zahlungen**: Produkt, Rate, Laufzeit, Mandat, Verkäuferin — Tippen öffnet die Vertragsseite.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Dokumente",
+     "text": "Die Liste zeigt Formular, Datum, Wer und Status (Eingereicht, Geprüft, Wartet auf zweite Unterschrift). Das Blatt zeigt die Angaben, **PDF ansehen** öffnet die Vorschau zum Teilen oder Drucken."
+    },
+    {
+     "n": 2,
+     "title": "Behandlung lesen",
+     "text": "Zone antippen — die Sitzungen stehen mit allen Einstellungen darunter; **Fotos** öffnet die Bilder der Sitzung. Erfasst wird weiterhin in der Terminansicht."
+    },
+    {
+     "n": 3,
+     "title": "Vertrag öffnen",
+     "text": "Ein Tipp auf die Karte öffnet die native Vertragsseite mit Zahlungen, Verlauf und E-Mails."
+    },
+    {
+     "n": 4,
+     "title": "Widerruf erfassen",
+     "text": "Der Knopf unter der Karte startet den Ablauf in vier Schritten mit vorgewähltem Vertrag — wie unter Widerrufe. Danach öffnet sich der neue Fall."
+    }
+   ]
+  },
+  {
+   "h1": "Behandlung: Papierzettel nachtragen",
+   "sub": "Der Reiter „Behandlung“ zeigt, welche Behandlungen noch keinen Einstellungszettel haben, und nimmt die alten Zettel als Sitzungen auf.",
+   "card": {
+    "title": "Nachtragen in der Akte",
+    "text": "Hinweis, Assistent in drei Schritten, Etikett „Papier“"
+   },
+   "left": {
+    "shot": "treatment-backfill-hint-light"
+   },
+   "right": {
+    "shot": "treatment-backfill-values-light"
+   },
+   "leftCaption": "Oben der Hinweis „N Behandlungen ohne Einstellungszettel“ mit **„Nachtragen“**; nachgetragene Sitzungen tragen **„Papier“** und „eingetragen von …“.",
+   "rightCaption": "Schritt 3 „Werte“: je Zone Laserkopf, Hauttyp, Haar, Empfehlung, genutzte Werte und Notiz.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Hinweis und Knopf",
+     "text": "Solange Behandlungen ohne Zettel offen sind, steht oben der gelbe Hinweis mit **„Nachtragen“**; sonst „Sitzung nachtragen“."
+    },
+    {
+     "n": 2,
+     "title": "Drei Schritte",
+     "text": "**1 Sitzung** (Termin aus der Liste oder ohne Termin mit Datum und Behandlerin), **2 Zonen** (Chips, aus dem Termin vorgewählt, eigene Zone als Text), **3 Werte** je Zone — mit „Letzte Werte übernehmen“."
+    },
+    {
+     "n": 3,
+     "title": "Sichern",
+     "text": "**„Sichern“** schließt, **„Sichern & nächste Sitzung“** springt zum nächsten offenen Termin und nimmt die Werte mit. Pflicht sind nur Datum und eine Zone."
+    },
+    {
+     "n": 4,
+     "title": "Papier und Löschen",
+     "text": "Nachgetragene Karten tragen **„Papier“**. Löschen (Wischen oder Knopf, mit Rückfrage) kann nur, wer eingetragen hat, sowie Leitung und Büro; Einträge aus dem Termin nie."
+    }
+   ]
+  },
+  {
+   "h1": "Forderungen, Service, Nachrichten",
+   "sub": "Forderungsfälle der Kundin, Zendesk-Tickets mit Verlauf und die WhatsApp-Unterhaltung mit Composer — Text, Vorlage, Foto, neue Unterhaltung.",
+   "card": {
+    "title": "Bereiche 7–9",
+    "text": "Forderungen, Kundenservice, Nachrichten"
+   },
+   "left": {
+    "shot": "client-tab-whatsapp-light"
+   },
+   "leftCaption": "**Nachrichten**: die WhatsApp-Unterhaltung mit Eingabezeile, darunter die automatisch versendeten Nachrichten (SEPA, Erinnerungen, Befragungen).",
+   "right": {
+    "shot": "client-tabs-ipad-light"
+   },
+   "rightCaption": "iPad: links die Übersicht, rechts der gewählte Bereich mit Reiter-Leiste.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Forderungen",
+     "text": "Offene und abgeschlossene Fälle mit Stufe, Frist und Betrag; ein Tipp öffnet die **Fallakte** unter Forderungen."
+    },
+    {
+     "n": 2,
+     "title": "Kundenservice",
+     "text": "Tickets mit Status und Priorität; das Blatt zeigt den Verlauf mit Kommentaren, interne Notizen sind markiert. **In Zendesk öffnen** springt in den Browser."
+    },
+    {
+     "n": 3,
+     "title": "Nachricht senden",
+     "text": "Im offenen **24-Stunden-Fenster** frei tippen und senden — die App fragt vorher nach. Ist das Fenster zu, **Vorlage senden**: Vorlage wählen, Platzhalter füllen, Vorschau, senden."
+    },
+    {
+     "n": 4,
+     "title": "Foto und neue Unterhaltung",
+     "text": "Die Büroklammer hängt ein Foto aus der Galerie an. Ohne Verknüpfung startet **Unterhaltung beginnen** mit Mobilnummer, Kanal und Vorlage."
+    }
+   ],
+   "hint": {
+    "text": "Jeder Versand ist echter Kundenkontakt über Superchat — die Rückfrage vor dem Senden lässt sich nicht abschalten. Wer keine Nachrichten senden darf, sieht die Unterhaltung nur."
+   }
+  }
+ ]
 }

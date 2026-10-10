@@ -1206,6 +1206,19 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   Vorlage vor. `FaceMapNotice` warnt im Zettel, solange das Gesicht geplant und keine Karte da ist;
   ist die Karte im Admin Pflicht, lehnt der Hub das Beenden mit 422 ab (die App zeigt die Meldung).
   Kundenakte-Reiter Behandlung: `FaceMapHistoryCard` (nur lesen). Snapshots `face-map*`.
+- **Behandlungsdaten nachtragen (seit 10.10.2026, Entwurf 2 „Sitzungs-Assistent"):** Papierzettel
+  werden als Sitzung erfasst — Datum, Behandlerin, mehrere Zonen. Einstiege: Reiter „Behandlung" der
+  Kundenakte (Hinweis „N Behandlungen ohne Einstellungszettel" + „Nachtragen"), Kopf des
+  Einstellungszettels („Frühere Sitzungen nachtragen", Zonen des Termins vorgewählt) und Zonen-Blatt
+  unter dem Verlauf („Frühere Sitzung nachtragen", nur diese Zone). iPhone: drei Schritte
+  (Sitzung · Zonen · Werte je Zone als Seiten), iPad: Split mit Sitzungsliste links und Raster
+  rechts (`BackfillValuesGrid`). „Sichern & nächste Sitzung" nimmt die Werte mit. Endpunkte wie das
+  Web (`…/client/{id}/sessions`, `…/backfill`, `DELETE …/{id}/backfill`), Modell
+  `TreatmentBackfillModel` in `AppointmentView/TreatmentBackfill.swift`; das Blatt aus dem Zonen-Blatt
+  öffnet als zweites Blatt über dem offenen (iPad `fullScreenCover`), nicht per `onDismiss`-Kette.
+  Verlauf zeigt „Papier" und das Datum (`treated_at`), Löschen nur bei `can_delete` (Swipe + Knopf
+  mit Rückfrage). Kein Foto-Upload (Jan). Snapshots `treatment-backfill-*`
+  (`TreatmentBackfillSnapshotTests`). Wissen: `behandlungsdaten-nachtragen.md`.
 - **Tageskalender neben den Slots (seit 10.10.2026, Entwurf App 1):** Segment „Vorschläge | Tag"
   im Slot-Finder sowie im Folgetermin- und Verlegen-Blatt (`BookingFinderView.suggestions`,
   `FollowUpBookingContent.suggestionsCard`). `Booking/BookingDayCalendar.swift`: Modell mit dem

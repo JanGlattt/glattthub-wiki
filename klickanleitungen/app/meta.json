@@ -1218,5 +1218,45 @@
   },
   "marks": [],
   "ratio": 1.0769230769230769
+ },
+ "treatment-backfill-hint-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1170,
+   "height": 2700
+  },
+  "marks": [],
+  "ratio": 2.3076923076923075
+ },
+ "treatment-backfill-values-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1170,
+   "height": 3540
+  },
+  "marks": [],
+  "ratio": 3.0256410256410255
+ },
+ "treatment-backfill-ipad-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 3240,
+   "height": 4500
+  },
+  "marks": [],
+  "ratio": 1.3888888888888888
+ },
+ "treatment-backfill-sessions-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1170,
+   "height": 2340
+  },
+  "marks": [],
+  "ratio": 2
  }
 }
