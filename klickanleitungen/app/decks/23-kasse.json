@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für die glatttHub-App auf iPhone und iPad — Kassenabschluss: zählen, mit Phorest abgleichen, Tresor und Bankeinzahlung",
   "eyebrow": "App · Kasse",
   "footerArea": "App",
-  "stand": "29.09.2026",
-  "version": "1.0",
+  "stand": "10.10.2026",
+  "version": "1.1",
   "notes": [
     "Die App zeigt **dieselben Abschlüsse wie die Web-Seite** (Betrieb → Kasse) — was du hier speicherst, sieht das Büro sofort.",
     "**Genau zählen, genau eintragen** — auch wenn ein Fehler drin ist. Wechselgeld-Cents und Trinkgeld gehören **nie** in die Kasse.",
@@ -36,7 +36,7 @@
         {
           "n": 1,
           "title": "Heute noch offen",
-          "text": "Die dunkle Karte öffnet das **Zählen für heute**. Sie verschwindet, sobald der Abschluss gespeichert ist."
+          "text": "Zeigt die **Bewegungen** von heute und den **Tresor jetzt**. **„Bewegung“** erfasst, was tagsüber passiert (Tresor → Bank, Tresor → Kasse, Kasse → Tresor, Auslage mit Grund und Belegfoto, Bank → Tresor); **„Abschluss zählen“** öffnet abends das Zählen. Die dunkle Karte öffnet das **Zählen für heute**. Sie verschwindet, sobald der Abschluss gespeichert ist."
         },
         {
           "n": 2,
@@ -65,7 +65,7 @@
         {
           "n": 1,
           "title": "Tresor",
-          "text": "Steht schon da — **wie beim letzten Abschluss**. Nur ändern, wenn Geld dazu kam oder raus ging."
+          "text": "Vom letzten Abschluss; darunter stehen die **Bewegungen des Tages** vorbelegt und rechnen ihn weiter — **„+ Bewegung“**, falls eine fehlt (bis zum Abschluss). Steht schon da — **wie beim letzten Abschluss**. Nur ändern, wenn Geld dazu kam oder raus ging."
         },
         {
           "n": 2,
@@ -93,8 +93,8 @@
       "steps": [
         {
           "n": 1,
-          "title": "Bankeinzahlung",
-          "text": "Geld zur Bank gebracht? Betrag eintragen — der **Tresor sinkt** automatisch."
+          "title": "Bewegungen und Auslagen",
+          "text": "Zur Bank, in die Kasse, in den Tresor, von der Bank — alles steht als **Bewegung** unter dem Tresor und rechnet ihn. **Auslagen** aus der Kasse zieht die App vom Phorest-Betrag ab, gegen den gewogen wird."
         },
         {
           "n": 2,

@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für die Kasse im glatttHub — Tag abschließen, mit Phorest abgleichen, Monatsliste und CSV fürs Büro",
  "eyebrow": "Betrieb · Kasse",
  "footerArea": "Betrieb",
- "stand": "29.09.2026",
- "version": "1.0",
+ "stand": "10.10.2026",
+ "version": "1.1",
  "notes": [
   "Die Kasse ersetzt die **Kassenlade-Excel** — ein Abschluss je Standort und Tag.",
   "Eintragen dürfen **alle** am Standort, einen gespeicherten Tag **korrigieren nur Leitung und Büro**.",
@@ -23,7 +23,7 @@
  "pages": [
   {
    "h1": "Die Seite Kasse",
-   "sub": "Betrieb → Kasse. Oben Standort und Monat, dann „Heute noch offen“, die Kennzahlen und der Monat Tag für Tag.",
+   "sub": "Betrieb → Kasse. Oben Standort und Monat, dann „Heute noch offen“ mit den Bewegungen des Tages, die Kennzahlen und der Monat Tag für Tag.",
    "card": {
     "title": "Kasse",
     "text": "Betrieb → Kasse"
@@ -31,28 +31,33 @@
    "left": {
     "shot": "kasse-web-list-light"
    },
-   "leftCaption": "Jeder Tag mit gezähltem Betrag, Phorest-Betrag, Unterschied, Bankeinzahlung und Kommentar.",
+   "leftCaption": "Jeder Tag mit gezähltem Betrag, Phorest-Betrag, Unterschied, Bankeinzahlung, Auslagen und Kommentar.",
    "steps": [
     {
      "n": 1,
      "title": "Heute noch offen",
-     "text": "Öffnet das **Zählblatt** für heute."
+     "text": "Zeigt, wie viele **Bewegungen** heute schon erfasst sind und den **Tresor jetzt**. **„Bewegung erfassen“** für alles, was tagsüber passiert; **„Abschluss zählen“** öffnet abends das Zählblatt."
     },
     {
      "n": 2,
-     "title": "Kennzahlen",
-     "text": "Abgeschlossene Tage, **Tage mit Differenz**, Summe der Differenzen und was **zur Bank** ging."
+     "title": "Bewegung erfassen",
+     "text": "Art antippen — **Tresor → Bank**, **Tresor → Kasse**, **Kasse → Tresor**, **Kasse → Auslage** (z. B. Briefmarken, Grund Pflicht, Belegfoto gern) oder **Bank → Tresor** (Wechselgeld geholt) — Betrag, Grund, Speichern. Der Hub merkt sich Uhrzeit und Person und rechnet den Tresor mit. Bis zum Abschluss lässt sich eine eigene Bewegung zurücknehmen."
     },
     {
      "n": 3,
-     "title": "CSV-Export",
-     "text": "Der Monat mit allen Spalten der früheren Excel — für das Kassenbuch im Büro."
+     "title": "Kennzahlen",
+     "text": "Abgeschlossene Tage, **Tage mit Differenz**, Summe der Differenzen, was **zur Bank** ging und die **Auslagen** des Monats."
+    },
+    {
+     "n": 4,
+     "title": "CSV-Export und Kassenbuch",
+     "text": "**CSV-Export**: der Monat mit allen Spalten der früheren Excel. **Kassenbuch**: jede Bewegung des Monats als eigene Zeile mit Uhrzeit, Art, Betrag, Grund, Beleg und Person — für das Büro."
     }
    ]
   },
   {
    "h1": "Zählen und abgleichen",
-   "sub": "Links Tresor, Scheine und Münzen, rechts die Waage: gezählt gegen Phorest „Erwartet“.",
+   "sub": "Links Tresor, die Bewegungen des Tages, Scheine und Münzen, rechts die Waage: gezählt gegen Phorest „Erwartet“ (minus Auslagen).",
    "card": {
     "title": "Zählblatt",
     "text": "Tag anklicken"
@@ -64,18 +69,23 @@
    "steps": [
     {
      "n": 1,
-     "title": "Stückzahlen",
-     "text": "Je Schein und Münze die **Anzahl** eintragen, die Summe rechnet der Hub. Der **Tresor** kommt vom letzten Abschluss."
+     "title": "Tresor und Bewegungen",
+     "text": "Der **Tresor** kommt vom letzten Abschluss; darunter stehen die **Bewegungen des Tages** fertig vorbelegt und rechnen ihn weiter („Tresor danach“). Fehlt eine, **„+ Bewegung“** — bis zum Abschluss, danach sind sie fest."
     },
     {
      "n": 2,
-     "title": "Phorest „Erwartet“",
-     "text": "Aus Phorest (Manager → Kassenabschluss → heute, Bar · Erwartet) übernehmen. Die Waage zeigt sofort, ob die Kasse stimmt."
+     "title": "Stückzahlen",
+     "text": "Je Schein und Münze die **Anzahl** eintragen, die Summe rechnet der Hub."
     },
     {
      "n": 3,
+     "title": "Phorest „Erwartet“",
+     "text": "Aus Phorest (Manager → Kassenabschluss → heute, Bar · Erwartet) übernehmen. Gab es **Auslagen** aus der Kasse, zieht der Hub sie ab („− Auslagen 12,50 € = …“) — gegen diesen Betrag wird gewogen. Die Waage zeigt sofort, ob die Kasse stimmt."
+    },
+    {
+     "n": 4,
      "title": "Abschluss speichern",
-     "text": "Bankeinzahlung, Wechselgeld offen und **Kommentar** (Pflicht bei Unterschied) eintragen, dann speichern. Danach in Phorest abschließen."
+     "text": "Wechselgeld offen und **Kommentar** (Pflicht bei Unterschied) eintragen, dann speichern. Danach in Phorest abschließen."
     }
    ]
   }
