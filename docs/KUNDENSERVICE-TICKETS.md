@@ -332,6 +332,12 @@ damit (Jan, 10.10.2026).
 
 ### Fallstricke
 
+- **Zendesk lehnt geschlossene Tickets mit 422 ab** (Befund 262, 10.10.2026): Der Spiegel (Weg 2)
+  kann einem in Zendesk geschlossenen Ticket keine Notiz mehr anhängen. Bei 422 fragt
+  `ZendeskMirrorService` den Zendesk-Status ab und hält bei `closed` einmal das Ereignis
+  `zendesk_mirror_skipped` fest, ohne Job-Wiederholung; vorher standen drei Fehlereinträge am Ticket.
+  Die Antwort an die Kundin ist davon nie betroffen.
+
 - webklex quotet nicht-numerische Suchwerte: UID-Bereiche nur über `uidRangeCriteria()`
   (`MailboxPollerUidQueryTest`). Der Cron-Endpunkt meldet 200, auch wenn der Abruf scheitert; der
   Fehler steht nur in `support_mailbox_states.last_error` und im Log „Postfach-Abruf
