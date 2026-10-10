@@ -7,7 +7,7 @@
   "audience": "institut",
   "footerArea": "App",
   "stand": "10.10.2026",
-  "version": "1.5",
+  "version": "1.6",
   "nr": 3,
   "title": [
     "Termine und die",
@@ -129,7 +129,7 @@
         {
           "n": 3,
           "title": "Speichern",
-          "text": "Der goldene Knopf. Danach lassen sich **Fotos** aufnehmen (Kamera oder Mediathek)."
+          "text": "**Zone Gesicht:** Unter den Werten liegt die **Gesichtskarte** — mit Finger oder Pencil einzeichnen, wo behandelt wird (Stift, Marker, Radierer), **„Karte speichern“**; beim nächsten Termin liegt sie wieder vor. Der goldene Knopf. Danach lassen sich **Fotos** aufnehmen (Kamera oder Mediathek)."
         },
         {
           "n": 4,

@@ -10,8 +10,8 @@
  "subtitle": "Klickanleitung für Bestandskundinnen — Behandlungstermin starten, Einstellungen je Körperzone erfassen, Termin beenden",
  "eyebrow": "Terminansicht · Behandlungstermin",
  "footerArea": "Terminansicht",
- "stand": "18.09.2026",
- "version": "1.3",
+ "stand": "10.10.2026",
+ "version": "1.4",
  "notes": [
   "Der Einstellungszettel wird **bei jeder Behandlung** gepflegt — je Zone Laserkopf, Hauttyp, Haar, empfohlene und genutzte Werte.",
   "Frühere Werte der Kundin stehen im Formular als **Historie** — beim nächsten Termin sind sie sofort sichtbar."
@@ -140,11 +140,16 @@
     },
     {
      "n": 3,
+     "title": "Gesichtskarte (nur Zone Gesicht)",
+     "text": "Bei **Flex GESICHT** oder **Ganzkörper** steht unter den Gruppen die **Gesichtskarte**: mit Finger, Maus oder Pencil auf der Gesichts-Vorlage einzeichnen, wo behandelt wird — **Stift** für Linien, **Marker** für Flächen, **Radierer** nimmt einen Strich weg. **„Gesichtskarte speichern“**. Beim nächsten Gesichts-Termin liegt die Karte wieder vor („übernommen vom …“) und wird angepasst. Fehlt sie, zeigt der Zettel oben den Hinweis; ist sie im Admin Pflicht, lässt sich der Termin ohne Karte nicht beenden."
+    },
+    {
+     "n": 4,
      "title": "Notizen & Foto",
      "text": "Optional: Besonderheiten der Behandlung und ein Foto der Zone."
     },
     {
-     "n": 4,
+     "n": 5,
      "title": "„Speichern“",
      "text": "Alle Gruppen außer Notizen sind Pflicht — fehlt etwas, nennt der Hub das Feld. Nach dem Speichern erscheint die Zone als Chip in der Übersicht."
     }

@@ -415,6 +415,14 @@ Person. Fachlogik und Dialoge: `TERMIN-BUCHUNG-IDEAL-SLOT.md`, Abschnitt „Extr
 Ganzkörper-Abschluss". Die App zeigt denselben Verlauf in der Karte „Extrazeiten"
 (`ClientAppointmentsTab`, `ClientExtraTimeHistoryEntry`).
 
+### Behandlungseinstellungen-Tab: Gesichtskarte (seit 10.10.2026)
+
+Ist die Zone „Gesicht" gewählt, zeigt der Reiter über der Sitzungstabelle die Karte
+„Gesichtskarte" mit allen gespeicherten Karten der Kundin (jüngste zuerst, nur lesen — Alpine
+`faceMapHistory()`, Endpunkt `GET /hub/treatment-settings/client/{id}/face-maps`). Bearbeitet wird
+ausschließlich im Termin (Entscheidung Jan, 10.10.2026). Fachlogik: `TREATMENT-SETTINGS.md`,
+Abschnitt „Gesichtskarte". Die App zeigt dasselbe als `FaceMapHistoryCard` im Reiter Behandlung.
+
 ### Nachrichten-Tab (Timeline + Superchat)
 
 Seit 28.08.2026 heißt der frühere Tab „WhatsApp" **„Nachrichten"** (Tab-`id` bleibt `whatsapp`).

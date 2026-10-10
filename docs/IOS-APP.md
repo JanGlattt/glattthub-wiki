@@ -1198,6 +1198,14 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   `?view=session&shell=native&direct=1` (`openDirect`, Klasse `apt-detail--native-direct`) bleibt
   im Hub erhalten, die App nutzt es nicht mehr; `bridge.js` meldet weiterhin
   `direct-treatment-booked`/`-closed` als `directTreatment` an `NativeBridge.onDirectTreatment`.
+- **Gesichtskarte (seit 10.10.2026, Entwurf A):** In der Zone „Gesicht" des nativen
+  Einstellungszettels zeichnet `FaceMapSection` (`AppointmentView/FaceMap.swift`) auf der
+  Vorlage `facemap-face` mit Finger oder Pencil ein (SwiftUI `Canvas` + `DragGesture`, Werkzeuge
+  Stift/Marker/Radierer/Rückgängig/Löschen); Striche sind dieselben JSON-Daten wie im Web
+  (`GET/POST hub/appointment/{b}/{a}/face-map`), die Karte des vorherigen Termins liegt als
+  Vorlage vor. `FaceMapNotice` warnt im Zettel, solange das Gesicht geplant und keine Karte da ist;
+  ist die Karte im Admin Pflicht, lehnt der Hub das Beenden mit 422 ab (die App zeigt die Meldung).
+  Kundenakte-Reiter Behandlung: `FaceMapHistoryCard` (nur lesen). Snapshots `face-map*`.
 - **Tageskalender neben den Slots (seit 10.10.2026, Entwurf App 1):** Segment „Vorschläge | Tag"
   im Slot-Finder sowie im Folgetermin- und Verlegen-Blatt (`BookingFinderView.suggestions`,
   `FollowUpBookingContent.suggestionsCard`). `Booking/BookingDayCalendar.swift`: Modell mit dem

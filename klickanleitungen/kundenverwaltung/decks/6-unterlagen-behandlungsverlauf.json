@@ -9,8 +9,8 @@
  "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — eingereichte Formulare, Einstellungszettel und Fotos",
  "eyebrow": "Kundenverwaltung · Unterlagen",
  "footerArea": "Kundenverwaltung",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "10.10.2026",
+ "version": "1.1",
  "notes": [
   "Beide Reiter sind **reine Ansicht** — geschrieben wird im laufenden Termin (Dokumente „Terminansicht 2–4“ und H).",
   "Der **Einstellungszettel** ist die wichtigste Vorbereitung auf eine Behandlung: Er zeigt, womit zuletzt gearbeitet wurde.",
@@ -98,6 +98,11 @@
    },
    "leftCaption": "Links die behandelten **Zonen**, rechts die Einträge der gewählten Zone.",
    "steps": [
+    {
+     "n": 0,
+     "title": "Gesichtskarte",
+     "text": "Zone **Gesicht** gewählt: Oben erscheint die Karte **„Gesichtskarte“** mit allen gespeicherten Karten der Kundin — wo im Gesicht behandelt wurde, mit Datum und Person. Hier nur ansehen; eingezeichnet wird im Termin."
+    },
     {
      "n": 1,
      "title": "Zone wählen",

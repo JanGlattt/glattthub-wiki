@@ -13,9 +13,10 @@
  "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Zustellungen nachsehen, Systemeinstellungen, Cache und Zugänge",
  "eyebrow": "Admin · Protokolle & System",
  "footerArea": "Admin-Panel",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "10.10.2026",
+ "version": "1.1",
  "notes": [
+  "**Gesichtskarte** (Betrieb → Gesichtskarte, seit 10.10.2026): Schalter, ob die Karte im Einstellungszettel bei Gesichtsbehandlungen Pflicht ist — aus = Hinweis, an = ohne Karte kein „Termin beenden“.",
   "Die Protokolle beantworten die häufigste Supportfrage: **„Ist das rausgegangen?“**",
   "Die Einstellungen darunter betreffen den ganzen Hub — **Absender, PDF-Aussehen, Schriftart**.",
   "**Cache leeren ist kein Allheilmittel**, aber der richtige erste Schritt, wenn Änderungen nicht ankommen."

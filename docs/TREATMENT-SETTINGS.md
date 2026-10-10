@@ -187,6 +187,52 @@ Pro Behandlung können **Fotos** hochgeladen werden:
 
 ---
 
+### Gesichtskarte (seit 10.10.2026)
+
+**Absicht (Leitungs-Workshop, Jan 10.10.2026 — Entwurf A „frei zeichnen").** Behandelt die Kundin
+das Gesicht (Flex GESICHT oder Ganzkörper), zeichnet die Behandlerin in der Zone „Gesicht" des
+Einstellungszettels auf einer Gesichts-Vorlage ein, **wo genau** behandelt wird. Beim nächsten
+Gesichts-Termin liegt die letzte Karte vor („übernommen vom …") und wird angepasst — jede Fassung
+bleibt je Termin erhalten. Die Kundenakte (Reiter Behandlungseinstellungen, Zone Gesicht) zeigt den
+Verlauf nur lesend; bearbeitet wird im Termin.
+
+- **Vorlage:** `public/images/facemap/face.svg` (Jans Scan als Linienzeichnung, Koordinatenraum
+  0–100 × 0–143); die App führt dieselbe Zeichnung als Bildsatz `facemap-face` (per
+  `rsvg-convert` aus dem SVG erzeugt).
+- **Daten:** `treatment_face_maps` (Migration `2026_10_10_200000`), eine Karte je
+  `phorest_appointment_id` (unique), `phorest_client_id` für den Verlauf, `treatment_setting_id`
+  der Gesichts-Zeile wenn vorhanden, `strokes` JSON `[{tool: pen|mark, width, points: [[x, y], …]}]`
+  in Vorlagen-Koordinaten (Web und App identisch), `stroke_count`, `note`, `copied_from_id`
+  (Vorlage aus dem vorherigen Termin), Soft Deletes. `TreatmentFaceMap::sanitizeStrokes()` klemmt
+  Koordinaten in die Vorlage und kappt bei 400 Strichen à 2.000 Punkten.
+- **Erkennung:** `FaceMapService::facePlanned()` — `PlannedZoneResolver` liefert `gesicht` oder
+  `full_body`. `getTreatmentSettingsData` gibt `faceMap {planned, required, exists}` mit; Web und
+  App zeigen den Hinweis „Gesichtskarte fehlt", solange geplant und nicht vorhanden.
+- **Pflicht (Admin):** `face_map_settings.required` (eine Zeile, `FaceMapSetting::required()`,
+  60 s gecacht), Filament-Seite „Gesichtskarte" unter Betrieb (Recht `manage_treatment_settings`).
+  Jan 10.10.2026: zunächst **freiwillig mit Hinweis**. Ist der Schalter an, weist
+  `PhorestController::appendAppointmentNote` das Beenden einer Gesichtsbehandlung ohne Karte mit
+  422 ab (`face_map_missing: true`, `FaceMapService::missingRequired()` über die Termin-Gruppe);
+  die Übergabe bei „Direkt behandeln" ist ausgenommen.
+- **Endpunkte** (`TreatmentFaceMapController`): `GET hub/appointment/{b}/{a}/face-map?client_id=`
+  → `{required, current, previous, template, width, height, client_id}` (Recht
+  `view_appointment_detail`); `POST …/face-map {client_id?, strokes[], note?, copied_from_id?}`
+  (Recht `manage_treatment_settings`); `GET hub/treatment-settings/client/{id}/face-maps` → Verlauf.
+- **Web:** Alpine `faceMapPad` (`public/js/components/face-map-pad.js`, in der Terminansicht
+  geladen) + `<x-face-map-pad />`: SVG mit `<image>` der Vorlage und `<path>` je Strich,
+  Pointer-Events (Finger, Maus, Pencil; `touch-action: none`), Werkzeuge Stift, Marker
+  (halbtransparent), Radierer (trifft den Strich), Rückgängig, Löschen, Hinweis, Speichern. Block
+  `.treatment-face-map` unter den Gruppen des Zettels, nur bei `currentZoneKey === 'gesicht'`;
+  Hinweis `.face-map__notice` über der Zonen-Grafik. Kundenakte: `faceMapHistory()` im Partial
+  `clients/partials/treatment-settings`. Stil: Abschnitt „GESICHTSKARTE" in `theme_glattt.css`.
+- **App:** `AppointmentView/FaceMap.swift` — `FaceMapStroke`/`FaceMapRecord` (gleiches JSON),
+  `FaceMapModel` (Laden, Zeichnen, Radierer, Speichern), `FaceMapCanvas` (SwiftUI `Canvas` über dem
+  Bildsatz, `DragGesture` — Finger wie Pencil), `FaceMapSection` im `ZoneFormContent` der Zone
+  Gesicht, `FaceMapNotice` im Zettel, `FaceMapHistoryCard` im Kundenakte-Reiter Behandlung.
+  Snapshots `face-map`/`face-map-ipad`/`face-map-history` (`FaceMapSnapshotTests`).
+- **Tests:** `tests/Feature/TreatmentFaceMapTest.php` (Speichern, Vorlage, Verlauf, Bereinigung,
+  Pflicht per Schalter, Rechte).
+
 ### 🔗 URL-Struktur
 
 ```
