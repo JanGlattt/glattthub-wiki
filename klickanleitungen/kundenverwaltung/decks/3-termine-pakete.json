@@ -9,8 +9,8 @@
  "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — Terminhistorie, Extrazeit und gekaufte Pakete",
  "eyebrow": "Kundenverwaltung · Termine & Pakete",
  "footerArea": "Kundenverwaltung",
- "stand": "06.10.2026",
- "version": "1.2",
+ "stand": "10.10.2026",
+ "version": "1.3",
  "notes": [
   "Termine und Pakete kommen **live aus Phorest** — der Hub zeigt sie nur an, geführt wird der Kalender dort.",
   "Behandelt wird immer über die **Terminansicht** (Dokumente „Terminansicht 1–8“), nicht über das Kundenprofil.",
@@ -157,6 +157,11 @@
      "n": 3,
      "title": "„Speichern“",
      "text": "Übernimmt den Wert. Ab dann plant die Buchung automatisch länger."
+    },
+    {
+     "n": 4,
+     "title": "Verlauf",
+     "text": "Unter den Badges steht seit 10.10.2026 der **Verlauf**: die Festlegung nach dem Ganzkörper-Abschluss und jede Prüfung nach einer Sitzung („gebucht 2:30 h, gebraucht 2:10 h → 30 Min → 15 Min“) mit Datum und Person. Ein ausdrückliches **„keine“** bleibt stehen — die Buchung übernimmt dann nicht die Extrazeit des letzten Termins."
     }
    ],
    "hint": {

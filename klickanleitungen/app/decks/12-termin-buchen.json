@@ -6,8 +6,8 @@
   "of": 24,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "07.10.2026",
-  "version": "1.3",
+  "stand": "10.10.2026",
+  "version": "1.4",
   "nr": 12,
   "title": [
     "Termin buchen",
@@ -51,6 +51,11 @@
           "n": 4,
           "title": "Terminart",
           "text": "**Beratung** oder **Behandlung**. Bei der Behandlung stehen die Zonen aus ihrem Paket mit Dauer und Resteinheiten, darunter die **FLEX-Einzelsitzungen** mit Preis (Bezahlung vor Ort, auch ohne Paket). Antippen zum An- und Abwählen — die Desinfektion zählt automatisch zur Dauer."
+        },
+        {
+          "n": 5,
+          "title": "Ganzkörper ohne Extrazeit",
+          "text": "Hat die Kundin ein **Ganzkörper-Paket** ohne festgelegte Extrazeit (etwa nach dem Abschluss zu Hause per Link), zeigt die App vor den Vorschlägen die Pflichtfrage **„Wie viel Extrazeit für die erste Sitzung?“** — Kachel antippen, **„Speichern und Zeit finden“**. Die Wahl gilt ab jetzt für jede Buchung."
         }
       ],
       "hint": {

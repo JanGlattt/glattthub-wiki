@@ -404,6 +404,17 @@ x-data="{
 - `update-zone-treatment-counts` → setzt Behandlungszähler-Badges
 - `update-custom-zones` → fügt benutzerdefinierte Zonen hinzu
 
+### Termine-Tab: Karte „Extrazeit" mit Verlauf (seit 10.10.2026)
+
+Die Karte „Extrazeit" (oben im Reiter Termine, `clients/partials/appointments.blade.php`,
+Alpine `clientExtraTimes()`, Endpunkte `GET/POST /hub/clients/{id}/extra-times`) zeigt neben den
+gespeicherten Extrazeit-Leistungen den **Verlauf** der Entscheidungen aus
+`client_extra_time_decisions` (`history` im JSON, jüngste zuerst, höchstens 20): die Festlegung
+nach dem Ganzkörper-Abschluss und die Prüfungen nach Sitzungen mit gebucht/gebraucht, Datum und
+Person. Fachlogik und Dialoge: `TERMIN-BUCHUNG-IDEAL-SLOT.md`, Abschnitt „Extrazeit nach dem
+Ganzkörper-Abschluss". Die App zeigt denselben Verlauf in der Karte „Extrazeiten"
+(`ClientAppointmentsTab`, `ClientExtraTimeHistoryEntry`).
+
 ### Nachrichten-Tab (Timeline + Superchat)
 
 Seit 28.08.2026 heißt der frühere Tab „WhatsApp" **„Nachrichten"** (Tab-`id` bleibt `whatsapp`).

@@ -175,6 +175,57 @@ getan — nur später.
 - Das Blatt zeigt je Tag höchstens vier Zeiten und vier Tage; „Andere Uhrzeit …" zeigt den ganzen
   Tag. Raumnamen „XX Nur für Beratungen" werden in Kacheln zu „XX Beratung" gekürzt (Web und App).
 
+### Extrazeit nach dem Ganzkörper-Abschluss und Prüfung nach der Sitzung (seit 10.10.2026)
+
+**Absicht (Leitungs-Workshop, Jan 10.10.2026).** Wer ein Ganzkörper-Paket abschließt, braucht in
+der ersten Sitzung oft mehr Zeit — bisher wusste das nur, wer die Karte „Extrazeit" in der
+Kundenakte kannte. Jetzt stellt der Hub zwei Pflichtfragen, ohne dass die Kundin etwas davon
+mitbekommt (Entwurf B: im Abschluss-Ablauf, nicht im Unterschrifts-Moment):
+
+1. **„Ganzkörper abgeschlossen – wie viel Extrazeit?"** — sobald ein aktiver Vertrag mit
+   `is_full_body` ohne `extra_time_decided_at` existiert. Gefragt wird im **Beenden-Ablauf** der
+   Terminansicht (vor „Direkt behandeln?" und vor dem Folgetermin), beim Klick auf die Kachel
+   **„Direkt behandeln"**, auf der **Institutsseite** direkt nach der Tageserfassung und beim
+   **ersten Buchen** im Seitenblatt „Termin buchen" bzw. im Slot-Finder der App (Fernabsatz:
+   Vertrag zu Hause per Link unterschrieben). Die Stufen sind die Phorest-Leistungen mit
+   „Extrazeit" im Namen (`booking.extrazeit_keyword`), nach Dauer sortiert, plus „keine".
+2. **„Extrazeit für den nächsten Termin kürzen?"** — nach einer Ganzkörper-Sitzung mit gebuchter
+   Extrazeit, im Beenden-Ablauf vor dem Folgetermin: *gebucht* = erste Startzeit bis letzte Endzeit
+   der Termin-Gruppe (`AppointmentGroupResolver`), *gebraucht* = ab dem Klick „Termin starten"
+   (`appointment_session_logs`, Aktion `started`; Rückfall Terminbeginn laut Phorest) bis jetzt.
+   Weicht gebucht − gebraucht um mindestens **15 Minuten** ab
+   (`ExtraTimeDecisionService::REVIEW_THRESHOLD_MINUTES`), kommt der Dialog mit Vorschlag:
+   kleinste Stufe, die die wirklich gebrauchte Extrazeit abdeckt; reicht keine, „keine"; fehlte
+   Zeit, die nächstgrößere Stufe. „Beibehalten" oder Stufe übernehmen.
+
+**Speicherung.** Die Wahl ersetzt die Kundeneinstellung `client_extra_times` (genau eine
+Extrazeit-Leistung oder keine) — dort zieht `BookingCalendarService::resolveClientExtras()` sie
+bei jeder Buchung und bei „Direkt behandeln" vor. Jede Entscheidung steht im Verlauf
+`client_extra_time_decisions` (`kind` initial | review | review_kept, vorher/nachher, gebucht/
+gebraucht, Person); die Karte „Extrazeit" der Kundenakte zeigt ihn (Web und App). **„keine" ist
+eine Entscheidung mit 0 Minuten:** `resolveClientExtras()` fällt dann *nicht* mehr auf die
+Extrazeit des letzten Termins zurück (`ExtraTimeDecisionService::explicitlyNone()`).
+
+**Endpunkte** (`hub/booking/api/extra-time/*`, Recht `view_booking`,
+`Hub\ExtraTimeDecisionController`): `GET pending?client_id&branch_id` → `pending` oder `null`
+(`contract`, `options`, `current`, `current_minutes`); `POST decide {contract_id, service_name|null}`
+(422 für Nicht-Ganzkörper); `GET review?branch_id&appointment_id&client_id` → `review` oder
+`null` (`booked_minutes`, `used_minutes`, `extra_minutes`, `unused_minutes`, `used_from`,
+`options`, `suggestion`, `current`); `POST apply {client_id, keep|service_name, appointment_id,
+booked_minutes, used_minutes}`. Institutsseite: `POST /api/shared/institut/{token}/extra-time`
+(`storeSale` liefert `extra_time {pending, contract_id, options}`).
+
+**Oberflächen.** Web: `hub/appointment-unified/partials/extra-time-dialogs.blade.php` (zwei
+Modale, Pflichtfrage ohne Schließen) mit `ensureExtraTimeDecision()` /
+`ensureExtraTimeReview()` in `appointment-unified.js` — die Kette (`continueAfterBalance`,
+`continueAfterDirectOffer`, `offerDirectTreatment`) wartet auf die Antwort; Seitenblatt
+`appointment-booking-panel` (Zwischenschritt statt Suche, `extraTimePending`); Institutsseite
+`shared/institute/modal-extra-time.blade.php`; Stufen-Kacheln `.extra-time-glattt-options`.
+App: `Booking/ExtraTime.swift` (`ExtraTimeModel`, `ExtraTimeDecisionSheet`,
+`ExtraTimeReviewSheet`, Inline-Karte im Slot-Finder), Kette in `AppointmentDetailModel` über
+`onDismiss` (`extraTimeDismissed()`), Snapshots `ExtraTimeSnapshotTests`. Tests:
+`tests/Feature/Booking/ExtraTimeDecisionTest.php`.
+
 ### „Andere Uhrzeit …" und Untergrenze „jetzt" (seit 26.09.2026)
 
 - **Andere Uhrzeit:** Die Vorschläge zeigen je Tag höchstens `booking.max_per_day` Zeiten und

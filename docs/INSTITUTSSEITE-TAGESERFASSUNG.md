@@ -159,6 +159,12 @@ Zahlungsplan im SEPA-Tab an.
 Vertrag (z. B. aus dem parallel laufenden Google-Sheet-Import), warnt die Seite
 und speichert erst nach ausdrücklicher Bestätigung.
 
+**Ganzkörper: Extrazeit gleich festlegen (seit 10.10.2026).** Nach einem
+Ganzkörper-Verkauf fragt die Seite als Pflichtfrage „Wie viel Extrazeit für die
+erste Sitzung?" (Stufen aus Phorest oder „keine"). Die Wahl landet in der
+Kundenakte (Termine → Extrazeit) und wird bei jeder Buchung vorbelegt;
+Hintergrund im Wiki `TERMIN-BUCHUNG-IDEAL-SLOT.md`.
+
 ### Upselling
 
 Button **„Upselling erfassen"**: Kunde über die Suche finden (alle Kunden der
@@ -324,6 +330,12 @@ stellen (Hinweis steht auch auf der Seite).
 - **Preisprüfung serverseitig:** `verifyPricePayload()` rechnet Rate, Summe
   und Rabatt gegen die Preisliste nach — der Client wird nie geglaubt (422 bei
   Abweichung).
+- **Extrazeit nach Ganzkörper (seit 10.10.2026):** `storeSale` liefert bei
+  `is_full_body` zusätzlich `extra_time {pending: true, contract_id, options}`;
+  `modal-extra-time.blade.php` zeigt die Pflichtfrage, `POST …/extra-time
+  {contract_id, service_name|null}` speichert über
+  `ExtraTimeDecisionService::decide()` (422 für fremde oder Nicht-Ganzkörper-
+  Verträge, Entscheidung ohne Nutzer, weil die Seite mit Token läuft).
 - **Ungültige IBAN (seit 31.08.2026):** `storeSale` lehnt eine ungültige IBAN
   nur noch ab, solange `bank.invalid_iban_confirmed` fehlt. Mit Bestätigung
   wird sie im pending-Mandat gespeichert und

@@ -1198,6 +1198,19 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   `?view=session&shell=native&direct=1` (`openDirect`, Klasse `apt-detail--native-direct`) bleibt
   im Hub erhalten, die App nutzt es nicht mehr; `bridge.js` meldet weiterhin
   `direct-treatment-booked`/`-closed` als `directTreatment` an `NativeBridge.onDirectTreatment`.
+- **Extrazeit (Ganzkörper, seit 10.10.2026):** Zwei Pflichtfragen mit denselben Endpunkten wie
+  das Web (`hub/booking/api/extra-time/{pending|decide|review|apply}`), `Booking/ExtraTime.swift`:
+  `ExtraTimeDecisionSheet` („Ganzkörper abgeschlossen – wie viel Extrazeit?", Stufen-Kacheln,
+  kein Abbrechen, `interactiveDismissDisabled`) vor „Direkt behandeln?"/der Kachel „Direkt
+  behandeln" und `ExtraTimeReviewSheet` (gebucht/gebraucht/ungenutzt, Vorschlag vorgewählt,
+  „Beibehalten"/„Übernehmen") vor dem Folgetermin. `continueAfterBalance()`,
+  `continueAfterDirectOffer()` und `offerDirectTreatment()` prüfen asynchron
+  (`ensureExtraTimeDecision`/`ensureExtraTimeReview`) und laufen nach `extraTimeDismissed()`
+  aus `onDismiss` weiter — dieselbe Blatt-Ketten-Regel wie oben. Der Slot-Finder zeigt die
+  Frage als Inline-Karte (`ExtraTimeDecisionContent(inline: true)`) statt der Vorschläge, solange
+  `BookingFinderModel.extraTime` gesetzt ist, und lädt nach dem Speichern die Leistungen neu. Die
+  Karte „Extrazeiten" der Kundenakte zeigt den Verlauf (`ClientExtraTimeHistoryEntry`).
+  Snapshots `extra-time-decision`/`extra-time-review` (iPhone und iPad, `ExtraTimeSnapshotTests`).
   Nach der Buchung beendet die App den Beratungstermin selbst (Kasse → Notiz → PAID, Folgetermin-Frage
   entfällt) und öffnet den neuen Behandlungstermin mit `autoStart` (`container.openAppointment`).
   Kasse: roter Vollbild-Schirm mit Betrag, Zusatz-Service-Hinweis, „wird kassiert" oder

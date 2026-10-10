@@ -6,8 +6,8 @@
   "of": 24,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "09.10.2026",
-  "version": "1.3",
+  "stand": "10.10.2026",
+  "version": "1.4",
   "nr": 3,
   "title": [
     "Termine und die",
@@ -93,7 +93,7 @@
         {
           "n": 4,
           "title": "Termin beenden",
-          "text": "Unten links. Die App prüft, ob alles erfasst ist, fragt nach der Notiz und schließt den Termin als bezahlt (PAID) ab."
+          "text": "Unten links. Die App prüft, ob alles erfasst ist, fragt nach der Notiz und schließt den Termin als bezahlt (PAID) ab. **Nur bei Ganzkörper:** Nach einem Abschluss kommt vorher die Pflichtfrage **„Wie viel Extrazeit für die erste Sitzung?“**; nach einer Sitzung mit Extrazeit prüft die App gebucht gegen gebraucht (ab **„Termin beginnen“**) und schlägt bei mindestens 15 Minuten Abweichung vor, die Extrazeit für den nächsten Termin zu kürzen — **„Beibehalten“** oder **„Übernehmen“**."
         }
       ],
       "hint": {
