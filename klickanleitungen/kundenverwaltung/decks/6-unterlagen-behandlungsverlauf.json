@@ -10,7 +10,7 @@
  "eyebrow": "Kundenverwaltung · Unterlagen",
  "footerArea": "Kundenverwaltung",
  "stand": "10.10.2026",
- "version": "1.1",
+ "version": "1.2",
  "notes": [
   "Beide Reiter sind **reine Ansicht** — geschrieben wird im laufenden Termin (Dokumente „Terminansicht 2–4“ und H).",
   "Der **Einstellungszettel** ist die wichtigste Vorbereitung auf eine Behandlung: Er zeigt, womit zuletzt gearbeitet wurde.",
@@ -88,7 +88,7 @@
   },
   {
    "h1": "Einstellungszettel",
-   "sub": "Der Reiter „Behandlungseinstellungen“ hält je Körperzone fest, mit welchen Werten behandelt wurde.",
+   "sub": "Der Reiter „Behandlungseinstellungen“ hält je Körperzone fest, mit welchen Werten behandelt wurde — und nimmt seit 10.10.2026 auch die alten Papierzettel auf.",
    "card": {
     "title": "Einstellungszettel",
     "text": "Werte der letzten Behandlungen je Zone nachschlagen"
@@ -96,7 +96,7 @@
    "left": {
     "shot": "n3-einstellungszettel"
    },
-   "leftCaption": "Links die behandelten **Zonen**, rechts die Einträge der gewählten Zone.",
+   "leftCaption": "Oben der Hinweis auf Behandlungen ohne Zettel, links die behandelten **Zonen**, rechts die Einträge der gewählten Zone.",
    "steps": [
     {
      "n": 0,
@@ -122,10 +122,20 @@
      "n": 4,
      "title": "Notizen",
      "text": "Auffälligkeiten der letzten Behandlung (Rötung, Schmerz, Pause). Vor jeder Behandlung lesen."
+    },
+    {
+     "n": 5,
+     "title": "Papierzettel nachtragen",
+     "text": "Der gelbe Hinweis zählt **Behandlungen ohne Einstellungszettel**. **„Nachtragen“** (oder „Sitzung nachtragen“ oben rechts) öffnet den Assistenten: links die vergangenen Termine der Kundin mit „offen“/„erfasst“, rechts **eine Sitzung** — Datum und Behandlerin kommen aus dem Termin, die Zonen als Chips, darunter das Raster mit den Zettelfeldern je Zone. **„Letzte Werte“** übernimmt die jüngste Sitzung der Zone, **„Speichern & nächste Sitzung“** springt zum nächsten offenen Termin und nimmt die Werte mit. „Sitzung ohne Termin“ für Zettel vor der Phorest-Zeit."
+    },
+    {
+     "n": 6,
+     "title": "Etikett „Papier“ und Löschen",
+     "text": "Nachgetragene Zeilen tragen **„Papier“** (mit Mauszeiger: wer eingetragen hat) und zählen in der Sitzungsnummer mit. Der **Papierkorb** löscht einen Nachtrag — nur die Person, die ihn eingetragen hat, sowie Leitung und Büro; Einträge aus dem Termin bleiben unantastbar."
     }
    ],
    "hint": {
-    "text": "**Eingetragen wird im Termin:** Der Einstellungszettel wird über die Kachel **„Einstellungszettel“** im laufenden Termin gefüllt („Terminansicht 8“). Im Kundenprofil steht nur die Historie."
+    "text": "**Eingetragen wird im Termin:** Der Einstellungszettel wird über die Kachel **„Einstellungszettel“** im laufenden Termin gefüllt („Terminansicht 8“). Nachträge aus Papierzetteln gehen hier in der Akte — oder im Termin über „Frühere Sitzungen nachtragen“."
    }
   },
   {

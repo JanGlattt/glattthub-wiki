@@ -233,6 +233,51 @@ Verlauf nur lesend; bearbeitet wird im Termin.
 - **Tests:** `tests/Feature/TreatmentFaceMapTest.php` (Speichern, Vorlage, Verlauf, Bereinigung,
   Pflicht per Schalter, Rechte).
 
+### Behandlungsdaten nachtragen (seit 10.10.2026)
+
+**Absicht (Jan, 10.10.2026 — Entwurf C „Sitzungs-Assistent").** Die alten Behandlungsdaten stehen
+auf Papierzetteln und kommen Schritt für Schritt in den Hub. Ein Papierzettel ist eine **Sitzung**:
+ein Datum, eine Behandlerin, mehrere Zonen mit Werten — genau so nimmt der Assistent sie auf. Er
+öffnet sich in der Kundenakte (Reiter Behandlungseinstellungen: Hinweis „N Behandlungen ohne
+Einstellungszettel" und Knopf „Sitzung nachtragen") und in der Terminansicht (Zettel-Übersicht
+„Frühere Sitzungen nachtragen" sowie im Zonen-Formular unter dem Verlauf), im Web wie in der App.
+
+!!! nutzerhandbuch "Bedienung: Kundenverwaltung 6 – Unterlagen & Behandlungsverlauf, Terminansicht 8 – Einstellungszettel"
+    https://hilfe.hub.glattt.com/kundenverwaltung/6/ · https://hilfe.hub.glattt.com/terminansicht/8/
+
+- **Datenmodell:** `treatment_settings.treated_at` (Behandlungsdatum) und `source`
+  (`appointment` = aus dem Termin, `backfill` = Nachtrag); `phorest_appointment_id` ist seit der
+  Migration `2026_10_11_100000` nullable. Die Migration füllt `treated_at` bestehender Einträge aus
+  `stats_historic_appointments`, deshalb braucht die Kundenakte Phorest nur noch für Einträge ohne
+  Datum. Verlauf und **Sitzungsnummern sortieren nach `treated_at`** — ein Nachtrag von 2025 wird
+  Sitzung 1, der Hub-Eintrag rückt nach (`TreatmentBackfillService::renumber`, auch nach Löschen).
+- **Sitzungen zur Vorbelegung** (`TreatmentBackfillService::sessions`): vergangene Termine der
+  Kundin aus `stats_historic_appointments`, nur `PAID`, gruppiert nach Tag + Behandlerin + Standort.
+  Beratungen (`consultation_services.is_consultation`), Desinfektion, Extrazeit, Flow und Wartung
+  zählen nicht als Zone, gehören aber zur Gruppe — der Zettel kann an jeder Termin-ID der Gruppe
+  hängen. Zonen werden aus den Leistungsnamen erraten (Zonenname im Namen), Ganzkörper lässt die
+  Auswahl offen. „offen" = Gruppe ohne Eintrag; die Anzahl ist der Hinweis in der Akte.
+- **Regeln (Jan):** Pflicht nur Datum und mindestens eine Zone; Behandlerin darf „unbekannt" sein,
+  Werte dürfen leer bleiben. Etikett **„Papier"** mit der eintragenden Person bleibt dauerhaft.
+  Löschen dürfen Ersteller, Leitung und Büro (Recht `delete_treatment_backfill`, erbt von
+  `view_bonus_board_branch`/`_all`); Einträge aus dem Termin werden nie gelöscht. Kein Foto-Upload.
+- **Endpunkte** (`TreatmentBackfillController`): `GET /hub/treatment-settings/client/{id}/sessions`
+  (Sitzungen, `open_count`, Behandlerinnen aus `phorest_staff`, Zonen, Optionen) · `POST
+  /hub/treatment-settings/client/{id}/backfill` (eine Sitzung, `entries[]` je Zone; 422 bei Datum in
+  der Zukunft, fehlender Zone oder Termin + Zone schon erfasst) · `DELETE
+  /hub/treatment-settings/{id}/backfill`. `GET /hub/treatment-settings/client/{id}` liefert je
+  Eintrag `is_backfill`, `can_delete`, `created_by_name`, `treated_at`, auf Datenebene
+  `openSessionsCount` und `canBackfill`; der Zettel-Endpunkt gibt `is_backfill` und `treated_at` mit.
+- **Web:** Alpine-Komponente `treatmentBackfill` (`public/js/components/treatment-backfill.js`) mit
+  Blade-Komponente `<x-treatment-backfill-modal config="…">`; die Seite öffnet sie per
+  `$dispatch('open-treatment-backfill', { zoneKeys })`. „Speichern & nächste Sitzung" nimmt die
+  Werte in die nächste offene Sitzung mit; „Letzte Werte" übernimmt den jüngsten Eintrag der Zone
+  (`latest()`-Rückruf: Kundenakte `treatmentsByZone`, Zettel `treatmentHistory`). In der
+  Terminansicht werden `clientId`/`branchId` als Funktion übergeben (Kundin erst nach dem Laden
+  bekannt), die Terminliste zeigt nur Tage vor dem heutigen.
+- **Tests:** `tests/Feature/TreatmentBackfillTest.php` (Gruppierung, Neudurchzählung, 422-Fälle,
+  Löschrechte, Kundenakte-Felder). Wissen: `.github/knowledge/behandlungsdaten-nachtragen.md`.
+
 ### 🔗 URL-Struktur
 
 ```

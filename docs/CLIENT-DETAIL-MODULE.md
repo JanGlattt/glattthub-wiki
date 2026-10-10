@@ -177,6 +177,7 @@ Jeder Tab hat ein `*Loaded`-Flag, damit Daten nur einmal geladen werden.
 
 #### State-Variablen für Behandlungseinstellungen
 
+
 In `detail.blade.php` → `clientDetailPage()`:
 
 ```js
@@ -290,6 +291,13 @@ interaktive Körperzonen-Grafik (links) mit Zone-Buttons (rechts), unten die Beh
 Behandlungszähler-Badges („1x", „2x") zeigen die Anzahl bisheriger Behandlungen, benutzerdefinierte
 Zonen (z.B. „Zehen") werden aus früheren Terminen geladen. Fotos öffnen eine Vollbild-Galerie
 (Prev/Next, Thumbnail-Leiste, Bildunterschrift mit Dateiname).
+
+
+**Papierzettel nachtragen (seit 10.10.2026):** Oben im Reiter zählt ein Hinweis die Behandlungen
+ohne Einstellungszettel; „Nachtragen" öffnet den Sitzungs-Assistenten (Datum und Behandlerin aus
+dem Termin, Zonen als Spalten). Nachträge tragen „Papier" und lassen sich von der eintragenden
+Person, Leitung und Büro löschen. Technik: Wiki `TREATMENT-SETTINGS.md`, Abschnitt
+„Behandlungsdaten nachtragen".
 
 #### Spalten der Behandlungstabelle (Datenfelder)
 

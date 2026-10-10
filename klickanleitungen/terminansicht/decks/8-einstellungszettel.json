@@ -11,7 +11,7 @@
  "eyebrow": "Terminansicht · Behandlungstermin",
  "footerArea": "Terminansicht",
  "stand": "10.10.2026",
- "version": "1.4",
+ "version": "1.5",
  "notes": [
   "Der Einstellungszettel wird **bei jeder Behandlung** gepflegt — je Zone Laserkopf, Hauttyp, Haar, empfohlene und genutzte Werte.",
   "Frühere Werte der Kundin stehen im Formular als **Historie** — beim nächsten Termin sind sie sofort sichtbar."
@@ -93,6 +93,11 @@
      "n": 3,
      "title": "Erfasste Zonen",
      "text": "Gespeicherte Zonen erscheinen oben als Chips — Antippen öffnet den Zettel erneut zum Nachbessern."
+    },
+    {
+     "n": 4,
+     "title": "Frühere Sitzungen nachtragen",
+     "text": "Der Knopf über der Figur öffnet den **Papierzettel-Assistenten**: links die früheren Termine der Kundin (nur vor heute), rechts eine Sitzung mit Datum, Behandlerin und den Zonen des laufenden Termins vorgewählt. Nach dem Speichern kennt der Zettel die nachgetragenen Werte als **„letzte Werte“**. Im Zonen-Formular gibt es denselben Knopf unter dem Verlauf, dort mit der offenen Zone vorgewählt; nachgetragene Zeilen tragen dort **„Papier“**."
     }
    ]
   },
