@@ -1188,5 +1188,35 @@
   },
   "marks": [],
   "ratio": 2.164102564102564
+ },
+ "tips-tips-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1371
+  },
+  "marks": [],
+  "ratio": 1.7576923076923077
+ },
+ "tips-person-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1520
+  },
+  "marks": [],
+  "ratio": 1.9487179487179487
+ },
+ "tips-payouts-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 840
+  },
+  "marks": [],
+  "ratio": 1.0769230769230769
  }
 }
