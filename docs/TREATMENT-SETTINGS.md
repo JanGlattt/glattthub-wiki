@@ -196,9 +196,9 @@ Gesichts-Termin liegt die letzte Karte vor („übernommen vom …") und wird an
 bleibt je Termin erhalten. Die Kundenakte (Reiter Behandlungseinstellungen, Zone Gesicht) zeigt den
 Verlauf nur lesend; bearbeitet wird im Termin.
 
-- **Vorlage:** `public/images/facemap/face.svg` (Jans Scan als Linienzeichnung, Koordinatenraum
-  0–100 × 0–143); die App führt dieselbe Zeichnung als Bildsatz `facemap-face` (per
-  `rsvg-convert` aus dem SVG erzeugt).
+- **Vorlage:** `public/images/facemap/face.png` — Jans Original-Zeichnung aus dem Workshop (1018 × 1457 px,
+  weißes Blatt), Koordinatenraum der Striche 0–100 × 0–143; die App führt dieselbe Datei als Bildsatz
+  `facemap-face` (1x/2x). Eine SVG-Nachzeichnung war zu grob (Jan, 10.10.2026) und ist entfernt.
 - **Daten:** `treatment_face_maps` (Migration `2026_10_10_200000`), eine Karte je
   `phorest_appointment_id` (unique), `phorest_client_id` für den Verlauf, `treatment_setting_id`
   der Gesichts-Zeile wenn vorhanden, `strokes` JSON `[{tool: pen|mark, width, points: [[x, y], …]}]`
