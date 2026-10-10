@@ -22,7 +22,8 @@ const karte = (name, url, titel, extra = {}) => ({ name, url, wait: 5000,
 
 const PLAN = [
   // ── Berichte 0: So funktionieren die Berichte (Übersicht + Beispiel Verkaufsstatistik)
-  { name: 'r0-uebersicht', url: '/hub/reports', wait: 9000, steps: [['loaded'], ['wait', 6000], ['scrollSel', '[data-area="verkauf"]', 'start'], ['wait', 800]],
+  // Zeitraum „Jahr“: Staging ist eine ältere Prod-Kopie — „Monat“ zeigt sonst Nullwerte (10.10.2026)
+  { name: 'r0-uebersicht', url: '/hub/reports', wait: 9000, steps: [['loaded'], ['wait', 3000], ['click', '.reports-range-glattt .segmented-control-glattt-option', 'Jahr', 7000], ['loaded'], ['wait', 1500], ['scrollSel', '[data-area="verkauf"]', 'start'], ['wait', 800]],
     marks: [
       { id: 'zeitraum', kind: 'badge', n: 3, sel: '.reports-range-glattt', at: 'l' },
       { id: 'info', kind: 'badge', n: 4, sel: '.report-card-compact-info-glattt', at: 'r' },

@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für die Berichte-Übersicht und alle Statistikseiten im glatttHub — Bereiche, Filter, Kennzahlen, Diagramm und Tabelle, Export",
   "eyebrow": "Berichte · Gemeinsames Gerüst",
   "footerArea": "Berichte",
-  "stand": "08.10.2026",
-  "version": "1.1",
+  "stand": "10.10.2026",
+  "version": "1.2",
   "notes": [
     "**Alle Berichte sind gleich aufgebaut.** Wer eine Seite bedienen kann, kann alle.",
     "Jede Karte zeigt ihre Zahlen als **Diagramm** und als **Tabelle** — umgeschaltet über das Register am Kartenrand.",
@@ -36,7 +36,7 @@
         {
           "n": 1,
           "title": "Bereich finden",
-          "text": "Die Berichte stehen in fünf Bereichen in fester Reihenfolge — **Verkauf** zuerst. Dieselbe Ordnung wie im Tab „Berichte“ der App."
+          "text": "Die Berichte stehen in fünf Bereichen in fester Reihenfolge — **Verkauf** zuerst, dieselbe Ordnung wie im Tab „Berichte“ der App. In jedem Bereich stehen die Karten mit Diagramm vorn, die flachen Karten folgen darunter."
         },
         {
           "n": 2,
