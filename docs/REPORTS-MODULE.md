@@ -331,6 +331,14 @@ zweites Mal in der Such-Registry. Beides kommt jetzt aus
   Termine & Beratung, Kunden & Marketing, Finanzen, Team & Büro) in Registry-Reihenfolge und
   überspringt, wofür die Berechtigung fehlt (`ReportRegistry::byArea()`) — dieselbe Ordnung wie
   die native Berichte-Übersicht der App.
+- **Hohe Karten zuerst (seit 10.10.2026):** Innerhalb eines Bereichs stellt `byArea()` die
+  Karten mit Mini-Diagramm (`AppReportsService::hasHistoryChart()`, Leitkennzahl aus einer
+  `HISTORY_SOURCES`-Quelle) stabil vor die flachen Karten. Grund: Das zweispaltige Raster packt
+  dicht (`grid-auto-flow: dense`), kennt die Höhe einer Karte aber erst nach dem Laden — in
+  Registry-Reihenfolge standen „Der glattt-Kunde“ und „Besucher & Buchungs-Funnel“ untereinander
+  und rechts blieb eine Lücke. Jetzt teilen sich die beiden hohen Karten die erste Zeile,
+  Kundenservice und Ads-Analyse folgen darunter. Der Panel-Titel wird mit `:title` übergeben,
+  sonst escaped Blade das „&“ doppelt (`&amp;` sichtbar).
 - `GlobalSearchService::pages()` mischt `ReportRegistry::searchEntries()` unter
   die App-Seiten — in `PAGES` stehen **keine Berichte mehr**
 - **Eine Kompaktkarte für alle Berichte** (seit 08.10.2026, TestFlight 254, Jan: „nach dem
