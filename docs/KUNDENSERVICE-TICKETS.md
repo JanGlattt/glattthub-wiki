@@ -293,6 +293,12 @@ und spiegelt bei Wiederholung nicht doppelt. Der Import erkennt gespiegelte Hub-
 `zendesk_mirror_id` und holt nur Kommentare dazu, ohne Nummer oder Status zu überschreiben. Nie als
 öffentlicher Kommentar spiegeln — Zendesk schickte die Antwort sonst ein zweites Mal; dasselbe gilt für
 den Zendesk-Trigger „Notify requester of solved request“, deshalb ist der Status einstellbar.
+Eingangsbestätigungen (`is_auto_submitted`) werden nicht gespiegelt, sie setzten das Zendesk-Ticket
+sonst vor der ersten echten Antwort auf „gelöst“. **Portal- und App-Anfragen** laufen im Live-Betrieb
+wie eine Mail: `PortalContactService::deliverToHub()` löst die Eingangsbestätigung des Hubs aus und
+meldet „Neue Mail im Kundenservice“ ans Team — die rohe Bestätigung, die Zendesk vor dem Stichtag an
+die Kundin schickte (Betreff „Kundenportal: Thema · Kundennummer“ mit ihrem eigenen Text), entfällt
+damit (Jan, 10.10.2026).
 
 ### Fallstricke
 
@@ -348,7 +354,8 @@ den Zendesk-Trigger „Notify requester of solved request“, deshalb ist der St
 - **09.10.2026 (nachts)** — Kundinnen sehen ihre Anfragen in Portal und My glattt (Kopie ohne
   Notizen, Antwort als Eingang, Folgeticket bei geschlossen, Push mit Ticketnummer).
 - **10.10.2026** — Zendesk-Spiegel (Weg 2): Hub-Antworten als interne Notiz ins Zendesk-Ticket,
-  Status einstellbar, Import erkennt gespiegelte Tickets.
+  Status einstellbar, Import erkennt gespiegelte Tickets. Portal-/App-Anfragen bekommen im
+  Live-Betrieb die Eingangsbestätigung des Hubs und melden sich beim Team.
 - **09.10.2026 (abends)** — Zuordnung über die Vertragsnummer, Schattenbetrieb schreibt in
   übernommene Tickets, Import erkennt vorhandene Mails, `support:reattach-shadow` räumt
   Schatten-Tickets auf. Kundinnen-Mails mit Auszeichnung (`body_rich`/`body_markdown`) und ohne
