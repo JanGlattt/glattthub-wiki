@@ -175,6 +175,53 @@ getan — nur später.
 - Das Blatt zeigt je Tag höchstens vier Zeiten und vier Tage; „Andere Uhrzeit …" zeigt den ganzen
   Tag. Raumnamen „XX Nur für Beratungen" werden in Kacheln zu „XX Beratung" gekürzt (Web und App).
 
+### Tageskalender neben den idealen Slots (seit 10.10.2026)
+
+**Absicht (Leitungs-Workshop, Jan 10.10.2026 — Entwürfe Web A / App 1).** Wer am Tresen oder am
+Telefon bucht, will neben den Vorschlägen den **echten Phorest-Tag** sehen: Wo sind Lücken, wer
+ist wie lange im Raum, welche Kollegin hat Schicht. Deshalb hat jedes Buchungsfenster für
+Mitarbeiterinnen ein Register **„Vorschläge | Tageskalender"** — Seitenblatt der Terminübersicht,
+Verlegen in der Kundenakte, Folgetermin nach „Termin beenden", Buchungsseite, in der App Slot-Finder,
+Folgetermin- und Verlegen-Blatt. **Die Selbstverlegung der Kundin** (Selbstbuchungslink,
+Kundenportal, My glattt) **bleibt bei den idealen Slots** — sie liest nur `days`.
+
+**Was der Kalender zeigt.** Nur die **Raum-Spalten** (Entscheidung Jan), jede mit Arbeitszeit
+(außerhalb schraffiert, nicht besetzte Räume ganz), Belegung als Block mit Kundenname, Leistungen
+und Zustand, Pausen/Blocker als „Pause", die idealen Vorschläge des Tages gestrichelt (grün = ohne
+Lücke), rote Jetzt-Linie. Darüber die **Schichten der Personen** als Chips (Initialen, Vorname,
+von–bis aus der Staff-WorkTimeTable, ohne Raum-Spalten und Absage-Platzhalter) — „wer arbeitet
+heute wann". Datum-Chips sind die Tage der Vorschläge, Pfeile und Datumsfeld öffnen jeden Tag ab heute.
+
+**Buchen aus dem Kalender.** Ein Tipp auf freie Fläche setzt den Start im 5-Minuten-Raster; der
+goldene Block „Name · neu" zeigt die Länge aller Leistungen plus Desinfektion. **Harte Grenzen:**
+Belegung, Arbeitszeit des Raums, Vergangenheit (jetzt + `booking.min_lead_minutes`). **Die
+Lückenregel ist nur eine Warnung** („Lässt 15 Min Lücke nach Lea S. — buchbar, aber nicht ideal",
+Schwellen `min_gap_minutes`/`gap_tolerance_minutes` aus der Antwort) — genau dafür ist der
+Kalender da. Gebucht wird über denselben Weg wie ein Vorschlag: im Seitenblatt `pick(slot)`, in
+den Livewire-Fenstern `stageCalendarSlot()` (hängt die Zeit an `$suggestions` an) plus
+Bestätigungsleiste (`pickSlot({ method: 'book', index })`), in der App als `Slot` mit Rückfrage.
+
+**Endpunkt** `POST hub/booking/api/day-calendar {branch_id, client_id?, date, service_ids[], kind?}`
+(Recht `view_booking`, `BookingApiController::dayCalendar` → `BookingService::dayCalendar()` →
+`BookingCalendarService::dayCalendar()`/`shiftsFor()`): `columns[]` (`room_staff_id`, `room_name`,
+`closed`, `open_start_min`, `open_end_min`, `blocks[]` mit `kind` appointment|break, `start_min`,
+`end_min`, `client_name`, `services`, `state`, `is_consultation`), `shifts[]`, `min_hour`,
+`max_hour`, `now_min`, `duration_minutes`, `bookable`, `not_before_min`, `step_minutes`,
+`min_gap_minutes`, `gap_tolerance_minutes`, `warnings`. Die Belegung kommt aus denselben Phorest-
+Terminzeilen wie die Slot-Engine (`buildDays`), die Namen per `getClientsParallel`, Pausen aus den
+Belegungsintervallen ohne Termin.
+
+**Oberflächen.** Web: Alpine-Komponente `bookingDayCalendar`
+(`public/js/components/booking-day-calendar.js`, im Hub-Layout geladen) mit dem Partial
+`components/booking-day-calendar.blade.php` (Klassen `.booking-day-cal__*` plus die
+`.day-schedule`-Klassen der Terminübersicht); Livewire-Fenster binden sie über
+`partials/day-calendar-xdata` + `day-calendar-toggle`, das Seitenblatt wird mit offenem Kalender
+breiter (`.booking-panel-glattt.is-calendar`). App: `Booking/BookingDayCalendar.swift`
+(`BookingDayCalendarModel` mit `pick()`-Regeln, `BookingDayCalendarView`), Segment „Vorschläge |
+Tag" in `BookingFinderView` und `FollowUpBookingContent`; iPad zeigt den Kalender breiter in der
+rechten Spalte. Tests: `BookingDayCalendarTest` (PHP), `BookingDayCalendarSnapshotTests` (Swift,
+Regeln und Bilder).
+
 ### Extrazeit nach dem Ganzkörper-Abschluss und Prüfung nach der Sitzung (seit 10.10.2026)
 
 **Absicht (Leitungs-Workshop, Jan 10.10.2026).** Wer ein Ganzkörper-Paket abschließt, braucht in

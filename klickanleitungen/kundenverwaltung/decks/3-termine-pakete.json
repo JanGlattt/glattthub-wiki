@@ -10,7 +10,7 @@
  "eyebrow": "Kundenverwaltung · Termine & Pakete",
  "footerArea": "Kundenverwaltung",
  "stand": "10.10.2026",
- "version": "1.3",
+ "version": "1.4",
  "notes": [
   "Termine und Pakete kommen **live aus Phorest** — der Hub zeigt sie nur an, geführt wird der Kalender dort.",
   "Behandelt wird immer über die **Terminansicht** (Dokumente „Terminansicht 1–8“), nicht über das Kundenprofil.",
@@ -87,7 +87,7 @@
     {
      "n": 2,
      "title": "„Verlegen“",
-     "text": "Öffnet die Terminverlegung mit freien Zeiten. Zeit anklicken, in der Leiste unten prüfen und **„Verlegen“** wählen. Danach aktualisiert sich die Liste von selbst — bis dahin bleibt sie leicht abgeblendet stehen."
+     "text": "Öffnet das Verlegen-Fenster mit den idealen Slots; das Register **„Tageskalender“** zeigt daneben den echten Phorest-Tag (Räume, Belegung mit Namen, Schichten) — freie Fläche antippen bucht auf jede Zeit, kleine Lücken werden nur gemeldet. Öffnet die Terminverlegung mit freien Zeiten. Zeit anklicken, in der Leiste unten prüfen und **„Verlegen“** wählen. Danach aktualisiert sich die Liste von selbst — bis dahin bleibt sie leicht abgeblendet stehen."
     },
     {
      "n": 3,

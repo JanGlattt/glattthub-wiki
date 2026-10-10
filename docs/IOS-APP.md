@@ -1198,6 +1198,16 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   `?view=session&shell=native&direct=1` (`openDirect`, Klasse `apt-detail--native-direct`) bleibt
   im Hub erhalten, die App nutzt es nicht mehr; `bridge.js` meldet weiterhin
   `direct-treatment-booked`/`-closed` als `directTreatment` an `NativeBridge.onDirectTreatment`.
+- **Tageskalender neben den Slots (seit 10.10.2026, Entwurf App 1):** Segment „Vorschläge | Tag"
+  im Slot-Finder sowie im Folgetermin- und Verlegen-Blatt (`BookingFinderView.suggestions`,
+  `FollowUpBookingContent.suggestionsCard`). `Booking/BookingDayCalendar.swift`: Modell mit dem
+  Endpunkt `POST hub/booking/api/day-calendar` und der Tipp-Logik `pick()` (5-Minuten-Raster,
+  harte Grenzen Belegung/Arbeitszeit/Vergangenheit, Lückenwarnung), `BookingDayCalendarView` mit
+  Datum-Chips, Schicht-Chips der Personen, Raum-Spalten (Belegung mit Namen, Pausen, schraffierte
+  Arbeitszeit, gestrichelte ideale Slots, rote Jetzt-Linie) und goldenem Block der gewählten Zeit.
+  Die Zeit wird zu einem `Slot` (`slot(from:)`) und läuft durch dieselbe Rückfrage wie ein
+  Vorschlag. iPad: breitere Spalten in der rechten Spalte des Slot-Finders. Snapshots
+  `booking-day-calendar`/`-ipad` (`BookingDayCalendarSnapshotTests`).
 - **Extrazeit (Ganzkörper, seit 10.10.2026):** Zwei Pflichtfragen mit denselben Endpunkten wie
   das Web (`hub/booking/api/extra-time/{pending|decide|review|apply}`), `Booking/ExtraTime.swift`:
   `ExtraTimeDecisionSheet` („Ganzkörper abgeschlossen – wie viel Extrazeit?", Stufen-Kacheln,

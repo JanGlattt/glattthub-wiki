@@ -7,7 +7,7 @@
   "audience": "institut",
   "footerArea": "App",
   "stand": "10.10.2026",
-  "version": "1.4",
+  "version": "1.5",
   "nr": 3,
   "title": [
     "Termine und die",
@@ -214,7 +214,7 @@
         {
           "n": 3,
           "title": "Buchen",
-          "text": "Vorschlag antippen, **„Buchen“** bzw. **„Verlegen“**. Passt keiner, zeigt **„Andere Uhrzeit …“** unter dem Tag alle freien Zeiten, nach Tageszeit sortiert. Die App bestätigt mit Datum und Uhrzeit und öffnet den neuen Termin."
+          "text": "Vorschlag antippen, **„Buchen“** bzw. **„Verlegen“**. Passt keiner, zeigt **„Andere Uhrzeit …“** unter dem Tag alle freien Zeiten, nach Tageszeit sortiert — oder das Segment **„Tag“** den echten Phorest-Tag mit Räumen, Belegung und Schichten, in dem jede freie Fläche antippbar ist. Die App bestätigt mit Datum und Uhrzeit und öffnet den neuen Termin."
         },
         {
           "n": 4,

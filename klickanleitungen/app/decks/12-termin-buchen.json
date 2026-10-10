@@ -7,7 +7,7 @@
   "audience": "institut",
   "footerArea": "App",
   "stand": "10.10.2026",
-  "version": "1.4",
+  "version": "1.5",
   "nr": 12,
   "title": [
     "Termin buchen",
@@ -130,6 +130,11 @@
         },
         {
           "n": 4,
+          "title": "Tag statt Liste",
+          "text": "Segment **„Tag“** über den Vorschlägen: der echte Phorest-Tag des Instituts — Räume als Spalten mit Kundin und Leistung, Pausen, nicht besetzte Zeit schraffiert, oben die **Schichten** der Kolleginnen. Tage der Vorschläge als Chips, Pfeile für jeden anderen Tag. **Freie Fläche antippen** setzt die Zeit (5-Minuten-Raster), der goldene Block zeigt die Länge; eine kleine Lücke meldet die App, buchen geht trotzdem. Auf dem iPad liegt der Tag breit in der rechten Spalte."
+        },
+        {
+          "n": 5,
           "title": "Passt keine Zeit?",
           "text": "**Andere Uhrzeit …** unter dem Tag zeigt alle freien Zeiten dieses Tages, nach Vormittag, Mittag, Nachmittag und Abend sortiert. Anderer Tag: Zeitraum oder **Datum …** oben ändern."
         }

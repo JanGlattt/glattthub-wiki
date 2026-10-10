@@ -14,7 +14,7 @@
  "eyebrow": "Terminansicht · Buchung",
  "footerArea": "Terminansicht",
  "stand": "10.10.2026",
- "version": "1.5",
+ "version": "1.6",
  "notes": [
   "Gebucht wird **direkt in Phorest** — der Termin steht sofort im Kalender des Instituts.",
   "Der schnellste Weg ist **„Termin buchen“ oben in der Terminübersicht** — auch für Neukunden, dort reicht der Name.",
@@ -186,6 +186,11 @@
     },
     {
      "n": 3,
+     "title": "Tageskalender",
+     "text": "Register **„Tageskalender“** neben „Vorschläge“: der echte Phorest-Tag des Instituts — Räume als Spalten mit Kundin und Leistung, Pausen, Arbeitszeit schraffiert, oben die **Schichten** der Kolleginnen (wer arbeitet wann). Tage der Vorschläge als Chips, Pfeile für jeden anderen Tag. **Freie Fläche antippen** setzt die Zeit auf 5 Minuten genau — der goldene Block zeigt die Länge. Lässt die Zeit eine kleine Lücke, sagt es der Hub, buchen geht trotzdem."
+    },
+    {
+     "n": 4,
      "title": "Zeit wählen",
      "text": "Ein Klick markiert die Zeit, unten erscheint eine Leiste mit Tag, Uhrzeit und Raum. Steht dort **„Keine freien Termine an diesem Tag“**, hilft ein anderer Tag oder eine kürzere Behandlung."
     }
