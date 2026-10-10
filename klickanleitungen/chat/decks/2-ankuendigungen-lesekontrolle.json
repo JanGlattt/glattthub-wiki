@@ -1,0 +1,154 @@
+{
+  "out": "../pdf/Chat-2-ankuendigungen-lesekontrolle",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "Chat",
+  "nr": 2,
+  "of": 2,
+  "audience": "leitung",
+  "title": [
+    "Ankündigungen",
+    "und Lesekontrolle"
+  ],
+  "subtitle": "Klickanleitung für den glatttHub — Ankündigungen schreiben, dringend markieren, Lesebestätigung anfordern und prüfen, wer bestätigt hat; Infospalte mit Mitgliedern, Stumm, Anheften, Archiv; Nicht stören",
+  "eyebrow": "Chat · Ankündigungen",
+  "footerArea": "Chat",
+  "stand": "11.10.2026",
+  "version": "1.0",
+  "notes": [
+    "In den Kanälen **glattt Ankündigungen** und **<Institut> Ankündigungen** schreibt nur, wer das Recht hat (Leitung, Büro, Institutsleitung). Alle anderen lesen und reagieren.",
+    "**Lesebestätigung** ist die aktive Lesekontrolle: Jede Empfängerin muss am Ende auf „Gelesen – ich bestätige“ tippen. Du siehst, wer bestätigt hat und wer noch fehlt.",
+    "**Dringend** schickt die Push auch durch „Nicht stören“ und zeitkritisch auf das iPhone."
+  ],
+  "pages": [
+    {
+      "h1": "Eine Ankündigung schreiben",
+      "sub": "Im Kanal schreiben wie in jedem Chat — mit zwei Schaltern neben dem Feld.",
+      "card": {
+        "title": "Ankündigung",
+        "text": "Dringend, Lesebestätigung"
+      },
+      "left": {
+        "shot": "c9-ankuendigung"
+      },
+      "leftCaption": "Der Kanal **glattt Ankündigungen**: Beitrag mit rotem Rahmen (dringend), Knopf **Gelesen – ich bestätige** und die beiden Schalter am Eingabefeld.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Schalter",
+          "text": "**Dringend** = zeitkritische Push, kommt auch bei „Nicht stören“. **Lesebestätigung** = jede Empfängerin muss aktiv bestätigen."
+        },
+        {
+          "n": 2,
+          "title": "Lesezähler",
+          "text": "Unter deinem Beitrag steht **Bestätigt n / m · wer fehlt?** — ein Klick zeigt die Liste (Seite 2). Für Empfängerinnen steht dort der Knopf."
+        },
+        {
+          "n": 3,
+          "title": "Reaktionen",
+          "text": "Reagieren dürfen alle — so bleibt der Kanal ruhig, Rückfragen gehören in die Team-Gruppe."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "Wer nicht schreiben darf, sieht unten „In diesem Kanal schreiben nur Berechtigte“. Die Rechte vergibt das Büro im Admin."
+      }
+    },
+    {
+      "h1": "Nachricht-Info: Wer hat gelesen, wer bestätigt?",
+      "sub": "Zu jeder eigenen Nachricht die Haken je Person — bei Ankündigungen zusätzlich die aktive Bestätigung.",
+      "card": {
+        "title": "Nachricht-Info",
+        "text": "Gelesen, zugestellt, bestätigt"
+      },
+      "left": {
+        "shot": "c10-nachricht-info"
+      },
+      "leftCaption": "**Nachricht-Info** einer eigenen Nachricht: gelesen, zugestellt und noch nicht zugestellt, je mit Namen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Öffnen",
+          "text": "⋯ an der Nachricht → **Nachricht-Info**, oder ein Klick auf die Haken bzw. auf „wer fehlt?“."
+        },
+        {
+          "n": 2,
+          "title": "Aktiv bestätigt",
+          "text": "Bei Lesebestätigung zuerst: wer bestätigt hat und wer noch nicht — die Liste zum Nachfassen."
+        },
+        {
+          "n": 3,
+          "title": "Gelesen · Zugestellt",
+          "text": "Darunter die Haken je Person: gelesen (farbig), zugestellt aber ungelesen, noch nicht zugestellt (Gerät war offline)."
+        }
+      ],
+      "hint": {
+        "text": "Offene Bestätigungen stehen bei jeder Empfängerin in **Heute für dich**, bis sie tippt."
+      }
+    },
+    {
+      "h1": "Infospalte: Mitglieder, Stumm, Archiv",
+      "sub": "Das ⓘ im Kopf öffnet rechts die Infos zum Chat.",
+      "card": {
+        "title": "Infospalte",
+        "text": "Mitglieder, Angeheftetes, Einstellungen"
+      },
+      "left": {
+        "shot": "c11-infospalte"
+      },
+      "leftCaption": "Die **Infospalte** von Team Bielefeld: Mitglieder mit Lesestand, Angeheftetes, Fotos, Einstellungen des Chats.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Mitglieder",
+          "text": "Mit Kürzel und „alles gelesen“ bzw. „n ungelesen“. In eigenen Gruppen: Hinzufügen, zum Admin machen, entfernen."
+        },
+        {
+          "n": 2,
+          "title": "Angeheftet",
+          "text": "Angeheftete Nachrichten stehen hier und als Leiste über dem Verlauf — ein Klick springt hin."
+        },
+        {
+          "n": 3,
+          "title": "Dieser Chat",
+          "text": "**Oben anheften**, **Stummschalten** (1 Std., 8 Std., 1 Woche, immer), **Name und Beschreibung**, **Gruppenbild**, **Archivieren**, **Gruppe verlassen**."
+        }
+      ],
+      "hint": {
+        "text": "Stumm heißt: keine Push, aber der Zähler zählt weiter. Erwähnungen mit @ und dringende Ankündigungen kommen trotzdem."
+      }
+    },
+    {
+      "h1": "Nicht stören",
+      "sub": "Außerhalb der Arbeitszeit keine Push aus dem Chat — je Person einstellbar.",
+      "card": {
+        "title": "Einstellungen",
+        "text": "Nicht stören, Push-Vorschau"
+      },
+      "left": {
+        "shot": "c12-einstellungen"
+      },
+      "leftCaption": "Die **Chat-Einstellungen** (Glocke neben der Suche): Zeitfenster, Wochentage, Vorschau in der Push.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Nicht stören",
+          "text": "Einschalten, Von/Bis und Wochentage wählen — das Fenster darf über Mitternacht gehen (20:00 bis 07:00)."
+        },
+        {
+          "n": 2,
+          "title": "Ausnahme",
+          "text": "Dringende Ankündigungen kommen trotzdem durch; alles andere wartet im Chat."
+        },
+        {
+          "n": 3,
+          "title": "Push-Vorschau",
+          "text": "Ausgeschaltet zeigt die Mitteilung nur „Neue Nachricht“ statt des Textes — für den Sperrbildschirm im Institut."
+        }
+      ],
+      "hint": {
+        "text": "Die Einstellung gilt für Web, App und Desktop gleichermaßen — sie liegt am Konto, nicht am Gerät."
+      }
+    }
+  ]
+}

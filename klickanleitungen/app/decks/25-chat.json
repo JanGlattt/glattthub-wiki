@@ -1,0 +1,150 @@
+{
+  "out": "../pdf/App-25-Chat",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "App",
+  "of": 25,
+  "audience": "institute",
+  "footerArea": "App",
+  "stand": "11.10.2026",
+  "version": "1.0",
+  "nr": 25,
+  "title": [
+    "Chat in der App"
+  ],
+  "subtitle": "Klickanleitung für die glatttHub-App — der Tab „Chat“: Liste mit Heute-Karte, Unterhaltung mit Haken, Antworten per Wischen, Reaktionen per Halten, Sprachnachricht per Halten, Ankündigungen bestätigen, iPad mit drei Spalten",
+  "eyebrow": "App · Chat",
+  "notes": [
+    "**Chat** ist der vierte Tab unten (iPhone) bzw. in der Seitenleiste (iPad) — mit Zähler. Berichte findest du dafür im Menü **Mehr**.",
+    "Die App läuft auch **ohne Netz** mit dem letzten Stand; Nachrichten, die du dann schreibst, gehen raus, sobald Verbindung da ist. Push-Mitteilungen lassen sich direkt aus der Mitteilung **beantworten**."
+  ],
+  "pages": [
+    {
+      "h1": "Die Liste",
+      "sub": "Heute für dich, Filter und alle Chats — wie im Web, nur für den Daumen.",
+      "card": {
+        "title": "Liste",
+        "text": "Heute, Filter, Chats"
+      },
+      "left": {
+        "shot": "chat-list-light"
+      },
+      "leftCaption": "Der Tab **Chat** auf dem iPhone mit Heute-Karte und Liste.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Kopf",
+          "text": "Lupe = Nachrichten suchen, Glocke = Nicht stören, Stift = neuer Chat. Der Punkt daneben zeigt, ob die Echtzeit-Verbindung steht."
+        },
+        {
+          "n": 2,
+          "title": "Wischen",
+          "text": "Eine Zeile nach links wischen: **Stumm** oder **Archiv**. Länger drücken: Anheften, Stummschalten, Archivieren."
+        },
+        {
+          "n": 3,
+          "title": "Ziehen",
+          "text": "Liste nach unten ziehen lädt neu — nötig ist das selten, die App bekommt neue Nachrichten von selbst."
+        }
+      ],
+      "hint": {
+        "text": "Der Zähler am Tab zählt alle ungelesenen Nachrichten; Erwähnungen tragen ein **@**."
+      }
+    },
+    {
+      "h1": "Die Unterhaltung",
+      "sub": "Blasen, Haken, Sprachnachricht, Umfrage — die Gesten wie bei jedem Messenger.",
+      "card": {
+        "title": "Unterhaltung",
+        "text": "Wischen, Halten, Mikrofon"
+      },
+      "left": {
+        "shot": "chat-room-light"
+      },
+      "leftCaption": "**Team Bielefeld** auf dem iPhone: Hub-Karte, Antwort mit Zitat, Sprachnachricht, Umfrage.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Nach rechts wischen",
+          "text": "Auf einer Nachricht = **Antworten** mit Zitat."
+        },
+        {
+          "n": 2,
+          "title": "Halten",
+          "text": "Schnell-Reaktionen oben, darunter Antworten, Weiterleiten, Kopieren, Anheften, Nachricht-Info, Bearbeiten, Löschen für alle."
+        },
+        {
+          "n": 3,
+          "title": "Mikrofon halten",
+          "text": "Aufnahme läuft, solange du hältst; **Loslassen sendet**, nach oben wischen bricht ab. Abspielen mit 1×, 1,5× oder 2×."
+        },
+        {
+          "n": 4,
+          "title": "Plus",
+          "text": "Fotos & Videos, Kamera, Datei, Umfrage, **Kundin/Vertrag/Fall** als Karte, GIF."
+        }
+      ],
+      "hint": {
+        "text": "Zwei farbige Haken = gelesen; in Gruppen zeigt die **Nachricht-Info** (Halten → Nachricht-Info), wer gelesen hat."
+      }
+    },
+    {
+      "h1": "Ankündigungen bestätigen",
+      "sub": "Eine Ankündigung mit Lesebestätigung endet mit einem Knopf — erst der Tipp zählt.",
+      "card": {
+        "title": "Ankündigung",
+        "text": "Gelesen – ich bestätige"
+      },
+      "left": {
+        "shot": "chat-announcement-light"
+      },
+      "leftCaption": "**glattt Ankündigungen**: dringender Beitrag mit rotem Rahmen und dem Knopf **Gelesen – ich bestätige**.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Bestätigen",
+          "text": "Auf **Gelesen – ich bestätige** tippen — danach steht „Von dir bestätigt“. Offene Bestätigungen erinnern in **Heute für dich**."
+        },
+        {
+          "n": 2,
+          "title": "Leitung",
+          "text": "Wer schreiben darf, hat über dem Feld die Schalter **Dringend** und **Lesebestätigung** und sieht unter dem Beitrag „Bestätigt n / m“."
+        },
+        {
+          "n": 3,
+          "title": "Push",
+          "text": "Dringende Ankündigungen kommen auch bei „Nicht stören“ — zeitkritisch auf dem Sperrbildschirm."
+        }
+      ]
+    },
+    {
+      "h1": "Auf dem iPad",
+      "sub": "Drei Spalten: Liste, Unterhaltung, Infos — im Hochformat weicht die Liste.",
+      "card": {
+        "title": "iPad",
+        "text": "Liste · Unterhaltung · Infos"
+      },
+      "left": {
+        "shot": "chat-ipad-light"
+      },
+      "leftCaption": "Das iPad quer: Liste links, Unterhaltung in der Mitte, die **Infospalte** (ⓘ) rechts mit Mitgliedern und Lesestand.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Infos",
+          "text": "Das ⓘ im Kopf blendet rechts Mitglieder, Angeheftetes und die Einstellungen des Chats ein."
+        },
+        {
+          "n": 2,
+          "title": "Tastatur",
+          "text": "⌘1–⌘4 wechseln die Tabs, **Enter** sendet, **Shift+Enter** neue Zeile."
+        },
+        {
+          "n": 3,
+          "title": "Push-Antwort",
+          "text": "Eine Chat-Mitteilung lässt sich direkt beantworten: Mitteilung halten → **Antworten** → Text → Senden, ohne die App zu öffnen."
+        }
+      ]
+    }
+  ]
+}

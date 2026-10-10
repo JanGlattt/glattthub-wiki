@@ -1,0 +1,265 @@
+{
+  "out": "../pdf/Chat-1-chats-gruppen-nachrichten",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "Chat",
+  "nr": 1,
+  "of": 2,
+  "audience": "institut",
+  "title": [
+    "Chats, Gruppen",
+    "und Nachrichten"
+  ],
+  "subtitle": "Klickanleitung für den glatttHub — der interne Chat statt WhatsApp: Chats finden, schreiben, antworten, Fotos und Sprachnachrichten schicken, Umfragen und Hub-Karten, neue Gruppen, Suche und das Seitenpanel",
+  "eyebrow": "Chat · Grundlagen",
+  "footerArea": "Chat",
+  "stand": "11.10.2026",
+  "version": "1.0",
+  "notes": [
+    "**Chat** findest du in der Seitenleiste direkt unter Kunden — und in der App als eigener Tab. Er ersetzt WhatsApp und Signal für alles Dienstliche: keine privaten Nummern, jede Kollegin ist über ihr Hub-Konto erreichbar.",
+    "**Alle glattt** und **Team <Institut>** pflegt der Hub selbst: Neue Kolleginnen sind sofort drin, ausgeschiedene zum Monatswechsel raus. Eigene Gruppen legst du jederzeit an.",
+    "Die drei Haken: **ein Haken** gesendet, **zwei graue** auf dem Gerät der anderen angekommen, **zwei farbige** gelesen."
+  ],
+  "pages": [
+    {
+      "h1": "Die Chatliste",
+      "sub": "Links alle Chats nach der letzten Nachricht, oben „Heute für dich“ — nur, wenn es etwas gibt.",
+      "card": {
+        "title": "Liste",
+        "text": "Chats, Filter, Heute für dich"
+      },
+      "left": {
+        "shot": "c1-liste"
+      },
+      "leftCaption": "Die Chatseite mit der Karte **Heute für dich** (neue Ankündigungen, offene Bestätigungen, Umfragen, Erwähnungen) und der Liste.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Filter",
+          "text": "**Alle · Ungelesen · Direkt · Gruppen · Ankündigungen** — die Zahl bei „Ungelesen“ zeigt, wie viele Chats warten."
+        },
+        {
+          "n": 2,
+          "title": "Neuer Chat",
+          "text": "Eine Kollegin anschreiben oder eine Gruppe anlegen (Seite 5)."
+        },
+        {
+          "n": 3,
+          "title": "Zeile",
+          "text": "Name, letzte Nachricht mit Haken, Uhrzeit und Zähler. Das **Menü an der Zeile** (⋯ beim Überfahren) heftet an, schaltet stumm oder archiviert."
+        },
+        {
+          "n": 4,
+          "title": "Heute für dich",
+          "text": "Ein Klick springt direkt zur Ankündigung, Umfrage oder Bestätigung."
+        }
+      ],
+      "hint": {
+        "text": "**Standard-Gruppen** tragen „pflegt der Hub“: Mitglieder kommen aus den Hub-Konten, du kannst sie nicht verlassen und niemanden hinzufügen — das macht das Büro über die Konten."
+      }
+    },
+    {
+      "h1": "Eine Unterhaltung",
+      "sub": "Rechts der Verlauf mit Tagestrennern, eigene Nachrichten in Gold, unten das Eingabefeld.",
+      "card": {
+        "title": "Unterhaltung",
+        "text": "Verlauf, Eingabe, Haken"
+      },
+      "left": {
+        "shot": "c2-unterhaltung"
+      },
+      "leftCaption": "**Team Bielefeld**: Blasen mit Namen und Institutskürzel, Uhrzeit und Haken, Reaktionen unter der Blase.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Eingabefeld",
+          "text": "Schreiben und **Enter** sendet, **Shift+Enter** macht eine neue Zeile. **@Name** erwähnt eine Kollegin — sie bekommt eine Push, auch wenn sie den Chat stummgeschaltet hat."
+        },
+        {
+          "n": 2,
+          "title": "Haken",
+          "text": "Ein Haken gesendet, zwei grau zugestellt, zwei farbig gelesen. In Gruppen zeigt **„Nachricht-Info“**, wer gelesen hat (Chat 2)."
+        },
+        {
+          "n": 3,
+          "title": "Mikrofon",
+          "text": "Ist das Feld leer, steht rechts das Mikrofon: **gedrückt halten** nimmt eine Sprachnachricht auf, Loslassen sendet, Esc bricht ab."
+        },
+        {
+          "n": 4,
+          "title": "Kopf",
+          "text": "Name und Mitgliederzahl; „schreibt …“ erscheint, während jemand tippt. Das **ⓘ** öffnet die Infospalte (Chat 2)."
+        }
+      ],
+      "hint": {
+        "text": "**Pfeil nach oben** im leeren Feld bearbeitet deine letzte Nachricht — 15 Minuten lang. Danach bleibt sie, wie sie ist."
+      }
+    },
+    {
+      "h1": "Anhängen über das Plus",
+      "sub": "Fotos, Kamera, Datei, Umfrage, Hub-Karte oder GIF — alles hinter dem Plus links vom Feld.",
+      "card": {
+        "title": "Plus",
+        "text": "Fotos, Dateien, Umfrage, Karte, GIF"
+      },
+      "left": {
+        "shot": "c3-plus-menue"
+      },
+      "leftCaption": "Das **Plus-Menü** über dem Eingabefeld.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Fotos & Kamera",
+          "text": "Bilder und Videos aus dem Gerät; am Handy direkt die Kamera. Mehrere Fotos werden als Galerie gezeigt, ein Tipp öffnet sie groß."
+        },
+        {
+          "n": 2,
+          "title": "Datei",
+          "text": "PDF, Excel, Word bis 50 MB — erscheint als Kachel mit Name und Größe."
+        },
+        {
+          "n": 3,
+          "title": "Kundin · Vertrag · Fall",
+          "text": "Eine **Hub-Karte**: Kundin, Vertrag oder Forderungsfall aus der Suche als Karte senden — ein Tipp führt in den Hub (Seite 4)."
+        },
+        {
+          "n": 4,
+          "title": "Umfrage · GIF",
+          "text": "Umfrage mit Frage und Antworten (Seite 4); GIFs über die Suche."
+        }
+      ],
+      "hint": {
+        "text": "Auch **Einfügen** (⌘V) und **Hineinziehen** einer Datei ins Eingabefeld hängt sie an."
+      }
+    },
+    {
+      "h1": "Antworten, Reaktionen, Weiterleiten",
+      "sub": "Jede Nachricht hat beim Überfahren drei Werkzeuge: Antworten, Reagieren, Mehr.",
+      "card": {
+        "title": "Werkzeuge",
+        "text": "Antworten, Reagieren, Mehr"
+      },
+      "left": {
+        "shot": "c4-antworten"
+      },
+      "leftCaption": "Antwort mit **Zitat** vorbereitet, Werkzeuge an der Nachricht, Reaktionen unter der Blase.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Werkzeuge",
+          "text": "↩ **Antworten** zitiert die Nachricht über deinem Feld; ☺ **Reagieren** zeigt 👍 ❤️ 😂 😮 🙏 🎉; ⋯ **Mehr**: Weiterleiten, Text kopieren, Anheften, Nachricht-Info, Bearbeiten, Löschen für alle."
+        },
+        {
+          "n": 2,
+          "title": "Zitat",
+          "text": "Das Zitat steht über dem Feld — ✕ verwirft es. Im Verlauf führt ein Klick auf das Zitat zur Ursprungsnachricht."
+        },
+        {
+          "n": 3,
+          "title": "Reaktionen",
+          "text": "Ein Klick auf eine vorhandene Reaktion nimmt sie zurück oder schließt sich an; Überfahren zeigt, wer reagiert hat."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "**Löschen für alle** lässt einen Platzhalter „Nachricht gelöscht“ stehen. Eigene Nachrichten darf jede löschen, fremde nur das Büro (Verwaltungsrecht)."
+      }
+    },
+    {
+      "h1": "Umfragen und Hub-Karten",
+      "sub": "Zwei Dinge, die WhatsApp nicht kann: abstimmen im Chat und Hub-Objekte als Karte.",
+      "card": {
+        "title": "Umfrage & Karte",
+        "text": "Abstimmen, in den Hub springen"
+      },
+      "left": {
+        "shot": "c5-umfrage"
+      },
+      "leftCaption": "Eine **Umfrage** mit Balken und Stimmen, darüber eine **Kundin-Karte** mit „Im Hub öffnen“.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Hub-Karte",
+          "text": "Kundin, Vertrag oder Forderungsfall mit Nummer und Kurzinfo. **Im Hub öffnen ›** führt in die Akte — wer dort kein Recht hat, sieht nur den Namen."
+        },
+        {
+          "n": 2,
+          "title": "Abstimmen",
+          "text": "Antwort anklicken; bei Mehrfachwahl mehrere. Die Balken zeigen die Verteilung, die Zahl die Stimmen."
+        },
+        {
+          "n": 3,
+          "title": "Beenden",
+          "text": "Wer die Umfrage gestellt hat, beendet sie mit **Beenden** — danach ist nichts mehr wählbar."
+        }
+      ],
+      "hint": {
+        "text": "Offene Umfragen, bei denen du noch nicht abgestimmt hast, stehen in **Heute für dich**."
+      }
+    },
+    {
+      "h1": "Neuer Chat oder neue Gruppe",
+      "sub": "Über „Neuer Chat“ oben rechts: Kollegin wählen oder eine Gruppe mit Namen und Mitgliedern anlegen.",
+      "card": {
+        "title": "Neuer Chat",
+        "text": "Kollegin oder Gruppe"
+      },
+      "left": {
+        "shot": "c6-neuer-chat"
+      },
+      "leftCaption": "Das Fenster **Neuer Chat** im Reiter „Neue Gruppe“ mit Name und Mitgliederliste.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Kollegin oder Gruppe",
+          "text": "Reiter **Kollegin**: ein Klick öffnet den Einzelchat (oder legt ihn an). Reiter **Neue Gruppe**: Name, optional Beschreibung, Mitglieder anhaken."
+        },
+        {
+          "n": 2,
+          "title": "Liste",
+          "text": "Alle aktiven Hub-Konten mit Institut; die Suche filtert nach Name oder Institut."
+        },
+        {
+          "n": 3,
+          "title": "Anlegen",
+          "text": "Du bist Eigentümerin der Gruppe: Mitglieder hinzufügen, Admins ernennen, umbenennen, Gruppenbild (Infospalte, Chat 2)."
+        }
+      ],
+      "hint": {
+        "text": "Wer eine Gruppe **verlässt**, bleibt im Verlauf sichtbar; die anderen lesen weiter."
+      }
+    },
+    {
+      "h1": "Suche und Seitenpanel",
+      "sub": "Nachrichten über alle Chats finden — und der Chat als Panel auf jeder Hub-Seite.",
+      "card": {
+        "title": "Suche & Panel",
+        "text": "Überall erreichbar"
+      },
+      "left": {
+        "shot": "c8-seitenpanel"
+      },
+      "leftCaption": "Das **Seitenpanel** rechts unten auf der Startseite: dieselbe Liste, derselbe Chat — ohne die Seite zu verlassen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Seitenpanel",
+          "text": "Der runde Chat-Knopf rechts unten (oder **⌘⇧C**) öffnet das Panel über jeder Hub-Seite. **⤢** wechselt zur Vollseite, ✕ schließt."
+        },
+        {
+          "n": 2,
+          "title": "Suche",
+          "text": "Die Lupe neben „Chats durchsuchen“ sucht **in den Nachrichten** aller Chats, auch Teilwörter. Ein Treffer springt an die Stelle im Verlauf."
+        },
+        {
+          "n": 3,
+          "title": "Zähler",
+          "text": "Ungelesene Nachrichten zählen in der Seitenleiste, am Panel-Knopf und im Tab der Browser-Seite."
+        }
+      ],
+      "hint": {
+        "text": "Das Panel merkt sich den zuletzt offenen Chat — beim Seitenwechsel bleibt er stehen."
+      }
+    }
+  ]
+}
