@@ -1632,6 +1632,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Forderungen | nativ | Arbeitsliste und Akte (seit 27.09.2026): Kennzahlen, drei Register, Bestand nach Stufe, gerichtliche Fälle, Fallakte mit nächstem Schritt, Schreiben-Vorschau, alle Aktionen der Seitenspalte; neues SEPA-Mandat eingebettet, Vorlagen Web |
 | Freunde werben, Google-Bewertungen | nativ | „Aufgabe zuerst“ (seit 27.09.2026): Überweisungsstapel mit Kopier-Knöpfen; Bewertungen schnell erfassen |
 | Widerrufe | nativ | Fallakte mit Reitern (seit 27.09.2026): Liste, Fall, Notiz, Status, Abschließen, Erfassen, Upload, RA-Vorgang, Forderungsübergabe; SEPA-Storno/Fernabsatz/Downgrade im Hub-Blatt |
+| Chat | nativ | Haupttab „Chat" (seit 11.10.2026): Liste mit Heute-Karte, Unterhaltung mit Haken gesendet/zugestellt/gelesen, Sprachnachrichten, Umfragen, Hub-Karten, Lesebestätigung bei Ankündigungen; Echtzeit über Reverb, Push mit Direkt-Antwort; iPad drei Spalten |
 | Berichte | nativ | Übersicht mit Standort, Zeitraum, Suche, eigenen/geteilten Dashboards und Berichten nach Bereich mit drei Leitkennzahlen (seit 27.09.2026, Nachzug 6 Schritt 1); Dashboard-Assistent eingebettet (Editor-Engine) |
 | Verkaufsstatistik | nativ | Berichtsseite „Wie im Hub“ mit KPI-Zeile und allen zwölf Karten nativ (seit 27.09.2026, Build 48) |
 | Zukünftige/Vergangene Beratungsgespräche, Stornierte und gelöschte Termine, Terminstatistik | nativ | Berichtsseiten „Wie im Hub“, alle 21 Karten nativ (seit 27.09.2026) |
@@ -2735,6 +2736,42 @@ unsichtbaren Hüllen-WebView. Jan wählte den nativen Chat, Entwurf 1 „Blatt v
 - **Nachweis:** `BertSnapshotTests` (Begrüßung, Unterhaltung mit Tabelle/Karten/Quellen, Antwort
   läuft, iPad — hell/dunkel; Markdown-Blöcke, Embed-IDs), PHP `AppBertTest` (Verlauf, Senden,
   Fehler, Umbenennen/Anpinnen/Löschen/Feedback, Recht).
+
+### Nativer Team-Chat (Haupttab „Chat", seit 11.10.2026)
+
+Der Team-Chat (Wiki [TEAM-CHAT](TEAM-CHAT.md)) ist der fünfte native Tab: `MobileNavigation::PRIMARY`
+führt ihn vor „Berichte", `MAX_TABS` = 4 — wer den Chat darf, bekommt ihn in die Leiste, Berichte
+wandert in den Mehr-Bereich (Gruppe „Schnellzugriff"). Jan folgte der Empfehlung: Entwurf 1
+„Vertraut" plus Heute-Karte und Kontextspalte aus Entwurf 2
+(https://claude.ai/artifact/Urf1o9ojcXQyJDtWNeeEx3).
+
+- **`ios/glatttHub/Chat/`**: `ChatView` (Liste mit Filtern, Heute-Karte, Wischen für Stumm/Archiv,
+  Halten für mehr; iPad drei Spalten Liste · Unterhaltung · Infos), `ChatRoomView` (Unterhaltung mit
+  Blasen, Haken gesendet/zugestellt/gelesen, Antworten per Wischen, Reaktionen/Weiterleiten/
+  Anheften/Bearbeiten/Löschen per Halten, Fotos/Kamera/Dateien/Videos, Sprachnachricht per Halten,
+  Umfragen, Hub-Karten, Lesebestätigung), `ChatSheets` (neuer Chat/Gruppe, Mitglieder,
+  Weiterleiten, Umfrage, Suche, Einstellungen, Nachricht-Info, Raum-Infos), `ChatModel`
+  (Räume, Verlauf, optimistisches Senden mit Client-UUID, Warteschlange, Offline-Stand
+  `OfflineStore` „chat"), `ChatLiveClient` (Reverb, Port des Fernseher-Clients: Kanal je
+  Nutzerin plus offener Raum, Backoff 1…60 s, nach Reconnect „alles ab Stand"), `ChatAudio`
+  (AAC-Aufnahme mit Pegel-Wellenform, Player mit 1×/1,5×/2×).
+- **Einhängen**: `TabBarHost` registriert `hub.chat` als nativen Tab und
+  `nativeDetailFactories["hub.chat"]` für `/hub/chat/raum/{id}` (Detailseite ohne Tab-Leiste,
+  `detail_prefixes` aus der Navigation); `AppContainer.open` kennt `chatRoomId()` (iPad: Raum
+  rechts über `state.chatRoomFocus`, `?seq=` → `chatRoomSeqFocus`); `bridge.js` fängt `/hub/chat`
+  und `/hub/chat/raum/…` ab. Ein Modell je Sitzung: `container.chat` (lazy, `@ObservationIgnored`),
+  `logout()` ruft `chat.reset()`, `didBecomeActive()` lädt nach.
+- **Zähler und Push**: `state.chatUnread` → Badge am Chat-Tab (`setTabBadge`), iPad-Seitenleiste,
+  App-Symbol (Mitteilungen + Chat). Kategorie `HUB_CHAT` mit `UNTextInputNotificationAction`
+  „Antworten" (derselbe Sende-Endpunkt, `PushManager.actionReply`); im offenen Raum zeigt der
+  Delegate kein Banner, sondern lädt nach. `module` = `chat-room-{id}` gruppiert je Raum.
+- **Snapshot-Fallen**: `List`, `ScrollView` und `Menu` rastern nicht — in
+  `appointmentsStaticLayout` zeigen Liste, Verlauf (Overlay am unteren Rand, geclippt) und
+  Raum-Infos feste Stapel. Dynamische Blasenbreite braucht `fixedSize(horizontal: false,
+  vertical: true)`, sonst kürzt SwiftUI den Text auf eine Zeile.
+- **Nachweis**: `ChatSnapshotTests` (hell/dunkel, iPhone Liste/Raum/Ankündigung, iPad drei Spalten
+  — liefert die Bilder der Klickanleitung), `ChatUITests` (Tab, „Alle glattt", senden, Haken,
+  Infos), PHP `tests/Feature/Chat/`.
 
 ### Verteilung
 
