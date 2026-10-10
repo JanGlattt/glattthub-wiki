@@ -310,8 +310,9 @@ const PLAN = [
   // Laser 6: Wartung Schritt 4 — nur fotografieren, nie abschließen; danach Entwurf verwerfen
   { name: 'l20-lager-check', url: GERAET, steps: [['loaded'], reiter('Wartungen'), wizard, setWert('anzahlFlaschenChillerFluid', 1)], clip: '.modal-glattt', marks: [
     { id: 'fluid', kind: 'badge', n: 1, ...L.byText('.modal-glattt .input-glattt-floating-label', 'Anzahl Flaschen'), at: 'l' },
-    { id: 'kommentar', kind: 'badge', n: 2, ...L.byText('.modal-glattt .form-glattt-label', 'Kommentare'), at: 'l' },
-    { id: 'abschluss', kind: 'badge', n: 3, ...L.byText('.modal-glattt-footer button', 'Wartung abschließen'), at: 'r' },
+    { id: 'lux', kind: 'badge', n: 2, ...L.byText('.modal-glattt .input-glattt-floating-label', 'Lux-Lotion'), at: 'l' },
+    { id: 'kommentar', kind: 'badge', n: 3, ...L.byText('.modal-glattt .form-glattt-label', 'Kommentare'), at: 'l' },
+    { id: 'abschluss', kind: 'badge', n: 4, ...L.byText('.modal-glattt-footer button', 'Wartung abschließen'), at: 'r' },
   ], after: async (page, L) => { await entwurfVerwerfen[1](page, L); console.log('Hinweis: Wartungs-Entwurf verworfen — nichts gespeichert.'); } },
   { name: 'l21-protokolle-teil', url: ANBAUTEIL, steps: [['loaded'], reiter('Wartungen')], marks: [
     { id: 'laser', kind: 'badge', n: 1, ...L.byText('th', 'Laser'), at: 't' },

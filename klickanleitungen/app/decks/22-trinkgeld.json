@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für die glatttHub-App auf iPhone und iPad — Rangliste, Sterne, Auszahlung, die Karte auf der Startseite und der Schalter beim Beenden",
   "eyebrow": "App · Trinkgeld",
   "footerArea": "App",
-  "stand": "29.09.2026",
-  "version": "1.0",
+  "stand": "10.10.2026",
+  "version": "1.1",
   "notes": [
     "Die App zeigt **dieselben Zahlen wie die Web-Seite** (Team → Trinkgeld) — Ranking, Sterne, Auszahlung, Kommentare je Recht.",
     "Nach unten ziehen lädt neu. Ohne Netz zeigt die Seite den **letzten Stand** mit Uhrzeit.",
@@ -65,7 +65,7 @@
         {
           "n": 1,
           "title": "Kacheln",
-          "text": "**Trinkgeld** (mit netto), **Trinkgelder** (Anzahl, Ø je Trinkgeld) und **Bewertungen** (mit Antwortquote)."
+          "text": "**Trinkgeld** (geht zu 100 % an dich), **Trinkgelder** (Anzahl, Ø je Trinkgeld) und **Bewertungen** (mit Antwortquote)."
         },
         {
           "n": 2,
@@ -89,12 +89,12 @@
       "left": {
         "shot": "tips-payouts-light"
       },
-      "leftCaption": "Segment „Auszahlung“: je Monat brutto, Gebühr, netto und der Stand der Auszahlung.",
+      "leftCaption": "Segment „Auszahlung“: je Monat die Auszahlung in voller Höhe, Anzahl, Gebühr des Unternehmens und der Stand der Auszahlung.",
       "steps": [
         {
           "n": 1,
           "title": "Auszahlung",
-          "text": "Je Monat **netto** groß, darunter brutto, Gebühr (vorläufig oder endgültig) und ob der Monat schon **ausgezahlt** ist. Antippen klappt die Behandlerinnen auf."
+          "text": "Je Monat die **Auszahlung** groß — das volle Trinkgeld, ohne Abzug —, darunter die Anzahl, die Gebühr des Unternehmens (vorläufig oder endgültig) und ob der Monat schon **ausgezahlt** ist. Antippen klappt die Behandlerinnen auf."
         },
         {
           "n": 2,

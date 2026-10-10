@@ -13,11 +13,11 @@
  "subtitle": "Klickanleitung für das Institut im glatttHub — was die Kundin nach der Behandlung bekommt, wie du die Nachricht beim Beenden steuerst und wo Trinkgeld und Sterne stehen",
  "eyebrow": "Team · Trinkgeld",
  "footerArea": "Team",
- "stand": "29.09.2026",
- "version": "1.0",
+ "stand": "10.10.2026",
+ "version": "1.1",
  "notes": [
   "Nach jeder **beendeten Behandlung** bekommt die Kundin verzögert eine Nachricht mit ihrem Bewertungslink — per WhatsApp, SMS oder E-Mail, je nachdem, was am Standort eingestellt ist und wozu sie eingewilligt hat.",
-  "Das **Trinkgeld kommt zu 100 % bei dir an**, nur die Gebühr des Zahlungsanbieters wird abgezogen. Ausgezahlt wird es mit dem Lohn des Folgemonats.",
+  "Das **Trinkgeld kommt zu 100 % bei dir an** — ohne Abzug, die Gebühr des Zahlungsanbieters trägt glattt. Ausgezahlt wird es in voller Höhe mit dem Lohn des Folgemonats.",
   "**Kommentare** der Kundinnen sehen nur Personen mit dem Recht „Kommentare lesen“ — ob es einen Kommentar gibt, sieht jede."
  ],
  "pages": [
@@ -154,7 +154,7 @@
     {
      "n": 4,
      "title": "Verlauf und Auszahlung",
-     "text": "Darunter der **Verlauf je Monat** und die **Auszahlungen** (brutto, Gebühr, netto, ausgezahlt). „Vorläufig“ heißt: Der Zahlungsanbieter hat die Gebühr noch nicht endgültig gebucht."
+     "text": "Darunter der **Verlauf je Monat** und die **Auszahlungen** (Trinkgeld, Auszahlung in voller Höhe, Gebühr des Unternehmens, ausgezahlt). Die Gebühr ist nur eine Information — sie wird dir nicht abgezogen. „Vorläufig“ heißt: Der Zahlungsanbieter hat sie noch nicht endgültig gebucht."
     }
    ],
    "notes": [

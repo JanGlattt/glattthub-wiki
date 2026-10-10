@@ -38,6 +38,12 @@ const editorVon = (name) => ['fn', async (page, L) => {
 }];
 const vorschau = formKnopf('Formular testen');
 
+// Kasse: Standort des Aufnahme-Laufs wählen (KLICK_KASSE_BRANCH, Standard Osnabrück) — die Seite merkt sich sonst den Sidebar-Filter
+const kasseStandort = ['fn', async (page, L) => {
+  await page.evaluate((id) => { const d = Alpine.$data(document.querySelector('[x-data^="cashClosingPage"]')); if (d && d.branchId !== id) d.branchId = id; }, process.env.KLICK_KASSE_BRANCH || '4Awk00OHdGhthWUrNgxakQ');
+  await L.wait(page, 2500);
+}];
+
 const PLAN = [
   // ── Betrieb 1: Institute
   { name: 'b1-institute', url: INSTITUT, steps: [['loaded']], marks: [
@@ -144,6 +150,20 @@ const PLAN = [
   { name: 'b16-beratungsservices', url: '/hub/services', steps: [['loaded'], ['click', 'button', 'Liste', 2000]] },
   { name: 'b17-zuordnung', url: '/hub/contracts/body-zone-mapping', steps: [['loaded']], marks: ['.card-glattt'] },
   // Laser hat seit 18.09.2026 eine eigene Serie (klickanleitungen/laser)
+  // ── Betrieb 5: Kasse (seit 10.10.2026 mit den Bewegungen des Tages — Beispieldaten des Aufnahme-Standorts)
+  { name: 'kasse-web-list-light', url: '/hub/kasse', steps: [['loaded'], kasseStandort, ['loaded'], ['wait', 1200]], marks: [
+    { id: 'heute', kind: 'frame', color: 'gold', sel: '.cash-today' },
+    { id: 'bewegung', kind: 'badge', n: 1, ...L.byText('.cash-today button', 'Bewegung erfassen'), at: 'l' },
+    { id: 'zaehlen', kind: 'badge', n: 2, ...L.byText('.cash-today button', 'Abschluss zählen'), at: 'l' },
+  ] },
+  { name: 'kasse-web-modal-light', url: '/hub/kasse', steps: [['loaded'], kasseStandort, ['loaded'], ['fn', async (page, L) => {
+    await page.evaluate(() => Alpine.$data(document.querySelector('[x-data^="cashClosingPage"]')).openToday());
+    await page.waitForFunction(() => { const d = Alpine.$data(document.querySelector('[x-data^="cashClosingPage"]')); return d.modalOpen && !d.dayLoading; }, null, { timeout: 20000 }).catch(() => console.log('ZÄHLBLATT NICHT OFFEN'));
+    await L.wait(page, 1200);
+  }]], clip: '.modal-glattt.cash-modal', marks: [
+    { id: 'tresor', kind: 'badge', n: 1, ...L.byText('.cash-modal .form-glattt-label, .cash-modal label, .cash-modal h4', 'Tresor'), at: 'l' },
+    { id: 'bewegungen', kind: 'badge', n: 2, ...L.byText('.cash-modal h4, .cash-modal .cash-section-title', 'Bewegungen'), at: 'l' },
+  ] },
 ];
 
 P.run(PLAN, L, { nur: process.argv.slice(2) });

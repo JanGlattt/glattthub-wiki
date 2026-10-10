@@ -48,12 +48,19 @@ const L = require('./lib.cjs');
   } else {
     console.log('MODAL FEHLT: Buchungslink — Knopf „Link" an der Terminkarte prüfen.');
   }
+  // Was auch immer offen blieb (Buchungslink-Fenster ohne Rahmen-Selektor): schließen, sonst liegt es über k5
+  await page.keyboard.press('Escape');
+  await page.evaluate(() => { const c = window.C(); ['showAppointmentModal', 'showRescheduleModal', 'showBookingLinkModal', 'showSelfServiceModal'].forEach(k => { if (k in c) c[k] = false; }); document.querySelectorAll('.modal-glattt-backdrop').forEach(b => { if (b.offsetParent !== null) b.style.display = 'none'; }); });
+  await L.wait(page, 800);
 
   // ── k5 Extrazeit bearbeiten (nicht speichern)
-  await L.clickText(page, '.btn-glattt-secondary', 'Bearbeiten', 1000);
-  const extraClip = await L.clipOf(page, '.card-glattt', 20);
+  // Die Karte „Extrazeit" (seit 10.10.2026 mit dem Verlauf der Entscheidungen) — über ihren Titel greifen
+  await page.evaluate(() => { const t = [...document.querySelectorAll('.card-glattt-title')].find(e => e.textContent.trim() === 'Extrazeit'); const card = t?.closest('.card-glattt'); card?.scrollIntoView({ block: 'start' }); window.scrollBy(0, -24); [...(card?.querySelectorAll('button.btn-glattt-secondary') || [])].find(b => b.textContent.trim() === 'Bearbeiten')?.click(); });
+  await L.wait(page, 1000);
+  const extraClip = await L.cardClip(page, 'Extrazeit', 20);
   await L.shot(page, 'k5-extrazeit', { clip: extraClip, noScroll: true, marks: [
     { id: 'speichern', kind: 'chip', label: 'Zum Schluss', ...L.byText('.btn-glattt-primary', 'Speichern'), at: 'l' },
+    { id: 'verlauf', kind: 'badge', n: 4, ...L.byText('.extra-time-glattt-history-title', 'Verlauf'), at: 'l' },
   ]});
   await L.clickText(page, '.btn-glattt-secondary', 'Abbrechen', 800);
 

@@ -5,8 +5,9 @@ Standorts — eine Nachricht (WhatsApp, SMS/RCS oder E-Mail in der je Standort f
 Reihenfolge) mit ihrem persönlichen Bewertungslink. Auf der Seite begrüßt sie ihre Behandlerin
 (Foto, Vorname, Text), sie vergibt **Sterne für die heutige Behandlung** und für ihr **bisheriges
 Ergebnis** (je mit Kommentar, alles freiwillig) und kann über die Mollie-Engine ein **Trinkgeld**
-geben, das zu 100 % abzüglich der tatsächlichen Mollie-Gebühr über den Lohnmonat bei der
-Behandlerin landet. Diese Seite beschreibt **Fachregeln, Ablauf, Datenmodell, Rechte und
+geben, das **zu 100 % und ohne Abzug** über den Lohnmonat bei der Behandlerin landet — die
+Mollie-Gebühr trägt das Unternehmen (Entscheidung Jan, 10.10.2026: ein Abzug der Gebühr vom
+Trinkgeld ist rechtlich nicht erlaubt). Diese Seite beschreibt **Fachregeln, Ablauf, Datenmodell, Rechte und
 Fallstricke**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
 !!! nutzerhandbuch "Bedienung: Team 5 – Trinkgeld und Bewertungen"
@@ -56,9 +57,10 @@ Fallstricke**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
   Web und in der App.
 - **Bericht Mitarbeiterperformance:** Die Karten „Trinkgeld & Sterne je Behandlerin" und „… im
   Verlauf" stehen auch dort und im Eigenen Dashboard.
-- **Auszahlung:** Bezahlte Trinkgelder eines Monats landen netto (nach Mollie-Gebühr) als Lohnart
-  „Trinkgeld" im Lohnmonat des Folgemonats; mit der Übergabe an die Steuerberatung gelten sie als
-  ausgezahlt.
+- **Auszahlung:** Bezahlte Trinkgelder eines Monats landen **in voller Höhe** (der Betrag, den die
+  Kundin gegeben hat) als Lohnart „Trinkgeld" im Lohnmonat des Folgemonats; mit der Übergabe an die
+  Steuerberatung gelten sie als ausgezahlt. Die Mollie-Gebühr ist Unternehmenskosten und wird nur
+  zur Information gezeigt („Gebühr (Unternehmen)").
 
 ---
 
@@ -82,7 +84,8 @@ Fallstricke**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 - **Alles freiwillig:** Sterne, Kommentare und Trinkgeld sind optional; Google-Link bei 5 Sternen
   (heutige Behandlung), je Standort abschaltbar, URL aus `review_whatsapp_settings.review_url`.
 - **Gebühr:** die tatsächliche Mollie-Gebühr aus den Kontobewegungen (Balance Transactions), bis
-  dahin je Zahlart geschätzt und als „vorläufig" gekennzeichnet.
+  dahin je Zahlart geschätzt und als „vorläufig" gekennzeichnet — **nie ein Abzug vom Trinkgeld**,
+  sondern Kosten des Unternehmens (seit 10.10.2026).
 - **Auszahlung monatlich über die Lohnliste** (Lohnart `tips`, steuerfrei als Durchleitung —
   Freigabe der Steuerberatung offen).
 - **Rechte:** Leitung alle Behandlerinnen ihrer erlaubten Institute, Behandlerin nur sich;
@@ -200,18 +203,30 @@ Team-Sicht entscheidet `TipStatisticsService` anhand von `view_team_tips`.
   die Schätzung.
 - Lohnmonat: `PayrollService::build()` nimmt bezahlte Trinkgelder des **Vormonats** (`paid_at`) je
   `staff_user_id` → `users.hr_employee_id` als Lohnart `tips` (Quelle `SOURCE_TIPS`, `source_ref`
-  mit `tip_ids`); `export()` markiert sie mit `payout_month`/`paid_out_at`.
+  mit `tip_ids`); `export()` markiert sie mit `payout_month`/`paid_out_at`. **Betrag = Summe
+  `amount_cents` (brutto, 100 %)** — seit 10.10.2026 (Jan); davor wurde `net_cents` (nach
+  Mollie-Gebühr) genommen, was rechtlich nicht zulässig ist. Bereits gebaute oder übergebene
+  Lohnmonate vor diesem Datum werden **nicht rückwirkend** geändert — wer sie korrigieren will,
+  erfasst die Differenz als manuellen Posten. `fee_cents`/`net_cents` bleiben am Trinkgeld erfasst
+  (Gebühr des Unternehmens, Zufluss bei Mollie), fließen aber nirgends mehr in eine Auszahlung;
+  Hinweistext der Lohnart per Migration `2026_10_10_190000_tips_wage_type_hint_gross_payout`.
 
 ### Auswertungen
 
 - Statistik-Registry (Kategorie Personal, Recht `view_tips`): `personal.tip-ranking` (Balken
-  Trinkgeld, Punkte Ø Sterne; Tabelle Ranking), `personal.tip-history` (Balken brutto/netto, Linien
-  Ø Sterne), `personal.tip-payouts` (gestapelt netto + Gebühr). Partials
-  `resources/views/statistics/personal/tip-*.blade.php`, JS in `public/js/statistics/personal.js`.
+  Trinkgeld, Punkte Ø Sterne; Tabelle Ranking mit Spalte „Gebühr (Unternehmen)"),
+  `personal.tip-history` (Balken Trinkgeld, Linien Ø Sterne; Gebühr nur in der Tabelle),
+  `personal.tip-payouts` (Balken „Auszahlung an die Behandlerinnen (100 %)" = Trinkgeld und daneben
+  „Mollie-Gebühr (Unternehmen)" — **nicht gestapelt**, die Gebühr ist kein Teil der Auszahlung).
+  Partials `resources/views/statistics/personal/tip-*.blade.php`, JS in
+  `public/js/statistics/personal.js`. Die Antworten tragen `tips_cents` (voller Betrag),
+  `fee_cents`, `net_cents` (nur Information, für ältere App-Builds) und in `…/auszahlung`
+  zusätzlich `payout_cents` (= `tips_cents`).
 - KPI-Registry Quelle `trinkgeld` (`TipStatisticsService::getKpis`, Vorperiode):
-  `trinkgeld.tips_total`, `tips_net`, `tips_count`, `avg_tip`, `avg_stars_today`,
-  `avg_stars_overall`, `ratings_count`, `response_rate`.
-- CSV-Export: `tip-ranking`, `tip-history` (auch auf der Mitarbeiterperformance), `tip-payouts`.
+  `trinkgeld.tips_total`, `fees` („Gebühr (Unternehmen)", seit 10.10.2026 statt `tips_net`),
+  `tips_count`, `avg_tip`, `avg_stars_today`, `avg_stars_overall`, `ratings_count`, `response_rate`.
+- CSV-Export: `tip-ranking`, `tip-history` (auch auf der Mitarbeiterperformance), `tip-payouts`
+  (Spalten Trinkgeld, Auszahlung an die Behandlerin, Gebühr (Unternehmen) — keine Netto-Spalte mehr).
 - Benachrichtigungs-Katalog `treatment_feedback`: `tip_received` und `rating_received` an die
   Behandlerin (`event_owners`), `low_rating` (≤ 2 Sterne auf einer Skala) an `view_team_tips`.
 
@@ -351,6 +366,7 @@ https://claude.ai/artifact/LYTdRBZdTH1mqWYsnSvp6a). Ziel: eine Frage je Schritt,
 
 | Datum | Änderung |
 |---|---|
+| 10.10.2026 | Trinkgeld geht zu 100 % an die Behandlerin (Jan): Lohnmonat nimmt `amount_cents` statt `net_cents`, Mollie-Gebühr nur noch als „Gebühr (Unternehmen)" in Statistik/CSV/App, KPI `trinkgeld.fees` ersetzt `tips_net`, Texte auf Kundenseite, My glattt, Hub-App und Anleitungen; frühere Netto-Lohnmonate bleiben unverändert |
 | 04.10.2026 | Bewertungsseite im Browser: Lob-/Problem-Karten und Rückruf wie in der App |
 | 03.10.2026 | My glattt: Bewertung wie bei Uber (Sterne, Lob-/Problem-Karten, Rückruf, Trinkgeld bei jeder Sternzahl), Schnellbewertung aus der Mitteilung, Karten auf der Seite „Trinkgeld“, Anlass „Rückruf nach Bewertung gewünscht“ |
 | 01.10.2026 | Dank nach dem Trinkgeld in My glattt (Polaroid/Herz, geschriebenes „Danke“), eigener Dankestext am Hub-Konto, Standardtext je Standort |

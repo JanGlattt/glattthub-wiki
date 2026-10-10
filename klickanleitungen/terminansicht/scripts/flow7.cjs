@@ -38,18 +38,47 @@ const KUNDE_NAME = process.env.KLICK_BOOK_CLIENT_NAME || 'Test Testererer';
     ]});
   }
 
-  // ── t2 Zeit finden
+  // ── t2 Zeit finden — seit 10.10.2026 mit dem Register „Vorschläge | Tageskalender": das Bild zeigt den
+  //    Tageskalender (echter Phorest-Tag mit Räumen und Schichten) neben den Vorschlägen
   if (will('t2-slots')) {
-    await L.wait(page, 1500);
-    await L.shot(page, 't2-slots', { marks: [
-      { id: 'tag', kind: 'badge', n: 1, sel: '.flatpickr-calendar, input.input-glattt', at: 'l' },
-      { id: 'slots', kind: 'frame', color: 'gold', sel: '.slot-grid, .btn-glattt-secondary' },
+    await L.goto(page, `/hub/booking?branchId=${L.MD}&clientId=${KUNDE_ID}&clientName=${encodeURIComponent(KUNDE_NAME)}`, 3000);
+    await page.waitForFunction(() => typeof Livewire !== 'undefined' && Livewire.all().length > 0, null, { timeout: 30000 });
+    await page.evaluate(async () => {
+      const w = Livewire.all().find(c => c.name === 'hub.booking.appointment-booking-form').$wire;
+      await w.set('selectedServiceIds', (w.serviceOptions || []).map(o => o.service_id));
+      await w.findSlots();
+    });
+    // Die Suche fragt Phorest je Tag ab — lokal dauert das deutlich länger als auf Staging
+    for (let i = 0; i < 300; i++) {
+      await L.wait(page, 500);
+      // Auto-Abmeldung des Hubs wach halten (sonst steht nach zwei Minuten die Anmeldeseite im Bild)
+      if (i % 20 === 0) await page.mouse.move(600 + (i % 40), 300 + (i % 30)).catch(() => {});
+      if (await page.evaluate(() => [...document.querySelectorAll('.slot-pill')].filter(b => b.offsetParent).length)) break;
+    }
+    // Register auf „Tageskalender" stellen (Radio-Name je Fenster verschieden, deshalb über den Wert)
+    await page.evaluate(() => { const r = [...document.querySelectorAll('input[type=radio][value="calendar"]')].find(e => e.closest('label')?.offsetParent !== null); r?.click(); });
+    const kalenderGeladen = () => page.waitForFunction(() => { const c = [...document.querySelectorAll('.booking-day-cal')].find(e => e.offsetParent !== null); return c && c.querySelectorAll('.booking-day-cal__column').length > 0 && !c.querySelector('.booking-day-cal__loading')?.offsetParent; }, null, { timeout: 60000 }).catch(() => console.log('TAGESKALENDER NICHT GELADEN'));
+    await kalenderGeladen();
+    // Erster Vorschlagstag kann ein Samstag ohne Schichten sein — den zweiten Tag-Chip (Werktag) nehmen
+    await page.evaluate(() => { const chips = [...document.querySelectorAll('.booking-day-cal__chip')].filter(e => e.offsetParent !== null && !e.classList.contains('booking-day-cal__chip--date')); chips[1]?.click(); });
+    await L.wait(page, 1500); await kalenderGeladen(); await L.wait(page, 1500);
+    await page.evaluate(() => { const c = [...document.querySelectorAll('.booking-day-cal')].find(e => e.offsetParent !== null); const card = c?.closest('.card-glattt') || c; card?.scrollIntoView({ block: 'start' }); window.scrollBy(0, -16); });
+    await L.wait(page, 500);
+    const rectOf = (sel) => { const el = [...document.querySelectorAll(sel)].find(e => e.offsetParent !== null); const b = el?.getBoundingClientRect(); return b ? { x: b.x, y: b.y, w: b.width, h: Math.min(b.height, window.innerHeight - b.y - 8) } : null; };
+    await L.shot(page, 't2-slots', { noScroll: true, marks: [
+      { id: 'register', kind: 'badge', n: 3, fn: () => { const l = [...document.querySelectorAll('.segmented-control-glattt-label')].find(e => e.offsetParent !== null && e.textContent.includes('Tageskalender')); const t = l?.closest('.segmented-control-glattt'); const b = t?.getBoundingClientRect(); return b ? { x: b.x, y: b.y, w: b.width, h: b.height } : null; }, at: 'l' },
+      { id: 'kalender', kind: 'frame', color: 'gold', fn: () => { const el = [...document.querySelectorAll('.booking-day-cal__schedule')].find(e => e.offsetParent !== null); const b = el?.getBoundingClientRect(); return b ? { x: b.x, y: b.y, w: b.width, h: Math.min(b.height, window.innerHeight - b.y - 8) } : null; } },
+      { id: 'schichten', kind: 'badge', n: 4, fn: () => { const el = [...document.querySelectorAll('.booking-day-cal__shifts')].find(e => e.offsetParent !== null); const b = el?.getBoundingClientRect(); return b ? { x: b.x, y: b.y, w: b.width, h: b.height } : null; }, at: 'l' },
     ]});
+    // zurück auf die Vorschläge für t3
+    await page.evaluate(() => { const r = [...document.querySelectorAll('input[type=radio][value="list"]')].find(e => e.closest('label')?.offsetParent !== null); r?.click(); });
+    await L.wait(page, 800);
   }
 
   // ── t3 Buchen und bestätigen: Zeit markieren → Leiste mit Tag, Uhrzeit, Raum
   if (will('t3-buchen')) {
     await L.goto(page, `/hub/booking?branchId=${L.MD}&clientId=${KUNDE_ID}&clientName=${encodeURIComponent(KUNDE_NAME)}`, 3000);
+    await page.waitForFunction(() => typeof Livewire !== 'undefined' && Livewire.all().length > 0, null, { timeout: 30000 });
     // Alle Paket-Leistungen der Kundin wählen, dann Zeiten suchen
     await page.evaluate(async () => {
       const w = Livewire.all().find(c => c.name === 'hub.booking.appointment-booking-form').$wire;
@@ -57,19 +86,20 @@ const KUNDE_NAME = process.env.KLICK_BOOK_CLIENT_NAME || 'Test Testererer';
       await w.findSlots();
     });
     let n = 0;
-    for (let i = 0; i < 60 && !n; i++) {
+    for (let i = 0; i < 300 && !n; i++) {
       await L.wait(page, 500);
-      n = await page.evaluate(() => [...document.querySelectorAll('.day-schedule__slot')].filter(b => b.offsetParent).length);
+      if (i % 20 === 0) await page.mouse.move(600 + (i % 40), 300 + (i % 30)).catch(() => {});
+      n = await page.evaluate(() => [...document.querySelectorAll('.slot-pill')].filter(b => b.offsetParent).length);
     }
     if (!n) { console.log('KEINE SLOTS — t3 nicht aufgenommen'); }
     else {
-      await page.evaluate(() => [...document.querySelectorAll('.day-schedule__slot')].filter(b => b.offsetParent)[1].click());
+      await page.evaluate(() => [...document.querySelectorAll('.slot-pill')].filter(b => b.offsetParent)[1].click());
       await L.wait(page, 800);
       // Markierte Zeit mittig, die Leiste klebt am unteren Rand
-      await page.evaluate(() => document.querySelector('.day-schedule__slot.is-selected').scrollIntoView({ block: 'center' }));
+      await page.evaluate(() => document.querySelector('.slot-pill.is-selected, .slot-pill.is-active, .slot-pill[aria-pressed="true"]').scrollIntoView({ block: 'center' }));
       await L.wait(page, 500);
       await L.shot(page, 't3-buchen', { noScroll: true, marks: [
-        { id: 'zeit', kind: 'frame', color: 'gold', sel: '.day-schedule__slot.is-selected' },
+        { id: 'zeit', kind: 'frame', color: 'gold', sel: '.slot-pill.is-selected, .slot-pill.is-active, .slot-pill[aria-pressed="true"]' },
         { id: 'leiste', kind: 'frame', color: 'teal', sel: '.slot-confirm-bar' },
         { id: 'buchen', kind: 'chip', label: 'Erst jetzt buchen', sel: '.slot-confirm-bar .btn-glattt-primary', at: 'l' },
       ]});

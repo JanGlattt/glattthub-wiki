@@ -32,8 +32,13 @@ const L = require('./lib.cjs');
 
   // ── n3 Behandlungseinstellungen: Zonen und Einträge
   await L.tab(page, 'Behandlungseinstellungen', 4000);
+  // Zone „Gesicht" wählen: oben erscheint die Karte „Gesichtskarte" (seit 10.10.2026, nur lesen)
+  await page.evaluate(() => window.dispatchEvent(new CustomEvent('treatment-zone-clicked', { detail: { zoneKey: 'gesicht', zoneName: 'Gesicht' } })));
+  await page.waitForFunction(() => [...document.querySelectorAll('.face-map-history__item')].some(e => e.offsetParent !== null), null, { timeout: 15000 }).catch(() => console.log('GESICHTSKARTE FEHLT — hat die Kundin eine gespeicherte Karte?'));
+  await L.wait(page, 1200);
   await L.shot(page, 'n3-einstellungszettel', { marks: [
-    { id: 'zonen', kind: 'badge', n: 1, ...L.byText('.card-glattt-title', 'Behandlungseinstellungen'), at: 'l' },
+    { id: 'zonen', kind: 'badge', n: 2, ...L.byText('.card-glattt-title', 'Behandlungseinstellungen'), at: 'l' },
+    { id: 'gesichtskarte', kind: 'frame', color: 'gold', sel: '.face-map-history' },
     { id: 'eintrag', kind: 'frame', color: 'teal', sel: '.table-glattt' },
   ]});
 
