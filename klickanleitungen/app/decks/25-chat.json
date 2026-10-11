@@ -7,7 +7,7 @@
   "audience": "institute",
   "footerArea": "App",
   "stand": "12.10.2026",
-  "version": "1.4",
+  "version": "1.5",
   "nr": 25,
   "title": [
     "Chat in der App"
@@ -76,7 +76,7 @@
         {
           "n": 3,
           "title": "Mikrofon halten",
-          "text": "Aufnahme läuft, solange du hältst; **Loslassen sendet**, nach oben wischen bricht ab. Die Sprachnachricht sieht aus wie bei WhatsApp: Dreieck zum Abspielen, Welle mit goldenem Punkt, Profilbild mit Mikrofon — beim Abspielen steht dort das Tempo **1×, 1,5× oder 2×**."
+          "text": "Aufnahme läuft, solange du hältst; **Loslassen sendet**, nach oben wischen bricht ab. Die Sprachnachricht sieht aus wie bei WhatsApp: Dreieck zum Abspielen, Welle mit goldenem Punkt, rechts das Profilbild mit Mikrofon — beim Abspielen flippt es zum Tempo **1×, 1,5× oder 2×**."
         },
         {
           "n": 4,

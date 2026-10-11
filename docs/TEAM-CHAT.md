@@ -311,6 +311,11 @@ Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Ha
 
 ## Changelog
 
+- **12.10.2026 (nachts)** — iOS: Sprachnachricht wie bei WhatsApp (Dreieck, Welle mittig mit Knopf,
+  Profilbild rechts flippt zum Tempo), Antworten mit Zitat nur so breit wie nötig (`HuggingColumn`),
+  Anhänge öffnen nur auf Tippen, Antwort-Leiste in Texthöhe mit Foto, Senden springt ans Ende,
+  Filter-Chips bis zum Rand, Animationen im Chat (Swoosh beim Einfügen, Federn der Leiste,
+  Flip, Haptik beim Senden; mit „Bewegung reduzieren“ aus) — Befunde 318–328.
 - **12.10.2026** — iOS: Pfeil nach unten nur abseits des Endes, Wischen zum Antworten als
   gleichzeitige Geste mit Antwort-Symbol, Sprachnachrichten spielen (Datei-Lader statt
   `imageData`), Tempo-Knopf immer sichtbar (Befunde 315–317); iPad-Seitenleiste wie im Web.
