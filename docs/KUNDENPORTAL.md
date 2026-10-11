@@ -26,6 +26,12 @@ nicht zugestellte Nachrichten erneut senden, Konten sperren und Einladungen neu 
 Auftrag kommt eine Mitteilung (Modul „Kundenportal“ im Benachrichtigungs-Katalog). GoCardless wird
 dabei nie automatisch angefasst.
 
+Seit 11.10.2026 gibt es den Zugang auch **direkt aus der Kundenakte** (Reiter „Kundenportal“, Web
+und App): Status des Kontos, „Zum Portal einladen“ bzw. „Einladung erneut senden“, „Passwort
+zurücksetzen“ und „Sperren“ — den Link per E-Mail, WhatsApp über Superchat, WhatsApp auf dem
+eigenen Handy, als kopierten Link oder als QR-Code am Tresen, den die Kundin mit ihrem Handy
+scannt. Der Verlauf zeigt, wer wann welchen Link wie weitergegeben hat und ob er genutzt wurde.
+
 Seit 02.10.2026 ist die Büro-Seite ein **Posteingang mit Kontext** (Entwurf A). Er steht im Web und
 nativ in der glatttHub-App auf iPhone und iPad. Zu jedem Auftrag zeigt die Seite Restbetrag, nächste
 Rate und offene Forderungen. Bei Bankverbindungen steht die bisherige neben der neuen, dazu kommen
@@ -74,6 +80,64 @@ Freunde, Paket, Kontakt.
 - **Zahl am Menüpunkt**: `PortalOfficeService::openCount()` (60 s Cache, nach jeder Aktion verworfen),
   als Komponente `<x-customer-portal-badge />` — ein `@if` im Gruppen-Markup der Seitenleiste bricht
   `SidebarNavGroupTest`.
+
+### Reiter „Kundenportal“ in der Kundenakte (11.10.2026)
+
+Entscheidung Jan (11.10.2026, Entwurf 1 „Reiter Kundenportal“ aus
+https://claude.ai/artifact/K9iRyBrtScvKSat26mmPAX): Der Zugang zum Kundenportal wird aus der
+Kundenakte heraus gegeben, nicht nur auf der Büro-Seite. Zehnter Reiter `#kundenportal` plus
+siebte Karte in der Übersicht, im Web und nativ in der glatttHub-App.
+
+- **Recht `manage_customer_access`** („Kundenportal: Kundin aus der Kundenakte einladen,
+  Passwort-Link senden, Konto sperren“) — Migration erbt die Zuordnung von
+  `manage_customer_portal` (admin, Büro) und `delete_treatment_backfill` (Leitung, Büro). Die
+  Büro-Seite behält `manage_customer_portal`.
+- **Endpunkte** (`CustomerAccessController`, `{clientId}` = Phorest-Kunden-ID, Web und App
+  identisch): `GET /hub/clients/{clientId}/portal` (Konto oder `null`, Kundin aus Phorest mit
+  maskierter Handynummer, mögliche Kanäle, `can_invite`/`can_reset`/`can_lock`,
+  `legal_texts_missing`, Verlauf), `POST …/portal/einladung` und `POST …/portal/passwort-link`
+  (jeweils `channel`), `POST …/portal/sperre` (`locked`). Antwort der Link-Aktionen: `url`,
+  `expires_at`, `message_text`, `whatsapp_url` (nur `whatsapp_app`), `qr_svg`, `dispatch`; bei
+  gescheiterter Zustellung `warning` — der Link gilt trotzdem. 422 bei fachlichen Hindernissen
+  (kein Vertrag, keine E-Mail in Phorest, Konto schon aktiv/gesperrt), 409 bei der Drossel
+  (3 echte Versendungen je Kundin und Stunde).
+- **Fünf Wege** (`CustomerAccessDispatch::LINK_CHANNELS`): `email` (Einladungs- bzw.
+  Reset-Mail), `whatsapp` (Superchat, Meta-Vorlagen `glattthub_kundenportal_einladung` /
+  `glattthub_kundenportal_passwort`, gewählt im Admin „Zugangsdaten-Nachrichten“, Variablen
+  {{1}} Vorname, {{2}} Link, {{3}} gültig bis, {{4}} Institut; Kontakt aus
+  `superchat_contact_links`, sonst per Handynummer über `SuperchatContactResolver`), `whatsapp_app`
+  (wa.me mit Text, Absenden im eigenen WhatsApp), `copy` und `qr` (nichts wird versendet; QR als
+  Inline-SVG über BaconQrCode, im Web bildschirmfüllend in der Lightbox, in der App als
+  `fullScreenCover`).
+- **Einladen vor der Freigabe** (Jan, 11.10.2026: „Sofort für alle“): geht auch bei
+  `PORTAL_INVITATIONS_ENABLED=false`; der Reiter warnt mit `legal_texts_missing`, dass die Kundin
+  nach dem Passwort bei der Zustimmung hängen bleibt. Nur Vertragskundinnen (Konto über
+  `PortalInvitationService::accountFor`), ein aktives Konto wird nicht erneut eingeladen,
+  sondern bekommt den Passwort-Link; ein gesperrtes muss erst entsperrt werden.
+- **Passwort-Link aus der Akte** gilt `portal.office_reset_minutes` (24 h, einmal) statt 30
+  Minuten — Links per WhatsApp oder kopiert kommen oft später an.
+  `PortalPasswordResetService::issueLink()` stellt ihn ohne Versand aus, `sendResetMail()`
+  verschickt ihn bei Kanal E-Mail.
+- **Verlauf** `customer_access_dispatches` (Konto, `kind` invitation|password|lock|unlock,
+  Kanal, maskierter Empfänger, wer, wann, Stand; verweist auf Einladung bzw. Reset, genutzt oder
+  abgelaufen kommt zur Laufzeit daher — nie ein Token). Die Büro-Seite und `portal:invite`
+  schreiben seit dem Umbau mit; ältere Einladungen (Vertragsmail) und Resets der Kundin
+  („Passwort vergessen“) ergänzt `CustomerAccessService::history()` aus den Quelltabellen.
+- **Zustellfehler** (Superchat nicht eingerichtet, keine Handynummer, Mail-Fehler) → Zeile
+  `failed` mit Grund, Katalog-Anlass `customer_portal.access_failed` (in_app, an
+  `manage_customer_access`), Antwort mit `warning` und gültigem Link.
+- **App-Übersicht** (`/api/app/clients/{id}`): Reiter `portal` in `tabs`, Feld `portal`
+  (`CustomerAccessService::summary()`: Status, Label, E-Mail, letzte Anmeldung, App) und
+  `can_manage_customer_access`; `AppClientService::forget()` nach jeder Aktion.
+- **Dateien:** `app/Services/Portal/CustomerAccessService.php`,
+  `app/Http/Controllers/Hub/CustomerAccessController.php`,
+  `app/Models/Portal/CustomerAccessDispatch.php`, `app/Services/SuperchatContactResolver.php`,
+  `resources/views/hub/clients/partials/portal.blade.php`, `public/js/client-portal.js`,
+  `ios/glatttHub/Clients/ClientPortalTab.swift`; Tests `tests/Feature/Portal/CustomerAccessTest.php`,
+  Snapshots in `ClientTabsSnapshotTests`.
+
+!!! nutzerhandbuch "Bedienung: Kundenverwaltung 7 – Kundenportal: Zugang geben"
+    [https://hilfe.hub.glattt.com/kundenverwaltung/7/](https://hilfe.hub.glattt.com/kundenverwaltung/7/)
 
 ### Architektur: eigener Dienst ohne Fremdschlüssel
 
@@ -349,6 +413,9 @@ Prüfen nach der Einrichtung: `https://my.glattt.com/anmelden` zeigt die Portal-
 
 ## Changelog
 
+- **11.10.2026** — Reiter „Kundenportal“ in der Kundenakte (Entwurf 1): einladen, Passwort-Link,
+  sperren mit fünf Wegen für den Link (E-Mail, Superchat, wa.me, kopieren, QR am Tresen), Verlauf
+  `customer_access_dispatches`, Recht `manage_customer_access`, Web und App.
 - **10.10.2026** — Anhänge der Kundin in Anfragen (Web + App), Tastatur-Leiste in der Antwortzeile,
   Zendesk-Importe ohne Doppel.
 - **09.10.2026** — Anfragen an den Kundenservice im Kontakt (Entwurf 1 „Kontakt wird Postfach“):

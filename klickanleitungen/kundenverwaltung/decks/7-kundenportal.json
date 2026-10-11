@@ -1,0 +1,195 @@
+{
+ "out": "../pdf/Kundenverwaltung-7-Kundenportal",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "title": [
+  "Kundenportal:",
+  "Zugang geben"
+ ],
+ "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — Kundin ins Kundenportal einladen, Passwort zurücksetzen, Link per E-Mail, WhatsApp, Kopieren oder QR-Code weitergeben",
+ "eyebrow": "Kundenverwaltung · Kundenportal",
+ "footerArea": "Kundenverwaltung",
+ "stand": "11.10.2026",
+ "version": "1.0",
+ "notes": [
+  "Das **Kundenportal** (my.glattt.com und die App „My glattt“) zeigt der Kundin Termine, Zahlungen, Unterlagen und den Kontakt zum Kundenservice. Den Zugang gibt das Institut oder das Büro im Reiter **„Kundenportal“** der Kundenakte.",
+  "**Nur Vertragskundinnen** bekommen einen Zugang. Die Kundin legt ihr **Passwort selbst** fest — über den Link, den du ihr gibst.",
+  "**Jeder Link gilt nur einmal** — eine Einladung 14 Tage, ein Passwort-Link 24 Stunden. Ein neuer Link macht den alten ungültig."
+ ],
+ "pages": [
+  {
+   "h1": "Der Reiter „Kundenportal“",
+   "sub": "In der Kundenakte ganz unten in der Reiter-Leiste. Oben links der Stand des Kontos, rechts, was die Kundin im Portal kann, darunter der Verlauf.",
+   "card": {
+    "title": "Konto im Kundenportal",
+    "text": "Stand, Knöpfe und Verlauf auf einen Blick"
+   },
+   "left": {
+    "shot": "o1-kundenportal"
+   },
+   "leftCaption": "Reiter **„Kundenportal“** mit der Konto-Karte und dem Verlauf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Stand",
+     "text": "**Kein Konto** (noch nie eingeladen), **Eingeladen** (Link offen, Passwort fehlt), **Aktiv** (Kundin kann sich anmelden) oder **Gesperrt**."
+    },
+    {
+     "n": 2,
+     "title": "E-Mail und Handy",
+     "text": "Die **E-Mail-Adresse** ist der Benutzername der Kundin — sie kommt aus Phorest. Steht **WhatsApp** hinter der Handynummer, lässt sich der Link auch so weitergeben."
+    },
+    {
+     "n": 3,
+     "title": "Knöpfe nach Stand",
+     "text": "**Zum Portal einladen** oder **Einladung erneut senden**, bei aktivem Konto **Passwort zurücksetzen**, dazu **Sperren**. Was gerade nicht geht, wird nicht angeboten."
+    },
+    {
+     "n": 4,
+     "title": "Verlauf",
+     "text": "Wer wann welchen Link wie weitergegeben hat — und ob die Kundin ihn **genutzt** hat, ob er noch **offen** oder schon **abgelaufen** ist."
+    }
+   ],
+   "hint": {
+    "text": "**Der Reiter fehlt?** Dann fehlt dir das Recht „Kundenportal: Kundin einladen“. Büro und Leitung haben es; sonst beim Büro melden."
+   }
+  },
+  {
+   "h1": "Zum Portal einladen",
+   "sub": "Die Einladung legt das Konto an. Du wählst nur, auf welchem Weg der Link zur Kundin kommt.",
+   "card": {
+    "title": "Zum Portal einladen",
+    "text": "Weg wählen, senden — fertig"
+   },
+   "left": {
+    "shot": "o2-einladen"
+   },
+   "leftCaption": "Fenster **„Zum Portal einladen“** mit der Auswahl des Wegs.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Weg wählen",
+     "text": "**E-Mail** (an die Adresse aus Phorest), **WhatsApp über Superchat** (der Hub sendet), **WhatsApp auf dem Handy** (du schickst aus deinem WhatsApp), **Link kopieren** oder **QR-Code am Tresen zeigen**."
+    },
+    {
+     "n": 2,
+     "title": "Hinweis lesen",
+     "text": "Unter der Auswahl steht, was genau passiert — bei „Link kopieren“ und „QR-Code“ wird **nichts versendet**."
+    },
+    {
+     "n": 3,
+     "title": "Senden",
+     "text": "Bei E-Mail und Superchat geht die Nachricht sofort raus. Bei den anderen Wegen zeigt das Fenster danach den Link."
+    }
+   ],
+   "hint": {
+    "text": "**Keine E-Mail-Adresse in Phorest?** Dann meldet der Hub das und lädt nicht ein. Adresse zuerst unter **„Kundeninfos“** eintragen („Kundenverwaltung 2“) — der Benutzername der Kundin ist diese Adresse."
+   }
+  },
+  {
+   "h1": "Link weitergeben",
+   "sub": "Nach dem Senden zeigt das Fenster den Link, seine Gültigkeit, den QR-Code und den Nachrichtentext — alles zum Kopieren.",
+   "card": {
+    "title": "Link, QR und Text",
+    "text": "Was die Kundin bekommt"
+   },
+   "left": {
+    "shot": "o3-link-ergebnis"
+   },
+   "leftCaption": "Ergebnis mit **Link**, **WhatsApp öffnen**, **QR-Code** und **Nachrichtentext**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Link kopieren",
+     "text": "Das Symbol neben dem Link legt ihn in die Zwischenablage — zum Einfügen in eine eigene Nachricht."
+    },
+    {
+     "n": 2,
+     "title": "WhatsApp öffnen",
+     "text": "Bei „WhatsApp auf dem Handy“ öffnet der Knopf WhatsApp mit der Kundin und dem fertigen Text — **absenden musst du dort selbst**."
+    },
+    {
+     "n": 3,
+     "title": "QR-Code groß zeigen",
+     "text": "Zeigt den Code bildschirmfüllend. Die Kundin scannt ihn mit ihrem Handy über den Tresen und landet direkt auf der Seite zum Passwort-Festlegen."
+    },
+    {
+     "n": 4,
+     "title": "Nachrichtentext",
+     "text": "Der fertige Text mit Link und Gültigkeit — zum Kopieren, wenn du ihn anders verschicken willst."
+    }
+   ],
+   "hint": {
+    "text": "**„Zustellung fehlgeschlagen“?** Der Link gilt trotzdem. Kopiere ihn oder zeige den QR-Code — und melde den Fehler dem Büro (steht auch in den Mitteilungen)."
+   }
+  },
+  {
+   "h1": "Passwort zurücksetzen",
+   "sub": "Hat die Kundin ihr Passwort vergessen, schickst du ihr einen Link zum neuen Passwort — ohne Geburtsdatum, weil du sie kennst.",
+   "card": {
+    "title": "Passwort zurücksetzen",
+    "text": "Nur bei aktivem Konto"
+   },
+   "left": {
+    "shot": "o4-passwort"
+   },
+   "leftCaption": "Konto **Aktiv** — der Knopf **„Passwort zurücksetzen“** und die Wege sind dieselben wie bei der Einladung.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Knopf",
+     "text": "**Passwort zurücksetzen** gibt es nur, wenn die Kundin ihr Passwort schon einmal gesetzt hat. Vorher heißt die Lösung **Einladung erneut senden**."
+    },
+    {
+     "n": 2,
+     "title": "Weg wählen",
+     "text": "Wie bei der Einladung: E-Mail, WhatsApp, Kopieren oder QR-Code."
+    },
+    {
+     "n": 3,
+     "title": "24 Stunden",
+     "text": "Der Link gilt **24 Stunden** und nur einmal. Das alte Passwort bleibt gültig, bis die Kundin ein neues festlegt."
+    }
+   ],
+   "hint": {
+    "text": "**Die Kundin kann es auch selbst:** Im Portal unter „Passwort vergessen“ braucht sie E-Mail-Adresse **und Geburtsdatum**. Fehlt das Geburtsdatum in Phorest, klappt das nicht — dann hilft dein Link."
+   }
+  },
+  {
+   "h1": "Sperren und entsperren",
+   "sub": "Bei Missbrauch oder auf Wunsch der Kundin: Sperren beendet sofort alle Anmeldungen im Browser und in der App.",
+   "card": {
+    "title": "Konto sperren",
+    "text": "Mit Rückfrage, jederzeit umkehrbar"
+   },
+   "left": {
+    "shot": "o5-sperren"
+   },
+   "leftCaption": "Rückfrage vor dem **Sperren**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Sperren",
+     "text": "Die Kundin kann sich danach weder im Browser noch in „My glattt“ anmelden; laufende Sitzungen werden beendet."
+    },
+    {
+     "n": 2,
+     "title": "Entsperren",
+     "text": "Derselbe Knopf heißt dann **Entsperren** — das Konto ist wieder **Aktiv** oder, wenn noch kein Passwort gesetzt war, **Eingeladen**."
+    },
+    {
+     "n": 3,
+     "title": "Im Verlauf",
+     "text": "Sperren und Entsperren stehen mit Datum und Name im Verlauf."
+    }
+   ],
+   "hint": {
+    "text": "**Konto löschen** (etwa auf Wunsch der Kundin nach DSGVO) macht das Büro auf der Seite **Betrieb → Kundenportal**, nicht hier."
+   }
+  }
+ ],
+ "audience": "institut",
+ "series": "Kundenverwaltung",
+ "nr": 7,
+ "of": 7
+}

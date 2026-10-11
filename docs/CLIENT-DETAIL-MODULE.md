@@ -487,6 +487,32 @@ Die Treatment-Settings-Styles sind komplett inline im Partial (`<style>`-Block),
 
 ---
 
+### Kundenportal-Tab (seit 11.10.2026)
+
+Zehnter Reiter (`#kundenportal`, nur mit Recht `manage_customer_access`, Entscheidung Jan
+11.10.2026, Entwurf 1 „Reiter Kundenportal“) plus siebte Karte „Kundenportal“ in der Übersicht.
+Der Reiter zeigt den Stand des Kontos auf my.glattt.com (kein Konto, eingeladen, aktiv, gesperrt;
+E-Mail, Handynummer aus Phorest mit WhatsApp-Hinweis, letzte Anmeldung, App installiert,
+Werbe-Code), je nach Zustand die Knöpfe „Zum Portal einladen“ / „Einladung erneut senden“,
+„Passwort zurücksetzen“ (nur aktiv) und „Sperren“, eine Karte „Was die Kundin im Portal kann“ und
+den Verlauf. Das Modal wählt den Weg (E-Mail, WhatsApp über Superchat, WhatsApp auf dem Handy,
+Link kopieren, QR-Code am Tresen) und zeigt danach Link, Gültigkeit, „WhatsApp öffnen“, QR-Code
+(bildschirmfüllend in der Lightbox) und den Nachrichtentext zum Kopieren.
+
+- Partial `partials/portal.blade.php`, Logik `public/js/client-portal.js` (`clientPortalCard()`,
+  Kunden-ID aus der URL), Endpunkte `GET/POST /hub/clients/{clientId}/portal…` — Fachlogik und
+  Datenmodell in [KUNDENPORTAL.md](KUNDENPORTAL.md), Abschnitt „Reiter Kundenportal in der
+  Kundenakte“.
+- Die Übersichtskarte lädt denselben `GET` (`loadOverviewPortal()` in `detail.blade.php`); nach
+  einer Aktion schickt der Reiter `portal-access-changed` am `window`, die Karte zieht nach.
+- Reiter und Karte stehen nur im Markup, wenn `@can('manage_customer_access')` gilt; die
+  Sichtbarkeit im `tabs`-Array kommt serverseitig (`@json(auth()->user()->can(...))`).
+- Einladen geht auch vor der Freigabe der Rechtstexte — der Reiter warnt dann sichtbar
+  (`legal_texts_missing`).
+
+!!! nutzerhandbuch "Bedienung: Kundenverwaltung 7 – Kundenportal: Zugang geben"
+    [https://hilfe.hub.glattt.com/kundenverwaltung/7/](https://hilfe.hub.glattt.com/kundenverwaltung/7/)
+
 ### Native App (seit 28.09.2026)
 
 Alle Registerkarten dieser Seite gibt es in der iOS-App nativ (Wiki `IOS-APP.md`, Abschnitt „Native
@@ -521,6 +547,12 @@ Rechte gelten weiterhin nur serverseitig; der Anker `#slug` öffnet in der App d
 ---
 
 ## Chronik der Änderungen (neueste zuerst)
+
+### Update 11.10.2026 — Reiter „Kundenportal“
+
+Zehnter Reiter und Übersichtskarte für den Zugang zum Kundenportal (einladen, Passwort-Link,
+sperren, fünf Wege für den Link), Web und native App; Recht `manage_customer_access`. Details oben
+unter „Kundenportal-Tab“ und in `KUNDENPORTAL.md`.
 
 ### Update 28.09.2026 — Native App
 

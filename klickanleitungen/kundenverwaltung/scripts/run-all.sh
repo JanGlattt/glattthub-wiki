@@ -25,7 +25,8 @@ if [ ! -f mask.json ]; then
 fi
 
 echo "### Lauf gegen $KLICK_BASE · Kundin $KLICK_CLIENT"
-for f in flow1 flow2 flow3 flow4 flow5 flow6; do
+# flow7 (Kundenportal) SCHREIBT mit KLICK_WRITE=1 (Konto + Einladung) — nur lokal, siehe Kopf von flow7.cjs
+for f in flow1 flow2 flow3 flow4 flow5 flow6 flow7; do
   echo "### $f"
   node scripts/$f.cjs 2>&1 | grep -v "^CONSOLE\|^    at " | tail -14 || { echo "!!! $f fehlgeschlagen"; exit 1; }
 done

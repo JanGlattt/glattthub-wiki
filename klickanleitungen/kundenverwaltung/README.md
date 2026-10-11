@@ -11,12 +11,15 @@ Standard siehe Wiki `docs/KLICKANLEITUNGEN.md`. Aufbau wie `klickanleitungen/ter
 | **L — Vertrag, Zahlung & offene Forderungen** | Vertragskarte, Forderungsfälle, Schnellprüfung, Zahlungsstand im Vertrag | Vertrag/Zahlungen, Forderungsmanagement |
 | **M — Nachrichten & Kundenservice** | automatische Nachrichten, WhatsApp lesen/senden, 24-Stunden-Fenster, Zendesk-Tickets | Nachrichten, Kundenservice |
 | **N — Unterlagen & Behandlungsverlauf** | eingereichte Formulare, PDF, Einstellungszettel, Behandlungsfotos | Dokumente, Behandlungseinstellungen |
+| **O — Kundenportal: Zugang geben** (seit 11.10.2026) | Stand des Kontos, einladen, Passwort-Link, Link per E-Mail/WhatsApp/Kopieren/QR, sperren, Verlauf | Kundenportal |
 
 - `decks/*.json` — Inhalt je Dokument (Cover, Seiten, Schritte, Hinweise, Screenshots mit Markierungen)
 - `meta.json` — Markierungen (Prozentkoordinaten) je Screenshot, entsteht beim Aufnahmelauf
 - `shots/*.png` — Screenshots (werden beim Lauf erzeugt)
 - `scripts/` — Playwright-Aufnahmeskripte: `lib.cjs` (Anmeldung, Maskierung, Screenshot+Marks),
-  `flow1…flow6.cjs` (je ein Dokument: I, J, K, L, M, N), `run-all.sh`
+  `flow1…flow7.cjs` (je ein Dokument: I, J, K, L, M, N, O), `run-all.sh`. **`flow7.cjs` schreibt**
+  (legt für die Ergebnis-Seiten lokal Konto und Einladung an) und läuft deshalb nur mit
+  `KLICK_WRITE=1` gegen den lokalen Hub — ohne den Schalter entstehen nur die ersten zwei Bilder.
 - `.env.example` / `mask.example.json` — Vorlagen; `.env` und `mask.json` sind gitignored
 
 ## Stand
