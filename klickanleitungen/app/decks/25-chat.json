@@ -7,7 +7,7 @@
   "audience": "institute",
   "footerArea": "App",
   "stand": "11.10.2026",
-  "version": "1.0",
+  "version": "1.1",
   "nr": 25,
   "title": [
     "Chat in der App"
@@ -39,7 +39,7 @@
         {
           "n": 2,
           "title": "Wischen",
-          "text": "Eine Zeile nach links wischen: **Stumm** oder **Archiv**. Länger drücken: Anheften, Stummschalten, Archivieren."
+          "text": "Eine Zeile nach links wischen: **Stumm** oder **Archiv**. Nach rechts wischen: **Gelesen** bzw. **Ungelesen** — so merkst du dir einen Chat zum späteren Lesen vor. Länger drücken: Anheften, Stummschalten, Archivieren, Gelesen/Ungelesen."
         },
         {
           "n": 3,

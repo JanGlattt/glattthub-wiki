@@ -14,7 +14,7 @@
   "eyebrow": "Chat · Grundlagen",
   "footerArea": "Chat",
   "stand": "11.10.2026",
-  "version": "1.0",
+  "version": "1.1",
   "notes": [
     "**Chat** findest du in der Seitenleiste direkt unter Kunden — und in der App als eigener Tab. Er ersetzt WhatsApp und Signal für alles Dienstliche: keine privaten Nummern, jede Kollegin ist über ihr Hub-Konto erreichbar.",
     "**Alle glattt** und **Team <Institut>** pflegt der Hub selbst: Neue Kolleginnen sind sofort drin, ausgeschiedene zum Monatswechsel raus. Eigene Gruppen legst du jederzeit an.",
@@ -46,7 +46,7 @@
         {
           "n": 3,
           "title": "Zeile",
-          "text": "Name, letzte Nachricht mit Haken, Uhrzeit und Zähler. Das **Menü an der Zeile** (⋯ beim Überfahren) heftet an, schaltet stumm oder archiviert."
+          "text": "Name, letzte Nachricht mit Haken, Uhrzeit und Zähler. Das **Menü an der Zeile** (⋯ beim Überfahren) markiert als gelesen oder ungelesen, heftet an, schaltet stumm oder archiviert."
         },
         {
           "n": 4,

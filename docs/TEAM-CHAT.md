@@ -134,7 +134,7 @@ Direkt-Antwort in der App, Ziel `/hub/chat/raum/{id}`. Der Text respektiert
 | `GET /raeume/{id}`, `PATCH /raeume/{id}` | Raum mit Mitgliedern und Verlauf; Name/Beschreibung, `muted_until` (`1h`, `8h`, `1w`, `forever`, `off`), `is_pinned`, `is_archived` |
 | `GET /raeume/{id}/nachrichten?before=\|since=` | Verlauf blättern / Nachladen ab Stand |
 | `POST /raeume/{id}/nachrichten` | Senden (multipart: `body`, `client_uuid`, `type`, `reply_to_id`, `mention_ids[]`, `files[]`, `duration_ms`, `waveform`, `poll[...]`, `meta[object]`, `meta[media]`, `is_urgent`, `requires_ack`) |
-| `POST /raeume/{id}/gelesen`, `POST /zugestellt`, `POST /raeume/{id}/tippt` | Lesestand (+`viewing`), Zustellstand je Raum, „schreibt gerade“ |
+| `POST /raeume/{id}/gelesen`, `POST /raeume/{id}/ungelesen`, `POST /zugestellt`, `POST /raeume/{id}/tippt` | Lesestand (+`viewing`; nie zurück), „als ungelesen markieren“ (Lesestand genau eine Nachricht zurück — die einzige Stelle, an der er rückwärts läuft), Zustellstand je Raum, „schreibt gerade“ |
 | `POST/DELETE /raeume/{id}/mitglieder[/{user}]`, `PATCH …/{user}` | Mitglieder, Rolle |
 | `PATCH/DELETE /nachrichten/{id}`, `POST …/reaktion`, `…/anheften`, `…/weiterleiten`, `…/bestaetigen` | Bearbeiten, Löschen, Reaktion, Anheften, Weiterleiten, Lesebestätigung |
 | `POST /umfragen/{id}/abstimmen`, `…/beenden` | Umfragen |
