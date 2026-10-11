@@ -34,6 +34,11 @@ abgeschickten Formular bietet dieselbe direkte Neuanmeldung.
   Session), ohne Deployment wirksam binnen einer Minute. Nicht zu verwechseln mit
   dem **Auto-Logout je Benutzer** (Countdown in der Sidebar), der weiterhin im
   Benutzer-Formular konfiguriert wird; vor dem Auto-Logout warnt ein Toast.
+- **Im Termin wird nie abgemeldet** (Jan, 11.10.2026): In der Terminansicht, im
+  Einstellungszettel und während der Laser-Wartung pausiert der Auto-Logout — die
+  Sidebar zeigt „Auto-Logout pausiert · Laser-Wartung". Danach beginnt die volle Zeit
+  von vorn. Das gilt im Browser wie in der iOS-App; dort läuft der Zähler auch auf
+  nativen Seiten und über einen Hintergrund-Aufenthalt hinweg weiter.
 - **Zu viele Fehlversuche** (mehr als fünf pro Minute) sperren die PIN-Anmeldung
   kurz — das Modal meldet „Zu viele Versuche".
 
@@ -134,6 +139,35 @@ warnt zusätzlich ein Toast.
 - Filament-Seite `SessionSettings` (Gruppe Einstellungen), Permission
   **`manage_session_settings`** (Migration verteilt sie an alle Rollen mit
   `manage_email_settings`; Katalog-Eintrag in `PermissionCatalog`).
+
+### Auto-Logout je Benutzer (Inaktivität)
+
+`public/js/auto-logout.js` (Hub-Layout, Zeit aus `<meta name="auto-logout-timeout">` =
+`users.auto_logout_timeout`, Standard 120 s, 0 = aus) ist **rein clientseitig**: Zeitgeber
+im Browser, nach Ablauf `POST /logout` über ein Formular (Overlay und Push-Abo-Deaktivierung
+über `window.glatttPrepareLogout`, siehe `logout.js`). Serverseitig gibt es keine
+Inaktivitätsprüfung — die Grenze dahinter ist die Session-Dauer oben.
+
+**Regeln seit 11.10.2026 (Jan):**
+
+- **Hintergrund zählt mit.** Ein Browser-Tab im Hintergrund (Safari friert JS ein) holt beim
+  Zurückkehren nach: Zeit abgelaufen → sofort abmelden, sonst mit der Restzeit weiter
+  (`visibilitychange`). Nichts wird beim Zurückkehren zurückgesetzt.
+- **Pausen:** `window.autoLogoutManager.hold(key, grund)` / `release(key)` oder ein Element
+  mit `data-auto-logout-hold="Grund"` (wird bei `DOMContentLoaded` und `livewire:navigated`
+  ausgewertet). Während einer Pause läuft kein Zeitgeber, die Sidebar zeigt „Auto-Logout
+  pausiert · Grund" (Theme-Klasse `.is-held` am Countdown-Balken, Zweitfarbe). Nach der
+  letzten Pause beginnt die volle Zeit von vorn. Pausiert sind: **Terminansicht und
+  Einstellungszettel** (`layouts.fullscreen` lädt `auto-logout.js` gar nicht — die Seite hat
+  keinen Zähler) und die **Laser-Wartung** (`maintenance-wizard.blade.php`: `x-effect` auf
+  `$wire.showModal` → `hold('laser-maintenance', 'Laser-Wartung')`; vorher rief der Countdown
+  jede Sekunde `resetTimer()`).
+- **iOS-App ab Build 90:** `auto-logout.js` führt keinen eigenen Zeitgeber mehr, sondern
+  übergibt an die App (`glatttNative.autoLogoutConfigure({timeout})`, `autoLogoutActivity()`,
+  `autoLogoutHold({key, reason, held})`), die den Zähler nativ führt — auch auf nativen
+  Seiten und im Hintergrund, siehe [IOS-APP.md](IOS-APP.md), Abschnitt „Auto-Abmeldung in
+  der App". Ältere Builds (ohne diese Bridge-Methoden) zählen weiter selbst, melden aber nie
+  aus einem unsichtbaren WebView ab und holen beim Zurückkehren nach.
 
 ### Service-Worker-Härtung (gleicher Commit)
 

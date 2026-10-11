@@ -213,9 +213,12 @@ erfolgt parallel.
   Prüfung in `markCountdownCompleted()` (Toleranz 2 s). Wird das Fenster zwischendurch
   geschlossen, läuft die Zeit weiter und der Countdown steht beim Wiederöffnen dort, wo er
   tatsächlich ist.
-- **Der laufende Countdown hält die automatische Abmeldung wach** (Stand 18.09.2026): Während
-  der fünf Minuten wird am Bildschirm nicht gearbeitet — ohne diesen Schutz würde die
-  Inaktivitäts-Abmeldung des Hubs mitten in die Wartung greifen und den Assistenten schließen.
+- **Der offene Assistent pausiert die automatische Abmeldung** (seit 11.10.2026, vorher hielt
+  der laufende Countdown sie jede Sekunde wach): Während der fünf Minuten wird am Bildschirm
+  nicht gearbeitet — ohne diesen Schutz würde die Inaktivitäts-Abmeldung des Hubs mitten in die
+  Wartung greifen und den Assistenten schließen. Umsetzung: `x-effect` auf `$wire.showModal` →
+  `window.autoLogoutManager.hold('laser-maintenance', 'Laser-Wartung')`, die Sidebar zeigt
+  „Auto-Logout pausiert · Laser-Wartung"; in der App dasselbe nativ (`LaserMaintenanceView`).
 
 **Schritt 2 – Zustandsprüfung je Anbauteil.** Vier Substeps für die vier Anbauteil-Typen
 (Handstück, Laserkopf groß, Laserkopf klein, Skintel). Je Substep: Zustand (4 Stufen),
@@ -325,7 +328,7 @@ Alle Tabellen mit Prefix `laser_` (bzw. `lasers`). Migrationen: `database/migrat
 
 1. Top-Unit-SN ist die führende Geräte-ID.
 2. Wöchentliche Wartungspflicht je **AKTIV**-Laser; „überfällig", wenn in laufender KW kein Protokoll (`Laser::isMaintenanceOverdue()`).
-   Flow-Maintenance-Countdown: 300 s (`MaintenanceWizard::COUNTDOWN_SECONDS`), Start in `laser_maintenance_drafts.countdown_started_at`, Abschluss nur serverseitig (`markCountdownCompleted()` prüft die Zeit, Toleranz 2 s); der laufende Countdown hält die automatische Abmeldung wach (Stand 18.09.2026).
+   Flow-Maintenance-Countdown: 300 s (`MaintenanceWizard::COUNTDOWN_SECONDS`), Start in `laser_maintenance_drafts.countdown_started_at`, Abschluss nur serverseitig (`markCountdownCompleted()` prüft die Zeit, Toleranz 2 s); der offene Assistent pausiert die automatische Abmeldung (seit 11.10.2026, siehe SESSION-ABLAUF.md).
 3. STK jährlich; Reminder 60 + 30 Tage vorher.
 4. **DEFEKT** (Komponente/Anbauteil) → automatischer Reparatur-Vorgang (`AUTO_DEFEKT`, idempotent).
 5. Versand → Laser `IN_REPARATUR` + `AssetHistory(REPARATUR_VERSAND)`.

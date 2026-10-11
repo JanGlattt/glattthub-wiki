@@ -441,6 +441,7 @@ Spiegelt `window.electronPush`; `push-notifications.js` bekommt eine generische 
 | `getInfo()` → `{ platform: 'ios', appName: 'glatttHub iOS App', appVersion, deviceName, nativeDeviceId, sharedDevice, kioskMode, canScan }`, `reportContext(ctx)` | `glattt:biometric-unlocked` |
 | `ready({ path, loggedIn })` (jede Seitenlast; `loggedIn` = Hub-Layout erkannt), `branchChanged({ branchId })` (Standortfilter, von bridge.js selbst gemeldet), `openMore({ focusSearch })` (Lupe im Scroll-Header), `openPage({ path })` (native Mehr-Seite, von bridge.js bei Links auf `/hub/bonus`), `openLaserMaintenance({ laserId })` (Web-Knopf „Wartung durchführen") | `glattt:laser-maintenance-saved` (`laserId`) → Seite lädt neu |
 | `sessionExpired({ path })` (von `session-guard.js`, wenn die Hub-Sitzung im WebView abgelaufen ist): die App zeigt statt des Web-Modals „Sitzung abgelaufen" die **native Anmeldeseite** (Face ID läuft von selbst an) und lädt danach dieselbe Seite neu (`pendingURL`). Nur aus dem aktiven WebView; im Kiosk-Modus fehlt die Methode, dort bleibt das Modal (Befund Jan, 23.09.2026, Nr. 43; abgesichert durch `SessionGuardNativeHandoverTest`) | — |
+| `autoLogoutConfigure({ timeout })`, `autoLogoutActivity()`, `autoLogoutHold({ key, reason, held })` (seit Build 90, von `auto-logout.js`): die App führt den Zähler der Auto-Abmeldung nativ — Zeit je Nutzerin, Bedienung im WebView, Pausen (Terminansicht, Einstellungszettel, Laser-Wartung). Fehlen die Methoden (älterer Build), zählt `auto-logout.js` selbst. Im Kiosk-Modus nicht vorhanden. Siehe „Auto-Abmeldung in der App" | — |
 | — | `glattt:set-branch` (`branchId`), `glattt:toggle-theme`, `glattt:start-tour`, `glattt:open-anleitung`, `glattt-bert-toggle` — Listener am Wurzelelement von `bottom-nav.blade.php` |
 
 `push-notifications.js` lädt `getInfo()` und `getPushStatus()` in `init()` (`loadNativeInfo()`); `device_type`
@@ -986,7 +987,12 @@ Vertragskarten (Rate, Laufzeit, Mandat) mit Sprung zur Vertragsseite und „Wide
 nativen Ablauf der Widerrufe. **Forderungen** listet die Fälle mit Sprung in die Fallakte,
 **Kundenservice** die Zendesk-Tickets mit Verlauf, **Nachrichten** die WhatsApp-Unterhaltung mit
 Composer (Text im 24-h-Fenster, Vorlage mit Platzhaltern, Foto, neue Unterhaltung — jeder Versand
-fragt nach) und darunter die Zeitleiste automatischer Nachrichten.
+fragt nach) und darunter die Zeitleiste automatischer Nachrichten. **Kundenportal** (zehnter Bereich
+seit 11.10.2026, nur mit Recht) zeigt den Stand des Kontos auf my.glattt.com und bietet „Zum Portal
+einladen“, „Passwort zurücksetzen“ und „Sperren“; die Kanalwahl (E-Mail, WhatsApp über Superchat,
+WhatsApp auf dem Handy, Link kopieren, QR-Code) ist auf dem iPhone ein Blatt, auf dem iPad ein
+Popover am Knopf, der QR-Code lässt sich bildschirmfüllend für den Tresen zeigen. Die Übersicht
+bekommt dazu die Karte „Kundenportal“.
 
 !!! nutzerhandbuch "Bedienung: App 4 – Kunden finden und die Kundenakte"
     [https://hilfe.hub.glattt.com/app/4/](https://hilfe.hub.glattt.com/app/4/)
@@ -2773,6 +2779,39 @@ wandert in den Mehr-Bereich (Gruppe „Schnellzugriff"). Jan folgte der Empfehlu
   — liefert die Bilder der Klickanleitung), `ChatUITests` (Tab, „Alle glattt", senden, Haken,
   Infos), PHP `tests/Feature/Chat/`.
 
+### Auto-Abmeldung in der App (seit 11.10.2026, Build 90)
+
+**Absicht (Jan, 11.10.2026):** Die Auto-Abmeldung je Konto (`users.auto_logout_timeout`, meist
+120 s) gilt in der App **wie im Browser** — auch wer die App während der zwei Minuten verlässt,
+ist danach abgemeldet. **Ausnahme: im Termin mit der Kundin wird nie abgemeldet** (Terminansicht,
+Einstellungszettel, Laser-Wartung). Die iPad-Seitenleiste zeigt den Countdown wie die Web-Sidebar,
+am iPhone steht er im Mehr-Sheet unter dem Profil.
+
+**Warum neu:** Bis Build 89 zählte `auto-logout.js` in jedem WebView für sich. Befund 299 (Sitzung
+weg mitten im Chat nach 7 Minuten Hintergrund) wurde mit „im Hintergrund pausieren, beim Zurückkehren
+alles zurücksetzen" behoben — damit bekam **jede** Rückkehr volle zwei Minuten, und ein mit zehn
+Sekunden Restzeit weggelegtes Institut-iPad war eine Stunde später noch als die Vorgängerin
+angemeldet. Die Face-ID-Sperre greift nur auf persönlichen Geräten (`BiometricLock`, Opt-in), auf
+dem geteilten iPad sperrte nichts.
+
+**Bauteile:**
+
+| Teil | Datei | Aufgabe |
+|---|---|---|
+| `AutoLogoutMonitor` | `ios/glatttHub/Lock/AutoLogoutMonitor.swift` | Ein Zähler je Sitzung: `configure(timeout:)` (Hub-Zeit, erneut dieselbe Zeit setzt nichts zurück), `noteActivity()`, `hold/release(key:)`, `didEnterBackground()` (kein Zeitgeber, die Uhr läuft weiter), `didBecomeActive()` → `true` wenn abgelaufen, `tick()` → `onExpired` genau einmal. Pure Logik testbar (`AutoLogoutMonitorTests`) |
+| Bridge | `NativeBridge.swift` (`autoLogoutConfigure`/`Activity`/`Hold`), `bridge.js` | `auto-logout.js` meldet Zeit, Bedienung (gedrosselt 2 s) und Pausen; Pausen-Schlüssel werden je Herkunfts-WebView geführt und beim Verwerfen des WebViews gelöst |
+| Container | `AppContainer.swift` | `didBecomeActive()`: **zuerst** `autoLogout.didBecomeActive()` — abgelaufen → `logout(automatic: true)` und Abbruch, bevor irgendetwas lädt. `didEnterBackground()`, `loadNavigation()` (Zeit aus `user.auto_logout_timeout`), `sessionExpired`/`logout` → `reset()`. `logout(automatic:)`: nativer Aufräumweg (Push-Abo, Offline-Stand, Gerätetoken, Chat) — nicht mehr der Web-POST aus einem WebView; Face ID darf nach einer Auto-Abmeldung von selbst anlaufen |
+| Bedienung | `ActivityObserver` → `WebViewStore.noteNativeActivity()` → `onNativeActivity` | Jede Berührung im Fenster zählt (Tastatureingaben über eine externe iPad-Tastatur nicht — bekannte Lücke) |
+| Pausen nativ | `.holdsAutoLogout("Termin")` (`AutoLogoutViews.swift`) an `AppointmentDetailView`, `TreatmentSettingsPane` („Einstellungszettel"), `LaserMaintenanceView` („Laser-Wartung") | `onAppear`/`onDisappear` mit eigenem Schlüssel je Instanz; ein Blatt über der Terminansicht löst deren Pause nicht |
+| Anzeige | `AutoLogoutCountdownView` in `PadShell` (Fußzeile) und `MoreSheet` (Profilzeile) | „Auto-Logout in 1:55" mit Balken, letzte 30 s rot, pausiert = voller Balken in der Zweitfarbe mit Grund; nichts bei Zeit 0 |
+| Hub | `MobileNavigation` (`user.auto_logout_timeout`), `auto-logout.js`, `theme_glattt.css` (`.is-held`) | Zeit auch ohne Bridge-Seite bekannt (nativer Kaltstart); Web-Verhalten siehe [SESSION-ABLAUF.md](SESSION-ABLAUF.md) |
+
+**Fallstricke:** Die Zeit darf nie aus Ereignisreihenfolge kommen (`lastActivity` + Uhr, keine
+`asyncAfter`-Heuristik). `configure` mit derselben Zeit ist ein No-op — jede Seite meldet sie.
+Aus dem Hintergrund wird nie abgemeldet (kein Netz, kein UI), nur beim Zurückkehren. Der Nachweis
+für „abgelaufen → abgemeldet" ist `AutoLogoutMonitorTests` plus ein Lauf am Gerät: App mit
+10 s Restzeit verlassen, nach einer Minute öffnen → Anmeldeseite.
+
 ### Verteilung
 
 Apple Business Manager **Custom App** (App Store Connect → „Privat — nur für bestimmte Organisationen"
@@ -2867,6 +2906,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 11.10.2026 | 1.4.x (90) | **Auto-Abmeldung nativ** (`AutoLogoutMonitor`): ein Zähler je Sitzung statt einem je WebView, zählt im Hintergrund weiter und meldet beim Zurückkehren ab; Pause in Terminansicht, Einstellungszettel und Laser-Wartung; Countdown in iPad-Seitenleiste und Mehr-Sheet. Hub: `auto-logout.js` mit Pausen-API und Übergabe an die App, personenbezogene Anlässe (nur Betroffene/einzelne Nutzerinnen) nie an geteilte Geräte |
 | 08.10.2026 | 1.4.1 | **glatttBert nativ** (TestFlight 252, Entwurf 1 „Blatt von überall“): Chat-Blatt aus Schnellzugriff, Mehr, Siri und ⌘K mit Vorschlägen zur Seite, Tabellen, Quellen, Karten, Feedback, Verlauf (Menü/iPad-Spalte); Hub: `BertConversations` + `/api/app/bert/*`. Dazu Info-i zu den Vergleichszahlen (250/251, `comparison.hint`), Mitteilungen einzeilig mit Symbol (253) |
 | 04.10.2026 | 1.4.x | **Apple Watch: Ring-Sammlung** — sechs runde Ziffernblatt-Widgets (KPZ im Monat, Prognose, Beratungen heute mit offen/No-Show, Abschlüsse, Ø KPZ je Beratung, nächste Beratung); Uhr-Seiten „Heute“ und „Monat“ erweitert; „Mehr“ bleibt in der Tab-Leiste markiert, solange das Mehr-Blatt offen ist (TestFlight 243/244) |
 | 03.10.2026 | 1.4.0 | **Apple-Watch-App** mit Ziffernblatt-Widgets (Kombination der Entwürfe KPZ-Ring, Standorte, Mein Tag): KPZ gegen das Standortziel der Bonus-Seite, Standortvergleich, Heute, Bonus-Ring, nächste Beratung und Kassen-Erinnerung im Smart Stack; Uhr als eigenes Gerät (`watchos`), Token per WatchConnectivity; Hub: `GET /api/app/widgets/watch` |

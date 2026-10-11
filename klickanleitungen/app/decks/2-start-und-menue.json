@@ -6,8 +6,8 @@
   "of": 25,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "08.10.2026",
-  "version": "1.5",
+  "stand": "11.10.2026",
+  "version": "1.6",
   "nr": 2,
   "title": [
     "Startseite, Menü,",
@@ -126,7 +126,7 @@
         {
           "n": 3,
           "title": "Unten: du",
-          "text": "Profilbild, Name, dann **Profil, Admin** (nur mit Recht) und **Abmelden**. Abmelden fragt in einem kleinen Fenster nach — bestätigen."
+          "text": "Profilbild, Name, dann **Profil, Admin** (nur mit Recht) und **Abmelden**. Abmelden fragt in einem kleinen Fenster nach — bestätigen. Darunter läuft **„Auto-Logout in 1:55“** mit Balken wie im Browser — jede Berührung setzt die Zeit zurück. Im Termin (Terminansicht, Einstellungszettel, Laser-Wartung) steht dort **„Auto-Logout pausiert“**: Mit der Kundin im Termin meldet die App nie ab."
         },
         {
           "n": 4,
@@ -297,7 +297,7 @@
         {
           "n": 3,
           "title": "Abmelden",
-          "text": "Unten links **„Abmelden“**, dann im Fenster bestätigen. Auf dem geteilten Institut-iPad **immer** abmelden, wenn du gehst."
+          "text": "Unten links **„Abmelden“**, dann im Fenster bestätigen. Auf dem geteilten Institut-iPad **immer** abmelden, wenn du gehst. Wer die App ohne Abmelden weglegt, ist nach Ablauf der Zeit beim nächsten Öffnen trotzdem abgemeldet — am iPhone zeigt das Mehr-Blatt die Restzeit unter dem Profil."
         }
       ],
       "notes": [
