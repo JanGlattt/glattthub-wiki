@@ -156,7 +156,9 @@ gezeichnetem Kürzel in Institutsfarbe, Anzeigename = Push-Titel („Kim @ Team 
 Zeile — bewusst ohne `speakableGroupName`, sonst zeigt iOS Absenderin und Gruppe zweizeilig), Gespräch
 `chat-room-{id}`; iOS zeigt dann das Bild statt des App-Symbols und „Antworten“ mit Textfeld direkt in
 der Mitteilung (`UNTextInputNotificationAction`, Antwort geht an denselben Nachrichten-Endpunkt). Im
-Vordergrund zeigt die App dafür das Systembanner statt der eigenen Karte. Bild nur als
+Vordergrund zeigt die App dafür das Systembanner statt der eigenen Karte. Ein versendetes Foto erscheint als
+Vorschau in der Mitteilung: `ChatPushPreview` legt eine verkleinerte, kurzlebige Kopie auf dem öffentlichen
+Bild-Disk ab (`image`), das Profilbild reist getrennt als `chat_avatar`. Bild nur als
 `INImage(imageData:)` — Datei-URLs liest der Bild-Proxy nicht. Voraussetzung: Capability
 „Communication Notifications“ nur an der App (die Erweiterung trägt `IntentsSupported` in der Info.plist, das
 Entitlement dort bricht den Export). Prüfstand: `simctl push` startet die Erweiterung
