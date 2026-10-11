@@ -284,6 +284,13 @@ Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Ha
 - **`ImageRenderer` rastert keine `List`, `ScrollView` oder `Menu`** — die Snapshot-Tests
   schalten über `appointmentsStaticLayout` auf feste Stapel (`ChatSnapshotTests`).
 - **`ISO8601DateFormatter` ist nicht `Sendable`** — je Aufruf eine Instanz (`ChatFormat`).
+- **`HubSession.imageData` nimmt nur `image/*` an** — eine Sprachnachricht (`audio/mp4`) kam damit nie
+  zum Player (Befund 317, 12.10.2026). Anhänge und Sprachnachrichten laden über `fileData`.
+- **Wischen zum Antworten nur als `simultaneousGesture`** — als `.gesture` verlor der Zug gegen
+  Textauswahl (`textSelection`) und Verlauf und kam nie an (Befund 316); senkrechte Bewegung nimmt
+  den Zug zurück, waagerechte zieht die Blase und blendet das Antwort-Symbol ein.
+- **`GeometryProxy.bounds(of: .scrollView)` liefert auf dem Gerät nil** — der Pfeil nach unten stand
+  deshalb auch am Ende (Befund 315); die Endmarke wird gegen die gemessene Höhe des Verlaufs geprüft.
 - **Reverb-Nutzlast ≤ 10 KB** — `messageCompact` kürzt den Text auf 4.000 Zeichen; Haken
   kommen nie über den Anstoß, sondern aus Serverantwort und `chat.activity`.
 - **Jeder Deploy startet Reverb neu** — Clients bauen neu auf und laden ab Stand nach; nie auf
@@ -304,6 +311,9 @@ Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Ha
 
 ## Changelog
 
+- **12.10.2026** — iOS: Pfeil nach unten nur abseits des Endes, Wischen zum Antworten als
+  gleichzeitige Geste mit Antwort-Symbol, Sprachnachrichten spielen (Datei-Lader statt
+  `imageData`), Tempo-Knopf immer sichtbar (Befunde 315–317); iPad-Seitenleiste wie im Web.
 - **11.10.2026 (abends)** — iOS: Look wie WhatsApp (Entwurf 3 + Tapete A, Befund 313): Blasen mit
   Schwänzchen, Tapete mit der Marke, Namensfarben, Leiste mit Kamera/GIF, Ungelesen-Trenner, Pfeil
   nach unten; Chat-Pushes immer mit `mutable-content` (Befund 312).
