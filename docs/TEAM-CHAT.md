@@ -133,6 +133,18 @@ Vordergrund-Banner Kürzel oder Bild; im Hintergrund bleibt die Systemmitteilung
 Migration `2026_10_11_233100` zieht den Regel-Titel von `{raum}` auf `{kopf}` nach, weil der
 Katalog Titel nur beim Anlegen setzt.
 
+**iOS wie iMessage (Jan, 11.10.2026):** Chat-Pushes (`HUB_CHAT`) sind Kommunikations-Mitteilungen.
+Die Erweiterung `glatttHubNotifications` (`ChatCommunication.apply`) hängt einen
+`INSendMessageIntent` an: Absenderin als `INPerson` mit Profilbild (Anhang aus `image`) oder
+gezeichnetem Kürzel in Institutsfarbe, Anzeigename = Push-Titel („Kim @ Team Bielefeld“ in **einer**
+Zeile — bewusst ohne `speakableGroupName`, sonst zeigt iOS Absenderin und Gruppe zweizeilig), Gespräch
+`chat-room-{id}`; iOS zeigt dann das Bild statt des App-Symbols und „Antworten“ mit Textfeld direkt in
+der Mitteilung (`UNTextInputNotificationAction`, Antwort geht an denselben Nachrichten-Endpunkt). Im
+Vordergrund zeigt die App dafür das Systembanner statt der eigenen Karte. Bild nur als
+`INImage(imageData:)` — Datei-URLs liest der Bild-Proxy nicht. Voraussetzung: Capability
+„Communication Notifications“ an App und Erweiterung. Prüfstand: `simctl push` startet die Erweiterung
+im Simulator nicht, deshalb `-glatttProbeChatNotice` (siehe Wissen `ios-chat-kommunikations-mitteilungen`).
+
 Drei Katalog-Anlässe (`HubEventRegistry`, Modul „Nachrichten & Dashboards“): `chat.message`
 (nur Push), `chat.mention` (nur Push, schlägt Stummschaltung), `chat.announcement` (In-App und
 Push, dringend = zeitkritisch). `ChatPushService` filtert die Empfänger: ohne Absenderin, ohne
