@@ -14,7 +14,7 @@
   "eyebrow": "Chat · Grundlagen",
   "footerArea": "Chat",
   "stand": "11.10.2026",
-  "version": "1.1",
+  "version": "1.2",
   "notes": [
     "**Chat** findest du in der Seitenleiste direkt unter Kunden — und in der App als eigener Tab. Er ersetzt WhatsApp und Signal für alles Dienstliche: keine privaten Nummern, jede Kollegin ist über ihr Hub-Konto erreichbar.",
     "**Alle glattt** und **Team <Institut>** pflegt der Hub selbst: Neue Kolleginnen sind sofort drin, ausgeschiedene zum Monatswechsel raus. Eigene Gruppen legst du jederzeit an.",
@@ -199,7 +199,7 @@
     },
     {
       "h1": "Neuer Chat oder neue Gruppe",
-      "sub": "Über „Neuer Chat“ oben rechts: Kollegin wählen oder eine Gruppe mit Namen und Mitgliedern anlegen.",
+      "sub": "Über „Neuer Chat“ oben rechts: Kollegin wählen oder eine Gruppe mit Name, Beschreibung, Mitgliedern und Einstellungen anlegen.",
       "card": {
         "title": "Neuer Chat",
         "text": "Kollegin oder Gruppe"
@@ -207,7 +207,7 @@
       "left": {
         "shot": "c6-neuer-chat"
       },
-      "leftCaption": "Das Fenster **Neuer Chat** im Reiter „Neue Gruppe“ mit Name und Mitgliederliste.",
+      "leftCaption": "Das Fenster **Neuer Chat** im Reiter „Neue Gruppe“ mit Name, Beschreibung, den beiden Schaltern und der Mitgliederliste.",
       "steps": [
         {
           "n": 1,
@@ -216,13 +216,18 @@
         },
         {
           "n": 2,
+          "title": "Wer darf was",
+          "text": "**Nur Admins dürfen Mitglieder hinzufügen** und **Nur Admins dürfen schreiben** — beides aus, dann darf jedes Mitglied. Später änderbar unter „Gruppe bearbeiten“ (Chat 2)."
+        },
+        {
+          "n": 3,
           "title": "Liste",
           "text": "Alle aktiven Hub-Konten mit Institut; die Suche filtert nach Name oder Institut."
         },
         {
-          "n": 3,
+          "n": 4,
           "title": "Anlegen",
-          "text": "Du bist Eigentümerin der Gruppe: Mitglieder hinzufügen, Admins ernennen, umbenennen, Gruppenbild (Infospalte, Chat 2)."
+          "text": "Du bist Eigentümerin der Gruppe: Mitglieder hinzufügen, Admins ernennen, umbenennen, Gruppenbild (Infospalte, Chat 2). In der App läuft dasselbe in zwei Schritten: erst Mitglieder, dann Bild, Name und Einstellungen."
         }
       ],
       "hint": {

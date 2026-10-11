@@ -62,7 +62,12 @@ verbindet Nachrichten mit Kundinnen, Verträgen und Ankündigungen.
 - **Räume** haben einen Typ (`direct`, `group`, `team`, `announcement`) und bei Standard-Räumen
   einen `system_key` (`all`, `team:{branch}`, `announce:global`, `announce:{branch}`);
   Einzelchats einen `direct_key` (`min-max` der User-IDs). `last_seq` ist der laufende Stand des
-  Raums, jede Nachricht erhöht ihn in einer Transaktion mit `lockForUpdate`.
+  Raums, jede Nachricht erhöht ihn in einer Transaktion mit `lockForUpdate`. Eigene Gruppen
+  tragen seit 11.10.2026 zwei Einstellungen wie bei WhatsApp (`members_can_add`,
+  `members_can_post`, Standard „alle“): „Nur Admins“ sperrt Hinzufügen bzw. Schreiben für
+  einfache Mitglieder; `canPost()` und `canAddMembers()` im `ChatRoomService` werten sie aus,
+  der Presenter liefert `can_add_members` je Nutzerin. Standard-Räume und Einzelchats kennen
+  die Felder nicht (422).
 - **Mitglieder** tragen Rolle (`owner`, `admin`, `member`), `last_read_seq` und
   `last_delivered_seq` als Nummern (nie je Nachricht), Stummschaltung (`muted_until`), Anheften
   und Archiv je Person. Verlassen setzt `left_at`; der Verlauf bleibt.
@@ -130,8 +135,8 @@ Direkt-Antwort in der App, Ziel `/hub/chat/raum/{id}`. Der Text respektiert
 |---|---|
 | `GET /data` | Einstieg: `me`, `rooms`, `today`, `settings`, `live`, `permissions`, `bert_available` |
 | `GET /kontakte`, `GET /suche?q=`, `GET /objekte?q=`, `GET /gifs?q=` | Kontakte, Nachrichtensuche (Teilwort), Hub-Objekte aus der globalen Suche, GIFs (Tenor, `TENOR_API_KEY`) |
-| `POST /direkt`, `POST /raeume` | Einzelchat, Gruppe anlegen |
-| `GET /raeume/{id}`, `PATCH /raeume/{id}` | Raum mit Mitgliedern und Verlauf; Name/Beschreibung, `muted_until` (`1h`, `8h`, `1w`, `forever`, `off`), `is_pinned`, `is_archived` |
+| `POST /direkt`, `POST /raeume` | Einzelchat, Gruppe anlegen (`name`, `description`, `user_ids[]`, `members_can_add`, `members_can_post`; das Bild folgt über `POST …/bild`) |
+| `GET /raeume/{id}`, `PATCH /raeume/{id}` | Raum mit Mitgliedern und Verlauf; Name/Beschreibung, `members_can_add`/`members_can_post` (nur Admins eigener Gruppen), `muted_until` (`1h`, `8h`, `1w`, `forever`, `off`), `is_pinned`, `is_archived` |
 | `GET /raeume/{id}/nachrichten?before=\|since=` | Verlauf blättern / Nachladen ab Stand |
 | `POST /raeume/{id}/nachrichten` | Senden (multipart: `body`, `client_uuid`, `type`, `reply_to_id`, `mention_ids[]`, `files[]`, `duration_ms`, `waveform`, `poll[...]`, `meta[object]`, `meta[media]`, `is_urgent`, `requires_ack`) |
 | `POST /raeume/{id}/gelesen`, `POST /raeume/{id}/ungelesen`, `POST /zugestellt`, `POST /raeume/{id}/tippt` | Lesestand (+`viewing`; nie zurück), „als ungelesen markieren“ (Lesestand genau eine Nachricht zurück — die einzige Stelle, an der er rückwärts läuft), Zustellstand je Raum, „schreibt gerade“ |
@@ -158,7 +163,11 @@ als `glattt:chat-unread` an Seitenleiste, Bottom-Nav und native Badges. Theme-Ab
 `ChatView` (Haupttab „Chat“, ersetzt Berichte in der Leiste), `ChatRoomView` (Detailseite ohne
 Tab-Leiste bzw. mittlere Spalte auf dem iPad), `ChatRoomInfoView` (Kontextspalte/Blatt),
 Blätter für neuen Chat, Mitglieder, Weiterleiten, Umfrage, Suche, Einstellungen,
-Nachricht-Info. `ChatModel` hält Räume, Verlauf, Warteschlange und Offline-Stand
+Nachricht-Info. „Neue Gruppe“ folgt seit 11.10.2026 Entwurf 1 „Wie WhatsApp“ (Befund 273):
+Schritt 1 Mitglieder mit Chips, Schritt 2 Gruppenseite mit Bild (Album), Name, Beschreibung,
+Mitgliederzeile und den Einstellungen „Mitglieder hinzufügen“ / „Nachrichten schreiben“ je
+„Alle“ oder „Nur Admins“; auf dem iPad liegen beide Schritte nebeneinander. Die Gruppen-Info
+zeigt dieselben Einstellungen für Admins und blendet „Hinzufügen“ nach `can_add_members` ein. `ChatModel` hält Räume, Verlauf, Warteschlange und Offline-Stand
 (`OfflineStore`, Schlüssel `chat`), `ChatLiveClient` die Reverb-Verbindung (Kanal je Nutzerin
 plus offener Raum, Backoff 1…60 s), `ChatRecorder`/`ChatPlayer` die Sprachnachrichten. Push:
 Kategorie `HUB_CHAT` mit „Antworten“ (Texteingabe, derselbe Sende-Endpunkt) — im offenen Raum
@@ -189,6 +198,9 @@ kein Banner. Details im Abschnitt „Nativer Team-Chat“ in [IOS-APP](IOS-APP.m
 
 ## Changelog
 
+- **11.10.2026 (nachmittags)** — Gruppen-Einstellungen „wer darf hinzufügen / schreiben“ und
+  das Blatt „Neue Gruppe“ in zwei Schritten wie bei WhatsApp (TestFlight-Befund 273, Entwurf 1);
+  Web-Dialog „Neuer Chat“ mit Beschreibung und beiden Schaltern, „Gruppe bearbeiten“ ebenso.
 - **11.10.2026** — Etappen 0–4: Fundament, Kern, Web, iOS/iPadOS, Mehrwert (Sprachnachrichten,
   Umfragen, Hub-Karten, GIFs, glatttBert), aktive Lesebestätigung für Ankündigungen,
   Browser-Freischaltung für Android.
