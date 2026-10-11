@@ -103,6 +103,22 @@ Mitgliedschaft (`left_at`), der Verlauf bleibt (Entscheidung Jan). Kein Schedule
 Rechte kommen per Migration (`2026_10_11_200100_add_chat_permissions`) und `PermissionCatalog`
 (Zweig „Chat“); Freischalten = im Admin den Rollen geben.
 
+### Geteilte Geräte: keine Chat-Pushes
+
+Seit 11.10.2026 (Jan): Auf **geteilten Institut-Geräten** (iPads, Institut-Macs) kommen keine
+personenbezogenen Pushes an — dort steht, wer gerade Dienst hat. Technisch:
+
+- `push_subscriptions.is_shared_device`: iPads erben die Kennzeichnung vom freigeschalteten Gerät
+  (`enrolled_devices.kind = shared`, gleiche `native_device_id`) oder aus der MDM-Konfiguration
+  (`shared_device: true` beim `subscribe/native`); Institut-Macs setzt das Büro im Admin unter
+  **System → Push-Geräte**. Eine gesetzte Kennzeichnung bleibt beim Nutzerwechsel erhalten.
+- `PushNotificationService::sendToUsers(..., ['personal' => true])` lässt geteilte Geräte weg;
+  Chat-Pushes tragen `personal` in ihren Push-Daten (`chatPushData`).
+- **Abmelden deaktiviert das Abo nur** (`POST /api/push/unsubscribe` bzw. `/unsubscribe/native`,
+  Web aus `logout.js`, App aus `AppContainer.logout()`), Browser-Abo und OS-Erlaubnis bleiben.
+  **Anmelden aktiviert still wieder** (`resumeSilently()` im Web-Client, `syncSubscription` in der
+  App) — niemand muss die Erlaubnis erneut bestätigen. Test: `tests/Feature/Push/SharedDevicePushTest.php`.
+
 ### Echtzeit (Reverb)
 
 - Kanal `private-chat.user.{id}` trägt alle Räume einer Nutzerin: Ereignis `chat.changed`
