@@ -83,6 +83,7 @@ const PLAN = [
   seite('a7-zuordnung', '/admin/phorest-staff'),
   seite('a8-protokolle', '/admin/email-logs'),
   seite('a8-einstellungen', '/admin/email-settings'),
+  seite('a8-push-geraete', '/admin/push-subscriptions', ['.fi-ta-content, .fi-ta']),
   seite('a8-cache', '/hub/settings/cache'),
 ];
 
