@@ -142,7 +142,8 @@ Zeile — bewusst ohne `speakableGroupName`, sonst zeigt iOS Absenderin und Grup
 der Mitteilung (`UNTextInputNotificationAction`, Antwort geht an denselben Nachrichten-Endpunkt). Im
 Vordergrund zeigt die App dafür das Systembanner statt der eigenen Karte. Bild nur als
 `INImage(imageData:)` — Datei-URLs liest der Bild-Proxy nicht. Voraussetzung: Capability
-„Communication Notifications“ an App und Erweiterung. Prüfstand: `simctl push` startet die Erweiterung
+„Communication Notifications“ nur an der App (die Erweiterung trägt `IntentsSupported` in der Info.plist, das
+Entitlement dort bricht den Export). Prüfstand: `simctl push` startet die Erweiterung
 im Simulator nicht, deshalb `-glatttProbeChatNotice` (siehe Wissen `ios-chat-kommunikations-mitteilungen`).
 
 Drei Katalog-Anlässe (`HubEventRegistry`, Modul „Nachrichten & Dashboards“): `chat.message`
