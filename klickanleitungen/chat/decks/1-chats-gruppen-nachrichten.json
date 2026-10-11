@@ -14,7 +14,7 @@
   "eyebrow": "Chat · Grundlagen",
   "footerArea": "Chat",
   "stand": "11.10.2026",
-  "version": "1.5",
+  "version": "1.6",
   "notes": [
     "**Chat** findest du in der Seitenleiste direkt unter Kunden — und in der App als eigener Tab. Er ersetzt WhatsApp und Signal für alles Dienstliche: keine privaten Nummern, jede Kollegin ist über ihr Hub-Konto erreichbar.",
     "**Alle glattt** und **Team <Institut>** pflegt der Hub selbst: Neue Kolleginnen sind sofort drin, ausgeschiedene zum Monatswechsel raus. Eigene Gruppen legst du jederzeit an.",
@@ -120,7 +120,7 @@
         {
           "n": 3,
           "title": "Kundin · Vertrag · Fall",
-          "text": "Eine **Hub-Karte**: Kundin, Vertrag oder Forderungsfall aus der Suche als Karte senden — ein Tipp führt in den Hub (Seite 4)."
+          "text": "Eine **Hub-Karte**: Der Dialog zeigt nur die gewählte Art. Ein Klick legt die Karte in die Eingabezeile — dazu schreibst du deinen Text und sendest beides zusammen (Seite 5)."
         },
         {
           "n": 4,
@@ -157,7 +157,7 @@
         {
           "n": 3,
           "title": "Reaktionen",
-          "text": "Ein Klick auf eine vorhandene Reaktion nimmt sie zurück oder schließt sich an; Überfahren zeigt, wer reagiert hat."
+          "text": "Eine Reaktion je Person: Ein anderes Emoji ersetzt deine, dasselbe nimmt sie zurück — dein Emoji ist im Picker hervorgehoben. Überfahren zeigt, wer reagiert hat."
         }
       ],
       "hint": {

@@ -166,6 +166,17 @@ goldene Stift (`.chat-new-btn`) in der Werkzeugleiste der Liste, die Erklärung 
 ein Feld, `GET /suche?q=&raum={id}` liefert Treffer nur dieses Raums, die Leiste
 `.chat-inline-search` unter dem Kopf springt per `jumpTo(seq)`; Esc/✕ schließt, Raumwechsel
 schließt mit. Das Fenster „Nachrichten suchen“ (alle Chats) bleibt an der Lupe der Liste.
+**Nachricht-Info mit Zeitpunkt:** `chat_room_members.last_delivered_at` (neu) und `last_read_at`
+liefern je Person „wann“ (`read_at`/`delivered_at` als `user_id → ISO` an der Nachricht); genau für
+die zuletzt gelesene Nachricht, für ältere der Zeitpunkt desselben Lese-Schwungs. **Eine Reaktion
+je Person** (wie WhatsApp): ein anderes Emoji ersetzt die eigene, dasselbe nimmt sie zurück; Web und
+App heben das eigene Emoji hervor. **Hub-Karten** werden aus dem Plus je Art gewählt (Kundin,
+Vertrag, Fall — der Dialog zeigt nur diese Art), liegen dann in der Eingabezeile und gehen mit dem
+Text in einer Nachricht (`type=object` + `meta[object]` + `body`). **Leere Einzelchats** stehen erst
+mit der ersten Nachricht in der Liste. `muted_until` ist DATETIME (TIMESTAMP endete 2038, „Immer“
+schrieb 2076). **Animationen:** Infospalte fährt von rechts (Rasterspalte 0 → 19 rem), Plus-Menü
+klappt aus dem Knopf (Plus dreht zum ✕), neue Nachrichten gleiten herein (`.is-entered`), die
+Kopf-Suche wächst aus der Lupe; in der App dieselben Übergänge per `.transition`/`.animation`.
 **Archiv:** `GET /data?archiv=1` liefert auch archivierte Räume; Web und App zeigen sie nur im
 Filter „Archiv“ (Zähler am Chip) und holen sie über das Zeilenmenü bzw. Wischen zurück. Ungelesen-
 Zähler und Push lassen archivierte Räume weiter aus.
