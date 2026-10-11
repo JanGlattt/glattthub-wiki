@@ -160,7 +160,7 @@ Direkt-Antwort in der App, Ziel `/hub/chat/raum/{id}`. Der Text respektiert
 | Methode & Pfad | Zweck |
 |---|---|
 | `GET /data` | Einstieg: `me`, `rooms`, `today`, `settings`, `live`, `permissions`, `bert_available` |
-| `GET /kontakte`, `GET /suche?q=`, `GET /objekte?q=`, `GET /gifs?q=` | Kontakte, Nachrichtensuche (Teilwort), Hub-Objekte aus der globalen Suche, GIFs (Tenor, `TENOR_API_KEY`) |
+| `GET /kontakte`, `GET /suche?q=`, `GET /objekte?q=`, `GET /gifs?q=` | Kontakte, Nachrichtensuche (Teilwort), Hub-Objekte aus der globalen Suche, GIFs (KLIPY, `KLIPY_API_KEY` — Tenor-API seit 30.06.2026 abgeschaltet; Suche/Trending über `api.klipy.com/api/v1/{key}/gifs/…`, Pflicht-Platzhalter „Search KLIPY“, `customer_id` anonymer Hash je Nutzerin) |
 | `POST /direkt`, `POST /raeume` | Einzelchat, Gruppe anlegen (`name`, `description`, `user_ids[]`, `members_can_add`, `members_can_post`; das Bild folgt über `POST …/bild`) |
 | `GET /raeume/{id}`, `PATCH /raeume/{id}` | Raum mit Mitgliedern und Verlauf; Name/Beschreibung, `members_can_add`/`members_can_post` (nur Admins eigener Gruppen), `muted_until` (`1h`, `8h`, `1w`, `forever`, `off`), `is_pinned`, `is_archived` |
 | `GET /raeume/{id}/nachrichten?before=\|since=` | Verlauf blättern / Nachladen ab Stand |
