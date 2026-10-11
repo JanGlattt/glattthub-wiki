@@ -1263,8 +1263,9 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
 ### iPad: native Seitenleiste und Start-Raster (seit 22.09.2026)
 
 **Für Endanwender:** Auf dem iPad ersetzt die App das Menü des Hubs. Im Querformat steht die
-Leiste fest links (Start · Termine · Kunden · Berichte, darunter die Gruppen Verkauf/Finanzen/
-Team/Betrieb/System — immer nur eine offen; oben Standort, Suche, Mitteilungen, unten Profil,
+Leiste fest links (Start · Termine · Kunden · Chat · Berichte in der Reihenfolge der Web-Sidebar,
+darunter die Gruppen Verkauf/Finanzen/Team/Betrieb/System — immer nur eine offen; oben Standort,
+Suche, Mitteilungen, unten Profil,
 Admin, Abmelden). Im Hochformat bleibt eine schmale Symbol-Spalte; Logo, „Mehr" oder Profil
 öffnen die volle Leiste als Überlagerung. Die Startseite ist wie am iPhone nativ, auf dem iPad
 als Raster: Kennzahlen als Streifen über die volle Breite, die Bausteine der Admin-Reihenfolge
@@ -1281,6 +1282,15 @@ als Kacheln (Chart breit, Karten schmal, Schnellzugriff als Zeile); im Hochforma
   WebView je Tab, Mehr-Pool und Detailseiten laufen unverändert; die Leiste ruft `selectTab` bzw.
   `navigate(toPath:)`. Die Leiste erscheint nur bei `isReady && navigation != nil` — davor
   decken Ladeschirm/Login alles ab (Regel „Sichtbarkeit nur aus Zustand").
+- **Hauptpunkte der Leiste (seit 11.10.2026):** `GET /api/app/navigation` liefert neben `tabs`
+  (höchstens vier, iPhone-Leiste) das Feld `sidebar` — alle erlaubten Hauptpunkte in der
+  Reihenfolge der Web-Sidebar (`MobileNavigation::SIDEBAR_ORDER`: Start · Termine · Kunden ·
+  Chat · Berichte). `PadSidebar` zeigt `NavigationModel.sidebarItems` und lässt die Gruppe
+  „Schnellzugriff" weg, soweit ihre Einträge oben stehen (`sidebarGroups`); ein Hauptpunkt ohne
+  Tab (Kunden) öffnet über `navigate(toPath:)` und markiert sich wie ein Mehr-Eintrag. Ältere
+  Hub-Stände ohne `sidebar` zeigen die Tabs. Das Mehr-Menü des iPhones behält Kunden im
+  Schnellzugriff (`tabs` + Gruppe `quick`). Der Seitenleisten-Snapshot rastert im echten
+  Fenster — `ImageRenderer` ließ den `ScrollView` weg, das Bild der Klickanleitung war leer.
 - **Markierung aus Zustand:** `HubTabBarController.onSelectedKeyChanged` (Override von
   `selectedViewController`) spiegelt `selectedKey` nach `AppState.activeTabKey`; die Leiste
   markiert Haupttabs daraus und Gruppen-Einträge nur im Mehr-Pool (`activeTabKey == "more"`) über

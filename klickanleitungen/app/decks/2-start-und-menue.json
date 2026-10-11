@@ -7,7 +7,7 @@
   "audience": "institut",
   "footerArea": "App",
   "stand": "11.10.2026",
-  "version": "1.6",
+  "version": "1.7",
   "nr": 2,
   "title": [
     "Startseite, Menü,",
@@ -99,7 +99,7 @@
     },
     {
       "h1": "Seitenleiste auf dem iPad",
-      "sub": "Links die Bereiche: oben die vier Hauptseiten, darunter die Gruppen Verkauf, Finanzen, Team, Betrieb, System — immer nur eine Gruppe offen.",
+      "sub": "Links die Bereiche: oben die fünf Hauptseiten wie im Web, darunter die Gruppen Verkauf, Finanzen, Team, Betrieb, System — immer nur eine Gruppe offen.",
       "card": {
         "title": "Seitenleiste",
         "text": "Hauptseiten, Gruppen, Profil und Abmelden"
@@ -107,7 +107,7 @@
       "left": {
         "shot": "pad-sidebar-full"
       },
-      "leftCaption": "Die Seitenleiste im Querformat — **Start** ist markiert, die Gruppe Verkauf aufgeklappt.",
+      "leftCaption": "Die Seitenleiste im Querformat — **Start, Termine, Kunden, Chat, Berichte** wie im Web, darunter die Gruppen.",
       "right": {
         "shot": "pad-port-drawer"
       },
@@ -116,7 +116,7 @@
         {
           "n": 1,
           "title": "Hauptseiten",
-          "text": "**Start, Termine, Kunden, Berichte** — die ersten drei sind native Seiten, Berichte öffnet die Hub-Seite."
+          "text": "**Start, Termine, Kunden, Chat, Berichte** — dieselbe Reihenfolge wie im Web. Auf dem iPhone bleibt die Leiste bei Start, Termine, Chat, Berichte; **Kunden** steht dort im Schnellzugriff von **Mehr**."
         },
         {
           "n": 2,
