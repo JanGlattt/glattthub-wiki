@@ -14,7 +14,7 @@
   "eyebrow": "Chat · Grundlagen",
   "footerArea": "Chat",
   "stand": "11.10.2026",
-  "version": "1.7",
+  "version": "1.8",
   "notes": [
     "**Chat** findest du in der Seitenleiste direkt unter Kunden — und in der App als eigener Tab. Er ersetzt WhatsApp und Signal für alles Dienstliche: keine privaten Nummern, jede Kollegin ist über ihr Hub-Konto erreichbar.",
     "**Alle glattt** und **Team <Institut>** pflegt der Hub selbst: Neue Kolleginnen sind sofort drin, ausgeschiedene zum Monatswechsel raus. Eigene Gruppen legst du jederzeit an.",
@@ -97,7 +97,7 @@
     },
     {
       "h1": "Anhängen über das Plus",
-      "sub": "Fotos, Kamera, Datei, Umfrage, Hub-Karte oder GIF — alles hinter dem Plus links vom Feld.",
+      "sub": "Fotos, Kamera, Datei, Umfrage, Hub-Karte (Kundin, Vertrag, Fall, Widerruf) oder GIF — alles hinter dem Plus links vom Feld.",
       "card": {
         "title": "Plus",
         "text": "Fotos, Dateien, Umfrage, Karte, GIF"
@@ -119,7 +119,7 @@
         },
         {
           "n": 3,
-          "title": "Kundin · Vertrag · Fall",
+          "title": "Kundin · Vertrag · Fall · Widerruf",
           "text": "Eine **Hub-Karte**: Der Dialog zeigt nur die gewählte Art. Ein Klick legt die Karte in die Eingabezeile — dazu schreibst du deinen Text und sendest beides zusammen (Seite 5)."
         },
         {
