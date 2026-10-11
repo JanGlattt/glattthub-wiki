@@ -14,7 +14,7 @@
   "eyebrow": "Chat · Ankündigungen",
   "footerArea": "Chat",
   "stand": "11.10.2026",
-  "version": "1.0",
+  "version": "1.1",
   "notes": [
     "In den Kanälen **glattt Ankündigungen** und **<Institut> Ankündigungen** schreibt nur, wer das Recht hat (Leitung, Büro, Institutsleitung). Alle anderen lesen und reagieren.",
     "**Lesebestätigung** ist die aktive Lesekontrolle: Jede Empfängerin muss am Ende auf „Gelesen – ich bestätige“ tippen. Du siehst, wer bestätigt hat und wer noch fehlt.",
@@ -128,7 +128,7 @@
       "left": {
         "shot": "c12-einstellungen"
       },
-      "leftCaption": "Die **Chat-Einstellungen** (Glocke neben der Suche): Zeitfenster, Wochentage, Vorschau in der Push.",
+      "leftCaption": "Die **Chat-Einstellungen** (Zahnrad neben der Suche → Nicht stören): Zeitfenster, Wochentage, Vorschau in der Push.",
       "steps": [
         {
           "n": 1,

@@ -14,7 +14,7 @@
   "eyebrow": "Chat · Grundlagen",
   "footerArea": "Chat",
   "stand": "11.10.2026",
-  "version": "1.3",
+  "version": "1.4",
   "notes": [
     "**Chat** findest du in der Seitenleiste direkt unter Kunden — und in der App als eigener Tab. Er ersetzt WhatsApp und Signal für alles Dienstliche: keine privaten Nummern, jede Kollegin ist über ihr Hub-Konto erreichbar.",
     "**Alle glattt** und **Team <Institut>** pflegt der Hub selbst: Neue Kolleginnen sind sofort drin, ausgeschiedene zum Monatswechsel raus. Eigene Gruppen legst du jederzeit an.",
@@ -147,7 +147,7 @@
         {
           "n": 1,
           "title": "Werkzeuge",
-          "text": "↩ **Antworten** zitiert die Nachricht über deinem Feld; ☺ **Reagieren** zeigt 👍 ❤️ 😂 😮 🙏 🎉; ⋯ **Mehr**: Weiterleiten, Text kopieren, Anheften, Nachricht-Info, Bearbeiten, Löschen für alle."
+          "text": "↩ **Antworten** zitiert die Nachricht über deinem Feld; ☺ **Reagieren** zeigt deine sechs zuletzt genutzten Emojis, **+** öffnet ein Raster und ein Feld für jedes Emoji; ⋯ **Mehr**: Weiterleiten, Text kopieren, Anheften, Nachricht-Info, Bearbeiten, Löschen für alle."
         },
         {
           "n": 2,
@@ -254,7 +254,7 @@
         {
           "n": 2,
           "title": "Suche",
-          "text": "Die Lupe neben „Chats durchsuchen“ sucht **in den Nachrichten aller Chats**, auch Teilwörter. Nur im offenen Chat suchen: die Lupe im Kopf der Unterhaltung (Seite 2)."
+          "text": "**Zahnrad → Nachrichten durchsuchen** sucht in den Nachrichten aller Chats, auch Teilwörter; hinter dem Zahnrad liegen auch „Nicht stören“ und die Erklärung. Nur im offenen Chat suchen: die Lupe im Kopf der Unterhaltung (Seite 2)."
         },
         {
           "n": 3,

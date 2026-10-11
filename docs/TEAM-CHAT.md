@@ -166,6 +166,12 @@ goldene Stift (`.chat-new-btn`) in der Werkzeugleiste der Liste, die Erklärung 
 ein Feld, `GET /suche?q=&raum={id}` liefert Treffer nur dieses Raums, die Leiste
 `.chat-inline-search` unter dem Kopf springt per `jumpTo(seq)`; Esc/✕ schließt, Raumwechsel
 schließt mit. Das Fenster „Nachrichten suchen“ (alle Chats) bleibt an der Lupe der Liste.
+Die drei Werkzeuge der Liste (Nachrichten durchsuchen, Nicht stören, Erklärung) liegen hinter einem
+**Zahnrad** (`.chat-list-menu`). **Reaktionen** zeigen die sechs zuletzt genutzten Emojis
+(`localStorage glattthub.chat.recentEmoji`, je Browser), „+“ öffnet ein Raster (`ALL_EMOJI` in
+`chat.js`) und ein freies Feld, das das erste Grapheme einer Eingabe als Reaktion schickt
+(`Intl.Segmenter`, Prüfung `\p{Extended_Pictographic}`); der Endpunkt nimmt bis 16 Zeichen
+(Spalte `chat_reactions.emoji` string(16), also auch Flaggen und ZWJ-Folgen).
 Fallstricke derselben Runde: `search-glattt-wrapper-flex` ist nur für Kopfzeilen (im Modal wird
 `flex-basis` zur Höhe); ein offenes Zeilenmenü hebt seine Zeile per `z-index` über die
 folgenden, weil jede Zeile positioniert ist; zwischen `.form-glattt-group` und
