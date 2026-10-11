@@ -14,7 +14,7 @@
   "eyebrow": "Chat · Grundlagen",
   "footerArea": "Chat",
   "stand": "11.10.2026",
-  "version": "1.6",
+  "version": "1.7",
   "notes": [
     "**Chat** findest du in der Seitenleiste direkt unter Kunden — und in der App als eigener Tab. Er ersetzt WhatsApp und Signal für alles Dienstliche: keine privaten Nummern, jede Kollegin ist über ihr Hub-Konto erreichbar.",
     "**Alle glattt** und **Team <Institut>** pflegt der Hub selbst: Neue Kolleginnen sind sofort drin, ausgeschiedene zum Monatswechsel raus. Eigene Gruppen legst du jederzeit an.",
@@ -175,12 +175,12 @@
       "left": {
         "shot": "c5-umfrage"
       },
-      "leftCaption": "Eine **Umfrage** mit Balken und Stimmen, darüber eine **Kundin-Karte** mit „Im Hub öffnen“.",
+      "leftCaption": "Eine **Umfrage** mit Balken und Stimmen, darüber eine **Akten-Karte** zur Kundin: Kürzel, Name, Nummer, vier Kennzahlen, Stand und Status.",
       "steps": [
         {
           "n": 1,
           "title": "Hub-Karte",
-          "text": "Kundin, Vertrag oder Forderungsfall mit Nummer und Kurzinfo. **Im Hub öffnen ›** führt in die Akte — wer dort kein Recht hat, sieht nur den Namen."
+          "text": "Kundin, Vertrag oder Forderungsfall als **Akten-Karte**: Kopf mit Bild oder Kürzel, vier Kennzahlen (bei Verträgen dazu der Raten-Fortschritt), unten „Stand HH:MM“ und der Status. Die Zahlen gelten zum Sendezeitpunkt. **Im Hub öffnen ›** führt in die Akte — wer dort kein Recht hat, sieht nur Name und Nummer."
         },
         {
           "n": 2,

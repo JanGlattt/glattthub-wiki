@@ -166,6 +166,17 @@ goldene Stift (`.chat-new-btn`) in der Werkzeugleiste der Liste, die Erklärung 
 ein Feld, `GET /suche?q=&raum={id}` liefert Treffer nur dieses Raums, die Leiste
 `.chat-inline-search` unter dem Kopf springt per `jumpTo(seq)`; Esc/✕ schließt, Raumwechsel
 schließt mit. Das Fenster „Nachrichten suchen“ (alle Chats) bleibt an der Lupe der Liste.
+**Akten-Karte (Jan, 11.10.2026, Entwurf 1 von drei):** Beim Senden einer Hub-Karte friert
+`ChatObjectEnricher` je Art ein Faktenpaket in `meta.object` ein — `facts` (vier Label/Wert-Paare),
+`status` (`label`, `tone` ok|warn|bad|neutral), `progress` (Verträge: bezahlte Raten / Anzahl),
+`initials`, `subtitle` (Nummer · Institut), `as_of`. Kundin: Telefon, nächster Termin
+(`stats_historic_appointments` ab heute), Vertrag mit Status, letzter Besuch; Vertrag: Paket in KPZ,
+Rate und Stand x/y, nächste Rate, Zahlungsart; Forderungsfall: offener Betrag (`openCents()`), Stufe,
+Frist, Eingang; Widerruf: Eingang, Grund, Zendesk-Nr., SEPA-Stand. Die Rechte der **Absenderin**
+entscheiden (`view_clients`, `view_contracts`, `view_receivables`, `view_revocations`); ohne Recht
+bleibt die Karte Name und Nummer, ältere Karten ohne `facts` zeigen weiter die Kurzform. Kundendaten
+kommen aus `client_statistics`, nie live aus Phorest (kein Netz beim Senden). Web `.chat-card`, App
+`aktenKarte()` in `ChatRoomView` mit `ChatCardPhoto` über die Hub-Sitzung.
 **Nachricht-Info mit Zeitpunkt:** `chat_room_members.last_delivered_at` (neu) und `last_read_at`
 liefern je Person „wann“ (`read_at`/`delivered_at` als `user_id → ISO` an der Nachricht); genau für
 die zuletzt gelesene Nachricht, für ältere der Zeitpunkt desselben Lese-Schwungs. **Eine Reaktion
