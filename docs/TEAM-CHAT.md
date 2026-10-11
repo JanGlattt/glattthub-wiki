@@ -166,6 +166,9 @@ goldene Stift (`.chat-new-btn`) in der Werkzeugleiste der Liste, die Erklärung 
 ein Feld, `GET /suche?q=&raum={id}` liefert Treffer nur dieses Raums, die Leiste
 `.chat-inline-search` unter dem Kopf springt per `jumpTo(seq)`; Esc/✕ schließt, Raumwechsel
 schließt mit. Das Fenster „Nachrichten suchen“ (alle Chats) bleibt an der Lupe der Liste.
+**Archiv:** `GET /data?archiv=1` liefert auch archivierte Räume; Web und App zeigen sie nur im
+Filter „Archiv“ (Zähler am Chip) und holen sie über das Zeilenmenü bzw. Wischen zurück. Ungelesen-
+Zähler und Push lassen archivierte Räume weiter aus.
 Die drei Werkzeuge der Liste (Nachrichten durchsuchen, Nicht stören, Erklärung) liegen hinter einem
 **Zahnrad** (`.chat-list-menu`). **Reaktionen** zeigen die sechs zuletzt genutzten Emojis
 (`localStorage glattthub.chat.recentEmoji`, je Browser), „+“ öffnet ein Raster (`ALL_EMOJI` in

@@ -14,7 +14,7 @@
   "eyebrow": "Chat · Grundlagen",
   "footerArea": "Chat",
   "stand": "11.10.2026",
-  "version": "1.4",
+  "version": "1.5",
   "notes": [
     "**Chat** findest du in der Seitenleiste direkt unter Kunden — und in der App als eigener Tab. Er ersetzt WhatsApp und Signal für alles Dienstliche: keine privaten Nummern, jede Kollegin ist über ihr Hub-Konto erreichbar.",
     "**Alle glattt** und **Team <Institut>** pflegt der Hub selbst: Neue Kolleginnen sind sofort drin, ausgeschiedene zum Monatswechsel raus. Eigene Gruppen legst du jederzeit an.",
@@ -36,7 +36,7 @@
         {
           "n": 1,
           "title": "Filter",
-          "text": "**Alle · Ungelesen · Direkt · Gruppen · Ankündigungen** — die Zahl bei „Ungelesen“ zeigt, wie viele Chats warten."
+          "text": "**Alle · Ungelesen · Direkt · Gruppen · Ankündigungen · Archiv** — die Zahl bei „Ungelesen“ zeigt, wie viele Chats warten, die bei „Archiv“, wie viele du weggeräumt hast. Archivierte Chats holt das Zeilenmenü (⋯) zurück."
         },
         {
           "n": 2,
