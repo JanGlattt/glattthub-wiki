@@ -120,6 +120,19 @@ Rechte kommen per Migration (`2026_10_11_200100_add_chat_permissions`) und `Perm
 
 ### Push
 
+**Hinweis-Karten (Jan, 11.10.2026):** Jede Chat-Mitteilung trägt in `notifications.data` die
+Push-Daten (`chat_room_id`, `chat_message_id`, `chat_sender`, `chat_room`, `chat_direct`,
+`chat_initials`, `chat_color`, `chat_can_reply`); der Web-Endpunkt `/phorest/notifications` gibt sie
+als `data` aus. Die Web-Karte (`hub-notices.js`, `.is-chat`) zeigt bei Chat-Mitteilungen das
+Profilbild der Absenderin bzw. das Gruppenbild (Katalog-`image` aus `chatPayload`), sonst das
+Kürzel in Institutsfarbe, als Titel „Kim @ Team Bielefeld“ (Regel-Titel `{kopf}`, Einzelchat nur der
+Name) und darunter ein Antwortfeld: Tippen oder Fokus hält die Karte offen, Enter sendet als Antwort
+auf die Nachricht über `POST /raeume/{id}/nachrichten`, danach „Gesendet ✓“ und die Karte geht zu.
+Ankündigungen haben kein Antwortfeld. Die App liest `chat_initials` aus dem Push und zeichnet im
+Vordergrund-Banner Kürzel oder Bild; im Hintergrund bleibt die Systemmitteilung mit „Antworten“.
+Migration `2026_10_11_233100` zieht den Regel-Titel von `{raum}` auf `{kopf}` nach, weil der
+Katalog Titel nur beim Anlegen setzt.
+
 Drei Katalog-Anlässe (`HubEventRegistry`, Modul „Nachrichten & Dashboards“): `chat.message`
 (nur Push), `chat.mention` (nur Push, schlägt Stummschaltung), `chat.announcement` (In-App und
 Push, dringend = zeitkritisch). `ChatPushService` filtert die Empfänger: ohne Absenderin, ohne
