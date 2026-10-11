@@ -47,7 +47,7 @@ const PLAN = [
     { id: 'art', kind: 'badge', n: 1, sel: '.chat-modal-tabs', at: 'l' },
     { id: 'liste', kind: 'frame', color: 'teal', sel: '.chat-contact-list' },
   ] },
-  { name: 'c7-suche', url: '/hub/chat', steps: [['loaded'], ['wait', 2000], ['fn', chat(`d.search.open = true; d.search.query = 'Raum'; d.runSearch();`)], ['wait', 1200]], clip: '.modal-glattt' },
+  { name: 'c7-suche', url: '/hub/chat', steps: [['loaded'], ['wait', 2000], ['fn', chat(`d.search.open = true; d.search.query = 'Raum'; d.runSearch();`)], ['wait', 4000]], clip: '.modal-glattt' },
   { name: 'c8-seitenpanel', url: '/hub', steps: [['loaded'], ['wait', 2500], ['fn', async (page) => { await page.evaluate(() => window.dispatchEvent(new CustomEvent('glattt-chat-toggle'))); await page.waitForTimeout(1500); }]], marks: [
     { id: 'dock', kind: 'frame', color: 'teal', sel: '.chat-dock' },
     { id: 'vollseite', kind: 'badge', n: 1, sel: '.chat-dock-head .btn-glattt-icon:nth-of-type(2)', at: 'l' },

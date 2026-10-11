@@ -34,7 +34,9 @@ bash scripts/run-all.sh         # 12 Screenshots, Plan in scripts/shots.cjs
 ```
 
 Der Testnutzer braucht `use_chat`, `post_chat_announcements` und ein Heimat-Institut (Team-Gruppe);
-`home_branch_id` danach wieder auf `all` stellen (Wissen `local-browser-test-user`).
+`home_branch_id` danach wieder auf `all` stellen (Wissen `local-browser-test-user`). **Vor jedem
+Aufnahmelauf das Seed-Skript erneut laufen lassen** — mit `all` ist der Nutzer nicht mehr in Team
+Bielefeld, dann öffnen `c2`–`c5` ins Leere und `c7` zeigt „Nichts gefunden“ (11.10.2026).
 
 ### Was die Bilder brauchen
 
