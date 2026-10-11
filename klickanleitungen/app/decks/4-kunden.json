@@ -6,14 +6,14 @@
   "of": 25,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "10.10.2026",
-  "version": "1.2",
+  "stand": "11.10.2026",
+  "version": "1.3",
   "nr": 4,
   "title": [
     "Kunden finden und",
     "die Kundenakte"
   ],
-  "subtitle": "Klickanleitung für die glatttHub-App — Kundenliste mit Suche, die native Kundenübersicht mit Karten, die neun Bereiche der Kundenakte: Kundeninfos, Termine, Pakete, Dokumente, Behandlung, Vertrag, Forderungen, Kundenservice, Nachrichten",
+  "subtitle": "Klickanleitung für die glatttHub-App — Kundenliste mit Suche, die native Kundenübersicht mit Karten, die zehn Bereiche der Kundenakte: Kundeninfos, Termine, Pakete, Dokumente, Behandlung, Vertrag, Forderungen, Kundenservice, Nachrichten, Kundenportal",
   "eyebrow": "App · Kunden",
   "notes": [
     "Seit 28.09.2026 sind **alle neun Bereiche** der Kundenseite nativ: Jede Karte der Übersicht öffnet ihren Bereich, die **Reiter-Leiste** oben wechselt seitlich, der Pfeil links führt zurück. Auf dem iPad steht der Bereich rechts neben der Übersicht."
@@ -241,6 +241,43 @@
       ],
       "hint": {
         "text": "Jeder Versand ist echter Kundenkontakt über Superchat — die Rückfrage vor dem Senden lässt sich nicht abschalten. Wer keine Nachrichten senden darf, sieht die Unterhaltung nur."
+      }
+    },
+    {
+      "h1": "Kundenportal: Zugang geben",
+      "sub": "Der zehnte Bereich (seit 11.10.2026) zeigt das Konto der Kundin auf my.glattt.com und gibt ihr den Zugang — Einladung, Passwort-Link, Sperre.",
+      "card": {
+        "title": "Bereich 10",
+        "text": "Kundenportal"
+      },
+      "left": {
+        "shot": "client-tab-portal-light"
+      },
+      "leftCaption": "**Kundenportal**: Konto-Karte mit Stand und Knöpfen, darunter was die Kundin im Portal kann und der Verlauf.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Stand lesen",
+          "text": "**Kein Konto**, **Eingeladen**, **Aktiv** oder **Gesperrt** — dazu E-Mail (der Benutzername), Handynummer mit WhatsApp-Hinweis, letzte Anmeldung und ob die App installiert ist."
+        },
+        {
+          "n": 2,
+          "title": "Einladen oder Passwort",
+          "text": "**Zum Portal einladen** legt das Konto an; bei aktivem Konto gibt es **Passwort zurücksetzen**. Beides öffnet die Wahl des Wegs: E-Mail, WhatsApp über Superchat, WhatsApp auf dem Handy, Link kopieren oder **QR-Code**."
+        },
+        {
+          "n": 3,
+          "title": "QR am Tresen",
+          "text": "**Bildschirmfüllend zeigen** — die Kundin scannt den Code mit ihrem Handy über den Tresen und legt ihr Passwort fest. Nichts wird versendet."
+        },
+        {
+          "n": 4,
+          "title": "Sperren",
+          "text": "Mit Rückfrage; beendet alle Anmeldungen im Browser und in „My glattt“. **Entsperren** stellt den alten Stand wieder her. Alles steht im Verlauf."
+        }
+      ],
+      "hint": {
+        "text": "Jeder Link gilt nur **einmal** — die Einladung 14 Tage, der Passwort-Link 24 Stunden. Der Bereich erscheint nur mit dem Recht „Kundenportal: Kundin einladen“ (Büro, Leitung)."
       }
     }
   ]

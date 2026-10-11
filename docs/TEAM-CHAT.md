@@ -264,6 +264,21 @@ plus offener Raum, Backoff 1…60 s), `ChatRecorder`/`ChatPlayer` die Sprachnach
 Kategorie `HUB_CHAT` mit „Antworten“ (Texteingabe, derselbe Sende-Endpunkt) — im offenen Raum
 kein Banner. Details im Abschnitt „Nativer Team-Chat“ in [IOS-APP](IOS-APP.md).
 
+**Look wie WhatsApp (Entscheidung Jan, 11.10.2026, Entwurf 3 + Tapete A):** Alle Züge stecken in
+`ChatLook` (`ios/glatttHub/Chat/ChatLook.swift`, Standard `ChatLook.current`, über die Umgebung
+`\.chatLook` umschaltbar): kräftig abgesetzte Blasen (`ownFill`/`otherFill`) mit **Schwänzchen oben
+außen** an der ersten Blase einer Gruppe (`ChatBubbleShape` — der Körper ist auf der Außenseite
+immer um die Schwanzbreite eingerückt, damit die lange Kante der Gruppe bündig bleibt), 17 pt Text,
+4 pt in der Gruppe / 14 pt zwischen Personen, feste **Namensfarbe je Person** (`senderColor`), Avatar
+in Gruppen **oben** neben der ersten Blase, **Tapete** `logoCoarse` (die Marke aus `LogoMark` 46 pt
+alle 118 pt, versetzt, 9–11 % Gold; weitere Stile `symbols`, `logoFine`, `logoWatermark` nur für
+Entwürfe), Eingabezeile mit GIF im Feld, Kamera daneben und gold gefülltem Mikrofon,
+**Ungelesen-Trenner** („n ungelesene Nachrichten“, Lesestand beim Öffnen in `unreadMarkSeq`
+eingefroren, der Verlauf springt dorthin) und **Pfeil nach unten** mit Zähler (Sichtbarkeit der
+Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Haken bleiben türkis.
+`ChatLook.legacy` und `named("1"…"3c")` liefern die alten Entwürfe für Vergleichsbilder
+(`ChatRoomLiveLayoutTests`, `CHAT_LOOKS`). Wissen: `chat-look-wie-whatsapp`.
+
 ### Fallstricke
 
 - **`ImageRenderer` rastert keine `List`, `ScrollView` oder `Menu`** — die Snapshot-Tests
@@ -289,6 +304,9 @@ kein Banner. Details im Abschnitt „Nativer Team-Chat“ in [IOS-APP](IOS-APP.m
 
 ## Changelog
 
+- **11.10.2026 (abends)** — iOS: Look wie WhatsApp (Entwurf 3 + Tapete A, Befund 313): Blasen mit
+  Schwänzchen, Tapete mit der Marke, Namensfarben, Leiste mit Kamera/GIF, Ungelesen-Trenner, Pfeil
+  nach unten; Chat-Pushes immer mit `mutable-content` (Befund 312).
 - **11.10.2026 (nachmittags)** — Gruppen-Einstellungen „wer darf hinzufügen / schreiben“ und
   das Blatt „Neue Gruppe“ in zwei Schritten wie bei WhatsApp (TestFlight-Befund 273, Entwurf 1);
   Web-Dialog „Neuer Chat“ mit Beschreibung und beiden Schaltern, „Gruppe bearbeiten“ ebenso.
