@@ -158,7 +158,10 @@ Zeile — bewusst ohne `speakableGroupName`, sonst zeigt iOS Absenderin und Grup
 der Mitteilung (`UNTextInputNotificationAction`, Antwort geht an denselben Nachrichten-Endpunkt). Im
 Vordergrund zeigt die App dafür das Systembanner statt der eigenen Karte. Ein versendetes Foto erscheint als
 Vorschau in der Mitteilung: `ChatPushPreview` legt eine verkleinerte, kurzlebige Kopie auf dem öffentlichen
-Bild-Disk ab (`image`), das Profilbild reist getrennt als `chat_avatar`. Bild nur als
+Bild-Disk ab (`image`), das Profilbild reist getrennt als `chat_avatar`. **`mutable-content` setzt der Hub
+bei jeder Chat-Push** (`ApplePushNotificationService`, Kategorie `HUB_CHAT`), nicht nur bei einem Bild — sonst
+läuft die Erweiterung bei Textnachrichten nicht und die Mitteilung zeigt das App-Symbol statt des Profilbilds
+(Befund 312, 11.10.2026). Bild nur als
 `INImage(imageData:)` — Datei-URLs liest der Bild-Proxy nicht. Voraussetzung: Capability
 „Communication Notifications“ nur an der App (die Erweiterung trägt `IntentsSupported` in der Info.plist, das
 Entitlement dort bricht den Export). Prüfstand: `simctl push` startet die Erweiterung
