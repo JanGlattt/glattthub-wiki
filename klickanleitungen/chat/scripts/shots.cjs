@@ -23,7 +23,7 @@ const PLAN = [
   { name: 'c1-liste', url: '/hub/chat', steps: [['loaded'], ['wait', 2500]], marks: [
     { id: 'heute', kind: 'frame', color: 'teal', sel: '.chat-today' },
     { id: 'filter', kind: 'badge', n: 1, sel: '.chat-filters', at: 'r' },
-    { id: 'neu', kind: 'badge', n: 2, sel: '.page-header-glattt-actions .btn-glattt-primary', at: 'l' },
+    { id: 'neu', kind: 'badge', n: 2, sel: '.chat-page-root .chat-new-btn', at: 'l' },
     { id: 'zeile', kind: 'frame', color: 'gold', sel: '.chat-row.is-active, .chat-row' },
   ] },
   { name: 'c2-unterhaltung', url: '/hub/chat', steps: [['loaded'], ['wait', 2000], ['fn', openRoom('team:urLYs9iAs3RUBrYaDZY9ew')], ['wait', 800]], marks: [

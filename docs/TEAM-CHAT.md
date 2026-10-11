@@ -158,6 +158,19 @@ ohne Netz, Entwürfe je Chat in `localStorage`, Echtzeit über `GlatttLive`, Spr
 als `glattt:chat-unread` an Seitenleiste, Bottom-Nav und native Badges. Theme-Abschnitt
 „TEAM-CHAT“ in `theme_glattt.css`.
 
+Seit 11.10.2026 (Jan): Die Seite `/hub/chat` hat **keinen Seitenkopf** — die Chatfläche
+(`.chat-shell`) füllt die Höhe bis zum unteren Rand wie die Seitenleiste
+(`100dvh − Layout-Offsets`, Mindesthöhe 30 rem, darunter scrollt die Seite). „Neuer Chat“ ist der
+goldene Stift (`.chat-new-btn`) in der Werkzeugleiste der Liste, die Erklärung das ⓘ daneben.
+**Suche im Kopf der Unterhaltung** (`roomSearch` in `chat.js`): Die Lupe ersetzt den Titel durch
+ein Feld, `GET /suche?q=&raum={id}` liefert Treffer nur dieses Raums, die Leiste
+`.chat-inline-search` unter dem Kopf springt per `jumpTo(seq)`; Esc/✕ schließt, Raumwechsel
+schließt mit. Das Fenster „Nachrichten suchen“ (alle Chats) bleibt an der Lupe der Liste.
+Fallstricke derselben Runde: `search-glattt-wrapper-flex` ist nur für Kopfzeilen (im Modal wird
+`flex-basis` zur Höhe); ein offenes Zeilenmenü hebt seine Zeile per `z-index` über die
+folgenden, weil jede Zeile positioniert ist; zwischen `.form-glattt-group` und
+`.form-glattt-row` gilt jetzt derselbe Stapel-Abstand wie zwischen zwei Gruppen.
+
 ### iOS/iPadOS
 
 `ChatView` (Haupttab „Chat“, ersetzt Berichte in der Leiste), `ChatRoomView` (Detailseite ohne

@@ -37,6 +37,10 @@ Der Testnutzer braucht `use_chat`, `post_chat_announcements` und ein Heimat-Inst
 `home_branch_id` danach wieder auf `all` stellen (Wissen `local-browser-test-user`). **Vor jedem
 Aufnahmelauf das Seed-Skript erneut laufen lassen** — mit `all` ist der Nutzer nicht mehr in Team
 Bielefeld, dann öffnen `c2`–`c5` ins Leere und `c7` zeigt „Nichts gefunden“ (11.10.2026).
+Ohne Seed-Skript reicht für `c2`–`c5`: `home_branch_id` des Testnutzers auf die Bielefeld-ID
+setzen und die Standard-Räume abgleichen —
+`php -d memory_limit=1G artisan tinker --execute 'app(App\Services\Chat\ChatRoomService::class)->syncStandardRooms(true);'`
+(ohne das Speicherlimit bricht Tinker still ab); danach wieder auf `all`.
 
 ### Was die Bilder brauchen
 
