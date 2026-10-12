@@ -342,6 +342,12 @@ damit (Jan, 10.10.2026).
   (`MailboxPollerUidQueryTest`). Der Cron-Endpunkt meldet 200, auch wenn der Abruf scheitert; der
   Fehler steht nur in `support_mailbox_states.last_error` und im Log „Postfach-Abruf
   fehlgeschlagen“.
+- **„Eingebettet“ entscheidet das HTML, nie die Kopfzeile** (12.10.2026, Ticket #10075): Apple Mail
+  verschickt auch echte Anhänge (gescannte PDFs, Fotos) mit `Content-Disposition: inline` und einer
+  Content-ID. Galt das als `is_inline`, blendeten Web, App, Portal und Benachrichtigungs-Mail den Anhang
+  aus — er lag nur im Bucket. `is_inline` heißt deshalb: das HTML der Mail zeigt ihn per `cid:` an
+  (`SupportAttachment::isReferencedIn()`); die Migration `fix_support_attachments_wrongly_inline` hat
+  den Bestand korrigiert (Zendesk-Importe ohne Content-ID unberührt).
 - Zendesk liefert Anhänge nur mit `Accept: */*` (406 sonst); scheitert ein Anhang, holt der nächste
   Importlauf ihn nach (`zendesk_updated_at` = null).
 - Mails nur mit HTML-Teil (web.de-App): `body_text` entsteht aus `plainText()` plus
