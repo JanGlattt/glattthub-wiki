@@ -457,7 +457,15 @@ solange ein Bildschirm keine Seiten hat.
   eigene Prognose-Säule `is_forecast`). **Versionsweiche:** `TILE_MIN_APP_VERSION` — der
   `TvPagesController` liest die App-Version aus dem User-Agent (`glatttHub-tvOS/x.y.z`) und lässt
   neue Kacheltypen für ältere Apps weg, weil ein unbekannter `type` dort die ganze Antwort
-  unlesbar macht. Standort aus `ScreenDashboardService::branchFor()`:
+  unlesbar macht. **Teure Kacheln** (`kpi`, `chart`, `kpz`, `upcoming`, `day`) liefert der Service
+  „alt sofort, neu im Hintergrund“: eigener Cache je Nutzer/Typ/Konfiguration (`screen-tile:*`, 3 h),
+  ab 5 Minuten Alter stößt ein Abruf genau einen `RefreshScreenTileJob` (Queue `default`) an — vorher
+  hielt ein abgelaufener Kennzahlen-Cache den Abruf alle ~20 Minuten über 3 Minuten fest (Prod-Log
+  13.10.2026). Die Beratungsliste bleibt live. Der technische Bildschirm-Nutzer braucht
+  `view_appointments` (Migration 13.10.2026), sonst fällt die Beratungsliste auf
+  `upcoming_consultations` zurück: keine Namen, keine No-Shows, Stand stundenlang gleich.
+  Kennzahlen-Bildschirme bekommen im Heartbeat `content_poll_seconds` = 60 statt 300 (sie ändern sich
+  ohne Echtzeit-Anstoß). Standort aus `ScreenDashboardService::branchFor()`:
   Office oder `kpi_all_branches` = alle Institute. Leere Objekte kommen als `(object)`, sonst
   dekodiert Swift `[]` nicht.
 - **Endpunkt `GET /api/tv/pages`** (`TvPagesController`, Gerätenachweis wie das Manifest): `etag`,
@@ -740,6 +748,7 @@ Kundenstimme). Swift: `DashboardPagerTests` (Seitenschnitt, Pager, Zahlenformat,
 
 ## Changelog
 
+- **13.10.2026 (Nachmittag)** — Büro-Fernseher zeigte „Stand 12:28“ um 13:22: Bildschirm-Nutzer bekommt `view_appointments`, Kennzahlen-Bildschirme fragen jede Minute nach, teure Kacheln im Hintergrund neu gerechnet; TV-App zeigt als „Stand“ den letzten Abgleich.
 - **13.10.2026** — Kennzahlen-Modus: Beratungen heute live aus der Terminansicht (Namen auch bei anstehenden Terminen, No-Show, im Gange, Instituts-Kürzel in Farbe, KPZ beim Vertrag, „1 Vertrag“, Umblättern mit einstellbarem Takt), neue Kacheln „Heute im Überblick“, „Zukünftige Beratungen“ und „KPZ-Verkauf“ (täglich/monatlich mit Prognose), Kennzahl-Auswahl im Fenster nach Berichtsseiten mit Vorschau, weiches Überblenden der Seiten und sich füllender Seitenpunkt, Raster-Fix im Baukasten. TV-App wieder als **glattt Screen** (`com.glattt.hub.tv`, Custom App über Mosyle) ab 1.2.0 (11); „glattt Bildschirme“ storniert.
 
 - **03.10.2026** — Echtzeit für alle Bildschirme über Reverb: Anstoß `screen.changed` bei Inhalten, Einstellungen und Befehlen (`ScreenLiveObserver` + `ScreenLive`), Inhalte mit Socket nur noch auf Anstoß bzw. alle 5 min, Hub-Seite live über `private-screens.monitor` (Status, Verbindung, Verlauf), Verbindungsstatus aus dem Reverb-Prozess (`TrackScreenLiveConnection`, `screens.live_connected_at`), Bildschirmfoto auf Befehl (`POST /api/tv/screenshot`). Braucht den eingerichteten Reverb-Dienst und einen neuen TV-Build.
