@@ -451,16 +451,18 @@ wird daraus `ios` bzw. `macos`, der Gerätename kommt aus `deviceName`. `platfor
 Erkennung: User-Agent-Suffix `glatttHub-iOS/<version>` (serverseitig `App\Support\NativeApp::isIos()`),
 `body.ios-app`, `<meta name="glattthub-app" content="ios">`. Bridge nur für den Hub-Host injizieren.
 
-### Managed App Configuration (Miradore → App)
+### Managed App Configuration (MDM → App)
+
+Seit 10/2026 läuft die Geräteverwaltung über **Mosyle** statt Miradore (auch für die Apple-TVs); eingetragen wird die Konfiguration unter Install App → Per-App Configuration → „Configure App PLIST“ mit aktivierten Variablen.
 
 | Schlüssel | Typ | Bedeutung |
 |---|---|---|
 | `baseUrl` | String | Hub-URL, Staging für Testgeräte |
 | `sharedDevice` | Bool | geteiltes Gerät: keine Face ID, keine Widgets, Abmelden prominent |
 | `kioskMode` / `instituteToken` | Bool / String | direkt auf die Institutsseite; Miradore setzt zusätzlich Single-App-Modus |
-| `deviceName` | String | Anzeigename in der Push-Geräteliste |
+| `deviceName` | String | Anzeigename in Push- und App-Geräteliste; in Mosyle `%DeviceName%` (Schema `glattt-BS-iPad-<Seriennummer>`), daraus liest der Hub bei glatttweitem MDM-Schlüssel das Institut |
 | `lockAfterSeconds` | Int | Face-ID-Sperre nach Hintergrund (Standard 60) |
-| `enrollmentKey` | String | MDM-Schlüssel der Gerätefreischaltung (Hub → App-Geräte → Art „MDM-Schlüssel”); die App löst ihn beim Start still ein — [APP-GERAETE-FREISCHALTUNG.md](APP-GERAETE-FREISCHALTUNG.md) |
+| `enrollmentKey` | String | MDM-Schlüssel der Gerätefreischaltung (Hub → App-Geräte → Art „MDM-Schlüssel”, Institut „Alle Institute“ für einen Basis-Satz); die App löst ihn beim Start still ein — [APP-GERAETE-FREISCHALTUNG.md](APP-GERAETE-FREISCHALTUNG.md) |
 
 ### Backend-Arbeitspakete im Hub
 

@@ -15,7 +15,7 @@ der App wählt die Kollegin auf der Anmeldeseite **„Gerät freischalten"**, sc
 den Code, und meldet sich danach wie gewohnt mit ihrer PIN an. Ein Code gilt einmal und
 24 Stunden (wahlweise 1 Stunde). Verlorenes Gerät oder Austritt: **Widerrufen** auf
 derselben Seite, das Gerät braucht danach einen neuen Code. Institut-iPads bekommen ihren
-Schlüssel über Miradore und schalten sich beim ersten Start selbst frei.
+Schlüssel über das MDM (seit 10/2026 Mosyle) und schalten sich beim ersten Start selbst frei.
 
 Seit 26.09.2026 gibt es die Seite auch **nativ in der App** (Mehr → Team → App-Geräte bzw.
 iPad-Seitenleiste): Liste mit Filtern und Kennzahlen, Code ausstellen in drei Schritten mit QR-Code
@@ -33,7 +33,7 @@ und Teilen-Blatt (AirDrop auf das Gerät daneben), Codes zurückziehen, Geräte 
 |---|---|---|---|---|---|
 | Persönliches Gerät | `personal` | einmal | 1 h oder 24 h | `personal` (Face ID möglich) | QR, Mail-Link, Abtippen |
 | Institut-Gerät (geteilt) | `shared` | einmal | 1 h oder 24 h | `shared`, an ein Institut gebunden | QR, Mail-Link, Abtippen |
-| MDM-Schlüssel | `mdm` | beliebig oft | ohne Ablauf | `shared`, an ein Institut gebunden | Managed App Configuration `enrollmentKey` |
+| MDM-Schlüssel | `mdm` | beliebig oft | ohne Ablauf | `shared`, an ein Institut gebunden — oder „Alle Institute“: Institut aus dem Gerätenamen | Managed App Configuration `enrollmentKey` |
 
 ### Datenmodell
 
@@ -124,11 +124,28 @@ liest und welche `null` sein dürfen, hält `tests/Feature/AppDevicesNativeTest.
   danach antwortet der App-Host ohne gültigen Nachweis mit 401/403, und die App muss neu
   freischalten (Ablauf in Schritt 2).
 - **Der MDM-Schlüssel ist ein normaler Code** (`kind = mdm`, `max_uses = null`,
-  `expires_at = null`). In Miradore als String `enrollmentKey` in die Managed App
-  Configuration; ein Widerruf im Hub macht alle damit freigeschalteten iPads beim nächsten
+  `expires_at = null`). In Mosyle als String `enrollmentKey` in die Managed App
+  Configuration (Install App → Per-App Configuration → „Configure App PLIST“); ein Widerruf im Hub macht alle damit freigeschalteten iPads beim nächsten
   Nachweis ungültig (Schritt 2) — die iPads holen sich beim nächsten Start keinen neuen
   Schlüssel, solange ihr Geheimnis lokal liegt. Erst „Freischaltung entfernen" in den
   Einstellungen oder ein neuer Schlüssel im MDM.
+- **Glatttweiter MDM-Schlüssel (seit 13.10.2026):** Ein MDM-Schlüssel darf ohne Institut
+  ausgestellt werden („Alle Institute“), damit ein einziger Basis-Satz in Mosyle für alle
+  iPads reicht. Beim Einlösen liest `DeviceEnrollmentService::branchFromDeviceName()` das
+  Institut aus dem Gerätenamen: ein Namensteil, der exakt einem Institutskürzel entspricht
+  (`ClientNumberService::suggestPrefix`, BI/H/OS/HB/BS/MD). Mosyle-Schema
+  `glattt-BS-iPad-<Seriennummer>`, übergeben per `deviceName = %DeviceName%` (ab iPadOS 16
+  liefert `UIDevice.name` ohne Sonderrecht nur „iPad“). Ohne Treffer bleibt das Gerät ohne
+  Institut — das Institut am Gerät ist reine Zuordnung (Liste, Meldung), es steuert keine
+  Rechte. Geteilte Einmal-Codes brauchen weiter ein Institut.
+
+  ```xml
+  <dict>
+      <key>enrollmentKey</key><string>XXXX-XXXX-XXXX</string>
+      <key>sharedDevice</key><true/>
+      <key>deviceName</key><string>%DeviceName%</string>
+  </dict>
+  ```
 
 ### Schritt 2: Der Nachweis wird erzwungen
 
