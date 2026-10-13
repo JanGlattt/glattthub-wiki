@@ -44,9 +44,15 @@ Projektwissen `.github/knowledge/tvos-app-bauplan.md`.
     **Kennzahlen-Modus (Zentrale):** Ein Bildschirm im Modus „Kennzahlen" zeigt Seiten aus dem
     **Seiten-Baukasten** („Seiten gestalten" auf der Bildschirm-Karte): Kacheln werden per Ziehen auf
     ein Raster gelegt und in der Größe gezogen — Kennzahl (mit Tendenz und Verlauf), Diagramm (Balken,
-    Linie, Ring; Verlauf oder Vergleich der Institute), **Beratungen heute** (Uhrzeit, Institut,
-    Beraterin, Kundin, Ergebnis farbig, Kommentar), Uhr und freier Text. Mehrere Seiten blättern von
-    selbst oder per Fernbedienung (links/rechts); Werte gleiten beim Wechsel animiert um. Der
+    Linie, Ring; Verlauf oder Vergleich der Institute), **Beratungen heute** (Uhrzeit, Kürzel des
+    Instituts in dessen Farbe, Beraterin, Kundin — auch bei noch anstehenden Terminen —, Ergebnis
+    farbig mit verkauften KPZ, No-Show und „im Gange“, Kommentar; blättert selbst um, wenn nicht alle
+    auf die Kachel passen), **Heute im Überblick** (Beratungen, Verkäufe, verkaufte KPZ, No-Shows wie
+    die Heute-Karte der App), **Zukünftige Beratungen** (Buchungsstand heute bis 28 Tage je Institut),
+    **KPZ-Verkauf** (täglich oder monatlich mit Prognose, gestapelt je Institut), Uhr und freier Text.
+    Die Kennzahl einer Kachel wird in einem Fenster gewählt — nach Berichtsseiten sortiert, mit Suche
+    und Live-Vorschau. Mehrere Seiten blenden weich ineinander über, von selbst oder per Fernbedienung
+    (links/rechts); der Seitenpunkt unten rechts füllt sich bis zum nächsten Wechsel. Der
     Einbrennschutz (alle x Minuten für y Sekunden Logo und Slogan) wird je Bildschirm in den
     Einstellungen gesetzt. Bildschirme mit Standort „Office" rechnen über alle Institute. Gerechnet
     wird mit den Rechten des Bildschirm-Nutzers — ohne Zuordnung mit dem technischen Nutzer
@@ -428,15 +434,30 @@ solange ein Bildschirm keine Seiten hat.
 
 - **Datenmodell:** `screen_pages` (`screen_id`, `name`, `sort_order`, `seconds` = Sekunden bis zum
   automatischen Weiterblättern, 0 = nur per Fernbedienung, `columns` 3–6, `rows` 2–4, `tiles` JSON).
-  Jede Kachel: `key`, `type` (`kpi`, `chart`, `consultations`, `clock`, `text`), `x`/`y`/`w`/`h` im
+  Jede Kachel: `key`, `type` (`kpi`, `chart`, `consultations`, `day`, `upcoming`, `kpz`, `clock`, `text`), `x`/`y`/`w`/`h` im
   Raster, `config` (KPI-ID + Zeitraum, Diagrammart `bar|line|ring` und Modus `history|branches`,
   Text). Konstanten in `App\Models\ScreenPage`. Einbrennschutz in `screens.settings['burn_in']`
   (`minutes`, `seconds`; Vorgabe 10/20, 0 Minuten = aus).
 - **Service `ScreenPageService`:** `build($screen)` löst jede Kachel zu fertigen Werten auf — KPIs über
   `WidgetKpiService` mit Verlauf (Sparkline), Diagramme im Modus `branches` je sichtbarem Institut in
-  Institutsfarbe, `consultations` aus `upcoming_consultations` ∪ `consultation_records` des Tages
-  (Namen über `ClientStatistic`/`PhorestStaff`, Ergebnis-Label und Farbton aus `OUTCOME_LABELS`/
-  `OUTCOME_TONES`, offene Termine als „gebucht"). Standort aus `ScreenDashboardService::branchFor()`:
+  Institutsfarbe. `consultations` (seit 13.10.2026) aus der Tagesansicht der Termine
+  (`AppAppointmentsService::day()`, Phorest live, 5 min Cache — Neukundinnen stehen dort mit Namen,
+  der Zustand kennt `NO_SHOW`/`CHECKED_IN`), darüber die `consultation_records` des Tages (Zuordnung
+  über alle `phorest_ids` der Buchung); verkaufte KPZ = heute unterschriebene Verträge der Kundin am
+  Standort (`sold_zones`), sonst die erfassten Zonen. Ohne Recht `view_appointments` Rückfall auf
+  `upcoming_consultations` + `ClientStatistic`. Zeile mit `branch_code`/`branch_color`, `state`, `kpz`
+  (Zahl) und `body_zones` (**Text** „3 KPZ“ — TV-Apps bis 1.1.0 dekodieren das Feld als String);
+  `page_seconds` (5–60, Vorgabe 10) ersetzt das alte `limit`, alle Zeilen gehen raus, der Fernseher
+  blättert. `day` = `WidgetDayService::today()` (Recht `view_appointments`), `upcoming` =
+  `ReportController::upcomingConsultationsKpi` (15 min Cache, Recht
+  `view_report_upcoming_consultations`, Zeitfenster aufsteigend mit „Bis Monatsende“ nach
+  `days_remaining`, Institute als `branch_rows`), `kpz` = `SalesStatisticsService::getBodyZonesDailyChart`
+  bzw. `getBodyZonesChart` (Recht `view_report_sales_statistics`; `view` `daily|monthly`, `span`
+  aus `ScreenPage::KPZ_SPANS`, Sonntage ohne Verkauf fallen weg, laufender Monat als „bis heute“ plus
+  eigene Prognose-Säule `is_forecast`). **Versionsweiche:** `TILE_MIN_APP_VERSION` — der
+  `TvPagesController` liest die App-Version aus dem User-Agent (`glatttHub-tvOS/x.y.z`) und lässt
+  neue Kacheltypen für ältere Apps weg, weil ein unbekannter `type` dort die ganze Antwort
+  unlesbar macht. Standort aus `ScreenDashboardService::branchFor()`:
   Office oder `kpi_all_branches` = alle Institute. Leere Objekte kommen als `(object)`, sonst
   dekodiert Swift `[]` nicht.
 - **Endpunkt `GET /api/tv/pages`** (`TvPagesController`, Gerätenachweis wie das Manifest): `etag`,
@@ -447,7 +468,11 @@ solange ein Bildschirm keine Seiten hat.
   Validierung stehen, sonst fällt er aus dem Payload), `preview` (POST, liefert eine Seite mit echten
   Werten). View `hub/screens/pages.blade.php`, Logik `public/js/screens-pages-editor.js`
   (Pointer-Events statt HTML5-Drag, `findFreeSpot()` beim Ablegen aus der Palette, Größe über den
-  Griff unten rechts, Vorschau als Sparkline/SVG). CSS-Block `.pg-*`.
+  Griff unten rechts, Vorschau als Sparkline/SVG; nur freie Rasterzellen werden gezeichnet und fest
+  platziert — automatisch fließend rutschten sie unter belegte Felder in Zusatzzeilen). Kennzahl-Wahl
+  über ein Fenster (`openKpiPicker()`): Berichtsseiten = `source` aus dem Katalog, Suche über Label,
+  Kategorie und Quelle, Vorschau über denselben `preview`-Endpunkt mit Zeitraum/Standort der Kachel
+  (je Kennzahl gecacht), Doppelklick übernimmt. CSS-Block `.pg-*`.
 - **tvOS:** `Model/Pages.swift` (Payload), `Play/PagePager.swift` (Blättern, Auto-Wechsel ab 5 s,
   Einbrennschutz-Timer; bleibt bei neuen Daten auf derselben Seite), `Views/PagesViews.swift`
   (`PageGridView` mit `LazyVGrid`-freiem Raster, `KpiTile`, `ChartTile` mit `BarMark`/`LineMark`/
@@ -587,7 +612,7 @@ drei Wiederholungen) am 24.09.2026 angelegt, siehe [Cloud Scheduler](CLOUD-SCHED
 Bildschirm im Kennzahlen-Modus mit Heartbeat in den letzten zwei Stunden einen `RenderScreenDashboardCards`-
 Job ein. Cloud-Scheduler-Job `render-screen-cards` (Prod, `*/15 * * * *`, drei Wiederholungen).
 
-### tvOS-App (`ios/glatttHubTV`, Target `glatttHubTV`, Produkt `glatttScreens`, Bundle `com.glattt.hub.tv`)
+### tvOS-App (`ios/glatttHubTV`, Target `glatttHubTV`, Produkt `glatttScreens`, Bundle `com.glattt.hub.tv`, Custom App „glattt Screen“ über Mosyle)
 
 Schema `glatttScreens`; bauen und testen ohne Xcode-GUI:
 `xcodebuild -project ios/glatttHub.xcodeproj -scheme glatttScreens -destination 'platform=tvOS Simulator,name=Apple TV 4K (3rd generation)' test CODE_SIGNING_ALLOWED=NO`
@@ -714,6 +739,8 @@ Kundenstimme). Swift: `DashboardPagerTests` (Seitenschnitt, Pager, Zahlenformat,
 `AdminNavigationGroupTest`, `EnvExampleConventionTest`.
 
 ## Changelog
+
+- **13.10.2026** — Kennzahlen-Modus: Beratungen heute live aus der Terminansicht (Namen auch bei anstehenden Terminen, No-Show, im Gange, Instituts-Kürzel in Farbe, KPZ beim Vertrag, „1 Vertrag“, Umblättern mit einstellbarem Takt), neue Kacheln „Heute im Überblick“, „Zukünftige Beratungen“ und „KPZ-Verkauf“ (täglich/monatlich mit Prognose), Kennzahl-Auswahl im Fenster nach Berichtsseiten mit Vorschau, weiches Überblenden der Seiten und sich füllender Seitenpunkt, Raster-Fix im Baukasten. TV-App wieder als **glattt Screen** (`com.glattt.hub.tv`, Custom App über Mosyle) ab 1.2.0 (11); „glattt Bildschirme“ storniert.
 
 - **03.10.2026** — Echtzeit für alle Bildschirme über Reverb: Anstoß `screen.changed` bei Inhalten, Einstellungen und Befehlen (`ScreenLiveObserver` + `ScreenLive`), Inhalte mit Socket nur noch auf Anstoß bzw. alle 5 min, Hub-Seite live über `private-screens.monitor` (Status, Verbindung, Verlauf), Verbindungsstatus aus dem Reverb-Prozess (`TrackScreenLiveConnection`, `screens.live_connected_at`), Bildschirmfoto auf Befehl (`POST /api/tv/screenshot`). Braucht den eingerichteten Reverb-Dienst und einen neuen TV-Build.
 
