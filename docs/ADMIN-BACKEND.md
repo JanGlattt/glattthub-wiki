@@ -27,6 +27,8 @@ Gruppe der aktuellen Seite geht von allein auf. **„Zurück zum Hub“** steht 
 der Seitenleiste, das Nutzer-Menü mit Abmelden darüber. Der Dark-Mode folgt der
 Einstellung des Hubs.
 
+Die Verwaltung der Hub-Konten hat eine eigene Seite: [Hub-Nutzer verwalten](HUB-NUTZER-VERWALTUNG.md).
+
 | Gruppe | Im Admin enthalten |
 |---|---|
 | **Verkauf** | Gutschein-Produkte, Bestellungen, Kauf-Links, Rechtsdokumente, Körperzonen, Beratungsgespräche (Services), Kundennummern, Zufriedenheitsbefragung |

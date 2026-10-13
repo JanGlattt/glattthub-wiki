@@ -215,6 +215,7 @@ nav:
       - Personalverwaltung: STAFF-MODULE.md
       - Benutzer-Einladungen: USER-INVITATION-SYSTEM.md
       - Benutzer archivieren: USER-ARCHIVIERUNG.md
+      - Hub-Nutzer verwalten (Admin): HUB-NUTZER-VERWALTUNG.md
       - Profilseite: PROFILE-INTEGRATION.md
       - Bonus-Board: BONUS-BOARD.md
       - Gamification (Feiern & Badges): GAMIFICATION.md
