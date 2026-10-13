@@ -116,7 +116,24 @@ und erneuert `remember_token`. Push-Abos bleiben.
 Tests: `tests/Feature/HubUserAdminTest.php`. Verwandt: [Benutzer archivieren](USER-ARCHIVIERUNG.md),
 [Benutzer-Einladungen](USER-INVITATION-SYSTEM.md), [Admin-Backend](ADMIN-BACKEND.md).
 
+### Performance
+
+Die Liste fragt für jede Zeile und jede Aktion die Schutzregeln ab (Sichtbarkeit, Zeilen-Link).
+Ungemerkt waren das **709 Abfragen bei 16 Konten** (Prod spürbar langsam, 13.10.2026). Deshalb:
+`HubUserGuard` ist im Container `scoped` und merkt sich Super-Admin-Rollen, aktive Super-Admins,
+Rechte und Zuweisbarkeit je Anfrage (`forget()` nach Änderungen — passiert automatisch über den
+`UserChangeObserver` und beim Rollen-Verlauf); die Tabelle lädt `roles.permissions` und
+`permissions` vorab, der Aufräumen-Check `hrEmployee.employmentPeriods`; Zähler laufen einmal
+(`ListUsers::counts()`). Ergebnis: 31 Abfragen, unabhängig von der Kontenzahl —
+`test_liste_fragt_nicht_je_person_neu_ab` wacht.
+
+**Ladeanzeige im ganzen Admin** (`filament.partials.loading-indicator`, Hook `BODY_END`): Balken
+oben und gedimmte Tabelle, solange eine ausgelöste Livewire-Anfrage läuft (ab 120 ms; Polling mit
+`$refresh` zählt nicht).
+
 ## Changelog
+
+- **13.10.2026 (abends)** — Liste 709 → 31 Abfragen, Ladeanzeige im Admin.
 
 - **13.10.2026** — Neuaufbau: Schutzregeln, Steckbrief und Reiter, Aufräumen, Verlauf, letzte
   Anmeldung, Ansehen als, Löschen nur archivierter Konten, Massenaktionen, Rechte-CSV.
