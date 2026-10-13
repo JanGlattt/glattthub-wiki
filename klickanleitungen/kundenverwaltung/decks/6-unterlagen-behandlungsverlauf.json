@@ -9,8 +9,8 @@
  "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — eingereichte Formulare, Einstellungszettel und Fotos",
  "eyebrow": "Kundenverwaltung · Unterlagen",
  "footerArea": "Kundenverwaltung",
- "stand": "10.10.2026",
- "version": "1.2",
+ "stand": "13.10.2026",
+ "version": "1.3",
  "notes": [
   "Beide Reiter sind **reine Ansicht** — geschrieben wird im laufenden Termin (Dokumente „Terminansicht 2–4“ und H).",
   "Der **Einstellungszettel** ist die wichtigste Vorbereitung auf eine Behandlung: Er zeigt, womit zuletzt gearbeitet wurde.",
@@ -101,7 +101,7 @@
     {
      "n": 0,
      "title": "Gesichtskarte",
-     "text": "Zone **Gesicht** gewählt: Oben erscheint die Karte **„Gesichtskarte“** mit allen gespeicherten Karten der Kundin — wo im Gesicht behandelt wurde, mit Datum und Person. Hier nur ansehen; eingezeichnet wird im Termin."
+     "text": "Zone **Gesicht** gewählt: oben die **„Gesichtskarte“** mit allen gespeicherten Karten der Kundin. Nur ansehen — eingezeichnet wird im Termin."
     },
     {
      "n": 1,
@@ -111,7 +111,7 @@
     {
      "n": 2,
      "title": "Eintrag lesen",
-     "text": "Je Behandlung: **Datum**, **Mitarbeiterin**, **Sitzung**, **Kopf**, **Hauttyp**, Haarfarbe, Dicke, Dichte."
+     "text": "**Datum**, **Mitarbeiterin**, **Sitzung**, **Kopf**, **Hauttyp**, Haar. Eine **zweite Einstellung** steht als Unterzeile mit „b“ (z. B. „4b“) und Bereich."
     },
     {
      "n": 3,
@@ -122,20 +122,89 @@
      "n": 4,
      "title": "Notizen",
      "text": "Auffälligkeiten der letzten Behandlung (Rötung, Schmerz, Pause). Vor jeder Behandlung lesen."
-    },
-    {
-     "n": 5,
-     "title": "Papierzettel nachtragen",
-     "text": "Der gelbe Hinweis zählt **Behandlungen ohne Einstellungszettel**. **„Nachtragen“** (oder „Sitzung nachtragen“ oben rechts) öffnet den Assistenten: links die vergangenen Termine der Kundin mit „offen“/„erfasst“, rechts **eine Sitzung** — Datum und Behandlerin kommen aus dem Termin, die Zonen als Chips, darunter das Raster mit den Zettelfeldern je Zone. **„Letzte Werte“** übernimmt die jüngste Sitzung der Zone, **„Speichern & nächste Sitzung“** springt zum nächsten offenen Termin und nimmt die Werte mit. „Sitzung ohne Termin“ für Zettel vor der Phorest-Zeit."
-    },
-    {
-     "n": 6,
-     "title": "Etikett „Papier“ und Löschen",
-     "text": "Nachgetragene Zeilen tragen **„Papier“** (mit Mauszeiger: wer eingetragen hat) und zählen in der Sitzungsnummer mit. Der **Papierkorb** löscht einen Nachtrag — nur die Person, die ihn eingetragen hat, sowie Leitung und Büro; Einträge aus dem Termin bleiben unantastbar."
     }
    ],
    "hint": {
     "text": "**Eingetragen wird im Termin:** Der Einstellungszettel wird über die Kachel **„Einstellungszettel“** im laufenden Termin gefüllt („Terminansicht 8“). Nachträge aus Papierzetteln gehen hier in der Akte — oder im Termin über „Frühere Sitzungen nachtragen“."
+   },
+   "notes": [
+    {
+     "title": "Papierzettel nachtragen",
+     "text": "Der gelbe Hinweis zählt **Behandlungen ohne Einstellungszettel** — **Haaranalyse** und **Qualitätskontrolle** zählen nicht mit, sie brauchen keinen Zettel. **„Nachtragen“** (oder „Sitzung nachtragen“ oben rechts) öffnet den Assistenten: links die vergangenen Termine der Kundin mit „offen“/„erfasst“, rechts **eine Sitzung** — Datum und Behandlerin kommen aus dem Termin, die Zonen als Chips, darunter das Raster mit den Zettelfeldern je Zone. **„Letzte Werte“** übernimmt die jüngste Sitzung der Zone, **„Speichern & nächste Sitzung“** springt zum nächsten offenen Termin und nimmt die Werte mit. „Sitzung ohne Termin“ für Zettel vor der Phorest-Zeit."
+    },
+    {
+     "title": "Etikett „Papier“ und Löschen",
+     "text": "Nachgetragene Zeilen tragen **„Papier“** (mit Mauszeiger: wer eingetragen hat) und zählen in der Sitzungsnummer mit. Der **Papierkorb** löscht einen Nachtrag — nur die Person, die ihn eingetragen hat, sowie Leitung und Büro; Einträge aus dem Termin bleiben unantastbar."
+    }
+   ]
+  },
+  {
+   "h1": "Papierzettel: zwei Einstellungen & gleiche Werte",
+   "sub": "Im Nachtrag-Assistenten gibt es dieselben Abkürzungen wie im Termin — und die Behandlerin, die nicht mehr im Team ist.",
+   "card": {
+    "title": "Nachtrag kompakt",
+    "text": "Zweite Einstellung, „Gleiche Werte für …“, ehemalige Behandlerin"
+   },
+   "left": {
+    "shot": "n5-nachtrag-zweite-einstellung",
+    "marks": [
+     {
+      "id": "behandlerin"
+     },
+     {
+      "id": "zweite"
+     },
+     {
+      "id": "gleich"
+     }
+    ],
+    "cls": "portrait"
+   },
+   "right": {
+    "shot": "n6-nachtrag-gleiche-werte",
+    "marks": [
+     {
+      "id": "spalte2"
+     },
+     {
+      "id": "entfernen"
+     },
+     {
+      "id": "notice"
+     }
+    ]
+   },
+   "leftCaption": "Brust und Bauch vom Papierzettel: im Spaltenkopf „+ 2. Einstellung“ und „Gleiche Werte für Bauch“.",
+   "rightCaption": "Danach: Spalte „Brust · Einstellung 2“ mit Bereich, darunter die Bestätigung.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Behandlerin nicht mehr im Team",
+     "text": "**„Nicht mehr im Team …“** wählen und darunter den **„Name der Behandlerin“** eintragen."
+    },
+    {
+     "n": 2,
+     "title": "„+ 2. Einstellung“",
+     "text": "Hängt die Spalte **„<Zone> · Einstellung 2“** an (zweiter Kopf oder Bereich), dazu die Zeile **„Bereich“**."
+    },
+    {
+     "n": 3,
+     "title": "„Gleiche Werte für …“",
+     "text": "Kopiert die Werte auf mitbehandelte Zonen **derselben Sitzung** (Brust → Bauch). Gespeichert wird erst mit „Speichern“."
+    },
+    {
+     "n": 4,
+     "title": "„Entfernen“",
+     "text": "Nimmt die zweite Einstellung wieder heraus."
+    },
+    {
+     "n": 5,
+     "title": "Bestätigung",
+     "text": "Unter dem Raster steht, was wohin übernommen wurde."
+    }
+   ],
+   "hint": {
+    "text": "Die zweite Einstellung zählt **nicht als eigene Sitzung**. Welche Zonen zusammengehören (Brust + Bauch, beide Arme, Beine …), legt das Büro im Admin unter **„Gemeinsame Zonen“** fest."
    }
   },
   {

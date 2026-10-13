@@ -23,6 +23,7 @@ Schritt für Schritt steht im Nutzerhandbuch.
 - [Für Anwender — Überblick](#fur-anwender-uberblick)
 - [Für Entwickler](#fur-entwickler)
     - [Funktionsumfang und Verhalten](#funktionsumfang-und-verhalten-seit-februar-2026)
+    - [Zonen gemeinsam behandeln & zweite Einstellung](#zonen-gemeinsam-behandeln-zweite-einstellung-seit-13102026)
     - [URL-Struktur](#url-struktur)
     - [Dateistruktur](#dateistruktur)
     - [Datenbank-Schema](#datenbank-schema)
@@ -55,6 +56,16 @@ Daten nur lesbar (Reiter mit Behandlungsverlauf und Fotogalerie).
   Hauttyp I–VI gewählt.
 - **Fotos erst nach dem Speichern** der Sitzung; sie liegen im privaten Cloud-Speicher und sind nur
   über zeitlich begrenzte Links abrufbar.
+- **Zwei Einstellungen in einer Zone** (seit 13.10.2026): Wird eine Zone mit zwei Köpfen oder bei
+  unterschiedlicher Haut/unterschiedlichen Haaren behandelt (typisch: Gesicht mit großem und kleinem
+  Kopf), nimmt der Zettel eine zweite Einstellung mit eigenem „Bereich" auf. Sie zählt nicht als
+  eigene Sitzung.
+- **Zonen, die zusammen behandelt werden** (Brust + Bauch, beide Arme, Beine …): Nach dem Speichern
+  fragt der Zettel „Heute zusammen behandelt?" und übernimmt die Werte auf Wunsch für die
+  mitbehandelten Zonen — nur wenn sich die Zonen nicht unterscheiden. Welche Zonen zusammengehören,
+  pflegt das Büro im Admin unter **Betrieb → Gemeinsame Zonen**.
+- **Haaranalyse, Qualitätskontrolle und Vertragstermine brauchen keinen Zettel** — sie zählen weder
+  als offene Behandlung noch als „Behandlung ohne Einstellungszettel".
 
 **Wo was erledigt wird:**
 
@@ -63,6 +74,8 @@ Daten nur lesbar (Reiter mit Behandlungsverlauf und Fotogalerie).
 | Behandlungstermin starten, Zone wählen, Zettel ausfüllen und speichern, Warnungen, Behandlung beenden | Terminansicht 8 |
 | Gesperrter Einstellungszettel: Sitzungsbestätigung ausfüllen | Terminansicht 10 |
 | Einstellungszettel und Behandlungsfotos im Kundenprofil lesen | Kundenverwaltung 6 |
+| Zweite Einstellung, „Heute zusammen behandelt?" | Terminansicht 8 |
+| Papierzettel nachtragen, Behandlerin nicht mehr im Team | Kundenverwaltung 6 |
 
 ---
 
@@ -275,8 +288,85 @@ Einstellungszettel" und Knopf „Sitzung nachtragen") und in der Terminansicht (
   (`latest()`-Rückruf: Kundenakte `treatmentsByZone`, Zettel `treatmentHistory`). In der
   Terminansicht werden `clientId`/`branchId` als Funktion übergeben (Kundin erst nach dem Laden
   bekannt), die Terminliste zeigt nur Tage vor dem heutigen.
+- **Behandlerin nicht mehr im Team** (seit 13.10.2026): Die Auswahl kennt nur aktive
+  `phorest_staff`; die Option „Nicht mehr im Team …" schickt `staff_name` (Freitext, ohne
+  `staff_id`). Gespeichert in `treatment_settings.staff_name`; überall, wo Behandlerinnen-Namen
+  aufgelöst werden, greift `TreatmentBackfillService::staffLabel()` (Phorest-Name, sonst Freitext).
+- **Nicht-Behandlungen** fallen seit 13.10.2026 über `NonTreatmentServices` aus den Sitzungen
+  (siehe nächster Abschnitt) — vorher galten Termine mit nur Haaranalyse oder QK als „offen".
 - **Tests:** `tests/Feature/TreatmentBackfillTest.php` (Gruppierung, Neudurchzählung, 422-Fälle,
   Löschrechte, Kundenakte-Felder). Wissen: `.github/knowledge/behandlungsdaten-nachtragen.md`.
+
+### Zonen gemeinsam behandeln & zweite Einstellung (seit 13.10.2026)
+
+**Absicht (Asana „KpZ die wir zusammen behandeln", Leitung Braunschweig; Entscheidung Jan
+13.10.2026: Web Entwurf A1 + B1).** Zonen, die im Institut in einem Durchgang behandelt werden,
+sollen nicht mehrfach abgetippt werden, und eine Zone soll zwei Einstellungen tragen können, wenn
+mit zwei Köpfen gearbeitet wird oder Haut/Haare innerhalb der Zone abweichen. Gilt im Zettel der
+Terminansicht und im Nachtrag, Web und App.
+
+!!! nutzerhandbuch "Bedienung: Terminansicht 8 – Einstellungszettel, Kundenverwaltung 6 – Behandlungsverlauf"
+    https://hilfe.hub.glattt.com/terminansicht/8/ · https://hilfe.hub.glattt.com/kundenverwaltung/6/
+
+**Zweite Einstellung — Datenmodell.** Eigene Zeile in `treatment_settings` mit `parent_id` auf die
+Hauptzeile und `setting_index = 2`; sie übernimmt Termin, Zone, Sitzungsnummer, Datum, Behandlerin
+und `source` der Hauptzeile (`TreatmentSetting::syncSecondSetting()`, beim Neudurchzählen
+`syncSecondIdentity()`). `area_label` (max. 60 Zeichen) benennt den Bereich, an beiden Zeilen.
+Notizen, Fotos und Gesichtskarte hängen nur an der Hauptzeile. Der Unique-Index ist jetzt
+(`phorest_appointment_id`, `body_zone_id`, `setting_index`).
+
+!!! warning "Globaler Scope `primary`"
+    `TreatmentSetting` blendet zweite Einstellungen per globalem Scope aus (`whereNull('parent_id')`).
+    Damit stimmen alle bestehenden Zähler, Sitzungsnummern, Verläufe und Auswertungen ohne Änderung.
+    Wer zweite Einstellungen braucht, lädt die Relation `secondSetting` (serialisiert als
+    `second_setting`) oder fragt mit `withoutGlobalScope(TreatmentSetting::SCOPE_PRIMARY)`.
+    **Raw-SQL auf `treatment_settings`** muss `parent_id IS NULL` selbst setzen, sonst zählt eine
+    Zone doppelt. Löschen der Hauptzeile nimmt die zweite mit (FK `cascadeOnDelete` + `deleting`-Hook).
+
+**Zweite Einstellung — API.** Der Speicher-Endpunkt nimmt je Eintrag `area_label` und `second`:
+*fehlt* = unverändert (ältere App-Builds), `null` = entfernen, Objekt mit den Laser-Feldern
+(`TreatmentSetting::LASER_FIELDS`) + `area_label` = anlegen/ändern. Der Daten-Endpunkt liefert an
+`existingSettings` und `treatmentHistory` je Zeile `second_setting`; ebenso die Kundenakte
+(`treatmentsByZone`). Der Nachtrag nimmt `entries[].second` und `entries[].area_label`.
+Web und App zeigen die zweite Einstellung im Verlauf als Unterzeile „4b". Pflichtfelder und
+Joule-Warnung gelten für beide; verglichen wird mit der jeweils gleichen Einstellung der letzten
+Sitzung (`primaryJoulesWarnings` / `secondJoulesWarnings` in `treatment-settings.js`).
+
+**Gemeinsame Zonen — Gruppen.** Tabelle `treatment_zone_groups` (`name`, `body_zone_keys` JSON,
+`custom_zone_names` JSON, `sort_order`, `is_active`), gepflegt im Admin unter **Betrieb →
+Gemeinsame Zonen** (`TreatmentZoneGroupResource`, Recht `manage_treatment_settings`). Die Migration
+legt die Liste aus Braunschweig an: beide Arme · Arme und Hände · LA + BW (Linea alba,
+Brustwarzen) · Brust und Bauch · Schultern, oberer und unterer Rücken · Oberschenkel, beide
+Unterschenkel, Füße · Intim, Bikini, Pofalte. LA, BW und Pofalte bleiben **freie Zonen** (Jan) —
+sie werden über den normalisierten Schlüssel erkannt (`TreatmentZoneGroup::customKey()`, gleich
+`custom_…` im Web und `BodyZoneCatalog.customKey` in der App). Das Gesicht steht in keiner Gruppe:
+großer und kleiner Kopf sind ein Fall für die zweite Einstellung.
+`TreatmentZoneGroup::payload()` liefert die aktiven Gruppen mit mindestens zwei Zonen als
+`zoneGroups` (Zettel-Endpunkt) bzw. `zone_groups` (Sitzungen des Nachtrags).
+
+**Gemeinsame Zonen — Ablauf (A1 „Vorschlag nach dem Speichern").** Nach dem Speichern einer Zone
+sammelt der Zettel alle Partnerzonen aus allen Gruppen der Zone. Gibt es darunter eine, die in
+diesem Termin noch nicht erfasst ist, fragt er „Heute zusammen behandelt?": geplante Zonen
+(`plannedZones.keys`, bei Ganzkörper alle Standardzonen) sind vorgehakt, freie Zonen nie, bereits
+erfasste ausgegraut. „Für … übernehmen" schickt **einen** POST mit je einem Eintrag pro Zone —
+nur Laser-Werte (+ `area_label` und zweite Einstellung), keine Notizen, keine Sitzungsnummer (die
+vergibt der Server je Zone). Keine Joule-Rückfrage für die Kopien; sie wurde an der Quelle
+bestätigt. Im Nachtrag kopiert „Gleiche Werte für …" clientseitig in die Spalten der Partnerzonen,
+die in derselben Sitzung gewählt sind; gespeichert wird mit der Sitzung.
+
+**Nicht-Behandlungen.** `App\Services\Treatments\NonTreatmentServices::PATTERN` ist die eine
+Stelle für Leistungen ohne Laser: Phorest markiert sie mit führendem `*` („*Haaranalyse 10 min",
+„*Qualitätskontrolle 30 min", „*Vertrag unterschreiben"), dazu Desinfektion, Extrazeit, Beratung,
+Flow, Wartung und „QK". Der Nachtrag filtert damit seine Sitzungen; `GET …/treated-zones` gibt das
+Muster als `non_treatment_pattern` mit, und die Sitzungs-Karte der Terminansicht (Web
+`appointment-unified.js`, App `AppointmentDetailModel.sessionChips`) blendet solche Leistungen aus den
+Behandlungs-Chips aus. Das Muster ist ohne Begrenzer geschrieben, damit PHP, JavaScript
+(`new RegExp(p, 'iu')`) und `NSRegularExpression` es gleich lesen.
+
+**Tests:** `tests/Feature/TreatmentZonesTogetherTest.php` (zweite Einstellung anlegen/behalten/
+entfernen, Zähler nur Hauptzeilen, Gruppen im Daten-Endpunkt, Mehrfach-Speichern mit eigener
+Sitzungsnummer, Nachtrag mit Freitext und zweiter Einstellung inkl. Neudurchzählung und Löschen,
+Haaranalyse/QK, Muster).
 
 ### 🔗 URL-Struktur
 
@@ -331,10 +421,16 @@ CREATE TABLE `treatment_settings` (
     `phorest_branch_id` VARCHAR(64) NOT NULL,
     `phorest_client_id` VARCHAR(64) NOT NULL,
     `phorest_staff_id` VARCHAR(64) NULL,
+    `staff_name` VARCHAR(100) NULL COMMENT 'Behandlerin als Freitext (Nachtrag, nicht mehr im Team)',
     
     -- Körperzone (nullable für benutzerdefinierte Zonen)
     `body_zone_id` BIGINT UNSIGNED NULL,
     `custom_zone_name` VARCHAR(100) NULL COMMENT 'Benutzerdefinierte Zone (z.B. Kinn)',
+
+    -- Zweite Einstellung derselben Zone (seit 13.10.2026)
+    `setting_index` TINYINT UNSIGNED NOT NULL DEFAULT 1 COMMENT '1 = Hauptzeile, 2 = zweite Einstellung',
+    `parent_id` BIGINT UNSIGNED NULL COMMENT 'Hauptzeile der zweiten Einstellung (ON DELETE CASCADE)',
+    `area_label` VARCHAR(60) NULL COMMENT 'Bereich innerhalb der Zone, z.B. Oberlippe',
     
     -- Behandlungsnummer an dieser Zone (1, 2, 3...)
     `treatment_number` TINYINT UNSIGNED NOT NULL DEFAULT 1,
@@ -369,7 +465,7 @@ CREATE TABLE `treatment_settings` (
     INDEX (`phorest_branch_id`),
     INDEX (`phorest_client_id`),
     INDEX (`phorest_staff_id`),
-    UNIQUE KEY (`phorest_appointment_id`, `body_zone_id`),
+    UNIQUE KEY (`phorest_appointment_id`, `body_zone_id`, `setting_index`), -- seit 13.10.2026
     FOREIGN KEY (`body_zone_id`) REFERENCES `body_zones` (`id`) ON DELETE CASCADE,
     FOREIGN KEY (`created_by_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 );

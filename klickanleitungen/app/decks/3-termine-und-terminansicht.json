@@ -6,8 +6,8 @@
   "of": 25,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "10.10.2026",
-  "version": "1.7",
+  "stand": "13.10.2026",
+  "version": "1.8",
   "nr": 3,
   "title": [
     "Termine und die",
@@ -134,11 +134,52 @@
         {
           "n": 4,
           "title": "Verlauf",
-          "text": "Unter dem Formular alle früheren Sitzungen dieser Zone — mit Fotos."
+          "text": "Über dem Formular alle früheren Sitzungen dieser Zone — mit Fotos. Eine **zweite Einstellung** steht als Unterzeile mit „b“ (z. B. „3b“) und Bereich."
         }
       ],
       "hint": {
         "text": "**Sitzungsnummer** zählt je Zone automatisch weiter. Skintel **oder** Hauttyp reicht — eines von beiden ist Pflicht."
+      }
+    },
+    {
+      "h1": "Zwei Einstellungen & gemeinsame Zonen",
+      "sub": "Ein Teil der Zone mit anderem Kopf oder helleren Haaren bekommt eine zweite Einstellung. Nach dem Speichern bietet die App an, die Werte für mitbehandelte Zonen zu übernehmen.",
+      "card": {
+        "title": "Zwei Einstellungen",
+        "text": "„Zweite Einstellung“, „Heute zusammen behandelt?“"
+      },
+      "left": {
+        "shot": "treatment-second-ipad-light"
+      },
+      "leftCaption": "iPad: Einstellung 1 und 2 nebeneinander, je mit Bereich — die Joule-Warnung prüft beide. Auf dem iPhone stehen sie untereinander.",
+      "right": {
+        "shot": "treatment-suggestion-iphone-light"
+      },
+      "rightCaption": "Nach dem Speichern: „Heute zusammen behandelt?“ — iPhone als Blatt, iPad als Popover am Speichern-Knopf.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "„Zweite Einstellung“",
+          "text": "Unter den Gruppen des Zonen-Formulars. Es erscheint **„Einstellung 2“** mit Bereich, Kopf, Hauttyp, Haar, empfohlenen und genutzten Werten; **„Entfernen“** nimmt sie wieder heraus."
+        },
+        {
+          "n": 2,
+          "title": "Bereiche benennen",
+          "text": "Für beide Einstellungen den **Bereich** eintragen (z. B. „Wangen“ / „Oberlippe“). Pflichtfelder und Joule-Warnung gelten für beide; **Notizen und Fotos** gibt es einmal je Zone."
+        },
+        {
+          "n": 3,
+          "title": "Zonen übernehmen",
+          "text": "Gehört die Zone zu einer Gruppe (z. B. Brust + Bauch, beide Arme, die Beine), fragt die App **„Heute zusammen behandelt?“**. Geplante Zonen sind angehakt, erfasste ausgegraut. **„Für … übernehmen“** speichert dieselben Werte samt zweiter Einstellung — ohne Notizen und Fotos."
+        },
+        {
+          "n": 4,
+          "title": "„Nur …“",
+          "text": "Schließt ohne Übernahme. Nur übernehmen, wenn sich die Zonen wirklich nicht unterscheiden."
+        }
+      ],
+      "hint": {
+        "text": "Die zweite Einstellung ist **keine eigene Sitzung**, und jede übernommene Zone behält ihre **eigene Sitzungsnummer**. Haaranalyse und Qualitätskontrolle erscheinen nicht mehr als Behandlungs-Chip."
       }
     },
     {
@@ -149,9 +190,9 @@
         "text": "Eine Sitzung = ein Zettel: Datum, Behandlerin, Zonen"
       },
       "left": {
-        "shot": "treatment-backfill-ipad-light"
+        "shot": "treatment-backfill-ipad-second-light"
       },
-      "leftCaption": "iPad: links die früheren Termine der Kundin (offen/erfasst), rechts die Sitzung mit Zonen-Chips und dem Raster je Zone.",
+      "leftCaption": "iPad: links die früheren Termine der Kundin (offen/erfasst), rechts die Sitzung mit Zonen-Chips und dem Raster je Zone — mit „Übernehmen für …“ und „Zweite Einstellung“.",
       "steps": [
         {
           "n": 1,
@@ -161,12 +202,12 @@
         {
           "n": 2,
           "title": "Sitzung wählen",
-          "text": "Links die vergangenen Termine (nur vor heute): Antippen belegt **Datum, Behandlerin und Zonen** vor. **„Ohne Termin“** für Zettel vor der Phorest-Zeit — Datum und Behandlerin frei."
+          "text": "Links die vergangenen Termine (nur vor heute): Antippen belegt **Datum, Behandlerin und Zonen** vor. **„Ohne Termin“** für Zettel vor der Phorest-Zeit — Datum und Behandlerin frei. Ist die Behandlerin nicht mehr im Team: **„Nicht mehr im Team“** wählen und den Namen eintippen."
         },
         {
           "n": 3,
           "title": "Werte je Zone",
-          "text": "Chips wählen die Zonen des Zettels, darunter die Felder je Zone (iPhone: Seiten zum Wischen, iPad: Raster). **„Letzte Werte übernehmen“** holt die jüngste Sitzung der Zone — nur Abweichungen ändern. Leere Felder bleiben leer."
+          "text": "Chips wählen die Zonen des Zettels, darunter die Felder je Zone (iPhone: Seiten zum Wischen, iPad: Raster). **„Letzte Werte übernehmen“** holt die jüngste Sitzung der Zone — nur Abweichungen ändern. Leere Felder bleiben leer. **„Zweite Einstellung“** hängt je Zone einen zweiten Satz Werte mit Bereich an, **„Gleiche Werte für …“** (iPad: „Übernehmen für …“) kopiert die Werte auf mitbehandelte Zonen derselben Sitzung."
         },
         {
           "n": 4,

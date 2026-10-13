@@ -1227,6 +1227,20 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   Verlauf zeigt „Papier" und das Datum (`treated_at`), Löschen nur bei `can_delete` (Swipe + Knopf
   mit Rückfrage). Kein Foto-Upload (Jan). Snapshots `treatment-backfill-*`
   (`TreatmentBackfillSnapshotTests`). Wissen: `behandlungsdaten-nachtragen.md`.
+- **Zonen gemeinsam & zweite Einstellung (seit 13.10.2026, wie Web A1 + B1):** gemeinsame Bausteine
+  in `AppointmentView/TreatmentLaserSettings.swift` (Laserwerte einer Einstellung mit Pflichtfeldern,
+  Joule-Warnung und Payload, Zonen-Gruppen aus `zoneGroups`/`zone_groups`, Kopf „Einstellung 1/2“ mit
+  „Bereich“, „+ Zweite Einstellung“, Ansicht „Heute zusammen behandelt?“). Zettel: zweite Einstellung
+  auf dem iPhone untereinander, auf dem iPad in zwei Spalten; der Vorschlag nach dem Speichern öffnet
+  auf dem iPhone als Blatt erst im `onDismiss` des Zonen-Blatts (Blatt-Kette), auf dem iPad als Popover
+  am Speichern-Knopf. Nachtrag: „Gleiche Werte für …“ (Menü bei mehreren Partnern), „+ Zweite
+  Einstellung“ je Werteseite bzw. Zeilen „2.“ im iPad-Raster, Behandlerin „Nicht mehr im Team …“ als
+  Freitext (`staff_name`). Verläufe (Zonen-Tabelle, Kundenakte, Terminansicht) zeigen die zweite
+  Einstellung als Unterzeile „3b“ mit Bereich. Sitzungs-Chips filtern Leistungen nach
+  `non_treatment_pattern` aus `treated-zones` (Haaranalyse, QK). Alle neuen Felder optional — ältere
+  Hubs bleiben bedienbar. Technik und API: `TREATMENT-SETTINGS.md`, „Zonen gemeinsam behandeln“.
+  Snapshots: `treatment-second-*`, `treatment-suggestion-iphone-*`, `treatment-history-second-*`,
+  `treatment-backfill-{copy,second,staff-free,ipad-second}-*`.
 - **Tageskalender neben den Slots (seit 10.10.2026, Entwurf App 1):** Segment „Vorschläge | Tag"
   im Slot-Finder sowie im Folgetermin- und Verlegen-Blatt (`BookingFinderView.suggestions`,
   `FollowUpBookingContent.suggestionsCard`). `Booking/BookingDayCalendar.swift`: Modell mit dem

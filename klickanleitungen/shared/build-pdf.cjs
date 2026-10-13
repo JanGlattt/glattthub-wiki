@@ -123,6 +123,9 @@ if (process.argv.includes('--html-only')) process.exit(0);
   const page = await browser.newPage();
   await page.goto('file://' + outBase + '.html', { waitUntil: 'load' });
   await page.waitForTimeout(500);
+  // Grosse Decks druckte Chromium mit leeren Screenshots (Terminansicht 8, 13.10.2026):
+  // (die Bilder tragen loading="lazy" fürs Web — im Druck laden Bilder ausserhalb des Fensters sonst nie)
+  await page.evaluate(() => Promise.all([...document.images].map(i => { i.loading = 'eager'; return i.decode().catch(() => {}); })));
   await page.pdf({ path: outBase + '.pdf', format: 'A4', landscape: true, printBackground: true, margin: { top: 0, bottom: 0, left: 0, right: 0 }, preferCSSPageSize: true });
   await browser.close();
   console.log('PDF', outBase + '.pdf');

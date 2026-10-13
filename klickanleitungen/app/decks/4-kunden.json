@@ -6,8 +6,8 @@
   "of": 25,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "11.10.2026",
-  "version": "1.3",
+  "stand": "13.10.2026",
+  "version": "1.4",
   "nr": 4,
   "title": [
     "Kunden finden und",
@@ -175,20 +175,20 @@
         "shot": "treatment-backfill-hint-light"
       },
       "right": {
-        "shot": "treatment-backfill-values-light"
+        "shot": "treatment-backfill-copy-light"
       },
       "leftCaption": "Oben der Hinweis „N Behandlungen ohne Einstellungszettel“ mit **„Nachtragen“**; nachgetragene Sitzungen tragen **„Papier“** und „eingetragen von …“.",
-      "rightCaption": "Schritt 3 „Werte“: je Zone Laserkopf, Hauttyp, Haar, Empfehlung, genutzte Werte und Notiz.",
+      "rightCaption": "Schritt 3 „Werte“: je Zone Laserkopf, Hauttyp, Haar, Empfehlung und genutzte Werte — darunter „Zweite Einstellung“ und „Gleiche Werte für …“.",
       "steps": [
         {
           "n": 1,
           "title": "Hinweis und Knopf",
-          "text": "Solange Behandlungen ohne Zettel offen sind, steht oben der gelbe Hinweis mit **„Nachtragen“**; sonst „Sitzung nachtragen“."
+          "text": "Solange Behandlungen ohne Zettel offen sind, steht oben der gelbe Hinweis mit **„Nachtragen“**; sonst „Sitzung nachtragen“. **Haaranalyse** und **Qualitätskontrolle** zählen nicht mit — sie brauchen keinen Zettel."
         },
         {
           "n": 2,
           "title": "Drei Schritte",
-          "text": "**1 Sitzung** (Termin aus der Liste oder ohne Termin mit Datum und Behandlerin), **2 Zonen** (Chips, aus dem Termin vorgewählt, eigene Zone als Text), **3 Werte** je Zone — mit „Letzte Werte übernehmen“."
+          "text": "**1 Sitzung** (Termin aus der Liste oder ohne Termin mit Datum und Behandlerin — für ausgeschiedene Kolleginnen **„Nicht mehr im Team“** und Name), **2 Zonen** (Chips, aus dem Termin vorgewählt, eigene Zone als Text), **3 Werte** je Zone — mit „Letzte Werte übernehmen“, **„Zweite Einstellung“** und **„Gleiche Werte für …“** (kopiert auf mitbehandelte Zonen der Sitzung)."
         },
         {
           "n": 3,

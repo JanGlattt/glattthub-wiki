@@ -1258,5 +1258,55 @@
   },
   "marks": [],
   "ratio": 2
+ },
+ "treatment-second-ipad-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1800,
+   "height": 2580
+  },
+  "ratio": 1.4333333333333333,
+  "marks": []
+ },
+ "treatment-suggestion-iphone-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 780
+  },
+  "ratio": 1.0,
+  "marks": []
+ },
+ "treatment-backfill-ipad-second-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2360,
+   "height": 2700
+  },
+  "ratio": 1.1440677966101696,
+  "marks": []
+ },
+ "treatment-backfill-staff-free-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1260
+  },
+  "ratio": 1.6153846153846154,
+  "marks": []
+ },
+ "treatment-backfill-copy-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 2800
+  },
+  "ratio": 3.58974358974359,
+  "marks": []
  }
 }

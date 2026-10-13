@@ -187,7 +187,9 @@ ist. Darunter wie gewohnt „Termin läuft" und „Termin beenden".
 **Behandlungen in der Sitzungs-Karte:** Unter dem Zeit-Block stehen die gebuchten Leistungen
 als Chips mit Zähler „n / m" — Namen bereinigt (Phorest-Präfix wie „Abo.LS-39" entfernt,
 VERSALIEN in Wortanfangs-Großschreibung; `displayServiceName()`), Phorest-Systemeinträge mit
-führendem Punkt („..Desinfektion") ausgeblendet. Sobald der Einstellungszettel für eine Zone einen
+führendem Punkt („..Desinfektion") ausgeblendet, seit 13.10.2026 auch Leistungen ohne Laser
+(Haaranalyse, Qualitätskontrolle, Vertrag, Beratung — Muster `non_treatment_pattern` aus
+`treated-zones`, siehe `TREATMENT-SETTINGS.md`, „Nicht-Behandlungen"). Sobald der Einstellungszettel für eine Zone einen
 Eintrag hat, wird der Chip grün mit Haken; zusätzlich eingetragene Zonen ohne gebuchte Leistung
 stehen als eigene Gruppe „Zusätzlich behandelt" darunter. Technik: `GET /hub/appointment/{branch}/{appointment}/treated-zones`
 (`AppointmentViewController::getTreatedZones`, `can:view_appointment_detail`, reine DB-Abfrage auf

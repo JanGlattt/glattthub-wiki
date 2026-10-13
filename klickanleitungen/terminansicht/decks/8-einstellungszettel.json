@@ -10,11 +10,12 @@
  "subtitle": "Klickanleitung für Bestandskundinnen — Behandlungstermin starten, Einstellungen je Körperzone erfassen, Termin beenden",
  "eyebrow": "Terminansicht · Behandlungstermin",
  "footerArea": "Terminansicht",
- "stand": "10.10.2026",
- "version": "1.5",
+ "stand": "13.10.2026",
+ "version": "1.6",
  "notes": [
   "Der Einstellungszettel wird **bei jeder Behandlung** gepflegt — je Zone Laserkopf, Hauttyp, Haar, empfohlene und genutzte Werte.",
-  "Frühere Werte der Kundin stehen im Formular als **Historie** — beim nächsten Termin sind sie sofort sichtbar."
+  "Frühere Werte der Kundin stehen im Formular als **Historie** — beim nächsten Termin sind sie sofort sichtbar.",
+  "Zwei Köpfe in einer Zone? **„+ Zweite Einstellung“**. Mehrere Zonen mit denselben Werten? **„Heute zusammen behandelt?“** übernimmt sie nach dem Speichern."
  ],
  "pages": [
   {
@@ -97,7 +98,7 @@
     {
      "n": 4,
      "title": "Frühere Sitzungen nachtragen",
-     "text": "Der Knopf über der Figur öffnet den **Papierzettel-Assistenten**: links die früheren Termine der Kundin (nur vor heute), rechts eine Sitzung mit Datum, Behandlerin und den Zonen des laufenden Termins vorgewählt. Nach dem Speichern kennt der Zettel die nachgetragenen Werte als **„letzte Werte“**. Im Zonen-Formular gibt es denselben Knopf unter dem Verlauf, dort mit der offenen Zone vorgewählt; nachgetragene Zeilen tragen dort **„Papier“**."
+     "text": "Der Knopf über der Figur öffnet den **Papierzettel-Assistenten**: links die früheren Termine der Kundin (nur vor heute), rechts eine Sitzung mit Datum, Behandlerin und den Zonen des laufenden Termins vorgewählt. Nach dem Speichern kennt der Zettel die nachgetragenen Werte als **„letzte Werte“**. Im Zonen-Formular gibt es denselben Knopf unter dem Verlauf, dort mit der offenen Zone vorgewählt; nachgetragene Zeilen tragen dort **„Papier“**. Auch im Nachtrag gibt es **„+ 2. Einstellung“** und **„Gleiche Werte für …“**, und eine ausgeschiedene Kollegin lässt sich als Behandlerin eintragen („Kundenverwaltung 6“)."
     }
    ]
   },
@@ -131,12 +132,12 @@
     ]
    },
    "leftCaption": "Zettel der Zone „Achseln“, erste Gruppe „Laserkopf“ — „Weiter“ springt zur nächsten Gruppe.",
-   "rightCaption": "Gruppe „Genutzt“: die tatsächlich verwendeten Werte, darunter Notizen und „Speichern“.",
+   "rightCaption": "Gruppe „Genutzt“: die tatsächlich verwendeten Werte, daneben die Notizen, unten „Speichern“.",
    "steps": [
     {
      "n": 1,
      "title": "Gruppen durchgehen",
-     "text": "**Laserkopf** (Groß/Klein) → **Hauttyp** (Skintel-Wert oder Typ I–VI) → **Haar** (Farbe, Dicke, Dichte) → **Empfohlen** (ms, Joule min/max) → **Genutzt**. Mit **„Weiter“** oder Antippen der Gruppe wechseln."
+     "text": "**Laserkopf** → **Hauttyp** (Skintel oder Typ I–VI) → **Haar** → **Empfohlen** → **Genutzt**. Mit **„Weiter“** oder Antippen der Gruppe wechseln. Darunter steht **„+ Zweite Einstellung“** (nächster Vorgang)."
     },
     {
      "n": 2,
@@ -146,7 +147,7 @@
     {
      "n": 3,
      "title": "Gesichtskarte (nur Zone Gesicht)",
-     "text": "Bei **Flex GESICHT** oder **Ganzkörper** steht unter den Gruppen die **Gesichtskarte**: mit Finger, Maus oder Pencil auf der Gesichts-Vorlage einzeichnen, wo behandelt wird — **Stift** für Linien, **Marker** für Flächen, **Radierer** nimmt einen Strich weg. **„Gesichtskarte speichern“**. Beim nächsten Gesichts-Termin liegt die Karte wieder vor („übernommen vom …“) und wird angepasst. Fehlt sie, zeigt der Zettel oben den Hinweis; ist sie im Admin Pflicht, lässt sich der Termin ohne Karte nicht beenden."
+     "text": "Bei **Flex GESICHT** oder **Ganzkörper** steht unter den Gruppen die **Gesichtskarte**: mit Finger oder Pencil einzeichnen, wo behandelt wird (**Stift**, **Marker**, **Radierer**), dann **„Gesichtskarte speichern“**. Beim nächsten Termin liegt sie wieder vor. Ist sie im Admin Pflicht, lässt sich der Termin ohne Karte nicht beenden."
     },
     {
      "n": 4,
@@ -161,6 +162,125 @@
    ],
    "hint": {
     "text": "Bei einer **Folgebehandlung** zeigt der Zettel die Werte der letzten Sitzung als Historie — so lässt sich direkt anknüpfen oder gezielt anpassen."
+   }
+  },
+  {
+   "h1": "Zwei Einstellungen in einer Zone",
+   "sub": "Wird ein Teil der Zone anders behandelt — kleiner Kopf für die Oberlippe, hellere Haare am Knie —, bekommt der Zettel eine zweite Einstellung.",
+   "card": {
+    "title": "Zweite Einstellung",
+    "text": "„+ Zweite Einstellung“, Bereich benennen, Verlauf mit „b“"
+   },
+   "left": {
+    "shot": "k8-zweite-einstellung-knopf",
+    "marks": [
+     {
+      "id": "add"
+     },
+     {
+      "id": "verlauf"
+     }
+    ]
+   },
+   "right": {
+    "shot": "k9-zweite-einstellung",
+    "marks": [
+     {
+      "id": "bereich1"
+     },
+     {
+      "id": "block2"
+     },
+     {
+      "id": "entfernen"
+     }
+    ]
+   },
+   "leftCaption": "Zettel „Linker Unterschenkel“: Einstellung 1 ist ausgefüllt, darunter „+ Zweite Einstellung“. Im Verlauf steht die zweite Einstellung der letzten Sitzung als Zeile „1b“.",
+   "rightCaption": "Oben der Bereich der Einstellung 1 („Schienbein“), unten der gestrichelte Block „Einstellung 2“ („Knie“, kleiner Kopf).",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„+ Zweite Einstellung“",
+     "text": "Unter den Gruppen. Gab es in der letzten Sitzung schon eine zweite Einstellung, sind ihre Werte vorbelegt."
+    },
+    {
+     "n": 2,
+     "title": "Bereiche benennen",
+     "text": "Oben erscheint **„Bereich (z. B. Wangen)“** für Einstellung 1, im Block „Einstellung 2“ der zweite Bereich (z. B. **„Oberlippe“**)."
+    },
+    {
+     "n": 3,
+     "title": "Einstellung 2 ausfüllen",
+     "text": "Kopf, Skintel oder Typ, Haar, empfohlene und genutzte Werte — **dieselben Pflichtfelder** wie Einstellung 1, auch die **Joule-Warnung** prüft beide."
+    },
+    {
+     "n": 4,
+     "title": "„Entfernen“",
+     "text": "Nimmt die zweite Einstellung wieder heraus (mit Rückfrage)."
+    },
+    {
+     "n": 5,
+     "title": "Verlauf mit „b“",
+     "text": "Die zweite Einstellung steht als **Unterzeile** mit „b“ (z. B. **„4b“**) und ihrem Bereich im Verlauf."
+    }
+   ],
+   "hint": {
+    "text": "**Keine eigene Sitzung:** Die Zone zählt einmal, die Sitzungsnummer bleibt. **Notizen, Fotos und Gesichtskarte** gibt es nur einmal je Zone."
+   }
+  },
+  {
+   "h1": "Heute zusammen behandelt?",
+   "sub": "Zonen, die meist gemeinsam behandelt werden (z. B. Brust + Bauch, beide Arme, die Beine), müssen nicht einzeln abgetippt werden — nach dem Speichern bietet der Hub an, die Werte zu übernehmen.",
+   "card": {
+    "title": "Gemeinsame Zonen",
+    "text": "Werte nach dem Speichern auf mitbehandelte Zonen übernehmen"
+   },
+   "left": {
+    "shot": "k10-zusammen-behandelt",
+    "marks": [
+     {
+      "id": "liste"
+     },
+     {
+      "id": "ok"
+     },
+     {
+      "id": "nur"
+     }
+    ]
+   },
+   "leftCaption": "Nach dem Speichern von „Linker Unterschenkel“: der geplante rechte Unterschenkel ist vorgehakt, der Oberschenkel ist schon erfasst.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zonen ankreuzen",
+     "text": "Die Liste zeigt die Partnerzonen. Für heute **geplante** Zonen sind vorgehakt, **„bereits erfasst“** ist ausgegraut und wird nicht überschrieben."
+    },
+    {
+     "n": 2,
+     "title": "Übernehmen",
+     "text": "**„Für Bauch übernehmen“** bzw. **„Für 2 Zonen übernehmen“** speichert dort dieselben Werte: Kopf, Hauttyp, Haar, empfohlene und genutzte Werte — samt zweiter Einstellung. **Notizen und Fotos** bleiben bei der ersten Zone."
+    },
+    {
+     "n": 3,
+     "title": "„Nur …“",
+     "text": "**„Nur Brust“** schließt das Fenster ohne Übernahme — die anderen Zonen dann wie gewohnt einzeln erfassen."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Welche Zonen zusammengehören",
+     "text": "Legt das Büro im Admin unter **„Gemeinsame Zonen“** fest — zum Start: Brust + Bauch, beide Arme, Arme + Hände, Schultern + oberer/unterer Rücken, Oberschenkel + Unterschenkel + Füße, Intim + Bikini + Pofalte, LA + BW."
+    },
+    {
+     "title": "Eigene Sitzungsnummer",
+     "text": "Jede übernommene Zone behält ihre **eigene Sitzungsnummer** und erscheint als eigener Chip."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Nur übernehmen, wenn sich die Zonen wirklich nicht unterscheiden** — etwa im Winter, wenn Brust und Bauch gleich hell sind. Andere Haare oder Haut? Dann „Nur …“ und die Zone einzeln einstellen."
    }
   },
   {
@@ -237,6 +357,11 @@
      "n": 3,
      "title": "Vor dem Beenden prüfen",
      "text": "Stehen alle Chips auf grün, ist die Behandlung vollständig dokumentiert — fehlt einer, den Zettel noch nachtragen."
+    },
+    {
+     "n": 4,
+     "title": "Ohne Zettel",
+     "text": "**Haaranalyse** und **Qualitätskontrolle** erscheinen nicht als Chip — sie brauchen keinen Einstellungszettel und zählen nicht als offene Behandlung."
     }
    ],
    "rightHtml": "<div class='steps cols-1' style='margin-top:0'><div class='step'><div class='num'>i</div><div><div class='t'>Zusätzlich behandelt</div><div class='d'>Zonen, die nicht gebucht waren, aber im Zettel stehen, hängen als eigene Gruppe <b>„Zusätzlich behandelt“</b> unten an der Karte — praktisch, wenn spontan eine Zone dazukommt.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Namen der Leistungen</div><div class='d'>Die Chips zeigen die gebuchte Leistung ohne den Phorest-Vorsatz (aus „Abo.LS-39 SCHULTERN“ wird „Schultern“).</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Aktualisiert sich selbst</div><div class='d'>Die Karte lädt nach jedem Speichern neu — Nachbessern eines Zettels färbt den Chip also sofort mit.</div></div></div></div>",
