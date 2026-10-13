@@ -14,7 +14,7 @@
   "eyebrow": "Admin · Nachrichten",
   "footerArea": "Admin-Panel",
   "stand": "13.10.2026",
-  "version": "1.6",
+  "version": "1.7",
   "notes": [
     "Hier wird eingestellt, **was der Hub von selbst verschickt** — an Kundinnen, ohne dass jemand tippt.",
     "**Jede Änderung wirkt sofort** auf alle künftigen Nachrichten; es gibt keinen Testversand an alle.",
@@ -66,6 +66,10 @@
         {
           "title": "Keine doppelte Nachricht",
           "text": "Ging die Beratungs-WhatsApp erst vor weniger als **12 Stunden** raus (heute für morgen gebucht), entfällt die Erinnerung — im Protokoll steht sie als „übersprungen“ mit Grund."
+        },
+        {
+          "title": "Beratung verlegen",
+          "text": "Der Link einer Beratung zeigt **dieselben Zeiten wie die Website**, bleibt im Institut und gilt nur **bis 4 Stunden vor dem Termin**. Danach steht dort die Bitte, im Institut anzurufen — kurzfristige Anrufe sind also gewollt."
         }
       ]
     },

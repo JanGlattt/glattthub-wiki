@@ -138,6 +138,35 @@ Gegen die No-Show-Rate setzt die Erinnerung am Vortag einer Beratung die
 - **„Am Vortag“, nicht „24 h vorher“.** Stufen rechnen in Tagen; die Erinnerung geht
   am Vortag zu Beginn des Sendefensters raus.
 
+### Beratungen verlegen: wie auf der Website (seit 13.10.2026)
+
+Der Link einer **reinen Beratung** folgt eigenen Regeln (Jan, 13.10.2026). „Rein“ entscheidet
+`ReminderLinkService::pureConsultationServiceId()`: genau eine Beratungsleistung, keine Behandlung
+daneben, keine B+B-Leistung. B+B ist in Phorest ebenfalls als Beratung markiert („Behandlung &
+Beratung (Booking)“, „Gratis Beratungsgespräch und erste Sitzung“) und wird deshalb über den Namen
+(`behandlung|sitzung`) ausgenommen — B+B verlegt weiter über die Hub-Slotsuche.
+
+- **Slots exakt wie auf glattt.com.** `WebsiteConsultationSlotService` fragt die
+  Phorest-Online-Verfügbarkeit (`isOnlineAvailability`) für genau diesen Beratungs-Service ab und
+  dünnt sie aus wie das Buchungs-Plugin (`glattt_thin_availability_slots()`, WPglatttBooking
+  0.16.3): je Tag ≥ 45 Minuten Startabstand, im Fenster gewinnt die Spalte „… Beratung …“, bei
+  Gleichstand die längste 45-Minuten-Kette, dann der früheste. **Ändert sich die Logik im Plugin,
+  muss sie hier nachgezogen werden.** Gebucht wird der Beratungs-Service in der Spalte, die
+  Phorest zum Slot liefert.
+- **Kein Standortwechsel.** `BranchSwitchService::enabled()` ist für Beratungs-Links immer aus,
+  unabhängig vom Admin-Schalter „Kunden-App“.
+- **Schluss 4 Stunden vorher.** `expires_at` = Terminbeginn − 4 h
+  (`BookingShareToken::CONSULTATION_CUTOFF_HOURS`). Danach zeigt die Seite „Bitte ruf uns kurz an“
+  mit dem Institutsnamen und einem Anruf-Knopf (Telefon aus den Instituts-Kontaktdaten); die
+  App-API antwortet mit `reason: too_late`. Dasselbe gilt für Bestätigen und Absagen. Ein durch
+  eine neuere Erinnerung ersetzter Link zeigt weiter „abgelaufen“ — unterschieden über
+  `appointment_starts_at`.
+- **Absagen** bleibt wie bei jedem Erinnerungs-Link möglich (mit Rückfrage-Stufe, sofortige
+  Stornierung in Phorest, Hinweis ans Institut).
+- Technik: Felder `consultation_service_id` + `appointment_starts_at` an `booking_share_tokens`,
+  Slot-Wahl zentral in `RescheduleSlotFinder` (Selfservice-Seite und App-API). Im Kundenportal
+  und in My glattt gibt es keine Beratungen zu verlegen — der Zugang entsteht erst mit dem Vertrag.
+
 ### Konfiguration und Sichtbarkeit im Hub
 
 - **Terminübersicht** (`/hub/appointments`): Terminkarten zeigen Badges
@@ -451,6 +480,7 @@ Tests: `tests/Unit/AppointmentReminderRuleTest.php`,
 `tests/Feature/AppointmentReminderEngineTest.php`,
 `tests/Feature/AppointmentReminderJobTest.php`,
 `tests/Feature/ReminderNoShowFlowTest.php`,
+`tests/Feature/ConsultationRescheduleLinkTest.php`,
 `tests/Feature/SharedBookingResponseTest.php`,
 `tests/Feature/ReminderConsentPageTest.php`,
 `tests/Feature/TwilioInboundWebhookTest.php`.
