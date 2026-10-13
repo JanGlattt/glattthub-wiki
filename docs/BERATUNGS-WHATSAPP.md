@@ -62,8 +62,8 @@ Eine Zeile je Phorest-Standort (`consultation_whatsapp_settings`), angelegt übe
 - **Gutschein-Produkt für den Kauf-Link** (optional) — Grundlage des Platzhalters
   „Gutschein-Kauf-Link".
 - **Platzhalter-Zuordnung** — je Variable der Vorlage (`{{1}}`, `{{2}}`, …) eine Quelle:
-  Vorname, Nachname, vollständiger Name, Termin-Datum, Termin-Uhrzeit, Standort-Name,
-  Gutschein-Kauf-Link (personalisiert) oder fester Text
+  Vorname, Nachname, vollständiger Name, Termin-Datum, Termin-Uhrzeit, Wochentag des Termins
+  (seit 13.10.2026), Standort-Name, Gutschein-Kauf-Link (personalisiert) oder fester Text
   (`ConsultationWhatsappSetting::variableSources()`).
 - **Versandfenster** („frühestens ab / spätestens bis", optional) — hält Buchungen außerhalb des
   Fensters zurück, siehe [Wann gesendet wird](#wann-gesendet-wird).
@@ -81,6 +81,22 @@ Gutscheins am Beratungstag** (festes `bonus_valid_until_date` am Bestell-Item) s
 Produkt-Standardfrist — Kassen-Hinweis, Phorest-Gutschein, Mail und Rechnung zeigen das Datum.
 Fehlt das Produkt, obwohl der Platzhalter gemappt ist, schlägt der Versand mit klarer Meldung im
 Protokoll fehl.
+
+**Weiter in der Erinnerung am Vortag (seit 13.10.2026):** Die
+[Terminerinnerung](TERMINERINNERUNGEN.md#beratungstermine-gutschein-angebot-und-schonfrist-seit-13102026)
+verwendet denselben Kauf-Link wieder, solange er offen ist, und sonst eine Vorlage ohne Gutschein.
+Wird die Beratung verschoben, verlängert der `UpcomingConsultationObserver` offene Angebote bis zum
+neuen Termintag (`ConsultationVoucherOfferService`) — „gilt bis zu Deinem Termin“ bleibt wahr.
+Innerhalb von 12 Stunden nach dieser Nachricht geht keine Erinnerung raus.
+
+**Vorschlag Nachricht nach Buchung (No-Show-Strecke, Jan 13.10.2026):**
+
+> Hey {{1}} 👋 hier ist Olivia von glattt {{2}}. Dein Termin steht, ich hab mir {{3}}, den {{4}}
+> um {{5}} Uhr ganz für Dich freigehalten ✨ … Kleines Dankeschön für Deine Buchung: bis zu Deinem
+> Termin kannst Du Dir einen 50 € Gutschein für nur 10 € sichern … 👉 {{6}} … Bis {{3}}!
+
+Zuordnung: 1 = Vorname, 2 = Standort-Name, 3 = Wochentag, 4 = Termin-Datum, 5 = Termin-Uhrzeit,
+6 = Gutschein-Kauf-Link.
 
 ### Wann gesendet wird
 

@@ -101,6 +101,43 @@ Terminart schlägt „alle". Wird ein Termin kurzfristig gebucht, sodass
 mehrere Stufen gleichzeitig fällig wären, wird nur die Stufe mit dem
 kleinsten Vorlauf gesendet (die anderen erscheinen als „übersprungen").
 
+### Beratungstermine: Gutschein-Angebot und Schonfrist (seit 13.10.2026)
+
+Gegen die No-Show-Rate setzt die Erinnerung am Vortag einer Beratung die
+[Beratungs-WhatsApp](BERATUNGS-WHATSAPP.md) fort (Entscheidung Jan, 13.10.2026):
+
+- **Gutschein-Link wiederverwenden.** Die Platzhalter-Quellen „Gutschein-Kauf-Link“
+  (`voucher_link`) und „Gutschein-Token“ (`voucher_token`) liefern den persönlichen
+  Kauf-Link, den die Kundin mit der Beratungs-WhatsApp bekommen hat — kein neuer
+  Token. Gesucht wird ein **offenes** Angebot: Kampagne „Beratungs-WhatsApp“,
+  `used_at` leer, nicht abgelaufen (`ConsultationVoucherOfferService::openOffer()`).
+- **Zwei Vorlagen je Stufe.** Meta-Vorlagen sind starr, die Gutschein-Zeile lässt sich
+  nicht ausblenden. Nutzt die Hauptvorlage den Gutschein-Link und gibt es kein offenes
+  Angebot (schon gekauft, abgelaufen, nie erhalten), geht die **„Vorlage ohne
+  Gutschein“** raus (`whatsapp_no_voucher_template_id/_name/_variable_mapping`,
+  Auswahl in `AppointmentReminderStage::whatsappTemplateFor()`). Fehlt sie, gilt
+  WhatsApp als blockiert und der nächste Kanal rückt nach. Im Admin erscheinen die
+  Felder erst, wenn die Hauptvorlage einen Gutschein-Platzhalter zugeordnet hat.
+- **Angebot wandert beim Verschieben mit.** Legt der Phorest-Sync eine neue
+  Beratung an (`UpcomingConsultationObserver::created`), werden offene Angebote der
+  Kundin bis zum Ende des neuen Termintags verlängert — nie verkürzt, abgelaufene
+  leben nicht wieder auf. Die Erinnerung verlängert vor dem Versand zusätzlich auf
+  ihren Termintag. Da die Bonus-Frist beim Kauf aus dem Token-Ablauf kommt
+  (`VoucherCheckoutPage`), wandert auch sie mit.
+- **Schonfrist nach der Beratungs-WhatsApp.** Ging die Beratungs-WhatsApp (oder ihr
+  SMS-Ersatz, `fallback_sent_at`) an dieselbe Kundin vor weniger als
+  **12 Stunden** raus (`SendAppointmentReminderJob::WELCOME_GRACE_HOURS`), wird die
+  Erinnerung mit Grund „übersprungen“ — sonst kämen bei „heute für morgen“ gebucht
+  zwei Nachrichten fast gleichzeitig.
+- **Neue Platzhalter** für alle Stufen: „Wochentag des Termins“ (`appointment_weekday`,
+  bzw. `{{termin_wochentag}}` in SMS/E-Mail) und „Adresse des Instituts“
+  (`branch_address`, aus Phorest — vorher nur in SMS/E-Mail).
+- **Werbung statt Utility.** Mit Gutschein-Angebot stuft Meta die Vorlage als
+  Marketing ein (teurer, je Empfängerin gedrosselt). Bewusst in Kauf genommen: eine
+  Nachricht statt zwei (Jan, 13.10.2026).
+- **„Am Vortag“, nicht „24 h vorher“.** Stufen rechnen in Tagen; die Erinnerung geht
+  am Vortag zu Beginn des Sendefensters raus.
+
 ### Konfiguration und Sichtbarkeit im Hub
 
 - **Terminübersicht** (`/hub/appointments`): Terminkarten zeigen Badges
@@ -367,6 +404,21 @@ von Meta freigegeben (Kategorie **Utility**, Dauer Minuten bis ~48h).
 Variablen-Zuordnung im Admin: 1 = Vorname, 2 = Standort-Name, 3 = Termin-Datum,
 4 = Termin-Uhrzeit; Button-Variable = „Verlege-Token".
 
+**Beratung am Vortag mit Gutschein (No-Show-Strecke, 13.10.2026, Kategorie Marketing):**
+
+> Hey {{1}}, morgen ist es so weit 🥳 ich freu mich auf Dich um {{2}} Uhr im glattt {{3}}.
+> Ich halte den Termin extra für Dich frei, also sei bitte pünktlich da.
+> WICHTIG: Passt es doch nicht? Kein Problem, dann klicke auf folgenden Link, um Deinen
+> Termin zu verschieben: {{4}}
+> Dein 50 € Gutschein für 10 € gilt nur noch bis zu Deinem Termin 👉 {{5}}
+> 📍 {{6}}
+> Bis morgen! Olivia von glattt {{3}}
+
+Zuordnung: 1 = Vorname, 2 = Termin-Uhrzeit, 3 = Standort-Name, 4 = Verlege-Link,
+5 = Gutschein-Kauf-Link, 6 = Adresse des Instituts. Als **Vorlage ohne Gutschein**
+derselbe Text ohne die Gutschein-Zeile (eigene Nummerierung). Links als
+Dynamic-URL-Buttons gehen ebenso (`booking_token` / `voucher_token`).
+
 ### Betrieb
 
 - **Cloud Scheduler** (Region `europe-west3`, `--max-retry-attempts=3`,
@@ -398,6 +450,7 @@ Variablen-Zuordnung im Admin: 1 = Vorname, 2 = Standort-Name, 3 = Termin-Datum,
 Tests: `tests/Unit/AppointmentReminderRuleTest.php`,
 `tests/Feature/AppointmentReminderEngineTest.php`,
 `tests/Feature/AppointmentReminderJobTest.php`,
+`tests/Feature/ReminderNoShowFlowTest.php`,
 `tests/Feature/SharedBookingResponseTest.php`,
 `tests/Feature/ReminderConsentPageTest.php`,
 `tests/Feature/TwilioInboundWebhookTest.php`.

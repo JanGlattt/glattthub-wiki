@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Erinnerungen, WhatsApp und die Benachrichtigungen an das Team",
   "eyebrow": "Admin · Nachrichten",
   "footerArea": "Admin-Panel",
-  "stand": "09.10.2026",
-  "version": "1.5",
+  "stand": "13.10.2026",
+  "version": "1.6",
   "notes": [
     "Hier wird eingestellt, **was der Hub von selbst verschickt** — an Kundinnen, ohne dass jemand tippt.",
     "**Jede Änderung wirkt sofort** auf alle künftigen Nachrichten; es gibt keinen Testversand an alle.",
@@ -37,7 +37,7 @@
         {
           "n": 1,
           "title": "Regel anlegen",
-          "text": "Vorlaufzeit, Kanal und Text — je Terminart eigene Regeln möglich."
+          "text": "Vorlaufzeit, Kanal und Text — je Terminart eigene Regeln möglich. Platzhalter gibt es auch für **Wochentag** und **Adresse** des Instituts."
         },
         {
           "n": 2,
@@ -57,7 +57,17 @@
       ],
       "hint": {
         "text": "**Erinnerungen wirken messbar** auf die Storno- und No-Show-Quote — ihre Wirkung lässt sich in „Berichte 4“ ablesen."
-      }
+      },
+      "notes": [
+        {
+          "title": "Gutschein in der Erinnerung",
+          "text": "Ordnet die WhatsApp-Vorlage den **Gutschein-Kauf-Link** zu, kommt der Link aus der Beratungs-WhatsApp. Darunter erscheint dann **„WhatsApp-Vorlage ohne Gutschein“**: Die geht an Kundinnen, die schon gekauft haben oder kein Angebot mehr offen haben. Ohne diese zweite Vorlage geht in dem Fall der nächste Kanal."
+        },
+        {
+          "title": "Keine doppelte Nachricht",
+          "text": "Ging die Beratungs-WhatsApp erst vor weniger als **12 Stunden** raus (heute für morgen gebucht), entfällt die Erinnerung — im Protokoll steht sie als „übersprungen“ mit Grund."
+        }
+      ]
     },
     {
       "h1": "Beratungs-WhatsApp",
@@ -84,7 +94,7 @@
         {
           "n": 3,
           "title": "Gutschein-Link",
-          "text": "Optional. Seine Wirkung misst „Berichte 12“."
+          "text": "Optional. Gilt bis zum Termin, auch wenn er verschoben wird, und erscheint auf Wunsch noch einmal in der Erinnerung am Vortag. Seine Wirkung misst „Berichte 12“."
         },
         {
           "n": 4,
