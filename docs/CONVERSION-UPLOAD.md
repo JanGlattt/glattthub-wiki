@@ -77,10 +77,15 @@ conversions:detect (alle 15 Min) ──► conversion_uploads (pending, 1 Zeile 
   Klick-ID UND Kundendaten, **wartet** die Zeile (seit 13.10.2026:
   `retry_after` = +1 h, Status bleibt pending, `attempts` zählt nicht hoch)
   und wird mit dem nächsten Lauf erneut versucht, bis das 60-Tage-Fenster
-  abläuft. Hintergrund: Kontaktdaten kommen aus `client_statistics`, die
-  Kundin steht dort oft erst nach dem nächsten Sync — der Sender lief
-  aber schon 7 Minuten nach der Buchung und markierte endgültig als
+  abläuft. Hintergrund: Kontaktdaten kommen aus `client_statistics`; der
+  Sync nimmt aber nur Kundinnen mit erstem Besuch auf (firstVisit-Cutoff),
+  eine Neubuchung steht dort also erst **nach** dem Beratungstermin. Der
+  Sender lief 7 Minuten nach der Buchung und markierte endgültig als
   fehlgeschlagen (45 % aller Google-Buchungs-Events im September 2026).
+  Deshalb holt `ConversionUserData` die Kontaktdaten seit 13.10.2026
+  **direkt aus Phorest** (`getClient`, Treffer 50 Minuten gecacht), wenn
+  die Statistik-Zeile fehlt; die Wartepause bleibt als Netz für Phorest-
+  Ausfälle.
   Die Migration `2026_10_13_200000` hat die so gescheiterten Zeilen der
   letzten 60 Tage zurück auf pending gesetzt. Alt-Daten ohne
   Consent-Erfassung (vor 15.08.2026) werden nie übermittelt.
