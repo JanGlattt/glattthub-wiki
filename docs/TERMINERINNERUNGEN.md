@@ -87,11 +87,27 @@ gesendet, übersprungen oder fehlgeschlagen ist.
 - Jede Nachricht enthält einen persönlichen Link ins Selfservice-Modul.
   Der Kunde kann dort **bestätigen** (ein Klick), **verlegen** (neuen Slot
   wählen — der alte Termin wird automatisch storniert) oder **absagen**
-  (mit Rückfrage-Stufe; der Termin wird sofort in Phorest storniert und das
-  Institut benachrichtigt). Der Link gilt bis zum Terminbeginn; jede neue
+  (mit Rückfrage-Stufe; der Termin wandert in Phorest in die Absage-Spalte des
+  Instituts und das Institut wird benachrichtigt). Der Link gilt bis zum Terminbeginn; jede neue
   Erinnerungsstufe erzeugt einen frischen Link und entwertet den alten.
 - Wird ein Termin storniert oder verlegt, verfallen ausstehende Erinnerungen
   automatisch; der neue Termin bekommt eigene.
+
+### Absage über den Link: Absage-Spalte statt Storno (seit 13.10.2026)
+
+Sagt die Kundin über den Erinnerungs-Link ab, wird der Termin in Phorest **nicht storniert**,
+sondern in die Spalte „XX. Absage weniger als 24 st / Nicht gekommen“ des Instituts verschoben
+(Jan, 13.10.2026) — das Team sieht die Absage im Kalender, der Raum wird frei.
+`BookingService::moveToCancellationColumn()` findet die Spalte über
+`CANCELLATION_COLUMN_PATTERN` (`absage|nicht gekommen`; die Namen weichen je Standort ab, z.B.
+„MD Absage weniger als 24 Std. / Nicht erschienen“, alle sechs Institute haben eine) und setzt je
+Termin-Zeile per PUT `staffId` — mit `version`, Zeiten und `force_selected_time=true`, sonst
+`STAFF_NOT_WORKING`. Fehlt die Spalte oder scheitert eine Zeile, wird **diese** Zeile wie früher
+storniert, damit die Absage in jedem Fall greift (Log-Warnung).
+
+Der Termin bleibt in Phorest aktiv. Damit er nicht wieder als „gebucht“ zurückkommt und weitere
+Erinnerungen auslöst, lässt `SyncUpcomingAppointments` Zeilen mit `client_cancelled_at`
+abgesagt. Das Institut bekommt wie bisher die Meldung „Termin vom Kunden abgesagt“.
 
 ### Welche Regel greift?
 
@@ -129,14 +145,27 @@ Gegen die No-Show-Rate setzt die Erinnerung am Vortag einer Beratung die
   **12 Stunden** raus (`SendAppointmentReminderJob::WELCOME_GRACE_HOURS`), wird die
   Erinnerung mit Grund „übersprungen“ — sonst kämen bei „heute für morgen“ gebucht
   zwei Nachrichten fast gleichzeitig.
+- **Gutschein-Hinweis in einer Vorlage (Alternative zu zwei Vorlagen).** Platzhalter-Quelle
+  „Gutschein-Hinweis“ (`voucher_hint`) mit zwei Texten am Mapping: `text` mit `{link}` (offenes
+  Angebot) und `text_fallback` (schon gekauft / kein Angebot). Der Ausweichtext ist Pflicht —
+  Meta lehnt **leere** Vorlagen-Variablen ab und erlaubt keine Zeilenumbrüche darin; ganz ohne
+  Text greift „Wir freuen uns auf Dich!“ (`AppointmentReminderStage::voucherHint()`). Mit dem
+  Hinweis braucht die Stufe keine Vorlage „ohne Gutschein“; die ist nur für die Quellen
+  Gutschein-Link/-Token nötig.
 - **Neue Platzhalter** für alle Stufen: „Wochentag des Termins“ (`appointment_weekday`,
   bzw. `{{termin_wochentag}}` in SMS/E-Mail) und „Adresse des Instituts“
   (`branch_address`, aus Phorest — vorher nur in SMS/E-Mail).
 - **Werbung statt Utility.** Mit Gutschein-Angebot stuft Meta die Vorlage als
   Marketing ein (teurer, je Empfängerin gedrosselt). Bewusst in Kauf genommen: eine
   Nachricht statt zwei (Jan, 13.10.2026).
-- **„Am Vortag“, nicht „24 h vorher“.** Stufen rechnen in Tagen; die Erinnerung geht
-  am Vortag zu Beginn des Sendefensters raus.
+- **Tage oder Stunden (seit 13.10.2026).** Je Stufe „Vorlauf in Tagen“ (wie bisher: am Tag X
+  vor dem Termin zu Beginn des Sendefensters) oder „in Stunden“ (`offset_unit = hours`,
+  `offset_hours`): fällig ab Terminbeginn − X Stunden, geprüft alle 15 Minuten
+  (`AppointmentReminderStage::isDueFor()`). Das Sendefenster der Regel gilt auch hier — liegt der
+  Zeitpunkt davor, geht die Nachricht zu Fensterbeginn raus, sofern der Termin dann noch
+  bevorsteht. Bei Stunden-Stufen hält `offset_days` die aufgerundeten Tage (Suchfenster); welche
+  von mehreren fälligen Stufen gesendet wird, entscheidet der kleinste Vorlauf in Minuten
+  (`leadMinutes()`).
 
 ### Beratungen verlegen: wie auf der Website (seit 13.10.2026)
 
@@ -161,8 +190,8 @@ Beratung (Booking)“, „Gratis Beratungsgespräch und erste Sitzung“) und wi
   App-API antwortet mit `reason: too_late`. Dasselbe gilt für Bestätigen und Absagen. Ein durch
   eine neuere Erinnerung ersetzter Link zeigt weiter „abgelaufen“ — unterschieden über
   `appointment_starts_at`.
-- **Absagen** bleibt wie bei jedem Erinnerungs-Link möglich (mit Rückfrage-Stufe, sofortige
-  Stornierung in Phorest, Hinweis ans Institut).
+- **Absagen** bleibt wie bei jedem Erinnerungs-Link möglich (siehe unten: Absage-Spalte statt
+  Storno).
 - Technik: Felder `consultation_service_id` + `appointment_starts_at` an `booking_share_tokens`,
   Slot-Wahl zentral in `RescheduleSlotFinder` (Selfservice-Seite und App-API). Im Kundenportal
   und in My glattt gibt es keine Beratungen zu verlegen — der Zugang entsteht erst mit dem Vertrag.
@@ -481,6 +510,7 @@ Tests: `tests/Unit/AppointmentReminderRuleTest.php`,
 `tests/Feature/AppointmentReminderJobTest.php`,
 `tests/Feature/ReminderNoShowFlowTest.php`,
 `tests/Feature/ConsultationRescheduleLinkTest.php`,
+`tests/Feature/ReminderHoursAndCancelColumnTest.php`,
 `tests/Feature/SharedBookingResponseTest.php`,
 `tests/Feature/ReminderConsentPageTest.php`,
 `tests/Feature/TwilioInboundWebhookTest.php`.

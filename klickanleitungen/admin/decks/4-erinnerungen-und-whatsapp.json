@@ -14,7 +14,7 @@
   "eyebrow": "Admin · Nachrichten",
   "footerArea": "Admin-Panel",
   "stand": "13.10.2026",
-  "version": "1.7",
+  "version": "1.8",
   "notes": [
     "Hier wird eingestellt, **was der Hub von selbst verschickt** — an Kundinnen, ohne dass jemand tippt.",
     "**Jede Änderung wirkt sofort** auf alle künftigen Nachrichten; es gibt keinen Testversand an alle.",
@@ -47,7 +47,7 @@
         {
           "n": 3,
           "title": "Zeitpunkt",
-          "text": "Zu früh wird vergessen, zu spät kommt zu spät. Ein bis zwei Tage haben sich bewährt."
+          "text": "Je Stufe **in Tagen** (am Vortag zu Beginn des Sendefensters) **oder in Stunden** vor dem Termin. Zu früh wird vergessen, zu spät kommt zu spät."
         },
         {
           "n": 4,
@@ -61,7 +61,7 @@
       "notes": [
         {
           "title": "Gutschein in der Erinnerung",
-          "text": "Ordnet die WhatsApp-Vorlage den **Gutschein-Kauf-Link** zu, kommt der Link aus der Beratungs-WhatsApp. Darunter erscheint dann **„WhatsApp-Vorlage ohne Gutschein“**: Die geht an Kundinnen, die schon gekauft haben oder kein Angebot mehr offen haben. Ohne diese zweite Vorlage geht in dem Fall der nächste Kanal."
+          "text": "Am einfachsten über den Platzhalter **„Gutschein-Hinweis“**: ein Text mit {link} für Kundinnen mit offenem Angebot und ein **Ausweichtext** für alle anderen (Pflicht — leere Platzhalter lehnt WhatsApp ab). Alternativ den Gutschein-Kauf-Link zuordnen und darunter eine **„WhatsApp-Vorlage ohne Gutschein“** wählen."
         },
         {
           "title": "Keine doppelte Nachricht",
@@ -70,6 +70,10 @@
         {
           "title": "Beratung verlegen",
           "text": "Der Link einer Beratung zeigt **dieselben Zeiten wie die Website**, bleibt im Institut und gilt nur **bis 4 Stunden vor dem Termin**. Danach steht dort die Bitte, im Institut anzurufen — kurzfristige Anrufe sind also gewollt."
+        },
+        {
+          "title": "Absage über den Link",
+          "text": "Sagt eine Kundin über den Link ab, landet der Termin in Phorest in der Spalte **„Absage weniger als 24 st / Nicht gekommen“** des Instituts — er wird nicht gelöscht. Das Institut bekommt eine Meldung."
         }
       ]
     },
