@@ -35,6 +35,9 @@ Recht `view_report_ads_analysis`, über die globale Suche auffindbar):
 Zusammenfassung (gesendet/wartend/fehlgeschlagen, übermittelter Vertragswert)
 plus Protokoll-Tabelle mit Filter-Pills. Fehlgeschlagene Zeilen haben einen
 „Erneut versuchen"-Button; automatisch wird ohnehin bis zu 5-mal wiederholt.
+Zeilen mit dem Hinweis „Wartet auf Kundendaten" sind kein Fehler: Die Kundin
+hat noch keine Kontaktdaten in der Kundenstatistik, der Hub versucht es
+stündlich erneut (bis zu 60 Tage).
 
 ### Zeitfenster (wichtig!)
 
@@ -71,7 +74,15 @@ conversions:detect (alle 15 Min) ──► conversion_uploads (pending, 1 Zeile 
   mit Klick-/Browser-ID (fbclid/fbp), Google auch ohne Klick-ID — der Sender
   schickt dann ein Event nur mit gehashten Kundendaten (Googles Empfehlung;
   behebt den Kontohinweis „Importing limited user-provided data"). Fehlen
-  Klick-ID UND Kundendaten, schlägt die Zeile im Sender fehl. Alt-Daten ohne
+  Klick-ID UND Kundendaten, **wartet** die Zeile (seit 13.10.2026:
+  `retry_after` = +1 h, Status bleibt pending, `attempts` zählt nicht hoch)
+  und wird mit dem nächsten Lauf erneut versucht, bis das 60-Tage-Fenster
+  abläuft. Hintergrund: Kontaktdaten kommen aus `client_statistics`, die
+  Kundin steht dort oft erst nach dem nächsten Sync — der Sender lief
+  aber schon 7 Minuten nach der Buchung und markierte endgültig als
+  fehlgeschlagen (45 % aller Google-Buchungs-Events im September 2026).
+  Die Migration `2026_10_13_200000` hat die so gescheiterten Zeilen der
+  letzten 60 Tage zurück auf pending gesetzt. Alt-Daten ohne
   Consent-Erfassung (vor 15.08.2026) werden nie übermittelt.
 - **„BG wahrgenommen"** kommt per Polling aus `stats_historic_appointments`
   (state COMPLETED/PAID) — es gibt kein Event beim Statuswechsel.
@@ -81,8 +92,10 @@ conversions:detect (alle 15 Min) ──► conversion_uploads (pending, 1 Zeile 
 - **Deduplizierung:** Unique (platform, event_id); event_id = `bg-<appointment>`,
   `bgw-<appointment>`, `vertrag-<contract>` — bei Google zugleich transactionId,
   bei Meta event_id (dedupliziert auch gegen Pixel-Events).
-- **Retry:** Fehlgeschlagene Chargen bleiben bis 5 Versuche pending;
-  danach failed (im UI manuell reaktivierbar).
+- **Retry:** Fehlgeschlagene Chargen (API-Fehler) bleiben bis 5 Versuche
+  pending; danach failed (im UI manuell reaktivierbar). Der Scope
+  `ConversionUpload::pending()` lässt Zeilen mit `retry_after` in der
+  Zukunft aus — so blockieren wartende Zeilen nicht das 500er-Limit je Lauf.
 
 ### Google: Data Manager API (nicht Google Ads API!)
 
