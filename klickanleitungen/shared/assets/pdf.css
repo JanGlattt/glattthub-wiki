@@ -100,6 +100,9 @@ table.err td:nth-child(2){width:27%;color:var(--muted)}
    sprengt die schmale, hohe Karte die Spalte. Marks bleiben prozentual korrekt. */
 .shot.portrait{width:auto;max-width:96%;margin:0 auto;display:table}
 .shot.portrait img{width:auto;height:78mm;max-width:100%}
+/* Einzelbild mit Schritten daneben: die volle Seitenhöhe nutzen */
+.two.beside .shot.portrait img{height:138mm}
+.two.beside .cap{max-width:110mm;margin-left:auto;margin-right:auto}
 .step .num.i{background:var(--gold)}
 
 /* Wegweiser-Tabelle (Dokument I, Seite „Die zehn Reiter") — wie table.err, aber mit

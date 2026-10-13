@@ -36,6 +36,31 @@ const slugify = (s) => String(s).toLowerCase()
   .replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss')
   .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
+/**
+ * Seitenverhältnis (Höhe/Breite) direkt aus der Bilddatei — PNG über den IHDR-Kopf, JPEG über
+ * den SOF-Marker. Für Aufnahmen ohne meta.json-Eintrag (App-Bilder aus Snapshot-Tests): Ohne
+ * Verhältnis galt jedes Bild als Querformat, Telefon-Aufnahmen liefen im PDF über die Seite
+ * hinaus und Schritte darunter fehlten (Reisekosten in der App, Asana 12.10.2026).
+ */
+function imageRatio(file) {
+  try {
+    const buf = fs.readFileSync(file);
+    if (buf.readUInt32BE(0) === 0x89504e47) return buf.readUInt32BE(20) / buf.readUInt32BE(16);
+    if (buf[0] === 0xff && buf[1] === 0xd8) {
+      let i = 2;
+      while (i < buf.length) {
+        if (buf[i] !== 0xff) { i++; continue; }
+        const marker = buf[i + 1];
+        if (marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker)) {
+          return buf.readUInt16BE(i + 5) / buf.readUInt16BE(i + 7);
+        }
+        i += 2 + buf.readUInt16BE(i + 2);
+      }
+    }
+  } catch (e) { /* Datei fehlt — Platzhalter übernimmt */ }
+  return null;
+}
+
 function load(deckFile) {
   const dir = path.dirname(deckFile);
   const deck = JSON.parse(fs.readFileSync(deckFile, 'utf8'));
@@ -66,6 +91,15 @@ function load(deckFile) {
   deck.stand = (fs.existsSync(standFile) ? fs.readFileSync(standFile, 'utf8').trim() : '')
     || process.env.STAND || deck.stand;
   deck.version = process.env.VERSION || deck.version || '';
+  // Fehlende Seitenverhältnisse aus den Bilddateien ergänzen (siehe imageRatio)
+  const usedShots = JSON.stringify(deck).match(/"shot":\s*"[^"]+"/g) || [];
+  for (const entry of usedShots) {
+    const name = entry.replace(/^"shot":\s*"|"$/g, '');
+    if (meta[name] && meta[name].ratio) continue;
+    const file = ['png', 'jpg'].map(ext => path.join(shotsDir, name + '.' + ext)).find(f => fs.existsSync(f));
+    const ratio = file ? imageRatio(file) : null;
+    if (ratio) meta[name] = Object.assign({}, meta[name], { ratio });
+  }
   return { deck, meta, shotsDir, dir };
 }
 

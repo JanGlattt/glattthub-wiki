@@ -91,6 +91,13 @@ deck.pages.forEach((p, i) => {
       `<div class="tile">${shot(t.shot, t.marks, 'tile-shot')}<div class="tile-t"><b>${D.esc(t.title)}</b> — ${D.rich(t.text)}</div></div>`).join('')}</div>`;
   } else if (p.layout === 'text' || (!p.left && !p.right)) {
     body += `<div class="textcols">${D.bodyBlocks(p).join('')}${p.steps ? D.stepsHtml(p.steps, p.stepCols || 2) : ''}${D.hintHtml(p.hint)}</div>`;
+  } else if (p.left && !p.right && !p.rightCaption && !p.rightSteps && !p.notes && !p.rightHint && !p.rightHtml
+      && D.bodyBlocks(p).length === 0) {
+    // Nur ein Bild (App-Aufnahmen im Hochformat): Schritte neben statt unter das Bild —
+    // darunter liefen sie über die Seite hinaus, rechts blieb die Hälfte leer (Asana 12.10.2026)
+    body += `<div class="two beside"><div class="col">${shot(p.left.shot, p.left.marks, p.left.cls || '')}`
+      + `${p.leftCaption ? `<div class="cap">${D.rich(p.leftCaption)}</div>` : ''}</div>`
+      + `<div class="col">${p.steps ? D.stepsHtml(p.steps, 1) : ''}${D.hintHtml(p.hint)}</div></div>`;
   } else {
     const left = p.left ? shot(p.left.shot, p.left.marks, p.left.cls || '') : '';
     const right = p.right ? shot(p.right.shot, p.right.marks, p.right.cls || '') : '';
