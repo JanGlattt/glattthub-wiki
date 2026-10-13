@@ -20,6 +20,18 @@ const seite = (name, url, marks = []) => ({ name, url, wait: 3500, steps: [['wai
 const PLAN = [
   seite('a1-panel', '/admin'),
   seite('a1-benutzer', '/admin/users', ['.fi-ta-content, .fi-ta']),
+  seite('a1-aufraeumen', '/admin/users?tab=aufraeumen'),
+  // Einzelseite eines Kontos: erste Zeile öffnen, dann den Reiter per Adresse wählen (nichts speichern)
+  ...[['a1-konto', 'institute-rollen'], ['a1-zugang', 'zugang']].map(([name, reiter]) => ({ name, url: '/admin/users', wait: 3500, steps: [
+    ['fn', async (page, L) => {
+      // erste echte Person, kein Dienstkonto „(System)“
+      const href = await page.evaluate(() => [...document.querySelectorAll('.fi-ta-record, .fi-ta-row')]
+        .filter(r => !r.innerText.includes('(System)'))
+        .map(r => [...r.querySelectorAll('a[href]')].map(a => a.getAttribute('href')).find(h => /\/edit$/.test(h || '')))
+        .find(Boolean));
+      if (href) { await page.goto(new URL(href, page.url()).toString() + '?reiter=' + reiter, { waitUntil: 'domcontentloaded' }); await L.wait(page, 3500); }
+    }],
+  ] })),
   { name: 'a1-rollen', url: '/admin/roles', wait: 3500, steps: [ersterEintrag, ['wait', 1500]] },
   seite('a2-news', '/admin/news'),
   seite('a2-wissen', '/admin/knowledge-articles'),

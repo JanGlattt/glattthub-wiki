@@ -6,7 +6,7 @@ Dokumente gebündelt. Standard und Deck-Format: `klickanleitungen/README.md` und
 
 | Dokument | Deckt ab | Stand |
 |---|---|---|
-| **1 — Benutzer und Rollen** | Panel-Aufbau, Benutzerliste, Rollen und Rechte | v1.1 (19.09.2026, Hub-Look) |
+| **1 — Benutzer und Rollen** | Panel-Aufbau, Hub-Nutzer-Liste, Aufräumen, Einzelseite, Zugangsdaten/Ansehen als/Archivieren, Rollen und Rechte | v1.3 (13.10.2026, Text neu; **Bilder a1-benutzer, a1-aufraeumen, a1-konto, a1-zugang nach Staging-Deploy aufnehmen**) |
 | **2 — Inhalte und Dokumente** | News, Wissensartikel, Rechtstexte | v1.0, Screenshots 19.09.2026 |
 | **3 — Gutschein-Verkauf** | Produkte, Bestellungen, Sonderfälle und Erstattungen | v1.0, Screenshots 19.09.2026 |
 | **4 — Erinnerungen und WhatsApp** | Terminerinnerungen, Beratungs-WhatsApp, Bewertungsanfragen, Testversand | v1.3 (19.09.2026, Testversand) |

@@ -13,11 +13,12 @@
  "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Konten, Rollen und Rechte verwalten",
  "eyebrow": "Admin · Benutzer & Rollen",
  "footerArea": "Admin-Panel",
- "stand": "07.10.2026",
- "version": "1.2",
+ "stand": "13.10.2026",
+ "version": "1.3",
  "notes": [
   "**Rollen entscheiden über alles**, was jemand im Hub sieht und darf — sie sind die wichtigste Einstellung überhaupt.",
-  "Angelegt werden Konten über die **Personalübersicht** („Team 1“); hier werden sie verwaltet.",
+  "**Es gibt immer mindestens eine Person mit Super-Admin.** Die letzte behält die Rolle, kann nicht archiviert und nicht gelöscht werden.",
+  "**Rollen nur bis zur eigenen Stufe:** Wer eine Rolle nicht selbst vollständig hat, kann sie weder vergeben noch entziehen — und Konten mit mehr Rechten nur ansehen.",
   "**Rechte werden nie einzeln vergeben**, sondern über Rollen — sonst weiß in einem Jahr niemand mehr, warum jemand etwas darf."
  ],
  "pages": [
@@ -59,40 +60,151 @@
    }
   },
   {
-   "h1": "Benutzer verwalten",
-   "sub": "Konten ansehen, Rolle ändern, sperren.",
+   "h1": "Die Hub-Nutzer-Liste",
+   "sub": "Alle Konten mit Rollen, Instituten, letzter Anmeldung, Zugang und Verknüpfungen. Oben die Kennzahlen, darunter Reiter nach Zustand.",
    "card": {
-    "title": "Benutzer",
-    "text": "Konten, Rollen, Zustand"
+    "title": "Liste",
+    "text": "Konten auf einen Blick"
    },
    "left": {
     "shot": "a1-benutzer"
    },
-   "leftCaption": "Die Benutzerliste im Admin-Panel.",
+   "leftCaption": "Die Liste mit Kennzahlen-Leiste und Reitern.",
    "steps": [
     {
      "n": 1,
-     "title": "Liste",
-     "text": "Alle Hub-Konten mit Rolle und Zustand."
+     "title": "Kennzahlen",
+     "text": "**Aktiv, zum Aufräumen, ohne Verknüpfung, Austritt nicht archiviert, Archivierung geplant.** Ein Klick öffnet den passenden Reiter."
     },
     {
      "n": 2,
-     "title": "Rolle ändern",
-     "text": "Wirkt sofort. Wer angemeldet ist, merkt es beim nächsten Seitenwechsel."
+     "title": "Reiter",
+     "text": "**Aktiv · Aufräumen · Archivierung geplant · Archiviert.** Archivierte stehen nicht mehr zwischen den aktiven Konten."
     },
     {
      "n": 3,
-     "title": "Stamm-Institut",
-     "text": "Bestimmt die Voreinstellung des Standortfilters."
+     "title": "Spalten",
+     "text": "Rollen (Super-Admin zuerst), Institute als Kürzel, **zuletzt angemeldet** mit Browser oder App, Zugang (PIN, E-Mail, App) und ob Phorest und askDANTE verknüpft sind."
     },
     {
      "n": 4,
-     "title": "Archivieren",
-     "text": "Läuft über die Personalübersicht — dort ist der richtige Ablauf hinterlegt („Team 1“)."
+     "title": "Aktionen",
+     "text": "Das **⋯-Menü** jeder Zeile: Bearbeiten, Zugangsdaten senden, Einladung, Ansehen als, Archivieren, Auf allen Geräten abmelden. Mehrere Zeilen anhaken: **„Für Auswahl“** — Rolle hinzufügen oder entfernen, Institute festlegen, archivieren, Einladungen senden."
     }
    ],
    "hint": {
-    "text": "**Konten nicht löschen.** Verträge, Beratungen und Bonus-Historie hängen daran; archivieren erreicht dasselbe, ohne die Vergangenheit zu beschädigen."
+    "text": "**„Rechte als CSV“** oben rechts lädt eine Liste, wer welche Rollen, Rechte und Institute hat — für die jährliche Rechte-Prüfung."
+   }
+  },
+  {
+   "h1": "Aufräumen",
+   "sub": "Der Reiter sammelt alle Konten, an denen etwas zu tun ist — mit dem Grund in der Zeile.",
+   "card": {
+    "title": "Aufräumen",
+    "text": "Was an Konten fehlt"
+   },
+   "left": {
+    "shot": "a1-aufraeumen"
+   },
+   "leftCaption": "Der Reiter „Aufräumen“ mit den Befunden je Person.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Austritt",
+     "text": "askDANTE meldet einen Austritt, das Konto ist aber nicht archiviert. Der Knopf **„Zum 01.xx. archivieren“** steht direkt in der Zeile."
+    },
+    {
+     "n": 2,
+     "title": "Verknüpfung fehlt",
+     "text": "Ohne **askDANTE** fehlt die Person in Arbeitszeiten und HR-Kennzahlen; ohne **Phorest** fehlen einer Behandlerin Termine und Verkäufe."
+    },
+    {
+     "n": 3,
+     "title": "Anmeldung",
+     "text": "Ein neues Konto, mit dem sich nie jemand angemeldet hat: meist sind die Zugangsdaten nicht angekommen — **„Zugangsdaten senden“**."
+    },
+    {
+     "n": 4,
+     "title": "Hinweise",
+     "text": "Blau statt gelb: z. B. eine überflüssige Rolle (eine andere enthält sie ganz) oder dass nur eine Person Super-Admin ist. Kein Muss, aber prüfenswert."
+    }
+   ],
+   "hint": {
+    "text": "Dieselben Befunde stehen als **Hinweisband oben auf der Seite** des Kontos."
+   }
+  },
+  {
+   "h1": "Ein Konto bearbeiten",
+   "sub": "Oben der Steckbrief, darunter Reiter je Thema. Gespeichert wird mit der Leiste unten, sie bleibt beim Scrollen stehen.",
+   "card": {
+    "title": "Einzelseite",
+    "text": "Steckbrief und Reiter"
+   },
+   "left": {
+    "shot": "a1-konto"
+   },
+   "leftCaption": "Reiter „Institute & Rollen“ mit den wirksamen Rechten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Steckbrief",
+     "text": "Name, Zustand, Rollen, Institute und letzte Anmeldung — darunter, falls nötig, das gelbe Hinweisband."
+    },
+    {
+     "n": 2,
+     "title": "Institute",
+     "text": "**„Alle Institute“ oder „Nur ausgewählte“**, dann die Institute anhaken. Das Stamm-Institut ist beim Öffnen des Hubs vorausgewählt."
+    },
+    {
+     "n": 3,
+     "title": "Rollen",
+     "text": "Ausgegraute Rollen kann man nicht vergeben oder entziehen — man hat ihre Rechte selbst nicht. Der blaue Kasten darunter zeigt die **wirksamen Rechte** aus allen gewählten Rollen."
+    },
+    {
+     "n": 4,
+     "title": "Weitere Reiter",
+     "text": "**Zugang** (Stand von PIN und Passwort, Auto-Abmeldung, Archivieren ab), **Verknüpfungen** (Phorest, askDANTE), **Bonus**, **Trinkgeld**, **Geräte** und **Verlauf** — wer wann was geändert hat."
+    }
+   ],
+   "hint": {
+    "text": "Ein Konto mit mehr Rechten als die eigenen öffnet sich **nur zum Ansehen** — bearbeiten kann es nur, wer mindestens dieselben Rechte hat."
+   }
+  },
+  {
+   "h1": "Zugangsdaten, Ansehen als, Archivieren",
+   "sub": "Die Knöpfe oben rechts auf der Seite des Kontos.",
+   "card": {
+    "title": "Aktionen",
+    "text": "Was man mit einem Konto tut"
+   },
+   "left": {
+    "shot": "a1-zugang"
+   },
+   "leftCaption": "Reiter „Zugang“: PIN und Passwort sind nie sichtbar, nur ihr Stand.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zugangsdaten senden",
+     "text": "Neue PIN oder neues Passwort setzen (leer lassen = der Hub erzeugt eins) und per E-Mail, WhatsApp oder zum Selbst-Weitergeben zustellen — oder einen **Selbst-Link** schicken, mit dem die Person sie selbst festlegt."
+    },
+    {
+     "n": 2,
+     "title": "Ansehen als",
+     "text": "Nur für Super-Admins: öffnet den Hub mit den Rechten der Person. Unten erscheint ein goldener Knopf **„Zurück zu …“**. Änderungen dabei gelten als ihre — Start und Ende stehen im Verlauf."
+    },
+    {
+     "n": 3,
+     "title": "Archivieren",
+     "text": "Immer zum 1. des Folgemonats. Ab dem Tag kein Login, kein Bonus, keine Auswahllisten; die Daten bleiben."
+    },
+    {
+     "n": 4,
+     "title": "Weitere Aktionen",
+     "text": "**Einladung per E-Mail**, **Auf allen Geräten abmelden** (beendet Sitzungen und App-Anmeldungen) und — nur bei archivierten Konten — **Endgültig löschen** mit Eingabe des Namens."
+    }
+   ],
+   "hint": {
+    "text": "**Löschen ist die Ausnahme.** Verträge, Beratungen und Bonus-Historie hängen am Konto; archivieren erreicht dasselbe, ohne die Vergangenheit zu beschädigen."
    }
   },
   {
