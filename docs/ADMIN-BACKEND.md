@@ -55,6 +55,8 @@ Die Verwaltung der Hub-Konten hat eine eigene Seite: [Hub-Nutzer verwalten](HUB-
 | Dark-Mode-Kopplung | `resources/views/filament/partials/theme-sync.blade.php` | Hub-Schlüssel → Filament-Schlüssel und zurück |
 | Akkordeon | `resources/views/filament/partials/sidebar-accordion.blade.php` | höchstens eine Gruppe offen, aktive geht auf |
 | Rückweg | `resources/views/filament/partials/back-to-hub.blade.php` | Link am Fuß der Seitenleiste |
+| Ladeanzeige | `resources/views/filament/partials/loading-indicator.blade.php` | Balken bei Livewire-Anfragen (ab 120 ms) und bei Seitenwechseln (sofort), Ziel-Menüpunkt sofort aktiv |
+| Rechte-Index | `app/Models/Concerns/IndexedPermissionLookup.php` | schnelle Spatie-Rechteprüfung (siehe „Geschwindigkeit“) |
 | Tests | `tests/Unit/AdminNavigationGroupTest.php`, `tests/Feature/AdminPanelHubLookTest.php` | Konvention + Rendering |
 
 ### Neue Resource oder Page einhängen
@@ -176,6 +178,41 @@ Rollenliste (`RolesTable`, `Split::make([...])->from('md')`, Aktion mit
 sortierbare Spalten erzeugen stattdessen Filaments Sortier-Dropdown im Inhaltskopf.
 Siehe [Berechtigungssystem → Rollenliste](BERECHTIGUNGSSYSTEM.md#rollenliste-seit-07102026).
 
+### Geschwindigkeit (14.10.2026)
+
+Befund Jan: „Das Admin-Menü ist allgemein langsam." Prod-Logs zeigten 0,4–0,7 s je
+einfacher Seite, die Hub-Nutzer-Liste im Median 1,9 s; rund 0,3 s davon sind ALB +
+IAP und bei jeder Anfrage fest. Drei Maßnahmen:
+
+- **SPA-Modus mit Vorladen** (`->spa(hasPrefetching: true)`): Menüklicks laufen über
+  `wire:navigate`, Seitenleisten-Links laden beim Überfahren vor. Vorher lud jeder
+  Klick das ganze Dokument samt `theme_glattt.css` und Alpine neu. Ziele außerhalb
+  von `/admin` bleiben normale Seitenwechsel — `AdminPanelProvider::spaUrlExceptions()`
+  baut die Ausnahmen aus den ersten Pfad-Segmenten **aller** Routen (Filament kennt
+  nur Positiv-Muster), eine neue Hub-Route ist also automatisch dabei. Ohne die
+  Ausnahmen öffnete „Zurück zum Hub“ (Nutzermenü) den Hub per `wire:navigate` im
+  Admin-Layout.
+- **Rechte-Index am User** (`IndexedPermissionLookup`): Spatie sucht jeden
+  Rechte-Namen linear in allen Rechten und lässt über sein `Gate::before` auch jede
+  Policy-Prüfung (`update`, `viewAny`) durch `checkPermissionTo()` laufen — dort
+  fliegt für den unbekannten Namen intern eine `PermissionDoesNotExist` samt
+  Stacktrace. In der Hub-Nutzer-Liste (8 `update`-Prüfungen je Zeile für die
+  Zeilenaktionen) war das gut ein Drittel der Renderzeit. Der Index hängt per
+  `WeakMap` an Spaties Rechte-Sammlung und erneuert sich mit jedem
+  `forgetCachedPermissions()`; Prüf-Ergebnisse werden nicht gecacht. Lokal
+  266 → 175 ms für die Liste; wirkt im ganzen Hub. Test `IndexedPermissionLookupTest`.
+- **`php artisan filament:optimize`** im Web-Entrypoint (Dockerfile, nach
+  `view:cache`): Komponenten- und Heroicon-Cache, sonst durchsucht Filament bei
+  jeder Anfrage Resources/Pages/Widgets und die Icon-Sets im Dateisystem.
+
+Rest-Kosten der Hub-Nutzer-Liste: Filament rendert je Zeile alle neun Aktionen der
+Aktionsgruppe (rund ein Drittel der Zeit) — Framework-Verhalten, bewusst so belassen.
+
+**Eigene Skripte im SPA-Modus:** Skripte am Body-Ende (Render-Hook `BODY_END`) laufen
+nach jedem Seitenwechsel erneut — Listener nur hinter einem Wächter registrieren
+(`window.__glattt…`) oder `data-navigate-once` setzen (Akkordeon). Auf neue Seiten
+reagieren über `livewire:navigated`, nicht `DOMContentLoaded`.
+
 ### Fallstricke
 
 - **`DisableBladeIconComponents`** steht in der Middleware des Panels: In
@@ -205,6 +242,10 @@ Jan, 19.09.2026: Stufe 1 + 2 jetzt, Stufe 3 fallweise.
 ---
 
 ## Changelog
+
+- **14.10.2026** — Geschwindigkeit: SPA-Modus mit Vorladen, Rechte-Index für Spatie,
+  `filament:optimize` beim Deploy; Seitenwechsel mit sofortigem Balken, gedimmtem
+  Inhalt und vorgezogenem aktiven Menüpunkt. Test `IndexedPermissionLookupTest`.
 
 - **07.10.2026** — Rollenliste auf Split-Layout umgestellt (Karte je Rolle mobil, verdichtete
   Angaben statt 134 Rechte-Badges); Theme-Abschnitt „Listen im Spalten-Layout" für alle

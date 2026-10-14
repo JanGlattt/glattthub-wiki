@@ -7,14 +7,19 @@ mit layoutgetreuen Skeleton Loadern").
 
 ## Für Endanwender
 
-- **Sofortige Reaktion:** Beim Klick auf einen Menüpunkt oder Link startet oben
-  ein Fortschrittsbalken. Antwortet der Server nicht innerhalb von ~150 ms,
-  wechselt die Ansicht sofort auf einen Platzhalter der Zielseite (graue,
-  schimmernde Umrisse von Tabellen, Diagrammen oder Formularen) — die Anwendung
-  „hängt" nie auf der alten Seite.
+- **Sofortige Reaktion:** Schon im Moment des Klicks startet oben ein
+  Fortschrittsbalken, der Ziel-Menüpunkt in Seitenleiste bzw. Menüleiste wird
+  aktiv und der angeklickte Link oder die Zeile blasst kurz ab — man sieht
+  immer, dass der Klick angekommen ist. Antwortet der Server nicht innerhalb von
+  ~150 ms, wechselt die Ansicht zusätzlich auf einen Platzhalter der Zielseite
+  (graue, schimmernde Umrisse von Tabellen, Diagrammen oder Formularen) — die
+  Anwendung „hängt" nie auf der alten Seite.
 - **Schnelle Wechsel ohne Flackern:** Reagiert der Server schnell (z. B. weil
   die Seite beim Überfahren des Menüpunkts schon vorgeladen wurde), erscheint
-  kein Platzhalter — die Seite wechselt direkt.
+  kein Platzhalter — nur der Balken huscht kurz durch, die Seite wechselt direkt.
+- **Admin-Backend:** Seit 14.10.2026 wechselt auch `/admin` die Seiten ohne
+  Neuladen (Filament-SPA-Modus) mit derselben Sofort-Rückmeldung — Details in
+  `ADMIN-BACKEND.md`.
 - **Vorladen beim Hover:** Sidebar-Menüpunkte laden die Zielseite bereits, wenn
   der Mauszeiger darüber schwebt. Der anschließende Klick wirkt dadurch meist
   augenblicklich.
@@ -55,10 +60,15 @@ Drei Bausteine:
 | Baustein | Datei | Aufgabe |
 |---|---|---|
 | Vorlagen | `resources/views/layouts/partials/nav-skeletons.blade.php` | Fünf inerte `<template>`-Elemente (`nav-skeleton-stats/-table/-detail/-cards/-form`), gebaut aus den bestehenden Skeleton-Primitiven (`<x-stat-skeleton>`, `.skeleton-glattt`, `.chart-canvas-glattt`) |
-| Logik | `public/js/nav-skeleton.js` | Routen-Tabelle `ROUTES` (Pfad-Präfix → Vorlage), Flackerschutz 150 ms, Ein-/Ausblenden |
+| Logik | `public/js/nav-skeleton.js` | Sofort-Rückmeldung beim Klick, Routen-Tabelle `ROUTES` (Pfad-Präfix → Vorlage), Flackerschutz 150 ms für den Skeleton, Ein-/Ausblenden |
 | Styles | `public/css/theme_glattt.css`, Abschnitt „Navigations-Skeletons" | `.nav-skeleton-active` (blendet alten Inhalt aus), Bausteine `.nav-skeleton-*` |
 
-Ablauf: `livewire:navigate` → Timer (150 ms). Läuft er ab, wird der alte
+Ablauf: `livewire:navigate` → **sofort** `body.navigating` (Balken),
+`window.updateActiveMenuItems(zielPfad)` aus `sidebar-toggle.js` (Seitenleiste
+und Bottom-Nav sind `@persist` und färbten sich bis 14.10.2026 erst nach
+`livewire:navigated` um) und `nav-pending-glattt` am zuletzt per `pointerdown`
+gedrückten `a[href]`/`[data-href]` (das Event nennt nur die URL, nicht das
+Element). Dann Timer (150 ms). Läuft er ab, wird der alte
 Seiteninhalt per `.nav-skeleton-active` versteckt, die passende Vorlage in
 `.dashboard-main-content` geklont (mit `dashboard-section-stack` für die
 Abstände) und nach oben gescrollt (außer bei History-Navigation — dort stellt
@@ -73,6 +83,14 @@ seiteneigenen Karten-Skeletons der Statistikseiten übernehmen nahtlos.
 **Neuer Seitentyp?** Template in `nav-skeletons.blade.php` ergänzen
 (bestehende Skeleton-Primitive verwenden, Höhen ausschließlich über
 `.chart-canvas-glattt`-Klassen) und in `ROUTES` referenzieren.
+
+**Warum der Balken nicht mehr wartet (14.10.2026):** Bis dahin kamen Balken und
+Skeleton gemeinsam erst nach 150 ms. Auf Prod antwortet aber keine Anfrage unter
+~300 ms (ALB + IAP vor Cloud Run, selbst `livewire.min.js` braucht 0,32 s) — nach
+jedem Klick passierte also spürbar nichts, Befund Jan: „man weiß nicht, ob man
+geklickt hat". Der Flackerschutz gilt seitdem nur noch für den Skeleton, der den
+Inhalt austauscht. Livewires eigener NProgress-Balken (`#nprogress`, ebenfalls
+erst nach 150 ms) lief doppelt daneben und ist im Theme ausgeblendet.
 
 ### Service Worker
 
