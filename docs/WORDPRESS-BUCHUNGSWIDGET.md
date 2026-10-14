@@ -101,6 +101,24 @@ passt in schmale Spalten und zeigt alle Standorte auf einen Blick.
     belegen — die Buchung schlägt dann fehl wie sonst auch bei einem inzwischen
     vergebenen Slot. Eine offene Seite aktualisiert sich nicht von selbst.
 
+### Schnellbuchung für einen Standort und schwebender Knopf (seit 0.17.0, 14.10.2026)
+
+Hintergrund ist der Booking-Masterplan (Ads-Arbeitsbereich, Welle 1): Auf den Standortseiten lag das
+Buchungswidget 7,6 Bildschirme tief, der schwebende Beratungs-Knopf fragte auch auf der Bremen-Seite
+nochmal nach dem Ort, und nirgends stand der nächste freie Termin.
+
+- **`[glattt_buchung variante="schnell" branch="<Branch-ID>"]`** zeigt nur die Kachel dieses Instituts,
+  volle Breite, größeres Foto, nächster freier Termin im Mint-Streifen; Klick bucht ihn, „andere Zeit" öffnet
+  den Kalender, kein „ändern". Im WPBakery-Element: Variante *Schnellbuchung* + *Standort vorwählen*.
+- **Ereignis `glattt:naechster-termin`** (`document`, Detail `{ branchId, start, label, anzahl }`, zusätzlich
+  `window.glatttNaechsterTermin[branchId]`) kommt aus dem Vorlade-Lauf und kostet keine Anfrage.
+- **Schwebender Knopf im Plugin** (`includes/cta.php`, `assets/css/cta.css`, `assets/js/cta.js`): vorher
+  Raw-HTML im Footer von glattt.com. Auf Standortseiten Link direkt zu `#termin` mit „Nächster Termin: …",
+  sonst Klappliste; erst nach dem ersten Scroll sichtbar, weg sobald `#termin` im Bild ist. `cta.js` entfernt
+  einen noch vorhandenen alten Block (`#glattt-cta`); der Footer-Block kann danach gelöscht werden.
+- **Vorschau ohne WordPress:** Widget-Markup per Stub-Harness, `jQuery.post` gemockt, Playwright aus
+  `klickanleitungen/node_modules` (`NODE_PATH`) für Rauchtest und Bild; Rezept im Plugin-README.
+
 ### Signatur: das Erscheinungsbild seit 0.15.0
 
 Das Widget bringt seinen Untergrund jetzt selbst mit — eine warme, cremefarbene
