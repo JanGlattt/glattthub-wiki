@@ -116,6 +116,11 @@ nochmal nach dem Ort, und nirgends stand der nächste freie Termin.
   Raw-HTML im Footer von glattt.com. Auf Standortseiten Link direkt zu `#termin` mit „Nächster Termin: …",
   sonst Klappliste; erst nach dem ersten Scroll sichtbar, weg sobald `#termin` im Bild ist. `cta.js` entfernt
   einen noch vorhandenen alten Block (`#glattt-cta`); der Footer-Block kann danach gelöscht werden.
+- **Bühne „Kalender-Stempel" während der Buchung** (statt Spinner): Kalenderblatt, Goldring, drei Schritte, bei
+  Erfolg Stempel und „Dein Termin ist gebucht", dann Danke-Seite; Mindestdauer 2,5 s, Fehlerfall wie bisher.
+  Entscheidung Jan 14.10.2026 (Variante A von drei Vorschlägen).
+- **Standortseite kompakt:** Skelett-Pillen beim Laden (keine Höhenänderung), Foto-Quadrat, Pillen zweispaltig,
+  Creme-Karte trägt Kalender und Formular (Element: Überschrift „Nein", Rahmen „randlos").
 - **Vorschau ohne WordPress:** Widget-Markup per Stub-Harness, `jQuery.post` gemockt, Playwright aus
   `klickanleitungen/node_modules` (`NODE_PATH`) für Rauchtest und Bild; Rezept im Plugin-README.
 
