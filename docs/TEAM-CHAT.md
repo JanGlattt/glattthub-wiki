@@ -27,8 +27,8 @@ dann muss jede Empfängerin am Ende der Nachricht auf „Gelesen – ich bestät
 Nachrichten zeigen die drei Haken (gesendet, zugestellt, gelesen), in Gruppen „Gelesen von“ je
 Person. Antworten mit Zitat, Reaktionen, Erwähnungen (@Name), Weiterleiten, Anheften,
 Bearbeiten (15 Minuten) und Löschen für alle laufen wie gewohnt; Fotos, Videos, Dateien und
-Sprachnachrichten (Mikrofon halten) ebenso — Aufnehmen nur in der iPhone-/iPad- und der
-Desktop-App, im Browser lassen sie sich nur abspielen. Über das Plus kommen Umfragen, GIFs und Hub-Karten
+Sprachnachrichten (Mikrofon halten) ebenso — Aufnehmen nur in der iPhone-/iPad-App, im Browser
+und in der Desktop-App lassen sie sich nur abspielen. Über das Plus kommen Umfragen, GIFs und Hub-Karten
 in den Chat; `@glatttBert Frage` holt den KI-Assistenten in den Raum. „Nicht stören“ je Person
 hält die Push-Mitteilungen außerhalb der Arbeitszeit fern, dringende Ankündigungen kommen durch.
 
@@ -312,9 +312,9 @@ Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Ha
 
 ## Changelog
 
-- **14.10.2026** — Web: Mikrofon-Knopf nur noch in den Apps (`canRecord` in `public/js/chat.js`
-  prüft `meta[name="glattthub-app"]` bzw. den UA-Token `glatttHub-Desktop/`); im Browser steht dort
-  der Senden-Knopf, empfangene Sprachnachrichten spielen weiter.
+- **14.10.2026** — Web: Mikrofon-Knopf nur noch in der iOS-App (`canRecord` in `public/js/chat.js`
+  prüft `meta[name="glattthub-app"]` auf `ios`); im Browser und in der Desktop-App steht dort der
+  Senden-Knopf, empfangene Sprachnachrichten spielen weiter.
 - **12.10.2026 (nachts)** — iOS: Sprachnachricht wie bei WhatsApp (Dreieck, Welle mittig mit Knopf,
   Profilbild rechts flippt zum Tempo), Antworten mit Zitat nur so breit wie nötig (`HuggingColumn`),
   Anhänge öffnen nur auf Tippen, Antwort-Leiste in Texthöhe mit Foto, Senden springt ans Ende,
