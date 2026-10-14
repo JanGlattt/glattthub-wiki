@@ -2535,6 +2535,19 @@ Mitteilungen, Gerätefreischaltung, Umgebung, Hilfe, Abmelden). Wer das Recht ha
 - **Nachweis:** PHP `SettingsPageTest` (Abschnitte je Recht, Umleitungen, Datenendpunkt, Hintergrund-Lauf,
   widerrufene Zugänge, Rate-Limit 180/je Zugang), `SettingsUITests`, `HubSettingsTests`.
 
+### Native Ruhezeiten (Einstellungen › Mitteilungen, seit 14.10.2026 — Build 1.4.5 (99))
+
+Eine Ruhezeit für alle Push-Mitteilungen, der Chat eingeschlossen — Entwurf 1 „Schlafenszeit-Uhr“ mit
+dem Urlaubsstreifen aus Entwurf 3 (Jan, 14.10.2026). `QuietHoursView` (iPhone gestapelt, iPad Uhr
+links / Urlaub und Ausnahmen rechts), `QuietHoursDial` (Mond/Sonne ziehen, Bogen verschiebt beides,
+15-Minuten-Raster, VoiceOver „Anpassen“, Haptik je Stunde), `QuietHoursExceptionsView` (Bereiche als
+Unterseiten, Chat-Gruppen, Personen mit Suche). Daten über `GET/PUT /hub/ruhezeiten` wie das Web.
+Einstiege: Blatt aus Einstellungen › Mitteilungen (`AppSettingsModifiers.showQuietHours`) und Link in
+den Chat-Einstellungen, die selbst nur noch die Push-Vorschau speichern. Snapshot-Test
+`QuietHoursSnapshotTests` (hell/dunkel, iPhone/iPad) mit gezeichneten Schaltern im Snapshot-Modus.
+Ältere Builds sehen über die `dnd_*`-Felder der Chat-Einstellungen den ersten Plan. Technik:
+[Ruhezeiten](RUHEZEITEN.md).
+
 ### Native Seite „Institute" (Mehr-Seite, seit 27.09.2026)
 
 **Für Endanwender:** „Institute“ öffnet in der App eine Karte mit allen Standorten als farbige Nadeln
@@ -2944,6 +2957,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 14.10.2026 | 1.4.5 (99) | **Ruhezeiten nativ** (Einstellungen › Mitteilungen, Chat-Einstellungen): Uhr wie der iOS-Schlafplan, Pläne mit eigenen Wochentagen, Urlaubsstreifen aus askDANTE, Ausnahmen für Bereiche, Anlässe, Chats und Personen. |
 | 11.10.2026 | 1.4.x (90) | **Auto-Abmeldung nativ** (`AutoLogoutMonitor`): ein Zähler je Sitzung statt einem je WebView, zählt im Hintergrund weiter und meldet beim Zurückkehren ab; Pause in Terminansicht, Einstellungszettel und Laser-Wartung; Countdown in iPad-Seitenleiste und Mehr-Sheet. Hub: `auto-logout.js` mit Pausen-API und Übergabe an die App, personenbezogene Anlässe (nur Betroffene/einzelne Nutzerinnen) nie an geteilte Geräte |
 | 08.10.2026 | 1.4.1 | **glatttBert nativ** (TestFlight 252, Entwurf 1 „Blatt von überall“): Chat-Blatt aus Schnellzugriff, Mehr, Siri und ⌘K mit Vorschlägen zur Seite, Tabellen, Quellen, Karten, Feedback, Verlauf (Menü/iPad-Spalte); Hub: `BertConversations` + `/api/app/bert/*`. Dazu Info-i zu den Vergleichszahlen (250/251, `comparison.hint`), Mitteilungen einzeilig mit Symbol (253) |
 | 04.10.2026 | 1.4.x | **Apple Watch: Ring-Sammlung** — sechs runde Ziffernblatt-Widgets (KPZ im Monat, Prognose, Beratungen heute mit offen/No-Show, Abschlüsse, Ø KPZ je Beratung, nächste Beratung); Uhr-Seiten „Heute“ und „Monat“ erweitert; „Mehr“ bleibt in der Tab-Leiste markiert, solange das Mehr-Blatt offen ist (TestFlight 243/244) |

@@ -29,8 +29,10 @@ Person. Antworten mit Zitat, Reaktionen, Erwähnungen (@Name), Weiterleiten, Anh
 Bearbeiten (15 Minuten) und Löschen für alle laufen wie gewohnt; Fotos, Videos, Dateien und
 Sprachnachrichten (Mikrofon halten) ebenso — Aufnehmen nur in der iPhone-/iPad-App, im Browser
 und in der Desktop-App lassen sie sich nur abspielen. Über das Plus kommen Umfragen, GIFs und Hub-Karten
-in den Chat; `@glatttBert Frage` holt den KI-Assistenten in den Raum. „Nicht stören“ je Person
-hält die Push-Mitteilungen außerhalb der Arbeitszeit fern, dringende Ankündigungen kommen durch.
+in den Chat; `@glatttBert Frage` holt den KI-Assistenten in den Raum. Die [Ruhezeiten](RUHEZEITEN.md)
+(seit 14.10.2026 für alle Mitteilungen, vorher „Nicht stören“ nur im Chat) halten Pushes aus dem
+Feierabend fern; einzelne Gruppen oder Kolleginnen lassen sich als Ausnahme durchlassen, dringende
+Ankündigungen kommen immer.
 
 **Warum.** WhatsApp lebt von privaten Handynummern, pflegt keine Gruppen und kennt den Hub nicht.
 Der Chat erreicht jede Kollegin über ihr Hub-Konto, hält Dienstliches im Unternehmen und
@@ -128,6 +130,11 @@ personenbezogenen Pushes an — dort steht, wer gerade Dienst hat. Technisch:
   Veröffentlichung, `ChatRoomEvent`).
 - Kanal `private-chat.room.{id}` nur für den offenen Raum: `chat.activity` mit `typing` und
   `read` (`ChatRoomActivity`).
+- Seit 14.10.2026 zusätzlich im persönlichen Kanal: `typing` an alle übrigen Mitglieder (Chatliste
+  zeigt „schreibt …“, höchstens alle 3 s je Person) und `receipt` nur an die Absenderin der letzten
+  Nachricht, sobald Zustell- oder Lesestand vorrückt (`message_id`, `status` aus
+  `ChatPresenter::receiptStatus` — dieselbe Regel wie im Verlauf). Ohne `message` im Ereignis — die
+  iOS-App steigt dabei vor jeder Verarbeitung aus, ältere Builds vertragen es.
 - Freigaben in `routes/channels.php` (Mitgliedschaft, `use_chat`); Presence-Kanal
   `presence-chat` ist vorbereitet.
 - Reverb ist **Anstoß, der Hub die Wahrheit**: Web (`GlatttLive` aus `guided-live.js`) und App
@@ -171,8 +178,10 @@ im Simulator nicht, deshalb `-glatttProbeChatNotice` (siehe Wissen `ios-chat-kom
 Drei Katalog-Anlässe (`HubEventRegistry`, Modul „Nachrichten & Dashboards“): `chat.message`
 (nur Push), `chat.mention` (nur Push, schlägt Stummschaltung), `chat.announcement` (In-App und
 Push, dringend = zeitkritisch). `ChatPushService` filtert die Empfänger: ohne Absenderin, ohne
-Stummgeschaltete, ohne „Nicht stören“ (`ChatUserSetting::isQuietAt`), ohne wer den Raum gerade
-offen hat (Cache-Marke aus dem Lesestand-Ping `viewing`). Der Dispatcher setzt eigene
+Stummgeschaltete, ohne wer den Raum gerade offen hat (Cache-Marke aus dem Lesestand-Ping `viewing`).
+Die Ruhezeit prüft seit 14.10.2026 zentral der Dispatcher ([Ruhezeiten](RUHEZEITEN.md)); dafür trägt
+`chatPushData` die `chat_sender_id`. Die Chatliste bekommt den Haken-Stand der letzten eigenen
+Nachricht als `last_message.status`. Der Dispatcher setzt eigene
 Zusatzdaten: `module` = `chat-room-{id}` (thread-id je Raum), Kategorie `HUB_CHAT` mit
 Direkt-Antwort in der App, Ziel `/hub/chat/raum/{id}`. Der Text respektiert
 `preview_in_push` je Person.
@@ -312,6 +321,15 @@ Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Ha
 
 ## Changelog
 
+- **14.10.2026 (abends)** — Web: flüssiger Chatwechsel ohne leere Fläche (alter Verlauf bleibt
+  gedimmt stehen, Räume im Speicher `roomCache`, Vorladen beim Drüberfahren, weiches Einblenden per
+  Web Animations API), kein Sprung beim Öffnen (Ziel steht vor dem Tausch fest, `keepBottomPinned`
+  beobachtet die Hülle `.chat-timeline-content` und rückt vor dem Zeichnen nach, Medien reservieren
+  ihre Größe über `mediaBox()`), Ungelesen-Trenner, Entwürfe in der Liste, Tipp-Blase mit Foto und
+  „schreibt …“ in der Liste, Liste gleitet beim Umsortieren (FLIP), Filterleiste bis zur Kante,
+  Tastatur `/` und Esc, Ablagefläche beim Ziehen, Ladeplatzhalter, neues Fenster „Neuer Chat“ (nach
+  Institut gegliedert, gleitender Umschalter, Auswahl als Chips), Haken in der Liste wie im Verlauf,
+  Standort-Badge in Institutsfarbe. „Nicht stören“ wird zu den [Ruhezeiten](RUHEZEITEN.md).
 - **14.10.2026** — Web: Mikrofon-Knopf nur noch in der iOS-App (`canRecord` in `public/js/chat.js`
   prüft `meta[name="glattthub-app"]` auf `ios`); im Browser und in der Desktop-App steht dort der
   Senden-Knopf, empfangene Sprachnachrichten spielen weiter.

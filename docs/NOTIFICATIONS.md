@@ -282,6 +282,13 @@ Benachrichtigungen bei Datenbank-Events.
 
 ---
 
+## Ruhezeiten (seit 14.10.2026)
+
+Wann eine Person keine Pushes bekommt, entscheidet ausschließlich der `QuietHoursService` im
+Push-Zweig von `HubNotificationDispatcher::deliver()`: Pläne wie der iOS-Schlafplan, Urlaub aus
+askDANTE, Ausnahmen je Modul, Anlass, Chat und Person, dringende Mitteilungen immer. Die In-App-Meldung
+und die E-Mail bleiben unberührt. Details: [Ruhezeiten](RUHEZEITEN.md).
+
 ## Push-Notifications Setup
 
 ### Browser-Unterstützung
