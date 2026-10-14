@@ -514,3 +514,13 @@ Tests: `tests/Unit/AppointmentReminderRuleTest.php`,
 `tests/Feature/SharedBookingResponseTest.php`,
 `tests/Feature/ReminderConsentPageTest.php`,
 `tests/Feature/TwilioInboundWebhookTest.php`.
+
+### Fallstrick: Kanal gesetzt, Liste zeigt „Kein Kanal" (behoben 14.10.2026)
+
+Die Admin-Liste „Terminerinnerungen: Kanäle" zeigte für alle Standorte „Kein Kanal — nur E-Mail", obwohl die
+Superchat-Kanal-IDs gespeichert waren und der WhatsApp-Versand lief. Ursache: Das Formular setzte den Kanal-Namen per
+`afterStateUpdated` in ein `TextInput->hidden()`, und Filament 4 dehydriert versteckte Felder nie (auch nicht mit
+`dehydrated()`). Jetzt `Hidden::make('channel_name')->dehydratedWhenHidden()`, die Liste zeigt ersatzweise die ID
+(maßgeblich für den Versand ist `channel_id`, siehe `SendAppointmentReminderJob`), und die Migration
+`2026_10_14_090000` hat die Namen aus den Beratungs-WhatsApp-Einstellungen nachgetragen. Wissen:
+`.github/knowledge/filament-hidden-feld-wird-nicht-gespeichert.md`.
