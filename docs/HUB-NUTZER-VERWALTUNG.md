@@ -26,6 +26,13 @@ niemand vergibt Rollen oder ändert Konten über die eigene Rechte-Stufe hinaus.
 - **Aktionen:** Zugangsdaten senden, Einladung, Ansehen als (nur Super-Admin), Archivieren,
   Auf allen Geräten abmelden, Endgültig löschen (nur archivierte Konten, Name eintippen).
 - **Rechte als CSV** für die Rechte-Prüfung.
+- **Bereich und Position (seit 14.10.2026):** Wer keinem Stamm-Institut angehört (Büro,
+  Management …), bekommt unter *Institute & Rollen* einen **Bereich** mit **Kürzel** (bis 4 Zeichen) —
+  das Kürzel steht dann überall, wo sonst das Institutskürzel steht, als graues Badge. Die
+  **Position** (Leitung, Finance, glattt Spezialistin …) im Reiter *Profil* gilt für alle und erscheint
+  im Chat, in der Personalübersicht, auf den Team-Karten der Institute und unten links unter dem
+  Namen. Beides Freitext mit Vorschlägen aus den schon vergebenen Einträgen; die Liste sucht und
+  filtert danach.
 
 ---
 
@@ -54,6 +61,19 @@ mutateFormDataBeforeSave()` prüft den Rollenwechsel und wirft bei Verstoß eine
 wo sie sich unterscheiden** (vorher Komplett-Ersatz, der `created_by_user_id` überschrieb).
 `CreateUser` legt über `UserProvisioningService::create()` an (PIN-Eindeutigkeit, Rollen-Grenzen,
 E-Mail optional).
+
+### Bereich und Position — `App\Support\UserOrgUnit`
+
+Spalten `users.department` (60), `department_short` (4), `position` (80), Migration
+`2026_10_14_230000`. **Eine Regel an einer Stelle:** `UserOrgUnit::department()` liefert den Bereich
+nur ohne Stamm-Institut (`home_branch_id` leer oder `all`), `departmentShort()` das eigene Kürzel
+in Großbuchstaben bzw. die ersten drei Buchstaben, `position()` die Position. `suggestions()` liefert
+die Vorschläge für Admin (`->datalist()`), Web-Assistent (`options.org`) und App-Assistent (Bereiche
+mit ihrem häufigsten Kürzel, Schreibweisen zusammengefasst). Ausgabe im Chat über
+`ChatPresenter::user()`: ohne Institut tragen `branch_name`/`branch_short` den Bereich und
+`branch_color` ist `null` (Badge grau), dazu `department` und `position`. Das Bereichsfeld ist im
+Formular nur sichtbar, solange kein Stamm-Institut gewählt ist (`home_branch_id` ist `live()`);
+ausgeblendet wird es nicht gespeichert, der alte Wert bleibt stehen und zählt erst wieder ohne Institut.
 
 ### Letzte Anmeldung
 
@@ -132,6 +152,9 @@ oben und gedimmte Tabelle, solange eine ausgelöste Livewire-Anfrage läuft (ab 
 `$refresh` zählt nicht).
 
 ## Changelog
+
+- **14.10.2026 (nachts)** — Bereich mit Kürzel (ohne Stamm-Institut) und Position für alle;
+  Anlegen in Admin, Web- und App-Assistent; Anzeige in Chat, Personal, Team, Profil.
 
 - **13.10.2026 (abends)** — Liste 709 → 31 Abfragen, Ladeanzeige im Admin.
 

@@ -125,7 +125,10 @@ Der Button **Konto anlegen** erscheint bei Personen ohne Konto für Nutzer mit d
 fünf Schritte, alles vorbelegt und änderbar:
 
 1. **Stammdaten** — Name und E-Mail aus askDANTE, Stamm-Institut und erlaubte Institute aus dem
-   askDANTE-Standort (bzw. Team-Namen), Auto-Logout. Passt ein vorhandenes Hub-Konto ohne
+   askDANTE-Standort (bzw. Team-Namen), Auto-Logout, **Position** und — ohne Stamm-Institut —
+   **Bereich mit Kürzel** (seit 14.10.2026, Vorschläge aus `options.org`, ein bekannter Bereich
+   bringt sein Kürzel mit; siehe [Hub-Nutzer](HUB-NUTZER-VERWALTUNG.md)). Die Übersicht zeigt die
+   Position unter dem Namen und ohne Institut den Bereich in der Spalte „Institut“. Passt ein vorhandenes Hub-Konto ohne
    Verknüpfung (gleiche E-Mail oder gleicher Name), bietet der Wizard **„Dieses Konto
    verknüpfen"** an — dann entsteht kein Duplikat, das Konto bekommt nur die
    askDANTE-Verknüpfung. Kandidaten sind nur **aktive** (nicht archivierte) Konten.

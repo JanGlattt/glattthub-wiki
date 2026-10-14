@@ -321,6 +321,10 @@ Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Ha
 
 ## Changelog
 
+- **14.10.2026 (nachts)** — Personen ohne Stamm-Institut zeigen ihr **Bereichs-Kürzel** (grau) statt
+  eines leeren Badges, die **Position** steht als Unterzeile (Mitglieder, Einzelchat-Kopf, Neuer Chat,
+  der nach Bereich gliedert). Fix: Badges ohne Kürzel waren sichtbar, weil `instStyle()` einen
+  Text-`:style` lieferte und damit das `display:none` von `x-show` überschrieb — jetzt als Objekt.
 - **14.10.2026 (abends)** — Web: flüssiger Chatwechsel ohne leere Fläche (alter Verlauf bleibt
   gedimmt stehen, Räume im Speicher `roomCache`, Vorladen beim Drüberfahren, weiches Einblenden per
   Web Animations API), kein Sprung beim Öffnen (Ziel steht vor dem Tausch fest, `keepBottomPinned`
