@@ -12,6 +12,27 @@ Das glatttHub-System wurde um ein PIN-basiertes Login-System erweitert. Jeder Be
 - **Einzigartigkeit**: Jede PIN kann nur einmal vergeben werden
 - **Optional**: PIN ist nicht verpflichtend
 
+### 1a. **Schnell-Index `pin_lookup` (seit 14.10.2026)**
+- **Warum:** Die PIN liegt als bcrypt-Hash vor, ohne zugehöriges Konto. Anmeldung und
+  Verfügbarkeitsprüfung verglichen deshalb die eingegebene PIN per bcrypt mit **jeder**
+  gespeicherten PIN — auf Prod dauerte die PIN-Anmeldung im Median 2,3 s (10 % über 5,6 s),
+  eine Prüfung auf eine *freie* PIN immer den vollen Durchlauf.
+- **Spalte:** `users.pin_lookup` (64 Zeichen, eindeutig, nullable) = `hash_hmac('sha256',
+  'hub-pin:'.$pin, APP_KEY)` — `PinAuthenticationService::lookupFor()`. Ohne App-Schlüssel nicht
+  umkehrbar; mit Schlüssel wäre auch der bcrypt-Hash einer vierstelligen PIN in Minuten geraten,
+  der Index schwächt also nichts. Staging teilt den Schlüssel mit Prod.
+- **Ablauf:** Erst ein Treffer über den Index (+ ein bcrypt-Vergleich zur Bestätigung), dann nur
+  noch über Konten **ohne** Eintrag. Ein Treffer dort trägt den Index nach — die Schleife wird mit
+  jeder Anmeldung kürzer. Konten **mit** Eintrag haben sicher eine andere PIN.
+- **Diese Annahme hält nur, solange der Eintrag nie veraltet:** PIN immer über
+  `User::assignPin(?string)` setzen (Hash + Index). Wer `pin` direkt beschreibt, verliert den
+  Index — der `saving`-Hook in `User::booted()` setzt ihn dann auf `null` (sonst blockierte ein
+  alter Eintrag die Eindeutigkeit für die nächste Person mit dieser PIN, und die neue PIN wäre über
+  die Schleife nicht mehr erreichbar). **Nie** die PIN per Raw-SQL ändern.
+- `pin_lookup` ist bewusst nicht massenzuweisbar (`forceFill` beim Anlegen) und `hidden`.
+- Tests: `tests/Feature/TeamPinTest.php` (Index beim Setzen, Nachtragen bei der Anmeldung,
+  Verwerfen bei direkter Änderung).
+
 ### 2. **Login-Seite mit Toggle**
 - **Haupt-Login-Methode**: PIN (4 Ziffern)
 - **Alternative Methode**: E-Mail/Passwort
@@ -39,7 +60,8 @@ Das glatttHub-System wurde um ein PIN-basiertes Login-System erweitert. Jeder Be
   - `updatePin()`: PIN setzen/ändern mit Validierung
   - `generateUniquePin()`: Zufällige eindeutige PIN erstellen
   - `isValidPin()`: PIN-Format validieren
-  - `isPinTaken()`: Eindeutigkeit prüfen
+  - `isPinTaken()`: Eindeutigkeit prüfen (Index zuerst, siehe 1a)
+  - `lookupFor()`: Schnell-Index einer PIN
   - `removePin()`: PIN entfernen
 
 - **PinLoginController**:

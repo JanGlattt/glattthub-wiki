@@ -10,11 +10,11 @@
     "Institute",
     "im Überblick"
   ],
-  "subtitle": "Klickanleitung für das Institut-Modul im glatttHub — Übersicht, Steckbrief und Kennzahlen je Standort",
+  "subtitle": "Klickanleitung für das Institut-Modul im glatttHub — Übersicht, Steckbrief, Kennzahlen und Team je Standort",
   "eyebrow": "Betrieb · Institute",
   "footerArea": "Betrieb",
-  "stand": "15.09.2026",
-  "version": "1.0",
+  "stand": "14.10.2026",
+  "version": "1.1",
   "notes": [
     "Die Institute kommen aus **Phorest** — angelegt und umbenannt werden sie dort, nicht im Hub.",
     "Im Hub kommt dazu, was Phorest nicht kennt: **Bild, Farbe, Symbol, Bankverbindung, Zugangs-Link**.",
@@ -153,10 +153,47 @@
           "n": 3,
           "title": "Kein Team hinterlegt",
           "text": "Dann ist noch niemand zugeordnet. Die Zuordnung passiert in der Personalverwaltung („Team 1“)."
+        },
+        {
+          "n": 4,
+          "title": "Neue PIN",
+          "text": "Mit dem **Schlüssel** rechts oben auf der Karte vergibst du eine neue PIN — nur Leitung, Admin und Super-Admin sehen ihn."
         }
       ],
       "hint": {
         "text": "**Diese Liste ist keine Dienstplanung.** Wer wann arbeitet, steht in askDANTE — hier steht nur, wer zu diesem Standort gehört."
+      }
+    },
+    {
+      "h1": "Neue PIN fürs Team",
+      "sub": "Hat eine Kollegin ihre PIN vergessen, vergibt die Leitung direkt hier eine neue — sie gilt sofort.",
+      "card": {
+        "title": "Neue PIN",
+        "text": "Vergessene PIN sofort ersetzen"
+      },
+      "left": {
+        "shot": "b4b-team-pin"
+      },
+      "leftCaption": "Schlüssel auf der Karte → Fenster **„Neue PIN“**.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Vier Ziffern",
+          "text": "Nach der vierten Ziffer prüft der Hub sofort: **„PIN ist frei“** oder **„nicht verfügbar“**. Einfache Folgen wie 1234 oder 0000 nimmt er nicht."
+        },
+        {
+          "n": 2,
+          "title": "Freie PIN vorschlagen",
+          "text": "Fällt dir keine ein, schlägt der Hub eine freie PIN vor."
+        },
+        {
+          "n": 3,
+          "title": "PIN speichern",
+          "text": "Die PIN gilt **ab sofort**, die alte erlischt. Beim ersten Anmelden muss sie **nicht** geändert werden — sag sie der Kollegin persönlich."
+        }
+      ],
+      "hint": {
+        "text": "**Nach zehn Versuchen ist zehn Minuten Pause.** Eine vergebene PIN öffnet ein fremdes Konto — deshalb bremst der Hub das Ausprobieren und nennt nie, wem eine PIN gehört."
       }
     }
   ]

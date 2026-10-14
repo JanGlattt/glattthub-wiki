@@ -2544,7 +2544,9 @@ oder Zeile das Institut mit **Anrufen**, **Mobil**, **WhatsApp** und **Route**, 
 heute, den Verträgen im Monat, Ø KPZ und den Öffnungszeiten. Das Blatt lässt sich hochziehen.
 **Kennzahlen**, **Team** und **Verwaltung** (Kontakt, Google-Wertung, Öffnungszeiten, Bild und Icon,
 Steckbrief, Bank, Tablet-Link, je nach Recht) sind eigene Seiten. Auf dem iPad schwebt das Blatt
-links über der Karte.
+links über der Karte. Seit 14.10.2026 trägt jede Zeile der Seite **Team** für Leitung, Admin und
+Super-Admin einen Schlüssel-Knopf **„Neue PIN"**: vier Kästchen und ein Ziffernblock, „frei" oder
+„nicht verfügbar" nach der vierten Ziffer, ✦ schlägt eine freie PIN vor. Die PIN gilt sofort.
 
 **Für Entwickler:**
 
@@ -2556,6 +2558,15 @@ links über der Karte.
   Rechte wie die Routen-Gates), danach blendet die App Verwaltung und Abschnitte ein.
 - **Kennzahlen-Karten** mit festem Standort über `GET /api/app/reports/page?keys=termine.booking-status,sales.body-zones-daily`
   und `ReportPageModel.fixedBranch` — dieselben nativen Bausteine wie in den Berichten.
+- **Neue PIN fürs Team (14.10.2026, Entwurf 1):** `TeamPinSheet` — dieselben Endpunkte wie das Web
+  (`POST /hub/team-pin/{user}/check|suggest`, `POST /hub/team-pin/{user}`) über
+  `HubSession.jsonBody` (422-Meldungen der Bremse und Prüfung landen in der Statuszeile). Sichtbar nur
+  bei `can_set_pin` aus `/phorest/institute/{id}/staff` (`InstituteStaff.canSetPin`, optional). iPhone:
+  Blatt `.medium`; iPad: Popover am Schlüssel-Knopf (`presentationCompactAdaptation(.sheet)`), Ziffern,
+  ⌫ und ⏎ über die Hardware-Tastatur (`onKeyPress`). Eigener Ziffernblock statt `NumericKeypadField`,
+  weil Kästchen-Anzeige und „Vorschlag"-Taste Teil des Blocks sind. Ziffernblock als `Grid`, nicht
+  `LazyVGrid` — der Snapshot-Renderer zeichnet Lazy-Container nicht zuverlässig. Rechte und Regeln
+  ausschließlich serverseitig (`TeamPinService`, Wiki [INSTITUTE-MODULE](INSTITUTE-MODULE.md)).
 - **Navigation:** `NativeMorePage.institutes` (`/hub/branches`); `/hub/branches/{id}` wählt das
   Institut über `AppState.instituteFocus`. Unterseiten per `pushMoreDetail`.
 - **Blatt (iPhone)** ist ein eigenes Overlay mit drei Stufen statt eines System-Sheets — ein Sheet
@@ -2567,7 +2578,8 @@ links über der Karte.
   Berichten (`upcomingNormalized`). „Körperzonen pro Tag“ beschriftete bei unter 31 Tagen jeden Tag,
   solange die Scroll-Einstellung aktiv war.
 - **Nachweis:** `InstitutesUITests` (iPhone gegen den lokalen Hub), `InstitutesSnapshotTests`
-  (Liste, Institut, iPad-Blatt; Öffnungsstatus, WhatsApp-Link, Pfade), PHP
+  (Liste, Institut, iPad-Blatt, Team-PIN iPhone/iPad; Öffnungsstatus, WhatsApp-Link, Pfade,
+  `can_set_pin`), PHP `TeamPinTest`,
   `InstituteDetailPageTest::test_contact_endpoint_reports_edit_rights`,
   `AppReportsTest::statistics_page_returns_requested_cards_the_user_may_see`. Ein iPad-UI-Test ist
   vorerst zurückgestellt (Jan, 27.09.2026): Die Anmeldehilfe kann einen frischen iPad-Simulator noch

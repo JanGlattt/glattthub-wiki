@@ -55,7 +55,23 @@ const PLAN = [
     { id: 'menueband', kind: 'frame', sel: '.tab-band-glattt' },
   ] },
   { name: 'b3-kennzahlen', url: INSTITUT, steps: [['loaded'], oeffneInstitut, reiter('Kennzahlen'), ['loaded'], ['wait', 1500]] },
-  { name: 'b4-team', url: INSTITUT, steps: [['loaded'], oeffneInstitut, reiter('Team'), ['loaded']] },
+  { name: 'b4-team', url: INSTITUT, steps: [['loaded'], oeffneInstitut, reiter('Team'), ['loaded']], marks: [
+    { id: 'pin', kind: 'badge', n: 4, sel: '.institute-staff-pin-btn', at: 'l' },
+  ] },
+  // „Neue PIN" (seit 14.10.2026): Dialog öffnen, freie PIN vorschlagen lassen — gespeichert wird nichts
+  { name: 'b4b-team-pin', url: INSTITUT, steps: [['loaded'], oeffneInstitut, reiter('Team'), ['loaded'],
+    ['fn', async (page, L) => {
+      const ok = await page.evaluate(() => { const b = [...document.querySelectorAll('.institute-staff-pin-btn')].find(x => x.offsetParent); if (!b) return false; b.click(); return true; });
+      if (!ok) console.log('PIN-KNOPF FEHLT (Recht set_team_pin?)');
+      await L.wait(page, 800);
+      await page.evaluate(() => [...document.querySelectorAll('.team-pin-form button')].find(x => /vorschlagen/.test(x.textContent))?.click());
+      await L.wait(page, 6000);
+    }]], marks: [
+    { id: 'kaestchen', kind: 'frame', color: 'teal', sel: '#team-pin-boxes' },
+    { id: 'status', kind: 'badge', n: 1, sel: '.team-pin-status', at: 'l' },
+    { id: 'vorschlag', kind: 'badge', n: 2, sel: '.team-pin-body .btn-glattt-ghost', at: 'l' },
+    { id: 'speichern', kind: 'badge', n: 3, sel: '.team-pin-form button[type=submit]', at: 'l' },
+  ] },
   // ── Betrieb 2: Institut pflegen
   { name: 'b5-infos', url: INSTITUT, steps: [['loaded'], oeffneInstitut, reiter('Infos'), ['loaded']] },
   { name: 'b6-bank', url: INSTITUT, steps: [['loaded'], oeffneInstitut, reiter('Bank'), ['loaded']] },

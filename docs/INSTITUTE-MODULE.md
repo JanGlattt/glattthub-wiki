@@ -57,6 +57,10 @@ nur dieses Institut), *Bank* (Bankverbindung für Zahlungserinnerungen und Mahnu
 - **Rechte trennen die Reiter:** Bearbeiten von Farbe/Reihenfolge/Sichtbarkeit, Icon, Bild und
   Kontakt braucht `manage_branch_images`, der Bank-Reiter `manage_branch_bank_details`, der
   Reiter *Extern* `manage_institute_access_tokens`.
+- **Neue PIN fürs Team (seit 14.10.2026):** Leitung, Admin und Super-Admin (Recht
+  `set_team_pin`) vergeben im Reiter *Team* einer Kollegin eine neue PIN — Web und App. Die PIN
+  gilt sofort und muss beim ersten Anmelden nicht geändert werden; vergebene und leicht zu
+  erratende PINs (1234, 0000 …) lehnt der Hub ab.
 
 **Wo was erledigt wird** — die Anleitung nennt Felder, Folgewirkungen und die gefährlichen Knöpfe:
 
@@ -101,7 +105,7 @@ Koordinaten mit Google-Maps-Link; Team-Größe mit Sprung zum Reiter „Team".
 | Reiter | Inhalt | Recht / Endpunkt |
 |---|---|---|
 | **1. Infos** | Adresse aus Phorest (nur lesbar, Karten-Link, Website) links, **Kontakt-Stammdaten** Telefon, WhatsApp-Nummer, E-Mail rechts; Standort-Icon (PNG/SVG, max. 2 MB) und Institut-Bild (max. 5 MB) als je eine Karte (neues Icon erscheint sofort im Steckbrief); Google-Maps-Einbettung über die Phorest-Koordinaten | Tabelle `institute_contacts`, `GET/POST /phorest/institute/{branchId}/contact`, Schreibrecht `manage_branch_images` (ohne Recht Leseansicht) |
-| **2. Team** | glatttHub-Konten mit diesem Institut als Stamminstitut: Avatar, Name, NiSV-Status (grün/gelb/orange/rot), „im Hub seit"; Klick öffnet das Profil. Wird beim Seitenaufruf geladen (Zähler im Reiter). | `GET /phorest/institute/{branchId}/staff` |
+| **2. Team** | glatttHub-Konten mit diesem Institut als Stamminstitut: Avatar, Name, NiSV-Status (grün/gelb/orange/rot), „im Hub seit"; Klick öffnet das Profil. Wird beim Seitenaufruf geladen (Zähler im Reiter). Mit `set_team_pin` je Karte der Schlüssel-Knopf **„Neue PIN"** (siehe unten). | `GET /phorest/institute/{branchId}/staff` (liefert je Person `can_set_pin`) |
 | **3. Kennzahlen** | KPI-Zeile + zwei Registry-Statistiken (siehe unten) | `GET /phorest/institute/{branchId}/kpis` |
 | **4. Bank** | Bankverbindung je Standort für Zahlungserinnerungen und Mahnungen des Forderungsmanagements (Kontoinhaber, IBAN, BIC, Bank, Schalter „Aktiv") | nur `manage_branch_bank_details` |
 | **5. Extern** | Zugangs-Link der Institutsseite (Tageserfassung Beratungsgespräche): erstellen, kopieren, erneuern, widerrufen; darunter seit 20.09.2026 der Block **„iPad-App (Kiosk-Modus)"** mit den Schlüsseln der Managed App Configuration (`baseUrl`, `sharedDevice`, `kioskMode`, `instituteToken`, `deviceName`) zum Kopieren nach Miradore — `InstituteAccessTokenController::appConfig()`, Wiki [IOS-APP](IOS-APP.md) | nur `manage_institute_access_tokens` |
@@ -123,6 +127,48 @@ Koordinaten mit Google-Maps-Link; Team-Größe mit Sprung zum Reiter „Team".
 - Neu in der KpiRegistry dafür: `termine.upcoming_tomorrow`, `termine.upcoming_month_end`
   (Eimer `tomorrow`/`month_end` aus `ReportController::buildUpcomingConsultationsKpi`) und
   `sales.total_body_zones` (Summe `body_zone_count` der Abschlüsse).
+
+### Neue PIN fürs Team (seit 14.10.2026)
+
+Entscheidung Jan (Entwurf 1 „Schlüssel auf der Karte, kurzer Dialog"): Die Leitung soll die PIN
+ihrer Kolleginnen selbst neu setzen können — nur die PIN, nur der neue Wert, ohne Erstzugangs-
+Pflicht. Das Büro behält dafür weiter die Zugang-Karte der Personal-Akte (`manage_user_access`).
+
+| Baustein | Datei |
+|---|---|
+| Recht | `set_team_pin` (Katalog „Institute → Team", Migration `2026_10_14_200000_add_set_team_pin_permission`: Super-Admin-Rollen, `admin`, `Leitung`) |
+| Regeln + Bremse | `App\Services\Users\TeamPinService` |
+| Endpunkte (alle POST, nie die PIN in einer URL) | `POST /hub/team-pin/{user}/check` → `{status: free\|taken\|weak\|format, message, remaining}`, `POST /hub/team-pin/{user}/suggest` → `{pin}`, `POST /hub/team-pin/{user}` → setzt (`TeamPinController`, Route-Gate `can:set_team_pin`) |
+| Web | Knopf in `hub/institutes/tabs/staff.blade.php`, Dialog `hub/institutes/partials/team-pin-modal.blade.php`, Logik `pinModal`/`openPinModal()` in `public/js/institute-detail.js`, Styles „Team-PIN" in `theme_glattt.css` |
+| App | `ios/glatttHub/Institutes/TeamPinSheet.swift` (Blatt am iPhone, Popover am iPad, eigener Ziffernblock, Hardware-Tastatur), Schlüssel-Knopf + Kontextmenü in `InstituteTeamPage` |
+| Tests | `tests/Feature/TeamPinTest.php`, `InstitutesSnapshotTests` (`institutes-team-pin*`) |
+
+**Wer darf wessen PIN setzen** (`TeamPinService::canSetPin()`): Recht `set_team_pin` **und**
+Stamm-Institut der Person in den `allowed_branch_ids` der Handelnden (leer = alle Standorte;
+schreibende Anfragen prüft `EnforceAllowedBranches` nicht, deshalb hier) **und**
+`HubUserGuard::canManage()` (nie für Konten mit mehr Rechten oder Super-Admins) **und** nicht
+archiviert. Der Staff-Endpunkt liefert das Ergebnis je Person als `can_set_pin`, Web und App
+zeigen den Knopf nur dann.
+
+**Gesetzt wird über `UserAccessService::setCredentials(…, mustChange: false)`** — dieselbe
+Stelle wie die Zugang-Karte, nur ohne Erstzugangs-Flag. Leicht zu erratende PINs
+(`UserAccessService::isWeakPin()`: Viererreihen, 1234, 2580 …) sind gesperrt.
+
+**Sicherheit:** Die Anmeldung läuft über die PIN allein. „Nicht verfügbar" heißt also „mit dieser
+PIN kommt man in ein fremdes Konto". Deshalb: Bremse 10 Prüfungen/Speicherversuche je 10 Minuten
+und Person (`RateLimiter`, Schlüssel `team-pin:{id}`), die Antwort nennt nie den Besitzer, jeder
+Treffer landet als Warnung im Log („Team-PIN: geprüfte PIN ist vergeben"). „Freie PIN
+vorschlagen" zählt nicht gegen die Bremse — ein Vorschlag verrät nichts über vergebene PINs.
+
+**Tempo:** Die Prüfung nutzt den PIN-Schnell-Index (`users.pin_lookup`, siehe
+[PIN-LOGIN-SYSTEM](PIN-LOGIN-SYSTEM.md)) — ohne ihn dauerte jede Prüfung auf Prod mehrere
+Sekunden.
+
+**Fallstricke beim Bauen:** `$refs` aus dem `x-teleport`-Inhalt kommen im Seiten-Scope nicht an
+(Kästchen deshalb per `#team-pin-boxes`), Fokus erst nach `$nextTick` + kurzer Pause (ein
+`requestAnimationFrame` war zu früh), Ziffern im `x-for` über den Index binden statt über die
+Item-Variable. Der Knopf liegt **neben** dem `<a>` der Karte (Knopf im Link wäre ungültig) — im
+Raster sind die Karten teils nur ~235 px breit, daher nur das Schlüssel-Symbol.
 
 ### Technische Implementierung
 
