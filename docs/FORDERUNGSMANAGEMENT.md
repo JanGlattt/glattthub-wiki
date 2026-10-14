@@ -1183,6 +1183,14 @@ Berichtsseite **„Schulden"** auf `/hub/reports` (Recht `view_report_debts`):
 wählbar. CSV-Export-Quellen `debts-flow`, `debts-pipeline`, `debts-outcomes`.
 Zeitreihen beginnen mit dem Modulstart 08/2026.
 
+**Bestands-KPIs (`open_total`, `active_cases`) zeitraumgerecht:** Endet der
+Zeitraum vor heute, liest `ReceivablesReportService::getKpis()` den letzten
+täglichen Snapshot innerhalb des Zeitraums aus `office_kpi_snapshots`
+(`receivables_total_cents`/`_cases`, Standortfilter über `visibleBranch`);
+ohne Snapshot (vor 09/2026) liefert er `null`. Nur der laufende Zeitraum
+rechnet live. Vorher zeigten Monatsverlauf der Berichte-Übersicht, Vorperiode
+und „Ø 12 M" immer den heutigen Bestand (Befund 13.10.2026).
+
 ### Tests
 
 `tests/Feature/Receivables/`: `DebtCaseIntakeTest` (Weiche, Cluster, Gebühr,

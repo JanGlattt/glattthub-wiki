@@ -63,7 +63,12 @@ const PLAN = [
     { id: 'info', kind: 'frame', color: 'teal', sel: '.chat-aside' },
     { id: 'stumm', kind: 'badge', n: 1, sel: '.chat-aside-actions', at: 'l' },
   ] },
-  { name: 'c12-einstellungen', url: '/hub/chat', steps: [['loaded'], ['wait', 2000], ['fn', chat(`d.openPrefs(); d.prefs.dnd_enabled = true;`)], ['wait', 800]], clip: '.modal-glattt' },
+  // Ruhezeiten (14.10.2026) statt „Nicht stören“ — globales Fenster aus layouts.partials.quiet-hours
+  { name: 'c12-ruhezeiten', url: '/hub/chat', steps: [['loaded'], ['wait', 2000], ['fn', async (page) => { await page.evaluate(() => window.dispatchEvent(new Event('glattt:quiet-hours-open'))); await page.waitForTimeout(1800); }]], clip: '.quiet-modal', marks: [
+    { id: 'plaene', kind: 'badge', n: 1, sel: '.quiet-plans', at: 'l' },
+    { id: 'uhr', kind: 'frame', color: 'teal', sel: '.quiet-dial-wrap' },
+    { id: 'tage', kind: 'badge', n: 2, sel: '.quiet-days', at: 'l' },
+  ] },
 ];
 
 P.run(PLAN, L, { nur: process.argv.slice(2) });

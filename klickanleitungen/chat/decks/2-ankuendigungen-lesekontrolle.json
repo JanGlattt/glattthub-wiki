@@ -10,15 +10,15 @@
     "Ankündigungen",
     "und Lesekontrolle"
   ],
-  "subtitle": "Klickanleitung für den glatttHub — Ankündigungen schreiben, dringend markieren, Lesebestätigung anfordern und prüfen, wer bestätigt hat; Infospalte mit Mitgliedern, Stumm, Anheften, Archiv; Nicht stören",
+  "subtitle": "Klickanleitung für den glatttHub — Ankündigungen schreiben, dringend markieren, Lesebestätigung anfordern und prüfen, wer bestätigt hat; Infospalte mit Mitgliedern, Stumm, Anheften, Archiv; Ruhezeiten",
   "eyebrow": "Chat · Ankündigungen",
   "footerArea": "Chat",
-  "stand": "11.10.2026",
-  "version": "1.2",
+  "stand": "14.10.2026",
+  "version": "1.3",
   "notes": [
     "In den Kanälen **glattt Ankündigungen** und **<Institut> Ankündigungen** schreibt nur, wer das Recht hat (Leitung, Büro, Institutsleitung). Alle anderen lesen und reagieren.",
     "**Lesebestätigung** ist die aktive Lesekontrolle: Jede Empfängerin muss am Ende auf „Gelesen – ich bestätige“ tippen. Du siehst, wer bestätigt hat und wer noch fehlt.",
-    "**Dringend** schickt die Push auch durch „Nicht stören“ und zeitkritisch auf das iPhone."
+    "**Dringend** schickt die Push auch in der Ruhezeit und zeitkritisch auf das iPhone."
   ],
   "pages": [
     {
@@ -36,7 +36,7 @@
         {
           "n": 1,
           "title": "Schalter",
-          "text": "**Dringend** = zeitkritische Push, kommt auch bei „Nicht stören“. **Lesebestätigung** = jede Empfängerin muss aktiv bestätigen."
+          "text": "**Dringend** = zeitkritische Push, kommt auch in der Ruhezeit. **Lesebestätigung** = jede Empfängerin muss aktiv bestätigen."
         },
         {
           "n": 2,
@@ -119,35 +119,35 @@
       }
     },
     {
-      "h1": "Nicht stören",
-      "sub": "Außerhalb der Arbeitszeit keine Push aus dem Chat — je Person einstellbar.",
+      "h1": "Ruhezeiten",
+      "sub": "Wann keine Push-Mitteilungen kommen — für den Chat und alle anderen Mitteilungen des Hubs, je Person.",
       "card": {
-        "title": "Einstellungen",
-        "text": "Nicht stören, Push-Vorschau"
+        "title": "Ruhezeiten",
+        "text": "Pläne, Urlaub, Ausnahmen"
       },
       "left": {
-        "shot": "c12-einstellungen"
+        "shot": "c12-ruhezeiten"
       },
-      "leftCaption": "Die **Chat-Einstellungen** (Zahnrad neben der Suche → Nicht stören): Zeitfenster, Wochentage, Vorschau in der Push.",
+      "leftCaption": "Das Fenster **Ruhezeiten** (Zahnrad neben der Suche → Ruhezeiten, oder Mitteilungen → Einstellungen): oben die Pläne, darunter die Uhr und die Wochentage.",
       "steps": [
         {
           "n": 1,
-          "title": "Nicht stören",
-          "text": "Einschalten, Von/Bis und Wochentage wählen — das Fenster darf über Mitternacht gehen (20:00 bis 07:00)."
+          "title": "Plan und Uhr",
+          "text": "Den **Mond** auf den Beginn ziehen, die **Sonne** auf das Ende — über Mitternacht geht (22:00 bis 06:30). Den Bogen ziehen verschiebt beides. **+** legt einen weiteren Plan an, bis zu sieben."
         },
         {
           "n": 2,
-          "title": "Ausnahme",
-          "text": "Dringende Ankündigungen kommen trotzdem durch; alles andere wartet im Chat."
+          "title": "Wochentage",
+          "text": "Unter der Uhr die Tage des Plans wählen. Ein Tag gehört immer nur zu einem Plan: Gestrichelte Tage stehen in einem anderen Plan, ein Klick holt sie her. Freier Tag? **Ganztags stumm**."
         },
         {
           "n": 3,
-          "title": "Push-Vorschau",
-          "text": "Ausgeschaltet zeigt die Mitteilung nur „Neue Nachricht“ statt des Textes — für den Sperrbildschirm im Institut."
+          "title": "Urlaub und Ausnahmen",
+          "text": "**Im Urlaub stumm** nimmt die Urlaubstage aus askDANTE. Unter **Kommt immer durch** Bereiche, einzelne Anlässe, Chat-Gruppen oder Kolleginnen wählen, die trotzdem durchkommen."
         }
       ],
       "hint": {
-        "text": "Die Einstellung gilt für Web, App und Desktop gleichermaßen — sie liegt am Konto, nicht am Gerät."
+        "text": "In der Ruhezeit bleibt nur die Push aus — im Hub und im Chat ist danach alles da. Dringende Ankündigungen kommen immer. Die Push-Vorschau (Text in der Mitteilung) steht unter Zahnrad → Push-Vorschau."
       }
     }
   ]
