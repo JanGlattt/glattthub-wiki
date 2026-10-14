@@ -1,0 +1,92 @@
+{
+  "out": "../pdf/App-26-Ruhezeiten",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "App",
+  "of": 26,
+  "audience": "institute",
+  "footerArea": "App",
+  "stand": "14.10.2026",
+  "version": "1.0",
+  "nr": 26,
+  "title": [
+    "Ruhezeiten in der App"
+  ],
+  "subtitle": "Klickanleitung für die glatttHub-App — wann keine Push-Mitteilungen kommen: Pläne mit Uhr wie der Schlafplan in iOS, eigene Wochentage, ganztags, im Urlaub stumm und Ausnahmen",
+  "eyebrow": "App · Ruhezeiten",
+  "notes": [
+    "**Ruhezeiten** findest du unter **Einstellungen › Mitteilungen › Ruhezeiten** und im Chat über die Chat-Einstellungen. Sie gelten für dein Konto — auch im Browser und in der Desktop-App.",
+    "In der Ruhezeit bleibt nur die **Push-Mitteilung** aus. Alles, was in dieser Zeit kommt, liegt danach in der Glocke bzw. im Chat. Dringende Ankündigungen kommen immer."
+  ],
+  "pages": [
+    {
+      "h1": "Pläne und Uhr",
+      "sub": "Wie der Schlafplan in iOS: je Plan eine Uhr und die Tage, an denen er gilt.",
+      "card": {
+        "title": "Ruhezeiten",
+        "text": "Plan, Uhr, Wochentage"
+      },
+      "left": {
+        "shot": "quiet-hours-light"
+      },
+      "leftCaption": "Die Seite **Ruhezeiten** auf dem iPhone: oben der Schalter, darunter die Pläne, die Uhr, die Wochentage, Urlaub und Ausnahmen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Einschalten",
+          "text": "**Ruhezeiten aktiv** oben einschalten. „Gerade Ruhe“ zeigt, dass jetzt gerade keine Push kommt."
+        },
+        {
+          "n": 2,
+          "title": "Uhr",
+          "text": "Den **Mond** auf den Beginn ziehen, die **Sonne** auf das Ende. Über Mitternacht geht (22:00–06:30). Den goldenen Bogen ziehen verschiebt beides."
+        },
+        {
+          "n": 3,
+          "title": "Wochentage",
+          "text": "Unter der Uhr die Tage des Plans antippen. Gestrichelte Tage mit Punkt stehen in einem anderen Plan — antippen holt sie her."
+        },
+        {
+          "n": 4,
+          "title": "Weitere Pläne",
+          "text": "**+** neben den Plänen legt einen weiteren an (bis zu sieben), z. B. Sa, So später. Freier Tag? **Ganztags stumm**. Speichern oben rechts."
+        }
+      ],
+      "hint": {
+        "text": "Mit VoiceOver lassen sich Mond und Sonne über „Anpassen“ (nach oben/unten wischen) in 15-Minuten-Schritten verstellen."
+      }
+    },
+    {
+      "h1": "Urlaub und Ausnahmen",
+      "sub": "Im Urlaub ganz stumm — und wer trotzdem durchkommt.",
+      "card": {
+        "title": "Urlaub · Ausnahmen",
+        "text": "askDANTE, Kommt immer durch"
+      },
+      "left": {
+        "shot": "quiet-hours-ipad-light"
+      },
+      "leftCaption": "Auf dem **iPad**: links Pläne und Uhr, rechts Urlaub mit den nächsten 14 Tagen und die Ausnahmen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Im Urlaub stumm",
+          "text": "Nimmt die Urlaubstage aus askDANTE — der Streifen zeigt die nächsten 14 Tage, Urlaub ist farbig. Ist dein Konto nicht verknüpft, steht dort ein Hinweis fürs Büro."
+        },
+        {
+          "n": 2,
+          "title": "Kommt immer durch",
+          "text": "Tippen öffnet die Ausnahmen: ganze **Bereiche** (z. B. Laser) oder darin einzelne Anlässe, **Gruppen im Chat** und **Personen**."
+        },
+        {
+          "n": 3,
+          "title": "Bereich oder Anlass",
+          "text": "„Ganzer Bereich“ lässt auch Anlässe durch, die später dazukommen; sonst einzelne Anlässe anschalten."
+        }
+      ],
+      "hint": {
+        "text": "Ausnahmen werden mit **Speichern** auf der Seite Ruhezeiten übernommen."
+      }
+    }
+  ]
+}

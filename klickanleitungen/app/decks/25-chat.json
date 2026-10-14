@@ -3,11 +3,11 @@
   "meta": "../meta.json",
   "shots": "../shots",
   "series": "App",
-  "of": 25,
+  "of": 26,
   "audience": "institute",
   "footerArea": "App",
-  "stand": "12.10.2026",
-  "version": "1.5",
+  "stand": "14.10.2026",
+  "version": "1.6",
   "nr": 25,
   "title": [
     "Chat in der App"
@@ -34,7 +34,7 @@
         {
           "n": 1,
           "title": "Kopf",
-          "text": "Lupe = Nachrichten suchen, Glocke = Nicht stören, Stift = neuer Chat. Der Punkt daneben zeigt, ob die Echtzeit-Verbindung steht."
+          "text": "Lupe = Nachrichten suchen, Glocke = Chat-Einstellungen (Ruhezeiten, Push-Vorschau), Stift = neuer Chat. Der Punkt daneben zeigt, ob die Echtzeit-Verbindung steht."
         },
         {
           "n": 2,
@@ -118,7 +118,7 @@
         {
           "n": 3,
           "title": "Push",
-          "text": "Dringende Ankündigungen kommen auch bei „Nicht stören“ — zeitkritisch auf dem Sperrbildschirm."
+          "text": "Dringende Ankündigungen kommen auch in der Ruhezeit — zeitkritisch auf dem Sperrbildschirm."
         }
       ]
     },

@@ -27,6 +27,7 @@ App steht im Wiki `IOS-APP.md`.
 | **20 — Bonus-Verwaltung in der App** | Monat mit Abschluss-Checkliste, offene Widerrufe entscheiden (Team/Persönlich: zählt, zählt nicht, parken), Minimalziele bearbeiten, Wert-Korrekturen, Zwischenstand/Final einfrieren, Regelwerk mit Chips, Regel-Akte, Assistent in vier Schritten, Sichtbarkeit je Nutzerin, iPad mit Abschnitten links (seit 28.09.2026) |
 | **24 — glatttBert in der App** | Chat-Blatt von jeder Seite (Schnellzugriff, Mehr, Siri, ⌘K), Vorschläge zur Seite, Antworten mit Tabelle/Quellen/Karten, Daumen, Verlauf mit Anpinnen/Umbenennen/Löschen, iPad mit Verlaufsspalte (seit 08.10.2026) |
 | **15 — Die Verkaufsstatistik in der App** | Native Berichtsseite „Wie im Hub“: Standort, Brutto/Netto, Kennzahlen, KPZ pro Institut mit Prognose und Verkäuferinnen, Neukunden, Sales-Mix mit Schaltern, Tabelle hinter jedem Diagramm, Web-Karten im Übergang, iPad (seit 27.09.2026) |
+| **26 — Ruhezeiten in der App** | Pläne mit Uhr wie der iOS-Schlafplan, eigene Wochentage, ganztags, im Urlaub stumm (askDANTE), Ausnahmen für Bereiche, Anlässe, Chats und Personen; iPad mit Uhr links (seit 14.10.2026) |
 
 Die ersten sieben, 9 (Gutscheine) und 12 (Termin buchen) richten sich an **die Institute**; 6 (Management-Sicht) zusätzlich an Leitung und Büro, 8 (Verträge), 10 (App-Geräte), 16 (Forderungen), 17 (Widerrufe), 18 (Zufriedenheit), 19 (Unternehmensverträge) und 20 (Bonus-Verwaltung) an Leitung und Büro.
 

@@ -28,8 +28,8 @@ Anlässe, Chat-Gruppen oder Kolleginnen. Dringende Ankündigungen kommen immer.
 die Uhr. Die Ruhezeit hält Pushes aus dem Feierabend fern, ohne dass eine Meldung verloren geht:
 alles liegt danach in der Glocke bzw. im Chat.
 
-!!! nutzerhandbuch "Bedienung: Grundlagen 2 – Benachrichtigungen (Ruhezeiten) und App – Ruhezeiten"
-    https://hilfe.hub.glattt.com/grundlagen/2/
+!!! nutzerhandbuch "Bedienung: Chat 2 – Ruhezeiten (Web) und App 26 – Ruhezeiten in der App"
+    https://hilfe.hub.glattt.com/chat/2/ · https://hilfe.hub.glattt.com/app/26/
 
 ## Für Entwickler
 
