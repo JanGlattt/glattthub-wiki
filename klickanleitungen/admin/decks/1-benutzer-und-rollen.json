@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Konten, Rollen und Rechte verwalten",
  "eyebrow": "Admin · Benutzer & Rollen",
  "footerArea": "Admin-Panel",
- "stand": "13.10.2026",
- "version": "1.3",
+ "stand": "14.10.2026",
+ "version": "1.4",
  "notes": [
   "**Rollen entscheiden über alles**, was jemand im Hub sieht und darf — sie sind die wichtigste Einstellung überhaupt.",
   "**Es gibt immer mindestens eine Person mit Super-Admin.** Die letzte behält die Rolle, kann nicht archiviert und nicht gelöscht werden.",
@@ -153,7 +153,7 @@
     {
      "n": 2,
      "title": "Institute",
-     "text": "**„Alle Institute“ oder „Nur ausgewählte“**, dann die Institute anhaken. Das Stamm-Institut ist beim Öffnen des Hubs vorausgewählt."
+     "text": "**„Alle Institute“ oder „Nur ausgewählte“**, dann die Institute anhaken. Das Stamm-Institut ist beim Öffnen des Hubs vorausgewählt. Ohne Stamm-Institut (Büro, Management …) erscheinen **Bereich** und **Kürzel** (bis 4 Zeichen) — das Kürzel steht dann im Chat und in Listen wie ein Institutskürzel. Die **Position** (Leitung, Finance …) steht im Reiter Profil."
     },
     {
      "n": 3,

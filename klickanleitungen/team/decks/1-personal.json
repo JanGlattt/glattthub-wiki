@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für die Personalverwaltung im glatttHub — Mitarbeiterinnen finden, Konto anlegen, archivieren",
   "eyebrow": "Team · Personal",
   "footerArea": "Team",
-  "stand": "29.09.2026",
-  "version": "1.2",
+  "stand": "14.10.2026",
+  "version": "1.3",
   "notes": [
     "Die Personalliste kommt aus **askDANTE** — eingestellt und ausgetragen wird dort. Der Hub ergänzt sie um die **Stammdaten** aus Teamliste und Lohnliste und das **Hub-Konto**.",
     "Das **Hub-Konto** ist etwas anderes als der Personaldatensatz: Es entscheidet, wer sich anmelden darf.",
@@ -157,7 +157,7 @@
         {
           "n": 3,
           "title": "Stamm-Institut",
-          "text": "Bestimmt die Voreinstellung des Standortfilters und die Zuordnung im Bonus-Board."
+          "text": "Bestimmt die Voreinstellung des Standortfilters und die Zuordnung im Bonus-Board. Ohne Stamm-Institut (Büro, Management …) **Bereich und Kürzel** eintragen; die **Position** (Leitung, Finance, glattt Spezialistin …) gilt für alle und erscheint im Chat und unter dem Namen."
         },
         {
           "n": 4,
