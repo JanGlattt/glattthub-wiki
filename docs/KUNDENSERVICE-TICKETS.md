@@ -300,6 +300,27 @@ Kundenservice“ trägt `data.ticket`. Alles erst, wenn das Postfach auf **live*
 
 ### Zendesk-Umschalter und Stichtag
 
+**Stichtag war der 15.10.2026:** Seitdem läuft der Kundenservice allein im Hub — IONOS-Weiterleitung an
+Zendesk aus, Spiegel aus, Schatten-Tickets gelöscht, `sync-zendesk-tickets` pausiert.
+
+**Aufräumen nach dem Umstieg** (`ZendeskDuplicateMerger`, Befehl `support:merge-zendesk-duplicates`,
+immer erst mit `--dry-run`), zusammengeführt wird stets **ins Zendesk-Ticket**, weil die Kundin dessen
+Nummer aus unserer Antwort kennt:
+
+1. **Doppel aus der Übergangszeit (10.–15.10.2026):** Dieselbe Mail lag im Hub-Ticket und in Zendesk; die
+   Antwort aus Zendesk kam per Import ins Zendesk-Ticket, die Mails der Kundin blieben im Hub-Ticket.
+   Erkennbar an der Kundinnen-Mail, die der Import mit einer Zendesk-Kommentar-ID versehen hat.
+2. **Antworten auf Mails, die noch aus Zendesk kamen:** Zendesks Mail-Kennung
+   `<NVZLZ914Y3N_…_sprut@zendesk.com>` enthält die verschlüsselte Ticketnummer (API-Feld `encoded_id`).
+   Der Import speichert sie als `zendesk_encoded_id`, der Posteingang ordnet Antworten darüber zu.
+   `--backfill=<Datum>` trägt die Nummer für schon übernommene Tickets nach (nur lesend in Zendesk).
+
+Dabei gilt: Schrieb die Kundin nach unserer letzten echten Antwort (die Eingangsbestätigung zählt nicht),
+wird das Ticket wieder offen; ist das Zendesk-Ticket geschlossen, bleibt das Hub-Ticket als Folgeticket;
+ein laufender Vorgang gewinnt vor einem geschlossenen; von Hand schon Zusammengeführtes und Hub-Mahnungen
+(erste Nachricht von uns) bleiben unberührt.
+
+
 `SupportMode::usesHub()` (Postfach „live“, 60 s zwischengespeichert) stellt Kundenakte,
 Widerrufs-Suche, Widerrufs-Verlauf, Mahn-Mails, Portal-Kontakt und Office-Kennzahlen auf
 Hub-Tickets um; die Spalten `zendesk_ticket_number`/`zendesk_ticket_id` behalten ihren Namen und
