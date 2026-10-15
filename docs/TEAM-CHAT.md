@@ -137,10 +137,110 @@ personenbezogenen Pushes an — dort steht, wer gerade Dienst hat. Technisch:
   iOS-App steigt dabei vor jeder Verarbeitung aus, ältere Builds vertragen es.
 - Freigaben in `routes/channels.php` (Mitgliedschaft, `use_chat`); Presence-Kanal
   `presence-chat` ist vorbereitet.
-- Reverb ist **Anstoß, der Hub die Wahrheit**: Web (`GlatttLive` aus `guided-live.js`) und App
-  (`ChatLiveClient`, Port des Fernseher-Clients) laden nach jedem Reconnect und beim
-  Sichtbarwerden „alles ab seq X“ (`GET /raeume/{id}/nachrichten?since=`). Ein Fehler des
-  Echtzeit-Dienstes lässt nie eine Nachricht scheitern (`ChatRealtime::safely`).
+- Reverb ist **Anstoß, der Hub die Wahrheit**: Ein Fehler des Echtzeit-Dienstes lässt nie eine
+  Nachricht scheitern (`ChatRealtime::safely`). Was ein Client verpasst, holt er über den Abgleich
+  (nächster Abschnitt); `GET /raeume/{id}/nachrichten?since=` bleibt für den offenen Raum.
+
+### Abgleich: Ereignis-Protokoll, Sync-Cursor, Lückenregel (Etappe A, 16.10.2026)
+
+Das Pusher-Protokoll spielt nach einem Verbindungsabbruch **nichts nach**. Bis zum 15.10.2026 war das
+Sicherheitsnetz ein voller `/data`-Abgleich jede Minute in jedem offenen Tab — teuer und trotzdem bis
+zu 60 s blind (Joanna: Nachrichten erst nach „Aktualisieren“, ein Haken 20 Minuten grau nach dem
+Reverb-Neustart beim Deploy). Seitdem gilt das Muster von Discord (`RESUME`), Matrix (`next_batch`)
+und Telegram (`pts`):
+
+- **`chat_events`**: `ChatRealtime` schreibt vor jedem Anstoß eine Zeile mit globaler, monotoner ID
+  (Arten `message`, `edit`, `delete`, `reaction`, `pin`, `poll`, `ack`, `room`, `member`) und trägt sie
+  als `event_id` im Anstoß mit — auch wenn Reverb nicht antwortet. Jede neue Änderungsart muss durch
+  `messageChanged()`/`roomChanged()` laufen, sonst fehlt sie im Abgleich.
+- **`GET /hub/chat/sync?since=<cursor>`** (`ChatSyncService`): Ereignisse > since aus den eigenen
+  Räumen in Reihenfolge, mit kompakter Nachricht (eigene mit Haken-Stand), dazu die Zeilen der
+  berührten Räume (Zähler, letzte Nachricht); `limited` bei mehr als 200 (dann gleich weiter),
+  `reset`, wenn `since` jünger als das jüngste Ereignis ist (dann `/data` neu laden).
+- **Cursor-Grace-Regel (2 s):** Ereignisse entstehen außerhalb der Nachrichten-Transaktion, zwei
+  gleichzeitige Sender können IDs in anderer Reihenfolge festschreiben als vergeben. Der Cursor rückt
+  nur bis zum jüngsten Ereignis, das älter als 2 s ist; jüngere kommen beim nächsten Abgleich noch
+  einmal. Clients verarbeiten deshalb **idempotent** (Nachricht-ID, Client-UUID) und setzen den Cursor
+  **nur aus Sync-Antworten**, nie aus dem `event_id` eines Anstoßes.
+- **Lückenregel im Client** (`public/js/chat-sync.js` `gapRule`, iOS `ChatSyncRule.decide`): Stand ==
+  lokal + 1 → anwenden; ≤ lokal → Duplikat, nur den offenen Verlauf ergänzen; > lokal + 1 → Nachricht
+  zeigen und nach 0,5 s abgleichen (Pakete kommen umsortiert an).
+- **Takt und Zombie-Prüfung:** Abgleich im Vordergrund alle 30 s, verdeckt alle 5 Min, ohne Echtzeit
+  alle 20 s; dazu bei Reconnect, Fokus, Netz zurück, Aufwachen, Push-Empfang und erkannter Lücke.
+  Liefert ein Takt-Abgleich fremde Nachrichten, die älter als 5 s sind und trotz „live“ nie über den
+  Socket kamen, ist die Verbindung taub: `GlatttLive.reconnect()` bzw. `ChatLiveClient.reconnect()`;
+  die Zahl geht als `gap` ins nächste Lebenszeichen. Der volle `resync()` bleibt nur für
+  Strukturänderungen (Gruppe angelegt, Bild, Mitglieder).
+- **Lebenszeichen** (`chat_client_heartbeats`): je Nutzerin, Client-Art (`web`, `desktop`, `ios`,
+  `android`) und Gerätekennung ein Datensatz mit Verbindungszustand, Cursor, Zahl der Abgleiche und
+  gemeldeten Lücken — vom Sync-Aufruf gepflegt, gelesen von **Admin → System → Chat-Gesundheit**
+  (`ChatHealthService`, Recht `manage_chat`): verbundene Chat-Kanäle über die Reverb-HTTP-API,
+  Geräte live/ohne, Push-Latenz p50/p95 und Zustellquittungen aus `push_notification_logs`
+  (`data->category = HUB_CHAT`), Auffälligkeiten der letzten 24 h. Alles beim Aufruf gerechnet, kein
+  Scheduler-Job.
+- **Persistente Warteschlange:** Web in IndexedDB (`glattthub-chat`/`outbox`, Dateien als Blob),
+  iOS unter Application Support/chat-outbox (JSON über `OfflineStore`, je Nutzerin, Abmelden räumt
+  weg). Kein Netz, 5xx oder 429 → Uhr statt Haken, Backoff 1…60 s ±20 %, Band „n Nachrichten warten
+  auf Netz · Jetzt senden“ unter dem Kopf, Reihenfolge je Raum bleibt; 4xx bleibt „!“ ohne
+  Warteschlange. Wartende hängen sich beim Öffnen eines Raums an den Verlauf.
+- **Verbindungszustand im Kopf:** „Verbinde wieder …“, „Kein Netz · Stand 14:02“ oder „Keine
+  Live-Verbindung · Abgleich alle 20 s“ ersetzt den Untertitel in Orange; das Dock trägt den Text am
+  Verbindungspunkt.
+- **Push im Worker:** `ChatPushFanoutJob` (push-Warteschlange) ermittelt Empfänger und versendet; die
+  Senderin bekommt ihre Antwort direkt nach Transaktion und Anstoß. `ChatPushPreview::publish` rechnet
+  die Bildvorschau je Nachricht nur einmal.
+- **Bremsen und Fallen** (Code-Durchsicht 15.10.2026): `throttle` je Nutzerin auf Senden (60/min),
+  Tippen (40), Suche/Objekte/GIFs (40), Sync (180); `muted_until` nur `1h|8h|1w|forever|off` (sonst 422);
+  gleiche Client-UUID gleichzeitig → Unique-Index fängt, Antwort ist die erste Nachricht; Bearbeiten
+  verlangt Mitgliedschaft; GIF-Quelle nur https und nach `KLIPY_MEDIA_HOSTS` (leer = alle https-Hosts);
+  Web prüft Dateien vor dem Hochladen (50 MB, 10 Stück). **glatttBert** antwortet im Raum nur dann mit
+  Hub-Daten (Kundinnen, Umsatz, Kennzahlen), wenn jedes aktive Mitglied `use_ai_assistant` hat
+  (`GlatttBertService::withHubTools`), sonst nur aus der Wissensdatenbank — die Antwort sehen alle.
+- Projektwissen: `.github/knowledge/chat-sync-cursor-und-lueckenregel.md`; Tests
+  `tests/Feature/Chat/ChatSyncTest.php`, `ChatHealthTest.php`, `tests/js/chat-sync.test.mjs`
+  (`npm test`), `ios/glatttHubTests/ChatSyncRuleTests.swift`.
+
+### Etappe B „Rund“ (16.10.2026)
+
+Entscheidungen Jan vom 15.10.2026 (Vorlage mit drei Entwürfen je Punkt, alle Empfehlungen gewählt).
+
+- **Suche** (`ChatQuery::search`): MySQL-Volltext `chat_messages_fulltext` (ngram, Wortteile ab zwei Zeichen) über
+  `body` und `transcript`; Hub-Karten über `meta->object->title`, Dateien über `meta->filename` — nicht mehr `LIKE`
+  über das ganze JSON. Filter am Endpunkt `GET /suche`: `raum`, `von_person`, `ab`, `bis`, `art`
+  (`media|file|voice|link|card|starred`); ohne Suchbegriff liefert ein Filter allein die Treffer. SQLite (Tests)
+  fällt auf `LIKE` zurück.
+- **Gespeichert** (`chat_message_stars`): `POST /nachrichten/{id}/merken` schaltet um, `is_starred` steht nur in
+  Antworten, die die Sterne der Person geladen haben (Echtzeit-Anstöße an alle tragen das Feld nicht und
+  überschreiben es deshalb nicht); die eigenen anderen Geräte bekommen `star` auf dem persönlichen Kanal. Liste
+  über den Filter-Chip „★ Gespeichert“ (`/suche?art=starred`).
+- **Medien** (`ChatMediaService`, Job `ChatMediaJob`): im Worker Vorschaubild ≤ 320 px (`thumb_path`), Maße,
+  BlurHash (eigener Kodierer nach Wolt, 4 × 3, 28 Zeichen; Dekoder in `chat-sync.js`), Video-Standbild per ffmpeg
+  (`poster_path`), HEIC über ImageMagick. Upload streamt (`putFileAs`). Infospalte mit Reitern **Mitglieder ·
+  Medien · Dateien · Links**, Medien nach Monat.
+- **Link-Vorschau** (`ChatLinkPreviewService`, `chat_link_previews`): Open Graph im Worker, nur https, Port 443,
+  5 s, 512 KB, höchstens 3 Weiterleitungen von Hand, IP vorher geprüft (keine privaten/lokalen/Metadaten-Ziele)
+  und per `CURLOPT_RESOLVE` festgehalten (kein DNS-Rebinding); Bild als eigenes Vorschaubild im privaten Bucket
+  (`GET /link-bild/{id}`), nie die Fremdadresse. Hub-Links werden zur Hub-Karte ohne Abruf; dieselbe Adresse wird
+  7 Tage wiederverwendet. Die Karte kommt per Ereignis `edit` nach.
+- **Lesebestätigung mit Frist** (`ChatAckService`, `ChatAckFollowUpJob`): `ack_due` beim Senden (`24h|48h|72h|1w`
+  oder Datum, Standard im Web 48 h). Erinnerung an Fehlende automatisch 24 h nach dem Senden (bei kürzerer Frist
+  2 h vorher), von Hand höchstens einmal am Tag (`POST /nachrichten/{id}/erinnern`); nach Ablauf geht der Anlass
+  `chat.ack_overdue` an die Institutsleitung (`post_branch_chat_announcements` mit passendem
+  `allowed_branch_ids`) und die Absenderin. **Kein Cloud-Scheduler-Job**: beim Senden werden zwei verzögerte
+  Aufträge eingereiht, die zum Zeitpunkt prüfen. Stand je Institut `GET /nachrichten/{id}/bestaetigungen`,
+  CSV `…/bestaetigungen.csv` (Semikolon, BOM).
+- **Nachricht-Info neutral**: „Zugestellt heißt: auf mindestens einem Gerät angekommen …“ — keine privaten
+  Gründe (Ruhezeit, stumm).
+- **Optik wie die App**: Schwänzchen oben außen an der ersten Blase, Füllungen und Namenspalette aus
+  `ChatLook.swift`, Avatar oben, Tapete aus der Marke als SVG-Data-URI (einfache Anführungszeichen im SVG,
+  sonst beendet `"` das `url(...)`).
+- **Abfragen und Geräte** (Z7/Z12): Zustellstand gebündelt (73 → 2 Abfragen + 1 Update für 16 Räume),
+  Raumliste ohne Konten je Mitglied, Erwähnungen in SQL, Standard-Gruppen im Hintergrund
+  (`ChatSyncStandardRoomsJob`); eigene Einstellungen live über `self` an die eigenen Geräte, im Abgleich über
+  `since_at`; gelesene Mitteilungen verschwinden auf den anderen Geräten (Web-Push je Chat mit Kennzeichen
+  `chat-room-{id}`, iOS über `thread-id`). Ein Abgleich je Browser über `BroadcastChannel`, das Dock schweigt
+  auf `/hub/chat`. `ChatQueryCountTest` wacht über die Abfragezahlen.
+- Tests: `ChatEtappeBTest`, `ChatQueryCountTest`, `ChatSyncTest`, `tests/js/chat-sync.test.mjs`.
 
 ### Push
 
@@ -215,7 +315,8 @@ Deploy) kosten höchstens eine Minute.
 
 | Methode & Pfad | Zweck |
 |---|---|
-| `GET /data` | Einstieg: `me`, `rooms`, `today`, `settings`, `live`, `permissions`, `bert_available` |
+| `GET /data` | Einstieg: `me`, `rooms`, `today`, `settings`, `live`, `permissions`, `bert_available`, `cursor` (Stand des Ereignis-Protokolls) |
+| `GET /sync?since=&client=&device=&live=&version=&gap=` | Abgleich „alles ab Ereignis X über alle Räume“ (seit 16.10.2026): `events` (mit kompakter Nachricht), `rooms` (berührte Zeilen), `cursor`, `limited`, `reset`, `unread_total`; trägt das Lebenszeichen des Geräts für „Chat-Gesundheit“ |
 | `GET /kontakte`, `GET /suche?q=`, `GET /objekte?q=`, `GET /gifs?q=` | Kontakte, Nachrichtensuche (Teilwort), Hub-Objekte aus der globalen Suche, GIFs (KLIPY, `KLIPY_API_KEY` — Tenor-API seit 30.06.2026 abgeschaltet; Suche/Trending über `api.klipy.com/api/v1/{key}/gifs/…`, Pflicht-Platzhalter „Search KLIPY“, `customer_id` anonymer Hash je Nutzerin) |
 | `POST /direkt`, `POST /raeume` | Einzelchat, Gruppe anlegen (`name`, `description`, `user_ids[]`, `members_can_add`, `members_can_post`; das Bild folgt über `POST …/bild`) |
 | `GET /raeume/{id}`, `PATCH /raeume/{id}` | Raum mit Mitgliedern und Verlauf; Name/Beschreibung, `members_can_add`/`members_can_post` (nur Admins eigener Gruppen), `muted_until` (`1h`, `8h`, `1w`, `forever`, `off`), `is_pinned`, `is_archived` |
@@ -328,8 +429,9 @@ Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Ha
   deshalb auch am Ende (Befund 315); die Endmarke wird gegen die gemessene Höhe des Verlaufs geprüft.
 - **Reverb-Nutzlast ≤ 10 KB** — `messageCompact` kürzt den Text auf 4.000 Zeichen; Haken
   kommen nie über den Anstoß, sondern aus Serverantwort und `chat.activity`.
-- **Jeder Deploy startet Reverb neu** — Clients bauen neu auf und laden ab Stand nach; nie auf
-  einen verpassten Anstoß vertrauen.
+- **Jeder Deploy startet Reverb neu** — Clients bauen neu auf und holen Verpasstes über
+  `/sync?since=` nach; nie auf einen verpassten Anstoß vertrauen, Cursor nie aus dem Anstoß setzen
+  (Cursor-Grace-Regel, siehe „Abgleich“).
 - **Push im offenen Raum** unterdrückt der Hub über die `viewing`-Marke (40 s); die App
   pingt alle 25 s, das Web ebenso — aber nur mit Fenster-Fokus, sonst gilt ein Fenster hinter
   einer anderen App als „sieht hin“.
@@ -347,6 +449,14 @@ Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Ha
 
 ## Changelog
 
+- **16.10.2026 (Etappe B)** — Volltextsuche mit Filtern, Gespeichert, Medien-Reiter mit Vorschaubild und BlurHash, Link-Vorschau mit SSRF-Schutz, Lesebestätigung mit Frist/Erinnerung/Eskalation/CSV, Nachricht-Info neutral, Optik wie die App, gebündelter Zustandsstand, eigene Geräte gleichziehen, ein Abgleich je Browser.
+- **16.10.2026** — Etappe A „Verlässlich“ (Ausbauplan, Jan 15.10.2026): Ereignis-Protokoll `chat_events`
+  mit globalem Cursor und `GET /hub/chat/sync` statt Minuten-Volllauf; Lückenregel und Zombie-Prüfung in
+  Web und App (`chat-sync.js`, `ChatSyncRule`); persistente Warteschlange (IndexedDB / Platte) mit Uhr,
+  Backoff und Band „wartet auf Netz“; Verbindungszustand im Kopf; Push-Versand im Worker
+  (`ChatPushFanoutJob`); Bremsen je Nutzerin und die 500er-Fallen (Stummschalt-Wert, Doppel-Senden,
+  Bearbeiten ohne Mitgliedschaft, fremde GIF-Quellen); glatttBert ohne Hub-Daten in Räumen mit Mitgliedern
+  ohne Bert-Recht; Admin-Seite **Chat-Gesundheit** (Reverb, Geräte, Push-Latenz, Lücken).
 - **15.10.2026 (abends)** — Schalter „Mitteilungen aufs Handy, auch wenn ich am Mac im Chat bin“
   (`push_while_viewing`, Push dann nur an iPhone/iPad/Android).
 - **15.10.2026** — Zweiter Haken aus der Push-Mitteilung (iOS-Erweiterung Build 103, Desktop-App 1.1.8,

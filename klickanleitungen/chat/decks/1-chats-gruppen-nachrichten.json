@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für den glatttHub — der interne Chat statt WhatsApp: Chats finden, schreiben, antworten, Fotos und Sprachnachrichten schicken, Umfragen und Hub-Karten, neue Gruppen, Suche und das Seitenpanel",
   "eyebrow": "Chat · Grundlagen",
   "footerArea": "Chat",
-  "stand": "15.10.2026",
-  "version": "1.10",
+  "stand": "16.10.2026",
+  "version": "1.12",
   "notes": [
     "**Chat** findest du in der Seitenleiste direkt unter Kunden — und in der App als eigener Tab. Er ersetzt WhatsApp und Signal für alles Dienstliche: keine privaten Nummern, jede Kollegin ist über ihr Hub-Konto erreichbar.",
     "**Alle glattt** und **Team <Institut>** pflegt der Hub selbst: Neue Kolleginnen sind sofort drin, ausgeschiedene zum Monatswechsel raus. Eigene Gruppen legst du jederzeit an.",
@@ -36,7 +36,7 @@
         {
           "n": 1,
           "title": "Filter",
-          "text": "**Alle · Ungelesen · Direkt · Gruppen · Ankündigungen · Archiv** — die Zahl bei „Ungelesen“ zeigt, wie viele Chats warten, die bei „Archiv“, wie viele du weggeräumt hast. Archivierte Chats holt das Zeilenmenü (⋯) zurück."
+          "text": "**Alle · Ungelesen · Direkt · Gruppen · Ankündigungen · Archiv** — die Zahl bei „Ungelesen“ zeigt, wie viele Chats warten, die bei „Archiv“, wie viele du weggeräumt hast. Archivierte Chats holt das Zeilenmenü (⋯) zurück. **★ Gespeichert** zeigt alle Nachrichten, die du dir gemerkt hast (Menü ⋯ → „Merken“), aus allen Chats — ein Klick springt an die Stelle."
         },
         {
           "n": 2,
@@ -78,7 +78,7 @@
         {
           "n": 2,
           "title": "Haken",
-          "text": "Ein Haken gesendet, zwei grau zugestellt, zwei farbig gelesen. In Gruppen zeigt **„Nachricht-Info“**, wer gelesen hat (Chat 2)."
+          "text": "Ein Haken gesendet, zwei grau zugestellt, zwei farbig gelesen. Eine **Uhr** heißt: wartet auf Netz — die Nachricht geht von selbst raus, sobald die Verbindung zurück ist; ein Klick darauf versucht es sofort. In Gruppen zeigt **„Nachricht-Info“**, wer gelesen hat (Chat 2)."
         },
         {
           "n": 3,
@@ -88,7 +88,7 @@
         {
           "n": 4,
           "title": "Kopf",
-          "text": "Name und Mitgliederzahl; „schreibt …“ erscheint, während jemand tippt. Die **Lupe** klappt ein Suchfeld an Stelle des Titels auf — Treffer in diesem Chat erscheinen direkt unter dem Kopf, ein Klick springt im Verlauf an die Stelle, ✕ oder Esc schließt. Das **ⓘ** öffnet die Infospalte (Chat 2)."
+          "text": "Name und Mitgliederzahl; „schreibt …“ erscheint, während jemand tippt. Hakt die Verbindung, steht hier in Orange **„Verbinde wieder …“** oder **„Kein Netz · Stand 14:02“** — nichts geht verloren, der Chat holt Verpasstes nach. Die **Lupe** klappt ein Suchfeld an Stelle des Titels auf — Treffer in diesem Chat erscheinen direkt unter dem Kopf, ein Klick springt im Verlauf an die Stelle, ✕ oder Esc schließt. Das **ⓘ** öffnet die Infospalte (Chat 2)."
         }
       ],
       "hint": {
@@ -110,7 +110,7 @@
         {
           "n": 1,
           "title": "Fotos & Kamera",
-          "text": "Bilder und Videos aus dem Gerät; am Handy direkt die Kamera. Mehrere Fotos werden als Galerie gezeigt, ein Tipp öffnet sie groß."
+          "text": "Bilder und Videos aus dem Gerät; am Handy direkt die Kamera. Mehrere Fotos werden als Galerie gezeigt, ein Tipp öffnet sie groß. Fotos erscheinen erst als Farbfläche, dann scharf; in der Infospalte (ⓘ) sammelt der Reiter **Medien** alle Fotos und Videos des Chats nach Monat, **Dateien** und **Links** daneben."
         },
         {
           "n": 2,
@@ -147,7 +147,7 @@
         {
           "n": 1,
           "title": "Werkzeuge",
-          "text": "↩ **Antworten** zitiert die Nachricht über deinem Feld; ☺ **Reagieren** zeigt deine sechs zuletzt genutzten Emojis, **+** öffnet ein Raster und ein Feld für jedes Emoji; ⋯ **Mehr**: Weiterleiten, Text kopieren, Anheften, Nachricht-Info, Bearbeiten, Löschen für alle."
+          "text": "↩ **Antworten** zitiert die Nachricht über deinem Feld; ☺ **Reagieren** zeigt deine sechs zuletzt genutzten Emojis, **+** öffnet ein Raster und ein Feld für jedes Emoji; ⋯ **Mehr**: Weiterleiten, Text kopieren, Anheften, Nachricht-Info, Bearbeiten, Löschen für alle. Im Menü ⋯ steht außerdem **Merken**: Die Nachricht bekommt einen Stern und erscheint im Filter „Gespeichert“."
         },
         {
           "n": 2,
@@ -254,7 +254,7 @@
         {
           "n": 2,
           "title": "Suche",
-          "text": "**Zahnrad → Nachrichten durchsuchen** sucht in den Nachrichten aller Chats, auch Teilwörter; hinter dem Zahnrad liegen auch die **Ruhezeiten**, die Push-Vorschau und die Erklärung. Dort lässt sich auch einschalten, dass Mitteilungen **aufs Handy** kommen, obwohl du den Chat am Mac gerade offen hast. Schnell suchen: Taste **/** springt in die Chatsuche. Nur im offenen Chat suchen: die Lupe im Kopf der Unterhaltung (Seite 2)."
+          "text": "**Zahnrad → Nachrichten durchsuchen** sucht in den Nachrichten aller Chats, auch Teilwörter; hinter dem Zahnrad liegen auch die **Ruhezeiten**, die Push-Vorschau und die Erklärung. Dort lässt sich auch einschalten, dass Mitteilungen **aufs Handy** kommen, obwohl du den Chat am Mac gerade offen hast. Schnell suchen: Taste **/** springt in die Chatsuche. Nur im offenen Chat suchen: die Lupe im Kopf der Unterhaltung (Seite 2). Die Suche findet auch Wortteile; ein Link in einer Nachricht erscheint als **Karte** mit Titel und Bild der Seite."
         },
         {
           "n": 3,
