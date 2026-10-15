@@ -344,6 +344,16 @@ Das Preload-Script (läuft in jedem Tab) hat vier Aufgaben:
 3. **Farbschema melden**: `html.dark` → `electron-theme:changed` für die Tab-Leiste
 4. **⌘-Klick**: Links und `[data-href]`-Zeilen mit Meta/Ctrl in einem neuen Tab öffnen
 5. **Menüzustand & Befehle** (seit 1.1.6): meldet dem Hauptprozess, was die Menüleiste braucht (`electron-menu:state`), und führt dessen Befehle aus (`electron-command`) — siehe „Menüleiste & Dock-Menü" unten
+6. **Aufwachen** (seit 1.1.7): `electron-wake` vom Hauptprozess (`powerMonitor` `resume`/`unlock-screen`) wird zum Fenster-Ereignis `glattthub-wake` — Seiten mit Echtzeit laden darauf nach
+
+!!! warning "Echtzeit im Hintergrund"
+    Tabs laufen seit 1.1.7 mit `backgroundThrottling: false`. Vorher drosselte Chromium Hintergrund-Tabs
+    und das Fenster hinter anderen Apps: Die Herzschläge der Reverb-Verbindung blieben aus, eine nach
+    Ruhezustand oder Netzwechsel stumm gestorbene Verbindung fiel nicht auf, und der Chat zeigte neue
+    Nachrichten erst nach „Neu laden" (15.10.2026). Da das Fenster beim App-Wechsel für die Seite
+    `visible` bleibt, hilft `visibilitychange` dort nicht. `public/js/chat.js` lädt deshalb zusätzlich bei
+    `focus`, `online` und `glattthub-wake` nach (höchstens alle 5 s) und hat einen 20-s-Wächter: fragt ab,
+    solange die Echtzeit nicht `live` ist, und erkennt Ruhezustände an einer Taktlücke über 60 s.
 
 Die Drag-Region wird bei drei Events neu erstellt (Sicherheit gegen SPA-Navigation):
 
@@ -754,6 +764,7 @@ Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 15.10.2026 | 1.1.7 | Chat aktualisiert sich auch im Hintergrund: `backgroundThrottling: false` je Tab, Aufwach-Anstoß nach Ruhezustand/Bildschirmsperre (`electron-wake` → `glattthub-wake`); dazu im Web Nachladen bei Fokus/Netz und Wächter in `chat.js` |
 | 09.10.2026 | 1.1.6 | **Universal-Build** (arm64 + x64 in einer App, Dateinamen `-universal`), damit ein PKG in Miradore alle Macs inkl. der Intel-Geräte versorgt |
 | 09.10.2026 | 1.1.6 | Menüleiste: „Gehe zu" (Hub-Seiten nach Rechten, Suche, glatttBert), Tabs mit Seitennamen und Häkchen, „Geschlossenen Tab wiederherstellen" (⇧⌘T), Farbschema und Standort als Untermenüs, Hilfe mit Nutzerhandbuch und „Rundgang dieser Seite"; Dock-Menü mit offenen Tabs und Schnellstart; Profilbild im Rechtsklick-Menü auf Kunden; Zustand aus `/api/app/navigation`, Befehle per postMessage (`desktop-app-bridge`), Prüfung über `GLATTTHUB_DEBUG_MENU` |
 | 09.10.2026 | 1.1.5 | **1.1.4 nicht verteilen:** Der Preload-Wächter rief `classList.add()` auch bei vorhandener Klasse auf — das schreibt das Attribut neu, löst die nächste Mutation aus und friert den Renderer in einer Endlosschleife ein (Login- und Startseite reagierten auf nichts). Jetzt nur setzen, wenn die Klasse fehlt; Nachweis in der echten App per CDP |
