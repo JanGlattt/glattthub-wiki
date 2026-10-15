@@ -197,6 +197,13 @@ Ausliefern, 5 s Zeitlimit, ab Build 103), die Desktop-App im Hauptprozess (ab 1.
 `*.glattt.com`) und der Service Worker (gleicher Ursprung). Kein Push (stumm, Ruhezeit, Raum offen) →
 kein Haken bis zum Öffnen. Bremse 600/min, weil hinter dem Load Balancer alle dieselbe IP haben.
 
+**Auch aufs Handy, wenn am Mac im Chat (15.10.2026):** Schalter `push_while_viewing` in
+`chat_user_settings` (Chat-Einstellungen → Push-Vorschau, Standard aus). Die Anwesenheits-Marke
+merkt sich die Quelle (`ChatPushService::viewingSource()`: iOS-App bzw. Handy-Browser = `phone`,
+sonst `desktop`). Sieht jemand den Raum am Rechner und hat den Schalter an, geht die Push trotzdem
+raus — aber mit `phone_only`, und `PushNotificationService::sendToUsers` nimmt dann nur Abos mit
+`device_type` `ios`/`android`. Wer in der App im Raum ist, bekommt weiter nichts.
+
 **„Sieht den Raum“ nur mit Fokus (15.10.2026):** Web-`isViewing()` verlangt `document.hasFocus()`;
 `blur` meldet `viewing: false`. Ein Fenster hinter einer anderen App bleibt für die Seite `visible` —
 die Mitteilung wurde unterdrückt und hätte ungesehen „gelesen“ gemeldet (Wissen
@@ -340,6 +347,8 @@ Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Ha
 
 ## Changelog
 
+- **15.10.2026 (abends)** — Schalter „Mitteilungen aufs Handy, auch wenn ich am Mac im Chat bin“
+  (`push_while_viewing`, Push dann nur an iPhone/iPad/Android).
 - **15.10.2026** — Zweiter Haken aus der Push-Mitteilung (iOS-Erweiterung Build 103, Desktop-App 1.1.8,
   Service Worker); „sieht den Raum“ nur mit Fenster-Fokus; Web-Chat lädt bei Fokus/Netz/Aufwachen nach
   und gleicht sich jede Minute ab, Haken im offenen Verlauf aus dem Listenstand (Joanna: Nachrichten erst

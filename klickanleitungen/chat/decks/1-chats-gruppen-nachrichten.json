@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für den glatttHub — der interne Chat statt WhatsApp: Chats finden, schreiben, antworten, Fotos und Sprachnachrichten schicken, Umfragen und Hub-Karten, neue Gruppen, Suche und das Seitenpanel",
   "eyebrow": "Chat · Grundlagen",
   "footerArea": "Chat",
-  "stand": "14.10.2026",
-  "version": "1.9",
+  "stand": "15.10.2026",
+  "version": "1.10",
   "notes": [
     "**Chat** findest du in der Seitenleiste direkt unter Kunden — und in der App als eigener Tab. Er ersetzt WhatsApp und Signal für alles Dienstliche: keine privaten Nummern, jede Kollegin ist über ihr Hub-Konto erreichbar.",
     "**Alle glattt** und **Team <Institut>** pflegt der Hub selbst: Neue Kolleginnen sind sofort drin, ausgeschiedene zum Monatswechsel raus. Eigene Gruppen legst du jederzeit an.",
@@ -254,7 +254,7 @@
         {
           "n": 2,
           "title": "Suche",
-          "text": "**Zahnrad → Nachrichten durchsuchen** sucht in den Nachrichten aller Chats, auch Teilwörter; hinter dem Zahnrad liegen auch die **Ruhezeiten**, die Push-Vorschau und die Erklärung. Schnell suchen: Taste **/** springt in die Chatsuche. Nur im offenen Chat suchen: die Lupe im Kopf der Unterhaltung (Seite 2)."
+          "text": "**Zahnrad → Nachrichten durchsuchen** sucht in den Nachrichten aller Chats, auch Teilwörter; hinter dem Zahnrad liegen auch die **Ruhezeiten**, die Push-Vorschau und die Erklärung. Dort lässt sich auch einschalten, dass Mitteilungen **aufs Handy** kommen, obwohl du den Chat am Mac gerade offen hast. Schnell suchen: Taste **/** springt in die Chatsuche. Nur im offenen Chat suchen: die Lupe im Kopf der Unterhaltung (Seite 2)."
         },
         {
           "n": 3,
