@@ -212,6 +212,10 @@ System-Browser. Zum Testen gegen Staging:
 | Letzter Tab schließen | schließt das Fenster (wie ⌘W im Browser) |
 | Admin-Panel | `openOrFocus(ADMIN_URL)` — vorhandenen Admin-Tab aktivieren statt neu öffnen |
 | Push-Klick | `loadInActive(url)` lädt die Ziel-URL im aktiven Tab |
+| Nebeneinander (seit 1.2.1) | Rechtsklick auf einen anderen Tab → „Rechts daneben anzeigen“: aktiver Tab links, dieser rechts (`split = { leftId, rightId, ratio }`), Trenner `divider.html` (6 px, beim Ziehen über die ganze Fläche gelegt, Bildschirm-x per `divider-preload.cjs`, 25–75 %). Nur ab 1100 px Fensterbreite, darunter zeigt der aktive Tab allein; ein Tab außerhalb des Paars zeigt sich allein, zurück zum Paar zeigt wieder beide. Klick in eine Hälfte macht sie aktiv (`focusPane`, Zurück/Vor/Neu laden gelten ihr). Schließen eines Paar-Tabs beendet das Nebeneinander |
+| Anheften (seit 1.2.1) | `tab.pinned`: vorn, 44 px, Anfangsbuchstabe, kein Schließen-Knopf, Mittelklick schließt nicht; Umsortieren bleibt innerhalb der Gruppe. Gemerkt in `userData/pinned-tabs.json` (URL + Farbe, nur Hub-Adressen) und beim Start vor der Startseite geöffnet (`restorePinned`) |
+| Farbe (seit 1.2.1) | `tab.color` gold/rot/grün/blau: Streifen unten + zarte Tönung; im Menü als Farbfelder (`swatches`-Eintrag in `context-menu.cjs`) |
+| Tab-Menü auf Dokumenten (seit 1.2.1) | PDF-/Bild-Ansicht und Ladeanzeige haben kein Seiten-Preload → `nativeTabMenu()` (Systemmenü mit denselben Einträgen); erkannt über `markDocument()` aus `onHeadersReceived`. Im Nebeneinander zeichnet die Hälfte unter dem Zeiger |
 | Tab-Breite (seit 1.2.0) | alle Tabs gleich breit (`flex: 1 1 0`, höchstens 240 px, mindestens 56 px) |
 | Ladeanzeige (seit 1.2.0) | eine eigene `WebContentsView` (`loading.html`, Kreisel in Gold, hell/dunkel nach Leiste) liegt über dem aktiven Tab, solange er `fresh` ist — vom Öffnen bis zum ersten `did-stop-loading` bzw. Fehler; auch beim App-Start |
 | Dokumente (seit 1.2.0) | `plugins: true` aktiviert Chromiums PDF-Ansicht. `registerDocumentHandlers()` in `main.cjs` schreibt bei Antworten in einen **neuen** Tab (`freshTabFor`) `Content-Disposition: attachment` → `inline` um, wenn es PDF oder Bild ist — Herunterladen/Drucken bietet die PDF-Ansicht. Im selben Tab bleibt es ein Download (sonst verließe man die Seite) |
@@ -789,6 +793,7 @@ den Release Notes lesen.
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 15.10.2026 | 1.2.1 | Zwei Tabs **nebeneinander** mit ziehbarem Trenner (ab 1100 px), Tabs **anheften** (bleiben nach Neustart), Tabs **farbig markieren**, Tab-Menü auch auf PDF-Tabs (Systemmenü); erste Version, die per Selbst-Update kommt |
 | 15.10.2026 | 1.2.0 | **Selbst-Update** über den öffentlichen Bucket (electron-updater, Postinstall für Standardkonten, „Nach Updates suchen …“); PDFs und Bilder öffnen im neuen Tab als Ansicht statt Download; Downloads ohne Dialog nach „Downloads“ mit Mitteilung, leerer Download-Tab schließt sich; Ladeanzeige für neue Tabs; gleich breite Tabs; Electron 41.10.7; Verteilung über Mosyle |
 | 15.10.2026 | 1.1.8 | Zustellhaken im Team-Chat: Der Hauptprozess ruft bei einer Chat-Push die signierte Quittung `data.chat_ack` auf (`acknowledgeChatPush`, nur `https` auf `*.glattt.com`) — zweiter Haken beim Absender, auch ohne offenen Chat-Tab (siehe [Team-Chat](TEAM-CHAT.md)) |
 | 15.10.2026 | 1.1.7 | Chat aktualisiert sich auch im Hintergrund: `backgroundThrottling: false` je Tab, Aufwach-Anstoß nach Ruhezustand/Bildschirmsperre (`electron-wake` → `glattthub-wake`); dazu im Web Nachladen bei Fokus/Netz und Wächter in `chat.js` |
