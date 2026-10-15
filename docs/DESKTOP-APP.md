@@ -212,6 +212,10 @@ System-Browser. Zum Testen gegen Staging:
 | Letzter Tab schließen | schließt das Fenster (wie ⌘W im Browser) |
 | Admin-Panel | `openOrFocus(ADMIN_URL)` — vorhandenen Admin-Tab aktivieren statt neu öffnen |
 | Push-Klick | `loadInActive(url)` lädt die Ziel-URL im aktiven Tab |
+| Tab-Breite (seit 1.2.0) | alle Tabs gleich breit (`flex: 1 1 0`, höchstens 240 px, mindestens 56 px) |
+| Ladeanzeige (seit 1.2.0) | eine eigene `WebContentsView` (`loading.html`, Kreisel in Gold, hell/dunkel nach Leiste) liegt über dem aktiven Tab, solange er `fresh` ist — vom Öffnen bis zum ersten `did-stop-loading` bzw. Fehler; auch beim App-Start |
+| Dokumente (seit 1.2.0) | `plugins: true` aktiviert Chromiums PDF-Ansicht. `registerDocumentHandlers()` in `main.cjs` schreibt bei Antworten in einen **neuen** Tab (`freshTabFor`) `Content-Disposition: attachment` → `inline` um, wenn es PDF oder Bild ist — Herunterladen/Drucken bietet die PDF-Ansicht. Im selben Tab bleibt es ein Download (sonst verließe man die Seite) |
+| Downloads (seit 1.2.0) | `will-download` speichert ohne Dialog nach „Downloads“ (gleiche Namen „(2)“), Mitteilung „Download abgeschlossen“ (Klick zeigt die Datei im Finder), Dock-Stapel springt. Ein neuer Tab ohne eigene Seite (`!tab.committed` bei `did-stop-loading`) war nur ein Download und schließt sich — `will-download` meldet dafür den Opener, nicht den Tab, und ein Sichern-Dialog am Tab verschwand mit ihm |
 
 #### Kontextmenü (`context-menu.cjs`, `context-menu.css`)
 
@@ -714,18 +718,40 @@ Der Notarization-Hook (`electron/notarize.cjs`) wird von `electron-builder` auto
 | ZIP-Archiv | `.zip` | ✅ Signiert & notarisiert |
 | Mac App Store | — | Nicht geplant |
 
-#### MDM-Verteilung via Miradore
+#### MDM-Verteilung via Mosyle (seit 10/2026, vorher Miradore)
 
-**Miradore → Management → Applications → Add → macOS**
+Die PKG wird als Custom App in Mosyle hochgeladen und den Macs zugewiesen. Seit 1.2.0 ist das nur
+noch für die **Erstinstallation** nötig — danach aktualisiert sich die App selbst (siehe „Updates“).
 
 | Feld | Wert |
 |------|------|
-| **File** | `electron/dist/glatttHub-1.1.8-universal.pkg` |
-| **Application name** | `glatttHub` |
+| **Datei** | `glatttHub-<version>-universal.pkg` (auch unter `https://storage.googleapis.com/glattthub-public/downloads/desktop/`) |
 | **Bundle identifier** | `com.glattt.hub` |
-| **Version** | `1.1.8` |
 
-Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
+### Updates (seit 1.2.0)
+
+`electron/updater.cjs` (electron-updater) fragt 30 s nach dem Start, alle 4 Stunden und nach dem
+Aufwachen `latest-mac.yml` im öffentlichen Bucket ab (`publish: generic` in
+`electron-builder.config.cjs`), lädt das ZIP im Hintergrund und fragt „glatttHub X ist bereit —
+Jetzt neu starten / Später“. „Später“ installiert beim nächsten Beenden. Menü glatttHub →
+„Nach Updates suchen …“ prüft sofort. Nur in der gepackten App (`app.isPackaged`).
+
+**Standardkonten ohne Admin-Rechte:** Das PKG installiert als root. Squirrel.Mac bräuchte dann ein
+Admin-Passwort. Deshalb (1) gibt `electron/pkg-scripts/postinstall` das Bundle der Gruppe `staff`
+mit Schreibrecht (alle lokalen Konten sind darin) und (2) setzt die App
+`SquirrelMacEnableDirectContentsWrite`, damit nur der Inhalt des Bundles ersetzt wird und kein
+Schreibrecht auf `/Applications` nötig ist. `release.sh` bricht ab, wenn das PKG kein Postinstall
+enthält. Nebenwirkung: Jedes lokale Konto könnte das Bundle verändern — das Selbst-Update prüft die
+Signatur (gleiches Developer-ID-Team), Gatekeeper beim Start.
+
+**Veröffentlichen:** `bash electron/release.sh --publish` lädt ZIP, Blockmap und PKG
+(`immutable`) und **zuletzt** `latest-mac.yml` (`no-cache`) hoch — ab dann ziehen alle Macs mit
+≥ 1.2.0 die Version innerhalb von ~4 Stunden. Zurückziehen geht nur mit einer **höheren** Version.
+Versionen vor 1.2.0 haben keinen Updater und brauchen die 1.2.0 einmal per Mosyle.
+
+**Electron-Version:** 41.10.7 (seit 1.2.0) — 41.2.0 hatte offene Lücken (CVE-2026-70597,
+CVE-2026-70611, Squirrel.Mac-Pfadauflösung). Bei Electron-Updates die Squirrel/ShipIt-Hinweise in
+den Release Notes lesen.
 
 !!! info "Push-Registrierung nach MDM-Installation"
     Nach einer Neuinstallation muss der User die Push-Benachrichtigungen einmal neu bestätigen, da ein neuer APNs-Token generiert wird. Das Opt-in-Modal erscheint automatisch beim ersten Start.
@@ -736,7 +762,6 @@ Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 |--------------|-------------|
 | **Kein Offline-Modus** | App braucht Internet — zeigt Fehler wenn offline |
 | **Push nur bei offener App** | Kein Background Push wie bei nativen Apps oder Browser (Service Worker) |
-| **Kein Auto-Updater** | Noch nicht implementiert — Update = neue `.pkg` per MDM verteilen |
 | **Nur macOS** | Universal (Apple Silicon + Intel) seit 09.10.2026; kein Windows/Linux (aktuell nicht benötigt) |
 | **Neuer APNs-Token nach Neuinstallation** | Nach PKG-Reinstall muss Push-Banner neu bestätigt werden (`localStorage.removeItem('push-banner-dismissed')`) |
 
@@ -764,6 +789,7 @@ Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 15.10.2026 | 1.2.0 | **Selbst-Update** über den öffentlichen Bucket (electron-updater, Postinstall für Standardkonten, „Nach Updates suchen …“); PDFs und Bilder öffnen im neuen Tab als Ansicht statt Download; Downloads ohne Dialog nach „Downloads“ mit Mitteilung, leerer Download-Tab schließt sich; Ladeanzeige für neue Tabs; gleich breite Tabs; Electron 41.10.7; Verteilung über Mosyle |
 | 15.10.2026 | 1.1.8 | Zustellhaken im Team-Chat: Der Hauptprozess ruft bei einer Chat-Push die signierte Quittung `data.chat_ack` auf (`acknowledgeChatPush`, nur `https` auf `*.glattt.com`) — zweiter Haken beim Absender, auch ohne offenen Chat-Tab (siehe [Team-Chat](TEAM-CHAT.md)) |
 | 15.10.2026 | 1.1.7 | Chat aktualisiert sich auch im Hintergrund: `backgroundThrottling: false` je Tab, Aufwach-Anstoß nach Ruhezustand/Bildschirmsperre (`electron-wake` → `glattthub-wake`); dazu im Web Nachladen bei Fokus/Netz und Wächter in `chat.js` |
 | 09.10.2026 | 1.1.6 | **Universal-Build** (arm64 + x64 in einer App, Dateinamen `-universal`), damit ein PKG in Miradore alle Macs inkl. der Intel-Geräte versorgt |
