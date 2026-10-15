@@ -14,11 +14,12 @@
   "eyebrow": "Chat · Grundlagen",
   "footerArea": "Chat",
   "stand": "16.10.2026",
-  "version": "1.12",
+  "version": "1.13",
   "notes": [
     "**Chat** findest du in der Seitenleiste direkt unter Kunden — und in der App als eigener Tab. Er ersetzt WhatsApp und Signal für alles Dienstliche: keine privaten Nummern, jede Kollegin ist über ihr Hub-Konto erreichbar.",
     "**Alle glattt** und **Team <Institut>** pflegt der Hub selbst: Neue Kolleginnen sind sofort drin, ausgeschiedene zum Monatswechsel raus. Eigene Gruppen legst du jederzeit an.",
-    "Die drei Haken: **ein Haken** gesendet, **zwei graue** auf dem Gerät der anderen angekommen, **zwei farbige** gelesen."
+    "Die drei Haken: **ein Haken** gesendet, **zwei graue** auf dem Gerät der anderen angekommen, **zwei farbige** gelesen.",
+    "**Anrufe:** Im Einzelchat über den Hörer oder die Kamera oben — mit Bildschirm teilen, auch in der Desktop-App."
   ],
   "pages": [
     {
@@ -264,6 +265,43 @@
       ],
       "hint": {
         "text": "Das Panel merkt sich den zuletzt offenen Chat — beim Seitenwechsel bleibt er stehen."
+      }
+    },
+    {
+      "h1": "Anrufen und Bildschirm teilen",
+      "sub": "Im Einzelchat rufst du über den Hörer oben an, die Kamera daneben startet einen Videoanruf. Es klingelt bei der Kollegin auf jeder Hub-Seite.",
+      "card": {
+        "title": "Anrufe",
+        "text": "Sprache, Video, Bildschirm"
+      },
+      "left": {
+        "shot": "c14-anruf-bildschirm"
+      },
+      "leftCaption": "Ein laufender Videoanruf: Die Kollegin teilt ihren Bildschirm (groß), die Kameras stehen klein daneben, unten die Knöpfe.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Anrufen",
+          "text": "Im Kopf eines **Einzelchats**: **Hörer** = Sprachanruf, **Kamera** = Videoanruf. In Gruppen gibt es (noch) keine Anrufe."
+        },
+        {
+          "n": 2,
+          "title": "Annehmen",
+          "text": "Rechts unten erscheint die Kollegin mit **Ablehnen** und **Annehmen**; bei einem Videoanruf geht auch **Nur Ton**. Hast du den Hub mehrfach offen, gewinnt das Gerät, auf dem du annimmst."
+        },
+        {
+          "n": 3,
+          "title": "Im Gespräch",
+          "text": "**Stumm**, **Kamera** (auch im Sprachanruf zuschaltbar), **Teilen** zeigt deinen Bildschirm, **Groß** füllt den Bildschirm, **Chat** öffnet die Unterhaltung, **Auflegen** beendet. Das Fenster bleibt stehen, wenn du im Hub die Seite wechselst."
+        },
+        {
+          "n": 4,
+          "title": "Spur im Verlauf",
+          "text": "Nach dem Gespräch steht im Chat z. B. „Ausgehender Videoanruf · 3:12“ oder „Verpasster Sprachanruf“ — mit **Zurückrufen**."
+        }
+      ],
+      "hint": {
+        "text": "Beim ersten Anruf fragt der Browser bzw. der Mac nach **Mikrofon** und **Kamera** — bitte erlauben. In deinen **Ruhezeiten** klingelt kein Push."
       }
     }
   ]
