@@ -617,9 +617,9 @@ export APPLE_API_ISSUER=84f1cc63-769a-4ea0-b54f-636f28ccbbaa
 electron/dist/
 ├── mac-universal/
 │   └── glatttHub.app                   # Signierte App (intern), arm64 + x64
-├── glatttHub-1.1.6-universal.dmg       # Direkter Download
-├── glatttHub-1.1.6-universal-mac.zip   # ZIP-Archiv
-└── glatttHub-1.1.6-universal.pkg       # PKG-Installer für MDM
+├── glatttHub-1.1.7-universal.dmg       # Direkter Download
+├── glatttHub-1.1.7-universal-mac.zip   # ZIP-Archiv
+└── glatttHub-1.1.7-universal.pkg       # PKG-Installer für MDM
 ```
 
 !!! info "Universal-Build seit 09.10.2026"
@@ -720,10 +720,10 @@ Der Notarization-Hook (`electron/notarize.cjs`) wird von `electron-builder` auto
 
 | Feld | Wert |
 |------|------|
-| **File** | `electron/dist/glatttHub-1.1.6-universal.pkg` |
+| **File** | `electron/dist/glatttHub-1.1.7-universal.pkg` |
 | **Application name** | `glatttHub` |
 | **Bundle identifier** | `com.glattt.hub` |
-| **Version** | `1.1.6` |
+| **Version** | `1.1.7` |
 
 Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
