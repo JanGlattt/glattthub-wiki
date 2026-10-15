@@ -186,6 +186,24 @@ Zusatzdaten: `module` = `chat-room-{id}` (thread-id je Raum), Kategorie `HUB_CHA
 Direkt-Antwort in der App, Ziel `/hub/chat/raum/{id}`. Der Text respektiert
 `preview_in_push` je Person.
 
+**Zustellhaken aus der Push (Jan, 15.10.2026):** Der zweite Haken heißt „auf mindestens einem Gerät
+angekommen“, nicht mehr „ein Chat war offen“. `PushNotificationService::queueNotifications` hängt jeder
+Chat-Push je Empfängerin `data.chat_ack` an (`ChatPushReceipt`): eine relativ signierte, 7 Tage gültige
+Adresse `POST /api/push/chat-delivered/{user}/{room}/{seq}` auf `PUBLIC_URL` (nicht `APP_URL`, das ist auf
+Prod die gesperrte run.app; nicht der App-Host, dort verlangt jede Anfrage den Gerätenachweis). Ohne
+Sitzung aufrufbar, die Signatur bindet Person, Raum und Stand; `ChatPushDeliveredController` setzt
+`markDelivered` und stößt den Haken beim Absender an. Aufrufer: die iOS-Mitteilungserweiterung (vor dem
+Ausliefern, 5 s Zeitlimit, ab Build 103), die Desktop-App im Hauptprozess (ab 1.1.8, nur `https` auf
+`*.glattt.com`) und der Service Worker (gleicher Ursprung). Kein Push (stumm, Ruhezeit, Raum offen) →
+kein Haken bis zum Öffnen. Bremse 600/min, weil hinter dem Load Balancer alle dieselbe IP haben.
+
+**„Sieht den Raum“ nur mit Fokus (15.10.2026):** Web-`isViewing()` verlangt `document.hasFocus()`;
+`blur` meldet `viewing: false`. Ein Fenster hinter einer anderen App bleibt für die Seite `visible` —
+die Mitteilung wurde unterdrückt und hätte ungesehen „gelesen“ gemeldet (Wissen
+`sichtbar-heisst-nicht-angesehen`). Dazu lädt der Web-Chat bei Fokus, Netz zurück und Aufwachen nach
+und gleicht sich mindestens jede Minute ab, auch bei „live“ — verlorene Anstöße (Reverb-Neustart beim
+Deploy) kosten höchstens eine Minute.
+
 ### Endpunkte (`/hub/chat`, Recht `use_chat`)
 
 | Methode & Pfad | Zweck |
@@ -306,7 +324,8 @@ Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Ha
 - **Jeder Deploy startet Reverb neu** — Clients bauen neu auf und laden ab Stand nach; nie auf
   einen verpassten Anstoß vertrauen.
 - **Push im offenen Raum** unterdrückt der Hub über die `viewing`-Marke (40 s); die App
-  pingt alle 25 s, das Web ebenso.
+  pingt alle 25 s, das Web ebenso — aber nur mit Fenster-Fokus, sonst gilt ein Fenster hinter
+  einer anderen App als „sieht hin“.
 - **Keine Verschlüsselung auf Nachrichtenebene** (Jan: Suche wie WhatsApp) — Cloud SQL
   verschlüsselt ruhend, der Transport über TLS; Anhänge liegen im privaten Bucket und werden
   nur über `/anhang/{id}` mit Mitgliedschaftsprüfung ausgeliefert.
@@ -321,6 +340,10 @@ Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Ha
 
 ## Changelog
 
+- **15.10.2026** — Zweiter Haken aus der Push-Mitteilung (iOS-Erweiterung Build 103, Desktop-App 1.1.8,
+  Service Worker); „sieht den Raum“ nur mit Fenster-Fokus; Web-Chat lädt bei Fokus/Netz/Aufwachen nach
+  und gleicht sich jede Minute ab, Haken im offenen Verlauf aus dem Listenstand (Joanna: Nachrichten erst
+  nach „Aktualisieren“, keine Mitteilung bei Fenster im Hintergrund).
 - **14.10.2026 (nachts)** — Personen ohne Stamm-Institut zeigen ihr **Bereichs-Kürzel** (grau) statt
   eines leeren Badges, die **Position** steht als Unterzeile (Mitglieder, Einzelchat-Kopf, Neuer Chat,
   der nach Bereich gliedert). Fix: Badges ohne Kürzel waren sichtbar, weil `instStyle()` einen

@@ -617,9 +617,9 @@ export APPLE_API_ISSUER=84f1cc63-769a-4ea0-b54f-636f28ccbbaa
 electron/dist/
 ├── mac-universal/
 │   └── glatttHub.app                   # Signierte App (intern), arm64 + x64
-├── glatttHub-1.1.7-universal.dmg       # Direkter Download
-├── glatttHub-1.1.7-universal-mac.zip   # ZIP-Archiv
-└── glatttHub-1.1.7-universal.pkg       # PKG-Installer für MDM
+├── glatttHub-1.1.8-universal.dmg       # Direkter Download
+├── glatttHub-1.1.8-universal-mac.zip   # ZIP-Archiv
+└── glatttHub-1.1.8-universal.pkg       # PKG-Installer für MDM
 ```
 
 !!! info "Universal-Build seit 09.10.2026"
@@ -720,10 +720,10 @@ Der Notarization-Hook (`electron/notarize.cjs`) wird von `electron-builder` auto
 
 | Feld | Wert |
 |------|------|
-| **File** | `electron/dist/glatttHub-1.1.7-universal.pkg` |
+| **File** | `electron/dist/glatttHub-1.1.8-universal.pkg` |
 | **Application name** | `glatttHub` |
 | **Bundle identifier** | `com.glattt.hub` |
-| **Version** | `1.1.7` |
+| **Version** | `1.1.8` |
 
 Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
@@ -764,6 +764,7 @@ Nach dem Upload: **Deploy** → Geräte auswählen → Installieren.
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 15.10.2026 | 1.1.8 | Zustellhaken im Team-Chat: Der Hauptprozess ruft bei einer Chat-Push die signierte Quittung `data.chat_ack` auf (`acknowledgeChatPush`, nur `https` auf `*.glattt.com`) — zweiter Haken beim Absender, auch ohne offenen Chat-Tab (siehe [Team-Chat](TEAM-CHAT.md)) |
 | 15.10.2026 | 1.1.7 | Chat aktualisiert sich auch im Hintergrund: `backgroundThrottling: false` je Tab, Aufwach-Anstoß nach Ruhezustand/Bildschirmsperre (`electron-wake` → `glattthub-wake`); dazu im Web Nachladen bei Fokus/Netz und Wächter in `chat.js` |
 | 09.10.2026 | 1.1.6 | **Universal-Build** (arm64 + x64 in einer App, Dateinamen `-universal`), damit ein PKG in Miradore alle Macs inkl. der Intel-Geräte versorgt |
 | 09.10.2026 | 1.1.6 | Menüleiste: „Gehe zu" (Hub-Seiten nach Rechten, Suche, glatttBert), Tabs mit Seitennamen und Häkchen, „Geschlossenen Tab wiederherstellen" (⇧⌘T), Farbschema und Standort als Untermenüs, Hilfe mit Nutzerhandbuch und „Rundgang dieser Seite"; Dock-Menü mit offenen Tabs und Schnellstart; Profilbild im Rechtsklick-Menü auf Kunden; Zustand aus `/api/app/navigation`, Befehle per postMessage (`desktop-app-bridge`), Prüfung über `GLATTTHUB_DEBUG_MENU` |
