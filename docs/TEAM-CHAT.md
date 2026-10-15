@@ -34,6 +34,13 @@ in den Chat; `@glatttBert Frage` holt den KI-Assistenten in den Raum. Die [Ruhez
 Feierabend fern; einzelne Gruppen oder Kolleginnen lassen sich als Ausnahme durchlassen, dringende
 Ankündigungen kommen immer.
 
+**Anrufe (seit 16.10.2026).** Im Einzelchat ruft der Hörer oben eine Kollegin an, die Kamera
+startet einen Videoanruf. Es klingelt auf jeder Hub-Seite, im Gespräch lässt sich die Kamera
+zuschalten, das Mikrofon stummschalten und der **Bildschirm teilen** (Browser und Desktop-App).
+Das Fenster bleibt beim Wechsel zwischen Hub-Seiten stehen; „Groß“ füllt den Bildschirm. Im
+Verlauf bleibt eine Spur („Ausgehender Videoanruf · 3:12“, „Verpasster Sprachanruf“) mit
+**Zurückrufen**. Wer in den Ruhezeiten ist, bekommt keinen Klingel-Push.
+
 **Warum.** WhatsApp lebt von privaten Handynummern, pflegt keine Gruppen und kennt den Hub nicht.
 Der Chat erreicht jede Kollegin über ihr Hub-Konto, hält Dienstliches im Unternehmen und
 verbindet Nachrichten mit Kundinnen, Verträgen und Ankündigungen.
@@ -242,6 +249,45 @@ Entscheidungen Jan vom 15.10.2026 (Vorlage mit drei Entwürfen je Punkt, alle Em
   auf `/hub/chat`. `ChatQueryCountTest` wacht über die Abfragezahlen.
 - Tests: `ChatEtappeBTest`, `ChatQueryCountTest`, `ChatSyncTest`, `tests/js/chat-sync.test.mjs`.
 
+### Anrufe (16.10.2026)
+
+Priorität Jan (Freigabe C/D, 16.10.2026): „Call-Funktion inklusive Screen Sharing“. 1:1 im Einzelchat, Audio oder
+Video, Bildschirmfreigabe als zusätzliche Videospur im selben Anruf. Die Medien laufen direkt zwischen den Geräten
+(**WebRTC**), der Hub vermittelt nur.
+
+- **Datenmodell:** `chat_calls` (Zustand `ringing → accepted → ended`, `end_reason` hangup | declined | missed |
+  cancelled | busy | failed, `caller_device`/`callee_device`, `screen_shared`) und `chat_call_signals` (SDP,
+  ICE-Kandidaten, Medienstand mit laufender ID).
+- **`ChatCallService`:** jeder Übergang ist ein bedingtes UPDATE („nur wenn noch ringing“) — von zwei Geräten
+  gewinnt das erste, Annehmen gegen Auflegen wirkt nur einmal. Besetzt, wenn die Angerufene schon telefoniert;
+  rufen sich beide gleichzeitig an, verbindet der zweite Druck. Klingeln endet nach 45 s
+  (`ChatCallTimeoutJob` auf der push-Warteschlange **und** beim nächsten Zugriff, falls die Warteschlange hängt).
+  Angenommene Anrufe ohne Lebenszeichen (Ping alle 10 s) gelten nach 40 s als abgebrochen — kein hängendes
+  „besetzt“. Signale nur nach der Annahme und nur von den beiden verbundenen Geräten, höchstens 64 KB.
+- **Echtzeit:** eigener Ereignisname `chat.call` auf `private-chat.user.{id}` (alte Clients hören nur
+  `chat.changed`), Nutzlast nur Kennungen. Signale holt der Client „ab ID X“ (`GET /anrufe/{id}/signale?nach=`):
+  auf Anstoß sofort, ohne Live-Verbindung im 1–2-s-Takt, sonst alle 4 s; ein freier Tab ohne Live-Verbindung
+  fragt alle 5 s nach eingehenden Anrufen.
+- **Verhandlung:** Perfect Negotiation, die Angerufene ist höflich. Jede PeerConnection hat eine Epoche, jedes
+  Signal trägt sie; nach dem Neuladen steigt die Seite mit neuer Epoche ab `last_signal_id` ein, die Gegenseite
+  baut für die größere Epoche neu auf (Regel `bindEpoch` in `chat-call.js`, per `npm test` geprüft). ICE-Neustart
+  nach 4 s Funkstille, Aufgabe nach 25 s.
+- **STUN/TURN:** `GET /anrufe/ice` liefert STUN (`STUN_URLS`) und, wenn eingerichtet, TURN mit zeitlich
+  begrenzten Zugangsdaten (`TURN_URLS`, `TURN_SECRET`, HMAC-SHA1 wie coturn `use-auth-secret`, 6 h). Einrichtung
+  der coturn-VM: `scripts/turn/TURN-SERVER-EINRICHTEN.md` im Hub-Repo. Admin → **Chat-Gesundheit** zeigt
+  „Anrufe · TURN“ (Gespräche, nicht verbunden, Test-Knopf für einen Relay-Kandidaten).
+- **Web:** `public/js/chat-call.js` (Regeln, Engine `GlatttCall`, Fenster `chatCallUi`), Fenster
+  `layouts.partials.chat-call` per `@persist('chat-call')` — ein Gespräch überlebt `wire:navigate`. Ton über ein
+  eigenes `<audio>`, Kamera und Ton der Gegenseite in einem selbst gebauten Strom, Bildschirm getrennt (angesagt
+  per `media`-Signal mit `screen_stream`). Klingelton per WebAudio, nur ein Tab klingelt (Web Locks).
+- **Desktop-App:** `setDisplayMediaRequestHandler` mit `useSystemPicker` (macOS 15+ Systemauswahl, älter:
+  Rückfrage, dann Hauptbildschirm), Entitlements `device.audio-input`/`device.camera`, Texte
+  `NSMicrophoneUsageDescription`/`NSCameraUsageDescription`.
+- **Benachrichtigungen:** Anlässe `chat.call` (Push, nicht „dringend“ — Ruhezeiten gelten, Personen-Ausnahmen
+  greifen) und `chat.call_missed` (Glocke + Push).
+- **Spur im Verlauf:** Systemnachricht mit `meta.event = call` und `meta.call` (Art, Anruferin, Grund, Dauer,
+  Bildschirm); der Presenter liefert `call`, die Clients formulieren aus eigener Sicht (`traceText`).
+
 ### Push
 
 **Hinweis-Karten (Jan, 11.10.2026):** Jede Chat-Mitteilung trägt in `notifications.data` die
@@ -328,6 +374,11 @@ Deploy) kosten höchstens eine Minute.
 | `POST /umfragen/{id}/abstimmen`, `…/beenden` | Umfragen |
 | `GET /anhang/{id}`, `GET /raeume/{id}/bild`, `POST …/bild` | Anhänge und Gruppenbild (privater Bucket) |
 | `PATCH /einstellungen` | Nicht stören, Push-Vorschau |
+| `POST /raeume/{id}/anruf` (`kind` audio\|video, `device`) | Anruf starten (nur Einzelchat); Antwort `call` aus eigener Sicht, bei besetzter Gegenseite sofort `ended/busy` |
+| `GET /anrufe/aktiv?device=`, `GET /anrufe/{id}?device=` | offener Anruf (Neuladen, Push, Aufwachen) bzw. Stand; `elsewhere` = läuft auf einem anderen eigenen Gerät, `last_signal_id` = Einstieg nach dem Neuladen |
+| `POST /anrufe/{id}/annehmen`, `…/auflegen`, `…/fehler`, `…/ping` | Annehmen (erstes Gerät gewinnt), Ablehnen/Abbrechen/Auflegen je nach Stand, Verbindung gescheitert, Lebenszeichen |
+| `POST /anrufe/{id}/signal` (`kind` description\|candidate\|media, `payload`), `GET …/signale?nach=` | Signalisierung zwischen den beiden verbundenen Geräten |
+| `GET /anrufe/ice` | STUN/TURN-Server mit Zugangsdaten auf Zeit (`Cache-Control: no-store`) |
 | `GET /hub/chat`, `GET /hub/chat/raum/{id}[?seq=]` | Seite und Deep-Link (Web zeigt den Raum, App ihre native Unterhaltung) |
 
 Fachliche Fehler kommen als 422/403 mit deutscher `message`.
@@ -416,6 +467,12 @@ Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Ha
 (`ChatRoomLiveLayoutTests`, `CHAT_LOOKS`). Wissen: `chat-look-wie-whatsapp`.
 
 ### Fallstricke
+- **Bremsen brauchen einen eigenen Schlüssel** (16.10.2026): `throttle:N,M` ohne dritten Wert zählt alle Routen
+  einer Person gemeinsam — Tippen bremste das Senden, Anruf-Signale die Pings. Alle Chat-Routen tragen
+  `throttle:N,M,chat.<route>`.
+- **Mikrofon und Kamera brauchen die Permissions-Policy** (16.10.2026): `SecurityHeaders` sperrte beides,
+  seit 16.10.2026 `(self)` für Kamera, Mikrofon und Bildschirmaufnahme.
+- **SDP nie durch TrimStrings**: Der Signal-Endpunkt liest die Nutzlast roh, sonst fehlt das abschließende CRLF.
 
 - **`ImageRenderer` rastert keine `List`, `ScrollView` oder `Menu`** — die Snapshot-Tests
   schalten über `appointmentsStaticLayout` auf feste Stapel (`ChatSnapshotTests`).
@@ -443,11 +500,17 @@ Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Ha
 
 ### Relevante Tests
 
-`tests/Feature/Chat/` (Räume, Nachrichten, Push-Empfänger, Katalog-Weg, Endpunkte, Seite),
+`tests/Feature/Chat/` (Räume, Nachrichten, Push-Empfänger, Katalog-Weg, Endpunkte, Seite, `ChatCallTest` für
+Anrufe), `tests/js/chat-call.test.mjs` (Epochen, Spur, Endtexte),
 `tests/Feature/App/BrowserEnrollmentTest.php`, `ios/glatttHubTests/ChatSnapshotTests.swift`,
 `ios/glatttHubUITests/ChatUITests.swift`.
 
 ## Changelog
+
+- **16.10.2026 (Anrufe)** — 1:1 Sprach- und Videoanrufe mit Bildschirmfreigabe (WebRTC), Klingeln auf jeder
+  Hub-Seite, Fenster über Seitenwechsel hinweg, Spur mit Zurückrufen, STUN/TURN mit Zugangsdaten auf Zeit,
+  Chat-Gesundheit „Anrufe · TURN“, Desktop-App mit Bildschirmauswahl. Nebenbei: Permissions-Policy erlaubt
+  Mikrofon/Kamera für den Hub, Chat-Bremsen mit eigenem Zähler je Endpunkt.
 
 - **16.10.2026 (Etappe B)** — Volltextsuche mit Filtern, Gespeichert, Medien-Reiter mit Vorschaubild und BlurHash, Link-Vorschau mit SSRF-Schutz, Lesebestätigung mit Frist/Erinnerung/Eskalation/CSV, Nachricht-Info neutral, Optik wie die App, gebündelter Zustandsstand, eigene Geräte gleichziehen, ein Abgleich je Browser.
 - **16.10.2026** — Etappe A „Verlässlich“ (Ausbauplan, Jan 15.10.2026): Ereignis-Protokoll `chat_events`
