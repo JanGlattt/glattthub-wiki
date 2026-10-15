@@ -212,7 +212,7 @@ System-Browser. Zum Testen gegen Staging:
 | Letzter Tab schließen | schließt das Fenster (wie ⌘W im Browser) |
 | Admin-Panel | `openOrFocus(ADMIN_URL)` — vorhandenen Admin-Tab aktivieren statt neu öffnen |
 | Push-Klick | `loadInActive(url)` lädt die Ziel-URL im aktiven Tab |
-| Nebeneinander (seit 1.2.1) | Rechtsklick auf einen anderen Tab → „Rechts daneben anzeigen“: aktiver Tab links, dieser rechts (`split = { leftId, rightId, ratio }`), Trenner `divider.html` (6 px, beim Ziehen über die ganze Fläche gelegt, Bildschirm-x per `divider-preload.cjs`, 25–75 %). Nur ab 1100 px Fensterbreite, darunter zeigt der aktive Tab allein; ein Tab außerhalb des Paars zeigt sich allein, zurück zum Paar zeigt wieder beide. Klick in eine Hälfte macht sie aktiv (`focusPane`, Zurück/Vor/Neu laden gelten ihr). Schließen eines Paar-Tabs beendet das Nebeneinander |
+| Nebeneinander (seit 1.2.1) | Seit 1.2.2 bei **jedem** Tab im Menü (`splitOffer`): am aktiven Tab „Nebeneinander mit „<zuletzt benutzter Tab>““, sonst „Rechts daneben anzeigen“; unter 1100 px grau mit „(Fenster breiter ziehen)“. Rechtsklick auf einen anderen Tab → „Rechts daneben anzeigen“: aktiver Tab links, dieser rechts (`split = { leftId, rightId, ratio }`), Trenner `divider.html` (6 px, beim Ziehen über die ganze Fläche gelegt, Bildschirm-x per `divider-preload.cjs`, 25–75 %). Nur ab 1100 px Fensterbreite, darunter zeigt der aktive Tab allein; ein Tab außerhalb des Paars zeigt sich allein, zurück zum Paar zeigt wieder beide. Klick in eine Hälfte macht sie aktiv (`focusPane`, Zurück/Vor/Neu laden gelten ihr). Schließen eines Paar-Tabs beendet das Nebeneinander |
 | Anheften (seit 1.2.1) | `tab.pinned`: vorn, 44 px, Anfangsbuchstabe, kein Schließen-Knopf, Mittelklick schließt nicht; Umsortieren bleibt innerhalb der Gruppe. Gemerkt in `userData/pinned-tabs.json` (URL + Farbe, nur Hub-Adressen) und beim Start vor der Startseite geöffnet (`restorePinned`) |
 | Farbe (seit 1.2.1) | `tab.color` gold/rot/grün/blau: Streifen unten + zarte Tönung; im Menü als Farbfelder (`swatches`-Eintrag in `context-menu.cjs`) |
 | Tab-Menü auf Dokumenten (seit 1.2.1) | PDF-/Bild-Ansicht und Ladeanzeige haben kein Seiten-Preload → `nativeTabMenu()` (Systemmenü mit denselben Einträgen); erkannt über `markDocument()` aus `onHeadersReceived`. Im Nebeneinander zeichnet die Hälfte unter dem Zeiger |
@@ -732,25 +732,47 @@ noch für die **Erstinstallation** nötig — danach aktualisiert sich die App s
 | **Datei** | `glatttHub-<version>-universal.pkg` (auch unter `https://storage.googleapis.com/glattthub-public/downloads/desktop/`) |
 | **Bundle identifier** | `com.glattt.hub` |
 
-### Updates (seit 1.2.0)
+### Updates (seit 1.2.0, Update-Dienst seit 1.2.2)
 
-`electron/updater.cjs` (electron-updater) fragt 30 s nach dem Start, alle 4 Stunden und nach dem
-Aufwachen `latest-mac.yml` im öffentlichen Bucket ab (`publish: generic` in
-`electron-builder.config.cjs`), lädt das ZIP im Hintergrund und fragt „glatttHub X ist bereit —
-Jetzt neu starten / Später“. „Später“ installiert beim nächsten Beenden. Menü glatttHub →
-„Nach Updates suchen …“ prüft sofort. Nur in der gepackten App (`app.isPackaged`).
+**Warum ein eigener Dienst:** Die Nutzerinnen haben Standardkonten, und macOS schützt Apps unter
+`/Applications` zusätzlich zu den Dateirechten (App-Verwaltung, Merkmal `com.apple.macl` nach
+PKG-/MDM-Installation). Eine Schreibprobe der App ins eigene Bundle scheitert mit `EPERM`, obwohl
+das Bundle `root:staff` mit `g+w` ist — Squirrel.Mac (electron-updater) startet dann sein
+Hilfsprogramm privilegiert und fragt nach einem **Admin-Passwort** (15.10.2026, mit und ohne
+„Install as Managed“ in Mosyle; ein PPPC-Profil „App Management“ half nicht).
 
-**Standardkonten ohne Admin-Rechte:** Das PKG installiert als root. Squirrel.Mac bräuchte dann ein
-Admin-Passwort. Deshalb (1) gibt `electron/pkg-scripts/postinstall` das Bundle der Gruppe `staff`
-mit Schreibrecht (alle lokalen Konten sind darin) und (2) setzt die App
-`SquirrelMacEnableDirectContentsWrite`, damit nur der Inhalt des Bundles ersetzt wird und kein
-Schreibrecht auf `/Applications` nötig ist. `release.sh` bricht ab, wenn das PKG kein Postinstall
-enthält. Nebenwirkung: Jedes lokale Konto könnte das Bundle verändern — das Selbst-Update prüft die
-Signatur (gleiches Developer-ID-Team), Gatekeeper beim Start.
+**Update-Dienst** (`electron/pkg-scripts/updater.sh`, LaunchDaemon `com.glattt.hub.updater`,
+beides vom Postinstall eingerichtet): läuft als root alle 30 Minuten, beim Start und sobald die App in
+`/Users/Shared/glatttHub/` etwas ablegt (WatchPaths). Er liest `latest-mac.yml`, lädt bei neuerer
+Version das PKG nach `/Library/Application Support/glatttHub/updates/` (nur root), prüft die
+Signatur (`pkgutil --check-signature` mit „Developer ID Installer … (63DQ6FV92R)“ + `spctl -t
+install`) und installiert mit `installer`, **wenn die App nicht läuft**. Läuft sie, schreibt er
+`update-ready.json`; die App (`electron/updater.cjs`, Modus `daemon`) fragt „Jetzt neu starten /
+Später“. „Jetzt neu starten“ legt `relaunch` ab und beendet die App → der Dienst wartet bis 30 s,
+installiert und öffnet die App für die angemeldete Person wieder (`launchctl asuser`). „Später“ +
+normales Beenden legt `quit` ab → Installation sofort nach dem Beenden. „Nach Updates suchen …“
+legt `check-now` ab. Protokolle: `/Library/Logs/glatttHub-updater.log` (Dienst),
+`~/Library/Application Support/glatttHub/logs/updater.log` (App).
+
+**Fallstricke:** Das Postinstall ersetzt `updater.sh` per `mv` (der laufende Dienst hat die
+Installation ja selbst gestartet) und lädt einen geladenen Dienst **nie** neu — `bootout` würde den
+laufenden Installer mitbeenden; Änderungen an der plist greifen erst nach Neustart. Erkennung der
+laufenden App: `pgrep -f "/Applications/glatttHub.app/Contents/MacOS/glatttHub( |$)"` (Helfer
+haben andere Pfade). Fremde oder unsignierte Pakete im Download-Ordner verwirft der Dienst.
+
+**Selbst-Update per Squirrel** bleibt nur für Macs ohne Dienst (z. B. per DMG installiert) und nur,
+wenn die Schreibprobe gelingt; sonst ist die App still und „Nach Updates suchen …“ meldet „Updates
+kommen über die IT“. Es wird nie mehr nach einem Admin-Passwort gefragt. Das Postinstall gibt das
+Bundle weiter `staff g+w` (Rückfall) und die App setzt `SquirrelMacEnableDirectContentsWrite`.
+
+**Mosyle:** Die 1.2.2 muss einmal über Mosyle auf jeden Mac (bringt den Dienst mit). Danach kommen
+Versionen über den Dienst; im Mosyle-Eintrag kann die zuletzt verteilte Version stehen bleiben (eine
+neuere installierte Version wird nicht zurückgestuft — beim ersten Folge-Release beobachten).
 
 **Veröffentlichen:** `bash electron/release.sh --publish` lädt ZIP, Blockmap und PKG
-(`immutable`) und **zuletzt** `latest-mac.yml` (`no-cache`) hoch — ab dann ziehen alle Macs mit
-≥ 1.2.0 die Version innerhalb von ~4 Stunden. Zurückziehen geht nur mit einer **höheren** Version.
+(`immutable`) und **zuletzt** `latest-mac.yml` (`no-cache`) hoch — ab dann holen alle Macs mit
+Dienst (≥ 1.2.2) die Version innerhalb von 30 Minuten. `release.sh` bricht ab, wenn im PKG
+Postinstall, `updater.sh` oder die plist fehlen. Zurückziehen geht nur mit einer **höheren** Version.
 Versionen vor 1.2.0 haben keinen Updater und brauchen die 1.2.0 einmal per Mosyle.
 
 **Electron-Version:** 41.10.7 (seit 1.2.0) — 41.2.0 hatte offene Lücken (CVE-2026-70597,
@@ -793,6 +815,7 @@ den Release Notes lesen.
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 15.10.2026 | 1.2.2 | **Update-Dienst** (root-LaunchDaemon aus dem PKG) statt Squirrel auf verwalteten Macs — keine Admin-Passwortabfrage mehr; Squirrel nur noch bei beschreibbarem Bundle; Update-Protokoll; „Nebeneinander“ bei jedem Tab im Menü |
 | 15.10.2026 | 1.2.1 | Zwei Tabs **nebeneinander** mit ziehbarem Trenner (ab 1100 px), Tabs **anheften** (bleiben nach Neustart), Tabs **farbig markieren**, Tab-Menü auch auf PDF-Tabs (Systemmenü); erste Version, die per Selbst-Update kommt |
 | 15.10.2026 | 1.2.0 | **Selbst-Update** über den öffentlichen Bucket (electron-updater, Postinstall für Standardkonten, „Nach Updates suchen …“); PDFs und Bilder öffnen im neuen Tab als Ansicht statt Download; Downloads ohne Dialog nach „Downloads“ mit Mitteilung, leerer Download-Tab schließt sich; Ladeanzeige für neue Tabs; gleich breite Tabs; Electron 41.10.7; Verteilung über Mosyle |
 | 15.10.2026 | 1.1.8 | Zustellhaken im Team-Chat: Der Hauptprozess ruft bei einer Chat-Push die signierte Quittung `data.chat_ack` auf (`acknowledgeChatPush`, nur `https` auf `*.glattt.com`) — zweiter Haken beim Absender, auch ohne offenen Chat-Tab (siehe [Team-Chat](TEAM-CHAT.md)) |
