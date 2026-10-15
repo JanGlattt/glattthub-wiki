@@ -14,6 +14,9 @@ unter **Betrieb → Kasse**, im Web und nativ in der App (iPhone und iPad).
   und von der Bank geholtes Geld werden sofort über „Bewegung erfassen“ eingetragen — mit Uhrzeit
   und Person. Der Tresor rechnet sich live mit („Tresor jetzt“ auf der Karte „Heute noch offen“),
   am Abend stehen die Bewegungen fertig im Zählblatt. Nach dem Abschluss sind sie fest.
+- **Erst Phorest, dann zählen (seit 15.10.2026):** Solange „Erwartet“ aus dem Phorest-Kassenabschluss
+  fehlt, sind Scheine und Münzen gesperrt — im Web mit Hinweis und Knopf „Zum Phorest-Wert“, in der
+  App steht das Feld beim Öffnen schon aktiv (Wunsch Leitung Braunschweig, 14.10.2026).
 - **Zählen:** Stückzahl je Schein und Münze, dazu der Tresor. Der Tresorstand kommt vom letzten
   Abschluss, die Bewegungen des Tages rechnen ihn weiter. Auslagen mindern den Phorest-Betrag:
   Erwartet − Auslagen = was in der Kasse liegen muss.
@@ -144,3 +147,4 @@ Standorte kein Abschluss vorliegt; im Laser-Modus steht er vorne. Snapshot-Test 
 | 29.09.2026 | Modul angelegt (Hub + App), Entwürfe: Mischung aus „Tag für Tag“ und „Waage“; vorerst nur Rolle Super-Admin |
 | 29.09.2026 | Tresor-Bewegungen direkt am Tresor: „→ zur Bank“ und „→ in die Kasse“ (Befund 213) |
 | 10.10.2026 | Bewegungen während des Tages (Kassenbuch): fünf Arten mit Grund und Beleg, Tresor serverseitig, Auslagen mindern „Erwartet“, Kassenbuch-CSV, Web und App (Leitungs-Workshop, Entwurf A) |
+| 15.10.2026 | Reihenfolge fest: erst Phorest „Erwartet“, dann zählen — Stückelungen bis dahin gesperrt (Web `countLocked`, App `countLocked` + Startfeld) |

@@ -292,8 +292,23 @@ Einstellungszettel" und Knopf „Sitzung nachtragen") und in der Terminansicht (
   `phorest_staff`; die Option „Nicht mehr im Team …" schickt `staff_name` (Freitext, ohne
   `staff_id`). Gespeichert in `treatment_settings.staff_name`; überall, wo Behandlerinnen-Namen
   aufgelöst werden, greift `TreatmentBackfillService::staffLabel()` (Phorest-Name, sonst Freitext).
+- **Standort ohne Sitzung** (seit 15.10.2026): Hat die Kundin keine abgerechnete Sitzung im Hub,
+  schickt der Assistent der Kundenakte keinen Standort mit — das Speichern scheiterte an „branch
+  id“ (Asana Leitung Braunschweig, 14.10.2026). `branch_id` ist jetzt optional;
+  `TreatmentBackfillService::resolveBranchId()` nimmt den Standort der Behandlerin
+  (`phorest_staff`), sonst den letzten Termin der Kundin (`stats_historic_appointments`), die
+  Kundenstatistik oder den Heimat-Standort der Nutzerin; ohne jede Quelle 422 mit deutscher Meldung.
+- **„2 Kleine Zonen“ immer benennen** (seit 15.10.2026, Asana MaSo): Für die Zone
+  `zwei_kleine_zonen` ist `area_label` Pflicht — im Nachtrag **und** im Einstellungszettel des
+  Termins, auch ohne zweite Einstellung. Prüfung zentral in `TreatmentSetting::smallZonesLabelMissing()`
+  (422 mit `SMALL_ZONES_LABEL_MESSAGE`). Web zeigt dafür das Feld „Bereich“ („Welche zwei Zonen?“),
+  die App `SmallZonesAreaField`. **Falle:** Web und App verwarfen `area_label` ohne zweite
+  Einstellung — bei dieser Zone bleibt er jetzt im Payload (`keepArea` bzw. `isSmallZones`).
+  Beim Vertrag fragt das Formular die beiden Zonen schon seit 08/2026 ab (`small_zones_details`).
 - **Nicht-Behandlungen** fallen seit 13.10.2026 über `NonTreatmentServices` aus den Sitzungen
   (siehe nächster Abschnitt) — vorher galten Termine mit nur Haaranalyse oder QK als „offen".
+  Seit 15.10.2026 zählt auch „Abweichender Kontoinhaber unterschreiben“ nicht (`unterschreib` im
+  Muster); „*Vertrag unterschreiben“ fiel schon über das Sternchen bzw. `vertrag` heraus.
 - **Tests:** `tests/Feature/TreatmentBackfillTest.php` (Gruppierung, Neudurchzählung, 422-Fälle,
   Löschrechte, Kundenakte-Felder). Wissen: `.github/knowledge/behandlungsdaten-nachtragen.md`.
 

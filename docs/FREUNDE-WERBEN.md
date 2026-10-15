@@ -97,6 +97,15 @@ ist. Die Herleitung steht unten im [Status-Modell](#status-modell).
   Warnung, die bewusst bestätigt werden muss.
 - Nach der Auswahl werden **IBAN und Kontoinhaber** aus dem SEPA-Mandat der Werberin vorbefüllt
   (falls vorhanden); beides kann überschrieben oder später ergänzt werden.
+- **Bankverbindung beim Anlegen, egal über welchen Weg** (seit 15.10.2026): Preis-Modul im
+  Vertragsformular und Tageserfassung reichten keine IBAN durch — Werbungen standen beim
+  Überweisen ohne Bankdaten da (Asana Janine, 14.10.2026). Jetzt füllt der `creating`-Hook von
+  `ContractReferral` über `fillPayoutFromReferrer()` leere Felder: zuerst die in „My glattt“
+  hinterlegte Prämien-IBAN, sonst die IBAN des jüngsten SEPA-Mandats (`client_mandates`, Kontoinhaber
+  aus den Zahler-Namen, sonst `referrer_name`). Eine erfasste IBAN wird nie überschrieben. Migration
+  `2026_10_15_090000` trug sie für alle nicht ausgezahlten, nicht abgelehnten Werbungen nach.
+  **Falle:** Den Hook nie als Pfeilfunktion schreiben — ein zurückgegebenes `false` bricht das
+  Anlegen ab.
 
 **Rabatt der Neukundin (50 €)**
 
