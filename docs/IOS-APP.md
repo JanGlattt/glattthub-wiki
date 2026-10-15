@@ -2862,6 +2862,30 @@ wandert in den Mehr-Bereich (Gruppe „Schnellzugriff"). Jan folgte der Empfehlu
   — liefert die Bilder der Klickanleitung), `ChatUITests` (Tab, „Alle glattt", senden, Haken,
   Infos), PHP `tests/Feature/Chat/`.
 
+### Anrufe im Team-Chat (seit 16.10.2026, Build 106)
+
+Freigegebener Entwurf D1 („klingelt wie FaceTime, auch gesperrt, über VoIP-Push“). 1:1 Sprach- und
+Videoanruf aus dem Einzelchat (Hörer/Kamera im Raumkopf, „Zurückrufen“ an der Spur im Verlauf). Technik
+und Hub-Seite: Wiki [TEAM-CHAT](TEAM-CHAT.md), Abschnitt „Anrufe“.
+
+- **`ios/glatttHub/Chat/Call/`**: `ChatCallRules` (Epochen, Spur, Endtexte — dieselben Regeln wie
+  `public/js/chat-call.js`, `ChatCallRulesTests`), `ChatCallEngine` (WebRTC über das Paket
+  `stasel/WebRTC` 150.0.0, Perfect Negotiation, Signale „ab ID X“, Ping alle 10 s, ICE-Neustart),
+  `ChatCallKit` (CallKit + PushKit), `ChatCallView` + `ChatCallWindow` (eigenes `UIWindow` auf
+  Alert-Ebene, damit der Anruf über offenen Blättern und Vollbild-Ansichten liegt).
+- **VoIP-Push**: `PKPushRegistry` liefert den Token, `POST /api/push/subscribe/voip` legt ihn am Push-Abo
+  des Geräts ab (`push_subscriptions.voip_token`). Der Hub schickt `chat_call` (klingeln) und
+  `chat_call_end` (abgebrochen, verpasst, anderswo angenommen) über `ChatCallVoipJob`. **Apple-Pflicht:**
+  Jeder VoIP-Push meldet sofort einen Anruf an CallKit — `chat_call_end` ohne bekannten Anruf meldet einen
+  und beendet ihn im selben Atemzug, sonst stellt iOS die VoIP-Pushes ein.
+- **Audio**: `RTCAudioSession.useManualAudio`; WebRTC bekommt den Ton erst in `provider(_:didActivate:)`.
+  Videoanrufe starten mit Lautsprecher.
+- **Gerät**: Die Engine meldet sich mit `DeviceIdentity.id` — dieselbe Kennung wie `native_device_id` am
+  Push-Abo; daran erkennt der Hub, welches Gerät angenommen hat, und beendet das Klingeln auf den anderen.
+- **Grenzen**: Bildschirm teilen kann die App empfangen (groß, Kamera klein), selbst teilen nur Browser und
+  Mac-App (ReplayKit-Erweiterung bewusst nicht gebaut). Geteilte Geräte und Kiosk haben keine Anrufe.
+- **Abmelden** beendet ein laufendes Gespräch und verwirft den VoIP-Token beim Hub.
+
 ### Auto-Abmeldung in der App (seit 11.10.2026, Build 90)
 
 **Absicht (Jan, 11.10.2026):** Die Auto-Abmeldung je Konto (`users.auto_logout_timeout`, meist
@@ -2989,6 +3013,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 16.10.2026 | 1.4.5 (106) | **Anrufe im Team-Chat**: CallKit + VoIP-Push (klingelt auch gesperrt), WebRTC mit demselben Protokoll wie Browser und Mac-App, Spur im Verlauf mit Zurückrufen, Bildschirm der Gegenseite groß. |
 | 14.10.2026 | 1.4.5 (99) | **Ruhezeiten nativ** (Einstellungen › Mitteilungen, Chat-Einstellungen): Uhr wie der iOS-Schlafplan, Pläne mit eigenen Wochentagen, Urlaubsstreifen aus askDANTE, Ausnahmen für Bereiche, Anlässe, Chats und Personen. |
 | 11.10.2026 | 1.4.x (90) | **Auto-Abmeldung nativ** (`AutoLogoutMonitor`): ein Zähler je Sitzung statt einem je WebView, zählt im Hintergrund weiter und meldet beim Zurückkehren ab; Pause in Terminansicht, Einstellungszettel und Laser-Wartung; Countdown in iPad-Seitenleiste und Mehr-Sheet. Hub: `auto-logout.js` mit Pausen-API und Übergabe an die App, personenbezogene Anlässe (nur Betroffene/einzelne Nutzerinnen) nie an geteilte Geräte |
 | 08.10.2026 | 1.4.1 | **glatttBert nativ** (TestFlight 252, Entwurf 1 „Blatt von überall“): Chat-Blatt aus Schnellzugriff, Mehr, Siri und ⌘K mit Vorschlägen zur Seite, Tabellen, Quellen, Karten, Feedback, Verlauf (Menü/iPad-Spalte); Hub: `BertConversations` + `/api/app/bert/*`. Dazu Info-i zu den Vergleichszahlen (250/251, `comparison.hint`), Mitteilungen einzeilig mit Symbol (253) |
