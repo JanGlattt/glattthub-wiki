@@ -368,6 +368,38 @@ zu können. Ein Fehler wurde nie gemeldet, weil nie etwas versucht wurde.
   (`PushNotificationService::subscribeNative` fällt auf `'macos'` zurück, wenn der Typ
   nicht in `config('push.device_types')` steht).
 
+#### Mitteilungen wieder einschalten (seit 15.10.2026, Befund 336)
+
+!!! nutzerhandbuch "Bedienung: App 1 – Anmelden und Face ID"
+    [https://hilfe.hub.glattt.com/app/1/](https://hilfe.hub.glattt.com/app/1/)
+
+**Befund:** Wer die Apple-Rückfrage einmal mit „Nicht erlauben" beantwortet hatte, kam
+nicht mehr zurück. Der einzige Schalter lag unter **Einstellungen → Diese App**, die
+Seite hängt an `view_settings` — Institut-Mitarbeiterinnen sehen sie nicht. Dazu
+sprang „In den iOS-Einstellungen öffnen" nur auf die allgemeine App-Seite, und der
+Stand wurde nach der Rückkehr nicht neu gelesen. (Die Livewire-Komponente
+`push-notification-settings` mit dem Text „Browser-Einstellungen" ist nirgends
+eingebunden; das Web-Modal in `layouts/hub.blade.php` ist in der App ohnehin aus.)
+
+**Lösung (Jan wählte Variante 1 + 3):**
+
+- `AppState.pushStatus` hält den Stand (`granted`/`denied`/`default`, `…` = ungelesen);
+  `AppContainer.refreshPushStatus()` liest ihn nach jeder Anmeldung und bei jeder
+  Rückkehr in den Vordergrund — wer in iOS erlaubt hat, ist beim Zurückkommen sofort
+  hinterlegt (`syncSubscription`) und sieht „erlaubt".
+- `AppContainer.turnOnPush()`: nie gefragt → Apple-Dialog + Hinterlegen (`enable`);
+  abgelehnt → `PushManager.openSystemSettings()` mit
+  `UIApplication.openNotificationSettingsURLString` (direkt zur Mitteilungs-Seite der App).
+- **Hinweis-Karte** `PushOffCard` oben in `NotificationsView` (Mehr-Blatt, iPad-Popover),
+  für jede Rolle, solange Push aus ist.
+- **Erinnerung** `PushReminderSheet` nach der Anmeldung (`remindPushIfDue()` in
+  `loadNavigation`): höchstens alle 7 Tage (`PushReminder.lastShown` in `UserDefaults`,
+  gesetzt erst in `onAppear` — verwirft SwiftUI das Blatt wegen eines anderen offenen
+  Blatts, kommt es beim nächsten Laden wieder), nie auf geteilten Geräten
+  (`managed.sharedDevice`) und im Kiosk, nie vor oder über der Einführung.
+- Tests: `NotificationsSnapshotTests` (`testPushReminderIsDue`, Snapshots Karte und
+  Blatt iPhone/iPad hell/dunkel).
+
 **Lehre für jede weitere Gerätefunktion:** Ein Weg, den nur eine versteckte Web-Seite
 anbietet, wird in der App nicht benutzt. Was die App können soll, muss sie selbst tun
 oder selbst anbieten.

@@ -6,8 +6,8 @@
   "of": 26,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "29.09.2026",
-  "version": "1.1",
+  "stand": "15.10.2026",
+  "version": "1.2",
   "nr": 1,
   "title": [
     "Die App auf iPad",
@@ -94,7 +94,7 @@
       "notes": [
         {
           "title": "Was die App noch fragt",
-          "text": "Beim ersten Start bittet sie um **Mitteilungen** (Push) — „Erlauben“, damit Termine und Hinweise ankommen. Die Kamera fragt sie erst, wenn du das erste Foto machst."
+          "text": "Beim ersten Start bittet sie um **Mitteilungen** (Push) — „Erlauben“, damit Termine und Hinweise ankommen. Versehentlich abgelehnt? Oben in den **Mitteilungen** steht dann „Mitteilungen sind aus“ mit einem Knopf direkt in die iOS-Einstellungen; einmal pro Woche erinnert die App nach der Anmeldung daran. Die Kamera fragt sie erst, wenn du das erste Foto machst."
         }
       ],
       "hint": {
