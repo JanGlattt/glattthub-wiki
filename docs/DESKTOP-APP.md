@@ -28,6 +28,7 @@ Die glatttHub Desktop-App ist eine native macOS-Anwendung, die die Web-App (`htt
 | **Tabs** (seit 1.1.0) | Mehrere Hub-Seiten nebeneinander in einem Fenster, Tab-Leiste in der Titelzeile — neuer Tab per ⌘T oder „+", Wechsel per Klick, ⌃Tab oder ⌘1…9, schließen per ⌘W oder Kreuz. Rechtsklick auf einen Link (oder eine Kundenzeile) → „Link in neuem Tab öffnen", ⌘-Klick ebenso. Alles, was bisher ein neues Fenster öffnete (Admin-Panel, Formular-Vorschau, PDFs), wird zum Tab |
 | **Zurück / Vor / Neu laden** (seit 1.1.0) | Drei Knöpfe links in der Tab-Leiste, wirken auf den aktiven Tab (jeder Tab hat seinen eigenen Verlauf); Kürzel ⌘[ ⌘] ⌘R |
 | **Rechtsklick-Menü** (seit 1.1.1) | Eigenes Menü im glattt-Look statt Browser-Menü. Auf einem Kunden, Vertrag oder Forderungsfall (Zeile, Karte, Link oder die Detailseite selbst) zeigt es oben, worum es geht (bei Kunden seit 1.1.6 mit **Profilbild** aus „My glattt", sonst Initialen), und bietet: öffnen, in neuem Tab öffnen, direkt zu einem Reiter (Termine, Pakete, Zahlungen, Ratenzahlung …), Kunde/Vertrag öffnen, Kunden-/Vertragsnummer kopieren. In Eingabefeldern Ausschneiden/Kopieren/Einsetzen, überall Zurück/Vorwärts/Neu laden. Rechtsklick auf einen Tab: Neu laden, Duplizieren, Tab/andere Tabs/Tabs rechts schließen |
+| **Eine Anmeldung für alle Tabs** (seit 1.2.3) | Abmelden in einem Tab meldet alle Tabs ab (sie zeigen die Anmeldeseite), Anmelden in einem Tab bringt alle zurück auf ihre Seite. Läuft die Sitzung ab, erscheint in jedem Tab das Anmelde-Fenster; wer sich in einem davon wieder anmeldet, kann überall weiterarbeiten. Meldet sich eine andere Person an, laden die Tabs neu — nichts von der Vorgängerin bleibt stehen |
 | **Tabs sortieren** (seit 1.1.1) | Tabs in der Leiste per Drag & Drop verschieben; die Reihenfolge gilt auch für ⌘1…9 |
 | **Overlay-Titelleiste** | Schlankes Design mit macOS Traffic Lights (Schließen/Minimieren/Maximieren) |
 | **Spotlight-Suche** | „glatttHub" eingeben → App öffnen |
@@ -353,6 +354,7 @@ Das Preload-Script (läuft in jedem Tab) hat vier Aufgaben:
 4. **⌘-Klick**: Links und `[data-href]`-Zeilen mit Meta/Ctrl in einem neuen Tab öffnen
 5. **Menüzustand & Befehle** (seit 1.1.6): meldet dem Hauptprozess, was die Menüleiste braucht (`electron-menu:state`), und führt dessen Befehle aus (`electron-command`) — siehe „Menüleiste & Dock-Menü" unten
 6. **Aufwachen** (seit 1.1.7): `electron-wake` vom Hauptprozess (`powerMonitor` `resume`/`unlock-screen`) wird zum Fenster-Ereignis `glattthub-wake` — Seiten mit Echtzeit laden darauf nach
+7. **Anmeldestatus** (seit 1.2.3): meldet `electron-auth:report` — siehe „Anmeldestatus aller Tabs" unten
 
 !!! warning "Echtzeit im Hintergrund"
     Tabs laufen seit 1.1.7 mit `backgroundThrottling: false`. Vorher drosselte Chromium Hintergrund-Tabs
@@ -368,6 +370,33 @@ Die Drag-Region wird bei drei Events neu erstellt (Sicherheit gegen SPA-Navigati
 - `DOMContentLoaded` — Erster Seitenaufbau
 - `livewire:navigated` — Nach Livewire SPA-Navigation
 - `setInterval(ensureDragRegion, 1000)` — Fallback
+
+### Anmeldestatus aller Tabs (seit 1.2.3)
+
+Alle Tabs teilen sich einen Cookie-Speicher und damit eine Sitzung. Bis 1.2.2 blieb nach dem
+Abmelden in einem Tab jeder andere Tab mit den Daten der Vorgängerin stehen und fragte im
+Hintergrund weiter ab; nach dem Anmelden hingen die anderen auf der Anmeldeseite. Seit 1.2.3
+(Jan, 15.10.2026) gleicht `TabManager.reportAuth()` (`tabs.cjs`) sie ab:
+
+| Meldung eines Tabs | Wirkung auf die anderen Tabs |
+|---|---|
+| `out` — Seite mit Meta `glattthub-auth=guest` (Anmeldeseite, 419-Seite als Gast) | auf `/login`, bisherige Seite als `resumeUrl` gemerkt |
+| `expired` — Session-Guard zeigt das Modal | Befehl `session-expired`: dasselbe Modal (prüft vorher `/login/token`, ein einzelnes 401 ist kein Sitzungsende); Seiten ohne Modal (Admin) → `/login` |
+| `in` + `userId` — Hub-Seite mit Meta `user-id` oder Anmeldung im Modal | abgemeldete Tabs laden ihre `resumeUrl`, Tabs mit Modal bekommen `session-resumed` (`SessionGuard.resume()`), Tabs einer **anderen** Person laden neu; der Anmelde-Tab selbst kehrt bei derselben Person auf seine Seite zurück, sonst Startseite |
+
+- Meldewege: Preload liest beim Laden die Metas (`pageAuthState()`), Ereignisse des
+  Session-Guards kommen per `postMessage({type: 'glattthub-auth'})`; Befehle an die Seite
+  gehen über `desktop-app-bridge.blade.php` (`session-expired`/`session-resumed`).
+- `/shared/…`-Seiten und Tabs auf `/login` werden nicht angefasst; Zustand je Tab in
+  `tab.auth` (`in`/`out`/`expired`/`pending`), damit nichts im Kreis läuft.
+- Gegenstück auf dem Server: beendete Sitzungen bleiben beendet (Grabstein, keine Cookies
+  aus alten Anfragen) — siehe [SESSION-ABLAUF.md](SESSION-ABLAUF.md), Abschnitt „Beendete
+  Sitzungen bleiben beendet".
+- **Prüfstand:** Playwright `_electron` mit eigenem `userData` (Dev-Modus heißt `glattthub`
+  und teilt sonst den Ordner der installierten App — angeheftete Tabs, Cookies!) und **ohne
+  `ELECTRON_RUN_AS_NODE`** (setzt das VS-Code-Terminal; dann startet Electron als Node und
+  `require('electron')` schlägt fehl). Wrapper: `app.setPath('userData', …)` und dann
+  `require('electron/main.cjs')`.
 
 ### Electron-Erkennung in der Web-App
 
@@ -815,6 +844,7 @@ den Release Notes lesen.
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 15.10.2026 | 1.2.3 | **Eine Anmeldung für alle Tabs:** Abmelden/Sitzungsablauf zieht alle Tabs nach, Anmelden bringt sie auf ihre Seite zurück, andere Person → neu laden (`reportAuth`, Preload-Meldung `electron-auth:report`); dazu serverseitig Schutz gegen 419 und „falsches Konto" nach Abmelden + Anmelden ([SESSION-ABLAUF.md](SESSION-ABLAUF.md)) |
 | 15.10.2026 | 1.2.2 | **Update-Dienst** (root-LaunchDaemon aus dem PKG) statt Squirrel auf verwalteten Macs — keine Admin-Passwortabfrage mehr; Squirrel nur noch bei beschreibbarem Bundle; Update-Protokoll; „Nebeneinander“ bei jedem Tab im Menü |
 | 15.10.2026 | 1.2.1 | Zwei Tabs **nebeneinander** mit ziehbarem Trenner (ab 1100 px), Tabs **anheften** (bleiben nach Neustart), Tabs **farbig markieren**, Tab-Menü auch auf PDF-Tabs (Systemmenü); erste Version, die per Selbst-Update kommt |
 | 15.10.2026 | 1.2.0 | **Selbst-Update** über den öffentlichen Bucket (electron-updater, Postinstall für Standardkonten, „Nach Updates suchen …“); PDFs und Bilder öffnen im neuen Tab als Ansicht statt Download; Downloads ohne Dialog nach „Downloads“ mit Mitteilung, leerer Download-Tab schließt sich; Ladeanzeige für neue Tabs; gleich breite Tabs; Electron 41.10.7; Verteilung über Mosyle |
