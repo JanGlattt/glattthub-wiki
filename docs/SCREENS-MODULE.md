@@ -475,8 +475,12 @@ solange ein Bildschirm keine Seiten hat.
   `save` (PUT, ganze Seitenliste, prüft Rasterüberlappung und -grenzen, `tiles.*.key` muss in der
   Validierung stehen, sonst fällt er aus dem Payload), `preview` (POST, liefert eine Seite mit echten
   Werten). View `hub/screens/pages.blade.php`, Logik `public/js/screens-pages-editor.js`
-  (Pointer-Events statt HTML5-Drag, `findFreeSpot()` beim Ablegen aus der Palette, Größe über den
-  Griff unten rechts, Vorschau als Sparkline/SVG; nur freie Rasterzellen werden gezeichnet und fest
+  (Pointer-Events statt HTML5-Drag, `findFreeSpot()` beim Ablegen aus der Palette, Größe über zwei
+  Griffe — unten rechts wächst nach rechts/unten, unten links nach links/unten (fester Punkt oben
+  rechts); die Kachel wächst bis zur größten freien Fläche Richtung Zeiger statt bei einer belegten
+  Zelle gar nicht. Liegt der Zeiger beim Verschieben über einer anderen Kachel, tauschen beide die
+  Plätze, wenn jede in die Fläche der anderen passt (`trySwap()`, seit 15.10.2026 — im voll belegten
+  Raster ließ sich vorher kaum eine Kachel bewegen), Vorschau als Sparkline/SVG; nur freie Rasterzellen werden gezeichnet und fest
   platziert — automatisch fließend rutschten sie unter belegte Felder in Zusatzzeilen). Kennzahl-Wahl
   über ein Fenster (`openKpiPicker()`): Berichtsseiten = `source` aus dem Katalog, Suche über Label,
   Kategorie und Quelle, Vorschau über denselben `preview`-Endpunkt mit Zeitraum/Standort der Kachel
@@ -748,6 +752,7 @@ Kundenstimme). Swift: `DashboardPagerTests` (Seitenschnitt, Pager, Zahlenformat,
 
 ## Changelog
 
+- **15.10.2026** — Seiten-Baukasten: Kacheln tauschen beim Verschieben die Plätze, Größe ändern bis zur freien Grenze und zweiter Griff unten links (Kacheln ließen sich im vollen Raster nicht verschieben oder vergrößern).
 - **13.10.2026 (Nachmittag)** — Büro-Fernseher zeigte „Stand 12:28“ um 13:22: Bildschirm-Nutzer bekommt `view_appointments`, Kennzahlen-Bildschirme fragen jede Minute nach, teure Kacheln im Hintergrund neu gerechnet; TV-App zeigt als „Stand“ den letzten Abgleich.
 - **13.10.2026** — Kennzahlen-Modus: Beratungen heute live aus der Terminansicht (Namen auch bei anstehenden Terminen, No-Show, im Gange, Instituts-Kürzel in Farbe, KPZ beim Vertrag, „1 Vertrag“, Umblättern mit einstellbarem Takt), neue Kacheln „Heute im Überblick“, „Zukünftige Beratungen“ und „KPZ-Verkauf“ (täglich/monatlich mit Prognose), Kennzahl-Auswahl im Fenster nach Berichtsseiten mit Vorschau, weiches Überblenden der Seiten und sich füllender Seitenpunkt, Raster-Fix im Baukasten. TV-App wieder als **glattt Screen** (`com.glattt.hub.tv`, Custom App über Mosyle) ab 1.2.0 (11); „glattt Bildschirme“ storniert.
 
