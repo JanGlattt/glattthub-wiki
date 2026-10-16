@@ -79,7 +79,10 @@ Alle Tabellen tragen das Präfix `support_` (Migrationen ab `2026_10_02_200000`)
 | `support_surveys` | Zufriedenheitsumfrage je Ticket: `token`, `sent_at`, `rating`, `comment`, `answered_at`, `reopened_at`, `expires_at` |
 
 Status: `new`, `open`, `pending` (wartet auf Kundin), `on_hold`, `review`, `solved`, `closed`.
-Antwort der Kundin auf `solved` öffnet wieder, auf `closed` entsteht ein Folgeticket.
+Eine Antwort der Kundin öffnet `solved` **und** `closed` wieder (`addInboundMessage()`, leert
+`closed_at`; Jan, 16.10.2026). Nur ein als Spam geschlossenes Ticket (`SupportTicket::isClosedAsSpam()`)
+bekommt ein Folgeticket (`follow_up_of_id`). Der Betreff-Rückfall `findBySenderAndSubject()` findet
+deshalb auch geschlossene Tickets der letzten 14 Tage.
 
 ### Eingang und Zuordnung
 
@@ -294,7 +297,7 @@ zusammengeführte Tickets, Zendesk-Importe ohne eigene Nachricht der Kundin. Tec
 eine Kopie, die der Hub am Kundenkonto ablegt (`PortalSupportSnapshot`, Beobachter
 `PortalSupportSyncObserver`) — der Portal-Dienst liest `support_*` nie. Eine Antwort der Kundin
 kommt als Eingang mit `message_id = portal-<id>@glattt.com` (Kanal `portal`); auf „gelöst“
-öffnet sie wieder, auf „geschlossen“ entsteht ein Folgeticket. Die Mitteilung „Antwort vom
+und „geschlossen“ öffnet sie wieder (Spam: Folgeticket). Die Mitteilung „Antwort vom
 Kundenservice“ trägt `data.ticket`. Alles erst, wenn das Postfach auf **live** steht. Details:
 `KUNDENPORTAL.md`, Abschnitt „Anfragen an den Kundenservice“.
 
@@ -423,6 +426,8 @@ damit (Jan, 10.10.2026).
   Anhänge, Fakten, bereinigter Betreff, „Mir zuweisen“/„Als gelöst“ mit Bestätigungsseite);
   Ticket-Seite der App als Messenger (Entwurf 2); Kundinnen sehen Anhänge schon während des
   Sendens, Antworten zählen am Kontakt-Reiter der Kunden-App.
+- **16.10.2026** — Antworten auf geschlossene Tickets öffnen sie wieder (Mail, Weiterleitung,
+  Portal) statt ein Folgeticket anzulegen; Ausnahme nur als Spam geschlossene Tickets.
 - **09.10.2026 (abends)** — Zuordnung über die Vertragsnummer, Schattenbetrieb schreibt in
   übernommene Tickets, Import erkennt vorhandene Mails, `support:reattach-shadow` räumt
   Schatten-Tickets auf. Kundinnen-Mails mit Auszeichnung (`body_rich`/`body_markdown`) und ohne

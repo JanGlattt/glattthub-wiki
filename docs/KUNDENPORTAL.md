@@ -236,8 +236,8 @@ von uns), `solved` Gelöst, `closed` Abgeschlossen. Offen = die ersten drei; Abg
 (höchstens 50 in der Kopie) liegt eine Seite dahinter.
 
 **Antwort der Kundin.** `portal_contact_requests` mit `support_ticket_number` → Auftrag
-`contact` → `PortalContactService::replyInHub()`: Eingang ans Ticket (gelöst öffnet wieder, wie
-eine Mail), bei geschlossen ein Folgeticket (`follow_up_of_id`), bei einem Ticket, das der
+`contact` → `PortalContactService::replyInHub()`: Eingang ans Ticket (gelöst und geschlossen öffnen
+wieder, wie eine Mail; nur Spam bekommt ein Folgeticket), bei einem Ticket, das der
 Kundin nicht gehört, eine neue Anfrage — nie an ein fremdes Ticket. `PortalSupportData` (läuft im
 Portal) legt noch nicht zugestellte Nachrichten über die Kopie: eine neue Nachricht erscheint
 sofort als Anfrage „Eingegangen“ (`key` = `p<id>`), eine Antwort sofort im Verlauf („wird
