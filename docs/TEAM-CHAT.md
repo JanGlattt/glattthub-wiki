@@ -410,6 +410,11 @@ Video, Bildschirmfreigabe als zusätzliche Videospur im selben Anruf. Die Medien
   (`enumerateDevices`, Wechsel per `replaceTrack` ohne Neuverhandlung, Ausgabe per `setSinkId`); die Wahl merkt sich
   der Browser (localStorage) und nutzt sie als `ideal`, nie als `exact` — ein abgestecktes Headset bricht so keinen
   Anruf.
+- **Klingelton „Goldton“ (16.10.2026):** Glocken-Dreiklang aus WebAudio (`GOLD` in `chat-call.js`), ausgehend ein
+  leiser Freiton derselben Klangfarbe; die iOS-App spielt denselben Ton als CallKit-Ton (`glattt-ring.caf`, gerendert
+  von `scripts/anruf-klingelton/render.cjs`).
+- **Mac-App außerhalb der App (ab 1.2.7):** schwebendes Anruf-Fenster über allen Apps, Mitteilung mit „Annehmen“,
+  hüpfendes Dock-Symbol — Details in [Desktop-App](DESKTOP-APP.md), Abschnitt „Eingehende Anrufe“.
 - **Desktop-App (ab 1.2.6):** `setDisplayMediaRequestHandler` mit eigener Bildschirmauswahl (`useSystemPicker:
   false`); fehlt die macOS-Freigabe „Bildschirmaufnahme“, erklärt die App das und öffnet die Systemeinstellungen,
   statt still zu scheitern. Entitlements `device.audio-input`/`device.camera`, Texte
@@ -670,7 +675,8 @@ Anrufe), `tests/js/chat-call.test.mjs` (Epochen, Spur, Endtexte), `ios/glatttHub
 - **16.10.2026 (Anrufe nachgeschärft)** — Geräteauswahl im Anruf, Teilen in der Desktop-App 1.2.6 mit
   Freigabe-Hinweis, Teilen auf iPhone/iPad (Build 112), kein doppeltes Klingeln (Build 111), Aushandlung Mac → iPhone
   repariert (Builds 113–115: nur die Anruferin bietet an, Antwort nicht mehr vom eigenen Takt abgebrochen),
-  Diagnose je Anruf, Anruf-Prüfstand, veraltete Fenster laden bei neuem Stand neu.
+  Diagnose je Anruf, Anruf-Prüfstand, veraltete Fenster laden bei neuem Stand neu; Klingelton „Goldton“ und
+  Anruf-Fenster auf dem Mac (1.2.7); ein Tab ohne Echtzeit-Verbindung klingelte nach dem Auflegen weiter.
 
 - **16.10.2026 (Etappe D)** — Antwortstränge unter Ankündigungen und „Antworten anzeigen“, Terminfindung und Quiz,
   glattt-Sticker, Aufgaben, Später senden und Erinnern, Übersetzen, Termin- und Ticket-Karten, glatttBert-Dienstplan,

@@ -684,6 +684,9 @@ env -u ELECTRON_RUN_AS_NODE GLATTTHUB_URL=http://glattthub.local:8888 \
 # dann: chromium.connectOverCDP('http://127.0.0.1:9333') → Seite mit glattthub.local wählen
 ```
 
+Mit `GLATTTHUB_USER_DATA=/pfad` läuft die Dev-App mit eigenem Profil — ohne die Variable teilt sie Cookies,
+Tabs und Einstellungen mit der installierten App (`~/Library/Application Support/glatttHub`).
+
 Reagiert `page.evaluate(() => 1)` nicht innerhalb weniger Sekunden, ist der Renderer
 blockiert (so wurde die Endlosschleife von 1.1.4 nachgewiesen).
 
@@ -811,6 +814,29 @@ den Release Notes lesen.
 !!! info "Push-Registrierung nach MDM-Installation"
     Nach einer Neuinstallation muss der User die Push-Benachrichtigungen einmal neu bestätigen, da ein neuer APNs-Token generiert wird. Das Opt-in-Modal erscheint automatisch beim ersten Start.
 
+### Eingehende Anrufe (seit 1.2.7)
+
+Jan wählte am 16.10.2026 Variante A + C: Ein Anruf soll auch auffallen, wenn eine andere App vorn liegt.
+
+- **Ablauf:** Klingelt ein Tab (`chat-call.js`, nur ein Tab dank Web Lock), meldet er über die Brücke
+  `window.electronCall.ringing(info)` (Preload) den Anruf mit Name, Kürzel, Farbe, Profilbild und Art.
+  `electron/call-alert.cjs` zeigt dann
+  - das **Anruf-Fenster** `call-window.html` (360 × 128, rahmenlos, `alwaysOnTop` auf Stufe `screen-saver`,
+    `setVisibleOnAllWorkspaces(…, { visibleOnFullScreen: true })`, `focusable: false` — Klicks gehen durch, Tippen
+    in der vorderen App nicht verloren), oben rechts auf dem Bildschirm mit dem Mauszeiger,
+  - eine **Mitteilung** mit Knopf „Annehmen“ (lautlos, der Klingelton läuft in der Seite),
+  - **Dock-Hüpfen** (`app.dock.bounce('critical')`).
+- **Annehmen/Ablehnen** gehen per `electron-call:action` an genau den klingelnden Tab zurück (`onAction` in
+  `chat-call.js`); Annehmen holt vorher das Hauptfenster mit diesem Tab nach vorn. Das Klingeln endet
+  (`electron-call:ended`) bei Annahme, Ablehnen, Auflegen der Anruferin oder wenn der Tab schließt — dann
+  verschwinden Fenster, Mitteilung und Dock-Hüpfen.
+- **Profilbild** lädt der Hauptprozess (`fetchNotificationImage`) und reicht es als Data-URL ins Fenster — das
+  Fenster selbst darf nichts aus dem Netz laden (CSP `default-src 'none'`). Schrift Lato liegt unter `electron/fonts/`.
+- **Klingelton „Goldton“** (Glocken-Dreiklang G5–H5–D6, G6 als Schluss) erzeugt die Seite selbst per WebAudio;
+  dieselben Werte rendert `scripts/anruf-klingelton/render.cjs` als CallKit-Ton der iOS-App.
+- **Test:** `scripts/anruf-pruefstand/run.sh desk` startet die echte App (eigenes Profil) gegen den lokalen Hub und
+  prüft Fenster, Annehmen, Ablehnen und Auflegen.
+
 ### Bekannte Einschränkungen
 
 | Einschränkung | Beschreibung |
@@ -844,6 +870,10 @@ den Release Notes lesen.
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 16.10.2026 | 1.2.7 | **Eingehende Anrufe außerhalb der App:** schwebendes Anruf-Fenster oben rechts über allen Apps, Desktops und Vollbild (Annehmen/Ablehnen, nimmt keinen Fokus), macOS-Mitteilung mit „Annehmen“, hüpfendes Dock-Symbol; Klingelton „Goldton“ (siehe „Eingehende Anrufe“); `GLATTTHUB_USER_DATA` für ein eigenes Profil im Dev-Modus |
+| 16.10.2026 | 1.2.6 | Bildschirm teilen prüft die macOS-Freigabe „Bildschirmaufnahme“, erklärt sie und öffnet die Systemeinstellungen; eigene Bildschirmauswahl statt Systemauswahl |
+| 16.10.2026 | 1.2.5 | Rechtsklick auf Chat-Zeilen (öffnen, neuer Tab) und Nachrichten (kopieren, antworten, als Aufgabe, Person anschreiben, Link) |
+| 16.10.2026 | 1.2.4 | Anrufe im Team-Chat: Mikrofon und Kamera (Entitlements, Texte), Bildschirmfreigabe über `setDisplayMediaRequestHandler` |
 | 15.10.2026 | 1.2.3 | **Eine Anmeldung für alle Tabs:** Abmelden/Sitzungsablauf zieht alle Tabs nach, Anmelden bringt sie auf ihre Seite zurück, andere Person → neu laden (`reportAuth`, Preload-Meldung `electron-auth:report`); dazu serverseitig Schutz gegen 419 und „falsches Konto" nach Abmelden + Anmelden ([SESSION-ABLAUF.md](SESSION-ABLAUF.md)) |
 | 15.10.2026 | 1.2.2 | **Update-Dienst** (root-LaunchDaemon aus dem PKG) statt Squirrel auf verwalteten Macs — keine Admin-Passwortabfrage mehr; Squirrel nur noch bei beschreibbarem Bundle; Update-Protokoll; „Nebeneinander“ bei jedem Tab im Menü |
 | 15.10.2026 | 1.2.1 | Zwei Tabs **nebeneinander** mit ziehbarem Trenner (ab 1100 px), Tabs **anheften** (bleiben nach Neustart), Tabs **farbig markieren**, Tab-Menü auch auf PDF-Tabs (Systemmenü); erste Version, die per Selbst-Update kommt |

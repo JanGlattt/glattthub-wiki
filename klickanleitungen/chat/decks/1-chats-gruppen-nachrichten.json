@@ -14,7 +14,7 @@
   "eyebrow": "Chat · Grundlagen",
   "footerArea": "Chat",
   "stand": "16.10.2026",
-  "version": "1.13",
+  "version": "1.14",
   "notes": [
     "**Chat** findest du in der Seitenleiste direkt unter Kunden — und in der App als eigener Tab. Er ersetzt WhatsApp und Signal für alles Dienstliche: keine privaten Nummern, jede Kollegin ist über ihr Hub-Konto erreichbar.",
     "**Alle glattt** und **Team <Institut>** pflegt der Hub selbst: Neue Kolleginnen sind sofort drin, ausgeschiedene zum Monatswechsel raus. Eigene Gruppen legst du jederzeit an.",
@@ -287,7 +287,7 @@
         {
           "n": 2,
           "title": "Annehmen",
-          "text": "Rechts unten erscheint die Kollegin mit **Ablehnen** und **Annehmen**; bei einem Videoanruf geht auch **Nur Ton**. Hast du den Hub mehrfach offen, gewinnt das Gerät, auf dem du annimmst."
+          "text": "Es klingelt mit dem **Goldton**, rechts unten erscheint die Kollegin mit **Ablehnen** und **Annehmen**; bei einem Videoanruf geht auch **Nur Ton**. Hast du den Hub mehrfach offen, gewinnt das Gerät, auf dem du annimmst."
         },
         {
           "n": 3,
@@ -302,6 +302,43 @@
       ],
       "hint": {
         "text": "Beim ersten Anruf fragt der Browser bzw. der Mac nach **Mikrofon** und **Kamera** — bitte erlauben. In deinen **Ruhezeiten** klingelt kein Push."
+      }
+    },
+    {
+      "h1": "Anrufe auf dem Mac nicht verpassen",
+      "sub": "In der Mac-App erscheint ein eingehender Anruf auch dann, wenn du gerade in einer anderen App arbeitest — oben rechts, über allem.",
+      "card": {
+        "title": "Mac-App",
+        "text": "Anruf-Fenster, Mitteilung, Dock"
+      },
+      "left": {
+        "shot": "c15-anruf-mac"
+      },
+      "leftCaption": "Das Anruf-Fenster oben rechts: Name und Bild der Kollegin, darunter Ablehnen und Annehmen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Anruf-Fenster",
+          "text": "Oben rechts erscheint ein kleines Fenster mit **Ablehnen** und **Annehmen** — über allen Apps, auf jedem Schreibtisch und auch bei Vollbild. Es nimmt dir nicht den Fokus: Was du gerade tippst, geht weiter."
+        },
+        {
+          "n": 2,
+          "title": "Annehmen",
+          "text": "**Annehmen** holt die Mac-App nach vorn und öffnet das Gespräch im richtigen Tab. **Ablehnen** sagt der Kollegin ab."
+        },
+        {
+          "n": 3,
+          "title": "Mitteilung und Dock",
+          "text": "Zusätzlich kommt eine **Mitteilung** mit **Annehmen**, und das **glatttHub-Symbol im Dock hüpft**, bis du reagierst."
+        },
+        {
+          "n": 4,
+          "title": "Legt die Kollegin auf",
+          "text": "…verschwindet das Fenster von selbst; im Chat steht dann „Verpasster Videoanruf“ mit **Zurückrufen**."
+        }
+      ],
+      "hint": {
+        "text": "Das Anruf-Fenster gibt es ab der **Mac-App 1.2.7** — sie kommt automatisch. Die Mac-App muss dafür geöffnet sein; ist sie zu, bekommst du die normale Mitteilung."
       }
     }
   ]
