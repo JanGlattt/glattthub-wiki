@@ -8,17 +8,18 @@
   "audience": "alle",
   "title": [
     "Im Team arbeiten",
-    "Übergabe, Checklisten, Status"
+    "Übergabe, Checklisten, Stränge"
   ],
-  "subtitle": "Klickanleitung für den glatttHub — Schichtübergabe als Karte, Checklisten im Team-Raum, Dienststatus, Mitteilungen je Chat, Stichwörter, Zusammenfassung mit glatttBert und Transkripte",
+  "subtitle": "Klickanleitung für den glatttHub — Schichtübergabe als Karte, Checklisten im Team-Raum, Dienststatus, Mitteilungen je Chat, Antworten unter Ankündigungen, Terminfindung und Quiz, Sticker, Aufgaben und später senden",
   "eyebrow": "Chat · Im Team arbeiten",
   "footerArea": "Chat",
   "stand": "16.10.2026",
-  "version": "1.0",
+  "version": "1.1",
   "notes": [
     "Die **Übergabe** gibt es im Team-Raum deines Instituts über das Plus im Eingabefeld. Kasse, Laser und die Termine von morgen trägt der Hub schon ein.",
     "**Checklisten** legt das Büro im Admin an; der Hub stellt sie zur Uhrzeit in den Team-Raum. Wer abhakt, steht mit Name und Uhrzeit daneben.",
-    "Statt „online“ siehst du den **Dienststatus** aus dem Dienstplan — und oben in der Liste deinen eigenen, den du mit „ändern“ kurz überschreiben kannst."
+    "Statt „online“ siehst du den **Dienststatus** aus dem Dienstplan — und oben in der Liste deinen eigenen, den du mit „ändern“ kurz überschreiben kannst.",
+    "Unter **Ankündigungen** antwortest du im **Strang** unter dem Beitrag — nicht mehr im Kanal. Mitteilungen bekommen nur die Absenderin und wer mitschreibt."
   ],
   "pages": [
     {
@@ -125,6 +126,117 @@
       ],
       "hint": {
         "text": "Sprachnachrichten bekommen ein **Transkript** unter der Welle; in den Chat-Einstellungen lässt es sich ausblenden."
+      }
+    },
+    {
+      "h1": "Antworten unter Ankündigungen",
+      "sub": "In Ankündigungskanälen schreibt nur die Leitung — Rückfragen gehören in den Strang unter dem Beitrag.",
+      "card": {
+        "title": "Strang",
+        "text": "Antworten zum Beitrag"
+      },
+      "left": {
+        "shot": "c18-antwortstrang"
+      },
+      "leftCaption": "Ankündigung mit „3 Antworten · zuletzt Kim“, rechts der geöffnete Strang mit Beitrag, Antworten und Eingabefeld.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Öffnen",
+          "text": "Tippe unter dem Beitrag auf **Antworten** bzw. **„N Antworten · zuletzt …“**. Rechts öffnet sich der Strang, in der App ein Blatt."
+        },
+        {
+          "n": 2,
+          "title": "Antworten",
+          "text": "Schreib unten ins Feld und drück **Enter** (neue Zeile mit Umschalt + Enter). Alle sehen am Beitrag, dass es Neues gibt."
+        },
+        {
+          "n": 3,
+          "title": "Mitteilungen",
+          "text": "Eine Mitteilung bekommen nur die Absenderin und wer im Strang schon geantwortet hat. Nur lesen meldet dich nicht an."
+        },
+        {
+          "n": 4,
+          "title": "Antworten anzeigen",
+          "text": "In jedem anderen Chat zeigt das Menü (⋯) einer Nachricht **Antworten anzeigen** — alle Nachrichten, die sie zitieren; tippen springt hin."
+        }
+      ],
+      "hint": {
+        "text": "Antworten im Strang zählen nicht als ungelesene Chats — der Kanal bleibt ruhig."
+      }
+    },
+    {
+      "h1": "Terminfindung und Quiz",
+      "sub": "Zwei neue Arten im Plus neben der Umfrage — für Teamabende und Schulungen.",
+      "card": {
+        "title": "Umfrage-Arten",
+        "text": "Terminfindung, Quiz"
+      },
+      "left": {
+        "shot": "c20-umfrage-arten"
+      },
+      "leftCaption": "Das Fenster **Quiz**: Frage, Antworten und der grüne Haken an der richtigen Antwort.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Art wählen",
+          "text": "Plus → **Terminfindung** oder **Quiz** (oder oben im Fenster zwischen Umfrage, Terminfindung und Quiz umschalten)."
+        },
+        {
+          "n": 2,
+          "title": "Terminfindung",
+          "text": "Zeiten aus dem Kalender wählen. Alle tippen je Zeit **✓ Ja**, **? Vielleicht** oder **✗ Nein**; die **beste Zeit** ist markiert, die Namen stehen beim Drüberfahren."
+        },
+        {
+          "n": 3,
+          "title": "Quiz",
+          "text": "Tippe auf den Haken neben der **richtigen Antwort**. Wer antwortet, sieht sofort, ob es stimmte — ändern geht dann nicht mehr."
+        },
+        {
+          "n": 4,
+          "title": "Auswertung",
+          "text": "Nur du als Erstellerin siehst unter dem Quiz **Auswertung**: wer wie geantwortet hat."
+        }
+      ],
+      "hint": {
+        "text": "Beenden kannst du Umfragen jederzeit über **Beenden** unter der Karte."
+      }
+    },
+    {
+      "h1": "Sticker, Aufgaben, später senden",
+      "sub": "Kleine Werkzeuge im Plus und im Menü einer Nachricht.",
+      "card": {
+        "title": "Mehr",
+        "text": "Sticker und Co."
+      },
+      "left": {
+        "shot": "c19-terminfindung-quiz-sticker"
+      },
+      "leftCaption": "Team-Raum mit Terminfindung, Quiz und einem Sticker ohne Blase.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Sticker",
+          "text": "Plus → **Sticker** (oder GIF → Reiter **Sticker**): glattt, Institute, Laser, Räume, Danke, Daumen. Weitere Pakete legt das Büro im Admin an."
+        },
+        {
+          "n": 2,
+          "title": "Als Aufgabe",
+          "text": "Menü einer Nachricht → **Als Aufgabe …**: Person aus dem Chat, fällig am. Sie bekommt eine Mitteilung, erledigt steht im Chat."
+        },
+        {
+          "n": 3,
+          "title": "Später senden",
+          "text": "Uhr neben dem Senden-Knopf: **heute Abend**, **morgen früh** oder Datum und Uhrzeit. Bis dahin siehst nur du die Nachricht grau mit Uhr."
+        },
+        {
+          "n": 4,
+          "title": "Erinnern und Übersetzen",
+          "text": "**Erinnere mich** meldet die Nachricht später nur dir; **Übersetzen** zeigt sie klein in deiner Sprache darunter."
+        }
+      ],
+      "hint": {
+        "text": "**glatttBert** beantwortet im Chat auch „Wer hat heute Dienst?“ — aus Dienstplan und Abwesenheiten."
       }
     }
   ]

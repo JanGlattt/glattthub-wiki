@@ -2886,6 +2886,29 @@ und Hub-Seite: Wiki [TEAM-CHAT](TEAM-CHAT.md), Abschnitt „Anrufe“.
   Mac-App (ReplayKit-Erweiterung bewusst nicht gebaut). Geteilte Geräte und Kiosk haben keine Anrufe.
 - **Abmelden** beendet ein laufendes Gespräch und verwirft den VoIP-Token beim Hub.
 
+### Team-Chat Etappe C und D in der App (seit 16.10.2026, Builds 107/108)
+
+Dieselben Funktionen wie im Web, dieselben Endpunkte (Wiki [TEAM-CHAT](TEAM-CHAT.md), Abschnitte „Etappe C“ und
+„Etappe D“). Nativ dazu:
+
+- **Antwortstränge (D2)**: Knopf „N Antworten · zuletzt …“ unter jedem Ankündigungs-Beitrag, `ChatThreadSheet`
+  als Blatt (iPad: große Stufe). Die Antworten liegen in `ChatModel.messages` unter der **Strang-Raum-ID** — Senden
+  (`send(roomId:)`, Warteschlange), Echtzeit und Abgleich laufen damit ohne eigenen Weg. Ereignisse mit `thread_of`
+  gehen nur dorthin, nie in die Liste (`onLiveEvent`). Halten-Menü: „Im Strang antworten“ bzw. „Antworten anzeigen“
+  (`ChatRepliesSheet`, Tippen springt hin).
+- **Umfrage-Arten (D8)**: `ChatPollSheet` mit Art-Auswahl (Umfrage · Terminfindung · Quiz); Terminfindung mit
+  `DatePicker` je Zeit (Beschriftung „Mi, 04.11. · 19:00“ wie im Web), Quiz mit Kreis an der richtigen Antwort.
+  In der Blase drei Knöpfe Ja/Vielleicht/Nein je Zeit (Namen im Kontextmenü), beim Quiz grün/rot nach der eigenen
+  Antwort, „Auswertung“ (`ChatQuizResultsSheet`) nur für die Erstellerin. Echtzeit-Anstöße mit `personal: false`
+  behalten die eigene Sicht und laden `GET /umfragen/{id}` nach.
+- **Sticker (D7)**: zweiter Reiter im GIF-Blatt, Plus-Menü „Sticker“; Anzeige 140 pt frei ohne Blase und ohne
+  grauen Platzhalter (`ChatAnimatedImage(placeholder:)`).
+- **Aufgaben, Später senden, Erinnern, Übersetzen, Karten (D3–D6, D9)**: siehe Build-Notizen 107/108.
+- **Apple Watch (D12)**: Seite „Chats“ (`ChatPages.swift`) aus `summary.chats` — höchstens fünf ungelesene Räume
+  mit Kürzel, Zahl, @ bei Erwähnung und letzter Nachricht; bei Ungelesenem direkt hinter der ersten Seite.
+- Tests: `ChatPollKindsSnapshotTests` (Bilder `chat-polls-*`, Decodierung), `ChatSnapshotTests` (Strang unter der
+  Ankündigung), `WatchSummaryTests.testUnreadChatsDecode`.
+
 ### Auto-Abmeldung in der App (seit 11.10.2026, Build 90)
 
 **Absicht (Jan, 11.10.2026):** Die Auto-Abmeldung je Konto (`users.auto_logout_timeout`, meist

@@ -50,12 +50,27 @@ Termin kurz überschreiben kann. Je Chat lässt sich wählen: **Alle Nachrichten
 `@alle` erwähnt die ganze Gruppe, eigene **Stichwörter** melden sich wie eine Erwähnung. Ab 20 ungelesenen
 Nachrichten fasst **glatttBert** auf Knopfdruck zusammen. **Sprachnachrichten** bekommen ein Transkript.
 
+**Mehr Werkzeug (seit 16.10.2026, Etappe D).** Unter **Ankündigungen** antworten Kolleginnen im **Strang** unter dem
+Beitrag („12 Antworten · zuletzt Lea“), nicht mehr im Kanal; Mitteilungen bekommen nur die Absenderin und wer
+mitschreibt. Jede Nachricht zeigt über „Antworten anzeigen“, wer darauf geantwortet hat. Im Plus gibt es neben der
+Umfrage die **Terminfindung** (je Zeit Ja/Vielleicht/Nein, die beste Zeit ist markiert) und das **Quiz** für
+Schulungen (die Lösung erscheint nach der eigenen Antwort, wer wie geantwortet hat, sieht nur die Erstellerin),
+dazu **glattt-Sticker** neben den GIFs. Nachrichten lassen sich **später senden** (Senden-Knopf halten bzw. Uhr),
+mit **Erinnere mich** vormerken, **als Aufgabe** an eine Kollegin geben und auf Tippen **übersetzen**. Termine und
+Kundenservice-Tickets kommen als Karte in den Chat. **glatttBert** beantwortet „Wer hat heute Dienst?“. In der
+Desktop-App hat der Rechtsklick auf Chats und Nachrichten eigene Einträge, die **Apple Watch** zeigt ungelesene
+Chats. Das Büro legt im Admin **Löschfristen** je Chat-Art fest (Standard: unbegrenzt) und kann Gruppen als ZIP
+exportieren.
+
 **Warum.** WhatsApp lebt von privaten Handynummern, pflegt keine Gruppen und kennt den Hub nicht.
 Der Chat erreicht jede Kollegin über ihr Hub-Konto, hält Dienstliches im Unternehmen und
 verbindet Nachrichten mit Kundinnen, Verträgen und Ankündigungen.
 
 !!! nutzerhandbuch "Bedienung: Chat 1 – Chats, Gruppen und Ankündigungen"
     https://hilfe.hub.glattt.com/chat/1/ (Deck in Arbeit; App-Bedienung in der Serie „App“)
+
+!!! nutzerhandbuch "Bedienung: Chat 3 – Im Team arbeiten"
+    https://hilfe.hub.glattt.com/chat/3/ (Übergabe, Checklisten, Dienststatus, Umfrage-Arten, Sticker, Antwortstränge)
 
 ## Für Entwickler
 
@@ -295,6 +310,58 @@ Freigabe Jan (Entwürfe C/D, 16.10.2026). Je Punkt Web **und** iOS.
 - Tests: `ChatNotifyLevelsTest`, `ChatDutyTest`, `ChatSummaryTest`, `ChatTranscriptTest`, `ChatChecklistTest`,
   `ChatHandoverTest`.
 
+### Etappe D „Mehrwert“ (16.10.2026)
+
+Freigabe Jan (Entwürfe C/D, 16.10.2026). D1 sind die Anrufe (eigener Abschnitt). Je Punkt Web **und** iOS.
+
+- **D2 Antwortstränge** (`ChatThreadService`): Ein Strang ist ein **versteckter Raum** `type = thread` mit
+  `chat_rooms.parent_message_id` (eindeutig, fällt mit dem Beitrag). So laufen Senden, Anhänge, Reaktionen, Echtzeit,
+  Abgleich und Push über die bestehenden Wege. `GET /nachrichten/{id}/strang` legt ihn an (nur unter Ankündigungen,
+  nur für Mitglieder des Kanals) und trägt die Person ein: Absenderin des Beitrags und Antwortende mit
+  `notify_level = all`, wer nur liest mit `mentions` — daraus folgt „Push nur an Absenderin und Beteiligte“.
+  **Strang-Mitgliedschaften sind `is_archived = true` angelegt**; damit fallen sie ohne Sonderfälle aus Raumliste,
+  Badge, „Heute für dich“ und allen Ungelesen-Summen. `roomsFor()` und die Suche schließen `thread` zusätzlich aus.
+  Schreiben darf, wer im Kanal ist, solange der Beitrag nicht gelöscht ist (`ChatRoomService::canPost`). Nach jeder
+  Antwort schickt `afterReply()` den Beitrag als Ereignis `thread` in den Kanal; `presenter.thread` =
+  `{room_id, count, last_at, last_user}` (Eager-Load `threadRoom.lastMessage.user`). Echtzeit-Nutzlasten aus einem
+  Strang tragen `thread_of` — Web (`isThreadEvent`) und App werten sie nur fürs offene Blatt aus, nie für die Liste.
+  `GET /nachrichten/{id}/antworten` = „Antworten auf diese Nachricht“ (Zitate im selben Raum). Der Raum-Export
+  schreibt Strang-Antworten eingerückt unter den Beitrag.
+- **D3 Aufgaben** (`ChatTaskService`, `chat_tasks`), **D5 Später senden / Erinnere mich** (`ChatScheduleService`,
+  `chat_scheduled_messages`, `chat_reminders`) — beide im Minuten-Takt von `process-notification-automations`.
+- **D4/D9 Karten**: Termin („Im Chat teilen“ in der Terminansicht) und Kundenservice-Ticket (Objekttyp `ticket`,
+  nur mit `manage_support_tickets`); „Ticket anlegen …“ öffnet `/hub/kundenservice?neu=1&betreff=&text=`.
+- **D6 Übersetzen** (`ChatTranslationService`, `chat_translations` je Nachricht und Sprache, Claude).
+- **D7 glattt-Sticker** (`chat_sticker_packs`, `chat_stickers`): Paket „glattt“ (24 PNG, 512 px) liegt unter
+  `public/images/chat-stickers/glattt` (`disk = null`), weitere Pakete lädt das Büro im Admin **Betrieb → Chat-Sticker**
+  hoch (Chat-Speicher, Auslieferung `GET /sticker/{id}` mit Sitzung). Senden nur als `type = sticker` +
+  `meta[sticker_id]` aus einem aktiven Paket — nie eine freie Bildadresse. Anzeige ohne Blase.
+- **D8 Umfrage-Arten** (`chat_polls.kind` `poll|schedule|quiz`, `correct_key`; `chat_poll_votes.answer`):
+  Terminfindung mit `answers[option] = yes|maybe|no` und `best` (meiste Ja, dann Vielleicht); Quiz mit genau einer,
+  **endgültigen** Antwort, die Erstellerin rät nicht mit; Lösung und Zählung erst nach der eigenen Antwort (oder nach
+  Ende), `results` je Person nur für die Erstellerin. Der Echtzeit-Anstoß geht an alle und ist deshalb **nicht
+  persönlich** (`personal: false`) — Web und App laden die eigene Sicht über `GET /umfragen/{id}` nach, statt die
+  eigene Stimme zu überschreiben.
+- **D10 „Wer hat heute Dienst?“**: glatttBert-Werkzeug `get_duty_roster` (`ChatDutyService::roster`) — je Institut
+  Schicht von/bis (Phorest, Cache) und Abwesenheit (askDANTE, nur Urlaub/Frei/Feiertag), heute oder morgen. Die
+  Standort-Bindung der Fragenden **und im Team-Chat aller Mitlesenden** (`withAudience`) begrenzt die Institute;
+  Hub-Werkzeuge im Raum nur nach der Raumregel aus Etappe A.
+- **D11 Chat-Verwaltung** (Admin **Betrieb → Chat-Verwaltung**, `manage_chat`): Löschfrist je Raumtyp
+  (`chat_retention_rules`, leer = unbegrenzt), angeheftete Nachrichten und Lesebestätigungen bleiben; Lauf einmal
+  nachts ab 03:10 aus dem Minuten-Takt (`ChatRetentionJob`, höchstens 5.000 Nachrichten je Nacht), dabei verwaiste
+  Dateien unter `chat/` (älter als zwei Tage, von keiner Zeile gemeint). Probelauf zählt nur. Export
+  `GET /verwaltung/export/{raum}` streamt ein ZIP (`verlauf.txt`, `nachrichten.csv`, `anhaenge/`) über
+  `maennchen/zipstream-php` — nie in `/tmp`, das auf Cloud Run Arbeitsspeicher ist; Protokoll `chat_exports`.
+  Direktnachrichten lassen sich nicht exportieren.
+- **D12 Desktop-App und Watch**: Chat-Zeilen tragen `data-ctx="chat"`, Nachrichten `data-ctx="chat-message"` mit
+  `-room/-seq/-mine/-text`; das Preload (App 1.2.5) bietet Kopieren, Antworten, Als Aufgabe, Person anschreiben, Link —
+  Befehle gehen per `postMessage` (`command: chat`) über `desktop-app-bridge` als Ereignis `glattt-chat-command` an den
+  Chat. Die Watch bekommt im Endpunkt `/api/app/widgets/watch` den Block `chats` (höchstens fünf ungelesene Räume,
+  **nicht** aus dem 5-Minuten-Cache) und die Seite `chats`.
+- Tests: `ChatPollKindsTest`, `ChatStickerTest`, `ChatRetentionTest`, `ChatThreadTest`, `ChatDutyTest` (Dienstplan),
+  `AppWatchSummaryTest` (Chats), `ChatTaskTest`, `ChatScheduleTest`, `ChatTranslationTest`; iOS
+  `ChatPollKindsSnapshotTests`, `ChatSnapshotTests` (Strang), `WatchSummaryTests`.
+
 ### Anrufe (16.10.2026)
 
 Priorität Jan (Freigabe C/D, 16.10.2026): „Call-Funktion inklusive Screen Sharing“. 1:1 im Einzelchat, Audio oder
@@ -417,7 +484,10 @@ Deploy) kosten höchstens eine Minute.
 | `POST /raeume/{id}/gelesen`, `POST /raeume/{id}/ungelesen`, `POST /zugestellt`, `POST /raeume/{id}/tippt` | Lesestand (+`viewing`; nie zurück), „als ungelesen markieren“ (Lesestand genau eine Nachricht zurück — die einzige Stelle, an der er rückwärts läuft), Zustellstand je Raum, „schreibt gerade“ |
 | `POST/DELETE /raeume/{id}/mitglieder[/{user}]`, `PATCH …/{user}` | Mitglieder, Rolle |
 | `PATCH/DELETE /nachrichten/{id}`, `POST …/reaktion`, `…/anheften`, `…/weiterleiten`, `…/bestaetigen` | Bearbeiten, Löschen, Reaktion, Anheften, Weiterleiten, Lesebestätigung |
-| `POST /umfragen/{id}/abstimmen`, `…/beenden` | Umfragen |
+| `GET /umfragen/{id}`, `POST /umfragen/{id}/abstimmen` (`options[]` bzw. `answers[key]`), `…/beenden` | Umfragen, Terminfindung, Quiz; GET = persönliche Sicht nach einem Echtzeit-Anstoß |
+| `GET /nachrichten/{id}/strang`, `GET /nachrichten/{id}/antworten` | Antwortstrang unter einer Ankündigung öffnen (legt an, trägt ein), Antworten auf eine Nachricht |
+| `GET /sticker-pakete`, `GET /sticker/{id}` | Sticker-Pakete, hochgeladene Sticker |
+| `GET /verwaltung/export/{id}` | Raum als ZIP (`manage_chat`, keine Direktnachrichten) |
 | `GET /anhang/{id}`, `GET /raeume/{id}/bild`, `POST …/bild` | Anhänge und Gruppenbild (privater Bucket) |
 | `PATCH /einstellungen` | Nicht stören, Push-Vorschau |
 | `POST /raeume/{id}/anruf` (`kind` audio\|video, `device`) | Anruf starten (nur Einzelchat); Antwort `call` aus eigener Sicht, bei besetzter Gegenseite sofort `ended/busy` |
@@ -519,6 +589,14 @@ Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Ha
 - **Mikrofon und Kamera brauchen die Permissions-Policy** (16.10.2026): `SecurityHeaders` sperrte beides,
   seit 16.10.2026 `(self)` für Kamera, Mikrofon und Bildschirmaufnahme.
 - **SDP nie durch TrimStrings**: Der Signal-Endpunkt liest die Nutzlast roh, sonst fehlt das abschließende CRLF.
+- **Echtzeit-Anstöße sind nicht persönlich** (D8, 16.10.2026): `messageChanged` geht an alle Mitglieder ohne
+  `meId` — eigene Stimme, Quiz-Lösung und Auswertung fehlen darin. Clients übernehmen eine Umfrage mit
+  `personal: false` nie über den bekannten Stand, sondern laden `GET /umfragen/{id}` nach.
+- **Strang-Räume nie in Listen** (D2): Wer einen neuen Raumtyp einführt, prüft jede Abfrage über
+  `chat_room_members` — Strang-Mitgliedschaften sind deshalb archiviert angelegt; ältere App-Builds laden bei einem
+  Strang-Ereignis einmal neu (`!rooms.contains`), neue werten `thread_of` aus.
+- **Sticker und GIFs nie als freie Bildadresse** (D7): Sticker kommen nur über `meta[sticker_id]`, GIFs nur von
+  erlaubten Hosts — eine fremde Adresse wäre bei allen Mitgliedern ein Zählpixel.
 
 - **`ImageRenderer` rastert keine `List`, `ScrollView` oder `Menu`** — die Snapshot-Tests
   schalten über `appointmentsStaticLayout` auf feste Stapel (`ChatSnapshotTests`).
@@ -552,6 +630,10 @@ Anrufe), `tests/js/chat-call.test.mjs` (Epochen, Spur, Endtexte),
 `ios/glatttHubUITests/ChatUITests.swift`.
 
 ## Changelog
+
+- **16.10.2026 (Etappe D)** — Antwortstränge unter Ankündigungen und „Antworten anzeigen“, Terminfindung und Quiz,
+  glattt-Sticker, Aufgaben, Später senden und Erinnern, Übersetzen, Termin- und Ticket-Karten, glatttBert-Dienstplan,
+  Löschfristen/Export/Aufräumen im Admin, Rechtsklick der Desktop-App (1.2.5), ungelesene Chats auf der Watch.
 
 - **16.10.2026 (Etappe C)** — Übergabe-Karte, Dienststatus aus Dienstplan, Checklisten im Team-Raum, „Verpasst“ mit
   glatttBert, Transkripte für Sprachnachrichten, Mitteilungen dreistufig mit @alle und Stichwörtern, Barrierefreiheit,
