@@ -22,6 +22,11 @@ Textbausteine und sieht in der Kundenkarte Vertrag, Rate, Forderung und nächste
 die Kundenakte zu wechseln. Vorgänge wie „Raten pausieren“ oder „Widerruf anlegen“ öffnen den
 passenden Hub-Ablauf; ist er erledigt, steht das automatisch als Notiz im Ticket.
 
+**Neues Ticket und Kundin zuordnen (seit 16.10.2026).** „Neues Ticket“ öffnet kein Formular mehr,
+sondern die normale Ticketansicht als Entwurf: Betreff im Kopf, Kundin im Kasten „Kundin“ rechts,
+Nachricht unten — „Senden“ legt das Ticket an und schickt die Mail. Im selben Kasten lässt sich bei
+jedem Ticket die Kundin zuordnen oder wechseln, etwa wenn eine Mail von einer unbekannten Adresse kam.
+
 **Warum.** Zendesk kostete 3,5 T€ im Jahr und kannte den Hub-Kontext nur über ein Notizfeld. Im
 Hub hat jedes Ticket Vertrag, Raten, Forderungen und Termine direkt daneben. Die Teams
 „Kundenservice“ und „Forderungsmanagement“ behalten ihre Vier-Augen-Prüfung: Schließt eine
@@ -146,7 +151,8 @@ Alle unter `/hub/kundenservice` (dieselben für Web und App, JSON):
 | `POST /tickets/{nr}/bert/antwort|zusammenfassung|anliegen` | glatttBert |
 | `POST /tickets` | neues Ticket mit Mail (nur live) |
 | `POST /tickets/sammelaktion` | Mehrfachauswahl |
-| `GET /kunden-suche?q=` | Kundensuche für „Neues Ticket“ |
+| `GET /kunden-suche?q=` | Kundensuche (neues Ticket, Kasten „Kundin“) |
+| `POST /tickets/{n}/kundin` | Kundin zuordnen/wechseln (`phorest_client_id`; Ereignis `client_assigned`) |
 | `POST /teams/{id}`, `/textbausteine`, `/anliegen`, `GET/DELETE /gesperrte-absender` | Einstellungen |
 
 Öffentlich (IAP-Bypass): `GET|POST /shared/kundenservice/bewertung/{token}` (Umfrage).
@@ -270,6 +276,22 @@ Auswahl plus Schnellfilter, Listenzeile = Status plus genau ein Hinweis (`rowSig
 Entwürfe je Ticket im localStorage, ⌘/Strg+Enter sendet, nach dem Abschließen öffnet sich das
 nächste Ticket, Anwesenheit „sieht/schreibt gerade“ über den Cache. Neue Elemente gehören in
 diese Aufteilung, nicht als weitere Karten oder Abzeichen in den Kopf.
+
+**Neues Ticket als Entwurf (Jan, 16.10.2026).** `openNewTicket()` setzt `ticket` auf ein
+Pseudo-Ticket mit `draft: true` (`number: null`, `permissions.can_note/can_bert: false`) — Kopf,
+Antwortfeld und Detailleiste bleiben dieselben, sie schalten nur über `ticket.draft` um (Betreff-Feld
+im Kopf, „Verwerfen“, kein Notiz-Reiter, Zuständig = „Du“). Gespeichert wird erst beim Senden:
+`send()` → `sendNewTicket()` → `POST /tickets` (Multipart mit Anhängen, Status aus dem Knopf bzw.
+der Textbaustein-Aktion, auch `on_hold`). Felder im Entwurf schreiben `onFieldChange()` nur lokal;
+Presence, Entwurf-Speicher und glatttBert springen bei `draft` aus. `?neu=1&betreff=&text=`
+(„Ticket anlegen“ aus dem Chat) füllt den Entwurf vor.
+
+**Kasten „Kundin“.** `clientPick` (Suche über `/kunden-suche`) gilt für beide Fälle: im Entwurf merkt
+`pickClient()` Kundin, Adresse und Standort nur vor, bei bestehenden Tickets speichert es sofort über
+`POST /tickets/{n}/kundin` → `SupportTicketService::assignClient()`. Name und Standort kommen aus
+`SupportClientMatcher::byId()`; die Antwortadresse `requester_email` bleibt, außer das Ticket hat noch
+keine. Auch `createTicket()` holt bei mitgeschickter `phorest_client_id` Name und Standort über `byId()`
+(vorher blieb der Standort beim neuen Ticket leer).
 
 ### App (iPhone, iPad)
 
@@ -426,6 +448,8 @@ damit (Jan, 10.10.2026).
   Anhänge, Fakten, bereinigter Betreff, „Mir zuweisen“/„Als gelöst“ mit Bestätigungsseite);
   Ticket-Seite der App als Messenger (Entwurf 2); Kundinnen sehen Anhänge schon während des
   Sendens, Antworten zählen am Kontakt-Reiter der Kunden-App.
+- **16.10.2026** — „Neues Ticket“ öffnet die Ticketansicht als Entwurf statt eines Formulars;
+  Kundin im Kasten „Kundin“ bei jedem Ticket zuordnen/wechseln (`POST /tickets/{n}/kundin`).
 - **16.10.2026** — Antworten auf geschlossene Tickets öffnen sie wieder (Mail, Weiterleitung,
   Portal) statt ein Folgeticket anzulegen; Ausnahme nur als Spam geschlossene Tickets.
 - **09.10.2026 (abends)** — Zuordnung über die Vertragsnummer, Schattenbetrieb schreibt in
