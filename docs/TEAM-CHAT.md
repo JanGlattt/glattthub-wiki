@@ -381,7 +381,11 @@ Video, Bildschirmfreigabe als zusätzliche Videospur im selben Anruf. Die Medien
   `chat.changed`), Nutzlast nur Kennungen. Signale holt der Client „ab ID X“ (`GET /anrufe/{id}/signale?nach=`):
   auf Anstoß sofort, ohne Live-Verbindung im 1–2-s-Takt, sonst alle 4 s; ein freier Tab ohne Live-Verbindung
   fragt alle 5 s nach eingehenden Anrufen.
-- **Verhandlung:** Perfect Negotiation, die Angerufene ist höflich. Jede PeerConnection hat eine Epoche, jedes
+- **Verhandlung:** Das **erste Angebot macht nur die Anruferin** (seit 16.10.2026, Web und iOS): Die Angerufene
+  legt ihre Spuren an, bietet aber erst nach der ersten Gegenstelle selbst an — zwei gleichzeitige Angebote
+  ließen Anrufe Mac ↔ iPhone bei „Verbinde …“ hängen. Kamera/Mikrofon haben eine Zeitgrenze von 6 s mit Rückfall
+  auf Ton (am Mac hing die belegte iPhone-Kamera), und während des Annehmens setzt die Abfrage die Anzeige nicht
+  auf „Annehmen“ zurück. Für spätere Neuverhandlungen gilt Perfect Negotiation, die Angerufene ist höflich. Jede PeerConnection hat eine Epoche, jedes
   Signal trägt sie; nach dem Neuladen steigt die Seite mit neuer Epoche ab `last_signal_id` ein, die Gegenseite
   baut für die größere Epoche neu auf (Regel `bindEpoch` in `chat-call.js`, per `npm test` geprüft). ICE-Neustart
   nach 4 s Funkstille, Aufgabe nach 25 s.
