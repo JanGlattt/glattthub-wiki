@@ -393,9 +393,26 @@ Video, Bildschirmfreigabe als zusätzliche Videospur im selben Anruf. Die Medien
   `layouts.partials.chat-call` per `@persist('chat-call')` — ein Gespräch überlebt `wire:navigate`. Ton über ein
   eigenes `<audio>`, Kamera und Ton der Gegenseite in einem selbst gebauten Strom, Bildschirm getrennt (angesagt
   per `media`-Signal mit `screen_stream`). Klingelton per WebAudio, nur ein Tab klingelt (Web Locks).
-- **Desktop-App:** `setDisplayMediaRequestHandler` mit `useSystemPicker` (macOS 15+ Systemauswahl, älter:
-  Rückfrage, dann Hauptbildschirm), Entitlements `device.audio-input`/`device.camera`, Texte
+- **Geräteauswahl (Web/Desktop):** Knopf „Geräte“ im Anruffenster mit Mikrofon, Kamera und Tonausgabe
+  (`enumerateDevices`, Wechsel per `replaceTrack` ohne Neuverhandlung, Ausgabe per `setSinkId`); die Wahl merkt sich
+  der Browser (localStorage) und nutzt sie als `ideal`, nie als `exact` — ein abgestecktes Headset bricht so keinen
+  Anruf.
+- **Desktop-App (ab 1.2.6):** `setDisplayMediaRequestHandler` mit eigener Bildschirmauswahl (`useSystemPicker:
+  false`); fehlt die macOS-Freigabe „Bildschirmaufnahme“, erklärt die App das und öffnet die Systemeinstellungen,
+  statt still zu scheitern. Entitlements `device.audio-input`/`device.camera`, Texte
   `NSMicrophoneUsageDescription`/`NSCameraUsageDescription`.
+- **iOS/iPadOS:** Anrufe über CallKit + VoIP-Push, keine Katalog-Mitteilung an Geräte mit VoIP-Kennung
+  (`skip_voip`) und kein Web-Anruffenster in der App — sonst klingelte das iPhone doppelt. **Bildschirm teilen**
+  (Build 112) über die Übertragungs-Erweiterung `glatttHubBroadcast` (ganzer Bildschirm, `RPSystemBroadcastPickerView`
+  mit vorausgewählter Erweiterung): sie reicht JPEG-Bilder (12 fps, ≤ 1280 px) über einen Unix-Socket im
+  App-Gruppen-Container `group.com.glattt.hub` an die App (`BroadcastShared/ScreenShareWire.swift`, Socket-Pfad
+  ≤ 104 Zeichen, sonst relativ), die App speist sie als Spur `glattt-screen` in den Anruf — gleiche Ansage wie
+  Browser/Mac. Die Frage nach dem lokalen Netzwerk kommt beim ersten Öffnen des Chats, nicht mitten im Anruf.
+- **Aushandlung auf iOS (Build 113):** Die höfliche Seite wartet ein laufendes eigenes Angebot ab und rollt nur
+  in `have-local-offer` zurück — libwebrtc wirft bei Rollback im stabilen Zustand, und das Angebot der Gegenseite
+  ging verloren (Anrufe Mac → iPhone hingen bei „Verbinde …“). Fehler beim Aushandeln schickt die App als `diag`
+  im `media`-Signal; bei hängenden Anrufen zuerst `chat_call_signals` lesen: fehlt ein `answer`, ist es die
+  Aushandlung, nicht das Netz.
 - **Benachrichtigungen:** Anlässe `chat.call` (Push, nicht „dringend“ — Ruhezeiten gelten, Personen-Ausnahmen
   greifen) und `chat.call_missed` (Glocke + Push).
 - **Spur im Verlauf:** Systemnachricht mit `meta.event = call` und `meta.call` (Art, Anruferin, Grund, Dauer,
@@ -583,6 +600,11 @@ Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Ha
 (`ChatRoomLiveLayoutTests`, `CHAT_LOOKS`). Wissen: `chat-look-wie-whatsapp`.
 
 ### Fallstricke
+- **Offene Fenster behalten alten Code** (16.10.2026): `wire:navigate` lädt Skripte nie neu, die Desktop-App läuft
+  tagelang — Joanna bekam Nachrichten mit Chat-Code von vor Etappe A 20 Minuten zu spät. Seiten tragen
+  `<meta name="glattthub-build">`, der Chat-Abgleich liefert `build`; `public/js/build-watch.js` lädt bei neuem
+  Stand beim nächsten Seitenwechsel ganz neu, stehende Seiten in einem ruhigen Moment (nie im Anruf, nie beim
+  Tippen, nie mit offenem Modal).
 - **Bremsen brauchen einen eigenen Schlüssel** (16.10.2026): `throttle:N,M` ohne dritten Wert zählt alle Routen
   einer Person gemeinsam — Tippen bremste das Senden, Anruf-Signale die Pings. Alle Chat-Routen tragen
   `throttle:N,M,chat.<route>`.
@@ -625,11 +647,16 @@ Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Ha
 ### Relevante Tests
 
 `tests/Feature/Chat/` (Räume, Nachrichten, Push-Empfänger, Katalog-Weg, Endpunkte, Seite, `ChatCallTest` für
-Anrufe), `tests/js/chat-call.test.mjs` (Epochen, Spur, Endtexte),
+Anrufe), `tests/js/chat-call.test.mjs` (Epochen, Spur, Endtexte), `ios/glatttHubTests/ChatCallPeerTests.swift`
+(echte Peers: Delegate-Thread, Kollision und Rollback), `ChatScreenShareTests` (Übertragungs-Weg),
 `tests/Feature/App/BrowserEnrollmentTest.php`, `ios/glatttHubTests/ChatSnapshotTests.swift`,
 `ios/glatttHubUITests/ChatUITests.swift`.
 
 ## Changelog
+
+- **16.10.2026 (Anrufe nachgeschärft)** — Geräteauswahl im Anruf, Teilen in der Desktop-App 1.2.6 mit
+  Freigabe-Hinweis, Teilen auf iPhone/iPad (Build 112), kein doppeltes Klingeln (Build 111), Aushandlung Mac → iPhone
+  repariert (Build 113), veraltete Fenster laden bei neuem Stand neu.
 
 - **16.10.2026 (Etappe D)** — Antwortstränge unter Ankündigungen und „Antworten anzeigen“, Terminfindung und Quiz,
   glattt-Sticker, Aufgaben, Später senden und Erinnern, Übersetzen, Termin- und Ticket-Karten, glatttBert-Dienstplan,
