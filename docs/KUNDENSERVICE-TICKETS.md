@@ -298,7 +298,12 @@ keine. Auch `createTicket()` holt bei mitgeschickter `phorest_client_id` Name un
 `SupportView` (Liste → Ticket), iPad als „Gespräch mit Inspektor“ (Kundenkarte, Vorgänge,
 Umfrage rechts; Anliegen/Team/Zuständig als Menü-Chips). Dieselben Endpunkte über
 `HubSession.json()`; Anhänge über `HubSession.uploadMultipart` (`files[]`, Galerie-Bilder vor dem
-Upload zu JPEG). Blätter: `SupportNewTicketSheet` (Kundensuche), `SupportSettingsSheet` (Teams,
+Upload zu JPEG). **Neues Ticket seit 16.10.2026 wie im Web als Entwurf** (Jan: Entwurf 1 „Entwurf im
+Ticket“): `SupportDraftTicketView` (Betreff im Kopf, Kundin als Zeile → Suchblatt `SupportClientPickerSheet`,
+iPad: Suche im Inspektor, Senden mit Status-Menü und Anhängen → `createTicket` als Multipart; danach tauscht die
+Ansicht an Ort und Stelle gegen `SupportTicketView`, auf dem iPad übernimmt die Listenauswahl). „Kundin
+zuordnen/ändern“ (`clientAssignRow`, Popover = Blatt auf dem iPhone) speichert über `assignClient` sofort.
+Blätter: `SupportSettingsSheet` (Teams,
 Textbausteine, Anliegen, gesperrte Absender), `SupportReturnSheet`. Zusammenfassung über dem Verlauf.
 **Verlauf und Antwortzeile seit 10.10.2026 als Messenger** (Jan wählte Entwurf 2 „Kanal-Kopf“,
 Befund 258): Datums-Kapseln, Ereignisse mittig, Blasen mit Uhrzeit und Zustand unten rechts
@@ -449,7 +454,8 @@ damit (Jan, 10.10.2026).
   Ticket-Seite der App als Messenger (Entwurf 2); Kundinnen sehen Anhänge schon während des
   Sendens, Antworten zählen am Kontakt-Reiter der Kunden-App.
 - **16.10.2026** — „Neues Ticket“ öffnet die Ticketansicht als Entwurf statt eines Formulars;
-  Kundin im Kasten „Kundin“ bei jedem Ticket zuordnen/wechseln (`POST /tickets/{n}/kundin`).
+  Kundin im Kasten „Kundin“ bei jedem Ticket zuordnen/wechseln (`POST /tickets/{n}/kundin`). Am selben Tag auch in der
+  App (iPhone/iPad, Entwurf 1).
 - **16.10.2026** — Antworten auf geschlossene Tickets öffnen sie wieder (Mail, Weiterleitung,
   Portal) statt ein Folgeticket anzulegen; Ausnahme nur als Spam geschlossene Tickets.
 - **09.10.2026 (abends)** — Zuordnung über die Vertragsnummer, Schattenbetrieb schreibt in
