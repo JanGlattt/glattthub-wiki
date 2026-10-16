@@ -2372,6 +2372,17 @@ nebeneinander, dem Gespräch blieben ≈ 280 pt. Jetzt höchstens zwei Inhaltssp
 - Snapshots `support-ipad` (Liste · Gespräch, 920 pt) und `support-ipad-inspector`; der
   ImageRenderer zeichnet keinen Inspektor, im Snapshot steht er deshalb als feste Spalte.
 
+**Neues Ticket als Entwurf** (Jan 16.10.2026, Entwurf 1 „Entwurf im Ticket“ aus
+https://claude.ai/artifact/8eXorSzkirzTVc7N1SbWmv — wie im Web): Das Stift-Symbol öffnet
+`SupportDraftTicketView` — iPhone als Seite ohne Tab-Leiste (`pushMoreDetail`, Pfad `?neu=1`), iPad im
+Detailbereich mit offenem Inspektor (`padDraft`). Betreff im Kopf, Kundin als Zeile (iPhone: Suchblatt
+`SupportClientPickerSheet`, iPad: `SupportClientSearch` im Inspektor), Anliegen/Team als Chips, unten die
+Antwortzeile mit Textbausteinen, Anhängen und Senden-Menü (Senden / & abschließen / offen lassen).
+Nach dem Anlegen tauscht die Ansicht an Ort und Stelle gegen `SupportTicketView` (iPad: Listenauswahl).
+Bei jedem Ticket ordnet „Kundin zuordnen/ändern“ (`clientAssignRow`, `.popover` = Blatt auf dem iPhone)
+die Kundin über `POST /tickets/{n}/kundin` zu. Snapshots `support-new-ticket`, `support-new-ticket-ipad`,
+`support-client-picker`.
+
 ### Native Unternehmensverträge (Mehr-Seite, seit 28.09.2026)
 
 **Für Endanwender:** „Unt.-Verträge“ zeigt in der App zuerst, worum es dem Modul geht: die
