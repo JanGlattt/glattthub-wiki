@@ -1,0 +1,131 @@
+{
+  "out": "../pdf/Chat-3-im-team-arbeiten",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "Chat",
+  "nr": 3,
+  "of": 3,
+  "audience": "alle",
+  "title": [
+    "Im Team arbeiten",
+    "Übergabe, Checklisten, Status"
+  ],
+  "subtitle": "Klickanleitung für den glatttHub — Schichtübergabe als Karte, Checklisten im Team-Raum, Dienststatus, Mitteilungen je Chat, Stichwörter, Zusammenfassung mit glatttBert und Transkripte",
+  "eyebrow": "Chat · Im Team arbeiten",
+  "footerArea": "Chat",
+  "stand": "16.10.2026",
+  "version": "1.0",
+  "notes": [
+    "Die **Übergabe** gibt es im Team-Raum deines Instituts über das Plus im Eingabefeld. Kasse, Laser und die Termine von morgen trägt der Hub schon ein.",
+    "**Checklisten** legt das Büro im Admin an; der Hub stellt sie zur Uhrzeit in den Team-Raum. Wer abhakt, steht mit Name und Uhrzeit daneben.",
+    "Statt „online“ siehst du den **Dienststatus** aus dem Dienstplan — und oben in der Liste deinen eigenen, den du mit „ändern“ kurz überschreiben kannst."
+  ],
+  "pages": [
+    {
+      "h1": "Übergabe und Checkliste im Team-Raum",
+      "sub": "Beides sind Karten im Verlauf: die Übergabe der vorigen Schicht und die Checkliste, die der Hub zur Uhrzeit postet.",
+      "card": {
+        "title": "Team-Raum",
+        "text": "Übergabe und Checkliste"
+      },
+      "left": {
+        "shot": "c15-team-uebergabe-checkliste"
+      },
+      "leftCaption": "Team-Raum mit einer Checkliste (ein Punkt erledigt) und einer Übergabe, die noch niemand übernommen hat.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Abhaken",
+          "text": "Tippe auf einen Punkt der **Checkliste** — dein Name und die Uhrzeit stehen daneben, alle sehen es sofort. Versehentlich gehakt? Nochmal tippen."
+        },
+        {
+          "n": 2,
+          "title": "Offene Punkte",
+          "text": "Ist eine Liste nach der eingestellten Zeit nicht fertig, bekommt die Institutsleitung einen Hinweis."
+        },
+        {
+          "n": 3,
+          "title": "Übernehmen",
+          "text": "Unter einer **Übergabe** tippst du **Übernommen** — dann steht „Lea hat um 06:52 übernommen“ an der Karte. **Rückfrage** öffnet eine Antwort mit Zitat."
+        },
+        {
+          "n": 4,
+          "title": "Verlauf",
+          "text": "In der Infospalte (ⓘ) zeigt der Reiter **Übergaben** die letzten Übergaben mit wer, wann und ob übernommen."
+        }
+      ],
+      "hint": {
+        "text": "Die Vorlagen der Checklisten (Uhrzeit, Wochentage, Punkte) pflegt das Büro im Admin unter **Betrieb → Chat-Checklisten**."
+      }
+    },
+    {
+      "h1": "Übergabe schreiben",
+      "sub": "Im Team-Raum über das Plus → „Übergabe“. Der Hub füllt vor, du ergänzt und schickst ab.",
+      "card": {
+        "title": "Übergabe",
+        "text": "Kasse, Laser, Morgen"
+      },
+      "left": {
+        "shot": "c16-uebergabe-formular"
+      },
+      "leftCaption": "Das Fenster **Übergabe** mit Schicht, Kasse, Morgen, Nachbestellen und Notiz.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Vorbefüllt",
+          "text": "**Kasse** aus dem Kassenabschluss des Tages, offene **Laser**-Meldungen der Räume, **Morgen** mit Terminen, Beratungen und Extrazeit. Alles lässt sich überschreiben."
+        },
+        {
+          "n": 2,
+          "title": "Ergänzen",
+          "text": "**Nachbestellen** (z. B. Gel, Einmalrasierer) und eine **Notiz** für die nächste Schicht."
+        },
+        {
+          "n": 3,
+          "title": "Übergeben",
+          "text": "Die Übergabe erscheint als Karte im Team-Raum, alle bekommen wie sonst eine Mitteilung."
+        }
+      ],
+      "hint": {
+        "text": "Die Übergabe gibt es nur im Team-Raum eines Instituts, nicht in eigenen Gruppen."
+      }
+    },
+    {
+      "h1": "Mitteilungen, Stichwörter, Status",
+      "sub": "Wann der Chat dich meldet, stellst du je Chat und für dich ein.",
+      "card": {
+        "title": "Mitteilungen",
+        "text": "je Chat und persönlich"
+      },
+      "left": {
+        "shot": "c17-mitteilungen-stichwoerter"
+      },
+      "leftCaption": "Die Chat-Einstellungen (Zahnrad) mit Transkripten und **Meine Stichwörter**.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Je Chat",
+          "text": "Im Zeilenmenü (⋯) oder in der Infospalte: **Alle Nachrichten**, **Nur Erwähnungen** oder **Stumm** (mit Dauer)."
+        },
+        {
+          "n": 2,
+          "title": "@alle und Stichwörter",
+          "text": "**@alle** erwähnt die ganze Gruppe. Eigene **Stichwörter** (z. B. „BI.02“, „Storno“) melden sich wie eine Erwähnung und sind im Verlauf markiert."
+        },
+        {
+          "n": 3,
+          "title": "Dienststatus",
+          "text": "Oben in der Liste steht „Du: Im Dienst bis 18:00 · ändern“ — für Pause, Termin oder Nicht stören. Hat jemand Feierabend, sagt der Chat dir das über dem Eingabefeld."
+        },
+        {
+          "n": 4,
+          "title": "Zusammenfassen",
+          "text": "Ab 20 ungelesenen Nachrichten fasst **glatttBert** auf Knopfdruck zusammen — nur für dich, jeder Punkt springt zur Stelle."
+        }
+      ],
+      "hint": {
+        "text": "Sprachnachrichten bekommen ein **Transkript** unter der Welle; in den Chat-Einstellungen lässt es sich ausblenden."
+      }
+    }
+  ]
+}
