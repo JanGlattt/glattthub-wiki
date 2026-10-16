@@ -41,6 +41,15 @@ Das Fenster bleibt beim Wechsel zwischen Hub-Seiten stehen; „Groß“ füllt d
 Verlauf bleibt eine Spur („Ausgehender Videoanruf · 3:12“, „Verpasster Sprachanruf“) mit
 **Zurückrufen**. Wer in den Ruhezeiten ist, bekommt keinen Klingel-Push.
 
+**Arbeitswerkzeug (seit 16.10.2026, Etappe C).** Im Team-Raum eines Instituts steht im Plus die
+**Übergabe** (vorbefüllt mit Kasse, offenen Laser-Meldungen und den Terminen von morgen; die nächste
+Schicht tippt „Übernommen“). Das Büro legt im Admin **Checklisten** an (Öffnen, Schließen …), die der Hub
+zur Uhrzeit in den Team-Raum stellt; abgehakt wird mit Name und Zeit. Statt „online“ zeigt der Chat den
+**Dienststatus** aus dem Dienstplan („Im Dienst bis 21:00“, „Urlaub bis 20.10.“), den man für Pause oder
+Termin kurz überschreiben kann. Je Chat lässt sich wählen: **Alle Nachrichten · Nur Erwähnungen · Stumm**;
+`@alle` erwähnt die ganze Gruppe, eigene **Stichwörter** melden sich wie eine Erwähnung. Ab 20 ungelesenen
+Nachrichten fasst **glatttBert** auf Knopfdruck zusammen. **Sprachnachrichten** bekommen ein Transkript.
+
 **Warum.** WhatsApp lebt von privaten Handynummern, pflegt keine Gruppen und kennt den Hub nicht.
 Der Chat erreicht jede Kollegin über ihr Hub-Konto, hält Dienstliches im Unternehmen und
 verbindet Nachrichten mit Kundinnen, Verträgen und Ankündigungen.
@@ -248,6 +257,43 @@ Entscheidungen Jan vom 15.10.2026 (Vorlage mit drei Entwürfen je Punkt, alle Em
   `chat-room-{id}`, iOS über `thread-id`). Ein Abgleich je Browser über `BroadcastChannel`, das Dock schweigt
   auf `/hub/chat`. `ChatQueryCountTest` wacht über die Abfragezahlen.
 - Tests: `ChatEtappeBTest`, `ChatQueryCountTest`, `ChatSyncTest`, `tests/js/chat-sync.test.mjs`.
+
+### Etappe C „Arbeitswerkzeug“ (16.10.2026)
+
+Freigabe Jan (Entwürfe C/D, 16.10.2026). Je Punkt Web **und** iOS.
+
+- **C1 Übergabe** (`ChatHandoverService`, Typ `handover`, `meta.handover`): `GET /raeume/{id}/uebergabe` schlägt vor
+  (Kassenabschluss des Tages mit Differenz, offene/in Bearbeitung befindliche `laser_errors` der Räume des Instituts,
+  `upcoming_appointments` von morgen mit Beratungen und `client_extra_times`), `POST` sendet als normale Nachricht
+  (Push wie üblich), `POST /nachrichten/{id}/uebernommen` setzt `taken_by`/`taken_at` (nicht die Übergebende selbst),
+  `GET /raeume/{id}/uebergaben` füllt den Reiter „Übergaben“. Nur Team-Räume mit `branch_id`.
+- **C2 Dienststatus** (`ChatDutyService`): eigener Status mit Ablauf (`chat_user_settings.status_kind/until`) vor
+  askDANTE-Abwesenheit (`hr_planned_absences`, nur `MUTING_REASONS`, Wochenenden überbrückt — „Urlaub bis 20.10.“,
+  nie Krankheit) vor Phorest-Schicht (Staff-WorkTimeTable WORKING heute/morgen, Zuordnung über
+  `phorest_staff.glatthub_user_id`, `users.phorest_user_id`, `phorest_staff_id(s)`). Die Schichten lädt
+  `ChatDutyRefreshJob` im Hintergrund (Cache 10 Min.), die Anfrage liest nur den Cache. `partner.duty` und
+  `partner.quiet_now` (Ruhezeit gerade aktiv, ohne Uhrzeiten) an Einzelchats; `me_duty` im Einstieg.
+- **C3 Checklisten** (`ChatChecklistService`, Tabellen `chat_checklist_templates|runs|checks`, Typ `checklist`):
+  Vorlagen im Admin unter **Betrieb → Chat-Checklisten** (`manage_chat`). Takt: der Cloud-Scheduler-Job
+  `process-notification-automations` (jede Minute) ruft `tick()` — **kein eigener Scheduler-Job**. Nachholen höchstens
+  90 Minuten. Abhaken `POST /checklisten/{run}/haken`, offene Punkte nach `remind_after_minutes` als Anlass
+  `chat.checklist_open` an die Institutsleitung (`post_branch_chat_announcements`). Die Karte auf der Institutsseite
+  (Tageserfassung) ist noch nicht gebaut.
+- **C4 „Verpasst“** (`ChatSummaryService`): ab 20 Ungelesenen `POST /raeume/{id}/zusammenfassen {from_seq}` —
+  Claude (kleines Modell) bekommt nur den Chattext (max. 400 Nachrichten, keine Hub-Werkzeuge), antwortet mit
+  3–5 Punkten und Sprungmarke `seq`; 30 Min. im Cache je Person und Stand, nichts im Raum.
+- **C5 Transkript**: App transkribiert offline (`ChatVoiceTranscriber`: iOS 26 `SpeechAnalyzer`, sonst SFSpeech
+  on-device, höchstens 8 s) und schickt `transcript` mit; sonst `ChatTranscribeJob` über Speech-to-Text (EU) mit
+  Tagesdeckel `CHAT_TRANSCRIPTS_DAILY_CAP` (300). Vorschau/Push zeigen den Text, Schalter `show_transcripts`.
+- **C6 Mitteilungen dreistufig**: `chat_room_members.notify_level` (`all|mentions`), Stumm bleibt `muted_until`.
+  `@alle` (in eigenen Gruppen jede, in Standard-Gruppen nur mit `manage_chat`/Ankündigungsrecht) legt Erwähnungen
+  für alle Mitglieder an (`meta.mentions_all`); Stichwörter (`chat_user_settings.keywords`, max. 10) pushen wie eine
+  Erwähnung (`ChatUserSetting::matchesKeyword`, Wortanfang). Stumm lässt nur namentliche Erwähnungen durch.
+- **C7 Barrierefreiheit**: Web-Verlauf `role="log"` + `aria-live`, Blasen mit `aria-label` („Kim, 14:02: …, gelesen“),
+  Pfeiltasten in der Liste, Fokusring, Haken-Kontrast; App mit vollständigem VoiceOver-Text je Blase.
+- **C8 Erster Start**: Einführungskarte (drei Schritte) bis `intro_seen` am Konto, Leerzustand je Filter.
+- Tests: `ChatNotifyLevelsTest`, `ChatDutyTest`, `ChatSummaryTest`, `ChatTranscriptTest`, `ChatChecklistTest`,
+  `ChatHandoverTest`.
 
 ### Anrufe (16.10.2026)
 
@@ -506,6 +552,10 @@ Anrufe), `tests/js/chat-call.test.mjs` (Epochen, Spur, Endtexte),
 `ios/glatttHubUITests/ChatUITests.swift`.
 
 ## Changelog
+
+- **16.10.2026 (Etappe C)** — Übergabe-Karte, Dienststatus aus Dienstplan, Checklisten im Team-Raum, „Verpasst“ mit
+  glatttBert, Transkripte für Sprachnachrichten, Mitteilungen dreistufig mit @alle und Stichwörtern, Barrierefreiheit,
+  Einführung und Leerzustände.
 
 - **16.10.2026 (Anrufe)** — 1:1 Sprach- und Videoanrufe mit Bildschirmfreigabe (WebRTC), Klingeln auf jeder
   Hub-Seite, Fenster über Seitenwechsel hinweg, Spur mit Zurückrufen, STUN/TURN mit Zugangsdaten auf Zeit,
