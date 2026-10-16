@@ -389,6 +389,15 @@ Video, Bildschirmfreigabe als zusätzliche Videospur im selben Anruf. Die Medien
   Signal trägt sie; nach dem Neuladen steigt die Seite mit neuer Epoche ab `last_signal_id` ein, die Gegenseite
   baut für die größere Epoche neu auf (Regel `bindEpoch` in `chat-call.js`, per `npm test` geprüft). ICE-Neustart
   nach 4 s Funkstille, Aufgabe nach 25 s.
+- **iOS-Takt (Build 115):** Abholen und Verarbeiten der Signale laufen außerhalb des abbrechbaren Takt-Tasks, jedes
+  Signal wird in einem eigenen Task gesendet und bei Netzfehlern bis zu dreimal wiederholt. Vorher brach der Takt sich
+  beim Verarbeiten des Angebots selbst ab — die Antwort des iPhones ging nie raus, Mac → iPhone hing bei „Verbinde …“.
+- **Diagnose:** Beide Seiten schreiben `media.diag` ins Signal-Protokoll — einmal „hängt seit 6 s“ mit gesammelten
+  Kandidaten-Arten, ICE-/Signalzustand und Server-Arten (ohne Zugangsdaten), einmal „verbunden nach X s über
+  host/udp → prflx“. Bei Problemen zuerst `chat_call_signals` lesen. Die ICE-Server holt jede Verbindung frisch.
+- **Prüfstand:** `scripts/anruf-pruefstand/run.sh` fährt die echte iOS-Engine im Simulator gegen den lokalen Hub mit
+  Chromium als Gegenseite (beide Richtungen) plus die Browser-Tests; `ChatCallLiveBenchTests` überspringt sich ohne
+  `GLATTT_CALL_BENCH`.
 - **STUN/TURN:** `GET /anrufe/ice` liefert STUN (`STUN_URLS`) und, wenn eingerichtet, TURN mit zeitlich
   begrenzten Zugangsdaten (`TURN_URLS`, `TURN_SECRET`, HMAC-SHA1 wie coturn `use-auth-secret`, 6 h). Einrichtung
   der coturn-VM: `scripts/turn/TURN-SERVER-EINRICHTEN.md` im Hub-Repo. Admin → **Chat-Gesundheit** zeigt
@@ -660,7 +669,8 @@ Anrufe), `tests/js/chat-call.test.mjs` (Epochen, Spur, Endtexte), `ios/glatttHub
 
 - **16.10.2026 (Anrufe nachgeschärft)** — Geräteauswahl im Anruf, Teilen in der Desktop-App 1.2.6 mit
   Freigabe-Hinweis, Teilen auf iPhone/iPad (Build 112), kein doppeltes Klingeln (Build 111), Aushandlung Mac → iPhone
-  repariert (Build 113), veraltete Fenster laden bei neuem Stand neu.
+  repariert (Builds 113–115: nur die Anruferin bietet an, Antwort nicht mehr vom eigenen Takt abgebrochen),
+  Diagnose je Anruf, Anruf-Prüfstand, veraltete Fenster laden bei neuem Stand neu.
 
 - **16.10.2026 (Etappe D)** — Antwortstränge unter Ankündigungen und „Antworten anzeigen“, Terminfindung und Quiz,
   glattt-Sticker, Aufgaben, Später senden und Erinnern, Übersetzen, Termin- und Ticket-Karten, glatttBert-Dienstplan,
