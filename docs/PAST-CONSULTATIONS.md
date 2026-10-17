@@ -229,8 +229,10 @@ zwischen verschachtelten Apps (bekanntes Muster, siehe CLAUDE.md).
 ### Caching
 
 `consultation-monthly-fast` und `no-show-matrix` laufen über
-`ReportsOverviewCache::remember(endpoint, params, TTL, …)` — `branch_id` ist
-Teil der `params`. Invalidierung über `ReportsOverviewCache::flush()`.
+`ReportsOverviewCache::remember(endpoint, params, TTL, …, recipe)` — `branch_id` ist
+Teil der `params`. Seit 17.10.2026 Stale-while-revalidate über `StatisticsCache`:
+`ReportsOverviewCache::flush()` markiert Einträge als veraltet, nachgerechnet wird im
+Hintergrund (siehe [Performance & Caching](PERFORMANCE-CACHING.md)).
 
 ### Tests
 

@@ -1,20 +1,34 @@
-# Performance & Caching (Reports + Kundensuche)
+# Performance & Caching (Statistiken + Kundensuche)
 
-Stand: Juli 2026 — Performance-Offensive für Reports-Übersicht und Kundenseite.
+Stand: 17.10.2026 — Statistik-Cache mit Stale-while-revalidate (davor Juli 2026: Performance-Offensive
+für Reports-Übersicht und Kundenseite).
 
 ## Für Endanwender
 
 ### Was ist neu?
 
-- **Reports-Übersicht lädt in unter einer Sekunde.** Die KPI-Kacheln (Behandlungen, Termindauer, Stornos, Beratungen, Pakete) werden alle 15 Minuten im Hintergrund vorberechnet. Beim Öffnen der Seite kommen die Zahlen aus dem Cache statt live aus der Datenbank.
-- **Die Kundensuche ist praktisch sofort.** Die Suche auf der Kundenseite läuft jetzt gegen eine lokale Kopie der Phorest-Kundendaten (statt bis zu 10 gleichzeitige Anfragen an die Phorest-API pro Suchvorgang). Tippen → Treffer in Millisekunden.
+- **Statistiken sind sofort da.** Jede Karte auf den Berichtsseiten und jede Kachel der
+  Berichte-Übersicht kommt aus einem Zwischenspeicher auf dem Server. Ist ein Wert nicht mehr
+  ganz frisch, wird er trotzdem sofort gezeigt und im Hintergrund neu gerechnet — beim nächsten
+  Öffnen steht der neue Stand da. Niemand wartet mehr auf eine Berechnung (Entscheidung Jan,
+  17.10.2026).
+- **Nach jedem Vertrag stimmen die Verkaufszahlen.** Körperzonen pro Institut, Körperzonen pro
+  Tag und die Tagesmessung werden nach jedem Abschluss sofort neu gerechnet.
+- **Buchungsstand und Kalenderübersicht** (Zukünftige Beratungsgespräche) zeigen ihren Datenstand
+  („Stand 14:32") und haben einen Aktualisieren-Knopf, der direkt in Phorest nachsieht.
+- **Die Kundensuche ist praktisch sofort.** Die Suche auf der Kundenseite läuft gegen eine lokale
+  Kopie der Phorest-Kundendaten. Tippen → Treffer in Millisekunden.
+
+!!! nutzerhandbuch "Bedienung: Berichte 2 – Zukünftige Beratungsgespräche"
+    [https://hilfe.hub.glattt.com/berichte/2/](https://hilfe.hub.glattt.com/berichte/2/)
 
 ### Wie aktuell sind die Daten?
 
 | Bereich | Aktualität |
 |---|---|
-| Reports-KPI-Kacheln | max. 1 Stunde alt, durch 15-Minuten-Warming meist frischer; nach dem nächtlichen Termin-Sync wird der Cache komplett erneuert |
-| Kommende Beratungen (Live-Phorest-Kachel) | max. 15 Minuten alt |
+| Körperzonen pro Institut, Körperzonen pro Tag, Tagesmessung | Sekunden nach jedem Vertrag (Neuberechnung auf dem Worker) |
+| Aktueller Buchungsstand, Kalenderübersicht (Phorest) | alle 5 Minuten; „Aktualisieren" holt den Stand sofort |
+| Berichte-Übersicht, übrige Statistik-Karten | meist unter 15 Minuten alt; nach Termin-Syncs wird im Hintergrund nachgerechnet |
 | Kundensuche | max. 10 Minuten alt (Delta-Sync); brandneue Kunden werden über einen automatischen Live-Fallback trotzdem gefunden |
 
 ### Kundensuche: Besonderheiten
@@ -25,21 +39,90 @@ Stand: Juli 2026 — Performance-Offensive für Reports-Übersicht und Kundensei
 
 ## Für Entwickler
 
-### Reports-Overview-Caching
+### Statistik-Cache: Stale-while-revalidate (seit 17.10.2026)
 
-Die fünf schweren Overview-Endpunkte im `ReportController` sind über die Support-Klasse `App\Support\ReportsOverviewCache` gecacht (versioniertes Key-Schema wie in `SalesStatisticsService` & Co.):
+**Ausgangslage (Prod-Logs 14.–17.10.2026):** Die Berichte-Übersicht brauchte je Karte im Median
+2 s, HR-Kennzahlen 41 s, Schulden 18 s, Office 12 s; auf den Statistikseiten lagen die p90-Zeiten
+bei 5–13 s. Vier Ursachen: (1) 8 PHP-FPM-Worker je Instanz bei 5–17 gleichzeitigen Karten-Anfragen
+je Seite — Anfrage 9 wartete; (2) der Übersichts-Cache hing an der Nutzer-ID; (3) der Wärmer kannte
+nur die alten Übersichts-Endpunkte, dazu leerte jeder Vertrag und jeder Termin-Sync die Caches
+komplett (`HrKpiService::flushCache()` leerte sogar den gesamten Cache); (4) Cache-Treiber ist die
+Datenbank.
 
-| Endpoint | Cache-Key-Endpoint | TTL |
+**Lösung — ein Helfer für alle Statistik-Services:** `App\Support\StatisticsCache`.
+
+```php
+return StatisticsCache::remember(
+    self::CACHE_GROUP,                       // Gruppe für touch(): 'sales', 'personal', 'hr', …
+    $key,                                    // Methode + Filter (+ BranchVisibility::cacheKeyPart())
+    $callback,                               // Berechnung
+    StatisticsCache::callerRecipe($this),    // Rezept: aufrufende öffentliche Methode + Argumente
+    self::CACHE_TTL                          // Frische in Sekunden
+);
+```
+
+- **Antwort immer aus dem Cache.** Ein Eintrag ist *veraltet*, wenn er älter als `fresh` ist oder
+  seine Gruppe nach seiner Berechnung mit `StatisticsCache::touch($group)` markiert wurde. Veraltet
+  heißt: alter Wert zurück, `RefreshStatisticsCacheJob` auf die Queue `stats`. Der Job führt das
+  **Rezept** (Klasse, öffentliche Methode, Argumente; Requests als Query-Array, Models als ID)
+  erneut aus und überschreibt genau diesen Eintrag. Erst jenseits `MAX_AGE` (2 Tage) wird
+  synchron gerechnet. Höchstens ein Job je Eintrag (Lock `…:refreshing`).
+- **Kein Versions-Zähler mehr.** `flushCache()` der Services ruft `touch()`; alte Einträge bleiben
+  lesbar. Die Keys tragen `BranchVisibility::cacheKeyPart()`, damit ausgeblendete Institute
+  eigene Einträge bekommen.
+- **Nutzerunabhängig.** `WidgetKpiService::values()` schlüsselt nach Kennzahl-IDs (vorab nach
+  Berechtigung gefiltert) und Standort-Scopes statt nach Nutzer-ID. Wärmer und Refresh-Job rechnen
+  im Vertrauensmodus `KpiValueService::trusted()` ohne Nutzer; die Auslieferung prüft die Rechte
+  weiterhin selbst (`AppReportsService::allowedKpis`).
+- **Modi je Prozess:** `inline()` rechnet veraltete Einträge sofort (Wärmer), `force()` übergeht
+  alles (Aktualisieren-Knopf, `?refresh=1`), `forcing($group, $key)` nur einen Eintrag (Refresh-Job).
+  Jeder Job ruft `resetRequestState()` am Anfang und Ende — der Worker-Prozess lebt lange.
+- **Synchrone Queue** (Tests, Konsole ohne Worker): veraltete Einträge werden an Ort und Stelle
+  gerechnet, Wärm-Jobs aus dem Observer entfallen (`queueIsAsync()`).
+- `generatedAt()` liefert den Zeitstempel des gelieferten Eintrags — der Buchungsstand-Endpunkt
+  gibt ihn als `generated_at` aus, `glattt-stats.js` zeigt daraus „Stand HH:MM" (`standLabel()`)
+  und `reload()` setzt `refresh=1`.
+
+**Drei Mechanismen je Datenquelle (Entscheidung Jan, 17.10.2026):**
+
+| Daten | Mechanismus | Umsetzung |
 |---|---|---|
-| `reportsOverviewKpis` | `overview-kpis` | 3600s |
-| `cancelledAppointmentsMonthlyFast` | `cancelled-monthly-fast` | 3600s |
-| `consultationMonthlyStatsFast` | `consultation-monthly-fast` | 3600s |
-| `clientCoursesKpis` | `client-courses-kpis` | 3600s |
-| `upcomingConsultationsKpi` (Live-Phorest) | `upcoming-consultations-kpi` | 900s |
+| Verkauf, Tagesmessung (Verträge entstehen im Hub) | **Frisch bei Änderung** | `ContractObserver` → `touch('sales'/'personal'/'widerrufe')` + `WarmStatisticsJob('sales')`: Körperzonen pro Institut, Körperzonen pro Tag, Tagesmessung für „Alle" und je Standort |
+| Buchungsstand, Kalenderübersicht (Phorest live) | **Fester Takt** | `upcomingConsultationsData` liest aus dem Cache (5 Min frisch), `WarmStatisticsJob('booking-status')` alle 5 Minuten (Cloud Scheduler → `/api/cron/warm-booking-status`), Karte zeigt Datenstand + Aktualisieren |
+| Alles andere | **Stale-while-revalidate** | Services über `StatisticsCache`, `WarmStatisticsJob('reports')` alle 15 Minuten für Übersicht (`WidgetKpiService::values` je Bericht × Standort, Monat) + Leit-Karten + Buchungsstand + alte Übersichts-Endpunkte |
 
-- **Invalidierung:** `ReportsOverviewCache::flush()` (Version-Bump) am Ende von `sync:appointments` und `sync:client-courses` — den Quellen der Overview-Daten. Der 10-Minuten-Delta-Sync der Kundenstatistik bumpt **bewusst nicht** (würde den warmen Cache ständig verwerfen; die Overview-Endpunkte lesen diese Tabelle nicht).
-- **Warming:** `php artisan reports:warm-cache` (`app/Console/Commands/WarmReportsCache.php`) wärmt alle Varianten (alle Standorte + je Standort). Prod: Cloud Scheduler → `POST /api/cron/warm-reports-cache` alle 15 Minuten. Lokal: Scheduler-Eintrag in `routes/console.php`.
-- **Muster für neue Endpunkte:** Controller-Methode in schlanken HTTP-Teil + private `build…()`-Methode splitten, `ReportsOverviewCache::remember('endpoint', [$params…], TTL, fn () => $this->build…())`.
+**Wärm-Pläne** stehen in `App\Services\Statistics\StatisticsWarmPlan` (`reports`, `sales`,
+`booking-status`): Rezepte, die **dieselben Controller-/Service-Methoden wie das Web** aufrufen —
+so entstehen exakt die Schlüssel, die die Seiten anfragen. `WarmStatisticsJob` (ShouldBeUnique je
+Plan) arbeitet sie im `inline`-Modus ab: Frisches wird übersprungen. Konsole:
+`php artisan reports:warm-cache {reports|sales|booking-status} [--queue]`.
+
+**Infrastruktur:** PHP-FPM 12 statische Worker (vorher 8) und Cloud Run `--concurrency 12` für
+den Web-Service, damit Cloud Run skaliert statt zu stapeln; der Worker hat einen eigenen Prozess
+`queue-stats` (`docker/supervisord-worker.conf`), damit minutenlange HR-Läufe die Standard-Queue
+nicht blockieren. Die Cron-Endpunkte legen nur noch den Job auf die Queue — vorher lief der Wärmer
+17 s lang in einem PHP-Worker des Web-Containers.
+
+**Gruppen und Frische:** `sales`/`kunden`/`glattt`/`ads`/`personal`/`widerrufe` 1 h,
+`hr`/`gutscheinaktion`/`widgets`/`booking-intake` 15 Min, `schulden`/`office` 5 Min,
+`reports-overview` 15 Min (Phorest-Endpunkte 5 Min), `booking-outlook` 1 h.
+
+**Muster für neue Statistik-Methoden:** öffentliche Methode mit `array $filters` (und weiteren
+skalaren Argumenten), darin `$this->remember($key, fn () => …)` über den Service-Wrapper. Private
+Methoden bekommen kein Rezept und werden bei Veralterung an Ort und Stelle gerechnet — lieber eine
+öffentliche Methode cachen. Controller-Endpunkte: `ReportsOverviewCache::remember('endpoint',
+$params, TTL, fn () => …, StatisticsCache::recipe($this, __FUNCTION__, [$request]))`.
+
+**Fallstricke:**
+
+- Rezept-Argumente müssen serialisierbar sein (Arrays, Skalare, Models, Requests) — keine Closures,
+  keine Carbon-Objekte.
+- `callerRecipe()` liest den Aufrufer per `debug_backtrace`; der Wrapper muss direkt aus der
+  öffentlichen Methode aufgerufen werden (eine Zwischenstufe → `depth` anpassen).
+- Zeitstempel sind `microtime(true)`: `touch()` und Berechnung in derselben Sekunde verdecken sich
+  sonst (Test `flush_invalidates_all_entries`).
+- Lokal ohne laufenden `queue:work --queue=stats` bleiben veraltete Einträge bis `MAX_AGE` stehen —
+  `php artisan reports:warm-cache` oder einen Worker starten.
 
 ### Kundensuche über lokalen Spiegel
 
@@ -68,7 +151,8 @@ Auth wie bei allen Cron-Routen über Header `X-Cron-Token` (Secret `services.cro
 
 | Job | URL | Takt |
 |---|---|---|
-| Reports-Cache wärmen | `POST /api/cron/warm-reports-cache` | alle 15 Min (`*/15 * * * *`) |
+| Statistik-Cache wärmen (Plan `reports`) | `POST /api/cron/warm-reports-cache` | alle 15 Min, versetzt (`2,17,32,47 * * * *`) |
+| Buchungsstand frisch rechnen (Plan `booking-status`, seit 17.10.2026) | `POST /api/cron/warm-booking-status` | alle 5 Min (`*/5 * * * *`) |
 | Kundenstatistik-Delta-Sync | `POST /api/cron/sync-client-statistics` | **umstellen auf** alle 10 Min (`*/10 * * * *`) |
 | Cache-Pruning | `POST /api/cron/prune-expired-cache` | täglich (`30 1 * * *`) |
 
@@ -80,11 +164,16 @@ Auth wie bei allen Cron-Routen über Header `X-Cron-Token` (Secret `services.cro
 
 ### Relevante Dateien
 
-- `app/Support/ReportsOverviewCache.php` — versionierter Cache-Helper
-- `app/Http/Controllers/ReportController.php` — gecachte Overview-Endpunkte
+- `app/Support/StatisticsCache.php` — gemeinsamer Statistik-Cache (Stale-while-revalidate, Rezepte, Modi)
+- `app/Support/ReportsOverviewCache.php` — Hülle für die Controller-Endpunkte (Gruppe `reports-overview`)
+- `app/Jobs/RefreshStatisticsCacheJob.php`, `app/Jobs/WarmStatisticsJob.php` — Hintergrund-Berechnung und Wärmer (Queue `stats`)
+- `app/Services/Statistics/StatisticsWarmPlan.php` — Wärm-Pläne `reports`, `sales`, `booking-status`
+- `app/Observers/ContractObserver.php` — „frisch bei Änderung" für Verkauf und Tagesmessung
+- `app/Http/Controllers/ReportController.php` — gecachte Endpunkte, Buchungsstand mit `generated_at`/`refresh`
 - `app/Http/Controllers/ClientSearchController.php` — lokale Kundensuche
-- `app/Console/Commands/WarmReportsCache.php` — Cache-Warming
+- `app/Console/Commands/WarmReportsCache.php` — `reports:warm-cache {plan} [--queue]`
+- `docker/php-fpm-pool.conf`, `docker/supervisord-worker.conf`, `cloudbuild*.yaml` — Worker-Zahl, Stats-Queue, Concurrency
 - `app/Console/Commands/PruneExpiredCacheCommand.php` — Cache-Pruning
 - `app/Services/ClientStatisticsSyncService.php` — Spiegel-Sync (inkl. `email`)
 - `resources/views/hub/clients.blade.php` — Kundenseite
-- Tests: `tests/Feature/ClientSearchTest.php`, `tests/Unit/ReportsOverviewCacheTest.php`, `tests/Feature/SyncClientStatisticsDeltaTest.php`
+- Tests: `tests/Unit/StatisticsCacheTest.php`, `tests/Unit/StatisticsWarmPlanTest.php`, `tests/Feature/ContractObserverStatisticsTest.php`, `tests/Feature/UpcomingConsultationsDataCacheTest.php`, `tests/Unit/ReportsOverviewCacheTest.php`, `tests/Feature/ClientSearchTest.php`, `tests/Feature/SyncClientStatisticsDeltaTest.php`

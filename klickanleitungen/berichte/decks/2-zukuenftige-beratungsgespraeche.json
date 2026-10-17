@@ -13,11 +13,11 @@
  "subtitle": "Klickanleitung für die Berichte im glatttHub — geplante Beratungen für heute und die nächsten 3, 7, 14 und 28 Tage",
  "eyebrow": "Berichte · Zukünftige Beratungen",
  "footerArea": "Berichte",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "17.10.2026",
+ "version": "1.1",
  "notes": [
   "Der Blick nach vorn: **Wie voll sind die nächsten Wochen mit Beratungsgesprächen?**",
-  "Die Termine kommen **live aus Phorest** — Stornos schlagen mit Verzögerung durch.",
+  "Die Termine kommen **alle 5 Minuten aus Phorest** — die Karte zeigt ihren Stand („Stand 14:32“), der Pfeil daneben holt ihn sofort neu.",
   "Ein leerer Kalender in 14 Tagen ist ein **Marketing-Signal**, kein Terminproblem."
  ],
  "pages": [
@@ -79,10 +79,15 @@
      "n": 3,
      "title": "Vergleich",
      "text": "Gegen dieselbe Stufe der Vorwoche gelesen wird daraus ein Trend."
+    },
+    {
+     "n": 4,
+     "title": "Stand & Aktualisieren",
+     "text": "Rechts im Kopf steht, von wann die Zahlen sind. Der Pfeil daneben holt sie sofort frisch aus Phorest."
     }
    ],
    "hint": {
-    "text": "**Nur Beratungen, keine Behandlungen.** Ein Termin gilt als Beratung, wenn sein Service so gekennzeichnet ist („Betrieb 5“)."
+    "text": "**Die Zahlen kommen aus einem Zwischenspeicher, nicht live:** Der Hub holt sie alle 5 Minuten aus Phorest, damit die Seite sofort da ist. Wer gerade gebucht hat und es sehen will, drückt den Pfeil neben „Stand“. Nur Beratungen zählen, keine Behandlungen („Betrieb 5“)."
    }
   },
   {

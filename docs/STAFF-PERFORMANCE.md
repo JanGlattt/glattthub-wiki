@@ -890,11 +890,14 @@ dadurch komplett: In der Tagesmessung blieb die Spalte **„Heute" leer**, und
 Tag zu niedrig (gemeldet 08/2026).
 
 Gelöst über **`sync:appointments-recent`** (`SyncRecentAppointments`): Der
-Command holt die **letzten 3 Tage inklusive heute** nach und leert anschließend
-die Report-Caches (`StaffPerformanceService`, `ReportsOverviewCache`,
+Command holt die **letzten 3 Tage inklusive heute** nach und markiert anschließend
+die Report-Caches als veraltet (`StaffPerformanceService`, `ReportsOverviewCache`,
 `SalesStatisticsService`, `GlatttKpiService`) — ohne den Flush zeigten die
 Auswertungen die frischen Termine erst nach Ablauf ihrer TTL von bis zu einer
-Stunde.
+Stunde. Seit 17.10.2026 leert `flushCache()` nichts mehr, sondern setzt per
+`StatisticsCache::touch()` eine Marke: alte Werte bleiben lesbar, der Worker rechnet
+nach, der versetzte Wärmer holt die Leit-Karten direkt danach
+(siehe [Performance & Caching](PERFORMANCE-CACHING.md)).
 
 > **Nur diese vier Caches — bewusst.** Jeder Flush kostet den nächsten Besucher
 > einen kalten Cache. Die Kundenstatistik etwa liest gar nicht aus der

@@ -686,8 +686,10 @@ Terminen). Tests: `tests/Feature/ReportExportTest.php`,
 **Server-Cache seit 28.09.2026 (TestFlight-Befund 121, 1.3.0):** Die vier schweren Endpunkte
 `appointments-body-zones/{data,duration,body-zones,service-combinations}` brauchten auf Prod je
 12–17 s pro Aufruf — in der App wie im Web. `ReportController::cachedReport()` bedient sie jetzt aus
-dem versionierten `ReportsOverviewCache` (Schlüssel = Endpunkt + alle Query-Parameter, TTL eine
-Stunde, Invalidierung über `ReportsOverviewCache::flush()` nach dem Termin-Sync); Fehlerantworten
+dem `ReportsOverviewCache` (Schlüssel = Endpunkt + alle Query-Parameter; seit 17.10.2026 eine
+Hülle über `StatisticsCache` mit Stale-while-revalidate: veraltete Einträge werden ausgeliefert und
+im Hintergrund nachgerechnet, `ReportsOverviewCache::flush()` nach dem Termin-Sync markiert sie nur
+noch als veraltet — siehe [Performance & Caching](PERFORMANCE-CACHING.md)); Fehlerantworten
 werden nicht gemerkt. Die Rechenlogik liegt unverändert in den `…Uncached`-Methoden. Der erste
 Aufruf nach dem nächtlichen Sync bleibt langsam — die App wartet auf Berichtskarten 90 s
 (`ReportPageModel.requestTimeout`).
