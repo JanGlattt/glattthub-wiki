@@ -150,6 +150,14 @@ Vier Dinge machten den Übergang unruhig (Video Jan, 17.10.2026), alle in
   sitzt eingeklappt als Marke oben rechts am Symbol, die Profilkarte stapelt
   Abmelde-Countdown unter dem Bild. Nachweis: Playwright misst Pille und Symbol
   in beiden Zuständen (`dx = 0`) und zeichnet die Bildfolge beim Umschalten auf.
+- **Fußzeile ohne Richtungswechsel:** glatttBert, Nutzerhandbuch-Link und
+  Theme-Umschalter bleiben eine Flex-Reihe. Eingeklappt nimmt ein negativer
+  linker Rand die hinteren Knöpfe aus der Breite und `transform: translateY`
+  schiebt sie unter glatttBert (`:has(.sidebar-help-link)` für drei Knöpfe),
+  die Reihe reserviert den Platz über `padding-bottom`. Die glatttBert-Pille
+  läuft über `max-width` auf 40 px, Name und Hinweis blenden über `max-width:
+  0` aus, die Profilkarte verengt Rand und Lücke — alles transitionierte
+  Längen. Ein `flex-direction: column` sprang im ersten Frame.
   Wissen `sidebar-einklappen-ohne-spruenge`.
 
 ### Einführungstour
