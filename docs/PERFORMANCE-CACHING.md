@@ -118,8 +118,14 @@ nicht blockieren. Die Cron-Endpunkte legen nur noch den Job auf die Queue — vo
 17 s lang in einem PHP-Worker des Web-Containers.
 
 **Gruppen und Frische:** `sales`/`kunden`/`glattt`/`ads`/`personal`/`widerrufe` 1 h,
-`hr`/`gutscheinaktion`/`widgets`/`booking-intake` 15 Min, `schulden`/`office` 5 Min,
-`reports-overview` 15 Min (Phorest-Endpunkte 5 Min), `booking-outlook` 1 h.
+`hr`/`gutscheinaktion`/`widgets`/`booking-intake`/`besucher`/`kundenservice`/`trinkgeld` 15 Min,
+`schulden`/`office`/`bonus` 5 Min, `reports-overview` 15 Min (Phorest-Endpunkte 5 Min),
+`booking-outlook` 1 h, `free-slots` nach `consultations.free_slots.cache_minutes`.
+
+**Abdeckung (17.10.2026):** Alle 114 Endpunkte der `StatisticRegistry` laufen über den Cache (93 per
+Service-Wrapper, 21 per `cachedReport()`/`ReportsOverviewCache`). Was dennoch kalt bleibt: der
+allererste Aufruf einer Filterkombination, die seit zwei Tagen niemand geöffnet hat, und Zeiträume
+außerhalb des Monatsstandards, die kein Wärmplan vorrechnet.
 
 **Muster für neue Statistik-Methoden:** öffentliche Methode mit `array $filters` (und weiteren
 skalaren Argumenten), darin `$this->remember($key, fn () => …)` über den Service-Wrapper. Private
