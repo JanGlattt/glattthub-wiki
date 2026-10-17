@@ -124,6 +124,33 @@ Zwei Fallstricke, die dabei aufschlugen:
   `!important` auf `display: block`. Der Titel des Gruppenkopfs muss deshalb
   ebenfalls mit `!important` verschwinden — sonst blitzt hinter dem Flyout noch
   der Tooltip auf.
+- Der Flyout ist **`display: block`**, keine Grid-Zeile mit `1fr`: Sonst fahren
+  beim Ausklappen alle geschlossenen Gruppen in der schmalen Leiste sichtbar von
+  1fr auf 0fr zu.
+
+### Ein- und Ausklappen ohne Sprünge (seit 17.10.2026)
+
+Vier Dinge machten den Übergang unruhig (Video Jan, 17.10.2026), alle in
+`theme_glattt.css` gelöst:
+
+- **Symbole bleiben `justify-content: flex-start`** und wandern über das
+  `padding-left` der Pille in die Mitte (Rand 8 px + Kante 2 px + 14 px + Symbol
+  22 px = mittig in 70 px); das Logo genauso über das Padding von
+  `.sidebar-header`. Mit `justify-content: center` sprangen sie im ersten Frame
+  in die Mitte der noch breiten Leiste, weil der Titel sofort `position:
+  absolute` wird.
+- **Tooltip und Flyout sind zusätzlich `visibility: hidden`** mit `visibility
+  0s` im Übergang: Beim Einklappen verschwinden sie sofort statt als Kasten von
+  1 auf 0 auszublenden; beim Überfahren blendet die Deckkraft weiter weich ein.
+  Die Flyout-Einträge setzen `visibility: visible` zurück.
+- **Hover ohne Layout-Änderung:** Die Kante bleibt 2 px, die zweiten 2 px kommen
+  als `box-shadow: inset` — vorher rutschte das Symbol beim Überfahren um 3 px.
+- **Zentriert ist, was gemessen zentriert ist:** Der Sofort-Stil beim Laden
+  (`hub.blade.php`) nutzt dieselbe Breite wie das Theme (4,5 rem); Chat-Zähler
+  sitzt eingeklappt als Marke oben rechts am Symbol, die Profilkarte stapelt
+  Abmelde-Countdown unter dem Bild. Nachweis: Playwright misst Pille und Symbol
+  in beiden Zuständen (`dx = 0`) und zeichnet die Bildfolge beim Umschalten auf.
+  Wissen `sidebar-einklappen-ohne-spruenge`.
 
 ### Einführungstour
 
