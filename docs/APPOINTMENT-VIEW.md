@@ -211,6 +211,19 @@ Aufräumen), Getter `plannedStartLabel`, `plannedEndLabel`, `currentTimeLabel`,
 `remainingMinutes`/`remainingIsOver`/`remainingTimeLabel`. Styles `.apt-detail-session-*`
 in `theme_glattt.css`. Test: `AppointmentDetailLayoutTest`.
 
+### Beratungsergebnis beim Beenden (seit 17.10.2026)
+
+Ab dem Stichtag füllt niemand mehr die Institutsseite „Beratungsgespräche erfassen“ aus. Der
+Notiz-Schritt von „Termin beenden“ (Web und App) fragt deshalb bei Terminen mit aktivem Beratungs-Service
+(auch Beratung + Behandlung) das **Ergebnis der Beratung** als Pflicht ab: Neuer Termin vereinbart,
+Überlegt noch, Nicht behandelbar, Sonstiges. Ein im Ablauf gebuchter Folgetermin wählt „Neuer Termin“ vor.
+Ein Vertrag im Termin (Formular-Einreichung am Termin) legt „Vertrag abgeschlossen“ automatisch an, schon
+erfasste Gespräche werden nicht noch einmal gefragt. Die Terminnotiz ist die Notiz des Ergebnisses.
+Status `GET /phorest/appointment/{b}/{a}/consultation-outcome`, gespeichert über den Notiz-Endpunkt mit
+`consultation_outcome`; die Pflicht greift nur mit `consultation_outcome_supported: true`, damit ältere
+App-Builds weiter beenden können. Logik: `AppointmentConsultationOutcome`. Details und die Anrufliste,
+die daraus entsteht: [Überlegt noch](UEBERLEGT-NOCH.md).
+
 ### Kundenkonto-Schuld & geführter Beenden-Ablauf
 
 Signal-Banner + Kassen-Schritt (eingeführt 08.08.2026, umgebaut 20.08.2026):
