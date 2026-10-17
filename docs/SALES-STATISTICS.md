@@ -438,7 +438,8 @@ SalesStatisticsService (app/Services/)
 ### Datengrundlage
 
 - **Tabelle:** `contracts`
-- **Relevante Status:** `active`, `completed` (über `SALE_STATUSES` Konstante)
+- **Relevante Status:** `active`, `completed` (über `SALE_STATUSES` Konstante) — für Vertragsanzahl, Umsatz und Ø KPZ
+- **Verkaufte KPZ bei Upgrade/Downgrade:** Summen laufen über `Contract::SOLD_ZONE_STATUSES` (zusätzlich `modified`) und `Contract::soldZonesSql()` = `contracts.sold_body_zones`. **Upgrade** (2 → 4): Der ersetzte Vertrag behält 2 KPZ an seinem Abschlusstag, der Nachfolger zählt die Differenz 2. **Downgrade** (6 → 4, seit 15.10.2026): Der ersetzte Vertrag zählt an seinem Abschlusstag nur noch 4, der Nachfolger 0 — es gibt nie negative Tageswerte. Gerechnet in `Contract::refreshSoldBodyZones()` über eine Obergrenze je Vertrag (Minimum der KPZ über ihn und alle wirksamen Nachfolger; ein stornierter Folgevertrag zählt nicht). Der `ContractObserver` rechnet bei Änderung von KPZ, Nachfolger oder Status die ganze Kette neu (`refreshSoldBodyZonesChain()`), weil ein Downgrade rückwirkend den Vorgänger kürzt.
 - **Verkaufsdatum:** `signed_at` (Unterschriftsdatum)
 - **Umsatz-Metriken:** `total_value_cents` (Gesamtwert) + `monthly_amount_cents` (SEPA-Rate)
 - **Geldbeträge:** In Cents gespeichert, Frontend rechnet `/100` für Anzeige
