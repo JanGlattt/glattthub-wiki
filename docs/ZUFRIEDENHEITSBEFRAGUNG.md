@@ -87,8 +87,10 @@ erscheinen als offene Folgeaufgaben und lösen zusätzlich eine Benachrichtigung
   Einheiten verbraucht), ohne Folgetermin und ohne weiteres aktives Paket. Kundinnen mit einem Widerruf
   in der Historie werden **markiert, nicht versteckt**. Eine Zeile bündelt **alle gemeinsam beendeten
   Pakete** — die Paket-Spalte zeigt z.B. „Abo.SEPA CRM 2x9er — Beine, Bikinizone, Intim (3)".
-- **Senden** löst den Versand sofort aus (Bestätigungs-Dialog). WhatsApp wird bevorzugt, sonst E-Mail —
-  je nach Marketing-Einwilligung im Phorest-Kundenprofil. Je Kundin nur einmal.
+- **Senden** löst den Versand sofort aus (Bestätigungs-Dialog). Seit 17.10.2026 **E-Mail zuerst**,
+  WhatsApp nur als Rückfall — je nach Marketing-Einwilligung im Phorest-Kundenprofil. Je Kundin nur
+  einmal. Mit dem Admin-Schalter „Automatisch versenden“ geht die Befragung täglich um 10 Uhr ohne
+  Klick raus (`satisfaction:auto-send`, Cron `/api/cron/satisfaction-auto-send`).
 - **Überspringen** nur mit Pflicht-Begründung, im Verlauf nachvollziehbar; „Zurückholen" ist möglich.
 - **Offene Folgeaufgaben**: Rückrufwünsche (mit Nummer) und Auffrisch-Anfragen aus den Antworten — mit
   „Erledigt"-Haken. Zusätzlich wird das Institut sofort benachrichtigt (In-App/Push; über die
@@ -98,10 +100,27 @@ erscheinen als offene Folgeaufgaben und lösen zusätzlich eine Benachrichtigung
 
 **Befragungs-Seite (Kundin)**
 
-Persönlicher Link (30 Tage gültig), mobil optimiert, nicht indexierbar: Sternebewertung 1–5 +
-Freitext. Danach je nach Bewertung Google-Link bzw. Rückruf-Angebot, Auffrisch-Anfrage (das Institut
-meldet sich — bewusst kein Direktkauf) und der Freunde-werben-Hinweis (50 €/50 €). Beantwortete
-Befragungen bleiben über den Link erreichbar, die Bewertung ist unveränderlich.
+Persönlicher Link (30 Tage gültig), mobil optimiert, nicht indexierbar. Seit dem Bewertungs-Motor
+(Etappe 2, Jan 17.10.2026) ein Fragebogen in **vier Teilen** (`App\Support\Satisfaction\SurveyQuestions`):
+
+1. **Ergebnis** — Gesamtbewertung 1–5 (einzige Pflicht), bei 1–3 direkt darunter die Rückrufbitte mit
+   Wunschzeit; Ergebnis je Zone (Zonen aus den Paketnamen, „keine Haare mehr“ … „kaum Veränderung“);
+   Rasur heute
+2. **Bei uns** — sechs Punkte mit je 1–5 Sternen, Empfinden der Behandlung
+3. **Empfehlung** — 0–10 (`nps`), „am besten gefallen“, „besser machen“ (landen auch in `feedback_text`)
+4. **Wie weiter** — weitere Zonen, Auffrischsitzung (ja → Auffrisch-Anfrage), Herkunft
+
+Danach: **Gutschein fürs Ausfüllen** (für jede Kundin, unabhängig von den Sternen — sonst wäre er eine
+Belohnung für gute Bewertungen; 10 €, 1 Jahr, für alles, verschenkbar), Google-Link bei 4–5 Sternen
+**bis zum ersten Klick** (Zähl-Umweg `/shared/zufriedenheit/{token}/google`, Merker je Kundin wie bei
+„Wie war's heute?“), Rückruf durch den **Kundenservice** (Ticket, ohne Frist), Freunde werben. Alpine
+kommt über `@livewireScripts`. Beantwortete Befragungen bleiben über den Link erreichbar, die Antwort
+ist unveränderlich.
+
+**Gutschein in Phorest** (`SurveyVoucherService`): beim Abschicken sofort angelegt (Standort der
+Befragung, `clientId` der Kundin, Seriennummer vorab gespeichert), bei Phorest-Fehler im Hintergrund
+(`CreateSurveyVoucherJob`, 5 Versuche, danach `voucher_status = failed` mit Grund in der Verlaufsliste).
+Die Seriennummer steht auf der Danke-Seite.
 
 **Auswertung & Export**
 
@@ -112,19 +131,20 @@ Paketende (Bewertungen je Institut)".
 
 ### Admin-Konfiguration & Meta-Template
 
-**Filament → Integrationen → Zufriedenheitsbefragung**, je Standort: WhatsApp aktivieren,
+**Filament → Integrationen → Zufriedenheitsbefragung**, je Standort: automatisch versenden,
+Gutschein (an/aus, Wert, Monate), WhatsApp-Rückfall aktivieren,
 Superchat-Kanal + Meta-Template wählen, Template-Variablen zuordnen, optional eigene E-Mail-Vorlage
 (sonst Standard-Text). Der Google-Bewertungslink kommt aus der **Bewertungs-WhatsApp-Konfiguration**
 (`review_whatsapp_settings.review_url`) — eine Pflege-Stelle für beide Features.
 
-**Meta-Template-Entwurf** (über Superchat einreichen, Kategorie Utility, URL-Button mit dynamischem
-Suffix):
+**Meta-Vorlage** (Stand 17.10.2026, je Standort, Kategorie **Marketing**, weil sie den Gutschein nennt):
 
-> Hallo {{1}}, dein Behandlungspaket bei glattt ist abgeschlossen — wie zufrieden bist du
-> mit deinen Behandlungen? Über den Button kannst du uns in einer Minute Feedback geben.
-> Der Link ist 30 Tage gültig.
+> Hallo {{1}}, deine Behandlung bei glattt in Bielefeld ist abgeschlossen — wie zufrieden bist du mit
+> deinem Ergebnis? 💛 Die Befragung dauert etwa 3 Minuten. Als Dankeschön gibt es einen
+> 10-€-Gutschein — für alles bei glattt oder zum Verschenken. Ganz lieben Dank!
 >
-> Button „Feedback geben" → `https://hub.glattt.com/shared/zufriedenheit/{{1}}` (Button-Variable = Token)
+> Button „Zur Befragung“ (Dynamische URL) → Basis `https://hub.glattt.com/shared/zufriedenheit/` +
+> Variable „Nur der Link-Token“
 
 Variablen-Zuordnung im Admin: Position 1 = Vorname; Button-Variable = „Nur der Link-Token".
 
@@ -208,7 +228,10 @@ Benachrichtigungs-Regel-Engine, s. NOTIFICATIONS.md).
   sonst bleibt `@if` literal stehen und das `@endif` wird verwaist (Parse-Error erst
   beim Rendern).
 - Die Sternewahl der öffentlichen Seite ist reines CSS (`flex-direction: row-reverse` +
-  `input:checked ~ label`) — kein Alpine/Livewire auf der Seite.
+  `input:checked ~ label`); seit 17.10.2026 schaltet Alpine (über `@livewireScripts`) die vier Teile
+  um — ohne Livewire-Skripte lädt kein Alpine, dann stehen alle Teile-Beschriftungen nebeneinander.
+- Der Cron-Endpunkt `satisfaction-auto-send` braucht einen Cloud-Scheduler-Job (täglich 10:00,
+  `--max-retry-attempts=3`), sonst läuft der automatische Versand auf Prod nie.
 - `getStatistics()` respektiert `scope_branch_ids` (Datensichtbarkeit des CSV-Exports).
 - Recht `manage_satisfaction_surveys` erbt per Migration von `view_appointment_detail`
   (gleiche Zielgruppe wie die Bewertungs-WhatsApp); Own-Stufe der Datensichtbarkeit zählt
