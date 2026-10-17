@@ -219,7 +219,9 @@ Suche als eigene Pille rechts), auf iOS 17/18 als klassische Leiste — die App 
   Institute mit Farbkreis und Kürzel, „Ausgeblendet"-Kennzeichen) und `NotificationsView`
   (`GET /phorest/notifications?branch_id=`, Tippen markiert gelesen + öffnet das Ziel, „Alle
   gelesen", Link zur Mitteilungsseite — dieselben Endpunkte wie Glocke und Web-Sheet, aufgerufen
-  mit den WebView-Cookies inkl. IAP). **Seit 28.09.2026 als Mitteilungszentrale** (TestFlight-Befund
+  mit den WebView-Cookies inkl. IAP; seit 17.10.2026 liefert der Feed nur Ungelesene plus die 40
+  neuesten Gelesenen statt der ganzen Historie, und die View verwirft Antworten, die vor einem
+  „gelesen" losgingen — siehe [Benachrichtigungen](NOTIFICATIONS.md#glocken-feed-get-phorestnotifications)). **Seit 28.09.2026 als Mitteilungszentrale** (TestFlight-Befund
   131, Jan wählte Entwurf 1 „Heute zuerst“ plus Kennzahlen-Zeile und angepinnte dringliche Meldungen
   aus Entwurf 2; Artefakt https://claude.ai/artifact/SobVHJ6aHK1g1AmYteXFMF): Chips Alle / Ungelesen /
   Wichtig, dringliche ungelesene Meldungen als Abschnitt „Dringlich“ oben, Tagesgruppen Heute /

@@ -599,6 +599,31 @@ Nutzer + Regel, Cascade beim Löschen von Nutzer oder Regel.
 | `/push/mark-read` | POST | Aktion „Als gelesen markieren" der iOS-App: `log_id` → Klick verbuchen, verknüpfte In-App-Meldung (`data.notification_id`) für den Nutzer lesen, Antwort `unread_count` für den Badge; nur eigene Push-Logs (sonst 404) |
 | `/push/test` | POST | Test-Push senden |
 
+### Glocken-Feed (`GET /phorest/notifications`)
+
+Eine Liste für vier Oberflächen: Web-Sidebar (Glocke), mobiles Mehr-Sheet, native
+Mitteilungszentrale der App und der App-Start (`StartViewModel`). Parameter `branch_id`
+(leer = Stamm-Institut). Antwort `data` (neueste zuerst) und `unread_count`.
+
+**Seit 17.10.2026 begrenzt und ohne N+1:** Die Liste enthält **alle ungelesenen** Meldungen
+(höchstens `Notification::BELL_UNREAD_LIMIT` = 200, der Zähler zählt darüber hinaus) plus die
+**neuesten gelesenen** (`BELL_RECENT_LIMIT` = 40, für die Tagesgruppen der App). Der Lesestatus
+kommt aus einer einzigen Abfrage (`readers` auf den Nutzer eingeschränkt). Vorher lieferte der
+Endpunkt die gesamte Historie — Jans Konto sah in Prod 627 Meldungen, jede mit eigener
+`getReadAtForUser()`-Abfrage; die App brauchte Sekunden bis zur Liste, und jede Sidebar fragte
+das alle 120 s ab. Die vollständige Historie bleibt Sache des Posteingangs (unten).
+`POST /phorest/notifications/mark-all-read` trägt alle Ungelesenen mit **einem** `insertOrIgnore`
+ein. Vorlagen (`is_webhook_template`/`is_automation_template`) sind ausgeschlossen (`sent()`).
+Tests: `tests/Feature/NotificationBellFeedTest.php`.
+
+**Wettlauf „Gelesen" gegen langsame Antwort:** Das Öffnen des Panels startet einen Ladevorgang;
+drückt jemand sofort „Gelesen", leert die Oberfläche sofort, und die ältere Antwort kam Sekunden
+später mit dem alten Stand zurück — die Meldungen tauchten wieder auf (Video Jan, 17.10.2026).
+Sidebar, Mehr-Sheet (`notificationsSeq`) und `NotificationsView` (`generation`) zählen deshalb
+bei jeder lokalen Änderung hoch und verwerfen Antworten, die vor der Änderung losgingen; nach
+„Alle gelesen" zieht die Sidebar den Serverstand still nach. Siehe Wissen
+`optimistische-aenderung-alte-antwort-gewinnt`.
+
 ### Mitteilungsseite (`/hub/notifications`)
 
 Seite `hub/notifications.blade.php` + `public/js/notifications-page.js` (Alpine `notificationsPage`),
@@ -828,6 +853,10 @@ tail -f storage/logs/laravel.log | grep -i "notification\|push"
 
 ## Changelog
 
+- **17.10.2026 — Glocken-Feed schlank:** nur Ungelesene plus 40 neueste Gelesene, Lesestatus aus
+  einer Abfrage (vorher 627 Meldungen × 1 Abfrage für Jans Konto, App-Mitteilungszentrale brauchte
+  Sekunden); „Alle gelesen" als ein Insert; Sidebar, Mehr-Sheet und App verwerfen veraltete
+  Antworten, damit „Gelesen" nicht Sekunden später zurückspringt.
 - **09.10.2026 — E-Mail als dritter Kanal:** `channel_email` je Regel, Nutzer-Wahl `email`,
   `HubNotificationMail`; Kundenservice-Anlässe „Neue Mail“ (neu) und „Kundin hat geantwortet“
   per Mail, erst im Live-Betrieb.
