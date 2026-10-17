@@ -163,10 +163,17 @@ und die Kunden-Sperre laufen unter `view_appointment_detail`.
   der Bewertungsseite zeigen", „Persönlicher Satz".
 - **Protokolle → Trinkgeld & Qualität – Protokoll** (`TreatmentFeedbackRequestResource`, nur lesen):
   jede Anfrage mit Versand-Ausgang, Sternen, Trinkgeld, Fehler/Grund, Kommentare im Modal.
-- **Meta-Vorlage (Superchat):** Du-Form, z.&nbsp;B. „Hallo {{1}}, schön, dass du heute bei uns
-  warst! {{2}} würde sich über deine Rückmeldung freuen — bewerte deine Behandlung in einer
-  Minute:" mit URL-Button `https://hub.glattt.com/shared/danke/{{3}}` (Variable 3 = „Nur der
-  Link-Token"). Vorlage legt Jan in Superchat an; ohne genehmigte Vorlage greift der nächste Kanal.
+- **Meta-Vorlage (Superchat):** Du-Form, eine Vorlage je Standort (Stand 17.10.2026):
+  „Hallo {{Vorname}}, danke für deinen Besuch heute bei glattt in Bielefeld! 💛 Wie war deine
+  Behandlung bei {{Freitext}}? … {{Freitext}} Ganz lieben Dank!" mit URL-Button (Dynamische URL)
+  Basis `https://hub.glattt.com/shared/danke/` + Variable „Nur der Link-Token". Zuordnung im Admin:
+  Vorname der Kundin, Vorname der Behandlerin, **„Trinkgeld-Satz"** (der Hub setzt je nach Schalter
+  „Trinkgeld anbieten" den Satz mit Trinkgeld oder den Alternativ-Text ein — eine Vorlage für beide
+  Fälle), Link-Token. Vorlage legt Jan in Superchat an; ohne genehmigte Vorlage greift der nächste Kanal.
+- **Danke-WhatsApp (WhatsApp 2):** eigene Vorlage im selben Kanal, URL-Button Basis
+  `https://hub.glattt.com/shared/danke/` + Variable „Nur Token/google" — so läuft der Klick über
+  den Zähl-Umweg. Schalter, Uhrzeit am Folgetag (Standard 18:00) und Variablen im Abschnitt
+  „Danke-WhatsApp (am Folgetag)".
 
 ### Endpunkte
 
@@ -174,6 +181,8 @@ und die Kunden-Sperre laufen unter `view_appointment_detail`.
 |---|---|
 | `GET/POST /shared/danke/{token}` | Bewertungsseite, Abgabe (einmalig) |
 | `GET/POST /shared/danke/{token}/abmelden` | Abmeldung (Bestätigungs-Schritt) |
+| `POST /shared/danke/{token}/rueckruf` | „Rückruf anfordern" nach der Bewertung (bis 3 Sterne, mit `callback_time`) |
+| `GET /shared/danke/{token}/google` | Zähl-Umweg zum Google-Bewertungsfenster: merkt den Klick (Anfrage + `client_contact_preferences`), leitet weiter |
 | `GET /shared/danke/trinkgeld/{uuid}`, `…/status` | Rücksprung von Mollie, Polling |
 | `POST /api/shared/pay/applepay-session` | Apple-Pay-Merchant-Session (geteilt mit der Bezahlseite) |
 | `GET /hub/treatment-feedback/appointment/{branch}/{id}/status` | Stand für den Beenden-Dialog (`enabled`, `blocked`, `would_send`, `reason`, `staff_name`) |
@@ -195,7 +204,9 @@ Team-Sicht entscheidet `TipStatisticsService` anhand von `view_team_tips`.
 
 - Zahlarten: alle aktiven Mollie-Methoden außer SEPA-Lastschrift und Überweisung
   (`TipPaymentService::EXCLUDED_METHODS`); Karte über Mollie Components, Apple Pay direkt,
-  alles andere mit vorgewählter Methode zum Anbieter. Beträge 1–500 €.
+  alles andere mit vorgewählter Methode zum Anbieter. Beträge zwischen Mindestbetrag und
+  `tip_max_cents` (Standard 100 €, höchstens 500 €); ohne `tip_custom_enabled` nur die Vorauswahl —
+  geprüft in `TipPaymentService::startPayment()`, nicht nur in der Kasse.
 - Gebühr: beim Anlegen geschätzt (`estimateFee()`, Listenpreise DE netto je Zahlart), nach der
   Zahlung mit der bekannten Zahlart neu geschätzt, stündlich durch `MollieFeeResolver` ersetzt
   (Balance Transactions `type=payment`, `context.paymentId`, `deductions`/`resultAmount`;
@@ -312,6 +323,38 @@ https://claude.ai/artifact/LYTdRBZdTH1mqWYsnSvp6a). Ziel: eine Frage je Schritt,
 - **Bezahlen:** über die App-Kasse (`?kasse=app`, siehe [Kundenportal](KUNDENPORTAL.md),
   Abschnitt „App-Kasse“).
 
+### Bewertungs-Motor (17.10.2026)
+
+Aus „Bewertungs-WhatsApp" (Knopf in der Terminansicht) und „Trinkgeld & Qualität" wird **eine**
+automatische Nachricht nach jeder Behandlung (Booking-Masterplan, Entscheidungen Jan 17.10.2026):
+
+- **Google-Knopf ab 4 Sternen** (vorher nur 5) für die heutige Behandlung — aber nur, bis die
+  Kundin ihn **einmal geklickt** hat; danach nie wieder (Seite, App, WhatsApp 2). Einzige Stelle:
+  `TreatmentFeedbackResponder::googleLinkFor()`; sie liefert den Zähl-Umweg
+  `/shared/danke/{token}/google`, nie die Google-Adresse. Merker `client_contact_preferences.google_review_clicked_at`
+  (je Kundin), zusätzlich `treatment_feedback_requests.google_clicked_at`. Die Google-Adresse bleibt
+  in `review_whatsapp_settings.review_url`. Das Review-Gating (Google nur bei guten Sternen) ist eine
+  bewusste Entscheidung von Jan trotz Google-Richtlinie.
+- **WhatsApp 2 „Danke + Google"** am Folgetag (`thanks_send_at`, Standard 18:00), nur bei 4–5 Sternen
+  ohne Google-Klick. `scheduleThanks()` plant beim Antworten (`thanks_status = scheduled`),
+  `SendTreatmentThanksJob` → `TreatmentFeedbackSender::sendThanks()` prüft den Klick unmittelbar vor
+  dem Versand erneut; Sicherheitsnetz im Cron `feedback:dispatch-due`.
+- **Rückruf durch den Kundenservice (Büro):** Haken plus Wunschzeit (`callback_time`:
+  vormittags/nachmittags/abends), auch nachträglich über „Rückruf anfordern" auf der Danke-Seite.
+  `CallbackTicketService` legt ein Ticket an (Kanal `hub`, Tags `rueckruf`/`bewertung`, Anliegen
+  „Rückruf", wenn im Admin angelegt) mit allen Angaben als interne Notiz und meldet es dem Team
+  (`supportTicketCreated`). Erst ab Stichtag (`SupportMode::usesHub()`), davor nur die Meldung
+  „Rückruf gewünscht". Der Kundin wird **keine Frist** genannt.
+- **Pflicht** ist nur „Wie war deine Behandlung heute?" (`stars_today` required, Schild „Pflicht");
+  alle übrigen Fragen tragen „freiwillig". Fragen linksbündig, Sterne mittig.
+- **Trinkgeld:** Schalter `tips_enabled` (ganz), `tip_custom_enabled` (freier Betrag), `tip_max_cents`.
+  WhatsApp 1 nennt das Trinkgeld über die Variable „Trinkgeld-Satz" (`tipSentence()`, Texte
+  `tip_sentence`/`no_tip_sentence`, nie leer).
+- **Manueller Knopf „Bewertungs-WhatsApp"** ruht an Standorten mit aktivem Modul
+  (`ReviewWhatsappService::status()`/`send()`).
+- App: `PortalSnapshotService` liefert `google_url` (Zähl-Umweg), `callback_time`, `tip_max_cents`,
+  `tip_custom_enabled`; die native App wertet die neuen Felder noch nicht aus.
+
 ### Dateien
 
 - Services: `app/Services/TreatmentFeedback/` (`TreatmentFeedbackScheduler`,
@@ -366,6 +409,7 @@ https://claude.ai/artifact/LYTdRBZdTH1mqWYsnSvp6a). Ziel: eine Frage je Schritt,
 
 | Datum | Änderung |
 |---|---|
+| 17.10.2026 | Bewertungs-Motor Etappe 1: Google-Knopf ab 4 Sternen bis zum ersten Klick (Zähl-Umweg), Danke-WhatsApp am Folgetag, Rückruf mit Wunschzeit als Kundenservice-Ticket, Pflichtfeld, freier Trinkgeld-Betrag schaltbar mit Obergrenze, Trinkgeld-Satz als Vorlagen-Variable, manueller Bewertungs-Knopf ruht |
 | 10.10.2026 | Trinkgeld geht zu 100 % an die Behandlerin (Jan): Lohnmonat nimmt `amount_cents` statt `net_cents`, Mollie-Gebühr nur noch als „Gebühr (Unternehmen)" in Statistik/CSV/App, KPI `trinkgeld.fees` ersetzt `tips_net`, Texte auf Kundenseite, My glattt, Hub-App und Anleitungen; frühere Netto-Lohnmonate bleiben unverändert |
 | 04.10.2026 | Bewertungsseite im Browser: Lob-/Problem-Karten und Rückruf wie in der App |
 | 03.10.2026 | My glattt: Bewertung wie bei Uber (Sterne, Lob-/Problem-Karten, Rückruf, Trinkgeld bei jeder Sternzahl), Schnellbewertung aus der Mitteilung, Karten auf der Seite „Trinkgeld“, Anlass „Rückruf nach Bewertung gewünscht“ |
