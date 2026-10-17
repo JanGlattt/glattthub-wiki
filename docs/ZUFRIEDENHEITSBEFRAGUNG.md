@@ -117,6 +117,14 @@ Belohnung für gute Bewertungen; 10 €, 1 Jahr, für alles, verschenkbar), Goog
 kommt über `@livewireScripts`. Beantwortete Befragungen bleiben über den Link erreichbar, die Antwort
 ist unveränderlich.
 
+**Kunden-App „My glattt“ (nativ, seit 17.10.2026):** Die Befragung liegt als `survey` in der
+Konto-Kopie (`PortalSnapshotService::survey()` — offen, solange der Link gilt, danach 60 Tage als Dank
+mit Gutschein); Fragen und Antwortmöglichkeiten liefert der Hub mit. Startseite: Karte „Deine Behandlung
+ist abgeschlossen“ → `SurveyFlow.swift` (vier Teile, Rückruf mit Wunschzeit, Dank mit Gutschein-Nummer
+zum Kopieren). Antwort: `POST /api/app/v1/befragung` → Auftrag `survey` im Auftragsbuch → Hub-Worker →
+`SatisfactionSurveyResponder` (dieselbe Logik wie die Web-Seite). Kopie wird nach Versand, Antwort,
+Gutschein und Google-Klick aufgefrischt (`refreshSurvey`). UI-Test `SurveyFlowUITests`, Demo `-DemoSurvey open|done`.
+
 **Gutschein in Phorest** (`SurveyVoucherService`): beim Abschicken sofort angelegt (Standort der
 Befragung, `clientId` der Kundin, Seriennummer vorab gespeichert), bei Phorest-Fehler im Hintergrund
 (`CreateSurveyVoucherJob`, 5 Versuche, danach `voucher_status = failed` mit Grund in der Verlaufsliste).
