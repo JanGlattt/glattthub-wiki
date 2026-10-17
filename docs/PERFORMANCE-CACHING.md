@@ -91,8 +91,22 @@ return StatisticsCache::remember(
 | Buchungsstand, Kalenderübersicht (Phorest live) | **Fester Takt** | `upcomingConsultationsData` liest aus dem Cache (5 Min frisch), `WarmStatisticsJob('booking-status')` alle 5 Minuten (Cloud Scheduler → `/api/cron/warm-booking-status`), Karte zeigt Datenstand + Aktualisieren |
 | Alles andere | **Stale-while-revalidate** | Services über `StatisticsCache`, `WarmStatisticsJob('reports')` alle 15 Minuten für Übersicht (`WidgetKpiService::values` je Bericht × Standort, Monat) + Leit-Karten + Buchungsstand + alte Übersichts-Endpunkte |
 
+**App-Cockpit (Startbildschirm der iOS-App, 17.10.2026):** Das Cockpit lädt seinen Rahmen über
+`/api/app/start`, die Tagesmessung über `/api/app/start/team` und die Zahlen über die
+Widget-Endpunkte. Prod vorher: Kennzahlen-Zeile (`/api/app/widgets/kpis`) Median 4,3 s, p90 12 s;
+der Rahmen 1,1 s, weil die Bonus-Kachel den kompletten Bonus-Stand bei jedem Start neu rechnete; die
+Widgets Tag, Beratungen und Körperzonen cachten je Nutzerin und rotierten ihre Schlüssel alle 10
+Minuten bzw. stündlich (jede Rotation ein kalter Aufruf). Jetzt: Kennzahlen über `WidgetKpiService`
+(Statistik-Cache, Plan `cockpit` wärmt Standard- und Rollen-Sätze mit Verlauf je Standort, Teil
+von `reports`), Bonus-Stand über `BonusCalculationService::cachedBoard()` (Gruppe `bonus`, 5 Min,
+`touch` aus Vertrags- und Widerrufs-Observer, Termin-Sync und allen Bonus-Stammdaten per Trait
+`TouchesBonusCache`), Widgets Tag/Beratungen/Körperzonen mit Schlüssel nach Standort-Sicht
+(`AppBranchList::scopeHash`) statt Nutzer-ID und Rezept mit Person — Stale-while-revalidate ohne
+Rotation. Die Tagesmessung des Instituts wärmt weiterhin `stats:cache-consultations` alle 15 Minuten
+über `AppStartService::warmTeamCache()`.
+
 **Wärm-Pläne** stehen in `App\Services\Statistics\StatisticsWarmPlan` (`reports`, `sales`,
-`booking-status`): Rezepte, die **dieselben Controller-/Service-Methoden wie das Web** aufrufen —
+`booking-status`, `cockpit`): Rezepte, die **dieselben Controller-/Service-Methoden wie das Web** aufrufen —
 so entstehen exakt die Schlüssel, die die Seiten anfragen. `WarmStatisticsJob` (ShouldBeUnique je
 Plan) arbeitet sie im `inline`-Modus ab: Frisches wird übersprungen. Konsole:
 `php artisan reports:warm-cache {reports|sales|booking-status} [--queue]`.
