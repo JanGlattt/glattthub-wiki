@@ -319,6 +319,29 @@ nicht erst eingebunden.
   immer exakt die gesetzliche Pflichtpause (5.748 von 5.748 Tagen) — eine
   Compliance-Kennzahl daraus wäre konstant 100 % und wurde deshalb verworfen.
 
+### Performance der Abfragen (17.10.2026)
+
+Die HR-Quelle war mit 41 s die langsamste Karte der Berichte-Übersicht (Prod-Logs). Direkt gegen die
+Prod-Datenbank gemessen: `getKpis` für einen Monat 17 s, für den Seitenstandard von 12 Monaten 67 s
+mit 462 Abfragen. Vier Ursachen, alle behoben:
+
+| Ursache | Wirkung | Lösung |
+|---|---|---|
+| `whereDate()` auf `stats_historic_appointments.appointment_date` | `date(spalte)` verhindert jeden Index: voller Scan über 296.000 Zeilen, 7 s je Abfrage | `where(spalte, '>=', von)` + `where(spalte, '<', bis + 1 Tag)` — 0,3 s. Gilt für alle Datumsvergleiche der Klasse (`work_date`, `signed_at`, `period_month`, `valid_from`) |
+| Join auf `consultation_services` über `service_name` | 103 Namen stehen je Standort mehrfach — die Termine wurden um ~7 % vervielfacht, Zonen und Stunden zu hoch gezählt | `leftJoinSub` auf eine je Name gruppierte Ableitung (`MAX(is_consultation)`, `MAX(body_zones)`) |
+| `HrSalary::forEmployeeOn()` je Person und Monat | 444 Gehaltsabfragen bei 37 Personen über 12 Monate | alle Gehaltsstände einmal laden, je Monat den jüngsten gültigen nehmen |
+| Mitarbeiterliste viermal je Berechnung, `BranchVisibility::hiddenIds()` 74-mal | je Aufruf eine Abfrage auf die Cache-Tabelle | Memo je Instanz (`allEmployees()`) bzw. 30-s-Prozess-Memo in `BranchVisibility` |
+
+Dazu rechnet `outputTotals()` Zonen, Termine und gebuchte Minuten in **einer** Abfrage, und die
+Migration `2026_10_17_200000` legt den Index `(branch_id, deleted, activation_state,
+appointment_date)` an — mit Standortfilter wählte MySQL sonst den reinen `branch_id`-Index und las
+die ganze Filiale (9,8 s statt 1,0 s).
+
+Nachher (Prod, Index noch ohne): Monat 1,2 s, 12 Monate 4,7 s, 12 Monate mit Standort 7,7 s (mit
+Index erwartet ~1–2 s). **Die Zonen je Stunde sind seitdem niedriger** (Oktober: 6,48 statt 7,73) —
+das ist die Korrektur der Doppelzählung, kein Datenverlust. Der Cache darüber ist seit demselben Tag
+Stale-while-revalidate, siehe [Performance & Caching](PERFORMANCE-CACHING.md).
+
 ### CSV-Export
 
 Acht Quellen unter der Seite `hr-kennzahlen`: `hr-capacity`, `hr-productivity`,
