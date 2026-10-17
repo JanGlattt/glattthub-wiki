@@ -122,6 +122,11 @@ nicht blockieren. Die Cron-Endpunkte legen nur noch den Job auf die Queue — vo
 `schulden`/`office`/`bonus` 5 Min, `reports-overview` 15 Min (Phorest-Endpunkte 5 Min),
 `booking-outlook` 1 h, `free-slots` nach `consultations.free_slots.cache_minutes`.
 
+**Konventionstest:** `tests/Unit/StatisticsCacheConventionTest.php` bricht, wenn ein Endpunkt der
+`StatisticRegistry` oder eine Quelle der `KpiRegistry` ungecacht rechnet, `whereDate()` auf der
+Terminhistorie oder ein Namens-Join auf `consultation_services` zurückkommt. Neue Statistiken sind
+damit von Anfang an gecacht (Arbeitsregel Jan, 17.10.2026).
+
 **Abdeckung (17.10.2026):** Alle 114 Endpunkte der `StatisticRegistry` laufen über den Cache (93 per
 Service-Wrapper, 21 per `cachedReport()`/`ReportsOverviewCache`). Was dennoch kalt bleibt: der
 allererste Aufruf einer Filterkombination, die seit zwei Tagen niemand geöffnet hat, und Zeiträume
