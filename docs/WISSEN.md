@@ -57,6 +57,9 @@ Konzept und Entwürfe: Projektwissen `.github/knowledge/glatttipedia-neu-wissens
 | `knowledge_pages` | Seiten | `space_id`, `parent_id`, `slug` (je Bereich eindeutig), `title`, `summary`, `blocks` (veröffentlicht), `draft_blocks` (Entwurf), `search_text`, `status` (`draft`/`published`/`archived`), `kind` (`page`/`start`/`aktion`), `valid_from`, `valid_until`, `branch_ids`, `show_banner`, `audiences`, `owner_user_id`, `review_at`, `review_interval_months`, `requires_acknowledgement`, `published_version_id`, `imported_from_url`, `import_log`, SoftDeletes |
 | `knowledge_page_versions` | Veröffentlichungen | `page_id`, `version_no`, `blocks`, `change_summary`, `author_user_id`, `published_at` |
 | `knowledge_audiences` | Zielgruppen | `key`, `name`, `color`, `rules` (JSON: `permissions_any`, `branch_ids`, `departments`, `user_ids`), `is_default` |
+| `knowledge_feedback` | Rückmeldungen | `page_id`, `user_id`, `kind` (`helpful`/`not_helpful`/`outdated`), `comment`, `resolved_at`, `resolved_by_user_id` |
+| `knowledge_acknowledgements` | Lesebestätigungen | `page_id`, `user_id`, `version_id`, `acknowledged_at` (eindeutig je Seite und Person) |
+| `knowledge_user_states` | Persönlicher Stand | `user_id`, `feed_seen_at` |
 | `knowledge_media` | Uploads | `disk`, `path`, `url`, `mime`, `size`, `width`, `height`, `alt_text`, `ai_description` |
 
 Rechte (Katalog, Migration, Gate): `view_knowledge` (alle Rollen mit `access_hub`), `edit_knowledge` und
@@ -194,6 +197,46 @@ Veröffentlichen fragt die Änderungszeile ab. Die Felder des Seitenpanels halte
   Push geht über den bestehenden Anlass `news.published` (`NewsObserver`), `push_enabled = false` unterdrückt ihn.
   Der Baum-Endpunkt `/api/tree` liefert `start`, `actions` und `notices` auch an die App.
 
+### Stufe 2: Prozesse, Versionen, Pflege (19.10.2026)
+
+- **Prozess-Block** (`type: process`): Schritte mit Wer, Was, Details, Womit und optionaler Entscheidung (Frage, Ja →, Nein →).
+  `ProcessDiagram::layout()` legt Bahnen (eine je „Wer“) und Spalten (eine je Schritt) fest, das Partial
+  `wissen/partials/process.blade.php` zeichnet daraus ein SVG (Knoten als `foreignObject`, damit Text umbricht) und
+  bietet die Checkliste zum Abhaken (nur lokal). `KnowledgeBlocks::blockText()` liefert den Prozess als Text für Suche
+  und glatttBert. Geplant: echtes BPMN über bpmn-js (Block „BPMN-Diagramm“, XML + SVG, PHP-Parser für den Bert-Text).
+- **Versionsvergleich** `/hub/wissen/bearbeiten/{page}/versionen?von=&bis=` (`entwurf` = aktueller Stand):
+  `WissenDiff::compare()` vergleicht blockweise per LCS über den Blocktext, macht aus einem Lauf „entfernt“ plus
+  „hinzugefügt“ paarweise „geändert“ mit Wort-Diff. „Version n als Entwurf übernehmen“ (`POST …/versionen/{v}/uebernehmen`)
+  ersetzt nur den Entwurf.
+- **Rückmeldungen** (`knowledge_feedback`): „War diese Seite hilfreich?“ ist eine Stimme je Person (Wechsel ersetzt),
+  „Veraltet melden“ legt eine Meldung mit Kommentar an und löst den Anlass `knowledge.outdated_reported` an die
+  verantwortliche Person aus. Redaktion: Karte „Rückmeldungen“ mit Erledigt, Bewertungen der letzten 90 Tage.
+- **Prüfdatum**: `wissen:pruefungen` (täglich 07:30, Scheduler-Job `wissen-pruefungen`) mahnt überfällige Seiten über
+  `knowledge.review_due`, höchstens alle 7 Tage (`review_reminded_at`). „Geprüft — gilt weiter“ (Redaktion und Editor)
+  verschiebt `review_at` um das Intervall.
+- **Bereich wechseln**: Dropdown „Bereich“ im Editor; `space_id` im Autosave macht die Seite zur obersten Seite des
+  neuen Bereichs mit dort eindeutigem Slug, danach lädt der Editor neu.
+
+### Stufe 3: Feed, Pflichtseiten, Kiosk, Drive (19.10.2026)
+
+- **Was ist neu** `/hub/wissen/neu`: alle Veröffentlichungen (Versionen) nach Tagen, sichtbar nach Zielgruppe; der Besuch
+  setzt `knowledge_user_states.feed_seen_at`, die Seitenleiste zählt Neues seit dem letzten Besuch.
+- **Pflichtseiten** (`requires_acknowledgement`): Box „Pflichtseite“ auf der Seite mit „Gelesen und verstanden“
+  (`POST /api/seite/{page}/bestaetigen`, `knowledge_acknowledgements` je Version — eine neue Version macht die
+  Bestätigung erneut fällig), Liste `/hub/wissen/pflicht`, Redaktionsübersicht `/hub/wissen/pflicht/{page}` (bestätigt,
+  ältere Version, fehlt — Grundgesamtheit: aktive Personen mit `view_knowledge`, die die Seite sehen dürfen). Beim
+  Veröffentlichen einer Pflichtseite geht der Anlass `knowledge.required_published` an alle mit `view_knowledge`.
+- **Kiosk** `/shared/wissen/{token}`: derselbe Code, dieselben Views — die Middleware `wissen.kiosk` prüft den Token der
+  Institutsseite, meldet das Service-Konto `institutsseite@system.glattt.com` nur für diese Anfrage an
+  (`Auth::onceUsingId`) und bindet den Token; `App\Support\WissenUrl::route()` erzeugt dann Kiosk-Adressen. **Alle
+  Lese-Links laufen über `WissenUrl::route('…')`, nie direkt über `route('hub.wissen.…')`.** Die Hülle blendet im Kiosk
+  Banner, Rückmeldungen, Bestätigung, Bert, Abmelde-Logik aus; „Institutsseite“ führt zurück. Das Service-Konto hat per
+  Migration nur `view_knowledge` (Zielgruppe „Alle“). Einstieg: Knopf „glatttipedia“ auf der Institutsseite.
+- **Drive-Dokumente** `/hub/wissen/drive` (`WissenDriveService`): die für glatttBert indexierten Drive-Artikel (Docs,
+  PDF, Word, Tabellen, Präsentationen; keine Bilder/Videos) mit Stand „übernommen“ (Seite mit gleicher
+  `imported_from_url`); „Als Seite übernehmen“ legt einen Entwurf an: Link zum Original als erster Block, Text als
+  Absätze, kurze GROSSBUCHSTABEN-Zeilen als Zwischenüberschriften.
+
 ### Suche und glatttBert
 
 - Raum-Suche: MySQL `MATCH … AGAINST` (Boolean, Präfix) auf `title, summary, search_text` plus LIKE auf
@@ -240,6 +283,7 @@ Tests `tests/Feature/WissenTest.php`, `WissenImportTest.php`, `tests/Unit/Knowle
 
 ## Changelog
 
+- **19.10.2026** — Stufe 2 (Prozess-Block mit Bahnen-Diagramm, Versionsvergleich, Rückmeldungen, Prüf-Erinnerung, Bereich wechseln) und Stufe 3 (Was ist neu, Pflichtseiten, Kiosk für die Institut-iPads, Drive-Dokumente); Katalog-Modul „Wissen“ mit drei Anlässen.
 - **18.10.2026 (nachts, 3)** — Home je Bereich ist die Startseite (`kind = start`, nicht in der Liste); Auswahl der glatttipedia neben dem Logo; großes Suchfeld sucht an Ort und Stelle; Leitung nach der alten Site gegliedert; `wissen:struktur` idempotent (`neu` über Titel, `start: true`).
 - **18.10.2026 (nachts, 2)** — Kapitel der Haupt-glatttipedia als Menüband (`is_primary`), Büro/Leitung rechts mit Schloss; Institut-Alltag nach der alten Site gegliedert; Startkarten zeigen Kapitel mit Unterseiten.
 - **18.10.2026 (nachts)** — Struktur-Editor in der Redaktion (Ziehen und Pfeile), Befehl `wissen:struktur`, Büro-Prozesse nach der Navigation der alten Google Site gegliedert (10 Kapitel), Kapitelseiten listen Unterseiten, Werkzeug-Reiter werden bei Platznot zu Symbolen.
