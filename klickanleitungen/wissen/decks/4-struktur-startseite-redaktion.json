@@ -1,0 +1,171 @@
+{
+  "out": "../pdf/Wissen-4-Struktur-Startseite-Redaktion",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "Wissen",
+  "nr": 4,
+  "of": 5,
+  "audience": "buero",
+  "title": [
+    "Struktur, Startseite",
+    "& Redaktion"
+  ],
+  "subtitle": "Klickanleitung für die Redaktion — Kapitel ordnen, Startseiten pflegen, Rückmeldungen und Prüfungen abarbeiten, Versionen vergleichen",
+  "eyebrow": "Wissen · Redaktion",
+  "footerArea": "Wissen",
+  "stand": "19.10.2026",
+  "version": "1.0",
+  "notes": [],
+  "pages": [
+    {
+      "h1": "Struktur und Reihenfolge",
+      "sub": "Unter **Redaktion › Struktur und Reihenfolge** ordnest du die Seiten eines Bereichs: Reihenfolge, Kapitel, Unterseiten — in einem Rutsch gespeichert.",
+      "card": {
+        "title": "Struktur",
+        "text": "Ziehen oder Pfeile, Kapitel sind markiert"
+      },
+      "left": {
+        "shot": "w15-struktur"
+      },
+      "leftCaption": "Der Struktur-Editor: Kapitel fett mit Markierung, Unterseiten eingerückt.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Bereich wählen",
+          "text": "Oben den Bereich wählen. Die Liste zeigt alle Seiten mit ihren Unterseiten."
+        },
+        {
+          "n": 2,
+          "title": "Ordnen",
+          "text": "Am Griff **⋮⋮** ziehen; eine Seite in eine andere hineinziehen macht sie zur Unterseite. Die Pfeile tun dasselbe per Tipp: hoch, runter, einrücken, ausrücken."
+        },
+        {
+          "n": 3,
+          "title": "Speichern",
+          "text": "**Struktur speichern** schreibt alles. Oberste Seiten mit Unterseiten sind danach die Kapitel im Menüband."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "h1": "Die Startseite eines Bereichs",
+      "sub": "Jede glatttipedia hat eine Home-Seite — sie ist der Reiter **Start** und steht nicht in der Seitenliste. Die Bereichsübersicht zeigt ihren Inhalt oben.",
+      "card": {
+        "title": "Startseite",
+        "text": "Home-Seite je Bereich"
+      },
+      "left": {
+        "shot": "w16-startseite"
+      },
+      "leftCaption": "Die Bereichsübersicht mit der Home-Seite oben und der Seitenliste darunter.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Bearbeiten",
+          "text": "Oben rechts **Startseite bearbeiten** — die Home-Seite ist eine normale Block-Seite."
+        },
+        {
+          "n": 2,
+          "title": "Anlegen",
+          "text": "Fehlt sie, heißt der Knopf **Startseite anlegen**. Eine Home-Seite hat keine Unterseiten."
+        },
+        {
+          "n": 3,
+          "title": "Alle Seiten",
+          "text": "Darunter steht die vollständige Liste des Bereichs mit Kapiteln und Unterseiten."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "h1": "Redaktion: was ansteht",
+      "sub": "Die Redaktionsseite sammelt alles, was zu tun ist: Neuigkeiten, Rückmeldungen, Entwürfe, geänderte Seiten und fällige Prüfungen.",
+      "card": {
+        "title": "Redaktion",
+        "text": "Rückmeldungen · Entwürfe · Prüfung fällig"
+      },
+      "left": {
+        "shot": "w17-redaktion"
+      },
+      "leftCaption": "Die Karte „Rückmeldungen“ mit einer offenen Veraltet-Meldung.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Rückmeldungen",
+          "text": "Jede Veraltet-Meldung steht hier mit Kommentar und Absenderin. **Erledigt**, sobald die Seite angepasst ist."
+        },
+        {
+          "n": 2,
+          "title": "Prüfung fällig",
+          "text": "Seiten, deren Prüfdatum erreicht ist. **Geprüft** verschiebt das Datum um das Intervall, **Bearbeiten** öffnet den Editor. Die Verantwortliche bekommt zusätzlich eine Erinnerung."
+        },
+        {
+          "n": 3,
+          "title": "Drive-Dokumente",
+          "text": "Der Knopf oben rechts führt zu den Drive-Dateien, die sich als Seite übernehmen lassen."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "h1": "Versionen vergleichen",
+      "sub": "Jede Veröffentlichung ist eine Version. Der Vergleich zeigt zwei Stände nebeneinander, Wort für Wort — und holt eine alte Fassung als Entwurf zurück.",
+      "card": {
+        "title": "Versionen",
+        "text": "Vergleich und Wiederherstellen"
+      },
+      "left": {
+        "shot": "w18-versionen"
+      },
+      "leftCaption": "Zwei Stände nebeneinander: entfernt rot, hinzugefügt grün, geändert mit Markierung im Satz.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Öffnen",
+          "text": "Im Editor rechts unter **Verlauf** auf **Versionen vergleichen** — oder direkt auf eine Version, dann steht sie dem Entwurf gegenüber."
+        },
+        {
+          "n": 2,
+          "title": "Stände wählen",
+          "text": "**Von** und **Bis** wählen, **Vergleichen**. Oben die Bilanz: hinzugefügt, entfernt, geändert."
+        },
+        {
+          "n": 3,
+          "title": "Zurückholen",
+          "text": "**Version n als Entwurf übernehmen** ersetzt nur den Entwurf — veröffentlicht wird erst wieder über den Editor."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "h1": "Drive-Dokumente übernehmen",
+      "sub": "Was bisher als Google Doc, PDF oder Word im Drive lag, kennt glatttBert schon. Die Redaktion holt es als Entwurfsseite in die glatttipedia.",
+      "card": {
+        "title": "Drive-Dokumente",
+        "text": "Als Seite übernehmen"
+      },
+      "left": {
+        "shot": "w19-drive"
+      },
+      "leftCaption": "Die Liste der Drive-Dokumente mit Ordner, Typ und Stand.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Suchen",
+          "text": "Nach Titel oder Ordner filtern."
+        },
+        {
+          "n": 2,
+          "title": "Bereich wählen",
+          "text": "In der Zeile den Zielbereich wählen und **Als Seite übernehmen** tippen."
+        },
+        {
+          "n": 3,
+          "title": "Nacharbeiten",
+          "text": "Der Entwurf öffnet im Editor: Link zum Original oben, der Text als Absätze darunter. Prüfen, kürzen, veröffentlichen."
+        }
+      ],
+      "notes": []
+    }
+  ]
+}

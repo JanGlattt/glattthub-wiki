@@ -1,0 +1,86 @@
+{
+  "out": "../pdf/Wissen-5-Am-Institut-iPad",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "Wissen",
+  "nr": 5,
+  "of": 5,
+  "audience": "institut",
+  "title": [
+    "Die glatttipedia",
+    "am Institut-iPad"
+  ],
+  "subtitle": "Klickanleitung für das Institut — Wissen auf dem geteilten iPad lesen, ohne persönliche Anmeldung",
+  "eyebrow": "Wissen · Kiosk",
+  "footerArea": "Wissen",
+  "stand": "19.10.2026",
+  "version": "1.0",
+  "notes": [],
+  "pages": [
+    {
+      "h1": "Von der Institutsseite aus",
+      "sub": "Auf den geteilten iPads gibt es keine persönliche Anmeldung. Die Institutsseite hat deshalb den Knopf **glatttipedia**, der das Wissen zum Lesen öffnet.",
+      "card": {
+        "title": "Institutsseite",
+        "text": "Knopf glatttipedia oben rechts"
+      },
+      "left": {
+        "shot": "w20-institutsseite"
+      },
+      "leftCaption": "Die Institutsseite der Tageserfassung mit dem Knopf **glatttipedia** im Kopf.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Knopf",
+          "text": "Oben im Kopf der Institutsseite auf **glatttipedia** tippen."
+        },
+        {
+          "n": 2,
+          "title": "Lesen",
+          "text": "Es öffnet dieselbe glatttipedia wie im Hub — ohne Anmeldung, nur zum Lesen, nur mit dem, was für alle bestimmt ist."
+        },
+        {
+          "n": 3,
+          "title": "Zurück",
+          "text": "Oben rechts bringt **Institutsseite** wieder zur Tageserfassung."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Nur für alle",
+          "text": "Büro- und Leitungs-glatttipedia und Blöcke „nur Büro“ erscheinen am Kiosk nicht. Rückmeldungen und Pflichtbestätigungen gibt es nur persönlich angemeldet im Hub."
+        }
+      ]
+    },
+    {
+      "h1": "Lesen am Kiosk",
+      "sub": "Der Kiosk sieht aus wie die glatttipedia im Hub: Menüband mit Kapiteln, Suche, Seiten mit Inhaltsverzeichnis — nur ohne Schreibwerkzeuge.",
+      "card": {
+        "title": "Kiosk",
+        "text": "Lesen und suchen, sonst nichts"
+      },
+      "left": {
+        "shot": "w21-kiosk"
+      },
+      "leftCaption": "Die glatttipedia im Kiosk des Instituts.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Kapitel",
+          "text": "Die Reiter oben und die Karten darunter führen zu den Seiten — wie im Hub."
+        },
+        {
+          "n": 2,
+          "title": "Suche",
+          "text": "Das Suchfeld funktioniert genauso, Treffer öffnen die Seite im Kiosk."
+        },
+        {
+          "n": 3,
+          "title": "Was fehlt",
+          "text": "Kein Bearbeiten, keine Rückmeldung, kein glatttBert — dafür braucht es die persönliche Anmeldung im Hub."
+        }
+      ],
+      "notes": []
+    }
+  ]
+}

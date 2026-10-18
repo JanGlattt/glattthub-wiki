@@ -1,0 +1,146 @@
+{
+  "out": "../pdf/Wissen-3-Prozesse-als-Diagramm",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "Wissen",
+  "nr": 3,
+  "of": 5,
+  "audience": "buero",
+  "title": [
+    "Prozesse als",
+    "Diagramm"
+  ],
+  "subtitle": "Klickanleitung für die Redaktion — Abläufe als Schrittfolge erfassen und als BPMN-Diagramm zeigen",
+  "eyebrow": "Wissen · Prozesse",
+  "footerArea": "Wissen",
+  "stand": "19.10.2026",
+  "version": "1.0",
+  "notes": [],
+  "pages": [
+    {
+      "h1": "Der Prozess-Block",
+      "sub": "Ein Prozess besteht aus Schritten mit **Wer**, **Was**, **Womit** und einer möglichen **Entscheidung**. Daraus entstehen Diagramm und Checkliste von selbst.",
+      "card": {
+        "title": "Prozess",
+        "text": "Schritte mit Wer / Was / Womit / Entscheidung"
+      },
+      "left": {
+        "shot": "w11-schritte"
+      },
+      "leftCaption": "Der Prozess-Block im Editor: je Schritt eine Zeile mit allen Angaben.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Block einfügen",
+          "text": "**/** tippen, **Prozess** wählen. Oben der Name des Prozesses, dann die Schritte."
+        },
+        {
+          "n": 2,
+          "title": "Schritt ausfüllen",
+          "text": "**Wer** (z. B. Leitung — Vorschläge aus den bisherigen Schritten), **Was**, bei Bedarf Details und **Womit** (Phorest, Formular …)."
+        },
+        {
+          "n": 3,
+          "title": "Entscheidung",
+          "text": "Steht an einem Schritt eine Frage, trägst du sie unter **Entscheidung** ein und sagst, was bei **Ja** und **Nein** passiert."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "h1": "Als BPMN-Diagramm",
+      "sub": "Mit **→ Als BPMN-Diagramm** wird aus den Schritten ein echtes BPMN-Diagramm: ein Pool, eine Bahn je Beteiligte, Aufgaben, Gateways für Entscheidungen.",
+      "card": {
+        "title": "BPMN-Modeler",
+        "text": "Aus Schritten wird ein Diagramm, das du frei weiterbearbeitest"
+      },
+      "left": {
+        "shot": "w12-bpmn-studio"
+      },
+      "leftCaption": "Der Modeler im Vollbild: Palette links, Diagramm in der Mitte, oben Name und Übernehmen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Umwandeln",
+          "text": "Unter dem Prozess-Block auf **→ Als BPMN-Diagramm** tippen. Der Modeler öffnet mit dem fertig angeordneten Diagramm."
+        },
+        {
+          "n": 2,
+          "title": "Verfeinern",
+          "text": "Elemente ziehen, Doppelklick benennt, aus der Palette links kommen weitere Aufgaben, Gateways und Ereignisse. **⌘Z** macht rückgängig."
+        },
+        {
+          "n": 3,
+          "title": "Übernehmen",
+          "text": "Oben rechts **Übernehmen**. Das Diagramm landet als eigener Block auf der Seite; den Schritte-Block kannst du behalten oder entfernen."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Direkt zeichnen",
+          "text": "Ein BPMN-Diagramm geht auch ohne Schritte: **/** › **BPMN-Diagramm** öffnet den leeren Modeler."
+        }
+      ]
+    },
+    {
+      "h1": "So sehen es die anderen",
+      "sub": "In der Leseansicht steht das Diagramm mit Zoom und Vollbild — und daneben **Als Text**: derselbe Ablauf in Worten, den auch glatttBert liest.",
+      "card": {
+        "title": "Leseansicht",
+        "text": "Diagramm · Zoom · Vollbild · Als Text"
+      },
+      "left": {
+        "shot": "w13-bpmn-lesen"
+      },
+      "leftCaption": "Das BPMN-Diagramm auf der fertigen Seite.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Zoom",
+          "text": "Mit **−** und **+** vergrößern, das Symbol daneben schaltet aufs Vollbild. Beim Öffnen passt sich das Diagramm der Breite an."
+        },
+        {
+          "n": 2,
+          "title": "Als Text",
+          "text": "Der Umschalter zeigt den Ablauf als Liste: Beteiligte, Schritte in Reihenfolge, Entscheidungen mit beiden Ausgängen."
+        },
+        {
+          "n": 3,
+          "title": "glatttBert",
+          "text": "Fragt jemand den Assistenten nach dem Ablauf, antwortet er aus genau diesem Text — Diagramm und Antwort bleiben immer gleich."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "h1": "Die Textfassung",
+      "sub": "Die Textfassung eignet sich zum Vorlesen, für die App und für alle, die mit Kästchen und Pfeilen nichts anfangen können.",
+      "card": {
+        "title": "Als Text",
+        "text": "Derselbe Prozess als Liste"
+      },
+      "left": {
+        "shot": "w14-bpmn-text"
+      },
+      "leftCaption": "Die Textfassung: Beteiligte oben, dann die Schritte, Entscheidungen eingerückt.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Beteiligte",
+          "text": "Die erste Zeile nennt alle Bahnen des Diagramms."
+        },
+        {
+          "n": 2,
+          "title": "Schritte",
+          "text": "Nummerierte Zeilen sind Aufgaben, in eckigen Klammern steht, wer sie erledigt."
+        },
+        {
+          "n": 3,
+          "title": "Entscheidungen",
+          "text": "Eine Entscheidung zeigt beide Ausgänge mit Pfeil: **Ja →** und **Nein →**, dahinter der nächste Schritt oder das Ende."
+        }
+      ],
+      "notes": []
+    }
+  ]
+}

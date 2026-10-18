@@ -1,0 +1,13 @@
+{
+  "_hinweis": [
+    "Kopie als mask.json anlegen (gitignored). Im Wissen fallen Namen der Verantwortlichen (Seitenfuß, Verlauf,",
+    "Rückmeldungen) und der angemeldeten Person an. Kundendaten gibt es hier nicht."
+  ],
+  "replace": [
+    ["Jan Teichmann", "Anna Beispiel"],
+    ["Claude Dev", "Anna Beispiel"],
+    ["Marie Berger", "Lena Muster"]
+  ],
+  "blankText": [],
+  "sampleTexts": []
+}

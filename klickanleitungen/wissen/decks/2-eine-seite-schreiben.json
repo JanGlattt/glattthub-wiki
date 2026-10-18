@@ -1,0 +1,151 @@
+{
+  "out": "../pdf/Wissen-2-Eine-Seite-schreiben",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "Wissen",
+  "nr": 2,
+  "of": 5,
+  "audience": "buero",
+  "title": [
+    "Eine Seite",
+    "schreiben"
+  ],
+  "subtitle": "Klickanleitung für die Redaktion — neue Seite anlegen, Blöcke setzen, Sichtbarkeit wählen, veröffentlichen",
+  "eyebrow": "Wissen · Redaktion",
+  "footerArea": "Wissen",
+  "stand": "19.10.2026",
+  "version": "1.0",
+  "notes": [],
+  "pages": [
+    {
+      "h1": "Neue Seite anlegen",
+      "sub": "Wer das Recht **Wissen bearbeiten** hat, sieht in jeder Kapitel-Seitenleiste den Knopf **+ Neue Seite**. Die Seite entsteht als Entwurf und ist erst nach dem Veröffentlichen für alle sichtbar.",
+      "card": {
+        "title": "Neue Seite",
+        "text": "Titel eingeben, Entwurf entsteht im aktuellen Bereich"
+      },
+      "left": {
+        "shot": "w7-neue-seite"
+      },
+      "leftCaption": "Das Fenster „Neue Seite“ — Titel genügt, alles Weitere kommt im Editor.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Bereich wählen",
+          "text": "Erst in den richtigen Bereich wechseln (Institut, Büro, Leitung), dann **+ Neue Seite** in der Seitenleiste tippen."
+        },
+        {
+          "n": 2,
+          "title": "Titel",
+          "text": "Den Titel so schreiben, wie ihn jemand suchen würde: „Urlaub beantragen“ statt „Urlaub“."
+        },
+        {
+          "n": 3,
+          "title": "Anlegen und bearbeiten",
+          "text": "Öffnet den Editor. Das Kapitel setzt du dort über **Übergeordnete Seite**."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "h1": "Der Editor",
+      "sub": "Oben die feste Leiste mit Sichern, Vorschau und Veröffentlichen; links der Schreibbereich; rechts das Seitenpanel mit Bereich, Kapitel und Sichtbarkeit.",
+      "card": {
+        "title": "Editor",
+        "text": "Leiste · Schreibbereich · Seitenpanel"
+      },
+      "left": {
+        "shot": "w8-editor"
+      },
+      "leftCaption": "Der Editor einer Seite mit Leiste, Titel und Seitenpanel.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Leiste",
+          "text": "Zurück, Pfad, Speicherstand, Rückgängig/Wiederholen, Panel ein/aus, **Vorschau**, **Sichern**, **Veröffentlichen**. Der Entwurf sichert sich auch von selbst."
+        },
+        {
+          "n": 2,
+          "title": "Schreibbereich",
+          "text": "Titel oben, darunter der Text. Unter dem Titel stehen Wortzahl, Blöcke und Lesezeit."
+        },
+        {
+          "n": 3,
+          "title": "Seitenpanel",
+          "text": "Kurzbeschreibung für Suche und Karte, **Bereich**, **Übergeordnete Seite** (= Kapitel), Art der Seite, Gültigkeit, **Sichtbar für**, Prüfintervall."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "h1": "Blöcke einfügen",
+      "sub": "Eine Seite besteht aus Blöcken: Text, Überschrift, Liste, Checkliste, Schrittfolge, Hinweis, Bild, Tabelle, Zitat, Prozess, BPMN-Diagramm und mehr.",
+      "card": {
+        "title": "Blöcke",
+        "text": "Schrägstrich oder Plus öffnet die Auswahl"
+      },
+      "left": {
+        "shot": "w9-bloecke"
+      },
+      "leftCaption": "Die Block-Auswahl: tippe **/** in einer leeren Zeile oder auf das Plus am Rand.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Auswahl öffnen",
+          "text": "In einer leeren Zeile **/** tippen oder links auf das **+**. Tippen filtert die Liste."
+        },
+        {
+          "n": 2,
+          "title": "Block wählen",
+          "text": "Enter oder Klick setzt den Block ein. **⋮⋮** am Rand zieht ihn an eine andere Stelle, **⌘Z** macht rückgängig."
+        },
+        {
+          "n": 3,
+          "title": "Sichtbarkeit je Block",
+          "text": "Über die Block-Einstellungen (⋮⋮ › **Sichtbar für**) kann ein einzelner Block nur für Büro oder Leitung gelten — alle anderen sehen ihn nicht."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Schrittfolge oder Prozess?",
+          "text": "Für einfache Abläufe reicht die **Schrittfolge**. Mit mehreren Beteiligten und Entscheidungen nimmst du den **Prozess** — siehe „Wissen 3“."
+        }
+      ]
+    },
+    {
+      "h1": "Veröffentlichen",
+      "sub": "Erst mit **Veröffentlichen** sehen die anderen die Seite. Jede Veröffentlichung ist eine Version mit Änderungszeile — die taucht unter „Was ist neu“ auf.",
+      "card": {
+        "title": "Veröffentlichen",
+        "text": "Änderungszeile, Version, Vorschau"
+      },
+      "left": {
+        "shot": "w10-veroeffentlichen"
+      },
+      "leftCaption": "Das Fenster „Veröffentlichen“ fragt nach der Änderungszeile.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Vorschau",
+          "text": "**Vorschau** zeigt den Entwurf so, wie ihn die anderen sehen werden — inklusive Sichtbarkeit je Block."
+        },
+        {
+          "n": 2,
+          "title": "Änderungszeile",
+          "text": "Ein Satz, was sich geändert hat. Er steht im Verlauf, im Feed und in der Erinnerung an Pflichtseiten."
+        },
+        {
+          "n": 3,
+          "title": "Jetzt veröffentlichen",
+          "text": "Danach ist die Seite sichtbar, glatttBert kennt sie, und das Prüfdatum wird neu gesetzt."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Pflichtseite",
+          "text": "Mit dem Haken **Pflichtseite** im Panel bekommt jede mit Zugang die Aufforderung „Bitte lesen und bestätigen“. Nur für wirklich verbindliche Seiten."
+        }
+      ]
+    }
+  ]
+}

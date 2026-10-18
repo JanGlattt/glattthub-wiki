@@ -1,0 +1,216 @@
+{
+  "out": "../pdf/Wissen-1-Nachschlagen-und-suchen",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "Wissen",
+  "nr": 1,
+  "of": 5,
+  "audience": "institut",
+  "title": [
+    "Nachschlagen &",
+    "suchen"
+  ],
+  "subtitle": "Klickanleitung für die glatttipedia — Wissen für den Alltag im Institut, im Büro und in der Leitung",
+  "eyebrow": "Wissen · Lesen",
+  "footerArea": "Wissen",
+  "stand": "19.10.2026",
+  "version": "1.0",
+  "notes": [],
+  "pages": [
+    {
+      "h1": "Die glatttipedia öffnen",
+      "sub": "Die glatttipedia ist das Wissen des Hubs: eine Seite je Thema, nach Kapiteln geordnet, durchsuchbar. Sie öffnet aus der Hub-Seitenleiste über den Knopf **Wissen** in einem eigenen Tab.",
+      "card": {
+        "title": "Startseite",
+        "text": "Kapitel als Reiter, Karten mit den Seiten"
+      },
+      "left": {
+        "shot": "w1-start"
+      },
+      "leftCaption": "Die Startseite: oben das Menüband mit den Kapiteln, darunter eine Karte je Kapitel.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Menüband",
+          "text": "Die Reiter oben sind die **Kapitel** der Haupt-glatttipedia. Was nicht in die Zeile passt, steht unter **Weitere Seiten**."
+        },
+        {
+          "n": 2,
+          "title": "Karten",
+          "text": "Jede Karte ist ein Kapitel mit seinen Seiten. Ein Tipp auf den Titel öffnet die Kapitelübersicht, ein Tipp auf eine Zeile die Seite."
+        },
+        {
+          "n": 3,
+          "title": "Institut · Büro · Leitung",
+          "text": "Neben dem Logo wechselst du zwischen den glatttipedias. Büro und Leitung sehen nur die, die dort arbeiten — erkennbar am Schloss."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Zurück zum Hub",
+          "text": "Der Knopf **Zum Hub** oben rechts bringt dich zurück. Die glatttipedia bleibt im eigenen Tab offen."
+        }
+      ]
+    },
+    {
+      "h1": "Kapitel und Unterseiten",
+      "sub": "Fahre mit der Maus über einen Reiter: Das Flyout zeigt alle Seiten des Kapitels, ohne dass du klicken musst.",
+      "card": {
+        "title": "Flyout",
+        "text": "Seiten eines Kapitels direkt aus dem Menüband"
+      },
+      "left": {
+        "shot": "w2-flyout"
+      },
+      "leftCaption": "Hover über ein Kapitel — die Seiten klappen aus, Entwürfe stehen kursiv.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Reiter berühren",
+          "text": "Maus über den Reiter halten (am iPad kurz antippen) — das Flyout öffnet sich unter dem Kapitel."
+        },
+        {
+          "n": 2,
+          "title": "Seite wählen",
+          "text": "Ein Tipp auf einen Eintrag öffnet die Seite. Ein Zähler hinter dem Namen zeigt, wie viele Unterseiten dahinterliegen."
+        },
+        {
+          "n": 3,
+          "title": "Seitenleiste",
+          "text": "Auf jeder Seite steht links das aktuelle Kapitel mit allen Unterseiten — so bleibt der Überblick beim Lesen."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "h1": "Eine Seite lesen",
+      "sub": "Jede Seite hat denselben Aufbau: Pfad oben, Titel, Inhalt, rechts das Inhaltsverzeichnis und die Angaben zur Pflege.",
+      "card": {
+        "title": "Leseansicht",
+        "text": "Inhaltsverzeichnis, Verantwortliche, nächste Prüfung"
+      },
+      "left": {
+        "shot": "w3-seite"
+      },
+      "leftCaption": "Eine Seite im Kapitel HR: Inhalt links, Inhaltsverzeichnis rechts.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Pfad",
+          "text": "Oben steht, wo die Seite liegt: Alle Bereiche › Bereich › Kapitel. Jeder Teil ist anklickbar."
+        },
+        {
+          "n": 2,
+          "title": "Inhaltsverzeichnis",
+          "text": "Rechts stehen die Zwischenüberschriften. Ein Tipp springt an die Stelle, beim Scrollen wandert die Markierung mit."
+        },
+        {
+          "n": 3,
+          "title": "Verantwortlich",
+          "text": "Unten steht, wer die Seite pflegt und wann sie das nächste Mal geprüft wird — bei Fragen ist das die richtige Ansprechperson."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "h1": "Suchen",
+      "sub": "Die Suche findet Seiten über Titel, Zusammenfassung und jeden einzelnen Absatz — und springt direkt an die Fundstelle.",
+      "card": {
+        "title": "Suche",
+        "text": "⌘K oben rechts oder das große Feld auf der Startseite"
+      },
+      "left": {
+        "shot": "w4-suche"
+      },
+      "leftCaption": "Treffer während des Tippens: Bereich, Titel und die Textstelle.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Feld öffnen",
+          "text": "Oben rechts ins Feld **Suche** tippen oder **⌘K** drücken. Auf der Startseite tut es auch das große Feld in der Mitte."
+        },
+        {
+          "n": 2,
+          "title": "Tippen",
+          "text": "Ab zwei Zeichen kommen Treffer. Pfeiltasten wählen, **Enter** öffnet den ersten Treffer."
+        },
+        {
+          "n": 3,
+          "title": "Fundstelle",
+          "text": "Der Treffer zeigt den Absatz, in dem das Wort steht. Nach dem Öffnen ist die Stelle auf der Seite kurz hervorgehoben."
+        }
+      ],
+      "notes": [
+        {
+          "title": "glatttBert kennt die glatttipedia",
+          "text": "Der Assistent beantwortet Fragen aus denselben Seiten — auch aus Prozess-Diagrammen. Er zeigt dir nur, was du auch lesen darfst."
+        }
+      ]
+    },
+    {
+      "h1": "Was ist neu",
+      "sub": "Unter **Für mich › Was ist neu** steht jede Veröffentlichung mit der Änderungszeile der Redaktion. Ein Zähler in der Seitenleiste zeigt, was seit deinem letzten Besuch dazukam.",
+      "card": {
+        "title": "Was ist neu",
+        "text": "Alle Veröffentlichungen nach Tagen"
+      },
+      "left": {
+        "shot": "w5-neu"
+      },
+      "leftCaption": "Der Änderungs-Feed: neu angelegte und geänderte Seiten nach Tagen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Öffnen",
+          "text": "In der Seitenleiste unter **Für mich** auf **Was ist neu** tippen. Der Zähler daneben nennt die Einträge seit deinem letzten Besuch."
+        },
+        {
+          "n": 2,
+          "title": "Lesen",
+          "text": "Jeder Eintrag nennt Seite, Bereich, Uhrzeit und die Änderungszeile — **Neu** oder **Geändert** mit Versionsnummer."
+        },
+        {
+          "n": 3,
+          "title": "Weiter",
+          "text": "Ein Tipp öffnet die Seite. Der Besuch setzt den Zähler zurück."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "h1": "Pflichtseiten bestätigen und Rückmeldung geben",
+      "sub": "Manche Seiten muss jede gelesen haben. Sie tragen oben die Box **Pflichtseite** — und unten kann jede Seite bewertet oder als veraltet gemeldet werden.",
+      "card": {
+        "title": "Pflichtseite & Rückmeldung",
+        "text": "Gelesen und verstanden · hilfreich · veraltet melden"
+      },
+      "left": {
+        "shot": "w6-pflicht"
+      },
+      "leftCaption": "Die Box der Pflichtseite und darunter die Rückmeldung.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Gelesen und verstanden",
+          "text": "Seite ganz lesen, dann den Knopf in der goldenen Box tippen. Ändert die Redaktion die Seite, wird die Bestätigung erneut fällig."
+        },
+        {
+          "n": 2,
+          "title": "War diese Seite hilfreich?",
+          "text": "Daumen hoch oder runter — eine Stimme je Person, umentscheiden geht jederzeit."
+        },
+        {
+          "n": 3,
+          "title": "Veraltet melden",
+          "text": "Stimmt etwas nicht mehr, tippst du auf **Veraltet melden** und schreibst kurz, was. Die verantwortliche Person bekommt die Meldung sofort."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Offene Pflichtseiten",
+          "text": "Unter **Für mich › Pflichtseiten** stehen alle offenen und bestätigten Pflichtseiten auf einen Blick."
+        }
+      ]
+    }
+  ]
+}

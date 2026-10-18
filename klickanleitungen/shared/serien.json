@@ -390,6 +390,38 @@
       "beschreibung": "Der interne Team-Chat des Hubs als Ersatz für WhatsApp und Signal: Chats und Gruppen, Nachrichten mit Haken, Antworten und Reaktionen, Fotos, Dateien und Sprachnachrichten, Umfragen und Hub-Karten, Ankündigungen mit Lesebestätigung, Nicht stören und das Seitenpanel auf jeder Hub-Seite.",
       "fuer": "Für alle Kolleginnen; der Teil „Ankündigungen und Lesekontrolle“ für Leitung und Büro.",
       "stichworte": "chat nachrichten whatsapp signal gruppe gruppenchat ankündigung lesebestätigung bestätigen gelesen haken sprachnachricht umfrage reaktion antworten weiterleiten anheften stumm nicht stören seitenpanel"
+    },
+    "Wissen": {
+      "beschreibung": "Die glatttipedia: das Wissen für den Alltag bei glattt — nachschlagen und suchen, Prozesse als Diagramm, für die Redaktion das Schreiben von Seiten, Struktur und Startseiten, Rückmeldungen und Prüfungen, Versionen und Drive-Dokumente; dazu der Kiosk auf den Institut-iPads.",
+      "fuer": "Für alle, die etwas nachschlagen wollen — und für die Redaktion im Büro, die das Wissen pflegt.",
+      "stichworte": [
+        "wissen",
+        "glatttipedia",
+        "wiki",
+        "handbuch",
+        "nachschlagen",
+        "prozess",
+        "bpmn",
+        "diagramm",
+        "ablauf",
+        "redaktion",
+        "seite schreiben",
+        "editor",
+        "blöcke",
+        "veröffentlichen",
+        "kapitel",
+        "struktur",
+        "startseite",
+        "pflichtseite",
+        "bestätigen",
+        "veraltet",
+        "rückmeldung",
+        "version",
+        "vergleich",
+        "drive",
+        "kiosk",
+        "ipad"
+      ]
     }
   }
 }
