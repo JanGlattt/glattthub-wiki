@@ -239,6 +239,8 @@ nav:
       - Termin vorziehen: TERMIN-VORZIEHEN.md
     - KI-Assistent:
       - glatttBert: GLATTTBERT-AI-ASSISTENT.md
+    - Wissen:
+      - glatttipedia (Wissens-Raum): WISSEN.md
 
   - Berichte & Statistiken:
     - berichte/index.md

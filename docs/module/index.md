@@ -94,4 +94,14 @@
 
     <small>Nutzerhandbuch: *Grundlagen 5*</small>
 
+- :material-book-open-page-variant: **Wissen (glatttipedia)**
+
+    ---
+
+    Wissens-Raum im Hub: Bereiche, Seiten als Blöcke mit Zielgruppe je Block, Block-Editor, Suche, glatttBert-Quelle, Import aus Google Sites.
+
+    [:octicons-arrow-right-24: glatttipedia](../WISSEN.md)
+
+    <small>Nutzerhandbuch: *Serie Wissen (geplant)*</small>
+
 </div>
