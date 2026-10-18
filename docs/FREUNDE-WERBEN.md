@@ -31,6 +31,7 @@ Aktion; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
     - [Push-Benachrichtigung (Automation)](#push-benachrichtigung-automation)
     - [Tests](#tests)
     - [Kunden-App „My glattt“](#kunden-app-my-glattt)
+    - [Freunde werben digital (Werbelink, Begleitlink)](#freunde-werben-digital-werbelink-begleitlink)
 - [Chronik der Änderungen](#chronik-der-anderungen-neueste-zuerst)
 
 ---
@@ -60,6 +61,15 @@ steht in der Liste **Verträge → Freunde werben**.
   ausgezahlt und wird als „Rückbuchung nach Auszahlung" gekennzeichnet (nach der Auszahlung).
 - **Korrekturen sind möglich** — falsche Werberin, umgehängter Vertrag (z.B. nach Widerruf und
   Neuvertrag), nachträglich verrechneter Rabatt — und landen immer in der Vertragshistorie.
+
+**Digital eingeladen (seit 18.10.2026):** Jede Vertragskundin hat einen persönlichen Werbecode —
+derselbe wie auf der Werbe-Karte in My glattt. Er steht als Link in der **Vertragsmail** und, je
+Erinnerungsregel einschaltbar, in der **Terminerinnerung**. Bucht eine Freundin über diesen Link auf
+glattt.com, steht dort „Lisa hat Dich eingeladen“, und beim Vertragsabschluss schlägt der Hub die
+Werberin vor — das Institut bzw. Büro bestätigt wie bisher mit „Übernehmen“. Auf der Danke-Seite
+nach einer Website-Buchung gibt es außerdem den **Begleitlink**: Eine Freundin kann damit ihre
+Beratung zur **selben Zeit in derselben Spalte** buchen (Notiz „Begleitung von …“ am Termin). Der
+Begleitlink ist keine Werbung und bringt keine Prämie — die Buchende ist noch keine Kundin.
 
 **Zustände einer Werbung:** *Wartet* (Einzug offen oder Karenz läuft) → *Auszahlbar* → *Ausgezahlt*
 (mit Datum und Benutzer); *Blockiert*, wenn der erste Einzug geplatzt oder der Vertrag storniert
@@ -265,12 +275,59 @@ ein späteres Profilbild vorbereitet: `photo_url`).
   das Testkonto (Phorest `3ruXMx…`) je einen Fall pro Status an (`TEST-FW-1…6`, Magdeburg).
 - Tests: `PortalReferralsTest`.
 
+### Freunde werben digital (Werbelink, Begleitlink)
+
+Booking-Masterplan Welle 2, Entwurf und Entscheidungen Jan 18.10.2026
+([Entwurf](https://claude.ai/artifact/JXPDVuzbFaqRW5ryL2hQME)): Code für jede Vertragskundin, Vorname
+auf der Website, Vorschlag statt automatischer Zuordnung, Teilnahmebedingungen ohne Häkchen (Mail
+verlinkt sie, Büro holt die Zustimmung wie bisher ein).
+
+- **Ein Code je Kundin:** `client_referral_codes` (`phorest_client_id` unique, `code` unique) plus
+  `customer_accounts.referral_code`. `ReferralCodeService::forClient()` nimmt zuerst den Konto-Code,
+  sonst die Tabelle, und legt nur für werbeberechtigte Kundinnen
+  (`ELIGIBLE_REFERRER_STATUSES`) einen neuen an — mit `CustomerAccount::newReferralCode()`, das jetzt
+  **beide** Tabellen auf Kollisionen prüft. Ein später angelegtes Portal-Konto übernimmt den Code
+  aus der Tabelle (`CustomerAccount::booted`). Anlage automatisch im `ContractObserver` (created,
+  Statuswechsel); die Migration `create_client_referral_codes` zieht Konto-Codes und alle
+  Vertragskundinnen einmalig nach. `clientIdForCode()` sucht in beiden Quellen —
+  `ContractReferralService::referrerByCode()` (Scan im Formular) nutzt es.
+- **Links:** `PortalAppController::referralLink($code, $medium)` — `utm_medium` = `my-glattt`,
+  `mail` oder `erinnerung`. `shareData()` liefert Code, Link, WhatsApp-Link (`wa.me/?text=`) und
+  die öffentliche Bedingungsseite `/shared/freunde-werben/bedingungen` (Text aus Admin „Kunden-App“,
+  sonst `CustomerAppSettings::REFERRAL_TERMS`). Ist `referral_enabled` aus, gibt es keinen Abschnitt.
+- **Vertragsmail:** `SepaEmailService::buildOnboardingMail()` → `OnboardingMail::$referral` →
+  Hinweiskasten + „Per WhatsApp teilen“ in `emails/sepa/onboarding.blade.php` (nur im echten
+  Versand, Fehler werden geloggt, nie geworfen).
+- **Erinnerung:** Baustein `email_blocks.referral` (Standard aus, Überschrift/Text im Regel-Editor),
+  `ReminderMailComposer::compose(..., $referral)`; `SendAppointmentReminderJob` holt die Daten nur,
+  wenn der Baustein an ist. Ohne Code (keine Vertragskundin) bleibt der Baustein unsichtbar.
+- **Website:** `GET /api/v1/referral-code/{code}` (Scope `booking-tracking:write`, Drossel
+  `throttle:120,1,referral-code`) → `{valid, first_name}` — nur Vorname, nur werbeberechtigt.
+  `POST /api/v1/booking-tracking` nimmt `referral_code` und `companion_of` an
+  (`booking_trackings`). Plugin-Seite: WPglatttBooking 0.30.0, README „Freunde werben digital“.
+- **Vorschlag beim Abschluss:** `ContractReferralService::suggestionForClient()` — jüngste
+  Buchung der Kundin mit Werbecode (180 Tage), nie Selbstwerbung. Endpunkte
+  `GET /api/forms/referrer-suggestion?client_id=` (Formular, `form-fill.js`
+  `loadReferrerSuggestion()`) und `GET /hub/contracts/{id}/referrer-suggestion`
+  (`referralMixin`, Partial `referral-select-section`). Übernommen wird nur per Klick.
+- **Begleitlink (gleiche Zeit):** komplett im Plugin (Transient-Token, `force_selected_time`,
+  Phorest nimmt die belegte Spalte an — am 18.10.2026 mit zwei Magdeburger Testkunden geprüft).
+  Im Hub landet nur `booking_trackings.companion_of` (Termin-ID der Buchenden) für spätere
+  Auswertungen (Show-Rate und Abschluss der Paare).
+- Tests: `ReferralDigitalTest` (Code-Vergabe/Übernahme, API, Tracking, Vorschlag, Erinnerung).
+
 ## Chronik der Änderungen (neueste zuerst)
 
 Die Update-Blöcke in der Reihenfolge ihres Entstehens — jeweils mit Anlass, fachlicher Wirkung
 und technischer Umsetzung. Das aktuell gültige Verhalten ist oben in den [Fachregeln](#fachregeln)
 eingearbeitet; neue Erkenntnisse werden dort ergänzt, die Chronik wächst nur um den Verweis.
 Bedienung: Nutzerhandbuch, Verkauf 2.
+
+### Update 18.10.2026 — Freunde werben digital
+
+Werbecode für jede Vertragskundin, Link in Vertragsmail und Erinnerung, Hinweis und Vorschlag aus
+der Website-Buchung, Begleitlink mit Buchung zur gleichen Zeit — siehe
+[Freunde werben digital](#freunde-werben-digital-werbelink-begleitlink).
 
 ### Update 01.10.2026 — Freunde werben in „My glattt“
 
