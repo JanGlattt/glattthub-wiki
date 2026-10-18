@@ -1,4 +1,4 @@
-# Überlegt noch — Anrufliste für Beratungen ohne Abschluss
+# Überlegt noch — Anrufliste für Beratungen ohne Abschluss, verpasste Termine und Reaktivierung
 
 ## Für Endanwender
 
@@ -9,6 +9,13 @@ Link, mit dem die Kundin sich selbst ein neues Beratungsgespräch bucht), **Term
 Buchungsfenster) oder **Nicht erreicht** (die Kundin kommt nach drei Tagen wieder nach oben, nach drei
 Versuchen fällt sie aus der Liste). Der Termin bekommt in Phorest automatisch die Notiz „Überlegt noch
 — erneutes Beratungsgespräch …“, damit die Beraterin vorher weiß, wen sie vor sich hat.
+
+Seit dem 18.10.2026 stehen zwei weitere Gründe in derselben Liste. **Termin verpasst:** Wer zu einer
+Beratung nicht erschienen ist, bekommt am nächsten Tag um 10 Uhr automatisch eine WhatsApp mit einem Link
+für einen neuen Termin; bucht sie nicht, steht sie zwei Tage später zum Anrufen ganz oben (roter Chip).
+**Reaktivierung:** Kundinnen mit einer Beratung im Vorjahr ohne Vertrag stehen in einem eigenen Reiter —
+nur an freigegebenen Standorten und nur mit Werbeeinwilligung. Dort wird nicht angerufen, sondern
+angekreuzt und der Link an die Auswahl geschickt.
 
 Damit die Liste auch nach der Umstellung auf den Hub gefüllt bleibt, fragt **„Termin beenden“** bei
 Beratungsterminen das Ergebnis der Beratung als Pflicht ab; ein Vertrag im Termin wird automatisch als
@@ -31,19 +38,51 @@ Beratungsterminen das Ergebnis der Beratung als Pflicht ab; ein Vertrag im Termi
 - Institute rufen an (Recht `manage_still_considering`, Datensichtbarkeit Standort).
 - Entwurf 1 „Anrufliste mit Ergebnis-Blatt“, Web und App.
 
+### Welle 2: Termin verpasst und Reaktivierung (Jan, 18.10.2026)
+
+Entwurf 1 „Ein Stapel, Grund als Chip“: `still_considering_cases.reason` = `considering` | `missed` |
+`reactivation`; Fälle ohne Beratungsprotokoll tragen statt `consultation_record_id` den Phorest-Termin
+(`source_appointment_id`). Je Kundin gibt es höchstens einen laufenden Fall, egal aus welchem Grund.
+
+**Termin verpasst** (`StillConsideringService::createMissedCases()`): Beratungs-Service in
+`stats_historic_appointments` der letzten drei Tage mit `state = BOOKED` und `activation_state = ACTIVE`.
+Ausgeschlossen, weil die Kundin da war oder selbst abgesagt hat: Start im Hub (`appointment_session_logs`),
+Beratungsergebnis zum Termin, Selfservice-Absage (`upcoming_appointments.client_cancelled_at` — die Absage
+verschiebt nur in die Absage-Spalte, der Termin bleibt aktiv), jeder andere wahrgenommene Termin der Kundin
+ab dem Tag (`CHECKED_IN`/`PAID`, etwa die Behandlung bei Beratung + Behandlung), Vertrag, offener Termin.
+
+!!! warning "Tresen-Buchungen erst ab 01.11.2026"
+    Am Tresen angelegte Beratungen (Phorest-Quelle `TERMINAL`) wurden bis Ende Oktober zu 97 % nie
+    ausgecheckt und wären fast alle Fehlalarme. Sie zählen erst ab `MISSED_TERMINAL_FROM` (01.11.2026),
+    wenn jeder Termin über den Hub beendet wird.
+
+Der Tageslauf `still-considering:daily` (10:00, Cron `/api/cron/still-considering-daily`) schickt an
+Standorten mit „Automatisch nachfassen“ (`missed_enabled`) für Termine von gestern/vorgestern den Link
+(`StillConsideringLinkSender::sendAutomatic()`): WhatsApp-Vorlage „Termin verpasst“, sonst E-Mail. Der Fall
+bleibt `open` mit `next_call_on` in zwei Tagen; geht nichts raus oder ist das Nachfassen aus, ist er sofort
+fällig. Die Phorest-Notiz beginnt mit „Termin verpasst — neues Beratungsgespräch …“.
+
+**Reaktivierung** (`createReactivationCases()`): letzte wahrgenommene Beratung 2025, danach kein Termin,
+nie ein Vertrag (jeder Status), nichts gebucht — nur für freigegebene Standorte (`reactivation_enabled`,
+Wellen). Die Werbeeinwilligung (WhatsApp = `smsMarketingConsent`, E-Mail = `emailMarketingConsent`) prüft
+`CheckStillConsideringConsentJob` je Fall in Phorest (`consent_*`) — `client_statistics` führt sie nicht.
+Sichtbar ist nur, wer eingewilligt hat oder noch geprüft wird. Versand gesammelt über
+`POST hub/ueberlegt-noch/reaktivierung/senden` (höchstens 50, je Fall `SendStillConsideringLinkJob`,
+Einwilligung vor jeder Nachricht live).
+
 ### Datenmodell
 
 | Tabelle | Inhalt |
 |---|---|
 | `still_considering_cases` | je Kundin ein Fall zur letzten Beratung ohne Abschluss: `status` (`open`, `link_sent`, `booked`, `declined`, `unreachable`, `closed`), `close_reason` (`contract`, `appointment`, `new_consultation`), `attempts`, `next_call_on`, Link (`link_token_id`, `link_channel`, `link_expires_at`), Buchung (`booked_via` = `link`/`hub`/`manual`), `note_pending_since`/`note_written_at`, `contract_id` (Erfolg auch nach der Buchung) |
 | `still_considering_events` | Verlauf: Ergebnis, Link, Notiz, Selbstbuchung, Abschluss, nachgetragene Notiz |
-| `still_considering_settings` | je Standort Superchat-Kanal + Vorlage + Platzhalter, E-Mail-Text, `campaign_note` (Aktion für die Notiz) |
+| `still_considering_settings` | je Standort Superchat-Kanal + Vorlage + Platzhalter, E-Mail-Text, `campaign_note` (Aktion für die Notiz); seit Welle 2 je Grund `missed_*` / `reactivation_*` (Schalter, Vorlage, Platzhalter, E-Mail) |
 | `booking_share_tokens.booking_note` | Phorest-Notiz, die eine Selbstbuchung über den Link mitschreibt (`source = still_considering`) |
 
 ### Services und Endpunkte
 
 - `StillConsideringService` — einzige Stelle für Anlegen/Schließen (`refresh()`, beim Laden der Seite
-  höchstens alle 10 Minuten, kein Scheduler-Job), Ergebnisse, Notiz-Text (`bookingNote()`), Buchung aus
+  höchstens alle 10 Minuten, dazu der Tageslauf um 10:00), Ergebnisse, Notiz-Text (`bookingNote()`), Buchung aus
   Hub (`bookedFromHub`) und Link (`bookedFromLink`, aus `BookingShareToken::markBooked()`),
   `writePendingNotes()` (läuft nach jedem `sync:upcoming-appointments`).
 - `StillConsideringLinkSender` — Token (Modus `new`, Beratungs-Service des Standorts, Slots wie auf der
@@ -80,5 +119,7 @@ iOS `glatttHub/StillConsidering/*`, Tests `StillConsideringTest`, `AppointmentCo
 
 ## Changelog
 
+- **18.10.2026** — Welle 2: „Termin verpasst“ (automatische WhatsApp am Folgetag, nach zwei Tagen
+  anrufen) und Reiter „Reaktivierung“ (Einwilligung, Sammelversand), Web und App; Tageslauf 10:00.
 - **17.10.2026** — Seite „Überlegt noch“ (Web + nativ), Buchungslink, Phorest-Notiz, Admin-Vorlagen;
   Beratungsergebnis beim „Termin beenden“ (Web + App), Verkauf automatisch aus dem Vertrag.

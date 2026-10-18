@@ -8,12 +8,12 @@
   "audience": "leitung",
   "footerArea": "App",
   "stand": "18.10.2026",
-  "version": "1.0",
+  "version": "1.1",
   "title": [
     "Überlegt noch",
     "in der App"
   ],
-  "subtitle": "Klickanleitung für die glatttHub-App — Kundinnen ohne Abschluss anrufen, Buchungslink schicken, Termin buchen und beim Beenden das Ergebnis der Beratung erfassen",
+  "subtitle": "Klickanleitung für die glatttHub-App — Kundinnen ohne Abschluss anrufen, verpasste Beratungen nachfassen, Reaktivierung verschicken, Termin buchen und beim Beenden das Ergebnis der Beratung erfassen",
   "eyebrow": "App · Verkauf",
   "notes": [
     "**Überlegt noch** findest du im Menü **Mehr** unter **Verkauf** (iPhone) bzw. in der Seitenleiste (iPad). Dieselbe Liste wie im Hub (Verkauf 5).",
@@ -39,12 +39,12 @@
         {
           "n": 1,
           "title": "Kennzahlen",
-          "text": "Anzurufen, heute fällig, Link raus, gebucht — für den Standort oben."
+          "text": "Anzurufen, **verpasst**, heute fällig, Link raus, gebucht — für den Standort oben."
         },
         {
           "n": 2,
           "title": "Reiter",
-          "text": "Offen, Link, Erledigt. Ziehen nach unten aktualisiert."
+          "text": "Offen, Link, Erledigt und **Reakt.** (Reaktivierung). Ziehen nach unten aktualisiert."
         },
         {
           "n": 3,
@@ -103,6 +103,63 @@
           "n": 1,
           "title": "Kundin wählen",
           "text": "Ein Tipp links zeigt sie rechts; die Aktionen sind dieselben wie auf dem iPhone."
+        }
+      ]
+    },
+    {
+      "h1": "Termin verpasst",
+      "sub": "Nicht erschienen? Am nächsten Tag geht automatisch ein Link raus — zwei Tage später wird angerufen.",
+      "card": {
+        "title": "Termin verpasst",
+        "text": "Eigener Abschnitt ganz oben"
+      },
+      "left": {
+        "shot": "still-considering-missed-light"
+      },
+      "leftCaption": "Akte einer verpassten Beratung mit Termin, Buchungsweg und automatischer WhatsApp.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Abschnitt „Termin verpasst“",
+          "text": "Steht in „Offen“ über „Heute fällig“: Kundinnen, die zur Beratung nicht kamen und auf den automatischen Link nicht gebucht haben."
+        },
+        {
+          "n": 2,
+          "title": "Akte",
+          "text": "Zeigt, wann der Termin war, wie er gebucht wurde und wann die WhatsApp rausging. Danach wie gewohnt: **Anrufen**, Link schicken, Termin buchen oder „Nicht erreicht“."
+        }
+      ]
+    },
+    {
+      "h1": "Reaktivierung",
+      "sub": "Beratung im Vorjahr ohne Vertrag — ankreuzen und den Link an alle schicken.",
+      "card": {
+        "title": "Reaktivierung",
+        "text": "Reiter „Reakt.“, Sammelversand"
+      },
+      "left": {
+        "shot": "still-considering-reactivation-light"
+      },
+      "leftCaption": "Reiter **„Reakt.“**: Kundinnen antippen, dann „Link an … senden“.",
+      "right": {
+        "shot": "still-considering-reactivation-ipad-light"
+      },
+      "rightCaption": "Auf dem iPad mit der gewählten Kundin rechts.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Nur mit Einwilligung",
+          "text": "Hier stehen nur Kundinnen freigegebener Standorte, die in Phorest der Werbung zugestimmt haben. „wird geprüft“ heißt: die Einwilligung wird gerade abgefragt."
+        },
+        {
+          "n": 2,
+          "title": "Ankreuzen",
+          "text": "Antippen setzt den Haken, **„Bereite auswählen“** nimmt alle (höchstens 50)."
+        },
+        {
+          "n": 3,
+          "title": "„Link an … senden“",
+          "text": "Nach der Rückfrage gehen die Links im Hintergrund raus — per WhatsApp oder E-Mail, je nach Einwilligung."
         }
       ]
     },

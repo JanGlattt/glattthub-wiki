@@ -1428,5 +1428,65 @@
   },
   "ratio": 1.435897435897436,
   "marks": []
+ },
+ "still-considering-missed-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1520
+  },
+  "ratio": 1.9487179487179487,
+  "marks": []
+ },
+ "still-considering-missed-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1520
+  },
+  "ratio": 1.9487179487179487,
+  "marks": []
+ },
+ "still-considering-reactivation-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1520
+  },
+  "ratio": 1.9487179487179487,
+  "marks": []
+ },
+ "still-considering-reactivation-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1520
+  },
+  "ratio": 1.9487179487179487,
+  "marks": []
+ },
+ "still-considering-reactivation-ipad-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2048,
+   "height": 1480
+  },
+  "ratio": 0.72265625,
+  "marks": []
+ },
+ "still-considering-reactivation-ipad-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2048,
+   "height": 1480
+  },
+  "ratio": 0.72265625,
+  "marks": []
  }
 }

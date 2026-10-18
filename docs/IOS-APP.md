@@ -1694,7 +1694,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild, Akte (Überblick, Vergütung, Zeit, Konto), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten (seit 27.09.2026); Teamliste- und Lohnliste-Import bleiben Web (Datei-Upload im Büro), Checklisten Eintritt/Austritt vorerst ausgeblendet |
 | Institute | nativ | Karte zuerst (seit 27.09.2026): Nadeln in Hub-Farbe, Blatt mit Liste/Institut, Unterseiten Kennzahlen, Team, Verwaltung |
 | Trinkgeld | nativ | Rangliste mit meiner Zeile (seit 29.09.2026): Kennzahlen, Segment Trinkgeld/Sterne/Auszahlung, Zeitraum-Chips, Person als Blatt (iPad daneben), Kommentare nur mit Recht; Startseiten-Karte „Meine Bewertungen“, Beenden-Schalter, Kunden-Sperre |
-| Überlegt noch | nativ | Anrufliste (seit 17.10.2026): Reiter Offen/Link/Erledigt, Akte mit Link per WhatsApp, Termin buchen, Nicht erreicht, Ergebnis-Blatt nach dem Anruf; iPad Liste + Akte |
+| Überlegt noch | nativ | Anrufliste (seit 17.10.2026, Welle 2 seit 18.10.2026: Termin verpasst, Reiter Reaktivierung mit Sammelversand): Reiter Offen/Link/Erledigt, Akte mit Link per WhatsApp, Termin buchen, Nicht erreicht, Ergebnis-Blatt nach dem Anruf; iPad Liste + Akte |
 | Zufriedenheit | nativ | Drei Stapel (seit 27.09.2026): Folgeaufgaben mit Anrufen/Termin buchen, Kandidatinnen mit Senden (Rückfrage, Kanal-Hinweis) und Überspringen, Verlauf mit Chips, Detailkarte; Standort-Einstellungen bleiben im Admin |
 | Forderungen | nativ | Arbeitsliste und Akte (seit 27.09.2026): Kennzahlen, drei Register, Bestand nach Stufe, gerichtliche Fälle, Fallakte mit nächstem Schritt, Schreiben-Vorschau, alle Aktionen der Seitenspalte; neues SEPA-Mandat eingebettet, Vorlagen Web |
 | Freunde werben, Google-Bewertungen | nativ | „Aufgabe zuerst“ (seit 27.09.2026): Überweisungsstapel mit Kopier-Knöpfen; Bewertungen schnell erfassen |
@@ -2279,6 +2279,9 @@ SEPA pausieren/fortsetzen, Anschrift, abschreiben). Auf dem iPad stehen Liste un
 stehen oben. Ein Tipp öffnet die Akte mit Beratungsnotiz, „Anrufen“ und den drei Hauptaktionen (Link per
 WhatsApp, Termin buchen, Nicht erreicht), der Rest unter „Mehr“. Wer aus der Akte anruft, bekommt beim
 Zurückkommen das Blatt „Wie lief der Anruf?“. Auf dem iPad stehen Liste und Akte nebeneinander.
+Seit 18.10.2026 steht „Termin verpasst“ als eigener Abschnitt über „Heute fällig“ (Akte mit Termin,
+Buchungsweg und automatischer WhatsApp), der vierte Reiter „Reakt.“ listet die Reaktivierung zum Ankreuzen
+mit „Link an N senden“ (Rückfrage am Knopf).
 
 !!! nutzerhandbuch "Bedienung: App 27 – Überlegt noch in der App"
     [https://hilfe.hub.glattt.com/app/27/](https://hilfe.hub.glattt.com/app/27/)
@@ -2287,8 +2290,11 @@ Zurückkommen das Blatt „Wie lief der Anruf?“. Auf dem iPad stehen Liste und
 https://claude.ai/artifact/TxYeFqQujH4oNe42DQuGmz). Dieselben Endpunkte wie das Web (`hub/ueberlegt-noch/…`),
 „Termin buchen“ öffnet den Slot-Finder mit `BookingTarget.stillConsideringCaseId` (Notiz + Abhaken,
 „Termin an anderem Gerät bereits gebucht“). Ergebnis-Blatt über `scenePhase` nach `openURL(tel:)`.
-Snapshots: `StillConsideringSnapshotTests` (im Snapshot statt `ScrollView`/`Menu` feste Stapel). Wiki
-[Überlegt noch](UEBERLEGT-NOCH.md).
+Snapshots: `StillConsideringSnapshotTests` (im Snapshot statt `ScrollView`/`Menu` feste Stapel). Welle 2
+(Entwurf 1 „Ein Stapel, Grund als Chip“, Artefakt https://claude.ai/artifact/Bp5sTxKhM2xergJTXjdJRr):
+`StillConsideringRow.reason`, `missedRows`/`dueRows`/`laterRows`, Reiter `.reactivation` mit
+`selected`/`sendSelected()` → `hub/ueberlegt-noch/reaktivierung/senden`; Snapshots `still-considering-missed`
+und `still-considering-reactivation-ipad`. Wiki [Überlegt noch](UEBERLEGT-NOCH.md).
 
 ### Native Zufriedenheit (Mehr-Seite, seit 27.09.2026)
 

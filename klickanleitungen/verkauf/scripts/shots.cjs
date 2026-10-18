@@ -50,7 +50,8 @@ const PLAN = [
     { id: 'sortieren', kind: 'badge', n: 3, sel: '.still-considering-col-name', at: 'l' },
     { id: 'zeile', kind: 'frame', color: 'teal', sel: '.still-considering-row' },
   ] },
-  { name: 'v29-zeile-offen', url: '/hub/ueberlegt-noch', reload: true, steps: [['loaded'], ['wait', 2500], ['click', '.still-considering-row', 'Maria Beispiel', 900]], marks: [
+  { name: 'v29-zeile-offen', url: '/hub/ueberlegt-noch', reload: true, steps: [['loaded'], ['wait', 2500], ['click', '.still-considering-row', 'Maria Beispiel', 900],
+    ['scroll', '.still-considering-row', 'Maria Beispiel', 260]], marks: [
     { id: 'telefon', kind: 'badge', n: 1, sel: '.still-considering-phone', at: 'l' },
     { id: 'whatsapp', kind: 'badge', n: 2, ...L.byText('.still-considering-collapse.is-open button', 'Link per WhatsApp'), at: 'l' },
     { id: 'buchen', kind: 'badge', n: 3, ...L.byText('.still-considering-collapse.is-open button', 'Termin buchen'), at: 'l' },
@@ -70,6 +71,28 @@ const PLAN = [
   { name: 'v32-erledigt', url: '/hub/ueberlegt-noch', reload: true, steps: [['loaded'], ['wait', 2500], ['click', '.segmented-control-glattt-label', 'Erledigt', 900],
     ['click', '.still-considering-row', 'Nina Test', 900]], marks: [
     { id: 'zurueck', kind: 'badge', n: 1, ...L.byText('.still-considering-collapse.is-open button', 'Wieder auf die Liste'), at: 'l' },
+  ] },
+  // ── Verkauf 5, Welle 2 (18.10.2026): Termin verpasst und Reaktivierung — nur Beispielkundinnen (sc2_demo_*)
+  { name: 'v33-termin-verpasst', url: '/hub/ueberlegt-noch', reload: true, steps: [['loaded'], ['wait', 2500],
+    ['fn', async (page) => { await page.evaluate(() => { const a = Alpine.$data(document.querySelector('[x-data="stillConsideringApp()"]')); a.loadChannels = async (row) => { a.channels = { ...a.channels, [row.id]: { whatsapp: null, email: null } }; }; }); }],
+    ['click', '.still-considering-row', 'Anna Beispiel', 900]], marks: [
+    { id: 'chip', kind: 'badge', n: 1, ...L.byText('.still-considering-row .badge-glattt', 'Termin verpasst'), at: 'l' },
+    { id: 'auto', kind: 'badge', n: 2, sel: '.still-considering-auto', at: 'r' },
+    { id: 'filter', kind: 'badge', n: 3, sel: '.still-considering-reason-filter', at: 'l' },
+  ] },
+  { name: 'v34-reaktivierung', url: '/hub/ueberlegt-noch', reload: true, steps: [['loaded'], ['wait', 2500],
+    ['fn', async (page) => { await page.evaluate(() => {
+      const a = Alpine.$data(document.querySelector('[x-data="stillConsideringApp()"]'));
+      a.data.reactivation = a.data.reactivation.filter(r => r.client_id.startsWith('sc2_demo'));
+      a.data.counts.reactivation_ready = a.data.reactivation.filter(r => a.selectable(r)).length;
+      a.data.reactivation_info.unchecked = 0;
+      a.dataVersion++;
+    }); }],
+    ['click', '.segmented-control-glattt-label', 'Reaktivierung', 900],
+    ['click', '.still-considering-bulk button', 'Bereite auswählen', 600]], marks: [
+    { id: 'hinweis', kind: 'badge', n: 1, sel: '.still-considering-reactivation-note', at: 'l' },
+    { id: 'auswahl', kind: 'badge', n: 2, sel: '.still-considering-reactivation-table tbody tr.is-selected .checkbox-glattt', at: 'l' },
+    { id: 'senden', kind: 'badge', n: 3, ...L.byText('.still-considering-bulk button', 'Link an'), at: 'r' },
   ] },
 ];
 

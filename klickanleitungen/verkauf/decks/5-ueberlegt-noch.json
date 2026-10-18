@@ -8,16 +8,17 @@
  "audience": "leitung",
  "title": [
   "Überlegt noch",
-  "anrufen und Link schicken"
+  "anrufen, nachfassen, reaktivieren"
  ],
- "subtitle": "Klickanleitung für die Seite „Überlegt noch“ im glatttHub — Kundinnen ohne Abschluss anrufen, Buchungslink per WhatsApp schicken, Termin buchen, Ergebnis eintragen",
+ "subtitle": "Klickanleitung für die Seite „Überlegt noch“ im glatttHub — Kundinnen ohne Abschluss anrufen, verpasste Beratungen nachfassen, Reaktivierung verschicken, Termin buchen, Ergebnis eintragen",
  "eyebrow": "Verkauf · Überlegt noch",
  "footerArea": "Verkauf",
  "stand": "18.10.2026",
- "version": "1.0",
+ "version": "1.1",
  "notes": [
   "Auf der Liste steht jede Kundin, deren Beratung **ohne Vertrag** endete (überlegt noch, Folgetermin, Sonstiges) und die **keinen offenen Termin** hat. Neue kommen zwei Tage nach dem Gespräch dazu.",
-  "**Zuerst anrufen.** Die WhatsApp mit dem Buchungslink kommt nach dem Anruf — „ich schick dir gleich den Link“. Automatisch geht nichts raus.",
+  "**Zuerst anrufen.** Bei „Überlegt noch“ kommt die WhatsApp mit dem Buchungslink nach dem Anruf — „ich schick dir gleich den Link“. Automatisch geht nur bei **verpassten Terminen** etwas raus (am nächsten Tag um 10 Uhr).",
+  "**Termin verpasst** steht mit rotem Chip oben in „Offen“, **Reaktivierung** hat einen eigenen Reiter — dort wird nicht angerufen, sondern angekreuzt und verschickt.",
   "Jeder Termin aus der Liste bekommt in Phorest die Notiz **„Überlegt noch — erneutes Beratungsgespräch …“**, damit die Beraterin vorher weiß, wen sie vor sich hat.",
   "Die Liste füllt sich aus **„Termin beenden“**: Bei Beratungsterminen ist dort das Ergebnis der Beratung Pflicht (Terminansicht 6)."
  ],
@@ -37,12 +38,12 @@
     {
      "n": 1,
      "title": "Kennzahlen",
-     "text": "Anzurufen, heute fällig, Link geschickt, neue Beratung gebucht und **Vertrag danach** — für den Standort aus der Seitenleiste."
+     "text": "Anzurufen, **Termin verpasst**, heute fällig, Link geschickt, neue Beratung gebucht und **Vertrag danach** — für den Standort aus der Seitenleiste."
     },
     {
      "n": 2,
      "title": "Reiter",
-     "text": "**Offen** = anrufen. **Link geschickt** = der Link ist raus, aber noch nicht gebucht. **Erledigt** = gebucht, kein Interesse, nicht erreicht oder von selbst erledigt (Vertrag, eigener Termin)."
+     "text": "**Offen** = anrufen. **Link geschickt** = der Link ist raus, aber noch nicht gebucht. **Erledigt** = gebucht, kein Interesse, nicht erreicht oder von selbst erledigt (Vertrag, eigener Termin). **Reaktivierung** = Beratung im Vorjahr ohne Vertrag, ankreuzen statt anrufen."
     },
     {
      "n": 3,
@@ -154,6 +155,71 @@
    ],
    "hint": {
     "text": "**Immer über die Liste buchen.** Ein Termin, der direkt in Phorest angelegt wird, bekommt die Notiz erst mit dem nächsten Abgleich — und nur, wenn „an anderem Gerät gebucht“ getippt wurde."
+   }
+  },
+  {
+   "h1": "Termin verpasst",
+   "sub": "Wer zur Beratung nicht gekommen ist, bekommt am nächsten Tag automatisch einen Link — und wird angerufen, wenn sie nicht bucht.",
+   "card": {
+    "title": "Termin verpasst",
+    "text": "Automatische WhatsApp, dann anrufen"
+   },
+   "left": {
+    "shot": "v33-termin-verpasst"
+   },
+   "leftCaption": "Eine verpasste Beratung, aufgeklappt: Termin, Buchungsweg und die automatische WhatsApp.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Roter Chip „Termin verpasst“",
+     "text": "Die Kundin ist zu ihrer Beratung nicht erschienen. Am **nächsten Tag um 10 Uhr** hat sie automatisch eine WhatsApp (sonst E-Mail) mit ihrem persönlichen Buchungslink bekommen."
+    },
+    {
+     "n": 2,
+     "title": "Automatisch geschickt",
+     "text": "Die grüne Zeile zeigt, wann die Nachricht rausging. **Zwei Tage später** steht die Kundin oben zum Anrufen, wenn sie bis dahin nicht gebucht hat. Bucht sie über den Link, ist sie von selbst erledigt."
+    },
+    {
+     "n": 3,
+     "title": "Filter „Grund“",
+     "text": "Zeigt nur „Überlegt noch“ oder nur „Termin verpasst“. Danach wie gewohnt: anrufen, Link schicken, Termin buchen oder „Nicht erreicht“."
+    }
+   ],
+   "hint": {
+    "text": "**Wer zählt als „verpasst“?** Nur wer weder eingecheckt noch im Hub gestartet wurde und nicht selbst abgesagt hat. Am Tresen angelegte Beratungen zählen erst ab **1. November** — dann werden alle Termine über den Hub beendet."
+   }
+  },
+  {
+   "h1": "Reaktivierung",
+   "sub": "Kundinnen mit Beratung im Vorjahr ohne Vertrag — ankreuzen und den Link schicken, kein Anruf nötig.",
+   "card": {
+    "title": "Reaktivierung",
+    "text": "Ankreuzen und Link an alle"
+   },
+   "left": {
+    "shot": "v34-reaktivierung"
+   },
+   "leftCaption": "Reiter **„Reaktivierung“** mit ausgewählten Kundinnen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Wer steht hier?",
+     "text": "Beratung im Vorjahr, danach kein Termin und nie ein Vertrag — nur an **freigegebenen Standorten** und nur mit **Werbeeinwilligung** in Phorest. Wer nicht eingewilligt hat, erscheint gar nicht."
+    },
+    {
+     "n": 2,
+     "title": "Ankreuzen",
+     "text": "Einzelne Kundinnen antippen oder **„Bereite auswählen“** — höchstens 50 auf einmal. Die Spalte „Kanal“ zeigt, ob der Link per WhatsApp oder E-Mail kommt."
+    },
+    {
+     "n": 3,
+     "title": "„Link an … senden“",
+     "text": "Nach einer Rückfrage gehen die Links im Hintergrund raus. Die Kundinnen stehen dann auf **„Link · bis …“**, gebuchte auf **„gebucht“**."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Das ist Werbung.** Deshalb prüft der Hub die Einwilligung vor jeder Nachricht noch einmal in Phorest. Welche Standorte gerade dran sind, legt das Büro im Admin fest."
    }
   },
   {
