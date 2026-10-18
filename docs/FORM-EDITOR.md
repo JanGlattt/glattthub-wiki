@@ -185,6 +185,23 @@ clientseitig in `public/js/appointment-unified.js` (Getter `requiredForms`,
 gegen die Client-Submissions aus `GET /api/forms/submissions/client/{clientId}`, die dafür
 `appointment_id` mitliefern).
 
+### ⏳ Gültigkeit einer Unterschrift (seit 18.10.2026)
+
+Eine früher unterschriebene Kundeninformation/Einverständniserklärung muss in späteren Terminen nicht neu
+unterschrieben werden — aber nur, solange sie gilt (Entscheidung Jan, 18.10.2026: zunächst 12 Monate,
+je Formular einstellbar).
+
+- **Einstellung** im Einstellungsfenster → Zuordnung: **„Unterschrift gilt (Monate)“** (`forms.valid_months`,
+  leer = unbegrenzt) und **„Bisherige Unterschriften ungültig machen“** (`forms.signatures_valid_from` = heute;
+  „Zurücknehmen“ leert es). Nicht bei „Bei jedem Termin neu“, Vertrag und SEPA (gehören zum einzelnen Kauf).
+- **Regel nur einmal:** `Form::signatureValidUntil()` / `signatureStillValid()`. `GET /api/forms/submissions/client/{id}`
+  liefert je Einreichung `valid_until` und `expired`; Web (`earlierValidSubmission()`, `isFormDone()`) und App
+  (`AppointmentDetailModel.earlierValidSubmission`) lesen nur diese Felder.
+- **Terminansicht:** Die Kachel ist bei früherer gültiger Unterschrift grün („Bereits unterschrieben am … ✓ · gilt
+  bis …“), ein Tipp bietet Ansehen oder neu ausfüllen. Abgelaufen → „Unterschrift vom … ist abgelaufen — bitte neu
+  ausfüllen“. Die Formular-Kette (Vertrag erst nach der Kundeninformation) zählt dieselbe Gültigkeit.
+- Migration setzt 12 Monate für Formulare mit „Einverständnis“/„Einwilligung“ im Namen.
+
 ### 🧒 Nur bei minderjährigen Kundinnen
 
 **Für Endanwender:** Der zweite Schalter im Bereich „Zuordnung", **„Nur bei

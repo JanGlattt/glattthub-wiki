@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für den Formular-Editor im glatttHub — Felder anordnen, Regeln setzen, Vertrag und SEPA einbauen",
   "eyebrow": "Betrieb · Formular-Editor",
   "footerArea": "Betrieb",
-  "stand": "28.09.2026",
-  "version": "1.5",
+  "stand": "18.10.2026",
+  "version": "1.6",
   "notes": [
     "Die Formulare sind **Daten, kein Code** — Kundeninformation, Behandlungsvertrag und SEPA-Mandat entstehen alle hier.",
     "Ein Formular mit **Vertrags- oder SEPA-Feld** löst echte Vorgänge aus: Vertrag anlegen, Mandat einrichten, Kauf in Phorest.",
@@ -159,7 +159,7 @@
         {
           "n": 3,
           "title": "Pflicht und Gültigkeit",
-          "text": "**„Pflichtformular vor Behandlung“** sperrt den Einstellungszettel. Gültigkeit **„Einmalig pro Kunde“** oder **„Bei jedem Termin neu“**."
+          "text": "**„Pflichtformular vor Behandlung“** sperrt den Einstellungszettel. Gültigkeit **„Einmalig pro Kunde“** oder **„Bei jedem Termin neu“**. **„Unterschrift gilt (Monate)“** (z. B. 12) legt fest, wie lange eine frühere Unterschrift in späteren Terminen zählt — leer = unbegrenzt; nicht bei Vertrag und SEPA. **„Bisherige Unterschriften ungültig machen“** nach einer grundlegenden Änderung: Ab heute müssen alle Kundinnen neu unterschreiben."
         },
         {
           "n": 4,
