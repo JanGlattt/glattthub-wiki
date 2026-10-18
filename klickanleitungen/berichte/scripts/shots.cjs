@@ -49,6 +49,8 @@ const PLAN = [
   kopf('r2-kopf', '/hub/reports/upcoming-consultations'),
   karte('r2-stufen', '/hub/reports/upcoming-consultations', 'Aktueller Buchungsstand'),
   karte('r2-stornos', '/hub/reports/upcoming-consultations', 'Buchungsvorlauf-Analyse'),
+  // 18.10.2026: Termin vorziehen (Beispieldaten lokal)
+  karte('r2-vorziehen', '/hub/reports/upcoming-consultations', 'Termin vorziehen'),
   // ── 3 Vergangene Beratungsgespräche
   kopf('r3-kopf', '/hub/reports/past-consultations'),
   karte('r3-verlauf', '/hub/reports/past-consultations', 'Beratungsgespräche-Analyse'),

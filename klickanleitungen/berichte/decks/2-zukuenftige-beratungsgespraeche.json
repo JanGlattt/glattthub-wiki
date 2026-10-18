@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für die Berichte im glatttHub — geplante Beratungen für heute und die nächsten 3, 7, 14 und 28 Tage",
  "eyebrow": "Berichte · Zukünftige Beratungen",
  "footerArea": "Berichte",
- "stand": "17.10.2026",
- "version": "1.1",
+ "stand": "18.10.2026",
+ "version": "1.2",
  "notes": [
   "Der Blick nach vorn: **Wie voll sind die nächsten Wochen mit Beratungsgesprächen?**",
   "Die Termine kommen **alle 5 Minuten aus Phorest** — die Karte zeigt ihren Stand („Stand 14:32“), der Pfeil daneben holt ihn sofort neu.",
@@ -121,6 +121,38 @@
    "hint": {
     "kind": "warn",
     "text": "**Die Vorschau ist eine Momentaufnahme.** Wer sie am Montag exportiert und am Freitag zitiert, redet über einen Stand, den es nicht mehr gibt."
+   }
+  },
+  {
+   "h1": "Termin vorziehen",
+   "sub": "Wer lange im Voraus gebucht hat, bekommt einmal das Angebot, früher zu kommen — die Karte zeigt, was daraus wird.",
+   "card": {
+    "title": "Vorziehen",
+    "text": "Angebote, vorgezogen, Show-Rate"
+   },
+   "left": {
+    "shot": "r2-vorziehen"
+   },
+   "leftCaption": "Je Institut: vorgezogen, nicht vorgezogen, Kontrollgruppe.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Wie es funktioniert",
+     "text": "Jeden Morgen um 10 Uhr bekommen Kundinnen mit lange im Voraus gebuchter Beratung **eine** WhatsApp mit einem Link. Er zeigt nur **frühere** Termine im **selben Institut** und gilt bis 3 Tage vor dem bisherigen Termin. Wer vorzieht, gibt den alten Termin frei."
+    },
+    {
+     "n": 2,
+     "title": "Säulen",
+     "text": "**Vorgezogen** + **nicht vorgezogen** = verschickte Angebote. **Kontrollgruppe** = bewusst keine Nachricht, zum Vergleich."
+    },
+    {
+     "n": 3,
+     "title": "Tabelle",
+     "text": "Quote, im Schnitt gewonnene Tage und die **Show-Rate** vergangener Termine — mit Angebot gegen Kontrollgruppe. Erst mit einigen Dutzend Terminen je Gruppe belastbar."
+    }
+   ],
+   "hint": {
+    "text": "**Einstellungen im Admin** unter Verkauf → **Termin vorziehen**: Schwellen, Tageslimit, Kontrollgruppe und die Vorschau „Wer heute ein Angebot bekäme“."
    }
   },
   {

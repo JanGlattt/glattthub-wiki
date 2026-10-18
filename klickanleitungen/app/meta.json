@@ -1588,5 +1588,25 @@
   },
   "ratio": 1.02197265625,
   "marks": []
+ },
+ "cockpit-earlier-offers-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 671
+  },
+  "ratio": 0.8602564102564103,
+  "marks": []
+ },
+ "cockpit-earlier-offers-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 671
+  },
+  "ratio": 0.8602564102564103,
+  "marks": []
  }
 }

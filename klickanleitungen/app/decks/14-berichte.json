@@ -7,7 +7,7 @@
   "audience": "leitung",
   "footerArea": "App",
   "stand": "18.10.2026",
-  "version": "1.3",
+  "version": "1.4",
   "nr": 14,
   "title": [
     "Berichte",
@@ -183,6 +183,25 @@
           "n": 2,
           "title": "Bewertungen oder Klicks",
           "text": "Umschalter oben; die Tabelle (Symbol rechts oben) zeigt jeden Monat und jedes Institut."
+        }
+      ]
+    },
+    {
+      "h1": "Termin vorziehen",
+      "sub": "Wie viele Kundinnen ihre lange im Voraus gebuchte Beratung vorgezogen haben — auf „Zukünftige Beratungsgespräche“ und im Cockpit.",
+      "card": {
+        "title": "Vorziehen",
+        "text": "Angebote und Ergebnis"
+      },
+      "left": {
+        "shot": "cockpit-earlier-offers-light"
+      },
+      "leftCaption": "Je Institut gestapelt: vorgezogen, nicht vorgezogen, Kontrollgruppe.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Tabelle",
+          "text": "Symbol rechts oben: Quote, im Schnitt gewonnene Tage und Show-Rate mit Angebot gegen Kontrollgruppe."
         }
       ]
     },
