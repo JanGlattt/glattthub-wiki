@@ -203,7 +203,19 @@ Veröffentlichen fragt die Änderungszeile ab. Die Felder des Seitenpanels halte
   `ProcessDiagram::layout()` legt Bahnen (eine je „Wer“) und Spalten (eine je Schritt) fest, das Partial
   `wissen/partials/process.blade.php` zeichnet daraus ein SVG (Knoten als `foreignObject`, damit Text umbricht) und
   bietet die Checkliste zum Abhaken (nur lokal). `KnowledgeBlocks::blockText()` liefert den Prozess als Text für Suche
-  und glatttBert. Geplant: echtes BPMN über bpmn-js (Block „BPMN-Diagramm“, XML + SVG, PHP-Parser für den Bert-Text).
+  und glatttBert.
+- **BPMN-Block** (`type: bpmn`, Entscheidung Jan 19.10.2026): echte BPMN-2.0-Diagramme mit **bpmn-js 18.31**
+  (bpmn.io/Camunda, MIT; das „powered by bpmn.io“-Logo ist Lizenzbedingung). Der Modeler läuft als Vollbild-Overlay
+  (`BpmnStudio` in `wissen-editor.js`, deutsche Palette über das `translate`-Modul) und speichert XML plus
+  exportiertes SVG im Block. XML und SVG gehen **base64-kodiert** durch `editor.save()`, weil der Editor.js-Sanitizer
+  sonst alle Tags entfernt; `KnowledgeBlocks::maybeBase64()` dekodiert, `sanitizeSvg()` entfernt Skripte,
+  Ereignis-Attribute, `javascript:`-Links und `foreignObject`. `BpmnText::describe()` liest Pools, Bahnen, Aufgaben,
+  Gateways mit ihren Ausgängen und Sequenzflüsse (SimpleXML, Attribute über `->attributes()`) und liefert den
+  Prozesstext in Lesereihenfolge für Suche, glatttBert und die Textfassung („Als Text“) der Leseansicht.
+  `BpmnBuilder::fromSteps()` erzeugt aus dem Schritte-Block ein BPMN mit Layout (BPMNDI): Pool, eine Bahn je „Wer“,
+  Aufgaben, exklusives Gateway je Entscheidung (Ja → nächster Schritt, Nein → Endereignis unter dem Gateway);
+  `POST /hub/wissen/api/bpmn/aus-schritten`, im Schritte-Block „→ Als BPMN-Diagramm“. Leseansicht: SVG mit Zoom,
+  Vollbild und Anpassung an die Breite; die App zeigt dasselbe SVG als Bild.
 - **Versionsvergleich** `/hub/wissen/bearbeiten/{page}/versionen?von=&bis=` (`entwurf` = aktueller Stand):
   `WissenDiff::compare()` vergleicht blockweise per LCS über den Blocktext, macht aus einem Lauf „entfernt“ plus
   „hinzugefügt“ paarweise „geändert“ mit Wort-Diff. „Version n als Entwurf übernehmen“ (`POST …/versionen/{v}/uebernehmen`)
@@ -283,7 +295,7 @@ Tests `tests/Feature/WissenTest.php`, `WissenImportTest.php`, `tests/Unit/Knowle
 
 ## Changelog
 
-- **19.10.2026** — Stufe 2 (Prozess-Block mit Bahnen-Diagramm, Versionsvergleich, Rückmeldungen, Prüf-Erinnerung, Bereich wechseln) und Stufe 3 (Was ist neu, Pflichtseiten, Kiosk für die Institut-iPads, Drive-Dokumente); Katalog-Modul „Wissen“ mit drei Anlässen.
+- **19.10.2026** — Stufe 2 (Prozess-Block mit Bahnen-Diagramm, echte BPMN-Diagramme mit bpmn-js, Versionsvergleich, Rückmeldungen, Prüf-Erinnerung, Bereich wechseln) und Stufe 3 (Was ist neu, Pflichtseiten, Kiosk für die Institut-iPads, Drive-Dokumente); Katalog-Modul „Wissen“ mit drei Anlässen.
 - **18.10.2026 (nachts, 3)** — Home je Bereich ist die Startseite (`kind = start`, nicht in der Liste); Auswahl der glatttipedia neben dem Logo; großes Suchfeld sucht an Ort und Stelle; Leitung nach der alten Site gegliedert; `wissen:struktur` idempotent (`neu` über Titel, `start: true`).
 - **18.10.2026 (nachts, 2)** — Kapitel der Haupt-glatttipedia als Menüband (`is_primary`), Büro/Leitung rechts mit Schloss; Institut-Alltag nach der alten Site gegliedert; Startkarten zeigen Kapitel mit Unterseiten.
 - **18.10.2026 (nachts)** — Struktur-Editor in der Redaktion (Ziehen und Pfeile), Befehl `wissen:struktur`, Büro-Prozesse nach der Navigation der alten Google Site gegliedert (10 Kapitel), Kapitelseiten listen Unterseiten, Werkzeug-Reiter werden bei Platznot zu Symbolen.
