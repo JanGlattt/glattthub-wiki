@@ -27,6 +27,16 @@ const PLAN = [
   { name: 'v20-referral-pruefen', url: '/hub/contracts/referrals', steps: [['loaded'], ['click', 'button.btn-glattt-secondary', 'Details', 2000]], clip: '.modal-glattt' },
   { name: 'v21-auszahlung', url: '/hub/contracts/referrals', steps: [['loaded'], ['click', 'button.btn-glattt-secondary', 'Details', 2000],
     ['fn', async (page, L) => { await page.evaluate(() => { const box = document.querySelector('.modal-glattt-body, .modal-glattt'); const el = box && [...box.querySelectorAll('h3, h4, label, legend, span')].find(e => /Bank|Auszahlung/.test(e.textContent)); if (el) el.scrollIntoView({ block: 'start' }); }); await L.wait(page, 800); }]], clip: '.modal-glattt' },
+  // Freunde werben digital (18.10.2026): Vorschlag der Werberin aus dem Werbecode der Website-Buchung.
+  // Lokal: Vertrag 12751 + BookingTracking „klick-demo-werbecode“ mit Code der Testkundin (KLICK_REF_CONTRACT).
+  { name: 'v22-werber-vorschlag', url: '/hub/contracts/' + (process.env.KLICK_REF_CONTRACT || '12751'), steps: [['loaded'], ['wait', 2500],
+    ['fn', async (page, L) => { await page.evaluate(() => {
+      const el = [...document.querySelectorAll('[x-data]')].find(e => { try { return typeof Alpine.$data(e).openReferralModal === 'function'; } catch (x) { return false; } });
+      if (el) Alpine.$data(el).openReferralModal();
+    }); await L.wait(page, 2500); }]], clip: '.modal-glattt', marks: [
+    { id: 'vorschlag', kind: 'badge', n: 1, sel: '.modal-glattt .signing-extras-referrer-suggestion', at: 'l' },
+    { id: 'uebernehmen', kind: 'badge', n: 2, sel: '.modal-glattt .signing-extras-referrer-suggestion button', at: 'r' },
+  ] },
   // ── Verkauf 3: Gutscheine
   { name: 'v22-gutscheine', url: '/hub/vouchers', steps: [['loaded'], ['wait', 1500]], marks: [
     { id: 'suche', kind: 'badge', n: 1, sel: '.search-glattt, input[type=search], input[placeholder*="Serien"]', at: 'l' },

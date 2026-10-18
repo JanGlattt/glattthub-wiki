@@ -13,10 +13,11 @@
  "subtitle": "Klickanleitung für das Vertrags-Modul im glatttHub — Werbungen prüfen, Bankdaten pflegen, Prämien auszahlen",
  "eyebrow": "Verkauf · Freunde werben",
  "footerArea": "Verkauf",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "18.10.2026",
+ "version": "1.1",
  "notes": [
   "Die Werberin wird **beim Vertragsabschluss erfasst** — im Formular unter „Freunde werben“ („Terminansicht 3“).",
+  "Seit 18.10.2026 hat **jede Vertragskundin einen Werbelink** — in der Vertragsmail, in Erinnerungen und in My glattt. Bucht eine Freundin darüber, **schlägt der Hub die Werberin vor**.",
   "Die Geworbene bekommt **Rabatt auf die erste Rate**, die Werberin eine **Prämie**.",
   "**Ausgezahlt wird nur mit vollständiger Bankverbindung** — und erst, wenn die Sperre gefallen ist."
  ],
@@ -51,6 +52,33 @@
    ],
    "hint": {
     "text": "**„Auszahlung blockiert“** heißt fast immer: Der geworbene Vertrag ist noch zu jung, widerrufen oder nicht bezahlt. Vor dem Nachfragen also erst den Vertrag ansehen („Verträge 2“)."
+   }
+  },
+  {
+   "h1": "Werberin aus dem Werbelink",
+   "sub": "Hat die Freundin über einen Werbelink gebucht, steht die Werberin schon als Vorschlag da.",
+   "card": {
+    "title": "Vorschlag aus dem Link",
+    "text": "Werberin aus der Website-Buchung übernehmen"
+   },
+   "left": {
+    "shot": "v22-werber-vorschlag"
+   },
+   "leftCaption": "Fenster **„Freunde werben“** am Vertrag mit dem Vorschlag aus der Buchung.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Vorschlag",
+     "text": "Name der Werberin und woher er kommt: **Website-Buchung mit Datum und Werbecode**. Derselbe Vorschlag erscheint beim Vertragsabschluss im Formular unter „Freunde werben“."
+    },
+    {
+     "n": 2,
+     "title": "Übernehmen",
+     "text": "Erst der Klick auf **„Übernehmen“** trägt die Werberin ein — danach wie gewohnt **„Werber hinterlegen“**. Passt der Vorschlag nicht, einfach wie bisher suchen."
+    }
+   ],
+   "hint": {
+    "text": "**Der Hub trägt nie selbst ein.** Ein Vorschlag erscheint nur, wenn die Freundin über einen Werbelink gebucht hat — Selbstwerbung wird nie vorgeschlagen. Die Teilnahmebedingungen stehen im Link der Mail; bei Fragen gilt wie bisher die Absprache im Institut."
    }
   },
   {
