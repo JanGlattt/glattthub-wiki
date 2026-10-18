@@ -115,7 +115,13 @@ Büro 🔒 · Leitung 🔒“ aus Hauptbereich und Bereichen mit Kapitel-Band, n
 Bindestrich, nur ab 1024 px). Alle Bänder sind damit gleich aufgebaut: „Start“ (Übersicht der gewählten glatttipedia,
 beim Hauptbereich `/hub/wissen`), Kapitel, „Weitere Seiten“, Werkzeuge.
 
-Die **Startseite** folgt demselben Aufbau: eine Karte je Kapitel des Hauptbereichs (mit Unterseiten), dann „Weitere
+**Startseite je Bereich:** die Seite mit `kind = start` („Home“) ist der Reiter „Start“ des Bereichs. `treeFor()` lässt sie
+aus Liste, Band und Flyouts heraus; die Bereichsübersicht (`WissenController::space`) zeigt ihren Inhalt oben und die
+Seitenliste darunter („Alle Seiten“), `/hub/wissen` die Startseite des Hauptbereichs (`startPage()`). Veröffentlichte
+Inhalte sehen alle, Entwürfe nur die Redaktion mit Markierung. Anlegen über „Startseite anlegen“
+(`/hub/wissen/startseite/bearbeiten?space=<key>` → `ensureStartPage()`), per Vorlage über `start: true` in `wissen:struktur`.
+
+Die **Startseite** des Raums folgt demselben Aufbau wie das Band: eine Karte je Kapitel des Hauptbereichs (mit Unterseiten), dann „Weitere
 Seiten“, dann Büro und Leitung; flache Bereiche mit Inhalt stehen als Zeile „Weitere Bereiche“ unter dem Raster.
 
 Die zweite Kopfzeile zeigt also Kapitel (bzw. ohne Hauptbereich die Bereiche) als Reiter; **Hover oder Tastaturfokus** auf einem Reiter öffnet ein
@@ -234,6 +240,7 @@ Tests `tests/Feature/WissenTest.php`, `WissenImportTest.php`, `tests/Unit/Knowle
 
 ## Changelog
 
+- **18.10.2026 (nachts, 3)** — Home je Bereich ist die Startseite (`kind = start`, nicht in der Liste); Auswahl der glatttipedia neben dem Logo; großes Suchfeld sucht an Ort und Stelle; Leitung nach der alten Site gegliedert; `wissen:struktur` idempotent (`neu` über Titel, `start: true`).
 - **18.10.2026 (nachts, 2)** — Kapitel der Haupt-glatttipedia als Menüband (`is_primary`), Büro/Leitung rechts mit Schloss; Institut-Alltag nach der alten Site gegliedert; Startkarten zeigen Kapitel mit Unterseiten.
 - **18.10.2026 (nachts)** — Struktur-Editor in der Redaktion (Ziehen und Pfeile), Befehl `wissen:struktur`, Büro-Prozesse nach der Navigation der alten Google Site gegliedert (10 Kapitel), Kapitelseiten listen Unterseiten, Werkzeug-Reiter werden bei Platznot zu Symbolen.
 - **18.10.2026 (spät)** — Flyouts unter den Reitern, Kapitel-Band für Büro und Leitung (`nav_mode`), Priorität+-Menü „Weitere …“, Editor mit fester Aktionsleiste, Rückgängig, Ziehen, Wortzahl, Blöcke Checkliste/Zitat/Code/Einbettung; Importer setzt Eltern und Titel aus dem Sites-Pfad.
