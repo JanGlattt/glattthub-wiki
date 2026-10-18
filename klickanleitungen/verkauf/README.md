@@ -13,6 +13,7 @@ Deck-Format: `klickanleitungen/README.md` und Wiki `docs/KLICKANLEITUNGEN.md`.
 | **6 — Freunde werben** | Empfehlung erfassen, Prämie, Auswertung | v1.0, Screenshots offen |
 | **7 — Gutscheine** | Phorest-Gutscheine verwalten, Online-Verkauf, Bonus-Guthaben | v1.0, Screenshots offen |
 | **8 — Zufriedenheitsbefragung** | Befragung auslösen, Rückläufe lesen, Konsequenzen | v1.0, Screenshots offen |
+| **Verkauf 5 — Überlegt noch** | Anrufliste, Buchungslink, Termin buchen, Erledigt (`v28`–`v32`, lokal gegen Beispieldaten; `v30` stellt die Kanalprüfung für das Bild auf frei) | v1.0, 18.10.2026 |
 
 Alle acht richten sich ans **Büro**. Im Institut wird an Verträgen nicht gearbeitet — dort
 genügt „Kundenverwaltung 4“ (Vertrag lesen, offene Forderungen erkennen).

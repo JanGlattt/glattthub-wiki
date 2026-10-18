@@ -43,6 +43,34 @@ const PLAN = [
     { id: 'ueberspringen', kind: 'badge', n: 2, ...L.byText('button.btn-glattt-secondary', 'Überspringen'), at: 'r' },
   ] },
   { name: 'v27-folgeaufgaben', url: '/hub/zufriedenheit', steps: [['loaded'], ['wait', 2500], ['scroll', '.card-glattt-title', 'Verlauf', 120]], clip: 'card:Verlauf' },
+  // ── Verkauf 5: Überlegt noch (17.10.2026) — der Lauf sendet nichts und bucht nichts
+  { name: 'v28-ueberlegt-noch', url: '/hub/ueberlegt-noch', steps: [['loaded'], ['wait', 2500]], marks: [
+    { id: 'kennzahlen', kind: 'badge', n: 1, sel: '.stat-strip-glattt', at: 'l' },
+    { id: 'reiter', kind: 'badge', n: 2, sel: '.still-considering-tabs', at: 'l' },
+    { id: 'sortieren', kind: 'badge', n: 3, sel: '.still-considering-col-name', at: 'l' },
+    { id: 'zeile', kind: 'frame', color: 'teal', sel: '.still-considering-row' },
+  ] },
+  { name: 'v29-zeile-offen', url: '/hub/ueberlegt-noch', reload: true, steps: [['loaded'], ['wait', 2500], ['click', '.still-considering-row', 'Maria Beispiel', 900]], marks: [
+    { id: 'telefon', kind: 'badge', n: 1, sel: '.still-considering-phone', at: 'l' },
+    { id: 'whatsapp', kind: 'badge', n: 2, ...L.byText('.still-considering-collapse.is-open button', 'Link per WhatsApp'), at: 'l' },
+    { id: 'buchen', kind: 'badge', n: 3, ...L.byText('.still-considering-collapse.is-open button', 'Termin buchen'), at: 'l' },
+    { id: 'erreicht', kind: 'badge', n: 4, ...L.byText('.still-considering-collapse.is-open button', 'Nicht erreicht'), at: 'l' },
+    { id: 'mehr', kind: 'badge', n: 5, ...L.byText('.still-considering-collapse.is-open button', 'Mehr'), at: 'r' },
+  ] },
+  // Beispielkundinnen gibt es in Phorest nicht — Kanalprüfung für das Bild auf „frei“ stellen
+  { name: 'v30-link-senden', url: '/hub/ueberlegt-noch', reload: true, steps: [['loaded'], ['wait', 2500],
+    ['fn', async (page, L) => { await page.evaluate(() => { const a = Alpine.$data(document.querySelector('[x-data="stillConsideringApp()"]')); a.loadChannels = async (row) => { a.channels = { ...a.channels, [row.id]: { whatsapp: null, email: null } }; }; }); }],
+    ['click', '.still-considering-row', 'Maria Beispiel', 900],
+    ['click', '.still-considering-collapse.is-open button', 'Link per WhatsApp', 1500],
+    ['fill', '.modal-glattt textarea', 'Möchte nach dem Gespräch mit ihrem Partner einen Termin, am liebsten abends.', 600]], clip: '.modal-glattt' },
+  { name: 'v31-termin-buchen', url: '/hub/ueberlegt-noch', reload: true, steps: [['loaded'], ['wait', 2500], ['click', '.still-considering-row', 'Maria Beispiel', 900],
+    ['click', '.still-considering-collapse.is-open button', 'Termin buchen', 6000]], clip: '?.booking-panel-glattt', marks: [
+    { id: 'woanders', kind: 'badge', n: 1, sel: '.booking-panel-glattt-elsewhere', at: 'l' },
+  ] },
+  { name: 'v32-erledigt', url: '/hub/ueberlegt-noch', reload: true, steps: [['loaded'], ['wait', 2500], ['click', '.segmented-control-glattt-label', 'Erledigt', 900],
+    ['click', '.still-considering-row', 'Nina Test', 900]], marks: [
+    { id: 'zurueck', kind: 'badge', n: 1, ...L.byText('.still-considering-collapse.is-open button', 'Wieder auf die Liste'), at: 'l' },
+  ] },
 ];
 
 P.run(PLAN, L, { nur: process.argv.slice(2) });

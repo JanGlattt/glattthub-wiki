@@ -14,8 +14,10 @@ Damit die Liste auch nach der Umstellung auf den Hub gefüllt bleibt, fragt **�
 Beratungsterminen das Ergebnis der Beratung als Pflicht ab; ein Vertrag im Termin wird automatisch als
 „Vertrag abgeschlossen“ erfasst.
 
-!!! nutzerhandbuch "Bedienung: Verkauf – Überlegt noch (in Arbeit)"
-    Die Klickanleitung folgt; bis dahin beschreibt dieser Abschnitt die Bedienung.
+!!! nutzerhandbuch "Bedienung: Verkauf 5 – Überlegt noch"
+    [https://hilfe.hub.glattt.com/verkauf/5/](https://hilfe.hub.glattt.com/verkauf/5/) · in der App:
+    [App 27 – Überlegt noch in der App](https://hilfe.hub.glattt.com/app/27/) · Ergebnis beim Beenden:
+    [Terminansicht 6](https://hilfe.hub.glattt.com/terminansicht/6/)
 
 ## Für Entwickler
 

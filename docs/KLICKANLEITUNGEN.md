@@ -201,6 +201,7 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | 26 | Preislisten pflegen (Pakete, Rabattstufen, Zahlungsmodus) | `/hub/contracts` › Preislisten | **Verkauf 1** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 27 | Freunde werben: Empfehlung erfassen, Prämie, Auswertung | `/hub/contracts/referrals` | **Verkauf 2** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 28 | Zufriedenheitsbefragung auslösen und auswerten | `/hub/satisfaction` | **Verkauf 4** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 28a | Überlegt noch: anrufen, Buchungslink schicken, Termin buchen | `/hub/ueberlegt-noch` | **Verkauf 5** (v1.0), App **27** | ✅ im Portal (Screenshots lokal 18.10.2026, App aus Snapshot-Tests) |
 | 29 | Institute: Überblick, Steckbrief, Kennzahlen, Team | `/hub/branches` | **Betrieb 1** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 30 | Ein Institut pflegen: Infos, Bilder, Bank, Sichtbarkeit | `/hub/branches/{id}` | **Betrieb 2** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 31 | Formulare bauen: Editor, Feldtypen, Bedingungen | `/hub/forms` | **Betrieb 3** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |

@@ -10,8 +10,8 @@
  "subtitle": "Klickanleitung für den Abschluss des Beratungsgesprächs — Behandlung sofort anschließen, Kasse, Folgetermin, Terminnotiz",
  "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
- "stand": "10.10.2026",
- "version": "1.5",
+ "stand": "18.10.2026",
+ "version": "1.6",
  "notes": [
   "**Jeder** Beratungstermin wird über **„Termin beenden“** abgeschlossen — auch ohne Verkauf. Erst dann gilt er in Phorest als erledigt.",
   "Die **Terminnotiz ist Pflicht** und wandert automatisch nach Phorest. Bei **Direkt behandeln** reicht **eine** Notiz — die kommt am Ende der Behandlung; die Beratung bekommt automatisch den Vermerk „Direkt im Anschluss behandelt“."
@@ -107,7 +107,7 @@
    "sub": "Ohne Direktbehandlung: „Termin beenden“ unten links. Der Hub führt durch Kasse, Folgetermin und Terminnotiz.",
    "card": {
     "title": "Termin beenden",
-    "text": "Kasse prüfen, Extrazeit (Ganzkörper), Folgetermin planen, Terminnotiz, „Termin jetzt beenden“"
+    "text": "Kasse prüfen, Extrazeit (Ganzkörper), Folgetermin planen, Terminnotiz (bei Beratung mit Ergebnis), „Termin jetzt beenden“"
    },
    "left": {
     "shot": "i3-terminnotiz",
@@ -147,8 +147,8 @@
     },
     {
      "n": 4,
-     "title": "Terminnotiz & „Termin jetzt beenden“",
-     "text": "Pflichtfeld ausfüllen und bestätigen. Ohne Text: „Bitte gib eine Terminnotiz ein.“"
+     "title": "Terminnotiz, Ergebnis der Beratung & „Termin jetzt beenden“",
+     "text": "Pflichtfeld ausfüllen und bestätigen. Ohne Text: „Bitte gib eine Terminnotiz ein.“ **Bei einem Beratungstermin** (auch Beratung + Behandlung) ohne Vertrag steht darüber **„Ergebnis der Beratung“** — eine der vier Optionen ist Pflicht: Neuer Termin vereinbart, Überlegt noch, Nicht behandelbar, Sonstiges. Wurde gerade ein Folgetermin gebucht, ist „Neuer Termin“ schon gewählt. Wurde ein **Vertrag** unterschrieben, erfasst der Hub „Vertrag abgeschlossen“ automatisch. Die Notiz ist zugleich die Notiz zum Ergebnis — Beratungen auf der Institutsseite nachzutragen ist nicht mehr nötig."
     },
     {
      "n": 5,

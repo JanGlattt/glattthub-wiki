@@ -1,0 +1,182 @@
+{
+ "out": "../pdf/Verkauf-5-ueberlegt-noch",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Verkauf",
+ "nr": 5,
+ "of": 5,
+ "audience": "leitung",
+ "title": [
+  "Überlegt noch",
+  "anrufen und Link schicken"
+ ],
+ "subtitle": "Klickanleitung für die Seite „Überlegt noch“ im glatttHub — Kundinnen ohne Abschluss anrufen, Buchungslink per WhatsApp schicken, Termin buchen, Ergebnis eintragen",
+ "eyebrow": "Verkauf · Überlegt noch",
+ "footerArea": "Verkauf",
+ "stand": "18.10.2026",
+ "version": "1.0",
+ "notes": [
+  "Auf der Liste steht jede Kundin, deren Beratung **ohne Vertrag** endete (überlegt noch, Folgetermin, Sonstiges) und die **keinen offenen Termin** hat. Neue kommen zwei Tage nach dem Gespräch dazu.",
+  "**Zuerst anrufen.** Die WhatsApp mit dem Buchungslink kommt nach dem Anruf — „ich schick dir gleich den Link“. Automatisch geht nichts raus.",
+  "Jeder Termin aus der Liste bekommt in Phorest die Notiz **„Überlegt noch — erneutes Beratungsgespräch …“**, damit die Beraterin vorher weiß, wen sie vor sich hat.",
+  "Die Liste füllt sich aus **„Termin beenden“**: Bei Beratungsterminen ist dort das Ergebnis der Beratung Pflicht (Terminansicht 6)."
+ ],
+ "pages": [
+  {
+   "h1": "Die Anrufliste",
+   "sub": "Wer heute dran ist, steht oben — frische Beratungen und fällige Wiedervorlagen.",
+   "card": {
+    "title": "Die Anrufliste",
+    "text": "Kennzahlen, Reiter, Sortierung"
+   },
+   "left": {
+    "shot": "v28-ueberlegt-noch"
+   },
+   "leftCaption": "Die Seite **„Überlegt noch“** unter **Verkauf**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kennzahlen",
+     "text": "Anzurufen, heute fällig, Link geschickt, neue Beratung gebucht und **Vertrag danach** — für den Standort aus der Seitenleiste."
+    },
+    {
+     "n": 2,
+     "title": "Reiter",
+     "text": "**Offen** = anrufen. **Link geschickt** = der Link ist raus, aber noch nicht gebucht. **Erledigt** = gebucht, kein Interesse, nicht erreicht oder von selbst erledigt (Vertrag, eigener Termin)."
+    },
+    {
+     "n": 3,
+     "title": "Sortieren",
+     "text": "Ein Klick auf eine Spaltenüberschrift sortiert, ein zweiter dreht die Richtung um, ein dritter stellt die Standard-Reihenfolge (heute fällig zuerst) wieder her."
+    }
+   ],
+   "hint": {
+    "text": "**Die Telefonnummer ist antippbar** — auf dem iPad oder in der Desktop-App startet sie direkt den Anruf."
+   }
+  },
+  {
+   "h1": "Nach dem Anruf",
+   "sub": "Ein Klick auf die Kundin klappt die Beratungsnotiz und die Aktionen auf.",
+   "card": {
+    "title": "Nach dem Anruf",
+    "text": "Link, Termin, nicht erreicht"
+   },
+   "left": {
+    "shot": "v29-zeile-offen"
+   },
+   "leftCaption": "Aufgeklappte Zeile mit der Notiz aus der Beratung und den Aktionen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Anrufen",
+     "text": "Nummer antippen oder abtippen. Die graue Zeile zeigt, wie oft schon angerufen wurde."
+    },
+    {
+     "n": 2,
+     "title": "Link per WhatsApp",
+     "text": "Schickt den persönlichen Buchungslink (nächste Seite). Die Kundin wandert in **„Link geschickt“**."
+    },
+    {
+     "n": 3,
+     "title": "Termin buchen",
+     "text": "Bucht direkt am Telefon — das Buchungsfenster öffnet sich mit der Kundin."
+    },
+    {
+     "n": 4,
+     "title": "Nicht erreicht",
+     "text": "Die Kundin kommt **nach drei Tagen** wieder nach oben. Nach **drei Versuchen** fällt sie aus der Liste (unter „Erledigt“)."
+    },
+    {
+     "n": 5,
+     "title": "Mehr",
+     "text": "**Link per E-Mail**, **Notiz** und **Kein Interesse**. Ohne Handynummer steht der E-Mail-Link schon vorne."
+    }
+   ],
+   "hint": {
+    "text": "**Kein Interesse heißt Schluss.** Nicht nachfassen — unter „Erledigt“ lässt sich ein versehentlicher Klick zurückholen."
+   }
+  },
+  {
+   "h1": "Buchungslink schicken",
+   "sub": "Die Kundin bucht sich das neue Beratungsgespräch selbst — ihre Daten sind schon eingetragen.",
+   "card": {
+    "title": "Link schicken",
+    "text": "WhatsApp oder E-Mail"
+   },
+   "left": {
+    "shot": "v30-link-senden"
+   },
+   "leftCaption": "Rückfrage vor dem Senden, mit freiwilliger Notiz zum Anruf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Notiz (freiwillig)",
+     "text": "Was die Kundin am Telefon gesagt hat. Die Notiz steht später auch in der Phorest-Notiz des neuen Termins."
+    },
+    {
+     "n": 2,
+     "title": "„Jetzt senden“",
+     "text": "Die WhatsApp geht sofort raus. Der Link gilt **7 Tage**; wer bis dahin nicht bucht, steht wieder zum Anrufen da („Link abgelaufen“)."
+    },
+    {
+     "n": 3,
+     "title": "Gebucht",
+     "text": "Bucht die Kundin über den Link, ist sie automatisch abgehakt (**„gebucht“**) — und der Termin trägt die Notiz."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**WhatsApp nicht möglich?** Fehlt die Vorlage des Standorts oder die Handynummer, sagt das Fenster es vorher. Dann über **Mehr → Link per E-Mail**."
+   }
+  },
+  {
+   "h1": "Termin direkt buchen",
+   "sub": "Am Telefon gleich einen Termin festmachen — mit der Notiz für die Beraterin.",
+   "card": {
+    "title": "Termin buchen",
+    "text": "Im Buchungsfenster, mit Notiz"
+   },
+   "left": {
+    "shot": "v31-termin-buchen"
+   },
+   "leftCaption": "Das Buchungsfenster mit der Kundin und „Beratung“ vorausgewählt.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Termin an anderem Gerät bereits gebucht",
+     "text": "Schon in Phorest gebucht? Dann nur abhaken — die Notiz trägt der Hub nach, sobald der Termin im Abgleich auftaucht."
+    },
+    {
+     "n": 2,
+     "title": "Zeit wählen und „Beratung buchen“",
+     "text": "Wie in der Terminübersicht (Terminansicht 9). Der Termin bekommt die Notiz „Überlegt noch …“, die Kundin ist abgehakt."
+    }
+   ],
+   "hint": {
+    "text": "**Immer über die Liste buchen.** Ein Termin, der direkt in Phorest angelegt wird, bekommt die Notiz erst mit dem nächsten Abgleich — und nur, wenn „an anderem Gerät gebucht“ getippt wurde."
+   }
+  },
+  {
+   "h1": "Erledigt",
+   "sub": "Was aus der Liste wurde — und der Weg zurück.",
+   "card": {
+    "title": "Erledigt",
+    "text": "Gebucht, kein Interesse, zurückholen"
+   },
+   "left": {
+    "shot": "v32-erledigt"
+   },
+   "leftCaption": "Reiter **„Erledigt“** mit aufgeklappter Kundin.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Wieder auf die Liste",
+     "text": "Holt eine Kundin zurück, z. B. nach einem versehentlichen „Kein Interesse“. Die Versuche bleiben gezählt."
+    }
+   ],
+   "hint": {
+    "text": "**Von selbst erledigt:** Unterschreibt eine Kundin einen Vertrag, bucht sie selbst oder hat sie eine neue Beratung, verschwindet sie aus „Offen“ — die Kennzahl **„Vertrag danach“** zeigt, was die Liste gebracht hat."
+   }
+  }
+ ]
+}

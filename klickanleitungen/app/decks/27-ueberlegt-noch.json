@@ -1,0 +1,142 @@
+{
+  "out": "../pdf/App-27-Ueberlegt-noch",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "App",
+  "nr": 27,
+  "of": 27,
+  "audience": "leitung",
+  "footerArea": "App",
+  "stand": "18.10.2026",
+  "version": "1.0",
+  "title": [
+    "Überlegt noch",
+    "in der App"
+  ],
+  "subtitle": "Klickanleitung für die glatttHub-App — Kundinnen ohne Abschluss anrufen, Buchungslink schicken, Termin buchen und beim Beenden das Ergebnis der Beratung erfassen",
+  "eyebrow": "App · Verkauf",
+  "notes": [
+    "**Überlegt noch** findest du im Menü **Mehr** unter **Verkauf** (iPhone) bzw. in der Seitenleiste (iPad). Dieselbe Liste wie im Hub (Verkauf 5).",
+    "Den Buchungslink zu schicken ist echter Kundenkontakt — die App fragt immer nach."
+  ],
+  "pages": [
+    {
+      "h1": "Die Anrufliste",
+      "sub": "Heute fällige Kundinnen stehen oben, darunter die mit späterer Wiedervorlage.",
+      "card": {
+        "title": "Anrufliste",
+        "text": "Offen, Link, Erledigt"
+      },
+      "left": {
+        "shot": "still-considering-open-light"
+      },
+      "right": {
+        "shot": "still-considering-linkSent-dark"
+      },
+      "leftCaption": "Reiter **Offen**: heute fällig und später.",
+      "rightCaption": "Reiter **Link**: Link verschickt, noch nicht gebucht.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Kennzahlen",
+          "text": "Anzurufen, heute fällig, Link raus, gebucht — für den Standort oben."
+        },
+        {
+          "n": 2,
+          "title": "Reiter",
+          "text": "Offen, Link, Erledigt. Ziehen nach unten aktualisiert."
+        },
+        {
+          "n": 3,
+          "title": "Wischen",
+          "text": "Nach rechts: **Link** per WhatsApp. Nach links: **Nicht erreicht**. Beides steht auch in der Akte."
+        }
+      ]
+    },
+    {
+      "h1": "Die Akte",
+      "sub": "Ein Tipp auf die Kundin öffnet Beratungsnotiz, Anrufen und die Aktionen.",
+      "card": {
+        "title": "Akte",
+        "text": "Anrufen, Link, Termin"
+      },
+      "left": {
+        "shot": "still-considering-case-light"
+      },
+      "leftCaption": "Akte mit **Anrufen** und den drei Hauptaktionen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Anrufen",
+          "text": "Startet den Anruf. Kommst du zurück in die App, fragt sie **„Wie lief der Anruf?“** — Link schicken, Termin buchen, Nicht erreicht oder Kein Interesse."
+        },
+        {
+          "n": 2,
+          "title": "Link per WhatsApp",
+          "text": "Mit freiwilliger Notiz zum Anruf; der Link gilt 7 Tage."
+        },
+        {
+          "n": 3,
+          "title": "Termin buchen",
+          "text": "Öffnet den Slot-Finder mit der Kundin und „Beratung“. Unten: **„Termin an anderem Gerät bereits gebucht“**, wenn schon in Phorest gebucht wurde."
+        },
+        {
+          "n": 4,
+          "title": "Nicht erreicht / Mehr",
+          "text": "Nach drei Tagen wieder oben, nach drei Versuchen raus. Unter **Mehr**: E-Mail-Link, Notiz, Kein Interesse."
+        }
+      ]
+    },
+    {
+      "h1": "Auf dem iPad",
+      "sub": "Liste links, Akte rechts — ohne Blatt dazwischen.",
+      "card": {
+        "title": "iPad",
+        "text": "Liste und Akte nebeneinander"
+      },
+      "left": {
+        "shot": "still-considering-ipad-light"
+      },
+      "leftCaption": "iPad: links die Liste, rechts die gewählte Kundin.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Kundin wählen",
+          "text": "Ein Tipp links zeigt sie rechts; die Aktionen sind dieselben wie auf dem iPhone."
+        }
+      ]
+    },
+    {
+      "h1": "Beim Beenden: Ergebnis der Beratung",
+      "sub": "Damit die Liste sich füllt, fragt „Termin beenden“ bei Beratungen nach dem Ergebnis.",
+      "card": {
+        "title": "Ergebnis der Beratung",
+        "text": "Pflicht beim Beenden"
+      },
+      "left": {
+        "shot": "consultation-outcome-light"
+      },
+      "leftCaption": "Notiz-Blatt eines Beratungstermins ohne Vertrag.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Ergebnis wählen",
+          "text": "Neuer Termin vereinbart, Überlegt noch, Nicht behandelbar oder Sonstiges — ohne Auswahl lässt sich der Termin nicht beenden."
+        },
+        {
+          "n": 2,
+          "title": "Notiz",
+          "text": "Die Terminnotiz ist zugleich die Notiz zum Ergebnis — sie erscheint später auf der Anrufliste."
+        },
+        {
+          "n": 3,
+          "title": "Mit Vertrag",
+          "text": "Wurde im Termin ein Vertrag unterschrieben, erfasst die App „Vertrag abgeschlossen“ selbst — dann gibt es keine Frage."
+        }
+      ],
+      "hint": {
+        "text": "Die Frage gibt es ab dieser App-Version. Ältere Versionen beenden noch ohne sie — bitte die App aktualisieren."
+      }
+    }
+  ]
+}

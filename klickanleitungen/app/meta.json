@@ -1308,5 +1308,125 @@
   },
   "ratio": 3.58974358974359,
   "marks": []
+ },
+ "still-considering-ipad-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2048,
+   "height": 1480
+  },
+  "ratio": 0.72265625,
+  "marks": []
+ },
+ "still-considering-ipad-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2048,
+   "height": 1480
+  },
+  "ratio": 0.72265625,
+  "marks": []
+ },
+ "still-considering-done-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1520
+  },
+  "ratio": 1.9487179487179487,
+  "marks": []
+ },
+ "still-considering-case-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1520
+  },
+  "ratio": 1.9487179487179487,
+  "marks": []
+ },
+ "still-considering-linkSent-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1520
+  },
+  "ratio": 1.9487179487179487,
+  "marks": []
+ },
+ "still-considering-case-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1520
+  },
+  "ratio": 1.9487179487179487,
+  "marks": []
+ },
+ "still-considering-done-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1520
+  },
+  "ratio": 1.9487179487179487,
+  "marks": []
+ },
+ "still-considering-linkSent-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1520
+  },
+  "ratio": 1.9487179487179487,
+  "marks": []
+ },
+ "still-considering-open-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1520
+  },
+  "ratio": 1.9487179487179487,
+  "marks": []
+ },
+ "still-considering-open-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1520
+  },
+  "ratio": 1.9487179487179487,
+  "marks": []
+ },
+ "consultation-outcome-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1120
+  },
+  "ratio": 1.435897435897436,
+  "marks": []
+ },
+ "consultation-outcome-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1120
+  },
+  "ratio": 1.435897435897436,
+  "marks": []
  }
 }

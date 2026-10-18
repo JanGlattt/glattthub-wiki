@@ -2280,6 +2280,9 @@ stehen oben. Ein Tipp öffnet die Akte mit Beratungsnotiz, „Anrufen“ und den
 WhatsApp, Termin buchen, Nicht erreicht), der Rest unter „Mehr“. Wer aus der Akte anruft, bekommt beim
 Zurückkommen das Blatt „Wie lief der Anruf?“. Auf dem iPad stehen Liste und Akte nebeneinander.
 
+!!! nutzerhandbuch "Bedienung: App 27 – Überlegt noch in der App"
+    [https://hilfe.hub.glattt.com/app/27/](https://hilfe.hub.glattt.com/app/27/)
+
 **Für Entwickler:** Entwurf 1 „Anrufliste mit Ergebnis-Blatt“ (Jan, 17.10.2026, Artefakt
 https://claude.ai/artifact/TxYeFqQujH4oNe42DQuGmz). Dieselben Endpunkte wie das Web (`hub/ueberlegt-noch/…`),
 „Termin buchen“ öffnet den Slot-Finder mit `BookingTarget.stillConsideringCaseId` (Notiz + Abhaken,
