@@ -103,7 +103,15 @@ Standard-Zielgruppe `alle`. `allows($required, $keys)` ist der einzige Vergleich
 
 ### Menüband: Reiter, Flyouts, Kapitel (`layouts/wissen.blade.php`, `wissen.js`)
 
-Die zweite Kopfzeile zeigt die Bereiche als Reiter; **Hover oder Tastaturfokus** auf einem Reiter öffnet ein
+**Seit 18.10.2026 (nachts) sind die Kapitel der Haupt-glatttipedia das Menüband** (Entscheidung Jan): genau ein
+Bereich ist `knowledge_spaces.is_primary` (Institut-Alltag, läuft im Kapitel-Modus). Sein Band — „Start“, Kapitel,
+„Weitere Seiten“, dann die Bereiche mit eigenem Band (Büro, Leitung) als Reiter mit Schloss und Flyout, dann die
+Werkzeuge — steht überall, auch auf Start, Historie, Redaktion und in den übrigen (flachen) Bereichen; nur Büro und
+Leitung zeigen ihr eigenes Band mit „← Start“. Die flachen Bereiche sind über die Startkarten erreichbar, ihre Seiten
+stehen in der Seitenleiste. Ohne `is_primary` fällt das Layout auf Bereichs-Reiter zurück. Eine oberste Seite ohne
+Unterseiten ist kein Kapitel, sondern steht unter „Weitere Seiten“ — „Home“ darf deshalb keine Unterseiten haben.
+
+Die zweite Kopfzeile zeigt also Kapitel (bzw. ohne Hauptbereich die Bereiche) als Reiter; **Hover oder Tastaturfokus** auf einem Reiter öffnet ein
 Flyout (`.wissen-tab-wrap` + `.wissen-flyout`, rein CSS über `:hover`/`:focus-within`, ab acht Seiten zwei
 Spalten à sieben, danach „alle N Seiten“). Bereiche mit `nav_mode = chapters` (Büro, Leitung) bekommen statt
 der Bereichs-Reiter ein **eigenes Kapitel-Band**: Zurück-Pfeil „Alle Bereiche“, Bereichsname, Trenner, je
@@ -114,7 +122,8 @@ ohne Unterseiten, breites Flyout mit drei Spalten). Die Seitenleiste zeigt dann 
 Reiter, die nicht in die Zeile passen, versteckt `fitTabs()` in `wissen.js` von hinten und legt sie als Links
 in das Menü „Weitere Seiten“ bzw. „Weitere Bereiche“ (Priorität+, bei jeder Breitenänderung neu, Trennlinie
 zwischen verschobenen Reitern und den eigentlichen Einträgen). Gemessen wird die rechte Kante des letzten
-Werkzeugs, **nicht** `scrollWidth` — der zählt die absolut positionierten Flyouts mit. `.wissen-tabs-inner`
+Werkzeugs, **nicht** `scrollWidth` — der zählt die absolut positionierten Flyouts mit. Versteckt werden zuerst Kapitel
+(von hinten), die Bereichs-Reiter Büro/Leitung zuletzt; davor werden die Werkzeuge rechts zu Symbolen (`is-compact`). `.wissen-tabs-inner`
 hat deshalb `overflow-x: clip` (nicht `auto`: das würde auch senkrecht beschneiden, und die Flyouts wären
 unsichtbar). Unter 1024 px gibt es keine Reiter, dort übernimmt die mobile Bereichsliste in der Seitenleiste.
 
@@ -218,6 +227,7 @@ Tests `tests/Feature/WissenTest.php`, `WissenImportTest.php`, `tests/Unit/Knowle
 
 ## Changelog
 
+- **18.10.2026 (nachts, 2)** — Kapitel der Haupt-glatttipedia als Menüband (`is_primary`), Büro/Leitung rechts mit Schloss; Institut-Alltag nach der alten Site gegliedert; Startkarten zeigen Kapitel mit Unterseiten.
 - **18.10.2026 (nachts)** — Struktur-Editor in der Redaktion (Ziehen und Pfeile), Befehl `wissen:struktur`, Büro-Prozesse nach der Navigation der alten Google Site gegliedert (10 Kapitel), Kapitelseiten listen Unterseiten, Werkzeug-Reiter werden bei Platznot zu Symbolen.
 - **18.10.2026 (spät)** — Flyouts unter den Reitern, Kapitel-Band für Büro und Leitung (`nav_mode`), Priorität+-Menü „Weitere …“, Editor mit fester Aktionsleiste, Rückgängig, Ziehen, Wortzahl, Blöcke Checkliste/Zitat/Code/Einbettung; Importer setzt Eltern und Titel aus dem Sites-Pfad.
 - **18.10.2026** — Stufe 1 auf `feature/wissen`: Raum, Zielgruppen, Block-Editor, Suche, glatttBert-Quelle, Import-Werkzeuge; nachmittags Startseite als Block-Seite, Aktionen mit Gültigkeit und Historie, Neuigkeiten als Banner/Modal.
