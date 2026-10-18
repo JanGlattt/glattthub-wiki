@@ -53,7 +53,7 @@ Konzept und Entwürfe: Projektwissen `.github/knowledge/glatttipedia-neu-wissens
 
 | Tabelle | Zweck | Wichtige Spalten |
 |---|---|---|
-| `knowledge_spaces` | Bereiche | `key`, `name`, `icon`, `audiences` (JSON, leer = alle), `sort_order`, `is_active` |
+| `knowledge_spaces` | Bereiche | `key`, `name`, `icon`, `audiences` (JSON, leer = alle), `sort_order`, `is_active`, `nav_mode` (`flat` = Bereichs-Reiter, `chapters` = eigenes Kapitel-Band; Büro und Leitung) |
 | `knowledge_pages` | Seiten | `space_id`, `parent_id`, `slug` (je Bereich eindeutig), `title`, `summary`, `blocks` (veröffentlicht), `draft_blocks` (Entwurf), `search_text`, `status` (`draft`/`published`/`archived`), `kind` (`page`/`start`/`aktion`), `valid_from`, `valid_until`, `branch_ids`, `show_banner`, `audiences`, `owner_user_id`, `review_at`, `review_interval_months`, `requires_acknowledgement`, `published_version_id`, `imported_from_url`, `import_log`, SoftDeletes |
 | `knowledge_page_versions` | Veröffentlichungen | `page_id`, `version_no`, `blocks`, `change_summary`, `author_user_id`, `published_at` |
 | `knowledge_audiences` | Zielgruppen | `key`, `name`, `color`, `rules` (JSON: `permissions_any`, `branch_ids`, `departments`, `user_ids`), `is_default` |
@@ -101,12 +101,36 @@ Standard-Zielgruppe `alle`. `allows($required, $keys)` ist der einzige Vergleich
 | `POST /hub/wissen/seiten` · `PUT …/{id}` · `POST …/{id}/veroeffentlichen` · `POST /hub/wissen/medien` | Redaktion (`edit_knowledge`) |
 | `GET /hub/wissen/redaktion` | Entwürfe, geänderte Seiten, fällige Prüfungen |
 
+### Menüband: Reiter, Flyouts, Kapitel (`layouts/wissen.blade.php`, `wissen.js`)
+
+Die zweite Kopfzeile zeigt die Bereiche als Reiter; **Hover oder Tastaturfokus** auf einem Reiter öffnet ein
+Flyout (`.wissen-tab-wrap` + `.wissen-flyout`, rein CSS über `:hover`/`:focus-within`, ab acht Seiten zwei
+Spalten à sieben, danach „alle N Seiten“). Bereiche mit `nav_mode = chapters` (Büro, Leitung) bekommen statt
+der Bereichs-Reiter ein **eigenes Kapitel-Band**: Zurück-Pfeil „Alle Bereiche“, Bereichsname, Trenner, je
+Kapitel (= oberste Seite mit Unterseiten) ein Reiter mit Flyout, dahinter „Weitere Seiten“ (oberste Seiten
+ohne Unterseiten, breites Flyout mit drei Spalten). Die Seitenleiste zeigt dann nur das aktive Kapitel
+(`WissenService::pathTo`).
+
+Reiter, die nicht in die Zeile passen, versteckt `fitTabs()` in `wissen.js` von hinten und legt sie als Links
+in das Menü „Weitere Seiten“ bzw. „Weitere Bereiche“ (Priorität+, bei jeder Breitenänderung neu, Trennlinie
+zwischen verschobenen Reitern und den eigentlichen Einträgen). Gemessen wird die rechte Kante des letzten
+Werkzeugs, **nicht** `scrollWidth` — der zählt die absolut positionierten Flyouts mit. `.wissen-tabs-inner`
+hat deshalb `overflow-x: clip` (nicht `auto`: das würde auch senkrecht beschneiden, und die Flyouts wären
+unsichtbar). Unter 1024 px gibt es keine Reiter, dort übernimmt die mobile Bereichsliste in der Seitenleiste.
+
 ### Editor (`public/js/wissen-editor.js`)
 
-Editor.js 2.30.7 von jsDelivr (Header, List, Table, Image, Marker, InlineCode, Delimiter) plus eigene
-Werkzeuge `callout`, `steps`, `gallery`, `hublink`, `toggle`, `video`, `file` und die Block-Tune `audience`
-(Sichtbarkeit je Block, Korallstreifen im Editor). Autosave nach 2,5 s Ruhe per `PUT`, `⌘S` sichert sofort,
-Veröffentlichen fragt die Änderungszeile ab. Uploads gehen an `/hub/wissen/medien` (Disk
+Editor.js 2.30.7 von jsDelivr (Header, List, Checklist, Quote, Code, Embed für YouTube/Vimeo, Table, Image,
+Marker, InlineCode, Underline, Delimiter) plus eigene Werkzeuge `callout`, `steps`, `gallery`, `hublink`,
+`toggle`, `video`, `file` und die Block-Tune `audience` (Sichtbarkeit je Block, Korallstreifen im Editor).
+Rückgängig/Wiederholen über `editorjs-undo`, Ziehen der Blöcke über `editorjs-drag-drop`. Über dem Schreibbereich
+klebt die Aktionsleiste `.wissen-editor-bar` (Zurück, Pfad, Speicherstand, Rückgängig/Wiederholen, Seitenpanel
+ein/aus — Zustand in `localStorage` `wissen.editor.side`, Vorschau, Sichern, Veröffentlichen); unter dem Titel
+stehen Wortzahl, Blöcke und Lesezeit (`updateStats`). Autosave nach 2,5 s Ruhe per `PUT`, `⌘S` sichert sofort,
+Veröffentlichen fragt die Änderungszeile ab. Die Felder des Seitenpanels halten ihren Abstand über `gap` an
+`.wissen-editor-box` — die Nachbar-Regel `.form-glattt-group + .form-glattt-group` greift über die
+`x-if`-Wrapper hinweg nicht; die Datumszeile ist eine `.form-glattt-row` (bringt `display: grid` mit), keine
+`.form-glattt-group`. Uploads gehen an `/hub/wissen/medien` (Disk
 `config('wissen.media_disk')`, lokal `public`, in der Cloud `gcs`).
 
 ### Startseite, Aktionen, Historie, Neuigkeiten (18.10.2026)
@@ -161,6 +185,8 @@ Google Sites hat keinen strukturierten Export. Zwei Schritte:
 - Laravel 12: Controller brauchen `AuthorizesRequests` für `$this->authorize()`.
 - Die Hub-Seitenleiste merkt sich „eingeklappt“ in `localStorage`; der Raum hat eine eigene Hülle und ist davon unabhängig.
 - Theme- und Toast-Script liegen seit 18.10.2026 in `layouts/partials/theme-bootstrap` und `toast-script` (geteilt von `hub` und `wissen`).
+- Ein Element mit `grid-column: 1 / -1` in einem Raster mit `grid-auto-flow: column` landet **oben links**: Elemente mit fester Spalte werden vor dem Autoflow platziert. Der „alle N Seiten“-Link des Flyouts hat deshalb zusätzlich `grid-row: 8`.
+- Playwright-Prüfung der Reiter braucht einen Viewport ab 1024 px; Screenshots als JPEG (`deviceScaleFactor` 0,75 bei 1280 px hält sie unter 1000 px).
 
 ### Dateien
 
@@ -171,4 +197,5 @@ Tests `tests/Feature/WissenTest.php`, `WissenImportTest.php`, `tests/Unit/Knowle
 
 ## Changelog
 
+- **18.10.2026 (spät)** — Flyouts unter den Reitern, Kapitel-Band für Büro und Leitung (`nav_mode`), Priorität+-Menü „Weitere …“, Editor mit fester Aktionsleiste, Rückgängig, Ziehen, Wortzahl, Blöcke Checkliste/Zitat/Code/Einbettung; Importer setzt Eltern und Titel aus dem Sites-Pfad.
 - **18.10.2026** — Stufe 1 auf `feature/wissen`: Raum, Zielgruppen, Block-Editor, Suche, glatttBert-Quelle, Import-Werkzeuge; nachmittags Startseite als Block-Seite, Aktionen mit Gültigkeit und Historie, Neuigkeiten als Banner/Modal.
