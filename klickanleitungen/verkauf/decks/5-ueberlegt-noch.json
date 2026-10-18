@@ -14,7 +14,7 @@
  "eyebrow": "Verkauf · Überlegt noch",
  "footerArea": "Verkauf",
  "stand": "18.10.2026",
- "version": "1.1",
+ "version": "1.2",
  "notes": [
   "Auf der Liste steht jede Kundin, deren Beratung **ohne Vertrag** endete (überlegt noch, Folgetermin, Sonstiges) und die **keinen offenen Termin** hat. Neue kommen zwei Tage nach dem Gespräch dazu.",
   "**Zuerst anrufen.** Bei „Überlegt noch“ kommt die WhatsApp mit dem Buchungslink nach dem Anruf — „ich schick dir gleich den Link“. Automatisch geht nur bei **verpassten Terminen** etwas raus (am nächsten Tag um 10 Uhr).",
@@ -186,7 +186,7 @@
     }
    ],
    "hint": {
-    "text": "**Wer zählt als „verpasst“?** Nur wer weder eingecheckt noch im Hub gestartet wurde und nicht selbst abgesagt hat. Am Tresen angelegte Beratungen zählen erst ab **1. November** — dann werden alle Termine über den Hub beendet."
+    "text": "**Wer zählt als „verpasst“?** Nur wer weder eingecheckt noch im Hub gestartet wurde und nicht selbst abgesagt hat — bei Online- und Offline-Beratung gleich."
    }
   },
   {

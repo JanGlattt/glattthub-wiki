@@ -51,10 +51,11 @@ Beratungsergebnis zum Termin, Selfservice-Absage (`upcoming_appointments.client_
 verschiebt nur in die Absage-Spalte, der Termin bleibt aktiv), jeder andere wahrgenommene Termin der Kundin
 ab dem Tag (`CHECKED_IN`/`PAID`, etwa die Behandlung bei Beratung + Behandlung), Vertrag, offener Termin.
 
-!!! warning "Tresen-Buchungen erst ab 01.11.2026"
-    Am Tresen angelegte Beratungen (Phorest-Quelle `TERMINAL`) wurden bis Ende Oktober zu 97 % nie
-    ausgecheckt und wären fast alle Fehlalarme. Sie zählen erst ab `MISSED_TERMINAL_FROM` (01.11.2026),
-    wenn jeder Termin über den Hub beendet wird.
+!!! note "Online und offline zählen gleich"
+    Unterschieden wird über die beiden Beratungs-Services (`consultation_services.is_online`: „Nur gratis
+    Beratungsgespräch“ online, „..Beratungsgespräch“ offline) — nie über die Phorest-Quelle (Jan,
+    18.10.2026). Der Fall trägt `booking_source` = `online`/`offline`, die Phorest-Notiz nennt
+    „Online-Beratung“ bzw. „Offline-Beratung“.
 
 Der Tageslauf `still-considering:daily` (10:00, Cron `/api/cron/still-considering-daily`) schickt an
 Standorten mit „Automatisch nachfassen“ (`missed_enabled`) für Termine von gestern/vorgestern den Link
