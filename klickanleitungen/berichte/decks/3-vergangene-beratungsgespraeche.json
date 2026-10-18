@@ -4,7 +4,7 @@
  "shots": "../shots",
  "series": "Berichte",
  "nr": 3,
- "of": 16,
+ "of": 17,
  "audience": "leitung",
  "title": [
   "Vergangene",
@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für die Berichte im glatttHub — historische Analyse der geführten Beratungen",
  "eyebrow": "Berichte · Vergangene Beratungen",
  "footerArea": "Berichte",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "18.10.2026",
+ "version": "1.1",
  "notes": [
   "Der Rückblick: **Wie viele Beratungen wurden geführt — und was ist daraus geworden?**",
   "Grundlage sind die **tatsächlich durchgeführten** Termine, nicht die gebuchten.",
@@ -121,6 +121,66 @@
    "hint": {
     "kind": "warn",
     "text": "**Quote und Menge zusammen lesen.** Eine Quote von 80 % bei fünf Beratungen ist schwächer als 50 % bei fünfzig — die Prozentzahl allein führt in die Irre."
+   }
+  },
+  {
+   "h1": "No-Shows online und offline",
+   "sub": "Wer nicht kommt, ist online anders unterwegs als nach einem Gespräch im Institut — deshalb getrennt.",
+   "card": {
+    "title": "No-Shows",
+    "text": "Online- und Offline-Beratung getrennt"
+   },
+   "left": {
+    "shot": "r3-noshow"
+   },
+   "leftCaption": "No-show-Matrix mit dem Schalter **Alle · Online · Offline**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Online oder offline",
+     "text": "**Online** = online gebuchte Beratung („Nur gratis Beratungsgespräch“), **Offline** = im Institut oder am Telefon gebucht („..Beratungsgespräch“). „Alle“ zählt beide."
+    },
+    {
+     "n": 2,
+     "title": "Quote lesen",
+     "text": "No-show-Quote je Institut und Monat, Woche oder Tag — die Tabelle färbt auffällige Werte."
+    }
+   ],
+   "hint": {
+    "text": "**Verpasste Beratungen holt der Hub zurück:** Am Folgetag geht automatisch ein Link für einen neuen Termin raus, danach stehen sie zum Anrufen in „Überlegt noch“ (Verkauf 5)."
+   }
+  },
+  {
+   "h1": "Nachfass-Ergebnis",
+   "sub": "Was aus „Überlegt noch“, verpassten Terminen und der Reaktivierung wurde.",
+   "card": {
+    "title": "Nachfass",
+    "text": "Liste → Kontakt → Termin → Vertrag"
+   },
+   "left": {
+    "shot": "r3-nachfass"
+   },
+   "leftCaption": "Je Institut: auf der Liste, kontaktiert, Link, gebucht, Vertrag.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Grund wählen",
+     "text": "**Alle**, **Überlegt noch**, **Termin verpasst** oder **Reaktivierung** — das Diagramm zeigt die Stufen für den gewählten Grund."
+    },
+    {
+     "n": 2,
+     "title": "Stufen",
+     "text": "Auf der Liste → kontaktiert (angerufen oder automatisch angeschrieben) → Link geschickt → neue Beratung gebucht → Vertrag."
+    },
+    {
+     "n": 3,
+     "title": "Tabelle",
+     "text": "Dazu Vertragswert und Quote Vertrag je Institut — auch als CSV im Export."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Zeit lassen.** Junge Fälle hatten noch keine Chance auf einen Vertrag — eine Welle erst einige Wochen später bewerten."
    }
   },
   {

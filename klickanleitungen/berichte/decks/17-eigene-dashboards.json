@@ -1,0 +1,128 @@
+{
+ "out": "../pdf/Berichte-17-eigene-dashboards",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Berichte",
+ "nr": 17,
+ "of": 17,
+ "audience": "leitung",
+ "title": [
+  "Eigene",
+  "Dashboards"
+ ],
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — eigene Dashboards mit Links, Notizen und Notiz-Kacheln, am Beispiel „Booking-Masterplan“",
+ "eyebrow": "Berichte · Eigene Dashboards",
+ "footerArea": "Berichte",
+ "stand": "18.10.2026",
+ "version": "1.0",
+ "notes": [
+  "Ein **Eigenes Dashboard** stellt Statistiken aus allen Berichten auf einer Seite zusammen — gebaut über den Assistenten („Neues Dashboard bauen“ in den Berichten).",
+  "Seit 18.10.2026 hat jedes Dashboard **Links** im Kopf, einen **Notiz-Verlauf** und **Notiz-Kacheln** zwischen den Statistiken.",
+  "Beispiel ist das Cockpit **„Booking-Masterplan“** — geteilt mit Leitungen und Büro."
+ ],
+ "pages": [
+  {
+   "h1": "Links und Notizen",
+   "sub": "Alles zum Thema an einem Ort: Plan, Aufgaben, Entscheidungen.",
+   "card": {
+    "title": "Kopf",
+    "text": "Links und Notiz-Verlauf"
+   },
+   "left": {
+    "shot": "r17-kopf"
+   },
+   "leftCaption": "Dashboard „Booking-Masterplan“ mit Links und Notizen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Links",
+     "text": "Führen zum Masterplan oder zu Asana-Aufgaben (Häkchen-Symbol) und öffnen in einem neuen Tab. Die Links legt die Besitzerin im Assistenten fest."
+    },
+    {
+     "n": 2,
+     "title": "Notiz schreiben",
+     "text": "Jede, die das Dashboard sieht, kann eine Notiz hinterlassen — z. B. eine Entscheidung aus dem Check-in. ⌘ + Enter speichert."
+    },
+    {
+     "n": 3,
+     "title": "Verlauf",
+     "text": "Neueste zuerst, mit Datum und Name. Löschen kann die Verfasserin oder die Besitzerin des Dashboards."
+    }
+   ],
+   "hint": {
+    "text": "**Notizen sehen alle Empfängerinnen des Dashboards** — keine Kundendaten hineinschreiben."
+   }
+  },
+  {
+   "h1": "Notiz-Kachel",
+   "sub": "Text und Links mitten zwischen den Statistiken.",
+   "card": {
+    "title": "Kachel",
+    "text": "Freier Text mit Links"
+   },
+   "left": {
+    "shot": "r17-kachel"
+   },
+   "leftCaption": "Notiz-Kachel „Check-ins“ mit den nächsten Terminen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Wofür",
+     "text": "Für Dinge, die sich selten ändern: Termine der Check-ins, Ziele, Erklärungen zu einer Kennzahl."
+    },
+    {
+     "n": 2,
+     "title": "Wie eine Statistik",
+     "text": "Halbe oder volle Breite, beliebig platzierbar — auch in der App."
+    }
+   ]
+  },
+  {
+   "h1": "Links im Assistenten",
+   "sub": "Die Besitzerin pflegt die Linkleiste in Schritt 1.",
+   "card": {
+    "title": "Schritt 1",
+    "text": "Links hinzufügen"
+   },
+   "left": {
+    "shot": "r17-assistent-links"
+   },
+   "leftCaption": "Assistent, Schritt 1: Name, Beschreibung und **Links im Kopf**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Link hinzufügen“",
+     "text": "Beschriftung und Adresse (mit https://) eintragen. Bis zu 12 Links; leere oder ungültige fallen beim Speichern weg."
+    }
+   ]
+  },
+  {
+   "h1": "Notiz-Kachel anlegen",
+   "sub": "In Schritt 2 hinzufügen, in Schritt 3 beschriften.",
+   "card": {
+    "title": "Schritt 3",
+    "text": "Titel, Text, Links"
+   },
+   "left": {
+    "shot": "r17-assistent-notiz"
+   },
+   "leftCaption": "Assistent, Schritt 3: Notiz-Kachel mit Titel, Text und Links.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Notiz-Kachel hinzufügen“",
+     "text": "Knopf in Schritt 2 neben der Statistik-Suche."
+    },
+    {
+     "n": 2,
+     "title": "Beschriften",
+     "text": "In Schritt 3 Titel, Text und bis zu 10 Links eintragen, dann wie jede Kachel verschieben und die Breite wählen."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Erst ganz am Ende wird gespeichert.** Wer den Assistenten abbricht, verliert die Änderungen."
+   }
+  }
+ ]
+}

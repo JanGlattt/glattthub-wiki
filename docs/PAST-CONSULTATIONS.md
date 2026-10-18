@@ -76,8 +76,9 @@ weiterhin konzernweite Zahlen — direkt neben korrekt gefilterten KPIs.
 | **KPI-Zeile** | personalisierbare Kennzahlen (kpi-dashboard, Drag & Drop) | — |
 | **Beratungsgespräche-Analyse** | Diagramm mit Metrik-Umschalter: **Beratungen** (Balken + No-Show-Quote als Linie) oder **No-Shows** (gestapelt Stattgefunden/Nicht stattgefunden + Quote); **Standorte** = gruppierte Balken je Institut (bei „No-Shows" gestapelt: Stattgefunden voll, No-Show-Anteil schraffiert), Quoten als Linien (rechte %-Achse); Zoom-Leiste | die Ampel-Tabelle Monat × Institut (Anzahl oder No-Show %) mit Wochen-Drilldown und Klick auf jede Zelle → Termine-Liste |
 | **Wochentag & Uhrzeit** | Heatmap Wochentag × Stunde (Gesamt oder Mini-Heatmaps je Standort), Filter-Drawer (Status, Buchungstyp, Zeitraum) | dieselben Werte als Zahlen-Tabelle mit Summen |
-| **No-show-Matrix** („Analyse Gigi") | Verlaufs-Diagramm der gewählten Kennzahl je Institut | die bekannte Ampel-Matrix (Quote/Gebucht/Erschienen, Färbungs-Vergleichsmodus, „Frühere Zeiträume laden") |
+| **No-show-Matrix** („Analyse Gigi") | Verlaufs-Diagramm der gewählten Kennzahl je Institut; seit 18.10.2026 Schalter **Alle / Online / Offline** (Parameter `art`, über `consultation_services.is_online` — online „Nur gratis Beratungsgespräch“, offline „..Beratungsgespräch“, nie über die Phorest-Quelle) | die bekannte Ampel-Matrix (Quote/Gebucht/Erschienen, Färbungs-Vergleichsmodus, „Frühere Zeiträume laden") |
 | **Vorlauf & Termin-Erfolg** (seit 08/2026) | Kurven-Stack: drei Panels über derselben Vorlauf-Achse (Show-Rate + Abschlussquote, Ø KPZ, Buchungsvolumen); darüber drei Zonen-Karten (Kurzfristig 0–2 / Mittelfristig 3–9 / Langfristig 10+ Tage) mit Online/Offline-Vergleich; Kanal-Umschalter Alle/Online/Offline (clientseitig), Karten-Zeitraum (Standard: letzte 12 Monate) | Kennzahlen je Vorlauf-Gruppe für den gewählten Kanal, mit Gesamt-Zeile |
+| **Nachfass-Ergebnis** (seit 18.10.2026, `termine.follow-up-result`) | je Institut die Stufen der Liste „Überlegt noch“ — auf der Liste, kontaktiert, Link, gebucht, Vertrag —, Umschalter nach Grund (Überlegt noch / Termin verpasst / Reaktivierung); Zeitraum = Tag, an dem die Kundin auf die Liste kam | Stufen, Vertragswert und Quote Vertrag je Institut mit Gesamt-Zeile |
 | **Buchungseingänge** | Kalender (Buchungszeitpunkt statt Termindatum); begründete Ausnahme ohne Register | — |
 
 **Zusammenlegung 07/2026:** Die früheren drei Karten „Monatliche
@@ -116,6 +117,7 @@ anstehenden Tagestermine als „nicht erschienen" gewertet würden (Bug 08/2026)
 | `consultation-weekday-time` | Termine/Erschienen/No-Shows/Quote je Wochentag & Stunde |
 | `consultation-booking-days` | Buchungseingänge pro Tag & Institut (beide Quellen, dedupliziert) |
 | `consultation-lead-success` | Vorlauf & Termin-Erfolg: Buchungen, Show-Rate, Ausfallquote (inkl. Stornos < 24 h), Abschlussquote & Ø KPZ je Vorlauf-Gruppe und Kanal (Alle/Online/Offline) — exakt die Zahlen der Karte |
+| `follow-up-result` | Nachfass-Ergebnis je Institut und Grund: auf der Liste, kontaktiert, Link, gebucht, Vertrag, Vertragswert (seit 18.10.2026) |
 
 ### Vorlauf & Termin-Erfolg — Definitionen
 

@@ -54,6 +54,14 @@ Karte „Funnel-Vergleich".
 
 ### Die Analyse-Karten & ihre Rechenregeln
 
+- **Google-Bewertungen (seit 18.10.2026, `besucher.google-reviews`):** neue Google-Bewertungen je
+  Monat und Institut aus der Bewertungsverwaltung (`google_reviews`, Bonus → Google-Bewertungen) mit
+  Sternen-Schnitt und dem Monatsziel des Booking-Masterplans (Braunschweig 10, sonst 15 —
+  `BookingCockpitStatisticsService::REVIEW_TARGETS`); Umschalter **Google-Klicks** = `google_clicked_at`
+  aus „Wie war's heute?“ (`treatment_feedback_requests`) und Endbefragung (`satisfaction_surveys`).
+  Ohne Zeitraum die letzten 12 Monate; Standortfilter wirkt. CSV-Quelle `google-reviews`. Keine
+  Matomo-Zahl — die Karte steht hier, weil Bewertungen die Sichtbarkeit vor dem Besuch treiben.
+
 - **KPI-Dashboard (selbst zusammenstellbar):** Nutzt die wiederverwendbare
   KPI-Dashboard-Komponente (wie die Verkaufsstatistik): Über **„Anpassen"**
   lassen sich die 4 sichtbaren Karten per **Drag & Drop** anordnen, entfernen
@@ -297,7 +305,7 @@ Abandonment), `segments` + `segment-timeseries` (Funnel-Vergleich je
 Standort/Quelle, Parameter `segment=standort|source`), `timeseries`
 (Tageswerte aller vier Funnel-Stufen),
 `devices` (Mobil/Desktop/Tablet mit Quoten), `insights`
-(automatische Erkenntnisse), `sources`, `top-pages`.
+(automatische Erkenntnisse), `sources`, `top-pages`, `google-reviews` (seit 18.10.2026).
 
 ---
 

@@ -1488,5 +1488,105 @@
   },
   "ratio": 0.72265625,
   "marks": []
+ },
+ "cockpit-notes-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 695
+  },
+  "ratio": 0.8910256410256411,
+  "marks": []
+ },
+ "cockpit-notes-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 695
+  },
+  "ratio": 0.8910256410256411,
+  "marks": []
+ },
+ "cockpit-note-tile-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 374
+  },
+  "ratio": 0.4794871794871795,
+  "marks": []
+ },
+ "cockpit-note-tile-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 374
+  },
+  "ratio": 0.4794871794871795,
+  "marks": []
+ },
+ "cockpit-follow-up-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 742
+  },
+  "ratio": 0.9512820512820512,
+  "marks": []
+ },
+ "cockpit-follow-up-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 742
+  },
+  "ratio": 0.9512820512820512,
+  "marks": []
+ },
+ "cockpit-google-reviews-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 876
+  },
+  "ratio": 1.123076923076923,
+  "marks": []
+ },
+ "cockpit-google-reviews-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 876
+  },
+  "ratio": 1.123076923076923,
+  "marks": []
+ },
+ "cockpit-ipad-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2048,
+   "height": 2093
+  },
+  "ratio": 1.02197265625,
+  "marks": []
+ },
+ "cockpit-ipad-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2048,
+   "height": 2093
+  },
+  "ratio": 1.02197265625,
+  "marks": []
  }
 }

@@ -53,6 +53,11 @@ const PLAN = [
   kopf('r3-kopf', '/hub/reports/past-consultations'),
   karte('r3-verlauf', '/hub/reports/past-consultations', 'Beratungsgespräche-Analyse'),
   karte('r3-ergebnis', '/hub/reports/past-consultations', 'Vorlauf & Termin-Erfolg'),
+  // 18.10.2026: Online/Offline-Schalter der No-show-Matrix und das Nachfass-Ergebnis
+  karte('r3-noshow', '/hub/reports/past-consultations', 'No-show-Matrix'),
+  karte('r3-nachfass', '/hub/reports/past-consultations', 'Nachfass-Ergebnis', { marks: [
+    { id: 'grund', kind: 'badge', n: 1, ...L.byText('.segmented-control-glattt-label', 'Überlegt noch'), at: 'l' },
+  ] }),
   // ── 4 Stornierte und gelöschte Termine
   kopf('r4-kopf', '/hub/reports/rescheduled-cancelled'),
   karte('r4-vorlauf', '/hub/reports/rescheduled-cancelled', 'Stornierte Termine pro Monat'),
@@ -101,9 +106,30 @@ const PLAN = [
   kopf('r15-kopf', '/hub/reports/visitor-funnel'),
   karte('r15-herkunft', '/hub/reports/visitor-funnel', 'Herkunft der Besucher'),
   karte('r15-funnel', '/hub/reports/visitor-funnel', 'Buchungs-Funnel'),
+  karte('r15-bewertungen', '/hub/reports/visitor-funnel', 'Google-Bewertungen', { marks: [
+    { id: 'umschalter', kind: 'badge', n: 1, ...L.byText('.segmented-control-glattt-label', 'Google-Klicks'), at: 'l' },
+  ] }),
   // ── 16 glattt-Pakete
   kopf('r16-kopf', '/hub/reports/client-courses'),
   karte('r16-verkauft', '/hub/reports/client-courses', 'Monatliche Übersicht'),
+  // ── 17 Eigene Dashboards (18.10.2026): Links, Notizen, Notiz-Kachel — Beispiel-Dashboard des Test-Kontos
+  { name: 'r17-kopf', url: '/hub/reports/custom-dashboard/20', wait: 6000, steps: [['loaded'], ['wait', 2000]], marks: [
+    { id: 'links', kind: 'badge', n: 1, sel: '.dashboard-links-glattt', at: 'l' },
+    { id: 'notiz', kind: 'badge', n: 2, sel: '.dashboard-note-form-glattt', at: 'l' },
+    { id: 'verlauf', kind: 'badge', n: 3, sel: '.dashboard-notes-list-glattt', at: 'l' },
+  ] },
+  { name: 'r17-kachel', url: '/hub/reports/custom-dashboard/20', wait: 6000, steps: [['loaded'], ['scrollSel', '.dashboard-note-tile-glattt', 'center'], ['wait', 1500]],
+    clip: '.dashboard-note-tile-glattt', marks: [] },
+  { name: 'r17-assistent-links', url: '/hub/reports/custom-dashboard/20', wait: 6000, steps: [['loaded'], ['wait', 1500],
+    ['click', '.dashboard-header-actions-glattt button', 'Bearbeiten', 2500]], clip: '.modal-glattt-xl', marks: [
+    { id: 'links', kind: 'frame', color: 'teal', sel: '.wizard-links-glattt' },
+  ] },
+  { name: 'r17-assistent-notiz', url: '/hub/reports/custom-dashboard/20', wait: 6000, steps: [['loaded'], ['wait', 1500],
+    ['click', '.dashboard-header-actions-glattt button', 'Bearbeiten', 2500],
+    ['fn', async (page) => { await page.evaluate(() => { const el = document.querySelector('.modal-glattt-xl'); const a = Alpine.$data(el); a.step = 3; }); await page.waitForTimeout(1200); }]],
+    clip: '.modal-glattt-xl', marks: [
+    { id: 'editor', kind: 'frame', color: 'teal', sel: '.wizard-note-editor-glattt' },
+  ] },
   { name: 'r16-nutzung', url: '/hub/reports/client-courses', wait: 5000, steps: [['loaded'], ['scrollSel', '.kpi-dashboard', 'start'], ['wait', 800]], clip: '.kpi-dashboard', marks: [] },
 ];
 

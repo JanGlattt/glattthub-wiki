@@ -2127,6 +2127,10 @@ Karte. Was die App nicht nachbaut, öffnet ⋯ „Hub-Fassung öffnen".
 3/6/12/24 Monate — je Dashboard gemerkt), darunter die gewählten Kennzahlen und alle Kacheln in der
 Reihenfolge des Dashboards; auf dem iPad stehen halbe Kacheln nebeneinander. Bearbeiten und Teilen
 gehen über ⋯ in die Hub-Fassung, ein neues Dashboard entsteht wie bisher über den Assistenten.
+Seit 18.10.2026 stehen unter dem Kopf die **Links** des Dashboards (Masterplan, Asana — öffnen außerhalb
+der App) und der **Notiz-Verlauf** mit Eingabefeld; **Notiz-Kacheln** erscheinen an ihrer Stelle zwischen
+den Statistiken. Neu als native Karten: **Nachfass-Ergebnis** und **Google-Bewertungen**, dazu der
+Online/Offline-Schalter der No-show-Matrix.
 
 **Für Entwickler:**
 
@@ -2146,6 +2150,13 @@ gehen über ⋯ in die Hub-Fassung, ein neues Dashboard entsteht wie bisher übe
   40 → 3 Monate), stürzte mit dem alten Scroll-Zustand ab (`FixedWidthInteger.init` in
   `OnScrollGeometryChangeModifier`). Alle Scroll-Diagramme tragen deshalb `.id(<Spalten>)` und werden
   bei neuen Spalten neu aufgebaut.
+- **Links, Notizen, Notiz-Kacheln (18.10.2026):** `dashboard.links`, `dashboard.notes`, `dashboard.notes_path` im
+  Rahmen; Karten aus `CustomDashboard::displayTiles()`, Notiz-Kachel als `key = dashboard.note` mit `note`
+  (`DashboardNoteCard`, Karten-ID `note-<id>` statt `key` — sonst kollidieren mehrere Notiz-Kacheln im
+  `ForEach`). Notiz schreiben/löschen über `ReportPageModel.addNote/deleteNote` → dieselben Hub-Endpunkte wie das
+  Web (`hub/reports/custom-dashboard/{id}/notizen`). `DashboardLinksNotesSection` in
+  `Reports/DashboardNotesViews.swift`; Karten `FollowUpResultCard`/`GoogleReviewsCard` in
+  `Reports/BookingCockpitCards.swift`; Snapshots `BookingCockpitSnapshotTests` (Bilder der Klickanleitung App 14).
 - **Nachweis:** `AppointmentReportsUITests.testCustomDashboardPage` (lokales „App-Prüfdashboard“ des
   Testnutzers, Zeitraumwechsel, keine Web-Karte), PHP `AppReportsTest::dashboard_page_lists_visible_tiles_in_order_and_width`.
 

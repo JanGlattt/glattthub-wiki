@@ -71,11 +71,22 @@ Bauen (`create_custom_dashboard`) und Teilen (`share_custom_dashboard`) sind get
 ein geteiltes Dashboard anzusehen braucht keines der beiden. Gelöschte Dashboards lassen sich
 nicht wiederherstellen.
 
+**Links, Notizen, Notiz-Kacheln (seit 18.10.2026):** Im Kopf jedes Dashboards steht eine Linkleiste
+(z. B. Masterplan, Asana-Aufgaben — pflegt die Besitzerin in Schritt 1 des Wizards) und ein
+Notiz-Verlauf, in den **jede schreiben darf, die das Dashboard sieht** (löschen: Verfasserin oder
+Besitzerin). Dazu gibt es **Notiz-Kacheln** mit Titel, Text und Links, die wie Statistiken zwischen
+den Kacheln stehen (Schritt 2 „Notiz-Kachel hinzufügen“, beschriftet in Schritt 3). Erstes Beispiel ist
+das Cockpit **„Booking-Masterplan“** (angelegt per Migration, geteilt mit Institute Leitung und Büro).
+
+!!! nutzerhandbuch "Bedienung: Berichte 17 – Eigene Dashboards"
+    [https://hilfe.hub.glattt.com/berichte/17/](https://hilfe.hub.glattt.com/berichte/17/) · in der App:
+    [App 14 – Berichte in der App](https://hilfe.hub.glattt.com/app/14/)
+
 **Wo was erledigt wird:**
 
 | Vorgang | Anleitung |
 |---|---|
-| Dashboard anlegen (Wizard), bearbeiten, löschen | Anleitung folgt — Berichte 17 (geplant) |
+| Dashboard anlegen (Wizard), bearbeiten, löschen | Berichte 17 (Links, Notizen, Notiz-Kacheln) |
 | Dashboard teilen: an Nutzer, per Link, Freigabe widerrufen, Kopie übernehmen | Anleitung folgt — Berichte 17 (geplant) |
 | Zeitraum und Standort einer Kachel, Diagramm/Tabelle umschalten | Berichte 0 |
 | Was eine einzelne Kachel zeigt und wie sie zu lesen ist | Anleitung des jeweiligen Berichts (Berichte 1–16) |
@@ -408,8 +419,9 @@ das ist der Inhalt der Karte, keine Doppelpflege.
 | `name` | varchar(100) | Schritt 1 des Wizards |
 | `description` | varchar(255), null | Schritt 1 — Kopf und Übersichtskarte |
 | `sort_order` | smallint | Reihenfolge in der Übersicht |
-| `widgets` | json | `[{key, width}]` — Schritte 2 und 3 |
+| `widgets` | json | `[{key, width}]` — Schritte 2 und 3; Notiz-Kachel: `{key: "dashboard.note", id, width, title, body, links[]}` |
 | `kpi_ids` | json, null | IDs aus der `KpiRegistry` — Schritt 4 |
+| `links` | json, null | Linkleiste im Kopf `[{label, url}]`, nur http(s) — Schritt 1 (seit 18.10.2026) |
 | `share_token` | varchar(64), unique, null | Link-Freigabe (null = kein Link) |
 
 **`custom_dashboard_shares`** (Freigabe an Nutzer)
@@ -421,6 +433,28 @@ das ist der Inhalt der Karte, keine Doppelpflege.
 | `shared_by_user_id` | FK → users | Wer geteilt hat (steht auf der Karte) |
 
 Unique über (`custom_dashboard_id`, `user_id`).
+
+**`custom_dashboard_notes`** (Notiz-Verlauf, seit 18.10.2026)
+
+| Spalte | Typ | Zweck |
+|---|---|---|
+| `custom_dashboard_id` | FK, cascade | |
+| `user_id` | FK → users, null on delete | Verfasserin |
+| `user_name` | varchar, null | Name zum Zeitpunkt des Schreibens |
+| `body` | text | höchstens 2000 Zeichen |
+
+**Links, Notizen und Notiz-Kacheln — Regeln für Entwickler:**
+
+- `CustomDashboard::displayTiles($viewer)` liefert Statistiken **und** Notiz-Kacheln (`type` = `statistic`|`note`)
+  für Hub-Seite, Kopie und App. `visibleTiles()` bleibt reine Statistik-Liste — Bildschirme (TV), der
+  öffentliche Link und dessen Daten-Proxy sehen **keine** Notizen und keine Links (interne Asana-Links).
+- Bereinigung nur über `CustomDashboard::cleanLinks()` / `cleanNote()`: nur http(s), leere Notiz-Kacheln fallen weg.
+- Notizen: `POST|DELETE hub/reports/custom-dashboard/{id}/notizen[/{note}]` (`CustomDashboardNoteController`),
+  Zugriff über `viewableBy()` (Besitzer oder geteilt) — Web und App dieselben Endpunkte.
+- App: `/api/app/reports/page?dashboard=` trägt `dashboard.links`, `dashboard.notes`, `dashboard.notes_path`;
+  Notiz-Kacheln kommen als Karte `key = dashboard.note` mit `note` (iOS `DashboardNoteCard`,
+  `DashboardLinksNotesSection`, Karten-ID `note-<id>`, weil mehrere Notiz-Kacheln denselben Key haben).
+- Tests: `CustomDashboardNotesTest`, iOS `BookingCockpitSnapshotTests`.
 
 ---
 
@@ -726,7 +760,7 @@ So verhält sich die öffentliche Link-Ansicht wie er, nie großzügiger.
 
 ## Was bewusst NICHT geht
 
-- **Keine Inline-Bearbeitung** auf der Dashboard-Seite — nur der Wizard
+- **Keine Inline-Bearbeitung** auf der Dashboard-Seite — nur der Wizard (Ausnahme: der Notiz-Verlauf)
 - **Kein Entwurfsstatus**: Abbrechen im Wizard hinterlässt nichts in der Datenbank
 - **Kein eigener Standortfilter** je Dashboard — der Standort kommt aus der Seitenleiste
 - **Kein Wiederherstellen** gelöschter Dashboards

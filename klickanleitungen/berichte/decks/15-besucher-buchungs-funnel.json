@@ -4,7 +4,7 @@
  "shots": "../shots",
  "series": "Berichte",
  "nr": 15,
- "of": 16,
+ "of": 17,
  "audience": "leitung",
  "title": [
   "Besucher &",
@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für die Berichte im glatttHub — Besucher der Website, Herkunft, Verweildauer und Abbrüche",
  "eyebrow": "Berichte · Besucher-Funnel",
  "footerArea": "Berichte",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "18.10.2026",
+ "version": "1.1",
  "notes": [
   "Der Bericht zeigt, **was auf der Website passiert, bevor jemand bucht** — und wo Menschen abspringen.",
   "Grundlage ist die Web-Statistik; sie zählt Besuche, nicht Personen.",
@@ -126,6 +126,33 @@
    "hint": {
     "kind": "warn",
     "text": "**Ein Abbruch ist kein verlorener Kunde.** Viele buchen später oder rufen an. Der Trichter zeigt Reibung, nicht Verlust."
+   }
+  },
+  {
+   "h1": "Google-Bewertungen",
+   "sub": "Bewertungen bringen Besucher — aktuelle zählen bei Google mehr als die Gesamtzahl.",
+   "card": {
+    "title": "Bewertungen",
+    "text": "Neue Bewertungen und Google-Klicks"
+   },
+   "left": {
+    "shot": "r15-bewertungen"
+   },
+   "leftCaption": "Neue Google-Bewertungen je Monat, gestapelt nach Institut.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Bewertungen oder Google-Klicks",
+     "text": "**Bewertungen** = neu erfasste Google-Bewertungen. **Google-Klicks** = wie oft Kundinnen nach „Wie war's heute?“ oder der Endbefragung auf den Google-Knopf getippt haben."
+    },
+    {
+     "n": 2,
+     "title": "Ziel",
+     "text": "Monatsziel aus dem Booking-Masterplan: **Braunschweig 10, alle anderen 15**. In der Tabelle ist ein erreichtes Ziel grün."
+    }
+   ],
+   "hint": {
+    "text": "**Ein Klick ist noch keine Bewertung.** Die Lücke zwischen beiden zeigt, wie viele unterwegs abbrechen. Bewertungen kommen aus der Bewertungsverwaltung (Bonus → Google-Bewertungen)."
    }
   },
   {
