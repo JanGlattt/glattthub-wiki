@@ -110,6 +110,8 @@ Werkzeuge — steht überall, auch auf Start, Historie, Redaktion und in den üb
 Leitung zeigen ihr eigenes Band mit „← Start“. Die flachen Bereiche sind über die Startkarten erreichbar, ihre Seiten
 stehen in der Seitenleiste. Ohne `is_primary` fällt das Layout auf Bereichs-Reiter zurück. Eine oberste Seite ohne
 Unterseiten ist kein Kapitel, sondern steht unter „Weitere Seiten“ — „Home“ darf deshalb keine Unterseiten haben.
+Die **Startseite** folgt demselben Aufbau: eine Karte je Kapitel des Hauptbereichs (mit Unterseiten), dann „Weitere
+Seiten“, dann Büro und Leitung; flache Bereiche mit Inhalt stehen als Zeile „Weitere Bereiche“ unter dem Raster.
 
 Die zweite Kopfzeile zeigt also Kapitel (bzw. ohne Hauptbereich die Bereiche) als Reiter; **Hover oder Tastaturfokus** auf einem Reiter öffnet ein
 Flyout (`.wissen-tab-wrap` + `.wissen-flyout`, rein CSS über `:hover`/`:focus-within`, ab acht Seiten zwei
