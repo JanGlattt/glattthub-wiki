@@ -1695,6 +1695,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Institute | nativ | Karte zuerst (seit 27.09.2026): Nadeln in Hub-Farbe, Blatt mit Liste/Institut, Unterseiten Kennzahlen, Team, Verwaltung |
 | Trinkgeld | nativ | Rangliste mit meiner Zeile (seit 29.09.2026): Kennzahlen, Segment Trinkgeld/Sterne/Auszahlung, Zeitraum-Chips, Person als Blatt (iPad daneben), Kommentare nur mit Recht; Startseiten-Karte „Meine Bewertungen“, Beenden-Schalter, Kunden-Sperre |
 | Überlegt noch | nativ | Anrufliste (seit 17.10.2026, Welle 2 seit 18.10.2026: Termin verpasst, Reiter Reaktivierung mit Sammelversand): Reiter Offen/Link/Erledigt, Akte mit Link per WhatsApp, Termin buchen, Nicht erreicht, Ergebnis-Blatt nach dem Anruf; iPad Liste + Akte |
+| Wissen (glatttipedia) | nativ | Leseansicht „Wie im Hub“ (seit 19.10.2026): Umschalter Institut · Büro · Leitung, Kapitelliste, Suche, Fließtext mit Sprungliste, Pflichtseite bestätigen, Hilfreich/Veraltet, Lightbox; iPad Seitenleiste · Text · Inhaltsverzeichnis. Redaktion und Kiosk bleiben Web |
 | Zufriedenheit | nativ | Drei Stapel (seit 27.09.2026): Folgeaufgaben mit Anrufen/Termin buchen, Kandidatinnen mit Senden (Rückfrage, Kanal-Hinweis) und Überspringen, Verlauf mit Chips, Detailkarte; Standort-Einstellungen bleiben im Admin |
 | Forderungen | nativ | Arbeitsliste und Akte (seit 27.09.2026): Kennzahlen, drei Register, Bestand nach Stufe, gerichtliche Fälle, Fallakte mit nächstem Schritt, Schreiben-Vorschau, alle Aktionen der Seitenspalte; neues SEPA-Mandat eingebettet, Vorlagen Web |
 | Freunde werben, Google-Bewertungen | nativ | „Aufgabe zuerst“ (seit 27.09.2026): Überweisungsstapel mit Kopier-Knöpfen; Bewertungen schnell erfassen |
@@ -2306,6 +2307,34 @@ Snapshots: `StillConsideringSnapshotTests` (im Snapshot statt `ScrollView`/`Menu
 `StillConsideringRow.reason`, `missedRows`/`dueRows`/`laterRows`, Reiter `.reactivation` mit
 `selected`/`sendSelected()` → `hub/ueberlegt-noch/reaktivierung/senden`; Snapshots `still-considering-missed`
 und `still-considering-reactivation-ipad`. Wiki [Überlegt noch](UEBERLEGT-NOCH.md).
+
+### Native glatttipedia (Mehr-Seite, seit 19.10.2026)
+
+**Für Endanwender:** „Wissen“ im Mehr-Menü (iPhone) bzw. das Buch-Symbol in der iPad-Seitenleiste öffnet
+die glatttipedia zum Lesen: Umschalter Institut · Büro · Leitung, Suche (Tippfehler, ganze Fragen), Kapitel
+und Seiten als Fließtext mit Überschriften-Chips und Sprungliste (⋯), Prozesse und BPMN als Schrittfolge mit
+Verantwortlicher, Bilder in der Lightbox („In Safari öffnen“ erst dort), Pflichtseiten mit „Gelesen und
+verstanden“ am Fuß, „War diese Seite hilfreich?“ und „Veraltet melden“. Auf dem iPad stehen Seitenleiste
+(Suche + Kapitelbaum), Text und Inhaltsverzeichnis/Metadaten nebeneinander. Zuletzt gelesene Seiten bleiben
+offline lesbar. Schreiben, Struktur, Versionen und Drive bleiben der Redaktion im Browser.
+
+!!! nutzerhandbuch "Bedienung: App 28 – Die glatttipedia in der App"
+    [https://hilfe.hub.glattt.com/app/28/](https://hilfe.hub.glattt.com/app/28/)
+
+**Für Entwickler:** Entwurf 2 „Wie im Hub“ (Jan, 19.10.2026, Artefakt
+https://claude.ai/artifact/HqtjgeEYwhmEUPy9vKJTcv). `NativeMorePage.wissen` (`/hub/wissen`), Unterpfade
+`/hub/wissen/{bereich}[/{seite}]` landen über `isWissenPage()` ebenfalls dort und setzen `AppState.wissenFocus`
+(Bereich wechseln, Seite öffnen); reservierte Segmente (`redaktion`, `bearbeiten`, `api`, …) und der Kiosk
+`/shared/wissen` bleiben Web. Endpunkte wie das Web: `hub/wissen/api/tree` (Bereiche mit `chapters`/`primary`,
+Startseite, Aktionen), `hub/wissen/api/seite/{id}` (seit 19.10.2026 je Block `text` = `KnowledgeBlocks::blockText`,
+Institut-Blöcke `facts`, dazu `path`, `children`, `ack`, `feedback`), `hub/wissen/api/suche`,
+`POST …/bestaetigen` und `…/rueckmeldung`. Dateien `ios/glatttHub/Wissen/`: `WissenModels` (Baum, Seite, Blöcke,
+`WissenInline` HTML→Markdown für `AttributedString`), `WissenModel` (Baum, Seiten-Cache, Suche mit 250 ms
+Entprellung, Offline-Snapshot Baum + 40 Seiten als rohes JSON), `WissenView` (iPhone-Liste, gepushte Seite mit
+eigenem Kopf, iPad drei Spalten ab 1000 pt), `WissenBlocks` (alle Blocktypen aus `blocks.blade.php`; Prozess und
+BPMN aus dem Klartext, Menüs/Picker/TextField im Snapshot als statische Nachbildung). Snapshots
+`WissenSnapshotTests` (`wissen-list`, `wissen-page`, `wissen-ipad`), Hub-Test
+`seiten_json_traegt_klartext_pfad_unterseiten_bestaetigung_und_rueckmeldung_fuer_die_app`. Wiki [Wissen](WISSEN.md).
 
 ### Native Zufriedenheit (Mehr-Seite, seit 27.09.2026)
 

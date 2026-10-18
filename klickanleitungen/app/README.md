@@ -1,6 +1,6 @@
 # Klickanleitungen App — Quellen
 
-Quellen der Serie **App 1–20** (die glatttHub-App auf iPad und iPhone). Standard und
+Quellen der Serie **App 1–28** (die glatttHub-App auf iPad und iPhone). Standard und
 Deck-Format: `klickanleitungen/README.md` und Wiki `docs/KLICKANLEITUNGEN.md`; die Technik der
 App steht im Wiki `IOS-APP.md`.
 
@@ -29,6 +29,7 @@ App steht im Wiki `IOS-APP.md`.
 | **15 — Die Verkaufsstatistik in der App** | Native Berichtsseite „Wie im Hub“: Standort, Brutto/Netto, Kennzahlen, KPZ pro Institut mit Prognose und Verkäuferinnen, Neukunden, Sales-Mix mit Schaltern, Tabelle hinter jedem Diagramm, Web-Karten im Übergang, iPad (seit 27.09.2026) |
 | **26 — Ruhezeiten in der App** | Pläne mit Uhr wie der iOS-Schlafplan, eigene Wochentage, ganztags, im Urlaub stumm (askDANTE), Ausnahmen für Bereiche, Anlässe, Chats und Personen; iPad mit Uhr links (seit 14.10.2026) |
 
+| **28 — Die glatttipedia in der App** | Umschalter Institut · Büro · Leitung, Kapitelliste, Suche, Seite als Fließtext mit Chips und Sprungliste, Prozesse als Schrittfolge, Lightbox, Pflichtseite bestätigen, Hilfreich/Veraltet, iPad mit Seitenleiste · Text · Inhaltsverzeichnis (seit 19.10.2026, Bilder aus WissenSnapshotTests) |
 Die ersten sieben, 9 (Gutscheine) und 12 (Termin buchen) richten sich an **die Institute**; 6 (Management-Sicht) zusätzlich an Leitung und Büro, 8 (Verträge), 10 (App-Geräte), 16 (Forderungen), 17 (Widerrufe), 18 (Zufriedenheit), 19 (Unternehmensverträge) und 20 (Bonus-Verwaltung) an Leitung und Büro.
 
 ## Screenshots — nicht mit Playwright

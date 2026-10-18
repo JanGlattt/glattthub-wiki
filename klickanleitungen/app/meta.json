@@ -1608,5 +1608,65 @@
   },
   "ratio": 0.8602564102564103,
   "marks": []
+ },
+ "wissen-list-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1520
+  },
+  "ratio": 1.9487179487179487,
+  "marks": []
+ },
+ "wissen-list-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 1520
+  },
+  "ratio": 1.9487179487179487,
+  "marks": []
+ },
+ "wissen-page-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 2520
+  },
+  "ratio": 3.230769230769231,
+  "marks": []
+ },
+ "wissen-page-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 780,
+   "height": 2520
+  },
+  "ratio": 3.230769230769231,
+  "marks": []
+ },
+ "wissen-ipad-light": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2048,
+   "height": 1520
+  },
+  "ratio": 0.7421875,
+  "marks": []
+ },
+ "wissen-ipad-dark": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 2048,
+   "height": 1520
+  },
+  "ratio": 0.7421875,
+  "marks": []
  }
 }
