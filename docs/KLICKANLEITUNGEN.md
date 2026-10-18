@@ -494,6 +494,7 @@ Abdeckungsliste im Hub-Repo steht damit auf `fertig`.
 | **App** | 1–20 | Institute, Leitung, Büro | Die iPad-/iPhone-App: Anmelden & Face ID, Startseite & Menü, Termine & Terminansicht, Kunden, Laser-Wartung, Bonus-Board, Widgets/Siri/Scanner (1–7), danach je native Seite ein Deck (Verträge bis Unternehmensverträge, 20 = Bonus-Verwaltung, 28.09.2026) — Screenshots aus Snapshot-/UI-Tests des Simulators statt Playwright (seit 23.09.2026) |
 | **Berichte** | 0–16 | Leitung, Büro | Rahmendokument plus je eine Anleitung für die 16 Berichtsseiten |
 | **Admin** | 1–8 | Administration | Das Verwaltungspanel `/admin`, thematisch gebündelt |
+| **Wissen** | 1–5 | Institut, Büro | Die glatttipedia: nachschlagen und suchen, Seiten schreiben, Prozesse als BPMN-Diagramm, Struktur/Startseite/Redaktion, Kiosk am Institut-iPad (seit 19.10.2026) |
 
 **Cover mit fünf oder sechs Karten:** Das Karten-Raster schaltet ab fünf Karten auf drei Spalten
 (`.cards.n5`/`.n6`) — die zweite Reihe passte bis 15.09.2026 nicht auf die Seite und wurde unten
