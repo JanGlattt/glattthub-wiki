@@ -118,6 +118,27 @@ Werkzeugs, **nicht** `scrollWidth` — der zählt die absolut positionierten Fly
 hat deshalb `overflow-x: clip` (nicht `auto`: das würde auch senkrecht beschneiden, und die Flyouts wären
 unsichtbar). Unter 1024 px gibt es keine Reiter, dort übernimmt die mobile Bereichsliste in der Seitenleiste.
 
+### Struktur und Reihenfolge (Kapitel, Unterseiten)
+
+Die Reihenfolge der Seiten und ihre Verschachtelung (`parent_id`, `sort_order`) bestimmen Seitenleiste, Flyouts und
+Kapitel-Band. Gesetzt wird sie an zwei Stellen:
+
+- **Redaktion → „Struktur und Reihenfolge“** (`wissenStruktur` in `wissen.js`): Baum je Bereich aus `/hub/wissen/api/tree`,
+  Ziehen am Griff (SortableJS, Ablegen in eine Seite macht sie zur Unterseite) oder die Pfeile hoch, runter, einrücken,
+  ausrücken; „Struktur speichern“ schickt `[{id, children: […]}]` als `PUT /hub/wissen/struktur/{space}` an
+  `WissenEditorController::saveStructure` → `WissenService::applyStructure()`. Zehnerschritte in `sort_order`, nicht
+  genannte Seiten des Bereichs rücken auf 900 (hinter alles Genannte), fremde IDs werden übergangen. Der Endpunkt liest
+  den Baum mit `$request->input('tree')`, weil `validated()` bei `tree.*.id` die verschachtelten `children` verwirft.
+- **Befehl `php artisan wissen:struktur <datei.json> [--apply]`** für größere Umbauten nach Vorlage (Trockenlauf ohne
+  `--apply`). Datei: `{"space": "...", "pages": [{"id"|"path", "title"?, "neu"?, "children"?}]}` — `path` ist das Ende der
+  importierten Sites-Adresse, `neu: true` legt fehlende Seiten **veröffentlicht und ohne Inhalt** an (ein Entwurf als
+  Kapitel würde seine Unterseiten für Leser aus dem Baum nehmen), `title` benennt um und zieht den Slug nach. Der Lauf
+  listet alle Seiten, die nicht genannt sind. Vorlage für Büro: `database/wissen/struktur/buero-prozesse.json`
+  (nennt lokale IDs — nicht gegen Staging/Prod fahren; die Struktur reist mit dem Export der Seiten).
+
+Kapitelseiten ohne eigenen Inhalt zeigen „Seiten in diesem Kapitel“ (`children` aus `WissenController::show`, für Leser
+nur veröffentlichte, Zielgruppen gefiltert).
+
 ### Editor (`public/js/wissen-editor.js`)
 
 Editor.js 2.30.7 von jsDelivr (Header, List, Checklist, Quote, Code, Embed für YouTube/Vimeo, Table, Image,
@@ -197,5 +218,6 @@ Tests `tests/Feature/WissenTest.php`, `WissenImportTest.php`, `tests/Unit/Knowle
 
 ## Changelog
 
+- **18.10.2026 (nachts)** — Struktur-Editor in der Redaktion (Ziehen und Pfeile), Befehl `wissen:struktur`, Büro-Prozesse nach der Navigation der alten Google Site gegliedert (10 Kapitel), Kapitelseiten listen Unterseiten, Werkzeug-Reiter werden bei Platznot zu Symbolen.
 - **18.10.2026 (spät)** — Flyouts unter den Reitern, Kapitel-Band für Büro und Leitung (`nav_mode`), Priorität+-Menü „Weitere …“, Editor mit fester Aktionsleiste, Rückgängig, Ziehen, Wortzahl, Blöcke Checkliste/Zitat/Code/Einbettung; Importer setzt Eltern und Titel aus dem Sites-Pfad.
 - **18.10.2026** — Stufe 1 auf `feature/wissen`: Raum, Zielgruppen, Block-Editor, Suche, glatttBert-Quelle, Import-Werkzeuge; nachmittags Startseite als Block-Seite, Aktionen mit Gültigkeit und Historie, Neuigkeiten als Banner/Modal.
