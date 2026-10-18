@@ -249,6 +249,37 @@ Veröffentlichen fragt die Änderungszeile ab. Die Felder des Seitenpanels halte
   `imported_from_url`); „Als Seite übernehmen“ legt einen Entwurf an: Link zum Original als erster Block, Text als
   Absätze, kurze GROSSBUCHSTABEN-Zeilen als Zwischenüberschriften.
 
+### Feedback-Runde 19.10.2026: Blöcke, Prozesse, Bert, Suche
+
+- **Weitere Blöcke:** `person` (Kontaktkarte; Suche über `GET /hub/wissen/api/personen?q=` liefert aktive Hub-Konten mit
+  Rolle, E-Mail, Telefon, Foto), `institute` (nur `branch_id`, `hours`, `note` im Block — Name, Anschrift, Farbe, Bild
+  kommen beim Rendern aus `InstituteFacts::for()`, gecacht eine Stunde), `faq` (Frage/Antwort, `<details>`),
+  `orgchart` (Baum aus `{name, role, children}`, bis fünf Ebenen, CSS-Verbinder in `.wissen-org-tree`). Alle liefern
+  Text für Suche und glatttBert über `blockText()`.
+- **Prozesse:** `owner` ist Pflicht (Modeler verweigert „Übernehmen“ ohne); Risiken sind BPMN-Anmerkungen mit Präfix
+  „Risiko:“ (`+ Risiko` im Modeler), `BpmnText::parse()` liefert sie als `risks`, übrige Anmerkungen als `notes`; die
+  Leseansicht listet Risiken unter dem Diagramm. Der Modeler fängt alle Tastatur-Ereignisse ab (sonst greift Editor.js
+  ein), `+ Text` legt eine Anmerkung an, `?` zeigt die Kurzanleitung. Die Anleitungsseite „BPMN-Diagramme erstellen“
+  (Büro › Das Unternehmen) liegt als Import-Datei `database/wissen/seiten/bpmn-anleitung.json` im Repo und wird mit
+  `wissen:import-json … --apply` eingespielt.
+- **Bilder:** Aktionen „Text rechts/links daneben“ des Bild-Werkzeugs setzen `align` (`left`/`right`) → Float mit
+  `.wissen-figure-left/-right`; Klick öffnet die Lightbox (`data-lightbox`), „In neuem Tab öffnen“ erst dort.
+- **glatttBert:** „glatttBert zu dieser Seite fragen“ schickt die Seiten-ID mit (`glattt-bert-toggle` mit `page`);
+  `AiAssistant::setPageContext()` → `GlatttBertService::withPageFocus()` fügt einen Systemblock mit dem Seitentext an
+  (zuerst aus dieser Seite antworten, Suche nur als Ergänzung). Der Editor-Knopf **Vorschlag** ruft
+  `POST /hub/wissen/seiten/{page}/vorschlag` (`WissenRevisionService`: Claude mit Seitentext und Treffern aus
+  Klickanleitungen, Wiki und Wissen, Antwort als JSON-Blöcke); Vorschau im Modal, „Als Entwurf übernehmen“ rendert die
+  Blöcke in den Editor.
+- **Suche:** Füllwörter (`WissenService::STOPWORDS`) zählen nicht; nach dem Wortlaut kommen unscharfe Treffer über
+  Titel und Überschriften (Levenshtein ≤ 1/2, Wortstamm) und semantische Treffer aus dem glatttBert-Index
+  (`KnowledgeSearchService`, Artikel `wissen:<id>`), bei ganzen Sätzen immer.
+- **Führungskraft:** `managersFor()` = aktive Konten mit `approve_travel_expenses` oder `set_team_pin` am selben
+  Stamm-Institut, sonst alle mit `manage_knowledge`. Anlässe `knowledge.owner_left` (Verantwortliche archiviert,
+  `owner_left_alerted_at`) und `knowledge.review_escalated` (> 14 Tage überfällig, `review_escalated_at`, alle 14 Tage)
+  laufen im täglichen `wissen:pruefungen`.
+- **Drive-Videos:** im Drive-Werkzeug unter „Videos“ (`video/mp4` u. a.); „Als Seite übernehmen“ legt einen
+  `embed`-Block mit `drive.google.com/file/d/<id>/preview` an; `video`-Blöcke mit Drive-Adresse rendern ebenso.
+
 ### Suche und glatttBert
 
 - Raum-Suche: MySQL `MATCH … AGAINST` (Boolean, Präfix) auf `title, summary, search_text` plus LIKE auf
@@ -295,6 +326,7 @@ Tests `tests/Feature/WissenTest.php`, `WissenImportTest.php`, `tests/Unit/Knowle
 
 ## Changelog
 
+- **19.10.2026 (Feedback-Runde)** — Editor im Dunkelmodus, Blöcke Person/Institut/FAQ/Organigramm, BPMN mit Verantwortlichen und Risiken plus Anleitungsseite, Text neben Bildern, Lightbox, glatttBert-Fokus und Vorschlag, Suche mit Tippfehlern/Füllwörtern/Sinn, Führungskraft-Anlässe, Drive-Videos.
 - **19.10.2026** — Stufe 2 (Prozess-Block mit Bahnen-Diagramm, echte BPMN-Diagramme mit bpmn-js, Versionsvergleich, Rückmeldungen, Prüf-Erinnerung, Bereich wechseln) und Stufe 3 (Was ist neu, Pflichtseiten, Kiosk für die Institut-iPads, Drive-Dokumente); Katalog-Modul „Wissen“ mit drei Anlässen.
 - **18.10.2026 (nachts, 3)** — Home je Bereich ist die Startseite (`kind = start`, nicht in der Liste); Auswahl der glatttipedia neben dem Logo; großes Suchfeld sucht an Ort und Stelle; Leitung nach der alten Site gegliedert; `wissen:struktur` idempotent (`neu` über Titel, `start: true`).
 - **18.10.2026 (nachts, 2)** — Kapitel der Haupt-glatttipedia als Menüband (`is_primary`), Büro/Leitung rechts mit Schloss; Institut-Alltag nach der alten Site gegliedert; Startkarten zeigen Kapitel mit Unterseiten.
