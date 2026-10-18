@@ -110,6 +110,11 @@ Werkzeuge — steht überall, auch auf Start, Historie, Redaktion und in den üb
 Leitung zeigen ihr eigenes Band mit „← Start“. Die flachen Bereiche sind über die Startkarten erreichbar, ihre Seiten
 stehen in der Seitenleiste. Ohne `is_primary` fällt das Layout auf Bereichs-Reiter zurück. Eine oberste Seite ohne
 Unterseiten ist kein Kapitel, sondern steht unter „Weitere Seiten“ — „Home“ darf deshalb keine Unterseiten haben.
+Die **Wahl der glatttipedia** sitzt seit 18.10.2026 neben dem Logo (`.wissen-switch`, Segment-Leiste „Institut ·
+Büro 🔒 · Leitung 🔒“ aus Hauptbereich und Bereichen mit Kapitel-Band, nur sichtbare, Kurzname = Teil vor dem
+Bindestrich, nur ab 1024 px). Alle Bänder sind damit gleich aufgebaut: „Start“ (Übersicht der gewählten glatttipedia,
+beim Hauptbereich `/hub/wissen`), Kapitel, „Weitere Seiten“, Werkzeuge.
+
 Die **Startseite** folgt demselben Aufbau: eine Karte je Kapitel des Hauptbereichs (mit Unterseiten), dann „Weitere
 Seiten“, dann Büro und Leitung; flache Bereiche mit Inhalt stehen als Zeile „Weitere Bereiche“ unter dem Raster.
 
