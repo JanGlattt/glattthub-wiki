@@ -54,7 +54,7 @@ Konzept und Entwürfe: Projektwissen `.github/knowledge/glatttipedia-neu-wissens
 | Tabelle | Zweck | Wichtige Spalten |
 |---|---|---|
 | `knowledge_spaces` | Bereiche | `key`, `name`, `icon`, `audiences` (JSON, leer = alle), `sort_order`, `is_active` |
-| `knowledge_pages` | Seiten | `space_id`, `parent_id`, `slug` (je Bereich eindeutig), `title`, `summary`, `blocks` (veröffentlicht), `draft_blocks` (Entwurf), `search_text`, `status` (`draft`/`published`/`archived`), `audiences`, `owner_user_id`, `review_at`, `review_interval_months`, `requires_acknowledgement`, `published_version_id`, `imported_from_url`, `import_log`, SoftDeletes |
+| `knowledge_pages` | Seiten | `space_id`, `parent_id`, `slug` (je Bereich eindeutig), `title`, `summary`, `blocks` (veröffentlicht), `draft_blocks` (Entwurf), `search_text`, `status` (`draft`/`published`/`archived`), `kind` (`page`/`start`/`aktion`), `valid_from`, `valid_until`, `branch_ids`, `show_banner`, `audiences`, `owner_user_id`, `review_at`, `review_interval_months`, `requires_acknowledgement`, `published_version_id`, `imported_from_url`, `import_log`, SoftDeletes |
 | `knowledge_page_versions` | Veröffentlichungen | `page_id`, `version_no`, `blocks`, `change_summary`, `author_user_id`, `published_at` |
 | `knowledge_audiences` | Zielgruppen | `key`, `name`, `color`, `rules` (JSON: `permissions_any`, `branch_ids`, `departments`, `user_ids`), `is_default` |
 | `knowledge_media` | Uploads | `disk`, `path`, `url`, `mime`, `size`, `width`, `height`, `alt_text`, `ai_description` |
@@ -109,6 +109,24 @@ Werkzeuge `callout`, `steps`, `gallery`, `hublink`, `toggle`, `video`, `file` un
 Veröffentlichen fragt die Änderungszeile ab. Uploads gehen an `/hub/wissen/medien` (Disk
 `config('wissen.media_disk')`, lokal `public`, in der Cloud `gcs`).
 
+### Startseite, Aktionen, Historie, Neuigkeiten (18.10.2026)
+
+- **Startseite** des Raums ist eine Block-Seite (`kind = start`, Bereich `system`, inaktiv, nie im Baum oder in
+  der Suche). `WissenService::ensureStartPage()` legt sie beim ersten „Startseite bearbeiten“ an; die Startseite
+  zeigt darunter automatisch laufende/geplante Aktionen und die Bereichskarten.
+- **Aktion** = Seite mit `kind = aktion`, `valid_from`, `valid_until`, `branch_ids`, `show_banner`. Jede Seite
+  darf eine Gültigkeit tragen. `isRunning()/isUpcoming()/isExpired()`, Scope `running()`. Abgelaufene Seiten
+  bleiben lesbar (Hinweis im Kopf), stehen im Baum mit „vorbei“ und in der Suche nachrangig.
+- **Historie** `/hub/wissen/historie` (`?art=alle` für alle befristeten Seiten): laufend/geplant oben,
+  Abgelaufenes nach Jahr → Monat des Enddatums (`WissenService::historyFor`). Bereich `aktionen`.
+- **Neuigkeiten** nutzen die Hub-Nachrichten (`news`): `wissen_display` (`banner`/`modal`), `starts_at`,
+  `ends_at`, `audiences`, `requires_ack`, `push_enabled`; Schließen/Bestätigen je Person in
+  `news_dismissals`. `WissenNoticeService::forUser()` liefert Banner und höchstens ein Modal (Pflicht-Modal
+  zuerst) plus Banner laufender Aktionen; `POST /hub/wissen/hinweise/{news}/schliessen`. Anlegen auf der
+  Redaktionsseite (`POST /hub/wissen/hinweise`) oder im Admin-Nachrichtenformular (Abschnitt „Wissens-Raum“).
+  Push geht über den bestehenden Anlass `news.published` (`NewsObserver`), `push_enabled = false` unterdrückt ihn.
+  Der Baum-Endpunkt `/api/tree` liefert `start`, `actions` und `notices` auch an die App.
+
 ### Suche und glatttBert
 
 - Raum-Suche: MySQL `MATCH … AGAINST` (Boolean, Präfix) auf `title, summary, search_text` plus LIKE auf
@@ -153,4 +171,4 @@ Tests `tests/Feature/WissenTest.php`, `WissenImportTest.php`, `tests/Unit/Knowle
 
 ## Changelog
 
-- **18.10.2026** — Stufe 1 auf `feature/wissen`: Raum, Zielgruppen, Block-Editor, Suche, glatttBert-Quelle, Import-Werkzeuge.
+- **18.10.2026** — Stufe 1 auf `feature/wissen`: Raum, Zielgruppen, Block-Editor, Suche, glatttBert-Quelle, Import-Werkzeuge; nachmittags Startseite als Block-Seite, Aktionen mit Gültigkeit und Historie, Neuigkeiten als Banner/Modal.
