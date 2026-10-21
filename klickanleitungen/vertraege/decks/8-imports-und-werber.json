@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — fehlgeschlagene Importe korrigieren, zuordnen, verwerfen, Werber hinterlegen",
  "eyebrow": "Verträge · Sonderfälle",
  "footerArea": "Verträge",
- "stand": "16.09.2026",
- "version": "1.0",
+ "stand": "21.10.2026",
+ "version": "1.1",
  "notes": [
   "Ein **offener Import** heißt: Dieser Vertrag fehlt in **jeder** Auswertung.",
   "**Verwerfen ist endgültig** — im Zweifel die Zeile lieber stehen lassen und nachfragen.",
@@ -311,6 +311,52 @@
       "Ausstehend · Ausgeglichen · Angepasst"
      ]
     ]
+   }
+  },
+  {
+   "card": {
+    "title": "Werbe-Bonus anwenden",
+    "text": "50 € Rabatt später auf die Raten verrechnen"
+   },
+   "h1": "Werbe-Bonus anwenden",
+   "sub": "Ist die Werberin am Vertrag hinterlegt, der Rabatt aber noch auf keine Rate gerechnet, holt dieser Dialog das nach — mit Vorschau, was sich ändert.",
+   "left": {
+    "shot": "vt8-bonus-dialog",
+    "marks": [
+     {
+      "id": "tabelle"
+     },
+     {
+      "id": "ok"
+     }
+    ]
+   },
+   "leftCaption": "Der Dialog zeigt je Rate den Betrag bisher und neu — gerechnet wird erst nach „Bonus anwenden“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Aktionen-Menü öffnen",
+     "text": "Reiter **„Zahlungen & SEPA“** → **„Aktionen“** → **„Werbe-Bonus anwenden“**. Der Eintrag erscheint nur, wenn eine Werberin hinterlegt ist, ihr Rabatt noch nicht verrechnet wurde und es offene SEPA-Raten gibt, die sich noch ändern lassen."
+    },
+    {
+     "n": 2,
+     "title": "Raten prüfen",
+     "text": "Die Tabelle zeigt die **frühesten offenen SEPA-Raten** mit dem Betrag **bisher** und **neu**. Eine Rate behält mindestens 1 €; reicht eine Rate nicht für die 50 €, rechnet der Hub den Rest auf die nächste."
+    },
+    {
+     "n": 3,
+     "title": "„Bonus anwenden“",
+     "text": "Erst dieser Knopf schreibt. Kommentar und Verlaufseintrag entstehen automatisch, danach zeigt der Dialog die Bestätigung."
+    },
+    {
+     "n": 4,
+     "title": "Hinweis zu GoCardless",
+     "text": "Sind für diese Raten schon **Einzüge bei GoCardless** angelegt, werden genau diese storniert und mit dem neuen Betrag neu angelegt — wie beim Hinterlegen der Werberin. Der Knopf löst also echte Änderungen bei GoCardless aus."
+    }
+   ],
+   "hint": {
+    "text": "**Nur einmal anwenden:** Danach ist der Rabatt verrechnet, der Menüpunkt verschwindet. Wer Raten auf eigene Faust angepasst hat, prüft vorher die Vorschau — dort steht, was der Hub daraus macht.",
+    "kind": "warn"
    }
   }
  ]

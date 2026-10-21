@@ -56,6 +56,26 @@ const fixShow = (page) => page.evaluate(() => { document.querySelectorAll('[x-sh
     { id: 'bereich', kind: 'badge', n: 5, fn: (t) => { const e = [...document.querySelectorAll('.backfill-grid-label')].find(x => x.offsetParent !== null && x.textContent.trim() === t); const r = e?.getBoundingClientRect(); return r ? { x: r.x, y: r.y, w: r.width, h: r.height } : null; }, fnArg: 'Bereich', at: 'l' },
     { id: 'notice', kind: 'badge', n: 5, fn: (t) => { const e = [...document.querySelectorAll('.backfill-modal p')].find(x => x.offsetParent !== null && x.textContent.trim().startsWith(t)); const r = e?.getBoundingClientRect(); return r ? { x: r.x, y: r.y, w: r.width, h: r.height } : null; }, fnArg: 'Werte von', at: 'l' },
   ]});
+  // n7 (seit 21.10.2026): „Nicht behandelt“ je Zone + Freitext „Bereich“ nur bei „2 Kleine Zonen“
+  await L.openClient(page, 2500);
+  await L.tab(page, 'Behandlungseinstellungen', 4000);
+  await page.addStyleTag({ content: NO_ANIM });
+  await page.evaluate(() => { window.B = () => Alpine.$data(document.querySelector('[x-data^="treatmentBackfill"]')); });
+  await page.evaluate(() => window.dispatchEvent(new CustomEvent('open-treatment-backfill', { detail: { zoneKeys: ['bauch', 'zwei_kleine_zonen'] } })));
+  await page.waitForFunction(() => { const el = document.querySelector('[x-data^="treatmentBackfill"]'); return el && Alpine.$data(el).open && !Alpine.$data(el).loading; }, null, { timeout: 30000 });
+  await L.wait(page, 1200);
+  await page.evaluate(() => {
+    const b = B();
+    b.zoneKeys = ['bauch', 'zwei_kleine_zonen'];
+    b.ensureValues('zwei_kleine_zonen');
+    Object.assign(b.values.zwei_kleine_zonen, { area_label: 'Zehen, Nasenrücken', machine_head: 'small', skin_type: 3, hair_color: 'd', hair_thickness: 'f', hair_density: 'nd', recommended_ms: 20, recommended_jules_min: 10, recommended_jules_max: 14, used_ms: 20, used_jules: 12 });
+    b.ensureValues('bauch'); b.toggleNotTreated('bauch', true);
+  });
+  await L.wait(page, 800); await fixShow(page); await L.wait(page, 500);
+  await L.shot(page, 'n7-nachtrag-nicht-behandelt', { clip: await modal(), noScroll: true, marks: [
+    { id: 'nt', kind: 'badge', n: 1, fn: (t) => { const e = [...document.querySelectorAll('.backfill-grid-label')].find(x => x.offsetParent !== null && x.textContent.trim() === t); const r = e?.getBoundingClientRect(); return r ? { x: r.x, y: r.y, w: r.width, h: r.height } : null; }, fnArg: 'Nicht behandelt', at: 'l' },
+    { id: 'bereich', kind: 'badge', n: 2, fn: (t) => { const e = [...document.querySelectorAll('.backfill-grid-label')].find(x => x.offsetParent !== null && x.textContent.trim() === t); const r = e?.getBoundingClientRect(); return r ? { x: r.x, y: r.y, w: r.width, h: r.height } : null; }, fnArg: 'Bereich', at: 'l' },
+  ]});
   console.log('Spalten', JSON.stringify(await page.evaluate(() => B().columns.map(c => c.col))));
   await page.evaluate(() => B().close());
   await browser.close();

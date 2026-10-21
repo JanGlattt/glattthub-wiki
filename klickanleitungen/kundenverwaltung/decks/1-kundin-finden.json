@@ -9,8 +9,8 @@
  "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — von der Suche bis zum richtigen Reiter",
  "eyebrow": "Kundenverwaltung · Suche & Profil",
  "footerArea": "Kundenverwaltung",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "21.10.2026",
+ "version": "1.1",
  "notes": [
   "Das Kundenprofil ist die **Akte der Kundin**: Daten, Termine, Pakete, Vertrag, Nachrichten und Unterlagen an einem Ort.",
   "Diese Anleitung ist der **Einstieg der Reihe „Kundenverwaltung 1–6“** — die letzte Seite zeigt, welcher Reiter in welchem Dokument erklärt wird.",
@@ -36,7 +36,7 @@
     {
      "n": 1,
      "title": "Suchfeld nutzen",
-     "text": "Ein Feld für alles: **Name**, **E-Mail**, **Telefonnummer** oder **Kunden-Nummer**. Die Liste aktualisiert sich von selbst, kurz nachdem die Eingabe stoppt."
+     "text": "Ein Feld für alles: **Name**, **E-Mail**, **Telefonnummer** oder **Kunden-Nummer**. Die Liste aktualisiert sich von selbst, kurz nachdem die Eingabe stoppt. Bei der Kunden-Nummer ist **Groß- oder Kleinschreibung egal**, und **fehlende Nullen** stören nicht: „md2“ findet MD000002, „bs5“ findet BS000005. Das gilt auch für ältere Kundinnen, deren Nummer anders geschrieben ist."
     },
     {
      "n": 2,
@@ -50,7 +50,7 @@
     }
    ],
    "hint": {
-    "text": "**Nichts gefunden?** Zuerst mit **weniger** Buchstaben suchen (nur Nachname), dann über die **Kunden-Nummer**. Führt beides nicht zum Ziel, ist die Kundin eventuell archiviert — Schalter einschalten."
+    "text": "**Nichts gefunden?** Zuerst mit **weniger** Buchstaben suchen (nur Nachname), dann über die **Kunden-Nummer** — in beliebiger Schreibweise, auch ohne Nullen. Führt beides nicht zum Ziel, ist die Kundin eventuell archiviert — Schalter einschalten."
    }
   },
   {
@@ -106,7 +106,7 @@
   },
   {
    "h1": "Übersicht lesen",
-   "sub": "Der erste Reiter fasst alles zusammen: sechs Karten, je eine je Thema — mit einem Sprung in die Tiefe.",
+   "sub": "Der erste Reiter fasst alles zusammen: je eine Karte je Thema — mit einem Sprung in die Tiefe.",
    "card": {
     "title": "Übersicht lesen",
     "text": "Sechs Karten als Kurzfassung der ganzen Akte"
@@ -122,7 +122,7 @@
    "steps": [
     {
      "n": 1,
-     "title": "Kontakt",
+     "title": "Kundeninfos",
      "text": "E-Mail, Mobil, Adresse, Geburtsdatum, **„Kunde seit“** und die erteilten **Einwilligungen** (grün = erteilt)."
     },
     {
@@ -137,8 +137,8 @@
     },
     {
      "n": 4,
-     "title": "„Alle ansehen“",
-     "text": "Der kleine Knopf am Kopf jeder Karte springt in den zugehörigen **Reiter** mit allen Einzelheiten."
+     "title": "„Öffnen“",
+     "text": "Der kleine Knopf **„Öffnen“** am Kopf jeder Karte springt in den zugehörigen **Reiter** mit allen Einzelheiten."
     }
    ],
    "hint": {

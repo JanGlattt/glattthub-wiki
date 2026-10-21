@@ -10,12 +10,13 @@
  "subtitle": "Klickanleitung für Bestandskundinnen — Behandlungstermin starten, Einstellungen je Körperzone erfassen, Termin beenden",
  "eyebrow": "Terminansicht · Behandlungstermin",
  "footerArea": "Terminansicht",
- "stand": "13.10.2026",
- "version": "1.6",
+ "stand": "21.10.2026",
+ "version": "1.7",
  "notes": [
   "Der Einstellungszettel wird **bei jeder Behandlung** gepflegt — je Zone Laserkopf, Hauttyp, Haar, empfohlene und genutzte Werte.",
   "Frühere Werte der Kundin stehen im Formular als **Historie** — beim nächsten Termin sind sie sofort sichtbar.",
-  "Zwei Köpfe in einer Zone? **„+ Zweite Einstellung“**. Mehrere Zonen mit denselben Werten? **„Heute zusammen behandelt?“** übernimmt sie nach dem Speichern."
+  "Zwei Köpfe in einer Zone? **„+ Zweite Einstellung“**. Mehrere Zonen mit denselben Werten? **„Heute zusammen behandelt?“** übernimmt sie nach dem Speichern.",
+  "Kommt die Kundin zu spät? Den Haken **„Nicht behandelt“** setzen — die Zone zählt dann nicht als Sitzung."
  ],
  "pages": [
   {
@@ -58,7 +59,7 @@
   },
   {
    "h1": "Zone wählen",
-   "sub": "Die Übersicht zeigt alle Körperzonen mit der Anzahl bisheriger Behandlungen. Eine Zone antippen öffnet ihren Zettel.",
+   "sub": "Die Übersicht zeigt alle Körperzonen mit der Anzahl bisheriger Behandlungen. Eine Zone antippen öffnet ihren Zettel — die Kundennummer bleibt dabei im Kopf stehen.",
    "card": {
     "title": "Zone wählen",
     "text": "Figur oder Liste, Zähler „0x“ = noch nie behandelt"
@@ -70,14 +71,14 @@
       "id": "figur"
      },
      {
-      "id": "zone"
+      "id": "nr"
      }
     ]
    },
    "right": {
     "shot": "k5-zettel-gespeichert"
    },
-   "leftCaption": "Übersicht vor der ersten Behandlung — alle Zonen stehen auf „0x“.",
+   "leftCaption": "Übersicht: Oben rechts steht die Kundin mit ihrer Kundennummer, darunter die Figur mit allen Zonen.",
    "rightCaption": "Nach dem Speichern: Die behandelte Zone ist eingefärbt und erscheint als Chip.",
    "steps": [
     {
@@ -87,18 +88,52 @@
     },
     {
      "n": 2,
+     "title": "Kundennummer im Kopf",
+     "text": "Name und **Kundennummer** der Kundin stehen oben rechts im Zettel — auch dann noch, wenn die Zone offen ist. So lässt sich die Nummer beim Laser eintippen, ohne den Zettel zu verlassen."
+    },
+    {
+     "n": 3,
      "title": "Eigene Zone",
      "text": "Unten in der Liste lässt sich eine eigene Zone anlegen (z. B. „Nacken links“), wenn sie in der Standardliste fehlt."
     },
     {
-     "n": 3,
+     "n": 4,
      "title": "Erfasste Zonen",
      "text": "Gespeicherte Zonen erscheinen oben als Chips — Antippen öffnet den Zettel erneut zum Nachbessern."
     },
     {
-     "n": 4,
+     "n": 5,
      "title": "Frühere Sitzungen nachtragen",
      "text": "Der Knopf über der Figur öffnet den **Papierzettel-Assistenten**: links die früheren Termine der Kundin (nur vor heute), rechts eine Sitzung mit Datum, Behandlerin und den Zonen des laufenden Termins vorgewählt. Nach dem Speichern kennt der Zettel die nachgetragenen Werte als **„letzte Werte“**. Im Zonen-Formular gibt es denselben Knopf unter dem Verlauf, dort mit der offenen Zone vorgewählt; nachgetragene Zeilen tragen dort **„Papier“**. Auch im Nachtrag gibt es **„+ 2. Einstellung“** und **„Gleiche Werte für …“**, und eine ausgeschiedene Kollegin lässt sich als Behandlerin eintragen („Kundenverwaltung 6“)."
+    }
+   ]
+  },
+  {
+   "card": {
+    "title": "2 Kleine Zonen",
+    "text": "Sammelzone unter „Sonstiges“"
+   },
+   "h1": "Sammelzone „2 Kleine Zonen“",
+   "sub": "Zwei kleine Stellen, die zusammen behandelt wurden — zum Beispiel Zehen und Nasenrücken —, haben eine eigene Zone unter „Sonstiges“.",
+   "left": {
+    "shot": "k1b-zonen-sonstiges",
+    "marks": [
+     {
+      "id": "zkz"
+     }
+    ]
+   },
+   "leftCaption": "Unten in der Liste: Kategorie „Sonstiges“ mit der Zone „2 Kleine Zonen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„2 Kleine Zonen“ antippen",
+     "text": "Öffnet den Zettel der Sammelzone. Im Feld **„Bereich“** steht, welche zwei Stellen gemeint sind (z. B. „Zehen, Nasenrücken“)."
+    },
+    {
+     "n": 2,
+     "title": "In der Übersicht",
+     "text": "Die Sammelzone steht jetzt auch in der **Zonen-Übersicht** und im Verlauf — früher fehlte sie dort, obwohl Sitzungen gespeichert waren. Sie zählt wie jede andere Zone."
     }
    ]
   },
@@ -157,11 +192,47 @@
     {
      "n": 5,
      "title": "„Speichern“",
-     "text": "Alle Gruppen außer Notizen sind Pflicht — fehlt etwas, nennt der Hub das Feld. Nach dem Speichern erscheint die Zone als Chip in der Übersicht."
+     "text": "Alle Gruppen außer Notizen sind Pflicht (außer bei „Nicht behandelt“, nächster Vorgang) — fehlt etwas, nennt der Hub das Feld. Nach dem Speichern erscheint die Zone als Chip in der Übersicht."
     }
    ],
    "hint": {
     "text": "Bei einer **Folgebehandlung** zeigt der Zettel die Werte der letzten Sitzung als Historie — so lässt sich direkt anknüpfen oder gezielt anpassen."
+   }
+  },
+  {
+   "card": {
+    "title": "Zone nicht behandelt",
+    "text": "Schalter bei zu spät gekommen"
+   },
+   "h1": "Zone nicht behandelt",
+   "sub": "Kommt eine Kundin zu spät und eine geplante Zone fällt aus, wird sie trotzdem erfasst — ohne Laserwerte und ohne dass sie als Sitzung zählt.",
+   "left": {
+    "shot": "k11-nicht-behandelt",
+    "marks": [
+     {
+      "id": "nt"
+     },
+     {
+      "id": "save"
+     }
+    ]
+   },
+   "leftCaption": "Mit gesetztem Haken verschwinden die Werte-Gruppen; nur noch „Speichern“ ist nötig.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Haken „Nicht behandelt“",
+     "text": "Oben im Zettel: **„Nicht behandelt (z. B. zu spät gekommen)“**. Laserkopf, Hauttyp, Haar und Werte entfallen, ebenso die zweite Einstellung. Notizen bleiben möglich — dort steht am besten der Grund."
+    },
+    {
+     "n": 2,
+     "title": "„Speichern“",
+     "text": "Die Zone wird grün wie jede erfasste Zone, **zählt aber nicht als Sitzung**: Die Sitzungsnummer läuft nicht weiter, und im Verlauf steht statt der Nummer ein Strich (–) mit dem roten Etikett **„nicht behandelt“**."
+    }
+   ],
+   "hint": {
+    "text": "Gilt auch für „Heute zusammen behandelt?“ — eine nicht behandelte Zone gibt ihre Werte nicht an Partnerzonen weiter und bekommt auch keine von ihnen.",
+    "kind": "warn"
    }
   },
   {

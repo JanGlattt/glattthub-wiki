@@ -9,8 +9,8 @@
  "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — eingereichte Formulare, Einstellungszettel und Fotos",
  "eyebrow": "Kundenverwaltung · Unterlagen",
  "footerArea": "Kundenverwaltung",
- "stand": "13.10.2026",
- "version": "1.3",
+ "stand": "21.10.2026",
+ "version": "1.4",
  "notes": [
   "Beide Reiter sind **reine Ansicht** — geschrieben wird im laufenden Termin (Dokumente „Terminansicht 2–4“ und H).",
   "Der **Einstellungszettel** ist die wichtigste Vorbereitung auf eine Behandlung: Er zeigt, womit zuletzt gearbeitet wurde.",
@@ -206,6 +206,55 @@
    "hint": {
     "text": "Die zweite Einstellung zählt **nicht als eigene Sitzung**. Welche Zonen zusammengehören (Brust + Bauch, beide Arme, Beine …), legt das Büro im Admin unter **„Gemeinsame Zonen“** fest."
    }
+  },
+  {
+   "card": {
+    "title": "Nicht behandelt nachtragen",
+    "text": "Zeile „Nicht behandelt“, Bereich bei „2 Kleine Zonen“"
+   },
+   "h1": "Papierzettel: „Nicht behandelt“ & Bereich",
+   "sub": "War eine Zone auf dem Papierzettel nicht behandelt (zu spät gekommen), wird sie ohne Laserwerte nachgetragen. Der Freitext „Bereich“ gehört zu „2 Kleine Zonen“.",
+   "left": {
+    "shot": "n7-nachtrag-nicht-behandelt",
+    "marks": [
+     {
+      "id": "nt"
+     },
+     {
+      "id": "bereich"
+     }
+    ]
+   },
+   "right": {
+    "shot": "n8-verlauf-nicht-behandelt",
+    "marks": [
+     {
+      "id": "etikett"
+     },
+     {
+      "id": "eintrag"
+     }
+    ]
+   },
+   "leftCaption": "Nachtrag: Bauch ist „Nicht behandelt“ (ausgegraut), „2 Kleine Zonen“ hat den Freitext „Bereich“.",
+   "rightCaption": "Im Verlauf: Strich statt Sitzungsnummer und das rote Etikett „nicht behandelt“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeile „Nicht behandelt“",
+     "text": "Je Zone gibt es im Raster die Zeile **„Nicht behandelt“**. Mit dem Haken wird die Spalte ausgegraut: Laserkopf, Werte und zweite Einstellung entfallen, die Notiz bleibt. Auch „Gleiche Werte für …“ überspringt solche Zonen."
+    },
+    {
+     "n": 2,
+     "title": "Freitext „Bereich“",
+     "text": "Das Feld **„Bereich“** (z. B. „Oberlippe“) erscheint nur noch dort, wo es Sinn hat: bei **„2 Kleine Zonen“** (Welche zwei? z. B. „Zehen, Nasenrücken“) und bei Zonen mit zweiter Einstellung."
+    },
+    {
+     "n": 3,
+     "title": "Im Verlauf",
+     "text": "Eine nicht behandelte Zone zählt **nicht als Sitzung**: Im Verlauf steht statt der Sitzungsnummer ein **Strich (–)** mit dem Etikett **„nicht behandelt“**; die folgenden Sitzungen zählen ohne sie weiter."
+    }
+   ]
   },
   {
    "h1": "Behandlungsfotos",

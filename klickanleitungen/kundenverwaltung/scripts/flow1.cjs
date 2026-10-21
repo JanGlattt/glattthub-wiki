@@ -23,6 +23,8 @@ const SEARCH = process.env.KLICK_SEARCH || '';   // Suchbegriff (Nachname der Ku
   await page.waitForFunction(() => !document.querySelector('.spinner-glattt'), null, { timeout: 20000 }).catch(() => {});
   await L.wait(page, 1500);
   const rowSel = 'tbody tr';
+  // Beispiel für die Anleitung: groß/klein und fehlende Nullen sind egal (Treffer ist maskiert, Eingabe passend dazu)
+  await page.evaluate(() => { document.querySelector('.search-glattt').value = 'md2'; });
   await L.shot(page, 'i2-suche-treffer', { marks: [
     { id: 'suche', kind: 'frame', color: 'teal', sel: '.search-glattt-wrapper' },
     { id: 'treffer', kind: 'badge', n: 1, sel: '.site-second-line', at: 'r' },
@@ -42,7 +44,7 @@ const SEARCH = process.env.KLICK_SEARCH || '';   // Suchbegriff (Nachname der Ku
   // ── i4 Übersicht: die Karten und ihre „Alle ansehen"-Knöpfe
   await L.tab(page, 'Übersicht', 2500);
   await L.shot(page, 'i4-uebersicht-oben', { marks: [
-    { id: 'kontakt', kind: 'badge', n: 1, ...L.byText('.card-glattt-title', 'Kontakt'), at: 'l' },
+    { id: 'kontakt', kind: 'badge', n: 1, ...L.byText('.card-glattt-title', 'Kundeninfos'), at: 'l' },
     { id: 'termine', kind: 'badge', n: 2, ...L.byText('.card-glattt-title', 'Termine'), at: 'l' },
     { id: 'alle', kind: 'chip', label: 'Öffnet den Reiter', sel: '.btn-glattt-tertiary', at: 'l' },
   ]});
@@ -51,7 +53,6 @@ const SEARCH = process.env.KLICK_SEARCH || '';   // Suchbegriff (Nachname der Ku
   await L.scrollTo(page, '.client-overview-grid-glattt', 'end');
   await L.shot(page, 'i5-uebersicht-unten', { noScroll: true, marks: [
     { id: 'vertrag', kind: 'badge', n: 3, ...L.byText('.card-glattt-title', 'Vertrag'), at: 'l' },
-    { id: 'forderungen', kind: 'frame', sel: '.client-overview-claims-row-glattt' },
   ]});
 
   await browser.close();

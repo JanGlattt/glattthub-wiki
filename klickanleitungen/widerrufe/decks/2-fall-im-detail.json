@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — Aufbau der Fallseite, Stammdaten und Fristbeginn, Dokumente, Wiedervorlage",
  "eyebrow": "Widerrufe · Fallseite",
  "footerArea": "Widerrufe",
- "stand": "16.09.2026",
- "version": "1.0",
+ "stand": "21.10.2026",
+ "version": "1.1",
  "notes": [
   "Die Haken **„SEPA storniert“** und **„Phorest aktualisiert“** halten nur fest — sie **tun** nichts.",
   "Ein **abweichender Fristbeginn** verschiebt das Urteil über den Fall: immer mit Begründung.",
@@ -95,6 +95,49 @@
       "Die Abwicklungsschritte — „Widerrufe 4“"
      ]
     ]
+   }
+  },
+  {
+   "card": {
+    "title": "Folgevertrag fehlt",
+    "text": "Hinweiskarte bei Upgrade und Downgrade"
+   },
+   "h1": "Hinweis „Folgevertrag fehlt“",
+   "sub": "Bei Upgrade und Downgrade gehört der neue Vertrag an den Fall. Fehlt er, weist die Fallseite darauf hin — sonst zählt der alte Vertrag in den Verkaufszahlen falsch.",
+   "left": {
+    "shot": "wd2-folgevertrag-fehlt",
+    "marks": [
+     {
+      "id": "knopf"
+     }
+    ]
+   },
+   "leftCaption": "Die gelbe Hinweiskarte steht im Überblick des Falls, wenn ein Folgevertrag fehlt.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Wann die Karte erscheint",
+     "text": "Nur bei einem **abgeschlossenen** Fall mit Reaktion **Upgrade** oder **Downgrade**, zu dem noch kein Folgevertrag verknüpft ist. Sichtbar für alle mit dem Recht, Widerrufe zu verwalten."
+    },
+    {
+     "n": 2,
+     "title": "Ein Kandidat oder mehrere",
+     "text": "Kommen mehrere oder nicht eindeutige Neuverträge der Kundin in Frage, steht je Vertrag ein Knopf **„… übernehmen“** mit Vertragsnummer, KPZ und Datum. Ein Klick verknüpft genau diesen Vertrag mit dem Fall — vorher die Vertragsnummer prüfen."
+    },
+    {
+     "n": 3,
+     "title": "Noch kein Neuvertrag",
+     "text": "Gibt es noch keinen passenden Vertrag, steht in der Karte nur der Hinweis. Sobald der Neuvertrag angelegt ist, wird er bei eindeutigem Treffer **automatisch** zugeordnet; sonst erscheint er hier. Von Hand geht es weiter über **„Bearbeiten“**."
+    },
+    {
+     "n": 4,
+     "title": "Automatische Zuordnung",
+     "text": "Der Hub ordnet nur zu, wenn es **genau einen** passenden Neuvertrag derselben Kundin gibt: unterschrieben **bis zu 45 Tage** vor oder nach dem Widerrufsdatum, noch ohne Vorgänger, bei **Upgrade mit mehr KPZ**, bei **Downgrade mit weniger KPZ**. Im Fall und im Vertrag steht dazu ein Verlaufseintrag."
+    }
+   ],
+   "hint": {
+    "text": "**Nie raten:** Ist der Treffer nicht eindeutig — zum Beispiel zwei offene Fälle derselben Kundin —, ordnet der Hub nichts zu. Dann entscheidet das Büro über die Knöpfe der Karte. GoCardless wird dabei nie angefasst.",
+    "kind": "warn"
    }
   },
   {

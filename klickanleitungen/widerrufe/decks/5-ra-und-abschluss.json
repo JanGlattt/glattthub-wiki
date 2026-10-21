@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — Kosten und Schriftwechsel erfassen, Wirtschaftlichkeit, Fall abschließen",
  "eyebrow": "Widerrufe · Anwalt & Abschluss",
  "footerArea": "Widerrufe",
- "stand": "16.09.2026",
- "version": "1.0",
+ "stand": "21.10.2026",
+ "version": "1.1",
  "notes": [
   "**Kosten erfassen**, sonst sieht der Fall wirtschaftlicher aus, als er war.",
   "Das **RA-Ergebnis** beschreibt das Verfahren, das **Abschluss-Ergebnis** wirkt auf den Vertrag.",
@@ -300,7 +300,7 @@
     {
      "n": 2,
      "title": "Folgevertrag",
-     "text": "Bei **Downgrade** und **Upgrade** wird der neue Vertrag verknüpft."
+     "text": "Bei **Downgrade** und **Upgrade** wird der neue Vertrag verknüpft — meist schon **automatisch**, sobald er eindeutig zu erkennen ist. Fehlt er noch, zeigt die Fallseite die Karte **„Folgevertrag fehlt“** („Widerrufe 2“)."
     },
     {
      "n": 3,
