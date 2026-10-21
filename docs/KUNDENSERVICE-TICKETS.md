@@ -139,7 +139,7 @@ Alle unter `/hub/kundenservice` (dieselben für Web und App, JSON):
 
 | Methode & Pfad | Zweck |
 |---|---|
-| `GET /data?view=&search=&page=` | Liste je Ansicht (`SupportTicketQuery::views`), `mode`, `me`, Rechte. Eigene Ansichten: `mine` („Meine Tickets“, alles Zugewiesene außer gelöst/geschlossen, `MINE_STATUSES`) und direkt dahinter `mine_solved` („Meine gelösten“, `SOLVED_STATUSES`); beide Zähler kommen aus **einer** Summenabfrage, die Leiste kostet nicht mehr Abfragen. In der App liegt `mine_solved` im Ansichten-Menü, nicht im Segment |
+| `GET /data?view=&search=&page=` | Liste je Ansicht (`SupportTicketQuery::views`), `mode`, `me`, Rechte. Eigene Ansichten: `mine` („Meine Tickets“, alles Zugewiesene außer gelöst/geschlossen, `MINE_STATUSES`) und direkt dahinter `mine_solved` („Meine gelösten“, `SOLVED_STATUSES`); beide Zähler kommen aus **einer** Summenabfrage, die Leiste kostet nicht mehr Abfragen. In der App liegt `mine_solved` im Ansichten-Menü, nicht im Segment. Seit 21.10.2026 eigene Ansicht `on_hold` („Angehalten“, Wiedervorlage): „Alle offenen“ und die Team-Ansichten nutzen `OPEN_STATUSES` (neu/offen/in Prüfung) und zeigen angehaltene Tickets nicht mehr; „Meine Tickets“ behält sie bewusst |
 | `GET /optionen` | Teams mit Mitgliedern, Kolleginnen, Erwähnbare, Textbausteine, Anliegen, `require_category`, `bert_available` |
 | `GET /tickets/{nr}` | Detail mit Verlauf, Kundenkarte, Zusammenführen-Vorschlag, Vorgängen, Kanälen, Umfrage, Rechten |
 | `POST /tickets/{nr}/antwort` | Antwort (E-Mail/WhatsApp), `status`, `files[]`, `actions[...]` |
@@ -270,7 +270,7 @@ stehen im Verlauf. Noch nicht Teil des Berichts „Kundenservice“.
 
 ### Web-Seite (Entwurf A)
 
-Eine Karte mit drei Bereichen (`.support-shell`): Liste, Gespräch, Detailleiste. Ansichten als
+Eine Karte mit drei Bereichen (`.support-shell`): Liste, Gespräch, Detailleiste. Der Ticket-Kopf (`.support-convo-head`) klebt oben im Gesprächsbereich, einzeilig und kompakt; `.support-convo-inner` braucht `flex-shrink: 0`, sonst schrumpft der Inhalt auf die Scrollhöhe und der Kopf klebt nur kurz (Asana „Einfrieren Fenster“, 21.10.2026). Ansichten als
 Auswahl plus Schnellfilter, Listenzeile = Status plus genau ein Hinweis (`rowSignal`), im Kopf nur
 Übernehmen/Abschließen, der Rest im ⋯-Menü. Unter 1280 px blendet ein Knopf die Detailleiste ein.
 Entwürfe je Ticket im localStorage, ⌘/Strg+Enter sendet, nach dem Abschließen öffnet sich das
