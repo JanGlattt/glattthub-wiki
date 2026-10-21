@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — 250-€-Weiche, gerichtliches Mahnverfahren, ruhend stellen, abschreiben",
  "eyebrow": "Forderungen · Eskalation",
  "footerArea": "Forderungen",
- "stand": "16.09.2026",
- "version": "1.0",
+ "stand": "21.10.2026",
+ "version": "1.1",
  "notes": [
   "Die **250-€-Weiche rechnet mit der offenen Summe inklusive Kosten** — vorher prüfen.",
   "Im **gerichtlichen Verfahren schlägt der Hub nichts mehr vor** — dort wird dokumentiert.",
@@ -312,7 +312,7 @@
      ],
      [
       "**abgeschrieben (WNB)**",
-      "Wirtschaftlich nicht beitreibbar"
+      "Wirtschaftlich nicht beitreibbar. Kommt die Zahlung doch noch, auf dem Fall **Abschreibung zurücknehmen** und den Eingang danach normal verbuchen"
      ],
      [
       "**RZV**",

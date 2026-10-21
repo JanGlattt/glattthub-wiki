@@ -528,7 +528,13 @@ können eigene Vorlagen-Varianten hinterlegt werden (`dunning_templates`, Cluste
   RZV behält ihre eigene Vorlage-Logik (Vereinbarung „geplatzt", Büro
   entscheidet), ruhende Fälle werden wie bisher automatisch reaktiviert.
 - **WNB (abschreiben)**: eigenes Recht (`write_off_receivables`); der Kunde bleibt
-  in Phorest archiviert.
+  in Phorest archiviert. **„Abschreibung zurücknehmen"** (Recht
+  `manage_receivables`, `POST /hub/receivables/{case}/reopen-write-off`,
+  `DebtCaseActionService::reopenWrittenOff()`) öffnet einen abgeschriebenen Fall
+  wieder — Stufe bleibt, keine Frist, Vermerk `case_resumed` im Verlauf. Gedacht
+  für Zahlungen, die nach der WNB doch noch eingehen (Fall BI005401,
+  21.10.2026): Der Eingang wird danach normal verbucht, der Fall schließt sich
+  mit Ausgang „bezahlt". Die Archivierung in Phorest wird nicht zurückgenommen.
 - **Notiz hinzufügen**: Freitext-Kommentar direkt in der Verlauf-Card der
   Fall-Seite (Recht `manage_receivables`) — mit Autor und Zeitstempel in der
   Timeline, mehrzeilig möglich. Ersetzt die Kommentar-Spalten der alten
