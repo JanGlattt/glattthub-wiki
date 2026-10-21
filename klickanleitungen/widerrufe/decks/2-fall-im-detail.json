@@ -122,7 +122,7 @@
     {
      "n": 2,
      "title": "Ein Kandidat oder mehrere",
-     "text": "Kommen mehrere oder nicht eindeutige Neuverträge der Kundin in Frage, steht je Vertrag ein Knopf **„… übernehmen“** mit Vertragsnummer, KPZ und Datum. Ein Klick verknüpft genau diesen Vertrag mit dem Fall — vorher die Vertragsnummer prüfen."
+     "text": "Kommen mehrere oder nicht eindeutige Neuverträge der Kundin in Frage, steht je Vertrag ein Knopf **„… übernehmen“** mit Vertragsnummer, KPZ und Datum. Nach einer Rückfrage verknüpft der Knopf genau diesen Vertrag mit dem Fall — vorher die Vertragsnummer prüfen."
     },
     {
      "n": 3,
