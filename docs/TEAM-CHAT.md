@@ -511,6 +511,8 @@ Deploy) kosten höchstens eine Minute.
 |---|---|
 | `GET /data` | Einstieg: `me`, `rooms`, `today`, `settings`, `live`, `permissions`, `bert_available`, `cursor` (Stand des Ereignis-Protokolls) |
 | `GET /sync?since=&client=&device=&live=&version=&gap=` | Abgleich „alles ab Ereignis X über alle Räume“ (seit 16.10.2026): `events` (mit kompakter Nachricht), `rooms` (berührte Zeilen), `cursor`, `limited`, `reset`, `unread_total`; trägt das Lebenszeichen des Geräts für „Chat-Gesundheit“ |
+| `POST /client-fehler` (`client`, `device`, `version`, `count`, `status`, `text`) | Ein Client meldet **anhaltende Abgleich-Fehler** (ab dem dritten in Folge; seit 22.10.2026). Eigener Endpunkt ohne Abhängigkeit vom Abgleich — der Fehler vom 16.10.2026 (422 durch ungekodiertes „+“ in `since_at`) wäre sonst nie angekommen. Speichert `sync_errors`, `last_error_*` am Lebenszeichen, „Chat-Gesundheit“ zeigt das Gerät unter „Probleme“ rot |
+| `GET /suche?raum=&art=media\|file\|link` | Reiter **Medien · Dateien · Links** der Infos (Web und App, neueste zuerst, 40) |
 | `GET /kontakte`, `GET /suche?q=`, `GET /objekte?q=`, `GET /gifs?q=` | Kontakte, Nachrichtensuche (Teilwort), Hub-Objekte aus der globalen Suche, GIFs (KLIPY, `KLIPY_API_KEY` — Tenor-API seit 30.06.2026 abgeschaltet; Suche/Trending über `api.klipy.com/api/v1/{key}/gifs/…`, Pflicht-Platzhalter „Search KLIPY“, `customer_id` anonymer Hash je Nutzerin) |
 | `POST /direkt`, `POST /raeume` | Einzelchat, Gruppe anlegen (`name`, `description`, `user_ids[]`, `members_can_add`, `members_can_post`; das Bild folgt über `POST …/bild`) |
 | `GET /raeume/{id}`, `PATCH /raeume/{id}` | Raum mit Mitgliedern und Verlauf; Name/Beschreibung, `members_can_add`/`members_can_post` (nur Admins eigener Gruppen), `muted_until` (`1h`, `8h`, `1w`, `forever`, `off`), `is_pinned`, `is_archived` |
@@ -595,7 +597,12 @@ Blätter für neuen Chat, Mitglieder, Weiterleiten, Umfrage, Suche, Einstellunge
 Nachricht-Info. „Neue Gruppe“ folgt seit 11.10.2026 Entwurf 1 „Wie WhatsApp“ (Befund 273):
 Schritt 1 Mitglieder mit Chips, Schritt 2 Gruppenseite mit Bild (Album), Name, Beschreibung,
 Mitgliederzeile und den Einstellungen „Mitglieder hinzufügen“ / „Nachrichten schreiben“ je
-„Alle“ oder „Nur Admins“; auf dem iPad liegen beide Schritte nebeneinander. Die Gruppen-Info
+„Alle“ oder „Nur Admins“; auf dem iPad liegen beide Schritte nebeneinander. **Chat-Profil „Kontaktkarte“ (Entwurf 1, Jan, 21.10.2026):** `ChatRoomInfoView` + `ChatProfile.swift` —
+Kopf (Avatar 96 pt, Name, Rolle mit Institut-Tag, **Dienststatus** statt „Zuletzt aktiv“: ein Aktivitätsstempel der
+Kolleginnen ist nicht freigegeben), Knopfreihe (Anruf/Video nur im Einzelchat, Suche nur im Blatt, Stumm/Laut), Reiter
+Medien/Dateien/Links über `ChatModel.roomAssets` (dieselbe Suche wie im Web, je Reiter einmal geladen, Antippen springt zur
+Nachricht), Einstellungen in einer Hub-Karte, bei Gruppen Angeheftet, Mitglieder und Gruppen-Einstellungen. Gruppenanrufe gibt es
+nicht, daher dort kein Anruf-Knopf. Die Gruppen-Info
 zeigt dieselben Einstellungen für Admins und blendet „Hinzufügen“ nach `can_add_members` ein. `ChatModel` hält Räume, Verlauf, Warteschlange und Offline-Stand
 (`OfflineStore`, Schlüssel `chat`), `ChatLiveClient` die Reverb-Verbindung (Kanal je Nutzerin
 plus offener Raum, Backoff 1…60 s), `ChatRecorder`/`ChatPlayer` die Sprachnachrichten. Push:
@@ -662,6 +669,30 @@ Endmarke über `onGeometryChange` in `.scrollView`-Koordinaten). Lato bleibt, Ha
 - **Android** kommt über die Browser-Freischaltung auf den App-Host (Plattform `browser`,
   ohne App Attest, siehe [APP-GERAETE-FREISCHALTUNG](APP-GERAETE-FREISCHALTUNG.md)).
 
+### Robustheit und Flüssigkeit (21./22.10.2026)
+
+Auslöser: Die iPhone-App bekam seit der Etappe B bei **jedem** Abgleich ein 422 (ungekodiertes „+“ in `since_at`) und schluckte
+es still; dazu Rückmeldungen „Chat ruckelt“. Maßnahmen und Regeln:
+
+- **Abgleich-Fehler sichtbar:** `POST /client-fehler` (siehe Endpunkte), App, Web und Mac-App melden ab dem dritten Fehlschlag in Folge,
+  `chat_client_heartbeats.sync_errors` + `last_error_*`, Probleme-Liste „Abgleich fehlt“ (rot), ein erfolgreicher Abgleich beendet die Serie.
+  `ChatController::sync` repariert ein ungekodiertes „+“ (ältere App-Builds); `HubSession.json` kodiert „+“ als `%2B`.
+- **Abgelaufene Sitzung:** Torwächter `GlatttChatSync.authGate` (`chat-sync.js`): erster 401/419 pausiert nicht, dann 10, 20, 40 … höchstens 300 s;
+  Chat und Anruf-Fenster klopfen nicht mehr jede Sekunde an; Senden bei 401/419 geht in die Warteschlange; `session-guard:resumed`
+  öffnet ihn. Hintergrund: 2.600 Aufrufe mit 401 in 7 Tagen von einem Desktop-Gerät.
+- **Sticker und GIF** tragen die Antwort, haben eine vorläufige Blase und laufen über die Warteschlange (`ChatModel.sendMedia`) — wie Text.
+- **Liste:** stabile Kennung je Nachricht (`ChatMessageItem.stableKey` = `client_uuid`), sonst blinkte die Blase beim Ersetzen der vorläufigen
+  Zeile; **ein** Scroll ans Ende mit derselben Feder wie das Einfliegen (`ChatRoomView.messageSpring`), Einflug-Animation nur bei neuem Ende;
+  Eingabeleiste mit einer Animation (`ComposerPhase`).
+- **Formatter nie je Aufruf bauen:** `ChatFormat` hält gemeinsame `ISO8601DateFormatter`/`DateFormatter` und einen Zeitstempel-Zwischenspeicher
+  (3,7 s von ~12 s Hauptthread-Arbeit in der Messung); ein `NSDataDetector` für Links.
+- **Push-Öffnen:** `HubTabBarController.openDetail` schiebt nur animiert, wenn die App aktiv und der Tab schon offen war; Chat-Bilder liegen
+  zusätzlich auf der Platte (`ChatImageCache`, im Offline-Ordner, wird mit Abmelden/Nutzerwechsel gelöscht).
+- **Messen statt behaupten:** `ios/scripts/chat-smooth.sh` (UI-Test `ChatSmoothUITests` + App-Messfühler `HitchProbe` + `hitch-report.py`) und
+  `video-jank.py` für Aufnahmen vom iPhone; Rezept im Projektwissen `chat-ruckeln-messen-und-beheben`. Simulator-Zahlen sind Anhaltspunkte.
+- **Offen:** neue Nachricht aus der Mitteilung sofort in den Raum legen (Duplikat-Regel), Erstzugriff-Aussetzer beim ersten Öffnen von Menü und
+  GIF-Blatt auf dem Gerät prüfen, Anruf-Zeilen im Verlauf zusammenfassen, Cloud-Scheduler-Jobs um :00 versetzen (Abgleich dauert zur vollen Stunde 3–4 s).
+
 ### Relevante Tests
 
 `tests/Feature/Chat/` (Räume, Nachrichten, Push-Empfänger, Katalog-Weg, Endpunkte, Seite, `ChatCallTest` für
@@ -671,6 +702,10 @@ Anrufe), `tests/js/chat-call.test.mjs` (Epochen, Spur, Endtexte), `ios/glatttHub
 `ios/glatttHubUITests/ChatUITests.swift`.
 
 ## Changelog
+
+- **22.10.2026 (robuster und glatter)** — Abgleich-Fehler der App behoben und überwacht, Torwächter bei abgelaufener Sitzung, Sticker/GIF mit
+  Antwort und Warteschlange, Chat-Profil „Kontaktkarte“ (Medien, Dateien, Links), Glättung (Formatter, stabile Kennung, ein Scroll, Plattencache),
+  Push-Öffnen ohne Schiebe-Animation, Messvorrichtung. App 1.5.2.
 
 - **16.10.2026 (Anrufe nachgeschärft)** — Geräteauswahl im Anruf, Teilen in der Desktop-App 1.2.6 mit
   Freigabe-Hinweis, Teilen auf iPhone/iPad (Build 112), kein doppeltes Klingeln (Build 111), Aushandlung Mac → iPhone
