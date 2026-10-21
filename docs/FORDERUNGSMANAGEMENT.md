@@ -140,7 +140,15 @@ Vier Einstiege eröffnen Fälle **automatisch** (`DebtCaseIntakeService`):
 1. **Rücklastschrift (RLS)**: Platzt eine GoCardless-Lastschrift, entsteht der
    Fall von selbst. Automatisch werden **10 € RLS-Gebühr** gebucht. Hatte der
    Kunde zum Zeitpunkt bereits **über 50 € Altschulden** (über alle Verträge),
-   startet der **harte Weg**, sonst der **sanfte Weg**.
+   startet der **harte Weg**, sonst der **sanfte Weg**. Solange der Fall noch in
+   Stufe „Neu" steht (kein Schreiben raus), wird die Weiche bei jedem
+   `nextAction()` neu geprüft (`DebtCaseActionService::refreshPathIfUnstarted()`):
+   Sind die Altschulden inzwischen beglichen (Zahlung verbucht, Rate als bezahlt
+   vermerkt), rutscht der Fall auf „sanft" und die Timeline bekommt eine Notiz
+   (Fall BI006504, 21.10.2026 — vorher blieb er hart und zog die Vorlage „alle
+   offenen Schulden / SEPA gestoppt"). Ausgenommen sind reaktivierte Fälle
+   (`case_resumed`) und Fälle ab der zweiten RLS: dort ist „hart" eine bewusste
+   Eskalation.
 2. **Direktzahler**: Vertrag mit Direktzahlung, Abschluss über 28 Tage her,
    nicht bezahlt → Fall in Stufe „Kontaktaufnahme" (täglicher Prüflauf 07:15).
 3. **SEPA-Mandatsentzug**: Entzieht der Kunde (oder seine Bank) das Mandat,
@@ -464,8 +472,15 @@ können eigene Vorlagen-Varianten hinterlegt werden (`dunning_templates`, Cluste
   **Platzt eine GoCardless-RZV-Rate, eskaliert der Fall bewusst NICHT
   automatisch**: Die Vereinbarung wird als „geplatzt" markiert, die 10-€-Gebühr
   gebucht und der Fall sofort vorgelegt (Badge „RZV geplatzt") — ob weiter
-  gemahnt oder der Plan angepasst wird, entscheidet das Büro. Die geplatzte
-  RZV-Rate erhöht die Hauptforderung dabei nicht (die Schuld bestand schon —
+  gemahnt oder der Plan angepasst wird, entscheidet das Büro. **„Regulär
+  weitermahnen"** (Knopf im Tab „Ratenzahlung", nur bei geplatzter Vereinbarung,
+  `POST /hub/receivables/{case}/rzv/{agreement}/resume-dunning`,
+  `ReceivablesController::resumeDunningAfterRzv()`) ist für RZVs gedacht, die
+  nur den normalen Vertragseinzug wieder aufnehmen (Fall BI006547, 16.10.2026):
+  Die Vereinbarung wird auf „storniert" gesetzt, der Fall geht in Stufe „Neu",
+  sanfter Weg — damit läuft der übliche Gang 1./2. Zahlungserinnerung →
+  Monitoring. Für PfÜB-/Vergleichs-RZVs bleibt es bei „Plan anpassen". Die
+  geplatzte RZV-Rate erhöht die Hauptforderung dabei nicht (die Schuld bestand schon —
   `DebtCaseBalanceService::rlsPrincipals()` schließt RZV-Raten aus).
 
 #### Ruhend, RLS-Entscheid, Abschreiben, Notizen

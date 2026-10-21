@@ -13,7 +13,7 @@
  "subtitle": "Klickanleitung für den glatttHub — RZV abschließen, Plan ändern, laufende Vereinbarung verfolgen",
  "eyebrow": "Forderungen · RZV",
  "footerArea": "Forderungen",
- "stand": "16.09.2026",
+ "stand": "21.10.2026",
  "version": "1.0",
  "notes": [
   "Eine RZV ist **immer eine Einzelfallentscheidung** — es gibt keine Regel und keinen Automatismus.",
@@ -267,7 +267,7 @@
     },
     {
      "title": "„RZV geplatzt“ ist ein eigener Topf",
-     "text": "Bleibt eine Rate aus, erscheint der Fall in der Arbeitsliste. Dann ist zu entscheiden: Plan ändern oder zurück in die Mahnkette."
+     "text": "Bleibt eine Rate aus, erscheint der Fall in der Arbeitsliste. Dann ist zu entscheiden: **Zahlungsplan ändern** (die Vereinbarung läuft weiter) oder **Regulär weitermahnen**. Letzteres passt, wenn die Vereinbarung nur den normalen Vertragseinzug wieder aufgenommen hat: Die Vereinbarung wird beendet, der Fall startet von vorn mit der 1. Zahlungserinnerung."
     },
     {
      "title": "Der Fall schließt sich mit der letzten Rate",
