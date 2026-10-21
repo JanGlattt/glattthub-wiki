@@ -247,6 +247,14 @@ re-parst und korrigiert; das Prod-Pendant liegt unter
     - `GET  /superchat/templates?channel_id=…` — approved WhatsApp-Templates
       für einen bestimmten Kanal (kein Kontakt-Link nötig, daher für
       *Neue Konversation* besser geeignet als `composer-state`).
+      **Erweiterung 21.10.2026 (Vorlagen-Schublade):** jede Vorlage trägt zusätzlich
+      `title` (Name ohne „02 H - “), `category` (Neukundin, Beratung, Termin, Aktion,
+      Allgemein), `institute_code` (BI/BS/HB/H/OS/MD) und `is_duplicate` („Kopie“ im Namen).
+      Mit `&phorest_client_id=…` kommen außerdem `recommended` (`[{template_id, reason,
+      category}]`, „Empfohlen für diese Kundin“) und `categories` (Chip-Reihenfolge). Alle
+      Felder sind optional und rückwärtskompatibel; der Cache bleibt je Kanal, Klassifizierung
+      und Empfehlung laufen danach (feste 4 Abfragen: `client_statistics`,
+      `upcoming_consultations`, `stats_historic_appointments`, `client_number_sequences`).
     - `POST /superchat/send` — Body: `{phorest_client_id, kind: text|file|template, ...}`.
       `text`/`file` werfen **409** wenn das 24h-Fenster zu ist.
     - `POST /superchat/upload` — Multipart-Upload, akzeptiert nur
@@ -263,6 +271,19 @@ re-parst und korrigiert; das Prod-Pendant liegt unter
   Shadow-Record mit `direction=outbound, status=sending` geschrieben.
   Der reguläre Webhook-Pfad upsertet später per `superchat_message_id`
   und hebt den Status.
+
+### Vorlagen-Einteilung und Empfehlung
+
+- `app/Services/Superchat/SuperchatTemplateClassifier.php` — reine Funktion des Namens;
+  Schlagwörter je Kategorie (Reihenfolge zählt) und Institutskürzel stehen in
+  `config/superchat_templates.php`. Kein Pflichtfeld in der DB, die Vorlagen leben in Superchat.
+- `app/Services/Superchat/SuperchatTemplateRecommender.php` — Regeln (Priorität oben nach unten):
+  Termin innerhalb 48 h → Kategorie *Termin* („Termin morgen“); kommende Beratung →
+  *Beratung* („Beratung am 24.10.“); kein Vertrag/keine Beratung/höchstens ein Termin →
+  *Neukundin*. Institut der Kundin aus dem Präfix der Kundennummer (Rückfall:
+  `client_number_sequences`); Vorlagen anderer Institute und Kopien werden nie empfohlen,
+  eigenes Institut steht zuerst. Höchstens `max_recommended` (4).
+- Tests: `tests/Feature/SuperchatTemplateRecommendationTest.php`.
 
 ### Neue Konversation starten (`start-conversation`)
 

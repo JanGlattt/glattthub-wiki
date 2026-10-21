@@ -1021,9 +1021,8 @@ Status; das Blatt zeigt die Angaben und die PDF-Vorschau. **Behandlung** hat die
 je Zone die Sitzungen mit Einstellungen, Notizen und Fotos. **Vertrag & Zahlungen** zeigt die
 Vertragskarten (Rate, Laufzeit, Mandat) mit Sprung zur Vertragsseite und „Widerruf erfassen“ im
 nativen Ablauf der Widerrufe. **Forderungen** listet die Fälle mit Sprung in die Fallakte,
-**Kundenservice** die Zendesk-Tickets mit Verlauf, **Nachrichten** die WhatsApp-Unterhaltung mit
-Composer (Text im 24-h-Fenster, Vorlage mit Platzhaltern, Foto, neue Unterhaltung — jeder Versand
-fragt nach) und darunter die Zeitleiste automatischer Nachrichten. **Kundenportal** (zehnter Bereich
+**Kundenservice** die Zendesk-Tickets mit Verlauf, **Nachrichten** die Chat-Vorschau mit „Chat öffnen“ (derselbe Chat wie der WhatsApp-Knopf, siehe „Superchat-Chat“) und darunter die
+Zeitleiste automatischer Nachrichten. **Kundenportal** (zehnter Bereich
 seit 11.10.2026, nur mit Recht) zeigt den Stand des Kontos auf my.glattt.com und bietet „Zum Portal
 einladen“, „Passwort zurücksetzen“ und „Sperren“; die Kanalwahl (E-Mail, WhatsApp über Superchat,
 WhatsApp auf dem Handy, Link kopieren, QR-Code) ist auf dem iPhone ein Blatt, auf dem iPad ein
@@ -1047,6 +1046,16 @@ bekommt dazu die Karte „Kundenportal“.
   `GET /hub/receivables/client/{id}` (dieselben Zeilen wie die Arbeitsliste, `DebtCaseRow`),
   `GET /zendesk/customer-tickets` + `/zendesk/tickets/{id}/comments`,
   `GET /phorest/client/{id}/messages`, `/superchat/client-conversations|channels|templates|send|upload|start-conversation`.
+
+**Superchat-Chat (Entwurf A „Chat zuerst, Vorlagen als Schublade“ + Zeile „Empfohlen für diese Kundin“, 21.10.2026):** ein Muster für alles rund um WhatsApp einer Kundin, ersetzt `ClientTemplateSheet`, die alten Phasen von `ClientWhatsAppSheet` und die Composer-Karte des Reiters. `SuperchatChatView` (`ios/glatttHub/Clients/SuperchatChatView.swift`) + `SuperchatChatModel` (Logik, `SuperchatChatModel.swift`). Einstiege (alle öffnen dieselbe Ansicht über `ClientWhatsAppSheet`): WhatsApp-Knopf der Kundenakte, Terminliste (Knopf + Wisch-Aktion), „Chat öffnen“ im Reiter Nachrichten (dort bleibt die Zeitleiste „Automatisch versendet“); ohne `can_send_messages` bleiben die Knöpfe weg, der Reiter zeigt nur den Verlauf.
+- **Kopf:** Name, Kundennummer · Institut (aus dem Präfix) · Kanal; Fensterzeile „Fenster offen bis …“ bzw. „Fenster geschlossen — Vorlage nötig“. Geschlossenes Fenster sperrt freies Schreiben und erklärt den Vorlagen-Weg; neue Unterhaltung (keine Superchat-Verknüpfung) zeigt Mobilnummer + Kanal im selben Muster, erste Nachricht nur per Vorlage (`start-conversation`), fehlende Nummer wird benannt.
+- **Eingabe:** Foto (wird als Chip vorgemerkt, HEIC→JPEG), ✦ öffnet die Vorlagen, Senden fragt vor jedem Versand nach. iPad ab 720 pt: Vorlagen als feste Spalte rechts statt Blatt; Kürzel ⌘⇧T (Vorlage öffnen/suchen — ⌘K gehört glatttBert) und ⌘↩ (Senden).
+- **Vorlagen-Schublade** (`SuperchatTemplateDrawer`, Blatt mittel/groß): Suche über Titel/Text/Kategorie, Chips Empfohlen · Alle · Kategorien, Instituts-Badge statt Präfix im Titel, Kopien gedimmt mit Badge „Kopie“ ans Ende, eigenes Institut vor fremden, Vorschau mit eingesetztem Vornamen (offene Platzhalter lesbar als „[Uhrzeit]“, nie roh). „Empfohlen für <Vorname>“ steht oben mit Grund (Stern).
+- **Entwurfsblase:** gewählte Vorlage im Chat, gestrichelter Rand; Platzhalter-Felder nach Art aus dem Textumfeld abgeleitet (`SuperchatPlaceholderKind`: „am {{2}}“ Datum → Datumsauswahl, „um {{3}} Uhr“ Uhrzeit → Zeitauswahl, „{{4}} €“ Betrag, „Hi {{1}}“ Vorname vorbelegt, sonst Text); die Statuszeile nennt, was noch fehlt; Ändern/Verwerfen möglich.
+- **Hub:** `GET superchat/templates?phorest_client_id=…` liefert `title/category/institute_code/is_duplicate` je Vorlage plus `recommended`/`categories` (siehe `SUPERCHAT-WHATSAPP.md`, „Vorlagen-Einteilung und Empfehlung"); alte Hub-Stände ohne die Felder funktionieren (alle Felder optional).
+- **Tests:** `SuperchatChatTests` (Logik inkl. Hauptpfad Vorlage → Platzhalter → Senden aktiv ohne Versand; Snapshots hell/dunkel iPhone + iPad, nur als fester VStack), PHP `SuperchatTemplateRecommendationTest`.
+
+**Update 21.10.2026 – Recht, Kanalwahl, Ansichtsleiste:** `/api/app/navigation` liefert `user.can_send_messages` (Recht `send_client_messages`, optionales Feld); ohne Recht blendet die App den WhatsApp-Knopf (Kundenakte, Terminliste inkl. Wisch-Aktion) aus (`AppContainer.canSendMessages`, bei fehlendem Feld älterer Hub-Stände sichtbar). Die Kanalwahl für Zugangsdaten (Personal) und Kundenportal bietet „WhatsApp auf dem Handy öffnen“ (wa.me) nicht mehr an – Versand läuft über Superchat; bewusst extern bleiben nur Link kopieren/QR, Institut-Kontakt (Nummer des Instituts) und Telefonnummern in Wissensseiten. Kundenservice-Ansichtsleiste: „Meine gelösten“ (`mine_solved`) ist bei Leitung ein eigenes Segment; bei fünf Ansichten wird die Leiste eine horizontal scrollbare Chip-Leiste (44 pt, Dynamic Type, iPhone SE).
   **Neu:** `GET /hub/clients/{id}/appointments/data` (`ClientAppointmentsController`, Recht
   `view_client_detail`) bündelt `ClientAppointmentHistoryService::history()` mit den Namen der
   Mitarbeiterinnen aus dem Staff-Cache — statt 1 + N + 1 Aufrufen im Browser; die Web-Registerkarte
@@ -1285,6 +1294,29 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   Die Zeit wird zu einem `Slot` (`slot(from:)`) und läuft durch dieselbe Rückfrage wie ein
   Vorschlag. iPad: breitere Spalten in der rechten Spalte des Slot-Finders. Snapshots
   `booking-day-calendar`/`-ipad` (`BookingDayCalendarSnapshotTests`).
+  **Gewählte Zeit = Entwurf (seit 21.10.2026, TestFlight-Rückmeldung):** Antippen einer freien
+  Fläche oder eines idealen Slots setzt nur einen Entwurf (`place()`); der goldene Block liegt auf
+  einer eigenen Ebene über allen Spalten und lässt sich per Ziehen frei im Raster und zwischen den
+  Räumen bewegen (Raster 5 Minuten, Haptik je Schritt, Warnton beim Wechsel in einen Konflikt;
+  Konflikte — belegt, außerhalb der Arbeitszeit, Vergangenheit — färben den Block rot, die Zeit
+  bleibt sichtbar). Erst „Zeit übernehmen" (`onPick`) gibt sie an die Rückfrage des Blatts weiter,
+  bei Konflikt ist der Knopf gesperrt. Ohne Ziehen bedienbar: „Früher/Später" (±5 Min), Menü
+  „Raum wechseln", VoiceOver-Einstellbar (`accessibilityAdjustableAction`). Gilt für alle
+  Fenster mit `BookingDayCalendarView` (Termin buchen, Folgetermin, Verlegen). **Auto-Scroll
+  (21.10.2026):** zieht man den Block in die 60-pt-Randzone oben/unten des sichtbaren Bereichs,
+  scrollt der Kalender mit (bis 520 pt/s, je näher am Rand desto schneller; reine Rechenfunktion
+  `BookingDayAutoScroll.velocity`, getestet). Die Entwurfsposition wird aus Finger + Scroll-Versatz
+  neu gerechnet, der Block bleibt unter dem Finger; Haptik und Konfliktprüfung laufen weiter. Stoppt
+  beim Loslassen oder Verlassen der Zone. Mit „Bewegung reduzieren" (`accessibilityReduceMotion`)
+  gibt es keinen Auto-Scroll, dann bleiben „Früher/Später". Technik: `BookingDayGridScroller` sucht
+  die `UIScrollView` des Rasters (iOS 17, kein `ScrollPosition`) und setzt `contentOffset`.
+  Das Web-Fenster (`appointment-booking-panel.js`) hat keinen Tageskalender-Entwurf und bleibt
+  unverändert.
+- **Termin verlegen — nie halb (seit 21.10.2026):** `BookingService::reschedule()` bucht neu
+  **vor** dem Stornieren des alten Termins (ohne Zeitüberschneidung); bei Überschneidung
+  (z. B. 15 Minuten früher im selben Raum) wird erst storniert und bei Fehlschlag der alte Termin
+  aus dem gelesenen Stand wiederhergestellt. Phorest-Fehler werden zu deutschem Text mit
+  Handlungshinweis übersetzt (`friendlyBookingError`), nie roh angezeigt.
 - **Extrazeit (Ganzkörper, seit 10.10.2026):** Zwei Pflichtfragen mit denselben Endpunkten wie
   das Web (`hub/booking/api/extra-time/{pending|decide|review|apply}`), `Booking/ExtraTime.swift`:
   `ExtraTimeDecisionSheet` („Ganzkörper abgeschlossen – wie viel Extrazeit?", Stufen-Kacheln,
@@ -1681,7 +1713,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Start | nativ | Cockpit je Rolle, `GET /api/app/start`; iPad als Raster |
 | glatttBert | nativ | Chat-Blatt von überall (Schnellzugriff, Mehr, Siri, ⌘K), `/api/app/bert/*`; seit 08.10.2026 |
 | Termine | nativ | Terminseite + Terminansicht Stufen 1–4; Formular-Ausfüllen und „Direkt behandeln" eingebettet (Editor-Engine) |
-| Kunden | nativ | Liste + Übersicht (`/api/app/clients`); seit 28.09.2026 alle neun Registerkarten nativ als Unterseiten mit Reiter-Leiste (iPad rechts neben der Übersicht), Kundeninfos bearbeiten, Superchat-Composer |
+| Kunden | nativ | Liste + Übersicht (`/api/app/clients`); seit 28.09.2026 alle neun Registerkarten nativ als Unterseiten mit Reiter-Leiste (iPad rechts neben der Übersicht), Kundeninfos bearbeiten, Superchat-Chat mit Vorlagen-Schublade |
 | Benachrichtigungen | nativ | Mitteilungsliste im Mehr-Sheet / iPad-Popover, In-App-Banner |
 | Kasse | nativ | Kassenabschluss (seit 29.09.2026): Monatsliste „Tag für Tag“, Zählen mit Waage und Ziffernblock, Scheine/Münzen als Bilder, iPad Liste + Tag; CSV-Export Web — Details [KASSE.md](KASSE.md) |
 | Laser | nativ | Raum-Sicht des Instituts, Werkbank „Alle“, Geräteakte mit acht Reitern, Teile-Akte, Reparatur/STK/Behörde nativ, Wartungsassistent, Störung melden (seit 26.09.2026); Inventarisieren, Stammdaten, Verbrauchsmaterial, Berichte Web |
@@ -1749,6 +1781,14 @@ Drücken auf einen Vertrag zeigt Zahlungen, Verlauf, Kundin und Kopieren der Num
   Raten (Statusmodell wie `contract-detail.js`: `paid_out`, `pending_submission`, `failed`, `on_site` …).
   Schreiben: `PATCH …/notes` (Begründung ≥ 10 Zeichen), `POST …/payments/record-external` (Sondertilgung
   von den letzten offenen Raten), `POST …/payments/{payment}/settle`. Test `ContractNativeDetailTest`.
+- **Werbe-Bonus anwenden (20.10.2026):** Im Reiter Zahlungen erscheint „Werbe-Bonus anwenden …“, wenn
+  `referral_block.discount_pending`, der Plan bearbeitbar ist und `manage_gocardless` da ist (wie der
+  Menüpunkt im Web). Der Knopf öffnet ein Blatt (`ContractReferralBonusSheet`) mit der **Server-Vorschau**
+  `GET /hub/contracts/{id}/referral/bonus-preview` (`ContractReferralService::previewPendingBonus`, gleiche
+  Auswahl und `distributeDiscount` wie die Verrechnung: je Rate bisher → neu, `gocardless_count`), danach
+  Toolbar „Anwenden“ → `confirmationDialog` → `POST …/referral/apply-bonus`. Warnhinweis: bereits angelegte
+  GoCardless-Einzüge dieser Raten werden storniert und reduziert neu angelegt. Nie automatisch. Tests
+  `ContractReferralTest` (Vorschau/Anwenden), Swift `ContractsSnapshotTests.testBonusPreviewParsing`.
 - **Eingebettete Web-Fassung:** `GET /hub/contracts/{id}?shell=native#sepa|zahlungen|uebersicht` — die
   Vertragsseite trägt `contract-v2-page--native-shell`; `theme_glattt.css` blendet damit Sidebar,
   Kopf, Menüleiste, glatttBert, Seitenkopf, Reiter und Summary-Spalte aus, der Anker wählt den Reiter.
@@ -2158,6 +2198,9 @@ Online/Offline-Schalter der No-show-Matrix.
   Web (`hub/reports/custom-dashboard/{id}/notizen`). `DashboardLinksNotesSection` in
   `Reports/DashboardNotesViews.swift`; Karten `FollowUpResultCard`/`GoogleReviewsCard` in
   `Reports/BookingCockpitCards.swift`; Snapshots `BookingCockpitSnapshotTests` (Bilder der Klickanleitung App 14).
+- **Kachel ohne Embed-Adresse (20.10.2026):** `EmbeddedStatisticCard` lädt bei leerem `embed` nie eine WebView (sie
+  würde die Startseite laden — ältere App-Builds ohne `dashboard.note` zeigten so „Gute Nacht, Jan!“), sondern einen
+  Hinweis „neuere App-Version“. Snapshot `testRenderDashboardNotes` (`ReportPageSnapshotTests`).
 - **Nachweis:** `AppointmentReportsUITests.testCustomDashboardPage` (lokales „App-Prüfdashboard“ des
   Testnutzers, Zeitraumwechsel, keine Web-Karte), PHP `AppReportsTest::dashboard_page_lists_visible_tiles_in_order_and_width`.
 
@@ -2224,6 +2267,17 @@ Hub-Fassung als Blatt.
   Bei fünf Reitern zeigt die Leiste Symbole mit VoiceOver-Beschriftung.
 - **Nachweis:** `CancellationsUITests`, `CancellationsSnapshotTests` (nachgezogen 27.09.2026, Bilder der
   Klickanleitung App 17), PHP `CancellationCasePageTest` (Datenendpunkt, Knopf-Recht).
+- **Folgevertrag fehlt (20.10.2026):** `GET /hub/cancellations/{id}/data` trägt `successor_hint`
+  (`missing`, `reaction`, `candidates[]` mit `id`, `contract_number`, `body_zone_count`, `signed_at`,
+  `total_value_cents`) — nur mit `manage_revocations`, nur bei abgeschlossenem Upgrade/Downgrade ohne
+  Folgevertrag, sonst `null` (alte Server: Feld fehlt, alle Felder im Swift-Modell optional). Quelle ist
+  `CancellationCaseController::successorHint()` über `SuccessorContractLinker`, dieselbe wie die
+  Hinweiskarte der Web-Fallseite. Die Übersicht zeigt oben die Karte „Folgevertrag fehlt“ mit je einem
+  Knopf je Kandidat; der Tipp fragt per `confirmationDialog` nach und ruft `POST
+  /hub/cancellations/{id}/link-successor` (dieselbe Route wie das Web, antwortet bei `Accept: application/json`
+  mit `{success, message}` statt Redirect; Kandidaten-Prüfung serverseitig). GoCardless wird nicht angefasst.
+  Test `SuccessorContractLinkerTest`, Swift `CancellationsSnapshotTests.testSuccessorHintParsing`.
+
 
 ### Native Forderungen (Mehr-Seite, seit 27.09.2026)
 

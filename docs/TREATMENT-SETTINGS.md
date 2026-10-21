@@ -810,6 +810,44 @@ TreatmentSetting::where('phorest_client_id', $clientId)
     ->max('treatment_number') + 1
 ```
 
+#### „Nicht behandelt (zu spät)“ (seit 20.10.2026)
+
+Kommt eine Kundin zu spät, wird nicht jede gebuchte Zone gelasert (Asana „Late comers GK / KPZ“). Im Zettel
+gibt es je Zone den Schalter **„Nicht behandelt“** (Web und App): Der Eintrag bleibt als Beleg mit Notiz
+stehen, trägt aber keine Laserwerte und zählt **nicht** als Sitzung der Zone.
+
+- Spalte `treatment_settings.not_treated` (bool, Standard `false`, rückwärtskompatibel). Ältere App-Builds
+  senden das Feld nicht und behandeln alles wie bisher.
+- Zähler (`getNextTreatmentNumber`, `zoneTreatmentCounts`, `treatmentCount`, „N Sitzungen“) lassen solche
+  Zeilen aus. Die Zeile selbst behält die Nummer der **letzten behandelten Sitzung davor** (0 davor), damit
+  die Historie sortiert bleibt; die Oberfläche zeigt „–“ und das Etikett „nicht behandelt“.
+- `TreatmentBackfillService::renumber()` zählt nur behandelte Zeilen; der Speicher-Endpunkt ruft es auf,
+  sobald der Schalter ein- oder ausgeschaltet wird (die nächste Sitzung rückt nach).
+- Beim Speichern werden Laserwerte, Bereich und zweite Einstellung verworfen; „Heute zusammen behandelt?“
+  und die Pflicht „Bereich“ bei „2 Kleine Zonen“ entfallen.
+- **Nachtrags-Assistent (Papierzettel):** derselbe Schalter je Zone und Sitzung (Web: Zeile „Nicht behandelt“ im
+  Raster, Spalte ausgegraut; App: Schalter im Zonenformular bzw. Rasterzeile auf dem iPad). `entries[].not_treated`
+  geht über `TreatmentBackfillController::store` in `TreatmentBackfillService::store`, das Laserwerte, Bereich und
+  zweite Einstellung verwirft und `renumber()` die Nummer der letzten behandelten Sitzung davor vergeben lässt.
+  „Letzte Werte" und „Gleiche Werte für …" überspringen solche Spalten; „Speichern & nächste Sitzung" setzt den Schalter zurück.
+
+#### Fallstricke (20.10.2026)
+
+- `foreach ($arr as &$zone)` in `getTreatmentSettingsData()` hinterließ eine Referenz; die spätere
+  `foreach ($bodyZones as $zone)` überschrieb das **letzte** Element von `previouslyTreatedZones` — die zuletzt
+  behandelte Zone fehlte in der Übersicht (Asana „2 Kleine Zonen does not show up“). Nach jeder Referenz-Schleife
+  `unset($zone)`.
+- „2 Kleine Zonen“ hat keine Grafik; der Zonen-Selektor führt sie in der Kategorie „Sonstiges“ nur als Knopf.
+- Der Freitext „Bereich“ im Nachtrags-Raster erscheint nur bei „2 Kleine Zonen“ und bei Zonen mit zweiter
+  Einstellung (`needsArea()`), nicht mehr in jeder Spalte.
+- Kundennummer + Name stehen im Zettel-Kopf (Web: `.apt-client-number-chip`, App: `ClientNumberChip`), weil die
+  Nummer beim Laser eingegeben wird.
+- `NonTreatmentServices::PATTERN` enthält auch „Kundeninformation / Einverständnis“ (Beratungstag), sonst galt
+  ein Beratungstag als „Behandlung ohne Zettel“.
+- Kundensuche nach Nummer (`ClientSearchService::numberVariants`) ist groß-/kleinschreibungs- und
+  nullentolerant; ohne Treffer sucht sie über `contracts.legacy_kundennummer` → `client_id` (auch archivierte
+  Kundinnen per Phorest-ID), erst dann live per `externalId`.
+
 ---
 
 ### 📱 Tablet-Optimierung

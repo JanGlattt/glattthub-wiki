@@ -115,7 +115,7 @@ anstehenden Tagestermine als „nicht erschienen" gewertet würden (Bug 08/2026)
 |--------|--------|
 | `consultation-noshow-monthly` | No-show-Statistik pro Monat & Institut (deckt die Beratungsgespräche-Analyse und die Matrix auf Monatsebene, inkl. Quartal/Jahr-Aggregation per Tabellenkalkulation) |
 | `consultation-weekday-time` | Termine/Erschienen/No-Shows/Quote je Wochentag & Stunde |
-| `consultation-booking-days` | Buchungseingänge pro Tag & Institut (beide Quellen, dedupliziert) |
+| `consultation-booking-days` | Buchungseingänge pro Tag & Institut (drei Quellen, dedupliziert) |
 | `consultation-lead-success` | Vorlauf & Termin-Erfolg: Buchungen, Show-Rate, Ausfallquote (inkl. Stornos < 24 h), Abschlussquote & Ø KPZ je Vorlauf-Gruppe und Kanal (Alle/Online/Offline) — exakt die Zahlen der Karte |
 | `follow-up-result` | Nachfass-Ergebnis je Institut und Grund: auf der Liste, kontaktiert, Link, gebucht, Vertrag, Vertragswert (seit 18.10.2026) |
 
@@ -172,7 +172,7 @@ ReportController (app/Http/Controllers/) — Ausschnitt dieser Seite
 ├── consultationNoShowMatrix()      → JSON: Matrix (Granularität month/week/day, offset-Paging) — gecacht
 ├── weekdayTimeAnalysis()           → JSON: Heatmap Wochentag × Stunde
 ├── consultationAppointments()      → JSON: Termine-Liste (Zellen-Modal)
-├── consultationBookingCalendar()   → JSON: Buchungseingänge (booking_trackings + Phorest, dedupliziert)
+├── consultationBookingCalendar()   → JSON: Buchungseingänge (booking_trackings + Phorest-Terminhistorie + upcoming_consultations, dedupliziert; Quelle C liefert heute gebuchte Offline-Termine, weil die Terminhistorie nach Termindatum synchronisiert wird)
 ├── consultationBookingDay()        → JSON: Buchungen eines Tages (Modal)
 └── consultationLeadSuccess()       → JSON: Vorlauf & Termin-Erfolg (rechnet im ConsultationLeadSuccessService —
                                       gemeinsame Datenbasis mit der CSV-Quelle consultation-lead-success)

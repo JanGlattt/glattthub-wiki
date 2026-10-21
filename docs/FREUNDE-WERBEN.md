@@ -275,6 +275,10 @@ ein späteres Profilbild vorbereitet: `photo_url`).
   das Testkonto (Phorest `3ruXMx…`) je einen Fall pro Status an (`TEST-FW-1…6`, Magdeburg).
 - Tests: `PortalReferralsTest`.
 
+### Werbe-Bonus anwenden (20.10.2026)
+
+Hinterlegt das Institut die Werberin (Preis-Modul/Tageserfassung), steht `discount_cents` = 5.000 ohne `discount_allocation` am Datensatz (`ContractReferral::discountPending()`). Phorest macht bei zwei Rabatten in der 1. Sitzung oft Probleme, deshalb ziehen die Institute den Bonus meist von den SEPA-Raten ab. Der Knopf **„Werbe-Bonus anwenden“** (Aktionen-Menü im Zahlungen-Tab, Bestätigungsdialog mit Vorschau je Rate alt → neu) ruft `POST /hub/contracts/{id}/referral/apply-bonus` → `ContractController::applyReferralBonus` → `ContractReferralService::applyPendingBonus()`: Verteilung über `distributeDiscount()` (früheste offene SEPA-Rate ab `firstSepaInstallmentNumber()`, 1-€-Minimum je Rate), Allocation wird gespeichert, `ContractChange` `referral_discount_applied` mit automatischem Kommentar. Danach stimmt die Plausibilitätsprüfung von „Raten anpassen“ ohne Differenz-Bestätigung (Rabatt am Vertrag gezählt, Raten gekürzt). Recht `manage_gocardless` wie „Raten anpassen“; Cache-Lock gegen Doppelklick. **GoCardless** wird nur auf diesen Klick angefasst (bereits angelegte Einzüge der gekürzten Raten werden wie bei „Werber hinterlegen“ storniert und reduziert neu angelegt) — nie im Hintergrund. Test: `ContractReferralTest::test_apply_bonus_*`.
+
 ### Freunde werben digital (Werbelink, Begleitlink)
 
 Booking-Masterplan Welle 2, Entwurf und Entscheidungen Jan 18.10.2026

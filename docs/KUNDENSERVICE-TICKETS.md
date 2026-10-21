@@ -139,7 +139,7 @@ Alle unter `/hub/kundenservice` (dieselben für Web und App, JSON):
 
 | Methode & Pfad | Zweck |
 |---|---|
-| `GET /data?view=&search=&page=` | Liste je Ansicht (`SupportTicketQuery::views`), `mode`, `me`, Rechte |
+| `GET /data?view=&search=&page=` | Liste je Ansicht (`SupportTicketQuery::views`), `mode`, `me`, Rechte. Eigene Ansichten: `mine` („Meine Tickets“, alles Zugewiesene außer gelöst/geschlossen, `MINE_STATUSES`) und direkt dahinter `mine_solved` („Meine gelösten“, `SOLVED_STATUSES`); beide Zähler kommen aus **einer** Summenabfrage, die Leiste kostet nicht mehr Abfragen. In der App liegt `mine_solved` im Ansichten-Menü, nicht im Segment |
 | `GET /optionen` | Teams mit Mitgliedern, Kolleginnen, Erwähnbare, Textbausteine, Anliegen, `require_category`, `bert_available` |
 | `GET /tickets/{nr}` | Detail mit Verlauf, Kundenkarte, Zusammenführen-Vorschlag, Vorgängen, Kanälen, Umfrage, Rechten |
 | `POST /tickets/{nr}/antwort` | Antwort (E-Mail/WhatsApp), `status`, `files[]`, `actions[...]` |
