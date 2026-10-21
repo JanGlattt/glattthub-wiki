@@ -6,8 +6,8 @@
   "of": 28,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "13.10.2026",
-  "version": "1.4",
+  "stand": "21.10.2026",
+  "version": "1.5",
   "nr": 4,
   "title": [
     "Kunden finden und",
@@ -204,15 +204,15 @@
     },
     {
       "h1": "Forderungen, Service, Nachrichten",
-      "sub": "Forderungsfälle der Kundin, Zendesk-Tickets mit Verlauf und die WhatsApp-Unterhaltung mit Composer — Text, Vorlage, Foto, neue Unterhaltung.",
+      "sub": "Forderungsfälle der Kundin, Kundenservice-Tickets mit Verlauf und der Chat mit der Kundin — der WhatsApp-Knopf öffnet den internen Superchat-Chat.",
       "card": {
         "title": "Bereiche 7–9",
         "text": "Forderungen, Kundenservice, Nachrichten"
       },
       "left": {
-        "shot": "client-tab-whatsapp-light"
+        "shot": "superchat-1-chat-offen-light"
       },
-      "leftCaption": "**Nachrichten**: die WhatsApp-Unterhaltung mit Eingabezeile, darunter die automatisch versendeten Nachrichten (SEPA, Erinnerungen, Befragungen).",
+      "leftCaption": "**Nachrichten**: der Chat mit der Kundin — Verlauf, oben das Badge „Fenster offen bis …“, unten Eingabe, Büroklammer und ✦.",
       "right": {
         "shot": "client-tabs-ipad-light"
       },
@@ -230,18 +230,147 @@
         },
         {
           "n": 3,
-          "title": "Nachricht senden",
-          "text": "Im offenen **24-Stunden-Fenster** frei tippen und senden — die App fragt vorher nach. Ist das Fenster zu, **Vorlage senden**: Vorlage wählen, Platzhalter füllen, Vorschau, senden."
+          "title": "Chat öffnen",
+          "text": "In der Kundenakte öffnet der **WhatsApp-Knopf** den **Chat in der App** — nicht mehr WhatsApp selbst. Wie er funktioniert, steht auf den nächsten Seiten."
         },
         {
           "n": 4,
-          "title": "Foto und neue Unterhaltung",
-          "text": "Die Büroklammer hängt ein Foto aus der Galerie an. Ohne Verknüpfung startet **Unterhaltung beginnen** mit Mobilnummer, Kanal und Vorlage."
+          "title": "Kein Knopf?",
+          "text": "Wer keine Nachrichten senden darf, sieht den Knopf nicht. Die automatisch versendeten Nachrichten (SEPA, Erinnerungen, Befragungen) stehen weiter unter „Nachrichten“ in der Kundenakte."
         }
       ],
       "hint": {
-        "text": "Jeder Versand ist echter Kundenkontakt über Superchat — die Rückfrage vor dem Senden lässt sich nicht abschalten. Wer keine Nachrichten senden darf, sieht die Unterhaltung nur."
+        "text": "Jeder Versand ist echter Kundenkontakt über Superchat — die Bestätigung vor dem Senden lässt sich nicht abschalten."
       }
+    },
+    {
+      "h1": "Der Chat: Verlauf und Vorlagen",
+      "sub": "Der Chat zeigt den ganzen Verlauf mit der Kundin. Ist das 24-Stunden-Fenster offen, tippst du frei; die Vorlagen liegen hinter dem ✦-Knopf.",
+      "card": false,
+      "left": {
+        "shot": "superchat-1-chat-offen-light"
+      },
+      "leftCaption": "**Chat offen:** eingehende Nachrichten grau, eigene goldfarben mit Status (zugestellt, gelesen).",
+      "right": {
+        "shot": "superchat-2-schublade-light"
+      },
+      "rightCaption": "**Vorlagen-Schublade:** Suche, Filter und die Zeile „Empfohlen für diese Kundin“.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Fenster lesen",
+          "text": "Das grüne Badge **„Fenster offen bis …“** sagt, bis wann du frei schreiben darfst. Ist es abgelaufen, sind nur Vorlagen möglich."
+        },
+        {
+          "n": 2,
+          "title": "Frei schreiben",
+          "text": "Ins Eingabefeld tippen, Büroklammer hängt ein Foto an, der Pfeil sendet."
+        },
+        {
+          "n": 3,
+          "title": "Vorlagen öffnen",
+          "text": "Der **✦-Knopf** öffnet die Schublade. Oben **„Empfohlen für diese Kundin“**, darunter Suche und Filter."
+        },
+        {
+          "n": 4,
+          "title": "Vorlage wählen",
+          "text": "Antippen legt die Vorlage als **Entwurf** in den Chat — gesendet wird noch nichts."
+        }
+      ]
+    },
+    {
+      "h1": "Entwurf ausfüllen und senden",
+      "sub": "Eine Vorlage erscheint als Entwurfsblase mit Feldern für die Platzhalter. Erst wenn alles ausgefüllt ist, geht sie raus.",
+      "card": false,
+      "left": {
+        "shot": "superchat-3-entwurf-offen-light"
+      },
+      "leftCaption": "**Entwurf offen:** Der Vorname ist vorbelegt, Datum und Uhrzeit fehlen noch — das steht orange unter dem Feld.",
+      "right": {
+        "shot": "superchat-4-bereit-light"
+      },
+      "rightCaption": "**Bereit:** alle Felder gefüllt, der Sendeknopf ist aktiv.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Felder füllen",
+          "text": "Datum und Uhrzeit über die Auswahl setzen, andere Felder eintippen. Der **Vorname** kommt aus der Kundenakte."
+        },
+        {
+          "n": 2,
+          "title": "Fehlendes",
+          "text": "Fehlt etwas, nennt **„Senden“ die fehlenden Angaben** („Noch ausfüllen: Datum, Uhrzeit“) und sendet nicht."
+        },
+        {
+          "n": 3,
+          "title": "Senden",
+          "text": "Der Pfeil fragt vor dem Versand **noch einmal nach** — erst die Bestätigung schickt die Nachricht ab."
+        },
+        {
+          "n": 4,
+          "title": "Verwerfen",
+          "text": "Der Entwurf lässt sich schließen, ohne dass etwas gesendet wird."
+        }
+      ]
+    },
+    {
+      "h1": "Fenster zu, neue Unterhaltung, iPad",
+      "sub": "Auch ohne offenes Fenster oder bisherigen Verlauf ist der Chat der Weg zur Kundin — dann immer über eine Vorlage.",
+      "card": false,
+      "left": {
+        "shot": "superchat-5-fenster-zu-light"
+      },
+      "leftCaption": "**Fenster zu:** Das Badge sagt „Fenster geschlossen — Vorlage nötig“ (orange), freies Tippen ist gesperrt — nur eine Vorlage geht.",
+      "right": {
+        "shot": "superchat-6-neu-light"
+      },
+      "rightCaption": "**Neue Unterhaltung:** Gibt es noch keinen Verlauf, beginnst du mit einer Vorlage.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Fenster zu",
+          "text": "Nach 24 Stunden ohne Antwort der Kundin bleibt nur eine **Vorlage** (✦)."
+        },
+        {
+          "n": 2,
+          "title": "Neu beginnen",
+          "text": "Ohne Verlauf wählst du **Kanal und Vorlage** und startest die Unterhaltung."
+        },
+        {
+          "n": 3,
+          "title": "Auf dem iPad",
+          "text": "Die Vorlagen stehen als **feste Spalte rechts** neben dem Chat — kein Blatt nötig."
+        }
+      ],
+      "hint": {
+        "text": "Der Knopf fehlt ohne das Recht zum Senden. Aus der **Terminliste** öffnet der WhatsApp-Knopf (und die Wisch-Aktion auf der Karte) denselben Chat."
+      }
+    },
+    {
+      "h1": "Der Chat auf dem iPad",
+      "sub": "Links der Verlauf, rechts die Vorlagen als feste Spalte — Auswahl und Entwurf ohne Schublade.",
+      "card": false,
+      "left": {
+        "shot": "superchat-7-ipad-light"
+      },
+      "leftCaption": "iPad: **Vorlagen-Spalte rechts**, Entwurf im Chat, Sendeknopf unten.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Vorlage wählen",
+          "text": "Eine Vorlage in der Spalte antippen — sie erscheint als Entwurf im Chat."
+        },
+        {
+          "n": 2,
+          "title": "Felder füllen",
+          "text": "Wie auf dem iPhone: Felder ausfüllen, fehlende Angaben werden genannt."
+        },
+        {
+          "n": 3,
+          "title": "Senden",
+          "text": "Sendeknopf, dann die Bestätigung."
+        }
+      ]
     },
     {
       "h1": "Kundenportal: Zugang geben",

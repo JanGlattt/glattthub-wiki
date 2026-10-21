@@ -6,8 +6,8 @@
   "of": 28,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "10.10.2026",
-  "version": "1.5",
+  "stand": "21.10.2026",
+  "version": "1.6",
   "nr": 12,
   "title": [
     "Termin buchen",
@@ -139,6 +139,48 @@
           "text": "**Andere Uhrzeit …** unter dem Tag zeigt alle freien Zeiten dieses Tages, nach Vormittag, Mittag, Nachmittag und Abend sortiert. Anderer Tag: Zeitraum oder **Datum …** oben ändern."
         }
       ]
+    },
+    {
+      "h1": "Der Tageskalender: Zeit ziehen",
+      "sub": "Im Segment „Tag“ tippst du eine freie Fläche an und setzt damit einen Entwurf. Den Zeitblock kannst du verschieben, bis er passt.",
+      "card": {
+        "title": "Tageskalender",
+        "text": "Antippen, ziehen, Zeit übernehmen"
+      },
+      "left": {
+        "shot": "booking-day-calendar-ipad-light"
+      },
+      "leftCaption": "Der **Entwurf** (gold) im Raum BI 1; unten **Früher**, **Später**, der Raumknopf und **Zeit übernehmen**. Rot wäre ein Konflikt.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Entwurf setzen",
+          "text": "Eine freie Fläche antippen. Es entsteht ein goldener Block in der Länge des Termins — gebucht ist noch nichts."
+        },
+        {
+          "n": 2,
+          "title": "Ziehen",
+          "text": "Den Block **senkrecht ziehen** oder in einen anderen Raum. Er rastet im **5-Minuten-Raster** ein, jeder Schritt gibt ein Haptik-Signal. Am oberen und unteren Rand **scrollt der Kalender selbst** mit."
+        },
+        {
+          "n": 3,
+          "title": "Konflikt",
+          "text": "Überschneidet der Block einen Termin oder liegt er außerhalb der Schicht, färbt er sich **rot** — er bleibt sichtbar, bis du ihn verschiebst."
+        },
+        {
+          "n": 4,
+          "title": "Feinjustieren",
+          "text": "**Früher** und **Später** rücken um einen Schritt, der Raumknopf wechselt den Raum."
+        },
+        {
+          "n": 5,
+          "title": "Zeit übernehmen",
+          "text": "Erst **„Zeit übernehmen“** bestätigt die Zeit; danach folgt die Rückfrage wie bei jedem Vorschlag."
+        }
+      ],
+      "hint": {
+        "text": "**Termin verlegen** bucht den neuen Termin zuerst und storniert den alten erst danach — scheitert etwas, bleibt der alte Termin bestehen. Die Meldung nennt den Grund verständlich."
+      }
     },
     {
       "h1": "Andere Uhrzeit",

@@ -6,8 +6,8 @@
   "of": 28,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "18.10.2026",
-  "version": "1.9",
+  "stand": "21.10.2026",
+  "version": "1.10",
   "nr": 3,
   "title": [
     "Termine und die",
@@ -50,7 +50,7 @@
         {
           "n": 3,
           "title": "Karte lesen",
-          "text": "Zeit, Kundin, Services, Raum, Status-Kante (grün = bezahlt/erledigt, gold = läuft). **Antippen** öffnet die Terminansicht."
+          "text": "Zeit, Kundin, Services, Raum, Status-Kante (grün = bezahlt/erledigt, gold = läuft). **Antippen** öffnet die Terminansicht. Der **WhatsApp-Knopf** auf der Karte (oder die Wisch-Aktion) öffnet den Chat mit der Kundin in der App — siehe „Kunden 4“."
         },
         {
           "n": 4,
@@ -119,7 +119,7 @@
         {
           "n": 1,
           "title": "Zone antippen",
-          "text": "In der Grafik oder in der Liste. **Ganzkörper**: alle Zonen sind frei. Eine Zone, die im Termin nicht geplant ist, fragt: **„Trotzdem erfassen?“**"
+          "text": "In der Grafik oder in der Liste. **Ganzkörper**: alle Zonen sind frei. Eine Zone, die im Termin nicht geplant ist, fragt: **„Trotzdem erfassen?“** Rechts oben im Kopf steht die **Kunden-Nr.** der Kundin als Chip — sie bleibt im Zettel sichtbar."
         },
         {
           "n": 2,
@@ -140,6 +140,41 @@
       "hint": {
         "text": "**Sitzungsnummer** zählt je Zone automatisch weiter. Skintel **oder** Hauttyp reicht — eines von beiden ist Pflicht."
       }
+    },
+    {
+      "h1": "Nicht behandelt und Sonstiges",
+      "sub": "Kam die Kundin zu spät, wird die Zone als „Nicht behandelt“ erfasst. Die Zonen-Auswahl führt zusätzlich „Sonstiges“.",
+      "card": false,
+      "left": {
+        "shot": "treatment-nottreated-iphone-light"
+      },
+      "leftCaption": "**Nicht behandelt:** Schalter an, Titel „Nicht behandelt erfassen“; oben der Chip mit der Kunden-Nr.",
+      "right": {
+        "shot": "treatment-zones-iphone-light"
+      },
+      "rightCaption": "Die Zonen-Auswahl nach Körperbereich — unter **Sonstiges** liegt „2 Kleine Zonen“.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Schalter",
+          "text": "Im Zonen-Formular **„Nicht behandelt (z. B. zu spät gekommen)“** einschalten."
+        },
+        {
+          "n": 2,
+          "title": "Was passiert",
+          "text": "Die Zone zählt in dieser Sitzung nicht mit — keine Laserwerte nötig, die **Sitzungsnummer läuft nicht weiter**. Die Notiz bleibt möglich."
+        },
+        {
+          "n": 3,
+          "title": "Kunden-Nr.",
+          "text": "Der Chip im Kopf zeigt Kunden-Nr. und Namen der Kundin — auch wenn die Nummer erst beim Terminstart vergeben wurde."
+        },
+        {
+          "n": 4,
+          "title": "Sonstiges",
+          "text": "„2 Kleine Zonen“ steht unter **Sonstiges** in der Zonen-Auswahl; frei benannte Zonen bleiben unter „Weitere Zonen“."
+        }
+      ]
     },
     {
       "h1": "Zwei Einstellungen & gemeinsame Zonen",
@@ -207,14 +242,18 @@
         {
           "n": 3,
           "title": "Werte je Zone",
-          "text": "Chips wählen die Zonen des Zettels, darunter die Felder je Zone (iPhone: Seiten zum Wischen, iPad: Raster). **„Letzte Werte übernehmen“** holt die jüngste Sitzung der Zone — nur Abweichungen ändern. Leere Felder bleiben leer. **„Zweite Einstellung“** hängt je Zone einen zweiten Satz Werte mit Bereich an, **„Gleiche Werte für …“** (iPad: „Übernehmen für …“) kopiert die Werte auf mitbehandelte Zonen derselben Sitzung."
+          "text": "Chips wählen die Zonen des Zettels, darunter die Felder je Zone (iPhone: Seiten zum Wischen, iPad: Raster). **„Letzte Werte übernehmen“** holt die jüngste Sitzung der Zone — nur Abweichungen ändern. Leere Felder bleiben leer. **„Zweite Einstellung“** hängt je Zone einen zweiten Satz Werte mit Bereich an, **„Gleiche Werte für …“** (iPad: „Übernehmen für …“) kopiert die Werte auf mitbehandelte Zonen derselben Sitzung. Kam die Kundin zu spät, schaltest du je Zone **„Nicht behandelt“** ein — die Zone zählt dann nicht als Sitzung (auf dem iPad als Schalter-Zeile im Raster)."
         },
         {
           "n": 4,
           "title": "Sichern & nächste Sitzung",
           "text": "Speichert, merkt die Werte und springt zum nächsten offenen Termin. Im Verlauf tragen die Zeilen **„Papier“** mit dem Datum; der Zettel kennt sie als letzte Werte. Kein Foto-Upload — der Zettel bleibt im Ordner."
         }
-      ]
+      ],
+      "right": {
+        "shot": "treatment-backfill-nottreated-light"
+      },
+      "rightCaption": "iPhone, Schritt 3: **„Nicht behandelt“** je Zone — Werte und zweite Einstellung entfallen, die Notiz bleibt."
     },
     {
       "h1": "Formulare und Direkt behandeln",
@@ -262,7 +301,7 @@
     },
     {
       "h1": "Folgetermin und Verlegen",
-      "sub": "Beide Blätter sehen gleich aus: Wunschzeitraum wählen, Vorschläge durchsehen, buchen. Verlegen storniert den alten Termin dabei automatisch.",
+      "sub": "Beide Blätter sehen gleich aus: Wunschzeitraum wählen, Vorschläge durchsehen, buchen. Verlegen bucht den neuen Termin zuerst und storniert dann den alten — nie halb.",
       "card": {
         "title": "Folgetermin",
         "text": "Vorschläge, buchen, verlegen"
@@ -274,7 +313,7 @@
       "right": {
         "shot": "booking-reschedule"
       },
-      "rightCaption": "**Termin verlegen:** oben der bisherige Termin (wird storniert), darunter der neue — ab heute, 1, 2 oder 4 Wochen. Vorgewählt sind die Leistungen des Termins.",
+      "rightCaption": "**Termin verlegen:** oben der bisherige Termin (wird erst nach dem neuen Termin storniert), darunter der neue — ab heute, 1, 2 oder 4 Wochen. Vorgewählt sind die Leistungen des Termins.",
       "steps": [
         {
           "n": 1,
@@ -294,7 +333,7 @@
         {
           "n": 4,
           "title": "Wenn nichts kommt",
-          "text": "„Keine buchbaren Räume“: Der Raum ist in Phorest nicht für alle Services freigeschaltet — Hinweis ans Büro (Phorest → Mitarbeiter → Raum → Services)."
+          "text": "„Keine buchbaren Räume“: Der Raum ist in Phorest nicht für alle Services freigeschaltet — Hinweis ans Büro (Phorest → Mitarbeiter → Raum → Services). Scheitert das Verlegen, bleibt der alte Termin bestehen; die Meldung nennt den Grund in einem Satz."
         }
       ]
     }

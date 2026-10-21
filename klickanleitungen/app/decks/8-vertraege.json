@@ -6,8 +6,8 @@
   "of": 28,
   "audience": "leitung",
   "footerArea": "App",
-  "stand": "25.09.2026",
-  "version": "1.0",
+  "stand": "21.10.2026",
+  "version": "1.1",
   "nr": 8,
   "title": [
     "Verträge nachschlagen",
@@ -122,11 +122,20 @@
           "n": 4,
           "title": "Stornierte Raten",
           "text": "Sind stornierte Raten dabei, blendet der Link rechts oben sie ein oder aus."
+        },
+        {
+          "n": 5,
+          "title": "Werbe-Bonus anwenden",
+          "text": "Ist eine Werberin hinterlegt und ihr Rabatt (50 €) noch nicht verrechnet, tippst du auf **„Werbe-Bonus anwenden …“**. Das Blatt zeigt **je Rate „bisher → neu“** (Vorschau vom Server). Ein Hinweis nennt, wie viele **bei GoCardless bereits angelegte Einzüge storniert und mit dem neuen Betrag angelegt** werden. **„Anwenden“** fragt noch einmal nach — nie automatisch."
         }
       ],
       "hint": {
         "text": "Auf dem **iPad** stehen Liste und Vertrag nebeneinander; das Blatt für GoCardless legt sich über den Vertrag."
-      }
+      },
+      "right": {
+        "shot": "contract-bonus-light"
+      },
+      "rightCaption": "Mit offenem Rabatt der Werberin erscheint **„Werbe-Bonus anwenden …“** über „Zahlung verbuchen“; unten die Karte „Freunde werben“."
     },
     {
       "h1": "Verlauf und E-Mails",

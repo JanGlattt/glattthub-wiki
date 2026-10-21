@@ -6,8 +6,8 @@
   "of": 28,
   "audience": "leitung",
   "footerArea": "App",
-  "stand": "27.09.2026",
-  "version": "1.0",
+  "stand": "21.10.2026",
+  "version": "1.1",
   "nr": 17,
   "title": [
     "Widerrufe",
@@ -62,12 +62,12 @@
         "text": "Grund, Behandlungsstand, Aktionen"
       },
       "left": {
-        "shot": "cancellation-overview-light"
+        "shot": "cancellation-successor-light"
       },
       "right": {
         "shot": "cancellation-settlement-light"
       },
-      "leftCaption": "Reiter **Überblick**: Widerrufsgrund, Behandlungsstand, Fall, Verknüpfungen und die Aktionen.",
+      "leftCaption": "Reiter **Überblick** mit der Karte **„Folgevertrag fehlt“** (bei Down-/Upgrade ganz oben), darunter Widerrufsgrund, Behandlungsstand und Fall.",
       "rightCaption": "Reiter **Umsetzung**: Stand von SEPA und Phorest, Übergabe ans Forderungsmanagement, Hub-Schritte.",
       "steps": [
         {
@@ -82,11 +82,16 @@
         },
         {
           "n": 3,
-          "title": "Verlauf & Dokumente",
-          "text": "Notiz schreiben, Zendesk, Mails, WhatsApp und Systemeinträge in einer Zeitleiste; Dokumente fotografieren, aus Fotos oder Dateien hochladen, ansehen und löschen."
+          "title": "Folgevertrag",
+          "text": "Fehlt bei Down-/Upgrade der Folgevertrag und ist er nicht eindeutig, bietet die Karte **Kandidaten** an: **„… übernehmen“** fragt zurück und verknüpft dann den gewählten Vertrag."
         },
         {
           "n": 4,
+          "title": "Verlauf & Dokumente",
+          "text": "Notiz schreiben, Zendesk, Mails, WhatsApp und Systemeinträge in einer Zeitleiste; bei Ticket-Nachrichten öffnet **„Öffnen“** das Kundenservice-Ticket direkt in der App. Dokumente fotografieren, aus Fotos oder Dateien hochladen, ansehen und löschen."
+        },
+        {
+          "n": 5,
           "title": "Anwalt",
           "text": "Ergebnis festhalten, Kostenposition erfassen, Schriftwechsel mit Anhang — der Reiter erscheint, sobald der Fall beim Anwalt ist."
         }
