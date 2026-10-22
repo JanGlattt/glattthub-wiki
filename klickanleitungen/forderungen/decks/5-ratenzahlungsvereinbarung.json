@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — RZV abschließen, Plan ändern, laufende Vereinbarung verfolgen",
  "eyebrow": "Forderungen · RZV",
  "footerArea": "Forderungen",
- "stand": "21.10.2026",
- "version": "1.1",
+ "stand": "23.10.2026",
+ "version": "1.2",
  "notes": [
   "Eine RZV ist **immer eine Einzelfallentscheidung** — es gibt keine Regel und keinen Automatismus.",
   "Solange sie läuft, **mahnt der Hub nicht** — er beobachtet nur die Raten.",
@@ -252,7 +252,7 @@
     {
      "n": 3,
      "title": "GoCardless-Status",
-     "text": "Bei Lastschrift steht der Einzugsstand je Rate."
+     "text": "Bei Lastschrift steht der Einzugsstand je Rate. Zahlt die Kundin selbst, zeigt der **Ratenplan** darunter, welche Raten bezahlt, teilweise bezahlt oder offen sind — Zahlungen werden der Reihe nach angerechnet, auch eine Sonderzahlung über mehrere Raten."
     },
     {
      "n": 4,

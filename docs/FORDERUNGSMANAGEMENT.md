@@ -479,8 +479,12 @@ können eigene Vorlagen-Varianten hinterlegt werden (`dunning_templates`, Cluste
   nur den normalen Vertragseinzug wieder aufnehmen (Fall BI006547, 16.10.2026):
   Die Vereinbarung wird auf „storniert" gesetzt, der Fall geht in Stufe „Neu",
   sanfter Weg — damit läuft der übliche Gang 1./2. Zahlungserinnerung →
-  Monitoring. Für PfÜB-/Vergleichs-RZVs bleibt es bei „Plan anpassen". Die
-  geplatzte RZV-Rate erhöht die Hauptforderung dabei nicht (die Schuld bestand schon —
+  Monitoring. Für PfÜB-/Vergleichs-RZVs bleibt es bei „Plan anpassen".
+  Bei Selbstzahlern zeigt der Tab „Ratenzahlung" den **Ratenplan mit Stand je Rate**:
+  `RzvPlanProgress` rechnet die Zahlungseingänge seit Abschluss der Vereinbarung
+  (`created_at`) der Reihe nach auf die Raten an — eine Sonderzahlung über mehrere
+  Raten (Fall OS003717, 15.10.2026) deckt so die ersten Raten voll, die nächste
+  teilweise. Die geplatzte RZV-Rate erhöht die Hauptforderung dabei nicht (die Schuld bestand schon —
   `DebtCaseBalanceService::rlsPrincipals()` schließt RZV-Raten aus).
 
 #### Ruhend, RLS-Entscheid, Abschreiben, Notizen
