@@ -165,6 +165,7 @@ nav:
       - PIN-Login: PIN-LOGIN-SYSTEM.md
       - Gerätevertrauen statt IAP (Plan): GERAETEVERTRAUEN-PLAN.md
       - App-Geräte & Freischalt-Code: APP-GERAETE-FREISCHALTUNG.md
+      - Missbrauchs-Bremse (Schreibsperre): MISSBRAUCHS-BREMSE.md
       - Session-Ablauf & Modal: SESSION-ABLAUF.md
 
   - Module:
