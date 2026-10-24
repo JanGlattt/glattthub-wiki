@@ -95,7 +95,7 @@ Weicht ein erneuter Abruf ab (Storno, Nachbuchung), wird die alte Fassung abgel�
 erhalten. Tage ohne Verkäufe bekommen eine leere Fassung (so ist „geprüft" von „fehlt" unterscheidbar). Phorest
 meldet einen Zeitraum ohne Verkäufe als `FAILED` mit »No records found« — das ist kein Fehler.
 Rollierend: tägliche letzte 7 Tage (sonntags 90) bis gestern; heute ist noch nicht abgeschlossen.
-**Nachladung der Historie** (einmalig): Cron-Endpoint `backfill-phorest-transactions` (ab 2023-01-01, Monat für
+**Nachladung der Historie** (einmalig): Cron-Endpoint `backfill-phorest-transactions` (ab 2023-09-01 — Phorest liefert Verkäufe erst ab Oktober 2023, gemessen 24.10.2026 an Bielefeld: Jan.–Sep. 2023 leer, Okt. 2023 433 Zeilen; Monat für
 Monat je Filiale, vollständige Monate werden übersprungen, Zeitbudget 1500 s) — als Scheduler-Job alle 30 Minuten
 laufen lassen, bis das Protokoll keinen Hinweis »Zeitbudget erschöpft« mehr trägt, dann Job löschen.
 
