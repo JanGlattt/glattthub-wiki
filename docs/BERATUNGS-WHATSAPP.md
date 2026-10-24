@@ -35,6 +35,10 @@ und lässt Fehlversuche wiederholen.
   Vorlage, alle Platzhalter belegt) — die Status-Spalte der Übersicht sagt, was fehlt.
 - **Kommt die WhatsApp nicht an,** geht dieselbe Botschaft automatisch per SMS/RCS raus — sofern
   für den Standort ein Fallback-Text gepflegt ist.
+- **Hat die Kundin kein WhatsApp,** schickt das Institut den Gutschein-Link auf Knopfdruck
+  **per E-Mail** — aus der Kundenakte (Reiter „Nachrichten“) oder aus der Terminansicht des
+  Beratungstermins, Web und App. Derselbe persönliche Link, Adresse aus Phorest (im Dialog
+  änderbar), kein automatischer Versand — die Mitarbeiterin entscheidet.
 - **Das Protokoll ist die einzige Anlaufstelle.** Es gibt bewusst keine zusätzlichen Alarm-Mails.
 
 **Wo was erledigt wird:**
@@ -44,6 +48,8 @@ und lässt Fehlversuche wiederholen.
 | Standorte laden, Kanal, Vorlage und Platzhalter einrichten | Admin 4 |
 | Versandfenster und SMS/RCS-Fallback-Text pflegen | Admin 4 |
 | Protokoll lesen, Fehlversuch wiederholen | Admin 4 |
+| Gutschein-Link per E-Mail schicken (Kundin ohne WhatsApp) | Kundenverwaltung 5, Terminansicht 1 |
+| E-Mail-Text je Standort pflegen | Admin 4 |
 | Gutschein-Produkt hinter dem Kauf-Link pflegen | Admin 3 |
 | Wirkung der Aktion auswerten | Berichte 12 |
 
@@ -208,3 +214,44 @@ zugestellt) und **Fallback** (per SMS/RCS zugestellt, fehlgeschlagen,
   fallback_sent_at` (Migration `2026_08_28_120000`). Max. ein
   Fallback-Versuch je Termin.
 - Tests: `tests/Feature/ConsultationWhatsapp/ConsultationSmsFallbackTest.php`.
+
+### Gutschein-Link per E-Mail — „Mail statt WhatsApp“ (seit 24.10.2026)
+
+**Fachlich (Janine, 28.09.2026; Entscheidung Jan, 24.10.2026):** Eine Kundin ohne WhatsApp
+konnte sich den „10 für 50 €“-Gutschein nicht sichern. Jetzt schickt das Institut denselben
+personalisierten Gutschein-Link per Knopf **„Gutschein-Link per E-Mail“** — in der Kundenakte
+(Reiter „Nachrichten“, Kopf der Karte „Automatisch versendete Nachrichten“) und in der
+Terminansicht des Beratungstermins (Seitenspalte, unter dem begleiteten Beratungsgespräch),
+Web und App. Der Dialog zeigt Beratungstermin, Stand der Beratungs-WhatsApp (gesendet,
+zugestellt, fehlgeschlagen) und den letzten E-Mail-Versand; die Adresse kommt aus Phorest
+und ist im Dialog änderbar (wird **nicht** nach Phorest geschrieben). Bewusst **kein
+automatischer Versand** bei Zustellfehler der WhatsApp — die Mitarbeiterin entscheidet.
+
+- **Ein Link je Kundin und Kampagne:** `App\Services\Messaging\ConsultationVoucherLink::resolve()`
+  ist seit 24.10.2026 die einzige Stelle, die den Gutschein-Token erzeugt bzw. wiederverwendet —
+  WhatsApp-Job, SMS-Fallback und E-Mail nutzen sie. Gültig bis zum Beratungstermin, Kampagnen-Label
+  `Beratungs-WhatsApp` (die Auswertung der Aktion zählt die E-Mail-Links damit mit).
+- **Service `ConsultationVoucherMailService`:** `state(clientId, appointmentId?)` liefert den
+  Zustand für den Knopf (verfügbar nur mit bekanntem Beratungstermin — Kundenakte: nächster
+  gebuchter, sonst jüngster — und aktivem Gutschein-Produkt am Standort-Setting), `send(...)`
+  verschickt `ConsultationVoucherLinkMail` (Aufbau wie `still-considering-link`, Knopf „Gutschein
+  sichern“) über die zentralen E-Mail-Einstellungen → landet im E-Mail-Protokoll.
+- **Text je Standort:** `consultation_whatsapp_settings.email_fallback_subject/_body` (Admin →
+  Beratungs-WhatsApp → Sektion „E-Mail statt WhatsApp“; leer = Standardtext aus
+  `ConsultationWhatsappSetting::defaultEmailSubject()/defaultEmailBody()`), Platzhalter
+  `{vorname} {kundenname} {institut} {termin_datum} {termin_uhrzeit} {gutschein_link} {gueltig_bis}`.
+- **Protokoll:** am `consultation_whatsapp_logs`-Eintrag des Termins die Felder `email_status`
+  (sent/failed), `email_to`, `email_reason`, `email_sent_at`, `email_sent_by` (Migration
+  `2026_10_24_210000`). Gibt es noch keinen Eintrag (WhatsApp nie versucht), entsteht er mit
+  Status `skipped` und dem Grund „von Hand per E-Mail versendet“ — der WhatsApp-Job überspringt
+  den Termin danach (Dedupe über `appointment_id`). Die Nachrichten-Zeitleiste der Kundin
+  (`ClientMessagesController`) zeigt den Versand als „Beratungs-Gutschein per E-Mail“.
+- **Endpunkte** (Web und App): `GET /phorest/client/{clientId}/consultation-voucher-mail`
+  (`view_client_detail`), `GET /phorest/appointment/{branchId}/{appointmentId}/consultation-voucher-mail?client_id=`
+  (nur dieser Termin), `POST /phorest/client/{clientId}/consultation-voucher-mail`
+  (`send_client_messages`, Body `appointment_id?`, `email?`, Bremse 20/10 Min).
+- **UI:** Blade-Komponente `<x-consultation-voucher-mail client-id="…" appointment-id="…" />`
+  (Knopf nur bei `available`, Dialog im Teleport, Event `consultation-voucher-mail-sent` lädt die
+  Zeitleiste neu); App `ConsultationVoucherMailButton` (ClientMessagesTab.swift) in Nachrichten-Reiter
+  und Terminansicht, Dialog als `alert` mit Adressfeld.
+- Tests: `tests/Feature/ConsultationWhatsapp/ConsultationVoucherMailTest.php`.

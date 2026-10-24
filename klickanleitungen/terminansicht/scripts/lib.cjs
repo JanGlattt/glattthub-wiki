@@ -8,7 +8,8 @@ const MD = process.env.KLICK_BRANCH || 'KrzIg1nVrQ3kpKzkTgQlzA';        // Magde
 const APT = process.env.KLICK_APT || '';                                 // Phorest-ID des Beratungstermins des Laufs
 const DATE = process.env.KLICK_DATE || '';                               // Tag des Termins, Format JJJJ-MM-TT
 const CREDS = [process.env.KLICK_USER || 'claude-dev@example.com', process.env.KLICK_PW || ''];
-if (!CREDS[1]) { console.error('KLICK_PW fehlt — Passwort des Staging-Testusers als Umgebungsvariable setzen (siehe ../.env.example).'); process.exit(2); }
+const PIN = process.env.KLICK_PIN || '';   // Anmeldeseite hat seit 24.10.2026 nur noch das PIN-Formular — PIN hat Vorrang
+if (!CREDS[1] && !PIN) { console.error('KLICK_PW oder KLICK_PIN fehlt — Zugang des Testusers als Umgebungsvariable setzen (siehe ../.env.example).'); process.exit(2); }
 if (!APT) { console.error('KLICK_APT fehlt — Phorest-ID des gebuchten Beratungstermins setzen (siehe ../README.md, Abschnitt „Screenshots neu aufnehmen").'); process.exit(2); }
 if (!DATE) { console.error('KLICK_DATE fehlt — Tag des Termins als JJJJ-MM-TT setzen.'); process.exit(2); }
 const HIDE_CSS = '.env-badge{display:none!important}';
@@ -27,12 +28,20 @@ async function hideBadge(page) { try { await page.addStyleTag({ content: HIDE_CS
 async function login(page, ctx) {
   await page.goto(BASE + '/hub', { waitUntil: 'domcontentloaded' });
   if (page.url().includes('/login')) {
+    if (PIN) {
+      await page.evaluate((pin) => {
+        const set = (el, v) => { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el, v); el.dispatchEvent(new Event('input',{bubbles:true})); };
+        const p = document.querySelector('#form-pin input[name="pin"]'); set(p, pin);
+        p.closest('form').requestSubmit();
+      }, PIN);
+    } else {
     await page.evaluate(([email, pw]) => {
       const set = (el, v) => { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(el, v); el.dispatchEvent(new Event('input',{bubbles:true})); };
       const e = document.querySelector('input[name="email"]'); set(e, email);
       set(e.closest('form').querySelector('input[name="password"]'), pw);
       e.closest('form').requestSubmit();
     }, CREDS);
+    }
     await page.waitForURL(u => !u.toString().includes('/login'), { timeout: 20000 });
     await ctx.storageState({ path: 'state.json' });
   }
