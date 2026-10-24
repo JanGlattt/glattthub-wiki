@@ -102,3 +102,27 @@ Einführung) bekommen sie beim nächsten Aufruf. Abschalten, falls eine Umgebung
 `AppServiceProvider` registriert, bekommt jede Meldung doppelt (deshalb heißen die Methoden `record`/`on…`).
 Die Bremse der PIN-Anmeldung je Gerät/Adresse steht in `FortifyServiceProvider` (5/Minute je Gerät, 40/Stunde und
 120/Tag je Adresse); die Meldung `pin_attack` ergänzt sie um das verteilte Durchprobieren.
+
+## PIN-Bestätigung für sensible Aktionen (24.10.2026)
+
+Bestimmte Aktionen verlangen vorher die **erneute Eingabe der eigenen PIN** (Register `SensitiveActionRegistry`, fünf Gruppen):
+Bankverbindung ändern, SEPA-Mandat anlegen/tauschen/stornieren, Konten anlegen und Team-PIN vergeben, Report-Mails einrichten,
+Exporte herunterladen (Exporte standardmäßig aus). Schalter und Gültigkeit je Aktion (Standard 10 Minuten) stehen im Admin unter
+System → Bestätigungspflichtige Aktionen (Recht `manage_sensitive_actions`, nur Rollen mit Super-Admin-Kennzeichen;
+Tabelle `sensitive_action_settings` hält nur Abweichungen vom Standard).
+
+**Ablauf:** `RequirePinConfirmation` (Middleware der `web`-Gruppe) greift über den **Routennamen** — eine neue sensible Aktion
+braucht nur einen Eintrag im Register; `PinConfirmationTest` prüft, dass jeder Name existiert. Ohne gültige Bestätigung:
+JSON/Livewire → `423 { pin_required: true, action, message }`, normale Aufrufe → Seite `/hub/pin-bestaetigen` und danach zurück.
+`public/js/pin-confirm.js` wickelt `fetch` ein, zeigt das Fenster `#pin-confirm-modal` (Layout `hub`), prüft die PIN über
+`POST /hub/pin-bestaetigen` und wiederholt die ursprüngliche Anfrage einmal. Die Bestätigung hängt an der Sitzung
+(`pin_confirmed_at`), die Bremse zählt je Konto (5 Versuche / 10 Minuten).
+
+**Was es schützt — und was nicht:** gestohlenes Sitzungs-Cookie, unbeaufsichtigter Bildschirm, „Ansehen als" (die PIN der
+Person kennt der Admin nicht). **Nicht** gegen jemanden, der die PIN selbst kennt — dafür sind Passkeys/Passwort die stärkere
+Bestätigung (geplant).
+
+**Ausnahmen/Schalter:** Anfragen der iOS-App (`glatttHub-iOS/`) sind ausgenommen, weil die App einige dieser Endpunkte direkt
+aufruft (Institut-Bankverbindung, Team-PIN) und noch keine PIN-Abfrage hat — sobald sie eine hat, Ausnahme streichen.
+Gesamtschalter `SECURITY_PIN_CONFIRMATION` (Notfall; in `phpunit.xml` aus, die Tests der Funktion schalten sie selbst ein).
+Admin-Backend-Aktionen (Rollen, Rechte, Einstellungen) sind schon durch die Admin-Passwort-Hürde geschützt.
