@@ -139,7 +139,7 @@ Alle unter `/hub/kundenservice` (dieselben für Web und App, JSON):
 
 | Methode & Pfad | Zweck |
 |---|---|
-| `GET /data?view=&search=&page=` | Liste je Ansicht (`SupportTicketQuery::views`), `mode`, `me`, Rechte. Eigene Ansichten: `mine` („Meine Tickets“, alles Zugewiesene außer gelöst/geschlossen, `MINE_STATUSES`) und direkt dahinter `mine_solved` („Meine gelösten“, `SOLVED_STATUSES`); beide Zähler kommen aus **einer** Summenabfrage, die Leiste kostet nicht mehr Abfragen. In der App liegt `mine_solved` im Ansichten-Menü, nicht im Segment. Seit 21.10.2026 eigene Ansicht `on_hold` („Angehalten“, Wiedervorlage): „Alle offenen“ und die Team-Ansichten nutzen `OPEN_STATUSES` (neu/offen/in Prüfung) und zeigen angehaltene Tickets nicht mehr; „Meine Tickets“ behält sie bewusst |
+| `GET /data?view=&search=&page=` | Liste je Ansicht (`SupportTicketQuery::views`), `mode`, `me`, Rechte. Eigene Ansichten: `mine` („Meine Tickets“, alles Zugewiesene außer gelöst/geschlossen, `MINE_STATUSES`) und direkt dahinter `mine_solved` („Meine gelösten“, `SOLVED_STATUSES`); Ausnahme: was die Bearbeiterin selbst abgeschlossen hat und nun bei einer Kollegin „in Prüfung“ liegt (`status = review` und `solved_by_id` = sie), fehlt in der Liste **und** im Zähler — für sie ist es erledigt; die Prüferin sieht es unter „Zu prüfen“. Beide Zähler kommen aus **einer** Summenabfrage, die Leiste kostet nicht mehr Abfragen. In der App liegt `mine_solved` im Ansichten-Menü, nicht im Segment. Seit 21.10.2026 eigene Ansicht `on_hold` („Angehalten“, Wiedervorlage): „Alle offenen“ und die Team-Ansichten nutzen `OPEN_STATUSES` (neu/offen/in Prüfung) und zeigen angehaltene Tickets nicht mehr; „Meine Tickets“ behält sie bewusst |
 | `GET /optionen` | Teams mit Mitgliedern, Kolleginnen, Erwähnbare, Textbausteine, Anliegen, `require_category`, `bert_available` |
 | `GET /tickets/{nr}` | Detail mit Verlauf, Kundenkarte, Zusammenführen-Vorschlag, Vorgängen, Kanälen, Umfrage, Rechten |
 | `POST /tickets/{nr}/antwort` | Antwort (E-Mail/WhatsApp), `status`, `files[]`, `actions[...]` |
@@ -148,6 +148,7 @@ Alle unter `/hub/kundenservice` (dieselben für Web und App, JSON):
 | `POST /tickets/{nr}/pruefung/freigeben|zurueck|uebernehmen` | Vier-Augen |
 | `POST /tickets/{nr}/zusammenfuehren`, `/alle-zusammenfuehren` | Zusammenführen (409 `different_requester`) |
 | `POST /tickets/{nr}/vorgang` | Vorgang geöffnet (Verlauf) |
+| `GET /tickets/{nr}/verlauf?notes=0|1` | Ticketverlauf als PDF (`pdf.support-ticket-history`, dompdf, Text-Fassung der Nachrichten); `notes=1` nimmt die internen Notizen mit, Leserecht genügt wie beim Detail |
 | `POST /tickets/{nr}/bert/antwort|zusammenfassung|anliegen` | glatttBert |
 | `POST /tickets` | neues Ticket mit Mail (nur live) |
 | `POST /tickets/sammelaktion` | Mehrfachauswahl |
@@ -292,6 +293,12 @@ Presence, Entwurf-Speicher und glatttBert springen bei `draft` aus. `?neu=1&betr
 `SupportClientMatcher::byId()`; die Antwortadresse `requester_email` bleibt, außer das Ticket hat noch
 keine. Auch `createTicket()` holt bei mitgeschickter `phorest_client_id` Name und Standort über `byId()`
 (vorher blieb der Standort beim neuen Ticket leer).
+
+**Antwortfeld und Textbausteine (24.10.2026).** `.support-editor` ist in der Höhe ziehbar (`resize: vertical`, bis 60 vh). `.support-editor-wrap` darf **kein** `overflow: hidden` haben: Das Textbaustein-Dropdown sitzt in der Werkzeugleiste darin und wurde sonst auf die Höhe des Feldes gekappt (nur wenige Bausteine sichtbar). Die Ecken runden deshalb Leiste und Feld selbst.
+
+**Verlauf als PDF.** Im ⋯-Menü des Tickets zwei Einträge („Verlauf als PDF“, „… mit Notizen“): einfache Links auf `/verlauf` bzw. `/verlauf?notes=1`. Das PDF zeigt Kopfdaten und jede Nachricht mit Art (Kundin, Antwort, Notiz), Absender, Zeit und Text; Notizen sind farbig abgesetzt. Gedacht für die Weitergabe eines Falls (Geschäftsführung, Anwalt).
+
+**Abschließen ohne Mail.** Der Knopf „Abschließen“ im Ticketkopf schließt ohne Nachricht an die Kundin ab; „Senden & abschließen“ im Antwortfeld verschickt dagegen die Antwort. Hat das Team die Vier-Augen-Prüfung, landet das Ticket danach „in Prüfung“ (siehe oben).
 
 ### App (iPhone, iPad)
 
@@ -444,6 +451,9 @@ damit (Jan, 10.10.2026).
 
 ## Changelog
 
+- **24.10.2026** — Selbst abgeschlossene Tickets in Prüfung verschwinden aus „Meine Tickets“ (Asana
+  „Tickets in Prüfung“); Antwortfeld in der Höhe ziehbar, Textbaustein-Auswahl nicht mehr
+  abgeschnitten; Ticketverlauf als PDF mit/ohne interne Notizen.
 - **09.10.2026 (nachts)** — Kundinnen sehen ihre Anfragen in Portal und My glattt (Kopie ohne
   Notizen, Antwort als Eingang, Folgeticket bei geschlossen, Push mit Ticketnummer).
 - **10.10.2026** — Zendesk-Spiegel (Weg 2): Hub-Antworten als interne Notiz ins Zendesk-Ticket,
