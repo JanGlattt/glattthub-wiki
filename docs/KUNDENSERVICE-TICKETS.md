@@ -4,7 +4,8 @@ Der Kundenservice von glattt arbeitet seit 10/2026 im Hub statt in Zendesk: Mail
 `kundenservice@glattt.com` werden Tickets, Antworten gehen über dasselbe Postfach raus, Teams
 prüfen sich gegenseitig (Vier-Augen), glatttBert hilft beim Antworten. Diese Seite ist die
 **technische Dokumentation**; die Bedienung Schritt für Schritt kommt ins Nutzerhandbuch
-(Decks „Kundenservice“ und „App“ sind geplant, siehe `.github/klickanleitungen-abdeckung.json`).
+(Serie „Kundenservice“, drei Decks seit 24.10.2026; die App-Bedienung folgt in der Serie „App“,
+siehe `.github/klickanleitungen-abdeckung.json`).
 
 !!! note "Stand"
     Entscheidung Jan, 02.10.2026. Hub-Seite, App, Bericht, Import und Schattenbetrieb sind seit
@@ -40,6 +41,15 @@ setzt das Anliegen, wenn die Stichwort-Erkennung nichts gefunden hat.
 **Zufriedenheitsumfrage.** Ist sie im Admin eingeschaltet, bekommt die Kundin einen Tag nach
 „gelöst“ eine Mail mit fünf Sternen. Ein Klick genügt. Bei ein oder zwei Sternen öffnet sich das
 Ticket wieder und die Zuständige bekommt eine Meldung.
+
+!!! nutzerhandbuch "Bedienung: Kundenservice 1 – Tickets bearbeiten"
+    https://hilfe.hub.glattt.com/kundenservice/1/ (Seite und Ansichten, Ticket lesen, Antworten per E-Mail/WhatsApp, interne Notiz mit @, neues Ticket als Entwurf, Kundin zuordnen)
+
+!!! nutzerhandbuch "Bedienung: Kundenservice 2 – Prüfen, zusammenführen, Textbausteine"
+    https://hilfe.hub.glattt.com/kundenservice/2/ (Vier-Augen-Prüfung, Zusammenführen, Teams und Textbausteine, glatttBert)
+
+!!! nutzerhandbuch "Bedienung: Kundenservice 3 – Meine Tickets, Verlauf und Umfrage"
+    https://hilfe.hub.glattt.com/kundenservice/3/ (Meine Tickets, Verlauf als PDF, Abschließen mit und ohne Mail, Wiedervorlage, Zufriedenheitsumfrage)
 
 ## Für Entwickler
 
@@ -294,7 +304,11 @@ Presence, Entwurf-Speicher und glatttBert springen bei `draft` aus. `?neu=1&betr
 keine. Auch `createTicket()` holt bei mitgeschickter `phorest_client_id` Name und Standort über `byId()`
 (vorher blieb der Standort beim neuen Ticket leer).
 
-**Antwortfeld und Textbausteine (24.10.2026).** `.support-editor` ist in der Höhe ziehbar (`resize: vertical`, bis 60 vh). `.support-editor-wrap` darf **kein** `overflow: hidden` haben: Das Textbaustein-Dropdown sitzt in der Werkzeugleiste darin und wurde sonst auf die Höhe des Feldes gekappt (nur wenige Bausteine sichtbar). Die Ecken runden deshalb Leiste und Feld selbst.
+**Antwortfenster (24.10.2026, Entwurf „Kombi“ aus 1 und 3).** Das Antwortfeld ist ein **angedocktes Fenster** unter dem Verlauf (`composer.blade.php`): dunkle Titelleiste mit „Antwort an <Name> · An <Adresse>“, Umschalter E-Mail/WhatsApp/Notiz (Zurückgeben nur in der Prüfung) und den Knöpfen Minimieren/Vergrößern; darunter das Feld und **eine** Fußzeile — Werkzeuge links (Fett, Kursiv, Liste, Link, @, Anhang, Baustein speichern, „Textbaustein“, glatttBert), rechts Status („Danach: wartet auf Kundin“) und der Split-Knopf **Senden ▴**. Dessen Menü bietet „Senden & abschließen“ und „Senden & anhalten“. Das Feld wächst bis `clamp(4.5rem, 16vh, 10rem)` und scrollt dann innen; „Vergrößern“ (`composerBig`) hebt den Deckel auf 60 vh, „Minimieren“ (`composerMin`, im `localStorage` `support.composerMin`) lässt nur die 45-px-Leiste stehen — der Entwurf bleibt, weil der Editor `x-show`, nicht `x-if` ist. `setComposerMode()` öffnet ein minimiertes Fenster wieder.
+
+**Menüs nie abgeschnitten.** „Senden …“ und „Textbaustein“ sind **keine** Dropdowns im Fenster, sondern ein Menü im `x-teleport="body"` (`mail-modal.blade.php`, Klasse `.support-pop`) mit `position: fixed`. `openPop(kind, event)` misst den Auslöser, klappt nach oben auf, wenn dort mehr Platz ist (sonst nach unten), begrenzt Breite und Höhe auf das Fenster (lange Listen scrollen im Menü) und klemmt links/rechts. Zu geht es bei Klick daneben (nicht auf den Auslöser selbst), Esc, Größenänderung und Scrollen der Seite dahinter. Grund: `dropdown-glattt` öffnet immer nach unten und wird in einer Fußzeile am Fensterrand abgeschnitten.
+
+**Schmale Spalte.** `.support-composer` ist ein Container (`container-type: inline-size`); unter 720 px entfallen Status, Beschriftungen, Pfeil, Kursiv (⌘I geht weiter) und @ (Tippen von @ genügt), damit die Fußzeile einzeilig bleibt.
 
 **Verlauf als PDF.** Im ⋯-Menü des Tickets zwei Einträge („Verlauf als PDF“, „… mit Notizen“): einfache Links auf `/verlauf` bzw. `/verlauf?notes=1`. Das PDF zeigt Kopfdaten und jede Nachricht mit Art (Kundin, Antwort, Notiz), Absender, Zeit und Text; Notizen sind farbig abgesetzt. Gedacht für die Weitergabe eines Falls (Geschäftsführung, Anwalt).
 
@@ -454,6 +468,8 @@ damit (Jan, 10.10.2026).
 - **24.10.2026** — Selbst abgeschlossene Tickets in Prüfung verschwinden aus „Meine Tickets“ (Asana
   „Tickets in Prüfung“); Antwortfeld in der Höhe ziehbar, Textbaustein-Auswahl nicht mehr
   abgeschnitten; Ticketverlauf als PDF mit/ohne interne Notizen.
+- **24.10.2026 (abends)** — Antwortbereich als angedocktes Fenster (Titelleiste, Umschalter, Minimieren/Vergrößern,
+  einzeilige Fußzeile, Split-Knopf „Senden“), Menüs im Teleport mit Platzberechnung.
 - **09.10.2026 (nachts)** — Kundinnen sehen ihre Anfragen in Portal und My glattt (Kopie ohne
   Notizen, Antwort als Eingang, Folgeticket bei geschlossen, Push mit Ticketnummer).
 - **10.10.2026** — Zendesk-Spiegel (Weg 2): Hub-Antworten als interne Notiz ins Zendesk-Ticket,
