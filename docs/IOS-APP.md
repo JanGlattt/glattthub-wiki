@@ -2157,7 +2157,9 @@ Karte. Was die App nicht nachbaut, öffnet ⋯ „Hub-Fassung öffnen".
   Widerrufe, Schulden, Gutschein-Aktion), `ClientHrReportCards.swift` (Kundenstatistik mit
   `ReportRing`, PLZ-Karte als `MapCircle` und seit 25.10.2026 `ClientChannelBranchesCard` —
   Akquisekanäle je Standort als Säulen je Kanal mit Instituten gestapelt, Kennzahl und Fenster
-  Quartal/Halbjahr/Alles als Umschalter statt des Web-Reglers, HR-Kennzahlen mit `HrMonthlyCard` für Monatsreihen mit
+  Quartal/Halbjahr/Alles als Umschalter statt des Web-Reglers,
+  dazu `ClientRefreshShareCard`/`ClientRefreshGapCard`/`ClientRefreshZonesCard` für die Auffrischung
+  nach Paketende, HR-Kennzahlen mit `HrMonthlyCard` für Monatsreihen mit
   wählbarer Kennzahl), `MarketingOfficeReportCards.swift` (Ads-Analyse, Besucher-Funnel, eigene
   Office-Karten mit `OfficeMonthlyCard`). Das Office-Teammeeting nutzt die Verkaufs-, Termin-,
   Widerruf- und Ads-Karten wieder; sie laufen über denselben Schalter in `ReportStatisticCard`.

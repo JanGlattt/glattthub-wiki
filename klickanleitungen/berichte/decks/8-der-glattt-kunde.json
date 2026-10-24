@@ -10,11 +10,11 @@
   "Der glattt-",
   "Kunde"
  ],
- "subtitle": "Klickanleitung für die Berichte im glatttHub — Demografie, Einzugsgebiet, Akquisekanäle (auch je Standort) und Conversion",
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — Demografie, Einzugsgebiet, Akquisekanäle (auch je Standort), Auffrischung nach dem Paket und Conversion",
  "eyebrow": "Berichte · Kundenstruktur",
  "footerArea": "Berichte",
  "stand": "25.10.2026",
- "version": "1.1",
+ "version": "1.2",
  "notes": [
   "Der Bericht beantwortet: **Wer sind unsere Kundinnen — und woher kommen sie?**",
   "Grundlage ist der ausgewertete Kundenbestand, nicht einzelne Kundendaten.",
@@ -164,6 +164,44 @@
    "hint": {
     "kind": "warn",
     "text": "**Empfehlung hat keine Conversion.** Der Kanal wird aus Vertrags-Empfehlungen abgeleitet und läge immer bei nahezu 100 % — er steht bei „Conversion“ als „n. v.“. Und: Kleine Fenster liefern kleine Zahlen; für Vergleiche mindestens ein Quartal wählen."
+   }
+  },
+  {
+   "h1": "Auffrischung nach dem Paket",
+   "sub": "Wer kommt nach dem aufgebrauchten Paket wieder — wann und womit?",
+   "card": {
+    "title": "Auffrischung",
+    "text": "Anteil, Abstand und Zonen"
+   },
+   "left": {
+    "shot": "r8-auffrischung"
+   },
+   "leftCaption": "Auffrischung nach Paketende je Institut und Abstand bis zur ersten Auffrischung; darunter die aufgefrischten Zonen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Paketende",
+     "text": "Eine Kundin gilt als „Paket beendet“, sobald alle ihre Abos aufgebraucht sind — Stichtag ist die letzte bezahlte Abo-Sitzung. Laufende Abos zählen nicht."
+    },
+    {
+     "n": 2,
+     "title": "Anteil je Institut",
+     "text": "Grün: Kundinnen, die danach mindestens eine bezahlte **Auffrischung** gebucht haben. Flex-Einzelsitzungen zählen nicht."
+    },
+    {
+     "n": 3,
+     "title": "Abstand",
+     "text": "Monate zwischen Paketende und erster Auffrischung als Verteilung; Ø und Median im Kartenkopf."
+    },
+    {
+     "n": 4,
+     "title": "Zonen",
+     "text": "Welche Zonen aufgefrischt werden — und ob sie **im Paket enthalten** waren oder **neu** dazukommen. Viel „neu“ bei einer Zone ist ein Argument fürs Beratungsgespräch."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Frische Paketenden sehen schlecht aus.** Wer erst vor drei Monaten fertig wurde, hatte kaum Zeit für eine Auffrischung — für Vergleiche einen Zeitraum wählen, der mindestens ein halbes Jahr zurückliegt. Der Zeitraum-Filter bezieht sich hier auf das Paketende."
    }
   },
   {

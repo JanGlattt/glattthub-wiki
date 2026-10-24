@@ -65,7 +65,7 @@ Endpoints einheitlich über `extractFilters()`: `branch_id, date_from, date_to, 
 | **Ranking nach Institut** | `/branches` | R B | **portiert** | ⚠ Currency-Bug offen (s. Abweichungen) |
 | Ranking nach Mitarbeiter | `/sellers` | R B | (a)/(b) | Partial verwaist (nur Alt-Widget nutzte es) |
 
-### Der glattt-Kunde (`view_report_client_statistics`) — 12 Statistiken
+### Der glattt-Kunde (`view_report_client_statistics`) — 15 Statistiken
 
 Endpoints einheitlich: `branch_id, date_from, date_to, consultation_only, gender, age_group, min_distance, max_distance`. Cache-Key enthält alle Filter (sicher).
 
@@ -82,6 +82,7 @@ Endpoints einheitlich: `branch_id, date_from, date_to, consultation_only, gender
 | Top-PLZ | `/top-plz` (+`limit`) | R B + | (d) | PLZ-Suche greift auf Karten-Daten der Nachbar-Sektion zu |
 | Persona-Segmente | `/segments` | R B + | (b) | |
 | Akquisekanäle je Standort | `/acquisition-channels-by-branch` | B (Fenster clientseitig, `fixed_range`) | konventionskonform (25.10.) | Registry-Karte `kunden.acquisition-channel-branches`; Monat × Institut × Kanal seit 04/2026, Regler = dataZoom auf verdeckter Monatsachse |
+| Auffrischung nach Paketende (Anteil / Abstand / Zonen) | `/refresh-share`, `/refresh-gap`, `/refresh-zones` (eine Berechnung) | R B (Zeitraum = Paketende, Standort = Paket-Institut) | konventionskonform (25.10.) | Registry-Karten `kunden.refresh-share`, `kunden.refresh-gap`, `kunden.refresh-zones`; Abos aus `stats_client_courses`, Zonen per PlannedZoneResolver |
 | Zufriedenheit nach Paketende | `/satisfaction` | R B | konventionskonform (17.08.) | Registry-Karte `kunden.zufriedenheit`; Datenbasis `satisfaction_surveys` (Zufriedenheitsbefragung), s. ZUFRIEDENHEITSBEFRAGUNG.md |
 | KPI-Zeile (8 KPIs, serverseitig) | `/kpis` | R B + | (d) | |
 

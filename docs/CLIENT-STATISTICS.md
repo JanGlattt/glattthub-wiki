@@ -95,7 +95,7 @@ gesamte Seite erst nach dem Sync-Status-Check erschien (leere Seite beim
 
 **CSV-Export** über den Export-Button im Seitenkopf — Quellen: Conversion-Funnel,
 Demografie, Kundensegmente, Herkunftsverteilung, Akquisekanäle (gesamt und je Standort),
-Entfernungsverteilung, Körperzonen-Verteilung (inkl. Details), Widerrufs-Analyse und Einzugsgebiet
+Auffrischung nach Paketende (Anteil, Abstand, Zonen), Entfernungsverteilung, Körperzonen-Verteilung (inkl. Details), Widerrufs-Analyse und Einzugsgebiet
 (Kunden pro PLZ). Filter: Zeitraum (1. Visit) + Institut.
 
 Die Statistikseite gliedert sich in folgende Bereiche von oben nach unten:
@@ -207,6 +207,44 @@ April 2026) bzw. den Chips Quartal / Halbjahr / Alles. Tabelle dahinter mit „U
 - Balkendiagramm mit Entfernungsgruppen (0-5 km, 5-10 km, 10-20 km, 20-50 km, 50+ km)
 - Gestapelte Balken: Ohne Vertrag / Mit Vertrag
 - Zweite Y-Achse: Conversion-Rate pro Entfernungsgruppe als Linie
+
+#### 3c. Auffrischung nach Paketende (drei Karten, seit 25.10.2026)
+
+**Für Endanwender:** Kommen Kundinnen nach dem aufgebrauchten Paket zur bezahlten **Auffrischung**
+wieder — und wann und womit? Drei Karten: **Auffrischung nach Paketende** (Anteil je Institut),
+**Abstand bis zur Auffrischung** (Monate zwischen Paketende und erster Auffrischung als Verteilung,
+Ø und Median) und **Aufgefrischte Körperzonen** (Rangliste, je Zone „im Paket enthalten" oder „neu").
+
+!!! nutzerhandbuch "Bedienung: Berichte 8 – Der glattt-Kunde, Seite „Auffrischung nach dem Paket""
+    https://hilfe.hub.glattt.com/berichte/8/
+
+**Für Entwickler:**
+
+- **Definitionen (Jan, 25.10.2026):** *Paketende* = letzte bezahlte Abo-Sitzung einer Kundin, sobald
+  **alle** ihre Phorest-Abos 0 Sitzungen übrig haben (`stats_client_courses`, `course_name LIKE 'Abo%'`,
+  `SUM(total_remaining_units) = 0`); Abo-Sitzung = bezahlter Termin (`state = PAID`, `deleted = 0`),
+  dessen `service_id` in den Leistungen ihrer Abos vorkommt (`stats_client_course_items.service_id`).
+  Laufende Abos zählen nicht. *Auffrischung* = bezahlter Termin mit `service_name LIKE 'Auffrischung%'`
+  **nach** dem Paketende („Flex …" und „..Desinfektion Auffrischung" bleiben draußen). Institut = Institut
+  des zuletzt gekauften Abos (`purchasing_branch_id`), der Zeitraum-Filter wirkt auf das Paketende.
+- **Zonen:** `PlannedZoneResolver` (dieselbe Erkennung wie der Einstellungszettel) über den Service-Namen
+  der Auffrischung; Ganzkörper als eigene Zeile `ganzkoerper`, „2 Kleine Zonen" als `kleine_zonen`,
+  unbekannte Namen als `unbestimmt` (die Namen stehen in `unmapped`). *Im Paket enthalten* = Zone in den
+  Abo-Leistungen der Kundin (Resolver über ihre `course_name`s; Ganzkörper-Pakete enthalten alles).
+- **Ein Endpunkt, drei Routen:** `ClientStatisticsService::getRefreshAfterPackage($filters)` rechnet
+  einmal (gecacht) und liefert `branches`, `gaps` (Klassen `REFRESH_GAP_GROUPS`: 0–3, 4–6, 7–12, 13–24,
+  >24 Monate; Monat = ⌈Tage / 30,44⌉), `zones`, `unmapped`, `meta{clients, refreshed, share, sessions,
+  avg_months, median_months}`. Die Routen `…/refresh-share`, `…/refresh-gap`, `…/refresh-zones` zeigen
+  auf `ClientStatisticsController::refreshAfterPackage()` — je Registry-Karte ein Routenname, damit
+  Registry, Export und App sauber bleiben. Berechnung in PHP über vier Abfragen (leere Kundinnen,
+  Paketende per Join, Abos, Auffrischungen), alle in 1000er-Blöcken.
+- Registry `kunden.refresh-share` / `kunden.refresh-gap` (half) / `kunden.refresh-zones` (full), Partials
+  unter `statistics/kunden/refresh-*.blade.php`, JS in `public/js/statistics/kunden.js`, CSV-Quellen
+  `clients-refresh-share|gap|zones`. App: `ClientRefreshShareCard`, `ClientRefreshGapCard`,
+  `ClientRefreshZonesCard` (Baustein F).
+- Test: `ClientStatisticsPageTest::test_refresh_after_package_counts_share_gap_and_zones`.
+- **Fallstrick:** frische Paketenden haben naturgemäß noch wenig Auffrischungen; der Abstand ist rechts
+  abgeschnitten (wer erst nach heute wiederkommt, fehlt). Beide Info-Panels sagen das.
 
 #### 4. Körperzonen-Verteilung & Widerrufs-Analyse (nebeneinander)
 

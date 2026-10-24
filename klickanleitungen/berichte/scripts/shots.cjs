@@ -80,6 +80,12 @@ const PLAN = [
   kopf('r8-kopf', '/hub/reports/client-statistics'),
   karte('r8-demografie', '/hub/reports/client-statistics', 'Altersverteilung'),
   karte('r8-kanaele', '/hub/reports/client-statistics', 'Conversion Funnel'),
+  { name: 'r8-auffrischung', url: '/hub/reports/client-statistics', wait: 5000,
+    steps: [['loaded'], ['scroll', '.card-glattt-title', 'Auffrischung nach Paketende'], ['wait', 1500]],
+    clip: '.stats-refresh-row-glattt', marks: [
+      { id: 'anteil', kind: 'frame', color: 'teal', sel: '[data-statistic-key="kunden.refresh-share"] .card-glattt' },
+      { id: 'abstand', kind: 'frame', color: 'teal', sel: '[data-statistic-key="kunden.refresh-gap"] .card-glattt' },
+    ] },
   karte('r8-kanaele-standorte', '/hub/reports/client-statistics', 'Akquisekanäle je Standort', { steps: [['wait', 1500]], marks: [
     { id: 'kennzahl', kind: 'badge', n: 1, sel: '[data-statistic-key="kunden.acquisition-channel-branches"] .card-glattt-header-controls .segmented-control-glattt:first-child', at: 'l' },
     { id: 'regler', kind: 'badge', n: 2, sel: '[data-statistic-key="kunden.acquisition-channel-branches"] .chart-canvas-glattt', at: 'b' },
