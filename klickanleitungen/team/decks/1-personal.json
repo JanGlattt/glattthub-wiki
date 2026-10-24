@@ -14,7 +14,7 @@
   "eyebrow": "Team · Personal",
   "footerArea": "Team",
   "stand": "25.10.2026",
-  "version": "1.5",
+  "version": "1.6",
   "notes": [
     "Die Personalliste kommt aus **askDANTE** — eingestellt und ausgetragen wird dort. Der Hub ergänzt sie um die **Stammdaten** aus Teamliste und Lohnliste und das **Hub-Konto**.",
     "Das **Hub-Konto** ist etwas anderes als der Personaldatensatz: Es entscheidet, wer sich anmelden darf.",
@@ -93,6 +93,53 @@
       ],
       "hint": {
         "text": "**Personaldatensatz ≠ Hub-Konto.** Jemand kann in askDANTE stehen, ohne je den Hub zu öffnen. Erst das Konto macht daraus eine Nutzerin mit Rechten."
+      }
+    },
+    {
+      "h1": "Altersvorsorge",
+      "sub": "Der Reiter Altersvorsorge führt die betriebliche Altersvorsorge je Person: Stand, Beitrag mit Arbeitgeberzuschuss, Unterlagen — und erinnert das Büro, wenn ein Angebot fällig ist.",
+      "card": {
+        "title": "Altersvorsorge",
+        "text": "Stand, Beitrag, Unterlagen, Erinnerung"
+      },
+      "left": {
+        "shot": "p5-altersvorsorge"
+      },
+      "leftCaption": "Reiter **Altersvorsorge** mit Stand, Beitrag und Unterlagen (Beispielperson).",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Stand",
+          "text": "**Noch nicht angeboten** (gelb, sobald die Frist erreicht ist), **Angeboten**, **Abgeschlossen**, **Abgelehnt** oder **Bestehende baV mitgebracht**. Leitungen sehen nur den Stand, das Büro alles."
+        },
+        {
+          "n": 2,
+          "title": "Stand ändern",
+          "text": "Öffnet den Dialog: Stand, Datum, Anbieter (fest aus dem Admin oder frei, wenn dort freigeschaltet), bei **Abgeschlossen** die monatliche Entgeltumwandlung und der Zuschuss in Prozent (Vorgabe 15 %). Der Hub rechnet Zuschuss und Gesamtbeitrag vor."
+        },
+        {
+          "n": 3,
+          "title": "Lohnmonat",
+          "text": "Bei **Abgeschlossen** stehen Umwandlung und Zuschuss ab dem Datum als laufende Bezüge im Lohnmonat und in der Liste an die Steuerberatung (Lohnarten bAV). Eine spätere Änderung wird ein neuer Eintrag ab Datum, **Abgelehnt** beendet die Posten."
+        },
+        {
+          "n": 4,
+          "title": "Unterlagen",
+          "text": "Art wählen (Verzichtserklärung, Vertrag, Beratungsprotokoll) und hochladen — PDF, Foto oder Word, nur mit dem Recht Altersvorsorge sichtbar. Ein Klick öffnet die Datei."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Erinnerung",
+          "text": "Sechs Monate nach Eintritt (Stammdaten, sonst askDANTE) meldet der Hub dem Büro, wer noch kein Angebot hat — und alle sechs Monate erneut, bis der Stand gepflegt ist. In der Übersicht zählt **Altersvorsorge anbieten** unter „Was ansteht“."
+        },
+        {
+          "title": "Admin",
+          "text": "Anbieter, Freitext-Schalter, Zuschuss-Vorgabe und Frist stehen unter **Admin → Team → Altersvorsorge**."
+        }
+      ],
+      "hint": {
+        "text": "**Beträge und Unterlagen sieht nur das Büro** (Recht „Altersvorsorge pflegen“). Leitungen sehen den Stand ihrer Mitarbeiterinnen, damit sie im Gespräch Bescheid wissen."
       }
     },
     {

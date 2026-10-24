@@ -1723,7 +1723,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Gutscheine | nativ | Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin-Korrektur, neuer Gutschein, Guthaben-Karte in der Kundenübersicht (seit 26.09.2026); Bestand mit Kennzahlen bleibt Web |
 | Reisekosten | nativ | Anspruchstage aus askDANTE, Assistent für neue Reisen (auch mehrtägig mit Tagen & Nächten, seit 27.09.2026), Reisekarte mit Live-Summe und fünf Abschnitten, Belege mit Kamera/Scanner, Einreichen/Zurückziehen/Löschen, Register Freigabe mit Berichtigen und Entscheidung (seit 26.09.2026); Web-Freigabeseite bleibt Web |
 | App-Geräte | nativ | Liste mit Suche, Chips, Kennzahlen, offene Codes und Geräte nach Institut; Code ausstellen in drei Schritten mit QR und Teilen-Blatt (AirDrop), Code zurückziehen, Gerät widerrufen im Steckbrief; iPad-Split, Ausstellen als Popover (seit 26.09.2026); Einlösen bleibt `EnrollmentSheet` |
-| Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild mit Hub-Profilbild und Zeile „Was ansteht“ (seit 25.10.2026), Akte (Überblick, Vergütung, Zeit, Konto), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten (seit 27.09.2026); Teamliste- und Lohnliste-Import bleiben Web (Datei-Upload im Büro), Checklisten Eintritt/Austritt vorerst ausgeblendet |
+| Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild mit Hub-Profilbild und Zeile „Was ansteht“ (seit 25.10.2026), Akte (Überblick, Vergütung, Zeit, Konto, Vorsorge — betriebliche Altersvorsorge mit Blatt „Stand ändern“ für das Büro, seit 25.10.2026), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten (seit 27.09.2026); Teamliste- und Lohnliste-Import bleiben Web (Datei-Upload im Büro), Checklisten Eintritt/Austritt vorerst ausgeblendet |
 | Institute | nativ | Karte zuerst (seit 27.09.2026): Nadeln in Hub-Farbe, Blatt mit Liste/Institut, Unterseiten Kennzahlen, Team, Verwaltung |
 | Trinkgeld | nativ | Rangliste mit meiner Zeile (seit 29.09.2026): Kennzahlen, Segment Trinkgeld/Sterne/Auszahlung, Zeitraum-Chips, Person als Blatt (iPad daneben), Kommentare nur mit Recht; Startseiten-Karte „Meine Bewertungen“, Beenden-Schalter, Kunden-Sperre |
 | Überlegt noch | nativ | Anrufliste (seit 17.10.2026, Welle 2 seit 18.10.2026: Termin verpasst, Reiter Reaktivierung mit Sammelversand): Reiter Offen/Link/Erledigt, Akte mit Link per WhatsApp, Termin buchen, Nicht erreicht, Ergebnis-Blatt nach dem Anruf; iPad Liste + Akte |
@@ -1952,6 +1952,13 @@ und mit DATEV-Nummer pflegen.
 - **Nachweis:** `StaffSnapshotTests` (Liste, Akte Überblick/Vergütung, Checkliste, Lohnmonat, iPad —
   hell/dunkel; Pfad-Erkennung, Filter, Beträge, `null`-Felder), `StaffUITests` (nur lesend: Mehr →
   Personal, Filter, alle Reiter der Akte, Lohnmonat, Lohnarten), PHP `tests/Feature/Payroll/*`.
+
+**Reiter „Vorsorge“ (seit 25.10.2026):** betriebliche Altersvorsorge aus `GET hub/staff/api/people/{id}/pension`
+(derselbe Stand wie der Web-Reiter „Altersvorsorge“, Beträge nur mit `manage_pension`): Stand-Chip, Zeile mit
+Datum/Anbieter, drei `StatTile` (Umwandlung, Zuschuss, Gesamt), Unterlagen (nur Namen — hochgeladen wird im Hub)
+und die Posten im Lohnmonat. `PensionSheetView` speichert über `PUT …/pension` (Stand, Daten, Anbieter,
+Entgeltumwandlung, Zuschuss in Prozent; Feldfehler des Hubs als Meldung). Die Personenliste trägt den Filter
+„baV offen“ und die Kachel „Vorsorge anbieten“ (`pension_due`). Snapshot `staff-person-pension`.
 
 ### Native Berichte-Übersicht (Tab „Berichte", seit 27.09.2026 — Nachzug 6, Schritt 1)
 

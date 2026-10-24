@@ -48,6 +48,7 @@ Admin-Backend. Der Austritt einer Person wird über die
 | Austritt: Konto archivieren | Team 1 |
 | Rollen und Rechte ändern, Konto im Admin-Backend pflegen | Admin 1 |
 | Gehälter, Bonus-Auszahlungen, Personalzuordnungen | Admin 7 |
+| Betriebliche Altersvorsorge: Stand, Beitrag, Unterlagen, Erinnerung | Team 1, App 13 |
 | Reisekosten erfassen und freigeben | Team 2, Team 3 |
 
 ---
@@ -103,6 +104,36 @@ Bild, sonst die Initialen in fester Größe (`.avatar-glattt-sm/-md/-lg`, `flex-
 Asana-Befund kamen von einer nicht existierenden Größenklasse). Die App (`StaffPersonRow`, `StaffPersonView`)
 nutzt denselben `ProfileAvatar` und zeigt „Was ansteht“ als Kacheln über den Chips
 (`StaffViewModel.attention`, neue Filter `fixed` und `noMaster`).
+
+### Seit 25.10.2026: Betriebliche Altersvorsorge (baV)
+
+Reiter **„Altersvorsorge“** der Personalakte (Web `partials/detail-pension.blade.php` + `public/js/staff-pension.js`,
+App `StaffPersonView` Reiter „Vorsorge“ + `PensionSheetView`). Entscheidungen Jan 25.10.2026 (Asana „baV im Hub
+eingliedern“, Joanna):
+
+- **Ein Stand je Person** (`hr_pensions`, Modell `HrPension`): `not_offered` · `offered` (Datum) · `concluded`
+  (Anbieter, Entgeltumwandlung, Arbeitgeberzuschuss in % und Cent, gilt ab) · `declined` (Datum, Grund) ·
+  `existing` (mitgebrachter Vertrag: Anbieter, übernommen ab). Notiz, `reminded_on`, `updated_by_user_id`.
+- **Rechte:** Lesen mit `view_staff_overview` — Leitungen sehen Stand, Datum und Anbieter, **nicht** Beträge,
+  Notiz und Unterlagen; pflegen mit dem neuen Recht **`manage_pension`** („Altersvorsorge pflegen“, vergeben wie
+  `manage_payroll`). `PensionService::payload()` lässt die Beträge ohne Recht weg.
+- **Lohnmonat:** bei `concluded` legt `PensionService::syncPayroll()` laufende Bezüge der Lohnarten
+  `bav_conversion` (Entgeltumwandlung, Abzug) und `bav_employer` (Zuschuss) ab `effective_from` an —
+  Anpassung = neuer Eintrag, der vorige endet am Vortag (`CompensationService::addRecurring`); `declined` und jeder
+  andere Stand beenden offene Posten zum Vortag. So stehen die Beträge im Lohnmonat und in der TXT-Liste.
+- **Einstellungen** (`hr_pension_settings`, Admin → Team → Altersvorsorge, `PensionSettings`): Anbietername
+  (aktuell einer), `allow_free_text_provider` (sonst erzwingt der Hub den Admin-Anbieter),
+  `employer_subsidy_percent` (Vorgabe 15 %), `reminder_months` (6).
+- **Erinnerung:** `hr:check-pension-offers` täglich 07:50 (Cloud Scheduler `/api/cron/check-pension-offers`,
+  Anlass `pension.offer_due` an `manage_pension`): fällig = aktiv, Eintritt (Stammdaten `hr_employee_profiles.entry_date`,
+  sonst askDANTE) + `reminder_months` erreicht, Stand `not_offered`; erinnert wird einmal je `reminder_months`
+  (`reminded_on`). Die Übersicht zeigt dieselben Personen als Kachel „Altersvorsorge anbieten“ und Filter „baV offen“
+  (`pension_due` im Verzeichnis).
+- **Unterlagen** (`hr_pension_documents`, Muster CancellationDocument): Arten Verzichtserklärung, Vertrag,
+  Beratungsprotokoll, Sonstiges; Upload nur im Web (`POST …/pension/documents`, bis 10 Dateien à 20 MB), Stream über
+  `GET …/pension/documents/{id}`, privater Bucket in der Cloud. Die App listet nur.
+- Endpunkte: `GET/PUT /hub/staff/api/people/{hrEmployee}/pension`, `…/pension/documents[/{id}]`;
+  Tests `tests/Feature/StaffPensionTest.php`.
 
 ### Fachregeln der Übersicht und Detailseite
 

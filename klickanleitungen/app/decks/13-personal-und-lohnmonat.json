@@ -7,7 +7,7 @@
   "audience": "leitung",
   "footerArea": "App",
   "stand": "25.10.2026",
-  "version": "1.5",
+  "version": "1.6",
   "nr": 13,
   "title": [
     "Personal und Lohnmonat",
@@ -85,6 +85,40 @@
           "n": 4,
           "title": "Zugang einrichten (Mitarbeiterin)",
           "text": "Der Link öffnet in der App den Bildschirm **Zugang einrichten**: PIN mit dem Ziffernblock der Anmeldeseite, zweimal eingeben, dann das Passwort. Wer eine gesendete PIN bekommen hat, muss sie nach der Anmeldung sofort ändern — die App fragt von selbst."
+        }
+      ]
+    },
+    {
+      "h1": "Altersvorsorge",
+      "sub": "Der Reiter Vorsorge zeigt den Stand der betrieblichen Altersvorsorge. Leitungen sehen den Stand ihrer Mitarbeiterinnen, das Büro pflegt Beitrag und Unterlagen.",
+      "card": {
+        "title": "Vorsorge",
+        "text": "Stand, Beitrag, Unterlagen"
+      },
+      "left": {
+        "shot": "staff-person-pension-light"
+      },
+      "leftCaption": "Stand **Abgeschlossen** mit Entgeltumwandlung, Zuschuss und Gesamtbeitrag; darunter die Unterlagen und die Posten im Lohnmonat.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Stand lesen",
+          "text": "**Noch nicht angeboten**, **Angeboten**, **Abgeschlossen**, **Abgelehnt** oder **Bestehende baV mitgebracht** — mit Datum und Anbieter."
+        },
+        {
+          "n": 2,
+          "title": "Stand ändern",
+          "text": "Nur mit dem Recht Altersvorsorge: Stand, Datum, Anbieter, Entgeltumwandlung und Zuschuss in Prozent. Bei **Abgeschlossen** landen beide Posten ab dem Datum im Lohnmonat."
+        },
+        {
+          "n": 3,
+          "title": "Unterlagen",
+          "text": "Die App zeigt, was abgelegt ist. Hochladen (Verzichtserklärung, Vertrag, Beratungsprotokoll) geht im Hub am Rechner."
+        },
+        {
+          "n": 4,
+          "title": "Erinnerung",
+          "text": "Sechs Monate nach Eintritt meldet der Hub dem Büro, wer noch kein Angebot hat — alle sechs Monate erneut. In der Personenliste zählt die Kachel **Vorsorge anbieten** mit."
         }
       ]
     },

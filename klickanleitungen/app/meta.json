@@ -1778,5 +1778,25 @@
     },
     "ratio": 2.098717948717949,
     "marks": []
+  },
+  "staff-person-pension-light": {
+    "box": {
+      "x": 0,
+      "y": 0,
+      "width": 780,
+      "height": 1331
+    },
+    "ratio": 1.7064102564102563,
+    "marks": []
+  },
+  "staff-person-pension-dark": {
+    "box": {
+      "x": 0,
+      "y": 0,
+      "width": 780,
+      "height": 1331
+    },
+    "ratio": 1.7064102564102563,
+    "marks": []
   }
 }
