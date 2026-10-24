@@ -3227,8 +3227,14 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 ## Passkeys und die iOS-App (24.10.2026)
 
-Die Apple-App-Site-Association enthält `webcredentials.apps` (Team + Bundle-ID) und die App den Eintrag `webcredentials:hub.glattt.com` —
-damit können Passkeys für `hub.glattt.com` grundsätzlich auch in den WebViews der App angeboten werden (Admin-Schranke, Bestätigung sensibler
-Aktionen). **Nicht verifiziert** auf dem Gerät; die nativen Aufrufe der App (`HubSession`) laufen bei den sensiblen Aktionen ohne Abfrage (Ausnahme
-`glatttHub-iOS/` in `RequirePinConfirmation`), bis die App eine eigene Passkey-/PIN-Abfrage hat. Siehe `MISSBRAUCHS-BREMSE.md`.
+Die Apple-App-Site-Association enthält `webcredentials.apps` (Team + Bundle-ID) und die App den Eintrag `webcredentials:hub.glattt.com`;
+die Relying-Party-ID ist für `hub.glattt.com` und `app.hub.glattt.com` dieselbe.
 
+**Bestätigung sensibler Aktionen nativ (ab 1.5.3, Build 120):** Antwortet der Hub einem Aufruf der `HubSession` (`json`, `jsonBody`,
+`download`) mit **423** und `pin_required`, fragt `HubConfirmation` nach — System-Passkey per `ASAuthorizationController`
+(Optionen von `POST /hub/bestaetigen/passkey/options`, Antwort an `…/passkey`, gleiches JSON wie `public/js/passkey.js`), für Personen ohne
+Passkey die PIN (Alert, `POST /hub/pin-bestaetigen`) — und wiederholt den Aufruf einmal. Downloads schicken dafür `Accept: application/json`,
+sonst leitet der Hub auf die HTML-Bestätigungsseite um. Die WebViews der App nutzen das Fenster aus `pin-confirm.js` (WebAuthn im WKWebView).
+Serverseitig ist die iOS-App nur noch **bis `security.ios_confirmation_min_version` (1.5.3)** ausgenommen (`RequirePinConfirmation::oldIosApp`);
+ältere Builds haben kein Fenster und bleiben deshalb frei. Auf dem Gerät **nicht** verifiziert (Simulator hat keine Passkeys) — per TestFlight prüfen.
+Siehe `MISSBRAUCHS-BREMSE.md`.
