@@ -422,6 +422,11 @@
     "kiosk",
     "ipad"
    ]
+  },
+  "Kundenservice": {
+   "beschreibung": "Der Kundenservice im Hub statt in Zendesk: Mails an kundenservice@ als Tickets lesen, per E-Mail oder WhatsApp beantworten, interne Notizen und Erwähnungen, neue Tickets anlegen, Kundin zuordnen, Vier-Augen-Prüfung, Tickets zusammenführen, Teams und Textbausteine pflegen, glatttBert als Schreibhilfe, Meine Tickets, Verlauf als PDF, Wiedervorlage und Zufriedenheitsumfrage.",
+   "fuer": "Für das Kundenservice-Team und alle, die Tickets ihrer Kundinnen mitlesen; Teams, Textbausteine und Anliegen pflegt die Leitung.",
+   "stichworte": "kundenservice ticket tickets zendesk mail e-mail kundenservice@ antworten antwort notiz erwähnen whatsapp textbaustein textbausteine makro team vier-augen prüfung zusammenführen doppelt wiedervorlage meine tickets pdf verlauf umfrage zufriedenheit glatttbert zusammenfassung anliegen abschließen posteingang postfach"
   }
  }
 }

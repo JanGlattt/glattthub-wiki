@@ -1,0 +1,286 @@
+{
+ "out": "../pdf/Kundenservice-1-tickets-bearbeiten",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Kundenservice",
+ "nr": 1,
+ "of": 3,
+ "audience": "buero",
+ "title": [
+  "Tickets",
+  "bearbeiten"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Kundenservice statt Zendesk: Tickets finden, lesen, per E-Mail oder WhatsApp antworten, interne Notizen schreiben, neue Tickets anlegen und die Kundin zuordnen",
+ "eyebrow": "Kundenservice · Tickets",
+ "footerArea": "Kundenservice",
+ "stand": "24.10.2026",
+ "version": "1.0",
+ "notes": [
+  "**Kundenservice** findest du in der Seitenleiste unter **Betrieb**. Jede Mail an kundenservice@ wird automatisch zu einem Ticket; Antworten der Kundin landen im selben Ticket.",
+  "Eine Antwort geht als **E-Mail** raus (oder als **WhatsApp**, wenn die Kundin so geschrieben hat). **Interne Notizen** sieht nur das Team.",
+  "Alle Beispiele in dieser Anleitung zeigen erfundene Kundinnen."
+ ],
+ "pages": [
+  {
+   "h1": "Die Seite Kundenservice",
+   "sub": "Links die Tickets, in der Mitte das Gespräch, rechts die Details — in einer Karte.",
+   "card": {
+    "title": "Die Seite",
+    "text": "Liste, Ansichten, Suche"
+   },
+   "left": {
+    "shot": "k1-liste"
+   },
+   "leftCaption": "**Kundenservice** mit der Ansicht **Meine Tickets**: oben Suche und „Neues Ticket“, links die Liste, rechts noch kein Ticket gewählt.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Suche",
+     "text": "Findet Tickets nach Name, Betreff, E-Mail oder **#Nummer** (z. B. #10101)."
+    },
+    {
+     "n": 2,
+     "title": "Ansicht",
+     "text": "Wechselt zwischen **Meine Tickets**, **Zu prüfen**, **Nicht zugewiesen**, **Alle offenen**, **Wartet auf Kundin**, **Gelöst** und den Teams. Die Zahl in Klammern zeigt, wie viele Tickets warten."
+    },
+    {
+     "n": 3,
+     "title": "Schnellfilter",
+     "text": "Die wichtigsten Ansichten mit Zähler: **Meine**, **Gelöst**, **Prüfen**, **Neu**, **Mehrfach** (Kundin hat mehrere offene Tickets) und **Alle offen**."
+    },
+    {
+     "n": 4,
+     "title": "Neues Ticket",
+     "text": "Legt ein Ticket von Hand an, z. B. wenn eine Kundin angerufen hat (Seite 5)."
+    }
+   ],
+   "hint": {
+    "text": "Pro Zeile steht genau ein Hinweis, der wichtigste zuerst: weitere offene Tickets der Kundin, wie lange sie schon wartet, bei wem die Prüfung liegt, die Wiedervorlage oder WhatsApp."
+   }
+  },
+  {
+   "h1": "Ein Ticket lesen",
+   "sub": "Der Verlauf steht in der Mitte, Anliegen, Team und Zuständige rechts.",
+   "card": {
+    "title": "Ticket lesen",
+    "text": "Verlauf, Details, Status"
+   },
+   "left": {
+    "shot": "k2-ticket"
+   },
+   "leftCaption": "Ein offenes Ticket: im Kopf Betreff, Nummer, Status und Kundin; unter dem Verlauf das Antwortfeld.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Abschließen",
+     "text": "Schließt das Ticket ab — **ohne** Mail an die Kundin. Mit Antwort geht es über das Menü am Senden-Pfeil („Senden & abschließen“, Kundenservice 3). Gehört das Ticket zu einem Team mit Vier-Augen-Prüfung, geht es zur Kontrolle an eine Kollegin (Kundenservice 2)."
+    },
+    {
+     "n": 2,
+     "title": "Verlauf",
+     "text": "Nachrichten der Kundin links, eure Antworten rechts, dazwischen Ereignisse wie „Ticket angelegt“. Interne Notizen sind farbig abgesetzt."
+    },
+    {
+     "n": 3,
+     "title": "Details",
+     "text": "**Anliegen**, **Team** und **Zuständig** stellst du hier ein; darunter Wiedervorlage und die Kundenkarte. Mit dem Spalten-Symbol im Kopf blendest du die Details ein und aus."
+    }
+   ],
+   "table": {
+    "head": [
+     "Status",
+     "Bedeutung"
+    ],
+    "rows": [
+     [
+      "Neu / Offen",
+      "wartet auf uns"
+     ],
+     [
+      "Wartet auf Kundin",
+      "wir haben geantwortet; schreibt sie zurück, ist das Ticket wieder offen"
+     ],
+     [
+      "Angehalten",
+      "wartet auf etwas Drittes, z. B. eine Rückmeldung aus dem Institut"
+     ],
+     [
+      "In Prüfung",
+      "abgeschlossen, eine Kollegin kontrolliert"
+     ],
+     [
+      "Gelöst / Geschlossen",
+      "erledigt; eine neue Mail der Kundin öffnet es wieder"
+     ]
+    ]
+   }
+  },
+  {
+   "h1": "Antworten",
+   "sub": "Das Antwortfenster sitzt angedockt unter dem Verlauf — mit Umschalter, Werkzeugen und einem Senden-Knopf mit Menü.",
+   "card": {
+    "title": "Antworten",
+    "text": "E-Mail, Textbaustein, Senden"
+   },
+   "left": {
+    "shot": "k3-antworten",
+    "marks": [
+     {
+      "id": "umschalter",
+      "dy": -1,
+      "at": "tl",
+      "dx": -1
+     },
+     {
+      "id": "werkzeuge",
+      "dy": -11
+     },
+     {
+      "id": "senden",
+      "dy": -11
+     },
+     {
+      "id": "pfeil",
+      "dy": -11,
+      "dx": 2
+     }
+    ]
+   },
+   "leftCaption": "Das Antwortfenster: dunkle Titelleiste mit Umschalter, darunter das Feld, unten eine Fußzeile mit Werkzeugen und dem Split-Knopf **Senden**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Umschalter",
+     "text": "In der Titelleiste („Antwort an <Name> · An <Adresse>“) wählst du **E-Mail**, bei WhatsApp-Tickets zusätzlich **WhatsApp**, oder **Notiz**. Mit dem Strich-Symbol minimierst du das Fenster, mit dem Pfeil-Symbol vergrößerst du es."
+    },
+    {
+     "n": 2,
+     "title": "Textbaustein",
+     "text": "In der Fußzeile links die Werkzeuge (Fett, Kursiv, Liste, Link, @, Anhang, eigener Baustein) und das Menü **Textbaustein**: setzt einen fertigen Text ins Feld, Platzhalter füllt der Hub aus. Daneben **glatttBert** (Kundenservice 2)."
+    },
+    {
+     "n": 3,
+     "title": "Senden",
+     "text": "Schickt die Antwort; rechts daneben steht, was danach passiert („Danach: wartet auf Kundin“)."
+    },
+    {
+     "n": 4,
+     "title": "Pfeil",
+     "text": "Das Menü am Pfeil bietet **Senden**, **Senden & abschließen** und **Senden & anhalten** (Kundenservice 3)."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "Die Kundin sieht deine Antwort als normale Mail — prüfe Anrede und Inhalt vor dem Senden. **Strg/⌘ + Enter** sendet ebenfalls. Antworten gehen nur, solange das Postfach im Live-Betrieb ist. In einer schmalen Spalte (Details offen) zeigt die Fußzeile nur Symbole: Details ausblenden schafft wieder Platz."
+   },
+   "right": {
+    "shot": "k3c-minimiert",
+    "marks": []
+   },
+   "rightCaption": "**Minimiert** bleibt nur die Titelleiste stehen — der Verlauf bekommt den ganzen Platz."
+  },
+  {
+   "h1": "Interne Notiz und Erwähnen",
+   "sub": "Für alles, was nur das Team lesen soll — Umschalter **Notiz** in der Titelleiste, mit @ bekommt eine Kollegin eine Mitteilung.",
+   "card": {
+    "title": "Interne Notiz",
+    "text": "Nur fürs Team, mit @"
+   },
+   "left": {
+    "shot": "k4-notiz"
+   },
+   "leftCaption": "Der Umschalter steht auf **Notiz** (dunkle Titelleiste: „Nur intern sichtbar“). Beim Tippen von @ erscheint die Liste der Kolleginnen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Notiz",
+     "text": "Der Umschalter **Notiz** in der Titelleiste. Die Kundin bekommt nichts, im Verlauf ist die Notiz farbig abgesetzt."
+    },
+    {
+     "n": 2,
+     "title": "Erwähnen",
+     "text": "Das @-Symbol in der Fußzeile oder ein getipptes @ öffnet die Kolleginnenliste. Wer erwähnt wird, bekommt eine Mitteilung und sieht **genau dieses Ticket** (auch ohne Bearbeitungsrecht) — sie darf dort Notizen schreiben."
+    },
+    {
+     "n": 3,
+     "title": "Notiz speichern",
+     "text": "Legt die Notiz im Verlauf ab."
+    }
+   ],
+   "hint": {
+    "text": "Erwähnte Tickets stehen bei der Kollegin in der Ansicht **Erwähnt**. Eine Rückfrage ans Institut gehört als Notiz ins Ticket, nicht in eine Mail."
+   }
+  },
+  {
+   "h1": "Neues Ticket anlegen",
+   "sub": "Dieselbe Ansicht wie sonst — als Entwurf: Betreff oben, Kundin rechts, Nachricht unten.",
+   "card": {
+    "title": "Neues Ticket",
+    "text": "Entwurf, Kundin, Senden"
+   },
+   "left": {
+    "shot": "k5-neues-ticket"
+   },
+   "leftCaption": "„Neues Ticket“ öffnet kein Formular, sondern die Ticketansicht mit der Marke **Entwurf**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Betreff",
+     "text": "Eine kurze Überschrift, die später in Liste und Mail steht."
+    },
+    {
+     "n": 2,
+     "title": "Kundin",
+     "text": "Im Kasten **Kundin** suchen (Name, E-Mail, Telefon) und anklicken; E-Mail und Name werden übernommen. Ist die Kundin nicht im Bestand, trägst du die E-Mail-Adresse darunter direkt ein."
+    },
+    {
+     "n": 3,
+     "title": "Nachricht",
+     "text": "Text schreiben und **Senden**: Der Hub legt das Ticket an und schickt die Mail. Antwortet die Kundin, landet ihre Antwort im selben Ticket. **Verwerfen** wirft den Entwurf weg."
+    }
+   ],
+   "hint": {
+    "text": "Neue Tickets gehen nur im Live-Betrieb des Postfachs; sonst ist der Knopf grau."
+   }
+  },
+  {
+   "h1": "Die Kundin zuordnen",
+   "sub": "Kam eine Mail von einer unbekannten Adresse, ordnest du die Kundin in einem Klick zu — und siehst dann Vertrag, Rate, Forderung und Termin.",
+   "card": {
+    "title": "Kundin",
+    "text": "Zuordnen, Kundenkarte"
+   },
+   "left": {
+    "shot": "k6b-zuordnen"
+   },
+   "right": {
+    "shot": "k6-kundin"
+   },
+   "leftCaption": "Im Kasten **Kundin** auf „Kundin zuordnen“ klicken, suchen und das Ergebnis wählen.",
+   "rightCaption": "Ist die Kundin zugeordnet, zeigt die **Kundenkarte** Vertrag, Restbetrag, Forderung und nächsten Termin.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zuordnen oder Ändern",
+     "text": "„Kundin zuordnen“ bzw. **Ändern** öffnet die Suche. Die Auswahl wird sofort gespeichert."
+    },
+    {
+     "n": 2,
+     "title": "Kundenkarte",
+     "text": "Vier Kennzahlen ohne Wechsel in die Kundenakte: **Vertrag** mit Körperzonen, **Rest** mit nächster Rate, **Forderung** (rot, wenn offen) und **nächster Termin**."
+    },
+    {
+     "n": 3,
+     "title": "Kundenakte öffnen",
+     "text": "Der Link darunter springt in die Kundenakte; ein Rechtsklick in der Desktop-App bietet dieselben Wege."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Vorgänge",
+     "text": "Unter der Kundenkarte stehen **Vorgänge** wie „Raten pausieren“ oder „Widerruf anlegen“. Sie öffnen den passenden Hub-Ablauf in einem neuen Tab; ist er erledigt, steht das automatisch als Notiz im Ticket."
+    }
+   ]
+  }
+ ]
+}

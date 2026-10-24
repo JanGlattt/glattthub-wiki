@@ -1,0 +1,233 @@
+{
+ "out": "../pdf/Kundenservice-2-pruefen-zusammenfuehren-textbausteine",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Kundenservice",
+ "nr": 2,
+ "of": 3,
+ "audience": "buero",
+ "title": [
+  "Prüfen, zusammenführen,",
+  "Textbausteine"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Vier-Augen-Prüfung, doppelte Tickets zusammenführen, Teams und Textbausteine pflegen, glatttBert als Schreibhilfe",
+ "eyebrow": "Kundenservice · Team",
+ "footerArea": "Kundenservice",
+ "stand": "24.10.2026",
+ "version": "1.0",
+ "notes": [
+  "Teams mit **Vier-Augen-Prüfung** schließen nie allein: Wer ein Ticket abschließt, schickt es an eine **andere** Kollegin desselben Teams zur Kontrolle.",
+  "**Zusammenführen** bringt mehrere Tickets derselben Kundin in einen Verlauf.",
+  "**Teams & Textbausteine** pflegt, wer das Recht dazu hat (Leitung/Büro); eigene Textbausteine legt jede Kollegin für sich an.",
+  "**glatttBert** schreibt nur auf Knopfdruck und sendet nie von allein."
+ ],
+ "pages": [
+  {
+   "h1": "Vier-Augen-Prüfung",
+   "sub": "Abgeschlossen heißt hier: eine Kollegin schaut noch einmal drauf.",
+   "card": {
+    "title": "Prüfung",
+    "text": "Übernehmen, Freigeben"
+   },
+   "left": {
+    "shot": "k7-pruefung"
+   },
+   "leftCaption": "Ein Ticket **In Prüfung**: oben das Band mit den drei Aktionen, darunter der Verlauf.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Freigeben",
+     "text": "Das Ticket ist in Ordnung und wird **gelöst**."
+    },
+    {
+     "n": 2,
+     "title": "Zurückgeben",
+     "text": "Es fehlt noch etwas: Du schreibst kurz auf, was (nächste Seite); das Ticket geht an die Schließende zurück."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Übernehmen",
+     "text": "Der Hub schlägt reihum eine Prüferin vor. Übernehmen darf jede **andere** Kollegin des Teams, nie die, die abgeschlossen hat. Wer „Zu prüfen“ öffnet, sieht alle Tickets, die auf sie warten."
+    }
+   ],
+   "hint": {
+    "text": "Ein Ticket, das du selbst zur Prüfung gegeben hast, steht nicht mehr unter **Meine Tickets** — es liegt jetzt bei der Kollegin."
+   }
+  },
+  {
+   "h1": "Zurückgeben",
+   "sub": "Eine kurze Notiz sagt, was noch fehlt — sie geht mit dem Ticket an die Schließende.",
+   "card": {
+    "title": "Zurückgeben",
+    "text": "Notiz, Rückgabe"
+   },
+   "left": {
+    "shot": "k8-zurueckgeben"
+   },
+   "leftCaption": "Beim Zurückgeben steht der Umschalter in der Titelleiste auf **Zurückgeben**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zurückgeben (Reiter)",
+     "text": "Die Titelleiste fragt nach der Notiz („Geht zurück an …“) — sie sieht nur das Team."
+    },
+    {
+     "n": 2,
+     "title": "Zurückgeben",
+     "text": "Schickt das Ticket mit der Notiz zurück; es steht dann wieder bei der Schließenden auf **Offen**. **Abbrechen** wechselt zurück zur Notiz."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "Ohne Notiz lässt sich nicht zurückgeben — so weiß die Kollegin, worum es geht."
+   }
+  },
+  {
+   "h1": "Tickets zusammenführen",
+   "sub": "Schreibt eine Kundin mehrfach, steht alles in einem Verlauf.",
+   "card": {
+    "title": "Zusammenführen",
+    "text": "Mehrere Tickets, ein Verlauf"
+   },
+   "left": {
+    "shot": "k9-zusammenfuehren"
+   },
+   "right": {
+    "shot": "k9b-merge-fenster"
+   },
+   "leftCaption": "Der gelbe Streifen erscheint, sobald die Kundin noch ein offenes Ticket hat.",
+   "rightCaption": "Das Fenster **Zusammenführen** (⋯ → „Zusammenführen …“) für beliebige Tickets.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Hierher zusammenführen",
+     "text": "Ein Klick holt die anderen offenen Tickets der Kundin in dieses Ticket; bei mehreren heißt der Knopf **Alle hierher zusammenführen**."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Was passiert",
+     "text": "Die Nachrichten des anderen Tickets wandern in dieses; das andere wird geschlossen und verweist hierher. Die Ansicht **Mehrfach geschrieben** listet alle Kundinnen mit mehreren offenen Tickets."
+    }
+   ]
+  },
+  {
+   "h1": "Teams und Mitglieder",
+   "sub": "Wer im Kundenservice arbeitet und ob ein Team die Vier-Augen-Prüfung braucht.",
+   "card": {
+    "title": "Teams",
+    "text": "Mitglieder, Vier-Augen-Prüfung"
+   },
+   "left": {
+    "shot": "k10-teams"
+   },
+   "leftCaption": "**Teams & Textbausteine** → Reiter **Teams**: je Team Mitglieder und der Schalter **Vier-Augen-Prüfung**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Reiter",
+     "text": "Teams, Textbausteine, Anliegen und gesperrte Absender (Spam) liegen in einem Fenster."
+    },
+    {
+     "n": 2,
+     "title": "Team",
+     "text": "Mitglieder abhaken, **Vier-Augen-Prüfung** ein- oder ausschalten und **Team speichern**."
+    }
+   ],
+   "hint": {
+    "text": "Das Fenster öffnet nur, wer „Teams & Textbausteine“ in der Kopfzeile sieht — das Recht vergibt das Büro im Admin über die Rollen."
+   }
+  },
+  {
+   "h1": "Textbausteine",
+   "sub": "Fertige Antworten mit Platzhaltern — für alle im Team oder nur für dich.",
+   "card": {
+    "title": "Textbausteine",
+    "text": "Platzhalter, Aktionen"
+   },
+   "left": {
+    "shot": "k11-textbausteine"
+   },
+   "leftCaption": "Reiter **Textbausteine**: links die Liste, rechts der Editor mit Platzhaltern und Aktionen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Liste",
+     "text": "Alle Bausteine mit Anfang des Texts; ein ⚡ zeigt, dass beim Senden etwas passiert (z. B. „wartet auf Kundin“). Im Antwortfenster wählst du sie über das Menü **Textbaustein** in der Fußzeile."
+    },
+    {
+     "n": 2,
+     "title": "Platzhalter",
+     "text": "**Vorname**, **Ticketnummer**, **Vertrag**, **Restbetrag**, **Nächste Rate**, **Nächster Termin** und **Mein Vorname** füllt der Hub beim Einfügen aus."
+    },
+    {
+     "n": 3,
+     "title": "Beim Senden",
+     "text": "Optional ändert der Baustein **Status**, **Wiedervorlage**, **Anliegen** oder **Team** gleich mit."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Eigene Bausteine",
+     "text": "Im Antwortfenster speichert das Lesezeichen-Symbol in der Fußzeile den aktuellen Text als **eigenen** Textbaustein (mit ★ markiert), den nur du siehst."
+    }
+   ]
+  },
+  {
+   "h1": "glatttBert hilft beim Schreiben",
+   "sub": "Vorschlag und Zusammenfassung gibt es nur auf Knopfdruck — gesendet wird nie automatisch.",
+   "card": {
+    "title": "glatttBert",
+    "text": "Vorschlag, Zusammenfassung"
+   },
+   "left": {
+    "shot": "k12-bert-vorschlag"
+   },
+   "right": {
+    "shot": "k13-zusammenfassung"
+   },
+   "leftCaption": "Der **Vorschlag von glatttBert** steht im Feld; der Hinweis nennt, was du prüfen solltest, und die Quellen.",
+   "rightCaption": "Die **Zusammenfassung** (⋯ → „Zusammenfassen (glatttBert)“) für lange Verläufe.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Vorschlag",
+     "text": "Der Knopf **glatttBert** in der Fußzeile: Bert liest Verlauf, Kundenkarte, Textbausteine und Wissensdatenbank und schreibt einen Entwurf. Du liest, passt an und sendest selbst. Im Umschalter **Notiz** schreibt er stattdessen eine Einschätzung mit nächsten Schritten."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Zusammenfassung",
+     "text": "Sie nennt, worum es geht, was zugesagt ist und was offen bleibt, und bleibt stehen, bis neue Nachrichten kommen („seitdem neue Nachrichten“). **Erneuern** rechnet sie neu, **Ausblenden** räumt sie weg."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "Bert kann irren — Beträge, Zusagen und Fristen immer selbst prüfen, bevor du sendest."
+   }
+  },
+  {
+   "h1": "Anliegen vorschlagen lassen",
+   "sub": "Hat die Stichwort-Erkennung nichts gefunden, schlägt glatttBert das Anliegen vor.",
+   "card": {
+    "title": "Anliegen",
+    "text": "Vorschlag von glatttBert"
+   },
+   "left": {
+    "shot": "k13b-anliegen"
+   },
+   "leftCaption": "Solange kein **Anliegen** gesetzt ist, steht unter dem Feld der Knopf **Vorschlag von glatttBert**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Vorschlag",
+     "text": "Bert liest das Ticket und setzt das passende Anliegen. Du kannst es im Feld jederzeit ändern."
+    }
+   ],
+   "hint": {
+    "text": "Das Anliegen steuert Statistik und Team-Zuordnung: Manche Anliegen leiten das Ticket automatisch ins passende Team weiter. Neue Anliegen und Stichwörter pflegt die Leitung im Reiter **Anliegen**."
+   }
+  }
+ ]
+}

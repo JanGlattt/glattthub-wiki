@@ -1,0 +1,170 @@
+{
+ "out": "../pdf/Kundenservice-3-meine-tickets-verlauf-umfrage",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Kundenservice",
+ "nr": 3,
+ "of": 3,
+ "audience": "buero",
+ "title": [
+  "Meine Tickets,",
+  "Verlauf und Umfrage"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — eigene Tickets im Blick, Verlauf als PDF, Abschließen mit und ohne Mail, Wiedervorlage und die Zufriedenheitsumfrage",
+ "eyebrow": "Kundenservice · Alltag",
+ "footerArea": "Kundenservice",
+ "stand": "24.10.2026",
+ "version": "1.0",
+ "notes": [
+  "**Meine Tickets** zeigt alle offenen Tickets, die dir zugewiesen sind — auch wartende. Was du zur Prüfung gegeben hast, liegt bei der Kollegin und steht dort nicht mehr.",
+  "**Abschließen** im Kopf schließt ohne Mail; **Senden & abschließen** schickt zuerst die Antwort.",
+  "Die **Zufriedenheitsumfrage** läuft nur, wenn die Verwaltung sie im Admin eingeschaltet hat."
+ ],
+ "pages": [
+  {
+   "h1": "Meine Tickets und Meine gelösten",
+   "sub": "Deine Arbeitsliste: was dir gehört und was du erledigt hast.",
+   "card": {
+    "title": "Meine Tickets",
+    "text": "Offene und gelöste"
+   },
+   "left": {
+    "shot": "k14-meine"
+   },
+   "right": {
+    "shot": "k15-meine-geloest"
+   },
+   "leftCaption": "**Meine Tickets**: alle dir zugewiesenen offenen Tickets, auch die, die auf die Kundin warten.",
+   "rightCaption": "**Meine gelösten**: deine erledigten Tickets, bis sie geschlossen werden.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Meine",
+     "text": "Der Schnellfilter **Meine** (oder die Ansicht im Auswahlfeld). Eine Zahl zeigt, wie viele dir gehören."
+    },
+    {
+     "n": 2,
+     "title": "Gelöst",
+     "text": "Der Filter **Gelöst** wechselt zu **Meine gelösten**."
+    }
+   ],
+   "hint": {
+    "text": "Gibst du ein Ticket zur Vier-Augen-Prüfung, verschwindet es aus **Meine Tickets** — es wartet bei der Prüferin (Ansicht **Zu prüfen** bei ihr). Wird es zurückgegeben, erscheint es wieder."
+   }
+  },
+  {
+   "h1": "Verlauf als PDF",
+   "sub": "Der Schriftverkehr zu einem Ticket zum Ablegen oder Weitergeben — wahlweise mit internen Notizen.",
+   "card": {
+    "title": "Verlauf als PDF",
+    "text": "Mit und ohne Notizen"
+   },
+   "left": {
+    "shot": "k16-menue"
+   },
+   "right": {
+    "shot": "k16b-pdf"
+   },
+   "leftCaption": "Das Menü ⋯ im Ticketkopf: **Verlauf als PDF** und **Verlauf als PDF mit Notizen**.",
+   "rightCaption": "Der erzeugte Verlauf: Kopf mit Ticketdaten, dann alle Nachrichten (hier mit Notizen).",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Menü ⋯",
+     "text": "Im Kopf des Tickets rechts neben „Abschließen“."
+    },
+    {
+     "n": 2,
+     "title": "PDF wählen",
+     "text": "**Verlauf als PDF** enthält nur den Schriftverkehr mit der Kundin; **mit Notizen** zusätzlich die internen Notizen."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "Die Variante **mit Notizen** nie an die Kundin oder Dritte weitergeben — die Notizen sind nur fürs Team gedacht."
+   }
+  },
+  {
+   "h1": "Abschließen oder Senden & abschließen",
+   "sub": "Zwei Wege zum Abschluss — der Kopfknopf ohne Mail, das Menü am Senden-Pfeil mit Mail.",
+   "card": {
+    "title": "Abschließen",
+    "text": "Mit und ohne Mail"
+   },
+   "left": {
+    "shot": "k3b-senden-menue"
+   },
+   "leftCaption": "Der Kopfknopf **Abschließen** und das geöffnete Menü am Pfeil neben **Senden**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Abschließen",
+     "text": "Der Knopf oben im Ticket schließt, **ohne** der Kundin zu schreiben — z. B. wenn alles schon geklärt ist."
+    },
+    {
+     "n": 2,
+     "title": "Senden & abschließen",
+     "text": "Im Menü am Pfeil neben „Senden“: schickt die geschriebene Antwort **und** schließt das Ticket. Weitere Einträge: **Senden** (Ticket wartet auf die Kundin) und **Senden & anhalten**."
+    }
+   ],
+   "hint": {
+    "text": "Mit Vier-Augen-Prüfung geht das Ticket nach dem Abschließen **In Prüfung** zu einer Kollegin (Menütext: „Geht zur Prüfung, wenn das Team sie verlangt“); ohne Prüfpflicht steht es sofort auf **Gelöst**. Schreibt die Kundin später wieder, öffnet sich das Ticket von selbst."
+   }
+  },
+  {
+   "h1": "Wiedervorlage",
+   "sub": "Ein Ticket an einem bestimmten Tag wieder nach oben holen.",
+   "card": {
+    "title": "Wiedervorlage",
+    "text": "Morgen, in 3 Tagen, Datum"
+   },
+   "left": {
+    "shot": "k18-wiedervorlage"
+   },
+   "leftCaption": "Das Fenster **Wiedervorlage** (⋯ → „Wiedervorlage“ oder „setzen“ in den Details).",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Tag wählen",
+     "text": "Schnellauswahl (morgen, in 3 Tagen, in einer Woche …) oder ein Datum im Kalender."
+    },
+    {
+     "n": 2,
+     "title": "Speichern",
+     "text": "Am gewählten Tag öffnet sich das Ticket wieder und steht in der Liste mit „Wiedervorlage …“."
+    }
+   ],
+   "hint": {
+    "text": "Auch ein Textbaustein kann eine Wiedervorlage setzen (Kundenservice 2)."
+   }
+  },
+  {
+   "h1": "Zufriedenheitsumfrage",
+   "sub": "Ein Tag nach „gelöst“ bekommt die Kundin eine Mail mit fünf Sternen.",
+   "card": {
+    "title": "Umfrage",
+    "text": "Sterne, Stand am Ticket"
+   },
+   "left": {
+    "shot": "k17-umfrage"
+   },
+   "leftCaption": "In den Details steht **Zufriedenheit**: Sterne, Datum und – wenn vorhanden – der Kommentar der Kundin.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Stand",
+     "text": "Solange die Kundin nicht geantwortet hat, steht dort „Umfrage verschickt … noch keine Antwort“."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Schlechte Bewertung",
+     "text": "Bei **ein oder zwei Sternen** öffnet sich das Ticket wieder, und die Zuständige bekommt eine Mitteilung — dann am besten gleich bei der Kundin nachfragen."
+    }
+   ],
+   "hint": {
+    "text": "Ein Klick auf die Sterne in der Mail genügt; der Kommentar ist freiwillig. Die Umfrage schaltet die Verwaltung im Admin ein."
+   }
+  }
+ ]
+}
