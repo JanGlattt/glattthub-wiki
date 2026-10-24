@@ -248,6 +248,11 @@ Jan, 19.09.2026: Stufe 1 + 2 jetzt, Stufe 3 fallweise.
 
 ## Changelog
 
+- **24.10.2026 (Sicherheitsreview)** — Die Schranke gilt auch für Livewire-Aktualisierungen: `authMiddleware([...], isPersistent: true)` im
+  `AdminPanelProvider`, denn jede Admin-Aktion (Speichern, Zugang senden, Passkeys) läuft über `POST /livewire/update`, wo Livewire nur
+  **persistente** Middleware wiederholt. Dort zählt nur eine geworfene Antwort als Abbruch (`Utils::applyMiddleware` bricht nur bei
+  `RedirectResponse` ab) — `RequireAdminPassword` wirft deshalb `HttpResponseException` statt Antworten zurückzugeben. Test
+  `AdminPasswordGateTest::test_livewire_aktualisierungen_verlangen_die_schranke_ebenfalls`.
 - **24.10.2026** — Schranke vor dem Panel: Passkey **oder** Passwort (`AdminPasskeyController`, Wiki `MISSBRAUCHS-BREMSE.md`);
   neue Seiten System → **Passkeys** (`PasskeyResource`, Recht `manage_passkeys`) und **Bestätigungspflichtige Aktionen**
   (`SensitiveActionSettings`, Recht `manage_sensitive_actions`); im Reiter Zugang der Hub-Nutzer der Block „Passkey" und die Aktionen

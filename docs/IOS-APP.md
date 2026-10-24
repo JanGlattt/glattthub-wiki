@@ -3236,5 +3236,8 @@ die Relying-Party-ID ist für `hub.glattt.com` und `app.hub.glattt.com` dieselbe
 Passkey die PIN (Alert, `POST /hub/pin-bestaetigen`) — und wiederholt den Aufruf einmal. Downloads schicken dafür `Accept: application/json`,
 sonst leitet der Hub auf die HTML-Bestätigungsseite um. Die WebViews der App nutzen das Fenster aus `pin-confirm.js` (WebAuthn im WKWebView).
 Serverseitig ist die iOS-App nur noch **bis `security.ios_confirmation_min_version` (1.5.3)** ausgenommen (`RequirePinConfirmation::oldIosApp`);
-ältere Builds haben kein Fenster und bleiben deshalb frei. Auf dem Gerät **nicht** verifiziert (Simulator hat keine Passkeys) — per TestFlight prüfen.
+ältere Builds haben kein Fenster und bleiben deshalb frei — aber nur als nachgewiesene App: freigeschaltetes Gerät (`X-Hub-Device`/Cookie) plus
+Versionsstand im User-Agent (Sicherheitsreview 24.10.2026; vorher reichte die Kopfzeile allein). Beim **Pflichtwechsel der PIN** nach dem Erstzugang
+(`AccessSetupView`, Modus `.change`) schickt die App die PIN der eben erfolgten Anmeldung als `current_pin` mit (`CredentialChangeRequest.currentPin`
+aus `HubSession.postCredentials`) — der Hub verlangt sie seit 24.10.2026 für jeden PIN-Wechsel; Feldfehler `current_pin` erscheint am Ziffernblock. Auf dem Gerät **nicht** verifiziert (Simulator hat keine Passkeys) — per TestFlight prüfen.
 Siehe `MISSBRAUCHS-BREMSE.md`.

@@ -97,6 +97,9 @@ iPadOS-Safari sich als „Macintosh" meldet; auf Apple-Geräten sind Safari/Chro
 zählen als „browser". Die Apps behalten ihren Token (`glatttHub-iOS/`, `glatttHub-Desktop/`) — die native
 App-Schicht (`HubSession`) und die WebViews teilen sich dieselbe Kennung. Sitzungen ohne Kennung (vor der
 Einführung) bekommen sie beim nächsten Aufruf. Abschalten, falls eine Umgebung ihre Kennung zur Laufzeit wechselt.
+Ein Wechsel der Kennung meldet **immer** ab — die Übergangsregel vom 24.10.2026 (alter Familien-Hash wird von einer
+App-Anfrage still umgebunden) ist seit dem Sicherheitsreview am selben Tag entfernt: Sie ließ jede Browser-Sitzung
+mit gefälschter App-Kennung zur „App" werden; alte Sitzungen sind nach 120 Minuten ohnehin abgelaufen.
 
 **Fallstricke:** Listener in `app/Listeners` mit Methoden namens `handle…` entdeckt Laravel selbst — wer sie zusätzlich in
 `AppServiceProvider` registriert, bekommt jede Meldung doppelt (deshalb heißen die Methoden `record`/`on…`).
@@ -127,10 +130,23 @@ ein, zeigt `#pin-confirm-modal` (**z-index 100010 über jedem anderen Modal** �
 Lade-Kreis), fragt das Gerät (`POST /hub/bestaetigen/passkey/options` + `/hub/bestaetigen/passkey`) oder die PIN
 (`POST /hub/pin-bestaetigen`) und wiederholt die Anfrage einmal. Falsche Versuche zählt eine Bremse je Konto (5 / 10 Minuten).
 
-**Ausnahmen/Schalter:** Anfragen der iOS-App (`glatttHub-iOS/`) sind ausgenommen — sie ruft einige Endpunkte direkt auf und hat noch keine
-Abfrage. Gesamtschalter `SECURITY_PIN_CONFIRMATION` (Notfall; in `phpunit.xml` aus). Wer in einer Umgebung ohne Passkey-Unterstützung (ältere
+**Ausnahmen/Schalter:** Anfragen der iOS-App **vor 1.5.3** (`security.ios_confirmation_min_version`) sind ausgenommen — sie hatten noch
+kein eigenes Fenster. Die Ausnahme gilt nur für eine **nachgewiesene** App: freigeschaltetes Gerät (`X-Hub-Device`/Cookie, `DeviceTrust`)
+**und** Versionsstand im User-Agent; ein `glatttHub-iOS/` ohne Version ist nie die App. Bis zum Sicherheitsreview am 24.10.2026 reichte der
+User-Agent allein — eine frei setzbare Kopfzeile, mit der jeder Browser die Bestätigung übersprang. Gesamtschalter `SECURITY_PIN_CONFIRMATION`
+(Notfall; in `phpunit.xml` aus). Wer in einer Umgebung ohne Passkey-Unterstützung (ältere
 Desktop-App) arbeitet, aber einen Passkey hat, kann nicht mit der PIN ausweichen — Hinweis im Fenster: im Browser bestätigen oder die App
 aktualisieren. Admin-Backend-Aktionen sind durch die Admin-Schranke geschützt.
+
+**Die Bestätigung kennt ihre Methode (Sicherheitsreview 24.10.2026):** In der Sitzung stehen `pin_confirmed_at`, `pin_confirmed_used` und
+`pin_confirmed_method` (`pin` | `passkey`). `PinConfirmation::isConfirmed()` bekommt die ganze Einstellung der Aktion und lässt eine
+PIN-Bestätigung nur durch, wenn die Aktion den PIN-Rückfall erlaubt — vorher reichte eine PIN-Bestätigung **ohne** Aktionsschlüssel (so postet
+die Rückfall-Seite) oder für eine andere Aktion, und „nur mit Passkey" war für alle ohne Passkey wirkungslos. Der `action`-Parameter von
+`POST /hub/pin-bestaetigen` dient nur noch der Meldung, nie der Entscheidung.
+
+**Eigene PIN nur mit der bisherigen:** `POST /hub/profile/credentials` verlangt `current_pin`, sobald eine PIN gesetzt ist (die App schickt
+beim Pflichtwechsel die PIN der eben erfolgten Anmeldung mit). Sonst setzte sich eine gestohlene Sitzung eine eigene PIN und bestätigte damit —
+derselbe Grund, aus dem Passwortwechsel `current_password` brauchen. Nach dem Wechsel verfällt eine offene Bestätigung (`PinConfirmation::forget`).
 
 **Bestätigungsfenster statt `window.confirm`:** `GlatttConfirm.ask({ title, message, confirmLabel, danger })` (`public/js/hub-confirm.js`,
 Markup `#hub-confirm-modal` im Layout `hub`); auf der Vertragsseite ersetzt es die vier Browser-Dialoge (Zahlungsplan stornieren,
