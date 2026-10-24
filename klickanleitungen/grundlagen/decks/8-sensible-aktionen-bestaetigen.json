@@ -1,225 +1,260 @@
 {
- "out": "../pdf/Grundlagen-8-Sensible-Aktionen-bestaetigen",
- "meta": "../meta.json",
- "shots": "../shots",
- "series": "Grundlagen",
- "nr": 8,
- "of": 8,
- "audience": "institut",
- "title": [
-  "Sensible Aktionen",
-  "bestätigen"
- ],
- "subtitle": "Klickanleitung für den glatttHub — wann der Hub nachfragt und wie du mit Passkey oder PIN bestätigst",
- "eyebrow": "Grundlagen · Sicherheit",
- "footerArea": "Grundlagen",
- "stand": "24.10.2026",
- "version": "1.0",
- "notes": [
-  "**Bei Aktionen mit Folgen für Geld und Zugänge fragt der Hub vorher nach** — Bankverbindung, SEPA-Mandat und Zahlungsplan, Konten und PINs, Report-Mails.",
-  "**Mit Passkey bestätigst du jedes Mal neu** — Fingerabdruck oder Gesicht, kein Passwort, nichts zum Merken.",
-  "**Noch kein Passkey? Dann fragt der Hub nach deiner PIN.** Sobald du einen Passkey hast, gilt nur noch er.",
-  "**Das schützt dich**, wenn jemand deinen Bildschirm offen vorfindet oder deine Sitzung kopiert."
- ],
- "pages": [
-  {
-   "h1": "Wann der Hub nachfragt",
-   "sub": "Bei wenigen, folgenreichen Aktionen erscheint vor dem Ausführen ein kleines Fenster — dort bestätigst du, dass du es bist.",
-   "card": {
-    "title": "Wann der Hub nachfragt",
-    "text": "Die Aktionen im Überblick"
-   },
-   "left": {
-    "shot": "g8-fenster-passkey"
-   },
-   "leftCaption": "Das Fenster „Kurz bestätigen“ legt sich über die Aktion, die gerade offen ist.",
-   "table": {
-    "head": [
-     "Aktion",
-     "Wo",
-     "Beispiel"
-    ],
-    "rows": [
-     [
-      "Bankverbindung ändern",
-      "Vertrag, Werber-Auszahlung, Institut",
-      "Neue IBAN im Fenster „Bankverbindung ändern“"
-     ],
-     [
-      "SEPA-Mandat und Zahlungsplan",
-      "Vertrag → SEPA",
-      "Mandat anlegen oder stornieren, Zahlungsplan anlegen, ändern oder stornieren, Einzug auslösen"
-     ],
-     [
-      "Konten und PIN",
-      "Personal, Institut → Team",
-      "Hub-Konto anlegen, PIN für eine Kollegin vergeben"
-     ],
-     [
-      "Report-Mails",
-      "System → Report-Mails",
-      "Abo anlegen, ändern oder sofort senden"
-     ]
-    ]
-   },
-   "hint": {
-    "text": "**Nur diese Aktionen.** Alles andere — Termine, Kunden ansehen, Beratung, Zahlungen nachtragen — läuft ohne Rückfrage."
-   }
-  },
-  {
-   "h1": "Mit Passkey bestätigen",
-   "sub": "So läuft es ab, sobald du einen Passkey eingerichtet hast.",
-   "card": {
-    "title": "Mit Passkey",
-    "text": "Fingerabdruck oder Gesicht"
-   },
-   "left": {
-    "shot": "g8-fenster-passkey"
-   },
-   "leftCaption": "Der Hub fragt dein Gerät gleich selbst — du musst nur noch bestätigen.",
-   "steps": [
+  "out": "../pdf/Grundlagen-8-Sensible-Aktionen-bestaetigen",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "Grundlagen",
+  "nr": 8,
+  "of": 8,
+  "audience": "institut",
+  "title": [
+    "Sensible Aktionen",
+    "bestätigen"
+  ],
+  "subtitle": "Klickanleitung für den glatttHub — wann der Hub nachfragt und wie du mit Passkey oder PIN bestätigst, im Browser, in der Desktop-App und in der App auf iPhone und iPad",
+  "eyebrow": "Grundlagen · Sicherheit",
+  "footerArea": "Grundlagen",
+  "stand": "24.10.2026",
+  "version": "1.1",
+  "notes": [
+    "**Bei Aktionen mit Folgen für Geld und Zugänge fragt der Hub vorher nach** — Bankverbindung, SEPA-Mandat und Zahlungsplan, Konten und PINs, Report-Mails.",
+    "**Mit Passkey bestätigst du jedes Mal neu** — Fingerabdruck oder Gesicht, kein Passwort, nichts zum Merken.",
+    "**Noch kein Passkey? Dann fragt der Hub nach deiner PIN.** Sobald du einen Passkey hast, gilt nur noch er.",
+    "**Das schützt dich**, wenn jemand deinen Bildschirm offen vorfindet oder deine Sitzung kopiert."
+  ],
+  "pages": [
     {
-     "n": 1,
-     "title": "Aktion auslösen",
-     "text": "Wie gewohnt, z. B. **„Speichern“** im Fenster „Bankverbindung ändern“."
+      "h1": "Wann der Hub nachfragt",
+      "sub": "Bei wenigen, folgenreichen Aktionen erscheint vor dem Ausführen ein kleines Fenster — dort bestätigst du, dass du es bist.",
+      "card": {
+        "title": "Wann der Hub nachfragt",
+        "text": "Die Aktionen im Überblick"
+      },
+      "left": {
+        "shot": "g8-fenster-passkey"
+      },
+      "leftCaption": "Das Fenster „Kurz bestätigen“ legt sich über die Aktion, die gerade offen ist.",
+      "table": {
+        "head": [
+          "Aktion",
+          "Wo",
+          "Beispiel"
+        ],
+        "rows": [
+          [
+            "Bankverbindung ändern",
+            "Vertrag, Werber-Auszahlung, Institut",
+            "Neue IBAN im Fenster „Bankverbindung ändern“"
+          ],
+          [
+            "SEPA-Mandat und Zahlungsplan",
+            "Vertrag → SEPA",
+            "Mandat anlegen oder stornieren, Zahlungsplan anlegen, ändern oder stornieren, Einzug auslösen"
+          ],
+          [
+            "Konten und PIN",
+            "Personal, Institut → Team",
+            "Hub-Konto anlegen, PIN für eine Kollegin vergeben"
+          ],
+          [
+            "Report-Mails",
+            "System → Report-Mails",
+            "Abo anlegen, ändern oder sofort senden"
+          ]
+        ]
+      },
+      "hint": {
+        "text": "**Nur diese Aktionen.** Alles andere — Termine, Kunden ansehen, Beratung, Zahlungen nachtragen — läuft ohne Rückfrage."
+      }
     },
     {
-     "n": 2,
-     "title": "Fenster erscheint",
-     "text": "„Kurz bestätigen“ öffnet sich über allem, was gerade offen ist."
+      "h1": "Mit Passkey bestätigen",
+      "sub": "So läuft es ab, sobald du einen Passkey eingerichtet hast.",
+      "card": {
+        "title": "Mit Passkey",
+        "text": "Fingerabdruck oder Gesicht"
+      },
+      "left": {
+        "shot": "g8-fenster-passkey"
+      },
+      "leftCaption": "Der Hub fragt dein Gerät gleich selbst — du musst nur noch bestätigen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Aktion auslösen",
+          "text": "Wie gewohnt, z. B. **„Speichern“** im Fenster „Bankverbindung ändern“."
+        },
+        {
+          "n": 2,
+          "title": "Fenster erscheint",
+          "text": "„Kurz bestätigen“ öffnet sich über allem, was gerade offen ist."
+        },
+        {
+          "n": 3,
+          "title": "Gerät bestätigt",
+          "text": "**Touch ID**, **Face ID** oder die Geräte-PIN — je nachdem, was dein Gerät anbietet. Bei Bitwarden zuerst den Tresor entsperren."
+        },
+        {
+          "n": 4,
+          "title": "Es geht weiter",
+          "text": "Die Aktion läuft von selbst zu Ende. Du musst sie **nicht** noch einmal anstoßen."
+        }
+      ],
+      "hint": {
+        "text": "**Jedes Mal neu.** Die Bestätigung gilt für genau diese eine Aktion. Wer nacheinander Mandat und Zahlungsplan anlegt, bestätigt zweimal.",
+        "kind": "warn"
+      }
     },
     {
-     "n": 3,
-     "title": "Gerät bestätigt",
-     "text": "**Touch ID**, **Face ID** oder die Geräte-PIN — je nachdem, was dein Gerät anbietet. Bei Bitwarden zuerst den Tresor entsperren."
+      "h1": "Noch kein Passkey: die PIN",
+      "sub": "Bis ein Passkey eingerichtet ist, bestätigst du mit deiner vierstelligen PIN.",
+      "card": {
+        "title": "Mit PIN",
+        "text": "Rückfall ohne Passkey"
+      },
+      "left": {
+        "shot": "g8-fenster-pin"
+      },
+      "leftCaption": "Ohne Passkey zeigt das Fenster das PIN-Feld.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "PIN eintippen",
+          "text": "Deine **vierstellige PIN** — dieselbe wie bei der Anmeldung."
+        },
+        {
+          "n": 2,
+          "title": "„Bestätigen“",
+          "text": "Stimmt die PIN, läuft die Aktion von selbst weiter."
+        },
+        {
+          "n": 3,
+          "title": "Abbrechen",
+          "text": "**„Abbrechen“** oder **Esc** schließt das Fenster; die Aktion wird dann nicht ausgeführt."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Fünf Versuche",
+          "text": "Nach fünf falschen PINs sperrt der Hub die Eingabe für zehn Minuten."
+        },
+        {
+          "title": "Passkey bekommen",
+          "text": "Wer einen Passkey hat, bestätigt **nur noch damit** — die PIN geht dann nicht mehr. Das ist gewollt: Sie würde sonst jedem helfen, der deine PIN kennt."
+        }
+      ],
+      "hint": {
+        "text": "**Einen Passkey bekommst du von der Administration.** Sie schickt dir einen Einrichtungs-Link; wie du ihn nutzt, steht in „Admin 9“."
+      }
     },
     {
-     "n": 4,
-     "title": "Es geht weiter",
-     "text": "Die Aktion läuft von selbst zu Ende. Du musst sie **nicht** noch einmal anstoßen."
+      "h1": "In der App auf iPhone und iPad",
+      "sub": "Ab App-Version 1.5.3 fragt auch die glatttHub-App nach, bevor sie eine dieser Aktionen ausführt. Es erscheint das Passkey-Fenster deines iPhones oder iPads.",
+      "layout": "text",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Aktion auslösen",
+          "text": "Wie gewohnt, z. B. **„Speichern“** bei einer neuen Bankverbindung oder **„Export laden“**."
+        },
+        {
+          "n": 2,
+          "title": "Passkey-Fenster erscheint",
+          "text": "Das Fenster mit dem Passkey von **hub.glattt.com** öffnet sich von unten. Es kommt vom iPhone selbst, nicht von der App."
+        },
+        {
+          "n": 3,
+          "title": "Mit Face ID oder Touch ID bestätigen",
+          "text": "Schau auf das Gerät oder lege den Finger auf. Danach läuft die Aktion von selbst zu Ende — du musst sie **nicht** noch einmal anstoßen."
+        },
+        {
+          "n": 4,
+          "title": "Noch kein Passkey? Dann die PIN",
+          "text": "Statt des Systemfensters erscheint ein kleines Fenster **„Kurz bestätigen“** mit einem PIN-Feld. Vier Ziffern eingeben, **„Bestätigen“** tippen."
+        }
+      ],
+      "hint": {
+        "text": "**Abbrechen ist erlaubt.** Tippst du im Fenster auf „Abbrechen“, passiert nichts — die Aktion wird nicht ausgeführt. Eine ältere App-Version (vor 1.5.3) fragt nicht nach; bitte über TestFlight bzw. den App Store aktualisieren."
+      }
+    },
+    {
+      "h1": "Rückfragen mit Bestätigungsfenster",
+      "sub": "Endgültige Schritte fragen im Hub-Fenster nach — nicht mehr im Fenster des Browsers.",
+      "card": {
+        "title": "Hub-Fenster",
+        "text": "Stornieren, zurücksetzen, reaktivieren"
+      },
+      "left": {
+        "shot": "g8-fenster-storno"
+      },
+      "leftCaption": "Die Rückfrage vor einem endgültigen Schritt.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Lesen",
+          "text": "Titel und Text sagen, **was** passiert — z. B. dass der GoCardless-Ratenzahlungsplan storniert wird."
+        },
+        {
+          "n": 2,
+          "title": "Entscheiden",
+          "text": "Der rote Knopf führt aus, **„Abbrechen“** lässt alles, wie es ist. Der Fokus liegt bewusst auf „Abbrechen“."
+        },
+        {
+          "n": 3,
+          "title": "Danach bestätigen",
+          "text": "Bei den Aktionen oben folgt auf **„Zahlungsplan stornieren“** noch die Bestätigung per Passkey oder PIN."
+        }
+      ],
+      "hint": {
+        "text": "**Im Zweifel abbrechen.** Ein stornierter Zahlungsplan lässt sich nur über neues Anlegen wiederherstellen — und die erste Rate verschiebt sich dann."
+      }
+    },
+    {
+      "h1": "Wenn es nicht klappt",
+      "sub": "Die häufigsten Meldungen und was sie bedeuten.",
+      "layout": "text",
+      "table": {
+        "head": [
+          "Meldung",
+          "Ursache",
+          "Was tun"
+        ],
+        "rows": [
+          [
+            "„Du hast einen Passkey — bitte damit bestätigen.“",
+            "Du hast schon einen Passkey, die PIN gilt nicht mehr.",
+            "Auf „Mit Passkey bestätigen“ gehen."
+          ],
+          [
+            "„In dieser Umgebung gibt es keine Passkeys.“",
+            "Ältere Desktop-App (vor 1.2.9) oder ein Browser ohne Passkey-Unterstützung.",
+            "Die Desktop-App aktualisieren (ab Version 1.2.9) oder im Safari arbeiten."
+          ],
+          [
+            "„Diese Aktion verlangt einen Passkey.“",
+            "Die Administration hat den PIN-Rückfall für diese Aktion abgeschaltet.",
+            "Einrichtungs-Link bei der Administration anfragen."
+          ],
+          [
+            "„Zu viele Versuche.“",
+            "Fünf falsche Eingaben in kurzer Zeit.",
+            "Zehn Minuten warten, dann noch einmal."
+          ],
+          [
+            "Das Gerät zeigt „abgebrochen oder nicht erlaubt“",
+            "Touch ID oder Face ID wurde nicht bestätigt, oder der Passkey liegt nicht auf diesem Gerät.",
+            "Noch einmal versuchen; bei Bitwarden den Tresor entsperren; sonst neuen Link anfragen."
+          ],
+          [
+            "In der App erscheint „Passkey nicht bestätigt“",
+            "Das iPhone hat den Passkey nicht freigegeben (abgebrochen, Face ID nicht erkannt).",
+            "Noch einmal versuchen. Hilft das nicht: Passkey im Hub unter deinem Konto prüfen lassen."
+          ]
+        ]
+      },
+      "hint": {
+        "text": "**Der Hub fragt nie nach deinem Passkey-Geheimnis.** Er bekommt nur die Bestätigung deines Geräts. Wer dich nach einem „Passkey-Code“ fragt, will etwas anderes.",
+        "kind": "warn"
+      }
     }
-   ],
-   "hint": {
-    "text": "**Jedes Mal neu.** Die Bestätigung gilt für genau diese eine Aktion. Wer nacheinander Mandat und Zahlungsplan anlegt, bestätigt zweimal.",
-    "kind": "warn"
-   }
-  },
-  {
-   "h1": "Noch kein Passkey: die PIN",
-   "sub": "Bis ein Passkey eingerichtet ist, bestätigst du mit deiner vierstelligen PIN.",
-   "card": {
-    "title": "Mit PIN",
-    "text": "Rückfall ohne Passkey"
-   },
-   "left": {
-    "shot": "g8-fenster-pin"
-   },
-   "leftCaption": "Ohne Passkey zeigt das Fenster das PIN-Feld.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "PIN eintippen",
-     "text": "Deine **vierstellige PIN** — dieselbe wie bei der Anmeldung."
-    },
-    {
-     "n": 2,
-     "title": "„Bestätigen“",
-     "text": "Stimmt die PIN, läuft die Aktion von selbst weiter."
-    },
-    {
-     "n": 3,
-     "title": "Abbrechen",
-     "text": "**„Abbrechen“** oder **Esc** schließt das Fenster; die Aktion wird dann nicht ausgeführt."
-    }
-   ],
-   "notes": [
-    {
-     "title": "Fünf Versuche",
-     "text": "Nach fünf falschen PINs sperrt der Hub die Eingabe für zehn Minuten."
-    },
-    {
-     "title": "Passkey bekommen",
-     "text": "Wer einen Passkey hat, bestätigt **nur noch damit** — die PIN geht dann nicht mehr. Das ist gewollt: Sie würde sonst jedem helfen, der deine PIN kennt."
-    }
-   ],
-   "hint": {
-    "text": "**Einen Passkey bekommst du von der Administration.** Sie schickt dir einen Einrichtungs-Link; wie du ihn nutzt, steht in „Admin 9“."
-   }
-  },
-  {
-   "h1": "Rückfragen mit Bestätigungsfenster",
-   "sub": "Endgültige Schritte fragen im Hub-Fenster nach — nicht mehr im Fenster des Browsers.",
-   "card": {
-    "title": "Hub-Fenster",
-    "text": "Stornieren, zurücksetzen, reaktivieren"
-   },
-   "left": {
-    "shot": "g8-fenster-storno"
-   },
-   "leftCaption": "Die Rückfrage vor einem endgültigen Schritt.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Lesen",
-     "text": "Titel und Text sagen, **was** passiert — z. B. dass der GoCardless-Ratenzahlungsplan storniert wird."
-    },
-    {
-     "n": 2,
-     "title": "Entscheiden",
-     "text": "Der rote Knopf führt aus, **„Abbrechen“** lässt alles, wie es ist. Der Fokus liegt bewusst auf „Abbrechen“."
-    },
-    {
-     "n": 3,
-     "title": "Danach bestätigen",
-     "text": "Bei den Aktionen oben folgt auf **„Zahlungsplan stornieren“** noch die Bestätigung per Passkey oder PIN."
-    }
-   ],
-   "hint": {
-    "text": "**Im Zweifel abbrechen.** Ein stornierter Zahlungsplan lässt sich nur über neues Anlegen wiederherstellen — und die erste Rate verschiebt sich dann."
-   }
-  },
-  {
-   "h1": "Wenn es nicht klappt",
-   "sub": "Die häufigsten Meldungen und was sie bedeuten.",
-   "layout": "text",
-   "table": {
-    "head": [
-     "Meldung",
-     "Ursache",
-     "Was tun"
-    ],
-    "rows": [
-     [
-      "„Du hast einen Passkey — bitte damit bestätigen.“",
-      "Du hast schon einen Passkey, die PIN gilt nicht mehr.",
-      "Auf „Mit Passkey bestätigen“ gehen."
-     ],
-     [
-      "„In dieser Umgebung gibt es keine Passkeys.“",
-      "Ältere Desktop-App oder ein Browser ohne Passkey-Unterstützung.",
-      "Die Desktop-App aktualisieren (ab Version 1.2.8) oder im Safari arbeiten."
-     ],
-     [
-      "„Diese Aktion verlangt einen Passkey.“",
-      "Die Administration hat den PIN-Rückfall für diese Aktion abgeschaltet.",
-      "Einrichtungs-Link bei der Administration anfragen."
-     ],
-     [
-      "„Zu viele Versuche.“",
-      "Fünf falsche Eingaben in kurzer Zeit.",
-      "Zehn Minuten warten, dann noch einmal."
-     ],
-     [
-      "Das Gerät zeigt „abgebrochen oder nicht erlaubt“",
-      "Touch ID oder Face ID wurde nicht bestätigt, oder der Passkey liegt nicht auf diesem Gerät.",
-      "Noch einmal versuchen; bei Bitwarden den Tresor entsperren; sonst neuen Link anfragen."
-     ]
-    ]
-   },
-   "hint": {
-    "text": "**Der Hub fragt nie nach deinem Passkey-Geheimnis.** Er bekommt nur die Bestätigung deines Geräts. Wer dich nach einem „Passkey-Code“ fragt, will etwas anderes.",
-    "kind": "warn"
-   }
-  }
- ]
+  ]
 }
