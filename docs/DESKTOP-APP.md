@@ -866,10 +866,27 @@ Jan wählte am 16.10.2026 Variante A + C: Ein Anruf soll auch auffallen, wenn ei
 
 ---
 
+### Passkeys (seit 1.2.8)
+
+Die Admin-Schranke nimmt neben dem Passwort einen Passkey (Wiki `MISSBRAUCHS-BREMSE.md`, Abschnitt Passkeys). In der Desktop-App
+liefert Electron den Authenticator: `app.configureWebAuthn()` in `main.cjs` (nach `ready`), zwei Betriebsarten:
+
+| Modus | Option | Wo liegt der Passkey | Voraussetzung |
+|---|---|---|---|
+| **Touch ID** (seit 1.2.8) | `touchID: { keychainAccessGroup }` | gerätegebunden im Schlüsselbund/Secure Enclave, **nicht** synchron | Entitlement `keychain-access-groups` (`63DQ6FV92R.com.glattt.hub.webauthn`); das bestehende Profil erlaubt `63DQ6FV92R.*` |
+| **System-Passkeys** (noch nicht) | `platformPasskeys: true` | iCloud-Schlüsselbund, Bitwarden … wie Safari, auf allen Geräten | zusätzlich `com.apple.developer.associated-domains` (`webcredentials:hub.glattt.com`), `com.apple.application-identifier`, ein **neues Provisioning-Profil mit Associated Domains** eingebettet, AASA mit `webcredentials.apps` (steht schon) |
+
+Mit Touch ID richtet jede Person den Passkey **in der App** ein (Einrichtungs-Link dort einfügen: „Passkey einrichten" auf der Schranke
+→ `/passkey`); im Browser (Safari/Chrome/Bitwarden) ein zweiter, ein neues Gerät bekommt einen neuen Link. Ohne Touch ID (Mac ohne Secure
+Enclave) bietet die Schranke nur das Passwort an. Der Origin-Wert bei System-Passkeys ist `https://<rpId>` (nicht die Seiten-URL) — die
+Prüfung am Server (`CeremonyAction`) erlaubt die Domain samt Unterdomänen. Getestet wird gegen Staging mit
+`GLATTTHUB_URL=https://staging.hub.glattt.com`.
+
 ## Changelog
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 24.10.2026 | 1.2.8 | **Passkeys für die Admin-Schranke:** Touch ID als Plattform-Authenticator (`app.configureWebAuthn`, Zugriffsgruppe `63DQ6FV92R.com.glattt.hub.webauthn`, Entitlement `keychain-access-groups`); die Schranke bietet „Mit Passkey bestätigen“, wenn das Konto einen Passkey hat |
 | 16.10.2026 | 1.2.7 | **Eingehende Anrufe außerhalb der App:** schwebendes Anruf-Fenster oben rechts über allen Apps, Desktops und Vollbild (Annehmen/Ablehnen, nimmt keinen Fokus), macOS-Mitteilung mit „Annehmen“, hüpfendes Dock-Symbol; Klingelton „Goldton“ (siehe „Eingehende Anrufe“); `GLATTTHUB_USER_DATA` für ein eigenes Profil im Dev-Modus |
 | 16.10.2026 | 1.2.6 | Bildschirm teilen prüft die macOS-Freigabe „Bildschirmaufnahme“, erklärt sie und öffnet die Systemeinstellungen; eigene Bildschirmauswahl statt Systemauswahl |
 | 16.10.2026 | 1.2.5 | Rechtsklick auf Chat-Zeilen (öffnen, neuer Tab) und Nachrichten (kopieren, antworten, als Aufgabe, Person anschreiben, Link) |
