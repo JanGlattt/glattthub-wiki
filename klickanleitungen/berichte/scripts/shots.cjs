@@ -80,6 +80,10 @@ const PLAN = [
   kopf('r8-kopf', '/hub/reports/client-statistics'),
   karte('r8-demografie', '/hub/reports/client-statistics', 'Altersverteilung'),
   karte('r8-kanaele', '/hub/reports/client-statistics', 'Conversion Funnel'),
+  karte('r8-kanaele-standorte', '/hub/reports/client-statistics', 'Akquisekanäle je Standort', { steps: [['wait', 1500]], marks: [
+    { id: 'kennzahl', kind: 'badge', n: 1, sel: '[data-statistic-key="kunden.acquisition-channel-branches"] .card-glattt-header-controls .segmented-control-glattt:first-child', at: 'l' },
+    { id: 'regler', kind: 'badge', n: 2, sel: '[data-statistic-key="kunden.acquisition-channel-branches"] .chart-canvas-glattt', at: 'b' },
+  ] }),
   // ── 9 Mitarbeiterperformance
   kopf('r9-kopf', '/hub/reports/staff-performance'),
   karte('r9-personen', '/hub/reports/staff-performance', 'Beratungs-Ranking'),

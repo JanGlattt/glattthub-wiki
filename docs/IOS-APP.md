@@ -2155,7 +2155,9 @@ Karte. Was die App nicht nachbaut, öffnet ⋯ „Hub-Fassung öffnen".
   dem Routennamen als Pfad öffnete die App still die Web-Seite (UI-Test fing es ab).
 - **Karten-Dateien:** `MoreReportCards.swift` (Mitarbeiterperformance, Pakete, glattt-KPIs,
   Widerrufe, Schulden, Gutschein-Aktion), `ClientHrReportCards.swift` (Kundenstatistik mit
-  `ReportRing` und PLZ-Karte als `MapCircle`, HR-Kennzahlen mit `HrMonthlyCard` für Monatsreihen mit
+  `ReportRing`, PLZ-Karte als `MapCircle` und seit 25.10.2026 `ClientChannelBranchesCard` —
+  Akquisekanäle je Standort als Säulen je Kanal mit Instituten gestapelt, Kennzahl und Fenster
+  Quartal/Halbjahr/Alles als Umschalter statt des Web-Reglers, HR-Kennzahlen mit `HrMonthlyCard` für Monatsreihen mit
   wählbarer Kennzahl), `MarketingOfficeReportCards.swift` (Ads-Analyse, Besucher-Funnel, eigene
   Office-Karten mit `OfficeMonthlyCard`). Das Office-Teammeeting nutzt die Verkaufs-, Termin-,
   Widerruf- und Ads-Karten wieder; sie laufen über denselben Schalter in `ReportStatisticCard`.

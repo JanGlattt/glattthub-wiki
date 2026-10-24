@@ -94,8 +94,8 @@ gesamte Seite erst nach dem Sync-Status-Check erschien (leere Seite beim
 Öffnen), ist behoben — die Karten stehen sofort in Endhöhe da.
 
 **CSV-Export** über den Export-Button im Seitenkopf — Quellen: Conversion-Funnel,
-Demografie, Kundensegmente, Herkunftsverteilung, Entfernungsverteilung,
-Körperzonen-Verteilung (inkl. Details), Widerrufs-Analyse und Einzugsgebiet
+Demografie, Kundensegmente, Herkunftsverteilung, Akquisekanäle (gesamt und je Standort),
+Entfernungsverteilung, Körperzonen-Verteilung (inkl. Details), Widerrufs-Analyse und Einzugsgebiet
 (Kunden pro PLZ). Filter: Zeitraum (1. Visit) + Institut.
 
 Die Statistikseite gliedert sich in folgende Bereiche von oben nach unten:
@@ -157,6 +157,48 @@ Jede KPI-Karte zeigt einen Trendpfeil (↑/↓) im Vergleich zum Vormonat.
   `App\Services\AcquisitionChannelResolver` (Kanal-Labels:
   `ClientStatistic::ACQUISITION_CHANNELS`). CSV-Export-Quelle:
   `clients-acquisition-channels`.
+
+#### 3a. Akquisekanäle je Standort (`kunden.acquisition-channel-branches`, seit 25.10.2026)
+
+**Für Endanwender:** Wirkt Google Ads in Hannover anders als in Bielefeld? Die Karte zeigt je
+Akquisekanal einen Balken pro Institut in Institutsfarbe. Die Kennzahl ist umschaltbar
+(Neukundinnen · Anteil · Beratungen · Verträge · Conversion), das Zeitfenster kommt **nicht** vom
+Zeitraum-Filter der Seite, sondern vom Regler mit zwei Griffen unter dem Diagramm (Monate seit
+April 2026) bzw. den Chips Quartal / Halbjahr / Alles. Tabelle dahinter mit „Unbekannt" je Institut.
+
+!!! nutzerhandbuch "Bedienung: Berichte 8 – Der glattt-Kunde, Seite „Kanäle je Standort vergleichen""
+    https://hilfe.hub.glattt.com/berichte/8/
+
+**Für Entwickler:**
+
+- Endpunkt `GET /hub/reports/client-statistics/acquisition-channels-by-branch` →
+  `ClientStatisticsService::getAcquisitionChannelsByBranch()` (gecacht über `StatisticsCache`,
+  Rezept = Methode + Filter). Er liefert **alle** Monate ab `ACQUISITION_BY_BRANCH_FROM`
+  (`2026-04`) bis zum laufenden Monat, auch leere — das Fenster rechnet die Karte clientseitig
+  (Summe der sichtbaren Monate), damit das Ziehen am Regler ohne Server-Rundreise animiert.
+- Zählbasis je Zelle Monat × Institut × Kanal: `clients` (Erstkontakt = `first_appointment_date`
+  im Monat, Kanal = `acquisition_channel`), `consultations` (`has_consultation`), `contracts`
+  (`has_consultation AND has_contract` — Funnel-Basis). Institut =
+  `COALESCE(consultation_branch_id, branch_id)` (Institut der ersten Beratung, sonst Stamm);
+  darauf wirkt `BranchVisibility::sql()`. Kundinnen ohne Kanal zählen je Institut als `unknown`
+  und erscheinen nur in der Tabelle, nie als Balken.
+- Antwort: `months[{month,label,total,branches{<id>{clients,known,unknown,channels{<key>{clients,
+  consultations,contracts}}}}}]`, `channels[{key,label,conversion_comparable}]` (Katalog-Reihenfolge
+  aus `ClientStatistic::ACQUISITION_CHANNELS`, nur vorkommende; `empfehlung` ist
+  `conversion_comparable: false` → „n. v."), `branch_ids` in `InstituteColor.sort_order`,
+  `branch_names`, `branch_colors`, `meta{from,tracking_since,total_clients,known}`.
+- Karte: Partial `statistics/kunden/acquisition-channel-branches.blade.php`, JS
+  `GlatttStats.register('kunden.acquisition-channel-branches')` in `public/js/statistics/kunden.js`.
+  **Technik des Reglers:** ein ECharts-`dataZoom`-Slider auf einer unsichtbaren zweiten
+  Kategorie-Achse (Monate) mit einer stillen Linien-Serie (Monatssumme = Schatten im Regler);
+  das `datazoom`-Ereignis liefert `startValue`/`endValue` als Monats-Indizes, die Balken werden
+  per `setOption({ series })` mit stabilen ids nachgerechnet (Übergang statt Neuaufbau). Die
+  Balken-Achse selbst hängt nicht am Zoom. Registry: `filters: ['branch']` plus `fixed_range`
+  (der Rahmen-Zeitraum wirkt bewusst nicht), `native: 'B'`, `default_width: 'full'`.
+- CSV-Export-Quelle `clients-acquisition-channels-by-branch` (eine Zeile je Monat × Institut ×
+  Kanal plus „Unbekannt"). App: `ClientChannelBranchesCard` (Säulen je Kanal, Institute gestapelt,
+  Umschalter Kennzahl und Fenster Quartal/Halbjahr/Alles statt Regler).
+- Test: `ClientStatisticsPageTest::test_acquisition_channels_by_branch_groups_month_institute_and_channel`.
 
 #### 3b. Entfernungsverteilung
 
