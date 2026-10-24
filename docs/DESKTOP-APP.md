@@ -868,25 +868,32 @@ Jan wählte am 16.10.2026 Variante A + C: Ein Anruf soll auch auffallen, wenn ei
 
 ### Passkeys (seit 1.2.8)
 
-Die Admin-Schranke nimmt neben dem Passwort einen Passkey (Wiki `MISSBRAUCHS-BREMSE.md`, Abschnitt Passkeys). In der Desktop-App
-liefert Electron den Authenticator: `app.configureWebAuthn()` in `main.cjs` (nach `ready`), zwei Betriebsarten:
+Die Admin-Schranke nimmt neben dem Passwort einen Passkey (Wiki `MISSBRAUCHS-BREMSE.md`, Abschnitt Passkeys). Die Desktop-App
+nutzt **System-Passkeys** über Apples `ASAuthorizationController`: `app.configureWebAuthn({ platformPasskeys: true })` in `main.cjs`
+(nach `ready`). Das ist dieselbe Auswahl wie in Safari — iCloud-Schlüsselbund, **Bitwarden** und andere Anmeldedaten-Anbieter —, der
+Passkey gilt also auf allen Geräten der Person, in der App wie im Browser, und ein neues Gerät findet ihn über den Schlüsselbund/Bitwarden.
 
-| Modus | Option | Wo liegt der Passkey | Voraussetzung |
-|---|---|---|---|
-| **Touch ID** (seit 1.2.8) | `touchID: { keychainAccessGroup }` | gerätegebunden im Schlüsselbund/Secure Enclave, **nicht** synchron | Entitlement `keychain-access-groups` (`63DQ6FV92R.com.glattt.hub.webauthn`); das bestehende Profil erlaubt `63DQ6FV92R.*` |
-| **System-Passkeys** (noch nicht) | `platformPasskeys: true` | iCloud-Schlüsselbund, Bitwarden … wie Safari, auf allen Geräten | zusätzlich `com.apple.developer.associated-domains` (`webcredentials:hub.glattt.com`), `com.apple.application-identifier`, ein **neues Provisioning-Profil mit Associated Domains** eingebettet, AASA mit `webcredentials.apps` (steht schon) |
+**Voraussetzungen** (fehlt eine, meldet die Seite nur `NotAllowedError`, Electron loggt den Grund in die DevTools-Konsole):
 
-Mit Touch ID richtet jede Person den Passkey **in der App** ein (Einrichtungs-Link dort einfügen: „Passkey einrichten" auf der Schranke
-→ `/passkey`); im Browser (Safari/Chrome/Bitwarden) ein zweiter, ein neues Gerät bekommt einen neuen Link. Ohne Touch ID (Mac ohne Secure
-Enclave) bietet die Schranke nur das Passwort an. Der Origin-Wert bei System-Passkeys ist `https://<rpId>` (nicht die Seiten-URL) — die
-Prüfung am Server (`CeremonyAction`) erlaubt die Domain samt Unterdomänen. Getestet wird gegen Staging mit
-`GLATTTHUB_URL=https://staging.hub.glattt.com`.
+| Baustein | Wo |
+|---|---|
+| Entitlements `com.apple.developer.associated-domains` (`webcredentials:hub.glattt.com`) und `com.apple.application-identifier` (`63DQ6FV92R.com.glattt.hub`) | `electron/entitlements.mac.plist` |
+| Provisioning-Profil **mit Associated Domains** im Bundle (`Contents/embedded.provisionprofile`) | `electron/signing/glatttHub.provisionprofile`, erzeugt mit `ios/scripts/asc-profile.py create` (Fähigkeit an der App-ID ist an; Profil läuft bis 2044) |
+| Domain-Datei mit `webcredentials.apps` = `63DQ6FV92R.com.glattt.hub` | Route `/.well-known/apple-app-site-association` (Prod und Staging geprüft 24.10.2026) |
+| Signierte (und notarisierte) App — ad-hoc/ungesignierte Builds gehen nicht | `release.sh` |
+
+Der Origin bei System-Passkeys ist `https://<rpId>` statt der Seiten-URL; die Prüfung am Server (`CeremonyAction`) erlaubt die Domain samt
+Unterdomänen. Die Einrichtungs-Seite (`/passkey`, „Passkey einrichten" auf der Schranke) läuft in der App wie im Browser; ohne
+`configureWebAuthn` (ältere App-Versionen) bietet die Schranke in der App nur das Passwort an. Staging testen: `GLATTTHUB_URL=https://staging.hub.glattt.com`
+— die Domain-Datei von Staging nennt dieselbe App, die Relying-Party-ID ist dort `staging.hub.glattt.com`, die Berechtigung der App gilt aber nur für
+`hub.glattt.com` (`webcredentials:`-Eintrag): **Staging-Passkeys in der App gehen nur mit `?mode=developer`-Eintrag und Entwicklermodus**, sonst im Browser testen.
+Das Profil wird nur bei Änderungen der Berechtigungen neu erzeugt; `asc-profile.py show` listet die Profile und ihre Berechtigungen.
 
 ## Changelog
 
 | Datum | Version | Änderung |
 |---|---|---|
-| 24.10.2026 | 1.2.8 | **Passkeys für die Admin-Schranke:** Touch ID als Plattform-Authenticator (`app.configureWebAuthn`, Zugriffsgruppe `63DQ6FV92R.com.glattt.hub.webauthn`, Entitlement `keychain-access-groups`); die Schranke bietet „Mit Passkey bestätigen“, wenn das Konto einen Passkey hat |
+| 24.10.2026 | 1.2.8 | **Passkeys für die Admin-Schranke:** System-Passkeys (iCloud-Schlüsselbund, Bitwarden wie in Safari) über `app.configureWebAuthn({ platformPasskeys: true })`, Entitlements für Associated Domains, neues Provisioning-Profil; die Schranke bietet „Mit Passkey bestätigen“, wenn das Konto einen Passkey hat |
 | 16.10.2026 | 1.2.7 | **Eingehende Anrufe außerhalb der App:** schwebendes Anruf-Fenster oben rechts über allen Apps, Desktops und Vollbild (Annehmen/Ablehnen, nimmt keinen Fokus), macOS-Mitteilung mit „Annehmen“, hüpfendes Dock-Symbol; Klingelton „Goldton“ (siehe „Eingehende Anrufe“); `GLATTTHUB_USER_DATA` für ein eigenes Profil im Dev-Modus |
 | 16.10.2026 | 1.2.6 | Bildschirm teilen prüft die macOS-Freigabe „Bildschirmaufnahme“, erklärt sie und öffnet die Systemeinstellungen; eigene Bildschirmauswahl statt Systemauswahl |
 | 16.10.2026 | 1.2.5 | Rechtsklick auf Chat-Zeilen (öffnen, neuer Tab) und Nachrichten (kopieren, antworten, als Aufgabe, Person anschreiben, Link) |
