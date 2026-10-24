@@ -103,29 +103,35 @@ Einführung) bekommen sie beim nächsten Aufruf. Abschalten, falls eine Umgebung
 Die Bremse der PIN-Anmeldung je Gerät/Adresse steht in `FortifyServiceProvider` (5/Minute je Gerät, 40/Stunde und
 120/Tag je Adresse); die Meldung `pin_attack` ergänzt sie um das verteilte Durchprobieren.
 
-## PIN-Bestätigung für sensible Aktionen (24.10.2026)
+## Bestätigung sensibler Aktionen — Passkey, PIN als Rückfall (24.10.2026)
 
-Bestimmte Aktionen verlangen vorher die **erneute Eingabe der eigenen PIN** (Register `SensitiveActionRegistry`, fünf Gruppen):
-Bankverbindung ändern, SEPA-Mandat anlegen/tauschen/stornieren, Konten anlegen und Team-PIN vergeben, Report-Mails einrichten,
-Exporte herunterladen (Exporte standardmäßig aus). Schalter und Gültigkeit je Aktion (Standard 10 Minuten) stehen im Admin unter
-System → Bestätigungspflichtige Aktionen (Recht `manage_sensitive_actions`, nur Rollen mit Super-Admin-Kennzeichen;
-Tabelle `sensitive_action_settings` hält nur Abweichungen vom Standard).
+Bestimmte Aktionen verlangen vorher eine **Bestätigung** (Register `SensitiveActionRegistry`, fünf Gruppen): Bankverbindung ändern,
+SEPA-Mandat **und Zahlungsplan** anlegen/ändern/stornieren/Verknüpfung lösen/Einzug auslösen, Konten anlegen und Team-PIN vergeben,
+Report-Mails einrichten, Exporte (standardmäßig aus). **Wer einen Passkey hat, bestätigt jedes Mal damit** (Touch ID/Face ID);
+**Personen ohne Passkey** bestätigen ersatzweise mit der PIN, solange der Rückfall für die Aktion erlaubt ist. Wer einen Passkey hat,
+bestätigt **nie** mit der PIN — sonst nützte der Passkey gegen einen Angreifer mit bekannter PIN nichts.
 
-**Ablauf:** `RequirePinConfirmation` (Middleware der `web`-Gruppe) greift über den **Routennamen** — eine neue sensible Aktion
-braucht nur einen Eintrag im Register; `PinConfirmationTest` prüft, dass jeder Name existiert. Ohne gültige Bestätigung:
-JSON/Livewire → `423 { pin_required: true, action, message }`, normale Aufrufe → Seite `/hub/pin-bestaetigen` und danach zurück.
-`public/js/pin-confirm.js` wickelt `fetch` ein, zeigt das Fenster `#pin-confirm-modal` (Layout `hub`), prüft die PIN über
-`POST /hub/pin-bestaetigen` und wiederholt die ursprüngliche Anfrage einmal. Die Bestätigung hängt an der Sitzung
-(`pin_confirmed_at`), die Bremse zählt je Konto (5 Versuche / 10 Minuten).
+**Einstellungen** (Admin → System → Bestätigungspflichtige Aktionen, Recht `manage_sensitive_actions`, nur Super-Admins; Tabelle
+`sensitive_action_settings` hält nur Abweichungen vom Standard): Schalter je Aktion, Gültigkeit in Minuten und „PIN als Rückfall".
+Standard **0 Minuten = jedes Mal neu**: Die Bestätigung gilt für genau die nächste Anfrage (zwei Minuten Zeit zum Wiederholen), danach
+fragt der Hub wieder. Mit Minuten > 0 gilt sie für alle sensiblen Aktionen in diesem Fenster (Fallstrick: wer kurz zuvor bestätigt hat,
+wird nicht erneut gefragt — so sah es bei der ersten Abnahme aus, als fehle der Schutz am Storno).
 
-**Was es schützt — und was nicht:** gestohlenes Sitzungs-Cookie, unbeaufsichtigter Bildschirm, „Ansehen als" (die PIN der
-Person kennt der Admin nicht). **Nicht** gegen jemanden, der die PIN selbst kennt — dafür sind Passkeys/Passwort die stärkere
-Bestätigung (geplant).
+**Ablauf:** `RequirePinConfirmation` (Middleware der `web`-Gruppe) greift über den **Routennamen**; `PinConfirmationTest` prüft, dass
+jeder Name existiert. Ohne Bestätigung: JSON/Livewire → `423 { pin_required, action, methods, message }` (`methods`: `['passkey']`,
+`['pin']` oder `[]` = nur mit Passkey möglich), normale Aufrufe → Seite `/hub/pin-bestaetigen`. `public/js/pin-confirm.js` wickelt `fetch`
+ein, zeigt `#pin-confirm-modal` (**z-index 100010 über jedem anderen Modal** — darunter blieb es unsichtbar, die Seite hing am
+Lade-Kreis), fragt das Gerät (`POST /hub/bestaetigen/passkey/options` + `/hub/bestaetigen/passkey`) oder die PIN
+(`POST /hub/pin-bestaetigen`) und wiederholt die Anfrage einmal. Falsche Versuche zählt eine Bremse je Konto (5 / 10 Minuten).
 
-**Ausnahmen/Schalter:** Anfragen der iOS-App (`glatttHub-iOS/`) sind ausgenommen, weil die App einige dieser Endpunkte direkt
-aufruft (Institut-Bankverbindung, Team-PIN) und noch keine PIN-Abfrage hat — sobald sie eine hat, Ausnahme streichen.
-Gesamtschalter `SECURITY_PIN_CONFIRMATION` (Notfall; in `phpunit.xml` aus, die Tests der Funktion schalten sie selbst ein).
-Admin-Backend-Aktionen (Rollen, Rechte, Einstellungen) sind schon durch die Admin-Passwort-Hürde geschützt.
+**Ausnahmen/Schalter:** Anfragen der iOS-App (`glatttHub-iOS/`) sind ausgenommen — sie ruft einige Endpunkte direkt auf und hat noch keine
+Abfrage. Gesamtschalter `SECURITY_PIN_CONFIRMATION` (Notfall; in `phpunit.xml` aus). Wer in einer Umgebung ohne Passkey-Unterstützung (ältere
+Desktop-App) arbeitet, aber einen Passkey hat, kann nicht mit der PIN ausweichen — Hinweis im Fenster: im Browser bestätigen oder die App
+aktualisieren. Admin-Backend-Aktionen sind durch die Admin-Schranke geschützt.
+
+**Bestätigungsfenster statt `window.confirm`:** `GlatttConfirm.ask({ title, message, confirmLabel, danger })` (`public/js/hub-confirm.js`,
+Markup `#hub-confirm-modal` im Layout `hub`); auf der Vertragsseite ersetzt es die vier Browser-Dialoge (Zahlungsplan stornieren,
+Verknüpfung zurücksetzen, Mandat reaktivieren, Einzüge stornieren). Weitere `confirm()`-Stellen im Hub stehen noch aus.
 
 ## Passkeys für die Admin-Schranke (24.10.2026)
 
