@@ -277,6 +277,7 @@ nav:
     - integrationen/index.md
     - Externe Systeme:
       - Phorest API: PHOREST-API.md
+      - Phorest-Spiegel mit Verlauf: PHOREST-SPIEGEL.md
       - Phorest Client-ID Import: PHOREST-CLIENT-ID-IMPORT.md
       - GoCardless API: GOCARDLESS-API.md
       - Zendesk API: ZENDESK-API.md

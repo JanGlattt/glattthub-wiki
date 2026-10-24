@@ -4,6 +4,7 @@
 
 | System | Zweck | Service im Hub |
 |---|---|---|
+| [Phorest-Spiegel](../PHOREST-SPIEGEL.md) | Vollständige Kopie der Phorest-Kunden mit Verlauf (alle Fassungen, nichts wird gelöscht) | `PhorestClientMirror`, `VersionedMirror` |
 | [Phorest](../PHOREST-API.md) | Salon-Software, **primäre Datenquelle** (Kunden, Termine, Branches, Staff, Gutscheine); Rückschreiben von Käufen | `PhorestApiService`, `PhorestContractPurchaseService` |
 | [GoCardless](../GOCARDLESS-API.md) | SEPA-Lastschriften — jede Rate eine Einzelzahlung, Mandate, Webhooks | `GoCardlessApiService`, `GoCardlessPaymentPlanService` |
 | Mollie | Zahlungsabwicklung Gutschein-Verkauf (+ Refunds), Event-Webhooks | `MolliePaymentService` — siehe [Gutschein-Verkauf](../GUTSCHEIN-VERKAUF.md) |
