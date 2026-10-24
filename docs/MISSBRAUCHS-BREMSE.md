@@ -76,3 +76,29 @@ Der Angriff lag bei bis zu 200 Phorest-Schreibzugriffen pro Minute. Alle Schwell
 - **Tests:** `AbuseGuardTest`, `ReportMailSecurityTest`, `SafeUrlTest`, `PortalAttachmentSanitizeTest`.
   `phpunit.xml` setzt `SECURITY_REPORT_MAIL_DOMAINS=*`, damit die Fabrik-Adressen der Tests nicht
   verworfen werden.
+
+## Weitere Bausteine (24.10.2026)
+
+Alle Meldungen sind Anlässe des Benachrichtigungs-Katalogs (`security`), **standardmäßig aus** — Jan schaltet sie im
+Admin unter Kommunikation → Benachrichtigungen selbst ein. Zielgruppe: die betroffene Person selbst
+(`event_owners`) und Konten mit dem Recht `manage_security_blocks`.
+
+| Anlass | Auslöser | Technik |
+|---|---|---|
+| `new_login_context` — Neue Anmeldung | Gerät (Browser/App + Betriebssystem) oder Netz (IPv4 /24, IPv6 /48) ist für das Konto neu | `RecordLoginContext` (Login-Ereignis), Tabelle `user_login_contexts`; die erste erfasste Umgebung eines Kontos löst nichts aus |
+| `access_rights_changed` — Rollen oder Rechte geändert | Spatie-Ereignisse `RoleAttached/Detached`, `PermissionAttached/Detached` (`permission.events_enabled`) | `NotifyAccessRightsChanged`; nur Änderungen einer angemeldeten Person im Betrieb — Befehle, Migrationen, Seeder melden nichts |
+| `session_device_mismatch` — Sitzung auf anderem Gerät | Sitzung wird mit anderem Gerät als bei der Anmeldung weiterbenutzt | `BindSessionToDevice` (Web + Admin-Panel), Sitzung wird sofort abgemeldet |
+| `pin_attack` — Viele falsche PINs | über alle Geräte/Adressen mehr als `security.pin_failures_alert` falsche PINs je Stunde | Zähler in `PinLoginController`, höchstens eine Meldung je Stunde |
+
+**Sitzungsbindung** (`config('security.bind_session_to_device')`, Umgebungsvariable
+`SECURITY_BIND_SESSION_TO_DEVICE`): `DeviceLabel::fingerprint()` hasht Betriebssystem-Familie und Browser **ohne
+Versionsnummern** (ein Browser-Update meldet nicht ab). iPhone, iPad und Mac gelten als eine Apple-Familie, weil
+iPadOS-Safari sich als „Macintosh" meldet; auf Apple-Geräten sind Safari/Chrome/Firefox/Edge alle WebKit und
+zählen als „browser". Die Apps behalten ihren Token (`glatttHub-iOS/`, `glatttHub-Desktop/`) — die native
+App-Schicht (`HubSession`) und die WebViews teilen sich dieselbe Kennung. Sitzungen ohne Kennung (vor der
+Einführung) bekommen sie beim nächsten Aufruf. Abschalten, falls eine Umgebung ihre Kennung zur Laufzeit wechselt.
+
+**Fallstricke:** Listener in `app/Listeners` mit Methoden namens `handle…` entdeckt Laravel selbst — wer sie zusätzlich in
+`AppServiceProvider` registriert, bekommt jede Meldung doppelt (deshalb heißen die Methoden `record`/`on…`).
+Die Bremse der PIN-Anmeldung je Gerät/Adresse steht in `FortifyServiceProvider` (5/Minute je Gerät, 40/Stunde und
+120/Tag je Adresse); die Meldung `pin_attack` ergänzt sie um das verteilte Durchprobieren.
