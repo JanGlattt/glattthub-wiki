@@ -52,6 +52,9 @@ Ein Volllauf liest 23.541 Kunden in rund 118 Abrufen à 200 (`includeArchived`, 
   (dort sind sie ohne erneuten Lauf des Skripts nicht lesbar — das ist gewollt).
 - Eine **Löschung auf Kundenwunsch (DSGVO)** muss alle Fassungen in `phorest_client_versions`
   erfassen, nicht nur `phorest_clients`.
+- **Nie zwei Läufe gleichzeitig:** Zwei parallele Volläufe verklemmen sich in der Datenbank (Deadlock beim ersten Prod-Lauf am
+  24.10.2026, weil der Job doppelt ausgelöst wurde). Der Befehl hält deshalb eine Sperre (`Cache::lock`, 1 h) — ein zweiter
+  Aufruf meldet »bereits aktiv« und beendet sich ohne Fehler; die Schreibblöcke wiederholen sich bei Deadlock bis zu dreimal.
 - Die Phorest-Kundenkategorien (2.912) sind größtenteils Straßenadressen — nur die IDs werden
   gespeichert (`client_category_ids`), die Kategorien selbst nicht gespiegelt.
 - Im Test ersetzt ein zweiter `Http::fake()` den ersten nicht (der zuerst registrierte gewinnt);
