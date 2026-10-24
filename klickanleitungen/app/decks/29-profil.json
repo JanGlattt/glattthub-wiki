@@ -1,0 +1,168 @@
+{
+  "out": "../pdf/App-29-Profil",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "App",
+  "nr": 29,
+  "of": 29,
+  "audience": "institute",
+  "footerArea": "App",
+  "stand": "25.10.2026",
+  "version": "1.0",
+  "title": [
+    "Mein Profil",
+    "in der App"
+  ],
+  "subtitle": "Klickanleitung für die glatttHub-App — Foto, PIN ändern in Schritten, angemeldete Geräte und Sitzungen, Darstellung, Dank-Text",
+  "eyebrow": "App · Profil",
+  "notes": [
+    "**Profil** erreichst du über deinen Namen im Menü **Mehr** (iPhone) bzw. am Fuß der Seitenleiste (iPad). Es ist dieselbe Seite wie im Hub am Rechner („Grundlagen 3“).",
+    "**Alles, was unter deiner PIN passiert, gilt als deine Arbeit.** Deshalb: PIN nie weitergeben — und nach einem Schichtwechsel, bei dem jemand zugesehen hat, in zehn Sekunden ändern."
+  ],
+  "pages": [
+    {
+      "h1": "Kopfkarte und Abschnitte",
+      "sub": "Oben dein Foto, Name, Position und Institut mit dem Stand deines Zugangs. Darunter vier Abschnitte: Zugang, Sicherheit, Darstellung, Persönliches.",
+      "card": {
+        "title": "Profil",
+        "text": "Foto, Zugang, Geräte auf einen Blick"
+      },
+      "left": {
+        "shot": "profile-light"
+      },
+      "leftCaption": "Die Kopfkarte mit den Chips **PIN aktiv**, **Face ID auf N Geräten** und der Zahl der Sitzungen; darunter die Abschnitte.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Foto",
+          "text": "**Foto** öffnet die Galerie. Das Bild erscheint danach in Personal, Chat, Terminansicht und im Hub. Entfernen geht unter **Persönliches**."
+        },
+        {
+          "n": 2,
+          "title": "Zugang",
+          "text": "Stand deiner PIN und von Face ID. Kolleginnen mit Admin-Rechten sehen hier zusätzlich **Passkey** und **Passwort** für die Admin-Schranke."
+        },
+        {
+          "n": 3,
+          "title": "Sicherheit",
+          "text": "Wo du angemeldet bist: Browser-Sitzungen mit **Dieses Gerät** und App-Geräte mit Face ID. **Entfernen** widerruft Face ID und Widgets auf dem Gerät."
+        },
+        {
+          "n": 4,
+          "title": "Darstellung und Persönliches",
+          "text": "Farbschema über **Einstellungen**, der Stand des Rundgangs, E-Mail-Adresse und dein **Dank fürs Trinkgeld**."
+        }
+      ],
+      "hint": {
+        "text": "**Kein Passwort nötig.** Wer sich nur per PIN anmeldet, sieht gar keinen Passwort-Abschnitt — Passwörter gibt es nur für die Admin-Schranke.",
+        "kind": "info"
+      }
+    },
+    {
+      "h1": "PIN ändern in drei Schritten",
+      "sub": "**PIN ändern** öffnet ein Blatt: aktuelle PIN, neue PIN, Wiederholung. Ziffernblock wie bei der Anmeldung, Fortschritt oben.",
+      "card": {
+        "title": "PIN ändern",
+        "text": "Aktuell, neu, wiederholen"
+      },
+      "left": {
+        "shot": "profile-pin-sheet-light"
+      },
+      "leftCaption": "Schritt 1 von 3: Zur Bestätigung erst die aktuelle PIN.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Aktuelle PIN",
+          "text": "Vier Ziffern — ohne sie lässt sich keine neue PIN setzen. Beim allerersten Festlegen entfällt der Schritt."
+        },
+        {
+          "n": 2,
+          "title": "Neue PIN",
+          "text": "Keine Jahreszahl, keine Folge wie 1234, nicht viermal dieselbe Ziffer. Zwei Personen dürfen nicht dieselbe PIN haben — die App sagt dann Bescheid."
+        },
+        {
+          "n": 3,
+          "title": "Wiederholen",
+          "text": "Noch einmal dieselben vier Ziffern. Stimmen sie nicht, geht es zurück zu Schritt 2."
+        },
+        {
+          "n": 4,
+          "title": "Fertig",
+          "text": "Die neue PIN gilt sofort in App, Hub und Desktop-App. Face ID bleibt eingerichtet, andere Sitzungen bleiben angemeldet."
+        }
+      ],
+      "hint": {
+        "text": "**Erstzugang:** Hat das Büro dir eine PIN geschickt, öffnet sich das Blatt beim ersten Öffnen des Profils von selbst — erst mit eigener PIN geht es weiter.",
+        "kind": "warn"
+      }
+    },
+    {
+      "h1": "Sitzungen beenden und Admin-Zugang",
+      "sub": "Nach einem verlorenen Gerät: **Andere Sitzungen beenden**. Die App bestätigt das per Face ID, Passkey oder PIN.",
+      "card": {
+        "title": "Sicherheit",
+        "text": "Sitzungen, Geräte, Passkey"
+      },
+      "left": {
+        "shot": "profile-admin-light"
+      },
+      "leftCaption": "Profil einer Leitung mit Admin-Rechten: zusätzlich **Passkey** und **Passwort** im Abschnitt Zugang.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Andere Sitzungen beenden",
+          "text": "Beendet alle Browser-Sitzungen außer dieser. App-Geräte mit Face ID bleiben — die entfernst du einzeln."
+        },
+        {
+          "n": 2,
+          "title": "Bestätigen",
+          "text": "Die App fragt kurz nach: Passkey, wenn du einen hast, sonst die PIN. Ohne Bestätigung passiert nichts."
+        },
+        {
+          "n": 3,
+          "title": "Passkey",
+          "text": "Zeigt, ob ein Passkey für die Admin-Schranke eingerichtet ist. Den Einrichtungs-Link schickt ein Super-Admin („Admin 9“)."
+        },
+        {
+          "n": 4,
+          "title": "Passwort",
+          "text": "Gilt nur für die Admin-Schranke und wird im Hub am Rechner geändert."
+        }
+      ]
+    },
+    {
+      "h1": "Auf dem iPad",
+      "sub": "Kopfkarte über die volle Breite, darunter die Abschnitte in zwei Spalten.",
+      "card": {
+        "title": "iPad",
+        "text": "Zwei Spalten"
+      },
+      "left": {
+        "shot": "profile-ipad-light"
+      },
+      "leftCaption": "Links Zugang und Darstellung, rechts Sicherheit und Persönliches.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Öffnen",
+          "text": "Dein Name am Fuß der Seitenleiste."
+        },
+        {
+          "n": 2,
+          "title": "Geteiltes iPad",
+          "text": "Am Tresen-iPad bleibt Face ID aus — dort meldet sich jede mit ihrer PIN an. Das Gerät steht trotzdem unter Sicherheit."
+        },
+        {
+          "n": 3,
+          "title": "Foto vom iPad",
+          "text": "Geht genauso: **Foto**, Galerie, fertig."
+        },
+        {
+          "n": 4,
+          "title": "Ohne Netz",
+          "text": "Das Profil braucht Verbindung — ändern geht nur online."
+        }
+      ]
+    }
+  ]
+}

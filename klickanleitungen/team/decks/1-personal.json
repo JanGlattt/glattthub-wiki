@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für die Personalverwaltung im glatttHub — Mitarbeiterinnen finden, Konto anlegen, archivieren",
   "eyebrow": "Team · Personal",
   "footerArea": "Team",
-  "stand": "24.10.2026",
-  "version": "1.4",
+  "stand": "25.10.2026",
+  "version": "1.5",
   "notes": [
     "Die Personalliste kommt aus **askDANTE** — eingestellt und ausgetragen wird dort. Der Hub ergänzt sie um die **Stammdaten** aus Teamliste und Lohnliste und das **Hub-Konto**.",
     "Das **Hub-Konto** ist etwas anderes als der Personaldatensatz: Es entscheidet, wer sich anmelden darf.",
@@ -23,7 +23,7 @@
   "pages": [
     {
       "h1": "Die Personalübersicht",
-      "sub": "„Personal“ im Menü zeigt direkt alle Mitarbeiterinnen: askDANTE, Stammdaten und Hub-Konto in einer Liste.",
+      "sub": "„Personal“ im Menü zeigt alle Mitarbeiterinnen als Karten mit Profilbild — askDANTE, Stammdaten und Hub-Konto in einer Ansicht. Darüber die Zeile „Was ansteht“.",
       "card": {
         "title": "Personalübersicht",
         "text": "Alle Mitarbeiterinnen mit Vertrag und Stand im Hub"
@@ -31,27 +31,27 @@
       "left": {
         "shot": "p1-personal"
       },
-      "leftCaption": "Die Liste mit Suche, Filtern und dem Stand im Hub (Beispielpersonen).",
+      "leftCaption": "Die Karten mit Suche, Zeile „Was ansteht“, Filtern und dem Stand im Hub (Beispielpersonen).",
       "steps": [
         {
           "n": 1,
-          "title": "Suchen",
-          "text": "Nach Name, Personalnummer oder Institut."
+          "title": "Suchen und umschalten",
+          "text": "Nach Name, Personalnummer, Institut oder Position. Der Umschalter **Karten | Tabelle** merkt sich die Wahl auf diesem Gerät."
         },
         {
           "n": 2,
+          "title": "Was ansteht",
+          "text": "**Probezeit endet** (60 Tage), **Ohne Hub-Konto**, **Ohne Stammdaten**, **Befristung läuft aus** (90 Tage), **Austritte** — ein Klick setzt den passenden Filter."
+        },
+        {
+          "n": 3,
           "title": "Filtern",
           "text": "**Aktiv**, **Probezeit**, **Befristet**, **Elternzeit & Mutterschutz**, **Ohne Konto**, **Ohne Stammdaten**, **Austritte** — die Zahl zeigt, wie viele es sind. Mit dem Recht Lohnliste zusätzlich **Ohne Gehalt**."
         },
         {
-          "n": 3,
-          "title": "Vertrag lesen",
-          "text": "Vertragsart, Stunden und Befristung aus den Stammdaten. **Enddatum weicht ab** heißt: askDANTE und Teamliste/Lohnliste nennen ein anderes Ende — bitte klären."
-        },
-        {
           "n": 4,
-          "title": "Stand im Hub",
-          "text": "**Stammdaten**, **Gehalt** und **Konto** in Grün sind vollständig, Gelb fehlt. **Konto** mit Plus legt ein Hub-Konto an. Ein Klick auf den Namen öffnet die Akte."
+          "title": "Karte lesen",
+          "text": "Profilbild oder Initialen, Position und Nummer, Institut, Vertrag mit Befristung und Eintritt. **Stammdaten**, **Gehalt** und **Konto** in Grün sind vollständig, Gelb fehlt; **+ Konto** legt ein Hub-Konto an. Ein Klick auf die Karte öffnet die Akte."
         }
       ],
       "hint": {

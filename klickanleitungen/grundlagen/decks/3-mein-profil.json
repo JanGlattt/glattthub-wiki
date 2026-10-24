@@ -1,179 +1,180 @@
 {
- "out": "../pdf/Grundlagen-3-Mein-Profil",
- "meta": "../meta.json",
- "shots": "../shots",
- "series": "Grundlagen",
- "nr": 3,
- "of": 8,
- "audience": "institut",
- "title": [
-  "Mein Profil",
-  "im glatttHub"
- ],
- "subtitle": "Klickanleitung für den glatttHub — Name und Bild, Passwort, PIN, angemeldete Geräte",
- "eyebrow": "Grundlagen · Profil",
- "footerArea": "Grundlagen",
- "stand": "24.10.2026",
- "version": "1.1",
- "notes": [
-  "Das Profil erreicht man über den **eigenen Namen** am Fuß der Seitenleiste.",
-  "**Passwort und PIN** sind zwei getrennte Schlüssel — beide gehören nur einer Person.",
-  "Wer ein Gerät verloren hat oder sich unsicher ist, meldet **alle anderen Sitzungen ab**."
- ],
- "pages": [
-  {
-   "h1": "Name und Bild",
-   "sub": "Oben im Profil stehen die eigenen Angaben — sie erscheinen überall dort, wo der Hub eine Person nennt.",
-   "card": {
-    "title": "Name und Bild",
-    "text": "Eigene Angaben und Profilbild pflegen"
-   },
-   "left": {
-    "shot": "i1-profil"
-   },
-   "leftCaption": "Die Profilseite mit ihren Abschnitten.",
-   "steps": [
+  "out": "../pdf/Grundlagen-3-Mein-Profil",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "Grundlagen",
+  "nr": 3,
+  "of": 8,
+  "audience": "institut",
+  "title": [
+    "Mein Profil",
+    "im glatttHub"
+  ],
+  "subtitle": "Klickanleitung für den glatttHub — Kopfkarte mit Foto, PIN ändern in Schritten, angemeldete Geräte und Sitzungen, Darstellung, Dank-Text",
+  "eyebrow": "Grundlagen · Profil",
+  "footerArea": "Grundlagen",
+  "stand": "25.10.2026",
+  "version": "2.0",
+  "notes": [
+    "Das Profil erreicht man über den **eigenen Namen** am Fuß der Seitenleiste — und in der App über **Mehr** („App 29“).",
+    "**PIN und Passwort** sind zwei verschiedene Schlüssel: Die PIN hat jede, ein Passwort nur, wer die Admin-Schranke vor dem Verwaltungsbereich passiert.",
+    "Wer ein Gerät verloren hat oder sich unsicher ist, beendet **alle anderen Sitzungen** — bestätigt per Passkey oder PIN, nicht per Passwort."
+  ],
+  "pages": [
     {
-     "n": 1,
-     "title": "Angaben prüfen",
-     "text": "Vor- und Nachname stehen später an Terminen, Verträgen und im Bonus-Board."
+      "h1": "Die Kopfkarte",
+      "sub": "Oben stehen Foto, Name, Position und Institut mit dem Stand des Zugangs. Darunter vier Karten: Zugang, Darstellung, Sicherheit, Persönliches.",
+      "card": {
+        "title": "Kopfkarte",
+        "text": "Foto, Rolle, Zugangsstatus"
+      },
+      "left": {
+        "shot": "i1-profil"
+      },
+      "leftCaption": "Die Profilseite mit Kopfkarte und den vier Abschnitten.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Foto",
+          "text": "Ein Klick aufs Bild oder auf **Foto ändern** öffnet die Dateiauswahl; das Bild wird sofort gespeichert und erscheint in Personal, Chat, Terminansicht und App."
+        },
+        {
+          "n": 2,
+          "title": "Stand des Zugangs",
+          "text": "**PIN aktiv**, **Face ID auf N Geräten**, **Passkey eingerichtet** (nur mit Admin-Rechten) und die Zahl der Sitzungen."
+        },
+        {
+          "n": 3,
+          "title": "PIN ändern",
+          "text": "Der große Knopf öffnet den Dialog in Schritten — siehe nächste Seite."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Name und E-Mail",
+          "text": "Der Name kommt aus dem Personaldatensatz und steht auf Auswertungen. Die E-Mail-Adresse ist zugleich der Anmeldename im Browser — Ändern unter **Persönliches** (Dialog)."
+        }
+      ],
+      "hint": {
+        "text": "**Der Name ist kein Spitzname.** Er steht auf Bonus-Board, Mitarbeiterperformance und Terminhistorie."
+      }
     },
     {
-     "n": 2,
-     "title": "Bild wählen",
-     "text": "Ein Profilbild macht die Zuordnung im Team leichter — Pflicht ist es nicht."
+      "h1": "PIN ändern in drei Schritten",
+      "sub": "Die vierstellige PIN ist der Schlüssel am gemeinsamen iPad im Institut, in der App und am Rechner. Geändert wird sie im Dialog — nie als Formularblock.",
+      "card": {
+        "title": "PIN ändern",
+        "text": "Aktuell, neu, wiederholen"
+      },
+      "left": {
+        "shot": "i3-pin"
+      },
+      "leftCaption": "Der Dialog **PIN ändern**, Schritt 1 von 3: erst die aktuelle PIN.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Aktuelle PIN",
+          "text": "Ziffernblock oder Tastatur. Ohne die aktuelle PIN gibt es keine neue — so kann niemand am offenen Rechner deine PIN tauschen."
+        },
+        {
+          "n": 2,
+          "title": "Neue PIN",
+          "text": "Genau **vier Ziffern**. Keine Geburtstage, keine 1234, nicht viermal dieselbe. Zwei Personen dürfen nicht dieselbe PIN haben — der Hub lehnt sie dann ab."
+        },
+        {
+          "n": 3,
+          "title": "Wiederholen",
+          "text": "Noch einmal dieselben Ziffern. Stimmen sie nicht, geht es zurück zu Schritt 2."
+        },
+        {
+          "n": 4,
+          "title": "Fertig",
+          "text": "Die neue PIN gilt sofort überall. Face ID in der App bleibt eingerichtet."
+        }
+      ],
+      "notes": [
+        {
+          "title": "Erstzugang",
+          "text": "Hat das Büro dir eine PIN geschickt, öffnet sich der Dialog beim ersten Besuch des Profils von selbst und lässt sich erst mit eigener PIN schließen."
+        }
+      ],
+      "hint": {
+        "kind": "warn",
+        "text": "**Alles, was unter einer PIN passiert, gilt als eigene Arbeit** — Verkäufe, Beratungen, Bonus-Zahlen, Änderungen an Kundendaten. Deshalb: nicht weitergeben, nicht auf einen Zettel am iPad schreiben."
+      }
     },
     {
-     "n": 3,
-     "title": "Speichern",
-     "text": "Erst der Knopf am Ende des Abschnitts übernimmt die Änderung."
+      "h1": "Zugang: PIN, Passkey, Passwort",
+      "sub": "Die Karte Zugang zeigt, womit du dich anmeldest. Ein Passwort sehen nur Kolleginnen mit Zugang zum Verwaltungsbereich.",
+      "card": {
+        "title": "Zugang",
+        "text": "Was es für wen gibt"
+      },
+      "left": {
+        "shot": "i2-zugang"
+      },
+      "leftCaption": "Karte **Zugang** eines Kontos mit Admin-Rechten: PIN, Passkey und Passwort.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "PIN",
+          "text": "Für alle. **Ändern …** öffnet den Dialog von der vorigen Seite."
+        },
+        {
+          "n": 2,
+          "title": "Passkey",
+          "text": "Für die Admin-Schranke: Touch ID oder Face ID statt Passwort. Den Einrichtungs-Link schickt ein Super-Admin („Admin 9“) — hier siehst du nur den Stand."
+        },
+        {
+          "n": 3,
+          "title": "Passwort",
+          "text": "Nur für die Admin-Schranke. **Ändern …** fragt das bisherige Passwort ab. Wer kein Admin-Konto hat, sieht die Zeile nicht — und braucht sie auch nicht."
+        }
+      ],
+      "hint": {
+        "text": "**Passwort vergessen?** Auf der Anmeldeseite den Link **„Passwort vergessen“** nutzen; die E-Mail kommt an die hinterlegte Adresse."
+      }
+    },
+    {
+      "h1": "Sicherheit und Darstellung",
+      "sub": "Wo du angemeldet bist, welche App-Geräte Face ID nutzen — und wie der Hub aussieht.",
+      "card": {
+        "title": "Sicherheit & Darstellung",
+        "text": "Sitzungen, Geräte, Farbschema, Rundgang"
+      },
+      "left": {
+        "shot": "i4-sicherheit"
+      },
+      "right": {
+        "shot": "i5-darstellung"
+      },
+      "leftCaption": "Karte **Sicherheit**: Browser-Sitzungen mit **Dieses Gerät**, darunter die App-Geräte.",
+      "rightCaption": "Karte **Darstellung** mit Farbschema und Rundgang.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Sitzungen lesen",
+          "text": "Browser oder App, Gerät, Adresse und wann zuletzt aktiv. **Dieses Gerät** ist die Sitzung, in der du gerade bist."
+        },
+        {
+          "n": 2,
+          "title": "Andere Sitzungen beenden",
+          "text": "Beendet **alle anderen** Browser-Sitzungen — bestätigt per Passkey oder PIN. Richtig nach einem verlorenen Gerät. App-Geräte mit Face ID bleiben."
+        },
+        {
+          "n": 3,
+          "title": "App-Gerät entfernen",
+          "text": "Widerruft Face ID und Widgets auf genau diesem iPhone oder iPad. Mehr als vier Geräte sind eingeklappt."
+        },
+        {
+          "n": 4,
+          "title": "Farbschema und Rundgang",
+          "text": "**Hell**, **Dunkel** oder **System** — gilt sofort und für dieses Gerät. **Rundgang starten** zeigt die Einführung erneut."
+        }
+      ],
+      "hint": {
+        "text": "**Dank fürs Trinkgeld:** Unter **Persönliches** steht dein eigener Text, den Kundinnen in My glattt nach bestätigtem Trinkgeld sehen — **Bearbeiten …** klappt den Editor mit Vorschau auf."
+      }
     }
-   ],
-   "notes": [
-    {
-     "title": "E-Mail-Adresse",
-     "text": "Sie ist zugleich der Anmeldename. Ändern lässt sie sich nur über das **Büro** — sonst käme man nicht mehr hinein."
-    }
-   ],
-   "hint": {
-    "text": "**Der Name ist kein Spitzname.** Er steht auf Auswertungen, die andere lesen — Bonus-Board, Mitarbeiterperformance, Terminhistorie."
-   }
-  },
-  {
-   "h1": "Passwort ändern",
-   "sub": "Das Passwort gilt für die Anmeldung mit E-Mail — und sollte niemand sonst kennen.",
-   "card": {
-    "title": "Passwort ändern",
-    "text": "Neues Passwort setzen"
-   },
-   "left": {
-    "shot": "i2-passwort"
-   },
-   "leftCaption": "Abschnitt zum Ändern des Passworts.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Aktuelles Passwort",
-     "text": "Zur Sicherheit wird das bisherige abgefragt — sonst könnte jeder an einem offenen Gerät das Passwort tauschen."
-    },
-    {
-     "n": 2,
-     "title": "Neues Passwort",
-     "text": "Zweimal eingeben. Lang schlägt kompliziert: ein Satz ist sicherer als ein kurzes Kryptisches."
-    },
-    {
-     "n": 3,
-     "title": "Speichern",
-     "text": "Ab sofort gilt das neue Passwort. Die PIN bleibt davon unberührt."
-    }
-   ],
-   "hint": {
-    "text": "**Passwort vergessen** geht auch ohne Profil: Auf der Anmeldeseite den Link **„Passwort vergessen“** nutzen, die E-Mail kommt an die hinterlegte Adresse."
-   }
-  },
-  {
-   "h1": "PIN verwalten",
-   "sub": "Die vierstellige PIN ist der schnelle Weg hinein — vor allem am gemeinsamen Gerät im Institut.",
-   "card": {
-    "title": "PIN verwalten",
-    "text": "Vierstellige PIN neu vergeben"
-   },
-   "left": {
-    "shot": "i3-pin"
-   },
-   "leftCaption": "Abschnitt **„PIN-Code verwalten“**.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Neue PIN",
-     "text": "Genau **vier Ziffern**. Keine Geburtstage, keine 1234 — sie ersetzt am iPad das Passwort."
-    },
-    {
-     "n": 2,
-     "title": "Bestätigen",
-     "text": "Zur Kontrolle ein zweites Mal eingeben."
-    },
-    {
-     "n": 3,
-     "title": "Speichern",
-     "text": "Ab dem nächsten Anmelden gilt die neue PIN."
-    }
-   ],
-   "notes": [
-    {
-     "title": "PIN schon vergeben",
-     "text": "Zwei Personen dürfen nicht dieselbe PIN haben — der Hub lehnt sie dann ab. In dem Fall einfach eine andere wählen."
-    },
-    {
-     "title": "PIN wechseln",
-     "text": "Nach einem Schichtwechsel, bei dem jemand zugesehen hat, kostet ein Wechsel zehn Sekunden — und verhindert Buchungen unter falschem Namen."
-    }
-   ],
-   "hint": {
-    "kind": "warn",
-    "text": "**Alles, was unter einer PIN passiert, gilt als eigene Arbeit** — Verkäufe, Beratungen, Bonus-Zahlen, Änderungen an Kundendaten. Deshalb: nicht weitergeben, nicht auf einen Zettel am iPad schreiben."
-   }
-  },
-  {
-   "h1": "Geräte und Rundgänge",
-   "sub": "Zwei nützliche Kleinigkeiten am Ende des Profils: angemeldete Geräte und die Einführungs-Rundgänge. Davor steht die Karte „Darstellung“: Hell, Dunkel oder System.",
-   "card": {
-    "title": "Geräte & Rundgänge",
-    "text": "Fremde Sitzungen beenden, Rundgänge neu starten"
-   },
-   "left": {
-    "shot": "i4-sitzungen"
-   },
-   "right": {
-    "shot": "i5-rundgang"
-   },
-   "leftCaption": "Die aktiven Anmeldungen auf allen Geräten.",
-   "rightCaption": "Abschnitt **„Einführung in den Hub“**.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Darstellung wählen",
-     "text": "In der Karte **„Darstellung“** zwischen **Hell**, **Dunkel** und **System** wählen. „System“ folgt dem Gerät. Die Wahl gilt sofort und bleibt auf diesem Gerät gespeichert — in der Seitenleiste gibt es dafür keinen Umschalter mehr."
-    },
-    {
-     "n": 2,
-     "title": "Geräte ansehen",
-     "text": "Zeigt, wo überall angemeldet ist — Gerät, Ort und wann zuletzt aktiv."
-    },
-    {
-     "n": 3,
-     "title": "Andere abmelden",
-     "text": "Beendet **alle anderen** Sitzungen. Richtig nach einem verlorenen Gerät oder wenn etwas unbekannt aussieht."
-    },
-    {
-     "n": 4,
-     "title": "Rundgänge zurücksetzen",
-     "text": "Danach startet auf jeder Seite wieder die kurze Einführung — hilfreich für den ersten Tag nach einer langen Pause."
-    }
-   ],
-   "hint": {
-    "text": "**Einzelnen Rundgang starten:** Dafür braucht es das Profil nicht — das **Fragezeichen** in der Kopfzeile der jeweiligen Seite genügt. Auf dem Handy steckt der Rundgang im **Mehr-Menü** („Grundlagen 4“)."
-   }
-  }
- ]
+  ]
 }

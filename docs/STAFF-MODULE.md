@@ -42,7 +42,7 @@ Admin-Backend. Der Austritt einer Person wird über die
 
 | Vorgang | Anleitung |
 |---|---|
-| Personalübersicht lesen, suchen, filtern, Stand im Hub prüfen | Team 1 |
+| Personalübersicht lesen, suchen, filtern, Stand im Hub prüfen (Karten oder Tabelle, „Was ansteht“) | Team 1, App 13 |
 | Detailseite einer Person (Stammdaten, Kontakt, Beschäftigung, Organisationseinheiten) | Team 1 |
 | Hub-Konto anlegen, vorhandenes Konto verknüpfen, Einladung senden | Team 1 |
 | Austritt: Konto archivieren | Team 1 |
@@ -85,6 +85,24 @@ Admin-Backend. Der Austritt einer Person wird über die
 - Offen: Die askDANTE-Endpunkte der Web-Seiten (`/askdante/staff*`) hängen am Recht
   `manage_own_travel_expenses` statt `view_staff` — bewusst nicht geändert, weil die Reisekosten
   sie mitnutzen.
+
+### Seit 25.10.2026: Karten, Profilbild, „Was ansteht“
+
+Nach Entwurf 1 „Kopfkarte und Abschnitte“ (zusammen mit der Profilseite entschieden) zeigt die
+Übersicht **Personenkarten** als Standard und die Tabelle auf Umschalter (`segmented-control` im
+Seitenkopf, gespeichert in `localStorage` unter `glattthub.staff.view`). Über den Filter-Chips steht die
+Zeile **„Was ansteht“** (`partials/attention.blade.php`, `.stat-strip-glattt` als Knöpfe): Probezeit endet
+in 60 Tagen, ohne Hub-Konto, ohne Stammdaten, Befristung läuft in 90 Tagen aus, Austritte (angekündigt oder
+in den letzten 90 Tagen). Ein Klick setzt den passenden Filter (`ATTENTION` in `staff-overview.js`); der
+Filter „Austritte“ zeigt seit diesem Tag auch Aktive mit bekanntem Ende, wie die App.
+
+Das **Hub-Profilbild** ersetzt die Initialen: `UserProvisioningService::userSummary()` liefert `photo_url`
+im `hub_account` der Übersicht, `StaffDirectoryController::show()` im `hub_account` der Akte. Karte, Tabelle
+und der Kopf der Detailseite (`loadHubAccount()` über `/hub/staff/api/people/{hrEmployeeId}`) zeigen das
+Bild, sonst die Initialen in fester Größe (`.avatar-glattt-sm/-md/-lg`, `flex-shrink: 0` — die Ovale aus dem
+Asana-Befund kamen von einer nicht existierenden Größenklasse). Die App (`StaffPersonRow`, `StaffPersonView`)
+nutzt denselben `ProfileAvatar` und zeigt „Was ansteht“ als Kacheln über den Chips
+(`StaffViewModel.attention`, neue Filter `fixed` und `noMaster`).
 
 ### Fachregeln der Übersicht und Detailseite
 

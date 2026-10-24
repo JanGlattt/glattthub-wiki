@@ -1,6 +1,6 @@
 # Klickanleitungen App — Quellen
 
-Quellen der Serie **App 1–28** (die glatttHub-App auf iPad und iPhone). Standard und
+Quellen der Serie **App 1–29** (die glatttHub-App auf iPad und iPhone). Standard und
 Deck-Format: `klickanleitungen/README.md` und Wiki `docs/KLICKANLEITUNGEN.md`; die Technik der
 App steht im Wiki `IOS-APP.md`.
 
@@ -16,7 +16,7 @@ App steht im Wiki `IOS-APP.md`.
 | **8 — Verträge in der App** | Native Vertragsliste (Suche, Chips), Vertragsseite mit Übersicht/Zahlungen/Verlauf/E-Mails, Notiz/Zahlung/Rate nativ, GoCardless als Hub-Blatt, iPad-Split (seit 25.09.2026) |
 | **9 — Gutscheine in der App** | Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin berichtigen, neuer Gutschein, Guthaben-Karte der Kundin, iPad-Split (seit 26.09.2026) |
 | **11 — Reisekosten in der App** | Anspruchstage, Reisekarte mit Live-Summe und Abschnitten, Belege fotografieren/scannen, einreichen/zurückziehen, Freigabe mit Berichtigen, iPad-Split (seit 26.09.2026) |
-| **13 — Personal und Lohnmonat in der App** | Personen nach Institut, Akte mit Vergütung (Gehalt ab, Bezüge, Dienstwagen), Hub-Konto anlegen, Lohnmonat mit Einmalzahlung, Brief und TXT-Übergabe an die Steuerberatung, Lohnarten, iPad-Split (seit 27.09.2026, v1.2) |
+| **13 — Personal und Lohnmonat in der App** | Personen nach Institut mit Hub-Profilbild und Zeile „Was ansteht“ (v1.5), Akte mit Vergütung (Gehalt ab, Bezüge, Dienstwagen), Hub-Konto anlegen, Lohnmonat mit Einmalzahlung, Brief und TXT-Übergabe an die Steuerberatung, Lohnarten, iPad-Split (seit 27.09.2026, v1.2) |
 | **12 — Termin buchen in der App** | Kundin wählen, Institut und „ab wann“, Paket-Leistungen, Vorschläge je Tag (grün = ohne Lücke), Rückfrage und Buchen, Zum Termin / Weiterer Termin, iPad mit allen Tagen nebeneinander (seit 26.09.2026) |
 | **10 — App-Geräte in der App** | Geräteliste mit Chips und Kennzahlen, Code ausstellen (Art, Angaben, QR/Teilen), Code zurückziehen, Steckbrief mit Widerruf, iPad-Split (seit 26.09.2026) |
 | **14 — Berichte in der App** | Native Übersicht: Standort, Zeitraum, Suche über die Analysen, eigene und geteilte Dashboards mit Kennzahlen, Berichte nach Bereich mit drei Leitkennzahlen und Verlauf, Laden Karte für Karte, iPad-Raster (seit 27.09.2026) |
@@ -30,6 +30,7 @@ App steht im Wiki `IOS-APP.md`.
 | **26 — Ruhezeiten in der App** | Pläne mit Uhr wie der iOS-Schlafplan, eigene Wochentage, ganztags, im Urlaub stumm (askDANTE), Ausnahmen für Bereiche, Anlässe, Chats und Personen; iPad mit Uhr links (seit 14.10.2026) |
 
 | **28 — Die glatttipedia in der App** | Umschalter Institut · Büro · Leitung, Kapitelliste, Suche, Seite als Fließtext mit Chips und Sprungliste, Prozesse als Schrittfolge, Lightbox, Pflichtseite bestätigen, Hilfreich/Veraltet, iPad mit Seitenleiste · Text · Inhaltsverzeichnis (seit 19.10.2026, Bilder aus WissenSnapshotTests) |
+| **29 — Mein Profil in der App** | Kopfkarte mit Foto und Zugangsstatus, PIN ändern in drei Schritten, Sitzungen und App-Geräte, Admin-Zugang (Passkey, Passwort), iPad zwei Spalten (seit 25.10.2026, Bilder aus ProfileSnapshotTests) |
 Die ersten sieben, 9 (Gutscheine) und 12 (Termin buchen) richten sich an **die Institute**; 6 (Management-Sicht) zusätzlich an Leitung und Büro, 8 (Verträge), 10 (App-Geräte), 16 (Forderungen), 17 (Widerrufe), 18 (Zufriedenheit), 19 (Unternehmensverträge) und 20 (Bonus-Verwaltung) an Leitung und Büro.
 
 ## Screenshots — nicht mit Playwright

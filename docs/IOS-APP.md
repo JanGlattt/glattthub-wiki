@@ -1723,7 +1723,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Gutscheine | nativ | Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin-Korrektur, neuer Gutschein, Guthaben-Karte in der Kundenübersicht (seit 26.09.2026); Bestand mit Kennzahlen bleibt Web |
 | Reisekosten | nativ | Anspruchstage aus askDANTE, Assistent für neue Reisen (auch mehrtägig mit Tagen & Nächten, seit 27.09.2026), Reisekarte mit Live-Summe und fünf Abschnitten, Belege mit Kamera/Scanner, Einreichen/Zurückziehen/Löschen, Register Freigabe mit Berichtigen und Entscheidung (seit 26.09.2026); Web-Freigabeseite bleibt Web |
 | App-Geräte | nativ | Liste mit Suche, Chips, Kennzahlen, offene Codes und Geräte nach Institut; Code ausstellen in drei Schritten mit QR und Teilen-Blatt (AirDrop), Code zurückziehen, Gerät widerrufen im Steckbrief; iPad-Split, Ausstellen als Popover (seit 26.09.2026); Einlösen bleibt `EnrollmentSheet` |
-| Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild, Akte (Überblick, Vergütung, Zeit, Konto), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten (seit 27.09.2026); Teamliste- und Lohnliste-Import bleiben Web (Datei-Upload im Büro), Checklisten Eintritt/Austritt vorerst ausgeblendet |
+| Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild mit Hub-Profilbild und Zeile „Was ansteht“ (seit 25.10.2026), Akte (Überblick, Vergütung, Zeit, Konto), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten (seit 27.09.2026); Teamliste- und Lohnliste-Import bleiben Web (Datei-Upload im Büro), Checklisten Eintritt/Austritt vorerst ausgeblendet |
 | Institute | nativ | Karte zuerst (seit 27.09.2026): Nadeln in Hub-Farbe, Blatt mit Liste/Institut, Unterseiten Kennzahlen, Team, Verwaltung |
 | Trinkgeld | nativ | Rangliste mit meiner Zeile (seit 29.09.2026): Kennzahlen, Segment Trinkgeld/Sterne/Auszahlung, Zeitraum-Chips, Person als Blatt (iPad daneben), Kommentare nur mit Recht; Startseiten-Karte „Meine Bewertungen“, Beenden-Schalter, Kunden-Sperre |
 | Überlegt noch | nativ | Anrufliste (seit 17.10.2026, Welle 2 seit 18.10.2026: Termin verpasst, Reiter Reaktivierung mit Sammelversand): Reiter Offen/Link/Erledigt, Akte mit Link per WhatsApp, Termin buchen, Nicht erreicht, Ergebnis-Blatt nach dem Anruf; iPad Liste + Akte |
@@ -1744,6 +1744,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Formulare | nativ | Liste und Akte (seit 28.09.2026): Suche, Chips, Marken, Erscheint bei, Beim Absenden, Aufbau, letzte Einreichungen mit PDF; Ausfüllen und Editor als eingebettete Hub-Blätter (`?shell=native`), Editor nur am iPad — Entscheidung Jan 28.09.2026: Web-Engine bleibt, kein nativer Nachbau |
 | Bildschirme, Report-Mails, Audit, Conversion-Upload | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
 | Einstellungen | nativ | Eine Seite (seit 27.09.2026): Darstellung, Diese App, Beratungs-Cache, API-Zugänge; iPad Abschnitte links |
+| Profil | nativ | Kopfkarte und Abschnitte (seit 25.10.2026): Foto, Zugangsstatus, PIN-Blatt in Schritten, Passkey/Passwort nur mit Admin-Schranke, Sitzungen und App-Geräte, Darstellung, Dank-Text; auch `/user/profile`; iPad Kopfkarte über zwei Spalten |
 
 ### Native Verträge (Mehr-Seite, seit 25.09.2026 — Nachzug 1)
 
@@ -2663,6 +2664,33 @@ Editor bildschirmfüllend — nur am iPad; am iPhone steht dort der Hinweis auf 
 - **Nachweis:** `FormsSnapshotTests` (iPhone Liste und Akte, iPad Split, hell/dunkel — Bilder der
   Klickanleitung App 21; Pfad-Erkennung, bridge.js-Abgleich, Modell-Toleranz),
   `.github/app-abdeckung.json` `hub.forms` auf „nativ".
+
+### Natives Profil (Mehr-Seite, seit 25.10.2026)
+
+Jan wählte Entwurf 1 „Kopfkarte und Abschnitte“ (drei Entwürfe als Canvas, zusammen mit der
+Personal-Seite). `ProfileView` (`ios/glatttHub/Profile/`) ist die Mehr-Seite `NativeMorePage.profile`
+für `/hub/profile` — die Jetstream-Adresse `/user/profile`, die die iPad-Seitenleiste und das
+Mehr-Menü nennen, landet ebenfalls dort (`bridge.js` kennt beide Pfade).
+
+- **Daten:** `GET /hub/profile/data` — dieselbe Antwort, die die Web-Seite serverseitig rendert
+  (`ProfileController::payload()`): Kopfkarte, Zugang, Sitzungen, App-Geräte, Dank-Text, Rundgang.
+- **Kopfkarte:** `ProfileAvatar` (AsyncImage mit Initialen-Rückfall, auch in der Personalseite),
+  Name, Position · Institut, Zugangs-Chips, Knöpfe „PIN ändern“ und „Foto“ (`PhotosPicker`,
+  Galerie-Bilder werden zu JPEG mit höchstens 1.200 px und über `HubSession.upload` an
+  `POST /hub/profile/photo` geschickt; Entfernen per `DELETE`).
+- **PIN-Blatt** `ProfilePinSheet`: aktuelle PIN → neue PIN → wiederholen → fertig, mit `PinDots`
+  und `NumberPad` der Anmeldeseite; speichert über `POST /hub/profile/credentials` mit
+  `current_pin`, Feldfehler des Hubs springen zum passenden Schritt. Beim Erstzugang
+  (`must_change_pin`) öffnet das Blatt von selbst und lässt sich erst nach dem Speichern schließen.
+- **Sicherheit:** Sitzungen mit „Dieses Gerät“, App-Geräte mit „Entfernen“
+  (`DELETE /api/app/devices/{id}`), „Andere Sitzungen beenden“ als sensible Aktion —
+  `HubSession.json` bestätigt die 423-Antwort per Passkey/PIN und wiederholt den Aufruf.
+- **Zugang** zeigt Passkey und Passwort nur mit `access_admin` (Passwort wird am Rechner
+  geändert), sonst den Stand von Face ID. **Darstellung** verweist auf die Einstellungen,
+  **Persönliches** öffnet den Dank-Text (`ThankYouTextSection`) als Detailseite.
+- **iPad:** Kopfkarte über zwei Spalten (Zugang/Darstellung links, Sicherheit/Persönliches rechts).
+- **Nachweis:** `ProfileSnapshotTests` (Profil, Admin-Variante, PIN-Blatt, iPad; Modell- und
+  Pfad-Tests), PHP `ProfilePageTest`. Klickanleitung App 29.
 
 ### Native Einstellungen (Mehr-Seite, seit 27.09.2026)
 

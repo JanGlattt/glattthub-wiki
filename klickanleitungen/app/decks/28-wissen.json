@@ -1,167 +1,167 @@
 {
- "out": "../pdf/App-28-Wissen",
- "meta": "../meta.json",
- "shots": "../shots",
- "series": "App",
- "nr": 28,
- "of": 28,
- "audience": "institute",
- "footerArea": "App",
- "stand": "19.10.2026",
- "version": "1.0",
- "title": [
-  "Die glatttipedia",
-  "in der App"
- ],
- "subtitle": "Klickanleitung für die glatttHub-App — Bereich wählen, Kapitel und Seiten lesen, mit der Sprungliste springen, Pflichtseiten bestätigen, Rückmeldung geben, suchen und Bilder groß öffnen; auf dem iPad Seitenleiste, Text und Inhaltsverzeichnis nebeneinander",
- "eyebrow": "App · Wissen",
- "notes": [
-  "**Wissen** findest du im Menü **Mehr** (iPhone) bzw. über das Buch-Symbol in der Seitenleiste (iPad). Es ist dieselbe glatttipedia wie im Hub (Serie Wissen) — nur zum Lesen; schreiben und ordnen bleibt der Redaktion im Browser vorbehalten.",
-  "Zuletzt gelesene Seiten bleiben ohne Netz lesbar („Kein Netz · Stand HH:MM“). Bestätigen und Rückmelden brauchen Verbindung."
- ],
- "pages": [
-  {
-   "h1": "Bereich wählen und Kapitel öffnen",
-   "sub": "Oben der Umschalter Institut · Büro · Leitung wie im Hub neben dem Logo, darunter die Suche und die Kapitel des gewählten Bereichs. Was du nicht sehen darfst, steht gar nicht erst da.",
-   "card": {
-    "title": "Einstieg",
-    "text": "Bereich, Suche, Kapitel"
-   },
-   "left": {
-    "shot": "wissen-list-light"
-   },
-   "leftCaption": "Die Kapitel der **Institut-glatttipedia**: ein Tipp öffnet Kapitel oder Seite, die Unterzeile sagt, wie viele Seiten dahinter stehen.",
-   "steps": [
+  "out": "../pdf/App-28-Wissen",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "App",
+  "nr": 28,
+  "of": 29,
+  "audience": "institute",
+  "footerArea": "App",
+  "stand": "19.10.2026",
+  "version": "1.0",
+  "title": [
+    "Die glatttipedia",
+    "in der App"
+  ],
+  "subtitle": "Klickanleitung für die glatttHub-App — Bereich wählen, Kapitel und Seiten lesen, mit der Sprungliste springen, Pflichtseiten bestätigen, Rückmeldung geben, suchen und Bilder groß öffnen; auf dem iPad Seitenleiste, Text und Inhaltsverzeichnis nebeneinander",
+  "eyebrow": "App · Wissen",
+  "notes": [
+    "**Wissen** findest du im Menü **Mehr** (iPhone) bzw. über das Buch-Symbol in der Seitenleiste (iPad). Es ist dieselbe glatttipedia wie im Hub (Serie Wissen) — nur zum Lesen; schreiben und ordnen bleibt der Redaktion im Browser vorbehalten.",
+    "Zuletzt gelesene Seiten bleiben ohne Netz lesbar („Kein Netz · Stand HH:MM“). Bestätigen und Rückmelden brauchen Verbindung."
+  ],
+  "pages": [
     {
-     "n": 1,
-     "title": "Umschalter",
-     "text": "**Institut**, **Büro** und **Leitung** sind die drei glatttipedias. Büro und Leitung siehst du nur mit dem passenden Recht — sonst fehlt der Reiter."
+      "h1": "Bereich wählen und Kapitel öffnen",
+      "sub": "Oben der Umschalter Institut · Büro · Leitung wie im Hub neben dem Logo, darunter die Suche und die Kapitel des gewählten Bereichs. Was du nicht sehen darfst, steht gar nicht erst da.",
+      "card": {
+        "title": "Einstieg",
+        "text": "Bereich, Suche, Kapitel"
+      },
+      "left": {
+        "shot": "wissen-list-light"
+      },
+      "leftCaption": "Die Kapitel der **Institut-glatttipedia**: ein Tipp öffnet Kapitel oder Seite, die Unterzeile sagt, wie viele Seiten dahinter stehen.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Umschalter",
+          "text": "**Institut**, **Büro** und **Leitung** sind die drei glatttipedias. Büro und Leitung siehst du nur mit dem passenden Recht — sonst fehlt der Reiter."
+        },
+        {
+          "n": 2,
+          "title": "Weitere Bereiche",
+          "text": "Das Raster-Symbol rechts listet die kleineren Bereiche (Verkauf & Beratung, Aktionen, Technik …)."
+        },
+        {
+          "n": 3,
+          "title": "Kapitel",
+          "text": "Ein Kapitel öffnet seine Seite mit der Liste „Seiten in diesem Kapitel“ darunter; eine Seite öffnet direkt den Text. Zurück per Wischen vom linken Rand."
+        },
+        {
+          "n": 4,
+          "title": "Start und Aktionen",
+          "text": "**Start** (oben rechts) zeigt die Startseite des Bereichs; laufende **Aktionen** stehen am Ende der Liste mit ihrer Gültigkeit."
+        }
+      ],
+      "hint": {
+        "text": "Nach unten ziehen lädt die Kapitel neu. Wer eine Seite aus einem Link, einer Mitteilung oder der Suche öffnet, landet direkt dort — der Bereich wechselt mit."
+      }
     },
     {
-     "n": 2,
-     "title": "Weitere Bereiche",
-     "text": "Das Raster-Symbol rechts listet die kleineren Bereiche (Verkauf & Beratung, Aktionen, Technik …)."
+      "h1": "Eine Seite lesen",
+      "sub": "Brotkrumen, Titel, Lesezeit und Stand, dann der Text mit Überschriften, Listen, Hinweisen, Schrittfolgen und Prozessen — wie im Hub, nur fürs Handy gesetzt.",
+      "card": {
+        "title": "Seite",
+        "text": "Fließtext mit Sprungliste"
+      },
+      "left": {
+        "shot": "wissen-page-light"
+      },
+      "leftCaption": "Die Seite „Urlaub“: **Pflichtseite**-Marke, die Überschriften als Chips, darunter Text, Hinweis, Schritte und ein Prozess mit Verantwortlicher.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Chips und ⋯",
+          "text": "Die Chips unter dem Kopf springen zu den Überschriften. Das **⋯**-Menü rechts oben hat dieselbe Sprungliste, **Veraltet melden** und **Im Web öffnen**."
+        },
+        {
+          "n": 2,
+          "title": "Prozesse",
+          "text": "Ein Prozess steht als nummerierte Schrittfolge mit **Verantwortlich** und Beteiligten; Risiken erscheinen als gelbe Kästen. Das Diagramm selbst zeigt die Web-Fassung."
+        },
+        {
+          "n": 3,
+          "title": "Bilder",
+          "text": "Ein Tipp öffnet das Bild groß (zwei Finger zum Zoomen, Doppeltipp). **In Safari öffnen** gibt es erst dort — nicht beim ersten Tipp."
+        },
+        {
+          "n": 4,
+          "title": "Links",
+          "text": "Links auf andere Seiten der glatttipedia öffnen in der App; Hub-Links öffnen die Hub-Seite; Telefon und E-Mail an Personenkarten starten Anruf bzw. Mail."
+        }
+      ],
+      "hint": {
+        "text": "Unter dem Text stehen **Verantwortlich** und die **nächste Prüfung** — wer etwas Falsches findet, meldet es über ⋯ › Veraltet melden mit einem Satz; die Redaktion bekommt eine Mitteilung.",
+        "kind": "info"
+      }
     },
     {
-     "n": 3,
-     "title": "Kapitel",
-     "text": "Ein Kapitel öffnet seine Seite mit der Liste „Seiten in diesem Kapitel“ darunter; eine Seite öffnet direkt den Text. Zurück per Wischen vom linken Rand."
+      "h1": "Pflichtseite bestätigen und Rückmeldung geben",
+      "sub": "Pflichtseiten tragen die Marke und den Knopf am Fuß. Nach dem Lesen „Gelesen und verstanden“ antippen — ändert die Redaktion die Seite, kommt die Frage erneut.",
+      "card": {
+        "title": "Fuß",
+        "text": "Bestätigen, Ja/Nein"
+      },
+      "left": {
+        "shot": "wissen-page-dark"
+      },
+      "leftCaption": "Dieselbe Seite im Dunkelmodus: ganz unten der goldene Knopf **Gelesen und verstanden** und die Frage **War diese Seite hilfreich?**",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Gelesen und verstanden",
+          "text": "Ein Tipp bestätigt; danach steht „Gelesen und verstanden · Datum“ unter dem Text. Die Leitung sieht im Hub, wer noch offen ist."
+        },
+        {
+          "n": 2,
+          "title": "Neue Fassung",
+          "text": "Wurde eine bestätigte Pflichtseite geändert, zeigt die App oben den Kasten **Neue Fassung** und bittet erneut um die Bestätigung."
+        },
+        {
+          "n": 3,
+          "title": "Hilfreich?",
+          "text": "**Ja** oder **Nein** zählt die Stimme; ein zweiter Tipp ändert sie. Die Zahl neben Ja zeigt, wie viele die Seite hilfreich fanden."
+        },
+        {
+          "n": 4,
+          "title": "Suche",
+          "text": "Die Suche oben in der Liste versteht Tippfehler und ganze Fragen („wie viel urlaub darf ich mitnehmen“). Treffer zeigen Seite, Textstelle und Bereich."
+        }
+      ]
     },
     {
-     "n": 4,
-     "title": "Start und Aktionen",
-     "text": "**Start** (oben rechts) zeigt die Startseite des Bereichs; laufende **Aktionen** stehen am Ende der Liste mit ihrer Gültigkeit."
+      "h1": "Auf dem iPad",
+      "sub": "Seitenleiste mit Suche und Kapitelbaum links, der Text in der Mitte, rechts Inhaltsverzeichnis, Verantwortliche, Prüfdatum und die Knöpfe — wie das Wiki am Mac.",
+      "card": {
+        "title": "iPad",
+        "text": "Drei Spalten"
+      },
+      "left": {
+        "shot": "wissen-ipad-light"
+      },
+      "leftCaption": "Links der Baum mit aufgeklapptem Kapitel **HR**, in der Mitte „Urlaub“, rechts **Inhaltsverzeichnis** und **Gelesen und verstanden**.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Bereich",
+          "text": "Der Knopf neben „glatttipedia“ wechselt zwischen Institut, Büro, Leitung und den weiteren Bereichen."
+        },
+        {
+          "n": 2,
+          "title": "Baum",
+          "text": "Kapitel klappen mit dem Pfeil auf; die gewählte Seite ist gold. Suchen ersetzt den Baum durch die Treffer, Löschen bringt ihn zurück."
+        },
+        {
+          "n": 3,
+          "title": "Rechte Spalte",
+          "text": "Ab etwa 1000 pt Breite stehen Inhaltsverzeichnis, Bereich, Verantwortliche, nächste Prüfung, Stand und die Knöpfe rechts; schmaler rutschen sie unter den Text."
+        },
+        {
+          "n": 4,
+          "title": "Ohne Netz",
+          "text": "Baum und zuletzt gelesene Seiten bleiben; Bestätigen und Rückmelden warten auf Verbindung und melden sonst „Nicht gespeichert“."
+        }
+      ]
     }
-   ],
-   "hint": {
-    "text": "Nach unten ziehen lädt die Kapitel neu. Wer eine Seite aus einem Link, einer Mitteilung oder der Suche öffnet, landet direkt dort — der Bereich wechselt mit."
-   }
-  },
-  {
-   "h1": "Eine Seite lesen",
-   "sub": "Brotkrumen, Titel, Lesezeit und Stand, dann der Text mit Überschriften, Listen, Hinweisen, Schrittfolgen und Prozessen — wie im Hub, nur fürs Handy gesetzt.",
-   "card": {
-    "title": "Seite",
-    "text": "Fließtext mit Sprungliste"
-   },
-   "left": {
-    "shot": "wissen-page-light"
-   },
-   "leftCaption": "Die Seite „Urlaub“: **Pflichtseite**-Marke, die Überschriften als Chips, darunter Text, Hinweis, Schritte und ein Prozess mit Verantwortlicher.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Chips und ⋯",
-     "text": "Die Chips unter dem Kopf springen zu den Überschriften. Das **⋯**-Menü rechts oben hat dieselbe Sprungliste, **Veraltet melden** und **Im Web öffnen**."
-    },
-    {
-     "n": 2,
-     "title": "Prozesse",
-     "text": "Ein Prozess steht als nummerierte Schrittfolge mit **Verantwortlich** und Beteiligten; Risiken erscheinen als gelbe Kästen. Das Diagramm selbst zeigt die Web-Fassung."
-    },
-    {
-     "n": 3,
-     "title": "Bilder",
-     "text": "Ein Tipp öffnet das Bild groß (zwei Finger zum Zoomen, Doppeltipp). **In Safari öffnen** gibt es erst dort — nicht beim ersten Tipp."
-    },
-    {
-     "n": 4,
-     "title": "Links",
-     "text": "Links auf andere Seiten der glatttipedia öffnen in der App; Hub-Links öffnen die Hub-Seite; Telefon und E-Mail an Personenkarten starten Anruf bzw. Mail."
-    }
-   ],
-   "hint": {
-    "text": "Unter dem Text stehen **Verantwortlich** und die **nächste Prüfung** — wer etwas Falsches findet, meldet es über ⋯ › Veraltet melden mit einem Satz; die Redaktion bekommt eine Mitteilung.",
-    "kind": "info"
-   }
-  },
-  {
-   "h1": "Pflichtseite bestätigen und Rückmeldung geben",
-   "sub": "Pflichtseiten tragen die Marke und den Knopf am Fuß. Nach dem Lesen „Gelesen und verstanden“ antippen — ändert die Redaktion die Seite, kommt die Frage erneut.",
-   "card": {
-    "title": "Fuß",
-    "text": "Bestätigen, Ja/Nein"
-   },
-   "left": {
-    "shot": "wissen-page-dark"
-   },
-   "leftCaption": "Dieselbe Seite im Dunkelmodus: ganz unten der goldene Knopf **Gelesen und verstanden** und die Frage **War diese Seite hilfreich?**",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Gelesen und verstanden",
-     "text": "Ein Tipp bestätigt; danach steht „Gelesen und verstanden · Datum“ unter dem Text. Die Leitung sieht im Hub, wer noch offen ist."
-    },
-    {
-     "n": 2,
-     "title": "Neue Fassung",
-     "text": "Wurde eine bestätigte Pflichtseite geändert, zeigt die App oben den Kasten **Neue Fassung** und bittet erneut um die Bestätigung."
-    },
-    {
-     "n": 3,
-     "title": "Hilfreich?",
-     "text": "**Ja** oder **Nein** zählt die Stimme; ein zweiter Tipp ändert sie. Die Zahl neben Ja zeigt, wie viele die Seite hilfreich fanden."
-    },
-    {
-     "n": 4,
-     "title": "Suche",
-     "text": "Die Suche oben in der Liste versteht Tippfehler und ganze Fragen („wie viel urlaub darf ich mitnehmen“). Treffer zeigen Seite, Textstelle und Bereich."
-    }
-   ]
-  },
-  {
-   "h1": "Auf dem iPad",
-   "sub": "Seitenleiste mit Suche und Kapitelbaum links, der Text in der Mitte, rechts Inhaltsverzeichnis, Verantwortliche, Prüfdatum und die Knöpfe — wie das Wiki am Mac.",
-   "card": {
-    "title": "iPad",
-    "text": "Drei Spalten"
-   },
-   "left": {
-    "shot": "wissen-ipad-light"
-   },
-   "leftCaption": "Links der Baum mit aufgeklapptem Kapitel **HR**, in der Mitte „Urlaub“, rechts **Inhaltsverzeichnis** und **Gelesen und verstanden**.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Bereich",
-     "text": "Der Knopf neben „glatttipedia“ wechselt zwischen Institut, Büro, Leitung und den weiteren Bereichen."
-    },
-    {
-     "n": 2,
-     "title": "Baum",
-     "text": "Kapitel klappen mit dem Pfeil auf; die gewählte Seite ist gold. Suchen ersetzt den Baum durch die Treffer, Löschen bringt ihn zurück."
-    },
-    {
-     "n": 3,
-     "title": "Rechte Spalte",
-     "text": "Ab etwa 1000 pt Breite stehen Inhaltsverzeichnis, Bereich, Verantwortliche, nächste Prüfung, Stand und die Knöpfe rechts; schmaler rutschen sie unter den Text."
-    },
-    {
-     "n": 4,
-     "title": "Ohne Netz",
-     "text": "Baum und zuletzt gelesene Seiten bleiben; Bestätigen und Rückmelden warten auf Verbindung und melden sonst „Nicht gespeichert“."
-    }
-   ]
-  }
- ]
+  ]
 }

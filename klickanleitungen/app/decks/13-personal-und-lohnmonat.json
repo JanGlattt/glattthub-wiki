@@ -3,11 +3,11 @@
   "meta": "../meta.json",
   "shots": "../shots",
   "series": "App",
-  "of": 28,
+  "of": 29,
   "audience": "leitung",
   "footerArea": "App",
-  "stand": "29.09.2026",
-  "version": "1.4",
+  "stand": "25.10.2026",
+  "version": "1.5",
   "nr": 13,
   "title": [
     "Personal und Lohnmonat",
@@ -22,7 +22,7 @@
   "pages": [
     {
       "h1": "Personen und Akte",
-      "sub": "Die Liste zeigt alle Personen nach Institut. Ein Tipp öffnet die Akte mit den Reitern Überblick, Vergütung, Zeit und Konto.",
+      "sub": "Die Liste zeigt alle Personen nach Institut — mit Hub-Profilbild, wo eines gesetzt ist. Darüber die Zeile „Was ansteht“. Ein Tipp öffnet die Akte mit den Reitern Überblick, Vergütung, Zeit und Konto.",
       "card": {
         "title": "Übersicht",
         "text": "Wer arbeitet wo, seit wann"
@@ -30,17 +30,17 @@
       "left": {
         "shot": "staff-list-light"
       },
-      "leftCaption": "Marken zeigen **Probezeit**, **ohne Konto** und ein bekanntes **Ende**. Die Nummer ist die DATEV-Personalnummer.",
+      "leftCaption": "Oben **Was ansteht**: Probezeit endet, ohne Konto, ohne Stammdaten, Befristung endet, Austritte — ein Tipp setzt den Filter. Marken an der Person zeigen **Probezeit**, **ohne Konto** und ein bekanntes **Ende**.",
       "steps": [
         {
           "n": 1,
-          "title": "Suchen",
-          "text": "Name, Personalnummer oder Institut eintippen."
+          "title": "Suchen und erkennen",
+          "text": "Name, Personalnummer oder Institut eintippen. Wer im Hub ein Profilbild gesetzt hat, erscheint damit statt mit Initialen — in Liste und Akte."
         },
         {
           "n": 2,
-          "title": "Filter",
-          "text": "**Aktiv**, **Probezeit**, **Ohne Konto** (noch kein Hub-Zugang) und **Austritte**."
+          "title": "Was ansteht und Filter",
+          "text": "Die Kacheln zählen, wo zu handeln ist, und setzen beim Tippen den Filter. Chips: **Aktiv**, **Probezeit**, **Befristet**, **Ohne Konto**, **Ohne Stammdaten**, **Austritte**."
         },
         {
           "n": 3,
