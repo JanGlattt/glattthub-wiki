@@ -126,3 +126,36 @@ Bestätigung (geplant).
 aufruft (Institut-Bankverbindung, Team-PIN) und noch keine PIN-Abfrage hat — sobald sie eine hat, Ausnahme streichen.
 Gesamtschalter `SECURITY_PIN_CONFIRMATION` (Notfall; in `phpunit.xml` aus, die Tests der Funktion schalten sie selbst ein).
 Admin-Backend-Aktionen (Rollen, Rechte, Einstellungen) sind schon durch die Admin-Passwort-Hürde geschützt.
+
+## Passkeys für die Admin-Schranke (24.10.2026)
+
+Neben dem Passwort bestätigt ein **Passkey** (WebAuthn) die Schranke vor dem Admin-Backend: gleiche Sitzungsmarke
+(`admin.password_confirmed_at`, 1 Stunde), Passwort bleibt Rückfall (Entscheidung Jan: Passkey **oder** Passwort).
+Technik: `spatie/laravel-passkeys` 1.8 (Prüfung und Speicherung), alles andere eigene Controller — die Livewire-Oberfläche
+des Pakets wird nicht benutzt. Relying-Party-ID = Host aus `APP_URL` (`hub.glattt.com`); auf Staging eigene Passkeys.
+
+**Einrichtung nur per Link eines Super-Admins** (Admin → System → Passkeys, Recht `manage_passkeys`, per Migration nur Rollen
+mit Super-Admin-Kennzeichen): `PasskeyEnrollmentService::createFor()` erzeugt `/passkey/{token}` (48 Stunden, einmal, nur der
+SHA-256-Hash liegt in `passkey_enrollments`, ein neuer Link macht ältere ungültig). Die Person gibt beim Öffnen **zusätzlich ihre
+PIN** ein (fünf Fehlversuche beenden den Link) — ein abgefangener Link allein nützt nichts. Öffentliche Seite (kein Hub-Login
+nötig, gedrosselt), bewusst **nicht** in der Apple-App-Site-Association: sie öffnet im Browser bzw. in der Desktop-App
+(`/passkey` = Seite zum Einfügen von Link/Code), nie in der iOS-App. Versand: Link kopieren oder per E-Mail (Schalter im Dialog);
+WhatsApp über die Zugang-Karte ist noch nicht angebunden. Mehrere Passkeys je Konto sind möglich (Mac, iPhone, neues Gerät =
+neuer Link); Entziehen im selben Admin-Bereich.
+
+**Ablauf an der Schranke:** `admin-password.blade.php` zeigt „Mit Passkey bestätigen", wenn das Konto einen hat
+(`public/js/passkey-gate.js`); `POST /admin-passkey/options` liefert nur die eigenen Passkeys, `POST /admin-passkey/verify`
+prüft die Signatur und dass der Passkey **zum angemeldeten Konto** gehört. `userVerification: required` bei Einrichtung und
+Abfrage (Touch ID/Face ID/Geräte-PIN), `residentKey: required`. `public/js/passkey.js` wandelt base64url ↔ ArrayBuffer ohne
+Fremdbibliothek.
+
+**Wo der Passkey liegt:** in Safari iCloud-Schlüsselbund, in Chrome der Google-Passwortmanager oder iCloud, **Bitwarden**
+(Browser-Erweiterung bzw. System-Anmeldedaten-Anbieter von macOS/iOS) — das Gerät fragt bei der Einrichtung, wohin. Bitwarden
+hält Passkeys browserübergreifend und synchron (auch in der Desktop-App, sobald dort System-Passkeys eingeschaltet sind).
+
+**Fallstricke:** Das Paket erzeugt seine Aktionen mit `new` — Container-Bindings greifen nur, wenn man die Klasse über
+`app(Config::getActionClass(...))` auflöst (Tests). Das Paket zieht Symfony 8 (PHP ≥ 8.4) nach, das Image läuft auf PHP 8.3:
+deshalb steht `config.platform.php = 8.3.0` in `composer.json` (Symfony 7.4). Die Desktop-App (Electron 41.10) braucht für
+Passkeys `app.configureWebAuthn({ platformPasskeys: true })`, Associated-Domains-Berechtigung, eingebettetes Provisioning-Profil und
+die Domain-Datei (AASA enthält `webcredentials.apps` bereits) — ohne das meldet die Schranke dort „Passkeys nicht verfügbar", das
+Passwort geht weiter.
