@@ -161,9 +161,11 @@ prüft die Signatur und dass der Passkey **zum angemeldeten Konto** gehört. `us
 Abfrage (Touch ID/Face ID/Geräte-PIN), `residentKey: required`. `public/js/passkey.js` wandelt base64url ↔ ArrayBuffer ohne
 Fremdbibliothek.
 
-**Wo der Passkey liegt:** in Safari iCloud-Schlüsselbund, in Chrome der Google-Passwortmanager oder iCloud, **Bitwarden**
-(Browser-Erweiterung bzw. System-Anmeldedaten-Anbieter von macOS/iOS) — das Gerät fragt bei der Einrichtung, wohin. Bitwarden
-hält Passkeys browserübergreifend und synchron (auch in der Desktop-App, sobald dort System-Passkeys eingeschaltet sind).
+**Wo der Passkey liegt:** Safari und die Desktop-App nutzen den **iCloud-Schlüsselbund („Passwörter“)** — der Passkey ist dort auf allen Geräten
+derselben Apple-Kennung gleich, auch in Chrome auf dem Mac. **Bitwarden ist auf macOS kein System-Anbieter für Passkeys** (nur die
+Browser-Erweiterung, Stand Anfang 2026; auf dem iPhone/iPad dagegen als AutoFill-Anbieter möglich) — die Desktop-App kann Bitwarden-Passkeys
+deshalb nicht nutzen. Empfehlung: Passkey in „Passwörter“ einrichten; wer Bitwarden im Browser will, richtet dort einen zweiten ein (mehrere Passkeys
+je Konto sind möglich).
 
 **Fallstricke:** Das Paket erzeugt seine Aktionen mit `new` — Container-Bindings greifen nur, wenn man die Klasse über
 `app(Config::getActionClass(...))` auflöst (Tests). Das Paket zieht Symfony 8 (PHP ≥ 8.4) nach, das Image läuft auf PHP 8.3:

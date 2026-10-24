@@ -88,7 +88,7 @@
     {
      "n": 3,
      "title": "Ablage wählen",
-     "text": "Das Gerät fragt, **wo** der Passkey liegen soll: **Bitwarden** (empfohlen — unabhängig von persönlichen Apple-Konten) oder iCloud-Schlüsselbund."
+     "text": "Das Gerät fragt, **wo** der Passkey liegen soll. Auf dem Mac und in der Desktop-App: **„Passwörter“ (iCloud-Schlüsselbund)** — nur dort ist der Passkey in Safari, Chrome, der Desktop-App und auf dem iPhone derselbe."
     },
     {
      "n": 4,
@@ -98,12 +98,12 @@
    ],
    "notes": [
     {
-     "title": "Bitwarden als Anbieter",
-     "text": "In der Desktop-App und auf dem iPhone erscheint Bitwarden nur, wenn es in den Systemeinstellungen als **AutoFill-Anbieter** für Passwörter und Passkeys aktiviert ist."
+     "title": "Bitwarden",
+     "text": "**Bitwarden** speichert Passkeys nur im **Browser** (Erweiterung für Chrome und Safari) — auf dem Mac ist es **kein** System-Anbieter, die Desktop-App kann es nicht nutzen. Wer Bitwarden im Browser bevorzugt, richtet **zusätzlich** dort einen zweiten Passkey ein (ein weiterer Link)."
     },
     {
      "title": "Mehrere Geräte",
-     "text": "Ein Passkey in Bitwarden oder iCloud gilt auf allen Geräten der Person. Ein neues Gerät braucht trotzdem keinen neuen Link, wenn der Tresor dort angemeldet ist."
+     "text": "Ein Passkey in „Passwörter“ gilt auf allen Geräten derselben Apple-Kennung. Ein **neues Gerät** mit derselben Kennung braucht **keinen** neuen Link; ein Gerät mit anderer Kennung bekommt einen neuen."
     }
    ],
    "hint": {

@@ -98,7 +98,7 @@
         },
         {
           "title": "Passkeys in der App (ab 1.2.8)",
-          "text": "Die Desktop-App unterstützt **Passkeys** wie Safari — auch **Bitwarden**, sobald es in den Systemeinstellungen als AutoFill-Anbieter aktiviert ist. Sie bestätigen die Schranke zum Admin-Panel und die sensiblen Aktionen im Hub. Ältere Versionen zeigen dort nur das Passwort bzw. die PIN."
+          "text": "Die Desktop-App unterstützt **Passkeys** wie Safari: Sie liegen im **iCloud-Schlüsselbund („Passwörter“)** und gelten damit auch im Safari, Chrome und auf dem iPhone. **Bitwarden** ist auf dem Mac kein System-Anbieter und kann die App nicht bedienen. Sie bestätigen die Schranke zum Admin-Panel und die sensiblen Aktionen im Hub. Ältere Versionen (vor 1.2.8) zeigen dort nur Passwort bzw. PIN."
         }
       ],
       "hint": {

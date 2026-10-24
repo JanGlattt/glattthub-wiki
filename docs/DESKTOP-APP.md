@@ -870,8 +870,9 @@ Jan wählte am 16.10.2026 Variante A + C: Ein Anruf soll auch auffallen, wenn ei
 
 Die Admin-Schranke nimmt neben dem Passwort einen Passkey (Wiki `MISSBRAUCHS-BREMSE.md`, Abschnitt Passkeys). Die Desktop-App
 nutzt **System-Passkeys** über Apples `ASAuthorizationController`: `app.configureWebAuthn({ platformPasskeys: true })` in `main.cjs`
-(nach `ready`). Das ist dieselbe Auswahl wie in Safari — iCloud-Schlüsselbund, **Bitwarden** und andere Anmeldedaten-Anbieter —, der
-Passkey gilt also auf allen Geräten der Person, in der App wie im Browser, und ein neues Gerät findet ihn über den Schlüsselbund/Bitwarden.
+(nach `ready`). Das ist dieselbe Auswahl wie in Safari — iCloud-Schlüsselbund und andere Anmeldedaten-Anbieter des Systems —, der
+Passkey gilt also auf allen Geräten derselben Apple-Kennung, in der App wie im Browser. **Bitwarden** erscheint dort nicht: Es ist auf macOS kein
+System-Anbieter für Passkeys (nur Browser-Erweiterung).
 
 **Voraussetzungen** (fehlt eine, meldet die Seite nur `NotAllowedError`, Electron loggt den Grund in die DevTools-Konsole):
 
@@ -893,7 +894,7 @@ Das Profil wird nur bei Änderungen der Berechtigungen neu erzeugt; `asc-profile
 
 | Datum | Version | Änderung |
 |---|---|---|
-| 24.10.2026 | 1.2.8 | **Passkeys für die Admin-Schranke:** System-Passkeys (iCloud-Schlüsselbund, Bitwarden wie in Safari) über `app.configureWebAuthn({ platformPasskeys: true })`, Entitlements für Associated Domains, neues Provisioning-Profil; die Schranke bietet „Mit Passkey bestätigen“, wenn das Konto einen Passkey hat |
+| 24.10.2026 | 1.2.8 | **Passkeys für die Admin-Schranke:** System-Passkeys (iCloud-Schlüsselbund wie in Safari; Bitwarden ist auf macOS kein System-Anbieter) über `app.configureWebAuthn({ platformPasskeys: true })`, Entitlements für Associated Domains, neues Provisioning-Profil; die Schranke bietet „Mit Passkey bestätigen“, wenn das Konto einen Passkey hat |
 | 16.10.2026 | 1.2.7 | **Eingehende Anrufe außerhalb der App:** schwebendes Anruf-Fenster oben rechts über allen Apps, Desktops und Vollbild (Annehmen/Ablehnen, nimmt keinen Fokus), macOS-Mitteilung mit „Annehmen“, hüpfendes Dock-Symbol; Klingelton „Goldton“ (siehe „Eingehende Anrufe“); `GLATTTHUB_USER_DATA` für ein eigenes Profil im Dev-Modus |
 | 16.10.2026 | 1.2.6 | Bildschirm teilen prüft die macOS-Freigabe „Bildschirmaufnahme“, erklärt sie und öffnet die Systemeinstellungen; eigene Bildschirmauswahl statt Systemauswahl |
 | 16.10.2026 | 1.2.5 | Rechtsklick auf Chat-Zeilen (öffnen, neuer Tab) und Nachrichten (kopieren, antworten, als Aufgabe, Person anschreiben, Link) |
