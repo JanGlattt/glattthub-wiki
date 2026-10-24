@@ -71,8 +71,39 @@ Produkte, Pakete, Bewertungen, Leads sind bei uns leer.
 
 Doku der Schnittstelle: `https://developer.phorest.com/llms.txt` (Seiten als `.md` abrufbar).
 
-## Geplant (weitere Etappen)
+## Weitere Spiegel (Etappe 2, 24.10.2026)
 
-Verkaufs-Historie (Transaktions-CSV je Filiale/Monat, unverändert abgelegt + zerlegt), Gutscheine,
-Dienstleistungen/Kurse/Zahlarten/Steuersätze als kleine Spiegel mit Verlauf, Änderungsverlauf der
-Termine (Status).
+Alle mit demselben Muster (Fingerabdruck, Versionen, nichts wird gelöscht), jeweils mit Sperre gegen
+parallele Läufe und Protokoll in `phorest_mirror_runs`.
+
+| Spiegel | Befehl / Cron-Endpoint / Zeit | Tabellen |
+|---|---|---|
+| Kunden | `phorest:mirror-clients` / `mirror-phorest-clients` / 02:50 | `phorest_clients`, `phorest_client_versions` |
+| Katalog | `phorest:mirror-catalog` / `mirror-phorest-catalog` / 03:10 | `phorest_records`, `phorest_record_versions` |
+| Verkäufe | `phorest:mirror-transactions` / `mirror-phorest-transactions` / 03:20 | `phorest_transaction_days`, `phorest_transaction_items` |
+| Termin-Änderungen | Beobachter `StatsHistoricAppointmentObserver` (bei jedem Abgleich) | `stats_historic_appointment_changes` |
+
+**Katalog** (`phorest_records`, Art in `entity`): Filialen, Zahlarten, Gutscheine; je Filiale Dienstleistungen
+(**mit archivierten: 812 statt 179**), Kurse, Kategorien, Steuersätze, Mitarbeiter. `record_key` =
+`<art>:<filiale>:<id>`. Nicht mehr gelieferte Datensätze bekommen `missing_since`.
+
+**Verkäufe** kommen über den CSV-Export-Auftrag `TRANSACTIONS_CSV` (`POST …/branch/{id}/csvexportjob`, Status per
+`GET …/csvexportjob/{jobId}`, dann die befristete CSV-Adresse laden). Je Filiale und Tag eine **Fassung**:
+`phorest_transaction_days` (Hash der Zeilen, `rows_gz` = Rohzeilen gzip, `is_current`, `superseded_at`) mit den
+Positionen in `phorest_transaction_items` (Beträge in Cents, Trinkgeld, Zahlart, vollständige Zeile in `raw`).
+Weicht ein erneuter Abruf ab (Storno, Nachbuchung), wird die alte Fassung abgelöst und bleibt samt Positionen
+erhalten. Tage ohne Verkäufe bekommen eine leere Fassung (so ist „geprüft" von „fehlt" unterscheidbar). Phorest
+meldet einen Zeitraum ohne Verkäufe als `FAILED` mit »No records found« — das ist kein Fehler.
+Rollierend: tägliche letzte 7 Tage (sonntags 90) bis gestern; heute ist noch nicht abgeschlossen.
+**Nachladung der Historie** (einmalig): Cron-Endpoint `backfill-phorest-transactions` (ab 2023-01-01, Monat für
+Monat je Filiale, vollständige Monate werden übersprungen, Zeitbudget 1500 s) — als Scheduler-Job alle 30 Minuten
+laufen lassen, bis das Protokoll keinen Hinweis »Zeitbudget erschöpft« mehr trägt, dann Job löschen.
+
+**Termin-Änderungsverlauf**: `stats_historic_appointments` zeigt nur den letzten Stand. Der Beobachter schreibt bei
+jeder Änderung `{feld: [alt, neu]}` (Status, Zeit, Mitarbeiterin, Service, Notiz …); Anlegen zählt nicht. Greift nur
+über Eloquent (`updateOrCreate`), nicht bei Massen-Updates ohne Modell.
+
+## Noch offen
+
+DSGVO-Löschung eines Kunden über alle Fassungen (Kunden-Versionen, Verkaufspositionen mit Kundenbezug), Rechte/Oberfläche
+zum Einsehen der Spiegel (bisher nur Datenbank), Produkt-/Lagerdaten (bei glattt leer).
