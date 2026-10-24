@@ -10,11 +10,11 @@
     "Standort, Suche",
     "& Mitteilungen"
   ],
-  "subtitle": "Klickanleitung für den glatttHub — die drei Werkzeuge am Kopf der Seitenleiste und die eigenen Benachrichtigungs-Einstellungen",
+  "subtitle": "Klickanleitung für den glatttHub — die Standort-Auswahl und die beiden Werkzeuge am Kopf der Seitenleiste sowie die eigenen Benachrichtigungs-Einstellungen",
   "eyebrow": "Grundlagen · Werkzeuge",
   "footerArea": "Grundlagen",
-  "stand": "09.10.2026",
-  "version": "1.5",
+  "stand": "24.10.2026",
+  "version": "1.6",
   "notes": [
     "Der **Standort wirkt auf fast jede Seite** — Termine, Berichte, Verträge richten sich danach.",
     "Die **Suche findet nicht nur Seiten**, sondern auch Kundinnen, Verträge und Gutscheine.",
@@ -25,7 +25,7 @@
   "pages": [
     {
       "h1": "Standort wählen",
-      "sub": "Oben in der Seitenleiste steht, für welches Institut die Zahlen gelten. Diese Wahl zieht sich durch den ganzen Hub.",
+      "sub": "Oben in der Seitenleiste, direkt unter dem Logo, steht das gewählte Institut mit seiner Farbe. Diese Wahl zieht sich durch den ganzen Hub.",
       "card": {
         "title": "Standort wählen",
         "text": "Institut einstellen — es wirkt auf fast jede Seite"
@@ -33,22 +33,22 @@
       "left": {
         "shot": "h1-standort"
       },
-      "leftCaption": "Die Standortwahl mit den Instituts-Karten.",
+      "leftCaption": "Die Standort-Auswahl: farbige Kürzel-Kachel, darunter die geöffnete Liste.",
       "steps": [
         {
           "n": 1,
-          "title": "„Institute“ öffnen",
-          "text": "Der oberste der drei Knöpfe klappt die Auswahl auf."
+          "title": "Auswahl öffnen",
+          "text": "Die Kachel unter dem Logo zeigt das gewählte Institut (Kürzel in der Institutsfarbe, z. B. **BI** gelb, **H** rosa). Ein Tippen klappt die Liste auf. Mit nur einem Institut ist es eine reine Anzeige."
         },
         {
           "n": 2,
           "title": "Institut antippen",
-          "text": "Jede Karte ist ein Standort. Der gewählte trägt ein Häkchen."
+          "text": "Jede Zeile ist ein Standort. Der gewählte trägt ein Häkchen, die Liste schließt sich von selbst. **Esc** oder ein Tippen daneben schließt sie ohne Wechsel."
         },
         {
           "n": 3,
           "title": "„Alle Standorte“",
-          "text": "Die oberste Karte hebt die Einschränkung auf — dann zeigt jede Seite die Zahlen **aller** Institute zusammen."
+          "text": "Die oberste Zeile hebt die Einschränkung auf — dann zeigt jede Seite die Zahlen **aller** Institute zusammen. Sie erscheint nur, wenn du mehr als ein Institut sehen darfst."
         }
       ],
       "notes": [
@@ -79,7 +79,7 @@
       "right": {
         "shot": "h3-suche-treffer"
       },
-      "leftCaption": "Das Suchfeld unter den drei Knöpfen.",
+      "leftCaption": "Das Suchfeld unter den beiden Knöpfen.",
       "rightCaption": "Treffer nach Bereichen gruppiert.",
       "steps": [
         {
@@ -119,7 +119,7 @@
     },
     {
       "h1": "Mitteilungen",
-      "sub": "Der dritte Knopf sammelt, was der Hub meldet — von der geplatzten Lastschrift bis zum neuen Formular.",
+      "sub": "Der Knopf „Mitteilungen“ sammelt, was der Hub meldet — von der geplatzten Lastschrift bis zum neuen Formular.",
       "card": {
         "title": "Mitteilungen",
         "text": "Meldungen lesen, öffnen, als gelesen markieren"

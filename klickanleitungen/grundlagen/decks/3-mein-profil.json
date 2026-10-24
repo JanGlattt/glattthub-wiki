@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — Name und Bild, Passwort, PIN, angemeldete Geräte",
  "eyebrow": "Grundlagen · Profil",
  "footerArea": "Grundlagen",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "24.10.2026",
+ "version": "1.1",
  "notes": [
   "Das Profil erreicht man über den **eigenen Namen** am Fuß der Seitenleiste.",
   "**Passwort und PIN** sind zwei getrennte Schlüssel — beide gehören nur einer Person.",
@@ -136,7 +136,7 @@
   },
   {
    "h1": "Geräte und Rundgänge",
-   "sub": "Zwei nützliche Kleinigkeiten am Ende des Profils: angemeldete Geräte und die Einführungs-Rundgänge.",
+   "sub": "Zwei nützliche Kleinigkeiten am Ende des Profils: angemeldete Geräte und die Einführungs-Rundgänge. Davor steht die Karte „Darstellung“: Hell, Dunkel oder System.",
    "card": {
     "title": "Geräte & Rundgänge",
     "text": "Fremde Sitzungen beenden, Rundgänge neu starten"
@@ -152,16 +152,21 @@
    "steps": [
     {
      "n": 1,
+     "title": "Darstellung wählen",
+     "text": "In der Karte **„Darstellung“** zwischen **Hell**, **Dunkel** und **System** wählen. „System“ folgt dem Gerät. Die Wahl gilt sofort und bleibt auf diesem Gerät gespeichert — in der Seitenleiste gibt es dafür keinen Umschalter mehr."
+    },
+    {
+     "n": 2,
      "title": "Geräte ansehen",
      "text": "Zeigt, wo überall angemeldet ist — Gerät, Ort und wann zuletzt aktiv."
     },
     {
-     "n": 2,
+     "n": 3,
      "title": "Andere abmelden",
      "text": "Beendet **alle anderen** Sitzungen. Richtig nach einem verlorenen Gerät oder wenn etwas unbekannt aussieht."
     },
     {
-     "n": 3,
+     "n": 4,
      "title": "Rundgänge zurücksetzen",
      "text": "Danach startet auf jeder Seite wieder die kurze Einführung — hilfreich für den ersten Tag nach einer langen Pause."
     }

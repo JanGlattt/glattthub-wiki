@@ -1,8 +1,8 @@
 # Globaler Standortfilter & mobile Navigation
 
-Stand: 19.09.2026
+Stand: 24.10.2026
 
-Der global gewählte Standort (Sidebar → Instituts-Kachel, mobil im Mehr-Sheet)
+Der global gewählte Standort (Sidebar → Standort-Umschalter unter dem Logo, mobil im Mehr-Sheet)
 filtert fast alle Ansichten des Hubs; die Auswahl liegt im localStorage und ist
 seit 08/2026 an den angemeldeten User gekoppelt. Diese Seite beschreibt
 **Speicherung, User-Kopplung, Validierung, die Kommunikation der Komponenten
@@ -39,7 +39,7 @@ bleibt im Browser gespeichert, auch über ein Ab- und Wiederanmelden hinweg.
 
 | Vorgang | Anleitung |
 |---|---|
-| Standort wählen (Instituts-Kachel der Seitenleiste) | Grundlagen 2 |
+| Standort wählen (Umschalter der Seitenleiste) | Grundlagen 2 |
 | Standort und Abmelden am Smartphone (Mehr-Menü) | Grundlagen 4 |
 | Institut aus Übersichten ausblenden | Betrieb 2 |
 
@@ -74,6 +74,31 @@ anderen ist der Standard „Alle Standorte" — der alte Fallback hat Usern ohne
 Stamm-Institut dauerhaft das erste Institut (Bielefeld) aufgezwungen; genau
 so entstand der Prod-Fall „User mit Alle-Standorte-Scope sieht nur Bielefeld".
 
+### Standort-Umschalter der Seitenleiste (seit 24.10.2026)
+
+Statt des früheren Panels „Institute" (Foto-Karten, die die Navigation
+verdrängten) sitzt der Umschalter **direkt unter dem Seitenkopf**
+(`.sidebar-branch-switch`, Tour-Anker `data-tour="branch-filter"`):
+
+- **Kürzel-Kachel** (`.branch-chip`): Institutsfarbe vollflächig, Kürzel (BI, H, OS,
+  HB, BS, MD) in Hell oder Dunkel je nach Helligkeit der Farbe (relative Luminanz,
+  Schwelle 0,35 — Gelb und Hellgrün bekommen dunkle Schrift). Farbe aus
+  `BranchColorService.getColor()` (= `InstituteColor::getColorMap()`), per CSS-Variablen
+  `--branch-chip-bg`/`--branch-chip-fg` über `branchChipVars()`; das Event
+  `branchColorsLoaded` färbt nach.
+- **Kürzel** kommt vom Endpunkt `/phorest/branches` (Feld `code`, `PhorestController::branchCode()`):
+  Nummernkreis-Konvention aus `ClientNumberService::suggestPrefix()`, sonst die ersten
+  zwei Buchstaben des Ortsnamens.
+- **Je nach Zahl der Institute:** eines → reine Anzeige (kein Dropdown); zwei oder mehr →
+  Dropdown (`showBranches` = Liste offen, schließt per Esc/Klick daneben). „Alle Standorte"
+  erscheint nur, wenn `!hasBranchRestriction` und mehr als ein Institut sichtbar ist
+  (`showAllOption`).
+- Reihenfolge der Liste: `sort_order` der Institute (`sortedBranches`), Anzeigename ohne
+  die Marke („Bielefeld" statt „glattt Bielefeld", `branchLabel()`).
+- Eingeklappte Leiste: der Umschalter ist ausgeblendet wie vorher die Aktionsknöpfe.
+- Die Aktionsleiste darunter hat nur noch **Suche und Mitteilungen** und zeigt ihre
+  Beschriftung dauerhaft (`.sidebar-action-buttons-labeled`).
+
 ### Kommunikation zwischen den Komponenten
 
 Sidebar (`sidebarPanels()`), Bottom-Nav (`mobileBottomNav()` in
@@ -87,7 +112,7 @@ auf `branchChanged`.
 
 Im Mehr-Sheet der Bottom-Navigation (siehe `MOBILE-DESIGN.md`) gibt es zwei
 Stellen: **Standort** (Utilities-Zeile) öffnet eine Auswahl mit „Alle Standorte"
-und allen Instituten (identisch zur Instituts-Kachel der Sidebar); das Icon des
+und allen Instituten (identisch zum Umschalter der Sidebar); das Icon des
 Eintrags zeigt immer den aktuell gewählten Standort. **Abmelden** (Profil-Zeile)
 meldet ab und setzt den Standortfilter zurück.
 

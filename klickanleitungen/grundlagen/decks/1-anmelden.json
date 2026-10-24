@@ -14,7 +14,7 @@
  "eyebrow": "Grundlagen · Anmeldung & Navigation",
  "footerArea": "Grundlagen",
  "stand": "24.10.2026",
- "version": "1.3",
+ "version": "1.4",
  "notes": [
   "Auf den Macs im Institut und im Büro gibt es den Hub auch als **Desktop-App** — ein eigenes Fenster mit eigenem Symbol im Dock. Sie zeigt genau dieselbe Website: Anmeldung, Menü und alle Abläufe sind identisch mit dem Browser. Alle Tabs teilen sich eine Anmeldung: Wer seine PIN eingibt, ist danach überall selbst angemeldet.",
   "Zwei Wege hinein: **PIN** für den schnellen Wechsel im Institut, **E-Mail und Passwort** als vollständige Anmeldung.",
@@ -152,10 +152,10 @@
   },
   {
    "h1": "Konto und Abmelden",
-   "sub": "Ganz unten stehen die eigene Karte, der Umschalter für Hell und Dunkel und das Abmelden.",
+   "sub": "Ganz unten stehen die eigene Karte, das Nutzerhandbuch und das Abmelden. Darüber liegen die Werkzeuge Wissen und glatttBert nebeneinander.",
    "card": {
     "title": "Konto und Abmelden",
-    "text": "Eigene Karte, Hell/Dunkel, Abmelden"
+    "text": "Eigene Karte, Nutzerhandbuch, Abmelden"
    },
    "left": {
     "shot": "g5-nutzerkarte"
@@ -175,7 +175,7 @@
     {
      "n": 3,
      "title": "Hell oder Dunkel",
-     "text": "Der Umschalter daneben wechselt die Darstellung. Die Wahl bleibt auf diesem Gerät gespeichert."
+     "text": "Die Darstellung stellst du im Profil ein, in der Karte **„Darstellung“** („Grundlagen 3“). Die Wahl bleibt auf diesem Gerät gespeichert."
     },
     {
      "n": 4,

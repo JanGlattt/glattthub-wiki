@@ -19,6 +19,12 @@ Der glatttHub verfügt nun über einen vollständig integrierten Dark Mode mit d
 - **Mobile**: Kompakter Icon-Toggle ohne Text
 - **Zyklus**: Hell → Dunkel → System → Hell...
 
+> **Stand 24.10.2026:** Die Seitenleiste hat keinen Hell/Dunkel-Umschalter mehr. Die Auswahl
+> (Hell / Dunkel / System) steht im Profil in der Karte „Darstellung"
+> (`resources/views/hub/profile/partials/appearance.blade.php`, ruft `window.themeManager.setTheme()`).
+> Das mobile Mehr-Menü hat weiterhin die Kachel „Theme", die `cycleTheme()` direkt aufruft; die
+> Desktop-App schaltet das Farbschema über dasselbe Ereignis.
+
 ### 🎯 Platzierung
 - **Hub-Seiten**: Toggle in der Topbar rechts (vor Branch-Selector)
 - **Standard-Seiten**: Toggle in der Navigation rechts (vor User-Dropdown)
