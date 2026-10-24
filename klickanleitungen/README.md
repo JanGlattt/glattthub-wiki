@@ -14,7 +14,7 @@ klickanleitungen/
 │   ├── synonyme.json       Synonym-Gruppen der Suche
 │   └── assets/             pdf.css, portal.css/js, suche.js, suche-kern.js, Logo, Lato
 ├── portal/                 Server, Dockerfile, build.sh, cloudbuild.yaml des Portals (dist/ gitignored)
-├── grundlagen/             Serie „Grundlagen" (Anmeldung, Navigation, Profil, Mobil, glatttBert)
+├── grundlagen/             Serie „Grundlagen" (Anmeldung, Navigation, Profil, Mobil, glatttBert, Desktop-App, sensible Aktionen bestätigen)
 ├── terminansicht/          Serie „Terminansicht" (Beratungs- und Behandlungstermin)
 ├── kundenverwaltung/       Serie „Kundenverwaltung" (Kundenprofil)
 ├── bonus-board/            Serie „Bonus-Board" (Mitarbeiterin, Leitung, Verwaltung)
@@ -28,7 +28,7 @@ klickanleitungen/
 ├── finanzen/               Serie „Finanzen" (Schulden, Unternehmensverträge)
 ├── system/                 Serie „System" (Report-Mails, Audit)
 ├── berichte/               Serie „Berichte" (Rahmen + 16 Berichtsseiten)
-└── admin/                  Serie „Admin" (Verwaltungspanel, acht Themenblöcke)
+└── admin/                  Serie „Admin" (Verwaltungspanel, neun Themenblöcke)
 ```
 
 ## Benennung: Bereich + Nummer

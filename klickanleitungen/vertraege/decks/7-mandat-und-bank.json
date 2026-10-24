@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — Mandats-Zustände, Mandat anlegen, Bankverbindung ändern, Stammdaten korrigieren",
  "eyebrow": "Verträge · Mandat",
  "footerArea": "Verträge",
- "stand": "16.09.2026",
- "version": "1.0",
+ "stand": "24.10.2026",
+ "version": "1.1",
  "notes": [
   "**Nichts davon passiert automatisch** — Mandat und Zahlungsplan legt immer ein Mensch an.",
   "Eine neue **Bankverbindung tauscht das Mandat aus**: altes storniert, neues angelegt, offene Raten umgebucht.",
@@ -218,6 +218,10 @@
     {
      "title": "Von Hand angelegt heißt: kein Einzug",
      "text": "Ein manuell hinterlegtes Mandat dokumentiert nur. Eingezogen wird erst, wenn es in GoCardless existiert und verknüpft ist."
+    },
+    {
+     "title": "Bestätigung vor dem Speichern",
+     "text": "Diese Aktion fragt vorher nach: mit **Passkey** (Touch ID oder Face ID), solange noch keiner eingerichtet ist mit der **PIN**. Das Fenster „Kurz bestätigen“ erscheint über der Aktion; danach läuft sie von selbst zu Ende — siehe „Grundlagen 8“."
     }
    ],
    "table": {
@@ -302,6 +306,10 @@
     {
      "title": "Der Kundin sagen, wann es wirkt",
      "text": "Die nächste Abbuchung kann noch vom alten Konto kommen. Wer das nicht ansagt, produziert eine Rücklastschrift."
+    },
+    {
+     "title": "Bestätigung vor dem Speichern",
+     "text": "Diese Aktion fragt vorher nach: mit **Passkey** (Touch ID oder Face ID), solange noch keiner eingerichtet ist mit der **PIN**. Das Fenster „Kurz bestätigen“ erscheint über der Aktion; danach läuft sie von selbst zu Ende — siehe „Grundlagen 8“."
     }
    ],
    "table": {

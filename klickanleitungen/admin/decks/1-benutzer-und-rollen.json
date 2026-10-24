@@ -4,7 +4,7 @@
  "shots": "../shots",
  "series": "Admin",
  "nr": 1,
- "of": 8,
+ "of": 9,
  "audience": "admin",
  "title": [
   "Benutzer",
@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Konten, Rollen und Rechte verwalten",
  "eyebrow": "Admin · Benutzer & Rollen",
  "footerArea": "Admin-Panel",
- "stand": "14.10.2026",
- "version": "1.4",
+ "stand": "24.10.2026",
+ "version": "1.5",
  "notes": [
   "**Rollen entscheiden über alles**, was jemand im Hub sieht und darf — sie sind die wichtigste Einstellung überhaupt.",
   "**Es gibt immer mindestens eine Person mit Super-Admin.** Die letzte behält die Rolle, kann nicht archiviert und nicht gelöscht werden.",
@@ -53,6 +53,11 @@
      "n": 4,
      "title": "Zurück in den Hub",
      "text": "**„Zurück zum Hub“** am Fuß der Seitenleiste; darüber das eigene Konto mit Abmelden."
+    },
+    {
+     "n": 5,
+     "title": "Schranke",
+     "text": "Beim Öffnen fragt das Panel **Passwort oder Passkey** (eine Stunde gültig). Wer einen Passkey hat, bestätigt per Touch ID oder Face ID — siehe „Admin 9“."
     }
    ],
    "hint": {
@@ -201,11 +206,20 @@
      "n": 4,
      "title": "Weitere Aktionen",
      "text": "**Einladung per E-Mail**, **Auf allen Geräten abmelden** (beendet Sitzungen und App-Anmeldungen) und — nur bei archivierten Konten — **Endgültig löschen** mit Eingabe des Namens."
+    },
+    {
+     "n": 5,
+     "title": "Passkey",
+     "text": "Der Block **„Passkey“** im Reiter „Zugang“ zeigt, wo die Person einen hat. **„Passkey-Einrichtungs-Link“** und **„Alle Passkeys entziehen“** gibt es nur für Super-Admins — siehe „Admin 9“."
     }
    ],
    "hint": {
     "text": "**Löschen ist die Ausnahme.** Verträge, Beratungen und Bonus-Historie hängen am Konto; archivieren erreicht dasselbe, ohne die Vergangenheit zu beschädigen."
-   }
+   },
+   "right": {
+    "shot": "a9-konto-passkey"
+   },
+   "rightCaption": "Neu: der Block „Passkey“ neben PIN und Passwort."
   },
   {
    "h1": "Rollen und Rechte",

@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für die Personalverwaltung im glatttHub — Mitarbeiterinnen finden, Konto anlegen, archivieren",
   "eyebrow": "Team · Personal",
   "footerArea": "Team",
-  "stand": "14.10.2026",
-  "version": "1.3",
+  "stand": "24.10.2026",
+  "version": "1.4",
   "notes": [
     "Die Personalliste kommt aus **askDANTE** — eingestellt und ausgetragen wird dort. Der Hub ergänzt sie um die **Stammdaten** aus Teamliste und Lohnliste und das **Hub-Konto**.",
     "Das **Hub-Konto** ist etwas anderes als der Personaldatensatz: Es entscheidet, wer sich anmelden darf.",
@@ -126,6 +126,11 @@
           "n": 4,
           "title": "Erstzugang",
           "text": "Gesendete Werte müssen beim ersten Anmelden ersetzt werden — der Hub führt die Person direkt aufs Profil, die App zeigt den Bildschirm „Zugang ändern“."
+        },
+        {
+          "n": 5,
+          "title": "Passkey-Link",
+          "text": "Super-Admins schicken hier auch den **Passkey-Einrichtungs-Link** für die Schranke zum Admin-Panel — siehe „Admin 9“. Die PIN-Vergabe für andere (Team-PIN) bestätigt der Hub zusätzlich per Passkey oder PIN."
         }
       ],
       "hint": {

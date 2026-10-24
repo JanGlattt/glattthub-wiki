@@ -4,7 +4,7 @@
   "shots": "../shots",
   "series": "Grundlagen",
   "nr": 7,
-  "of": 7,
+  "of": 8,
   "audience": "institut",
   "title": [
     "Die Desktop-App:",
@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für den glatttHub auf dem Mac — mehrere Seiten nebeneinander, die Menüleiste „Gehe zu“, das Dock-Menü und das Rechtsklick-Menü",
   "eyebrow": "Grundlagen · Desktop-App",
   "footerArea": "Grundlagen",
-  "stand": "09.10.2026",
-  "version": "1.1",
+  "stand": "24.10.2026",
+  "version": "1.2",
   "notes": [
     "Die Desktop-App ist der glatttHub in einem **eigenen Fenster** auf dem Mac — Anmeldung und Bedienung sind dieselben wie im Browser.",
     "Seit Version 1.1: **Tabs** in der Titelzeile, **Zurück / Vor / Neu laden** und ein **Rechtsklick-Menü**, das Kunden, Verträge und Forderungsfälle kennt — bei Kunden seit 1.1.6 mit **Profilbild**.",
@@ -95,6 +95,10 @@
         {
           "title": "Immer dabei",
           "text": "Unten im Menü stehen **Zurück, Vorwärts, Neu laden** und **„Seite in neuem Tab öffnen“** — egal, wo man klickt."
+        },
+        {
+          "title": "Passkeys in der App (ab 1.2.8)",
+          "text": "Die Desktop-App unterstützt **Passkeys** wie Safari — auch **Bitwarden**, sobald es in den Systemeinstellungen als AutoFill-Anbieter aktiviert ist. Sie bestätigen die Schranke zum Admin-Panel und die sensiblen Aktionen im Hub. Ältere Versionen zeigen dort nur das Passwort bzw. die PIN."
         }
       ],
       "hint": {

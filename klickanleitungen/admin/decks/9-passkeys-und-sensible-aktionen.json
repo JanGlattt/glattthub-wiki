@@ -1,0 +1,281 @@
+{
+ "out": "../pdf/Admin-9-passkeys-und-sensible-aktionen",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Admin",
+ "nr": 9,
+ "of": 9,
+ "audience": "admin",
+ "title": [
+  "Passkeys und",
+  "sensible Aktionen"
+ ],
+ "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Passkeys einrichten und verwalten, Bestätigungen einstellen",
+ "eyebrow": "Admin · Passkeys & Bestätigung",
+ "footerArea": "Admin-Panel",
+ "stand": "24.10.2026",
+ "version": "1.0",
+ "notes": [
+  "**Ein Passkey ersetzt an der Schranke vor dem Admin-Panel das Passwort** — Fingerabdruck oder Gesicht statt Tippen. Das Passwort bleibt als Rückfall.",
+  "**Einrichten kann nur eine Super-Admin-Person.** Sie schickt der Kollegin einen Link; die gibt zusätzlich ihre PIN ein. Ein abgefangener Link allein nützt nichts.",
+  "**Mehrere Passkeys je Person sind möglich** — Mac, iPhone, neues Gerät: jeweils ein Link.",
+  "**Die gleichen Passkeys bestätigen auch sensible Aktionen im Hub** (Bankverbindung, Mandat und Zahlungsplan, Konten, Report-Mails)."
+ ],
+ "pages": [
+  {
+   "h1": "Passkey-Link für eine Person erzeugen",
+   "sub": "Am Konto der Person im Reiter „Zugang“ — oder gesammelt unter System → Passkeys.",
+   "card": {
+    "title": "Link erzeugen",
+    "text": "Einrichtung anstoßen"
+   },
+   "left": {
+    "shot": "a9-konto-passkey"
+   },
+   "leftCaption": "Reiter „Zugang“ mit dem neuen Block „Passkey“: Stand, Geräte, Knöpfe.",
+   "right": {
+    "shot": "a9-link-erzeugen"
+   },
+   "rightCaption": "Der Link wird angezeigt und lässt sich kopieren.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Block lesen",
+     "text": "**„Passkey“** zeigt, ob die Person schon einen hat und wo er liegt („Safari auf Mac — zuletzt benutzt am …“)."
+    },
+    {
+     "n": 2,
+     "title": "Link erzeugen",
+     "text": "**„Passkey-Einrichtungs-Link“** — der Link gilt **48 Stunden** und **einmal**. Ein älterer offener Link der Person wird ungültig."
+    },
+    {
+     "n": 3,
+     "title": "Zustellen",
+     "text": "Link kopieren und per WhatsApp schicken, oder im Fenster **„Zusätzlich per E-Mail schicken“** einschalten (nur bei Konten mit Adresse)."
+    },
+    {
+     "n": 4,
+     "title": "Fertig melden",
+     "text": "Sobald die Person den Passkey angelegt hat, steht er im Block und in der Liste unter System → Passkeys."
+    }
+   ],
+   "hint": {
+    "text": "**Nur Super-Admins sehen diese Knöpfe** (Recht „Passkeys einrichten und entziehen“). Büro und Leitung sehen den Stand, aber keine Knöpfe."
+   }
+  },
+  {
+   "h1": "Was die Person tut",
+   "sub": "Vier Schritte am eigenen Gerät — im Browser oder in der Desktop-App.",
+   "card": {
+    "title": "Einrichtung",
+    "text": "Der Weg der Kollegin"
+   },
+   "left": {
+    "shot": "a9-einrichten"
+   },
+   "leftCaption": "Die Seite „Passkey einrichten“: erst die PIN, dann bestätigt das Gerät.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Link öffnen",
+     "text": "Im **Browser** (Safari oder Chrome) direkt anklicken. In der **Desktop-App**: Admin-Panel öffnen → **„Passkey einrichten“** → Link einfügen."
+    },
+    {
+     "n": 2,
+     "title": "PIN eingeben",
+     "text": "Die **vierstellige PIN** der Person. Nach fünf falschen Eingaben ist der Link tot."
+    },
+    {
+     "n": 3,
+     "title": "Ablage wählen",
+     "text": "Das Gerät fragt, **wo** der Passkey liegen soll: **Bitwarden** (empfohlen — unabhängig von persönlichen Apple-Konten) oder iCloud-Schlüsselbund."
+    },
+    {
+     "n": 4,
+     "title": "Bestätigen",
+     "text": "Touch ID, Face ID oder Geräte-PIN. Danach steht „Dein Passkey ist eingerichtet“ auf der Seite."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Bitwarden als Anbieter",
+     "text": "In der Desktop-App und auf dem iPhone erscheint Bitwarden nur, wenn es in den Systemeinstellungen als **AutoFill-Anbieter** für Passwörter und Passkeys aktiviert ist."
+    },
+    {
+     "title": "Mehrere Geräte",
+     "text": "Ein Passkey in Bitwarden oder iCloud gilt auf allen Geräten der Person. Ein neues Gerät braucht trotzdem keinen neuen Link, wenn der Tresor dort angemeldet ist."
+    }
+   ],
+   "hint": {
+    "text": "**Ein Link ist wie ein Passwort.** Nicht in Gruppen-Chats posten, nur an die Person selbst schicken."
+   }
+  },
+  {
+   "h1": "An der Schranke zum Admin-Panel",
+   "sub": "Wer einen Passkey hat, sieht neben dem Passwort-Feld einen zweiten Weg.",
+   "card": {
+    "title": "Die Schranke",
+    "text": "Passkey oder Passwort"
+   },
+   "left": {
+    "shot": "a9-schranke"
+   },
+   "leftCaption": "Die Schranke vor dem Admin-Panel mit „Mit Passkey bestätigen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Mit Passkey bestätigen“",
+     "text": "Das Gerät fragt nach Touch ID oder Face ID. Danach öffnet sich das Panel."
+    },
+    {
+     "n": 2,
+     "title": "Oder Passwort",
+     "text": "Das Passwort bleibt gültig — für ein verlorenes Gerät oder eine Umgebung ohne Passkeys."
+    },
+    {
+     "n": 3,
+     "title": "Eine Stunde",
+     "text": "Die Bestätigung gilt wie beim Passwort **eine Stunde**; jede neue Anmeldung beginnt von vorn."
+    }
+   ],
+   "hint": {
+    "text": "**Ohne Passwort und ohne Passkey kommt niemand ins Panel.** Wer keins von beidem hat, wendet sich an eine Super-Admin-Person.",
+    "kind": "warn"
+   }
+  },
+  {
+   "h1": "Passkeys einsehen und entziehen",
+   "sub": "Die Liste unter System → Passkeys zeigt alle Passkeys im Hub.",
+   "card": {
+    "title": "Verwalten",
+    "text": "Liste, Entziehen"
+   },
+   "left": {
+    "shot": "a9-passkeys-liste"
+   },
+   "leftCaption": "Alle Passkeys mit Person, Gerät und letzter Benutzung.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Suchen",
+     "text": "Nach dem Namen der Person; **„Zuletzt benutzt“** zeigt, ob ein Passkey überhaupt noch gebraucht wird."
+    },
+    {
+     "n": 2,
+     "title": "Entziehen",
+     "text": "**„Entziehen“** nimmt genau diesen Passkey weg. Die Person kommt danach nur noch mit dem Passwort (oder einem anderen Passkey) ins Panel."
+    },
+    {
+     "n": 3,
+     "title": "Alle auf einmal",
+     "text": "Am Konto: **„Alle Passkeys entziehen“** — bei verlorenem Gerät oder Verdacht auf Missbrauch."
+    },
+    {
+     "n": 4,
+     "title": "Neu einrichten",
+     "text": "Ein neuer Einrichtungs-Link macht den Weg wieder frei."
+    }
+   ],
+   "hint": {
+    "text": "**Bei einem Verdacht zuerst entziehen, dann nachfragen.** Das kostet die Person zwei Minuten und niemandem Daten.",
+    "kind": "warn"
+   }
+  },
+  {
+   "h1": "Welche Aktionen bestätigt werden",
+   "sub": "System → Bestätigungspflichtige Aktionen: je Aktion ein Schalter, die Gültigkeit und der PIN-Rückfall.",
+   "card": {
+    "title": "Einstellungen",
+    "text": "Schalter und Gültigkeit"
+   },
+   "left": {
+    "shot": "a9-aktionen"
+   },
+   "leftCaption": "Die fünf Gruppen mit ihren Einstellungen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Gruppe wählen",
+     "text": "**Bankverbindung**, **SEPA-Mandat und Zahlungsplan**, **Konten und PIN**, **Report-Mails**, **Exporte**."
+    },
+    {
+     "n": 2,
+     "title": "„Bestätigung verlangen“",
+     "text": "Der Schalter. **Exporte** sind standardmäßig aus, die übrigen an."
+    },
+    {
+     "n": 3,
+     "title": "Gültigkeit",
+     "text": "**0 Minuten = jedes Mal neu** (Standard). Mit z. B. 5 Minuten gilt eine Bestätigung für alle Aktionen in diesem Fenster."
+    },
+    {
+     "n": 4,
+     "title": "PIN als Rückfall",
+     "text": "An: Wer noch keinen Passkey hat, bestätigt mit der PIN. Aus: Die Aktion geht **nur mit Passkey**."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Wer einen Passkey hat",
+     "text": "bestätigt **immer** damit — nie mit der PIN, egal wie der Rückfall steht."
+    },
+    {
+     "title": "Notschalter",
+     "text": "Fällt die Passkey-Abfrage aus, schaltet die Technik sie über die Umgebungsvariable `SECURITY_PIN_CONFIRMATION` ab. Das ist ein Notfall, kein Dauerzustand."
+    }
+   ],
+   "hint": {
+    "text": "**Ein längeres Fenster macht es bequemer — und schwächer.** Wer 10 Minuten einstellt, bestätigt eine Reihe von Aktionen mit einer Geste; wer neben dem Bildschirm sitzt, nutzt dasselbe Fenster. Standard bleibt „jedes Mal“.",
+    "kind": "warn"
+   }
+  },
+  {
+   "h1": "Meldungen zur Sicherheit",
+   "sub": "Der Benachrichtigungs-Katalog kennt fünf Anlässe zu diesem Thema — alle zunächst ausgeschaltet.",
+   "layout": "text",
+   "table": {
+    "head": [
+     "Anlass",
+     "Wann",
+     "Empfänger"
+    ],
+    "rows": [
+     [
+      "Neue Anmeldung von unbekanntem Gerät oder Netz",
+      "Eine Person meldet sich von einem Gerät oder Netz an, das sie nie benutzt hat.",
+      "Die Person selbst, Super-Admins"
+     ],
+     [
+      "Rollen oder Rechte geändert",
+      "Rolle oder Recht wird vergeben oder entzogen (im laufenden Betrieb).",
+      "Die Person, Super-Admins"
+     ],
+     [
+      "Sitzung auf anderem Gerät benutzt",
+      "Dieselbe Sitzung taucht mit einem anderen Gerät auf — sie wird sofort abgemeldet.",
+      "Die Person, Super-Admins"
+     ],
+     [
+      "Viele falsche PINs",
+      "Mehr als 30 falsche PINs in einer Stunde, über alle Geräte.",
+      "Super-Admins"
+     ],
+     [
+      "Passkey eingerichtet",
+      "Für ein Konto wurde ein Passkey angelegt.",
+      "Die Person, Super-Admins"
+     ]
+    ]
+   },
+   "sections": [
+    {
+     "h2": "Wo einschalten",
+     "text": "Unter **Admin → Kommunikation → Benachrichtigungen**, Reiter „Anlässe & Regeln“, Modul **System & Synchronisation**, Anlass „Sicherheit“. Die Schalter stehen bewusst auf **aus**, bis die Administration entscheidet, wer sie bekommen soll."
+    }
+   ],
+   "hint": {
+    "text": "**Zuerst auf sich selbst schalten.** Wer „Neue Anmeldung“ einschaltet, bekommt in den ersten Wochen viele Meldungen — jedes neue Gerät, jedes Hotel-WLAN. Danach einpendeln lassen."
+   }
+  }
+ ]
+}

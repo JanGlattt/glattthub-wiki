@@ -4,7 +4,7 @@
  "shots": "../shots",
  "series": "Grundlagen",
  "nr": 1,
- "of": 7,
+ "of": 8,
  "audience": "institut",
  "title": [
   "Anmelden &",
@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — von der Anmeldung bis zum richtigen Menüpunkt",
  "eyebrow": "Grundlagen · Anmeldung & Navigation",
  "footerArea": "Grundlagen",
- "stand": "15.10.2026",
- "version": "1.2",
+ "stand": "24.10.2026",
+ "version": "1.3",
  "notes": [
   "Auf den Macs im Institut und im Büro gibt es den Hub auch als **Desktop-App** — ein eigenes Fenster mit eigenem Symbol im Dock. Sie zeigt genau dieselbe Website: Anmeldung, Menü und alle Abläufe sind identisch mit dem Browser. Alle Tabs teilen sich eine Anmeldung: Wer seine PIN eingibt, ist danach überall selbst angemeldet.",
   "Zwei Wege hinein: **PIN** für den schnellen Wechsel im Institut, **E-Mail und Passwort** als vollständige Anmeldung.",
@@ -66,45 +66,47 @@
    }
   },
   {
-   "h1": "Mit E-Mail anmelden",
-   "sub": "Der vollständige Weg — nötig auf neuen Geräten und immer dann, wenn die PIN nicht greift.",
+   "h1": "Wenn die PIN nicht greift",
+   "sub": "Die Anmeldung geht nur noch mit der PIN — die E-Mail-Anmeldung ist seit dem 22.10.2026 abgeschaltet.",
    "card": {
-    "title": "Mit E-Mail anmelden",
-    "text": "E-Mail und Passwort, Passwort zurücksetzen"
+    "title": "Wenn die PIN nicht greift",
+    "text": "Neues Gerät, vergessene PIN"
    },
-   "left": {
-    "shot": "g2-login-email"
-   },
-   "leftCaption": "Anmeldung mit E-Mail-Adresse und Passwort.",
+   "layout": "text",
    "steps": [
     {
      "n": 1,
-     "title": "Weg umschalten",
-     "text": "Oben von **PIN** auf **E-Mail** wechseln. Erst dann erscheinen die beiden Felder."
+     "title": "PIN prüfen",
+     "text": "Vier Ziffern, ohne Leerzeichen. Nach mehreren Fehlversuchen **bremst** der Hub die Eingabe für einige Minuten — dann kurz warten."
     },
     {
      "n": 2,
-     "title": "Zugangsdaten",
-     "text": "Die dienstliche **E-Mail-Adresse** und das persönliche **Passwort**."
+     "title": "Neues Gerät",
+     "text": "Neue Geräte (Institut-iPad, neues iPhone) werden von der Administration **freigeschaltet**; sie schickt einen Code oder Link. Der Hub erkennt die App danach wieder."
     },
     {
      "n": 3,
-     "title": "Passwort vergessen",
-     "text": "Der Link darunter schickt eine E-Mail zum Zurücksetzen an die hinterlegte Adresse."
+     "title": "PIN vergessen",
+     "text": "Das **Büro** setzt eine neue PIN und schickt sie per E-Mail, WhatsApp oder persönlich — nach dem ersten Anmelden legst du sie selbst neu fest."
+    },
+    {
+     "n": 4,
+     "title": "Ins Admin-Panel",
+     "text": "Wer das **Admin-Panel** nutzt, bestätigt dort zusätzlich mit **Passwort oder Passkey** — siehe „Admin 9“."
     }
    ],
    "notes": [
     {
      "title": "Erste Anmeldung",
-     "text": "Neue Kolleginnen bekommen eine **Einladung per E-Mail**. Über den Link werden Passwort **und** PIN einmalig festgelegt — danach gelten beide Wege."
+     "text": "Neue Kolleginnen bekommen eine **Einladung** oder einen **Selbst-Link**. Darüber legen sie die PIN (und bei Bedarf das Passwort für das Admin-Panel) einmalig selbst fest."
     },
     {
-     "title": "Einladung abgelaufen",
-     "text": "Einladungslinks sind zeitlich begrenzt. Ist er abgelaufen, verschickt das Büro ihn neu; der alte Link lässt sich nicht wiederbeleben."
+     "title": "Link abgelaufen",
+     "text": "Links sind zeitlich begrenzt. Ist er abgelaufen, schickt das Büro ihn neu; der alte Link lässt sich nicht wiederbeleben."
     }
    ],
    "hint": {
-    "text": "**Kein Zugang mehr?** Erst prüfen, ob die richtige Adresse eingetippt ist (dienstlich, nicht privat). Hilft das nicht, meldet sich das Büro — Konten werden dort angelegt, geändert und wieder freigeschaltet."
+    "text": "**Kein Zugang mehr?** Erst prüfen, ob die PIN stimmt und das Gerät freigeschaltet ist. Hilft das nicht, meldet sich das Büro — Konten werden dort angelegt, geändert und wieder freigeschaltet."
    }
   },
   {

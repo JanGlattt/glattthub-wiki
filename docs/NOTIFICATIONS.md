@@ -892,3 +892,21 @@ tail -f storage/logs/laravel.log | grep -i "notification\|push"
   Nutzer wählen je Anlass „Im Hub"/„Push" (Karte „Meine Benachrichtigungen").
   Zeit-/Aktions-Automatisierungen und GoCardless-Regeln respektieren dieselben
   Schalter und Kanal-Wahlen. Konventions-Test `NotificationDispatchConventionTest`.
+
+## Sicherheits-Anlässe (24.10.2026)
+
+Modul „System & Synchronisation“, Ereignis `security` (`HubEventRegistry`), alle **standardmäßig aus** — die Administration schaltet sie selbst ein:
+
+| Aktion | Auslöser | Technik |
+|---|---|---|
+| `access_blocked` | Missbrauchs-Bremse sperrt IP/Konto | `AbuseGuard` |
+| `email_changed` | E-Mail-Adresse eines Kontos geändert | `UserEmailChangeObserver` |
+| `new_login_context` | Anmeldung von unbekanntem Gerät/Netz | `RecordLoginContext` (Tabelle `user_login_contexts`) |
+| `access_rights_changed` | Rolle/Recht vergeben oder entzogen (nur im Betrieb) | Spatie-Ereignisse, `NotifyAccessRightsChanged` |
+| `session_device_mismatch` | Sitzung mit anderem Gerät weiterbenutzt (abgemeldet) | `BindSessionToDevice` |
+| `pin_attack` | > 30 falsche PINs je Stunde über alle Adressen | `PinLoginController::countFailure` |
+| `passkey_registered` | Passkey für ein Konto eingerichtet | `PasskeyEnrollmentController` |
+
+Zielgruppe jeweils `event_owners` (die betroffene Person) plus Konten mit dem passenden Recht. Details und Fallstricke (Listener nicht doppelt
+registrieren): `MISSBRAUCHS-BREMSE.md`.
+

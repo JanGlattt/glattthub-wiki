@@ -105,6 +105,9 @@ Die Bremse der PIN-Anmeldung je Gerät/Adresse steht in `FortifyServiceProvider`
 
 ## Bestätigung sensibler Aktionen — Passkey, PIN als Rückfall (24.10.2026)
 
+!!! nutzerhandbuch "Bedienung: Grundlagen 8 – Sensible Aktionen bestätigen"
+    [hilfe.hub.glattt.com/grundlagen/8/](https://hilfe.hub.glattt.com/grundlagen/8/) — wann der Hub nachfragt, Passkey, PIN, Hub-Bestätigungsfenster.
+
 Bestimmte Aktionen verlangen vorher eine **Bestätigung** (Register `SensitiveActionRegistry`, fünf Gruppen): Bankverbindung ändern,
 SEPA-Mandat **und Zahlungsplan** anlegen/ändern/stornieren/Verknüpfung lösen/Einzug auslösen, Konten anlegen und Team-PIN vergeben,
 Report-Mails einrichten, Exporte (standardmäßig aus). **Wer einen Passkey hat, bestätigt jedes Mal damit** (Touch ID/Face ID);
@@ -134,6 +137,9 @@ Markup `#hub-confirm-modal` im Layout `hub`); auf der Vertragsseite ersetzt es d
 Verknüpfung zurücksetzen, Mandat reaktivieren, Einzüge stornieren). Weitere `confirm()`-Stellen im Hub stehen noch aus.
 
 ## Passkeys für die Admin-Schranke (24.10.2026)
+
+!!! nutzerhandbuch "Bedienung: Admin 9 – Passkeys und sensible Aktionen"
+    [hilfe.hub.glattt.com/admin/9/](https://hilfe.hub.glattt.com/admin/9/) — Link erzeugen, Einrichtung durch die Person, Schranke, Entziehen, Einstellungen.
 
 Neben dem Passwort bestätigt ein **Passkey** (WebAuthn) die Schranke vor dem Admin-Backend: gleiche Sitzungsmarke
 (`admin.password_confirmed_at`, 1 Stunde), Passwort bleibt Rückfall (Entscheidung Jan: Passkey **oder** Passwort).

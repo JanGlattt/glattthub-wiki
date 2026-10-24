@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — Auswertungen automatisch per E-Mail erhalten, mit Zeitplan und Empfängern",
  "eyebrow": "System · Report-Mails",
  "footerArea": "System",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "24.10.2026",
+ "version": "1.1",
  "notes": [
   "Report-Mails schicken **bestehende Auswertungen** regelmäßig ins Postfach — sie erzeugen keine neuen Zahlen.",
   "Jede richtet sich ihre eigenen ein; **externe Empfänger** sind möglich, aber bewusst zu wählen.",
@@ -56,7 +56,13 @@
    ],
    "hint": {
     "text": "**Zeitpunkt mit Bedacht:** Eine Monatsauswertung am **1.** enthält den Vormonat, aber noch nicht alle Nachträge. Der **3.** oder **5.** liefert oft das belastbarere Bild."
-   }
+   },
+   "notes": [
+    {
+     "title": "Bestätigung vor dem Speichern",
+     "text": "Diese Aktion fragt vorher nach: mit **Passkey** (Touch ID oder Face ID), solange noch keiner eingerichtet ist mit der **PIN**. Das Fenster „Kurz bestätigen“ erscheint über der Aktion; danach läuft sie von selbst zu Ende — siehe „Grundlagen 8“."
+    }
+   ]
   },
   {
    "h1": "Empfänger und Formate",

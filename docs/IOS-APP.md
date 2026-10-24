@@ -3224,3 +3224,11 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | 20.09.2026 | 0.1 (dev) | Mehr-Sheet als Spiegel des Web-Sheets (Suche oben, Raster mit Überschriften, Werkzeuge, Profil/Abmelden); Such-Tab entfernt (sechs Tabs → System-„Mehr"); Standortwahl und Mitteilungen nativ (`branches` im Navigations-Payload, `glattt:set-branch`), Lupe im Scroll-Header öffnet das native Mehr — das Web-Sheet geht in der App nicht mehr auf |
 | 20.09.2026 | 0.1 (dev) | Xcode-Projekt unter `ios/` (XcodeGen) mit Phase-1-Code; Google/IAP-Login rendert im WKWebView mit Safari-UA (Weg A bewiesen, Simulator); 14 Swift-Tests |
 | 20.09.2026 | — | Backend-Vorarbeiten B1 (App-Erkennung), B2 (generische Bridge), B3 (`apns_environment`), B4 (Payload + `mark-read`), B5 (Badge), B6 (AASA-Route), B10 (Kiosk-Konfiguration im Institut-Modul) auf `develop`; LB-Regel `/.well-known/*` war schon vorhanden |
+
+## Passkeys und die iOS-App (24.10.2026)
+
+Die Apple-App-Site-Association enthält `webcredentials.apps` (Team + Bundle-ID) und die App den Eintrag `webcredentials:hub.glattt.com` —
+damit können Passkeys für `hub.glattt.com` grundsätzlich auch in den WebViews der App angeboten werden (Admin-Schranke, Bestätigung sensibler
+Aktionen). **Nicht verifiziert** auf dem Gerät; die nativen Aufrufe der App (`HubSession`) laufen bei den sensiblen Aktionen ohne Abfrage (Ausnahme
+`glatttHub-iOS/` in `RequirePinConfirmation`), bis die App eine eigene Passkey-/PIN-Abfrage hat. Siehe `MISSBRAUCHS-BREMSE.md`.
+

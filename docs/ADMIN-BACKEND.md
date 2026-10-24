@@ -12,7 +12,12 @@ Nutzerhandbuch.
 
 !!! nutzerhandbuch "Bedienung: Admin 1 – Benutzer und Rollen"
     [hilfe.hub.glattt.com/admin/1/](https://hilfe.hub.glattt.com/admin/1/) — das Panel öffnen, Gruppen, zurück in den Hub.
-    Die Serie **Admin 1–8** deckt alle Bereiche des Panels ab.
+    Die Serie **Admin 1–9** deckt alle Bereiche des Panels ab.
+
+
+!!! nutzerhandbuch "Bedienung: Admin 9 – Passkeys und sensible Aktionen"
+    [hilfe.hub.glattt.com/admin/9/](https://hilfe.hub.glattt.com/admin/9/) — Passkey-Links erzeugen und entziehen, die Schranke zum Panel,
+    welche Aktionen im Hub bestätigt werden. Für alle Mitarbeitenden: [Grundlagen 8](https://hilfe.hub.glattt.com/grundlagen/8/).
 
 ---
 
@@ -36,7 +41,7 @@ Die Verwaltung der Hub-Konten hat eine eigene Seite: [Hub-Nutzer verwalten](HUB-
 | **Team** | Personal (Phorest-Staff), Gehälter, Boni & Provisionen, Abwesenheiten, Mitarbeiter-Zielwerte, Anlässe, Ziele je Institut, Badges, Verleihungen |
 | **Betrieb** | Terminerinnerungen (Regeln, Kanäle, Opt-in-Vormerke), Beratungs- und Bewertungs-WhatsApp, Formular-Links, Superchat-Kontakt-Mapping, Superchat-Playground |
 | **Bildschirme** | Apple-TV-App „glattt Screens“ (`SCREENS-MODULE.md`): Bildschirme (Kopplung, Status, Steuerkanal), Medien und Upload, Testimonials, Playlists mit Drei-Spalten-Editor, Zeitpläne — eigene Gruppe seit 25.09.2026; seit 25.09.2026 nur noch Fallback, die Verwaltung läuft im Hub unter Betrieb → Bildschirme (`SCREENS-MODULE.md`) |
-| **System** | Hub-Nutzer, Rollen, Berechtigungen, Startseite je Rolle, App-Startseite je Rolle (iOS-Cockpit, `IOS-APP.md`), Benachrichtigungen, Report-Mails, Externe Empfänger, E-Mail-Versand, Schriftart, PDF, Session, Nachrichten, Wissensdatenbank, Bert-Dashboard |
+| **System** | Hub-Nutzer (mit Block „Passkey" im Reiter Zugang), Passkeys (nur Super-Admins), Bestätigungspflichtige Aktionen (nur Super-Admins), Rollen, Berechtigungen, Startseite je Rolle, App-Startseite je Rolle (iOS-Cockpit, `IOS-APP.md`), Benachrichtigungen, Report-Mails, Externe Empfänger, E-Mail-Versand, Schriftart, PDF, Session, Nachrichten, Wissensdatenbank, Bert-Dashboard |
 | **Protokolle** | E-Mail-, SEPA-E-Mail-, Terminerinnerungs-, WhatsApp-Protokolle, Report-Mail-Versandprotokoll, Bert-Insights |
 
 ---
@@ -242,6 +247,12 @@ Jan, 19.09.2026: Stufe 1 + 2 jetzt, Stufe 3 fallweise.
 ---
 
 ## Changelog
+
+- **24.10.2026** — Schranke vor dem Panel: Passkey **oder** Passwort (`AdminPasskeyController`, Wiki `MISSBRAUCHS-BREMSE.md`);
+  neue Seiten System → **Passkeys** (`PasskeyResource`, Recht `manage_passkeys`) und **Bestätigungspflichtige Aktionen**
+  (`SensitiveActionSettings`, Recht `manage_sensitive_actions`); im Reiter Zugang der Hub-Nutzer der Block „Passkey" und die Aktionen
+  „Passkey-Einrichtungs-Link" / „Alle Passkeys entziehen" (`UserActions`, Menü „Weitere Aktionen"). Beide Rechte nur für Rollen mit
+  Super-Admin-Kennzeichen (Migration). Tests `PasskeyTest`, `PinConfirmationTest`.
 
 - **14.10.2026** — Geschwindigkeit: SPA-Modus mit Vorladen, Rechte-Index für Spatie,
   `filament:optimize` beim Deploy; Seitenwechsel mit sofortigem Balken, gedimmtem

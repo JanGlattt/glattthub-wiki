@@ -1,6 +1,6 @@
 # Klickanleitungen Admin — Quellen
 
-Quellen der Serie **Admin** — das Filament-Verwaltungspanel unter `/admin`, thematisch in acht
+Quellen der Serie **Admin** — das Filament-Verwaltungspanel unter `/admin`, thematisch in neun
 Dokumente gebündelt. Standard und Deck-Format: `klickanleitungen/README.md` und Wiki
 `docs/KLICKANLEITUNGEN.md`.
 
@@ -14,13 +14,14 @@ Dokumente gebündelt. Standard und Deck-Format: `klickanleitungen/README.md` und
 | **6 — Gamification und Abzeichen** | Abzeichen, Anlässe, Institutsziele | v1.0, **noch nicht freigeschaltet** |
 | **7 — Personal und Vergütung** | Gehälter, Bonuszahlungen, Phorest-Zuordnung | v1.0, Screenshots 19.09.2026 |
 | **8 — Protokolle und Einstellungen** | E-Mail-Protokoll, PDF- und Schrifteinstellungen, Cache | v1.0, Screenshots 19.09.2026 |
+| **9 — Passkeys und sensible Aktionen** | Passkey-Links, Einrichtung durch die Person, Schranke, Entziehen, Bestätigungspflichtige Aktionen, Sicherheits-Meldungen | v1.0 (24.10.2026, Bilder aus `scripts/passkey-shots.cjs`, lokale Beispieldaten) |
 
 > **Screenshots: Stand 19.09.2026 (Hub-Look).** Aufgenommen gegen Staging nach dem Deploy des
 > Hub-Looks (Glas-Seitenleiste mit den Hub-Gruppen, Türkis, 50 Zeilen je Tabelle, kein Kopfbalken);
 > Bucket synchronisiert. Gehälter und Boni (Admin 7) sind auf Staging leer — die Bilder zeigen den
 > Leerzustand, solange dort keine Daten liegen. Wiki: `docs/ADMIN-BACKEND.md`.
 
-Alle acht richten sich an die **Administration**. Das Panel ist kein Ort für den Institutsalltag
+Alle neun richten sich an die **Administration**. Das Panel ist kein Ort für den Institutsalltag
 — wer dort etwas ändert, verändert es für alle.
 
 **Dokument 6** trägt eine rote Plakette auf dem Cover: Gamification liegt zwar auf Prod, ist aber
@@ -86,3 +87,11 @@ Ausdrücklich nicht gedrückt werden:
 
 Das Wiki-Repo ist öffentlich — jeder Screenshot dieser Serie gehört vor dem Committen einzeln
 durchgesehen.
+
+
+## Passkey-Bilder (Admin 9, Grundlagen 8)
+
+`scripts/passkey-shots.cjs` nimmt gegen eine **lokale Umgebung mit erfundenen Konten** auf (SQLite, `php -S` mit eigenem Router, Passkey-Zeilen als
+Platzhalter), nicht gegen Prod: Der Lauf braucht Konten mit Super-Admin-Rolle (Passwort für die Schranke) und eine Person ohne Passkey für das PIN-Fenster;
+die Passkey-Abfrage des Browsers wird stillgestellt (`navigator.credentials.get` löst nie auf), damit kein Fehlertext im Bild steht. Aufruf und Teile
+(`admin`, `pin`) stehen im Kopf des Skripts; die `g8-*`-Bilder gehören in `../grundlagen/shots` und `../grundlagen/meta.json` (nach dem Lauf verschieben).
