@@ -15,7 +15,7 @@ const L = require('./lib.cjs');
 const PLAN = [
   { name: 'fo1-uebersicht', url: '/hub/receivables' },
   { name: 'fo1-anlegen', url: '/hub/receivables', oeffne: 'ohne Vertrag anlegen', verwerfen: true },
-  { name: 'fo1-gerichtlich', url: '/hub/receivables' },
+  { name: 'fo1-gerichtlich', url: '/hub/receivables', bereich: 'Gerichtliches Verfahren', scrollzu: 'Fälle im gerichtlichen Mahnverfahren' },
   { name: 'fo2-aufstellung', url: '/hub/receivables/' + L.CASE },
   { name: 'fo2-sidebar', url: '/hub/receivables/' + L.CASE },
   { name: 'fo2-anschrift', url: '/hub/receivables/' + L.CASE, oeffne: 'Anschrift korrigieren', verwerfen: true },
@@ -51,6 +51,8 @@ const PLAN = [
     try {
       if (p.url !== letzte) { await L.goto(page, p.url, 3500); letzte = p.url; }
       if (p.reiter) { await L.clickText(page, 'button, a', p.reiter, 1500); }
+      // Bereichs-Umschalter der Übersicht (Mahnprozess / Gerichtliches Verfahren) ist ein Radio-Label
+      if (p.bereich) { await L.clickText(page, 'label.segmented-control-glattt-option', p.bereich, 1200); }
       if (p.filter) { await L.clickText(page, '.table-filter-btn', '', 1200); }
       if (p.oeffne) {
         const ok = await L.clickText(page, 'button, a', p.oeffne, 2000);
@@ -58,7 +60,9 @@ const PLAN = [
         await L.wait(page, 1200);
       }
       await L.wait(page, 800);
-      await L.shot(page, p.name, {});
+      // Karte unterhalb der Arbeitsliste: dorthin scrollen und ohne Rücksprung nach oben fotografieren
+      if (p.scrollzu) { await L.scrollToText(page, '.card-glattt-title, h2, h3', p.scrollzu); await L.wait(page, 500); }
+      await L.shot(page, p.name, { noScroll: !!p.scrollzu });
       if (p.verwerfen) { await page.keyboard.press('Escape'); await L.wait(page, 600); letzte = null; }
     } catch (e) {
       console.log('FEHLER bei', p.name, '—', e.message.split('\n')[0]);

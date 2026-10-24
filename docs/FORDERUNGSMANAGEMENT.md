@@ -273,10 +273,31 @@ Pflicht laut Prozess). Die Regeln im Detail:
   Seit 28.08.2026 gibt es je Bescheid ein **Zustelldatum** („Mahnbescheid
   zugestellt", „Vollstreckungsbescheid zugestellt"): Mit der Zustellung beginnt
   die 14-tägige Widerspruchs- bzw. Einspruchsfrist — beim Speichern legt der Hub
-  das Fristende automatisch als **Wiedervorlage** auf den Fall (Verlaufseintrag
-  inklusive), damit sichtbar ist, wann der nächste Schritt (VB beantragen bzw.
-  Zwangsvollstreckung einleiten) möglich ist. Werden beide Zustelldaten in einem
-  Rutsch geändert, zählt das spätere Verfahrensstadium.
+  das Fristende als Frist (`deadline_at`, Seitenspalte „Frist nach Zustellung")
+  auf den Fall. Werden beide Zustelldaten in einem Rutsch geändert, zählt das
+  spätere Verfahrensstadium.
+  **Wiedervorlage (seit 24.10.2026, Janine 15.10.2026):** Zusätzlich setzt das
+  Zustelldatum eine **Wiedervorlage** 21 Tage nach Zustellung
+  (`DebtJudicialProceeding::FOLLOW_UP_DAYS` = Frist plus eine Woche Postlauf,
+  Spalte `debt_judicial_proceedings.follow_up_on`). Sie ist im Tab „Gerichtliches
+  Verfahren" (Feld „Wiedervorlage am", Web und App) frei verschiebbar oder
+  löschbar — ein ausdrücklich gesetztes Datum gewinnt immer über den Standard.
+  Ist sie erreicht (`DebtCase::isJudicialFollowUpDue()`), wechselt der Fall in der
+  Arbeitsliste von `judicial` nach **`todo`** („Wiedervorlage erreicht — nächster
+  Schritt im Gerichtsverfahren", Badge „Wiedervorlage Gericht", ganz oben
+  sortiert), `days_overdue` zählt ab der Wiedervorlage; die Gerichts-Tabelle der
+  Übersicht bekommt die Spalte „Wiedervorlage" (fällige zuerst) und den Schalter
+  „Nur fällige Wiedervorlagen", die Kennzahl „Gerichtliches Verfahren" nennt die
+  fälligen darunter. **Erledigt** wird die Wiedervorlage automatisch, sobald der
+  nächste Schritt eingetragen wird (eines der Felder in
+  `DebtJudicialProceeding::NEXT_STEP_FIELDS` neu gesetzt oder Stufe gewechselt),
+  oder durch Löschen des Datums; ein neues Zustelldatum setzt sie wieder. Ruhende
+  Fälle (beim Anwalt) melden sich nicht. Der Tageslauf
+  `receivables:check-judicial-follow-ups` (07:45) meldet jede erreichte
+  Wiedervorlage **einmal** als Sammelmeldung an `manage_receivables` (Anlass
+  `debt_cases.judicial_follow_ups_due`; `follow_up_notified_on` merkt den Stand,
+  ein verschobenes Datum wird erneut gemeldet). Tests `JudicialFollowUpTest`,
+  `JudicialServedDeadlineTest`.
   **RZV nach dem Verfahren (07.09.2026, Fall BI005097):** Schließt ein Kunde,
   der bereits im gerichtlichen Verfahren steht (z. B. nach PfÜB), eine
   Ratenzahlungsvereinbarung ab, wird der Fall **wieder außergerichtlich
@@ -654,7 +675,7 @@ Cron: `receivables:reconcile-payment-links` (stündlich).
 | `debt_case_messages` | Schreiben-Snapshots (Kanal, Vorlage, HTML, Freitext, PDF-Pfad, Zendesk-Ticket) |
 | `debt_cost_items` | Kostenpositionen; 10-€-RLS-Gebühr automatisch, `source_payment_id` + Unique-Index = Idempotenz |
 | `debt_case_payments` | manuell erfasste Zahlungseingänge |
-| `debt_judicial_proceedings` | gerichtlicher Teil (1:1 je Fall, harte Trennung) |
+| `debt_judicial_proceedings` | gerichtlicher Teil (1:1 je Fall, harte Trennung); seit 28.08.2026 Zustelldaten `order_served_on`/`enforcement_order_served_on`, seit 24.10.2026 `follow_up_on` (Wiedervorlage, Standard Zustellung + 21 Tage, überschreibbar) und `follow_up_notified_on` (Stand der einmaligen Tagesmeldung) |
 | `debt_rzv_agreements` | RZV-Konditionen; seit 08/2026 zusätzlich `collect_via_gocardless` + `gocardless_payment_ids` (IDs der als GC-Einzelzahlungen angelegten Vertragsraten — Grundlage für die Status-Anzeige im Tab „Ratenzahlung" und die Plan-Anpassung) sowie `installments` (individueller Ratenplan als JSON: `due_date` + `amount_cents` je Rate, seit 21.08.2026) |
 | `institute_bank_accounts` | IBAN je Standort (encrypted Cast, Muster `institute_colors`) |
 | `dunning_templates` | Vorlagen je Stufe × Kanal × Cluster (NULL = alle); Startwerte via Migration `2026_08_09_110000` |
@@ -1173,6 +1194,11 @@ dafür ist `personalized_replies`. Offene Punkte dazu im Asana-Subtask
 - `receivables:detect-client-account-debts` täglich 07:30 (Route
   `/api/cron/detect-client-account-debts`) — eröffnet reife Fälle. **Muss nach
   dem Sync laufen**, sonst arbeitet die Erkennung mit dem Stand von gestern.
+- `receivables:check-judicial-follow-ups` täglich 07:45 (Route
+  `/api/cron/check-judicial-follow-ups`, `--dry-run` zeigt nur) — meldet
+  erreichte Wiedervorlagen im gerichtlichen Verfahren einmal als
+  Sammelmeldung (seit 24.10.2026; Cloud-Scheduler-Job muss angelegt werden,
+  `cron:audit` meldet ihn sonst als fehlend).
 - Alle Cloud-Scheduler-Jobs mit `--max-retry-attempts=3` anlegen.
 
 #### Kundenkonto-Spiegel im Detail
