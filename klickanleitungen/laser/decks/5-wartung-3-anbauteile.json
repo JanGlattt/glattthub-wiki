@@ -13,11 +13,12 @@
  "subtitle": "Klickanleitung für den glatttHub — Schritt 3 der Wartung: Handstück, Laserkopf groß, Laserkopf klein und Skintel bewerten und fotografieren",
  "eyebrow": "Laser · Wöchentliche Wartung",
  "footerArea": "Laser",
- "stand": "18.09.2026",
- "version": "1.0",
+ "stand": "25.10.2026",
+ "version": "1.1",
  "notes": [
   "Schritt 3 geht die vier Anbauteile **nacheinander** durch. Je Teil: Zustand wählen, beim Handstück die Impulse, beim Skintel die Tests — und die Fotos.",
-  "Fotos je Teil: Handstück **4**, Laserkopf groß **2**, Laserkopf klein **2**, Skintel **3**. Jede Kachel ist Pflicht, solange das Teil montiert ist."
+  "Fotos je Teil: Handstück **4**, Laserkopf groß **2**, Laserkopf klein **2**, Skintel **3**. Jede Kachel ist Pflicht, solange das Teil montiert ist.",
+  "Fehlt ein Teil oder wird es getauscht, geht das **direkt im Assistenten** — „Montieren“ bzw. „Tauschen“ oben in der Karte. Auch eine neue Seriennummer lässt sich eintippen."
  ],
  "pages": [
   {
@@ -75,6 +76,43 @@
    "hint": {
     "kind": "warn",
     "text": "**Defekt betrifft die Termine.** Ein Handstück oder Kopf, der ausfällt, verändert die Behandlungsplanung — die Leitung erfährt es nur, wenn es jemand sagt."
+   }
+  },
+  {
+   "h1": "Teil montieren oder tauschen",
+   "sub": "Hängt ein anderes Teil am Laser als im Hub — oder gar keins —, wird das direkt hier korrigiert. Danach fragt der Schritt Zustand und Fotos des neuen Teils.",
+   "card": {
+    "title": "Teil montieren oder tauschen",
+    "text": "Aus dem Lager oder mit neuer Seriennummer"
+   },
+   "left": {
+    "shot": "l18b-teil-tauschen"
+   },
+   "leftCaption": "„Laserkopf groß tauschen“: Zustand des ausgebauten Kopfs, Lagerliste und Feld für eine neue Seriennummer.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Montieren / Tauschen",
+     "text": "Oben in der Karte steht die Seriennummer des montierten Teils — oder **Nicht montiert**. Der Knopf daneben öffnet die Auswahl."
+    },
+    {
+     "n": 2,
+     "title": "Zustand des ausgebauten Teils",
+     "text": "Nur beim Tausch: Wie sieht das alte Teil aus? Es geht ins Lager am Standort und behält diesen Zustand."
+    },
+    {
+     "n": 3,
+     "title": "Aus dem Lager",
+     "text": "Alle passenden Teile, die nicht montiert sind. **Defekte** stehen am Ende und sind rot markiert."
+    },
+    {
+     "n": 4,
+     "title": "Neue Seriennummer",
+     "text": "Für ein Teil, das der Hub noch nicht kennt — z. B. ein frisch gelieferter Kopf. Die Nummer muss zum Teil passen (Handstück MHP…, großer Kopf VL…, kleiner Kopf VS…, Skintel 25A…/25B…). Dann **Einbauen**."
+    }
+   ],
+   "hint": {
+    "text": "Nach dem Tausch sind die Fotos des alten Teils weg und der Zustand ist wieder offen — Zustand und Fotos gelten immer für das Teil, das jetzt am Laser hängt."
    }
   },
   {

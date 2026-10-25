@@ -275,6 +275,20 @@ Wartung, Entwurfs-Schritt). In der App öffnet der Web-Knopf „Wartung durchfü
 den nativen Assistenten (Bridge fängt `open-maintenance-wizard` ab), nach dem Abschluss lädt die
 Web-Seite sich über `glattt:laser-maintenance-saved` neu. Tests: `tests/Feature/Laser/MaintenanceApiTest.php`.
 
+**Teil montieren oder tauschen im Assistenten (Web und App, seit 25.10.2026):** In Schritt 3 steht
+über jedem Anbauteil die Seriennummer bzw. „Nicht montiert“ und der Knopf **Montieren/Tauschen**.
+Beide Oberflächen nutzen `LaserAttachmentService` (`available()` — nicht montierte Teile des Typs,
+defekte am Ende mit `defekt: true`; `findOrRegister()` — neu eingetippte Seriennummer, Präfix aus
+`AnbauteilTyp::serialPrefixes()`, Historie `ANSCHAFFUNG`; `mount()` — beim Tausch Pflicht-Zustand des
+ausgebauten Teils, das ins Lager am Standort geht). App: `GET/POST hub/laser/api/maintenance/{id}/parts/{key}`
+(`attachment_id` **oder** `new_serial`), Web: `MaintenanceWizard::openPartPicker()/mountPart()`, Partial
+`partials/part-picker.blade.php`. Nach dem Tausch verwirft `MaintenanceWizardService::forgetPartPhotos()`
+die Entwurfs-Fotos des alten Teils, Zustand und Handstück-Pulse sind wieder offen. Zustand ist im Web
+nur noch Pflicht, wenn ein Teil montiert ist (wie in der App).
+
+!!! nutzerhandbuch "Bedienung: Laser 5 – Wartung 3: Anbauteile"
+    https://hilfe.hub.glattt.com/laser/5/
+
 ### Datenmodell (Tabellen)
 
 Alle Tabellen mit Prefix `laser_` (bzw. `lasers`). Migrationen: `database/migrations/2026_06_27_100000` … `100019`.

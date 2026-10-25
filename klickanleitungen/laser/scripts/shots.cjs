@@ -291,6 +291,16 @@ const PLAN = [
   { name: 'l17-defekt', url: GERAET, steps: [['loaded'], reiter('Wartungen'), wizard, setZustand('handstueck', 'DEFEKT'), ['wait', 800], bilderGeladen], clip: '.modal-glattt', marks: [
     { id: 'hinweis', kind: 'badge', n: 1, sel: '.modal-glattt .alert-glattt-warning', at: 'l' },
   ], after: async (page, L) => { await setZustand('handstueck', 'GUT')[1](page, L); await L.clickText(page, '.modal-glattt-footer button', 'Weiter', 3000); } },
+  // Teil montieren/tauschen mitten in der Wartung (Web wie App, 25.10.2026) — eigenständig: Schritt 3, Laserkopf groß
+  { name: 'l18b-teil-tauschen', url: GERAET, steps: [['loaded'], reiter('Wartungen'), wizard, setWert('step', 3), setWert('anbauteilSubstep', 1),
+    ['fn', async (page, L) => { await page.evaluate((expr) => eval(expr)?.$wire.call('openPartPicker'), wizardWire); await L.wait(page, 1800);
+      await page.evaluate(() => document.querySelector('.laser-part-picker-glattt')?.scrollIntoView({ block: 'center' })); await L.wait(page, 600); }]],
+    clip: '.modal-glattt', marks: [
+    { id: 'tauschen', kind: 'badge', n: 1, sel: '.laser-part-picker-glattt-title', at: 'l' },
+    { id: 'zustand-alt', kind: 'badge', n: 2, sel: '.laser-part-picker-glattt .form-glattt-group', at: 'l' },
+    { id: 'lager', kind: 'badge', n: 3, sel: '.laser-part-picker-glattt-list', at: 'l' },
+    { id: 'neu', kind: 'badge', n: 4, sel: '.laser-part-picker-glattt input[wire\\:model="newSerial"]', at: 'l' },
+  ], after: async (page) => { await page.evaluate((expr) => eval(expr)?.$wire.call('closePartPicker'), wizardWire); await page.waitForTimeout(800); } },
   { name: 'l18-laserkopf-gross', url: GERAET, steps: [['loaded'], reiter('Wartungen'), wizard, setZustand('laserkopf_gross', 'GUT'), fotosFuellen, bilderGeladen], clip: '.modal-glattt', marks: [
     { id: 'zustand', kind: 'badge', n: 1, ...L.byText('.modal-glattt .input-glattt-floating-label', 'Zustand'), at: 'l' },
     { id: 'innen', kind: 'badge', n: 2, sel: '.modal-glattt label[wire\\:target="photoUploads.grosser_kopf_innen"]', at: 'l' },
