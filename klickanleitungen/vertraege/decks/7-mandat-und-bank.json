@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — Mandats-Zustände, Mandat anlegen, Bankverbindung ändern, Stammdaten korrigieren",
  "eyebrow": "Verträge · Mandat",
  "footerArea": "Verträge",
- "stand": "24.10.2026",
- "version": "1.1",
+ "stand": "25.10.2026",
+ "version": "1.2",
  "notes": [
   "**Nichts davon passiert automatisch** — Mandat und Zahlungsplan legt immer ein Mensch an.",
   "Eine neue **Bankverbindung tauscht das Mandat aus**: altes storniert, neues angelegt, offene Raten umgebucht.",
@@ -347,6 +347,54 @@
    "hint": {
     "text": "**Reihenfolge beachten:** Läuft ein GoCardless-Ratenzahlungsplan alter Art, meldet der Hub, dass er **zuerst storniert** werden muss. Dann erst lassen sich Mandatsdaten ändern."
    }
+  },
+  {
+   "h1": "Neues Mandat anfordern",
+   "sub": "Die Kundin unterschreibt online — ohne Konto im Kundenportal.",
+   "card": {
+    "title": "Neues Mandat anfordern",
+    "text": "Einmal-Link per E-Mail oder WhatsApp"
+   },
+   "left": {
+    "shot": "vt7-mandat-anfordern"
+   },
+   "leftCaption": "Das Fenster „Neues Mandat anfordern“ mit den vier Wegen, den Link weiterzugeben.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Knopf im SEPA-Bereich",
+     "text": "**Neues Mandat anfordern** steht neben „Bankverbindung ändern“ — bei jedem SEPA-Vertrag mit Mandat."
+    },
+    {
+     "n": 2,
+     "title": "Weg wählen",
+     "text": "**Per E-Mail** (Adresse aus Phorest, änderbar), **WhatsApp (Superchat)** — nur, wenn die Kundin in den letzten 24 Stunden geschrieben hat —, **WhatsApp auf dem Handy** oder **Link kopieren**."
+    },
+    {
+     "n": 3,
+     "title": "Die Kundin unterschreibt",
+     "text": "Sie trägt Kontoinhaber und IBAN ein, unterschreibt mit dem Finger und bekommt das Mandat als PDF. Der Link gilt sieben Tage und geht nur einmal."
+    },
+    {
+     "n": 4,
+     "title": "Das Büro übernimmt",
+     "text": "Die Unterschrift liegt dann als Auftrag auf der Seite **Kundenportal**. Erst mit der Übernahme (Passkey oder PIN) wechselt das Konto am bestehenden Mandat."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Nichts passiert automatisch",
+     "text": "Bis das Büro übernimmt, zieht GoCardless vom bisherigen Konto ein. Der Ratenplan läuft unverändert weiter — nur das Konto wechselt."
+    },
+    {
+     "title": "Derselbe Link auf jedem Weg",
+     "text": "Wer erst per E-Mail und dann per WhatsApp schickt, gibt denselben Link weiter. Der Verlauf im Fenster zeigt, wann was an wen ging."
+    },
+    {
+     "title": "Kundenportal bleibt",
+     "text": "Kundinnen mit Konto können die Bankverbindung weiter selbst unter „Mein Paket“ ändern — das landet in derselben Auftragsliste."
+    }
+   ]
   },
   {
    "h1": "Mandat-Informationen ändern",

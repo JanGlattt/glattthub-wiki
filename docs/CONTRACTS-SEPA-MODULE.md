@@ -434,6 +434,49 @@ print_r(\$result);
 "
 ```
 
+## Neues Mandat anfordern — Einmal-Link aus dem SEPA-Reiter (seit 25.10.2026)
+
+**Für Endanwender:** Braucht ein Vertrag ein neues SEPA-Mandat (neues Konto, Mandat widerrufen, Bank
+gewechselt), schickt das Büro der Kundin aus dem Reiter „Zahlungen & SEPA" mit **„Neues Mandat
+anfordern"** einen persönlichen Link — per E-Mail, per WhatsApp über Superchat, als „WhatsApp auf dem
+Handy" oder zum Kopieren. Die Kundin braucht **kein Kundenportal-Konto**: Sie trägt Kontoinhaber und IBAN
+ein, unterschreibt online und bekommt das Mandat als PDF. Der Link gilt **sieben Tage** und ist **einmal**
+nutzbar. Die Unterschrift landet als Auftrag auf der Büro-Seite **Kundenportal**; erst wenn das Büro ihn
+mit Passkey/PIN übernimmt, wechselt das Konto am bestehenden GoCardless-Mandat — bis dahin wird vom
+bisherigen Konto eingezogen, der Ratenplan läuft unverändert weiter. Der Weg über das Kundenportal
+(Mein Paket → Bankverbindung) bleibt daneben bestehen.
+
+!!! nutzerhandbuch "Bedienung: Verträge 7 – Mandat und Bankverbindung, Seite „Neues Mandat anfordern""
+    https://hilfe.hub.glattt.com/vertraege/7/
+
+**Für Entwickler:**
+
+- **Knopf** neben „Bankverbindung ändern" im SEPA-Reiter (beide Stellen, Recht `edit_contract_data`),
+  Dialog `hub/contracts/partials/mandate-link-modal.blade.php`, Zustand/Versand in `sepaTab`
+  (`openMandateLink()`, `sendMandateLink(channel)`) über `GET/POST /hub/contracts/{id}/mandate-link`
+  (`ContractMandateLinkController`, Drossel 20/10 Min). Die App zeigt den SEPA-Reiter als Web-Blatt,
+  deshalb gilt der Dialog dort unverändert.
+- **Service** `App\Services\Contracts\MandateLinkService`: `state()` (Kontaktdaten aus
+  `ClientDataResolver`, offener Link, offene Unterschrift, Verlauf), `send()` (ein gültiger Token wird
+  auf jedem Kanal wiederverwendet — die Kundin bekommt überall denselben Link; E-Mail über
+  `MandateLinkMail`, Superchat als Freitext über `SuperchatComposerService::send()` — braucht ein
+  offenes 24-Stunden-Fenster, sonst Fehler mit Hinweis auf wa.me/E-Mail), `usable()` und `submit()`.
+- **Token** `mandate_link_tokens` (`MandateLinkToken`: token unique, contract_id, phorest_client_id,
+  channel, sent_to, status open/sent/failed/used/expired, expires_at, used_at, mandate_request_id).
+- **Öffentliche Seite** `/shared/mandat/{token}` (`Shared\SharedMandateController`, ohne IAP wie alle
+  `/shared/*`): dasselbe Formular wie `portal/mandate` (Mandatstext `portal.partials.mandate-text`,
+  Unterschrift `portal-signature.js`, Zahler-Umschalter `portal-mandate.js`, Validierung
+  `PortalPaymentService::mandateValidation()`), Rahmen `portal.layout` mit `.portal-card-wide`.
+  Verbraucht/abgelaufen/unbekannt → 410 mit Erklärung, Erfolg → `/danke`.
+- **Auftrag fürs Büro:** `PortalMandateRequest` mit `customer_account_id = null`, `phorest_client_id`
+  und `source = 'link'` (Migration macht das Konto optional). `PortalOfficeService` nennt die Kundin
+  dann über die Kundenstatistik, zeigt „Per Einmal-Link angefordert" und überspringt Portal-Bestätigung
+  und Push, wenn kein Konto existiert; `applyMandate()` tauscht wie bisher die Bankverbindung am
+  bestehenden Mandat (`ContractController::updateBankAccount`). Mitteilung ans Büro über den
+  vorhandenen Anlass `customer_portal.mandate_requested` (`PortalMandateRequest::clientId()`),
+  PDF über `PortalMandatePdfService` (Name aus der Kundenstatistik).
+- Test: `tests/Feature/MandateLinkRequestTest.php`.
+
 ## Datenmodell
 
 ### client_mandates (Primäre Mandats-Tabelle)

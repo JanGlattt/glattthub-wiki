@@ -66,6 +66,9 @@ Freunde, Paket, Kontakt.
   `GET /hub/kundenportal/data` (Aufträge mit `context`, `previous`, `checks`, dazu `reject_reasons`),
   `GET /hub/kundenportal/verlauf?q=` (30 Tage), `GET /hub/kundenportal/konten?q=&status=&page=` (50 je Seite).
   Dieselben Endpunkte nutzt die native Seite (`ios/glatttHub/CustomerPortal/`).
+- **Einmal-Link ohne Konto (25.10.2026):** Aufträge mit `source = 'link'` kommen aus „Neues Mandat
+  anfordern" im SEPA-Reiter (Wiki `CONTRACTS-SEPA-MODULE.md`); sie haben kein `customer_account_id`,
+  die Kundin steht über `phorest_client_id`, Übernahme und Ablehnung laufen gleich (ohne Portal-Mail/Push).
 - **Prüfpunkte** (`PortalOfficeService::mandateChecks`): IBAN-Prüfsumme, gleiche IBAN wie bisher,
   Kontoinhaber:in = Kundin bzw. abweichender Zahler, Unterschrift vorhanden, Rate in den nächsten 5 Tagen
   (könnte noch übers alte Konto laufen). Die Punkte sind nur Hinweise und sperren nichts.
