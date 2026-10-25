@@ -297,6 +297,19 @@ App: `Booking/ExtraTime.swift` (`ExtraTimeModel`, `ExtraTimeDecisionSheet`,
   Folgetermin- und Verlegen-Modal; die gewählte Zeit wird an `$suggestions` angehängt und über das
   vorhandene `book($index)` gebucht. Der Selbstbuchungs-Link bekommt das bewusst nicht (dort nur
   lückenlose Zeiten).
+- **Tagesansicht (seit 25.10.2026, Jan: Variante B):** Der offene Tag klappt nicht mehr als Feld
+  unter dem Wochenraster auf (lag im Modal oft außer Sicht), sondern **ersetzt** die
+  Wochenvorschläge: Kopf mit „Alle Tage“ (`hideOtherTimes`) und ‹ › (`shiftOtherDay(±1)`, nie vor
+  heute — `canShiftOtherDayBack()`), Zeiten in Spalten nach Tageszeit (`otherTimeBands()`), ohne
+  Raumnummer (`slot-pill` mit `compact`; der Raum steht im Tooltip und in der Bestätigungsleiste).
+  Die drei Fenster blenden ihr Raster per `@unless ($otherDate)` aus. CSS `.slot-day-view*` in
+  `theme_glattt.css`.
+- **Verlegen aus der Terminansicht (seit 25.10.2026):** Der Knopf öffnet `RescheduleSlotModal`
+  (Event `open-reschedule-modal`, eingebunden in `hub/appointment-unified/index` nur mit
+  `manage_appointment_booking`) statt auf die Buchungsseite zu springen. Nach dem Verlegen meldet
+  das Modal `appointment-rescheduled` mit `appointmentId`/`branchId`; die Terminansicht wechselt per
+  `Livewire.navigate` auf den neuen Termin, weil der alte storniert ist. `open()` und `book()` prüfen
+  das Recht serverseitig.
 - **Untergrenze:** Vorschläge und freie Zeiten beginnen frühestens jetzt + `booking.min_lead_minutes`
   (15 Min); ein Startdatum vor heute rückt auf heute. Tests mit festen Beispieldaten halten deshalb
   die Uhr fest (`Carbon::setTestNow`).
