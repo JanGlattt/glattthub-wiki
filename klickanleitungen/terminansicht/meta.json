@@ -3155,5 +3155,225 @@
    }
   ],
   "ratio": 0.3440766550522648
+ },
+ "up1-upselling-knopf": {
+  "box": {
+   "x": 24,
+   "y": 153.5,
+   "width": 320,
+   "height": 642.5
+  },
+  "marks": [
+   {
+    "id": "knopf",
+    "kind": "badge",
+    "n": 1,
+    "sel": ".apt-detail-quick-btn--upsell",
+    "at": "r",
+    "pct": {
+     "x": 44.9462890625,
+     "y": 33.15175097276264,
+     "w": 35.33203125,
+     "h": 6.848249027237355
+    }
+   }
+  ],
+  "ratio": 2.0078125
+ },
+ "up2-upselling-ersetzen": {
+  "box": {
+   "x": 142,
+   "y": 239.96875,
+   "width": 896,
+   "height": 1020.046875
+  },
+  "marks": [
+   {
+    "id": "weg",
+    "kind": "badge",
+    "n": 1,
+    "sel": ".upsell-modal .segmented-control-glattt",
+    "at": "l",
+    "pct": {
+     "x": 2.7901785714285716,
+     "y": 12.70468575279935,
+     "w": 94.41964285714286,
+     "h": 4.607631389488841
+    }
+   },
+   {
+    "id": "vergleich",
+    "kind": "frame",
+    "color": "gold",
+    "sel": ".upsell-modal .upsell-side--new",
+    "pct": {
+     "x": 52.67857142857143,
+     "y": 24.563822128272292,
+     "w": 44.53125,
+     "h": 18.540814607171853
+    }
+   },
+   {
+    "id": "zonen",
+    "kind": "badge",
+    "n": 2,
+    "sel": ".upsell-modal .upsell-zone-picker",
+    "at": "l",
+    "pct": {
+     "x": 2.7901785714285716,
+     "y": 47.572875021062146,
+     "w": 94.41964285714286,
+     "h": 11.59719988358378
+    }
+   },
+   {
+    "id": "rechnung",
+    "kind": "badge",
+    "n": 3,
+    "sel": ".upsell-modal .upsell-calc",
+    "at": "l",
+    "pct": {
+     "x": 2.7901785714285716,
+     "y": 72.29906713845871,
+     "w": 94.41964285714286,
+     "h": 16.800698497311707
+    }
+   },
+   {
+    "id": "docs",
+    "kind": "badge",
+    "n": 4,
+    "sel": ".upsell-modal .upsell-docs",
+    "at": "t",
+    "pct": {
+     "x": 2.7901785714285716,
+     "y": 94.72603893816154,
+     "w": 46.22105189732143,
+     "h": 1.9989890170488487
+    }
+   }
+  ],
+  "ratio": 1.1384451729910714
+ },
+ "up4-upselling-vertrag": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "banner",
+    "kind": "frame",
+    "color": "teal",
+    "sel": ".upsell-form-banner",
+    "pct": {
+     "x": 31.186440677966104,
+     "y": 26.181402439024392,
+     "w": 66.77966101694915,
+     "h": 8.231707317073171
+    }
+   },
+   {
+    "id": "verwerfen",
+    "kind": "chip",
+    "label": "Auswahl verwerfen",
+    "sel": ".upsell-form-banner .btn-glattt-ghost",
+    "at": "l",
+    "pct": {
+     "x": 88.84931144067797,
+     "y": 28.254573170731707,
+     "w": 7.337129237288136,
+     "h": 4.085365853658537
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "up3-upselling-zusatz": {
+  "box": {
+   "x": 142,
+   "y": 41,
+   "width": 896,
+   "height": 738
+  },
+  "marks": [
+   {
+    "id": "gesperrt",
+    "kind": "chip",
+    "label": "schon in einem Vertrag",
+    "sel": ".upsell-modal .upsell-zone-chip.is-owned",
+    "at": "b",
+    "pct": {
+     "x": 11.382184709821429,
+     "y": 51.56038279132791,
+     "w": 12.353515625,
+     "h": 4.765836720867209
+    }
+   },
+   {
+    "id": "neu",
+    "kind": "frame",
+    "color": "gold",
+    "sel": ".upsell-modal .upsell-zone-chip.is-on",
+    "pct": {
+     "x": 2.7901785714285716,
+     "y": 51.56038279132791,
+     "w": 7.878766741071429,
+     "h": 4.765836720867209
+    }
+   }
+  ],
+  "ratio": 0.8236607142857143
+ },
+ "t8-panel-andere-uhrzeit": {
+  "box": {
+   "x": 700,
+   "y": 0,
+   "width": 480,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "zurueck",
+    "kind": "badge",
+    "n": 1,
+    "sel": ".booking-panel-glattt .slot-day-view__head .btn-glattt-secondary",
+    "at": "l",
+    "pct": {
+     "x": 7.916666666666666,
+     "y": 14.96189024390244,
+     "w": 20.911458333333332,
+     "h": 4.085365853658537
+    }
+   },
+   {
+    "id": "blaettern",
+    "kind": "badge",
+    "n": 2,
+    "sel": ".booking-panel-glattt .slot-day-view__nav",
+    "at": "t",
+    "pct": {
+     "x": 31.240234374999996,
+     "y": 20.022865853658537,
+     "w": 61.051432291666664,
+     "h": 4.878048780487805
+    }
+   },
+   {
+    "id": "zeit",
+    "kind": "frame",
+    "color": "gold",
+    "sel": ".booking-panel-glattt .slot-day-view .slot-pill.is-selected",
+    "pct": {
+     "x": 8.75,
+     "y": 51.73971036585366,
+     "w": 25.901692708333336,
+     "h": 4.777057926829268
+    }
+   }
+  ],
+  "ratio": 1.7083333333333333
  }
 }

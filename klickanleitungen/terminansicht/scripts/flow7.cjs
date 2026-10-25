@@ -168,7 +168,9 @@ const KUNDE_NAME = process.env.KLICK_BOOK_CLIENT_NAME || 'Test Testererer';
     }
     // ── t8 „Andere Uhrzeit …" als Tagesansicht (25.10.2026): der Tag ersetzt die Wochenvorschläge
     if (will('t8-panel-andere-uhrzeit')) {
-      await page.evaluate(() => { const d = Alpine.$data(document.querySelector('.booking-panel-glattt')); d.picked = null; d.loadOtherTimes((d.days[1] || d.days[0]).date); });
+      // Einführungstour samt Abdunklung ausblenden — sie läge sonst über dem Bild
+      await page.addStyleTag({ content: '.driver-popover,.driver-overlay{display:none!important} body.driver-active, body.driver-active *{pointer-events:auto!important}' });
+      await page.evaluate(() => { const d = Alpine.$data(document.querySelector('.booking-panel-glattt')); d.chosenSlot = null; d.loadOtherTimes((d.days[1] || d.days[0]).date); });
       await page.waitForFunction(() => { const d = Alpine.$data(document.querySelector('.booking-panel-glattt')); return d.otherDay && !d.otherDay.loading; }, null, { timeout: 60000 }).catch(() => console.log('TAGESANSICHT NICHT GELADEN'));
       // Echter Klick auf eine Zeit (wie die Mitarbeiterin) — markiert sie für die Fußleiste
       await page.evaluate(() => { const b = [...document.querySelectorAll('.booking-panel-glattt .slot-day-view .slot-pill')].filter(e => e.offsetParent); b[Math.min(3, b.length - 1)]?.click(); });

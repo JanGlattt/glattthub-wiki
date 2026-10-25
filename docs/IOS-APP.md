@@ -1342,6 +1342,20 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   an der `FastCgiServer`-Zeile in `/Applications/MAMP/conf/apache/httpd.conf`. Der lokale Hub ruft
   die **echte Phorest-API** — in Tests nie Check-in/Beenden/Buchen auslösen.
 
+### Upselling in der Terminansicht (seit 25.10.2026)
+
+Knopf „Upselling“ neben „Verlegen“ (nur mit `can_upsell` = Recht `sell_upselling`) öffnet
+`UpsellingSheet` (`AppointmentView/UpsellingSheet.swift`, Entwurf 2 „Vorher/Nachher“, abgestimmt
+über die Web-Entwurfsseite mit iPhone- und iPad-Fassung). Dieselben Endpunkte wie das Web
+(`hub/upselling/context` + `quote`), die App rechnet nichts selbst. Auf dem iPad stehen „Heute“ und
+„Neu“ nebeneinander, auf dem iPhone untereinander; Formblatt-Größe ab iOS 18. Die Weg-Umschaltung
+ist bewusst kein `Picker(.segmented)` — der rendert im Snapshot nicht (Klickanleitung).
+„Behandlungsvertrag öffnen“ legt die Auswahl ab, das Blatt schließt, und **aus `onDismiss`**
+startet der eingebettete Behandlungsvertrag mit `?upselling=<JSON>` (ohne `form=`); die
+Web-Terminansicht übernimmt die Auswahl wie aus dem Web-Fenster. Fehlt die Kundeninformation,
+führt die Formularliste zuerst dorthin. Snapshot-Test `UpsellingSnapshotTests` (Ersetzen und
+Zusatzvertrag, iPhone/iPad, hell/dunkel). Technik: Wiki `UPSELLING.md`.
+
 ### iPad: native Seitenleiste und Start-Raster (seit 22.09.2026)
 
 **Für Endanwender:** Auf dem iPad ersetzt die App das Menü des Hubs. Im Querformat steht die

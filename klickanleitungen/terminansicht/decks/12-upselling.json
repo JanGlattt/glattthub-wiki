@@ -1,0 +1,143 @@
+{
+ "out": "../pdf/Terminansicht-12-Upselling",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Terminansicht",
+ "nr": 12,
+ "of": 12,
+ "audience": "institut",
+ "title": [
+  "Upselling"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — im Termin einen weiteren Vertrag verkaufen oder den laufenden Vertrag durch einen größeren ersetzen",
+ "eyebrow": "Terminansicht · Verkauf",
+ "footerArea": "Terminansicht",
+ "stand": "25.10.2026",
+ "version": "1.0",
+ "notes": [
+  "**Upselling** gibt es in jeder Terminansicht — im Browser, in der Desktop-App und in der App auf iPhone und iPad.",
+  "**Zusatzvertrag:** neue Zonen als eigener Vertrag, der bisherige läuft weiter. **Vertrag ersetzen:** ein größerer Vertrag löst den bisherigen ab, das bisher Gezahlte wird angerechnet.",
+  "Unterschrieben wird nur, was fehlt: meist **nur der Behandlungsvertrag** — ein vorhandenes SEPA-Mandat gilt für alle Verträge.",
+  "Ob und wann ersetzt werden darf, legt die Leitung im Admin fest (Verkauf → Upselling)."
+ ],
+ "pages": [
+  {
+   "h1": "Upselling starten",
+   "sub": "In der Terminansicht steht „Upselling“ neben „Verlegen“ — vor, während und nach der Behandlung.",
+   "card": {
+    "title": "Knopf „Upselling“",
+    "text": "Fenster öffnen"
+   },
+   "left": {
+    "shot": "up1-upselling-knopf"
+   },
+   "leftCaption": "Die Schnellknöpfe der Terminansicht.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Upselling“",
+     "text": "Öffnet das Upselling-Fenster mit den laufenden Verträgen der Kundin. Im laufenden Termin steht der Knopf zusätzlich unter der Restzeit."
+    }
+   ],
+   "hint": {
+    "text": "Den Knopf sieht nur, wer das Recht **„Upselling“** hat — Institut, Leitung und Büro haben es."
+   }
+  },
+  {
+   "h1": "Vertrag ersetzen",
+   "sub": "Der Vergleich zeigt links den heutigen Vertrag und rechts das neue Paket — darunter, was angerechnet wird.",
+   "card": {
+    "title": "Vorher/Nachher",
+    "text": "Weg, Zonen, Rechnung, Dokumente"
+   },
+   "left": {
+    "shot": "up2-upselling-ersetzen"
+   },
+   "leftCaption": "Ersetzen: 5 KPZ werden zu 6 KPZ, die neue Zone ist gold markiert.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Weg wählen",
+     "text": "**„Vertrag ersetzen“** — hat die Kundin mehrere Verträge, darunter den passenden wählen. Geht Ersetzen nicht, steht der Grund im gelben Hinweis (z. B. zu wenige offene Sitzungen)."
+    },
+    {
+     "n": 2,
+     "title": "Zonen dazunehmen",
+     "text": "Die Zonen des bisherigen Vertrags sind fest gesetzt, Zonen anderer Verträge durchgestrichen. Neue Zonen antippen — Ersetzen geht nur mit **mehr KPZ**."
+    },
+    {
+     "n": 3,
+     "title": "Rechnung prüfen",
+     "text": "Neuer Vertrag, **angerechnetes Guthaben** und Restbetrag. Das Guthaben mindert die ersten Raten — welche, steht darunter."
+    },
+    {
+     "n": 4,
+     "title": "Dokumente",
+     "text": "Unten steht, was unterschrieben wird. Ein Haken heißt: liegt schon vor."
+    }
+   ],
+   "hint": {
+    "text": "Der bisherige Vertrag wird erst abgelöst, wenn der neue unterschrieben ist. Wer vorher abbricht, ändert nichts."
+   }
+  },
+  {
+   "h1": "Zusatzvertrag",
+   "sub": "Neue Zonen als eigener Vertrag — der bisherige Vertrag läuft unverändert weiter.",
+   "card": {
+    "title": "Zusatzvertrag",
+    "text": "Neue Zonen, eigener Vertrag"
+   },
+   "left": {
+    "shot": "up3-upselling-zusatz"
+   },
+   "leftCaption": "Zusatzvertrag: Zonen aus laufenden Verträgen sind gesperrt.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Zusatzvertrag“",
+     "text": "Oben umschalten. Hat die Kundin noch keinen Vertrag, entsteht hier ihr erster Vertrag."
+    },
+    {
+     "n": 2,
+     "title": "Zonen wählen",
+     "text": "Nur Zonen, die sie noch nicht hat. Paket und Rate erscheinen sofort, gibt es mehrere Laufzeiten, darunter wählen."
+    }
+   ],
+   "hint": {
+    "text": "Ohne bestehenden Vertrag gehören auch **Kundeninformation** und **SEPA-Mandat** dazu — die Terminansicht führt der Reihe nach durch."
+   }
+  },
+  {
+   "h1": "Behandlungsvertrag unterschreiben",
+   "sub": "„Behandlungsvertrag öffnen“ öffnet den Vertrag mit Zonen und Paket aus dem Upselling.",
+   "card": {
+    "title": "Vertrag",
+    "text": "Vorbelegt, prüfen, unterschreiben"
+   },
+   "left": {
+    "shot": "up4-upselling-vertrag"
+   },
+   "leftCaption": "Der Behandlungsvertrag mit dem Upselling-Hinweis.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Hinweis oben",
+     "text": "Zeigt, was verkauft wird — z. B. **„Ersetzt … · 6 KPZ · Guthaben …“**. **„Verwerfen“** löscht die Auswahl, der Vertrag bleibt dann ein normaler Vertrag."
+    },
+    {
+     "n": 2,
+     "title": "Ausfüllen wie immer",
+     "text": "Zonen und Paket sind schon gesetzt. Einwilligungen, Startdatum und Unterschrift wie in „Terminansicht 3“."
+    },
+    {
+     "n": 3,
+     "title": "Absenden",
+     "text": "Der Hub prüft die Auswahl noch einmal. Danach ist der neue Vertrag angelegt und — beim Ersetzen — der bisherige abgelöst."
+    }
+   ],
+   "hint": {
+    "text": "Den Zahlungsplan legt das Büro im SEPA-Reiter an und stoppt dort die Raten des bisherigen Vertrags."
+   }
+  }
+ ]
+}
