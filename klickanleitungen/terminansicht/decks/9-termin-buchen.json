@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — Termin direkt aus der Terminübersicht buchen (auch für Neukunden), ideale Zeiten finden, Link weitergeben",
  "eyebrow": "Terminansicht · Buchung",
  "footerArea": "Terminansicht",
- "stand": "25.10.2026",
- "version": "1.7",
+ "stand": "10.10.2026",
+ "version": "1.6",
  "notes": [
   "Gebucht wird **direkt in Phorest** — der Termin steht sofort im Kalender des Instituts.",
   "Der schnellste Weg ist **„Termin buchen“ oben in der Terminübersicht** — auch für Neukunden, dort reicht der Name.",
@@ -74,7 +74,7 @@
     {
      "n": 2,
      "title": "Zeit wählen",
-     "text": "**„Ab heute“** oder später, dann eine Zeit antippen. Grün heißt: schließt ohne Lücke an. **„Andere Uhrzeit …“** öffnet den ganzen Tag: alle freien Zeiten nach Vormittag, Mittag, Nachmittag und Abend, mit ‹ › zum nächsten Tag und **„Alle Tage“** zurück zu den Vorschlägen."
+     "text": "**„Ab heute“** oder später, dann eine Zeit antippen. Grün heißt: schließt ohne Lücke an. **„Andere Uhrzeit …“** zeigt alle freien Zeiten des Tages."
     },
     {
      "n": 3,
