@@ -136,7 +136,7 @@ const KUNDE_NAME = process.env.KLICK_BOOK_CLIENT_NAME || 'Test Testererer';
   };
   const body = '.booking-panel-glattt .info-panel-body:not([style*="none"])';
 
-  if (will('t5-panel-neukunde') || will('t6-panel-zeit')) {
+  if (will('t5-panel-neukunde') || will('t6-panel-zeit') || will('t8-panel-andere-uhrzeit')) {
     await openPanel();
     await page.evaluate((md) => {
       const d = Alpine.$data(document.querySelector('.booking-panel-glattt'));
@@ -164,6 +164,20 @@ const KUNDE_NAME = process.env.KLICK_BOOK_CLIENT_NAME || 'Test Testererer';
         { id: 'zeit', kind: 'frame', color: 'gold', sel: '.booking-panel-glattt .slot-pill.is-selected' },
         { id: 'zusammenfassung', kind: 'frame', color: 'teal', sel: '.booking-panel-glattt-summary' },
         { id: 'buchen', kind: 'chip', label: 'Erst jetzt buchen', sel: '.booking-panel-glattt-submit', at: 'l' },
+      ]});
+    }
+    // ── t8 „Andere Uhrzeit …" als Tagesansicht (25.10.2026): der Tag ersetzt die Wochenvorschläge
+    if (will('t8-panel-andere-uhrzeit')) {
+      await page.evaluate(() => { const d = Alpine.$data(document.querySelector('.booking-panel-glattt')); d.picked = null; d.loadOtherTimes((d.days[1] || d.days[0]).date); });
+      await page.waitForFunction(() => { const d = Alpine.$data(document.querySelector('.booking-panel-glattt')); return d.otherDay && !d.otherDay.loading; }, null, { timeout: 60000 }).catch(() => console.log('TAGESANSICHT NICHT GELADEN'));
+      // Echter Klick auf eine Zeit (wie die Mitarbeiterin) — markiert sie für die Fußleiste
+      await page.evaluate(() => { const b = [...document.querySelectorAll('.booking-panel-glattt .slot-day-view .slot-pill')].filter(e => e.offsetParent); b[Math.min(3, b.length - 1)]?.click(); });
+      await page.evaluate((sel) => { const b = document.querySelector(sel); const v = b.querySelector('.slot-day-view'); if (v) b.scrollTop += v.getBoundingClientRect().top - b.getBoundingClientRect().top - 12; }, body);
+      await L.wait(page, 600);
+      await L.shot(page, 't8-panel-andere-uhrzeit', { noScroll: true, clip: await L.clipOf(page, '.booking-panel-glattt'), marks: [
+        { id: 'zurueck', kind: 'badge', n: 1, sel: '.booking-panel-glattt .slot-day-view__head .btn-glattt-secondary', at: 'l' },
+        { id: 'blaettern', kind: 'badge', n: 2, sel: '.booking-panel-glattt .slot-day-view__nav', at: 't' },
+        { id: 'zeit', kind: 'frame', color: 'gold', sel: '.booking-panel-glattt .slot-day-view .slot-pill.is-selected' },
       ]});
     }
   }

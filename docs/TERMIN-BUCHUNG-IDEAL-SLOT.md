@@ -303,7 +303,10 @@ App: `Booking/ExtraTime.swift` (`ExtraTimeModel`, `ExtraTimeDecisionSheet`,
   heute — `canShiftOtherDayBack()`), Zeiten in Spalten nach Tageszeit (`otherTimeBands()`), ohne
   Raumnummer (`slot-pill` mit `compact`; der Raum steht im Tooltip und in der Bestätigungsleiste).
   Die drei Fenster blenden ihr Raster per `@unless ($otherDate)` aus. CSS `.slot-day-view*` in
-  `theme_glattt.css`.
+  `theme_glattt.css`. Das Alpine-Seitenblatt „Termin buchen“ der Terminübersicht
+  (`appointment-booking-panel.js`) nutzt dieselben Klassen mit eigener Logik: `otherDay`
+  ersetzt die Vorschläge, `shiftOtherDay(±1)`/`canShiftOtherBack`, `otherBands`, beim Blättern
+  bleibt der alte Tag gedimmt stehen (`is-refreshing`) und die Knöpfe sind gesperrt.
 - **Verlegen aus der Terminansicht (seit 25.10.2026):** Der Knopf öffnet `RescheduleSlotModal`
   (Event `open-reschedule-modal`, eingebunden in `hub/appointment-unified/index` nur mit
   `manage_appointment_booking`) statt auf die Buchungsseite zu springen. Nach dem Verlegen meldet
