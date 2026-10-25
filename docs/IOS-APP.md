@@ -1222,7 +1222,7 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   „ohne Lücke" grün, Buchen mit Rückfrage, „Überspringen") in `BookingSheets.swift`. Beide sprechen
   JSON-Endpunkte des `Hub\BookingApiController`: `GET/POST hub/appointment/{b}/{id}/direct-treatment
   [/book|/retry-purchase]` (Recht `view_appointment_detail`) und `hub/booking/api/{services|
-  suggestions|book}` (Recht `view_booking`). Die Logik von „Direkt behandeln" liegt seitdem in
+  suggestions|book}` (Recht `manage_appointment_booking`). Die Logik von „Direkt behandeln" liegt seitdem in
   `App\Services\Booking\DirectTreatmentService` (Raum/Startzeit aus dem Beratungstermin,
   Optionen, Erklärung fehlender Services, Kauf nachholen, Buchen mit Desinfektion) — das Livewire-
   Modal `DirectTreatmentModal` nutzt denselben Service. **Übergabe ohne eigene Notiz (seit
@@ -2845,7 +2845,7 @@ gewählt werden. Technik, Endpunkte und Fallstricke: `TERMIN-BUCHUNG-IDEAL-SLOT.
   `appointmentIds` (kommagetrennt → Verlegen über `booking/api/reschedule`, Schnellwahl ab heute).
 - **Endpunkte — dieselben wie Web und Folgetermin-Blatt:** `GET booking/api/services`,
   `POST booking/api/suggestions`, `POST booking/api/book`, `POST booking/api/reschedule`, Recht
-  `view_booking`. **Hub-Änderung:** `book` nimmt optional `kind: new` → Phorest-Vermerk
+  `manage_appointment_booking`. **Hub-Änderung:** `book` nimmt optional `kind: new` → Phorest-Vermerk
   „Über glatttHub gebucht (Neubuchung)." und Meldung „Termin am … gebucht."; ohne Angabe bleibt es
   der Folgetermin (ältere Builds). `GET /api/app/navigation` liefert `user.can_book` — das Plus und
   der Kunden-Knopf erscheinen nur damit. Die Institutsauswahl nutzt `navigation.branches`

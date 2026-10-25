@@ -219,12 +219,21 @@ Bericht genau ein Recht hat und das Label ihn bereits benennt.
 | `configure_dashboard` | KPIs und Charts konfigurieren | Bearbeiten |
 | `view_dashboard` | Startseite sehen | Lesen |
 
-#### Termine (4)
+#### Termine (5)
 
 | Permission | Beschriftung | Stufe |
 |---|---|---|
+| `manage_appointment_booking` | Termine buchen und verlegen, Buchungslink senden, Extrazeit buchen | Bearbeiten |
 | `view_appointment_detail` | Termin-Detailansicht oeffnen | Lesen |
 | `view_appointments` | Terminuebersicht sehen | Lesen |
+
+!!! note "Seit 25.10.2026: `manage_appointment_booking` statt `view_booking`"
+    Das frühere `view_booking` hieß im Katalog „Buchungseingang sehen", steuerte aber Termin buchen,
+    Verlegen (Web + App), den Selfservice-Link der Kundenakte und die Extrazeit-Endpunkte
+    (`hub/booking/api/*`). Deshalb hatten es nur admin und Super-Admin. Die Migration
+    `2026_10_25_120000_rename_view_booking_to_manage_appointment_booking` benennt das Recht um
+    (Zuordnungen bleiben) und gibt es zusätzlich Institute Leitung, Institute MA und Büro. Der
+    Selfservice-Link (`BookingShareLinkModal`) prüft das Recht seitdem auch serverseitig.
 
 **Behandlung**
 
@@ -377,12 +386,6 @@ Bericht genau ein Recht hat und das Label ihn bereits benennt.
 | `delete_forms` | Formulare loeschen | Vollzugriff |
 | `view_forms` | Formulare sehen | Lesen |
 | `use_sepa_form_fields` | SEPA-Felder (IBAN, BIC, Kontoinhaber) | Bearbeiten |
-
-#### Buchungseingang (1)
-
-| Permission | Beschriftung | Stufe |
-|---|---|---|
-| `view_booking` | Buchungseingang sehen | Lesen |
 
 #### Reisekosten (2)
 

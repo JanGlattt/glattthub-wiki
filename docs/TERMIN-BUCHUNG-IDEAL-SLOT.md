@@ -96,7 +96,7 @@ den es in Phorest noch nicht gibt. Entschieden von Jan am 07.10.2026 nach drei E
 Web **A „Seitenblatt von rechts"**, App **1 „Slot-Finder mit ‚Wer?' davor"**. Beides nutzt dieselben
 Endpunkte und dieselbe Slot-Engine wie der Folgetermin.
 
-**Web.** Knopf `.appointments-book-btn` im Seitenkopf von `hub/appointments` (nur mit `view_booking`,
+**Web.** Knopf `.appointments-book-btn` im Seitenkopf von `hub/appointments` (nur mit `manage_appointment_booking`,
 steht vor der mobilen Zustandszeile und bleibt dadurch auch auf dem Handy sichtbar). Er feuert
 `open-appointment-booking`; das Partial `hub/partials/appointment-booking-panel.blade.php`
 (Info-Panel-Gerüst, `x-teleport`) mit der Alpine-Komponente `public/js/appointment-booking-panel.js`
@@ -111,7 +111,7 @@ bei „Alle Standorte" leer und Pflicht (vorher wurde still das erste sichtbare 
 Terminart „Beratung | Behandlung aus Paket" (Kundin mit Paket → Behandlung vorgewählt). Die
 Kundensuche öffnet nicht mehr von selbst. Auf dem iPad bleibt die zweispaltige Detailseite.
 
-**Endpunkte** (`hub/booking/api/*`, `view_booking`):
+**Endpunkte** (`hub/booking/api/*`, `manage_appointment_booking`):
 
 | Endpunkt | Neu/geändert |
 |---|---|
@@ -202,7 +202,7 @@ den Livewire-Fenstern `stageCalendarSlot()` (hängt die Zeit an `$suggestions` a
 Bestätigungsleiste (`pickSlot({ method: 'book', index })`), in der App als `Slot` mit Rückfrage.
 
 **Endpunkt** `POST hub/booking/api/day-calendar {branch_id, client_id?, date, service_ids[], kind?}`
-(Recht `view_booking`, `BookingApiController::dayCalendar` → `BookingService::dayCalendar()` →
+(Recht `manage_appointment_booking`, `BookingApiController::dayCalendar` → `BookingService::dayCalendar()` →
 `BookingCalendarService::dayCalendar()`/`shiftsFor()`): `columns[]` (`room_staff_id`, `room_name`,
 `closed`, `open_start_min`, `open_end_min`, `blocks[]` mit `kind` appointment|break, `start_min`,
 `end_min`, `client_name`, `services`, `state`, `is_consultation`), `shifts[]`, `min_hour`,
@@ -264,7 +264,7 @@ gebraucht, Person); die Karte „Extrazeit" der Kundenakte zeigt ihn (Web und Ap
 eine Entscheidung mit 0 Minuten:** `resolveClientExtras()` fällt dann *nicht* mehr auf die
 Extrazeit des letzten Termins zurück (`ExtraTimeDecisionService::explicitlyNone()`).
 
-**Endpunkte** (`hub/booking/api/extra-time/*`, Recht `view_booking`,
+**Endpunkte** (`hub/booking/api/extra-time/*`, Recht `manage_appointment_booking`,
 `Hub\ExtraTimeDecisionController`): `GET pending?client_id&branch_id` → `pending` oder `null`
 (`contract`, `options`, `current`, `current_minutes`); `POST decide {contract_id, service_name|null}`
 (422 für Nicht-Ganzkörper); `GET review?branch_id&appointment_id&client_id` → `review` oder
@@ -292,7 +292,7 @@ App: `Booking/ExtraTime.swift` (`ExtraTimeModel`, `ExtraTimeDecisionSheet`,
   `SlotFinderService::allSlotsForDay()` → `RoomSchedule::freeStarts()` (Raster
   `booking.free_start_step_minutes` = 15 plus Anschlusszeiten, dieselben Lückenregeln, je Uhrzeit
   ein Raum — lückenlos vor weniger ausgelastet). Endpunkt `POST hub/booking/api/day-slots`
-  (`view_booking`). Web über den Trait `App\Livewire\Hub\Booking\Concerns\HasOtherTimes` und die
+  (`manage_appointment_booking`). Web über den Trait `App\Livewire\Hub\Booking\Concerns\HasOtherTimes` und die
   Partials `livewire/hub/booking/partials/other-times-{button,panel}` in Buchungsseite,
   Folgetermin- und Verlegen-Modal; die gewählte Zeit wird an `$suggestions` angehängt und über das
   vorhandene `book($index)` gebucht. Der Selbstbuchungs-Link bekommt das bewusst nicht (dort nur
@@ -394,7 +394,7 @@ app/Services/Booking/
 | Partial | `resources/views/livewire/hub/booking/partials/slot-pill.blade.php` | Slot-Knopf aller Buchungsfenster (markiert nur) |
 | Partial | `resources/views/livewire/hub/booking/partials/slot-confirm-bar.blade.php` | Bestätigungsleiste „Abbrechen / Verlegen · Buchen" |
 | JS | `public/js/components/slot-confirm.js` | Alpine-Komponente `slotConfirm` (Auswahl, Sperre während der Buchung) |
-| Route | `routes/web.php` → `hub.booking` (`can:view_booking`) | Buchungsseite (technisch vorhanden, aus Sidebar entfernt) |
+| Route | `routes/web.php` → `hub.booking` (`can:manage_appointment_booking`) | Buchungsseite (technisch vorhanden, aus Sidebar entfernt) |
 | Route | `routes/web.php` → `shared.booking.show` (öffentlich, kein Auth) | Self-Service-Buchungsseite `/shared/booking/{token}` |
 | Config | `config/booking.php` | Schwellen, Geschäftszeiten, Raum-Pattern, Lücken-Regel |
 
@@ -528,7 +528,7 @@ app/Http/Controllers/SharedBookingController.php   # Rendert nur die Wrapper-Sei
 
 ### Berechtigung
 
-Recht `view_booking` (Migration `2026_06_28_100000_add_view_booking_permission.php`, `PermissionSeeder`, Produktiv-SQL `database/sql/booking_module_production.sql` — historisch; seit 07/2026 laufen Migrationen beim Deploy automatisch). Zugewiesen an `super_admin`, `admin`, `user`.
+Recht `manage_appointment_booking` „Termine buchen und verlegen, Buchungslink senden, Extrazeit buchen" — deckt Buchen, Verlegen, den Selfservice-Link (`BookingShareLinkModal`, auch serverseitig geprüft) und die Extrazeit-Endpunkte ab. Bis 25.10.2026 hieß es `view_booking` (angelegt mit `2026_06_28_100000_add_view_booking_permission.php`) und war nur admin/Super-Admin zugewiesen; die Migration `2026_10_25_120000_rename_view_booking_to_manage_appointment_booking` benennt es um und gibt es zusätzlich Institute Leitung, Institute MA und Büro. In der App kommt es als `can_book` aus `MobileNavigation`; ohne es blendet die native Terminansicht „Verlegen“ aus.
 
 ### Tests
 
@@ -537,7 +537,7 @@ Recht `view_booking` (Migration `2026_06_28_100000_add_view_booking_permission.p
 - `tests/Feature/Booking/BookingServiceTest.php` – End-to-End mit gemocktem `PhorestApiService` (Slot-Findung, Buchungs-Payload mit allen Services + Desinfektion, `onlyAdjacentSlots`-Filter).
 - `tests/Feature/Booking/RescheduleSlotModalTest.php` – Verlegen-Modal (Öffnen lädt Services + Slots, Buchen storniert per `cancelAppointment` und feuert `appointment-rescheduled`).
 - `tests/Feature/Booking/BookingShareLinkModalTest.php` – Link-Erstellen-Modal (Token-Felder, wa.me-Link-Generierung, Service-Vorauswahl, manuelles Ab-/Zubuchen, Validierung bei leerer Auswahl).
-- `tests/Feature/Booking/AppointmentBookingPanelTest.php` – Termin buchen aus der Terminübersicht (Institute ohne Auswahl, Beratung ohne Kunde, Neukunde beim Buchen angelegt + WhatsApp-Job, Wiederholschutz bei gescheiterter Buchung, Pflicht Vor-/Nachname und `create_clients`, fremdes Institut, Dublettenprüfung, Knopf nur mit `view_booking`).
+- `tests/Feature/Booking/AppointmentBookingPanelTest.php` – Termin buchen aus der Terminübersicht (Institute ohne Auswahl, Beratung ohne Kunde, Neukunde beim Buchen angelegt + WhatsApp-Job, Wiederholschutz bei gescheiterter Buchung, Pflicht Vor-/Nachname und `create_clients`, fremdes Institut, Dublettenprüfung, Knopf nur mit `manage_appointment_booking`).
 - `ios/glatttHubTests/BookingFinderSnapshotTests.swift` – App: Neukunde + Beratung (`testNewClientConsultation`), Snapshots `booking-finder-new-client{,-ipad}`; UI-Test `BookingFinderUITests.testNewClientConsultationPath`.
 - `tests/Feature/Booking/SharedBookingPageTest.php` – Öffentliche Buchungsseite (ungültig/abgelaufen/eingelöst, Slot-Filter, erfolgreiche Buchung markiert Token als eingelöst, `.ics`-Download enthält Ort/Dauer aber keine Servicenamen und keine doppelten Inhalte, `downloadIcs()` liefert `null` vor abgeschlossener Buchung).
 
