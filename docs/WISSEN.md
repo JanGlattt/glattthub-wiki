@@ -254,7 +254,7 @@ Veröffentlichen fragt die Änderungszeile ab. Die Felder des Seitenpanels halte
 - **Weitere Blöcke:** `person` (Kontaktkarte; Suche über `GET /hub/wissen/api/personen?q=` liefert aktive Hub-Konten mit
   Rolle, E-Mail, Telefon, Foto), `institute` (nur `branch_id`, `hours`, `note` im Block — Name, Anschrift, Farbe, Bild
   kommen beim Rendern aus `InstituteFacts::for()`, gecacht eine Stunde), `faq` (Frage/Antwort, `<details>`),
-  `orgchart` (Baum aus `{name, role, children}`, bis fünf Ebenen, CSS-Verbinder in `.wissen-org-tree`). Alle liefern
+  `orgchart` (siehe Abschnitt „Organigramm“). Alle liefern
   Text für Suche und glatttBert über `blockText()`.
 - **Prozesse:** `owner` ist Pflicht (Modeler verweigert „Übernehmen“ ohne); Risiken sind BPMN-Anmerkungen mit Präfix
   „Risiko:“ (`+ Risiko` im Modeler), `BpmnText::parse()` liefert sie als `risks`, übrige Anmerkungen als `notes`; die
@@ -273,12 +273,33 @@ Veröffentlichen fragt die Änderungszeile ab. Die Felder des Seitenpanels halte
 - **Suche:** Füllwörter (`WissenService::STOPWORDS`) zählen nicht; nach dem Wortlaut kommen unscharfe Treffer über
   Titel und Überschriften (Levenshtein ≤ 1/2, Wortstamm) und semantische Treffer aus dem glatttBert-Index
   (`KnowledgeSearchService`, Artikel `wissen:<id>`), bei ganzen Sätzen immer.
-- **Führungskraft:** `managersFor()` = aktive Konten mit `approve_travel_expenses` oder `set_team_pin` am selben
-  Stamm-Institut, sonst alle mit `manage_knowledge`. Anlässe `knowledge.owner_left` (Verantwortliche archiviert,
-  `owner_left_alerted_at`) und `knowledge.review_escalated` (> 14 Tage überfällig, `review_escalated_at`, alle 14 Tage)
-  laufen im täglichen `wissen:pruefungen`.
+- **Führungskraft:** `managersFor($person, $level = 1)` nimmt zuerst die gepflegte Kette (`users.reports_to_user_id`,
+  `OrgChartService::managerChain()`): Ebene 1 = direkte Führungskraft, Ebene 2 = deren Führungskraft. Ohne gepflegte
+  Kette der alte Rückfall (aktive Konten mit `approve_travel_expenses`/`set_team_pin` am selben Stamm-Institut, sonst
+  alle mit `manage_knowledge`). Anlässe `knowledge.owner_left` (Verantwortliche archiviert, `owner_left_alerted_at`) und
+  `knowledge.review_escalated` (> 14 Tage überfällig, ab 28 Tagen Verzug eine Ebene höher, `review_escalated_at`, alle
+  14 Tage) laufen im täglichen `wissen:pruefungen`.
 - **Drive-Videos:** im Drive-Werkzeug unter „Videos“ (`video/mp4` u. a.); „Als Seite übernehmen“ legt einen
   `embed`-Block mit `drive.google.com/file/d/<id>/preview` an; `video`-Blöcke mit Drive-Adresse rendern ebenso.
+
+### Organigramm (seit 21.10.2026)
+
+- **Quelle der Hierarchie:** `users.reports_to_user_id` („Direkte Führungskraft“), gepflegt im Admin (Nutzer bearbeiten,
+  Zyklus-Prüfung über `OrgChartService::wouldCreateCycle()`) und im Konto-Wizard. Bewusst ohne Fremdschlüssel:
+  archivierte Konten blockieren die Kette nicht (`managerChain()` überspringt sie).
+- **Startvorschlag:** `php artisan users:suggest-reports-to` (Trockenlauf, `--apply` schreibt) leitet aus Institut und
+  Leitungsrechten eine erste Zuordnung ab; bereits gepflegte Konten bleiben unberührt.
+- **Block `orgchart`:** `mode` `manual` (Knoten `{name, role, children}` von Hand, bis fünf Ebenen) oder `hub` (live:
+  gespeichert werden nur `root_user_id`, `depth` 1–6 und `branch`). `KnowledgeBlocks::visibleFor()` →
+  `resolveLive()` füllt die Knoten beim Anzeigen aus `OrgChartService::tree()` — Web, App-API und Kiosk bekommen so
+  dieselben Daten, die native Leseansicht (`WissenOrgNode`) braucht keine Änderung. Knoten: Name, Position,
+  Institut bzw. Bereich, Institutsfarbe, Foto (nur wenn hochgeladen, sonst Initialen), E-Mail, Zahl der Unterstellten.
+- **Darstellung:** `public/js/wissen-org.js` (Alpine, ohne Bibliothek). Standard ist der eingerückte Baum, Klick auf eine
+  Person wechselt in die Fokus-Ansicht (Führungskräfte darüber = Eskalationskette, direkt Unterstellte darunter),
+  „Gesamtübersicht“ führt zurück. Ohne JavaScript bleibt die Liste aus `orgnode.blade.php`. Klassen `wissen-org-*` in
+  `theme_glattt.css`.
+- **Fallstrick:** Editor.js schreibt „&“ als `&amp;` (teils doppelt) in gespeicherte Klartextfelder; `KnowledgeBlocks::plain()`
+  decodiert beim Speichern und Anzeigen, sonst erscheint „Learning &amp; Development“.
 
 ### Suche und glatttBert
 
@@ -326,6 +347,7 @@ Tests `tests/Feature/WissenTest.php`, `WissenImportTest.php`, `tests/Unit/Knowle
 
 ## Changelog
 
+- **21.10.2026** — Live-Organigramm aus den Hub-Konten (`reports_to_user_id`), Baum mit Fokus-Ansicht, Eskalationskette über zwei Ebenen, Korrektur „&amp;“.
 - **19.10.2026 (Feedback-Runde)** — Editor im Dunkelmodus, Blöcke Person/Institut/FAQ/Organigramm, BPMN mit Verantwortlichen und Risiken plus Anleitungsseite, Text neben Bildern, Lightbox, glatttBert-Fokus und Vorschlag, Suche mit Tippfehlern/Füllwörtern/Sinn, Führungskraft-Anlässe, Drive-Videos.
 - **19.10.2026** — Stufe 2 (Prozess-Block mit Bahnen-Diagramm, echte BPMN-Diagramme mit bpmn-js, Versionsvergleich, Rückmeldungen, Prüf-Erinnerung, Bereich wechseln) und Stufe 3 (Was ist neu, Pflichtseiten, Kiosk für die Institut-iPads, Drive-Dokumente); Katalog-Modul „Wissen“ mit drei Anlässen.
 - **18.10.2026 (nachts, 3)** — Home je Bereich ist die Startseite (`kind = start`, nicht in der Liste); Auswahl der glatttipedia neben dem Logo; großes Suchfeld sucht an Ort und Stelle; Leitung nach der alten Site gegliedert; `wissen:struktur` idempotent (`neu` über Titel, `start: true`).
