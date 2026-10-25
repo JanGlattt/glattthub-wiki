@@ -479,6 +479,17 @@ Beide Jobs auf `hub.glattt.com`, Zeitzone Europe/Berlin, Retries 3 / Backoff 30 
 | `render-screen-cards` | `*/15 * * * *` | `/api/cron/render-screen-cards` | 300 s | Apple-TV-App: Statistik-Karten der Bildschirme im Kennzahlen-Modus rendern (Job je Bildschirm) |
 | `watch-screens` | `*/5 * * * *` | `/api/cron/watch-screens` | 120 s | Apple-TV-App: Bildschirme überwachen — offline, wieder online, Abweichung vom Plan (`screens:watch`). Angelegt 25.09.2026, aktiv seit dem Prod-Merge |
 
+### Wiedervorlage und Altersvorsorge (25.10.2026)
+
+Beide Jobs auf `hub.glattt.com`, Zeitzone Europe/Berlin, Retries 3 / Backoff 30 s, Deadline 600 s,
+von Jan per Terminal angelegt und in `CronSchedule::COMMAND_ENDPOINTS` zugeordnet, damit `cron:audit`
+sie dem geplanten Befehl zuweist:
+
+| Job | Zeitplan | Endpoint | Befehl | Zweck |
+|---|---|---|---|---|
+| `check-judicial-follow-ups` | `45 7 * * *` | `/api/cron/check-judicial-follow-ups` | `receivables:check-judicial-follow-ups` | Forderungsmanagement: erreichte Wiedervorlagen im Gerichtsverfahren einmal melden (Wiki `FORDERUNGSMANAGEMENT.md`) |
+| `check-pension-offers` | `50 7 * * *` | `/api/cron/check-pension-offers` | `hr:check-pension-offers` | Personal: Erinnerung ans Büro, wenn eine Angestellte sechs Monate nach Eintritt noch kein baV-Angebot hat (Wiki `STAFF-MODULE.md`, Abschnitt Altersvorsorge) |
+
 ## 4. Jobs testen
 
 ### Manuell über gcloud:
