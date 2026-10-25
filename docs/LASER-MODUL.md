@@ -37,7 +37,8 @@ Altdaten-Import**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
     - [Scheduler & Push](#scheduler-push)
     - [Routen](#routen)
     - [Tests](#tests)
-    - [Migration der Altdaten (CSV-Import)](#migration-der-altdaten-csv-import)
+    - [Startstand aus der Wartungsliste](#startstand-aus-der-wartungsliste-start-im-hub-29102026)
+    - [Migration der Altdaten (CSV-Import, geparkt)](#migration-der-altdaten-csv-import-seit-29102026-geparkt)
 
 ---
 
@@ -371,7 +372,69 @@ App-Seite: `IOS-APP.md`, Abschnitt „Native Laser-Seite“.
 php artisan test --filter=Laser
 ```
 
-### Migration der Altdaten (CSV-Import)
+### Startstand aus der Wartungsliste (Start im Hub 29.10.2026)
+
+Bis zum Start wurde die Wartung weiter in der Google-Tabelle geführt; der erste Import endete am
+11.06.2026, die Teile-Zuordnung im Hub war seitdem falsch (jedes Teil hing am Laser, an dem es
+zuletzt gesehen wurde — 35-1949 hatte vier Handstücke). Entscheidung Jan, 25.10.2026: **nur der
+Listen-Auszug ab 02.09.2026 ist die Grundlage**, der Altbestand wird geparkt.
+
+**Herkunft (`source`) an `laser_maintenance_protocols` und `laser_errors`** (Migration
+`2026_10_25_120000`): `null` = im Hub erfasst, `legacy` = Altbestand, `wartungsliste` = Startstand.
+`MaintenanceProtocol` blendet `legacy` per globalem Scope `SCOPE_OHNE_ALTBESTAND` **überall** aus
+(Dashboard, Akte, App, Berichte, Erinnerungen); zurückholen per
+`withoutGlobalScope(MaintenanceProtocol::SCOPE_OHNE_ALTBESTAND)`. Alle Laser-Abfragen laufen über das
+Modell — wer je `DB::table('laser_maintenance_protocols')` schreibt, muss `source` selbst filtern.
+
+**Befehl** `laser:import-stand` (`App\Services\Laser\Import\MaintenanceListImporter`):
+
+```bash
+php artisan laser:import-stand                       # Trockenlauf mit Bericht
+php artisan laser:import-stand --apply               # einspielen
+php artisan laser:import-stand <csv> --korrekturen=<json> --apply
+```
+
+Standard-Dateien: `database/data/laser/wartungsliste-2026-10-23.csv` und
+`database/data/laser/korrekturen-2026-10.json`. Der Lauf ist **wiederholbar** — er entfernt die
+`wartungsliste`-Protokolle und -Fehler des vorigen Laufs und setzt den Stand neu; ein späterer
+Auszug wird einfach mit neuer CSV eingespielt.
+
+Ablauf in einer Transaktion (Trockenlauf = Rollback, Dateien werden erst nach dem Commit gelöscht):
+
+1. Standorte: `H.K`/`HB.K`/`BS.K` heißen `H.Lager`/`HB.Lager`/`BS.Lager`, `BI.Lager` wird angelegt.
+2. Altbestand parken (`source = legacy`: ohne Spezialistin, bis `altbestand_bis`).
+3. Hub-Testdaten aus der Korrekturdatei löschen, die Braunschweiger Wartungen vom 22.10.2026 auf den
+   richtigen Laser umhängen (jede Zeile wird gegen Laser und Datum geprüft), alle offenen
+   Wartungs-Entwürfe verwerfen.
+4. **Raum je Laser** = Raum seiner letzten Zeile, wenn dort zuletzt auch er stand; alle übrigen Laser
+   → `zentrallager` (`IM_LAGER`), mit `STANDORT_BEWEGUNG` in der Historie.
+5. **Teile**: erst alle lösen, dann montieren, was die **letzte Zeile mit Zählerstand** des Lasers nennt
+   (leer = nicht montiert); Lagerbestand aus der letzten Zeile je `*.Lager`. Teile mit „5./6.“
+   (muss getauscht werden / geht nicht) und alle Teile aus dem Auszug ohne aktuellen Platz →
+   Zentrallager, `DEFEKT`. Teile nur aus dem Altbestand → Zentrallager, Zustand unverändert.
+6. Ein Protokoll je Zeile mit Maschine (`source = wartungsliste`), KW aus dem Datum, Kürzel über
+   `kuerzel` auf Hub-Konten (unbekannte Kürzel als Text im Kommentar), Chiller-Fluid = Untergrenze
+   von „1-2“/„3-5“, beide Kommentarspalten zusammen.
+7. Fehler- und Sanduhr-Zähler → `laser_errors` mit Status `BEHOBEN` (nur Historie).
+
+**Sicherungen:** Dieselbe Seriennummer an zwei Stellen am selben Tag ist ein **Konflikt** und
+verhindert `--apply` (Auflösung über `zuordnung` in der Korrekturdatei); ebenso Hub-Wartungen nach
+dem letzten Listen-Datum (sonst würde der Listen-Stand sie überschreiben, `--force` übergeht das).
+Nummern mit dem Präfix eines anderen Teiltyps (MHP/RHP, VL, VS, 25A/25B) werden ignoriert und gemeldet.
+
+**Pulse-Prüfung im Assistenten** (`MaintenanceWizardService::lastPulses`): Maschine = letztes
+Protokoll **mit** Zählerstand; Handstück = letzter Wert **desselben** Handstücks (sonst dessen
+`pulses_count`). Vorher blockierte nach einem Handstück-Tausch der Stand des alten Handstücks.
+
+**Produktion:** wie jedes einmalige Command über Proxy und lokale Env (Wissen
+`artisan-command-auf-prod-ausfuehren`), immer erst den Trockenlauf.
+
+### Migration der Altdaten (CSV-Import, seit 29.10.2026 geparkt)
+
+!!! warning "Nicht mehr ausführen"
+    `laser:import-history --fresh` leert alle Laser-Tabellen. Seit dem Start im Hub gilt der
+    Startstand aus `laser:import-stand`; die Protokolle dieses Imports tragen `source = legacy`
+    und sind ausgeblendet.
 
 Die historischen Wartungsdaten (~2.225 Zeilen, Zeitraum 2022–2025) wurden über das Artisan-Command `laser:import-history` importiert.
 
