@@ -172,7 +172,11 @@ Alle unter `/hub/kundenservice` (dieselben für Web und App, JSON):
 
 `solve()` setzt bei Teams mit `requires_review` den Status `review` und wählt per
 `ReviewerPicker::pick()` reihum ein anderes Mitglied. Freigeben darf jedes andere Mitglied
-(`canReview`), nie die Schließende. „Zurückgeben“ braucht eine Notiz und setzt das Ticket auf
+(`canReview`), nie die Schließende — und immer die eingetragene Prüferin (`reviewer_id`), auch nach
+ihrem Austritt aus dem Team. Vorher hingen solche Tickets für alle fest: „Abschließen“ ist bei
+`review` ausgeblendet, das Banner nur mit `can_review` bedienbar (Asana Anne-Katrin, 26.10.2026,
+#4889/#4962 seit 16.10.). Seit 26.10.2026 steht „Freigeben“ zusätzlich im Ticketkopf an der
+Stelle von „Abschließen“, weil das Banner über dem Verlauf wegscrollt. „Zurückgeben“ braucht eine Notiz und setzt das Ticket auf
 `open` bei der Schließenden. Gibt es niemanden außer der Schließenden, wird ohne Prüfung gelöst
 und das sichtbar im Verlauf vermerkt (`review_skipped`).
 

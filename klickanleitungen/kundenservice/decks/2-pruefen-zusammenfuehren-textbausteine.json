@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — Vier-Augen-Prüfung, doppelte Tickets zusammenführen, Teams und Textbausteine pflegen, glatttBert als Schreibhilfe",
  "eyebrow": "Kundenservice · Team",
  "footerArea": "Kundenservice",
- "stand": "24.10.2026",
- "version": "1.0",
+ "stand": "26.10.2026",
+ "version": "1.1",
  "notes": [
   "Teams mit **Vier-Augen-Prüfung** schließen nie allein: Wer ein Ticket abschließt, schickt es an eine **andere** Kollegin desselben Teams zur Kontrolle.",
   "**Zusammenführen** bringt mehrere Tickets derselben Kundin in einen Verlauf.",
@@ -37,7 +37,7 @@
     {
      "n": 1,
      "title": "Freigeben",
-     "text": "Das Ticket ist in Ordnung und wird **gelöst**."
+     "text": "Das Ticket ist in Ordnung und wird **gelöst**. Den Knopf gibt es im Band und oben im Ticketkopf, wo sonst „Abschließen“ steht."
     },
     {
      "n": 2,
@@ -48,7 +48,7 @@
    "notes": [
     {
      "title": "Übernehmen",
-     "text": "Der Hub schlägt reihum eine Prüferin vor. Übernehmen darf jede **andere** Kollegin des Teams, nie die, die abgeschlossen hat. Wer „Zu prüfen“ öffnet, sieht alle Tickets, die auf sie warten."
+     "text": "Der Hub schlägt reihum eine Prüferin vor. Übernehmen darf jede **andere** Kollegin des Teams, nie die, die abgeschlossen hat. Die eingetragene Prüferin darf auch dann freigeben, wenn sie inzwischen nicht mehr im Team ist. Wer „Zu prüfen“ öffnet, sieht alle Tickets, die auf sie warten."
     }
    ],
    "hint": {

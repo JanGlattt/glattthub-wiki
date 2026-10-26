@@ -7,7 +7,7 @@ technische Doku: Wiki `docs/KUNDENSERVICE-TICKETS.md`.
 | Dokument | Inhalt | Zielgruppe | Stand |
 |---|---|---|---|
 | **1 — Tickets bearbeiten** | Seite und Ansichten, Ticket lesen, Antworten (E-Mail/WhatsApp), interne Notiz mit @, neues Ticket als Entwurf, Kundin zuordnen und Kundenkarte | Büro | v1.0, 24.10.2026 |
-| **2 — Prüfen, zusammenführen, Textbausteine** | Vier-Augen-Prüfung, Zurückgeben, Zusammenführen, Teams, Textbausteine, glatttBert (Vorschlag, Zusammenfassung, Anliegen) | Büro | v1.0, 24.10.2026 |
+| **2 — Prüfen, zusammenführen, Textbausteine** | Vier-Augen-Prüfung, Zurückgeben, Zusammenführen, Teams, Textbausteine, glatttBert (Vorschlag, Zusammenfassung, Anliegen) | Büro | v1.1, 26.10.2026 |
 | **3 — Meine Tickets, Verlauf und Umfrage** | Meine Tickets/Meine gelösten, Verlauf als PDF (mit/ohne Notizen), Abschließen vs. Senden & abschließen, Wiedervorlage, Zufriedenheitsumfrage | Büro | v1.0, 24.10.2026 |
 
 Die App-Bedienung steht in der Serie **App**.
