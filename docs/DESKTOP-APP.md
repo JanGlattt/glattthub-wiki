@@ -540,6 +540,13 @@ Die Hauptapp trägt dafür `com.apple.security.application-groups` (`group.com.g
 Sperrbildschirm-Größen und das Logo im Kopf (der Schreibtisch tönt Widgets ein, das Logo wurde
 zur weißen Fläche).
 
+**Ohne Fokus** (Schreibtisch hinter Fenstern, `widgetRenderingMode != .fullColor`) zeichnet macOS nur
+nach Helligkeit — Farben und Materialien werden weiß. Seit 1.2.11 deshalb: Kacheln der
+Terminübersicht mit dezenter Fläche statt Material (`widgetCardBackground()`), „KPZ je Monat" als
+ein Balken je Monat (laufender heller), Prognose als gestrichelter Rahmen (`chartOverlay`), keine
+Institutslegende (Entscheidung Jan, 26.10.2026). Mit Fokus bleibt alles farbig. Gilt genauso für die
+getönten Symbole auf iOS.
+
 **Fallstricke beim Testen:** Ein Testbuild muss unter `/Applications` liegen — sonst sucht `linkd`
 die App-Intents bei der installierten App ohne Widgets und jedes Widget bleibt grau
 (`CHSErrorDomain 1103 Intent configuration is required`). Gegen den lokalen Hub starten mit
