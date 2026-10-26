@@ -3101,6 +3101,66 @@ ist danach abgemeldet. **Ausnahme: im Termin mit der Kundin wird nie abgemeldet*
 Einstellungszettel, Laser-Wartung). Die iPad-Seitenleiste zeigt den Countdown wie die Web-Sidebar,
 am iPhone steht er im Mehr-Sheet unter dem Profil.
 
+### CarPlay, Siri im Team-Chat und Widgets im Auto (seit 26.10.2026, wartet auf Apples Freigabe)
+
+**Absicht (Jan, 26.10.2026):** Im Auto sollen Team-Chat, Hub-Anrufe und der Weg zum Institut ohne Blick aufs
+iPhone gehen. Gewählt: **Entwurf 1 „Drei Reiter“** (Entwürfe: Artefakt „CarPlay-Entwürfe glatttHub“) —
+Reiter **Gespräche · Team · Institute**, dazu Siri-Antworten zum Vorlesen und alle vier Widgets im
+CarPlay-Widget-Bereich. Kein Nachrichtentext und keine Kundendaten auf dem Auto-Bildschirm.
+
+**Was Apple zulässt:** CarPlay-Apps brauchen eine Kategorie mit Berechtigung. Wir laufen als
+**Kommunikations-App** (`com.apple.developer.carplay-communication`, beantragt über
+developer.apple.com/contact/carplay, Bundle `com.glattt.hub`). Damit gibt es nur Apples Vorlagen
+(Reiter, Listen, Kontaktkarte); Statistiken, Termine, Kunden oder WebViews sind in CarPlay nicht möglich.
+Die Route ist der „Route“-Knopf der Kontaktkarte (`CPContactDirectionsButton`) — eine Institutsliste mit
+Navigationsknopf würde nicht zur Kategorie passen.
+
+**Aufbau**
+
+| Teil | Datei | Was es tut |
+|---|---|---|
+| Szene | `ios/glatttHub/CarPlay/CarPlaySceneDelegate.swift` | `CPTabBarTemplate` mit drei `CPListTemplate`s; Gespräche als `CPMessageListItem` (Antippen startet Siri), Team und Institute öffnen `CPContactTemplate` |
+| Inhalt | `ios/glatttHub/CarPlay/CarPlayCatalog.swift` | Reine Zusammenstellung: Ungelesenes zuerst, ohne Archiv, Team = aktive Einzelchats, Institute ohne ausgeblendete, Siri-Kennung `chat-room-<id>`, Karten-Link `maps://?daddr=…&dirflg=d` |
+| Siri im Chat | `ios/glatttHub/Intents/ChatSiriHandler.swift` | `INSendMessageIntent`, `INSearchForMessagesIntent`, `INSetMessageAttributeIntent` im App-Prozess (`AppDelegate.application(_:handlerFor:)`); dieselben Endpunkte wie die Direkt-Antwort (`hub/chat/raeume/{id}/nachrichten`, `…/gelesen`) |
+| Siri-Anrufe | `ChatSiriHandler.swift` + `ChatCallKit.swift` | `INStartCallIntent` („Ruf Sarah mit glatttHub an“) startet den Hub-Anruf über CallKit; `INSearchCallHistoryIntent` („Habe ich verpasste Anrufe?“) liest `GET hub/chat/anrufe/verlauf` (`ChatCallService::history`, letzte 20 beendete Anrufe, `missed` = an mich und nie angenommen) |
+| Mitteilungen im Auto | `ios/glatttHub/Push/PushManager.swift` | Erlaubnis mit `.carPlay`, nur die Chat-Kategorie mit `.allowInCarPlay` und `INSearchForMessagesIntentIdentifier` — im Auto Absender/Gruppe, nie der Text; Antippen lässt Siri vorlesen |
+| Siri-Sätze | `ios/glatttHub/Intents/SiriSpeech.swift`, `HubIntents.swift` | Tagesüberblick mit **KPZ zuerst**, neu „Körperzonen im Monat“ und „Neue Nachrichten“ |
+| Widgets | `ios/glatttHubWidgets/WidgetChrome.swift` | `.systemSmall` erscheint seit iOS 26 in CarPlay — alle vier bleiben sichtbar, nie `disfavoredLocations([.carPlay])` |
+
+- **Kontaktkarte Kollegin:** Anrufen = Hub-Anruf über CallKit (`ChatCallKit.startCall`, derselbe Weg wie in der
+  App), Nachricht = Siri diktiert in den Einzelchat. **Institut:** Anrufen = Institutstelefon (`tel:`),
+  Nachricht = Team-Gruppe des Standorts (`CarPlayCatalog.instituteRoomId`, nie die Ankündigungsgruppe),
+  Route = Apple Karten. Geöffnet wird über `CPTemplateApplicationScene.open(_:)`.
+- **Start ohne iPhone-Fenster:** Tippt man das Symbol in CarPlay bei gesperrtem iPhone, verbindet sich nur die
+  CarPlay-Szene. `AppDelegate.container` setzt aber erst das `onAppear` des iPhone-Fensters — deshalb
+  `AppContainer.current`, gesetzt am Ende von `AppContainer.init`. Bis die Sitzung bereit ist (`isReady`),
+  zeigt die Liste den gesicherten Stand des Chats; neu gezeichnet wird nur aus Zustand
+  (`withObservationTracking`), nie per Timer, und nur bei sichtbarer Änderung (sonst springt die Liste nach oben).
+- **Geteilte Geräte und Institut-iPads** zeigen in CarPlay nur einen Hinweis (personenbezogene Gespräche).
+- **Hinweistexte nennen nur den Zustand** („Du bist in glatttHub nicht angemeldet.“) — Apples Regel 2 für alle
+  CarPlay-Apps verbietet jede Aufforderung, das iPhone zu bedienen.
+- **Apple-Pflichten für Kommunikations-Apps** (Leitfaden Stand 13.10.2026, Zusatzvereinbarung Rev. 06-08-2026,
+  geprüft 26.10.2026): Nachrichten → Senden, Suchen, Attribut setzen; VoIP → CallKit + Anruf starten + Anrufliste
+  durchsuchen. Alle fünf Intents stehen in `INIntentsSupported` und `ChatSiriHandler.supported`.
+- **Siri-Kennungen:** Unterhaltung `chat-room-<id>` (dieselbe wie in den Kommunikations-Mitteilungen, damit
+  „Antworten“ nach einer Ansage den Raum trifft), Nachricht `chat-msg-<raum>-<seq>` → Lesestand. Vorgelesen
+  werden höchstens fünf Räume mit je zehn Nachrichten, stummgeschaltete Räume nicht.
+
+**Berechtigungen — bis zur Freigabe nur im Simulator:** `glatttHub-CarPlay.entitlements` (= normale
+Berechtigungen + CarPlay Communication + SiriKit) gilt über `CODE_SIGN_ENTITLEMENTS[sdk=iphonesimulator*]`.
+Geräte-Builds (TestFlight, Xcode Cloud) bleiben unverändert signierbar. **Nach Apples Zusage:**
+„CarPlay Communication“ und „SiriKit“ am App-ID `com.glattt.hub` einschalten, beide Schlüssel in
+`entitlements.properties` von `project.yml` übernehmen, die Simulator-Zeile und die Datei löschen,
+`xcodegen generate`, Projektdatei mitcommitten.
+
+**Prüfen:** Simulator → *I/O › External Displays › CarPlay*. Unit-Test `CarPlayCatalogTests` (Zusammenstellung,
+Kennungen, Sätze). CarPlay-Vorlagen lassen sich nicht als Snapshot rendern; die Klickanleitung (Serie
+„App“) entsteht mit der Freigabe aus Bildern des CarPlay-Simulators.
+
+**Fallstricke:** Ein Siri-Befehl „Route zum Institut“ war geplant, braucht aber `OpenURLIntent` (iOS 18) und
+lässt sich in `AppShortcutsProvider` erst ab iOS 17.4 bedingt registrieren — bei Mindestversion 17.0 nicht
+möglich. „Navigiere zu glattt Hannover“ kann Apple Karten ohnehin selbst.
+
 **Warum neu:** Bis Build 89 zählte `auto-logout.js` in jedem WebView für sich. Befund 299 (Sitzung
 weg mitten im Chat nach 7 Minuten Hintergrund) wurde mit „im Hintergrund pausieren, beim Zurückkehren
 alles zurücksetzen" behoben — damit bekam **jede** Rückkehr volle zwei Minuten, und ein mit zehn
@@ -3228,6 +3288,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | 03.10.2026 | 1.4.0 | **Apple-Watch-App** mit Ziffernblatt-Widgets (Kombination der Entwürfe KPZ-Ring, Standorte, Mein Tag): KPZ gegen das Standortziel der Bonus-Seite, Standortvergleich, Heute, Bonus-Ring, nächste Beratung und Kassen-Erinnerung im Smart Stack; Uhr als eigenes Gerät (`watchos`), Token per WatchConnectivity; Hub: `GET /api/app/widgets/watch` |
 | 29.09.2026 | 1.3.0 (61) | Kasse: Tresor-Bewegungen „→ zur Bank“ und „→ in die Kasse“ direkt am Tresor (213); Kennzahl-Kachel „Beratungen heute“ mit Tendenz und Wochentags-Schnitt (`comparison.reference`, 214) |
 | 29.09.2026 | 1.3.0 (60) | Neue native Seite **Kasse** (Kassenabschluss, [KASSE.md](KASSE.md)): `NativeMorePage.cash`, Monatsliste und Waage, Schnellzugriff „Kassenabschluss“ im Cockpit, solange heute offen (212) |
+| 26.10.2026 | (vor Freigabe) | **CarPlay** (Entwurf 1 „Drei Reiter“: Gespräche, Team, Institute mit Anruf/Nachricht/Route), **Siri im Team-Chat** (vorlesen, antworten, gelesen), Siri-Sätze mit KPZ zuerst plus „Körperzonen im Monat“ und „Neue Nachrichten“, alle vier Widgets im CarPlay-Widget-Bereich. CarPlay/SiriKit-Berechtigung bis zu Apples Freigabe nur im Simulator. |
 | 29.09.2026 | 1.3.0 (60) | iPad-Cockpit: Bonus-Karten in einer Zeile oder wischbar (`BonusGoalPager` mit `fraction`), unvollständige Raster-Zeilen verteilen ihren Rest (`CockpitSections.pack`) (206); PIN-/Passwort-Wechsel als Vollbild vor dem Hub, kurze Bestätigung nach vier Ziffern, `DrawnCheckmark` bei Erfolg (208); Profilbild-Blatt zeigt das aktuelle Bild (210); Behandlungs-Ranking schickt 4 Monate wie das Web statt der ganzen Historie (211). Hub (live): Blind-Challenges auch in PDF/CSV verdeckt (207), 419-Seite übergibt an die native Anmeldung (209), Behandlungs-Intervalle je Aufruf nur einmal abgefragt (211) |
 | 29.09.2026 | 1.3.0 (59) | Trinkgeld-Karten der Mitarbeiterperformance nativ (Befund 198): `personal.tip-ranking` als Rangliste Trinkgeld/Sterne mit „(du)“ und Zeitraum Monat–12 M., `personal.tip-history` als Säulen Netto + Gebühr (= brutto) bzw. Sterne-Linien, beide mit Tabelle; die Karten wählen `date_from` selbst, weil der Hub ohne Zeitraum nur den laufenden Monat rechnet, `null`-Sterne bleiben fehlend statt 0. Berichtstitel mittig zur ganzen Leiste statt zwischen „‹ Berichte“ und ⋯ (199). Hub: Admin „Trinkgeld & Qualität“ unter Team statt Verkauf (200). Tagesmessung: Tipp auf eine Zelle öffnet die Beratungen dahinter als Blatt (`DailyCellDetailSheet`, `GET …/staff-performance/cell-details`) mit Ausschließen/Zuordnen/Aufheben wie im Web-Modal, sichtbar über `can_adjust` in der Antwort (204). Eingebettetes Formular: Ladeanimation `FormLoadingView` (nachgezeichnete Marke wie beim Start) bis Bridge-`formEvent` „ready“ (aus `form-ready` in `form-fill.js`, Rückfall 20 s); Hub: Terminseite im Formularmodus (`data-native-form`) lädt nur Termin, Formularliste, Formular und Kontext parallel, `x-init="init()"` hub-weit entfernt (43 Seiten luden doppelt) (205) |
 | 29.09.2026 | 1.3.0 (58) | Bonus-Board ohne Stufen-Pillen und Serien-Flammen (Befund 196, Jan): bleiben mit der Abzeichen-Karte hinter `BonusEmployeeView.showsBadges`, bis Level und Serie produktiv sind; Stufen-Marken am Balken und Tagesziel bleiben |
