@@ -35,6 +35,7 @@ Die glatttHub Desktop-App ist eine native macOS-Anwendung, die die Web-App (`htt
 | **Cmd+Tab** | Eigenes Icon in der App-Umschaltung |
 | **Deutsche Menüleiste** (ausgebaut in 1.1.6) | glatttHub, Bearbeiten, Darstellung (mit **Farbschema** und **Standort**), **Gehe zu** (alle Hub-Seiten nach Rechten, Suche, glatttBert), Tabs (mit Seitennamen, geschlossenen Tab zurückholen), Fenster, Hilfe (Nutzerhandbuch, Rundgang dieser Seite) |
 | **Dock-Menü** (seit 1.1.6) | Rechtsklick auf das Dock-Symbol: offene Tabs mit Häkchen am aktiven, Neuer Tab, Termine heute, Kunde suchen |
+| **Widgets** (seit 1.2.10) | Die vier glatttHub-Widgets des iPhones — Kennzahlen, Tagesübersicht, Beratungsgespräche, Körperzonen — auf dem Mac-Schreibtisch und in der Mitteilungszentrale. Melden sich mit der Desktop-App an und ab |
 | **Tray-Icon** | Schnellzugriff über die macOS-Menüleiste |
 | **Admin-Panel** | Eigener Tab für das Filament Admin-Panel (Cmd+Shift+A) |
 | **Push-Benachrichtigungen** | Native macOS-Benachrichtigungen (Opt-in beim ersten Start) |
@@ -59,6 +60,16 @@ Rechtsklick auf das glatttHub-Symbol im Dock (seit 1.1.6): oben die **offenen Ta
 Seitennamen (Häkchen am aktiven, ein Klick holt den Tab und das Fenster nach vorn), darunter
 **Neuer Tab**, **Termine heute** und **Kunde suchen …** — auch dann, wenn das Fenster hinter
 anderen liegt oder geschlossen ist (dann öffnet es sich wieder).
+
+### Widgets auf dem Schreibtisch
+
+Die Kennzahlen-Widgets des iPhones gibt es auch auf dem Mac: Rechtsklick auf den Schreibtisch →
+„Widgets bearbeiten …" → nach „glatttHub" suchen und Kennzahlen, Tagesübersicht,
+Beratungsgespräche oder Körperzonen hinziehen. Die Zahlen sind dieselben wie in der iPhone-App
+und im Hub, mit den Rechten der Person, die in der Desktop-App **angemeldet** ist. Wer sich
+abmeldet, sieht „In der App anmelden"; meldet sich jemand anderes an, zeigen die Widgets sofort
+deren Zahlen — auf geteilten Büro-Macs bleibt nichts von der Vorgängerin stehen. Ein Klick auf ein
+Widget öffnet die passende Seite in der Desktop-App.
 
 ### Push-Benachrichtigungen
 
@@ -148,6 +159,11 @@ electron/
 ├── context-menu.css         # Optik des Kontextmenüs (injiziert / von der Leiste geladen)
 ├── preload.cjs              # Preload je Tab: electron-app Klasse, Theme-Meldung, ⌘-Klick
 ├── release.sh               # Release: Build + PKG/DMG nachbessern + Notarisierung mit Wiederholung
+├── widgets.cjs              # Mac-Widgets: Gerät registrieren, Token in den Gruppen-Container, ab-/anmelden
+├── build-mac-widgets.sh     # baut + signiert Widget-Erweiterung (ios/, Target glatttHubMacWidgets) und widget-link.node
+├── after-pack.cjs           # legt Erweiterung + Modul NACH dem Universal-Merge in die App
+├── widget-link/             # natives Modul (Swift + N-API): containerURL, WidgetCenter
+├── signing/glatttHubWidgets.* # Developer-ID-Profil + Berechtigungen der Erweiterung
 ├── patch-dev.sh             # Patcht Electron.app für Dev (Name, Icon, Identifier)
 ├── icon-exports.sh          # Helfer: Icon-Composer-Exporte nach Pixelgröße finden (beide Namensschemata)
 ├── build-icns.sh            # Erstellt .icns/.png aus Icon Composer Exports
@@ -474,6 +490,62 @@ env -u ELECTRON_RUN_AS_NODE GLATTTHUB_URL=http://glattthub.local:8888 \
 `/hub/clients/{id}/foto` mit (fester Endpunkt, 404 ohne Foto). `context-menu.cjs` legt das
 `<img>` über die Initialen, blendet es nach `load` ein und entfernt es bei `error` — so gilt
 das Bild überall, wo ein Kunde erkannt wird, ohne neue `data-ctx`-Attribute.
+
+### Mac-Widgets (seit 1.2.10)
+
+Die Widget-Erweiterung ist **dieselbe wie auf dem iPhone** — derselbe SwiftUI-Code aus
+`ios/glatttHubWidgets`, als macOS-Target `glatttHubMacWidgets` (`ios/project.yml`, eigenes Schema
+„glatttHub Mac Widgets", Bundle `com.glattt.hub.widgets`, macOS 14+). Die Desktop-App bringt sie in
+`Contents/PlugIns/glatttHubWidgets.appex` mit; Updates kommen also mit jedem Release der Desktop-App.
+
+**Anmeldung (Entscheidung Jan, 26.10.2026: automatisch, immer die angemeldete Person):**
+
+```
+Tab meldet „angemeldet" (preload.cjs → TabManager.reportAuth → onAuthChange)
+  → widgets.cjs: einmal je App-Start und Person
+     POST /api/app/devices {native_device_id: mac-<uuid>, platform: macos} mit Web-Sitzung + XSRF
+     → widget_token (nur app:widgets, kein Sitzungs-Token)
+  → desktop-widget.json {token, baseURL, userId, userName} in den Gruppen-Container
+  → WidgetCenter.reloadAllTimelines()
+Abmelden → Datei löschen + neu laden · Sitzung abgelaufen → nichts
+```
+
+Die Erweiterung liest die Datei über `ios/Shared/DesktopLink.swift` (statt Schlüsselbund wie iOS)
+und verwirft den zwischengespeicherten Stand, sobald eine andere Person angemeldet ist. Meldet sich
+eine andere Person am selben Mac an, gehört das Gerät im Hub ihr (`AppDeviceService::register`
+entfernt den Eintrag der Vorgängerin samt Token). Der Mac erscheint im Profil unter „App-Geräte".
+Scheitert die Registrierung, versucht `widgets.cjs` es frühestens nach 5 Minuten erneut.
+
+**Warum ein natives Modul:** Node bekommt im Container der App-Gruppe `EPERM` — auch mit
+Berechtigung und Profil. macOS gibt den Container erst frei, wenn der Prozess
+`containerURL(forSecurityApplicationGroupIdentifier:)` aufruft. `electron/widget-link/` (Swift +
+N-API-Hülle in C, ABI-stabil) liefert diesen Pfad und lädt die Widgets neu — im App-Prozess, also
+eindeutig für die Widgets dieser App.
+
+**Bau und Signatur** (`build-mac-widgets.sh`, ruft `release.sh` selbst auf):
+
+1. `xcodegen` + `xcodebuild` Universal (arm64 + x86_64), unsigniert
+2. Profil `signing/glatttHubWidgets.provisionprofile` einbetten (angelegt mit
+   `ios/scripts/asc-profile.py --bundle com.glattt.hub.widgets create`), mit
+   `signing/glatttHubWidgets.entitlements` signieren (Sandbox, Netz, App-Gruppe)
+3. `widget-link.node` bauen und signieren
+4. `after-pack.cjs` legt beides in die fertige App — **nicht** per `extraFiles`: `@electron/universal`
+   schreibt beim Zusammenführen jede Info.plist neu und zerstört so die Signatur der Erweiterung.
+   electron-builder lässt `Contents/PlugIns` beim eigenen Signieren aus.
+
+Die Hauptapp trägt dafür `com.apple.security.application-groups` (`group.com.glattt.hub`) in
+`entitlements.mac.plist`, das Desktop-Profil erlaubt die Gruppe. Klicks auf ein Widget öffnen
+`glattthub://open/<pfad>` (`WidgetChrome.link`, auf iOS bleibt es https) — `main.cjs` fängt das in
+`open-url` ab, das Schema steht in `extendInfo.CFBundleURLTypes`. Auf dem Mac entfallen die
+Sperrbildschirm-Größen und das Logo im Kopf (der Schreibtisch tönt Widgets ein, das Logo wurde
+zur weißen Fläche).
+
+**Fallstricke beim Testen:** Ein Testbuild muss unter `/Applications` liegen — sonst sucht `linkd`
+die App-Intents bei der installierten App ohne Widgets und jedes Widget bleibt grau
+(`CHSErrorDomain 1103 Intent configuration is required`). Gegen den lokalen Hub starten mit
+`env -u ELECTRON_RUN_AS_NODE open -n /Applications/glatttHub.app --env GLATTTHUB_URL=http://glattthub.local:8888 --env GLATTTHUB_USER_DATA=<profil>`
+(die Erweiterung erlaubt `http` nur für `.local`-Namen). Systemprotokolle mit `/usr/bin/log show`
+— in zsh ist `log` ein eingebauter Befehl. Projektwissen: `mac-widgets-desktop-app`.
 
 ### Push-Notifications (Technisch)
 

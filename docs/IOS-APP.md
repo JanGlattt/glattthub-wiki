@@ -526,6 +526,14 @@ ohne No-Shows (Jan, 23.09.2026, statt Verkäufe), verkaufte KPZ, No-Shows mit Qu
 der letzten Monate + laufender Monat + Prognose-Balken, darunter je Tag; gestapelt nach Institut) —
 klein bis extra groß, auf iOS 27 auch das seitengroße Hochformat.
 
+!!! info "Auch auf dem Mac (seit Desktop-App 1.2.10)"
+    Dieselben vier Widgets laufen auf dem Mac-Schreibtisch, mitgeliefert von der Desktop-App
+    (Target `glatttHubMacWidgets`, gemeinsamer Swift-Code). Unterschiede nur per `#if os(macOS)`:
+    Token aus `DesktopLink` statt Schlüsselbund, keine Sperrbildschirm-Größen, kein Logo, Links als
+    `glattthub://open/…`. Änderungen an den Widgets also immer auch für den Mac bauen — Details in
+    [Desktop-App → Mac-Widgets](DESKTOP-APP.md#mac-widgets-seit-1210).
+
+
 Kennzahlen-Widget im Detail: vier Größen (klein: eine Zahl; mittel:
 bis vier Kennzahlen in einer Zeile; groß: Liste oder — bei „Jeder Standort einzeln" — Tabelle je
 Standort; Sperrbildschirm: eine Zahl). Langer Druck → „Widget bearbeiten": Kennzahlen, Standort
