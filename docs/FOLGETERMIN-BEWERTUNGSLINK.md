@@ -21,7 +21,8 @@ im Nutzerhandbuch.
 
 **Folgetermin direkt planen.** Nach „Termin beenden" (Kasse, ggf. Direkt behandeln, Pflicht-Notiz)
 öffnet sich automatisch „Folgetermin planen": Terminabstand per Schnellwahl (6/8/10 Wochen oder
-freie Wochenzahl) oder freies Datum, dann dieselbe Slot-Suche wie im Buchungsmodul (ideale Slots
+freie Wochenzahl) oder freies Datum — darüber steht, wie lange die vorige Behandlung her ist
+(„Letzte Behandlung vor 6 Wochen (am 14.09.2026)“) —, dann dieselbe Slot-Suche wie im Buchungsmodul (ideale Slots
 im richtigen Raum, ohne Lücke), ein Klick bucht nach Phorest. Überspringen geht jederzeit ohne
 Begründung. Nach der letzten Sitzung eines Pakets wird kein Folgetermin mehr angeboten.
 
@@ -53,6 +54,14 @@ Protokoll (Admin → Integrationen → „Bewertungs-WhatsApp Protokoll").
   Folgetermin → Notiz, siehe `APPOINTMENT-VIEW.md`); nach „Direkt behandeln" entfällt die Frage.
 - Terminabstand per Schnellwahl „in 6/8/10 Wochen" oder freie Wochenzahl → `startDate = heute + X Wochen`;
   zusätzlich freies Datum über den Kalender.
+- **Letzter Abstand** (seit 26.10.2026, Wunsch Leitung Braunschweig): über der Schnellwahl die vorige
+  bezahlte Behandlung — `TreatmentIntervalService::lastInterval($clientId)` sucht in
+  `stats_historic_appointments` den jüngsten `PAID`-Termin **vor heute**, ohne Beratungen
+  (`consultation_services.is_consultation`) und ohne Begleitleistungen (`NonTreatmentServices`).
+  Unter 14 Tagen in Tagen, sonst gerundet in Wochen. Der heutige Termin zählt bewusst nicht mit, auch
+  wenn der Abgleich ihn schon kennt. Nachgetragene Papierzettel ohne Phorest-Termin zählen nicht.
+  Die App bekommt denselben Wert als `last_interval` aus `GET hub/booking/api/services` und zeigt ihn
+  nur beim Folgetermin, nicht beim Verlegen.
 - Slot-Suche identisch zum Buchungsmodul (`TERMIN-BUCHUNG-IDEAL-SLOT.md`): beste freie Slots ab dem
   gewählten Datum inkl. Raum und „ohne Lücke"-Kennzeichnung; gebucht werden automatisch alle aktiven
   Paket-Services des Kunden plus Desinfektion. Ein Klick auf einen Slot bucht (mit Bestätigungsabfrage)

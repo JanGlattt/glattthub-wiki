@@ -10,8 +10,8 @@
  "subtitle": "Klickanleitung für Bestandskundinnen — Behandlungstermin starten, Einstellungen je Körperzone erfassen, Termin beenden",
  "eyebrow": "Terminansicht · Behandlungstermin",
  "footerArea": "Terminansicht",
- "stand": "21.10.2026",
- "version": "1.7",
+ "stand": "26.10.2026",
+ "version": "1.8",
  "notes": [
   "Der Einstellungszettel wird **bei jeder Behandlung** gepflegt — je Zone Laserkopf, Hauttyp, Haar, empfohlene und genutzte Werte.",
   "Frühere Werte der Kundin stehen im Formular als **Historie** — beim nächsten Termin sind sie sofort sichtbar.",
@@ -453,7 +453,7 @@
    "right": {
     "shot": "l2-behandlung-terminnotiz"
    },
-   "leftCaption": "„Folgetermin planen“: Terminabstand wählen, der Hub schlägt freie Slots vor.",
+   "leftCaption": "„Folgetermin planen“: Oben steht, wie lange die letzte Behandlung her ist — Terminabstand wählen, der Hub schlägt freie Slots vor.",
    "rightCaption": "Terminnotiz zur Behandlung — Pflicht, wandert nach Phorest.",
    "steps": [
     {

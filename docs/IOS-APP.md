@@ -533,7 +533,6 @@ klein bis extra groß, auf iOS 27 auch das seitengroße Hochformat.
     `glattthub://open/…`. Änderungen an den Widgets also immer auch für den Mac bauen — Details in
     [Desktop-App → Mac-Widgets](DESKTOP-APP.md#mac-widgets-seit-1210).
 
-
 Kennzahlen-Widget im Detail: vier Größen (klein: eine Zahl; mittel:
 bis vier Kennzahlen in einer Zeile; groß: Liste oder — bei „Jeder Standort einzeln" — Tabelle je
 Standort; Sperrbildschirm: eine Zahl). Langer Druck → „Widget bearbeiten": Kennzahlen, Standort
@@ -1226,7 +1225,8 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   eines `confirmationDialog` die Abbrechen-Rolle weglässt und nichts abdunkelt). **Seit 21.09.2026
   nativ:** `DirectTreatmentSheet`/`DirectTreatmentModel` (gleicher Raum, Paket-Services zum
   An-/Abwählen, „Kauf nachholen", „Neu laden") und `FollowUpBookingSheet`/`FollowUpBookingModel`
-  (Terminabstand-Schnellwahl + freie Wochen, Institut, Datum, Services, Slot-Pillen je Tag mit
+  (Terminabstand-Schnellwahl + freie Wochen, darüber seit 26.10.2026 „Letzte Behandlung vor …“ aus
+  `last_interval`, Institut, Datum, Services, Slot-Pillen je Tag mit
   „ohne Lücke" grün, Buchen mit Rückfrage, „Überspringen") in `BookingSheets.swift`. Beide sprechen
   JSON-Endpunkte des `Hub\BookingApiController`: `GET/POST hub/appointment/{b}/{id}/direct-treatment
   [/book|/retry-purchase]` (Recht `view_appointment_detail`) und `hub/booking/api/{services|
@@ -3101,14 +3101,6 @@ Dieselben Funktionen wie im Web, dieselben Endpunkte (Wiki [TEAM-CHAT](TEAM-CHAT
 - Tests: `ChatPollKindsSnapshotTests` (Bilder `chat-polls-*`, Decodierung), `ChatSnapshotTests` (Strang unter der
   Ankündigung), `WatchSummaryTests.testUnreadChatsDecode`.
 
-### Auto-Abmeldung in der App (seit 11.10.2026, Build 90)
-
-**Absicht (Jan, 11.10.2026):** Die Auto-Abmeldung je Konto (`users.auto_logout_timeout`, meist
-120 s) gilt in der App **wie im Browser** — auch wer die App während der zwei Minuten verlässt,
-ist danach abgemeldet. **Ausnahme: im Termin mit der Kundin wird nie abgemeldet** (Terminansicht,
-Einstellungszettel, Laser-Wartung). Die iPad-Seitenleiste zeigt den Countdown wie die Web-Sidebar,
-am iPhone steht er im Mehr-Sheet unter dem Profil.
-
 ### CarPlay, Siri im Team-Chat und Widgets im Auto (seit 26.10.2026, wartet auf Apples Freigabe)
 
 **Absicht (Jan, 26.10.2026):** Im Auto sollen Team-Chat, Hub-Anrufe und der Weg zum Institut ohne Blick aufs
@@ -3168,6 +3160,14 @@ Kennungen, Sätze). CarPlay-Vorlagen lassen sich nicht als Snapshot rendern; die
 **Fallstricke:** Ein Siri-Befehl „Route zum Institut“ war geplant, braucht aber `OpenURLIntent` (iOS 18) und
 lässt sich in `AppShortcutsProvider` erst ab iOS 17.4 bedingt registrieren — bei Mindestversion 17.0 nicht
 möglich. „Navigiere zu glattt Hannover“ kann Apple Karten ohnehin selbst.
+
+### Auto-Abmeldung in der App (seit 11.10.2026, Build 90)
+
+**Absicht (Jan, 11.10.2026):** Die Auto-Abmeldung je Konto (`users.auto_logout_timeout`, meist
+120 s) gilt in der App **wie im Browser** — auch wer die App während der zwei Minuten verlässt,
+ist danach abgemeldet. **Ausnahme: im Termin mit der Kundin wird nie abgemeldet** (Terminansicht,
+Einstellungszettel, Laser-Wartung). Die iPad-Seitenleiste zeigt den Countdown wie die Web-Sidebar,
+am iPhone steht er im Mehr-Sheet unter dem Profil.
 
 **Warum neu:** Bis Build 89 zählte `auto-logout.js` in jedem WebView für sich. Befund 299 (Sitzung
 weg mitten im Chat nach 7 Minuten Hintergrund) wurde mit „im Hintergrund pausieren, beim Zurückkehren
@@ -3288,6 +3288,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 26.10.2026 | (vor Freigabe) | **CarPlay** (Entwurf 1 „Drei Reiter“: Gespräche, Team, Institute mit Anruf/Nachricht/Route), **Siri im Team-Chat** (vorlesen, antworten, gelesen), Siri-Sätze mit KPZ zuerst plus „Körperzonen im Monat“ und „Neue Nachrichten“, alle vier Widgets im CarPlay-Widget-Bereich. CarPlay/SiriKit-Berechtigung bis zu Apples Freigabe nur im Simulator. |
 | 16.10.2026 | 1.4.5 (106) | **Anrufe im Team-Chat**: CallKit + VoIP-Push (klingelt auch gesperrt), WebRTC mit demselben Protokoll wie Browser und Mac-App, Spur im Verlauf mit Zurückrufen, Bildschirm der Gegenseite groß. |
 | 14.10.2026 | 1.4.5 (99) | **Ruhezeiten nativ** (Einstellungen › Mitteilungen, Chat-Einstellungen): Uhr wie der iOS-Schlafplan, Pläne mit eigenen Wochentagen, Urlaubsstreifen aus askDANTE, Ausnahmen für Bereiche, Anlässe, Chats und Personen. |
 | 11.10.2026 | 1.4.x (90) | **Auto-Abmeldung nativ** (`AutoLogoutMonitor`): ein Zähler je Sitzung statt einem je WebView, zählt im Hintergrund weiter und meldet beim Zurückkehren ab; Pause in Terminansicht, Einstellungszettel und Laser-Wartung; Countdown in iPad-Seitenleiste und Mehr-Sheet. Hub: `auto-logout.js` mit Pausen-API und Übergabe an die App, personenbezogene Anlässe (nur Betroffene/einzelne Nutzerinnen) nie an geteilte Geräte |
@@ -3296,7 +3297,6 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 | 03.10.2026 | 1.4.0 | **Apple-Watch-App** mit Ziffernblatt-Widgets (Kombination der Entwürfe KPZ-Ring, Standorte, Mein Tag): KPZ gegen das Standortziel der Bonus-Seite, Standortvergleich, Heute, Bonus-Ring, nächste Beratung und Kassen-Erinnerung im Smart Stack; Uhr als eigenes Gerät (`watchos`), Token per WatchConnectivity; Hub: `GET /api/app/widgets/watch` |
 | 29.09.2026 | 1.3.0 (61) | Kasse: Tresor-Bewegungen „→ zur Bank“ und „→ in die Kasse“ direkt am Tresor (213); Kennzahl-Kachel „Beratungen heute“ mit Tendenz und Wochentags-Schnitt (`comparison.reference`, 214) |
 | 29.09.2026 | 1.3.0 (60) | Neue native Seite **Kasse** (Kassenabschluss, [KASSE.md](KASSE.md)): `NativeMorePage.cash`, Monatsliste und Waage, Schnellzugriff „Kassenabschluss“ im Cockpit, solange heute offen (212) |
-| 26.10.2026 | (vor Freigabe) | **CarPlay** (Entwurf 1 „Drei Reiter“: Gespräche, Team, Institute mit Anruf/Nachricht/Route), **Siri im Team-Chat** (vorlesen, antworten, gelesen), Siri-Sätze mit KPZ zuerst plus „Körperzonen im Monat“ und „Neue Nachrichten“, alle vier Widgets im CarPlay-Widget-Bereich. CarPlay/SiriKit-Berechtigung bis zu Apples Freigabe nur im Simulator. |
 | 29.09.2026 | 1.3.0 (60) | iPad-Cockpit: Bonus-Karten in einer Zeile oder wischbar (`BonusGoalPager` mit `fraction`), unvollständige Raster-Zeilen verteilen ihren Rest (`CockpitSections.pack`) (206); PIN-/Passwort-Wechsel als Vollbild vor dem Hub, kurze Bestätigung nach vier Ziffern, `DrawnCheckmark` bei Erfolg (208); Profilbild-Blatt zeigt das aktuelle Bild (210); Behandlungs-Ranking schickt 4 Monate wie das Web statt der ganzen Historie (211). Hub (live): Blind-Challenges auch in PDF/CSV verdeckt (207), 419-Seite übergibt an die native Anmeldung (209), Behandlungs-Intervalle je Aufruf nur einmal abgefragt (211) |
 | 29.09.2026 | 1.3.0 (59) | Trinkgeld-Karten der Mitarbeiterperformance nativ (Befund 198): `personal.tip-ranking` als Rangliste Trinkgeld/Sterne mit „(du)“ und Zeitraum Monat–12 M., `personal.tip-history` als Säulen Netto + Gebühr (= brutto) bzw. Sterne-Linien, beide mit Tabelle; die Karten wählen `date_from` selbst, weil der Hub ohne Zeitraum nur den laufenden Monat rechnet, `null`-Sterne bleiben fehlend statt 0. Berichtstitel mittig zur ganzen Leiste statt zwischen „‹ Berichte“ und ⋯ (199). Hub: Admin „Trinkgeld & Qualität“ unter Team statt Verkauf (200). Tagesmessung: Tipp auf eine Zelle öffnet die Beratungen dahinter als Blatt (`DailyCellDetailSheet`, `GET …/staff-performance/cell-details`) mit Ausschließen/Zuordnen/Aufheben wie im Web-Modal, sichtbar über `can_adjust` in der Antwort (204). Eingebettetes Formular: Ladeanimation `FormLoadingView` (nachgezeichnete Marke wie beim Start) bis Bridge-`formEvent` „ready“ (aus `form-ready` in `form-fill.js`, Rückfall 20 s); Hub: Terminseite im Formularmodus (`data-native-form`) lädt nur Termin, Formularliste, Formular und Kontext parallel, `x-init="init()"` hub-weit entfernt (43 Seiten luden doppelt) (205) |
 | 29.09.2026 | 1.3.0 (58) | Bonus-Board ohne Stufen-Pillen und Serien-Flammen (Befund 196, Jan): bleiben mit der Abzeichen-Karte hinter `BonusEmployeeView.showsBadges`, bis Level und Serie produktiv sind; Stufen-Marken am Balken und Tagesziel bleiben |
