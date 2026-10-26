@@ -277,7 +277,8 @@ Einstellungszettel" und Knopf „Sitzung nachtragen") und in der Terminansicht (
 - **Endpunkte** (`TreatmentBackfillController`): `GET /hub/treatment-settings/client/{id}/sessions`
   (Sitzungen, `open_count`, Behandlerinnen aus `phorest_staff`, Zonen, Optionen) · `POST
   /hub/treatment-settings/client/{id}/backfill` (eine Sitzung, `entries[]` je Zone; 422 bei Datum in
-  der Zukunft, fehlender Zone oder Termin + Zone schon erfasst) · `DELETE
+  der Zukunft, fehlender Zone oder Termin + Zone schon erfasst; **409 mit `duplicate: true`**, wenn
+  dieselbe Zone am selben Tag schon einen Eintrag hat — mit `confirm_duplicate: true` erneut senden) · `DELETE
   /hub/treatment-settings/{id}/backfill`. `GET /hub/treatment-settings/client/{id}` liefert je
   Eintrag `is_backfill`, `can_delete`, `created_by_name`, `treated_at`, auf Datenebene
   `openSessionsCount` und `canBackfill`; der Zettel-Endpunkt gibt `is_backfill` und `treated_at` mit.
@@ -305,12 +306,23 @@ Einstellungszettel" und Knopf „Sitzung nachtragen") und in der Terminansicht (
   die App `SmallZonesAreaField`. **Falle:** Web und App verwarfen `area_label` ohne zweite
   Einstellung — bei dieser Zone bleibt er jetzt im Payload (`keepArea` bzw. `isSmallZones`).
   Beim Vertrag fragt das Formular die beiden Zonen schon seit 08/2026 ab (`small_zones_details`).
+- **Gleiche Zone am selben Tag** (seit 26.10.2026, Asana „Observations from uploading Zetteln“):
+  Zweimal gespeichert ergab zwei Sitzungen am selben Tag, weil der Server nur „Termin + Zone“
+  prüfte. Dieselbe Zone kann aber wirklich zweimal am Tag behandelt werden (Jan), daher **Rückfrage
+  statt Sperre**: `TreatmentBackfillService::duplicateZoneNames()` sucht Einträge der Kundin am Tag
+  (Termin **und** Nachtrag, nur Haupt-Einstellungen), der Controller antwortet 409 + `duplicate`;
+  Web zeigt den Hinweis „Schon erfasst“ über der Fußleiste, die App einen Alert, beide mit „Trotzdem
+  speichern/sichern“. „Termin + Zone“ bleibt harte Sperre (422) und wird vorher geprüft. App-Builds
+  vor dieser Änderung zeigen die Rückfrage nur als Fehlermeldung ohne „Trotzdem“.
+- **„Sitzung ohne Termin“ leert Datum und Behandlerin** (seit 26.10.2026): Vorher blieb das Datum
+  der zuvor gewählten Sitzung stehen — der Knopf wirkte wirkungslos und „Speichern“ legte dieselbe
+  Sitzung noch einmal an. Zonen und Werte bleiben als Vorlage; ohne Datum ist Speichern gesperrt.
 - **Nicht-Behandlungen** fallen seit 13.10.2026 über `NonTreatmentServices` aus den Sitzungen
   (siehe nächster Abschnitt) — vorher galten Termine mit nur Haaranalyse oder QK als „offen".
   Seit 15.10.2026 zählt auch „Abweichender Kontoinhaber unterschreiben“ nicht (`unterschreib` im
   Muster); „*Vertrag unterschreiben“ fiel schon über das Sternchen bzw. `vertrag` heraus.
 - **Tests:** `tests/Feature/TreatmentBackfillTest.php` (Gruppierung, Neudurchzählung, 422-Fälle,
-  Löschrechte, Kundenakte-Felder). Wissen: `.github/knowledge/behandlungsdaten-nachtragen.md`.
+  Rückfrage bei gleicher Zone am Tag, Löschrechte, Kundenakte-Felder). Wissen: `.github/knowledge/behandlungsdaten-nachtragen.md`.
 
 ### Zonen gemeinsam behandeln & zweite Einstellung (seit 13.10.2026)
 
