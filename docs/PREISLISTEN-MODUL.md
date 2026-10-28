@@ -94,8 +94,32 @@ Rabatte werden automatisch angewendet, wenn die Mindest-KPZ erreicht wird:
 | Oster-Aktion | 1 | Prozent | 10 % | 01.04.2026 | 30.04.2026 | Nur im Aktionszeitraum |
 
 **Rabatt-Typen:**
-- **Euro (fixed)**: Fester Betrag wird vom Monatspreis abgezogen
-- **Prozent (percentage)**: Prozentualer Abzug vom Monatspreis
+- **Euro (fixed)**: fester Betrag
+- **Prozent (percentage)**: prozentualer Abzug — wovon, entscheidet der Bezug
+
+**Bezug (seit 28.10.2026, Entscheidung Jan):** Jeder Rabatt trägt `discount_basis` —
+„1. Zahlung" (`first_payment`, Vorbelegung neuer Rabatte) oder „Gesamt" (`total`).
+
+| Bezug | Ratenzahlung | Einmalzahlung |
+|---|---|---|
+| **1. Zahlung** | Prozent der gewählten Monatsrate; mindert Rate 1, ein Rest (nur €-Rabatte, max. zwei Raten) Rate 2 | Prozent der **Rate der kürzesten Laufzeit** dieser KPZ-Zahl — dieselbe Ersparnis wie bei Ratenzahlung, nie ein Anteil am Gesamtpreis |
+| **Gesamt** | Prozent vom Gesamtpreis | Prozent vom Gesamtpreis |
+
+Beispiel 6 KPZ (19 × 239,99 € oder 24 × 189,99 €), 100 % auf die 1. Zahlung: bei
+24 Raten entfällt Rate 1 (189,99 €), bei Einmalzahlung sinkt der Preis um 239,99 €.
+Bei „1. Rate vor Ort" fällt Rate 1 auf 0 € (nichts zu kassieren); bei „Alle Raten per
+SEPA" bleibt das GoCardless-Minimum von 1 € stehen, der restliche Euro mindert Rate 2.
+
+Technik: Die eine Rechenstelle ist `PriceDiscount::discountCentsFor($total, $rate)`, die
+Bezugsrate der Einmalzahlung liefert `PriceList::oneTimeDiscountRateCents()`, für feste
+Pakete bündelt `PriceList::fixedDiscountCents($discount, $group, $oneTime)` beides. Die
+Formulare (`form-fill.js`, `shared-form-fill.js`, `institute-page.js` → `discountCents()`)
+spiegeln die Regel und bekommen dafür `discount_basis` am Rabatt und
+`one_time_discount_rate_cents` an jeder Paket-Option. Bestand: Die Migration setzte
+Rabatte fester Listen auf „1. Zahlung" (so rechneten sie seit 08/2026) und flexibler
+Listen auf „Gesamt" — kein Preis hat sich dadurch verändert. Bis 28.10.2026 rechnete
+`Contract::calculateTotalValue()` bei Einmalzahlung den Prozentsatz noch auf die ganze
+Zahlung (Vorschlag beim Preislistenwechsel in der Vertragsbearbeitung).
 
 **Gültigkeitszeitraum (seit 08/2026):** Jeder Rabatt kann optional ein „Gültig von"
 und/oder „Gültig bis" tragen — leer bedeutet offen. **Es gilt entweder der
@@ -189,7 +213,7 @@ fixiert am Vertrag) — deshalb bleiben sie eingeschränkt pflegbar:
 - **Erlaubt:** neue Rabatte anlegen, aktivieren/deaktivieren, Gültigkeitszeitraum
   setzen oder ändern, Name/Beschreibung anpassen. Ganz neue (noch ungespeicherte)
   Rabatt-Zeilen sind vollständig editier- und entfernbar.
-- **Gesperrt:** Wert, Typ und Ab-KPZ **bestehender** Rabatte sowie deren Löschung.
+- **Gesperrt:** Wert, Typ, Bezug und Ab-KPZ **bestehender** Rabatte sowie deren Löschung.
   Wer einen laufenden Rabatt ändern will, beendet ihn („Gültig bis" setzen oder
   deaktivieren) und legt einen neuen mit den gewünschten Konditionen an — so
   bleibt nachvollziehbar, welcher Rabatt wann galt.
@@ -283,6 +307,7 @@ CREATE TABLE price_discounts (
     min_body_zones INT NOT NULL,
     discount_type ENUM('fixed', 'percentage') NOT NULL,
     discount_value INT NOT NULL,  -- Cent oder Prozent*100
+    discount_basis VARCHAR(20) DEFAULT 'first_payment',  -- first_payment | total (seit 28.10.2026)
     description TEXT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     sort_order INT DEFAULT 0,

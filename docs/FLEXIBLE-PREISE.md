@@ -22,8 +22,12 @@ Feste Preislisten und alle bestehenden Verträge bleiben unverändert.
 
 ### Rechenregeln (`App\Services\Pricing\FlexiblePriceCalculator`)
 
-1. Zu zahlen = Gesamtpreis − Rabatt. Prozent-Rabatte gelten im flexiblen Modell auf den
-   Gesamtpreis (feste Listen weiter „auf eine Rate“), feste Rabatte sind Euro-Beträge.
+1. Zu zahlen = Gesamtpreis − Rabatt. Wovon ein Prozent-Rabatt rechnet, sagt sein Bezug
+   (seit 28.10.2026, [Preislisten › Bezug](PREISLISTEN-MODUL.md#rabatte-einrichten)):
+   „Gesamt“ = vom Gesamtpreis, die Raten entstehen aus dem rabattierten Preis (Bestand vor
+   dem 28.10.2026); „1. Zahlung“ = Prozent der gewählten Rate, die Raten entstehen aus dem
+   vollen Preis und der Rabatt mindert Rate 1 über die Kaskade, bei Einmalzahlung zählt die
+   Rate bei Mindestlaufzeit (`shortestRateCents()`). Feste Rabatte sind Euro-Beträge.
 2. Laufzeit gewählt: Rate = Preis ÷ Laufzeit, auf volle Euro aufgerundet; letzte Rate = Rest.
 3. Rate gewählt (volle Euro): Laufzeit = Preis ÷ Rate, aufgerundet; letzte Rate = Rest.
 4. Grenzen des Pakets vor denen der Liste; Eingaben außerhalb landen auf der nächsten gültigen
@@ -101,7 +105,7 @@ Listen werden weiter nur geloggt. Gespeichert: `pricing_model`, `base_total_cent
 
 **Zahlungsplan & PDF.** `Contract::installmentAmountCents($n)` liefert je Rate den Betrag (letzte Rate
 = `last_installment_cents`); `GoCardlessPaymentPlanService` und `YearEndReportService` nutzen ihn.
-`signingDiscountCents()` ist bei flexiblen Verträgen 0 — der Rabatt steckt schon im Gesamtpreis.
+`signingDiscountCents()` ist bei flexiblen Verträgen mit Bezug „Gesamt“ 0 — der Rabatt steckt schon in den Raten (Summe der Raten = Vertragswert); mit Bezug „1. Zahlung“ ist er Ratensumme − Vertragswert und mindert Rate 1 wie bei festen Listen. Die Option trägt dafür `discount_on_first_payment` und für die Einmalzahlung `upfront_price_discount_cents`.
 `hub/forms/pdf.blade.php` zeigt „N Raten à X €, letzte Rate Y €“, den Normalpreis durchgestrichen und
 Anlage 1 auch bei ungleicher letzter Rate.
 

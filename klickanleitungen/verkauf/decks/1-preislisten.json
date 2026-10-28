@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für das Vertrags-Modul im glatttHub — Preise je Körperzone, Laufzeiten, Rabatte, Zahlungsmodus",
  "eyebrow": "Verkauf · Preislisten",
  "footerArea": "Verkauf",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "28.10.2026",
+ "version": "1.1",
  "notes": [
   "Die Preisliste ist die **Grundlage jedes Vertrags** — sie bestimmt Preis, Laufzeit und Zahlungsmodus.",
   "**Eine aktive Fassung ist gesperrt.** Geändert wird über eine neue Fassung, nie an der laufenden.",
@@ -101,7 +101,7 @@
    "sub": "Zwei Einstellungen mit großer Wirkung: was nachgelassen wird und wie eingezogen wird.",
    "card": {
     "title": "Rabatte & Modus",
-    "text": "Rabatt-Zeiträume, erste Rate vor Ort oder alles per SEPA"
+    "text": "Rabatt-Zeiträume, Bezug des Rabatts, erste Rate vor Ort oder alles per SEPA"
    },
    "left": {
     "shot": "v18-rabatte"
@@ -115,8 +115,8 @@
     },
     {
      "n": 2,
-     "title": "Rabatt 1. Sitzung",
-     "text": "Mindert die **erste Rate**, nicht die Laufzeit."
+     "title": "Bezug: 1. Zahlung oder Gesamt",
+     "text": "**1. Zahlung** (Vorbelegung) mindert die erste Rate — 100 % heißt: Rate 1 entfällt. Bei Einmalzahlung sinkt der Preis um denselben Betrag wie bei der Rate der kürzesten Laufzeit. **Gesamt** rechnet vom Gesamtpreis."
     },
     {
      "n": 3,
