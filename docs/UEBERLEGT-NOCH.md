@@ -71,6 +71,33 @@ Sichtbar ist nur, wer eingewilligt hat oder noch geprüft wird. Versand gesammel
 `POST hub/ueberlegt-noch/reaktivierung/senden` (höchstens 50, je Fall `SendStillConsideringLinkJob`,
 Einwilligung vor jeder Nachricht live).
 
+### No-Show-Aktion Oktober 2026 (Jan, 28.10.2026)
+
+Einmalige E-Mail an jede Kundin, die im Oktober 2026 ihr Beratungsgespräch verpasst hat: persönlicher
+Buchungslink (Slots wie auf der Website, nur bis 31.10.) und das Angebot **„erste Zahlung im glatttPaket
+gratis“** bei Abschluss. Wortlaut immer „erste Zahlung“, nie „Rate“.
+
+- **Wer:** dieselbe Regel wie „Termin verpasst“ — `StillConsideringService::missedConsultations(von, bis)`
+  (seit 28.10.2026 die gemeinsame Abfrage, `createMissedCases()` nutzt sie auch), Zeitraum 01.10.–gestern,
+  ohne Vertrag, ohne neuen gebuchten Termin. **Zusätzlich raus**, wer nach dem No-Show nachgefasst wurde und
+  daraufhin gebucht hat, auch wenn der Termin schon vorbei oder abgesagt ist (Fall „Termin verpasst“ mit
+  Status `booked` oder ein seit 01.10. eingelöster `still_considering`-/`earlier_offer`-Link).
+- **Einwilligung:** bewusst **nicht** geprüft — Entscheidung der Geschäftsführung, sie trägt das Risiko.
+  Wer am Folgetag schon die automatische WhatsApp bekam, bekommt die Mail trotzdem (in Kauf genommen).
+- **Link:** `booking_share_tokens` mit `source = noshow_promo`, `max_date = 2026-11-01` (exklusiv),
+  `expires_at` 31.10. 23:59. `booking_note` beginnt mit **„AKTION: ERSTE ZAHLUNG IM GLATTTPAKET GRATIS“** und
+  landet über `noteFor()` ganz vorne in der Phorest-Terminnotiz — so sieht das Institut im Gespräch, dass die
+  erste Zahlung entfällt. Die Buchungsseite zeigt dann das Aktionsbanner (`booking-promo-banner`) und in der
+  Bestätigung den Hinweis.
+- **Versand:** `NoShowPromoMail` (Entwurf B „Geschenk-Karte“) über den Standard-Absender `no.reply@glattt.com`,
+  landet im E-Mail-Protokoll. Je Kundin eine Zeile in `promo_mail_recipients` (Status, Öffnung, Link).
+- **Auslösen:** `bash scripts/promo-noshow.sh prod preview|test <adresse>|send|report` (Jans Terminal, Cron-Token
+  aus dem Secret Manager) → `POST /api/cron/noshow-promo` → `promo:noshow-oktober`. Kein Scheduler-Job.
+- **Messung:** verschickt → geöffnet (Pixel `/shared/aktion/{tracking}/o.gif`, nur Richtwert wegen Apple Mail)
+  → Link aufgerufen (`accessed_at`) → gebucht (`booked_at`) → Vertrag (Kunden-ID, nach Versand).
+- **Offen:** Die erste Zahlung entfällt nicht automatisch am Vertrag — das Institut bzw. Büro setzt sie
+  anhand der Terminnotiz um.
+
 ### Datenmodell
 
 | Tabelle | Inhalt |
@@ -120,6 +147,7 @@ iOS `glatttHub/StillConsidering/*`, Tests `StillConsideringTest`, `AppointmentCo
 
 ## Changelog
 
+- **28.10.2026** — No-Show-Aktion Oktober: Aktions-Mail mit Buchungslink bis 31.10., „erste Zahlung gratis“ in der Terminnotiz; gemeinsame Abfrage `missedConsultations()`.
 - **18.10.2026** — Welle 2: „Termin verpasst“ (automatische WhatsApp am Folgetag, nach zwei Tagen
   anrufen) und Reiter „Reaktivierung“ (Einwilligung, Sammelversand), Web und App; Tageslauf 10:00.
 - **17.10.2026** — Seite „Überlegt noch“ (Web + nativ), Buchungslink, Phorest-Notiz, Admin-Vorlagen;
