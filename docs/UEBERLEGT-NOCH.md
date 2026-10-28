@@ -79,9 +79,12 @@ gratis“** bei Abschluss. Wortlaut immer „erste Zahlung“, nie „Rate“.
 
 - **Wer:** dieselbe Regel wie „Termin verpasst“ — `StillConsideringService::missedConsultations(von, bis)`
   (seit 28.10.2026 die gemeinsame Abfrage, `createMissedCases()` nutzt sie auch), Zeitraum 01.10.–gestern,
-  ohne Vertrag, ohne neuen gebuchten Termin. **Zusätzlich raus**, wer nach dem No-Show nachgefasst wurde und
-  daraufhin gebucht hat, auch wenn der Termin schon vorbei oder abgesagt ist (Fall „Termin verpasst“ mit
-  Status `booked` oder ein seit 01.10. eingelöster `still_considering`-/`earlier_offer`-Link).
+  ohne Vertrag, ohne neuen gebuchten Termin. **Zusätzlich raus** (Jan, 28.10.2026): wer nach dem No-Show
+  irgendeinen Termin gebucht hat — WhatsApp-Link, Institut oder Website, egal ob erschienen, wieder nicht
+  erschienen oder abgesagt (`rebookedSince()`: spätere Einträge in `stats_historic_appointments` und
+  `upcoming_appointments`, gebuchter „Termin verpasst“-Fall, eingelöster Nachfass-Link). `collect()` prüft vor
+  jedem Lauf neu und setzt nicht mehr passende offene Empfängerinnen auf `skipped`. Lücke: Termine weiter als
+  30 Tage voraus kennt der Hub nicht.
 - **Einwilligung:** bewusst **nicht** geprüft — Entscheidung der Geschäftsführung, sie trägt das Risiko.
   Wer am Folgetag schon die automatische WhatsApp bekam, bekommt die Mail trotzdem (in Kauf genommen).
 - **Link:** `booking_share_tokens` mit `source = noshow_promo`, `max_date = 2026-11-01` (exklusiv),
