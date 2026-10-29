@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für die glatttHub-App auf iPhone und iPad — Rangliste, Sterne, Auszahlung, die Karte auf der Startseite und der Schalter beim Beenden",
   "eyebrow": "App · Trinkgeld",
   "footerArea": "App",
-  "stand": "10.10.2026",
-  "version": "1.1",
+  "stand": "29.10.2026",
+  "version": "1.2",
   "notes": [
     "Die App zeigt **dieselben Zahlen wie die Web-Seite** (Team → Trinkgeld) — Ranking, Sterne, Auszahlung, Kommentare je Recht.",
     "Nach unten ziehen lädt neu. Ohne Netz zeigt die Seite den **letzten Stand** mit Uhrzeit.",
@@ -104,7 +104,7 @@
         {
           "n": 3,
           "title": "Termin beenden",
-          "text": "Im Beenden-Blatt steht unter der Notiz der Schalter **„Diesmal keine Nachricht senden“** mit „nur dieses Mal“ oder „dauerhaft“ — bei gesperrten Kundinnen **„Diesmal trotzdem senden“**. In der Kundenakte (Reiter Info) steht die Sperre „Nachrichten nach der Behandlung“."
+          "text": "Im Beenden-Blatt steht unter der Notiz, dass die Kundin ihre **Bewertungs-Nachricht** bekommt — abwählen lässt sie sich nicht. Abmelden kann sich nur die Kundin selbst über den Link in der Nachricht; in der Kundenakte (Reiter Info) siehst du das unter „Nachrichten nach der Behandlung“."
         }
       ]
     }

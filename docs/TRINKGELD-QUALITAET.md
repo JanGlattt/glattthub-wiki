@@ -42,12 +42,13 @@ Fallstricke**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 - **Nachricht nach der Behandlung:** Wird ein Behandlungstermin in der Terminansicht beendet, plant
   der Hub eine Nachricht an die Kundin (Standard: 15 Minuten später, im Sendefenster 08–21 Uhr).
   Reine Beratungstermine, gesperrte Kundinnen und ausgeschlossene Behandlerinnen lösen nichts aus.
-- **Beim Beenden entscheiden:** Im Beenden-Dialog (Web und App) steht ein Schalter „Diesmal keine
-  Nachricht senden" mit der Wahl „nur dieses Mal" oder „dauerhaft". Ist die Kundin gesperrt, heißt
-  der Schalter „Diesmal trotzdem senden" mit „nur dieses Mal" oder „dauerhaft wieder an".
-- **Kundenprofil:** Im Reiter *Info* unter „Nachrichten nach der Behandlung" lässt sich die
-  Nachricht je Kundin dauerhaft aus- und wieder einschalten. Die Kundin kann sich auch selbst über
-  den Abmeldelink in der Nachricht abmelden.
+- **Die Kundin bekommt die Nachricht immer (seit 29.10.2026):** Das Team kann sie weder beim
+  Beenden abwählen noch im Kundenprofil sperren. Abmelden kann sich nur die Kundin selbst über den
+  Link in der Nachricht. Grund: Die Bewertung soll ein unverfälschtes Bild jeder Behandlung geben.
+- **Ausnahme je Standort:** Im Admin lässt sich „Team darf die Nachricht abwählen“ einschalten.
+  Dann steht im Beenden-Dialog (Web und App) wieder „Diesmal keine Nachricht senden“ (nur dieses
+  Mal / dauerhaft) bzw. bei gesperrter Kundin „Diesmal trotzdem senden“, und im Kundenprofil
+  (Reiter *Info*, „Nachrichten nach der Behandlung“) lässt sich die Nachricht je Kundin sperren.
 - **Seite „Trinkgeld"** (Team → Trinkgeld): Kennzahlen, Ranking nach Trinkgeld und Sternen (die
   eigene Zeile hervorgehoben), Verlauf je Monat, Auszahlungen je Monat, Einzelbewertungen mit
   Kommentaren. Die Leitung sieht alle Behandlerinnen ihrer Institute, jede Behandlerin nur sich —
@@ -144,7 +145,7 @@ und die Kunden-Sperre laufen unter `view_appointment_detail`.
 ### Admin-Konfiguration
 
 - **Team → Trinkgeld & Qualität** (`TreatmentFeedbackSettingResource`, „Standorte laden"):
-  Modul an/aus, Verzögerung, Link-Gültigkeit, Sendefenster, Kanal-Reihenfolge (Repeater, ziehbar),
+  Modul an/aus, **Team darf abwählen** (`staff_can_skip`, Standard aus), Verzögerung, Link-Gültigkeit, Sendefenster, Kanal-Reihenfolge (Repeater, ziehbar),
   Superchat-Kanal und Meta-Vorlage mit Variablen-Zuordnung (`first_name`, `full_name`,
   `staff_first_name`, `branch_name`, `feedback_link`, `feedback_token`, `static`), SMS-Text,
   E-Mail-Betreff/-Text, Anrede-Text der Seite, Google-Link, Trinkgeld an/aus, Vorauswahl (€),
@@ -240,6 +241,27 @@ Team-Sicht entscheidet `TipStatisticsService` anhand von `view_team_tips`.
   (Spalten Trinkgeld, Auszahlung an die Behandlerin, Gebühr (Unternehmen) — keine Netto-Spalte mehr).
 - Benachrichtigungs-Katalog `treatment_feedback`: `tip_received` und `rating_received` an die
   Behandlerin (`event_owners`), `low_rating` (≤ 2 Sterne auf einer Skala) an `view_team_tips`.
+
+### Abwahl durch das Team (`staff_can_skip`, 29.10.2026)
+
+Jan wollte, dass jede Kundin die Nachricht bekommt; am ersten Tag in den Instituten hatten zwei
+Mitarbeiterinnen sie mehrfach abgewählt. Seitdem gilt je Standort `treatment_feedback_settings.staff_can_skip`
+(Standard `false`):
+
+- **`TreatmentFeedbackSetting::staffCanSkip($branchId)`** ist die einzige Abfrage. Ist sie `false`,
+  setzt `TreatmentFeedbackScheduler::afterSessionEnded()` die übergebene `feedback_decision` auf
+  `null` — auch aus älteren App-Versionen, die die Frage noch zeigen.
+- **Sperren:** `ClientContactPreference::isFeedbackBlocked($clientId, $includeTeamBlocks)`. Ohne
+  Abwahl-Recht zählt nur `feedback_blocked_source = customer` (Abmeldelink). Alte Team-Sperren
+  (`hub`) bleiben in der Tabelle, wirken aber nicht — Planer, Sender (`preflightSkipReason`,
+  `sendThanks`) und Portal-Banner prüfen so.
+- **Kundenprofil:** `GET …/preference` liefert `team_can_change`
+  (`TreatmentFeedbackSetting::staffCanSkipAnywhere()`, standortlos, weil die Akte keinen Standort hat)
+  und meldet eine Team-Sperre ohne Recht als nicht gesperrt. `POST` mit `feedback_blocked: true`
+  antwortet dann 403; Aufheben geht immer.
+- **Oberfläche:** Status-Endpunkt liefert `staff_can_skip` und `blocked_by_customer`. Web
+  (`end-session-modal`, `feedbackDecision()`) und App (`TreatmentFeedbackChoice`,
+  `feedbackDecision`) zeigen ohne Recht nur den Hinweis, keine Schalter.
 
 ### Terminansicht, Kundenprofil, Startseite
 
@@ -409,6 +431,7 @@ automatische Nachricht nach jeder Behandlung (Booking-Masterplan, Entscheidungen
 
 | Datum | Änderung |
 |---|---|
+| 29.10.2026 | Nachricht nach der Behandlung nicht mehr abwählbar: Schalter „Team darf abwählen“ je Standort (Standard aus); ohne ihn keine Abwahl beim Beenden, keine Sperre im Kundenprofil, alte Team-Sperren wirken nicht, nur die Abmeldung der Kundin zählt |
 | 17.10.2026 | Bewertungs-Motor Etappe 1: Google-Knopf ab 4 Sternen bis zum ersten Klick (Zähl-Umweg), Danke-WhatsApp am Folgetag, Rückruf mit Wunschzeit als Kundenservice-Ticket, Pflichtfeld, freier Trinkgeld-Betrag schaltbar mit Obergrenze, Trinkgeld-Satz als Vorlagen-Variable, manueller Bewertungs-Knopf ruht |
 | 10.10.2026 | Trinkgeld geht zu 100 % an die Behandlerin (Jan): Lohnmonat nimmt `amount_cents` statt `net_cents`, Mollie-Gebühr nur noch als „Gebühr (Unternehmen)" in Statistik/CSV/App, KPI `trinkgeld.fees` ersetzt `tips_net`, Texte auf Kundenseite, My glattt, Hub-App und Anleitungen; frühere Netto-Lohnmonate bleiben unverändert |
 | 04.10.2026 | Bewertungsseite im Browser: Lob-/Problem-Karten und Rückruf wie in der App |

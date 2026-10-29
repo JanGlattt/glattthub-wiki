@@ -2471,9 +2471,11 @@ mit Recht). **Auszahlung** listet je Monat brutto, Gebühr (vorläufig oder endg
 der Monat über den Lohnmonat ausgezahlt ist. Auf dem iPad stehen Liste und Person nebeneinander.
 Die **Startseite** zeigt nach „Mein Bonus“ die Karte „Meine Bewertungen“ (Trinkgeld diesen Monat
 mit Abstand zum nächsten Platz, Bewertung diesen Monat, Platz im Team, letzter Kommentar).
-Beim **Beenden eines Termins** gibt es den Schalter „Diesmal keine Nachricht senden“ (nur dieses
-Mal / dauerhaft) bzw. bei gesperrter Kundin „Diesmal trotzdem senden“; die **Kundenakte** (Reiter
-Info) trägt die Sperre „Nachrichten nach der Behandlung“.
+Beim **Beenden eines Termins** zeigt das Blatt die geplante Nachricht; den Schalter „Diesmal keine
+Nachricht senden“ (nur dieses Mal / dauerhaft) bzw. „Diesmal trotzdem senden“ gibt es seit
+29.10.2026 nur noch an Standorten mit „Team darf abwählen“ (`staffCanSkip`). Die **Kundenakte**
+(Reiter Info) trägt die Sperre „Nachrichten nach der Behandlung“ — ohne dieses Recht nur zum Aufheben
+(`team_can_change`).
 
 !!! nutzerhandbuch "Bedienung: App 22 – Trinkgeld in der App"
     [https://hilfe.hub.glattt.com/app/22/](https://hilfe.hub.glattt.com/app/22/) (in Arbeit)

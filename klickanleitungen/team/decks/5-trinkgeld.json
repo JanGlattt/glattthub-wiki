@@ -10,11 +10,11 @@
   "Trinkgeld",
   "und Bewertungen"
  ],
- "subtitle": "Klickanleitung für das Institut im glatttHub — was die Kundin nach der Behandlung bekommt, wie du die Nachricht beim Beenden steuerst und wo Trinkgeld und Sterne stehen",
+ "subtitle": "Klickanleitung für das Institut im glatttHub — was die Kundin nach der Behandlung bekommt und wo Trinkgeld und Sterne stehen",
  "eyebrow": "Team · Trinkgeld",
  "footerArea": "Team",
- "stand": "10.10.2026",
- "version": "1.1",
+ "stand": "29.10.2026",
+ "version": "1.2",
  "notes": [
   "Nach jeder **beendeten Behandlung** bekommt die Kundin verzögert eine Nachricht mit ihrem Bewertungslink — per WhatsApp, SMS oder E-Mail, je nachdem, was am Standort eingestellt ist und wozu sie eingewilligt hat.",
   "Das **Trinkgeld kommt zu 100 % bei dir an** — ohne Abzug, die Gebühr des Zahlungsanbieters trägt glattt. Ausgezahlt wird es in voller Höhe mit dem Lohn des Folgemonats.",
@@ -23,7 +23,7 @@
  "pages": [
   {
    "h1": "Die Nachricht nach der Behandlung",
-   "sub": "Wird ein Behandlungstermin beendet, plant der Hub die Nachricht an die Kundin von selbst. Du musst nichts tun — außer, wenn die Kundin sie nicht bekommen soll.",
+   "sub": "Wird ein Behandlungstermin beendet, plant der Hub die Nachricht an die Kundin von selbst. Du musst nichts tun — sie geht nach jeder Behandlung raus.",
    "card": {
     "title": "Automatisch",
     "text": "Termin beenden → Nachricht nach 15 Minuten"
@@ -31,32 +31,32 @@
    "left": {
     "shot": "t1-beenden-schalter"
    },
-   "leftCaption": "Der Beenden-Dialog der Terminansicht mit dem Schalter zur Bewertungs-Nachricht.",
+   "leftCaption": "Der Beenden-Dialog der Terminansicht mit dem Hinweis zur Bewertungs-Nachricht.",
    "steps": [
     {
      "n": 1,
-     "title": "Schalter im Beenden-Dialog",
-     "text": "Unter der Terminnotiz steht **„Bewertungs- und Trinkgeld-Nachricht“**. Lässt du alles so, geht die Nachricht nach dem Beenden verzögert raus."
+     "title": "Hinweis im Beenden-Dialog",
+     "text": "Unter der Terminnotiz steht **„Bewertungs- und Trinkgeld-Nachricht“** mit deinem Namen als Behandlerin. Nach dem Beenden geht die Nachricht verzögert raus."
     },
     {
      "n": 2,
-     "title": "Diesmal keine Nachricht",
-     "text": "Hake **„Diesmal keine Nachricht senden“** an, wenn die Kundin heute nichts bekommen soll — zum Beispiel nach einem schwierigen Termin."
+     "title": "Immer an",
+     "text": "Die Nachricht lässt sich **nicht abwählen** — jede Kundin bekommt sie nach jeder Behandlung. So entsteht ein ehrliches Bild aller Behandlungen."
     },
     {
      "n": 3,
-     "title": "Nur dieses Mal oder dauerhaft",
-     "text": "Danach fragt der Hub: **nur dieses Mal** oder **dauerhaft**. Dauerhaft sperrt die Kundin für alle künftigen Nachrichten — das lässt sich im Kundenprofil wieder ändern."
+     "title": "Wenn die Kundin keine möchte",
+     "text": "Abmelden kann sich nur die **Kundin selbst** über den Link unten in der Nachricht. Dann steht im Beenden-Dialog „Die Kundin hat sich selbst abgemeldet“."
     }
    ],
    "notes": [
     {
-     "title": "Kein Schalter zu sehen?",
+     "title": "Kein Hinweis zu sehen?",
      "text": "Dann löst dieser Termin keine Nachricht aus: reine Beratung, Standort ohne aktives Modul oder keine Behandlerin mit Hub-Konto am Termin."
     },
     {
-     "title": "Kundin ist gesperrt",
-     "text": "Dann heißt der Schalter **„Diesmal trotzdem senden“** — mit der Wahl „nur dieses Mal“ oder **„dauerhaft wieder einschalten“**."
+     "title": "Ausnahme je Standort",
+     "text": "Nur wenn das Büro es für deinen Standort freigeschaltet hat, steht hier zusätzlich **„Diesmal keine Nachricht senden“**."
     }
    ],
    "hint": {
@@ -96,8 +96,8 @@
    }
   },
   {
-   "h1": "Sperre im Kundenprofil",
-   "sub": "Möchte eine Kundin grundsätzlich keine solchen Nachrichten, schaltest du sie im Kundenprofil ab — und dort auch wieder an.",
+   "h1": "Nachrichten im Kundenprofil",
+   "sub": "Im Kundenprofil siehst du, ob die Kundin Nachrichten nach der Behandlung bekommt oder sich selbst abgemeldet hat.",
    "card": {
     "title": "Kundenprofil",
     "text": "Kunden → Kundin → Reiter Info → Nachrichten nach der Behandlung"
@@ -105,7 +105,7 @@
    "left": {
     "shot": "t3-kundenprofil-sperre"
    },
-   "leftCaption": "Der Schalter im Reiter Info des Kundenprofils.",
+   "leftCaption": "Der Abschnitt im Reiter Info des Kundenprofils.",
    "steps": [
     {
      "n": 1,
@@ -114,13 +114,13 @@
     },
     {
      "n": 2,
-     "title": "Schalter",
-     "text": "Ist der Schalter **aus**, bekommt die Kundin nach keiner Behandlung mehr eine Nachricht. Darunter steht, seit wann und ob die Kundin sich selbst abgemeldet hat."
+     "title": "Nur ansehen",
+     "text": "Abschalten kannst du die Nachricht hier **nicht** — das kann nur die Kundin über den Link in der Nachricht. Hat sie sich abgemeldet, steht darunter seit wann; meldet sie sich bei dir wieder an, kannst du den Schalter wieder einschalten."
     },
     {
      "n": 3,
      "title": "Abzeichen in der Übersicht",
-     "text": "Gesperrte Kundinnen tragen in der Übersicht bei den Einwilligungen das Abzeichen **„Keine Nachricht nach Behandlung“**."
+     "text": "Abgemeldete Kundinnen tragen in der Übersicht bei den Einwilligungen das Abzeichen **„Keine Nachricht nach Behandlung“**."
     }
    ]
   },
