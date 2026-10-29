@@ -176,6 +176,17 @@ selbst gewählt hat. Das Preis-Modul zeigt die Herkunft („… aus der Online-B
 Rabatt vorausgewählt") bzw. warnt, wenn die Preisliste keinen passenden Aktionsrabatt hat. Die
 Rabattrechnung bleibt `PriceDiscount::discountCentsFor()` (siehe [Preislisten](PREISLISTEN-MODUL.md)).
 
+**Nur der gewonnene Aktionsrabatt (29.10.2026):** Rabatte mit Aktionskürzel sind im Preis-Modul
+nur wählbar, wenn das Kürzel der Gewinnstufe der Kundin entspricht (`getSelectableDiscounts()`:
+alle Rabatte ohne Kürzel plus genau der passende). Der Server prüft dasselbe an drei Stellen über
+`PromoCodeService::assertDiscountAllowed()` / `assertDiscountIdAllowed()`: vor dem Speichern der
+Einreichung (`FormController::assertPromoDiscountAllowed()`, auch im Fernabsatz-Formular mit der
+Kundin aus dem Freigabe-Kontext) — so sieht die Verkäuferin die Meldung am Preisfeld —, und als
+Rückhalt in `ContractCreationService::createFromSubmission()` und `createFromInstituteCapture()`.
+Abgelehnt werden ein anderer Aktionsrabatt als der gewonnene, ein Aktionsrabatt ohne Code der
+Kundin und (bei gesetztem Geheimnis) ein nicht gültig signierter Code; Rabatte ohne Kürzel bleiben
+frei wählbar. Test `PromoDiscountGuardTest`.
+
 ### Hub: Terminansicht
 
 Das JSON der vereinheitlichten Terminansicht trägt `promo` (Ergebnis von `forClient`); die
@@ -206,6 +217,7 @@ App bekommt das Feld, zeigt es aber noch nicht an.
 - `tests/Feature/Promotions/PromoDiscountsCommandTest.php` — Befehl idempotent.
 - `tests/Feature/Promotions/BookingTrackingPromoCodeTest.php` — API nimmt `promo_code` an.
 - `tests/Feature/Promotions/PromoSuggestionEndpointTest.php` — Vorschlag-Endpunkt.
+- `tests/Feature/Promotions/PromoDiscountGuardTest.php` — nur der gewonnene Aktionsrabatt ist zulässig.
 - Plugin: Prüfstand headless (alle Auslöser, Parameter, Buchung bis zur Notiz, Abzeichen,
   Gegenprobe: vom Plugin signierte Codes prüft der Hub als gültig).
 
@@ -238,7 +250,7 @@ App bekommt das Feld, zeigt es aber noch nicht an.
 
 ## Chronik
 
-- **29.10.2026 abends** — Live auf glattt.com; 0.34.1 Weg zur Terminwahl, 0.34.2/0.34.3
+- **29.10.2026 abends** — Sperre: Aktionsrabatte nur mit passendem Code der Kundin (Formular, Fernabsatz, Institutsseite, Vertragsanlage). Live auf glattt.com; 0.34.1 Weg zur Terminwahl, 0.34.2/0.34.3
   Warten auf den Cookie-Banner; Preislisten-Editor nimmt Kürzel mit Preis-Art an.
 - **29.10.2026** — Preise neu (Jan): fünf Preise in zwei Arten mit je eigener Rangfolge und
   Füll-Preisen, Sternchen-Erklärung je Preis, Modal auf jeder Seite bis gespielt, Abzeichen
