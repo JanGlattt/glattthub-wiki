@@ -107,7 +107,7 @@
    ]
   },
   "Verkauf": {
-   "beschreibung": "Die Werkzeuge rund um den Verkauf: Preislisten anlegen und pflegen, Freunde-werben-Prämien prüfen und auszahlen, Gutscheine verwalten und verkaufen, die Zufriedenheitsbefragung versenden.",
+   "beschreibung": "Die Werkzeuge rund um den Verkauf: Preislisten anlegen und pflegen, Freunde-werben-Prämien prüfen und auszahlen, Gutscheine verwalten und verkaufen, die Zufriedenheitsbefragung versenden, die Black-November-Aktion auf der Website steuern.",
    "fuer": "Für das Büro.",
    "stichworte": [
     "preis",
@@ -124,7 +124,14 @@
     "zufriedenheit",
     "bewertung",
     "umfrage",
-    "google bewertung"
+    "google bewertung",
+    "black november",
+    "umschlag",
+    "umschläge",
+    "aktionscode",
+    "startbonus",
+    "wordpress",
+    "plugin"
    ]
   },
   "Verträge": {

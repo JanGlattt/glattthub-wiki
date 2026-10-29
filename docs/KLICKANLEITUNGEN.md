@@ -153,9 +153,9 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | # | Prozess | Ort im Hub | Anleitung | Status |
 |---|---|---|---|---|
 | 1 | Tageserfassung Beratungsgespräche (Verkauf, Kein Verkauf, Upselling, Statistik) | Institutsseite `/shared/institut/{token}` | PDF „Tageserfassung Beratungsgespräche" (25.08.2026, Quellen verloren) | ⛔ entfällt — Jan 19.09.2026: die Institutsseite wird abgelöst, bis dahin läuft sie ohne Nutzerhandbuch; kein Deck |
-| 2 | Beratungstermin finden, öffnen, Termin beginnen | `/hub/appointments` → Termin-Detailseite | **Terminansicht 1 – Beratungstermin starten** (v1.1) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 2 | Beratungstermin finden, öffnen, Termin beginnen | `/hub/appointments` → Termin-Detailseite | **Terminansicht 1 – Beratungstermin starten** (v1.4) | ✅ im Portal (Screenshots 17./18.09.2026; b1 neu 29.10.2026 mit Black-November-Abzeichen) |
 | 3 | Formular „Kundeninformation & Einverständniserklärung" | Session → Formulare | **Terminansicht 2 – Kundeninformation & Einverständniserklärung** (v1.1) | ✅ im Portal (Screenshots 17./18.09.2026) |
-| 4 | Formular „Behandlungsvertrag" (Zonen, Zahlungsart, Preisliste, Rabatt, Gutschein, Werber, AGB, Unterschrift) | dito | **Terminansicht 3 – Behandlungsvertrag abschließen** (v1.1) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 4 | Formular „Behandlungsvertrag" (Zonen, Zahlungsart, Preisliste, Rabatt, Gutschein, Werber, AGB, Unterschrift) | dito | **Terminansicht 3 – Behandlungsvertrag abschließen** (v1.3) | ✅ im Portal (Screenshots 17./18.09.2026; f4/f5 neu 29.10.2026 mit vorausgewähltem Aktionsrabatt) |
 | 5 | Formular „SEPA-Mandat" | dito | **Terminansicht 4 – SEPA-Mandat einrichten** (v1.1) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 6 | Formular an die Kundin weitergeben („Formular teilen", 48-h-Link) | Formular-Kopfzeile | **Terminansicht 5 – Formular an die Kundin weitergeben** (v1.1) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 7 | Direkt behandeln nach Vertragsabschluss + Termin beenden (Kasse, Folgetermin, Notiz) | Session-Kachel / Beenden-Ablauf | **Terminansicht 6 – Direkt behandeln & Termin beenden** (v1.1) | ✅ im Portal (Screenshots 17./18.09.2026) |
@@ -199,7 +199,8 @@ HTML-Elemente über dem Screenshot positioniert — so bleiben sie bei Screensho
 | 25b | **Vertragsänderung im Fernabsatz** (Downgrade per Link) | dito | **Widerrufe 3** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 25c | Abwicklung: SEPA stornieren, Phorest, Abgabe | dito | **Widerrufe 4** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 25d | RA-Vorgang, Kosten, Schriftwechsel, Abschluss | dito | **Widerrufe 5** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
-| 26 | Preislisten pflegen (Pakete, Rabattstufen, Zahlungsmodus) | `/hub/contracts` › Preislisten | **Verkauf 1** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
+| 26 | Preislisten pflegen (Pakete, Rabattstufen, Zahlungsmodus, Aktionskürzel) | `/hub/contracts` › Preislisten | **Verkauf 1** (v1.2) | ✅ im Portal (Screenshots 17./18.09.2026; v18b neu 29.10.2026) |
+| 26a | Black November auf der Website: Umschlag-Aktion in WordPress steuern, Preise und Chancen, Weg zum Vertrag | glattt.com (WPglatttBooking) | **Verkauf 6** (v1.0) | ✅ im Portal (Screenshots 29.10.2026 aus WordPress, glattt.com und lokalem Hub) |
 | 27 | Freunde werben: Empfehlung erfassen, Prämie, Auswertung | `/hub/contracts/referrals` | **Verkauf 2** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 28 | Zufriedenheitsbefragung auslösen und auswerten | `/hub/satisfaction` | **Verkauf 4** (v1.0) | ✅ im Portal (Screenshots 17./18.09.2026) |
 | 28a | Überlegt noch: anrufen, Buchungslink schicken, Termin buchen | `/hub/ueberlegt-noch` | **Verkauf 5** (v1.0), App **27** | ✅ im Portal (Screenshots lokal 18.10.2026, App aus Snapshot-Tests) |

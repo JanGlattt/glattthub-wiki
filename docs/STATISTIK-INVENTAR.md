@@ -112,7 +112,7 @@ Endpoints einheitlich: `branch_id, date_from, date_to, platform, campaign`. Kein
 | Ads vs. Organisch | `/ads-vs-organic` | R B + | (a) | kein Chart (Vergleichs-Kacheln) |
 | KPI-Zeile (17 KPIs) | `/kpis` | R B + | (d) | |
 
-### Besucher-Funnel (`view_report_visitor_funnel`) — 7 Statistiken
+### Besucher-Funnel (`view_report_visitor_funnel`) — 8 Statistiken
 
 Endpoints: `date_from, date_to, standort, referrer_type` — **kein `branch_id`** (Standort ist Matomo-Dimension; `standort` wird vom JS nie gesendet). Registry: `filters: ['range']`.
 
@@ -125,6 +125,7 @@ Endpoints: `date_from, date_to, standort, referrer_type` — **kein `branch_id`*
 | Herkunft der Besucher | `/sources` | (a) | |
 | Geräte-Vergleich | `/devices` | (a) | half ideal |
 | Top-Unterseiten | `/top-pages` | (a)/(c) | Limit 15 fest |
+| Black November: Umschläge & Verträge | `/black-november` | (a) | seit 29.10.2026, `PromoStatisticsService` (Cache-Gruppe `promo`), `filters: ['range', 'branch']`, Buchungen mit Aktionscode und Verträge mit Aktionsrabatt je Gewinnstufe |
 | KPI-Zeile (13 KPIs) | `/kpis` | (d) | |
 
 ### Mitarbeiterperformance (Gate: `view_report_sales_statistics` ⚠, mit Datensichtbarkeits-Scope) — 3 Karten, alle (d)

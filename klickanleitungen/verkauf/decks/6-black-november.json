@@ -1,0 +1,333 @@
+{
+ "out": "../pdf/Verkauf-6-black-november",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Verkauf",
+ "nr": 6,
+ "of": 6,
+ "audience": "buero",
+ "title": [
+  "Black November",
+  "auf der Website"
+ ],
+ "subtitle": "Klickanleitung für die Umschlag-Aktion im Buchungswidget von glattt.com — Einstellungen in WordPress, Preise und Chancen, was die Kundin sieht und wie der Gewinn in den Vertrag kommt",
+ "eyebrow": "Verkauf · Black November",
+ "footerArea": "Verkauf",
+ "stand": "29.10.2026",
+ "version": "1.0",
+ "notes": [
+  "Die Aktion läuft **im WordPress-Plugin WPglatttBooking** (Einstellungen unter *glattt Bookings → Einstellungen*), nicht im Hub. Der Hub kennt nur den **Aktionscode** aus der Buchung und wählt damit den passenden Rabatt vor.",
+  "**Jede gewinnt.** Drei goldene Umschläge, in jedem ein Vorteil für das glattt-Paket; die beiden anderen zeigen danach immer zwei geringere Preise derselben Art.",
+  "Ein Umschlag **pro Person** (30 Tage im Browser). Der Code steht automatisch in der Online-Buchung, in der Terminnotiz und im Hub am Termin."
+ ],
+ "pages": [
+  {
+   "h1": "Aktion einschalten und steuern",
+   "sub": "Die Sektion „Aktion: Drei goldene Umschläge“ in den Plugin-Einstellungen von WordPress.",
+   "card": {
+    "title": "Einschalten",
+    "text": "Aktiv, Zeitraum, „Gilt bis“, Auslöser, Verhalten nach dem Spiel"
+   },
+   "left": {
+    "shot": "bn1-einstellungen",
+    "marks": [
+     {
+      "id": "aktiv",
+      "n": 1
+     },
+     {
+      "id": "zeitraum",
+      "n": 2
+     },
+     {
+      "id": "gilt",
+      "n": 3
+     },
+     {
+      "id": "ausloeser",
+      "n": 4
+     },
+     {
+      "id": "nach",
+      "n": 5
+     }
+    ]
+   },
+   "leftCaption": "WordPress → **glattt Bookings → Einstellungen**, Abschnitt „Aktion: Drei goldene Umschläge“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Aktion aktiv",
+     "text": "Der Haken schaltet die Umschläge auf der ganzen Website ein. Danach **Änderungen speichern** und im Menü **WP Fastest Cache** den Cache leeren — sonst zeigen gecachte Seiten das Modal nicht."
+    },
+    {
+     "n": 2,
+     "title": "Sichtbar ab / bis",
+     "text": "Zeitraum der Aktion. Außerhalb läuft nichts, auch wenn der Haken gesetzt ist. Leer = ab sofort bzw. ohne Ende."
+    },
+    {
+     "n": 3,
+     "title": "„Gilt bis“",
+     "text": "Das Datum im Modal („gilt bei Abschluss eines glattt-Pakets bis zum …“). Muss zu den Rabatt-Zeiträumen im Hub passen (Seite 4)."
+    },
+    {
+     "n": 4,
+     "title": "Auslöser",
+     "text": "**Beim Aufruf jeder Seite** (Standard, bis gespielt wurde), beim Start der Buchung, bei der Zeitwahl oder nur über den Link. Der Parameter **?umschlag=1** öffnet das Modal immer — für Links aus Ads, Instagram und WhatsApp."
+    },
+    {
+     "n": 5,
+     "title": "Nach dem Spiel",
+     "text": "**Abzeichen** unten auf jeder Seite (Gewinn + Code, antippen öffnet das Ergebnis) — oder das Ergebnis erneut als Modal."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "Das Modal wartet, bis die Besucherin den **Cookie-Banner** beantwortet hat. Wer beim Test nichts sieht: Banner schließen, einen Moment warten."
+   }
+  },
+  {
+   "h1": "Preise, Rangfolge und Chancen",
+   "sub": "Die Tabelle bestimmt, was in den Umschlägen steckt und wie oft.",
+   "card": {
+    "title": "Preise & Chancen",
+    "text": "Zwei Arten, Rangfolge je Art, Erklärung, Chance, Füll-Preise"
+   },
+   "left": {
+    "shot": "bn2-preise",
+    "marks": [
+     {
+      "id": "art",
+      "n": 1
+     },
+     {
+      "id": "titel",
+      "n": 2
+     },
+     {
+      "id": "chance",
+      "n": 3
+     },
+     {
+      "id": "fuell",
+      "n": 4
+     }
+    ]
+   },
+   "leftCaption": "Die Vorgabe vom 29.10.2026: fünf Gewinne und vier Füll-Preise.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Art und Wert",
+     "text": "**% erste Zahlung** (100 = „Erste Sitzung gratis“) oder **€ Startbonus** (fester Betrag von der ersten Zahlung). Die Spalte **Code** zeigt den Schlüssel, z. B. **150E** — im Hub heißt der Rabatt dann **BN26-150E**."
+    },
+    {
+     "n": 2,
+     "title": "Preis und Erklärung",
+     "text": "Der Text auf der Karte im Umschlag; die Erklärung erscheint unter dem Gewinn und löst das Sternchen auf. Leer gelassen nimmt das Plugin die Vorgabe."
+    },
+    {
+     "n": 3,
+     "title": "Chance",
+     "text": "Anteile über alle Preise (40 + 20 + 10 + 20 + 10). Der oberste Preis der Tabelle ist der **Hauptpreis** (Konfetti)."
+    },
+    {
+     "n": 4,
+     "title": "Füll-Preise",
+     "text": "Chance **0** = wird nie gezogen, liegt nur in den beiden anderen Umschlägen. Unter jedem gewinnbaren Preis sollten mindestens **zwei** Preise derselben Art stehen, sonst zeigt ein anderer Umschlag einen höheren Preis."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Reihenfolge ist Rangfolge",
+     "text": "Je Art gilt: oben steht der wertvollste Preis. Die anderen Umschläge zeigen immer Preise **derselben Art**, die darunter stehen — Prozent neben Prozent, Startbonus neben Startbonus."
+    }
+   ],
+   "hint": {
+    "text": "Jede gewinnbare Stufe braucht im Hub einen Rabatt mit demselben Kürzel (Seite 4). Füll-Preise brauchen keinen."
+   }
+  },
+  {
+   "h1": "Code, Geheimnis und Texte",
+   "sub": "Der Code ist signiert — Hub und Plugin teilen sich ein Geheimnis.",
+   "card": {
+    "title": "Code & Texte",
+    "text": "Präfix, Geheimnis für den Hub, Hinweis vor der Ziehung, Teilnahmebedingungen"
+   },
+   "left": {
+    "shot": "bn3-geheimnis",
+    "marks": [
+     {
+      "id": "praefix",
+      "n": 1
+     },
+     {
+      "id": "geheimnis",
+      "n": 2
+     },
+     {
+      "id": "hinweis",
+      "n": 3
+     },
+     {
+      "id": "agb",
+      "n": 4
+     }
+    ]
+   },
+   "leftCaption": "Unterer Teil der Sektion: Code-Präfix, Geheimnis, Modal-Texte, Link zu den Teilnahmebedingungen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Code-Präfix",
+     "text": "Erster Teil jedes Codes (**BN26**-150E-K7PQ). Im Hub tragen die Rabatte das Kürzel Präfix-Stufe. Nicht mehr ändern, sobald die Aktion läuft."
+    },
+    {
+     "n": 2,
+     "title": "Geheimnis (für den Hub)",
+     "text": "Wird beim ersten Speichern erzeugt. **Derselbe Wert** muss im Hub als `PROMO_CODE_SECRET` hinterlegt sein — das macht die IT. Ändern macht alle vergebenen Codes ungültig."
+    },
+    {
+     "n": 3,
+     "title": "Sternchen-Hinweis",
+     "text": "Steht unten im Modal, solange noch kein Umschlag offen ist. Nach der Ziehung steht dort die Erklärung des gezogenen Preises."
+    },
+    {
+     "n": 4,
+     "title": "Teilnahmebedingungen",
+     "text": "Link auf die Seite mit den Teilnahmebedingungen — erscheint unter den Umschlägen. Vor dem Start anwaltlich prüfen lassen."
+    }
+   ]
+  },
+  {
+   "h1": "Was die Kundin sieht",
+   "sub": "Drei Umschläge, ein Gewinn, der Code wandert in die Buchung.",
+   "card": {
+    "title": "Aus Kundinnensicht",
+    "text": "Modal, Gewinnkarte mit Code, Abzeichen auf jeder Seite"
+   },
+   "left": {
+    "shot": "bn4-umschlaege",
+    "marks": [
+     {
+      "id": "umschlag",
+      "n": 1
+     },
+     {
+      "id": "spaeter",
+      "n": 2
+     }
+    ]
+   },
+   "right": {
+    "shot": "bn5-gewinn",
+    "marks": [
+     {
+      "id": "preis",
+      "n": 3
+     },
+     {
+      "id": "code",
+      "n": 4
+     },
+     {
+      "id": "andere",
+      "n": 5
+     },
+     {
+      "id": "weiter"
+     }
+    ]
+   },
+   "leftCaption": "Das Modal nach dem Cookie-Banner, hier auf der Seite Bremen.",
+   "rightCaption": "Die Gewinnkarte mit Aktionscode; darunter, was in den anderen Umschlägen lag.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Umschlag antippen",
+     "text": "Einer von drei — die Ziehung passiert auf dem Server nach den Chancen. Der gewählte Umschlag öffnet sich groß, die anderen zeigen danach ihren Inhalt."
+    },
+    {
+     "n": 2,
+     "title": "„Später“",
+     "text": "Schließt das Modal; beim nächsten Seitenaufruf kommt es wieder, bis gespielt wurde. Im Buchungsformular bleibt der Streifen „Umschlag öffnen“."
+    },
+    {
+     "n": 3,
+     "title": "Gewinn mit Erklärung",
+     "text": "Der Satz unter dem Gewinn erklärt das Sternchen — bei „Erste Sitzung gratis*“: die erste Zahlung im glattt-Paket ist geschenkt."
+    },
+    {
+     "n": 4,
+     "title": "Aktionscode",
+     "text": "Signierter Code wie **BN26-150E-K7PQ**. „Code merken & Termin aussuchen“ führt zur Terminwahl der Seite oder öffnet die Standortwahl."
+    },
+    {
+     "n": 5,
+     "title": "Die anderen Umschläge",
+     "text": "Immer zwei geringere Preise derselben Art — so ist der Gewinn als Gewinn erkennbar."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Danach auf jeder Seite",
+     "text": "Unten links bleibt ein goldenes **Abzeichen** mit Gewinn und Code; antippen öffnet das Ergebnis erneut. Bei der Buchung ist der Code schon eingetragen und landet als Notiz am Termin: „Black November: 150 € Startbonus - Code BN26-150E-…“."
+    }
+   ]
+  },
+  {
+   "h1": "Vom Code zum Vertrag",
+   "sub": "Im Hub steht der Gewinn am Termin, und das Vertragsformular wählt den Rabatt vor.",
+   "card": {
+    "title": "Im Hub",
+    "text": "Rabatte je Preisliste, Abzeichen am Termin, Vorwahl im Vertragsformular"
+   },
+   "left": {
+    "shot": "v18b-aktionskuerzel",
+    "marks": [
+     {
+      "id": "kuerzel",
+      "n": 1
+     }
+    ]
+   },
+   "right": {
+    "shot": "bn6-abzeichen",
+    "marks": [
+     {
+      "id": "abzeichen",
+      "n": 2
+     }
+    ]
+   },
+   "leftCaption": "Preislisten-Editor: je Gewinnstufe ein Rabatt mit Bezug „1. Zahlung“ und Aktionskürzel.",
+   "rightCaption": "Das Abzeichen der Kundin auf glattt.com — denselben Gewinn zeigt der Hub am Termin.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Rabatte im Hub anlegen",
+     "text": "Verträge → Preislisten → aktuelle Liste bearbeiten: je Gewinnstufe ein Rabatt, Typ **%** oder **€**, Bezug **1. Zahlung**, Aktionskürzel **BN26-100P / 60P / 33P / 150E / 75E**, Zeitraum bis zum Ende der Aktion plus Luft für späte Abschlüsse (Verkauf 1)."
+    },
+    {
+     "n": 2,
+     "title": "Am Termin",
+     "text": "Bucht die Kundin online mit Code, zeigt die Terminansicht im Kopf ein goldenes Abzeichen mit Gewinn und Code (Terminansicht 1)."
+    },
+    {
+     "n": 3,
+     "title": "Im Vertragsformular",
+     "text": "Der passende Rabatt ist **vorausgewählt**, der Hinweis nennt Code und Buchungsdatum. Andere Black-November-Rabatte sind nicht wählbar; normale Rabatte bleiben frei (Terminansicht 3)."
+    },
+    {
+     "n": 4,
+     "title": "Auswertung",
+     "text": "Berichte → **Besucher & Buchungs-Funnel** → Karte „Black November: Umschläge & Verträge“: Buchungen mit Code und Verträge je Gewinnstufe, auch im Eigenen Dashboard."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Tresen-Buchungen haben keinen Code.** Nur die Online-Buchung bringt ihn mit. Wer am Telefon bucht, bekommt keinen Black-November-Rabatt — die Kundin auf glattt.com/?umschlag=1 verweisen, bevor gebucht wird."
+   }
+  }
+ ]
+}

@@ -11,10 +11,12 @@ Vertragsabschluss den passenden Preislisten-Rabatt vor**. Diese Seite beschreibt
 Code-Format, Plugin-Einstellungen, Datenmodell, Endpunkte und Tests; die Bedienung steht im
 Nutzerhandbuch.
 
-!!! nutzerhandbuch "Bedienung: Terminansicht 3 – Behandlungsvertrag abschließen"
-    [hilfe.hub.glattt.com/terminansicht/3/](https://hilfe.hub.glattt.com/terminansicht/3/) —
-    der vorausgewählte Aktionsrabatt im Preis-Modul und das Abzeichen in der Terminansicht.
-    Die Plugin-Einstellungen der Aktion (WordPress-Backend) haben noch keine eigene Anleitung.
+!!! nutzerhandbuch "Bedienung: Verkauf 6 – Black November auf der Website"
+    [hilfe.hub.glattt.com/verkauf/6/](https://hilfe.hub.glattt.com/verkauf/6/) — Einstellungen in
+    WordPress, Preise und Chancen, was die Kundin sieht, der Weg zum Vertrag. Dazu
+    [Terminansicht 1](https://hilfe.hub.glattt.com/terminansicht/1/) (Abzeichen im Kopf),
+    [Terminansicht 3](https://hilfe.hub.glattt.com/terminansicht/3/) (vorausgewählter Aktionsrabatt)
+    und [Verkauf 1](https://hilfe.hub.glattt.com/verkauf/1/) (Aktionskürzel im Preislisten-Editor).
 
 ## Inhaltsverzeichnis
 
@@ -187,6 +189,19 @@ Abgelehnt werden ein anderer Aktionsrabatt als der gewonnene, ein Aktionsrabatt 
 Kundin und (bei gesetztem Geheimnis) ein nicht gültig signierter Code; Rabatte ohne Kürzel bleiben
 frei wählbar. Test `PromoDiscountGuardTest`.
 
+### Hub: Statistik „Black November: Umschläge & Verträge"
+
+Statistik `besucher.black-november` auf der Seite **Besucher & Buchungs-Funnel** (und damit im
+Eigenen Dashboard): `App\Services\Statistics\PromoStatisticsService::getTierOverview()` zählt je
+Gewinnstufe die Online-Buchungen mit Aktionscode (`booking_trackings.promo_code`, Zeitraum nach
+`COALESCE(booked_at, created_at)`) und die aktiven/abgeschlossenen Verträge mit dem Aktionsrabatt
+dieser Stufe (`contracts.discount_id` → `price_discounts.promo_code`, Zeitraum nach `signed_at`),
+dazu Vertragswert, verkaufte KPZ und die Quote. Cache-Gruppe `promo` (StatisticsCache),
+Standortfilter über `visibleBranch`, ohne Zeitraum ab 01.11.2026. Endpunkt
+`GET /hub/reports/visitor-funnel/black-november` (`BookingCockpitStatisticsController@blackNovember`),
+Export-Quelle `black-november`, Karte gruppierte Balken + Tabelle + Stat-Strip. Test
+`BlackNovemberStatisticTest`.
+
 ### Hub: Terminansicht
 
 Das JSON der vereinheitlichten Terminansicht trägt `promo` (Ergebnis von `forClient`); die
@@ -238,6 +253,11 @@ läuft in der App als eingebettetes Web-Blatt, Vorwahl und Sperre gelten dort un
   wieder schließen).
 - **Rabatt-Kaskade**: 100 % bzw. 150 € auf die erste Zahlung greift über die bestehende Regel
   (Überhang auf Rate 2, 1-€-Minimum bei „alle Raten per SEPA") — nichts Neues rechnen.
+- **Vorwahl nach den Preisen**: `loadPromoSuggestion()` wendete den Vorschlag nur an, wenn
+  `priceData` ein Array war — es ist ein Objekt, die Vorwahl griff deshalb nicht, wenn der
+  Vorschlag nach den Preisen eintraf (Hinweis sagte „vorausgewählt", Dropdown stand auf „Kein
+  Rabatt"). Seit 29.10.2026 genügt ein geladenes `priceData`, und `loadSigningVouchers()` holt
+  den Vorschlag als Rückhalt nach.
 - **Zu wenig Füll-Preise**: Stehen unter einem gewinnbaren Preis weniger als zwei Preise
   derselben Art, nimmt die Ziehung nächstbeste derselben Art — dann zeigt ein anderer Umschlag
   einen höheren Preis. Vorgabe hat je Art zwei Füll-Preise; beim Ändern der Tabelle beachten.
@@ -246,13 +266,13 @@ läuft in der App als eingebettetes Web-Blatt, Vorwahl und Sperre gelten dort un
 
 ### Offen / später
 
-- Statistik-Karte „Black November" nach Statistik-Konvention (Registry, Cache, Export),
-  Klickanleitung für die Plugin-Einstellungen, neue Screenshots für Terminansicht und
-  Preislisten-Editor.
+- Berichte 15 (Besucher-Funnel) um ein Bild der neuen Karte ergänzen; Teilnahmebedingungen-Seite.
 - Bindung „ein Umschlag pro Person" an die Mobilnummer im Hub (heute nur Cookie).
 
 ## Chronik
 
+- **29.10.2026 nachts** — Statistik-Karte `besucher.black-november`, Klickanleitungen Verkauf 6
+  (neu), Terminansicht 1/3 und Verkauf 1 nachgezogen, Vorwahl-Fehler bei später Antwort behoben.
 - **29.10.2026 abends** — Sperre: Aktionsrabatte nur mit passendem Code der Kundin (Formular, Fernabsatz, Institutsseite, Vertragsanlage). Live auf glattt.com; 0.34.1 Weg zur Terminwahl, 0.34.2/0.34.3
   Warten auf den Cookie-Banner; Preislisten-Editor nimmt Kürzel mit Preis-Art an.
 - **29.10.2026** — Preise neu (Jan): fünf Preise in zwei Arten mit je eigener Rangfolge und

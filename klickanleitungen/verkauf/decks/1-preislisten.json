@@ -4,7 +4,7 @@
  "shots": "../shots",
  "series": "Verkauf",
  "nr": 1,
- "of": 5,
+ "of": 6,
  "audience": "buero",
  "title": [
   "Preislisten",
@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für das Vertrags-Modul im glatttHub — Preise je Körperzone, Laufzeiten, Rabatte, Zahlungsmodus",
  "eyebrow": "Verkauf · Preislisten",
  "footerArea": "Verkauf",
- "stand": "28.10.2026",
- "version": "1.1",
+ "stand": "29.10.2026",
+ "version": "1.2",
  "notes": [
   "Die Preisliste ist die **Grundlage jedes Vertrags** — sie bestimmt Preis, Laufzeit und Zahlungsmodus.",
   "**Eine aktive Fassung ist gesperrt.** Geändert wird über eine neue Fassung, nie an der laufenden.",
@@ -101,7 +101,7 @@
    "sub": "Zwei Einstellungen mit großer Wirkung: was nachgelassen wird und wie eingezogen wird.",
    "card": {
     "title": "Rabatte & Modus",
-    "text": "Rabatt-Zeiträume, Bezug des Rabatts, erste Rate vor Ort oder alles per SEPA"
+    "text": "Rabatt-Zeiträume, Bezug des Rabatts, Aktionskürzel, erste Rate vor Ort oder alles per SEPA"
    },
    "left": {
     "shot": "v18-rabatte"
@@ -127,6 +127,11 @@
      "n": 4,
      "title": "Aktivieren",
      "text": "Erst die Aktivierung macht die Fassung gültig — und sperrt sie zugleich."
+    },
+    {
+     "n": 5,
+     "title": "Aktionskürzel",
+     "text": "Für Aktionen der Website (Black November): Das Kürzel ist die Gewinnstufe des Aktionscodes, z. B. **BN26-150E** für „150 € Startbonus“ oder **BN26-100P** für „Erste Sitzung gratis“. Über das Kürzel findet das Vertragsformular den Rabatt zur Buchung der Kundin — nur dieser ist dann wählbar. Normale Rabatte lassen das Feld leer."
     }
    ],
    "notes": [
@@ -142,7 +147,21 @@
    "hint": {
     "kind": "warn",
     "text": "**Vor dem Aktivieren im Formular gegenprüfen.** Eine falsch gestaffelte oder falsch zugeordnete Liste erzeugt Verträge mit falschen Beträgen — und die stehen dann unterschrieben in der Welt."
-   }
+   },
+   "right": {
+    "shot": "v18b-aktionskuerzel",
+    "marks": [
+     {
+      "id": "kuerzel",
+      "n": 5
+     },
+     {
+      "id": "bezug",
+      "n": 2
+     }
+    ]
+   },
+   "rightCaption": "Rabatt-Tabelle im Editor: Bezug und **Aktionskürzel** je Rabatt."
   }
  ]
 }

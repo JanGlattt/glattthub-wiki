@@ -22,6 +22,13 @@ const PLAN = [
     ['scroll', 'h4, h5, th, .card-glattt-title, label', 'Preis', 140]] },
   { name: 'v18-rabatte', url: '/hub/contracts/prices', steps: [['loaded'], ['click', '.card-glattt-header', 'glattt-Preise', 2500],
     ['scroll', 'h4, h5, th, .card-glattt-title, label, span', 'Rabatt', 140]] },
+  // Verkauf 1, v1.2 (29.10.2026): Aktionskürzel im Rabatt-Editor (Black November)
+  { name: 'v18b-aktionskuerzel', url: '/hub/contracts/prices', steps: [['loaded'], ['click', '.card-glattt-header', 'glattt-Preise', 2500],
+    ['click', 'button', 'Bearbeiten', 2500],
+    ['fn', async (page, L) => { await page.evaluate(() => { const th = [...document.querySelectorAll('th')].find(e => e.textContent.trim() === 'Aktionskürzel'); const body = th?.closest('.modal-glattt-body'); if (th && body) body.scrollTop += th.getBoundingClientRect().top - body.getBoundingClientRect().top - 120; }); await L.wait(page, 800); }]], marks: [
+    { id: 'kuerzel', kind: 'badge', n: 1, ...L.byText('th', 'Aktionskürzel'), at: 'l' },
+    { id: 'bezug', kind: 'badge', n: 2, ...L.byText('th', 'Bezug'), at: 'l' },
+  ] },
   // ── Verkauf 2: Freunde werben
   { name: 'v19-referrals', url: '/hub/contracts/referrals', steps: [['loaded'], ['scroll', '.card-glattt-title, th', 'Geworbener', 200]] },
   { name: 'v20-referral-pruefen', url: '/hub/contracts/referrals', steps: [['loaded'], ['click', 'button.btn-glattt-secondary', 'Details', 2000]], clip: '.modal-glattt' },
