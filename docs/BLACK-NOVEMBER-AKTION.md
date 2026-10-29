@@ -22,7 +22,7 @@ Nutzerhandbuch.
 - [Für Entwickler](#fur-entwickler)
     - [Fachregeln und Entscheidungen](#fachregeln-und-entscheidungen)
     - [Code-Format und Signatur](#code-format-und-signatur)
-    - [WordPress-Plugin (WPglatttBooking 0.34.0)](#wordpress-plugin-wpglatttbooking-0340)
+    - [WordPress-Plugin (WPglatttBooking 0.34.3)](#wordpress-plugin-wpglatttbooking-0343)
     - [Hub: Datenmodell](#hub-datenmodell)
     - [Hub: Aktionsrabatte je Preisliste](#hub-aktionsrabatte-je-preisliste)
     - [Hub: Vorwahl im Vertragsformular](#hub-vorwahl-im-vertragsformular)
@@ -117,7 +117,7 @@ Das Geheimnis liegt im Plugin (`glattt_umschlag_geheimnis`, beim ersten Speicher
 im Hub als `PROMO_CODE_SECRET` (`config('services.promo.secret')`). Ohne Hub-Secret wird der
 Code geparst, aber als `verified = false` gemeldet.
 
-### WordPress-Plugin (WPglatttBooking 0.34.0)
+### WordPress-Plugin (WPglatttBooking 0.34.3)
 
 - `includes/aktion-umschlag.php`: Einstellungen (Sektion „Aktion: Drei goldene Umschläge" in
   *glattt Bookings → Einstellungen*: aktiv, Name, Zeitraum von/bis, „Gilt bis", Auslöser, Nach
@@ -194,8 +194,10 @@ App bekommt das Feld, zeigt es aber noch nicht an.
 
 1. Hub: `PROMO_CODE_SECRET` in Prod und Staging setzen (Wert aus dem Plugin-Backend), deployen.
 2. Hub: `php artisan promo:discounts …` einmal ausführen (Rabatte prüfen im Preislisten-Editor).
-3. Plugin 0.34.0 hochladen, Sektion „Aktion" ausfüllen (Vorgabe-Preise prüfen, „Gilt bis"
-   setzen), Aktiv-Haken erst zum Start setzen.
+3. Plugin hochladen, Sektion „Aktion" ausfüllen (Vorgabe-Preise prüfen, „Gilt bis" setzen),
+   Aktiv-Haken zum Start setzen und WP Fastest Cache leeren. Stand 29.10.2026 abends: erledigt,
+   Aktion läuft mit Plugin 0.34.3; die fünf Rabatte hat Jan im Preislisten-Editor der Liste
+   „glattt-Preise ab 29.10.2026" angelegt, `PROMO_CODE_SECRET` steht auf Prod und Staging.
 4. Teilnahmebedingungen-Seite anlegen und verlinken (anwaltlich prüfen).
 
 ### Tests
@@ -212,7 +214,14 @@ App bekommt das Feld, zeigt es aber noch nicht an.
 - **Phorest-Notiz ohne Emoji** — 4-Byte-Zeichen führen zu HTTP 500 beim Buchen.
 - **Nur ein Widget je Seite**: der Streifen hängt am `#glattt-booking-form`; auf Seiten ohne
   Widget öffnet das Modal trotzdem (Skript läuft überall im Zeitraum), der Code wartet im Cookie.
-- **Borlabs-Banner** liegt über dem Modal (z-index 99990 bewusst darunter).
+- **Borlabs-Banner** liegt über dem Modal (z-index 99990 bewusst darunter). Deshalb wartet das
+  automatische Öffnen (Seitenaufruf, `?umschlag=1`, Ergebnis-Modal) seit 0.34.2/0.34.3, bis der
+  Dialog `.brlbs-cmpnt-dialog` geschlossen ist; Borlabs hängt ihn erst ~200 ms nach
+  DOMContentLoaded ein, ohne Cookie `borlabs-cookie` wird bis zu 4 s auf ihn gewartet.
+- **„Code merken & Termin aussuchen"** (0.34.1): scrollt zu Kopfbild/Widget/`#termin`, sonst
+  öffnet es die Standortwahl des schwebenden Beratungs-Knopfs (`.gcta-knopf` per `setTimeout`
+  klicken — der Klick auf den Modal-Knopf bubbelt noch zum `document` und würde das Panel sofort
+  wieder schließen).
 - **Rabatt-Kaskade**: 100 % bzw. 150 € auf die erste Zahlung greift über die bestehende Regel
   (Überhang auf Rate 2, 1-€-Minimum bei „alle Raten per SEPA") — nichts Neues rechnen.
 - **Zu wenig Füll-Preise**: Stehen unter einem gewinnbaren Preis weniger als zwei Preise
@@ -229,6 +238,8 @@ App bekommt das Feld, zeigt es aber noch nicht an.
 
 ## Chronik
 
+- **29.10.2026 abends** — Live auf glattt.com; 0.34.1 Weg zur Terminwahl, 0.34.2/0.34.3
+  Warten auf den Cookie-Banner; Preislisten-Editor nimmt Kürzel mit Preis-Art an.
 - **29.10.2026** — Preise neu (Jan): fünf Preise in zwei Arten mit je eigener Rangfolge und
   Füll-Preisen, Sternchen-Erklärung je Preis, Modal auf jeder Seite bis gespielt, Abzeichen
   danach; Code-Format `PRÄFIX-WERTART-RRCC`; Plugin 0.34.0, Hub `PromoCodeService`/`promo:discounts`
