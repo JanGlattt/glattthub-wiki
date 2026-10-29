@@ -6,7 +6,7 @@
 ## Für Endanwender
 
 Jeden Abend zählt ein Institut seine Kasse und gleicht sie mit dem Phorest-Kassenabschluss ab.
-Bis 09/2026 lief das über die „Kassenlade“-Excel je Standort. Seit dem 29.09.2026 macht das der Hub
+Bis 09/2026 lief das über die „Kassenlade“-Excel je Standort; deren Altbestände übernimmt der Hub seit 29.10.2026 per Import. Seit dem 29.09.2026 macht das der Hub
 unter **Betrieb → Kasse**, im Web und nativ in der App (iPhone und iPad).
 
 - **Bewegungen während des Tages (seit 10.10.2026):** Geld zur Bank, Wechselgeld aus dem Tresor
@@ -53,6 +53,28 @@ Janine (Büro) informieren. Der frühere Hinweis „nicht vor 20:50“ ist auf J
 | `expected_cents` / `difference_cents` | Phorest „Erwartet“ und `total − (expected − expense)` (beide nullable); `present()` liefert zusätzlich `expected_adjusted_cents` |
 | `change_pending_cents` | Wechselgeld-Merker, mit Vorzeichen |
 | `comment`, `counted_by`, `corrected_by`, `corrected_at` | Kommentar, wer gezählt / korrigiert hat |
+| `source`, `legacy_initials` | Herkunft (seit 29.10.2026): `null` = im Hub gezählt, `excel` = aus der Kassenlade-Excel importiert; dazu das Kürzel aus der Excel-Spalte „LS“ |
+
+#### Altbestände aus der Kassenlade-Excel (seit 29.10.2026)
+
+Je Standort eine CSV aus der Excel, eingespielt mit
+`php artisan cash:import-legacy <datei> --branch=bielefeld [--bis=JJJJ-MM-TT] [--execute]`
+(`LegacyCashImportService`). Ohne `--execute` nur Trockenlauf mit Bericht, Hinweise als CSV unter
+`storage/app/legacy-cash-import/`. Regeln:
+
+- „Sicherheit“ → `safe_cents`, Stückzahlen → `counts`, Kasse und Summe rechnet der Import neu
+  (Abweichung zu „Total gezählt“ = Hinweis), „PHOREST berechnet“ → `expected_cents` (unlesbar oder
+  „0,00 €“ bei gezählter Kasse → leer), Unterschied nachgerechnet.
+- Tage ohne Stückzahl und ohne Tresor (Sonntage, Feiertage, Lockdown) fallen weg; ein Datum außer der
+  Reihe zwischen zwei Folgetagen bekommt den Tag dazwischen (Hinweis).
+- „(Betrag) +/-“, „Andere“ und beide Kommentarspalten landen im Kommentar; Bankeinzahlungen stehen in
+  der Excel nur als Text und werden nicht zu Bewegungen.
+- Hub-Abschlüsse werden nie überschrieben; Bewegungen an importierten Tagen werden entfernt (Excel ist
+  dort maßgeblich); ein zweiter Lauf aktualisiert nur `source = excel`.
+- Direkt geschrieben, nicht über `save()` — keine Kommentarpflicht, keine Differenz-Pushes.
+- Der Tresor des nächsten Abschlusses kommt aus dem letzten Tag vor heute — nach dem Import stimmt er
+  sofort. Die Monatsliste zeigt fehlende Tage erst ab dem ersten **Hub**-Abschluss als „offen“.
+- Die CSV-Dateien gehören nicht ins Repo (Namen von Kundinnen und Mitarbeiterinnen in den Kommentaren).
 
 #### Bewegungen während des Tages (`cash_movements`, seit 10.10.2026)
 
@@ -147,4 +169,5 @@ Standorte kein Abschluss vorliegt; im Laser-Modus steht er vorne. Snapshot-Test 
 | 29.09.2026 | Modul angelegt (Hub + App), Entwürfe: Mischung aus „Tag für Tag“ und „Waage“; vorerst nur Rolle Super-Admin |
 | 29.09.2026 | Tresor-Bewegungen direkt am Tresor: „→ zur Bank“ und „→ in die Kasse“ (Befund 213) |
 | 10.10.2026 | Bewegungen während des Tages (Kassenbuch): fünf Arten mit Grund und Beleg, Tresor serverseitig, Auslagen mindern „Erwartet“, Kassenbuch-CSV, Web und App (Leitungs-Workshop, Entwurf A) |
+| 29.10.2026 | Altbestände der Kassenlade-Excel importierbar (`cash:import-legacy`, Spalte `source`), Tagesfenster zeigt „Aus der Kassenlade-Excel übernommen“ |
 | 15.10.2026 | Reihenfolge fest: erst Phorest „Erwartet“, dann zählen — Stückelungen bis dahin gesperrt (Web `countLocked`, App `countLocked` + Startfeld) |
