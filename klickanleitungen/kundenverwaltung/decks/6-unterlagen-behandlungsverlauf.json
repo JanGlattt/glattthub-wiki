@@ -9,10 +9,10 @@
  "subtitle": "Klickanleitung für die Kundenverwaltung im glatttHub — eingereichte Formulare, Einstellungszettel und Fotos",
  "eyebrow": "Kundenverwaltung · Unterlagen",
  "footerArea": "Kundenverwaltung",
- "stand": "26.10.2026",
- "version": "1.5",
+ "stand": "29.10.2026",
+ "version": "1.6",
  "notes": [
-  "Beide Reiter sind **reine Ansicht** — geschrieben wird im laufenden Termin (Dokumente „Terminansicht 2–4“ und H).",
+  "Beide Reiter sind vor allem **Ansicht** — geschrieben wird im laufenden Termin; Einträge des Einstellungszettels lassen sich hier nur **korrigieren** (Dokumente „Terminansicht 2–4“ und H).",
   "Der **Einstellungszettel** ist die wichtigste Vorbereitung auf eine Behandlung: Er zeigt, womit zuletzt gearbeitet wurde.",
   "**Fotos gehören der Kundin** — nicht weitergeben, nicht außerhalb des Hubs speichern."
  ],
@@ -122,6 +122,11 @@
      "n": 4,
      "title": "Notizen",
      "text": "Auffälligkeiten der letzten Behandlung (Rötung, Schmerz, Pause). Vor jeder Behandlung lesen."
+    },
+    {
+     "n": 5,
+     "title": "Werte korrigieren",
+     "text": "Stimmt ein Wert nicht, öffnet der **Stift** neben dem Datum den Eintrag zum **Korrigieren** — Behandlerin, Laserwerte, Notiz und bei Papier-Nachträgen das Datum. Das dürfen, wer den Eintrag erfasst hat, sowie **Leitung und Büro**. In der App: **„Korrigieren“** am Eintrag, nach rechts wischen oder lange drücken."
     }
    ],
    "hint": {
@@ -135,6 +140,10 @@
     {
      "title": "Etikett „Papier“ und Löschen",
      "text": "Nachgetragene Zeilen tragen **„Papier“** (mit Mauszeiger: wer eingetragen hat) und zählen in der Sitzungsnummer mit. Der **Papierkorb** löscht einen Nachtrag — nur die Person, die ihn eingetragen hat, sowie Leitung und Büro; Einträge aus dem Termin bleiben unantastbar."
+    },
+    {
+     "title": "„korrigiert“",
+     "text": "Geänderte Einträge tragen das Abzeichen **„korrigiert“**. Ein Klick darauf zeigt, **wer wann** was von welchem auf welchen Wert geändert hat — die ursprünglichen Werte gehen nicht verloren."
     }
    ]
   },

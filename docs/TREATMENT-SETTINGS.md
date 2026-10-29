@@ -24,6 +24,7 @@ Schritt für Schritt steht im Nutzerhandbuch.
 - [Für Entwickler](#fur-entwickler)
     - [Funktionsumfang und Verhalten](#funktionsumfang-und-verhalten-seit-februar-2026)
     - [Zonen gemeinsam behandeln & zweite Einstellung](#zonen-gemeinsam-behandeln-zweite-einstellung-seit-13102026)
+    - [Werte korrigieren](#werte-korrigieren-seit-29102026)
     - [URL-Struktur](#url-struktur)
     - [Dateistruktur](#dateistruktur)
     - [Datenbank-Schema](#datenbank-schema)
@@ -44,7 +45,8 @@ selbst benannte Zusatz-Zone wie „Kinn") zeigt alle bisherigen Sitzungen dieser
 und darunter die geführte Eingabe der aktuellen Sitzung in sechs Gruppen (Laserkopf, Hauttyp,
 Haar, empfohlene Werte, genutzte Werte, Notizen und Fotos). Die Sitzungsnummer und die
 Mitarbeiterin kommen automatisch aus Historie und Phorest-Termin. Im Kundenprofil sind dieselben
-Daten nur lesbar (Reiter mit Behandlungsverlauf und Fotogalerie).
+Daten lesbar (Reiter mit Behandlungsverlauf und Fotogalerie); Tippfehler lassen sich dort seit
+29.10.2026 korrigieren — mit Verlauf, wer wann was geändert hat.
 
 **Grundsätze:**
 
@@ -76,6 +78,7 @@ Daten nur lesbar (Reiter mit Behandlungsverlauf und Fotogalerie).
 | Einstellungszettel und Behandlungsfotos im Kundenprofil lesen | Kundenverwaltung 6 |
 | Zweite Einstellung, „Heute zusammen behandelt?" | Terminansicht 8 |
 | Papierzettel nachtragen, Behandlerin nicht mehr im Team | Kundenverwaltung 6 |
+| Werte eines Eintrags korrigieren, Verlauf „korrigiert“ ansehen | Kundenverwaltung 6 |
 
 ---
 
@@ -394,6 +397,48 @@ Behandlungs-Chips aus. Das Muster ist ohne Begrenzer geschrieben, damit PHP, Jav
 entfernen, Zähler nur Hauptzeilen, Gruppen im Daten-Endpunkt, Mehrfach-Speichern mit eigener
 Sitzungsnummer, Nachtrag mit Freitext und zweiter Einstellung inkl. Neudurchzählung und Löschen,
 Haaranalyse/QK, Muster).
+
+### Werte korrigieren (seit 29.10.2026)
+
+Jeder Eintrag im Behandlungsverlauf der Kundenakte lässt sich nachträglich berichtigen — Nachträge vom
+Papierzettel **und** Einstellungszettel aus dem Termin, jeweils mit zweiter Einstellung. Anlass waren
+Tippfehler in den ersten Tagen nach dem Start (Entscheidung Jan, 29.10.2026). Jede Korrektur bleibt mit
+altem und neuem Wert, Person und Zeitpunkt nachvollziehbar.
+
+!!! nutzerhandbuch "Bedienung: Kundenverwaltung 6 – Unterlagen & Behandlungsverlauf"
+    [hilfe.hub.glattt.com/kundenverwaltung/6/](https://hilfe.hub.glattt.com/kundenverwaltung/6/)
+
+- **Recht:** wie beim Löschen eines Nachtrags — wer den Eintrag erfasst hat (`created_by_user_id`) oder
+  wer `delete_treatment_backfill` hat (Leitung, Büro); anders als beim Löschen gilt das für **alle**
+  Einträge (`TreatmentSetting::canBeEditedBy()`). Route `PATCH /hub/treatment-settings/{id}` mit
+  `can:manage_treatment_settings`, die Eintrags-Prüfung im Service antwortet 403.
+- **Felder:** Behandlerin (`staff_id` bzw. Freitext `staff_name`), Laserkopf, Skintel/Hauttyp, Haar,
+  Empfehlung, genutzte Werte, Notiz, Bereich, `second.*` für die zweite Einstellung. Das **Datum** nur bei
+  Nachträgen (beim Termin kommt es aus Phorest → 422, in der Zukunft → 422); nach einer Datumsänderung
+  zählt `TreatmentBackfillService::renumber()` die Zone neu, `syncSecondIdentity()` zieht die zweite
+  Einstellung nach. „Nicht behandelt“ und die Zone selbst sind nicht korrigierbar (dafür löschen und neu
+  nachtragen).
+- **Semantik:** PATCH — nur mitgeschickte Felder zählen. `TreatmentCorrectionService::update()` vergleicht
+  mit dem Bestand und schreibt nur Abweichungen; ohne Abweichung entsteht keine Verlaufszeile („Keine
+  Änderung.“). Web und App schicken deshalb einfach das ganze Formular.
+- **Verlauf:** Tabelle `treatment_setting_changes` (`treatment_setting_id`, `user_id`, `changes` JSON
+  `{feld: [alt, neu]}`, Zeitstempel; zweite Einstellung als `second.<feld>`, Behandlerin als Klartext unter
+  `staff`). Relation `TreatmentSetting::corrections()` (neueste zuerst) — bewusst nicht `changes()`, das
+  kollidiert mit Eloquents internem `$changes`.
+- **Liste:** `GET /hub/treatment-settings/client/{id}` lädt `corrections.user` mit (keine Abfrage je
+  Eintrag) und liefert je Eintrag `can_edit`, `was_corrected` und `corrections` (`at_label`, `user_name`,
+  `items[]` mit `label`, `old`, `new` — fertig formatiert über `TreatmentCorrectionService::present()`).
+- **Web:** Stift je Zeile öffnet `<x-treatment-correction-modal>` (Alpine `treatmentCorrection`,
+  `public/js/components/treatment-correction.js`) im Raster des Nachtrag-Assistenten; das Abzeichen
+  „korrigiert“ klappt den Verlauf unter der Tabelle auf (eine Unterzeile im keyed `x-for` bräuchte mehrere
+  Wurzelelemente). Der Löschen-Knopf bleibt Nachträgen vorbehalten.
+- **App:** `TreatmentCorrectionSheet` (`ios/glatttHub/Clients/`), erreichbar über den Knopf „Korrigieren“,
+  das Kontextmenü und Wischen nach rechts (`SwipeToDeleteCard(onEdit:)`, links bleibt Löschen);
+  „korrigiert“ mit aufklappbarem Verlauf (`TreatmentCorrectionHistory`). Alle neuen Felder sind optional,
+  ältere Hubs liefern `can_edit = false`.
+- **Tests:** `tests/Feature/TreatmentCorrectionTest.php` (Erstellerin korrigiert Termin-Eintrag mit
+  Verlauf, keine Änderung ohne Verlauf, Rechte 403/Leitung, Datum nur bei Nachträgen mit
+  Neudurchzählung, zweite Einstellung, Listenfelder), iOS `TreatmentCorrectionSnapshotTests`.
 
 ### 🔗 URL-Struktur
 
