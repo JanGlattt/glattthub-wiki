@@ -191,7 +191,9 @@ frei wählbar. Test `PromoDiscountGuardTest`.
 
 Das JSON der vereinheitlichten Terminansicht trägt `promo` (Ergebnis von `forClient`); die
 Web-Ansicht zeigt ein goldenes Abzeichen „{Label} · Code …" mit Tooltip zur Buchung. Die native
-App bekommt das Feld, zeigt es aber noch nicht an.
+Terminansicht der App zeigt dasselbe Abzeichen seit 29.10.2026 in der Abzeichen-Zeile des Kopfs
+(`AppointmentDetailModel.promoBadge`, Snapshot `appointment-iphone-promo`); das Vertragsformular
+läuft in der App als eingebettetes Web-Blatt, Vorwahl und Sperre gelten dort unverändert.
 
 ### Endpunkte
 
@@ -244,8 +246,9 @@ App bekommt das Feld, zeigt es aber noch nicht an.
 
 ### Offen / später
 
-- Abzeichen in der nativen Terminansicht (Swift), Statistik-Karte „Black November" nach
-  Statistik-Konvention (Registry, Cache, Export), Klickanleitung für die Plugin-Einstellungen.
+- Statistik-Karte „Black November" nach Statistik-Konvention (Registry, Cache, Export),
+  Klickanleitung für die Plugin-Einstellungen, neue Screenshots für Terminansicht und
+  Preislisten-Editor.
 - Bindung „ein Umschlag pro Person" an die Mobilnummer im Hub (heute nur Cookie).
 
 ## Chronik
