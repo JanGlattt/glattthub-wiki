@@ -40,7 +40,7 @@
 
     Verträge, Preislisten mit Zahlungsmodus, SEPA über GoCardless, Widerrufe, Forderungsmanagement, Schulden, Gutscheine, Freunde werben, Imports.
 
-    [:octicons-arrow-right-24: Verträge & SEPA](../CONTRACTS-SEPA-MODULE.md) · [Widerrufe](../WIDERRUFE-MODULE.md) · [Upselling](../UPSELLING.md) · [Forderungen](../FORDERUNGSMANAGEMENT.md) · [Überlegt noch](../UEBERLEGT-NOCH.md) · [Termin vorziehen](../TERMIN-VORZIEHEN.md)
+    [:octicons-arrow-right-24: Verträge & SEPA](../CONTRACTS-SEPA-MODULE.md) · [Widerrufe](../WIDERRUFE-MODULE.md) · [Upselling](../UPSELLING.md) · [Forderungen](../FORDERUNGSMANAGEMENT.md) · [Überlegt noch](../UEBERLEGT-NOCH.md) · [Termin vorziehen](../TERMIN-VORZIEHEN.md) · [Black November](../BLACK-NOVEMBER-AKTION.md)
 
     <small>Nutzerhandbuch: Serien *Verträge*, *Widerrufe*, *Forderungen*, *Verkauf*, *Finanzen*</small>
 
