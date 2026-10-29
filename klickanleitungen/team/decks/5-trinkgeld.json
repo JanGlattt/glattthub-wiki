@@ -7,14 +7,14 @@
  "of": 5,
  "audience": "institut",
  "title": [
-  "Trinkgeld",
-  "und Bewertungen"
+  "Bewertungen",
+  "und Trinkgeld"
  ],
  "subtitle": "Klickanleitung für das Institut im glatttHub — was die Kundin nach der Behandlung bekommt und wo Trinkgeld und Sterne stehen",
- "eyebrow": "Team · Trinkgeld",
+ "eyebrow": "Team · Bewertungen & Trinkgeld",
  "footerArea": "Team",
- "stand": "29.10.2026",
- "version": "1.2",
+ "stand": "30.10.2026",
+ "version": "1.3",
  "notes": [
   "Nach jeder **beendeten Behandlung** bekommt die Kundin verzögert eine Nachricht mit ihrem Bewertungslink — per WhatsApp, SMS oder E-Mail, je nachdem, was am Standort eingestellt ist und wozu sie eingewilligt hat.",
   "Das **Trinkgeld kommt zu 100 % bei dir an** — ohne Abzug, die Gebühr des Zahlungsanbieters trägt glattt. Ausgezahlt wird es in voller Höhe mit dem Lohn des Folgemonats.",
@@ -125,48 +125,80 @@
    ]
   },
   {
-   "h1": "Die Seite Trinkgeld",
-   "sub": "Unter Team → Trinkgeld stehen Ranking, Verlauf und Auszahlung. Du siehst deine eigenen Zahlen — die Leitung das ganze Institut.",
+   "h1": "Die Seite Bewertungen & Trinkgeld",
+   "sub": "Unter Team → Bewertungen & Trinkgeld stehen Kennzahlen, Ranking und Verlauf. Die Sterne stehen vorne, das Trinkgeld ist einen Klick entfernt. Du siehst deine eigenen Zahlen — die Leitung das ganze Institut.",
    "card": {
-    "title": "Seite Trinkgeld",
-    "text": "Team → Trinkgeld"
+    "title": "Bewertungen & Trinkgeld",
+    "text": "Team → Bewertungen & Trinkgeld"
    },
    "left": {
     "shot": "t4-seite-trinkgeld"
    },
-   "leftCaption": "Kennzahlen, Zeitraum und das Ranking je Behandlerin — die eigene Zeile hervorgehoben.",
+   "leftCaption": "Kennzahlen (Sterne zuerst), Zeitraum und das Ranking je Behandlerin — die eigene Zeile hervorgehoben.",
    "steps": [
     {
      "n": 1,
      "title": "Zeitraum",
-     "text": "Oben rechts den **Zeitraum** wählen (dieser Monat, letzter Monat, 3 Monate, Jahr). Der **Standortfilter** der Seitenleiste gilt wie überall."
+     "text": "Oben rechts den **Zeitraum** wählen (dieser Monat, letzter Monat, 3 Monate, Jahr, seit Beginn). Der **Standortfilter** der Seitenleiste gilt wie überall."
     },
     {
      "n": 2,
      "title": "Kennzahlen",
-     "text": "Trinkgeld, Ø Sterne für die Behandlung, Ø Sterne für das Ergebnis, Bewertungen — je mit Vergleich zum Vorzeitraum. Die Zeile lässt sich per Ziehen personalisieren."
+     "text": "Vorne **Ø Sterne für die Behandlung**, **Ø Sterne für das Ergebnis**, **Bewertungen** und **Antwortquote**. Trinkgeld, Anzahl, Ø Trinkgeld und Gebühr stehen unter **„Weitere KPIs anzeigen“**. Die Zeile lässt sich per Ziehen personalisieren."
     },
     {
      "n": 3,
-     "title": "Ranking",
-     "text": "Die Karte **„Trinkgeld & Sterne je Behandlerin“** zeigt als Diagramm Balken (Trinkgeld) und Punkte (Sterne), als Tabelle das vollständige Ranking. Deine Zeile ist hervorgehoben; wer nur sich sieht, sieht trotzdem seinen Platz im Team."
-    },
-    {
-     "n": 4,
-     "title": "Verlauf und Auszahlung",
-     "text": "Darunter der **Verlauf je Monat** und die **Auszahlungen** (Trinkgeld, Auszahlung in voller Höhe, Gebühr des Unternehmens, ausgezahlt). Die Gebühr ist nur eine Information — sie wird dir nicht abgezogen. „Vorläufig“ heißt: Der Zahlungsanbieter hat sie noch nicht endgültig gebucht."
+     "title": "Sterne oder Trinkgeld",
+     "text": "Die Karten **„Sterne & Trinkgeld je Behandlerin“** und **„… im Verlauf“** zeigen zuerst die Sterne (Balken je Behandlerin bzw. Bewertungen je Monat). Mit dem Umschalter **Sterne | Trinkgeld** oben rechts wechselst du auf das Trinkgeld; über das Register am Rand gibt es jede Karte auch als Tabelle."
     }
    ],
    "notes": [
     {
-     "title": "Bewertungen und Kommentare",
-     "text": "Ganz unten stehen die **Einzelbewertungen** mit Datum, Kundin, Behandlung, Sternen und Trinkgeld. Den Kommentar sieht nur, wer das Recht **„Kommentare lesen“** hat — alle anderen sehen „Kommentar vorhanden“."
+     "title": "Auszahlungen",
+     "text": "Ganz unten stehen die **Auszahlungen je Monat** (Trinkgeld in voller Höhe, Gebühr des Unternehmens, ausgezahlt). Die Gebühr wird dir nicht abgezogen."
     },
     {
      "title": "Startseite und App",
-     "text": "Die Karte **„Meine Bewertungen“** auf der Startseite zeigt Trinkgeld und Bewertung diesen Monat, deinen Platz und den letzten Kommentar. In der App steht die Seite unter Mehr → Trinkgeld („App 22“)."
+     "text": "Die Karte **„Meine Bewertungen“** auf der Startseite zeigt Sterne und Trinkgeld diesen Monat, deinen Platz und den letzten Kommentar. In der App steht die Seite unter Mehr → Bewertungen & Trinkgeld („App 22“)."
     }
    ]
+  },
+  {
+   "h1": "Die einzelnen Bewertungen",
+   "sub": "Unter den Diagrammen steht jede Bewertung als eigene Zeile — mit Kundin, Behandlung, Sternen, Karten und Kommentar. Kritik ist rot markiert.",
+   "card": {
+    "title": "Bewertungen",
+    "text": "Filter Alle · Mit Kommentar · Kritik"
+   },
+   "left": {
+    "shot": "t5-bewertungen-liste"
+   },
+   "leftCaption": "Die Liste der Bewertungen mit Filter, Kundin als Link und den beiden Sterne-Werten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Filter",
+     "text": "**Alle**, **Mit Kommentar** oder **Kritik** — die Zahl daneben sagt, wie viele es im Zeitraum sind. Kritik heißt: 3 Sterne oder weniger auf einer der beiden Fragen, eine Problem-Karte oder ein gewünschter Rückruf."
+    },
+    {
+     "n": 2,
+     "title": "Behandlerin",
+     "text": "Die Leitung kann die Liste auf **eine Behandlerin** eingrenzen. Wer nur sich selbst sieht, hat diese Auswahl nicht."
+    },
+    {
+     "n": 3,
+     "title": "Kundin öffnen",
+     "text": "Ein Klick auf den **Namen der Kundin** öffnet ihr Kundenprofil. In der Desktop-App gibt es per Rechtsklick auch „In neuem Tab öffnen“."
+    },
+    {
+     "n": 4,
+     "title": "Sterne auf einen Blick",
+     "text": "Rechts stehen die Sterne für die **Behandlung** und das **Ergebnis** — grün bei 5, gelb bei 4, rot ab 3 abwärts. Hat die Kundin Trinkgeld gegeben, steht der Betrag darunter."
+    }
+   ],
+   "hint": {
+    "text": "Den **Kommentar** sieht nur, wer das Recht **„Kommentare lesen“** hat — alle anderen sehen „Kommentar vorhanden“."
+   }
   }
  ]
 }

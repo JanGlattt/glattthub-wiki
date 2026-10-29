@@ -1747,7 +1747,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | App-Geräte | nativ | Liste mit Suche, Chips, Kennzahlen, offene Codes und Geräte nach Institut; Code ausstellen in drei Schritten mit QR und Teilen-Blatt (AirDrop), Code zurückziehen, Gerät widerrufen im Steckbrief; iPad-Split, Ausstellen als Popover (seit 26.09.2026); Einlösen bleibt `EnrollmentSheet` |
 | Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild mit Hub-Profilbild und Zeile „Was ansteht“ (seit 25.10.2026), Akte (Überblick, Vergütung, Zeit, Konto, Vorsorge — betriebliche Altersvorsorge mit Blatt „Stand ändern“ für das Büro, seit 25.10.2026), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten (seit 27.09.2026); Teamliste- und Lohnliste-Import bleiben Web (Datei-Upload im Büro), Checklisten Eintritt/Austritt vorerst ausgeblendet |
 | Institute | nativ | Karte zuerst (seit 27.09.2026): Nadeln in Hub-Farbe, Blatt mit Liste/Institut, Unterseiten Kennzahlen, Team, Verwaltung |
-| Trinkgeld | nativ | Rangliste mit meiner Zeile (seit 29.09.2026): Kennzahlen, Segment Trinkgeld/Sterne/Auszahlung, Zeitraum-Chips, Person als Blatt (iPad daneben), Kommentare nur mit Recht; Startseiten-Karte „Meine Bewertungen“, Beenden-Schalter, Kunden-Sperre |
+| Bewertungen & Trinkgeld | nativ | Rangliste mit meiner Zeile (seit 29.09.2026; seit 30.10.2026 Sterne zuerst + Reiter Bewertungen mit Filter, Kundin antippen → Akte): Kennzahlen, Segment Sterne/Bewertungen/Trinkgeld/Auszahlung, Zeitraum-Chips, Person als Blatt (iPad daneben), Kommentare nur mit Recht; Startseiten-Karte „Meine Bewertungen“, Beenden-Schalter, Kunden-Sperre |
 | Überlegt noch | nativ | Anrufliste (seit 17.10.2026, Welle 2 seit 18.10.2026: Termin verpasst, Reiter Reaktivierung mit Sammelversand): Reiter Offen/Link/Erledigt, Akte mit Link per WhatsApp, Termin buchen, Nicht erreicht, Ergebnis-Blatt nach dem Anruf; iPad Liste + Akte |
 | Wissen (glatttipedia) | nativ | Leseansicht „Wie im Hub“ (seit 19.10.2026): Umschalter Institut · Büro · Leitung, Kapitelliste, Suche, Fließtext mit Sprungliste, Pflichtseite bestätigen, Hilfreich/Veraltet, Lightbox; iPad Seitenleiste · Text · Inhaltsverzeichnis. Redaktion und Kiosk bleiben Web |
 | Zufriedenheit | nativ | Drei Stapel (seit 27.09.2026): Folgeaufgaben mit Anrufen/Termin buchen, Kandidatinnen mit Senden (Rückfrage, Kanal-Hinweis) und Überspringen, Verlauf mit Chips, Detailkarte; Standort-Einstellungen bleiben im Admin |
@@ -2461,13 +2461,16 @@ Kandidatinnen. Auf dem iPad stehen die drei Stapel nebeneinander.
 
 ### Native Trinkgeld (Mehr-Seite, seit 29.09.2026)
 
-**Für Endanwender:** „Trinkgeld“ (Team) zeigt oben vier Kennzahlen (Trinkgeld, Ø Behandlung,
-Ø Ergebnis, Bewertungen), darunter das Segment **Trinkgeld | Sterne | Auszahlung** und
+**Für Endanwender:** „Bewertungen & Trinkgeld“ (Team; bis 30.10.2026 „Trinkgeld“) zeigt oben vier
+Kennzahlen — seit 30.10.2026 Sterne zuerst (Ø Behandlung, Ø Ergebnis, Bewertungen, Trinkgeld) —,
+darunter das Segment **Sterne | Bewertungen | Trinkgeld | Auszahlung** (Start: Sterne) und
 Zeitraum-Chips (Monat, letzter Monat, 3 Monate, Jahr). Die **Rangliste** nennt je Behandlerin
 Platz, Initialen oder Foto, Sterne-Zeile und Betrag mit Trend zum Vorzeitraum — die eigene Zeile
 ist gold hervorgehoben; wer nur sich sehen darf, sieht seinen Platz im Verhältnis zum Team. Ein
 Tipp öffnet die **Person** (Sterne beider Skalen, Trinkgeld, Bewertungen mit Kommentaren — nur
-mit Recht). **Auszahlung** listet je Monat brutto, Gebühr (vorläufig oder endgültig), netto und ob
+mit Recht). Der Reiter **Bewertungen** listet jede Bewertung als Karte (Kundin, Datum, Behandlerin,
+Behandlung in Kurzform, Lob-/Problem-Karten, Kommentar, rechts beide Sterne in Ampelfarbe; Kritik
+mit rotem Rand) mit den Filtern Alle · Mit Kommentar · Kritik — ein Tipp öffnet die Kundenakte. **Auszahlung** listet je Monat brutto, Gebühr (vorläufig oder endgültig), netto und ob
 der Monat über den Lohnmonat ausgezahlt ist. Auf dem iPad stehen Liste und Person nebeneinander.
 Die **Startseite** zeigt nach „Mein Bonus“ die Karte „Meine Bewertungen“ (Trinkgeld diesen Monat
 mit Abstand zum nächsten Platz, Bewertung diesen Monat, Platz im Team, letzter Kommentar).
@@ -2477,11 +2480,20 @@ Nachricht senden“ (nur dieses Mal / dauerhaft) bzw. „Diesmal trotzdem senden
 (Reiter Info) trägt die Sperre „Nachrichten nach der Behandlung“ — ohne dieses Recht nur zum Aufheben
 (`team_can_change`).
 
-!!! nutzerhandbuch "Bedienung: App 22 – Trinkgeld in der App"
-    [https://hilfe.hub.glattt.com/app/22/](https://hilfe.hub.glattt.com/app/22/) (in Arbeit)
+!!! nutzerhandbuch "Bedienung: App 22 – Bewertungen & Trinkgeld in der App"
+    [https://hilfe.hub.glattt.com/app/22/](https://hilfe.hub.glattt.com/app/22/)
 
 **Für Entwickler:**
 
+- **Sterne zuerst (Jan, 30.10.2026):** `TipsModel.Segment` = `stars, ratings, tips, payouts`,
+  Start `.stars`; `rows` sortiert nur im Reiter `.tips` nach Betrag. Reiter `.ratings`
+  (`TipsRatingsSection`): „Alle“ aus dem Seitenabruf, die Filter `comment`/`critical` holt
+  `setRatingFilter()` vom Hub (`…/bewertungen?filter=`), Zähler aus `counts`; ohne Netz wird der
+  geladene Stand lokal gefiltert (`TipsRatingRow.isCritical` = dieselbe Regel wie der Hub).
+  Neue Felder `service_short`, `cards`, `callback_requested` sind im Modell optional, damit alte
+  Offline-Stände lesbar bleiben. `TipsRatingCard` ist ein Knopf → `/hub/clients/{id}`.
+  Snapshot: das Personen-Blatt wird ohne `NavigationStack` gerastert (`TipsPersonContent`) —
+  ImageRenderer stürzt danach sonst mit „no current update to enqueue action to“ ab.
 - **Entscheidung (Jan, 29.09.2026):** Entwurf 1 „Rangliste mit meiner Zeile“ mit dem Abstand zum
   nächsten Platz aus Entwurf 2 (verworfen: Podium, Meine Seite zuerst); Startseite erst Bonus,
   dann Bewertungen. Artefakt: https://claude.ai/artifact/1nY15PXvRcRtb6BHNtdMgT.

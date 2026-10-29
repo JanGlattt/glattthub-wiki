@@ -1194,30 +1194,30 @@
       "x": 0,
       "y": 0,
       "width": 780,
-      "height": 1371
+      "height": 1660
     },
     "marks": [],
-    "ratio": 1.7576923076923077
+    "ratio": 2.128205128205128
   },
   "tips-person-light": {
     "box": {
       "x": 0,
       "y": 0,
       "width": 780,
-      "height": 1520
+      "height": 1135
     },
     "marks": [],
-    "ratio": 1.9487179487179487
+    "ratio": 1.455128205128205
   },
   "tips-payouts-light": {
     "box": {
       "x": 0,
       "y": 0,
       "width": 780,
-      "height": 840
+      "height": 870
     },
     "marks": [],
-    "ratio": 1.0769230769230769
+    "ratio": 1.1153846153846154
   },
   "treatment-backfill-hint-light": {
     "box": {
@@ -1798,5 +1798,25 @@
     },
     "ratio": 1.7064102564102563,
     "marks": []
+  },
+  "tips-stars-light": {
+    "box": {
+      "x": 0,
+      "y": 0,
+      "width": 780,
+      "height": 1660
+    },
+    "marks": [],
+    "ratio": 2.128205128205128
+  },
+  "tips-ratings-light": {
+    "box": {
+      "x": 0,
+      "y": 0,
+      "width": 780,
+      "height": 1385
+    },
+    "marks": [],
+    "ratio": 1.7756410256410255
   }
 }

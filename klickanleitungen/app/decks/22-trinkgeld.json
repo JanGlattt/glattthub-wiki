@@ -7,36 +7,36 @@
   "of": 29,
   "audience": "institut",
   "title": [
-    "Trinkgeld",
+    "Bewertungen & Trinkgeld",
     "in der App"
   ],
-  "subtitle": "Klickanleitung für die glatttHub-App auf iPhone und iPad — Rangliste, Sterne, Auszahlung, die Karte auf der Startseite und der Schalter beim Beenden",
-  "eyebrow": "App · Trinkgeld",
+  "subtitle": "Klickanleitung für die glatttHub-App auf iPhone und iPad — Sterne, Bewertungen mit Filter, Trinkgeld, Auszahlung, die Karte auf der Startseite und der Hinweis beim Beenden",
+  "eyebrow": "App · Bewertungen & Trinkgeld",
   "footerArea": "App",
-  "stand": "29.10.2026",
-  "version": "1.2",
+  "stand": "30.10.2026",
+  "version": "1.3",
   "notes": [
-    "Die App zeigt **dieselben Zahlen wie die Web-Seite** (Team → Trinkgeld) — Ranking, Sterne, Auszahlung, Kommentare je Recht.",
+    "Die App zeigt **dieselben Zahlen wie die Web-Seite** (Team → Bewertungen & Trinkgeld) — Sterne, Bewertungen, Trinkgeld, Auszahlung, Kommentare je Recht.",
     "Nach unten ziehen lädt neu. Ohne Netz zeigt die Seite den **letzten Stand** mit Uhrzeit.",
     "Die Bilder sind aus dem Simulator mit erfundenen Namen."
   ],
   "pages": [
     {
       "h1": "Rangliste mit deiner Zeile",
-      "sub": "Mehr → Trinkgeld. Oben die Kennzahlen, dann Trinkgeld | Sterne | Auszahlung und die Zeitraum-Chips.",
+      "sub": "Mehr → Bewertungen & Trinkgeld. Oben die Kennzahlen (Sterne zuerst), dann Sterne | Bewertungen | Trinkgeld | Auszahlung und die Zeitraum-Chips.",
       "card": {
-        "title": "Trinkgeld",
-        "text": "Mehr → Trinkgeld"
+        "title": "Bewertungen & Trinkgeld",
+        "text": "Mehr → Bewertungen & Trinkgeld"
       },
       "left": {
-        "shot": "tips-tips-light"
+        "shot": "tips-stars-light"
       },
-      "leftCaption": "Segment „Trinkgeld“: Platz, Name, Sterne-Zeile, Betrag mit Trend — deine Zeile gold.",
+      "leftCaption": "Reiter „Sterne“: Platz, Name, Sterne für Behandlung und Ergebnis — deine Zeile gold.",
       "steps": [
         {
           "n": 1,
-          "title": "Segment",
-          "text": "**Trinkgeld** sortiert nach Betrag, **Sterne** nach Ø Sternen der heutigen Behandlung, **Auszahlung** zeigt die Monate."
+          "title": "Reiter",
+          "text": "**Sterne** sortiert nach Ø Sternen der heutigen Behandlung (Start), **Bewertungen** zeigt jede einzelne Bewertung, **Trinkgeld** sortiert nach Betrag, **Auszahlung** zeigt die Monate."
         },
         {
           "n": 2,
@@ -47,6 +47,35 @@
           "n": 3,
           "title": "Deine Zeile",
           "text": "Deine Zeile ist **gold hervorgehoben**. Siehst du nur dich, steht darüber dein Platz im Verhältnis zum Team."
+        }
+      ]
+    },
+    {
+      "h1": "Die einzelnen Bewertungen",
+      "sub": "Der Reiter Bewertungen zeigt jede Bewertung als Karte — Kritik rot markiert. Ein Tipp öffnet die Kundin.",
+      "card": {
+        "title": "Bewertungen",
+        "text": "Reiter Bewertungen"
+      },
+      "left": {
+        "shot": "tips-ratings-light"
+      },
+      "leftCaption": "Reiter „Bewertungen“: Kundin, Datum, Behandlerin, Behandlung, Karten, Kommentar und rechts die beiden Sterne-Werte.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Filter",
+          "text": "Über der Liste: **Alle**, **Mit Kommentar**, **Kritik** — je mit der Anzahl im Zeitraum. Kritik heißt 3 Sterne oder weniger, eine Problem-Karte oder ein gewünschter Rückruf."
+        },
+        {
+          "n": 2,
+          "title": "Kundin öffnen",
+          "text": "Eine Karte **antippen** öffnet das Kundenprofil der Kundin."
+        },
+        {
+          "n": 3,
+          "title": "Sterne",
+          "text": "Rechts **Behandlung** und **Ergebnis** als Zahl — grün bei 5, gelb bei 4, rot ab 3 abwärts; ein Trinkgeld steht darunter."
         }
       ]
     },

@@ -10,9 +10,9 @@ Mollie-Gebühr trägt das Unternehmen (Entscheidung Jan, 10.10.2026: ein Abzug d
 Trinkgeld ist rechtlich nicht erlaubt). Diese Seite beschreibt **Fachregeln, Ablauf, Datenmodell, Rechte und
 Fallstricke**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 
-!!! nutzerhandbuch "Bedienung: Team 5 – Trinkgeld und Bewertungen"
+!!! nutzerhandbuch "Bedienung: Team 5 – Bewertungen und Trinkgeld"
     [https://hilfe.hub.glattt.com/team/5/](https://hilfe.hub.glattt.com/team/5/) — Seite
-    „Trinkgeld", Ranking, Auszahlung, Kommentare (Anleitung in Arbeit, Stand 29.09.2026).
+    „Bewertungen & Trinkgeld", Ranking, Bewertungsliste mit Filter, Auszahlung (Stand 30.10.2026).
 
     Angrenzend: „Terminansicht" (Nachricht beim Beenden aussetzen), „Kundenverwaltung"
     (Sperre im Kundenprofil), Serie „App" (native Seite und Startseiten-Karte).
@@ -49,10 +49,13 @@ Fallstricke**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
   Dann steht im Beenden-Dialog (Web und App) wieder „Diesmal keine Nachricht senden“ (nur dieses
   Mal / dauerhaft) bzw. bei gesperrter Kundin „Diesmal trotzdem senden“, und im Kundenprofil
   (Reiter *Info*, „Nachrichten nach der Behandlung“) lässt sich die Nachricht je Kundin sperren.
-- **Seite „Trinkgeld"** (Team → Trinkgeld): Kennzahlen, Ranking nach Trinkgeld und Sternen (die
-  eigene Zeile hervorgehoben), Verlauf je Monat, Auszahlungen je Monat, Einzelbewertungen mit
-  Kommentaren. Die Leitung sieht alle Behandlerinnen ihrer Institute, jede Behandlerin nur sich —
-  ihr Platz gilt trotzdem im Verhältnis zum Team. Kommentare nur mit eigenem Recht.
+- **Seite „Bewertungen & Trinkgeld"** (Team → Bewertungen & Trinkgeld; bis 30.10.2026 „Trinkgeld"):
+  **Sterne zuerst**, weil bisher fast nur Sterne und kaum Trinkgeld kommen (Jan, 30.10.2026) —
+  Kennzahlen, Ranking und Verlauf zeigen standardmäßig die Sterne und lassen sich auf Trinkgeld
+  umschalten. Darunter die **einzelnen Bewertungen** als kompakte Zeilen mit Filter (Alle · Mit
+  Kommentar · Kritik · Behandlerin); der Name der Kundin öffnet ihr Kundenprofil. Ganz unten die
+  Auszahlungen je Monat. Die Leitung sieht alle Behandlerinnen ihrer Institute, jede Behandlerin
+  nur sich — ihr Platz gilt trotzdem im Verhältnis zum Team. Kommentare nur mit eigenem Recht.
 - **Startseite:** Die Karte „Meine Bewertungen" (nach „Mein Bonus") zeigt Trinkgeld und Bewertung
   diesen Monat, den Platz im Team, den Abstand zum nächsten Platz und den letzten Kommentar — im
   Web und in der App.
@@ -192,7 +195,7 @@ und die Kunden-Sperre laufen unter `view_appointment_detail`.
 | `GET /hub/staff/trinkgeld/data` | Ranking + `me` + `team_size` + `scope` + `kpis` (Statistik `personal.tip-ranking`) |
 | `GET /hub/staff/trinkgeld/kpis` | KPI-Portfolio der Quelle `trinkgeld` |
 | `GET /hub/staff/trinkgeld/verlauf` | Monate (Statistik `personal.tip-history`) |
-| `GET /hub/staff/trinkgeld/bewertungen` | Einzelbewertungen (`staff_user_id`, `limit`, `offset`; `can_read_comments`) |
+| `GET /hub/staff/trinkgeld/bewertungen` | Einzelbewertungen (`staff_user_id`, `filter` = `comment`/`critical`, `limit`, `offset`); Antwort mit `counts` (all/comment/critical, folgen der Behandlerin), `staff` (Auswahlliste, folgt nicht der Behandlerin), `service_short` je Zeile, `can_read_comments` |
 | `GET /hub/staff/trinkgeld/auszahlung` | Monate mit Behandlerinnen (Statistik `personal.tip-payouts`) |
 | `GET /hub/staff/trinkgeld/me` | Eigene Kachel (Startseite Web) — dieselben Daten liefert `GET /api/app/start` als `tips` |
 | `POST /api/webhooks/mollie` | Webhook (dritter Zweig: `treatment_tips.mollie_payment_id`) |
@@ -225,18 +228,29 @@ Team-Sicht entscheidet `TipStatisticsService` anhand von `view_team_tips`.
 
 ### Auswertungen
 
-- Statistik-Registry (Kategorie Personal, Recht `view_tips`): `personal.tip-ranking` (Balken
-  Trinkgeld, Punkte Ø Sterne; Tabelle Ranking mit Spalte „Gebühr (Unternehmen)"),
-  `personal.tip-history` (Balken Trinkgeld, Linien Ø Sterne; Gebühr nur in der Tabelle),
+- Statistik-Registry (Kategorie Personal, Recht `view_tips`): `personal.tip-ranking` („Sterne &
+  Trinkgeld je Behandlerin"; Umschalter `rankingMetric`, Standard `stars` = Balken Ø Sterne beider
+  Skalen auf 0–5, `tips` = Balken Trinkgeld + Punkte Ø Sterne; Tabelle Ranking mit Spalte „Gebühr
+  (Unternehmen)"), `personal.tip-history` (Umschalter `historyMetric`, Standard `stars` = Balken
+  Anzahl Bewertungen, `tips` = Balken Trinkgeld; Linien Ø Sterne; Gebühr nur in der Tabelle),
   `personal.tip-payouts` (Balken „Auszahlung an die Behandlerinnen (100 %)" = Trinkgeld und daneben
   „Mollie-Gebühr (Unternehmen)" — **nicht gestapelt**, die Gebühr ist kein Teil der Auszahlung).
   Partials `resources/views/statistics/personal/tip-*.blade.php`, JS in
   `public/js/statistics/personal.js`. Die Antworten tragen `tips_cents` (voller Betrag),
   `fee_cents`, `net_cents` (nur Information, für ältere App-Builds) und in `…/auszahlung`
   zusätzlich `payout_cents` (= `tips_cents`).
-- KPI-Registry Quelle `trinkgeld` (`TipStatisticsService::getKpis`, Vorperiode):
-  `trinkgeld.tips_total`, `fees` („Gebühr (Unternehmen)", seit 10.10.2026 statt `tips_net`),
-  `tips_count`, `avg_tip`, `avg_stars_today`, `avg_stars_overall`, `ratings_count`, `response_rate`.
+- KPI-Registry Quelle `trinkgeld` (`TipStatisticsService::getKpis`, Vorperiode), seit 30.10.2026
+  Sterne zuerst: `trinkgeld.avg_stars_today` (einzige hervorgehobene), `avg_stars_overall`,
+  `ratings_count`, `response_rate`, dann `tips_total`, `tips_count`, `avg_tip`, `fees` („Gebühr
+  (Unternehmen)", seit 10.10.2026 statt `tips_net`). Die Seite speichert die Reihenfolge unter
+  `tips-kpis-v2` — der neue Schlüssel sorgt dafür, dass alte gespeicherte Reihenfolgen nicht die
+  Sterne nach hinten schieben.
+- Belegliste „Bewertungen" (keine Registry-Karte, Einzeldatensätze): `TipStatisticsService::ratings()`
+  mit `filter`; **Kritik** = `stars_today ≤ 3` oder `stars_overall ≤ 3` oder `callback_requested_at`
+  oder eine Problem-Karte (`whereJsonContains` je Schlüssel aus `feedback_issues`) — dieselbe Regel
+  steht in `tipsPage.isCritical()` und `TipsRatingRow.isCritical` (App). `shortServices()` macht aus
+  Phorest-Servicenamen eine Kurzform („Abo.LS-39 ACHSELN, ..Desinfektion" → „Achseln"; Präfixe,
+  Desinfektion/Extrazeit fallen weg, Versalien werden normal geschrieben).
 - CSV-Export: `tip-ranking`, `tip-history` (auch auf der Mitarbeiterperformance), `tip-payouts`
   (Spalten Trinkgeld, Auszahlung an die Behandlerin, Gebühr (Unternehmen) — keine Netto-Spalte mehr).
 - Benachrichtigungs-Katalog `treatment_feedback`: `tip_received` und `rating_received` an die
@@ -414,6 +428,10 @@ automatische Nachricht nach jeder Behandlung (Booking-Masterplan, Entscheidungen
   Anfrage bleibt mit `skip_reason` im Protokoll.
 - **Livewire-Kasse teilt `debt-checkout.js`** (`glatttDebtSubmit`, `glatttDebtApplePayStart`,
   `#mollie-components-config`) — nur eine Kasse je Seite.
+- **Statistik-Komponenten im richtigen Block von `personal.js`:** Die Datei hat zwei IIFEs; nur der
+  erste kennt `shared` (`monthLabel`, `baseOption`, `axisStyle`). Die drei Trinkgeld-Karten standen
+  vom 29.09. bis 30.10.2026 im zweiten Block (Mitarbeiterperformance) → `shared is not defined`,
+  alle drei Karten blieben leer (nur der Kopf). Neue Karten des Bereichs gehören in den ersten Block.
 - **Offline-Stand in der App:** `TipsSnapshot` muss `nonisolated` außerhalb des `@MainActor`-Modells
   liegen (Swift 6: isolierte Codable-Konformanz erfüllt kein `Sendable`).
 - **Mollie-Kontobewegungen filtern nicht nach Zahlung:** der Resolver liest rückwärts bis 1.500
@@ -431,6 +449,7 @@ automatische Nachricht nach jeder Behandlung (Booking-Masterplan, Entscheidungen
 
 | Datum | Änderung |
 |---|---|
+| 30.10.2026 | Seite heißt „Bewertungen & Trinkgeld“, Sterne zuerst (KPIs, Ranking und Verlauf mit Umschalter Sterne/Trinkgeld), Bewertungen als kompakte Zeilen mit Filter Alle/Kommentar/Kritik/Behandlerin und Link zur Kundenakte, Behandlung in Kurzform, Auszahlungen nach unten; Fix: die drei Karten blieben seit 29.09. leer (`shared is not defined`); App: Reiter „Bewertungen“ mit Filter und Kundin antippen |
 | 29.10.2026 | Nachricht nach der Behandlung nicht mehr abwählbar: Schalter „Team darf abwählen“ je Standort (Standard aus); ohne ihn keine Abwahl beim Beenden, keine Sperre im Kundenprofil, alte Team-Sperren wirken nicht, nur die Abmeldung der Kundin zählt |
 | 17.10.2026 | Bewertungs-Motor Etappe 1: Google-Knopf ab 4 Sternen bis zum ersten Klick (Zähl-Umweg), Danke-WhatsApp am Folgetag, Rückruf mit Wunschzeit als Kundenservice-Ticket, Pflichtfeld, freier Trinkgeld-Betrag schaltbar mit Obergrenze, Trinkgeld-Satz als Vorlagen-Variable, manueller Bewertungs-Knopf ruht |
 | 10.10.2026 | Trinkgeld geht zu 100 % an die Behandlerin (Jan): Lohnmonat nimmt `amount_cents` statt `net_cents`, Mollie-Gebühr nur noch als „Gebühr (Unternehmen)" in Statistik/CSV/App, KPI `trinkgeld.fees` ersetzt `tips_net`, Texte auf Kundenseite, My glattt, Hub-App und Anleitungen; frühere Netto-Lohnmonate bleiben unverändert |
