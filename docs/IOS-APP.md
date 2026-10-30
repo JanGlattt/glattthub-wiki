@@ -1220,9 +1220,17 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   per Theme unsichtbar (`body.ios-app:has(.apt-detail--native-form)`); der Browser ist unverändert.
 - **Stufe 4 — Direkt behandeln, Kasse, Minderjährige (seit 22.09.2026):** „Direkt behandeln"
   erscheint als Kachel, sobald im Termin ein Vertrag abgeschlossen ist und der SEPA-Schritt erledigt
-  (`directTreatmentAvailable`), und wird im Beenden-Ablauf nach der Kasse als Frage angeboten
-  (`showDirectOffer`, wie im Web vor der Folgetermin-Frage; als `.alert`, weil das iPad-Popover
-  eines `confirmationDialog` die Abbrechen-Rolle weglässt und nichts abdunkelt). **Seit 21.09.2026
+  (`directTreatmentAvailable`), und wird im Beenden-Ablauf nach der Kasse als Pflichtwahl
+  angeboten (`showDirectOffer`, wie im Web vor der Folgetermin-Frage). Seit 30.10.2026 ist das das
+  Blatt `DirectOfferSheet` „Wie geht es weiter?" statt eines Alerts: zwei gleichrangige Kacheln ohne
+  Vorauswahl, „Weiter" erst nach der Wahl, Fortsetzung aus `directOfferDismissed()` (onDismiss);
+  „Zurück" oder Wischen lässt die Beratung offen. Im Alert stand „Ja, Behandlungstermin jetzt
+  buchen" oben — am Hub-Start (29.10.2026) zweimal versehentlich getippt. Die gebuchte Behandlung
+  startet seitdem **nicht** mehr selbst (`autoStart: false`), und solange sie offen ist, zeigt die
+  Terminansicht den Hinweis „Doch nicht behandeln" (`undoDirectBanner` →
+  `DirectTreatmentUndoSheet`, `POST …/direct-treatment/undo`, danach Folgetermin aus
+  `undoDirectDismissed()`); bei hängender Übergabe gibt es denselben Knopf im goldenen Balken
+  (`undoHandover()`). Details in `APPOINTMENT-VIEW.md`, „Direkt behandeln nach Vertragsabschluss". **Seit 21.09.2026
   nativ:** `DirectTreatmentSheet`/`DirectTreatmentModel` (gleicher Raum, Paket-Services zum
   An-/Abwählen, „Kauf nachholen", „Neu laden") und `FollowUpBookingSheet`/`FollowUpBookingModel`
   (Terminabstand-Schnellwahl + freie Wochen, darüber seit 26.10.2026 „Letzte Behandlung vor …“ aus

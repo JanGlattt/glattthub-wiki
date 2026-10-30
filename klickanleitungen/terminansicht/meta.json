@@ -3402,5 +3402,125 @@
    }
   ],
   "ratio": 1.7083333333333333
+ },
+ "h4-wie-geht-es-weiter": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "later",
+    "kind": "badge",
+    "n": 1,
+    "sel": ".direct-offer-glattt-options label:nth-of-type(1)",
+    "at": "l",
+    "pct": {
+     "x": 3.4745762711864407,
+     "y": 44.719893292682926,
+     "w": 93.05084745762711,
+     "h": 7.865853658536586
+    }
+   },
+   {
+    "id": "today",
+    "kind": "badge",
+    "n": 2,
+    "sel": ".direct-offer-glattt-options label:nth-of-type(2)",
+    "at": "l",
+    "pct": {
+     "x": 3.4745762711864407,
+     "y": 53.561356707317074,
+     "w": 93.05084745762711,
+     "h": 7.865853658536586
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "h4b-wie-geht-es-weiter-gewaehlt": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "go",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "at": "l",
+    "pct": {
+     "x": 73.90625,
+     "y": 67.03696646341464,
+     "w": 22.61917372881356,
+     "h": 5.266768292682927
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "h5-rueckweg-hinweis": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "undo",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "sel": ".balance-alert-banner--undo .balance-alert-banner-action",
+    "at": "l",
+    "pct": {
+     "x": 42.54502118644068,
+     "y": 15.705030487804878,
+     "w": 14.909957627118645,
+     "h": 4.939024390243903
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
+ },
+ "h6-doch-nicht-behandeln": {
+  "box": {
+   "x": 0,
+   "y": 0,
+   "width": 1180,
+   "height": 820
+  },
+  "marks": [
+   {
+    "id": "note",
+    "kind": "badge",
+    "n": 1,
+    "sel": "#direct-undo-note",
+    "at": "l",
+    "pct": {
+     "x": 3.4745762711864407,
+     "y": 49.11013719512195,
+     "w": 93.05084745762711,
+     "h": 14.878048780487804
+    }
+   },
+   {
+    "id": "go",
+    "kind": "chip",
+    "label": "Hier tippen",
+    "at": "l",
+    "pct": {
+     "x": 75.27674788135593,
+     "y": 69.59794207317073,
+     "w": 21.248675847457626,
+     "h": 5.266768292682927
+    }
+   }
+  ],
+  "ratio": 0.6949152542372882
  }
 }

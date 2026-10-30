@@ -6,8 +6,8 @@
  "of": 29,
  "audience": "institut",
  "footerArea": "App",
- "stand": "25.10.2026",
- "version": "1.11",
+ "stand": "30.10.2026",
+ "version": "1.12",
  "nr": 3,
  "title": [
   "Termine und die",
@@ -289,10 +289,14 @@
     {
      "n": 4,
      "title": "Direkt behandeln",
-     "text": "Knopf in der Sitzungssteuerung. Raum und Services prüfen, **buchen**, **„Fertig“** — die App beendet die Beratung ohne eigene Notiz (nur die Kasse fragt bei offenem Betrag) und wechselt in den neuen Behandlungstermin. Die **eine Terminnotiz** schreibst du am Ende der Behandlung."
+     "text": "Knopf in der Sitzungssteuerung — oder beim Beenden **„Wie geht es weiter?“** → **„Ja, heute direkt behandeln“** (nichts ist vorausgewählt). Raum und Services prüfen, **buchen**, **„Fertig“** — die App beendet die Beratung ohne eigene Notiz (nur die Kasse fragt bei offenem Betrag) und wechselt in den neuen Behandlungstermin, der mit **„Termin beginnen“** startet. Die **eine Terminnotiz** schreibst du am Ende der Behandlung."
     }
    ],
    "notes": [
+    {
+     "title": "Doch nicht behandeln",
+     "text": "Versehentlich direkt gebucht? Im Behandlungstermin oben **„Doch nicht behandeln“** — storniert den Termin in Phorest, stellt die Beratungsnotiz richtig und öffnet den Folgetermin. Nie als Behandlung beenden."
+    },
     {
      "title": "Zweite Person",
      "text": "Minderjährige oder Mitunterzeichner: Das Formular bietet **„Zweite Person vor Ort“** oder einen **7-Tage-Link** an — beides landet in derselben Einreichung."

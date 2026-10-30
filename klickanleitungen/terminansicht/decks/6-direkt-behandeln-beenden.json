@@ -10,11 +10,12 @@
  "subtitle": "Klickanleitung für den Abschluss des Beratungsgesprächs — Behandlung sofort anschließen, Kasse, Folgetermin, Terminnotiz",
  "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
- "stand": "18.10.2026",
- "version": "1.6",
+ "stand": "30.10.2026",
+ "version": "1.7",
  "notes": [
   "**Jeder** Beratungstermin wird über **„Termin beenden“** abgeschlossen — auch ohne Verkauf. Erst dann gilt er in Phorest als erledigt.",
-  "Die **Terminnotiz ist Pflicht** und wandert automatisch nach Phorest. Bei **Direkt behandeln** reicht **eine** Notiz — die kommt am Ende der Behandlung; die Beratung bekommt automatisch den Vermerk „Direkt im Anschluss behandelt“."
+  "Die **Terminnotiz ist Pflicht** und wandert automatisch nach Phorest. Bei **Direkt behandeln** reicht **eine** Notiz — die kommt am Ende der Behandlung; die Beratung bekommt automatisch den Vermerk „Direkt im Anschluss behandelt“.",
+  "Versehentlich direkt gebucht? Im Behandlungstermin **„Doch nicht behandeln“** tippen — **nie** als Behandlung beenden, sonst zählt der Termin in Phorest als durchgeführte Sitzung."
  ],
  "pages": [
   {
@@ -61,8 +62,63 @@
    }
   },
   {
+   "h1": "Wie geht es weiter?",
+   "sub": "Wurde die Kachel übersehen, fragt der Hub beim Beenden nach — nichts ist vorausgewählt, du entscheidest bewusst.",
+   "card": {
+    "title": "Wie geht es weiter?",
+    "text": "Bewusst wählen: anderer Tag oder heute direkt behandeln, dann „Weiter“"
+   },
+   "left": {
+    "shot": "h4-wie-geht-es-weiter",
+    "marks": [
+     {
+      "id": "later",
+      "n": 1,
+      "kind": "badge",
+      "at": "l"
+     },
+     {
+      "id": "today",
+      "n": 2,
+      "kind": "badge",
+      "at": "l"
+     }
+    ]
+   },
+   "right": {
+    "shot": "h4b-wie-geht-es-weiter-gewaehlt",
+    "marks": [
+     {
+      "id": "go",
+      "n": 3,
+      "kind": "badge",
+      "at": "l"
+     }
+    ]
+   },
+   "leftCaption": "Erscheint nach der Kasse, wenn im Termin ein Vertrag abgeschlossen wurde.",
+   "rightCaption": "Erst nach der Wahl lässt sich „Weiter“ tippen — der Knopf sagt, was passiert.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Nein, an einem anderen Tag“",
+     "text": "Die Kundin wird heute **nicht** behandelt (z. B. Urlaub, Sonnenbrand, keine Zeit). Es geht normal weiter: Folgetermin buchen, Terminnotiz."
+    },
+    {
+     "n": 2,
+     "title": "„Ja, heute direkt behandeln“",
+     "text": "Nur wenn die Kundin **jetzt** im selben Raum behandelt wird. Danach öffnet sich der Dialog „Direkt behandeln“."
+    },
+    {
+     "n": 3,
+     "title": "„Weiter“",
+     "text": "Erst nach der Wahl aktiv. **„Zurück“** bricht das Beenden ab — die Beratung läuft weiter."
+    }
+   ]
+  },
+  {
    "h1": "Behandlungstermin gebucht",
-   "sub": "Nach der Buchung wird der Beratungstermin automatisch beendet — ohne eigene Terminnotiz. Es geht sofort im Behandlungstermin weiter.",
+   "sub": "Nach der Buchung wird der Beratungstermin automatisch beendet — ohne eigene Terminnotiz. Die Ansicht wechselt in den Behandlungstermin; dort startest du ihn mit „Termin beginnen“.",
    "card": {
     "title": "Gebucht",
     "text": "„Weiter“ — der Beratungstermin wird beendet, es geht in der Behandlung weiter"
@@ -101,6 +157,64 @@
      "text": "Kommt erst **am Ende der Behandlung**: Dort einmal festhalten, was besprochen und behandelt wurde — Zonen, Zahlungsart, Besonderheiten. Der Text wird als **Notiz in Phorest** gespeichert."
     }
    ]
+  },
+  {
+   "h1": "Doch nicht behandeln",
+   "sub": "Versehentlich direkt gebucht oder die Kundin kann heute doch nicht? Dann die Behandlung zurücknehmen — nie als Behandlung beenden.",
+   "card": {
+    "title": "Doch nicht behandeln",
+    "text": "Hinweis oben im Behandlungstermin, Notiz schreiben, „Behandlungstermin stornieren“"
+   },
+   "left": {
+    "shot": "h5-rueckweg-hinweis",
+    "marks": [
+     {
+      "id": "undo",
+      "n": 1,
+      "kind": "badge",
+      "at": "l"
+     }
+    ]
+   },
+   "right": {
+    "shot": "h6-doch-nicht-behandeln",
+    "marks": [
+     {
+      "id": "note",
+      "n": 2,
+      "kind": "badge",
+      "at": "l"
+     },
+     {
+      "id": "go",
+      "n": 3,
+      "kind": "badge",
+      "at": "l"
+     }
+    ]
+   },
+   "leftCaption": "Der Behandlungstermin startet nicht von selbst — oben steht der Hinweis, solange er offen ist.",
+   "rightCaption": "Dialog „Doch nicht behandeln“: kurz notieren, wie es weitergeht.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "„Doch nicht behandeln“",
+     "text": "Steht oben im Behandlungstermin, solange er nicht beendet ist — auch nach „Termin beginnen“."
+    },
+    {
+     "n": 2,
+     "title": "Notiz",
+     "text": "Pflicht: Warum heute nicht und wie es weitergeht. Der Text landet in der Notiz der **Beratung**."
+    },
+    {
+     "n": 3,
+     "title": "„Behandlungstermin stornieren“",
+     "text": "Storniert den Termin in Phorest — er zählt **nicht** als Sitzung, das Paket bleibt unberührt. Danach öffnet sich der Folgetermin."
+    }
+   ],
+   "hint": {
+    "text": "**Nie „Termin beenden“, wenn nicht behandelt wurde** — der Termin gilt dann in Phorest als durchgeführt und lässt sich nur noch im Büro korrigieren."
+   }
   },
   {
    "h1": "Termin beenden",
