@@ -195,7 +195,7 @@ und die Kunden-Sperre laufen unter `view_appointment_detail`.
 | `GET /hub/staff/trinkgeld/data` | Ranking + `me` + `team_size` + `scope` + `kpis` (Statistik `personal.tip-ranking`) |
 | `GET /hub/staff/trinkgeld/kpis` | KPI-Portfolio der Quelle `trinkgeld` |
 | `GET /hub/staff/trinkgeld/verlauf` | Monate (Statistik `personal.tip-history`) |
-| `GET /hub/staff/trinkgeld/bewertungen` | Einzelbewertungen (`staff_user_id`, `filter` = `comment`/`critical`, `limit`, `offset`); Antwort mit `counts` (all/comment/critical, folgen der Behandlerin), `staff` (Auswahlliste, folgt nicht der Behandlerin), `service_short` je Zeile, `can_read_comments` |
+| `GET /hub/staff/trinkgeld/bewertungen` | Einzelbewertungen (`staff_user_id`, `filter` = `comment`/`critical`, `limit`, `offset`); Antwort mit `counts` (all/comment/critical, folgen der Behandlerin), `staff` (Auswahlliste, folgt nicht der Behandlerin), `service_short`, `staff_name` (Vor- und Nachname) sowie `branch_short`/`branch_name`/`branch_color` (Standort-Abzeichen) je Zeile; Namen der Auswahlliste vollständig, `can_read_comments` |
 | `GET /hub/staff/trinkgeld/auszahlung` | Monate mit Behandlerinnen (Statistik `personal.tip-payouts`) |
 | `GET /hub/staff/trinkgeld/me` | Eigene Kachel (Startseite Web) — dieselben Daten liefert `GET /api/app/start` als `tips` |
 | `POST /api/webhooks/mollie` | Webhook (dritter Zweig: `treatment_tips.mollie_payment_id`) |
