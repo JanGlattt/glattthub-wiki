@@ -1775,7 +1775,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Bildschirme, Report-Mails, Audit, Conversion-Upload | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
 | Einstellungen | nativ | Eine Seite (seit 27.09.2026): Darstellung, Diese App, Beratungs-Cache, API-Zugänge; iPad Abschnitte links |
 | Profil | nativ | Kopfkarte und Abschnitte (seit 25.10.2026): Foto, Zugangsstatus, PIN-Blatt in Schritten, Passkey/Passwort nur mit Admin-Schranke, Sitzungen und App-Geräte, Darstellung, Dank-Text; auch `/user/profile`; iPad Kopfkarte über zwei Spalten |
-| glattt Coach | nativ | Beratungsgespräch-Trainer (seit 31.10.2026, Etappe 2 mit Ton, nur Super-Admin): Startseite „Plan zuerst“ (Wochenstand, Zuweisungen, Modul, Üben/Prüfung, Kundentyp-Karten), Gesprächsraum als Vollbild (Zuhören auf dem Gerät mit Pausenerkennung, Halten, Tippen, Google-Stimme, Souffleur), Ergebnis und Verlauf als Blatt; iPad Kennzahlen in einer Zeile, Typen dreispaltig. Video-Kundin folgt in Etappe 2b |
+| glattt Coach | nativ | Beratungsgespräch-Trainer (seit 31.10.2026, nur Super-Admin): Startseite „Plan zuerst“ (Wochenstand, Zuweisungen, Modul, Üben/Prüfung, Video-Schalter, Kundentyp-Karten), Gesprächsraum als Vollbild (Video-Kundin über Simli-WebRTC seit 01.11.2026, Zuhören auf dem Gerät mit Pausenerkennung, Halten, Tippen, Google-Stimme, Souffleur), Ergebnis mit Feier-Karte, Verlauf, Zuweisungen verwalten (Leitung/Büro), Cockpit-Abschnitt „Mein glattt Coach“; iPad Kennzahlen in einer Zeile, Typen dreispaltig |
 
 ### Native Verträge (Mehr-Seite, seit 25.09.2026 — Nachzug 1)
 
@@ -2756,7 +2756,11 @@ eine Karte öffnet den Gesprächsraum im Vollbild: die Kundin spricht, die App h
 Gesagte nach 1,5 Sekunden Pause an die Kundin. Halten-Modus, Stummschalten und Tippen als Rückfall; im
 Übungsmodus zeigt der Souffleur Phase, Bereitschaft, offene Pflichtschritte (antippen zeigt den Satz) und
 Tabus. Nach dem Ende erscheint das Ergebnis mit Score, Dimensionen, Phasen-Ampel, Stärken, Verbesserungen,
-Pflichtsätzen und Transkript; „Verlauf“ listet die eigenen Einheiten, mit Recht auch das Team.
+Pflichtsätzen und Transkript; „Verlauf“ listet die eigenen Einheiten, mit Recht auch das Team. Seit 01.11.2026
+antwortet die Kundin als **Video** (Schalter „Video-Kundin“ auf der Startseite, Knopf im Raum; bei Störung
+weiter mit Ton), eine bestandene Prüfung erscheint als **goldene Feier-Karte** über dem Ergebnis, Leitung und
+Büro verwalten **Zuweisungen** über „Zuweisen“ (Liste, Löschen per Wischen, Formular „Neue Zuweisung“), und
+das Cockpit zeigt den Abschnitt **„Mein glattt Coach“** mit Wochenstand und nächster Zuweisung.
 
 !!! nutzerhandbuch "Bedienung: App 30 – glattt Coach in der App"
     [https://hilfe.hub.glattt.com/app/30/](https://hilfe.hub.glattt.com/app/30/)
@@ -2769,10 +2773,14 @@ Fortsetzen, Ergebnis mit Nachfragen alle 3 s bis `review_status = done`, Verlauf
 (`AVAudioEngine` + `SFSpeechRecognizer` de-DE auf dem Gerät), `CoachVoicePlayer` (WAV oder Systemstimme),
 Views `CoachView`/`CoachStartView`, `CoachStageView` (`fullScreenCover(item:)`), `CoachResultView`
 (Ergebnis- und Verlaufs-Blatt). Dieselben Endpunkte wie das Web (`hub/coach/…`), `data` liefert
-`can_view_results`/`can_manage`. Etappe 2 startet mit `video: false`; die Video-Kundin braucht eigenes
-WebRTC gegen Simli (kein iOS-SDK) und kommt in Etappe 2b an die Stelle des Initialen-Kreises.
-Nachweis: `CoachSnapshotTests` (Bilder der Klickanleitung; im Snapshot statt Picker/ScrollView Chips in
-einer Zeile), PHP `tests/Feature/Coach`. Technik des Hubs: [glattt Coach](GLATTT-COACH.md).
+`can_view_results`/`can_manage`. **Etappe 2b:** `CoachVideoClient` baut die Simli-Sitzung ohne SDK
+(WebSocket für Signalisierung und PCM-Audio, WebRTC nur empfangend, `@preconcurrency import WebRTC`, Delegate
+`nonisolated`), `CoachStageModel.setupVideo()` holt Token/ICE/WS-Adresse vom Hub und fällt bei jedem Fehler auf
+Ton zurück; `ChatVideoView` rendert die Spur. **Etappe 3:** `CoachAssignmentsSheet` (Liste + `CoachNewAssignmentSheet`,
+Endpunkte `hub/coach/zuweisungen`), `CoachCelebrationBanner` aus `CoachResult.celebrations`, Cockpit-Abschnitt
+`coach` (`StartFrame.coach: CoachTile`, `CockpitView.coachSection`). Nachweis: `CoachSnapshotTests` (Bilder der
+Klickanleitung; im Snapshot statt Picker/ScrollView Chips in einer Zeile; WAV→PCM), PHP `tests/Feature/Coach`.
+Technik des Hubs: [glattt Coach](GLATTT-COACH.md).
 
 ### Native Einstellungen (Mehr-Seite, seit 27.09.2026)
 
@@ -3337,7 +3345,8 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
-| 31.10.2026 | 1.7.1 (130) | **glattt Coach nativ** (Mehr-Seite, nur Super-Admin): Startseite „Plan zuerst“, Gesprächsraum im Vollbild mit Zuhören auf dem Gerät, Google-Stimme, Souffleur, Ergebnis und Verlauf. Video-Kundin folgt in Etappe 2b. |
+| 01.11.2026 | 1.7.1 (131) | **glattt Coach Etappe 2b + 3**: Video-Kundin über Simli-WebRTC (eigener Client, Ton als Rückfall), Zuweisungen verwalten für Leitung/Büro, Feier-Karte nach bestandener Prüfung, Cockpit-Abschnitt „Mein glattt Coach“. |
+| 31.10.2026 | 1.7.1 (130) | **glattt Coach nativ** (Mehr-Seite, nur Super-Admin): Startseite „Plan zuerst“, Gesprächsraum im Vollbild mit Zuhören auf dem Gerät, Google-Stimme, Souffleur, Ergebnis und Verlauf. |
 | 26.10.2026 | (vor Freigabe) | **CarPlay** (Entwurf 1 „Drei Reiter“: Gespräche, Team, Institute mit Anruf/Nachricht/Route), **Siri im Team-Chat** (vorlesen, antworten, gelesen), Siri-Sätze mit KPZ zuerst plus „Körperzonen im Monat“ und „Neue Nachrichten“, alle vier Widgets im CarPlay-Widget-Bereich. CarPlay/SiriKit-Berechtigung bis zu Apples Freigabe nur im Simulator. |
 | 16.10.2026 | 1.4.5 (106) | **Anrufe im Team-Chat**: CallKit + VoIP-Push (klingelt auch gesperrt), WebRTC mit demselben Protokoll wie Browser und Mac-App, Spur im Verlauf mit Zurückrufen, Bildschirm der Gegenseite groß. |
 | 14.10.2026 | 1.4.5 (99) | **Ruhezeiten nativ** (Einstellungen › Mitteilungen, Chat-Einstellungen): Uhr wie der iOS-Schlafplan, Pläne mit eigenen Wochentagen, Urlaubsstreifen aus askDANTE, Ausnahmen für Bereiche, Anlässe, Chats und Personen. |

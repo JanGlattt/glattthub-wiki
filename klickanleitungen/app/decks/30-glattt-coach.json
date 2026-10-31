@@ -7,13 +7,13 @@
   "of": 30,
   "audience": "institute",
   "footerArea": "App",
-  "stand": "31.10.2026",
-  "version": "1.0",
+  "stand": "01.11.2026",
+  "version": "1.1",
   "title": [
     "glattt Coach",
     "in der App"
   ],
-  "subtitle": "Klickanleitung für die glatttHub-App — Beratungsgespräch mit einer KI-Kundin üben: Modul und Kundentyp wählen, sprechen statt tippen, Souffleur im Übungsmodus, Ergebnis mit Score lesen",
+  "subtitle": "Klickanleitung für die glatttHub-App — Beratungsgespräch mit einer KI-Kundin üben: Modul und Kundentyp wählen, sprechen statt tippen, Video-Kundin, Souffleur im Übungsmodus, Ergebnis mit Score, Zuweisungen für Leitung und Büro",
   "eyebrow": "App · Team",
   "notes": [
     "**glattt Coach** findest du unter **Mehr → glattt Coach** (iPhone) bzw. in der Seitenleiste unter Team (iPad). Im Pilot sehen ihn nur Super-Admin-Konten.",
@@ -84,7 +84,7 @@
         {
           "n": 3,
           "title": "Halten, Stumm, Tippen",
-          "text": "**Hand**: Halten-Modus — sprechen nur, solange du das Mikrofon gedrückt hältst (laute Umgebung). **Mikrofon**: stumm. **Tastatur**: tippen statt sprechen."
+          "text": "**Kamera**: Video-Kundin aus oder an — bei schwachem Netz geht es mit Ton weiter. **Hand**: Halten-Modus — sprechen nur, solange du das Mikrofon gedrückt hältst (laute Umgebung). **Mikrofon**: stumm. **Tastatur**: tippen statt sprechen."
         },
         {
           "n": 4,
@@ -93,7 +93,7 @@
         }
       ],
       "hint": {
-        "text": "Die Kundin entscheidet am Ende selbst: Vertrag, kein Vertrag oder „überlegt noch“. Danach öffnet sich das Ergebnis von allein."
+        "text": "Die Kundin antwortet als lippensynchrones Video, sobald die Verbindung steht; auf der Startseite schaltet „Video-Kundin“ das Bild für die nächste Einheit aus. Am Ende entscheidet sie selbst: Vertrag, kein Vertrag oder „überlegt noch“."
       }
     },
     {
@@ -111,7 +111,7 @@
         {
           "n": 1,
           "title": "Score",
-          "text": "0 bis 100 Punkte, **bestanden** ab der Schwelle aus dem Admin (Standard 75). Die Bewertung dauert etwa eine halbe Minute — solange steht „…“ im Ring."
+          "text": "0 bis 100 Punkte, **bestanden** ab der Schwelle aus dem Admin (Standard 75). Eine bestandene Prüfung erscheint als goldene Feier-Karte über dem Ergebnis; zugewiesene Einheiten gelten damit als erledigt. Die Bewertung dauert etwa eine halbe Minute — solange steht „…“ im Ring."
         },
         {
           "n": 2,
@@ -127,6 +127,39 @@
           "n": 4,
           "title": "Schritte und Transkript",
           "text": "Jeder Pflichtschritt mit ✓ erfüllt, ◐ teilweise, – gefehlt, Kernaussagen angehakt, **wörtlich** als Bonus. **Noch einmal** startet dieselbe Kundin erneut."
+        }
+      ]
+    },
+    {
+      "h1": "Zuweisungen (Leitung und Büro)",
+      "sub": "Mit dem Recht „Coach-Ergebnisse sehen“ gibt es oben rechts „Zuweisen“: eine Einheit für Personen oder ein Standort-Team.",
+      "card": {
+        "title": "Zuweisungen",
+        "text": "Zuweisen → Neu"
+      },
+      "left": {
+        "shot": "coach-assignments-light"
+      },
+      "right": {
+        "shot": "coach-result-celebration-light"
+      },
+      "leftCaption": "Die Liste der Zuweisungen deiner Sicht: offen, überfällig (rot), erledigt (grün); nach links wischen löscht.",
+      "rightCaption": "Die Feier-Karte über dem Ergebnis, sobald eine Prüfung bestanden ist.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Neu",
+          "text": "**+** öffnet das Formular: **Personen** mit Mehrfachauswahl oder **Standort-Team**, dann Modul, Kundentyp (oder frei wählbar), Mindestscore, Fälligkeit und eine Notiz."
+        },
+        {
+          "n": 2,
+          "title": "Was passiert",
+          "text": "Die Person bekommt sofort eine Mitteilung mit Push; ab dem Vortag der Fälligkeit erinnert der Hub täglich. Besteht sie die Prüfung mit dem Mindestscore, gilt die Zuweisung als erledigt und du bekommst Bescheid."
+        },
+        {
+          "n": 3,
+          "title": "Löschen",
+          "text": "Nach links wischen oder gedrückt halten → **Zuweisung löschen** (mit Rückfrage). Danach gibt es keine Erinnerung mehr."
         }
       ]
     },
@@ -163,7 +196,7 @@
         }
       ],
       "hint": {
-        "text": "Die Video-Kundin (lippensynchrones Bild) gibt es zuerst im Hub am Rechner; in der App folgt sie in einer späteren Version — bis dahin siehst du den Kreis mit der Initiale."
+        "text": "Die Startseite der App zeigt den Abschnitt **Mein glattt Coach** mit Wochenstand, Bestscore und der nächsten Zuweisung — antippen öffnet den Coach. Am Rechner steht dieselbe Seite unter Team → glattt Coach (**Team 6**)."
       }
     }
   ]

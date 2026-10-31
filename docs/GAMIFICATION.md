@@ -193,6 +193,16 @@ läuft; es fehlt nur noch die Aktivierung der Anlässe im Admin:
      geladener Bildschirm keine alten Feiern nachspielt; Events verfallen
      nach 30 Minuten).
 
+### glattt Coach (seit 31.10.2026)
+
+Der Beratungsgespräch-Trainer hängt sich in dieselben drei Schichten: Anlässe `coach.passed` (Prüfung bestanden)
+und `coach.mastered` (erster bestandener Kundentyp) in der `TriggerRegistry` (Kategorie „Coach“, Standard aus;
+Overlay auf der Ergebnisseite, Feed im Institut), Kennzahlen `coach_exams_passed`, `coach_types_mastered`,
+`coach_best_score`, `coach_sessions_count` im `BadgeMetricCatalog` und drei Katalog-Badges (Coach-Absolventin,
+Typen-Kennerin, Leitfaden im Schlaf; Migration `2026_10_31_130000`). Ausgelöst von `CoachGamificationService`
+direkt nach der Bewertung — die Overlays hängen an `coach_reviews.payload.celebrations` und werden einmal auf der
+Ergebnisseite abgespielt (Web) bzw. als goldene Karte gezeigt (App). Details: [glattt Coach](GLATTT-COACH.md).
+
 ### Nächtlicher Lauf
 
 `php artisan gamification:daily` (`RunGamificationDaily`, Scheduler 05:15,

@@ -153,6 +153,13 @@ Endpoints einheitlich `date_from/date_to/branch_id`. **Kein DataScope** (Gehalts
 
 Kapazität (`/capacity`), Produktivität (`/productivity`), Personalkosten (`/costs`, Permission `view_hr_salaries`!), Abwesenheiten (`/absence`), Fluktuation (`/turnover`), Befristungs-Radar (`/contract-radar`, Zeitraum ohne Wirkung → `fixed_range`), Personalstruktur (`/structure`), Institutsvergleich (`/branches`, Seiteneffekt `branchNames` auflösen), Mitarbeiter im Detail (`/employees`), Datenqualität (`/data-quality`). KPI-Zeile (22 KPIs) = (d).
 
+### glattt Coach (Seite Team → glattt Coach, Verlauf; `use_glattt_coach`) — 2 Statistiken (seit 01.11.2026)
+
+`personal.coach-scores` (Prüfungen, bestanden, Ø Score je Monat; Übungen und Dimensionen in der Tabelle) und
+`personal.coach-ranking` (Ø Score und bestandene Prüfungen je Mitarbeiterin). Endpoints `/hub/coach/statistik/verlauf|ranking`
+mit `date_from/date_to/branch_id`, Team nur mit `view_glattt_coach_results`, sonst eigene Einheiten. Export `coach-scores`,
+`coach-ranking` (Seite `coach`). Wiki [glattt Coach](GLATTT-COACH.md).
+
 ### glattt-KPIs (`view_report_glattt_kpis`) — 2 Statistiken
 
 | Statistik | Endpoint | Klasse | Anmerkung |

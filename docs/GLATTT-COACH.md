@@ -2,14 +2,15 @@
 
 Der glattt Coach ist ein gesprochenes Rollenspiel: eine KI spielt die Kundin im Beratungsgespräch,
 die Mitarbeiterin führt das Gespräch nach dem Leitfaden der glatttipedia, am Ende kommt eine
-Bewertung mit Score. Seit 31.10.2026 als Etappe 1 (Web) und Etappe 2 (native App mit Sprache) auf
-develop, nur Super-Admin; Konzept und alle Entscheidungen stehen im Claude-Doc „glattt Coach – Konzept
+Bewertung mit Score. Seit 31.10./01.11.2026 vollständig auf develop (Etappe 1 Web, 2 native App mit
+Sprache, 2b Video-Kundin in der App, 3 Zuweisungen, Feier-Momente, Abzeichen, Statistiken, Kachel), nur
+Super-Admin; Konzept und alle Entscheidungen stehen im Claude-Doc „glattt Coach – Konzept
 Beratungs-Trainer“ (30.10.2026).
 
-!!! nutzerhandbuch "Bedienung: App 30 – glattt Coach in der App"
-    [https://hilfe.hub.glattt.com/app/30/](https://hilfe.hub.glattt.com/app/30/) — die Serie *Team*
-    (Web: Start, Gespräch, Ergebnis, Verlauf) folgt nach der Abnahme. Bis dahin ist der Coach nur für
-    Super-Admin-Rollen sichtbar.
+!!! nutzerhandbuch "Bedienung: Team 6 – glattt Coach: Beratung trainieren · App 30 – glattt Coach in der App"
+    [https://hilfe.hub.glattt.com/team/6/](https://hilfe.hub.glattt.com/team/6/) (Hub) und
+    [https://hilfe.hub.glattt.com/app/30/](https://hilfe.hub.glattt.com/app/30/) (App). Bis zur
+    Freigabe ist der Coach nur für Super-Admin-Rollen sichtbar.
 
 ---
 
@@ -136,6 +137,57 @@ kennt. Die App startet mit `video: false` — das Video kommt in Etappe 2b.
   Verlauf; Modell-Tests). Im Snapshot ersetzen `appointmentsStaticLayout`-Zweige Picker und
   horizontale ScrollViews durch Chips in einer Zeile (ImageRenderer rastert beide nicht).
 
+### Video-Kundin in der App (Etappe 2b, seit 01.11.2026)
+
+Simli hat kein iOS-SDK; `CoachVideoClient` (`ios/glatttHub/Coach/`) spricht das Protokoll der Simli-Docs
+(docs.simli.com/api-reference/simli-webrtc) direkt: Der Hub liefert mit dem Sitzungstoken auch die
+ICE-Server (`GET /compose/ice`, Rückfall Googles STUN) und die WebSocket-Adresse
+(`config('coach.simli.ws_url')`). Die App öffnet `wss://api.simli.ai/compose/webrtc/p2p?session_token=…&enableSFU=true`,
+baut einen Peer mit zwei recvonly-Transceivern (Audio, Video), sammelt ICE **vollständig** (Simli nimmt keine
+Trickle-Kandidaten), schickt die Offer als erste Nachricht, setzt die Answer und wartet auf `START`. Danach
+gehen die PCM-Bytes der Google-Stimme (WAV-Kopf abgeschnitten, `CoachAudio.pcm`) als Binärframes zu 6.000 Byte
+über den WebSocket; das Bild kommt als `RTCVideoTrack` (`ChatVideoView`), der Ton über WebRTC
+(`RTCAudioSession.isAudioEnabled`, weil die Anrufe manuelles Audio eingestellt haben). `SKIP` verwirft
+Wartendes, `DONE` beendet sauber; Videosekunden gehen alle 30 s an `…/video`. Jeder Fehler (kein Token,
+kein START in 25 s, Socket zu, STOP/ERROR) fällt still auf Ton zurück; Knopf „Video aus“ im Raum, Schalter
+„Video-Kundin“ auf der Startseite (Standard an). **Am Gerät noch nicht verifiziert** (Simulator ohne Simli-Konto
+im Testlauf) — Jan prüft mit Build 1.7.1 (131).
+
+### Etappe 3: Zuweisungen, Feier-Momente, Abzeichen, Statistiken, Kachel (seit 31.10./01.11.2026)
+
+- **Zuweisungen** (`CoachAssignmentService`): Leitung und Büro (Recht `view_glattt_coach_results`) weisen
+  Personen oder einem Standort-Team Modul, Kundentyp (optional), Mindestscore, Fälligkeit und Notiz zu —
+  `GET/POST /hub/coach/zuweisungen`, `DELETE …/{id}`; Sicht = eigene plus `allowed_branch_ids`/Heimat-Institut
+  (Admin-Recht `manage_glattt_coach` sieht alles). Web: Karte „Zuweisungen verwalten“ mit Modal, App:
+  Blatt „Zuweisungen“ mit Formular. Nach der Bewertung einer bestandenen Prüfung mit Mindestscore stempelt
+  `completeFor()` die Zuweisung (`completed_at`, `completed_session_id`; Team-Zuweisungen bleiben für die
+  anderen offen) und meldet der zuweisenden Person. Anlässe im Benachrichtigungs-Katalog, Modul „glattt Coach“:
+  `coach_assignment.created` (Push an die Person/das Team), `.due` (täglich 07:30 über `HubDailyChecksService`,
+  morgen fällig/überfällig, höchstens alle 7 Tage je Zuweisung, `reminded_at`), `.completed` (an die zuweisende
+  Person), `coach_exam.passed` (an Leitung/Büro des Standorts, Standard aus).
+- **Feier-Momente** (`CoachGamificationService`, nach `CoachReviewService::review`): Anlässe `coach.passed`
+  und `coach.mastered` (erste bestandene Prüfung je Typ) in der `TriggerRegistry`, Kategorie „Coach“, Standard
+  aus wie alle Anlässe; Overlay-Daten landen in `coach_reviews.payload.celebrations`, die Ergebnisseite spielt
+  sie einmal über `glattt-celebrations.js` (nur für die Person selbst), die App zeigt sie als goldene Karte.
+  Feed-Zeile im Institut mit Dedupe-Schlüssel je Session bzw. je Person+Typ.
+- **Abzeichen**: Kennzahlen `coach_exams_passed`, `coach_types_mastered`, `coach_best_score`,
+  `coach_sessions_count` im `BadgeMetricCatalog` (regulär beendete Einheiten, Zeitraum nach `ended_at`);
+  drei Badges per Migration (Coach-Absolventin 1/5/15, Typen-Kennerin 3/6/12, Leitfaden im Schlaf 80/90/95),
+  Prämien 0 — Stufen und Prämien pflegt Jan im Badge-Admin. `BadgeAwardService::evaluateForUser` läuft direkt
+  nach der Bewertung, die Overlays hängen mit an der Bewertung.
+- **Statistiken** (Registry, Kategorie Personal, Recht `use_glattt_coach`): `personal.coach-scores` (Prüfungen,
+  bestanden, Ø Score je Monat; Übungen, Ø Pflichtsätze/Tabus in der Tabelle) und `personal.coach-ranking`
+  (Ø Score und bestandene Prüfungen je Mitarbeiterin, eigene Zeile in Gold). `CoachStatisticsService` über den
+  Statistik-Cache (Gruppe `coach`, 15 Min), Team nur mit `view_glattt_coach_results`, sonst eigene Einheiten;
+  Standort über `visibleBranch`, Einheiten ohne Standort (Konto „Alle Standorte“) zählen bei „Alle Standorte“
+  mit. Eingebunden im Verlauf der Coach-Seite (`resize` nach dem Einblenden, sonst 0 px breit), damit im
+  Eigenen Dashboard wählbar; CSV-Quellen `coach-scores`, `coach-ranking` (Seite `coach`).
+- **Kachel „Mein glattt Coach“** (`CoachTileService`, `GET /hub/coach/tile`): Startseiten-Kartentyp `coach`
+  (Recht `use_glattt_coach`, Rollen-Vorgaben im Admin) und App-Abschnitt `coach` (`AppStartLayout`, Standard
+  nach `tips`); ohne Einheit und Zuweisung liefert der Endpunkt `null`, die App lässt den Abschnitt weg.
+- **Limits**: Tageslimit und Monatsbudget stehen am aktiven Skript (`daily_limit`, `monthly_budget_usd`,
+  Admin „Coach: Einstellungen“), `config/coach.php` nur noch als Rückfall.
+
 ### Rechte, Navigation, Konventionen
 
 Rechte `use_glattt_coach`, `view_glattt_coach_results`, `manage_glattt_coach` (Katalog-Knoten
@@ -158,15 +210,13 @@ App-Abdeckung `nativ` (seit 31.10.2026), Klickanleitung App 30, Serie Team `gepl
 - `default_branch_id === 'all'` wird zu `null` (globale Preisliste), sonst steht „all“ in
   `branch_id` der Session.
 
-### Offen (Etappen 2 und 3)
+### Offen
 
-Video-Kundin in der App (Etappe 2b: eigenes WebRTC gegen den Simli-WebSocket oder LiveKit, Bausteine
-aus den Chat-Anrufen; bis dahin `video: false`), Gerätetest von Mikrofon und Stimme durch Jan (im
-Simulator nur gebaut und gerastert), Zuweisungen mit Push-Anlässen, Abzeichen im
-`BadgeMetricCatalog`, Feier-Momente in der `TriggerRegistry`, Registry-Statistiken (Score-Verlauf,
-Pflichtsatz-Quote je Institut), Admin-Tabelle für Monatsbudget und Tageslimit (heute `config/coach.php`),
-Pflichtsätze durch das Büro markieren (die grüne Markierung ging beim Sites-Import verloren),
-Klickanleitungen, EU-Prüfung der Anbieter (Simli AS, Norwegen).
+Gerätetest durch Jan (Mikrofon, Stimme, Video-Kundin in der App; im Simulator nur gebaut und gerastert),
+Anlässe `coach.*` und die Rollen-Freigabe im Admin einschalten (Pilot: Super-Admin → ein Institut → alle),
+Pflichtsätze durch das Büro markieren (die grüne Markierung ging beim Sites-Import verloren), Klickanleitung
+Serie Admin für die Coach-Pflegeseiten, EU-Prüfung/AVV der Anbieter (Simli AS, Norwegen), Tavus als
+zweiwöchiger Pilot-Vergleich (Konzept Stufe B).
 
 ## Changelog
 
@@ -175,3 +225,7 @@ Klickanleitungen, EU-Prüfung der Anbieter (Simli AS, Norwegen).
 - **31.10.2026** — Etappe 2: native App-Seite (Startseite Entwurf 3, Gesprächsraum Entwurf 4 mit Ton),
   Zuhören auf dem Gerät, Google-Stimme als WAV, Souffleur, Ergebnis, Verlauf; Klickanleitung App 30.
   Simli-Secret `simli-api-key` an Staging- und Prod-Web gemountet.
+- **31.10./01.11.2026** — Etappe 3: Zuweisungen (Web + App) mit Push-Anlässen und täglicher Erinnerung,
+  Feier-Momente und drei Abzeichen, Registry-Statistiken, Kachel „Mein glattt Coach“ (Startseite + Cockpit),
+  Limits am Skript; Klickanleitung Team 6.
+- **01.11.2026** — Etappe 2b: Video-Kundin in der App über eigenes WebRTC gegen Simli, ICE-Server über den Hub.
