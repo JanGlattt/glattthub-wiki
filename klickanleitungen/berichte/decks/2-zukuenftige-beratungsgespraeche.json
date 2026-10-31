@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für die Berichte im glatttHub — geplante Beratungen für heute und die nächsten 3, 7, 14 und 28 Tage",
  "eyebrow": "Berichte · Zukünftige Beratungen",
  "footerArea": "Berichte",
- "stand": "18.10.2026",
- "version": "1.2",
+ "stand": "31.10.2026",
+ "version": "1.3",
  "notes": [
   "Der Blick nach vorn: **Wie voll sind die nächsten Wochen mit Beratungsgesprächen?**",
   "Die Termine kommen **alle 5 Minuten aus Phorest** — die Karte zeigt ihren Stand („Stand 14:32“), der Pfeil daneben holt ihn sofort neu.",
@@ -87,7 +87,7 @@
     }
    ],
    "hint": {
-    "text": "**Die Zahlen kommen aus einem Zwischenspeicher, nicht live:** Der Hub holt sie alle 5 Minuten aus Phorest, damit die Seite sofort da ist. Wer gerade gebucht hat und es sehen will, drückt den Pfeil neben „Stand“. Nur Beratungen zählen, keine Behandlungen („Betrieb 5“)."
+    "text": "**Die Zahlen kommen aus einem Zwischenspeicher, nicht live:** Der Hub holt sie alle 5 Minuten aus Phorest und zusätzlich sofort nach jeder Online-Buchung, damit die Seite immer da und aktuell ist. Solange der Bericht offen ist, rückt der Stand alle 5 Minuten von selbst nach; wer es sofort sehen will, drückt den Pfeil neben „Stand“. Nur Beratungen zählen, keine Behandlungen („Betrieb 5“)."
    }
   },
   {

@@ -88,7 +88,7 @@ return StatisticsCache::remember(
 | Daten | Mechanismus | Umsetzung |
 |---|---|---|
 | Verkauf, Tagesmessung (Verträge entstehen im Hub) | **Frisch bei Änderung** | `ContractObserver` → `touch('sales'/'personal'/'widerrufe')` + `WarmStatisticsJob('sales')`: Körperzonen pro Institut, Körperzonen pro Tag, Tagesmessung für „Alle" und je Standort |
-| Buchungsstand, Kalenderübersicht (Phorest live) | **Fester Takt** | `upcomingConsultationsData` liest aus dem Cache (5 Min frisch), `WarmStatisticsJob('booking-status')` alle 5 Minuten (Cloud Scheduler → `/api/cron/warm-booking-status`), Karte zeigt Datenstand + Aktualisieren |
+| Buchungsstand, Kalenderübersicht (Phorest live), Buchungseingänge | **Fester Takt + frisch bei Buchung** (Gruppe `booking-live`, seit 31.10.2026) | `upcomingConsultationsData`, `upcomingConsultationsKpi` und `consultationBookingCalendar` liegen in der eigenen Gruppe `booking-live`. `WarmStatisticsJob('booking-status')` alle 5 Minuten (Cloud Scheduler → `/api/cron/warm-booking-status`) markiert die Gruppe vorab als geändert (`StatisticsWarmPlan::touches()`) und rechnet damit **jeden** Takt — vorher galt der Eintrag beim nächsten Takt mit ~295 s noch als frisch und wurde nur jeden zweiten Takt gerechnet (Prod-Log 31.10.2026: 0,2 s / 14 s im Wechsel). Dazu `ReportsOverviewCache::touchLive()` aus `BookingTrackingObserver` (jede Online-Beratungsbuchung), `sync:upcoming-appointments` (bei Änderungen) und `sync:appointments-recent`: Gruppe als geändert markieren + Plan sofort anstoßen. Karten zeigen Datenstand + Aktualisieren (`reload()` → `refresh=1`, auch im Kalender) und laden bei sichtbarem Tab alle 5 Minuten still nach (`refresh_interval` in der `StatisticRegistry`, Rahmen `glattt-stats.js`) |
 | Alles andere | **Stale-while-revalidate** | Services über `StatisticsCache`, `WarmStatisticsJob('reports')` alle 15 Minuten für Übersicht (`WidgetKpiService::values` je Bericht × Standort, Monat) + Leit-Karten + Buchungsstand + alte Übersichts-Endpunkte |
 
 **App-Cockpit (Startbildschirm der iOS-App, 17.10.2026):** Das Cockpit lädt seinen Rahmen über
@@ -108,7 +108,9 @@ Rotation. Die Tagesmessung des Instituts wärmt weiterhin `stats:cache-consultat
 **Wärm-Pläne** stehen in `App\Services\Statistics\StatisticsWarmPlan` (`reports`, `sales`,
 `booking-status`, `cockpit`): Rezepte, die **dieselben Controller-/Service-Methoden wie das Web** aufrufen —
 so entstehen exakt die Schlüssel, die die Seiten anfragen. `WarmStatisticsJob` (ShouldBeUnique je
-Plan) arbeitet sie im `inline`-Modus ab: Frisches wird übersprungen. Konsole:
+Plan) arbeitet sie im `inline`-Modus ab: Frisches wird übersprungen — außer die Gruppen aus
+`StatisticsWarmPlan::touches($plan)`, die der Lauf vorab als geändert markiert (`booking-status` →
+`booking-live`), damit ein 5-Minuten-Takt nicht an einem 295 s alten „frischen" Eintrag vorbeiläuft. Konsole:
 `php artisan reports:warm-cache {reports|sales|booking-status} [--queue]`.
 
 **Infrastruktur:** PHP-FPM 12 statische Worker (vorher 8) und Cloud Run `--concurrency 12` für
@@ -119,7 +121,8 @@ nicht blockieren. Die Cron-Endpunkte legen nur noch den Job auf die Queue — vo
 
 **Gruppen und Frische:** `sales`/`kunden`/`glattt`/`ads`/`personal`/`widerrufe` 1 h,
 `hr`/`gutscheinaktion`/`widgets`/`booking-intake`/`besucher`/`kundenservice`/`trinkgeld` 15 Min,
-`schulden`/`office`/`bonus` 5 Min, `reports-overview` 15 Min (Phorest-Endpunkte 5 Min),
+`schulden`/`office`/`bonus` 5 Min, `reports-overview` 15 Min (Phorest-Endpunkte 5 Min), `booking-live` 5 Min
+(jeder Wärmlauf rechnet neu, `touchLive()` bei Buchung/Sync),
 `booking-outlook` 1 h, `free-slots` nach `consultations.free_slots.cache_minutes`.
 
 **Konventionstest:** `tests/Unit/StatisticsCacheConventionTest.php` bricht, wenn ein Endpunkt der
@@ -128,7 +131,10 @@ Terminhistorie oder ein Namens-Join auf `consultation_services` zurückkommt. Ne
 damit von Anfang an gecacht (Arbeitsregel Jan, 17.10.2026).
 
 **Abdeckung (17.10.2026):** Alle 114 Endpunkte der `StatisticRegistry` laufen über den Cache (93 per
-Service-Wrapper, 21 per `cachedReport()`/`ReportsOverviewCache`). Was dennoch kalt bleibt: der
+Service-Wrapper, 21 per `cachedReport()`/`ReportsOverviewCache`). `cachedReport()` nimmt seit 31.10.2026
+`refresh` aus dem Schlüssel und rechnet bei `refresh=1` denselben Eintrag sofort neu (vorher entstand ein
+zweiter Schlüssel mit `refresh=1`, der beim nächsten Klick selbst veraltet war → zwei Klicks nötig); die
+Antwort trägt `generated_at` für die „Stand HH:MM"-Anzeige. Was dennoch kalt bleibt: der
 allererste Aufruf einer Filterkombination, die seit zwei Tagen niemand geöffnet hat, und Zeiträume
 außerhalb des Monatsstandards, die kein Wärmplan vorrechnet.
 
