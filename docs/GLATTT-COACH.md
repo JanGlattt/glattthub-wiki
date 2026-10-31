@@ -2,12 +2,14 @@
 
 Der glattt Coach ist ein gesprochenes Rollenspiel: eine KI spielt die Kundin im Beratungsgespräch,
 die Mitarbeiterin führt das Gespräch nach dem Leitfaden der glatttipedia, am Ende kommt eine
-Bewertung mit Score. Seit 31.10.2026 als Etappe 1 (Web, nur Super-Admin) auf develop; Konzept und
-alle Entscheidungen stehen im Claude-Doc „glattt Coach – Konzept Beratungs-Trainer“ (30.10.2026).
+Bewertung mit Score. Seit 31.10.2026 als Etappe 1 (Web) und Etappe 2 (native App mit Sprache) auf
+develop, nur Super-Admin; Konzept und alle Entscheidungen stehen im Claude-Doc „glattt Coach – Konzept
+Beratungs-Trainer“ (30.10.2026).
 
-!!! nutzerhandbuch "Bedienung: folgt nach der Abnahme von Etappe 1"
-    Klickanleitung Serie *Team* (Start, Gespräch, Ergebnis, Verlauf) und Serie *App* mit Etappe 2.
-    Bis dahin ist der Coach nur für Super-Admin-Rollen sichtbar.
+!!! nutzerhandbuch "Bedienung: App 30 – glattt Coach in der App"
+    [https://hilfe.hub.glattt.com/app/30/](https://hilfe.hub.glattt.com/app/30/) — die Serie *Team*
+    (Web: Start, Gespräch, Ergebnis, Verlauf) folgt nach der Abnahme. Bis dahin ist der Coach nur für
+    Super-Admin-Rollen sichtbar.
 
 ---
 
@@ -107,15 +109,39 @@ Oberfläche dafür kommt in Etappe 3.
   die Seite lädt `simli-client` als ES-Modul von jsDelivr, `start()` verbindet per WebRTC,
   `sendAudioData()` bekommt die PCM-Bytes des WAV (Kopf über den `data`-Chunk abgeschnitten,
   6.000-Byte-Stücke). Videosekunden meldet der Client alle 30 s an `…/video` (Kosten).
-  **Kein iOS-SDK bei Simli** — die App braucht in Etappe 2 ein eigenes WebRTC-Gegenstück oder den
+  **Kein iOS-SDK bei Simli** — die App braucht in Etappe 2b ein eigenes WebRTC-Gegenstück oder den
   LiveKit-Modus (Wissen `glattt-coach-konzept`).
+
+### Sprache in der App (Etappe 2, seit 31.10.2026)
+
+Native Mehr-Seite `NativeMorePage.coach` (`ios/glatttHub/Coach/`), Startseite nach Entwurf 3 „Plan
+zuerst“ (`CoachStartView`), Gesprächsraum nach Entwurf 4 als `fullScreenCover` (`CoachStageView`),
+Ergebnis und Verlauf als Blatt (`CoachResultSheet`, `CoachHistorySheet`). Dieselben Endpunkte wie das
+Web; `data` liefert zusätzlich `can_view_results`/`can_manage`, die das Web aus der Blade-Konfiguration
+kennt. Die App startet mit `video: false` — das Video kommt in Etappe 2b.
+
+- **Hören:** `CoachSpeechListener` (`nonisolated`, Rückrufe kommen von fremden Threads): `AVAudioEngine`-
+  Tap → `SFSpeechAudioBufferRecognitionRequest` (de-DE, Zwischenergebnisse, `requiresOnDeviceRecognition`,
+  wo das Sprachpaket es kann). Pausenerkennung macht `CoachStageModel`: 1,5 s ohne neues Ergebnis →
+  `POST …/turns`. Halten-Modus (`pushToTalk`, Drag-Geste am Mikrofon), Stummschalten, Tippen als Rückfall;
+  ohne Erlaubnis (`CoachSpeechListener.authorize()` = Mikrofon **und** Spracherkennung) öffnet das Textfeld.
+  Endet die Erkennung von selbst (Zeitgrenze des Dienstes), geht Gesagtes raus, sonst hört sie wieder zu.
+- **Sprechen:** `CoachVoicePlayer` spielt das WAV (`AVAudioPlayer(data:)`), ohne WAV die Systemstimme
+  (`AVSpeechSynthesizer`, de-DE); beide warten per Continuation auf das Ende, ein Wachhund löst nach
+  Dauer + 1,5 s. Während die Kundin spricht, ist der Listener aus (kein Selbst-Mithören über den
+  Lautsprecher); Audio-Session `.playAndRecord` mit `.defaultToSpeaker`.
+- **Zeit:** Countdown aus `seconds_left`, bei 0 `finish(timeout: true)`; Bildschirm bleibt wach
+  (`isIdleTimerDisabled`). Verlassen per Wischen ruft `teardown()` (Listener, Player, Audio-Session).
+- **Nachweis:** `CoachSnapshotTests` (Startseite iPhone/iPad, Gesprächsraum Üben/Prüfung/iPad, Ergebnis,
+  Verlauf; Modell-Tests). Im Snapshot ersetzen `appointmentsStaticLayout`-Zweige Picker und
+  horizontale ScrollViews durch Chips in einer Zeile (ImageRenderer rastert beide nicht).
 
 ### Rechte, Navigation, Konventionen
 
 Rechte `use_glattt_coach`, `view_glattt_coach_results`, `manage_glattt_coach` (Katalog-Knoten
 `coach`), Migration `2026_10_31_100100` nur an Super-Admin-Rollen. Seite in der Gruppe Team
 (Sidebar, `MobileNavigation::MORE`, `NavigationGroups`), Suche in `GlobalSearchService::PAGES`,
-App-Abdeckung `geplant` (Etappe 2), Klickanleitung `geplant`. Kosten je Aufruf landen über
+App-Abdeckung `nativ` (seit 31.10.2026), Klickanleitung App 30, Serie Team `geplant`. Kosten je Aufruf landen über
 `ClaudeUsage` (Zwecke `coach.dialog`, `coach.review`) und `cost_cents` an der Session.
 
 ### Fallstricke
@@ -134,7 +160,9 @@ App-Abdeckung `geplant` (Etappe 2), Klickanleitung `geplant`. Kosten je Aufruf l
 
 ### Offen (Etappen 2 und 3)
 
-Native App (Entwurf 4 + 3, eigenes WebRTC für Simli), Zuweisungen mit Push-Anlässen, Abzeichen im
+Video-Kundin in der App (Etappe 2b: eigenes WebRTC gegen den Simli-WebSocket oder LiveKit, Bausteine
+aus den Chat-Anrufen; bis dahin `video: false`), Gerätetest von Mikrofon und Stimme durch Jan (im
+Simulator nur gebaut und gerastert), Zuweisungen mit Push-Anlässen, Abzeichen im
 `BadgeMetricCatalog`, Feier-Momente in der `TriggerRegistry`, Registry-Statistiken (Score-Verlauf,
 Pflichtsatz-Quote je Institut), Admin-Tabelle für Monatsbudget und Tageslimit (heute `config/coach.php`),
 Pflichtsätze durch das Büro markieren (die grüne Markierung ging beim Sites-Import verloren),
@@ -144,3 +172,6 @@ Klickanleitungen, EU-Prüfung der Anbieter (Simli AS, Norwegen).
 
 - **31.10.2026** — Etappe 1: Datenmodell, Startbestand aus dem Leitfaden, Engine (Dialog, Bewertung,
   Scoring, Stimme, Simli-Token, Budget), Web-Seite, Admin, Tests. Entscheidungen Jan 30./31.10.2026.
+- **31.10.2026** — Etappe 2: native App-Seite (Startseite Entwurf 3, Gesprächsraum Entwurf 4 mit Ton),
+  Zuhören auf dem Gerät, Google-Stimme als WAV, Souffleur, Ergebnis, Verlauf; Klickanleitung App 30.
+  Simli-Secret `simli-api-key` an Staging- und Prod-Web gemountet.

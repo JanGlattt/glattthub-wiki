@@ -1,0 +1,170 @@
+{
+  "out": "../pdf/App-30-glattt-Coach",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "App",
+  "nr": 30,
+  "of": 30,
+  "audience": "institute",
+  "footerArea": "App",
+  "stand": "31.10.2026",
+  "version": "1.0",
+  "title": [
+    "glattt Coach",
+    "in der App"
+  ],
+  "subtitle": "Klickanleitung für die glatttHub-App — Beratungsgespräch mit einer KI-Kundin üben: Modul und Kundentyp wählen, sprechen statt tippen, Souffleur im Übungsmodus, Ergebnis mit Score lesen",
+  "eyebrow": "App · Team",
+  "notes": [
+    "**glattt Coach** findest du unter **Mehr → glattt Coach** (iPhone) bzw. in der Seitenleiste unter Team (iPad). Im Pilot sehen ihn nur Super-Admin-Konten.",
+    "**Die App hört auf dem Gerät zu.** Beim ersten Start fragt iOS nach **Mikrofon** und **Spracherkennung** — beides erlauben, sonst bleibt nur das Tippen. Deine Stimme verlässt das Gerät nicht, nur der erkannte Text geht an die Kundin.",
+    "**Üben zählt nicht, Prüfung zählt.** Im Übungsmodus hilft der Souffleur; die Prüfung läuft ohne Hilfe und zählt für Bestscore und Abzeichen."
+  ],
+  "pages": [
+    {
+      "h1": "Startseite: Plan zuerst",
+      "sub": "Oben dein Wochenstand, darunter Zuweisungen, Modul, Modus und die Kundentypen.",
+      "card": {
+        "title": "glattt Coach",
+        "text": "Modul und Kundentyp wählen"
+      },
+      "left": {
+        "shot": "coach-start-light"
+      },
+      "leftCaption": "Wochenstand, Zuweisung mit **Starten**, Modul-Chips, **Üben** oder **Prüfung**, Kundentypen als Karten.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Wochenstand",
+          "text": "**Prüfungen diese Woche** (Ziel 3), **Bestscore**, **Typen gemeistert** und die **freien Einheiten** heute — Komplett zählt doppelt."
+        },
+        {
+          "n": 2,
+          "title": "Für dich zugewiesen",
+          "text": "Hat dir Leitung oder Büro eine Einheit zugewiesen, steht sie hier mit Fälligkeit und Mindestscore. **Starten** öffnet sie direkt als Prüfung."
+        },
+        {
+          "n": 3,
+          "title": "Modul und Modus",
+          "text": "**Komplett** (bis 15 Minuten) oder eine einzelne Phase bzw. ein Einwand. Darunter **Üben** (mit Souffleur) oder **Prüfung** (zählt)."
+        },
+        {
+          "n": 4,
+          "title": "Kundentyp antippen",
+          "text": "Punkte zeigen die Schwierigkeit, die Marke deinen Stand (**neu**, **offen**, **gemeistert**). Antippen startet — die Kundin kommt nach wenigen Sekunden."
+        }
+      ]
+    },
+    {
+      "h1": "Der Gesprächsraum",
+      "sub": "Die Kundin spricht, du antwortest frei. Nach 1,5 Sekunden Pause gilt dein Satz als beendet.",
+      "card": {
+        "title": "Gesprächsraum",
+        "text": "Sprechen statt tippen"
+      },
+      "left": {
+        "shot": "coach-stage-light"
+      },
+      "right": {
+        "shot": "coach-stage-exam-dark"
+      },
+      "leftCaption": "**Üben**: unter dem Untertitel der Kundin der Souffleur mit Phase, Bereitschaft, offenen Pflichtschritten und Tabus.",
+      "rightCaption": "**Prüfung**: ohne Souffleur — nur Kundin, Restzeit und Mikrofon.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Zuhören",
+          "text": "Die goldenen Balken schlagen aus, solange die App zuhört; darunter erscheint, was sie versteht. Während die Kundin spricht, ist das Mikrofon aus."
+        },
+        {
+          "n": 2,
+          "title": "Souffleur (nur Üben)",
+          "text": "Offene Pflichtschritte der Phase als Chips — antippen zeigt den Pflichtsatz. Rote Chips sind Tabus, die du gerade benutzt hast."
+        },
+        {
+          "n": 3,
+          "title": "Halten, Stumm, Tippen",
+          "text": "**Hand**: Halten-Modus — sprechen nur, solange du das Mikrofon gedrückt hältst (laute Umgebung). **Mikrofon**: stumm. **Tastatur**: tippen statt sprechen."
+        },
+        {
+          "n": 4,
+          "title": "Zeit und Beenden",
+          "text": "Oben rechts die Restzeit; läuft sie ab, muss die Kundin los. **Beenden** schließt regulär, **✕** bricht ab — die Einheit wird bewertet, zählt aber nicht."
+        }
+      ],
+      "hint": {
+        "text": "Die Kundin entscheidet am Ende selbst: Vertrag, kein Vertrag oder „überlegt noch“. Danach öffnet sich das Ergebnis von allein."
+      }
+    },
+    {
+      "h1": "Das Ergebnis",
+      "sub": "Score, Ampel je Phase, drei Stärken, drei Verbesserungen mit Zitat, Pflichtsätze und Transkript.",
+      "card": {
+        "title": "Ergebnis",
+        "text": "Bewertung nach dem Gespräch"
+      },
+      "left": {
+        "shot": "coach-result-light"
+      },
+      "leftCaption": "Score-Ring mit **bestanden** ab der Schwelle, darunter Dimensionen, Phasen, Tabus, Stärken, Verbesserungen, Schritte, Transkript.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Score",
+          "text": "0 bis 100 Punkte, **bestanden** ab der Schwelle aus dem Admin (Standard 75). Die Bewertung dauert etwa eine halbe Minute — solange steht „…“ im Ring."
+        },
+        {
+          "n": 2,
+          "title": "Dimensionen und Phasen",
+          "text": "Phasen, Pflichtsätze, Tabus, Zuhören, Einwände, Abschluss, Zahlen mit ihrem Gewicht; je Phase eine Ampel."
+        },
+        {
+          "n": 3,
+          "title": "Stark und daran arbeiten",
+          "text": "Je drei konkrete Punkte mit Zitat aus deinem Gespräch — die Verbesserungen nennen die Phase."
+        },
+        {
+          "n": 4,
+          "title": "Schritte und Transkript",
+          "text": "Jeder Pflichtschritt mit ✓ erfüllt, ◐ teilweise, – gefehlt, Kernaussagen angehakt, **wörtlich** als Bonus. **Noch einmal** startet dieselbe Kundin erneut."
+        }
+      ]
+    },
+    {
+      "h1": "Verlauf und iPad",
+      "sub": "„Verlauf“ oben rechts listet deine Einheiten; Leitung und Büro schalten auf das Team um.",
+      "card": {
+        "title": "Verlauf",
+        "text": "Einheiten nachlesen"
+      },
+      "left": {
+        "shot": "coach-history-light"
+      },
+      "right": {
+        "shot": "coach-start-ipad-light"
+      },
+      "leftCaption": "Jede Zeile mit Kundin, Datum, Modul, Modus, Entscheidung und Score — antippen öffnet das Ergebnis.",
+      "rightCaption": "Auf dem **iPad** stehen die Kennzahlen in einer Zeile und die Kundentypen dreispaltig; der Gesprächsraum nutzt den ganzen Bildschirm.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Meine oder Team",
+          "text": "Mit dem Recht „Ergebnisse sehen“ erscheint der Umschalter **Meine | Team** — das Team zeigt den eigenen Standort."
+        },
+        {
+          "n": 2,
+          "title": "Abgebrochen",
+          "text": "Abgebrochene Einheiten stehen mit Hinweis in der Liste; sie werden bewertet, zählen aber nicht."
+        },
+        {
+          "n": 3,
+          "title": "Offene Einheit",
+          "text": "Hast du den Raum verlassen, bietet die Startseite 30 Minuten lang **Fortsetzen** oder **Verwerfen** an."
+        }
+      ],
+      "hint": {
+        "text": "Die Video-Kundin (lippensynchrones Bild) gibt es zuerst im Hub am Rechner; in der App folgt sie in einer späteren Version — bis dahin siehst du den Kreis mit der Initiale."
+      }
+    }
+  ]
+}

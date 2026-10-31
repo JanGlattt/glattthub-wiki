@@ -1,6 +1,6 @@
 # Klickanleitungen App — Quellen
 
-Quellen der Serie **App 1–29** (die glatttHub-App auf iPad und iPhone). Standard und
+Quellen der Serie **App 1–30** (die glatttHub-App auf iPad und iPhone). Standard und
 Deck-Format: `klickanleitungen/README.md` und Wiki `docs/KLICKANLEITUNGEN.md`; die Technik der
 App steht im Wiki `IOS-APP.md`.
 
@@ -30,6 +30,7 @@ App steht im Wiki `IOS-APP.md`.
 | **26 — Ruhezeiten in der App** | Pläne mit Uhr wie der iOS-Schlafplan, eigene Wochentage, ganztags, im Urlaub stumm (askDANTE), Ausnahmen für Bereiche, Anlässe, Chats und Personen; iPad mit Uhr links (seit 14.10.2026) |
 
 | **28 — Die glatttipedia in der App** | Umschalter Institut · Büro · Leitung, Kapitelliste, Suche, Seite als Fließtext mit Chips und Sprungliste, Prozesse als Schrittfolge, Lightbox, Pflichtseite bestätigen, Hilfreich/Veraltet, iPad mit Seitenleiste · Text · Inhaltsverzeichnis (seit 19.10.2026, Bilder aus WissenSnapshotTests) |
+| **30 — glattt Coach in der App** | Startseite „Plan zuerst“ (Wochenstand, Zuweisungen, Modul, Üben/Prüfung, Kundentypen), Gesprächsraum im Vollbild mit Zuhören auf dem Gerät, Halten/Stumm/Tippen, Souffleur, Ergebnis mit Score und Transkript, Verlauf, iPad dreispaltig (seit 31.10.2026, Bilder aus CoachSnapshotTests) |
 | **29 — Mein Profil in der App** | Kopfkarte mit Foto und Zugangsstatus, PIN ändern in drei Schritten, Sitzungen und App-Geräte, Admin-Zugang (Passkey, Passwort), iPad zwei Spalten (seit 25.10.2026, Bilder aus ProfileSnapshotTests) |
 Die ersten sieben, 9 (Gutscheine) und 12 (Termin buchen) richten sich an **die Institute**; 6 (Management-Sicht) zusätzlich an Leitung und Büro, 8 (Verträge), 10 (App-Geräte), 16 (Forderungen), 17 (Widerrufe), 18 (Zufriedenheit), 19 (Unternehmensverträge) und 20 (Bonus-Verwaltung) an Leitung und Büro.
 
