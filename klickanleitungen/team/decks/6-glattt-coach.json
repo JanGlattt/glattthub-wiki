@@ -1,0 +1,236 @@
+{
+  "out": "../pdf/Team-6-glattt-Coach",
+  "meta": "../meta.json",
+  "shots": "../shots",
+  "series": "Team",
+  "nr": 6,
+  "of": 6,
+  "audience": "institut",
+  "footerArea": "Team",
+  "stand": "01.11.2026",
+  "version": "1.0",
+  "title": [
+    "glattt Coach:",
+    "Beratung trainieren"
+  ],
+  "subtitle": "Klickanleitung für den glatttHub — Beratungsgespräch mit einer KI-Kundin üben: Modul und Kundentyp wählen, sprechen statt tippen, Ergebnis lesen, Zuweisungen für das Team",
+  "eyebrow": "Team · glattt Coach",
+  "notes": [
+    "**glattt Coach** steht im Menü unter **Team → glattt Coach**. Im Pilot sehen ihn nur Super-Admin-Konten, danach erst ein Institut, dann alle.",
+    "**Der Browser hört zu.** Chrome oder Safari fragen beim ersten Start nach dem Mikrofon — erlauben, sonst bleibt nur das Tippen. Deine Stimme wird nie gespeichert, nur der erkannte Text geht an die Kundin.",
+    "**Üben zählt nicht, Prüfung zählt.** Im Übungsmodus hilft der Souffleur; die Prüfung läuft ohne Hilfe und zählt für Bestscore, Abzeichen und zugewiesene Einheiten."
+  ],
+  "pages": [
+    {
+      "h1": "Die Startseite",
+      "sub": "Oben dein Wochenstand, darunter das, was dir zugewiesen wurde, dann Modul und Kundentyp.",
+      "card": {
+        "title": "glattt Coach",
+        "text": "Team → glattt Coach"
+      },
+      "left": {
+        "shot": "c1-coach-start"
+      },
+      "leftCaption": "Modus **Üben | Prüfung** und **Video-Kundin** im Kopf, Wochenstand, Zuweisung mit **Starten**, darunter „Zuweisungen verwalten“ (nur Leitung und Büro).",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Üben oder Prüfung",
+          "text": "**Üben** zeigt im Gespräch den Souffleur, **Prüfung** nicht — nur die Prüfung zählt. Der Schalter **Video-Kundin** schaltet das Bild aus, wenn das Netz schwach ist."
+        },
+        {
+          "n": 2,
+          "title": "Wochenstand",
+          "text": "**Prüfungen diese Woche** (Ziel 3), **Bestscore**, **Typen gemeistert** und die **freien Einheiten** heute — eine Komplett-Einheit zählt doppelt."
+        },
+        {
+          "n": 3,
+          "title": "Für dich zugewiesen",
+          "text": "Hat dir Leitung oder Büro eine Einheit zugewiesen, steht sie hier mit Fälligkeit und Mindestscore. **Starten** öffnet sie direkt als Prüfung."
+        },
+        {
+          "n": 4,
+          "title": "Verlauf",
+          "text": "Öffnet deine bisherigen Einheiten; Leitung und Büro schalten dort auf das Team um und sehen die Statistiken."
+        }
+      ]
+    },
+    {
+      "h1": "Modul und Kundentyp wählen",
+      "sub": "Komplett in bis zu 15 Minuten oder eine einzelne Phase — danach die Kundin, mit der du üben willst.",
+      "card": {
+        "title": "Kundentyp wählen",
+        "text": "Antippen startet"
+      },
+      "left": {
+        "shot": "c2-coach-typen"
+      },
+      "leftCaption": "Die Kundentypen als Karten: Ziffer = Schwierigkeit 1–5, Marke = dein Stand (**neu**, **offen**, **gemeistert**), Stimmung und Bestscore.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Modul",
+          "text": "**Komplett** (alle fünf Phasen), **Welcome und Bedarfsanalyse**, **Trying is buying**, **glattt Paket erklären**, **Verkauf und Abschluss** oder **Einwand** — jedes Modul hat sein Zeitlimit."
+        },
+        {
+          "n": 2,
+          "title": "Kundentyp",
+          "text": "Jede Karte ist ein Typ aus dem Admin — von der Entschlossenen (1) bis zum Schwierigen (5). Der Hub würfelt daraus eine konkrete Kundin mit Namen, Alter und Anlass."
+        },
+        {
+          "n": 3,
+          "title": "Stand",
+          "text": "**gemeistert** heißt: mindestens eine Prüfung mit diesem Typ bestanden. Klick auf die Karte — die Kundin begrüßt dich nach wenigen Sekunden."
+        }
+      ],
+      "hint": {
+        "text": "Das Tageslimit und die Schwelle „bestanden“ pflegt das Büro im Admin unter **Coach: Einstellungen**; dort stehen auch Kundentypen, Skript-Schritte, Einwände und Tabus."
+      }
+    },
+    {
+      "h1": "Der Gesprächsraum",
+      "sub": "Die Kundin spricht, du antwortest frei. Nach 1,5 Sekunden Pause gilt dein Satz als beendet.",
+      "card": {
+        "title": "Gesprächsraum",
+        "text": "Sprechen statt tippen"
+      },
+      "left": {
+        "shot": "c4-coach-gespraech"
+      },
+      "leftCaption": "Vollbild mit der Kundin, Restzeit oben rechts; im Übungsmodus der Souffleur mit Phase, Bereitschaft, offenen Pflichtschritten und Tabus; unten Pegel, erkannter Text und die Knöpfe.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Zuhören",
+          "text": "Die Balken schlagen aus, solange der Browser zuhört; darunter steht, was er versteht. Während die Kundin spricht, ist das Mikrofon aus."
+        },
+        {
+          "n": 2,
+          "title": "Souffleur (nur Üben)",
+          "text": "Offene Pflichtschritte der Phase als Chips — anklicken zeigt den Pflichtsatz. Rote Chips sind Tabus, die du gerade benutzt hast („aber“ auf einen Einwand, „Schmerz“ …)."
+        },
+        {
+          "n": 3,
+          "title": "Halten, Stumm, Tippen",
+          "text": "**Hand**: Halten-Modus — sprechen nur, solange die Maus auf dem Mikrofon gedrückt ist. **Mikrofon**: stumm. **Stift**: tippen statt sprechen. **Kamera**: Video aus, nur Ton."
+        },
+        {
+          "n": 4,
+          "title": "Zeit und Beenden",
+          "text": "Läuft die Zeit ab, muss die Kundin los. **Beenden** schließt regulär, **✕** bricht ab — die Einheit wird bewertet, zählt aber nicht."
+        }
+      ],
+      "hint": {
+        "text": "Die Kundin entscheidet am Ende selbst: Vertrag, kein Vertrag oder „überlegt noch“. Danach öffnet sich das Ergebnis von allein — die Bewertung braucht etwa eine halbe Minute."
+      }
+    },
+    {
+      "h1": "Das Ergebnis",
+      "sub": "Score, Ampel je Phase, Dimensionen, drei Stärken, drei Verbesserungen mit Zitat, Pflichtsätze und Transkript.",
+      "card": {
+        "title": "Ergebnis",
+        "text": "Bewertung nach dem Gespräch"
+      },
+      "left": {
+        "shot": "c5-coach-ergebnis"
+      },
+      "right": {
+        "shot": "c6-coach-verbesserungen"
+      },
+      "leftCaption": "Score-Ring mit **bestanden** ab der Schwelle, Zusammenfassung, Dimensionen mit Gewicht, Phasen-Ampel und Tabus.",
+      "rightCaption": "**Daran arbeiten**: drei konkrete Punkte mit Phase und Zitat aus deinem Gespräch.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Score",
+          "text": "0 bis 100 Punkte, **bestanden** ab der Schwelle aus dem Admin (Standard 75). Bei einer bestandenen Prüfung feiert der Hub kurz — und zugewiesene Einheiten gelten damit als erledigt."
+        },
+        {
+          "n": 2,
+          "title": "Dimensionen",
+          "text": "Skripttreue je Phase, Pflichtsätze, Tabus, Zuhören, Einwände, Abschluss und Zahlen — mit ihrem Gewicht am Gesamtscore."
+        },
+        {
+          "n": 3,
+          "title": "Phasen",
+          "text": "Je Phase eine Ampel: grün ab 80, orange ab 60, darunter rot. Darunter die Tabus mit Zähler."
+        },
+        {
+          "n": 4,
+          "title": "Weiter unten",
+          "text": "**Das war stark** und **Daran arbeiten** mit Zitaten, dann jeder Pflichtschritt mit ✓ erfüllt, ◐ teilweise, – gefehlt und das komplette Transkript. **Noch einmal** startet dieselbe Kundin erneut."
+        }
+      ]
+    },
+    {
+      "h1": "Zuweisungen (Leitung und Büro)",
+      "sub": "Eine Einheit für eine Person oder das ganze Team eines Standorts — mit Fälligkeit, Mindestscore und Notiz.",
+      "card": {
+        "title": "Neue Zuweisung",
+        "text": "Zuweisungen verwalten"
+      },
+      "left": {
+        "shot": "c3-coach-zuweisung"
+      },
+      "leftCaption": "Das Fenster **Neue Zuweisung**: Personen ankreuzen oder Standort-Team wählen, Modul, Kundentyp, Mindestscore, Fälligkeit, Notiz.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Für wen",
+          "text": "**Personen** zeigt alle mit Coach-Zugang in deinen Standorten — mehrere ankreuzen geht. **Standort-Team** weist dem ganzen Institut zu."
+        },
+        {
+          "n": 2,
+          "title": "Was",
+          "text": "Modul und optional der Kundentyp. Ohne Typ darf die Person selbst wählen."
+        },
+        {
+          "n": 3,
+          "title": "Ziel und Frist",
+          "text": "**Mindestscore** (leer = bestanden reicht) und **Fällig am**. Die Person bekommt sofort eine Mitteilung und einen Push; ab dem Vortag der Fälligkeit erinnert der Hub täglich."
+        },
+        {
+          "n": 4,
+          "title": "Verwalten",
+          "text": "Die Karte **Zuweisungen verwalten** zeigt offene, überfällige und erledigte Zuweisungen deiner Sicht. Der Papierkorb löscht eine Zuweisung; bestandene melden sich bei dir zurück."
+        }
+      ]
+    },
+    {
+      "h1": "Verlauf und Statistik",
+      "sub": "Alle Einheiten mit Score, mit Recht auch das Team — darunter die Statistiken, die auch im Eigenen Dashboard stehen.",
+      "card": {
+        "title": "Verlauf",
+        "text": "Meine | Team"
+      },
+      "left": {
+        "shot": "c7-coach-verlauf"
+      },
+      "right": {
+        "shot": "c8-coach-statistik"
+      },
+      "leftCaption": "Die Liste der Einheiten: Wann, Wer, Kundin, Modul, Modus, Entscheidung, Score — ein Klick öffnet das Ergebnis.",
+      "rightCaption": "**Prüfungen und Score im Verlauf** je Monat und **Score je Mitarbeiterin** — Diagramm oder Tabelle, exportierbar.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Meine oder Team",
+          "text": "Mit dem Recht „Coach-Ergebnisse sehen“ (Leitung, Büro, Geschäftsführung) erscheint **Meine | Team** — das Team zeigt den gewählten Standort inklusive Transkript."
+        },
+        {
+          "n": 2,
+          "title": "Statistiken",
+          "text": "Die beiden Karten gibt es wie jede Statistik auch als Kachel im **Eigenen Dashboard**; der Standortfilter der Seitenleiste wirkt."
+        },
+        {
+          "n": 3,
+          "title": "Export",
+          "text": "**Export** im Seitenkopf liefert beide Auswertungen als CSV, exakt wie angezeigt."
+        }
+      ],
+      "hint": {
+        "text": "Dieselbe Seite gibt es in der App (Mehr → glattt Coach): dort hört das iPhone zu — Bedienung in **App 30**."
+      }
+    }
+  ]
+}
