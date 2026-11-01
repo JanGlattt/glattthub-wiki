@@ -229,3 +229,4 @@ zweiwöchiger Pilot-Vergleich (Konzept Stufe B).
   Feier-Momente und drei Abzeichen, Registry-Statistiken, Kachel „Mein glattt Coach“ (Startseite + Cockpit),
   Limits am Skript; Klickanleitung Team 6.
 - **01.11.2026** — Etappe 2b: Video-Kundin in der App über eigenes WebRTC gegen Simli, ICE-Server über den Hub.
+- **01.11.2026** — Auf Prod (Merge aa968de1): alle Etappen live, Rechte per Migration nur an Super-Admin-Rollen (Pilot); Gamification-Anlässe im Admin noch aus.
