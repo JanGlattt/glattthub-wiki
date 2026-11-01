@@ -232,6 +232,15 @@ App-Abdeckung `nativ` (seit 31.10.2026), Klickanleitung App 30, Serie Team `gepl
   Seitdem holt der Hub das Token auf Cloud Run vom **Metadaten-Server** des Laufzeit-Dienstkontos
   (`GOOGLE_TOKEN_SOURCE=auto`, erkannt an `K_SERVICE`), der Schlüssel ist nur noch Rückfall und der
   Weg für lokale Umgebungen. Wissen `google-token-metadaten-server`.
+- Der Metadaten-Server gibt dasselbe Token bis kurz vor Ablauf aus: `expires_in` kann klein sein. Der
+  Hub cacht es deshalb nur `expires_in − 300 s` und wiederholt Google-Aufrufe bei 401 einmal mit frischem
+  Token (`GoogleServiceAccount::withToken()`); vorher 50 Minuten fest → nach einer halben Stunde 401 für
+  Stimme und Erkennung (01.11.2026).
+- Der Simli-Client lebt als Closure-Variable der Alpine-Factory, nicht im `x-data`: Alpine kapselt
+  Objekte in reaktive Proxys, `this.simli !== simli` ist dann immer wahr (die Seite schloss die frische
+  Sitzung sofort mit `DONE`), und WebSocket/PeerConnection vertragen keinen Proxy als Empfänger.
+  Wissen `alpine-proxy-identitaet-browser-objekte`.
+- Client-Meldungen (`…/client-event`) werden als `warning` geloggt — Prod läuft mit `LOG_LEVEL=warning`.
 - Zuhören im Browser „geht nicht, ich muss tippen“ = die Browser-Spracherkennung meldet still
   `network` (Desktop-App) oder `service-not-allowed` (Safari) — der Aufnahme-Rückfall übernimmt
   (siehe oben); bleibt es beim Tippen, fehlt der Mikrofon-Zugriff.
@@ -264,3 +273,4 @@ zweiwöchiger Pilot-Vergleich (Konzept Stufe B).
 - **01.11.2026** — Auf Prod (Merge aa968de1): alle Etappen live, Rechte per Migration nur an Super-Admin-Rollen (Pilot); Gamification-Anlässe im Admin noch aus.
 - **01.11.2026** — Web-Gesprächsraum nach dem ersten Prod-Test: Aufnahme-Rückfall mit Google Speech-to-Text (`…/transcribe`) für Desktop-App und Safari, Simli-Client nach SDK-API mit ICE-Servern vom Hub (vorher kein Video), Google-Token auf Cloud Run vom Metadaten-Server (Schlüssel im Secret war ungültig, Stimme fiel auf die Systemstimme zurück).
 - **01.11.2026** — Zweiter Prod-Test: Simli-SDK durch eigenen compose-Client ersetzt (SDK sprach das alte Protokoll, nie Video), Pausen-Erkennung mit adaptiver Schwelle (nichts kam an, weil Raumgeräusch nie als Stille galt), Mitschrift alle 2,5 s und Live-Pegel, Client-Meldungen ins Hub-Log.
+- **01.11.2026** — Dritter Prod-Test: Google-Token nur bis kurz vor Ablauf gecacht und bei 401 erneuert (Stimme und Erkennung fielen nach 34 Minuten aus), Simli-Client aus dem Alpine-Zustand genommen (Proxy-Identität schloss die Sitzung sofort), Video lokal gegen Simli bewiesen.
