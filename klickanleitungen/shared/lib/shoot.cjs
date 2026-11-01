@@ -149,7 +149,9 @@ async function login(page, ctx) {
         e.closest('form').requestSubmit();
       }, CREDS);
     }
-    await page.waitForURL(u => !u.toString().includes('/login'), { timeout: 20000 });
+    // Nur auf den URL-Wechsel warten, nicht auf „load“ der Startseite — das Cockpit auf Staging
+    // braucht mit allen Karten über 20 s, der Lauf navigiert danach ohnehin zur Zielseite (01.11.2026)
+    await page.waitForURL(u => !u.toString().includes('/login'), { timeout: 45000, waitUntil: 'domcontentloaded' });
     await ctx.storageState({ path: STATE });
   }
 }
