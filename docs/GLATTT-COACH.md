@@ -102,16 +102,29 @@ Oberfläche dafür kommt in Etappe 3.
 
 ### Sprache und Video im Browser
 
-- Hören: `SpeechRecognition` (de-DE, `continuous`, `interimResults`); Stille von 1,5 s sendet
-  (`armSilence`), Chrome beendet die Erkennung nach kurzer Stille selbst → `onend` startet neu.
-  Halten-Modus (`pushToTalk`) und Tippen als Rückfall; Mikrofon ist während der Antwort aus.
-- Sprechen: WAV aus der Antwort als `Audio`-Element; ohne WAV `speechSynthesis`.
-- Video: `POST …/simli-token` holt ein Simli-Sitzungstoken (Gesicht des Typs, 5 Minuten gültig),
-  die Seite lädt `simli-client` als ES-Modul von jsDelivr, `start()` verbindet per WebRTC,
-  `sendAudioData()` bekommt die PCM-Bytes des WAV (Kopf über den `data`-Chunk abgeschnitten,
-  6.000-Byte-Stücke). Videosekunden meldet der Client alle 30 s an `…/video` (Kosten).
-  **Kein iOS-SDK bei Simli** — die App braucht in Etappe 2b ein eigenes WebRTC-Gegenstück oder den
-  LiveKit-Modus (Wissen `glattt-coach-konzept`).
+- Hören, zwei Wege (`listenMode`, seit 01.11.2026): **Browser-Erkennung** `SpeechRecognition`
+  (de-DE, `continuous`, `interimResults`; Stille von 1,5 s sendet über `armSilence`, Chrome beendet
+  die Erkennung nach kurzer Stille selbst → `onend` startet neu) — nur dort, wo sie wirklich läuft.
+  **Aufnahme-Rückfall** für die Desktop-App (Chromium ohne Google-Schlüssel meldet bei jedem Start
+  `network`) und Safari ohne Diktat (`service-not-allowed`): `getUserMedia` → `MediaRecorder`
+  (WebM/Opus, in Safari MP4), ein `AnalyserNode` misst den Pegel (ab 0,02 RMS gilt „es wird
+  gesprochen“), 1,5 s Stille schließt das Stück, `POST …/transcribe` (multipart `audio` + `seconds`)
+  erkennt es über `CoachSpeechService::transcribe()` → `SpeechToTextService::recognize()` (Google
+  STT v2, Chirp 2, europe-west4, Format erkennt die API) und der Client schickt den Text als Zug.
+  Die Desktop-App nimmt den Rückfall immer, andere Browser wechseln beim ersten Fehler
+  (`switchToRecorder`). Kosten je Sekunde über `sttCostCents()` (`coach.stt_usd_per_minute`).
+  Halten-Modus (`pushToTalk`) und Tippen bleiben als Rückfall; Mikrofon ist während der Antwort aus.
+- Sprechen: WAV aus der Antwort als `Audio`-Element; ohne WAV `speechSynthesis` (die „Computerstimme“
+  — sie heißt: Google TTS hat gerade kein Token oder keine Stimme geliefert, siehe Fallstricke).
+- Video: `POST …/simli-token` holt ein Simli-Sitzungstoken (Gesicht des Typs, 5 Minuten gültig) samt
+  ICE-Servern; die Seite lädt `simli-client@1` als ES-Modul von jsDelivr und folgt dessen API:
+  `new SimliClient()`, `Initialize({ session_token, videoRef, audioRef, enableSFU })`,
+  `start(iceServers)`. **Die ICE-Server müssen mitgegeben werden** — ohne sie holt das SDK selbst
+  welche über `http${SimliURL}/getIceServers` mit dem API-Schlüssel, den es im Browser nicht gibt
+  (01.11.2026: Dauerschleife auf `/hub/http/getIceServers`, kein Video). `sendAudioData()` bekommt
+  die PCM-Bytes des WAV (Kopf über den `data`-Chunk abgeschnitten, 6.000-Byte-Stücke), `close()`
+  beendet die Sitzung (`DONE`). Videosekunden meldet der Client alle 30 s an `…/video` (Kosten).
+  **Kein iOS-SDK bei Simli** — die App hat ihr eigenes WebRTC-Gegenstück (Etappe 2b).
 
 ### Sprache in der App (Etappe 2, seit 31.10.2026)
 
@@ -201,8 +214,16 @@ App-Abdeckung `nativ` (seit 31.10.2026), Klickanleitung App 30, Serie Team `gepl
 - `ClaudeClient` wirft bei ungültigem Schlüssel eine `AuthenticationException`; Controller fangen
   `Throwable` und antworten 503 mit deutscher Meldung. Lokal muss `ANTHROPIC_API_KEY` gültig sein.
 - Google TTS braucht `texttospeech.googleapis.com` im Projekt (seit 31.10.2026 aktiv) und ein
-  gültiges Service-Konto (`GoogleServiceAccount::cloudAccessToken()`); schlägt die Stimme fehl, geht es
-  still mit der Systemstimme weiter (`audio_base64` = null).
+  gültiges Token (`GoogleServiceAccount::cloudAccessToken()`); schlägt die Stimme fehl, geht es
+  still mit der Systemstimme weiter (`audio_base64` = null) — im Log steht dann „Google-Stimme nicht
+  verfügbar“. Am 01.11.2026 war der JSON-Schlüssel im Prod-Secret `google-service-account-json`
+  ungültig (400 von `oauth2.googleapis.com/token`), seit Tagen auch für glatttBerts Embeddings.
+  Seitdem holt der Hub das Token auf Cloud Run vom **Metadaten-Server** des Laufzeit-Dienstkontos
+  (`GOOGLE_TOKEN_SOURCE=auto`, erkannt an `K_SERVICE`), der Schlüssel ist nur noch Rückfall und der
+  Weg für lokale Umgebungen. Wissen `google-token-metadaten-server`.
+- Zuhören im Browser „geht nicht, ich muss tippen“ = die Browser-Spracherkennung meldet still
+  `network` (Desktop-App) oder `service-not-allowed` (Safari) — der Aufnahme-Rückfall übernimmt
+  (siehe oben); bleibt es beim Tippen, fehlt der Mikrofon-Zugriff.
 - Die Queue muss laufen, sonst bleibt die Ergebnisseite auf „Bewertung läuft“ (Job auf `default`);
   in Tests `Queue::fake()`, sonst rechnet der Sync-Treiber die Bewertung mitten in der Anfrage.
 - Der magische Übergang „Aber jetzt prüfen wir erstmal …“ ist vom Tabu „aber“ ausgenommen
@@ -230,3 +251,4 @@ zweiwöchiger Pilot-Vergleich (Konzept Stufe B).
   Limits am Skript; Klickanleitung Team 6.
 - **01.11.2026** — Etappe 2b: Video-Kundin in der App über eigenes WebRTC gegen Simli, ICE-Server über den Hub.
 - **01.11.2026** — Auf Prod (Merge aa968de1): alle Etappen live, Rechte per Migration nur an Super-Admin-Rollen (Pilot); Gamification-Anlässe im Admin noch aus.
+- **01.11.2026** — Web-Gesprächsraum nach dem ersten Prod-Test: Aufnahme-Rückfall mit Google Speech-to-Text (`…/transcribe`) für Desktop-App und Safari, Simli-Client nach SDK-API mit ICE-Servern vom Hub (vorher kein Video), Google-Token auf Cloud Run vom Metadaten-Server (Schlüssel im Secret war ungültig, Stimme fiel auf die Systemstimme zurück).
