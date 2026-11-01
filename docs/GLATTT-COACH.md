@@ -116,15 +116,26 @@ Oberfläche dafür kommt in Etappe 3.
   Halten-Modus (`pushToTalk`) und Tippen bleiben als Rückfall; Mikrofon ist während der Antwort aus.
 - Sprechen: WAV aus der Antwort als `Audio`-Element; ohne WAV `speechSynthesis` (die „Computerstimme“
   — sie heißt: Google TTS hat gerade kein Token oder keine Stimme geliefert, siehe Fallstricke).
-- Video: `POST …/simli-token` holt ein Simli-Sitzungstoken (Gesicht des Typs, 5 Minuten gültig) samt
-  ICE-Servern; die Seite lädt `simli-client@1` als ES-Modul von jsDelivr und folgt dessen API:
-  `new SimliClient()`, `Initialize({ session_token, videoRef, audioRef, enableSFU })`,
-  `start(iceServers)`. **Die ICE-Server müssen mitgegeben werden** — ohne sie holt das SDK selbst
-  welche über `http${SimliURL}/getIceServers` mit dem API-Schlüssel, den es im Browser nicht gibt
-  (01.11.2026: Dauerschleife auf `/hub/http/getIceServers`, kein Video). `sendAudioData()` bekommt
-  die PCM-Bytes des WAV (Kopf über den `data`-Chunk abgeschnitten, 6.000-Byte-Stücke), `close()`
-  beendet die Sitzung (`DONE`). Videosekunden meldet der Client alle 30 s an `…/video` (Kosten).
-  **Kein iOS-SDK bei Simli** — die App hat ihr eigenes WebRTC-Gegenstück (Etappe 2b).
+- Video: `POST …/simli-token` holt ein Simli-Sitzungstoken (Gesicht des Typs, 5 Minuten gültig, aus
+  `/compose/token`) samt ICE-Servern und `ws_url`. Die Seite spricht Simlis **compose-Protokoll
+  selbst** (`CoachSimliCompose` in `coach-page.js`, dasselbe wie `CoachVideoClient` der App):
+  `wss://api.simli.ai/compose/webrtc/p2p?session_token=…&enableSFU=true`, `RTCPeerConnection` mit zwei
+  recvonly-Transceivern, Offer erst nach vollständigem ICE-Sammeln als erste Nachricht, Antwort
+  `{type: "answer"}`, dann `START`; danach PCM16-Bytes des WAV (Kopf über den `data`-Chunk
+  abgeschnitten) als Binärframes zu 6.000 Byte, `DONE` beendet. Beide Spuren landen in einem
+  `MediaStream` am `<video>`. **Das npm-SDK `simli-client` ist raus** (01.11.2026): Es spricht das alte
+  Protokoll (`/startAudioToVideoSession` + `wss://…/StartWebRTCSession`) und kennt die compose-Token
+  des Hubs nicht — „Video gerade nicht verfügbar“ in jedem Browser. Videosekunden meldet der Client
+  alle 30 s an `…/video` (Kosten).
+- Mitschrift und Pegel (Aufnahme-Rückfall, 01.11.2026): Die Schwelle folgt dem Raumgeräusch
+  (`noiseFloor`, gleitender Mittelwert in Stille; Sprechen ab `max(0,02; Floor × 2,5 + 0,008)` RMS),
+  sonst gilt bei Lüfter oder Klimaanlage nie Stille und es wird nie gesendet. Während des Sprechens
+  geht alle 2,5 s das bisher Aufgenommene als Zwischenstand an `…/transcribe` (`interim=1`) und
+  erscheint als Mitschrift; nach 20 s wird ein Stück ohnehin abgeschlossen. Die Balken der
+  Hör-Anzeige zeigen den echten Pegel (`--coach-level` als CSS-Variable, `.coach-listen.is-live`).
+- Fehlersuche ohne Konsole: `POST …/client-event` (`kind`, `message`) schreibt Client-Meldungen
+  (Simli-Fehler, Mikrofon verweigert, Erkennung fehlgeschlagen, gewählter Hör-Modus mit User-Agent)
+  als `glattt Coach: Client` ins Hub-Log — die Desktop-App hat keine erreichbare Konsole.
 
 ### Sprache in der App (Etappe 2, seit 31.10.2026)
 
@@ -252,3 +263,4 @@ zweiwöchiger Pilot-Vergleich (Konzept Stufe B).
 - **01.11.2026** — Etappe 2b: Video-Kundin in der App über eigenes WebRTC gegen Simli, ICE-Server über den Hub.
 - **01.11.2026** — Auf Prod (Merge aa968de1): alle Etappen live, Rechte per Migration nur an Super-Admin-Rollen (Pilot); Gamification-Anlässe im Admin noch aus.
 - **01.11.2026** — Web-Gesprächsraum nach dem ersten Prod-Test: Aufnahme-Rückfall mit Google Speech-to-Text (`…/transcribe`) für Desktop-App und Safari, Simli-Client nach SDK-API mit ICE-Servern vom Hub (vorher kein Video), Google-Token auf Cloud Run vom Metadaten-Server (Schlüssel im Secret war ungültig, Stimme fiel auf die Systemstimme zurück).
+- **01.11.2026** — Zweiter Prod-Test: Simli-SDK durch eigenen compose-Client ersetzt (SDK sprach das alte Protokoll, nie Video), Pausen-Erkennung mit adaptiver Schwelle (nichts kam an, weil Raumgeräusch nie als Stille galt), Mitschrift alle 2,5 s und Live-Pegel, Client-Meldungen ins Hub-Log.
