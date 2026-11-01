@@ -225,7 +225,7 @@ System-Browser. Zum Testen gegen Staging:
 | Kontextmenü Tab | Neu laden, Duplizieren, Tab schließen, Andere Tabs schließen |
 | Zurück / Vor / Neu laden | `navigationHistory.goBack()/goForward()` und `reload()` des aktiven Tabs; Zustand (`canGoBack`/`canGoForward`) wird bei `did-navigate` und `did-navigate-in-page` (Livewire `wire:navigate`) neu gesendet |
 | Titel | `page-title-updated` → Präfix „glatttHub - " abgeschnitten; Fenstertitel folgt dem aktiven Tab |
-| Farbschema | Seiten-Preload meldet `html.dark` per `electron-theme:changed` (MutationObserver); nur der aktive Tab bestimmt die Leiste |
+| Farbschema | Seiten-Preload meldet `html.dark` per `electron-theme:changed` (MutationObserver); **seit 1.2.13 je Tab gemerkt** (`tab.theme`), die Leiste zeigt das des aktiven Tabs und schaltet beim Tab-Wechsel mit (`applyTheme`). Neue Tabs erben das Schema des aktiven Tabs; PDF-/Bild-Tabs (`tab.document`) ignorieren Meldungen — die PDF-Ansicht hat kein `html.dark` und meldete immer „hell“, die Leiste sprang beim Öffnen eines Dokuments in den Tagmodus |
 | Letzter Tab schließen | schließt das Fenster (wie ⌘W im Browser) |
 | Admin-Panel | `openOrFocus(ADMIN_URL)` — vorhandenen Admin-Tab aktivieren statt neu öffnen |
 | Push-Klick | `loadInActive(url)` lädt die Ziel-URL im aktiven Tab |
@@ -973,6 +973,7 @@ Das Profil wird nur bei Änderungen der Berechtigungen neu erzeugt; `asc-profile
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 01.11.2026 | 1.2.13 | **Tab-Leiste bleibt im Farbschema der Seite:** Dokumente und Bilder schalten die Leiste nicht mehr hell, sie übernehmen das Schema der Seite, aus der sie geöffnet wurden; die Leiste bleibt nach dem Start nicht mehr hell hängen |
 | 01.11.2026 | Hub (SW 2.1.8) | **Vertrag lud weiter herunter:** Der Service Worker fing den PDF-Aufruf ab, die Desktop-App erkannte ihn nicht als Seitenaufruf. Dokument-Adressen laufen jetzt am Worker vorbei — ohne neue App-Version |
 | 30.10.2026 | 1.2.12 | **Dokumente immer im neuen Tab statt als Download:** Vertrag, SEPA-Mandat, Kundenservice-Anlage und jedes andere PDF/Bild aus dem Hub öffnet in einem neuen Tab, auch wenn der Link im selben Tab lädt oder der Server `attachment`/`octet-stream` schickt; Herunterladen über die PDF-Ansicht |
 | 24.10.2026 | 1.2.8 | **Passkeys für die Admin-Schranke:** System-Passkeys (iCloud-Schlüsselbund wie in Safari; Bitwarden ist auf macOS kein System-Anbieter) über `app.configureWebAuthn({ platformPasskeys: true })`, Entitlements für Associated Domains, neues Provisioning-Profil; die Schranke bietet „Mit Passkey bestätigen“, wenn das Konto einen Passkey hat |
