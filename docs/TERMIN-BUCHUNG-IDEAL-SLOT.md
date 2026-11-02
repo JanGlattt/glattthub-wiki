@@ -105,6 +105,17 @@ zeigt Kunde → Institut → Terminart → Vorschläge. Nach dem Buchen lädt
 Terminübersicht" in `theme_glattt.css` (`.booking-panel-glattt-*`), Slots über die vorhandenen
 `.slot-calendar`/`.slot-pill`.
 
+**Terminabstand (seit 02.11.2026).** Sobald eine Bestandskundin gewählt ist, steht unter ihrer Karte
+„Letzte Behandlung vor 8 Wochen (am 07.09.2026)" — derselbe `last_interval` aus `GET services`
+(`TreatmentIntervalService`, letzte bezahlte Behandlung ohne Beratung und Begleitleistungen), den
+bisher nur das Folgetermin-Fenster zeigte. Anlass: Viele Kundinnen sind am Ende ihres Pakets auf
+einem 8–10-Wochen-Rhythmus, der beim Buchen nicht sichtbar war. Ist bei einer Behandlung eine Zeit
+gewählt, ergänzt das Blatt „· mit diesem Termin: 10 Wochen" (vom letzten Behandlungstag bis zum
+gewählten Tag, unter 14 Tagen in Tagen); die App nennt diesen Abstand in der Rückfrage am Slot.
+Damit die Zeile auch bei „Alle Standorte" erscheint, schicken Web und App die Kundin jetzt auch
+ohne Institut an `services` (der Abstand hängt nicht am Institut; Paket-Services kommen weiterhin
+erst mit Institut). Die Schnellwahl der Wochen bleibt unverändert (Web 6, App 8 Wochen).
+
 **App.** `BookingFinderModel`/`BookingFinderView`: oben „Bestandskunde | Neukunde" (nur mit
 `can_create_clients` aus `booking/api/services`), Neukunden-Formular, Dubletten-Karte, Institut ist
 bei „Alle Standorte" leer und Pflicht (vorher wurde still das erste sichtbare Institut genommen),
@@ -115,7 +126,7 @@ Kundensuche öffnet nicht mehr von selbst. Auf dem iPad bleibt die zweispaltige 
 
 | Endpunkt | Neu/geändert |
 |---|---|
-| `GET services` | `branch_id`/`client_id` optional; zusätzlich `consultation_options`, `can_create_clients` und `branches` aus `AppBranchList::forUser()` (erlaubte Institute, Hub-Reihenfolge, Kürzel, Farbe, `hidden`) |
+| `GET services` | `branch_id`/`client_id` optional; zusätzlich `consultation_options`, `can_create_clients` und `branches` aus `AppBranchList::forUser()` (erlaubte Institute, Hub-Reihenfolge, Kürzel, Farbe, `hidden`); mit `client_id` auch ohne Institut `last_interval` (Terminabstand) |
 | `GET clients?q` | Bestandskunden über `ClientSearchService` (lokaler Spiegel, Phorest-Fallback) |
 | `GET client-matches` | Dubletten: gleiche Mobilnummer, gleiche E-Mail, exakt gleicher Vor- und Nachname — höchstens fünf |
 | `POST suggestions`, `day-slots` | `client_id` optional, `kind=consultation` |

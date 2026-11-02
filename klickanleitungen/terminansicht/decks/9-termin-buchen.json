@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — Termin direkt aus der Terminübersicht buchen (auch für Neukunden), ideale Zeiten finden, Link weitergeben",
  "eyebrow": "Terminansicht · Buchung",
  "footerArea": "Terminansicht",
- "stand": "25.10.2026",
- "version": "1.7",
+ "stand": "02.11.2026",
+ "version": "1.8",
  "notes": [
   "Gebucht wird **direkt in Phorest** — der Termin steht sofort im Kalender des Instituts.",
   "Der schnellste Weg ist **„Termin buchen“ oben in der Terminübersicht** — auch für Neukunden, dort reicht der Name.",
@@ -116,16 +116,21 @@
     },
     {
      "n": 2,
+     "title": "Letzte Behandlung",
+     "text": "Unter der Kundin steht **„Letzte Behandlung vor 8 Wochen (am 07.09.2026)“** — so siehst du ihren Rhythmus, viele Kundinnen sind am Ende des Pakets bei 8–10 Wochen. Sobald eine Zeit gewählt ist, ergänzt das Blatt **„mit diesem Termin: 10 Wochen“**."
+    },
+    {
+     "n": 3,
      "title": "FLEX-Sitzungen",
      "text": "Darunter die **FLEX-Einzelsitzungen** je Zone mit Preis — sie werden **vor Ort bezahlt** und lassen sich mit Paket-Leistungen kombinieren oder ohne Paket allein buchen."
     },
     {
-     "n": 3,
+     "n": 4,
      "title": "Ab wann",
      "text": "Behandlungen suchen standardmäßig **in 6 Wochen**, Beratungen **ab heute**."
     },
     {
-     "n": 4,
+     "n": 5,
      "title": "Ganzkörper ohne Extrazeit",
      "text": "Hat die Kundin ein **Ganzkörper-Paket**, für das noch keine Extrazeit festgelegt ist (etwa nach einem Abschluss zu Hause per Link), erscheint vor der Zeitsuche die Pflichtfrage **„Wie viel Extrazeit für die erste Sitzung?“** — Stufe oder „keine“ wählen, **„Speichern und Zeit finden“**. Die Wahl gilt ab jetzt für jede Buchung."
     }

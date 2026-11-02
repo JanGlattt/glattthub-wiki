@@ -1100,7 +1100,10 @@ Vertrag und SEPA wie im Web. Auf dem iPad quer liegt links die Spalte mit Kundin
 Kunden-Nr., Geburtstag; Anrufen/E-Mail/Bewertung/Verlegen), Termindaten (Datum, Uhrzeit, Institut,
 Mitarbeiterin), den Bereichen (Übersicht, Formulare, Einstellungszettel, Verläufe) und der
 Sitzungssteuerung; rechts der Inhalt. Auf dem iPhone ist alles gestapelt mit fester Aktionsleiste
-unten. „Termin beginnen" checkt in Phorest ein und startet die Uhr (Restzeit, Fortschritt);
+unten. „Termin beginnen" checkt in Phorest ein und startet die Uhr (Restzeit, Fortschritt — seit
+02.11.2026 ab dem Ist-Start plus gebuchter Dauer, Plan klein daneben, wenn er abweicht; bei einem
+Beratungstermin trägt die Kachel „Einstellungszettel" das Abzeichen „Achseln mitbehandelt?", grün
+sobald die Zone erfasst ist — Details `APPOINTMENT-VIEW.md`);
 „Termin beenden" führt durch Kasse-Hinweis (roter Saldo-Schirm mit Nicht-Kassierungs-Vermerk),
 Folgetermin-Buchung und Pflichtnotiz und schließt den Termin in Phorest ab (PAID). Formulare und
 Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite.
@@ -1755,7 +1758,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Kasse | nativ | Kassenabschluss (seit 29.09.2026): Monatsliste „Tag für Tag“, Zählen mit Waage und Ziffernblock, Scheine/Münzen als Bilder, iPad Liste + Tag; CSV-Export Web — Details [KASSE.md](KASSE.md) |
 | Laser | nativ | Raum-Sicht des Instituts, Werkbank „Alle“, Geräteakte mit acht Reitern, Teile-Akte, Reparatur/STK/Behörde nativ, Wartungsassistent, Störung melden (seit 26.09.2026); Inventarisieren, Stammdaten, Verbrauchsmaterial, Berichte Web |
 | Bonus-Board | nativ | Mehr-Seite, beide Sichten, Export per Teilen-Blatt |
-| Termin buchen | nativ | Slot-Finder als Detailseite im Termine-Tab: Kundin, Institut, ab wann, Paket-Leistungen, Vorschläge je Tag, Rückfrage am Slot, iPad-Raster (seit 26.09.2026); Einstiege Plus in der Terminliste, Kundenübersicht, ⌘N; Folgetermin/Verlegen aus der Terminansicht bleiben im Blatt |
+| Termin buchen | nativ | Slot-Finder als Detailseite im Termine-Tab: Kundin (seit 02.11.2026 mit „Letzte Behandlung vor …" aus `last_interval`, Abstand bis zum gewählten Tag in der Rückfrage), Institut, ab wann, Paket-Leistungen, Vorschläge je Tag, Rückfrage am Slot, iPad-Raster (seit 26.09.2026); Einstiege Plus in der Terminliste, Kundenübersicht, ⌘N; Folgetermin/Verlegen aus der Terminansicht bleiben im Blatt |
 | Verträge | nativ | Liste + Vertragsseite mit vier Reitern (seit 25.09.2026); GoCardless/Ratenplan/Bearbeiten als Web-Blatt; Preislisten, Mappings Web; Freunde werben nativ (27.09.2026) |
 | Gutscheine | nativ | Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin-Korrektur, neuer Gutschein, Guthaben-Karte in der Kundenübersicht (seit 26.09.2026); Bestand mit Kennzahlen bleibt Web |
 | Reisekosten | nativ | Anspruchstage aus askDANTE, Assistent für neue Reisen (auch mehrtägig mit Tagen & Nächten, seit 27.09.2026), Reisekarte mit Live-Summe und fünf Abschnitten, Belege mit Kamera/Scanner, Einreichen/Zurückziehen/Löschen, Register Freigabe mit Berichtigen und Entscheidung (seit 26.09.2026); Web-Freigabeseite bleibt Web |

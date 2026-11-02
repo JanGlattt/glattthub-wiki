@@ -9,8 +9,8 @@
  "subtitle": "Klickanleitung für die Terminansicht im glatttHub — vom Tagesplan bis zum laufenden Termin",
  "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
- "stand": "29.10.2026",
- "version": "1.4",
+ "stand": "02.11.2026",
+ "version": "1.5",
  "notes": [
   "Gilt für **jedes Beratungsgespräch**: Der Termin wird im Hub gestartet, alle Formulare laufen direkt im Termin.",
   "Bei Problemen oder Fehlermeldungen: **Asana-Task ans Büro** — siehe Dokument „Probleme & Fehlermeldungen“."
@@ -195,7 +195,7 @@
   },
   {
    "h1": "Die Spalte während des Termins",
-   "sub": "Sobald der Termin läuft, zeigt die linke Spalte nur noch das Nötige: Name, Zeit und die gebuchten Behandlungen.",
+   "sub": "Sobald der Termin läuft, zeigt die linke Spalte nur noch das Nötige: Name, Zeit und die gebuchten Behandlungen. Die Zeit läuft ab deinem Klick „Termin beginnen“ — nicht nach dem Phorest-Plan.",
    "card": {
     "title": "Sitzungs-Karte lesen",
     "text": "Restzeit, Fortschritt und Behandlungen im Blick behalten"
@@ -235,17 +235,17 @@
     {
      "n": 2,
      "title": "Verbleibende Zeit",
-     "text": "Zeigt, wie lange der Termin noch geplant ist. Ist die geplante Endzeit vorbei, springt die Anzeige auf **„Überzogen“** und wird rot."
+     "text": "Zeigt, wie lange der Termin noch dauert — gerechnet ab **„Termin beginnen“** plus gebuchter Dauer. Ist diese Endzeit vorbei, springt die Anzeige auf **„Überzogen“** und wird rot."
     },
     {
      "n": 3,
      "title": "Fortschrittsbalken",
-     "text": "Läuft zwischen geplantem Start und Ende mit — ein schneller Blick genügt, um zu sehen, wie weit der Termin ist."
+     "text": "Läuft zwischen Start und Ende der Sitzung mit — ein schneller Blick genügt, um zu sehen, wie weit der Termin ist."
     },
     {
      "n": 4,
      "title": "Start & Ende",
-     "text": "Die **geplanten** Zeiten des Termins, daneben oben rechts die aktuelle Uhrzeit („Jetzt“)."
+     "text": "**Start** ist der Moment, in dem du „Termin beginnen“ getippt hast, **Ende** = Start + gebuchte Dauer. Kommt die Kundin früher oder später, steht klein darunter **„geplant 11:00“** — so sieht jede, dass nicht zu kurz behandelt wurde, sondern früher begonnen. Oben rechts die aktuelle Uhrzeit („Jetzt“)."
     }
    ],
    "hint": {

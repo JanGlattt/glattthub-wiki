@@ -6,8 +6,8 @@
  "of": 30,
  "audience": "institut",
  "footerArea": "App",
- "stand": "30.10.2026",
- "version": "1.12",
+ "stand": "02.11.2026",
+ "version": "1.13",
  "nr": 3,
  "title": [
   "Termine und die",
@@ -78,7 +78,7 @@
     {
      "n": 1,
      "title": "Termin beginnen",
-     "text": "Der goldene Knopf links. Erst danach lassen sich Einstellungszettel und Behandlung erfassen — vorher nur lesen."
+     "text": "Der goldene Knopf links. Erst danach lassen sich Einstellungszettel und Behandlung erfassen — vorher nur lesen. Ab jetzt läuft die Zeit: **Ende = dein Start + gebuchte Dauer**; beginnt der Termin früher oder später als geplant, steht klein „geplant 11:00“ daneben."
     },
     {
      "n": 2,
@@ -88,7 +88,7 @@
     {
      "n": 3,
      "title": "Register",
-     "text": "**Übersicht, Zettel, Formulare, Verlauf** — auf dem iPhone als Reiter oben."
+     "text": "**Übersicht, Zettel, Formulare, Verlauf** — auf dem iPhone als Reiter oben. Bei einem **Beratungstermin** trägt die Kachel „Einstellungszettel“ das Abzeichen **„Achseln mitbehandelt?“**: Wurden die Achseln direkt mitgemacht, kommen die Werte dort hinein wie bei jeder Behandlung — das Abzeichen wird grün, sobald die Zone erfasst ist."
     },
     {
      "n": 4,

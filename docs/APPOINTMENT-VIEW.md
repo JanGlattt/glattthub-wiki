@@ -180,10 +180,27 @@ Seit 08.09.2026 (Anlass siehe [Chronik](#chronik-der-anderungen-neueste-zuerst))
 
 **Kompakte Spalte während des Termins:** Läuft der Termin, zeigt die linke Spalte nur noch das
 Nötige: den Kundennamen (Link ins Profil) und einen **Zeit-Block** mit der verbleibenden Zeit groß,
-der aktuellen Uhrzeit klein daneben, einem Fortschrittsbalken zwischen geplantem Start und Ende und
+der aktuellen Uhrzeit klein daneben, einem Fortschrittsbalken zwischen Start und Ende und
 den beiden Zeiten darunter (grüne Kante; ab Überziehung rot mit „Überzogen" und der Dauer).
 Kunden-Karte, Termin-Infos und die Bereichs-Navigation kommen zurück, sobald der Termin beendet
 ist. Darunter wie gewohnt „Termin läuft" und „Termin beenden".
+
+**Zeitmessung ab dem Ist-Start (seit 02.11.2026):** Start und Ende der Karte sind **nicht** mehr das
+Phorest-Fenster, sondern der erste Klick „Termin beginnen" plus die gebuchte Dauer — Restzeit,
+Fortschritt und „Überzogen" rechnen damit. Anlass war die Rückmeldung aus den Instituten, dass bei
+einer früher gekommenen Kundin trotzdem das ursprüngliche Ende stand und die Kolleginnen fürchteten,
+die Behandlung wirke zu kurz. Weicht der Ist-Start vom Plan ab, steht der Plan klein daneben
+(„Start 10:40 · geplant 11:00", „Ende 11:10 · geplant 11:30"); ein später Start schiebt das Ende
+entsprechend nach hinten. Der Hub liefert den Start im Termin-JSON als `sessionStarted.started_at`
+(Ortszeit ohne Zone, `AppointmentSessionLog::currentStart()` = erster `started`-Eintrag nach dem
+letzten `ended`) und in der Antwort von `POST …/session/log-start` als `started_at` — ein zweiter
+Start derselben Sitzung (Neuladen, zweites Gerät) verschiebt die Messung also nicht, erst „Termin
+fortsetzen" nach einem Beenden zählt neu. Die Clients nehmen den Ist-Start nur, wenn er höchstens
+zwölf Stunden vom geplanten Start entfernt liegt (verwaiste Einträge), und verwerfen ihn beim
+Beenden. Web: `actualStartDate`/`sessionStartDate`/`sessionEndDate` in `appointment-unified.js`,
+Sidebar `.apt-detail-session-timer-planned`; App: dieselben Namen in `AppointmentDetailModel`.
+Die Statistik „Behandlungsdauer" rechnet weiter mit den geplanten Phorest-Zeiten; die Session-Logs
+wertet nur die Extrazeit-Prüfung aus. Test `AppointmentSessionStartTimeTest`.
 
 **Behandlungen in der Sitzungs-Karte:** Unter dem Zeit-Block stehen die gebuchten Leistungen
 als Chips mit Zähler „n / m" — Namen bereinigt (Phorest-Präfix wie „Abo.LS-39" entfernt,
@@ -224,6 +241,20 @@ Status `GET /phorest/appointment/{b}/{a}/consultation-outcome`, gespeichert übe
 `consultation_outcome`; die Pflicht greift nur mit `consultation_outcome_supported: true`, damit ältere
 App-Builds weiter beenden können. Logik: `AppointmentConsultationOutcome`. Details und die Anrufliste,
 die daraus entsteht: [Überlegt noch](UEBERLEGT-NOCH.md).
+
+**Achseln im Beratungsgespräch mitbehandelt (seit 02.11.2026):** Dafür gibt es bewusst **kein
+Kästchen** beim Beenden (Entscheidung Jan, 02.11.2026 auf die Frage aus den Instituten). Die Werte
+der Achsel-Behandlung gehören in den **Einstellungszettel** wie bei jeder Behandlung — nur so stehen
+sie in der Kundenakte und beim nächsten Termin. Der Hub erinnert daran mit einem farbigen Marker:
+Bei einem Beratungstermin (laut `consultation-outcome` `is_consultation`) trägt die Kachel
+„Einstellungszettel" in der Session-Ansicht das Abzeichen **„Achseln mitbehandelt?"** (gold) und der
+Beenden-Dialog eine Hinweiszeile mit goldenem Punkt; sobald im Einstellungszettel eine Zone mit
+„Achsel" im Namen erfasst ist (`treated-zones`), werden beide grün („Achseln eingetragen ✓"). Web:
+`isConsultationAppointment`/`armpitsTreatedToday` in `appointment-unified.js`, dafür lädt die
+Terminansicht den Beratungs-Status jetzt schon beim Öffnen (und nach zusammengeführten Services),
+Styles `.consultation-armpits-glattt`; App: dieselben Namen in `AppointmentDetailModel`, Abzeichen
+über den `badge`-Parameter der Session-Kachel. Das Kästchen „Achseln wurden im Beratungsgespräch
+behandelt" im Widerrufs-Wizard bleibt davon unberührt.
 
 ### Kundenkonto-Schuld & geführter Beenden-Ablauf
 
@@ -495,6 +526,13 @@ Die Update-Blöcke, die bis zum 19.09.2026 am Seitenkopf standen — jeweils mit
 Verweis auf die Stelle oben, an der das heute gültige Verhalten beschrieben ist. Neue
 Erkenntnisse werden **nicht** hier, sondern oben an der thematisch passenden Stelle eingearbeitet;
 die Chronik wächst nur um den Verweis. Bedienung: Nutzerhandbuch, Serie „Terminansicht".
+
+### Update 02.11.2026 — Zeitmessung ab Ist-Start, Achseln-Hinweis im Beratungsgespräch
+
+Rückmeldung aus den Instituten über Jan (02.11.2026): Sitzungs-Karte zeigte bei früherem Start das
+Phorest-Ende; Frage nach einem Kästchen „Achseln direkt mitbehandelt". Siehe „Kompakte Spalte
+während des Termins" (Zeitmessung ab dem Ist-Start) und „Beratungsergebnis beim Beenden" (Achseln
+gehören in den Einstellungszettel, Marker statt Kästchen).
 
 ### Update 08.09.2026 — Desktop-App-Versatz oben, Aktions-Slot immer sichtbar
 
