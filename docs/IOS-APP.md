@@ -1105,7 +1105,9 @@ unten. „Termin beginnen" checkt in Phorest ein und startet die Uhr (Restzeit, 
 Beratungstermin trägt die Kachel „Einstellungszettel" das Abzeichen „Achseln mitbehandelt?", grün
 sobald die Zone erfasst ist — Details `APPOINTMENT-VIEW.md`; seit 02.11.2026 außerdem die
 Schnellaktion „Absagen" (`CancelAppointmentSheet`: Absage-Spalte oder Storno, 24-h-Regel, auch per
-Wischen in der Terminliste) und in der Notiz-Karte „Notiz zu diesem Termin hinzufügen"
+Wischen in der Terminliste; unten „Stattdessen umbuchen" — TestFlight 369 — schließt das Blatt und
+öffnet aus `onDismiss` das Verlegen-Blatt bzw. aus der Liste den Slot-Finder im Verlegen-Modus,
+die Liste bietet „Verlegen" zudem als Wischaktion) und in der Notiz-Karte „Notiz zu diesem Termin hinzufügen"
 (`can_note`), beides ohne den Termin zu beenden);
 „Termin beenden" führt durch Kasse-Hinweis (roter Saldo-Schirm mit Nicht-Kassierungs-Vermerk),
 Folgetermin-Buchung und Pflichtnotiz und schließt den Termin in Phorest ab (PAID). Formulare und
