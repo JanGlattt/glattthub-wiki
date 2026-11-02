@@ -7,7 +7,7 @@
  "audience": "institut",
  "footerArea": "App",
  "stand": "02.11.2026",
- "version": "1.17",
+ "version": "1.18",
  "nr": 3,
  "title": [
   "Termine und die",
@@ -305,7 +305,7 @@
   },
   {
    "h1": "Folgetermin und Verlegen",
-   "sub": "Beide Blätter sehen gleich aus: Wunschzeitraum wählen, Vorschläge durchsehen, buchen. Verlegen bucht den neuen Termin zuerst und storniert dann den alten — nie halb. Beim Verlegen stehen die Leistungen des Termins fest: Beratungen bekommen die Zeiten der Website, FLEX, Auffrischung, Gratis und Paket die freien Lücken wie gewohnt.",
+   "sub": "Beide Blätter sehen gleich aus: Wunschzeitraum wählen, Vorschläge durchsehen, buchen. Verlegen bucht den neuen Termin zuerst und storniert dann den alten — nie halb. Beim Verlegen stehen die Leistungen des Termins fest: Beratungen bekommen die Zeiten der Website, FLEX, Auffrischung, Gratis und Paket die freien Lücken wie gewohnt. Ohne aktives Paket stehen im Folgetermin Auffrischung und FLEX zur Wahl.",
    "card": {
     "title": "Folgetermin",
     "text": "Vorschläge, buchen, verlegen"

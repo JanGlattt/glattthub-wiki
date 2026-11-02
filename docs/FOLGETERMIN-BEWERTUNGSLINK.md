@@ -52,6 +52,7 @@ Protokoll (Admin → Integrationen → „Bewertungs-WhatsApp Protokoll").
 
 - Angeboten nach dem Speichern der Pflicht-Terminnotiz beim Beenden (im geführten Ablauf Kasse →
   Folgetermin → Notiz, siehe `APPOINTMENT-VIEW.md`); nach „Direkt behandeln" entfällt die Frage.
+- Kein aktives Paket (seit 02.11.2026): statt der Paket-Leistungen stehen Auffrischung und FLEX zur Wahl (Bezahlung vor Ort), vorgewählt bleibt nur die Extrazeit, gesucht wird erst nach einer Wahl — siehe `TERMIN-BUCHUNG-IDEAL-SLOT.md`, „Auffrischung".
 - Terminabstand per Schnellwahl „in 6/8/10 Wochen" oder freie Wochenzahl → `startDate = heute + X Wochen`;
   zusätzlich freies Datum über den Kalender.
 - **Letzter Abstand** (seit 26.10.2026, Wunsch Leitung Braunschweig): über der Schnellwahl die vorige

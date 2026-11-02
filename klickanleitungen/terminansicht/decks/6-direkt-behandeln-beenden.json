@@ -11,7 +11,7 @@
  "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
  "stand": "02.11.2026",
- "version": "1.8",
+ "version": "1.9",
  "notes": [
   "**Jeder** Beratungstermin wird über **„Termin beenden“** abgeschlossen — auch ohne Verkauf. Erst dann gilt er in Phorest als erledigt.",
   "Die **Terminnotiz ist Pflicht** und wandert automatisch nach Phorest. Bei **Direkt behandeln** reicht **eine** Notiz — die kommt am Ende der Behandlung; die Beratung bekommt automatisch den Vermerk „Direkt im Anschluss behandelt“.",
@@ -257,7 +257,7 @@
     {
      "n": 3,
      "title": "Folgetermin planen",
-     "text": "Nach einem Verkauf ohne Direktbehandlung schlägt der Hub freie Termine im passenden Abstand vor. Slot antippen → **„Fertig“**. Mit dem **✕** überspringen. Register **„Tageskalender“**: der echte Phorest-Tag mit Räumen, Belegung und Schichten — freie Fläche antippen setzt eine eigene Zeit (kleine Lücken werden nur gemeldet)."
+     "text": "Nach einem Verkauf ohne Direktbehandlung schlägt der Hub freie Termine im passenden Abstand vor. Slot antippen → **„Fertig“**. Mit dem **✕** überspringen. Register **„Tageskalender“**: der echte Phorest-Tag mit Räumen, Belegung und Schichten — freie Fläche antippen setzt eine eigene Zeit (kleine Lücken werden nur gemeldet). **Ohne aktives Paket** bietet das Fenster Auffrischung und FLEX zur Wahl an (Bezahlung vor Ort) — erst nach dem Anhaken sucht es Zeiten."
     },
     {
      "n": 4,

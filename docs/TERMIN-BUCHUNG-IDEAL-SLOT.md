@@ -145,9 +145,12 @@ Paket hervorgehoben — immer vorhanden, aber wie FLEX **eingeklappt**, bis man 
 (Jan 02.11.2026; die Kopfzeile zählt „N gewählt"). Gebucht wird wie bei FLEX mit der
 normalen Desinfektion. Beim Beenden kassiert der Hub Auffrischungen vor Ort
 (`PhorestController::unpaidAddonRows()` nimmt `getRefreshOptions()` als Rückfall, bis 02.11.2026
-nur Namen mit „Flex" — echte Auffrischungen wären per 0-€-Kauf ausgecheckt worden). Offen: das
-Folgetermin-Fenster beim Beenden (Modus Folgetermin, nicht Verlegen) kennt weiterhin nur
-Paket-Leistungen (weder FLEX noch Auffrischung).
+nur Namen mit „Flex" — echte Auffrischungen wären per 0-€-Kauf ausgecheckt worden). Das
+Folgetermin-Fenster beim Beenden (Modus Folgetermin) nimmt weiterhin die Paket-Leistungen; **hat die
+Kundin kein aktives Paket**, bietet es seit 02.11.2026 (Jan) stattdessen Auffrischung und FLEX zur
+Wahl an — vorgewählt bleibt nur die Extrazeit, gesucht wird erst nach einer Wahl, Bezahlung vor Ort
+(`FollowUpBookingModal::$noPackage`/`$alternatives`, `toggleAlternative()`; App
+`FollowUpBookingModel.noPackage`). Test `FollowUpBookingModalTest`.
 
 **App.** `BookingFinderModel`/`BookingFinderView`: oben „Bestandskunde | Neukunde" (nur mit
 `can_create_clients` aus `booking/api/services`), Neukunden-Formular, Dubletten-Karte, Institut ist
