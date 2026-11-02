@@ -7,7 +7,7 @@
  "audience": "institut",
  "footerArea": "App",
  "stand": "02.11.2026",
- "version": "1.8",
+ "version": "1.9",
  "nr": 12,
  "title": [
   "Termin buchen",
@@ -50,7 +50,7 @@
     {
      "n": 4,
      "title": "Terminart",
-     "text": "**Beratung** oder **Behandlung**. Bei der Behandlung stehen die Zonen aus ihrem Paket mit Dauer und Resteinheiten, darunter die **Auffrischung** (Einzelsitzung nach Paketende, Bezahlung vor Ort — bei leerem Paket hervorgehoben) und die **FLEX-Einzelsitzungen** mit Preis (Bezahlung vor Ort, auch ohne Paket). Antippen zum An- und Abwählen — die Desinfektion zählt automatisch zur Dauer."
+     "text": "**Beratung** oder **Behandlung**. Bei der Behandlung stehen die Zonen aus ihrem Paket mit Dauer und Resteinheiten. Darunter liegen **Auffrischung** (Einzelsitzung nach Paketende) und **FLEX-Einzelsitzungen** (Bezahlung vor Ort, auch ohne Paket) als eingeklappte Blöcke — antippen klappt sie auf, die Kopfzeile zählt die gewählten. Antippen zum An- und Abwählen — die Desinfektion zählt automatisch zur Dauer."
     },
     {
      "n": 5,

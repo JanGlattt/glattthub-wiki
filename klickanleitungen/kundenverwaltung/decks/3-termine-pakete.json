@@ -10,7 +10,7 @@
  "eyebrow": "Kundenverwaltung · Termine & Pakete",
  "footerArea": "Kundenverwaltung",
  "stand": "02.11.2026",
- "version": "1.6",
+ "version": "1.7",
  "notes": [
   "Termine und Pakete kommen **live aus Phorest** — der Hub zeigt sie nur an, geführt wird der Kalender dort.",
   "Behandelt wird immer über die **Terminansicht** (Dokumente „Terminansicht 1–8“), nicht über das Kundenprofil.",
@@ -87,7 +87,7 @@
     {
      "n": 2,
      "title": "„Verlegen“",
-     "text": "Öffnet das Verlegen-Fenster mit den idealen Slots; das Register **„Tageskalender“** zeigt daneben den echten Phorest-Tag (Räume, Belegung mit Namen, Schichten) — freie Fläche antippen bucht auf jede Zeit, kleine Lücken werden nur gemeldet. **„Andere Uhrzeit …“** unter einem Tag zeigt dessen ganzen Tag mit allen freien Zeiten (‹ › blättert, **„Alle Tage“** führt zurück). Zeit anklicken, in der Leiste unten prüfen und **„Verlegen“** wählen. Danach aktualisiert sich die Liste von selbst — bis dahin bleibt sie leicht abgeblendet stehen."
+     "text": "Öffnet das Verlegen-Fenster mit den idealen Slots; das Register **„Tageskalender“** zeigt daneben den echten Phorest-Tag (Räume, Belegung mit Namen, Schichten) — freie Fläche antippen bucht auf jede Zeit, kleine Lücken werden nur gemeldet. **„Andere Uhrzeit …“** unter einem Tag zeigt dessen ganzen Tag mit allen freien Zeiten (‹ › blättert, **„Alle Tage“** führt zurück). Zeit anklicken, in der Leiste unten prüfen und **„Verlegen“** wählen. Danach aktualisiert sich die Liste von selbst — bis dahin bleibt sie leicht abgeblendet stehen. Seit November 2026 geht das für jeden Termin: Beratungen bekommen die Zeiten der Website, FLEX, Auffrischung, Gratis und Paket die freien Lücken mit genau ihren Leistungen."
     },
     {
      "n": 3,

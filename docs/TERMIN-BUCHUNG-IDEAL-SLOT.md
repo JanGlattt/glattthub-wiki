@@ -116,6 +116,24 @@ Damit die Zeile auch bei „Alle Standorte" erscheint, schicken Web und App die 
 ohne Institut an `services` (der Abstand hängt nicht am Institut; Paket-Services kommen weiterhin
 erst mit Institut). Die Schnellwahl der Wochen bleibt unverändert (Web 6, App 8 Wochen).
 
+**Verlegen seit 02.11.2026: Art und Leistungen aus dem Termin.** Bis dahin nahm das Verlege-Fenster
+(`RescheduleSlotModal`, App `FollowUpBookingModel` im Modus Verlegen, Slot-Finder aus der
+Terminliste) nur die Paket-Services der Kundin — Beratungen, FLEX, Auffrischung und Gratis liefen
+ins Leere („Keine aktiven Paket-Services"). Jetzt liest `RescheduleContextService::context()` die
+Zeilen des Termins aus Phorest (`AppointmentGroupResolver`, nackte Zeilen werden nachgeladen),
+streicht die Desinfektion und bestimmt die Art: alle Leistungen Beratungs-Services
+(`consultation_services.is_consultation`) → **`consultation`**, Name „Haaranalyse" →
+**`hair_analysis`**, sonst **`treatment`**. `RescheduleSlotFinder::findForContext()` sucht dann
+(Entscheidung Jan 02.11.2026): **Beratungen bekommen exakt die Zeiten der Website**
+(`WebsiteConsultationSlotService`, kein Raum-/Lückenmodell, kein Tageskalender, kein „Andere
+Uhrzeit"), **FLEX, Auffrischung, Gratis und Paket** die Slot-Engine mit genau diesen Leistungen und
+den bekannten Lückenregeln (Desinfektion hängt die Engine an, Haaranalyse ohne). Beim Institutswechsel
+werden Behandlungen über den Namen übersetzt (`BranchSwitchService::mapServiceIds()`), Beratungs-IDs
+sind überall gleich. Endpunkte: `GET hub/booking/api/reschedule-context?branch_id&appointment_ids[]`
+(Kontext für die App), `POST suggestions` mit `appointment_ids` + `source_branch_id` (der Hub
+entscheidet), `POST reschedule` mit `source_branch_id` (Storno im Quell-Institut). Tests
+`RescheduleSlotModalTest` (FLEX, Beratung) und `BookingApiTest`.
+
 **Auffrischung (seit 02.11.2026).** Auffrischungen sind in Phorest eigene Einzel-Services mit
 Preis („Auffrischung ACHSELN 59,99€"), keine Paket-Kurse — das FLEX-Muster `^flex\s` erfasste sie
 nicht, also waren sie im Hub nicht buchbar („Auffrischung kann man nicht buchen, nur Flex", Team
@@ -123,12 +141,13 @@ nicht, also waren sie im Hub nicht buchbar („Auffrischung kann man nicht buche
 Auffrischung" bleibt draußen), `BookingService::getRefreshOptions()` (gemeinsamer Helfer mit FLEX,
 `price_cents`) und `refresh_options` in `GET services`; Web-Blatt und App-Finder zeigen den Block
 „Auffrischung · Einzelsitzung nach Paketende, Bezahlung vor Ort" unter dem Paket, bei leerem
-Paket hervorgehoben — immer sichtbar, nicht nur nach Paketende. Gebucht wird wie bei FLEX mit der
+Paket hervorgehoben — immer vorhanden, aber wie FLEX **eingeklappt**, bis man den Block aufklappt
+(Jan 02.11.2026; die Kopfzeile zählt „N gewählt"). Gebucht wird wie bei FLEX mit der
 normalen Desinfektion. Beim Beenden kassiert der Hub Auffrischungen vor Ort
 (`PhorestController::unpaidAddonRows()` nimmt `getRefreshOptions()` als Rückfall, bis 02.11.2026
 nur Namen mit „Flex" — echte Auffrischungen wären per 0-€-Kauf ausgecheckt worden). Offen: das
-Folgetermin-Fenster beim Beenden kennt weiterhin nur Paket-Leistungen (weder FLEX noch
-Auffrischung).
+Folgetermin-Fenster beim Beenden (Modus Folgetermin, nicht Verlegen) kennt weiterhin nur
+Paket-Leistungen (weder FLEX noch Auffrischung).
 
 **App.** `BookingFinderModel`/`BookingFinderView`: oben „Bestandskunde | Neukunde" (nur mit
 `can_create_clients` aus `booking/api/services`), Neukunden-Formular, Dubletten-Karte, Institut ist

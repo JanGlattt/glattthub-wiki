@@ -14,7 +14,7 @@
  "eyebrow": "Terminansicht · Buchung",
  "footerArea": "Terminansicht",
  "stand": "02.11.2026",
- "version": "1.9",
+ "version": "2.0",
  "notes": [
   "Gebucht wird **direkt in Phorest** — der Termin steht sofort im Kalender des Instituts.",
   "Der schnellste Weg ist **„Termin buchen“ oben in der Terminübersicht** — auch für Neukunden, dort reicht der Name.",
@@ -122,7 +122,7 @@
     {
      "n": 3,
      "title": "FLEX und Auffrischung",
-     "text": "Darunter die **FLEX-Einzelsitzungen** je Zone mit Preis und — neu seit November 2026 — die **Auffrischung** („Auffrischung ACHSELN 59,99 €“) für Kundinnen nach dem Paketende. Beide werden **vor Ort bezahlt**, lassen sich mit Paket-Leistungen kombinieren oder ohne Paket allein buchen; ist das Paket aufgebraucht, ist die Auffrischung hervorgehoben."
+     "text": "Darunter die **FLEX-Einzelsitzungen** je Zone mit Preis und — neu seit November 2026 — die **Auffrischung** („Auffrischung ACHSELN 59,99 €“) für Kundinnen nach dem Paketende. Beide werden **vor Ort bezahlt**, lassen sich mit Paket-Leistungen kombinieren oder ohne Paket allein buchen; ist das Paket aufgebraucht, ist die Auffrischung hervorgehoben. Beide Blöcke sind **eingeklappt** — ein Klick auf die Kopfzeile öffnet sie, daneben steht, wie viele gewählt sind."
     },
     {
      "n": 4,
