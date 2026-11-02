@@ -133,6 +133,14 @@ Oberfläche dafür kommt in Etappe 3.
   geht alle 2,5 s das bisher Aufgenommene als Zwischenstand an `…/transcribe` (`interim=1`) und
   erscheint als Mitschrift; nach 20 s wird ein Stück ohnehin abgeschlossen. Die Balken der
   Hör-Anzeige zeigen den echten Pegel (`--coach-level` als CSS-Variable, `.coach-listen.is-live`).
+- Latenz (02.11.2026): Eine Äußerung gilt nach **1,0 s** Pause als beendet (vorher 1,5 s). Schon nach
+  **0,4 s** Pause schickt die Seite das bisher Gesagte als **Vorgriff** an `…/transcribe`; bleibt es bis
+  zur 1,0-s-Marke still, wird dieses Ergebnis direkt als Zug abgegeben und die Aufnahme ohne zweite
+  Erkennung geschlossen — die Erkennung läuft damit in der Pause statt danach. Spricht die Mitarbeiterin
+  weiter, verfällt der Vorgriff. Der Server liefert je Zug `timings` (`claude_ms`, `tts_ms`), die Seite
+  meldet je Zug „erkennen · antwort (claude, stimme) · gesamt“ als Client-Meldung ins Hub-Log — damit
+  lässt sich im Pilot sehen, wo die Zeit bleibt. Erkannte Reste aus Füllwörtern oder Satzzeichen
+  („äh“, „hm“, „…“) werden nicht als Zug gesendet (`isNoise`).
 - Fehlersuche ohne Konsole: `POST …/client-event` (`kind`, `message`) schreibt Client-Meldungen
   (Simli-Fehler, Mikrofon verweigert, Erkennung fehlgeschlagen, gewählter Hör-Modus mit User-Agent)
   als `glattt Coach: Client` ins Hub-Log — die Desktop-App hat keine erreichbare Konsole.
@@ -274,3 +282,4 @@ zweiwöchiger Pilot-Vergleich (Konzept Stufe B).
 - **01.11.2026** — Web-Gesprächsraum nach dem ersten Prod-Test: Aufnahme-Rückfall mit Google Speech-to-Text (`…/transcribe`) für Desktop-App und Safari, Simli-Client nach SDK-API mit ICE-Servern vom Hub (vorher kein Video), Google-Token auf Cloud Run vom Metadaten-Server (Schlüssel im Secret war ungültig, Stimme fiel auf die Systemstimme zurück).
 - **01.11.2026** — Zweiter Prod-Test: Simli-SDK durch eigenen compose-Client ersetzt (SDK sprach das alte Protokoll, nie Video), Pausen-Erkennung mit adaptiver Schwelle (nichts kam an, weil Raumgeräusch nie als Stille galt), Mitschrift alle 2,5 s und Live-Pegel, Client-Meldungen ins Hub-Log.
 - **01.11.2026** — Dritter Prod-Test: Google-Token nur bis kurz vor Ablauf gecacht und bei 401 erneuert (Stimme und Erkennung fielen nach 34 Minuten aus), Simli-Client aus dem Alpine-Zustand genommen (Proxy-Identität schloss die Sitzung sofort), Video lokal gegen Simli bewiesen.
+- **02.11.2026** — Latenz: Pause 1,0 s, Vorgriff-Erkennung nach 0,4 s Pause, Füllwort-Filter, Zeiten je Zug (Server `timings`, Client-Meldung „zug“).
