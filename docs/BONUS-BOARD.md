@@ -29,6 +29,7 @@ Bedienung Schritt für Schritt steht im Nutzerhandbuch.
     - [Fachregeln: Mein Board](#fachregeln-mein-board)
     - [Sichtstufen und Management-Sicht](#sichtstufen-und-management-sicht)
     - [Fachregeln: Boni-Baukasten](#fachregeln-boni-baukasten-regeln-challenges)
+    - [glatttolympia: Disziplinen, Medaillen, Jury](#glatttolympia-disziplinen-medaillen-jury)
     - [Minimalziele, Widerrufe, Korrekturen, Monatsabschluss](#minimalziele-widerrufe-korrekturen-monatsabschluss)
     - [Google-Bewertungen](#google-bewertungen)
     - [Bonus-Klassen](#bonus-klassen)
@@ -284,6 +285,65 @@ Sichtbarkeit.
   KpiRegistry** zur Verfügung (Registry-Kennzahlen nur je Institut oder
   unternehmensweit — mitarbeiterscharf liefert die Registry nicht).
 
+### glatttolympia: Disziplinen, Medaillen, Jury
+
+Seit 02.11.2026 (Entscheidungen Jan, Entwurf 1 „Medaillenspiegel zuerst“) treten die Institute
+monatlich in **Disziplinen** gegeneinander an. Die Olympiade ist eine **Klammer über
+Team-Ranking-Challenges**: jede Disziplin ist eine normale Regel (`ranking_places`, Level Team,
+Preis „Gold · Teambudget“ als Team-Budget), die zusätzlich `olympiad_id`/`olympiad_order` trägt.
+Regeln bleiben Daten — Disziplinen lassen sich in der Verwaltung wie jede Challenge bearbeiten.
+
+- **Medaillen aus Plätzen:** Platz 1/2/3 = Gold/Silber/Bronze. Gleichstand = gleicher Platz (1, 1, 3):
+  beide Gold, beide das volle Teambudget, Silber entfällt. **Medaillenspiegel** in Olympia-Sortierung
+  (Gold, Silber, Bronze; gleiche Bilanz = gleicher Platz). Gesamtsieg (`overall.leaders`) für alle Teams
+  auf Platz 1, Preis als Text (`overall_prize_label`, Standard „Ein echter Goldbarren (ca. 1 g) …“).
+- **Fix vs. Zwischenstand:** Medaillen aus **entschiedenen** Disziplinen (`state = final`) sind fix
+  (`gold_fixed` …, `budget_fixed_cents`), alle anderen Zwischenstand. Entschieden ist eine Disziplin
+  nach Monatsende, bei vollständiger Jury-Wertung und beim Zeitpunkt-Ranking (Schnellstart), sobald
+  jedes Team einen Wert hat — „entschieden ist entschieden“, ein späterer Widerruf nimmt das Gold nicht.
+- **Richtung je Ranking:** `condition_config.direction` (`desc` Standard, `asc` = niedriger gewinnt;
+  Standard aus `BonusMetricResolver::defaultDirection()`). `assignRanks()` und der gesicherte Platz
+  rechnen in dieser Richtung; bei „niedriger gewinnt“ ist `secured_value` der **schlechtere** Fall
+  (Widerrufsquote inklusive offener Fälle).
+- **Qualifikation nach Anzahl:** `condition_config.qualify_min_count` prüft die Basis-Anzahl der
+  Kennzahl (`base_count`: Gespräche, Verkäufe, Termine, Köpfe) — Präzision ab 15 Gesprächen.
+- **Jury-Disziplin** (`metric = jury_rank`): Plätze kommen aus `bonus_jury_rankings`, eingetragen
+  direkt auf dem Board (Knopf in der aufgeklappten Disziplin, Recht `judge_bonus_olympiad` oder
+  `manage_bonus_rules`), vollständige Reihenfolge 1..n ohne Doppelung, bis dahin `state = jury`
+  („Jury offen“, keine Medaille), gesperrt nach finalem Freeze.
+- **Kennzahl-Arten:** neben `sum`/`ratio` gibt es `timestamp` (Schnellstart: Minuten seit Monatsbeginn,
+  `display` „02.11. 09:41“, Hub-Verträge mit Uhrzeit, Institutsseiten-Verträge über die Erfassungszeit)
+  und `rank` (Jury). Ranking-Einträge tragen `display`, `base_count`, `note`, `medal`, `medal_fixed`.
+- **Teilnehmer:** Olympiade-Disziplinen treten mit **allen sichtbaren Instituten** an (auch ohne
+  Minimalziel), ausgeblendete (Magdeburg) nicht; geparkte Widerrufe zählen wie in allen Challenges nie.
+  Disziplinen erzeugen **keine Ziel-Zeile je Person** (zehn Zeilen je Nutzerin, Budget statt Auszahlung)
+  und stehen nicht in den Challenge-Karten — nur in der Olympiade-Karte (`board['olympiad']`).
+
+**Die zehn Disziplinen des Vorlagen-Katalogs** (`OlympiadDisciplineCatalog`, Entscheidungen Jan 02.11.2026):
+
+| # | Disziplin | Kennzahl | Richtung | Definition |
+|---|---|---|---|---|
+| 1 | Schnellstart | `first_sale_at` | früher | Zeitpunkt des ersten Vertrags im Monat je Institut |
+| 2 | Hochsprung | `kpz_sold` relativ | höher | verkaufte KPZ ÷ Minimalziel × 100 |
+| 3 | Präzision | `kpz_per_bg` (Institut) | höher | KPZ je Beratungsgespräch, qualifiziert ab 15 Gesprächen |
+| 4 | Zuverlässigkeit | `no_show_rate` | niedriger | nicht erschienen ÷ gebuchte Beratungstermine (online + vor Ort, `active()->settled()`, wie No-Show-Matrix) |
+| 5 | Publikumsliebling | `google_review_balance` | höher | Positiv-Saldo der manuell erfassten Bewertungen |
+| 6 | Glanzleistung | `jury_rank` | Jury | Reihenfolge 1–5 durch die Jury (Sascha) |
+| 7 | Standfestigkeit | `revocation_zone_rate` | niedriger | widerrufene KPZ ÷ KPZ der Monatsverträge (echter Widerruf = akzeptiert oder storniert; offene unter Vorbehalt), Stand beim finalen Freeze |
+| 8 | Ausdauer | `treatments_per_100_active` | höher | bezahlte Behandlungen ÷ Kund:innen mit bezahltem Termin in den letzten 12 Monaten × 100 |
+| 9 | Teamgeist | `referral_kpz` | höher | KPZ aus Monatsverträgen mit Werbung (`contract_referrals` nicht abgelehnt ODER Werbecode an der Website-Buchung ≤ 180 Tage vor Unterschrift) |
+| 10 | Fitness | `sick_days_per_employee` | niedriger | Krankheitstage (`absence_ratio`, DISEASE) ÷ Köpfe des Instituts (KPI-relevant, zeitpunktgenau über `hr_employment_periods`), Langzeit-Episoden ab 43 Tagen ausgenommen, nur Teamwert |
+
+Anlegen: Verwaltung → Karte „glatttolympia <Monat>“ (Name, Teambudget je Gold, Gesamtpreis,
+Disziplinen abhaken) oder `php artisan bonus:olympiad 2026-11 --apply` (ohne `--apply` Trockenlauf).
+Höchstens eine aktive Olympiade je Monat (`BonusOlympiad::forMonth()`). Die Karte auf dem Board
+(Entwurf 1): links Medaillenspiegel (fix fett, Zwischenstand „+N“, Budget genauso), rechts die
+Disziplin-Kacheln im festen Zeilenraster; ein Klick klappt die Rangliste unter der Kachel-Reihe auf
+(Rasterzeile mit `grid-column: 1 / -1`, Spaltenzahl aus dem gerenderten Raster). Entschiedene
+Disziplinen tragen Goldrahmen, Pille „Entschieden“ und Podest (Silber links, Gold mittig, Bronze
+rechts), laufende einen Live-Punkt, die Jury-Disziplin einen gestrichelten Rahmen. PDF-Export mit
+Abschnitt Medaillenspiegel + Disziplinen (`BonusBoardExporter::olympiadForPdf()`).
+
 ### Minimalziele, Widerrufe, Korrekturen, Monatsabschluss
 
 - **Minimalziele**: KPZ-Minimalziel für das Team, **separates
@@ -372,6 +432,8 @@ Migration `2026_08_12_100100_create_bonus_board_tables`:
 | `bonus_revocation_decisions` | Entscheidung je offenem Widerruf × Monat, getrennt `team_decision` / `personal_decision` (count / exclude / park) |
 | `bonus_board_visits` | Letzter Besuch + Snapshot für die Celebration |
 | `bonus_visibility_overrides` | Per-User-Feinsteuerung der Regel-Sichtbarkeit |
+| `bonus_olympiads` | glatttolympia je Monat (Name, Preis je Gold, Gesamtpreis, aktiv) — Migration `2026_11_02_100000`; Disziplinen über `bonus_rules.olympiad_id` + `olympiad_order` |
+| `bonus_jury_rankings` | Jury-Platz je Disziplin × Institut (Platz, Notiz, wer, wann) |
 
 Das Standard-Bonussystem wird per Migration
 `2026_08_12_100200_seed_standard_bonus_rules` als fünf Regeln eingespielt
@@ -473,6 +535,11 @@ Das Standard-Bonussystem wird per Migration
   `manage_challenges`, Standard-Regeln nur mit `manage_bonus_rules`),
   Minimalziele, Freezes, Korrekturen, Widerruf-Entscheidungen, Sichtbarkeit.
 - `GoogleReviewController` — Erfassung/Liste/Löschen, Recht `manage_google_reviews`.
+- glatttolympia: `GET /hub/bonus/olympiade/data?month=` (Olympiade, Disziplinen mit Jury-Stand,
+  Vorlagen-Katalog, Rechte), `POST /hub/bonus/olympiade` (aus dem Katalog anlegen),
+  `POST /hub/bonus/olympiade/{rule}/jury` (Reihenfolge je Institut; `judge_bonus_olympiad` oder
+  `manage_bonus_rules`, gesperrt nach finalem Freeze). Die Board-Antwort trägt `olympiad` (eigene und
+  Management-Sicht) sowie `can_judge`; Disziplinen fehlen in `challenges`.
 - `App\Services\Bonus\BonusBoardScope` — löst die Sichtstufe (`own`/`branch`/`all`)
   aus den Rechten auf und schneidet den fertigen Board-Stand (auch eingefrorene
   Payloads) auf das Institut zu; Controller und Export nutzen dieselbe Stelle.
@@ -487,6 +554,7 @@ Das Standard-Bonussystem wird per Migration
 | `manage_bonus_rules` | `manage_settings` | Regeln, Ziele, Freeze, Korrekturen, Entscheidungen, Sichtbarkeit — schließt `view_bonus_board_all` ein |
 | `manage_challenges` | `manage_settings` | Nur Challenges pflegen |
 | `manage_google_reviews` | `manage_settings` | Google-Bewertungen erfassen |
+| `judge_bonus_olympiad` | — (von Hand an die Jury, z.B. Sascha) | glatttolympia: Jury-Wertung eintragen (Glanzleistung) |
 
 ### Frontend
 
@@ -518,11 +586,15 @@ Das Standard-Bonussystem wird per Migration
   `IOS-APP.md`, Abschnitt „Native Bonus-Verwaltung“. Snapshot-/Helfer-Tests:
   `ios/glatttHubTests/BonusBoardSnapshotTests.swift`, `BonusAdminSnapshotTests.swift`. **Änderungen an den Anzeige-Regeln in
   `bonus-board.js` müssen im Swift-Modell nachgezogen werden** — die Daten sind eine Wahrheit,
-  die Darstellung zweimal.
+  die Darstellung zweimal. Die glatttolympia-Karte liegt im Web in `partials/olympiad.blade.php` +
+  `olymp*`-Helfern in `bonus-board.js` (Theme `bonus-olymp-*`), nativ in `BonusOlympiadView.swift`
+  (`BonusOlympiadCard`, Kacheln als Reihen ohne LazyVGrid — Snapshot-tauglich; Jury als `BonusJurySheet`).
 
 ### Tests
 
-`tests/Feature/BonusEngineTest.php` (Formeln, Team-Split, Vorbehalt,
+`tests/Feature/BonusOlympiadTest.php` (Katalog, Medaillen, Richtung, geteiltes Gold, Widerrufsquote,
+Schnellstart entschieden, Jury offen/vergeben, Qualifikation nach Anzahl, No-Show/Ausdauer, eigene
+Sicht, Jury-Endpunkt, Befehl), `tests/Feature/BonusEngineTest.php` (Formeln, Team-Split, Vorbehalt,
 Korrekturen, Serien, Freeze, %-Aufschlag, Bonusberechtigung ohne Arbeitstag,
 Widerrufs-Felder), `tests/Feature/BonusBoardPageTest.php`
 (Rechte, Endpoints, Sichtbarkeit, finale Sperre, Management-Anreicherung,

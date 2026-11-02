@@ -1504,6 +1504,13 @@ keine zweite Logik im Backend:
   Widerrufe, CSV/PDF über das Teilen-Blatt), Monatswahl, Umschalter „Mein Board / Management bzw.
   Mein Institut" (Rechte kommen jetzt mit der `data`-Antwort: `can_switch_view`, `can_manage`,
   `can_manage_reviews`, `scope`). Google-Bewertungen sind seit 27.09.2026 nativ, die Verwaltung seit 28.09.2026 (Abschnitt „Native Bonus-Verwaltung“).
+  **glatttolympia (seit 02.11.2026):** `BonusOlympiadView.swift` zeigt oben auf dem Board den
+  Medaillenspiegel (fix fett, Zwischenstand „+N“) und die Disziplin-Kacheln (iPhone zwei, iPad drei
+  Spalten als Reihen — kein LazyVGrid, damit die Snapshots rastern); ein Tipp klappt die Rangliste unter
+  der Reihe auf, entschiedene Disziplinen tragen Podest und Pille „Entschieden“. Die Jury-Wertung ist
+  ein Blatt (`BonusJurySheet`, Picker je Institut, `POST hub/bonus/olympiade/{rule}/jury`), sichtbar mit
+  `can_judge` aus der Board-Antwort. Texte sind der Port der `olymp*`-Helfer aus `bonus-board.js`
+  (`BonusBoardSnapshotTests.testHelpers`). Siehe `BONUS-BOARD.md`, Abschnitt „glatttolympia“.
 - **Native Mehr-Seiten** (`Bonus/NativeMorePage.swift`): Pfade, die die App selbst rendert statt sie im
   Pool-WebView zu laden — Erkennung an genau dem Pfad (`/hub/bonus`; Unterseiten bleiben Web).
   `AppContainer.open()` und der `WebCoordinator` (harte Navigationen) leiten dorthin,

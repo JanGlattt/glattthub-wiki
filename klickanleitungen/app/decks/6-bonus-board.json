@@ -6,8 +6,8 @@
   "of": 30,
   "audience": "institut",
   "footerArea": "App",
-  "stand": "29.09.2026",
-  "version": "1.3",
+  "stand": "02.11.2026",
+  "version": "1.4",
   "nr": 6,
   "title": [
     "Das Bonus-Board",
@@ -18,7 +18,8 @@
   "notes": [
     "Das Bonus-Board ist in der App **nativ** — Team → Bonus-Board (iPad-Seitenleiste) bzw. Mehr → Team → Bonus-Board (iPhone). Die Zahlen sind dieselben wie im Hub.",
     "**Mein Board** zeigt deine Ziele mit Balken und Zielmarke; gesichert voll, KPZ unter Vorbehalt in Orange. Beim Wiederkommen feiert die App Fortschritte.",
-    "Mit Leitungs- oder Büro-Recht gibt es den Umschalter **Management** bzw. **Mein Institut**. Die Verwaltung der Regeln bleibt eine Hub-Seite."
+    "Mit Leitungs- oder Büro-Recht gibt es den Umschalter **Management** bzw. **Mein Institut**. Die Verwaltung der Regeln bleibt eine Hub-Seite.",
+    "Seit 02.11.2026 steht die **glatttolympia** oben auf dem Board: Medaillenspiegel der Institute und die zehn Disziplinen als Kacheln — ein Tipp klappt die Rangliste auf."
   ],
   "pages": [
     {
@@ -90,6 +91,44 @@
       "hint": {
         "text": "**Celebration:** Ist ein Wert seit deinem letzten Besuch gestiegen, erscheint oben ein Lob-Banner mit Konfetti — ein Tipp schließt es."
       }
+    },
+    {
+      "h1": "glatttolympia in der App",
+      "sub": "Der Team-Wettkampf des Monats steht oben auf dem Board: Medaillenspiegel, Disziplin-Kacheln und die Jury-Wertung direkt aus der Disziplin.",
+      "card": {
+        "title": "glatttolympia",
+        "text": "Medaillenspiegel, Kacheln, Rangliste aufklappen, Jury"
+      },
+      "left": {
+        "shot": "bonus-olympiad-ipad"
+      },
+      "leftCaption": "Die Olympiade-Karte auf dem iPad: links der Medaillenspiegel (fett = fix, grau +N = Zwischenstand), rechts die Disziplinen; die entschiedene Disziplin trägt ein Podest, die Jury-Disziplin einen gestrichelten Rahmen.",
+      "right": {
+        "shot": "bonus-olympiad-iphone"
+      },
+      "rightCaption": "iPhone: Spiegel oben, Kacheln in zwei Spalten darunter.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Medaillenspiegel",
+          "text": "Je Team Gold, Silber, Bronze und das **Teambudget** (50 € je Gold). **Fett** ist fix aus entschiedenen Disziplinen, **grau mit +** der Zwischenstand aus laufenden."
+        },
+        {
+          "n": 2,
+          "title": "Kachel antippen",
+          "text": "Die **Rangliste klappt unter der Kachel-Reihe auf**: Definition der Kennzahl, alle Teams mit Wert und Medaille, dein Abstand zum Gold. Nochmal antippen oder das Kreuz schließt."
+        },
+        {
+          "n": 3,
+          "title": "Zustände",
+          "text": "**Entschieden** (Goldrahmen, Podest) ändert sich nicht mehr; **Zwischenstand** (blauer Punkt) wird mit dem Monatsabschluss gewertet; **Jury offen** wartet auf die Wertung."
+        },
+        {
+          "n": 4,
+          "title": "Jury-Wertung",
+          "text": "Wer das Jury-Recht hat, findet in der aufgeklappten Disziplin **Glanzleistung** den Knopf **„Jury-Wertung eintragen“**: je Institut einen Platz wählen, optional eine Notiz, speichern."
+        }
+      ]
     },
     {
       "h1": "Stufen und Tagesziel",
