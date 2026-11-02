@@ -642,7 +642,7 @@ Kalender, unter 24 Stunden nur mit Begründung) und **Umbuchen** (Fenster „Ter
 der Kundenakte). Dieselben drei Knöpfe stehen oben in der **aufgeklappten Karte**. Ein ✕ in der
 Zeile gab es nur kurz am 02.11.2026 — Jan: „zu unruhig". Laufende Termine („Im Gange"), beendete,
 stornierte und No-Shows haben weder Menü noch Knöpfe; der Server sperrt eingecheckte Zeilen
-zusätzlich (Jan 02.11.2026). Bei **No-Shows** ist die Uhrzeit-Pille leicht rot, in Web und App.
+zusätzlich (Jan 02.11.2026). Bei **No-Shows** ist die Uhrzeit-Pille leicht rot; die App färbt nur die Uhrzeit-Schrift rot (Jan: der rote Hintergrund passt nur zur blauen Pille des Webs).
 
 Technik: `appointments.js` `canManage()`, `openAppointmentMenu()` (fest positioniertes Menü im
 `body`, nach Platz oben oder unten, schließt bei Klick daneben, Escape, Scrollen),
