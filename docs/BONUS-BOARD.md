@@ -347,6 +347,15 @@ Regeln bleiben Daten — Disziplinen lassen sich in der Verwaltung wie jede Chal
 | 9 | Teamgeist | `referral_kpz` | höher | KPZ aus Monatsverträgen mit Werbung (`contract_referrals` nicht abgelehnt ODER Werbecode an der Website-Buchung ≤ 180 Tage vor Unterschrift) |
 | 10 | Fitness | `sick_days_per_employee` | niedriger | Krankheitstage (`absence_ratio`, DISEASE) ÷ Köpfe des Instituts (KPI-relevant, zeitpunktgenau über `hr_employment_periods`), Langzeit-Episoden ab 43 Tagen ausgenommen, nur Teamwert |
 
+**Startseite (seit 02.11.2026):** Der Kachel-Endpunkt `/hub/bonus/tile` liefert neben `me` den Block
+`olympiad` (`BonusOlympiadService::tileSummary()`: `teams` mit `is_own`, `own`, `counts`, `leaders`,
+`reach` = Disziplinen, in denen das eigene Team Platz 2 hält, mit Abstandstext). Im Hub rendert ihn die
+Startseiten-Karte `olympiad` (`hub/start/_card-olympiad.blade.php`, Kartentyp in `StartPageConfig::CARD_TYPES`,
+nur mit `view_bonus_board`; Migration `2026_11_02_121000` legt sie in jeder gespeicherten Startseite oben an),
+in der App der Abschnitt `olympiad` (`AppStartLayout::SECTIONS`, Migration `2026_11_02_120000` hängt ihn in
+jedes Rollen-Layout hinter den Bonus-Abschnitt; `CockpitOlympiadCard.swift`). Ohne Olympiade im Monat
+zeigt die Hub-Karte einen Hinweis, die App lässt den Abschnitt still weg.
+
 Anlegen: Verwaltung → Karte „glatttolympia <Monat>“ (Name, Teambudget je Gold, Gesamtpreis,
 Disziplinen abhaken) oder `php artisan bonus:olympiad 2026-11 --apply` (ohne `--apply` Trockenlauf).
 Höchstens eine aktive Olympiade je Monat (`BonusOlympiad::forMonth()`). Die Karte auf dem Board

@@ -1103,7 +1103,10 @@ Sitzungssteuerung; rechts der Inhalt. Auf dem iPhone ist alles gestapelt mit fes
 unten. „Termin beginnen" checkt in Phorest ein und startet die Uhr (Restzeit, Fortschritt — seit
 02.11.2026 ab dem Ist-Start plus gebuchter Dauer, Plan klein daneben, wenn er abweicht; bei einem
 Beratungstermin trägt die Kachel „Einstellungszettel" das Abzeichen „Achseln mitbehandelt?", grün
-sobald die Zone erfasst ist — Details `APPOINTMENT-VIEW.md`);
+sobald die Zone erfasst ist — Details `APPOINTMENT-VIEW.md`; seit 02.11.2026 außerdem die
+Schnellaktion „Absagen" (`CancelAppointmentSheet`: Absage-Spalte oder Storno, 24-h-Regel, auch per
+Wischen in der Terminliste) und in der Notiz-Karte „Notiz zu diesem Termin hinzufügen"
+(`can_note`), beides ohne den Termin zu beenden);
 „Termin beenden" führt durch Kasse-Hinweis (roter Saldo-Schirm mit Nicht-Kassierungs-Vermerk),
 Folgetermin-Buchung und Pflichtnotiz und schließt den Termin in Phorest ab (PAID). Formulare und
 Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite.
@@ -1514,6 +1517,9 @@ keine zweite Logik im Backend:
   ein Blatt (`BonusJurySheet`: Reihenfolge-Liste, oben = Platz 1, Pfeile oder Ziehen, eine Notiz, `POST hub/bonus/olympiade/{rule}/jury`), sichtbar mit
   `can_judge` aus der Board-Antwort. Texte sind der Port der `olymp*`-Helfer aus `bonus-board.js`
   (`BonusBoardSnapshotTests.testHelpers`). Siehe `BONUS-BOARD.md`, Abschnitt „glatttolympia“.
+  **Startseite:** Abschnitt `olympiad` (`CockpitOlympiadCard.swift`, volle Breite): Medaillenspiegel mit
+  eigenem Team, „Gold in Reichweite“, Gesamtwertung — aus `GET /api/app/start` (`olympiad`, Daten des
+  Kachel-Endpunkts); fehlt still ohne Olympiade im Monat. Tipp öffnet das Bonus-Board.
 - **Native Mehr-Seiten** (`Bonus/NativeMorePage.swift`): Pfade, die die App selbst rendert statt sie im
   Pool-WebView zu laden — Erkennung an genau dem Pfad (`/hub/bonus`; Unterseiten bleiben Web).
   `AppContainer.open()` und der `WebCoordinator` (harte Navigationen) leiten dorthin,
@@ -1758,7 +1764,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Kasse | nativ | Kassenabschluss (seit 29.09.2026): Monatsliste „Tag für Tag“, Zählen mit Waage und Ziffernblock, Scheine/Münzen als Bilder, iPad Liste + Tag; CSV-Export Web — Details [KASSE.md](KASSE.md) |
 | Laser | nativ | Raum-Sicht des Instituts, Werkbank „Alle“, Geräteakte mit acht Reitern, Teile-Akte, Reparatur/STK/Behörde nativ, Wartungsassistent, Störung melden (seit 26.09.2026); Inventarisieren, Stammdaten, Verbrauchsmaterial, Berichte Web |
 | Bonus-Board | nativ | Mehr-Seite, beide Sichten, Export per Teilen-Blatt |
-| Termin buchen | nativ | Slot-Finder als Detailseite im Termine-Tab: Kundin (seit 02.11.2026 mit „Letzte Behandlung vor …" aus `last_interval`, Abstand bis zum gewählten Tag in der Rückfrage), Institut, ab wann, Paket-Leistungen, Vorschläge je Tag, Rückfrage am Slot, iPad-Raster (seit 26.09.2026); Einstiege Plus in der Terminliste, Kundenübersicht, ⌘N; Folgetermin/Verlegen aus der Terminansicht bleiben im Blatt |
+| Termin buchen | nativ | Slot-Finder als Detailseite im Termine-Tab: Kundin (seit 02.11.2026 mit „Letzte Behandlung vor …" aus `last_interval`, Abstand bis zum gewählten Tag in der Rückfrage), Institut, ab wann, Paket-Leistungen, seit 02.11.2026 Auffrischung neben FLEX, Vorschläge je Tag, Rückfrage am Slot, iPad-Raster (seit 26.09.2026); Einstiege Plus in der Terminliste, Kundenübersicht, ⌘N; Folgetermin/Verlegen aus der Terminansicht bleiben im Blatt |
 | Verträge | nativ | Liste + Vertragsseite mit vier Reitern (seit 25.09.2026); GoCardless/Ratenplan/Bearbeiten als Web-Blatt; Preislisten, Mappings Web; Freunde werben nativ (27.09.2026) |
 | Gutscheine | nativ | Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin-Korrektur, neuer Gutschein, Guthaben-Karte in der Kundenübersicht (seit 26.09.2026); Bestand mit Kennzahlen bleibt Web |
 | Reisekosten | nativ | Anspruchstage aus askDANTE, Assistent für neue Reisen (auch mehrtägig mit Tagen & Nächten, seit 27.09.2026), Reisekarte mit Live-Summe und fünf Abschnitten, Belege mit Kamera/Scanner, Einreichen/Zurückziehen/Löschen, Register Freigabe mit Berichtigen und Entscheidung (seit 26.09.2026); Web-Freigabeseite bleibt Web |
