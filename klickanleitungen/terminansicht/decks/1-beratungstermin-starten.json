@@ -10,7 +10,7 @@
  "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
  "stand": "02.11.2026",
- "version": "1.8",
+ "version": "1.9",
  "notes": [
   "Gilt für **jedes Beratungsgespräch**: Der Termin wird im Hub gestartet, alle Formulare laufen direkt im Termin.",
   "Bei Problemen oder Fehlermeldungen: **Asana-Task ans Büro** — siehe Dokument „Probleme & Fehlermeldungen“."
@@ -161,7 +161,7 @@
     {
      "n": 3,
      "title": "Stornieren",
-     "text": "Entfernt den Termin aus dem Kalender. **Weniger als 24 Stunden vorher nur mit Begründung** — sonst ist es ein No Show. Der Grund landet als Terminnotiz in Phorest. **Umbuchen unter 24 Stunden** zählt genauso: der bisherige Termin wird No Show, der neue gebucht."
+     "text": "Entfernt den Termin aus dem Kalender. **Weniger als 24 Stunden vorher nur mit Begründung** — sonst ist es ein No Show. Der Grund landet als Terminnotiz in Phorest. **Umbuchen unter 24 Stunden** zählt genauso: der bisherige Termin wird No Show, der neue gebucht. Ausnahme nur mit Häkchen und Begründung (z. B. „hat Samstagabend auf den AB gesprochen“) — dann wird der alte Termin normal storniert."
     },
     {
      "n": 4,

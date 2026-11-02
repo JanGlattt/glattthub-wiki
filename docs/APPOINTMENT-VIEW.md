@@ -286,7 +286,11 @@ an); `upcoming_appointments` bekommen `status = cancelled`, damit keine Erinneru
 verschiebt den bisherigen Termin als No Show in die Absage-Spalte (Notiz „Kurzfristig verlegt auf …
 — zählt als No Show", Erinnerungen stoppen) und bucht den neuen; scheitert die Buchung, wandern die
 Zeilen in ihren Raum zurück. Web-Fenster, App-Blatt und Slot-Finder sagen es vorher
-(`short_notice` aus `reschedule-context`). Gilt für jeden Verlege-Weg, auch den Selfservice-Link.
+(`short_notice` aus `reschedule-context`) und bieten die **Ausnahme** an: Häkchen „nicht als No Show
+zählen" plus Pflicht-Begründung (mindestens fünf Zeichen, z. B. „hat Samstagabend auf den AB
+gesprochen") — dann wird der alte Termin normal storniert, der Grund steht als Terminnotiz darauf
+(`reschedule(..., shortNoticeException:)`, API `no_show_exception_reason`). Ohne Ausnahme gilt die
+Regel für jeden Verlege-Weg, auch den Selfservice-Link der Kundin.
 Grenzen aus Phorest: beendete Zeilen (PAID) lassen sich nicht stornieren (500, nichts ändert sich)
 — der Dialog sperrt sie mit Hinweis auf „in Phorest Beleg stornieren, dann löschen"; schon in der
 Absage-Spalte stehende Termine lassen sich nur noch stornieren.
