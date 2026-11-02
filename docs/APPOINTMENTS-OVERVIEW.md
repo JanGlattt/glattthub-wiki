@@ -632,3 +632,14 @@ AND is_active = 1;
 - [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) - CSS-Variablen und Farben
 - [PHOREST-API.md](PHOREST-API.md) - Phorest API Integration
 - [FLATPICKR.md](FLATPICKR.md) - Flatpickr Konfiguration
+
+## Termin absagen aus der Übersicht (seit 02.11.2026)
+
+Jede Terminkarte trägt neben „Termin öffnen" ein kleines **✕** („Absagen oder stornieren"), nur mit
+`manage_appointment_booking` und nur bei gebuchten, bestätigten oder eingecheckten Terminen
+(`appointments.js` `canCancel()`; `data-can-book` am Listen-Container). Es öffnet denselben
+Dialog wie die Terminansicht (`<x-appointment-cancel-dialog />`, `public/js/appointment-cancel.js`):
+„Kurzfristig abgesagt / nicht gekommen" verschiebt in die Absage-Spalte (die Karte zeigt danach
+„No Show"), „Stornieren" storniert — weniger als 24 Stunden vorher nur mit Begründung. Nach
+`appointment-cancelled` lädt die Liste neu. Regeln und Technik: `APPOINTMENT-VIEW.md`, Abschnitt
+„Termin absagen".

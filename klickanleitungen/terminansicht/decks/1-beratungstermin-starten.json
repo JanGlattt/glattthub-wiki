@@ -10,7 +10,7 @@
  "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
  "stand": "02.11.2026",
- "version": "1.5",
+ "version": "1.6",
  "notes": [
   "Gilt für **jedes Beratungsgespräch**: Der Termin wird im Hub gestartet, alle Formulare laufen direkt im Termin.",
   "Bei Problemen oder Fehlermeldungen: **Asana-Task ans Büro** — siehe Dokument „Probleme & Fehlermeldungen“."
@@ -130,6 +130,48 @@
    "rightHtml": "<div class='steps cols-1' style='margin-top:0'><div class='step'><div class='num'>i</div><div><div class='t'>Termin-Infos</div><div class='d'>Datum, Uhrzeit mit Dauer, Institut und Raum (Mitarbeiterin) stehen in der Mitte der linken Spalte.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Navigation</div><div class='d'><b>„Übersicht“</b> ist diese Seite. <b>„Formulare“</b> und <b>„Einstellungszettel“</b> zeigen die Historie der Kundin — die aktuellen Formulare gibt es erst im laufenden Termin (nächste Seite).</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Nur vor dem Start</div><div class='d'>Kunden-Karte, Termin-Infos und Navigation sieht man <b>nur, solange der Termin nicht läuft</b>. Sobald er gestartet ist, zeigt die linke Spalte allein die Sitzungs-Karte (Seite 4).</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Adresse änderbar</div><div class='d'>Im Fenster des Knopfs „Gutschein-Link per E-Mail“ steht die Adresse aus Phorest vorbelegt und lässt sich für diesen Versand ändern — sie wird nicht nach Phorest geschrieben.</div></div></div><div class='step'><div class='num'>i</div><div><div class='t'>Rotes Banner</div><div class='d'>Erscheint, wenn die Kundin noch einen offenen Betrag auf dem Kundenkonto hat. Er muss beim Verlassen kassiert werden.</div></div></div></div>",
    "hint": {
     "text": "**„Termine“** oben links führt zurück zum Tagesplan — aber nur, solange der Termin **noch nicht begonnen** wurde."
+   }
+  },
+  {
+   "h1": "Absagen und Notiz hinzufügen",
+   "sub": "Zwei Dinge, die bis November 2026 nur in Phorest gingen: einen Termin absagen und eine Notiz schreiben, ohne den Termin zu beenden.",
+   "card": {
+    "title": "Absagen & Notiz",
+    "text": "„Absagen“ in der Seitenspalte, Notizfeld in der Notiz-Karte"
+   },
+   "left": {
+    "shot": "b1c-absagen-dialog"
+   },
+   "leftCaption": "Der Dialog „Termin absagen“ bei einem Termin, der in weniger als 24 Stunden beginnt.",
+   "right": {
+    "shot": "b1d-notiz-hinzufuegen"
+   },
+   "rightCaption": "Die Notiz-Karte mit dem Feld „Notiz zu diesem Termin hinzufügen“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Absagen",
+     "text": "Knopf **„Absagen“** in der Seitenspalte (nur vor dem Start). Der Hub zeigt, wie lange es bis zum Termin ist."
+    },
+    {
+     "n": 2,
+     "title": "Kurzfristig abgesagt / nicht gekommen",
+     "text": "Der Termin wandert in die **Absage-Spalte** des Instituts, bleibt im Kalender sichtbar und zählt als No-Show. Unter 24 Stunden vorher ist das vorgewählt."
+    },
+    {
+     "n": 3,
+     "title": "Stornieren",
+     "text": "Entfernt den Termin aus dem Kalender. **Weniger als 24 Stunden vorher nur mit Begründung** — sonst gehört er in die Absage-Spalte. Der Grund landet als Terminnotiz in Phorest."
+    },
+    {
+     "n": 4,
+     "title": "Notiz hinzufügen",
+     "text": "In der Notiz-Karte oben ins Feld schreiben und **„Notiz hinzufügen“** — jederzeit, auch vor oder nach dem Termin. Datum und dein Name kommen automatisch dazu."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "**Beendete Termine** (erledigt/bezahlt) lassen sich im Hub nicht absagen — die korrigiert das Büro in Phorest (Beleg stornieren, dann löschen). Das kleine **✕** an der Terminkarte der Übersicht öffnet denselben Dialog."
    }
   },
   {

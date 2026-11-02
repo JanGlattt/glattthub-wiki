@@ -256,6 +256,52 @@ Styles `.consultation-armpits-glattt`; App: dieselben Namen in `AppointmentDetai
 über den `badge`-Parameter der Session-Kachel. Das Kästchen „Achseln wurden im Beratungsgespräch
 behandelt" im Widerrufs-Wizard bleibt davon unberührt.
 
+### Termin absagen (seit 02.11.2026)
+
+Bis 02.11.2026 konnte eine Mitarbeiterin einen Termin im Hub nicht absagen — nur verlegen oder
+„Doch nicht behandeln"; glatttBert antwortete darum richtig mit „nur in Phorest". Seitdem gibt es
+**„Absagen"** in der Seitenspalte der Terminansicht, als **✕** an der Terminkarte der Terminübersicht
+und in der Kundenakte (Reiter Termine), in der App als Schnellaktion der Terminansicht und per
+Wischen in der Terminliste — nur mit dem Buchungsrecht `manage_appointment_booking` und nur für
+offene Termine (gebucht, bestätigt, eingecheckt; nicht im laufenden oder beendeten Termin).
+
+Zwei Wege, Entscheidung Jan 02.11.2026:
+
+- **Kurzfristig abgesagt / nicht gekommen:** Der Termin wandert in die Phorest-Spalte „Absage
+  weniger als 24 st / Nicht gekommen" des Instituts (`BookingService::moveToCancellationColumn()`,
+  derselbe Weg wie die Selfservice-Absage der Kundin), bleibt im Kalender sichtbar und zählt in
+  allen Statistiken als No-Show. Bei Beratungen läuft „Termin verpasst" (WhatsApp, Anrufliste)
+  weiter wie bei jedem No-Show — `client_cancelled_at` bleibt bewusst leer.
+- **Stornieren:** Termin wird in Phorest storniert (`cancelOnly()`, jede Zeile der Gruppe).
+  **Weniger als 24 Stunden vor dem Termin** (oder danach) nur mit ausdrücklicher Begründung —
+  der Dialog wählt dann die Absage-Spalte vor und verlangt für „Stornieren" mindestens fünf
+  Zeichen; rechtzeitig ist der Grund optional.
+
+Der Grund landet gestempelt („[02.11.2026 14:05 – Lina Lindmark] Termin storniert — Grund: …")
+als Terminnotiz auf allen Zeilen, **vor** dem Storno (stornierte Zeilen nehmen keine Notiz mehr
+an); `upcoming_appointments` bekommen `status = cancelled`, damit keine Erinnerung mehr rausgeht.
+Grenzen aus Phorest: beendete Zeilen (PAID) lassen sich nicht stornieren (500, nichts ändert sich)
+— der Dialog sperrt sie mit Hinweis auf „in Phorest Beleg stornieren, dann löschen"; schon in der
+Absage-Spalte stehende Termine lassen sich nur noch stornieren.
+
+Technik: `AppointmentCancellationService` (`info()`/`cancel()`), Endpunkte
+`GET/POST hub/appointment/{b}/{a}/cancellation` (`Hub\AppointmentCancellationController`), Web
+ein gemeinsamer Dialog `<x-appointment-cancel-dialog />` + `public/js/appointment-cancel.js`
+(öffnet per Fenster-Ereignis `open-appointment-cancel`, meldet `appointment-cancelled`), App
+`CancelAppointmentSheet`/`CancelAppointmentModel`. Notizen schreibt der neue
+`AppointmentNoteWriter` (gestempelt, Gruppen-Dedupe). Test `AppointmentCancellationTest`.
+
+### Notiz zu diesem Termin hinzufügen (seit 02.11.2026)
+
+Die Terminnotiz gab es im Hub nur beim „Termin beenden" (Pflichtfeld, beendet zugleich). Seit
+02.11.2026 steht in der Notiz-Karte der Terminansicht (Web und App) oben ein Feld **„Notiz zu
+diesem Termin hinzufügen"** — vor, während oder nach dem Termin, ohne ihn zu beenden. Der Text
+wird gestempelt (Datum, Name) an alle Zeilen der Termin-Gruppe gehängt und erscheint sofort in
+der Zeitleiste. Endpunkt `POST hub/appointment/{b}/{a}/notes` (Recht `manage_appointment_notes`,
+in der App über das Navigations-Flag `can_note`), Logik `AppointmentViewController::addNote()` +
+`AppointmentNoteWriter`. Die Kundennotiz (dauerhaft am Kunden) bleibt wie bisher in der Kundenakte,
+Reiter Kundeninfos, Feld „Kundennotizen". Test `AppointmentNotesAddTest`.
+
 ### Kundenkonto-Schuld & geführter Beenden-Ablauf
 
 Signal-Banner + Kassen-Schritt (eingeführt 08.08.2026, umgebaut 20.08.2026):
@@ -513,7 +559,7 @@ Auf dieser Seite produziert Headless-Chromium keine Frames (rAF verhungert) — 
 ## Geplante Erweiterungen
 
 - [ ] Beratungsprotokoll direkt erstellen
-- [ ] Termin stornieren
+- [x] Termin stornieren — seit 02.11.2026 „Absagen" (Absage-Spalte oder Storno, 24-h-Regel)
 - [ ] Upselling-Kachel mit Funktion füllen (Platzhalter „Bald verfügbar" ist reserviert)
 - [x] ~~Termin verschieben~~ → „Verlegen" in der Sidebar (Buchungsseite)
 - [x] ~~iframe-Modal ablösen~~ → Echte Unterseite mit Split-View (07/2026)
@@ -526,6 +572,13 @@ Die Update-Blöcke, die bis zum 19.09.2026 am Seitenkopf standen — jeweils mit
 Verweis auf die Stelle oben, an der das heute gültige Verhalten beschrieben ist. Neue
 Erkenntnisse werden **nicht** hier, sondern oben an der thematisch passenden Stelle eingearbeitet;
 die Chronik wächst nur um den Verweis. Bedienung: Nutzerhandbuch, Serie „Terminansicht".
+
+### Update 02.11.2026 (abends) — Termin absagen, Notiz hinzufügen, Auffrischung buchen
+
+Zweite Runde Team-Rückmeldungen (WhatsApp über Jan): „Absagen" in Terminansicht, Übersicht (✕)
+und Kundenakte mit 24-Stunden-Regel, „Notiz zu diesem Termin hinzufügen" ohne Beenden, Auffrischung
+als eigene Kategorie beim Buchen (siehe `TERMIN-BUCHUNG-IDEAL-SLOT.md`). Abschnitte „Termin
+absagen" und „Notiz zu diesem Termin hinzufügen".
 
 ### Update 02.11.2026 — Zeitmessung ab Ist-Start, Achseln-Hinweis im Beratungsgespräch
 

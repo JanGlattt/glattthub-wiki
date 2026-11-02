@@ -116,6 +116,20 @@ Damit die Zeile auch bei „Alle Standorte" erscheint, schicken Web und App die 
 ohne Institut an `services` (der Abstand hängt nicht am Institut; Paket-Services kommen weiterhin
 erst mit Institut). Die Schnellwahl der Wochen bleibt unverändert (Web 6, App 8 Wochen).
 
+**Auffrischung (seit 02.11.2026).** Auffrischungen sind in Phorest eigene Einzel-Services mit
+Preis („Auffrischung ACHSELN 59,99€"), keine Paket-Kurse — das FLEX-Muster `^flex\s` erfasste sie
+nicht, also waren sie im Hub nicht buchbar („Auffrischung kann man nicht buchen, nur Flex", Team
+02.11.2026). Jetzt gibt es `booking.refresh_service_pattern` (`^auffrischung\s`, „..Desinfektion
+Auffrischung" bleibt draußen), `BookingService::getRefreshOptions()` (gemeinsamer Helfer mit FLEX,
+`price_cents`) und `refresh_options` in `GET services`; Web-Blatt und App-Finder zeigen den Block
+„Auffrischung · Einzelsitzung nach Paketende, Bezahlung vor Ort" unter dem Paket, bei leerem
+Paket hervorgehoben — immer sichtbar, nicht nur nach Paketende. Gebucht wird wie bei FLEX mit der
+normalen Desinfektion. Beim Beenden kassiert der Hub Auffrischungen vor Ort
+(`PhorestController::unpaidAddonRows()` nimmt `getRefreshOptions()` als Rückfall, bis 02.11.2026
+nur Namen mit „Flex" — echte Auffrischungen wären per 0-€-Kauf ausgecheckt worden). Offen: das
+Folgetermin-Fenster beim Beenden kennt weiterhin nur Paket-Leistungen (weder FLEX noch
+Auffrischung).
+
 **App.** `BookingFinderModel`/`BookingFinderView`: oben „Bestandskunde | Neukunde" (nur mit
 `can_create_clients` aus `booking/api/services`), Neukunden-Formular, Dubletten-Karte, Institut ist
 bei „Alle Standorte" leer und Pflicht (vorher wurde still das erste sichtbare Institut genommen),
@@ -126,7 +140,7 @@ Kundensuche öffnet nicht mehr von selbst. Auf dem iPad bleibt die zweispaltige 
 
 | Endpunkt | Neu/geändert |
 |---|---|
-| `GET services` | `branch_id`/`client_id` optional; zusätzlich `consultation_options`, `can_create_clients` und `branches` aus `AppBranchList::forUser()` (erlaubte Institute, Hub-Reihenfolge, Kürzel, Farbe, `hidden`); mit `client_id` auch ohne Institut `last_interval` (Terminabstand) |
+| `GET services` | `branch_id`/`client_id` optional; zusätzlich `consultation_options`, `can_create_clients` und `branches` aus `AppBranchList::forUser()` (erlaubte Institute, Hub-Reihenfolge, Kürzel, Farbe, `hidden`); mit `client_id` auch ohne Institut `last_interval` (Terminabstand); mit Institut und Kunde `refresh_options` (Auffrischung) |
 | `GET clients?q` | Bestandskunden über `ClientSearchService` (lokaler Spiegel, Phorest-Fallback) |
 | `GET client-matches` | Dubletten: gleiche Mobilnummer, gleiche E-Mail, exakt gleicher Vor- und Nachname — höchstens fünf |
 | `POST suggestions`, `day-slots` | `client_id` optional, `kind=consultation` |
