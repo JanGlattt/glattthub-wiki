@@ -10,7 +10,7 @@
  "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
  "stand": "02.11.2026",
- "version": "1.7",
+ "version": "1.8",
  "notes": [
   "Gilt für **jedes Beratungsgespräch**: Der Termin wird im Hub gestartet, alle Formulare laufen direkt im Termin.",
   "Bei Problemen oder Fehlermeldungen: **Asana-Task ans Büro** — siehe Dokument „Probleme & Fehlermeldungen“."
@@ -133,16 +133,16 @@
    }
   },
   {
-   "h1": "Absagen und Notiz hinzufügen",
+   "h1": "No Show, Stornieren und Notiz",
    "sub": "Zwei Dinge, die bis November 2026 nur in Phorest gingen: einen Termin absagen und eine Notiz schreiben, ohne den Termin zu beenden.",
    "card": {
-    "title": "Absagen & Notiz",
-    "text": "„Absagen“ in der Seitenspalte, Notizfeld in der Notiz-Karte"
+    "title": "No Show & Notiz",
+    "text": "„No Show“ in der Seitenspalte, Notizfeld in der Notiz-Karte"
    },
    "left": {
     "shot": "b1c-absagen-dialog"
    },
-   "leftCaption": "Der Dialog „Termin absagen“ bei einem Termin, der in weniger als 24 Stunden beginnt.",
+   "leftCaption": "Der Dialog „No Show“ bei einem Termin, der in weniger als 24 Stunden beginnt.",
    "right": {
     "shot": "b1d-notiz-hinzufuegen"
    },
@@ -150,18 +150,18 @@
    "steps": [
     {
      "n": 1,
-     "title": "Absagen",
-     "text": "Knopf **„Absagen“** in der Seitenspalte (nur vor dem Start). Der Hub zeigt, wie lange es bis zum Termin ist."
+     "title": "No Show",
+     "text": "Knopf **„No Show“** in der Seitenspalte (nur vor dem Start). Der Hub zeigt, wie lange es bis zum Termin ist."
     },
     {
      "n": 2,
-     "title": "Kurzfristig abgesagt / nicht gekommen",
-     "text": "Der Termin wandert in die **Absage-Spalte** des Instituts, bleibt im Kalender sichtbar und zählt als No-Show. Unter 24 Stunden vorher ist das vorgewählt."
+     "title": "No Show: kurzfristig abgesagt oder nicht gekommen",
+     "text": "Der Termin wandert in die **Absage-Spalte** des Instituts, bleibt im Kalender sichtbar und zählt als No Show. Unter 24 Stunden vorher ist das vorgewählt."
     },
     {
      "n": 3,
      "title": "Stornieren",
-     "text": "Entfernt den Termin aus dem Kalender. **Weniger als 24 Stunden vorher nur mit Begründung** — sonst gehört er in die Absage-Spalte. Der Grund landet als Terminnotiz in Phorest."
+     "text": "Entfernt den Termin aus dem Kalender. **Weniger als 24 Stunden vorher nur mit Begründung** — sonst ist es ein No Show. Der Grund landet als Terminnotiz in Phorest. **Umbuchen unter 24 Stunden** zählt genauso: der bisherige Termin wird No Show, der neue gebucht."
     },
     {
      "n": 4,
@@ -171,7 +171,7 @@
    ],
    "hint": {
     "kind": "warn",
-    "text": "**Beendete** (erledigt/bezahlt) und **laufende** Termine („Im Gange“) lassen sich im Hub nicht absagen, stornieren oder umbuchen — Beendete korrigiert das Büro in Phorest (Beleg stornieren, dann löschen). In der **Terminübersicht** öffnet ein Klick auf die **Uhrzeit** das kleine Menü Absagen · Stornieren · Umbuchen; in der aufgeklappten Karte stehen die drei Knöpfe direkt. Bei No-Shows ist die Uhrzeit leicht rot."
+    "text": "**Beendete** (erledigt/bezahlt) und **laufende** Termine („Im Gange“) lassen sich im Hub nicht absagen, stornieren oder umbuchen — Beendete korrigiert das Büro in Phorest (Beleg stornieren, dann löschen). In der **Terminübersicht** öffnet ein Klick auf die **Uhrzeit** das kleine Menü No Show · Stornieren · Umbuchen; in der aufgeklappten Karte stehen die drei Knöpfe direkt. Bei No-Shows ist die Uhrzeit leicht rot."
    }
   },
   {

@@ -636,8 +636,8 @@ AND is_active = 1;
 ## Absagen, Stornieren, Umbuchen aus der Übersicht (seit 02.11.2026)
 
 Die **Uhrzeit-Pille** jeder Terminkarte ist bei gebuchten und bestätigten Terminen ein Knopf
-(Hover hebt sie an, kleiner Pfeil): Ein Klick öffnet ein kleines Menü mit **Absagen** (kurzfristig
-abgesagt oder nicht gekommen → Absage-Spalte, zählt als No-Show), **Stornieren** (Termin aus dem
+(Hover hebt sie an, kleiner Pfeil): Ein Klick öffnet ein kleines Menü mit **No Show** (kurzfristig
+abgesagt oder nicht gekommen → Absage-Spalte; Jan 02.11.2026: so heißt das Ganze, nicht „Absagen"), **Stornieren** (Termin aus dem
 Kalender, unter 24 Stunden nur mit Begründung) und **Umbuchen** (Fenster „Termin verlegen" wie in
 der Kundenakte). Dieselben drei Knöpfe stehen oben in der **aufgeklappten Karte**. Ein ✕ in der
 Zeile gab es nur kurz am 02.11.2026 — Jan: „zu unruhig". Laufende Termine („Im Gange"), beendete,

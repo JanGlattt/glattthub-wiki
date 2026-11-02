@@ -267,9 +267,9 @@ Wischen in der Terminliste — nur mit dem Buchungsrecht `manage_appointment_boo
 („Im Gange", eingecheckt) lassen sich weder absagen noch stornieren noch umbuchen** (Jan
 02.11.2026; der Server sperrt `CHECKED_IN` zusätzlich, „Verlegen" folgt derselben Regel).
 
-Zwei Wege, Entscheidung Jan 02.11.2026:
+Das Ganze heißt in der Oberfläche **„No Show"** (Jan 02.11.2026: nicht „Absagen"). Zwei Wege:
 
-- **Kurzfristig abgesagt / nicht gekommen:** Der Termin wandert in die Phorest-Spalte „Absage
+- **No Show (kurzfristig abgesagt oder nicht gekommen):** Der Termin wandert in die Phorest-Spalte „Absage
   weniger als 24 st / Nicht gekommen" des Instituts (`BookingService::moveToCancellationColumn()`,
   derselbe Weg wie die Selfservice-Absage der Kundin), bleibt im Kalender sichtbar und zählt in
   allen Statistiken als No-Show. Bei Beratungen läuft „Termin verpasst" (WhatsApp, Anrufliste)
@@ -282,6 +282,11 @@ Zwei Wege, Entscheidung Jan 02.11.2026:
 Der Grund landet gestempelt („[02.11.2026 14:05 – Lina Lindmark] Termin storniert — Grund: …")
 als Terminnotiz auf allen Zeilen, **vor** dem Storno (stornierte Zeilen nehmen keine Notiz mehr
 an); `upcoming_appointments` bekommen `status = cancelled`, damit keine Erinnerung mehr rausgeht.
+**Umbuchen unter 24 Stunden** folgt derselben Regel (Jan 02.11.2026): `BookingService::reschedule()`
+verschiebt den bisherigen Termin als No Show in die Absage-Spalte (Notiz „Kurzfristig verlegt auf …
+— zählt als No Show", Erinnerungen stoppen) und bucht den neuen; scheitert die Buchung, wandern die
+Zeilen in ihren Raum zurück. Web-Fenster, App-Blatt und Slot-Finder sagen es vorher
+(`short_notice` aus `reschedule-context`). Gilt für jeden Verlege-Weg, auch den Selfservice-Link.
 Grenzen aus Phorest: beendete Zeilen (PAID) lassen sich nicht stornieren (500, nichts ändert sich)
 — der Dialog sperrt sie mit Hinweis auf „in Phorest Beleg stornieren, dann löschen"; schon in der
 Absage-Spalte stehende Termine lassen sich nur noch stornieren.

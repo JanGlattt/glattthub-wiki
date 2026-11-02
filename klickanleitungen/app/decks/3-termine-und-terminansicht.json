@@ -7,7 +7,7 @@
  "audience": "institut",
  "footerArea": "App",
  "stand": "02.11.2026",
- "version": "1.18",
+ "version": "1.19",
  "nr": 3,
  "title": [
   "Termine und die",
@@ -83,7 +83,7 @@
     {
      "n": 2,
      "title": "Mitarbeiterin",
-     "text": "Unter dem Timer: Wer behandelt. Antippen ändert die Zuordnung (schreibt nach Phorest). Daneben seit November 2026 **„Absagen“**: Kurzfristig abgesagt / nicht gekommen → Absage-Spalte (zählt als No-Show), Stornieren → nur mit Begründung, wenn es weniger als 24 Stunden sind. In der Terminliste geht das auch per Wischen nach links — dort stehen **Absagen** und **Verlegen** nebeneinander, und im Absage-Blatt führt **„Stattdessen umbuchen“** direkt zum Verlegen. Laufende Termine („Im Gange“) lassen sich weder absagen noch verlegen; bei No-Shows steht die Uhrzeit in der Liste in Rot. In der Notiz-Karte der Übersicht lässt sich außerdem jederzeit eine **Notiz zu diesem Termin** hinzufügen, ohne ihn zu beenden."
+     "text": "Unter dem Timer: Wer behandelt. Antippen ändert die Zuordnung (schreibt nach Phorest). Daneben seit November 2026 **„No Show“**: kurzfristig abgesagt oder nicht gekommen → Absage-Spalte, Stornieren → nur mit Begründung, wenn es weniger als 24 Stunden sind. In der Terminliste geht das auch per Wischen nach links — dort stehen **No Show** und **Verlegen** nebeneinander, und im No-Show-Blatt führt **„Stattdessen umbuchen“** direkt zum Verlegen. Laufende Termine („Im Gange“) lassen sich weder absagen noch verlegen; bei No-Shows steht die Uhrzeit in der Liste in Rot. In der Notiz-Karte der Übersicht lässt sich außerdem jederzeit eine **Notiz zu diesem Termin** hinzufügen, ohne ihn zu beenden."
     },
     {
      "n": 3,
@@ -305,7 +305,7 @@
   },
   {
    "h1": "Folgetermin und Verlegen",
-   "sub": "Beide Blätter sehen gleich aus: Wunschzeitraum wählen, Vorschläge durchsehen, buchen. Verlegen bucht den neuen Termin zuerst und storniert dann den alten — nie halb. Beim Verlegen stehen die Leistungen des Termins fest: Beratungen bekommen die Zeiten der Website, FLEX, Auffrischung, Gratis und Paket die freien Lücken wie gewohnt. Ohne aktives Paket stehen im Folgetermin Auffrischung und FLEX zur Wahl.",
+   "sub": "Beide Blätter sehen gleich aus: Wunschzeitraum wählen, Vorschläge durchsehen, buchen. Verlegen bucht den neuen Termin zuerst und storniert dann den alten — nie halb. Beim Verlegen stehen die Leistungen des Termins fest: Beratungen bekommen die Zeiten der Website, FLEX, Auffrischung, Gratis und Paket die freien Lücken wie gewohnt. Ohne aktives Paket stehen im Folgetermin Auffrischung und FLEX zur Wahl. Unter 24 Stunden zählt das Umbuchen als No Show: der bisherige Termin wandert in die Absage-Spalte, der neue wird gebucht.",
    "card": {
     "title": "Folgetermin",
     "text": "Vorschläge, buchen, verlegen"
