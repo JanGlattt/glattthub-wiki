@@ -6,8 +6,8 @@
   "of": 30,
   "audience": "leitung",
   "footerArea": "App",
-  "stand": "18.10.2026",
-  "version": "1.4",
+  "stand": "02.11.2026",
+  "version": "1.5",
   "nr": 14,
   "title": [
     "Berichte",
@@ -204,6 +204,38 @@
           "text": "Symbol rechts oben: Quote, im Schnitt gewonnene Tage und Show-Rate mit Angebot gegen Kontrollgruppe."
         }
       ]
+    },
+    {
+      "h1": "Termine einer Mitarbeiterin",
+      "sub": "Im Behandlungs-Ranking auf die Person tippen.",
+      "card": {
+        "title": "Mitarbeiterperformance",
+        "text": "Termine mit Hub-Zeiten"
+      },
+      "left": {
+        "shot": "staff-treatments-light"
+      },
+      "leftCaption": "Termine einer Mitarbeiterin mit Geplant, Check-in und Beendet.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Person antippen",
+          "text": "In der Rangliste oder der Tabelle des Behandlungs-Rankings auf den Namen tippen."
+        },
+        {
+          "n": 2,
+          "title": "Neueste oben",
+          "text": "Die Termine des gewählten Zeitraums, der jüngste zuerst."
+        },
+        {
+          "n": 3,
+          "title": "Drei Zeiten",
+          "text": "**Geplant** aus Phorest, **Check-in** = „Termin beginnen“, **Beendet** = „Termin beenden“ im Hub."
+        }
+      ],
+      "hint": {
+        "text": "**„–“ heißt: kein Hub-Eintrag** — der Termin lief ohne Hub oder vor dessen Einführung."
+      }
     },
     {
       "h1": "Auf dem iPad",

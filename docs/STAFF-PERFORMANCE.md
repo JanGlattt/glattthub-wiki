@@ -736,6 +736,31 @@ durchgeführte Termine (abgeschlossen/bezahlt). Standort-Filter und die
 [Datensichtbarkeit](DATA-VISIBILITY.md) (eigene Daten / Team / alle) greifen
 auch hier. Export über die CSV-Quelle „Behandlungs-Ranking".
 
+**Termine einer Mitarbeiterin (seit 02.11.2026):** Ein Klick auf den Namen in
+der Tabelle öffnet ein Modal mit allen Behandlungs-Terminen der Person über den
+Seiten-Zeitraum, **neueste zuerst**. Je Termin stehen nebeneinander die
+**geplante Zeit aus Phorest** (Beginn–Ende, mehrere Positionen eines Tages zu
+einem Termin zusammengefasst — dieselbe Zählung wie die Spalte
+„Behandlungs-Termine") und die **Hub-Zeiten**: **Check-in** = Klick auf „Termin
+beginnen" im Hub (erster `started`-Eintrag in `appointment_session_logs`,
+Abweichung zur geplanten Zeit als „+4 min"/„−12 min"/„pünktlich", bis 5 min
+grün, bis 15 min grau, darüber rot) und **Beendet** = „Termin beenden" im Hub
+(letzter `ended`-Eintrag) mit der tatsächlichen Dauer und der Abweichung zur
+geplanten. Ohne Hub-Eintrag steht „–" (Termin lief ohne Hub oder vor dessen
+Einführung). Die Kennzahlen-Zeile fasst zusammen: Termine, davon im Hub
+gestartet (Anteil), Ø Check-in-Abweichung, Ø Dauer im Hub. Der Kundenname
+verlinkt in die Kundenakte, die Zeilen tragen `data-ctx="client"` fürs
+Rechtsklick-Menü der Desktop-App. Das Modal gehört zur Karte (Partial
+`statistics/personal/partials/staff-treatments-modal.blade.php`) und
+funktioniert damit auch auf dem Eigenen Dashboard. Endpunkt
+`GET /hub/reports/staff-performance/treatments/{staffId}`
+(`StaffPerformanceService::getStaffTreatmentAppointments()`, Datensichtbarkeit
+über `DataScope::allowsStaff()`, bewusst **ungecacht** wie die Zell-Detailansicht,
+weil die Liste Live-Zeitstempel des Hubs trägt; höchstens 500 Termine,
+`truncated` meldet den Abschnitt). In der App öffnet das Antippen der Person in
+Rangliste oder Tabelle dieselbe Liste als Sheet (`StaffTreatmentsSheet`). Test:
+`tests/Feature/StaffTreatmentAppointmentsTest.php`.
+
 Hinweis zur Abgrenzung: Behandlungen je **Institut** und je **Behandlungsart** (ohne Mitarbeiter-Bezug) zeigt weiterhin die Terminstatistik („Monatliche Übersicht", „Top Services"). Diese Sektion ergänzt die dort fehlende Mitarbeiter-Achse — und liefert die Datenbasis für die späteren HR-KPIs (KPZ pro Arbeitsstunde).
 
 ---
@@ -1081,6 +1106,7 @@ Migration: `2026_06_25_100000_add_staff_performance_contract_index.php`
 | GET | `/hub/reports/staff-performance/staff/{staffId}` | Mitarbeiter-Detail |
 | GET | `/hub/reports/staff-performance/treatments` | Behandlungs-Ranking-Tabelle (Seiten-Zeitraum) |
 | GET | `/hub/reports/staff-performance/treatments-timeline` | Behandlungs-Zeitverlauf je Monat (Diagramm, gesamte Historie) |
+| GET | `/hub/reports/staff-performance/treatments/{staffId}` | Termine einer Mitarbeiterin mit Hub-Zeiten (Check-in, Beendet), neueste zuerst |
 | GET | `/hub/reports/staff-performance/overview` | Tagesmessung (`date_from`/`date_to`, Standard: letzte 4 Kalendermonate) |
 | GET | `/hub/reports/staff-performance/targets` | Zielwerte lesen |
 | POST | `/hub/reports/staff-performance/targets` | Zielwerte speichern |

@@ -2221,6 +2221,12 @@ Karte. Was die App nicht nachbaut, öffnet ⋯ „Hub-Fassung öffnen".
   `testMarketingOfficeReportPages`, keine Web-Karte). PHP `AppReportsTest` prüft, dass **jede** Karte
   **jedes** Berichts aus der `ReportRegistry` einen Baustein hat; eine neue Statistik ohne
   `native`-Feld bricht den Lauf.
+- **Drilldowns als Sheet:** `DailyCellDetailSheet.swift` (Zelle der Tagesmessung) und seit
+  02.11.2026 `StaffTreatmentsSheet.swift` — Antippen einer Mitarbeiterin im Behandlungs-Ranking
+  (Rangliste oder Tabelle) zeigt ihre Termine mit geplanter Zeit neben Check-in und „Termin
+  beenden“ aus dem Hub (`GET …/staff-performance/treatments/{staffId}`, derselbe Endpunkt wie
+  das Web-Modal). `ReportRanking` und `ReportMonthTable` (flache Liste) haben dafür ein
+  optionales `onSelect`.
 
 ### Native eigene Dashboards (seit 27.09.2026)
 

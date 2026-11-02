@@ -98,6 +98,24 @@ const PLAN = [
   kopf('r9-kopf', '/hub/reports/staff-performance'),
   karte('r9-personen', '/hub/reports/staff-performance', 'Beratungs-Ranking'),
   karte('r9-ampel', '/hub/reports/staff-performance', 'Tagesmessung'),
+  // 02.11.2026: Termine einer Mitarbeiterin — Tabelle des Behandlungs-Rankings, Klick auf den ersten Namen, Modal
+  { name: 'r9-termine', url: '/hub/reports/staff-performance', wait: 5000,
+    steps: [['loaded'], ['scroll', '.card-glattt-title, h2, h3', 'Behandlungs-Ranking'], ['wait', 1200],
+            ['fn', async (page, L) => {
+              await page.evaluate(() => {
+                const card = [...document.querySelectorAll('.card-glattt')].find(c => c.querySelector('.card-glattt-title')?.textContent.includes('Behandlungs-Ranking'));
+                card?.querySelector('input[name="view-treatments"][value="table"]')?.click();
+              });
+              await L.wait(page, 1500);
+              // KLICK_STAFF wählt eine bestimmte Person (lokal die mit Hub-Einträgen), sonst die Erstplatzierte
+              await page.evaluate((wanted) => {
+                const card = [...document.querySelectorAll('.card-glattt')].find(c => c.querySelector('.card-glattt-title')?.textContent.includes('Behandlungs-Ranking'));
+                const links = [...(card?.querySelectorAll('button.link-glattt') || [])];
+                (links.find(b => wanted && b.textContent.includes(wanted)) || links[0])?.click();
+              }, process.env.KLICK_STAFF || '');
+              await L.wait(page, 3000);
+            }]],
+    clip: '.modal-glattt', marks: [{ id: 'kopf', kind: 'badge', n: 2, sel: '.modal-glattt-header-title', at: 'l' }] },
   // ── 10 Schulden
   kopf('r10-kopf', '/hub/reports/schulden'),
   karte('r10-rls', '/hub/reports/schulden', 'Rücklastschriften nach Grund'),
