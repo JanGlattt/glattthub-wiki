@@ -133,6 +133,12 @@ Oberfläche dafür kommt in Etappe 3.
   geht alle 2,5 s das bisher Aufgenommene als Zwischenstand an `…/transcribe` (`interim=1`) und
   erscheint als Mitschrift; nach 20 s wird ein Stück ohnehin abgeschlossen. Die Balken der
   Hör-Anzeige zeigen den echten Pegel (`--coach-level` als CSS-Variable, `.coach-listen.is-live`).
+- Zeit bis zum Video (02.11.2026): `POST /sessions` mit `defer_opening=1` legt die Einheit nur an und
+  gibt das Simli-Token (`data.simli`, ICE-Server 30 Minuten gecacht) gleich mit; der Browser verbindet
+  das Video sofort und holt parallel `POST …/opening` (erster Satz der Kundin, nur einmal je Einheit).
+  Vor dem ersten Satz wartet die Seite bis zu 2,5 s auf `simliReady`, damit er aus dem Video kommt.
+  ICE-Sammeln endet, sobald 250 ms kein neuer Kandidat kommt (nicht erst bei „complete“). Die App
+  nutzt weiter `start` mit Eröffnung in einer Antwort.
 - Latenz (02.11.2026): Eine Äußerung gilt nach **1,0 s** Pause als beendet (vorher 1,5 s). Schon nach
   **0,4 s** Pause schickt die Seite das bisher Gesagte als **Vorgriff** an `…/transcribe`; bleibt es bis
   zur 1,0-s-Marke still, wird dieses Ergebnis direkt als Zug abgegeben und die Aufnahme ohne zweite
@@ -283,3 +289,4 @@ zweiwöchiger Pilot-Vergleich (Konzept Stufe B).
 - **01.11.2026** — Zweiter Prod-Test: Simli-SDK durch eigenen compose-Client ersetzt (SDK sprach das alte Protokoll, nie Video), Pausen-Erkennung mit adaptiver Schwelle (nichts kam an, weil Raumgeräusch nie als Stille galt), Mitschrift alle 2,5 s und Live-Pegel, Client-Meldungen ins Hub-Log.
 - **01.11.2026** — Dritter Prod-Test: Google-Token nur bis kurz vor Ablauf gecacht und bei 401 erneuert (Stimme und Erkennung fielen nach 34 Minuten aus), Simli-Client aus dem Alpine-Zustand genommen (Proxy-Identität schloss die Sitzung sofort), Video lokal gegen Simli bewiesen.
 - **02.11.2026** — Latenz: Pause 1,0 s, Vorgriff-Erkennung nach 0,4 s Pause, Füllwort-Filter, Zeiten je Zug (Server `timings`, Client-Meldung „zug“).
+- **02.11.2026** — Zeit bis zum Video: aufgeschobene Eröffnung (`defer_opening`, `POST …/opening`), Simli-Token mit der Start-Antwort, ICE-Server gecacht, ICE-Sammeln nach 250 ms Ruhe.
