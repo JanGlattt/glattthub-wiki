@@ -260,10 +260,12 @@ behandelt" im Widerrufs-Wizard bleibt davon unberührt.
 
 Bis 02.11.2026 konnte eine Mitarbeiterin einen Termin im Hub nicht absagen — nur verlegen oder
 „Doch nicht behandeln"; glatttBert antwortete darum richtig mit „nur in Phorest". Seitdem gibt es
-**„Absagen"** in der Seitenspalte der Terminansicht, als **✕** an der Terminkarte der Terminübersicht
-und in der Kundenakte (Reiter Termine), in der App als Schnellaktion der Terminansicht und per
-Wischen in der Terminliste — nur mit dem Buchungsrecht `manage_appointment_booking` und nur für
-offene Termine (gebucht, bestätigt, eingecheckt; nicht im laufenden oder beendeten Termin).
+**„Absagen"** in der Seitenspalte der Terminansicht, in der Terminübersicht über das Menü an der
+Uhrzeit-Pille (Absagen · Stornieren · Umbuchen, siehe `APPOINTMENTS-OVERVIEW.md`) und in der
+Kundenakte (Reiter Termine), in der App als Schnellaktion der Terminansicht und per
+Wischen in der Terminliste — nur mit dem Buchungsrecht `manage_appointment_booking` und nur für gebuchte oder bestätigte Termine — **laufende Termine
+(„Im Gange", eingecheckt) lassen sich weder absagen noch stornieren noch umbuchen** (Jan
+02.11.2026; der Server sperrt `CHECKED_IN` zusätzlich, „Verlegen" folgt derselben Regel).
 
 Zwei Wege, Entscheidung Jan 02.11.2026:
 

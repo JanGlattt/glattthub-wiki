@@ -633,13 +633,21 @@ AND is_active = 1;
 - [PHOREST-API.md](PHOREST-API.md) - Phorest API Integration
 - [FLATPICKR.md](FLATPICKR.md) - Flatpickr Konfiguration
 
-## Termin absagen aus der Übersicht (seit 02.11.2026)
+## Absagen, Stornieren, Umbuchen aus der Übersicht (seit 02.11.2026)
 
-Jede Terminkarte trägt neben „Termin öffnen" ein kleines **✕** („Absagen oder stornieren"), nur mit
-`manage_appointment_booking` und nur bei gebuchten, bestätigten oder eingecheckten Terminen
-(`appointments.js` `canCancel()`; `data-can-book` am Listen-Container). Es öffnet denselben
-Dialog wie die Terminansicht (`<x-appointment-cancel-dialog />`, `public/js/appointment-cancel.js`):
-„Kurzfristig abgesagt / nicht gekommen" verschiebt in die Absage-Spalte (die Karte zeigt danach
-„No Show"), „Stornieren" storniert — weniger als 24 Stunden vorher nur mit Begründung. Nach
-`appointment-cancelled` lädt die Liste neu. Regeln und Technik: `APPOINTMENT-VIEW.md`, Abschnitt
-„Termin absagen".
+Die **Uhrzeit-Pille** jeder Terminkarte ist bei gebuchten und bestätigten Terminen ein Knopf
+(Hover hebt sie an, kleiner Pfeil): Ein Klick öffnet ein kleines Menü mit **Absagen** (kurzfristig
+abgesagt oder nicht gekommen → Absage-Spalte, zählt als No-Show), **Stornieren** (Termin aus dem
+Kalender, unter 24 Stunden nur mit Begründung) und **Umbuchen** (Fenster „Termin verlegen" wie in
+der Kundenakte). Dieselben drei Knöpfe stehen oben in der **aufgeklappten Karte**. Ein ✕ in der
+Zeile gab es nur kurz am 02.11.2026 — Jan: „zu unruhig". Laufende Termine („Im Gange"), beendete,
+stornierte und No-Shows haben weder Menü noch Knöpfe; der Server sperrt eingecheckte Zeilen
+zusätzlich (Jan 02.11.2026). Bei **No-Shows** ist die Uhrzeit-Pille leicht rot, in Web und App.
+
+Technik: `appointments.js` `canManage()`, `openAppointmentMenu()` (fest positioniertes Menü im
+`body`, nach Platz oben oder unten, schließt bei Klick daneben, Escape, Scrollen),
+`manageAppointment()` → Absage-Dialog `<x-appointment-cancel-dialog />` mit Vorwahl (`mode`,
+kompakt als `modal-glattt-sm`) bzw. `Livewire.dispatch('open-reschedule-modal')` an das auf der
+Seite eingebundene `reschedule-slot-modal`; nach `appointment-cancelled`/`appointment-rescheduled`
+lädt die Liste neu. `data-can-book` am Listen-Container. Regeln und Endpunkte:
+`APPOINTMENT-VIEW.md`, Abschnitt „Termin absagen".

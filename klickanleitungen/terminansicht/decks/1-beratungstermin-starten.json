@@ -10,7 +10,7 @@
  "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
  "stand": "02.11.2026",
- "version": "1.6",
+ "version": "1.7",
  "notes": [
   "Gilt für **jedes Beratungsgespräch**: Der Termin wird im Hub gestartet, alle Formulare laufen direkt im Termin.",
   "Bei Problemen oder Fehlermeldungen: **Asana-Task ans Büro** — siehe Dokument „Probleme & Fehlermeldungen“."
@@ -171,7 +171,7 @@
    ],
    "hint": {
     "kind": "warn",
-    "text": "**Beendete Termine** (erledigt/bezahlt) lassen sich im Hub nicht absagen — die korrigiert das Büro in Phorest (Beleg stornieren, dann löschen). Das kleine **✕** an der Terminkarte der Übersicht öffnet denselben Dialog."
+    "text": "**Beendete** (erledigt/bezahlt) und **laufende** Termine („Im Gange“) lassen sich im Hub nicht absagen, stornieren oder umbuchen — Beendete korrigiert das Büro in Phorest (Beleg stornieren, dann löschen). In der **Terminübersicht** öffnet ein Klick auf die **Uhrzeit** das kleine Menü Absagen · Stornieren · Umbuchen; in der aufgeklappten Karte stehen die drei Knöpfe direkt. Bei No-Shows ist die Uhrzeit leicht rot."
    }
   },
   {
