@@ -1,0 +1,116 @@
+{
+ "out": "../pdf/Terminansicht-13-Qualitaetskontrolle",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Terminansicht",
+ "nr": 13,
+ "of": 13,
+ "audience": "institut",
+ "title": [
+  "Qualitätskontrolle"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — bei einer Qualitätskontrolle die betroffenen Zonen wählen, Fotos machen und je Zone einen Befund notieren",
+ "eyebrow": "Terminansicht · Behandlung",
+ "footerArea": "Terminansicht",
+ "stand": "02.11.2026",
+ "version": "1.0",
+ "notes": [
+  "Die **Qualitätskontrolle** gibt es in jeder Terminansicht — im Browser, in der Desktop-App und in der App auf iPhone und iPad.",
+  "Sie braucht **keinen Einstellungszettel**: Es wird nichts behandelt, die Sitzungen der Kundin zählen nicht weiter.",
+  "Je Zone gibt es **einen Kommentar** und **beliebig viele Fotos**. Alles speichert von selbst.",
+  "Die Befunde stehen danach in der **Kundenakte** und als Hinweis im Einstellungszettel der nächsten Behandlung."
+ ],
+ "pages": [
+  {
+   "h1": "Qualitätskontrolle öffnen",
+   "sub": "Ist eine Qualitätskontrolle gebucht, steht nach „Termin beginnen“ eine eigene Kachel in der Session.",
+   "card": {
+    "title": "Kachel „Qualitätskontrolle“",
+    "text": "Bei gebuchter QK"
+   },
+   "left": {
+    "shot": "qk2-qk-kachel"
+   },
+   "leftCaption": "Die Session mit der Kachel „Qualitätskontrolle“ — grün, sobald ein Befund erfasst ist.",
+   "right": {
+    "shot": "qk3-qk-knopf-zettel",
+    "cls": "compact"
+   },
+   "rightCaption": "Ohne gebuchte QK: der Knopf oben im Einstellungszettel.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Gebuchte QK",
+     "text": "Steht im Termin eine Leistung **„Qualitätskontrolle“** oder **„QK“**, erscheint die Kachel. Antippen öffnet die Qualitätskontrolle."
+    },
+    {
+     "n": 2,
+     "title": "Ohne gebuchte QK",
+     "text": "Reklamiert eine Kundin während einer Behandlung, im Einstellungszettel **„Qualitätskontrolle erfassen“** antippen."
+    }
+   ],
+   "hint": {
+    "text": "Die Kachel ist nicht gesperrt — eine Qualitätskontrolle braucht keine Pflichtformulare."
+   }
+  },
+  {
+   "h1": "Befund je Zone erfassen",
+   "sub": "Links die Körpergrafik, rechts je Zone eine Karte mit Kommentar und Fotos.",
+   "card": {
+    "title": "Zone, Kommentar, Fotos",
+    "text": "Speichert von selbst"
+   },
+   "left": {
+    "shot": "qk1-qk-ansicht"
+   },
+   "leftCaption": "Befund „Achseln“ mit Kommentar und einem Foto.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zone wählen",
+     "text": "Zone in der Grafik antippen oder unten in der Liste wählen. Eine Zone ohne Bild (z. B. „Kinn“) unter **„Weitere Zonen“** eintippen. Für jede Zone entsteht rechts eine Karte."
+    },
+    {
+     "n": 2,
+     "title": "Kommentar",
+     "text": "Was ist zu sehen, was ist geplant? Der Text speichert nach einer kurzen Tipp-Pause — oben rechts steht dann **„Gespeichert“**."
+    },
+    {
+     "n": 3,
+     "title": "Fotos",
+     "text": "**„Foto“** antippen: Am iPad und Handy öffnet sich die Kamera, am Rechner die Dateiauswahl. Mehrere Fotos sind möglich. Antippen vergrößert, das rote **×** löscht ein Foto."
+    }
+   ],
+   "hint": {
+    "text": "Falsche Zone gewählt? Der **Papierkorb** entfernt den Befund mit allen Fotos."
+   }
+  },
+  {
+   "h1": "Befunde später finden",
+   "sub": "Alle Qualitätskontrollen der Kundin stehen in der Kundenakte im Reiter „Behandlungseinstellungen“.",
+   "card": {
+    "title": "Kundenakte",
+    "text": "Reiter Behandlungseinstellungen"
+   },
+   "left": {
+    "shot": "qk4-qk-kundenakte"
+   },
+   "leftCaption": "Abschnitt „Qualitätskontrollen“: Datum, wer erfasst hat, Befund je Zone mit Fotos.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kundenakte",
+     "text": "Ohne gewählte Zone stehen alle Qualitätskontrollen da. Ist eine Zone gewählt, nur deren Befunde."
+    },
+    {
+     "n": 2,
+     "title": "Nächste Behandlung",
+     "text": "Öffnet jemand im Einstellungszettel eine Zone mit Befund, steht oben ein **goldener Hinweis** mit Datum und Kommentar der letzten Qualitätskontrolle."
+    }
+   ],
+   "hint": {
+    "text": "In der App stehen die Qualitätskontrollen in der Kundenakte im Reiter „Behandlung“ ganz oben."
+   }
+  }
+ ]
+}

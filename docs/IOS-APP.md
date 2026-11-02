@@ -1366,6 +1366,29 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   an der `FastCgiServer`-Zeile in `/Applications/MAMP/conf/apache/httpd.conf`. Der lokale Hub ruft
   die **echte Phorest-API** — in Tests nie Check-in/Beenden/Buchen auslösen.
 
+### Qualitätskontrolle in der Terminansicht (seit 02.11.2026)
+
+Eigene Session-Kachel „Qualitätskontrolle“ (`tile-quality-check`) bei gebuchter QK-Leistung oder sobald
+Befunde da sind (`AppointmentDetailModel.qualityCheckTileVisible`, Muster `quality_check_pattern` aus
+`treated-zones`); ohne gebuchte QK über „Qualitätskontrolle erfassen“ im Kopf des nativen Zettels
+(`TreatmentSettingsPane(onQualityCheck:)`). Ansicht `.qualityCheck` mit `QualityCheckPane`
+(`ios/glatttHub/AppointmentView/QualityCheckView.swift`) — Entwurf 1 „Grafik und Befund-Karten“:
+iPhone gestapelt, iPad Grafik links und Karten rechts. Zonen über die Grafik (`QualityCheckGraphic`,
+Treffer über `BodyZoneCatalog.hit`), das Menü „Zone wählen“ (auch für VoiceOver) oder frei benannt
+(`BodyZoneCatalog.customKey`). `QualityCheckModel` legt beim Antippen sofort den Befund an (Fotos
+brauchen die ID), speichert den Kommentar nach 1,2 s Pause oder beim Verlassen des Felds, lädt Fotos
+über Kamera oder Mediathek (bis zehn auf einmal, JPEG ≤ 2000 px wie der Zettel). Endpunkte wie im Web
+(Wiki `TREATMENT-SETTINGS.md`, Abschnitt „Qualitätskontrolle“). Kundenakte: `QualityCheckHistoryCard`
+oben im Reiter „Behandlung“, auch ohne Einstellungszettel. Im Zonen-Formular zeigt ein Hinweis den
+letzten QK-Befund der Zone (`qualityFindings`, PHP liefert ein leeres Objekt als `[]`).
+
+**Körperskizze im Dunkelmodus:** Die Skizze ist schwarz gezeichnet — hinter ihr liegt im Dunkelmodus
+eine helle Fläche `#efefef` wie im Web (`BodyZoneSurface`), für QK und nativen Zettel
+(Rückmeldung Jan, 02.11.2026: Umrandung und Skizze dunkel auf dunkel).
+
+Snapshot-Test `QualityCheckSnapshotTests` (iPhone/iPad hell/dunkel, leerer Stand, Verlaufskarte),
+Bilder für App 3.
+
 ### Upselling in der Terminansicht (seit 25.10.2026)
 
 Knopf „Upselling“ neben „Verlegen“ (nur mit `can_upsell` = Recht `sell_upselling`) öffnet

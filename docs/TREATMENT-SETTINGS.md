@@ -25,6 +25,7 @@ Schritt für Schritt steht im Nutzerhandbuch.
     - [Funktionsumfang und Verhalten](#funktionsumfang-und-verhalten-seit-februar-2026)
     - [Zonen gemeinsam behandeln & zweite Einstellung](#zonen-gemeinsam-behandeln-zweite-einstellung-seit-13102026)
     - [Werte korrigieren](#werte-korrigieren-seit-29102026)
+    - [Qualitätskontrolle](#qualitatskontrolle-seit-02112026)
     - [URL-Struktur](#url-struktur)
     - [Dateistruktur](#dateistruktur)
     - [Datenbank-Schema](#datenbank-schema)
@@ -68,6 +69,9 @@ Daten lesbar (Reiter mit Behandlungsverlauf und Fotogalerie); Tippfehler lassen 
   pflegt das Büro im Admin unter **Betrieb → Gemeinsame Zonen**.
 - **Haaranalyse, Qualitätskontrolle und Vertragstermine brauchen keinen Zettel** — sie zählen weder
   als offene Behandlung noch als „Behandlung ohne Einstellungszettel".
+- **Qualitätskontrolle** (seit 02.11.2026): eigene Kachel neben dem Zettel — betroffene Zonen wählen,
+  je Zone ein Kommentar und Fotos, ohne Einstellungen und ohne Sitzungszähler. Die Befunde stehen in der
+  Kundenakte und als Hinweis im Zettel der nächsten Behandlung.
 
 **Wo was erledigt wird:**
 
@@ -79,6 +83,7 @@ Daten lesbar (Reiter mit Behandlungsverlauf und Fotogalerie); Tippfehler lassen 
 | Zweite Einstellung, „Heute zusammen behandelt?" | Terminansicht 8 |
 | Papierzettel nachtragen, Behandlerin nicht mehr im Team | Kundenverwaltung 6 |
 | Werte eines Eintrags korrigieren, Verlauf „korrigiert“ ansehen | Kundenverwaltung 6 |
+| Qualitätskontrolle: Zone, Kommentar, Fotos, Befunde in der Kundenakte | Terminansicht 13, App 3 |
 
 ---
 
@@ -439,6 +444,60 @@ altem und neuem Wert, Person und Zeitpunkt nachvollziehbar.
 - **Tests:** `tests/Feature/TreatmentCorrectionTest.php` (Erstellerin korrigiert Termin-Eintrag mit
   Verlauf, keine Änderung ohne Verlauf, Rechte 403/Leitung, Datum nur bei Nachträgen mit
   Neudurchzählung, zweite Einstellung, Listenfelder), iOS `TreatmentCorrectionSnapshotTests`.
+
+### Qualitätskontrolle (seit 02.11.2026)
+
+Bei einer Qualitätskontrolle (QK) wollten die Institute Fotos ablegen — das ging nur an einem
+Einstellungszettel, und mit „Nicht behandelt“ verschwand der Foto-Knopf (Asana „Photos for quality
+control topics“, Hannover 02.11.2026). Seitdem hat die QK einen eigenen Weg: Zone wählen, je Zone
+**ein Kommentar** und **beliebig viele Fotos**, ohne Einstellungen. Entscheidungen Jan (02.11.2026):
+Kommentar je Zone, Kachel bei gebuchter QK-Leistung plus Knopf im Zettel, Ablage in der Kundenakte im
+Reiter Behandlung; Entwurf 1 „Grafik und Befund-Karten“ (Web, iPhone, iPad).
+
+!!! nutzerhandbuch "Bedienung: Terminansicht 13 – Qualitätskontrolle"
+    [hilfe.hub.glattt.com/terminansicht/13/](https://hilfe.hub.glattt.com/terminansicht/13/)
+
+- **Bewusst getrennt von `treatment_settings`:** eine QK ist keine Sitzung. Sie zählt nicht in der
+  Sitzungsnummer, nicht im Behandlungszähler und nicht in „Behandlung ohne Einstellungszettel“ (das regelt
+  weiter `NonTreatmentServices::PATTERN`).
+- **Tabellen:** `quality_checks` (je Termin eine Zeile, `phorest_appointment_id` unique,
+  `phorest_client_id`, `phorest_branch_id`, `checked_on` = Termindatum, `created_by_user_id`, SoftDeletes)
+  → `quality_check_zones` (`zone_key` der Körpergrafik oder `custom_…`, `zone_name`, `body_zone_id`
+  nullable, `comment`, `sort_order`; unique je QK + Zone) → `quality_check_photos` (gleicher Speicher
+  wie die Behandlungsfotos: Cloud `gcs-private`, lokal `public`, Pfad `quality-check-photos/{client}`).
+  Löschen einer Zone löscht die Foto-Dateien über `QualityCheckZone::deleting`; ohne Zonen wird die QK
+  weich gelöscht und beim nächsten Befund wiederhergestellt.
+- **Service:** `App\Services\Treatments\QualityCheckService` — einzige Stelle für Anlegen
+  (`saveZone()`, legt die QK beim ersten Befund an), Entfernen, Fotos, Verlauf (`history()`) und den
+  Hinweis für die nächste Behandlung (`findingsByZone()`: letzter Befund je Zone, ohne den laufenden Termin).
+  Erkennung der gebuchten QK-Leistung über `SERVICE_PATTERN` (`qualit(ä|ae)tskontrolle|\bqk\b`).
+- **Endpunkte** (`QualityCheckController`, Web und App gleich):
+
+| Methode | Pfad | Recht |
+|---|---|---|
+| GET | `/hub/appointment/{b}/{a}/quality-check` | `view_appointment_detail` |
+| PUT | `/hub/appointment/{b}/{a}/quality-check/zones/{zoneKey}` (`zone_name`, `comment`, optional `client_id`, `appointment_date`) | `manage_treatment_settings` |
+| DELETE | `/hub/appointment/{b}/{a}/quality-check/zones/{zoneKey}` | `manage_treatment_settings` |
+| POST | `/hub/quality-check/zones/{zoneId}/photos` (`photo`, Bild bis 10 MB) | `manage_treatment_photos` |
+| DELETE | `/hub/quality-check/photos/{photoId}` | `manage_treatment_photos` |
+| GET | `/hub/quality-check/photos/{photoId}/view` (Umleitung auf zeitlich begrenzte Adresse) | `manage_treatment_photos` |
+| GET | `/hub/treatment-settings/client/{clientId}/quality-checks` (Verlauf, neueste zuerst) | `view_appointment_detail` |
+
+  Kundin und Termindatum schickt der Client mit; fehlen sie beim ersten Befund, fragt der Controller
+  Phorest. `treated-zones` liefert zusätzlich `quality_check_pattern` und `quality_check_zones` (Kachel),
+  `session/treatment-settings/data` liefert `qualityFindings` (Hinweis im Zonen-Formular).
+- **Web:** Kachel in `session-grid.blade.php` (`qualityCheckTileVisible`: gebuchte Leistung oder schon
+  Befunde), Ansicht `currentView === 'quality-check'` mit Partial `appointment-unified/partials/quality-check`
+  und Alpine-Komponente `public/js/quality-check.js`; Knopf „Qualitätskontrolle erfassen“ im Zettel.
+  Die Körpergrafik ist dieselbe wie im Zettel, aber im **eigenen Kanal**: `@include('partials.body-zone-
+  selector-treatment', ['channel' => 'quality-check'])` setzt allen Fenster-Ereignissen `quality-check-`
+  voran — ohne Kanal hätte ein Tipp auf die Grafik der QK den Einstellungszettel geöffnet. Kundenakte:
+  Karte „Qualitätskontrollen“ (`qualityCheckHistory`) **außerhalb** des Behandlungs-Blocks, damit auch
+  Kundinnen ganz ohne Zettel ihre Befunde zeigen; mit gewählter Zone nur deren Befunde.
+- **App:** `QualityCheckModel` / `QualityCheckView` (siehe Wiki `IOS-APP.md`).
+- **Tests:** `tests/Feature/QualityCheckTest.php` (Befund mit Fotos und Verlauf, keine Zettel-Zeile,
+  Kachel-Felder, Hinweis je Zone, Entfernen samt Datei, Rechte, Leistungserkennung), iOS
+  `QualityCheckSnapshotTests`.
 
 ### 🔗 URL-Struktur
 

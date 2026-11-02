@@ -7,7 +7,7 @@
  "audience": "institut",
  "footerArea": "App",
  "stand": "02.11.2026",
- "version": "1.20",
+ "version": "1.21",
  "nr": 3,
  "title": [
   "Termine und die",
@@ -375,6 +375,42 @@
    ],
    "hint": {
     "text": "Ausführlich mit allen Regeln: „Terminansicht 12 – Upselling“."
+   }
+  },
+  {
+   "h1": "Qualitätskontrolle",
+   "sub": "Bei einer gebuchten Qualitätskontrolle steht in der Session die Kachel „Qualitätskontrolle“ — ohne Einstellungszettel, die Sitzungen zählen nicht weiter.",
+   "card": {
+    "title": "Qualitätskontrolle",
+    "text": "Zone, Kommentar, Fotos"
+   },
+   "left": {
+    "shot": "quality-check-iphone"
+   },
+   "leftCaption": "**iPhone:** oben die Körpergrafik, darunter je Zone eine Befund-Karte.",
+   "right": {
+    "shot": "quality-check-ipad"
+   },
+   "rightCaption": "**iPad:** Grafik links, Befunde rechts.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zone wählen",
+     "text": "Zone in der Grafik antippen, über **„Zone wählen“** aus der Liste nehmen oder eine andere Zone (z. B. „Kinn“) eintippen und **+** antippen."
+    },
+    {
+     "n": 2,
+     "title": "Kommentar",
+     "text": "Befund in das Feld schreiben — er speichert von selbst, oben rechts steht dann **„Gespeichert“**."
+    },
+    {
+     "n": 3,
+     "title": "Fotos",
+     "text": "**„Foto“** → **Foto aufnehmen** oder **Aus Fotos wählen** (mehrere auf einmal). Antippen vergrößert, das **×** löscht ein Foto, der **Papierkorb** den ganzen Befund."
+    }
+   ],
+   "hint": {
+    "text": "Ohne gebuchte QK: im Einstellungszettel **„Qualitätskontrolle erfassen“**. Alle Befunde stehen danach in der Kundenakte im Reiter „Behandlung“ ganz oben."
    }
   }
  ]
