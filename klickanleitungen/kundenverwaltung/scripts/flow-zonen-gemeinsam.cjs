@@ -68,7 +68,7 @@ const fixShow = (page) => page.evaluate(() => { document.querySelectorAll('[x-sh
     const b = B();
     b.zoneKeys = ['bauch', 'zwei_kleine_zonen'];
     b.ensureValues('zwei_kleine_zonen');
-    Object.assign(b.values.zwei_kleine_zonen, { area_label: 'Zehen, Nasenrücken', machine_head: 'small', skin_type: 3, hair_color: 'd', hair_thickness: 'f', hair_density: 'nd', recommended_ms: 20, recommended_jules_min: 10, recommended_jules_max: 14, used_ms: 20, used_jules: 12 });
+    Object.assign(b.values.zwei_kleine_zonen, { area_label: 'Zehen, Finger', machine_head: 'small', skin_type: 3, hair_color: 'd', hair_thickness: 'f', hair_density: 'nd', recommended_ms: 20, recommended_jules_min: 10, recommended_jules_max: 14, used_ms: 20, used_jules: 12 });
     b.ensureValues('bauch'); b.toggleNotTreated('bauch', true);
   });
   await L.wait(page, 800); await fixShow(page); await L.wait(page, 500);

@@ -1624,7 +1624,7 @@ Zwei gemeldete Fälle (H004872, BS001318) deckten drei Lücken auf.
 ### Update 08.08.2026 (spät) — Verkaufbare Position „2 Kleine Zonen"
 
 Neben den 18 Grafik-Zonen gibt es jetzt die Position **„2 Kleine Zonen"**
-(z.B. Zehen, Nasenrücken) — verkaufbar wie jede andere Körperzone.
+(z.B. Zehen, Finger) — verkaufbar wie jede andere Körperzone.
 
 **Für Endanwender:**
 
@@ -1634,7 +1634,7 @@ Neben den 18 Grafik-Zonen gibt es jetzt die Position **„2 Kleine Zonen"**
 - Bei Auswahl erscheinen **zwei Pflicht-Textfelder** („Kleine Zone 1/2") — ohne
   beide Angaben lässt sich das Formular nicht absenden (Client- und
   Server-Validierung, auch im Shared-Link).
-- Die Angabe erscheint überall als `2 Kleine Zonen (Zehen & Nasenrücken)`:
+- Die Angabe erscheint überall als `2 Kleine Zonen (Zehen & Finger)`:
   im **Vertrags-PDF** am Zonen-Tag, in der Einreichungs-Ansicht und in den
   Vertragslisten des Hubs.
 - Preislich zählt die Position als **1 KPZ** (Entscheidung Jan 08/2026 — die
@@ -1654,7 +1654,7 @@ Neben den 18 Grafik-Zonen gibt es jetzt die Position **„2 Kleine Zonen"**
   — Validierung zentral in `FormController::resolveSmallZonesDetails()`
   (auch vom `SharedFormController` genutzt). Draft/Share-Prefill nehmen den
   Wert explizit mit (`_small_zones_details` in `form-fill.js`).
-- `ContractCreationService` schreibt `small_zones_note` („Zehen & Nasenrücken")
+- `ContractCreationService` schreibt `small_zones_note` („Zehen & Finger")
   auf den Vertrag; Anzeige über `Contract::bodyZonesDisplay()` (sortiert nach
   `sort_order`, Fallback Legacy-`body_zone_description`).
 - **Phorest:** Für die Aufbuchung braucht die Zone wie alle anderen ein

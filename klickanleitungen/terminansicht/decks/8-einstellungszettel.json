@@ -114,7 +114,7 @@
     "text": "Sammelzone unter „Sonstiges“"
    },
    "h1": "Sammelzone „2 Kleine Zonen“",
-   "sub": "Zwei kleine Stellen, die zusammen behandelt wurden — zum Beispiel Zehen und Nasenrücken —, haben eine eigene Zone unter „Sonstiges“.",
+   "sub": "Zwei kleine Stellen, die zusammen behandelt wurden — zum Beispiel Zehen und Finger —, haben eine eigene Zone unter „Sonstiges“.",
    "left": {
     "shot": "k1b-zonen-sonstiges",
     "marks": [
@@ -128,7 +128,7 @@
     {
      "n": 1,
      "title": "„2 Kleine Zonen“ antippen",
-     "text": "Öffnet den Zettel der Sammelzone. Im Feld **„Bereich“** steht, welche zwei Stellen gemeint sind (z. B. „Zehen, Nasenrücken“)."
+     "text": "Öffnet den Zettel der Sammelzone. Im Feld **„Bereich“** steht, welche zwei Stellen gemeint sind (z. B. „Zehen, Finger“)."
     },
     {
      "n": 2,
