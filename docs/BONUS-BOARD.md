@@ -303,7 +303,9 @@ Regeln bleiben Daten — Disziplinen lassen sich in der Verwaltung wie jede Chal
   jedes Team einen Wert hat — „entschieden ist entschieden“, ein späterer Widerruf nimmt das Gold nicht.
   Beim Zeitpunkt-Ranking ist zudem **jede schon vergebene Medaille sofort fix** (niemand kann noch vor
   dem ersten Verkauf liegen): `entries[].medal_fixed`, `decided_medals` („Gold“, „Gold + Silber“), die
-  Kachel zeigt „✓ Gold vergeben“ statt „Zwischenstand“, der Spiegel zählt sie fett.
+  Kachel zeigt „✓ Gold fix“ mit Podest (offene Stufen leer), der Spiegel zählt sie fett. Sobald **drei
+  Medaillen vergeben** sind (drittes Team hat verkauft), gilt die Disziplin als entschieden — Podest,
+  Goldrahmen, „✓ Entschieden“ —, auch wenn weitere Teams noch nicht verkauft haben.
 - **0 ist keine Leistung:** Bei Olympiade-Disziplinen mit „höher gewinnt“ ist ein Wert von 0 nicht
   qualifiziert („noch keine Daten“) — sonst teilen sich am Monatsanfang alle Teams Gold für 0 KPZ über
   „Freunde werben“. Bei „niedriger gewinnt“ (No-Show-Rate, Widerrufe, Krankheitstage) ist 0 der beste
@@ -321,6 +323,8 @@ Regeln bleiben Daten — Disziplinen lassen sich in der Verwaltung wie jede Chal
 - **Kennzahl-Arten:** neben `sum`/`ratio` gibt es `timestamp` (Schnellstart: Minuten seit Monatsbeginn,
   `display` „02.11. 09:41“, Hub-Verträge mit Uhrzeit, Institutsseiten-Verträge über die Erfassungszeit)
   und `rank` (Jury). Ranking-Einträge tragen `display`, `base_count`, `note`, `medal`, `medal_fixed`.
+  Die Jury-Wertung ist ein Modal (`partials/olympiad-jury-modal.blade.php`), einmal je Seite in
+  `index.blade.php` eingebunden — nicht im Olympiade-Partial, das in beiden Sichten steht.
 - **Teilnehmer:** Olympiade-Disziplinen treten mit **allen sichtbaren Instituten** an (auch ohne
   Minimalziel), ausgeblendete (Magdeburg) nicht; geparkte Widerrufe zählen wie in allen Challenges nie.
   Disziplinen erzeugen **keine Ziel-Zeile je Person** (zehn Zeilen je Nutzerin, Budget statt Auszahlung)
