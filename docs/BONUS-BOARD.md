@@ -301,6 +301,13 @@ Regeln bleiben Daten — Disziplinen lassen sich in der Verwaltung wie jede Chal
   (`gold_fixed` …, `budget_fixed_cents`), alle anderen Zwischenstand. Entschieden ist eine Disziplin
   nach Monatsende, bei vollständiger Jury-Wertung und beim Zeitpunkt-Ranking (Schnellstart), sobald
   jedes Team einen Wert hat — „entschieden ist entschieden“, ein späterer Widerruf nimmt das Gold nicht.
+  Beim Zeitpunkt-Ranking ist zudem **jede schon vergebene Medaille sofort fix** (niemand kann noch vor
+  dem ersten Verkauf liegen): `entries[].medal_fixed`, `decided_medals` („Gold“, „Gold + Silber“), die
+  Kachel zeigt „✓ Gold vergeben“ statt „Zwischenstand“, der Spiegel zählt sie fett.
+- **0 ist keine Leistung:** Bei Olympiade-Disziplinen mit „höher gewinnt“ ist ein Wert von 0 nicht
+  qualifiziert („noch keine Daten“) — sonst teilen sich am Monatsanfang alle Teams Gold für 0 KPZ über
+  „Freunde werben“. Bei „niedriger gewinnt“ (No-Show-Rate, Widerrufe, Krankheitstage) ist 0 der beste
+  Wert und zählt; mehr als zwei Goldträger zeigt die Kachel als „Gold geteilt: N Teams“.
 - **Richtung je Ranking:** `condition_config.direction` (`desc` Standard, `asc` = niedriger gewinnt;
   Standard aus `BonusMetricResolver::defaultDirection()`). `assignRanks()` und der gesicherte Platz
   rechnen in dieser Richtung; bei „niedriger gewinnt“ ist `secured_value` der **schlechtere** Fall
