@@ -133,6 +133,13 @@ Oberfläche dafür kommt in Etappe 3.
   geht alle 2,5 s das bisher Aufgenommene als Zwischenstand an `…/transcribe` (`interim=1`) und
   erscheint als Mitschrift; nach 20 s wird ein Stück ohnehin abgeschlossen. Die Balken der
   Hör-Anzeige zeigen den echten Pegel (`--coach-level` als CSS-Variable, `.coach-listen.is-live`).
+- Gesicht und Alter (Befund 371, 02.11.2026): `App\Support\CoachFaces` beschreibt je Simli-Gesicht
+  Geschlecht, geschätzte Altersspanne und Eignung (Uniform, Kittel, Kochjacke = ungeeignet). Hat der
+  Kundentyp ein festes Gesicht, legt `CoachPersonGenerator` das Alter der Person in dessen Spanne;
+  ohne festes Gesicht wählt `CoachFaces::pick()` eins passend zu Geschlecht und Alter. Das gewählte
+  Gesicht steht in `person.face_id` und geht so in das Simli-Token (Web und App).
+- Ladeanzeige beim Start (Befund 372): Web und App zeigen nach dem Tippen auf einen Kundentyp sofort
+  ein Overlay „Die Kundin kommt …“ über der ganzen Seite (`.coach-starting`, SwiftUI `.overlay`).
 - Zeit bis zum Video (02.11.2026): `POST /sessions` mit `defer_opening=1` legt die Einheit nur an und
   gibt das Simli-Token (`data.simli`, ICE-Server 30 Minuten gecacht) gleich mit; der Browser verbindet
   das Video sofort und holt parallel `POST …/opening` (erster Satz der Kundin, nur einmal je Einheit).
@@ -290,3 +297,4 @@ zweiwöchiger Pilot-Vergleich (Konzept Stufe B).
 - **01.11.2026** — Dritter Prod-Test: Google-Token nur bis kurz vor Ablauf gecacht und bei 401 erneuert (Stimme und Erkennung fielen nach 34 Minuten aus), Simli-Client aus dem Alpine-Zustand genommen (Proxy-Identität schloss die Sitzung sofort), Video lokal gegen Simli bewiesen.
 - **02.11.2026** — Latenz: Pause 1,0 s, Vorgriff-Erkennung nach 0,4 s Pause, Füllwort-Filter, Zeiten je Zug (Server `timings`, Client-Meldung „zug“).
 - **02.11.2026** — Zeit bis zum Video: aufgeschobene Eröffnung (`defer_opening`, `POST …/opening`), Simli-Token mit der Start-Antwort, ICE-Server gecacht, ICE-Sammeln nach 250 ms Ruhe.
+- **02.11.2026** — Befunde 371/372: Alter der Person folgt dem Gesicht (`CoachFaces` mit Altersspannen und Eignung, automatische Wahl ohne festes Gesicht), Ladeanzeige als Overlay beim Start in Web und App.
