@@ -91,7 +91,8 @@ gesendet, übersprungen oder fehlgeschlagen ist.
   Instituts und das Institut wird benachrichtigt). Der Link gilt bis zum Terminbeginn; jede neue
   Erinnerungsstufe erzeugt einen frischen Link und entwertet den alten.
 - Wird ein Termin storniert oder verlegt, verfallen ausstehende Erinnerungen
-  automatisch; der neue Termin bekommt eigene.
+  automatisch; der neue Termin bekommt eigene — auch wenn er in Phorest verschoben
+  wurde und seine `appointment_id` behalten hat (seit 02.11.2026, siehe Fallstrick unten).
 
 ### Absage über den Link: Absage-Spalte statt Storno (seit 13.10.2026)
 
@@ -319,8 +320,8 @@ sync:upcoming-appointments (15-min kurz --days=8, nachts 03:10 voll --days=35)
 reminders:dispatch (15-min, Minute 7/22/37/52 — nach dem Sync)
   AppointmentReminderService: Zeilen → Besuche (Kunde × Tag × Standort),
   Regelwahl (specificity), fällige Stufe, Idempotenz über
-  unique(visit_key, stage_id) in appointment_reminder_logs (Status queued)
-  → SendAppointmentReminderJob je Besuch × Stufe (Queue default, tries=1)
+  unique(visit_key, stage_id, appointment_date) in appointment_reminder_logs (Status queued)
+  → SendAppointmentReminderJob je Besuch × Stufe × Termindatum (Queue default, tries=1)
 
 SendAppointmentReminderJob
   Storno-Recheck → PhorestApiService::getCachedClient (Consents!) →
@@ -524,3 +525,14 @@ Superchat-Kanal-IDs gespeichert waren und der WhatsApp-Versand lief. Ursache: Da
 (maßgeblich für den Versand ist `channel_id`, siehe `SendAppointmentReminderJob`), und die Migration
 `2026_10_14_090000` hat die Namen aus den Beratungs-WhatsApp-Einstellungen nachgetragen. Wissen:
 `.github/knowledge/filament-hidden-feld-wird-nicht-gespeichert.md`.
+
+### Fallstrick: Verschobene Termine wurden nicht mehr erinnert (behoben 02.11.2026)
+
+Osnabrück meldete, dass Kundinnen keine Erinnerungs-SMS/-E-Mail bekommen. Der Versand lief, aber **in Phorest
+verschobene Termine** blieben stumm: Phorest behält beim Verschieben die `appointment_id`, der Besuchs-Schlüssel
+`visit_key` (kleinste `appointment_id`) blieb also gleich, und die Idempotenz `unique(visit_key, stage_id)` hielt die
+Stufe für schon versendet — die Erinnerungen hatte der alte Tag bekommen. Am 02.11.2026 betraf das mindestens
+44 künftige Besuche (OS 19, BI 9, BS 8, HB 7, H 1). Seitdem gehört das Termindatum zum Schlüssel (Migration
+`2026_11_02_160000`), der Job bekommt das Datum mit und überspringt eine Zeile, deren Termin inzwischen auf einem
+anderen Tag liegt. Bereits verschobene Termine holt der nächste Viertelstunden-Lauf nach (nur noch fällige Stufen,
+kurzfristig nur die kleinste). Test: `AppointmentReminderEngineTest::test_verlegter_termin_wird_fuer_den_neuen_tag_erneut_erinnert`.
