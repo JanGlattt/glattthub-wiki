@@ -1508,7 +1508,7 @@ keine zweite Logik im Backend:
   Medaillenspiegel (fix fett, Zwischenstand „+N“) und die Disziplin-Kacheln (iPhone zwei, iPad drei
   Spalten als Reihen — kein LazyVGrid, damit die Snapshots rastern); ein Tipp klappt die Rangliste unter
   der Reihe auf, entschiedene Disziplinen tragen Podest und Pille „Entschieden“. Die Jury-Wertung ist
-  ein Blatt (`BonusJurySheet`, Picker je Institut, `POST hub/bonus/olympiade/{rule}/jury`), sichtbar mit
+  ein Blatt (`BonusJurySheet`: Reihenfolge-Liste, oben = Platz 1, Pfeile oder Ziehen, eine Notiz, `POST hub/bonus/olympiade/{rule}/jury`), sichtbar mit
   `can_judge` aus der Board-Antwort. Texte sind der Port der `olymp*`-Helfer aus `bonus-board.js`
   (`BonusBoardSnapshotTests.testHelpers`). Siehe `BONUS-BOARD.md`, Abschnitt „glatttolympia“.
 - **Native Mehr-Seiten** (`Bonus/NativeMorePage.swift`): Pfade, die die App selbst rendert statt sie im

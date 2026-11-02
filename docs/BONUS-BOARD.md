@@ -318,7 +318,9 @@ Regeln bleiben Daten — Disziplinen lassen sich in der Verwaltung wie jede Chal
   Kennzahl (`base_count`: Gespräche, Verkäufe, Termine, Köpfe) — Präzision ab 15 Gesprächen.
 - **Jury-Disziplin** (`metric = jury_rank`): Plätze kommen aus `bonus_jury_rankings`, eingetragen
   direkt auf dem Board (Knopf in der aufgeklappten Disziplin, Recht `judge_bonus_olympiad` oder
-  `manage_bonus_rules`), vollständige Reihenfolge 1..n ohne Doppelung, bis dahin `state = jury`
+  `manage_bonus_rules`): eine **Reihenfolge-Liste** (oben = Platz 1, Pfeile zum Verschieben, eine Notiz
+  für alle — Jan 02.11.2026: Dropdowns je Institut waren „zu unruhig“), gespeichert als Plätze 1..n ohne
+  Doppelung, bis dahin `state = jury`
   („Jury offen“, keine Medaille), gesperrt nach finalem Freeze.
 - **Kennzahl-Arten:** neben `sum`/`ratio` gibt es `timestamp` (Schnellstart: Minuten seit Monatsbeginn,
   `display` „02.11. 09:41“, Hub-Verträge mit Uhrzeit, Institutsseiten-Verträge über die Erfassungszeit)
