@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — Kundenservice statt Zendesk: Tickets finden, lesen, per E-Mail oder WhatsApp antworten, interne Notizen schreiben, neue Tickets anlegen und die Kundin zuordnen",
  "eyebrow": "Kundenservice · Tickets",
  "footerArea": "Kundenservice",
- "stand": "24.10.2026",
- "version": "1.0",
+ "stand": "03.11.2026",
+ "version": "1.1",
  "notes": [
   "**Kundenservice** findest du in der Seitenleiste unter **Betrieb**. Jede Mail an kundenservice@ wird automatisch zu einem Ticket; Antworten der Kundin landen im selben Ticket.",
   "Eine Antwort geht als **E-Mail** raus (oder als **WhatsApp**, wenn die Kundin so geschrieben hat). **Interne Notizen** sieht nur das Team.",
@@ -156,7 +156,7 @@
     {
      "n": 2,
      "title": "Textbaustein",
-     "text": "In der Fußzeile links die Werkzeuge (Fett, Kursiv, Liste, Link, @, Anhang, eigener Baustein) und das Menü **Textbaustein**: setzt einen fertigen Text ins Feld, Platzhalter füllt der Hub aus. Daneben **glatttBert** (Kundenservice 2)."
+     "text": "In der Fußzeile links die Werkzeuge (Fett, Kursiv, Liste, Link, @, Anhang, eigener Baustein) und das Menü **Textbaustein**: setzt einen fertigen Text ins Feld, Platzhalter füllt der Hub aus. Daneben **glatttBert** (Kundenservice 2). Angehängte Dateien lädt der Hub sofort hoch und verkleinert große PDFs und Fotos, am Anhang steht dann z. B. „13,1 MB → 1,2 MB“; gesendet werden kann, sobald „wird verkleinert …“ verschwunden ist."
     },
     {
      "n": 3,

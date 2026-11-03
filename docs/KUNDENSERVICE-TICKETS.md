@@ -318,6 +318,21 @@ keine. Auch `createTicket()` holt bei mitgeschickter `phorest_client_id` Name un
 
 **Abschließen ohne Mail.** Der Knopf „Abschließen“ im Ticketkopf schließt ohne Nachricht an die Kundin ab; „Senden & abschließen“ im Antwortfeld verschickt dagegen die Antwort. Hat das Team die Vier-Augen-Prüfung, landet das Ticket danach „in Prüfung“ (siehe oben).
 
+**Anhänge: vorab hochladen und verkleinern (03.11.2026).** Anhänge laden **beim Auswählen** einzeln
+über `POST /hub/kundenservice/anhaenge` hoch (`SupportTicketController::upload`, Recht wie Notiz,
+max. 25 MB je Datei). `SupportUploadService::prepare()` verkleinert ab 1 MB — PDFs über Ghostscript
+(`PdfCompressorService`, `/ebook`: Bilder auf 150 dpi, Text bleibt Text, Ergebnis nur bei ≥ 10 %
+Ersparnis), Fotos über ImageMagick zu JPEG mit max. 2000 px (`ImageOptimizerService::toJpegFile`,
+Name wird `.jpg`) — und legt die Datei unter `support/uploads/{user}/{token}` ab; die Marke steht
+24 h im Cache. Der Chip im Antwortfeld zeigt „wird verkleinert …“ und danach „13,1 MB → 1,2 MB“.
+Antwort, Notiz und neues Ticket schicken nur noch `uploads[]`; `claim()` nimmt ausschließlich Marken
+der eigenen Nutzerin, `storeUploads()` verschiebt die Datei an die Nachricht und verbraucht die
+Marke erst dann (scheitert das Senden, bleiben die Anhänge für den nächsten Versuch). Direkt
+mitgeschickte `files[]` (App) gehen weiter und werden beim Speichern genauso verkleinert. Summe je
+Nachricht nach dem Verkleinern höchstens 20 MB (`SupportUploadService::MAX_TOTAL_BYTES`, sonst 422
+mit Hinweis auf zwei Nachrichten); ein 413 von nginx bekommt im Web eine eigene Meldung
+(`failMessage()`).
+
 ### App (iPhone, iPad)
 
 `SupportView` (Liste → Ticket), iPad als „Gespräch mit Inspektor“ (Kundenkarte, Vorgänge,
@@ -408,6 +423,11 @@ damit (Jan, 10.10.2026).
 
 ### Fallstricke
 
+- **Upload-Grenze 25 MB je Anfrage** (nginx `client_max_body_size` + PHP `post_max_size` in
+  `docker/nginx.conf`, bis 03.11.2026 20 MB): nginx antwortet mit 413 als **HTML**, Laravel sieht die
+  Anfrage nie — im Web stand nur „Senden fehlgeschlagen.“ (#10318: zwei Vertrags-PDFs à ~13 MB,
+  zusammen 27 MB). Deshalb lädt jeder Anhang einzeln vorab hoch. Die App schickt `files[]` noch in
+  einer Anfrage und kann an derselben Grenze scheitern.
 - **Zendesk lehnt geschlossene Tickets mit 422 ab** (Befund 262, 10.10.2026): Der Spiegel (Weg 2)
   kann einem in Zendesk geschlossenen Ticket keine Notiz mehr anhängen. Bei 422 fragt
   `ZendeskMirrorService` den Zendesk-Status ab und hält bei `closed` einmal das Ereignis
@@ -463,12 +483,17 @@ damit (Jan, 10.10.2026).
 - `resources/views/hub/support/`, `resources/views/emails/support/`,
   `resources/views/shared/support-survey*.blade.php`, `public/js/support-tickets.js`
 - `app/Filament/Pages/SupportMailboxSettings.php`, `ZendeskImport.php`
+- Anhänge verkleinern: `app/Services/PdfCompressorService.php`, `ImageOptimizerService::toJpegFile()`,
+  `docker/nginx.conf` (Upload-Grenze), `Dockerfile` (Paket `ghostscript`)
 - `ios/glatttHub/Support/*`, `ios/glatttHubTests/SupportSnapshotTests.swift`
 - Tests `tests/Feature/Support/*`
-- Wissen `.github/knowledge/kundenservice-tickets-bauplan.md`, `imap-uid-bereich-ungequotet.md`
+- Wissen `.github/knowledge/kundenservice-tickets-bauplan.md`, `imap-uid-bereich-ungequotet.md`,
+  `anhaenge-upload-grenze-413.md`
 
 ## Changelog
 
+- **03.11.2026** — Anhänge laden einzeln vorab hoch und werden verkleinert (PDF per Ghostscript,
+  Fotos als JPEG); Upload-Grenze 25 MB, eigene Meldung bei 413, höchstens 20 MB je Nachricht.
 - **24.10.2026** — Selbst abgeschlossene Tickets in Prüfung verschwinden aus „Meine Tickets“ (Asana
   „Tickets in Prüfung“); Antwortfeld in der Höhe ziehbar, Textbaustein-Auswahl nicht mehr
   abgeschnitten; Ticketverlauf als PDF mit/ohne interne Notizen.
