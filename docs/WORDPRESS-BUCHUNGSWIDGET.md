@@ -179,13 +179,15 @@ Angezeigte Termine haben pro Tag mindestens **45 Minuten Abstand** zwischen den 
 
 ---
 
-### Aktion „Drei goldene Umschläge“ (seit 0.33.0, Preise neu 0.34.0, Black November 2026)
+### Aktion „Drei goldene Umschläge“ (seit 0.33.0, Preise neu 0.34.0, Hub-Ziehung 0.35.0, Black November 2026)
 
 Das Plugin bringt das Umschlag-Spiel mit: Modal auf allen Seiten im Aktionszeitraum, bis ein
 Umschlag geöffnet wurde (Auslöser, Preise in zwei Arten mit Rangfolge und Erklärung im Backend
 unter *glattt Bookings → Einstellungen → Aktion*), Link-Parameter `?umschlag=1`, signierter
 Aktionscode (`BN26-150E-K7PQ`) im Cookie, Abzeichen auf jeder Seite nach dem Spiel, Streifen im
-Formular, Notizzeile am Termin und `promo_code` im Booking-Tracking. Fachregeln, Code-Format, Hub-Seite und Einrichtung:
+Formular, Notizzeile am Termin und `promo_code` im Booking-Tracking. Seit 0.35.0 zieht das Plugin
+über den signierten Aufruf `glattt_umschlag_hub` auch für den Hub (Umschlag in der
+Kundeninformation für Neukundinnen ohne Online-Code). Fachregeln, Code-Format, Hub-Seite und Einrichtung:
 [Black November (Umschlag-Aktion)](BLACK-NOVEMBER-AKTION.md).
 
 ## Für Entwickler

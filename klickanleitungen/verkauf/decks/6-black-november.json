@@ -10,15 +10,15 @@
   "Black November",
   "auf der Website"
  ],
- "subtitle": "Klickanleitung für die Umschlag-Aktion im Buchungswidget von glattt.com — Einstellungen in WordPress, Preise und Chancen, was die Kundin sieht und wie der Gewinn in den Vertrag kommt",
+ "subtitle": "Klickanleitung für die Umschlag-Aktion — Einstellungen in WordPress, Preise und Chancen, was die Kundin sieht, der Umschlag im Beratungsgespräch und wie der Gewinn in den Vertrag kommt",
  "eyebrow": "Verkauf · Black November",
  "footerArea": "Verkauf",
- "stand": "29.10.2026",
- "version": "1.0",
+ "stand": "03.11.2026",
+ "version": "1.1",
  "notes": [
   "Die Aktion läuft **im WordPress-Plugin WPglatttBooking** (Einstellungen unter *glattt Bookings → Einstellungen*), nicht im Hub. Der Hub kennt nur den **Aktionscode** aus der Buchung und wählt damit den passenden Rabatt vor.",
   "**Jede gewinnt.** Drei goldene Umschläge, in jedem ein Vorteil für das glattt-Paket; die beiden anderen zeigen danach immer zwei geringere Preise derselben Art.",
-  "Ein Umschlag **pro Person** (30 Tage im Browser). Der Code steht automatisch in der Online-Buchung, in der Terminnotiz und im Hub am Termin."
+  "Ein Umschlag **pro Person**. Online steht der Code automatisch in der Buchung, in der Terminnotiz und im Hub am Termin. **Neukundinnen ohne Online-Code** ziehen ihn im Beratungsgespräch oben in der Kundeninformation."
  ],
  "pages": [
   {
@@ -325,8 +325,83 @@
     }
    ],
    "hint": {
+    "kind": "info",
+    "text": "**Ohne Online-Code?** Hat die Kundin telefonisch oder am Tresen gebucht, zieht sie ihren Umschlag im Beratungsgespräch — oben in der Kundeninformation (nächste Seite)."
+   }
+  },
+  {
+   "h1": "Umschlag im Beratungsgespräch",
+   "sub": "Für Neukundinnen ohne Online-Code: drei Umschläge ganz oben in der Kundeninformation — im Hub und in der App.",
+   "card": {
+    "title": "Im Institut",
+    "text": "Neukundin ohne Code zieht oben in der Kundeninformation, Gewinn kommt automatisch in den Vertrag"
+   },
+   "left": {
+    "shot": "bn7-hub-umschlaege",
+    "marks": [
+     {
+      "id": "umschlag",
+      "n": 1
+     },
+     {
+      "id": "tippen"
+     }
+    ]
+   },
+   "right": {
+    "shot": "bn8-hub-gewinn",
+    "marks": [
+     {
+      "id": "gewinn",
+      "n": 2
+     },
+     {
+      "id": "code",
+      "n": 3
+     },
+     {
+      "id": "vertrag",
+      "n": 4
+     }
+    ]
+   },
+   "leftCaption": "Kundeninformation, ganz oben: die drei Umschläge.",
+   "rightCaption": "Nach dem Öffnen: Gewinn, Erklärung und Code.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Kundin wählt",
+     "text": "Die Kundin tippt selbst auf einen Umschlag — am iPad oder am Bildschirm. Die Umschläge erscheinen nur bei **Neukundinnen** (noch kein Vertrag) in einem **Beratungstermin**, die online **keinen** Code gezogen haben, und nur solange die Aktion läuft."
+    },
+    {
+     "n": 2,
+     "title": "Der Gewinn",
+     "text": "Gezogen wird mit denselben Preisen und Chancen wie auf glattt.com. Die anderen beiden Umschläge zeigen, was sonst drin gewesen wäre."
+    },
+    {
+     "n": 3,
+     "title": "Der Code",
+     "text": "Steht danach an der Kundin — wie bei einer Online-Buchung. Die Terminansicht zeigt ihn als goldenes Abzeichen."
+    },
+    {
+     "n": 4,
+     "title": "Im Vertrag",
+     "text": "Im Behandlungsvertrag ist der passende Rabatt **vorausgewählt**. Weiter wie gewohnt."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Nur einmal",
+     "text": "Je Kundin gibt es genau einen Umschlag. Wird die Kundeninformation erneut geöffnet, steht dort nur noch eine Zeile mit Gewinn und Code."
+    },
+    {
+     "title": "Hat sie schon einen Code?",
+     "text": "Dann erscheinen keine Umschläge, sondern nur diese Zeile — der Online-Gewinn gilt."
+    }
+   ],
+   "hint": {
     "kind": "warn",
-    "text": "**Tresen-Buchungen haben keinen Code.** Nur die Online-Buchung bringt ihn mit. Wer am Telefon bucht, bekommt keinen Black-November-Rabatt — die Kundin auf glattt.com/?umschlag=1 verweisen, bevor gebucht wird."
+    "text": "**Die Umschläge fehlen?** Dann ist es keine Neukundin, kein Beratungstermin, die Aktion ist vorbei — oder die Kundeninformation wurde ohne Termin geöffnet. Immer **aus der Terminansicht** heraus ausfüllen."
    }
   }
  ]

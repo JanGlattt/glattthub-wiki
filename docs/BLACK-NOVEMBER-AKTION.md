@@ -29,6 +29,7 @@ Nutzerhandbuch.
     - [Hub: Aktionsrabatte je Preisliste](#hub-aktionsrabatte-je-preisliste)
     - [Hub: Vorwahl im Vertragsformular](#hub-vorwahl-im-vertragsformular)
     - [Hub: Terminansicht](#hub-terminansicht)
+    - [Hub: Umschlag in der Kundeninformation](#hub-umschlag-in-der-kundeninformation)
     - [Endpunkte](#endpunkte)
     - [Einrichtung vor dem Start](#einrichtung-vor-dem-start)
     - [Tests](#tests)
@@ -66,6 +67,10 @@ ihn ändern oder entfernen.
   denselben Betrag wie die Rate der kürzesten Laufzeit (Regel vom 28.10.2026).
 - **Codes sind signiert.** Ein selbst ausgedachter `BN26-150E-XXXX` wird vom Hub als „nicht
   geprüft" markiert bzw. vom Plugin gar nicht erst in die Notiz geschrieben.
+- **Neukundinnen ohne Online-Code ziehen im Institut** (seit 03.11.2026): Wer telefonisch, am
+  Tresen oder vor dem Start gebucht hat, öffnet ihren Umschlag im Beratungsgespräch ganz oben in
+  der **Kundeninformation** — im Web und in der App, mit denselben Preisen und Chancen wie auf der
+  Website. Danach gilt der Gewinn wie ein Online-Code (Vorwahl im Vertrag, Abzeichen am Termin).
 
 ## Für Entwickler
 
@@ -210,6 +215,53 @@ Terminansicht der App zeigt dasselbe Abzeichen seit 29.10.2026 in der Abzeichen-
 (`AppointmentDetailModel.promoBadge`, Snapshot `appointment-iphone-promo`); das Vertragsformular
 läuft in der App als eingebettetes Web-Blatt, Vorwahl und Sperre gelten dort unverändert.
 
+### Hub: Umschlag in der Kundeninformation
+
+**Anlass (Jan, 03.11.2026):** Kundinnen ohne Online-Code (Telefon, Tresen, vor dem 01.11.
+gebucht) bekamen keinen Aktionsrabatt — die Sperre lässt ihn nur mit Code zu. Lösung ohne
+iOS-Build: Der Umschlag sitzt im Formular, und Formulare laufen auch in der App als eingebettete
+Web-Seite (`/hub/appointment/…?view=forms&shell=native`).
+
+**Regeln** (einzige Stelle: `App\Services\Promotions\PromoEnvelopeService::status()`), in
+dieser Reihenfolge, billig vor teuer:
+
+1. Kundin hat schon einen Code (online oder im Hub gezogen) → `has_code`, kurze Zeile mit
+   Gewinn und Code statt Umschlägen.
+2. Kundin hat einen Vertrag (jeder Status außer `draft`) → `not_new`, nichts sichtbar.
+3. Formular ohne Termin/Standort → `no_consultation`.
+4. Aktion läuft laut Plugin nicht → `not_running`; Website nicht erreichbar → `unavailable`.
+5. Termin-Gruppe (`AppointmentGroupResolver`) ohne Beratungs-Service
+   (`AppointmentConsultationOutcome::isConsultation`) → `no_consultation`.
+6. sonst `eligible`.
+
+**Ziehung im Plugin:** Der Hub ruft `admin-ajax.php` mit `action=glattt_umschlag_hub`,
+`aktion=status|ziehen`, `zeit` und `signatur = HMAC-SHA256("aktion|zeit", PROMO_CODE_SECRET)`
+(±5 Minuten). „ziehen" ist dieselbe `glattt_umschlag_ziehen()` wie im Browser — Preise und
+Chancen werden nur im Plugin gepflegt. Der Status wird 5 Minuten gecacht
+(`promo-envelope:plugin-status`). Der Hub prüft die Signatur des zurückgegebenen Codes erneut und
+verwirft ungültige.
+
+**Datenmodell:** `promo_envelope_draws` (eine Zeile je Kundin, `client_id` unique): Code, Stufe,
+Label, Erklärung, die beiden anderen Preise, Termin, Standort, Formular, wer gezogen hat.
+`PromoCodeService::forClient()` liest nach den Buchungs-Trackings auch diese Tabelle
+(`source: 'hub'`) — damit wirken Vorwahl, Sperre (`assertDiscountAllowed`) und Abzeichen der
+Terminansicht in Web **und** App ohne weitere Änderung. Ein Cache-Lock je Kundin verhindert
+Doppelziehungen.
+
+**Formular-Schalter:** Formular-Editor → Einstellungen → „Umschlag-Aktion oben anzeigen"
+(`forms.settings.promo_envelope.enabled`). Gedacht für „Kundeninformation &
+Einverständniserklärung", weil sie im Beratungsgespräch zuerst ausgefüllt wird.
+
+**Oberfläche:** Partial `hub/forms/partials/promo-envelope.blade.php` (eingebunden in
+`hub/forms/fill` und `appointment-unified/partials/form-fill-inline`), Komponente
+`public/js/components/promo-envelope.js` (verschachtelt in `formFill`, Werte per `x-effect` →
+`sync()`), Styles `.promo-envelope-glattt-*` in `theme_glattt.css`. Das Seitenverhältnis hängt an
+`.promo-envelope-glattt-shape`, nicht am Knopf (WebKit/WKWebView ignoriert `aspect-ratio` auf
+`<button>`).
+
+**Statistik:** Die Karte „Black November" zählt weiterhin nur Online-Buchungen mit Code; Verträge
+mit Aktionsrabatt zählen unabhängig von der Herkunft des Codes.
+
 ### Endpunkte
 
 | Methode | Pfad | Zweck |
@@ -217,6 +269,9 @@ läuft in der App als eingebettetes Web-Blatt, Vorwahl und Sperre gelten dort un
 | POST | `/api/v1/booking-tracking` | nimmt `promo_code` an (Regex `^[A-Z0-9]{2,8}-\d{1,3}[PE]-[A-Z0-9]{4}$`) |
 | GET | `/api/forms/promo-suggestion?client_id=&appointment_id=` | Vorschlag für das Vertragsformular |
 | admin-ajax | `action=glattt_umschlag_ziehen` (WordPress) | serverseitige Ziehung |
+| admin-ajax | `action=glattt_umschlag_hub` (WordPress, signiert) | Status und Ziehung für den Hub (ab 0.35.0) |
+| GET | `/api/forms/promo-envelope?client_id=&branch_id=&appointment_id=` | darf die Kundin ziehen? (`view_forms`) |
+| POST | `/api/forms/promo-envelope/draw` | Umschlag ziehen (`fill_forms`, 10/Minute) |
 
 ### Einrichtung vor dem Start
 
@@ -227,6 +282,9 @@ läuft in der App als eingebettetes Web-Blatt, Vorwahl und Sperre gelten dort un
    Aktion läuft mit Plugin 0.34.3; die fünf Rabatte hat Jan im Preislisten-Editor der Liste
    „glattt-Preise ab 29.10.2026" angelegt, `PROMO_CODE_SECRET` steht auf Prod und Staging.
 4. Teilnahmebedingungen-Seite anlegen und verlinken (anwaltlich prüfen).
+5. Umschlag im Institut (03.11.2026): Plugin 0.35.0 hochladen, im Formular-Editor bei
+   „Kundeninformation & Einverständniserklärung" den Schalter „Umschlag-Aktion oben anzeigen"
+   setzen. `PROMO_WEBSITE_URL` nur setzen, wenn nicht `https://glattt.com`.
 
 ### Tests
 
@@ -235,6 +293,9 @@ läuft in der App als eingebettetes Web-Blatt, Vorwahl und Sperre gelten dort un
 - `tests/Feature/Promotions/BookingTrackingPromoCodeTest.php` — API nimmt `promo_code` an.
 - `tests/Feature/Promotions/PromoSuggestionEndpointTest.php` — Vorschlag-Endpunkt.
 - `tests/Feature/Promotions/PromoDiscountGuardTest.php` — nur der gewonnene Aktionsrabatt ist zulässig.
+- `tests/Feature/Promotions/PromoEnvelopeTest.php` — Umschlag im Hub: Neukundin im
+  Beratungstermin, eine Ziehung je Kundin, Online-Code/Vertrag/Behandlungstermin/Aktionsende
+  sperren, ungültig signierter Code wird verworfen, Recht `fill_forms`.
 - Plugin: Prüfstand headless (alle Auslöser, Parameter, Buchung bis zur Notiz, Abzeichen,
   Gegenprobe: vom Plugin signierte Codes prüft der Hub als gültig).
 
@@ -270,6 +331,10 @@ läuft in der App als eingebettetes Web-Blatt, Vorwahl und Sperre gelten dort un
 - Bindung „ein Umschlag pro Person" an die Mobilnummer im Hub (heute nur Cookie).
 
 ## Chronik
+
+- **03.11.2026** — Umschlag in der Kundeninformation für Neukundinnen mit Beratungsgespräch ohne
+  Online-Code (Web + App ohne Build): Plugin 0.35.0 (`glattt_umschlag_hub`), Hub
+  `PromoEnvelopeService`, Tabelle `promo_envelope_draws`, Formular-Schalter.
 
 - **29.10.2026 nachts** — Statistik-Karte `besucher.black-november`, Klickanleitungen Verkauf 6
   (neu), Terminansicht 1/3 und Verkauf 1 nachgezogen, Vorwahl-Fehler bei später Antwort behoben.
