@@ -2211,6 +2211,14 @@ jede Auswertung mit Diagramm und Tabelle, Heatmaps mit Zahlen in jeder Zelle, Ka
   ohne Diagramm und bleibt über ⋯ „Hub-Fassung öffnen" erreichbar.
 - **Nachweis:** `AppointmentReportsUITests` (alle vier Seiten gegen den lokalen Hub, keine Web-Karte),
   PHP `AppReportsTest` (jede Karte der vier Seiten hat einen Baustein).
+- **„Buchungen am …“** (seit 03.11.2026, Entwurf 2 „Eigene Seite“): Ein Tipp auf einen Tag der Karte
+  Buchungseingänge öffnet die native Detailseite `BookingDayView` unter dem App-eigenen Pfad
+  `/hub/reports/buchungseingang/{JJJJ-MM-TT}` (`BookingDayTarget`, Fabrik `hub.reports` in `TabBarHost` —
+  das Web kennt den Pfad nicht, dort ist es das Fenster über der Karte). Gleicher Endpunkt wie das Web
+  (`consultation-booking-day`, Felder siehe [Buchungseingangs-Kalender](BUCHUNGSEINGANGS-KALENDER.md)),
+  Kennzahlen, Eingang je Stunde (Swift Charts), Herkunft, Filter, Buchungen nach Eingang; Tipp öffnet die
+  Kundenakte. iPhone: Tag per Wischen oder Knopf (auch Pfeiltasten); iPad: links die Tage der letzten vier
+  Wochen aus `consultation-booking-calendar`. Nachweis: `BookingDaySnapshotTests` (Bilder + Modell/Filter).
 
 ### Native Berichtsseiten: alle übrigen Berichte (seit 27.09.2026)
 
