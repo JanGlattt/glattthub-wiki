@@ -14,7 +14,7 @@
  "eyebrow": "Berichte · Zukünftige Beratungen",
  "footerArea": "Berichte",
  "stand": "03.11.2026",
- "version": "1.4",
+ "version": "1.5",
  "notes": [
   "Der Blick nach vorn: **Wie voll sind die nächsten Wochen mit Beratungsgesprächen?**",
   "Die Termine kommen **alle 5 Minuten aus Phorest** — die Karte zeigt ihren Stand („Stand 14:32“), der Pfeil daneben holt ihn sofort neu.",
@@ -180,7 +180,7 @@
     {
      "n": 3,
      "title": "Weiter zurück",
-     "text": "„+ 4 Wochen weiter zurück“ lädt ältere Wochen nach; ein Klick auf einen Tag öffnet die Buchungsliste."
+     "text": "„+ 4 Wochen weiter zurück“ lädt ältere Wochen nach; ein Klick auf einen Tag öffnet das Tagesprotokoll."
     },
     {
      "n": 4,
@@ -190,6 +190,44 @@
    ],
    "hint": {
     "text": "**Frisch bei jeder Buchung:** Der Hub rechnet die Karte alle 5 Minuten neu und zusätzlich sofort nach jeder Online-Buchung und jedem Termin-Abgleich. Solange der Bericht offen ist, rückt der Stand alle 5 Minuten von selbst nach — wer es sofort sehen will, drückt den Pfeil neben „Stand“. Online-Buchungen kommen aus der Buchungsverfolgung, Buchungen am Tresen oder Telefon aus dem Phorest-Buchungsdatum."
+   }
+  },
+  {
+   "h1": "Das Tagesprotokoll: Was kam an einem Tag herein?",
+   "sub": "Ein Klick auf einen Tag im Kalender zeigt alle Beratungsbuchungen dieses Tages in der Reihenfolge, in der sie eingingen.",
+   "card": {
+    "title": "Tagesprotokoll",
+    "text": "Kennzahlen, Herkunft und jede Buchung des Tages"
+   },
+   "left": {
+    "shot": "r2-tagesprotokoll"
+   },
+   "leftCaption": "Tagesprotokoll eines Buchungstags (Beispieldaten, Namen geändert).",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Der Tag in Zahlen",
+     "text": "Oben: Buchungen (online und offline), Neukundinnen, Ø Vorlauf bis zum Termin, Verträge seit der Buchung und Stornos. Darunter der Eingang je Stunde und die Herkunft."
+    },
+    {
+     "n": 2,
+     "title": "Filtern",
+     "text": "Nach Institut, Herkunft oder „Nur Neukundinnen“ eingrenzen. Die Zahlen oben gelten immer für den ganzen Tag."
+    },
+    {
+     "n": 3,
+     "title": "Jede Buchung",
+     "text": "Uhrzeit und Gerät, Kundin mit „Neu“ oder „Bestand“, Termin mit Vorlauf, Institut, Herkunft mit Kampagne, Code, Status und Ergebnis. Ein Klick auf die Zeile öffnet die Kundenakte."
+    },
+    {
+     "n": 4,
+     "title": "Tag wechseln",
+     "text": "„Vortag“ und „Folgetag“ blättern, ohne das Fenster zu schließen."
+    }
+   ],
+   "hint": {
+    "kind": "info",
+    "text": "**Vertrag zählt erst ab dem Buchungstag.** Ältere Verträge einer Bestandskundin erscheinen hier nicht — nur, was aus dieser Buchung werden konnte."
    }
   },
   {

@@ -21,9 +21,10 @@ Schritt für Schritt steht im Nutzerhandbuch.
 **Was der Kalender beantwortet.** An welchen Tagen sind Buchungen eingegangen, wie viele, und was ist
 aus ihnen geworden. Jeder Kalendertag trägt die Gesamtzahl der an diesem Tag **eingegangenen**
 Buchungen plus farbige Badges für stattgefunden, ausstehend, gelöscht und No-Show; daneben steht eine
-Wochen-Zusammenfassung je Standort. Ein Klick auf einen Tag öffnet die vollständige Buchungsliste
-dieses Tages mit Kundin, Termin, Standort, Status, Herkunft (Google Ads, Meta Ads, organisch, offline)
-und — falls vorhanden — dem daraus entstandenen Vertrag mit KPZ-Zahl.
+Wochen-Zusammenfassung je Standort. Ein Klick auf einen Tag öffnet das **Tagesprotokoll** (seit
+03.11.2026): Kennzahlen des Tages, Eingang je Stunde, Herkunftsmix und alle Buchungen in der
+Reihenfolge ihres Eingangs — mit Uhrzeit, Kundin (neu oder Bestand), Termin und Vorlauf, Institut,
+Herkunft samt Kampagne, Code, Status und dem, was daraus wurde (Beratungsergebnis oder Vertrag).
 
 !!! warning "Das Datum ist der Buchungseingang, nicht der Termin"
     Ein Klick auf den „15. April" zeigt alle Buchungen, die **am 15. April eingegangen** sind — die
@@ -32,16 +33,16 @@ und — falls vorhanden — dem daraus entstandenen Vertrag mit KPZ-Zahl.
 
 **Zwei Ansichten:** Anzahl (Standard) oder No-Show-Quote je Tag. Die genaue Bedeutung der Status- und
 Herkunftswerte steht unten unter [Status- und Herkunftswerte](#status-und-herkunftswerte); warum
-frische Buchungen zunächst als „Ausstehend" erscheinen, unter
+eine Buchung „Noch offen“ zeigt, unter
 [Bekannte Einschränkungen](#bekannte-einschrankungen).
 
 **Wo was erledigt wird:**
 
 | Vorgang | Anleitung |
 |---|---|
-| Die Seite öffnen, auf der der Kalender sitzt | Berichte 3 |
+| Die Seite öffnen, auf der der Kalender sitzt | Berichte 2 |
 | Zeitraum und Standort, Diagramm/Tabelle, Export | Berichte 0 |
-| Diesen Kalender Schritt für Schritt | Anleitung folgt (Serie Berichte) |
+| Diesen Kalender und das Tagesprotokoll | Berichte 2, Seite „Buchungseingänge“ |
 
 ---
 
@@ -68,25 +69,35 @@ neben dem Kalender steht eine **KW-Zusammenfassung** mit der Buchungsanzahl pro 
 **Zwei Ansichtsmodi** über einen Toggle: **Anzahl** (Standard, absolute Buchungsanzahl pro Tag) und
 **No-Show-Rate** (Quote in %, Farbintensität spiegelt sie wider).
 
-**Tagesdetail-Modal** — vollständige Buchungsliste des Tages als Tabelle:
+**Tagesprotokoll** (Fenster nach Klick auf einen Tag, Entwurf 1, seit 03.11.2026): Kopf mit
+Vortag/Folgetag, Kennzahlen-Zeile (`stat-strip-glattt`: Buchungen mit online/offline, Neukundinnen,
+Ø Vorlauf, Verträge mit KPZ, Storniert — immer über alle Buchungen des Tages), Eingang je Stunde
+6–22 Uhr (ECharts-Balken, `chart-canvas-glattt-xs`), Herkunftsliste, Filter-Chips (Institut — nur
+ohne Sidebar-Standort —, Herkunft, „Nur Neukundinnen“; rein clientseitig) und die Tabelle:
 
 | Spalte | Inhalt |
 |--------|--------|
-| **Kunde** | Vor- und Nachname (aus Phorest) |
-| **Termin** | Termindatum + Uhrzeit |
-| **Standort** | Institutsname (ohne Präfix „glattt ") |
-| **Status** | Buchungsstatus (siehe unten) |
-| **Herkunft** | Wie die Buchung zustande kam |
-| **Vertrag** | KPZ-Anzahl und Vertragsnummer, falls vorhanden — grünes Badge mit Abschlussdatum bei aktivem oder abgeschlossenem Vertrag, sonst „–" |
+| **Gebucht** | Uhrzeit des Eingangs, darunter Gerät (Handy/Tablet/Computer) bzw. „Institut“ |
+| **Kundin** | Name, Marke **Neu** oder **Bestand** (Bestand = aktiver Termin vor dem Buchungstag) |
+| **Termin** | Wochentag, Datum, Uhrzeit; darunter Vorlauf („in 9 Tagen“, „am selben Tag“) |
+| **Institut** | Farbpunkt + Name (mobil unter dem Namen) |
+| **Herkunft** | Google Ads / Meta Ads / Bezahlte Werbung / Organisch / Offline, darunter der Kampagnenname |
+| **Code** | Aktions-, Gutschein- und Empfehlungscode aus dem Buchungs-Tracking |
+| **Status** | Geplant, Stattgefunden, Nicht erschienen, Storniert, Gelöscht, Noch offen |
+| **Ergebnis** | Vertrag (KPZ, Nummer, Datum) — nur wenn am Buchungstag oder später unterschrieben —, sonst das Beratungsergebnis |
+
+Zeilen tragen `data-ctx="client"` und `data-href` (Kundenakte, Rechtsklick-Menü der Desktop-App);
+stornierte und gelöschte Termine bleiben ausgegraut in der Liste, weil der Kalender sie mitzählt.
 
 ### Status- und Herkunftswerte
 
 | Status | Farbe | Bedeutung |
 |--------|-------|-----------|
 | Stattgefunden | Grün | Termin wurde abgehalten |
-| No Show | Orange | Kunde nicht erschienen |
-| Geplant | Blau | Termin liegt in der Zukunft |
-| Ausstehend | Grau | Termin noch nicht mit Phorest synchronisiert |
+| Nicht erschienen | Orange | Termin vorbei, nicht als bezahlt/abgeschlossen markiert |
+| Geplant | Blau | Termin liegt heute oder in der Zukunft |
+| Noch offen | Grau | Termin (oder sein Ausgang) steht in keinem Spiegel — Sync-Lücke |
+| Storniert | Rot | Termin abgesagt (Terminhistorie inaktiv bzw. Vorschau `cancelled`) |
 | Gelöscht | Rot | Termin wurde gelöscht |
 
 | Herkunft | Bedeutung |
@@ -98,188 +109,62 @@ neben dem Kalender steht eine **KW-Zusammenfassung** mit der Buchungsanzahl pro 
 
 ### Architektur
 
-Das Feature besteht aus drei Schichten:
-
 ```
-Frontend (Alpine.js)
-    └── openBookingDayModal(dateStr)         # Komponente termine.booking-calendar (public/js/statistics/termine.js)
-         └── GET /phorest/reports/consultation-booking-day?date=YYYY-MM-DD
-              └── ReportController::consultationBookingDay()
-                   ├── Query A: booking_trackings (Online-Buchungen)
-                   ├── Query B: stats_historic_appointments (Offline/Historisch)
-                   ├── Client-Namen-Lookup (DB + API Fallback)
-                   └── JSON Response → Modal-Tabelle
+Frontend (Alpine.js, Komponente termine.booking-calendar in public/js/statistics/termine.js)
+    └── openBookingDayModal(date) / shiftBookingDay(±1) → loadBookingDay()
+         └── GET /phorest/reports/consultation-booking-day?date=YYYY-MM-DD[&branch_id=…]
+              └── ReportController::consultationBookingDay()   (nur Validierung)
+                   └── App\Services\BookingDayService::bookings($date, $branchId)
 ```
 
-### Backend: ReportController
+### Backend: BookingDayService
 
-**Methode:** `consultationBookingDay(Request $request): JsonResponse`  
-**Route:** `GET /phorest/reports/consultation-booking-day`  
-**Parameter:** `date` (YYYY-MM-DD), optional `branch_id`
+Dieselben drei Quellen und dieselbe Dedup-Logik wie der Kalender, damit Fenster und Tageszahl
+übereinstimmen. Zeitfenster als `>= Tag` und `< Tag + 1` (kein `DATE()`, Index bleibt nutzbar).
 
-#### Query A — Online-Buchungen (booking_trackings)
+- **A — `booking_trackings`** (online): `LEFT JOIN` auf Terminhistorie **und** Beratungsvorschau;
+  Termin = `COALESCE(sha, uc)`. Ohne den Vorschau-Join standen künftige Termine bis zum Sync als „–“
+  und „Ausstehend“ da. Storno = `sha.activation_state <> 'ACTIVE'` bzw. (ohne Historie)
+  `uc.status = 'cancelled'`. Die Kollations-Angleichung (`COLLATE utf8mb4_unicode_ci`) gilt nur auf
+  MySQL — SQLite kennt die Kollation nicht.
+- **B — `stats_historic_appointments`**: aktive Termine nach `created_at_phorest`, ohne Tracking.
+- **C — `upcoming_consultations`**: gebuchte Vorschau-Termine nach `booked_at`, die weder Tracking
+  noch Historie kennen.
 
-Buchungen aus dem Online-Buchungsformular, die über `booking_trackings` nachverfolgt werden. Inklusive UTM-Parameter, gclid, fbclid.
-
-```php
-$trackingRows = DB::table('booking_trackings as bt')
-    ->leftJoin('stats_historic_appointments as sha',
-        DB::raw('bt.appointment_id COLLATE utf8mb4_unicode_ci'), '=', 'sha.appointment_id')
-    ->whereIn('bt.service_id', $consultationServiceIds)
-    ->whereNotNull('bt.booked_at')
-    ->where(DB::raw('DATE(bt.booked_at)'), $date)
-    ->select([...])
-    ->get();
-```
-
-> **Kollationshinweis:** `booking_trackings.appointment_id` hat Kollation `utf8mb4_0900_ai_ci`, `stats_historic_appointments.appointment_id` hat `utf8mb4_unicode_ci`. Der JOIN erfordert daher `COLLATE utf8mb4_unicode_ci` am `bt.appointment_id`.
-
-#### Query B — Offline/Historische Buchungen (stats_historic_appointments)
-
-Buchungen die direkt im Phorest-System angelegt wurden (Telefon, Walk-in, etc.). Gefiltert auf Buchungen die **nicht** in `booking_trackings` vorhanden sind.
-
-```php
-$historicRows = DB::table('stats_historic_appointments as sha')
-    ->whereIn('sha.service_id', $consultationServiceIds)
-    ->where('sha.activation_state', 'ACTIVE')
-    ->whereNotNull('sha.created_at_phorest')
-    ->where(DB::raw('DATE(sha.created_at_phorest)'), $date)
-    ->whereNotIn('sha.appointment_id', function ($sub) {
-        $sub->select(DB::raw('appointment_id COLLATE utf8mb4_unicode_ci'))
-            ->from('booking_trackings')
-            ->whereNotNull('booked_at')
-            ->whereNotNull('appointment_id');
-    })
-    ->get();
-```
-
-#### Client-Namen-Lookup (zweistufig)
-
-Namen werden in zwei Stufen ermittelt:
-
-1. **Schritt 1 — DB-Lookup:** Schnell, aus `client_statistics` via `phorest_client_id`
-2. **Schritt 2 — API-Fallback:** Für IDs die nicht in `client_statistics` sind (neue Kunden, noch nicht gesynced), werden diese parallel via Phorest API abgefragt (`PhorestApiService::getClientsParallel()`)
-
-```php
-// Schritt 1: client_statistics (lokal, schnell)
-$clientNames = [];
-DB::table('client_statistics')
-    ->whereIn('phorest_client_id', $clientIds)
-    ->get()
-    ->each(fn($c) => $clientNames[$c->phorest_client_id] = trim("$c->first_name $c->last_name") ?: null);
-
-// Schritt 2: Phorest API für fehlende IDs
-$missingIds = array_diff($clientIds, array_keys($clientNames));
-if (!empty($missingIds)) {
-    $apiResults = $this->phorest->getClientsParallel($missingIds);
-    foreach ($apiResults as $id => $data) {
-        $clientNames[$id] = trim("$data[firstName] $data[lastName]") ?: null;
-    }
-}
-```
-
-> **Warum fehlen manche IDs in `client_statistics`?** Die Tabelle enthält nur Kunden mit mindestens einer abgeschlossenen Beratungskonsultation. Neue Kunden (Erstbuchung) sind dort noch nicht vorhanden — daher der API-Fallback.
-
-#### Status-Kategorien
-
-Die `status_category` wird pro Termin berechnet:
-
-```php
-if ($row->deleted)                          → 'deleted'
-if ($row->appointment_date === null && $row->has_tracking)  → 'pending'  // SHA noch nicht gesynced
-if ($row->state in [COMPLETED, PAID])       → 'past'
-if ($row->state in [NO_SHOW, ...] && date < today)  → 'no_show'
-if ($row->appointment_date >= today)        → 'future'
-else                                        → 'past'
-```
-
-> **`pending`-Status:** Wenn ein Online-Termin noch nicht von Phorest in `stats_historic_appointments` synchronisiert wurde, ist `appointment_date` NULL. Diese Termine werden als „Ausstehend" markiert, statt fälschlicherweise als „Stattgefunden".
-
-### Frontend: Alpine.js
-
-**Datei:** `public/js/statistics/termine.js` (Komponente `termine.booking-calendar`)
-
-Relevante State-Eigenschaften:
-```js
-bookingDayModal: {
-    open: false,
-    date: null,
-    label: '',
-    loading: false,
-    appointments: [],
-}
-```
-
-Relevante Methoden:
-```js
-openBookingDayModal(dateStr)   // Öffnet Modal, ruft API auf
-closeBookingDayModal()          // Schließt Modal
-bookingStatusClass(category)    // CSS-Klasse für Status-Badge
-bookingStatusLabel(category)    // Anzeigetext für Status
-bookingSourceClass(source)      // CSS-Klasse für Herkunfts-Badge
-```
-
-### Blade-Template
-
-**Datei:** `resources/views/hub/reports/partials/consultation-booking-day-modal.blade.php`
-
-Das Modal verwendet:
-- `<template x-teleport="body">` — wird ans Ende des `<body>` gerendert
-- `x-show="bookingDayModal.open"` + `x-cloak` — verhindert Flash beim Laden
-- `table-glattt` + `table-glattt-container` — Standard-Tabellenklassen
-- `badge-glattt-*` Klassen für Status und Herkunft
-
-> ⚠️ **Bekannte Falle:** Das Modal-Partial darf keinen HTML-Content **außerhalb** des `<template x-teleport>` Tags haben. Sonst wird dieser Content direkt im DOM gerendert und ist immer sichtbar, unabhängig von `x-show`.
+Anreicherung mit festen Zusatzabfragen (keine je Zeile): Namen aus `client_statistics` (Fehlende
+parallel über Phorest), Bestandskundinnen (ein `DISTINCT client_id` auf die Historie vor dem Tag),
+Verträge ab dem Buchungstag (erster je Kundin), Ergebnisse aus `consultation_records` per
+`appointment_id`, Google-Kampagnen über `GoogleAdsService::getCampaignIdMap()` (24 h gecacht, nur
+wenn eine numerische `utm_campaign` vorkommt). Eine numerische ID, die Google kennt, macht auch eine
+Buchung ohne gclid zu „Google Ads“. Kampagnenname = UTM-Schlüssel ohne `GoogleAds_` und
+Unterstriche („GoogleAds_PMax_H“ → „PMax H“).
 
 ### Relevante Dateien
 
 ```
-app/Http/Controllers/ReportController.php
-    └── consultationBookingDay()             # API-Endpunkt
-
-app/Services/PhorestApiService.php
-    └── getClientsParallel(array $clientIds) # Parallele Kunden-Abfrage
-
-public/js/statistics/termine.js        # Komponente termine.booking-calendar
-    ├── bookingDayModal (State)
-    ├── openBookingDayModal()
-    ├── closeBookingDayModal()
-    ├── bookingStatusClass()
-    ├── bookingStatusLabel()
-    └── bookingSourceClass()
-
-resources/views/hub/reports/partials/
-    └── consultation-booking-day-modal.blade.php  # Modal-Template
+app/Services/BookingDayService.php                       # Quellen, Status, Anreicherung
+app/Http/Controllers/ReportController.php                # consultationBookingCalendar(), consultationBookingDay()
+public/js/statistics/termine.js                          # termine.booking-calendar inkl. Tagesprotokoll
+resources/views/statistics/termine/booking-calendar.blade.php
+resources/views/statistics/termine/partials/booking-day-modal.blade.php
+public/css/theme_glattt.css                              # Abschnitt „Buchungen eines Tages“ (.booking-inbox-*)
+tests/Feature/BookingDayTest.php
 ```
 
-### API-Response-Format
+### API-Response-Format (Tagesprotokoll)
+
+Je Buchung (zusätzliche Felder sind rückwärtskompatibel ergänzt):
 
 ```json
 {
-    "success": true,
-    "date": "2026-04-24",
-    "total": 15,
-    "appointments": [
-        {
-            "appointment_id": "abc123",
-            "appointment_date": "2026-04-28",
-            "appointment_date_formatted": "28.04.2026",
-            "start_time": "14:30",
-            "state": "COMPLETED",
-            "status_category": "past",
-            "branch_id": "xyz",
-            "branch_name": "glattt Hannover",
-            "client_name": "Max Mustermann",
-            "source": "google_ads",
-            "source_label": "Google Ads",
-            "utm_campaign": "GoogleAds_PMax_HAN",
-            "contract": {
-                "contract_number": "K-001234",
-                "body_zone_count": 3,
-                "signed_at": "15.01.2026"
-            }
-        }
-    ]
+  "appointment_id": "…", "client_id": "…", "client_name": "Lea Brandt", "is_new_client": true,
+  "booked_at": "2026-11-03T11:15:00+01:00", "booked_time": "11:15",
+  "appointment_date": "2026-11-12", "appointment_date_formatted": "12.11.2026", "start_time": "16:30",
+  "lead_days": 9, "status_category": "future", "branch_id": "…", "branch_name": "glattt Hannover",
+  "source": "google_ads", "source_label": "Google Ads", "utm_campaign": "24357257191", "campaign": "PMax H",
+  "device": "Handy", "codes": [{"type": "promo", "label": "Aktion", "code": "BN26-150E"}],
+  "outcome": null, "outcome_label": null,
+  "contract": {"id": 1, "contract_number": "H000123", "body_zone_count": 4, "signed_at": "03.11.2026"}
 }
 ```
 
@@ -296,7 +181,7 @@ resources/views/hub/reports/partials/
 
 ### Bekannte Einschränkungen
 
-1. **SHA-Sync-Verzögerung:** `stats_historic_appointments` wird nicht in Echtzeit befüllt. Online-Buchungen der letzten Tage haben oft `appointment_date = NULL` → Status „Ausstehend". Nach dem nächsten Sync erscheint der korrekte Status.
+1. **Sync-Verzögerung:** `stats_historic_appointments` wird nicht in Echtzeit befüllt. Seit 03.11.2026 überbrückt die Beratungsvorschau (`upcoming_consultations`, alle 15 Min, 35 Tage voraus) künftige Termine; „Noch offen“ bleibt nur, wenn ein Termin in keinem Spiegel steht (z. B. vergangener Termin vor dem nächsten Historien-Sync).
 
 2. **Kollationskonflikt:** `booking_trackings` verwendet `utf8mb4_0900_ai_ci`, `stats_historic_appointments` und `client_statistics` verwenden `utf8mb4_unicode_ci`. PHP-seitige Lookups (`whereIn`) sind unproblematisch; SQL-JOINs zwischen diesen Tabellen benötigen explizites `COLLATE`.
 

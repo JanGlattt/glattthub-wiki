@@ -55,6 +55,19 @@ const PLAN = [
   karte('r2-buchungseingaenge', '/hub/reports/upcoming-consultations', 'Buchungseingänge', { marks: [
     { id: 'stand', kind: 'badge', n: 1, sel: '.stat-stand-glattt', at: 'l' },
   ] }),
+  // 03.11.2026: Tagesprotokoll — Klick auf den letzten Tag mit Buchungen vor heute, Fenster ausschneiden
+  { name: 'r2-tagesprotokoll', url: '/hub/reports/upcoming-consultations', wait: 5000,
+    steps: [['loaded'], ['scroll', '.card-glattt-title, h2, h3', 'Buchungseingänge'], ['wait', 1200],
+      ['fn', async (page, L) => {
+        const days = page.locator('.calendar-glattt-day-has-appointments');
+        await days.nth((await days.count()) - 1).click();
+        await L.wait(page, 3500);
+      }]],
+    clip: '.modal-glattt', marks: [
+      { id: 'zahlen', kind: 'badge', n: 1, sel: '.booking-inbox .stat-strip-glattt', at: 'l' },
+      { id: 'filter', kind: 'badge', n: 2, sel: '.booking-inbox-filters', at: 'l' },
+      { id: 'liste', kind: 'badge', n: 3, sel: '.booking-inbox-table', at: 'l' },
+    ] },
   // ── 3 Vergangene Beratungsgespräche
   kopf('r3-kopf', '/hub/reports/past-consultations'),
   karte('r3-verlauf', '/hub/reports/past-consultations', 'Beratungsgespräche-Analyse'),
