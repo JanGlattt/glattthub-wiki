@@ -281,9 +281,13 @@ Sichtbarkeit.
   10.09.2026 ohne Angabe rechnen weiter auf den gesamten Monatsbonus; neue
   Regeln starten mit „nur regulärer Bonus".
 - **Kennzahlen:** Als Kennzahlen stehen die internen Bonus-Kennzahlen (verkaufte
-  KPZ, KPZ je Beratungsgespräch, Google-Saldo) und **jede Kennzahl der
+  KPZ, KPZ je Beratungsgespräch, stattgefundene Beratungsgespräche
+  `consultations_held`, Google-Saldo) und **jede Kennzahl der
   KpiRegistry** zur Verfügung (Registry-Kennzahlen nur je Institut oder
   unternehmensweit — mitarbeiterscharf liefert die Registry nicht).
+  `consultations_held` (seit 03.11.2026) zählt je Person, Institut oder unternehmensweit
+  dieselben Gespräche wie der Nenner von KPZ je BG (Tagesmessung der Staff-Performance,
+  `total_consultations`) und ist eine Summe — wird also hochgerechnet.
 
 ### glatttolympia: Disziplinen, Medaillen, Jury
 
