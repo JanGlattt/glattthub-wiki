@@ -84,13 +84,21 @@ Begründung nicht an (`UpsellingRules::missingSetting()`).
 5. **Ersetzt wird erst, wenn der neue Vertrag aktiv ist** (`ContractObserver` →
    `UpsellingService::completeReplacement()`): alter Vertrag `modified` mit `successor_contract_id`.
    Bricht der Abschluss vor der SEPA-Unterschrift ab, bleibt er unangetastet.
-6. Phorest: Upselling-Verträge mit bestehendem Mandat kaufen sofort (normale Verkäufe kaufen erst
-   mit der SEPA-Unterschrift). `zonesToPurchase()` lässt im Modus `keep_remaining` die alten Zonen
+6. Phorest: Jeder Ratenvertrag mit bestehendem Mandat kauft sofort — er ist mit der Unterschrift
+   aktiv, eine SEPA-Unterschrift folgt nicht mehr (bis 03.11.2026 nur Upselling-Verträge; normale
+   Verkäufe blieben ohne Abos). Ohne Mandat kauft weiter erst die SEPA-Unterschrift. `zonesToPurchase()` lässt im Modus `keep_remaining` die alten Zonen
    weg; `archivePredecessorCourses()` archiviert im Modus `full_package` (und bei einem
    Ganzkörper-Nachfolger) nur Pakete mit dem Kaufdatum des alten Phorest-Kaufs — sonst Notiz am
    alten Vertrag fürs Büro.
 7. GoCardless bleibt manuell: Das Büro legt den Plan an und stoppt die Raten des alten Vertrags
    (`ReplacedContractCollectionService`, vorbelegter Haken im SEPA-Reiter).
+
+### Bestandskundin ohne Upselling-Fenster
+
+Wird für eine Kundin mit Vertrag (`CONTRACT_PROOF_STATUSES`) das normale Vertragsformular genutzt
+statt des Fensters, setzt `UpsellingService::contractAttributes()` selbst `upsell_mode = add`
+(Zusatzvertrag, Guthaben 0) — Entscheidung Jan 03.11.2026 nach BI001863. Ersetzen wird so nie
+ausgelöst, das geht nur über das Fenster.
 
 ### Statistik
 
@@ -106,6 +114,9 @@ Ersetzen nicht (der Vorgänger wird `modified`).
 - Jede Zone ist in Phorest ein **eigenes Kunden-Paket** (`body_zones.phorest_course_id`).
 - `predecessor_credit_cents` ist `NOT NULL` — Zusatzvertrag mit 0, nie `null` (legte bis
   25.10.2026 still keinen Vertrag an; das Formular meldet Fehler der Vertragsanlage nicht).
+- Verträge mit wiederverwendetem Mandat bis 03.11.2026 ohne Phorest-Kauf: Die Migration
+  `2026_11_03_200000_purchase_reused_mandate_contracts_in_phorest` holt ihn auf Prod einmal nach
+  (`PurchaseContractsInPhorestJob`, ein Versuch, Ergebnis am Vertrag).
 - Phorest-Kauf braucht einen mit Phorest verknüpften Verkäufer; sonst „Kein Phorest-Mitarbeiter“.
 
 ### Dateien
@@ -120,3 +131,6 @@ Ersetzen nicht (der Vorgänger wird `modified`).
 
 - 25.10.2026 — Etappen 1–3: Regeln, Endpunkte, Web-Fenster, Abschluss, App-Blatt, Kennzahl; auf
   Staging zweimal echt durchgespielt (Ersetzen 4 → 6, Zusatzvertrag + Ersetzen 3 → 5).
+- 03.11.2026 — Neuer Vertrag einer Bestandskundin wird automatisch Zusatzvertrag; Ratenverträge mit
+  bestehendem Mandat kaufen sofort in Phorest; fehlende Käufe (BI001863, BS000947, BS000740) per
+  Migration nachgeholt.
