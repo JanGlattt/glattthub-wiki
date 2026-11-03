@@ -56,8 +56,8 @@ ausgeblendete Institute weg. Feiertage sind im Kalender bundesweit und regional 
 | Vorgang | Anleitung |
 |---|---|
 | Zeitraum und Standort, Kennzahlen-Zeile anpassen, Diagramm/Tabelle, Export | Berichte 0 |
-| Zukünftige Beratungsgespräche (Kalender, Buchungsstand, Stornos im Blick) | Berichte 2 |
-| Vergangene Beratungsgespräche (Verlauf, No-Shows, Buchungseingang) | Berichte 3 |
+| Zukünftige Beratungsgespräche (Kalender, Buchungsstand, Stornos im Blick, Buchungseingang) | Berichte 2 |
+| Vergangene Beratungsgespräche (Verlauf, No-Shows, Nachfass-Ergebnis) | Berichte 3 |
 | Stornierte und gelöschte Termine (Vorlauf der Absagen, Muster) | Berichte 4 |
 | Terminstatistik (Auslastung, Terminarten, Termindauer, Top Services) | Berichte 6 |
 | Auslastung, Freie-Slots-Analyse, Buchungsvorlauf, Wochentag & Uhrzeit | Serie Berichte (Übersicht) |
@@ -180,7 +180,7 @@ Historische Analyse vergangener Beratungstermine.
 - Beliebtester Wochentag (letzte 3 Monate)
 - Prognose für den aktuellen Monat
 - Detailansicht mit Wochen-Expansion
-- **Buchungseingangs-Kalender** mit Tagesdetail-Modal ⭐
+- Buchungseingangs-Kalender: seit 03.11.2026 auf „Zukünftige Beratungsgespräche“
 
 **Dokumentation:** [BUCHUNGSEINGANGS-KALENDER.md](BUCHUNGSEINGANGS-KALENDER.md)
 
@@ -419,7 +419,7 @@ app/Http/Controllers/ReportController.php
 public/js/
 ├── reports-overview.js                 # Reports-Übersichtsseite (Kompaktkarten, seit 08.10.2026)
 ├── consultation-stats.js               # Kalenderübersicht (Alpine.js)
-├── past-consultation-stats.js          # Vergangene Beratungen inkl. Buchungseingangs-Kalender
+├── past-consultation-stats.js          # Vergangene Beratungen (Seiten-App, KPI-Zeile)
 ├── cancelled-appointments-page.js      # KPI-Dashboard für Stornierte
 └── cancelled-appointments-analysis.js  # Analyse-Komponenten
 ```

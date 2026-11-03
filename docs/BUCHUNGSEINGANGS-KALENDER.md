@@ -1,13 +1,13 @@
 # Buchungseingangs-Kalender
 
-Interaktiver Monatskalender auf der Berichtsseite [Vergangene Beratungsgespräche](PAST-CONSULTATIONS.md)
-(`/hub/reports/past-consultations`): Er zeigt, **wann Buchungen eingegangen sind** — also den
+Interaktiver Monatskalender auf der Berichtsseite [Zukünftige Beratungsgespräche](UPCOMING-CONSULTATIONS.md)
+(`/hub/reports/upcoming-consultations`, seit 03.11.2026 — vorher „Vergangene Beratungsgespräche“): Er zeigt, **wann Buchungen eingegangen sind** — also den
 Buchungszeitpunkt, nicht das Termindatum. Diese Seite beschreibt **Datenquellen, Queries,
 Status-Ableitung, Frontend-Komponente, Response-Format und bekannte Einschränkungen**; die Bedienung
 Schritt für Schritt steht im Nutzerhandbuch.
 
-!!! nutzerhandbuch "Bedienung: Berichte 3 – Vergangene Beratungsgespräche"
-    [hilfe.hub.glattt.com/berichte/3/](https://hilfe.hub.glattt.com/berichte/3/) — die Seite, auf der
+!!! nutzerhandbuch "Bedienung: Berichte 2 – Zukünftige Beratungsgespräche"
+    [hilfe.hub.glattt.com/berichte/2/](https://hilfe.hub.glattt.com/berichte/2/) — die Seite, auf der
     dieser Kalender sitzt. Rahmen aller Berichtsseiten (Zeitraum und Standort, Kennzahlen-Zeile,
     Diagramm oder Tabelle, Export): [Berichte 0](https://hilfe.hub.glattt.com/berichte/0/).
 
@@ -46,6 +46,17 @@ frische Buchungen zunächst als „Ausstehend" erscheinen, unter
 ---
 
 ## Für Entwickler
+
+### Ort, Recht und Endpunkte (seit 03.11.2026)
+
+Statistik `termine.booking-calendar` der `StatisticRegistry`, gerendert über
+`<x-statistic>` auf **Zukünftige Beratungsgespräche** direkt vor der Buchungseingangsmatrix — beide
+Karten messen den Buchungszeitpunkt. Recht ist das der Seite, `view_report_upcoming_consultations`:
+für die Karte, beide Routen (`phorest.reports.consultation-booking-calendar`,
+`phorest.reports.consultation-booking-day`, jetzt in der Routen-Gruppe der Seite) und die
+Export-Quelle `consultation-booking-days`. Wer nur „Vergangene Beratungen“ darf, sieht die Kachel
+auch im Eigenen Dashboard nicht mehr. Die native App liest die Kartenfolge aus der Blade-Datei
+(`ReportRegistry::statisticsOf()`) und zeigt die Karte damit ohne neuen Build auf der neuen Seite.
 
 ### Aufbau der Karte
 
@@ -91,7 +102,7 @@ Das Feature besteht aus drei Schichten:
 
 ```
 Frontend (Alpine.js)
-    └── openBookingDayModal(dateStr)         # In past-consultation-stats.js
+    └── openBookingDayModal(dateStr)         # Komponente termine.booking-calendar (public/js/statistics/termine.js)
          └── GET /phorest/reports/consultation-booking-day?date=YYYY-MM-DD
               └── ReportController::consultationBookingDay()
                    ├── Query A: booking_trackings (Online-Buchungen)
@@ -186,7 +197,7 @@ else                                        → 'past'
 
 ### Frontend: Alpine.js
 
-**Datei:** `public/js/past-consultation-stats.js`
+**Datei:** `public/js/statistics/termine.js` (Komponente `termine.booking-calendar`)
 
 Relevante State-Eigenschaften:
 ```js
@@ -229,7 +240,7 @@ app/Http/Controllers/ReportController.php
 app/Services/PhorestApiService.php
     └── getClientsParallel(array $clientIds) # Parallele Kunden-Abfrage
 
-public/js/past-consultation-stats.js
+public/js/statistics/termine.js        # Komponente termine.booking-calendar
     ├── bookingDayModal (State)
     ├── openBookingDayModal()
     ├── closeBookingDayModal()

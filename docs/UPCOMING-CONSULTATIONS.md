@@ -71,6 +71,7 @@ Alle Analyse-Karten sind zweiseitig: **Diagramm als Standard-Ansicht, Tabelle al
 | **Buchungsstand-Verlauf** | Linien 7/14/28 Tage über die Monats-Stichtage seit Juni 2023 | Heatmap-Tabelle mit aufklappbaren Wochen/Tagen (Lazy Loading) |
 | **Freie Slots Analyse** | Heatmap Wochentag × Uhrzeit oder Wochentags-Balken (interner Umschalter), Gesamt/Standorte, Zeitraum-Filter | Freie Slots je Wochentag × Uhrzeit mit Summenspalte |
 | **Buchungsvorlauf-Analyse** | Heatmap Wochentag × Uhrzeit oder Verteilungs-Histogramm, Durchschnitt/Median, Buchungstyp-Filter | Vorlauf (Tage) je Wochentag × Uhrzeit |
+| **Buchungseingänge** (seit 03.11.2026, vorher auf „Vergangene Beratungsgespräche“) | Kalender der Tage, an denen Beratungen **gebucht** wurden (Buchungszeitpunkt, nicht Termin), Wochensummen je Institut, Tages-Modal mit Herkunft und Vertrag; rollendes 4-Wochen-Fenster, „+ 4 Wochen weiter zurück“ — bewusste Ausnahme ohne Register, Details [BUCHUNGSEINGANGS-KALENDER.md](BUCHUNGSEINGANGS-KALENDER.md) | — |
 | **Buchungseingangsmatrix** | Heatmap Wochentag × 3-Stunden-Block über den **Buchungszeitpunkt** (nicht die Terminzeit) mit Σ-Zeilen/-Spalten; darunter Timeline (Buchungen pro Tag) mit Zoom-Regler zur freien Zeitraum-Wahl (Standard: letzte 6 Monate); Kennzahlen-Zeile rechnet mit | Dieselbe Matrix als Zahlen-Tabelle mit Summenzeile |
 
 In der Standort-Tabelle der Karte „Aktueller Buchungsstand" (und in der Kachel auf der Berichte-Übersicht) folgt auf „Heute" und „3 Tage" **direkt** der zugehörige Vergleichswert **Ø Heute** bzw. **Ø 3 Tage**: der Durchschnitt der gebuchten Beratungen am **gleichen Wochentag** der letzten zwölf Wochen. Liegt der Ist-Wert deutlich darunter, fehlen für den laufenden Tag Buchungen gegenüber den Vorwochen. Der Wochentags-Bezug ist wichtig, weil Montag und Samstag sich stark unterscheiden. Die Ø-Spalten sind blass und kursiv gesetzt (Theme-Klasse `.table-glattt-col-reference`), damit die Ist-Werte die Tabelle führen; der Spaltenkopf trägt die Erklärung als Tooltip.
@@ -88,6 +89,7 @@ Jede Karte hat ein Info-Panel (ℹ️) mit Erklärung, Spaltenbeschreibung, Auff
 - Freie Beratungsslots je Institut, Wochentag & Uhrzeit
 - Freie Slots Vorschau (nächste 3 Wochen, Ampel & Prime Time)
 - Buchungsvorlauf-Verteilung
+- Buchungseingänge pro Tag & Institut (`consultation-booking-days`, seit 03.11.2026 hier)
 - Buchungseingangsmatrix (Buchungszeitpunkt je Wochentag & 3-Stunden-Block)
 
 Der frühere CSV-Direktlink an der Verlaufs-Karte wurde entfernt — er ignorierte den Standortfilter (der Endpoint `historic-booking-timeline/export` akzeptiert jetzt zusätzlich `branch_id`).

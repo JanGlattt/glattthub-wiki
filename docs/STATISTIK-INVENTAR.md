@@ -196,7 +196,7 @@ Ungeeignet als Kachel: Kalenderübersicht (d), Buchungsstand-Verlauf (3-stufiger
 ### Vergangene Beratungsgespräche (Seite: `view_report_past_consultations`) — 3 kachelfähige
 
 **⚠ Endpoints ohne Permission.** Beratungsgespräche-Analyse (`/consultation-monthly/fast`, b+d — Chart-Code in separatem `chart2Extensions`), Wochentag & Uhrzeit (`/weekday-time-analysis`, a/c — eigener x-data), No-show-Matrix (`/no-show-matrix`, c — `offset`-Paging statt Range).
-Ungeeignet: Buchungseingänge-Kalender (d), Sync-UI, Modals.
+Ungeeignet: Sync-UI, Modals. (Der Buchungseingänge-Kalender ist seit 03.11.2026 Karte von „Zukünftige Beratungsgespräche“.)
 
 ### Stornierte und gelöschte Termine (Seite: `view_report_cancelled_appointments`) — 2 kachelfähige
 
@@ -228,8 +228,8 @@ Alle in der `Route::prefix('phorest')`-Gruppe (nur `RedirectDirectApiAccess` + `
 
 - **Terminstatistik:** alle 6 Endpoints (`/data`, `/duration`, `/body-zones`, `/top-services`, `/service-combinations`, `/kpi` + Weeks-Drilldowns) — Seiten-Gate wäre `view_report_appointments_body_zones`
 - **Client-Courses:** `/monthly`, `/kpis`, `/sync-status` — Seiten-Gate `view_report_client_courses`
-- **Upcoming Consultations:** alle Statistik-Endpoints (`upcoming-consultations-data`, `booking-outlook-timeseries`, `historic-booking-comparison`, `historic-booking-timeline/*`, `free-slots-analysis`, `booking-lead-time-analysis`, `upcoming-consultations-kpi`) — Gate `view_report_upcoming_consultations`
-- **Past Consultations:** `historic-appointments/*` (consultation-monthly/fast, weekly, appointments, weekday-time-analysis, no-show-matrix, consultation-booking-calendar/day) — Gate `view_report_past_consultations`
+- **Upcoming Consultations:** alle Statistik-Endpoints (`upcoming-consultations-data`, `booking-outlook-timeseries`, `historic-booking-comparison`, `historic-booking-timeline/*`, `free-slots-analysis`, `booking-lead-time-analysis`, `upcoming-consultations-kpi`, seit 03.11.2026 auch `consultation-booking-calendar/day`) — Gate `view_report_upcoming_consultations`
+- **Past Consultations:** `historic-appointments/*` (consultation-monthly/fast, weekly, appointments, weekday-time-analysis, no-show-matrix) — Gate `view_report_past_consultations`
 - **Stornierte Termine:** `cancelled-appointments/*` (Lese-Endpoints) — Gate `view_report_cancelled_appointments`
 
 Da die neue Registry Permission als Pflichtfeld durchsetzt (`StatisticRegistry::all()` wirft), müssen diese Routen **vor** ihrer Registrierung hinter `can:`-Gates — sinnvollerweise als eigenes kleines Vorab-Paket (auch unabhängig vom Dashboard ein Sicherheitsgewinn).

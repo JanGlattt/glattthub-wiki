@@ -2,7 +2,8 @@
 
 Historische Analyse aller Beratungstermine aus der Phorest-Terminhistorie: Beratungsgespräche-Analyse
 (monatliche Entwicklung, No-Shows, Ampel-Tabelle), Wochentag/Uhrzeit-Muster, No-show-Matrix
-(„Analyse Gigi"), Vorlauf & Termin-Erfolg und Buchungseingänge. Diese Seite beschreibt
+(„Analyse Gigi"), Vorlauf & Termin-Erfolg und Nachfass-Ergebnis. Der Buchungseingangs-Kalender ist
+am 03.11.2026 auf [Zukünftige Beratungsgespräche](UPCOMING-CONSULTATIONS.md) umgezogen. Diese Seite beschreibt
 **Kennzahl-Definitionen, Datenbasis, Endpunkte, Dateien und Fallstricke**; die Bedienung Schritt für
 Schritt steht im Nutzerhandbuch.
 
@@ -79,7 +80,6 @@ weiterhin konzernweite Zahlen — direkt neben korrekt gefilterten KPIs.
 | **No-show-Matrix** („Analyse Gigi") | Verlaufs-Diagramm der gewählten Kennzahl je Institut; seit 18.10.2026 Schalter **Alle / Online / Offline** (Parameter `art`, über `consultation_services.is_online` — online „Nur gratis Beratungsgespräch“, offline „..Beratungsgespräch“, nie über die Phorest-Quelle) | die bekannte Ampel-Matrix (Quote/Gebucht/Erschienen, Färbungs-Vergleichsmodus, „Frühere Zeiträume laden") |
 | **Vorlauf & Termin-Erfolg** (seit 08/2026) | Kurven-Stack: drei Panels über derselben Vorlauf-Achse (Show-Rate + Abschlussquote, Ø KPZ, Buchungsvolumen); darüber drei Zonen-Karten (Kurzfristig 0–2 / Mittelfristig 3–9 / Langfristig 10+ Tage) mit Online/Offline-Vergleich; Kanal-Umschalter Alle/Online/Offline (clientseitig), Karten-Zeitraum (Standard: letzte 12 Monate) | Kennzahlen je Vorlauf-Gruppe für den gewählten Kanal, mit Gesamt-Zeile |
 | **Nachfass-Ergebnis** (seit 18.10.2026, `termine.follow-up-result`) | je Institut die Stufen der Liste „Überlegt noch“ — auf der Liste, kontaktiert, Link, gebucht, Vertrag —, Umschalter nach Grund (Überlegt noch / Termin verpasst / Reaktivierung); Zeitraum = Tag, an dem die Kundin auf die Liste kam | Stufen, Vertragswert und Quote Vertrag je Institut mit Gesamt-Zeile |
-| **Buchungseingänge** | Kalender (Buchungszeitpunkt statt Termindatum); begründete Ausnahme ohne Register | — |
 
 **Zusammenlegung 07/2026:** Die früheren drei Karten „Monatliche
 Beratungsgespräche", „Trend-Analyse" und „No Show-Analyse" basierten alle exakt
@@ -115,7 +115,6 @@ anstehenden Tagestermine als „nicht erschienen" gewertet würden (Bug 08/2026)
 |--------|--------|
 | `consultation-noshow-monthly` | No-show-Statistik pro Monat & Institut (deckt die Beratungsgespräche-Analyse und die Matrix auf Monatsebene, inkl. Quartal/Jahr-Aggregation per Tabellenkalkulation) |
 | `consultation-weekday-time` | Termine/Erschienen/No-Shows/Quote je Wochentag & Stunde |
-| `consultation-booking-days` | Buchungseingänge pro Tag & Institut (drei Quellen, dedupliziert) |
 | `consultation-lead-success` | Vorlauf & Termin-Erfolg: Buchungen, Show-Rate, Ausfallquote (inkl. Stornos < 24 h), Abschlussquote & Ø KPZ je Vorlauf-Gruppe und Kanal (Alle/Online/Offline) — exakt die Zahlen der Karte |
 | `follow-up-result` | Nachfass-Ergebnis je Institut und Grund: auf der Liste, kontaktiert, Link, gebucht, Vertrag, Vertragswert (seit 18.10.2026) |
 
@@ -172,8 +171,6 @@ ReportController (app/Http/Controllers/) — Ausschnitt dieser Seite
 ├── consultationNoShowMatrix()      → JSON: Matrix (Granularität month/week/day, offset-Paging) — gecacht
 ├── weekdayTimeAnalysis()           → JSON: Heatmap Wochentag × Stunde
 ├── consultationAppointments()      → JSON: Termine-Liste (Zellen-Modal)
-├── consultationBookingCalendar()   → JSON: Buchungseingänge (booking_trackings + Phorest-Terminhistorie + upcoming_consultations, dedupliziert; Quelle C liefert heute gebuchte Offline-Termine, weil die Terminhistorie nach Termindatum synchronisiert wird)
-├── consultationBookingDay()        → JSON: Buchungen eines Tages (Modal)
 └── consultationLeadSuccess()       → JSON: Vorlauf & Termin-Erfolg (rechnet im ConsultationLeadSuccessService —
                                       gemeinsame Datenbasis mit der CSV-Quelle consultation-lead-success)
 ```

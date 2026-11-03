@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für die Berichte im glatttHub — historische Analyse der geführten Beratungen",
  "eyebrow": "Berichte · Vergangene Beratungen",
  "footerArea": "Berichte",
- "stand": "01.11.2026",
- "version": "1.2",
+ "stand": "03.11.2026",
+ "version": "1.3",
  "notes": [
   "Der Rückblick: **Wie viele Beratungen wurden geführt — und was ist daraus geworden?**",
   "Grundlage sind die **tatsächlich durchgeführten** Termine, nicht die gebuchten.",
@@ -181,43 +181,6 @@
    "hint": {
     "kind": "warn",
     "text": "**Zeit lassen.** Junge Fälle hatten noch keine Chance auf einen Vertrag — eine Welle erst einige Wochen später bewerten."
-   }
-  },
-  {
-   "h1": "Buchungseingänge: Wann wird gebucht?",
-   "sub": "Der Kalender zählt Beratungsbuchungen nach dem Tag, an dem sie eingingen — nicht nach dem Termintag.",
-   "card": {
-    "title": "Buchungseingänge",
-    "text": "Buchungen je Kalendertag, Stand und Aktualisieren"
-   },
-   "left": {
-    "shot": "r3-buchungseingaenge"
-   },
-   "leftCaption": "Buchungseingänge der letzten vier Wochen (Beispielwerte), rechts die Wochensummen je Institut.",
-   "steps": [
-    {
-     "n": 1,
-     "title": "Tag lesen",
-     "text": "Die große Zahl ist die Zahl der an diesem Tag eingegangenen Beratungsbuchungen — auch für Termine, die erst später stattfinden. Darunter: ✓ stattgefunden, ✗ nicht erschienen, 🗑 gelöscht."
-    },
-    {
-     "n": 2,
-     "title": "Gesamt oder Standorte",
-     "text": "„Standorte“ färbt die Tage je Institut; die Spalte rechts zeigt die Wochensumme je Institut."
-    },
-    {
-     "n": 3,
-     "title": "Weiter zurück",
-     "text": "„+ 4 Wochen weiter zurück“ lädt ältere Wochen nach; ein Klick auf einen Tag öffnet die Buchungsliste."
-    },
-    {
-     "n": 4,
-     "title": "Stand & Aktualisieren",
-     "text": "Rechts im Kopf steht, von wann die Zahlen sind. Der Pfeil daneben rechnet sie sofort neu."
-    }
-   ],
-   "hint": {
-    "text": "**Frisch bei jeder Buchung:** Der Hub rechnet die Karte alle 5 Minuten neu und zusätzlich sofort nach jeder Online-Buchung und jedem Termin-Abgleich. Solange der Bericht offen ist, rückt der Stand alle 5 Minuten von selbst nach — wer es sofort sehen will, drückt den Pfeil neben „Stand“. Online-Buchungen kommen aus der Buchungsverfolgung, Buchungen am Tresen oder Telefon aus dem Phorest-Buchungsdatum."
    }
   },
   {

@@ -51,6 +51,10 @@ const PLAN = [
   karte('r2-stornos', '/hub/reports/upcoming-consultations', 'Buchungsvorlauf-Analyse'),
   // 18.10.2026: Termin vorziehen (Beispieldaten lokal)
   karte('r2-vorziehen', '/hub/reports/upcoming-consultations', 'Termin vorziehen'),
+  // 03.11.2026: Buchungseingänge von „Vergangene“ hierher umgezogen — Karte mit „Stand HH:MM“ und Pfeil
+  karte('r2-buchungseingaenge', '/hub/reports/upcoming-consultations', 'Buchungseingänge', { marks: [
+    { id: 'stand', kind: 'badge', n: 1, sel: '.stat-stand-glattt', at: 'l' },
+  ] }),
   // ── 3 Vergangene Beratungsgespräche
   kopf('r3-kopf', '/hub/reports/past-consultations'),
   karte('r3-verlauf', '/hub/reports/past-consultations', 'Beratungsgespräche-Analyse'),
@@ -59,10 +63,6 @@ const PLAN = [
   karte('r3-noshow', '/hub/reports/past-consultations', 'No-show-Matrix'),
   karte('r3-nachfass', '/hub/reports/past-consultations', 'Nachfass-Ergebnis', { marks: [
     { id: 'grund', kind: 'badge', n: 1, ...L.byText('.segmented-control-glattt-label', 'Überlegt noch'), at: 'l' },
-  ] }),
-  // 01.11.2026: Buchungseingänge — Karte mit „Stand HH:MM“ und Pfeil (rechnet sofort neu, lädt alle 5 Min nach)
-  karte('r3-buchungseingaenge', '/hub/reports/past-consultations', 'Buchungseingänge', { marks: [
-    { id: 'stand', kind: 'badge', n: 1, sel: '.stat-stand-glattt', at: 'l' },
   ] }),
   // ── 4 Stornierte und gelöschte Termine
   kopf('r4-kopf', '/hub/reports/rescheduled-cancelled'),
