@@ -645,11 +645,22 @@ auf `/hub/staff/reisekosten/freigabe` (Migration hängt bestehende Regeln um).
 
 `askdante:sync-absence-types --months=1` läuft täglich um 04:45 (Scheduler, Cloud Scheduler →
 `/api/cron/sync-absence-types`; Jobs `sync-absence-types-staging` aktiv und `sync-absence-types`
-für Prod seit 26.09.2026 angelegt, Prod **pausiert** bis zum Merge nach main, beide mit drei
-Wiederholungen). `--months=N` scannt die
-letzten N Monate plus zwei voraus statt ganzer Jahre (80 Personen × 36 Monate wären zu viel für
-die Nacht). Neue Arten kommen **ohne** Reisekosten-Flag an; das setzt das Büro im Admin
-(Stammdaten → Abwesenheiten). Test `TravelExpenseAbsenceTypeSyncTest`.
+für Prod seit 26.09.2026 aktiv, beide mit drei Wiederholungen; Lauf rund 17 s). `--months=N`
+scannt die letzten N Monate plus zwei voraus statt ganzer Jahre (80 Personen × 36 Monate wären
+zu viel für die Nacht). Neue Arten kommen **ohne** Reisekosten-Flag an; das setzt das Büro im
+Admin (Team → Abwesenheiten). Test `TravelExpenseAbsenceTypeSyncTest`.
+
+askDANTE hat **keinen Endpunkt mit der Liste der Arten** — der Hub liest sie aus den
+eingetragenen Abwesenheiten aller Kalender. Eine Art erscheint deshalb erst, wenn sie im
+gescannten Zeitraum mindestens einmal eingetragen ist; der nächtliche Lauf sieht nichts, was nur
+vor dem Vormonat oder später als in zwei Monaten liegt.
+
+**Von Hand (seit 04.11.2026):** Knopf „Aus askDANTE abrufen" oben auf der Admin-Liste
+(`ListAbsenceTypes`, Recht `manage_absence_types`) mit Zeitraum 1, 6 oder 12 Monate zurück bis
+zwei voraus; läuft synchron (12 Monate ≈ 1 Minute, nginx erlaubt 1800 s) und meldet die neuen
+Arten mit Namen. Befehl und Knopf teilen `App\Services\AbsenceTypeSyncService`
+(`monthsAround()`, `sync()`); für den Erst-Import über Jahre bleibt
+`askdante:sync-absence-types --years=N`.
 
 ### Externe Dienste
 
@@ -733,3 +744,4 @@ ALTER TABLE travel_expenses
 | 26.09.2026 | Überarbeitung Stufe 2 und 3: Seiten in Partials + eigene JS-Dateien, Theme-Klassen statt ~360 Inline-Styles, Dropdown-/Flatpickr-Komponenten (auch Uhrzeiten), Stat-Strip, Skeletons, Adresssuche/Strecke über den Hub mit gespeicherten Koordinaten, Beleg-Abruf, Status „ausgezahlt“ mit CSV für die Lohnbuchhaltung, nächtlicher Abgleich der Abwesenheitsarten; Übernachtungs-Schalter war unsichtbar |
 | 26.09.2026 | Überarbeitung Stufe 1 (Jan): Freigabe-Route repariert, Hotelbeleg, Pauschale nur bei erlaubter Abwesenheitsart (serverseitig), eintägige Reise korrekt (Carbon-Float), Statusübergänge (eingereicht gesperrt/zurückziehen, abgelehnt erneut einreichen, Entwurf löschen), Eigentum am Konto mit Policy, `me`-Endpunkt, Meldungen an die Mitarbeiterin, eigene Ablehnungs-/Anmerkungsfelder, Tests. Befunde und native Entwürfe: [Artefakt](https://claude.ai/artifact/5EgnPnbSoKDnsfbxUZdEqW) |
 | 03/2026 | Modul erstellt (mehrtägige Arbeitszeit, Hotel/Verpflegung, Hin-/Rückfahrt), Freigabe |
+| 04.11.2026 | Admin-Knopf „Aus askDANTE abrufen“ für Abwesenheitsarten (Zeitraum wählbar), Abgleich als `AbsenceTypeSyncService` für Befehl und Knopf |

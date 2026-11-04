@@ -12,8 +12,8 @@
  "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Körperzonen, Beratungs-Services, Abwesenheitsarten, Kundennummern",
  "eyebrow": "Admin · Stammdaten",
  "footerArea": "Admin-Panel",
- "stand": "10.10.2026",
- "version": "1.1",
+ "stand": "04.11.2026",
+ "version": "1.2",
  "notes": [
   "Stammdaten sind die **Begriffe, mit denen der Hub rechnet** — Körperzonen, Beratungs-Services, Abwesenheitsarten.",
   "Sie ändern sich selten, wirken aber **überall auf einmal**.",
@@ -115,7 +115,7 @@
     {
      "n": 1,
      "title": "Abwesenheitsarten",
-     "text": "Bestimmen, welche Reisekosten-Pauschalen greifen („Team 2“)."
+     "text": "Bestimmen, welche Reisekosten-Pauschalen greifen („Team 2“). Neue Arten holt der Hub nachts aus askDANTE – sofort über „Aus askDANTE abrufen“ oben rechts, für ältere Einträge mit längerem Zeitraum."
     },
     {
      "n": 2,
@@ -166,7 +166,7 @@
      ],
      [
       "Neue Abwesenheitsart",
-      "Pauschalen und Belegpflicht prüfen"
+      "„Aus askDANTE abrufen“, dann Reisekosten und Verpflegung einstellen"
      ]
     ]
    },
