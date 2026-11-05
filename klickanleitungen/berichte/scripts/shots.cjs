@@ -107,6 +107,20 @@ const PLAN = [
     { id: 'kennzahl', kind: 'badge', n: 1, sel: '[data-statistic-key="kunden.acquisition-channel-branches"] .card-glattt-header-controls .segmented-control-glattt:first-child', at: 'l' },
     { id: 'regler', kind: 'badge', n: 2, sel: '[data-statistic-key="kunden.acquisition-channel-branches"] .chart-canvas-glattt', at: 'b' },
   ] }),
+  // 05.11.2026: Sitzungen je Körperzone — Zonen-Karte, „unter 8 geblieben“, Auffrischungen einmal/mehrfach
+  karte('r8-sitzungsbedarf', '/hub/reports/client-statistics', 'Sitzungen je Zone', { steps: [['wait', 1500]], marks: [
+    { id: 'mass', kind: 'badge', n: 1, sel: '[data-statistic-key="kunden.session-need-zones"] .card-glattt-header-controls .segmented-control-glattt:nth-of-type(1)', at: 'l' },
+    { id: 'art', kind: 'badge', n: 2, sel: '[data-statistic-key="kunden.session-need-zones"] .card-glattt-header-controls .segmented-control-glattt:nth-of-type(2)', at: 't' },
+    { id: 'quote', kind: 'badge', n: 3, sel: '[data-statistic-key="kunden.session-need-zones"] .card-glattt-header-controls .badge-glattt', at: 'b' },
+  ] }),
+  karte('r8-sitzungsbedarf-abbruch', '/hub/reports/client-statistics', 'Unter 8 Sitzungen geblieben', { steps: [['wait', 1500]], marks: [
+    { id: 'art', kind: 'badge', n: 1, sel: '[data-statistic-key="kunden.session-need-dropout"] .card-glattt-header-controls .segmented-control-glattt', at: 'l' },
+    { id: 'quote', kind: 'badge', n: 2, sel: '[data-statistic-key="kunden.session-need-dropout"] .card-glattt-header-controls .badge-glattt', at: 'b' },
+  ] }),
+  karte('r8-auffrischung-mehrfach', '/hub/reports/client-statistics', 'Auffrischungen: einmal oder mehrfach', { steps: [['wait', 1500]], marks: [
+    { id: 'streifen', kind: 'badge', n: 1, sel: '[data-statistic-key="kunden.refresh-frequency"] .stat-strip-glattt', at: 'l' },
+    { id: 'saeulen', kind: 'badge', n: 2, sel: '[data-statistic-key="kunden.refresh-frequency"] .chart-canvas-glattt', at: 't' },
+  ] }),
   // ── 9 Mitarbeiterperformance
   kopf('r9-kopf', '/hub/reports/staff-performance'),
   karte('r9-personen', '/hub/reports/staff-performance', 'Beratungs-Ranking'),

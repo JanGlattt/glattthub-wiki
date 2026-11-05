@@ -10,11 +10,11 @@
   "Der glattt-",
   "Kunde"
  ],
- "subtitle": "Klickanleitung für die Berichte im glatttHub — Demografie, Einzugsgebiet, Akquisekanäle (auch je Standort), Auffrischung nach dem Paket und Conversion",
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — Demografie, Einzugsgebiet, Akquisekanäle (auch je Standort), Auffrischung nach dem Paket, Sitzungsbedarf je Zone und Conversion",
  "eyebrow": "Berichte · Kundenstruktur",
  "footerArea": "Berichte",
- "stand": "25.10.2026",
- "version": "1.2",
+ "stand": "05.11.2026",
+ "version": "1.4",
  "notes": [
   "Der Bericht beantwortet: **Wer sind unsere Kundinnen — und woher kommen sie?**",
   "Grundlage ist der ausgewertete Kundenbestand, nicht einzelne Kundendaten.",
@@ -202,6 +202,100 @@
    "hint": {
     "kind": "warn",
     "text": "**Frische Paketenden sehen schlecht aus.** Wer erst vor drei Monaten fertig wurde, hatte kaum Zeit für eine Auffrischung — für Vergleiche einen Zeitraum wählen, der mindestens ein halbes Jahr zurückliegt. Der Zeitraum-Filter bezieht sich hier auf das Paketende."
+   }
+  },
+  {
+   "h1": "Wie viele Sitzungen braucht eine Zone?",
+   "sub": "Sitzungen bis zum Ende — je Körperzone, aus allen beendeten Behandlungen.",
+   "card": {
+    "title": "Sitzungen je Zone",
+    "text": "Ø, Median und Anteil 8 und mehr"
+   },
+   "left": {
+    "shot": "r8-sitzungsbedarf"
+   },
+   "leftCaption": "Sitzungen je Zone: Säulen = Ø bzw. Median, gestrichelte Linie = Anteil mit 8 und mehr Sitzungen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Ø oder Median",
+     "text": "Der **Median** ist bei kleinen Zonen verlässlicher — ein einzelner Ausreißer verschiebt ihn kaum."
+    },
+    {
+     "n": 2,
+     "title": "Balken oder Fläche",
+     "text": "Jede Karte dieses Abschnitts zeigt dieselben Zahlen wahlweise als **Balken** oder als **Linie mit Fläche**."
+    },
+    {
+     "n": 3,
+     "title": "Paket genutzt",
+     "text": "Das Abzeichen zeigt den Ø über alle Zonen und wie viele Zonen **8 und mehr** Sitzungen hatten — also das Paket genutzt haben."
+    }
+   ],
+   "hint": {
+    "kind": "info",
+    "text": "Gezählt werden nur Zonen, deren letzter Termin **mehr als 12 Monate** her ist, mit **mindestens 3 Sitzungen** — ohne Flex und ohne Auffrischung. Ganzkörper ist eine eigene Zeile, Unterschenkel und Arme zählen je als eine Zone."
+   }
+  },
+  {
+   "h1": "Wo hören Kundinnen vor dem Paketende auf?",
+   "sub": "Unter 8 Sitzungen geblieben, Verteilung, Institute und Ranglisten.",
+   "card": {
+    "title": "Unter 8 geblieben",
+    "text": "Je Zone, mit Anteil"
+   },
+   "left": {
+    "shot": "r8-sitzungsbedarf-abbruch"
+   },
+   "leftCaption": "Je Zone grün 8 und mehr Sitzungen, orange unter 8; die Linie zeigt den Anteil unter 8.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Balken oder Fläche",
+     "text": "Gestapelt als Säulen oder als Flächen übereinander."
+    },
+    {
+     "n": 2,
+     "title": "Anteil unter 8",
+     "text": "Wie viele Zonen vor der 8. Sitzung enden und wie viele Sitzungen es bis dahin im Schnitt waren. Der Grund steht nicht in den Terminen — zufrieden, Storno oder Umzug zählen gleich."
+    },
+    {
+     "n": 3,
+     "title": "Weitere Karten",
+     "text": "„Verteilung der Sitzungszahl“ (3 bis 10+) und „Sitzungen je Institut“ haben eine eigene **Zone**-Auswahl. „Zonen mit den meisten“ und „… wenigsten Sitzungen“ zeigen die Top 5 ab 30 Fällen."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "Der **Zeitraum** bezieht sich auf den letzten Termin der Zone, der **Standort** auf das Institut des letzten Termins."
+   }
+  },
+  {
+   "h1": "Wie oft wird aufgefrischt?",
+   "sub": "An welchen Zonen Kundinnen auffrischen — einmal, zweimal oder öfter.",
+   "card": {
+    "title": "Auffrischungen",
+    "text": "Einmal oder mehrfach je Zone"
+   },
+   "left": {
+    "shot": "r8-auffrischung-mehrfach"
+   },
+   "leftCaption": "Je Zone die Kundinnen nach Zahl ihrer Auffrischungen; die Linie zeigt den Anteil mehrfach.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Überblick",
+     "text": "Wie viele Kundinnen aufgefrischt haben, wie viele Auffrischungen es insgesamt waren und welcher Anteil **mehrfach** kam."
+    },
+    {
+     "n": 2,
+     "title": "Je Zone",
+     "text": "Je Säule von unten nach oben: **einmal**, **zweimal**, **dreimal und öfter**. Viele Mehrfach-Auffrischungen an einer Zone sprechen für nachwachsende Haare — ein Thema fürs Beratungsgespräch."
+    }
+   ],
+   "hint": {
+    "kind": "info",
+    "text": "Hier zählt jede Auffrischung, auch bei Kundinnen, die noch in Behandlung sind. Der Zeitraum bezieht sich auf die **letzte Auffrischung**."
    }
   },
   {

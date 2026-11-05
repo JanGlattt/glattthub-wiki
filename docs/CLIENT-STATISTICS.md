@@ -50,7 +50,8 @@ Bedienung Schritt für Schritt steht im Nutzerhandbuch.
 Geschlecht, woher (Postleitzahl, Entfernung zum Institut, vermutete Namensherkunft), über welchen
 Kanal gewonnen, und wie viele von ihnen gehen den Weg von der Beratung zum Vertrag? Der Bericht
 zeigt eine Kennzahlen-Zeile, Demografie, Conversion-Funnel und Akquisekanäle, Entfernungs- und
-Körperzonen-Verteilung, Widerrufs-Analyse nach Gruppen, eine Einzugsgebiets-Karte, Top-Postleitzahlen,
+Körperzonen-Verteilung, die **Sitzungen je Körperzone** (wie viele Sitzungen Kundinnen an einer Zone
+wirklich nutzen) samt Auffrischungen einmal oder mehrfach, Widerrufs-Analyse nach Gruppen, eine Einzugsgebiets-Karte, Top-Postleitzahlen,
 Persona-Segmente (Geschlecht × Altersgruppe) und die Herkunftsverteilung. Alle Karten sind
 zweiseitig (Diagramm, Tabelle dahinter); nur die Leaflet-Karte hat kein Register.
 
@@ -245,6 +246,69 @@ wieder — und wann und womit? Drei Karten: **Auffrischung nach Paketende** (Ant
 - Test: `ClientStatisticsPageTest::test_refresh_after_package_counts_share_gap_and_zones`.
 - **Fallstrick:** frische Paketenden haben naturgemäß noch wenig Auffrischungen; der Abstand ist rechts
   abgeschnitten (wer erst nach heute wiederkommt, fehlt). Beide Info-Panels sagen das.
+
+#### 3d. Sitzungen je Körperzone und Auffrischungen (sieben Karten, seit 05.11.2026)
+
+**Für Endanwender:** Wie viele Sitzungen nutzen Kundinnen an einer Körperzone **wirklich**? Eine Zone
+gilt als beendet, wenn ihr letzter Termin mehr als 12 Monate zurückliegt. Gezählt werden Sitzungen ohne
+Flex und ohne Auffrischung, und nur Zonen mit mindestens 3 Sitzungen. **8 und mehr** heißt: Paket
+genutzt. Karten: **Sitzungen je Zone** (Ø oder Median, Anteil 8 und mehr), **Verteilung der
+Sitzungszahl** (3 … 10+), **Sitzungen je Institut**, **Zonen mit den meisten** und **den wenigsten
+Sitzungen** (Top 5 ab 30 Fällen), **Unter 8 Sitzungen geblieben** und **Auffrischungen: einmal oder
+mehrfach**. Jede Karte schaltet zwischen **Balken** und **Fläche** um. Stand lokal 05.11.2026: Ø 6,5,
+Median 7 Sitzungen, 41 % mit 8 und mehr; über 9 Sitzungen geht fast niemand hinaus. Der Wert misst also,
+wie viel vom Paket genutzt wird, nicht den medizinischen Bedarf.
+
+!!! nutzerhandbuch "Bedienung: Berichte 8 – Der glattt-Kunde, Seite „Wie viele Sitzungen braucht eine Zone?""
+    https://hilfe.hub.glattt.com/berichte/8/
+
+**Für Entwickler:**
+
+- **Definitionen (Jan, 05.11.2026):** Quelle sind bezahlte Phorest-Termine (`stats_historic_appointments`,
+  `state = PAID`, `deleted = 0`); Zone aus dem Service-Namen über `PlannedZoneResolver`, ein Tag je Zone.
+  Jeder Termin ist `session`, `flex` (Name enthält `FLEX`) oder `refresh` (beginnt mit `Auffrischung`).
+  **Sitzungen** = nur `session`-Tage; gezählt ab `SESSION_NEED_MIN_SESSIONS` (3). **Beendet** = letzter
+  Termin der Zone (jede Art) vor `heute − 12 Monate`. **Paket genutzt** ab `SESSION_NEED_FULL_SESSIONS`
+  (8). Ganzkörper ist eine eigene Einheit, `SESSION_NEED_MERGED_UNITS` fasst Unterschenkel links/rechts
+  zu `unterschenkel` und beide Arme zu `arme` zusammen (sonst doppelt gezählt).
+- **Kein Abo-Stand (bewusst, 05.11.2026):** Der erste Stand teilte über `stats_client_courses` in
+  „aufgebraucht“ (Rest 0) und „vorzeitig“ (Rest > 0). Lokal standen danach 897 Zonen mit 0 Rest, aber
+  unter 8 Sitzungen auf „aufgebraucht“: Stornos/Widerrufe (25 % stornierte Verträge bei diesen
+  Kundinnen statt 3 %) und Upgrades (Einzelzonen-Abo auf 0, weiter unter Ganzkörper). Seitdem zählt nur
+  die Sitzungszahl. Wissen `phorest-abo-rest-nicht-aufgebraucht`.
+- **Linkszensur:** Zonen mit erstem Termin vor `SESSION_NEED_DATA_START` (01.04.2023) fallen raus — die
+  Terminhistorie beginnt 01/2023.
+- **Auffrischungen** (`refresh`): je Kundin und Zone die Zahl der Auffrischungs-Tage, **ohne**
+  Ruhe-Bedingung; Zeitraum und Standort nach der letzten Auffrischung. Liefert `zones[]` und `overall`
+  mit `clients` (Kundin × Zone), `once|twice|more`, `sessions`, `multi_share`, dazu `overall.people`.
+- **Ein Endpunkt, sieben Routen:** `ClientStatisticsService::getSessionNeed($filters)` (Cache-Schlüssel
+  `session-need-v2` mit Tagesdatum) → `zones`/`overall` (`count, avg, median, full, full_share, short,
+  short_avg, with_refresh, with_flex`), `distribution[zone]` (3 … 10+ mit `share`, `cumulative`, `full`),
+  `branches[zone]`, `ranking{top, bottom, min_count}` (`SESSION_NEED_RANK_MIN` 30, `…_RANK_SIZE` 5),
+  `refresh`, `zone_options`, `unmapped`, `meta`. Routen `…/session-need-zones|distribution|branches|
+  dropout|top|bottom` und `…/refresh-frequency` → `ClientStatisticsController::sessionNeed()`. Zeitraum =
+  letzter Termin, Standort = Institut des letzten Termins (`BranchVisibility::filterIds`). Termine in
+  500er-Blöcken je Kundin (~2 s).
+- Registry `kunden.session-need-zones` (full), `-distribution`/`-branches`/`-top`/`-bottom` (half),
+  `-dropout` (full), `kunden.refresh-frequency` (full). Partials `statistics/kunden/session-need-*.blade.php`
+  und `refresh-frequency.blade.php`, JS `public/js/statistics/kunden.js` (Mixin `sessionNeed` mit `snChart`,
+  Helfer `snSeries` baut je Serie Säule oder Linie mit Fläche bei gleicher `id`, damit der Wechsel
+  überblendet). Umschalter als Komponente `<x-chart-kind-toggle model="snChart" />`. CSV-Quellen
+  `clients-session-need-zones|distribution|branches|dropout|top|bottom`, `clients-refresh-frequency`.
+  App: `ClientSessionNeed…Card` (Zones, Distribution, Branches, Dropout, Ranking) und
+  `ClientRefreshFrequencyCard`, Umschalter über `ReportToggle`, Fläche über `ReportLineChart(area:)`.
+- Tests: `ClientStatisticsPageTest::test_session_need_counts_sessions_until_zone_ends`,
+  `PlannedZoneResolverTest::test_tippfehler_und_sammelnamen_aus_dem_katalog`,
+  `PhorestClientCoursesPagingTest`; Snapshot `ReportPageSnapshotTests.testRenderSessionNeed`.
+- **Fallstrick Abo-Spiegel (behoben 05.11.2026):** `PhorestApiService::getAllClientCoursesParallel()`
+  holte Seite 0 mit `includeUsedCourseItems=true`, die Seiten 1 … N aber ohne — Phorest liefert dann eine
+  kleinere Liste (9.449 statt 21.942 Abos). Aufgebrauchte Abos fehlten deshalb im Spiegel, 3.221 standen
+  fälschlich auf `not_found_in_api` mit 0 Restsitzungen. Jetzt gelten auf allen Seiten dieselben
+  Schalter; eine nicht abrufbare Seite bricht den Sync ab, statt Abos als „nicht gefunden" zu markieren.
+  Vor dem ersten vollständigen Lauf nach dem Deploy ist die Gruppe „unbekannt" groß.
+- **Zonen-Namen ergänzt (Jan, 05.11.2026):** `BIKINZONE`/`BIKNIZONE` (Katalog-Tippfehler), `GANZK`
+  (Ganzkörper), `BEINE` (Ober- + Unterschenkel), `PERIANAL` (Intimbereich) — gilt auch für den
+  Einstellungszettel. „2 kleine Zonen" bleibt ohne Zone und steht in `unmapped`.
 
 #### 4. Körperzonen-Verteilung & Widerrufs-Analyse (nebeneinander)
 
