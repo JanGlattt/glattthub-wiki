@@ -13,12 +13,13 @@
  "subtitle": "Klickanleitung für den glatttHub — wenn eine Kundin unter 18 ist: die Erlaubnis der Sorgeberechtigten einholen, vor Ort oder per Link an den zweiten Elternteil",
  "eyebrow": "Terminansicht · Minderjährige Kundin",
  "footerArea": "Terminansicht",
- "stand": "19.09.2026",
- "version": "1.2",
+ "stand": "06.11.2026",
+ "version": "1.3",
  "notes": [
   "Ist die Kundin **am Termintag unter 18**, hängt der Hub das Formular **„Erlaubnis Minderjährige“** automatisch an den Termin — bei jeder Dienstleistung. Ohne diese Erlaubnis bleibt der **Einstellungszettel gesperrt**.",
   "Bei **gemeinsamer Sorge** müssen **beide** Elternteile unterschreiben. Ist nur einer da, bekommt der andere einen **Link per E-Mail** und unterschreibt seinen Teil dort — erst dann ist das Formular vollständig.",
-  "Die Erlaubnis gilt **einmalig je Kundin**: Beim nächsten Termin fragt der Hub nicht erneut."
+  "Die Erlaubnis gilt **einmalig je Kundin**: Beim nächsten Termin fragt der Hub nicht erneut.",
+  "**Bestandskundinnen:** War die Kundin schon **vor dem Hub-Start (29.10.2026)** mit einem bezahlten Termin bei uns, liegt die Erlaubnis im Altsystem vor. Die Kachel zeigt dann **„Liegt im Altsystem vor“** statt „Pflicht“ und sperrt nichts — ausfüllen ist möglich, aber nicht nötig."
  ],
  "pages": [
   {
@@ -46,7 +47,7 @@
     {
      "n": 2,
      "title": "Kachel „Erlaubnis Minderjährige“",
-     "text": "Erscheint in der Formularliste **bei jeder Dienstleistung** mit dem gelben Abzeichen **„Pflicht · minderjährig“** — und sperrt den Einstellungszettel, bis sie ausgefüllt ist."
+     "text": "Erscheint in der Formularliste **bei jeder Dienstleistung** mit dem gelben Abzeichen **„Pflicht · minderjährig“** — und sperrt den Einstellungszettel, bis sie ausgefüllt ist. Ausnahme: Kundinnen, die **vor dem 29.10.2026** schon einen bezahlten Termin hatten — dort steht blau **„Liegt im Altsystem vor“**, der Einstellungszettel bleibt frei."
     },
     {
      "n": 3,
@@ -289,7 +290,7 @@
     {
      "n": 2,
      "title": "Kundenprofil",
-     "text": "Unter **Kunden → Übersicht** zeigt die Zeile „Erlaubnis Minderjährige“, ob sie **vorliegt**, **auf die zweite Unterschrift wartet** oder **fehlt**. Das PDF liegt unter **Dokumente**."
+     "text": "Unter **Kunden → Übersicht** zeigt die Zeile „Erlaubnis Minderjährige“, ob sie **vorliegt**, **auf die zweite Unterschrift wartet**, **im Altsystem vorliegt** (Kundin vor dem 29.10.2026) oder **fehlt**. Das PDF liegt unter **Dokumente**."
     },
     {
      "n": 3,

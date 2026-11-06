@@ -74,7 +74,9 @@ Kasse, Folgetermin und Pflicht-Notiz und schließt den Termin in Phorest ab.
 - **Direkt behandeln:** Nach einem Vertragsabschluss kann der Behandlungstermin sofort in derselben
   Raum angehängt werden — die Ansicht wechselt nahtlos in den neuen Termin.
 - **Minderjährige Kundinnen** werden am Geburtsdatum erkannt; die Erlaubnis der Eltern ist dann ein
-  Pflichtformular, die zweite Unterschrift kann per Link folgen.
+  Pflichtformular, die zweite Unterschrift kann per Link folgen. Wer schon vor dem Hub-Start (29.10.2026)
+  einen bezahlten Termin hatte, hat die Erlaubnis im Altsystem abgegeben — dort ist das Formular
+  optional („Liegt im Altsystem vor").
 
 **Wo was erledigt wird** — die Anleitung nennt Knöpfe, Felder und Fehlermeldungen:
 
@@ -395,6 +397,8 @@ sie aber in dieser Reihenfolge aus. Bei „einmalig pro Kunde" zählt eine früh
 - **Weitere Formulare:** Über die gestrichelte Kachel **„Weiteres Formular"** (bzw. den Button im Leer-Zustand) lassen sich auch Formulare ausfüllen, die **nicht** den gebuchten Dienstleistungen zugeordnet sind — Auswahl-Modal mit allen übrigen veröffentlichten Formularen, das gewählte Formular öffnet sich direkt. Für diesen Termin eingereichte Extra-Formulare bleiben auch nach einem Reload in der Liste sichtbar (Ableitung über die Einreichungen); die Pflichtformular-Sperre gilt für sie nicht, aber der „Alle Formulare ausgefüllt"-Haken berücksichtigt sie.
 
 **Minderjährige Kundinnen (seit 19.09.2026):** Ist die Kundin am Termintag unter 18, zeigt die Kunden-Karte **„Minderjährig (16)"**, und Formulare mit **„Nur bei minderjährigen Kundinnen"** (z.B. „Erlaubnis Minderjährige") erscheinen unabhängig von der Dienstleistung als Pflicht („Pflicht · minderjährig"). Kennt Phorest kein Geburtsdatum, steht dort **„Geburtsdatum fehlt"** — nachgetragen wird es über die Kundeninformation, die Terminansicht lädt die Kundendaten danach neu. Details: `FORM-EDITOR.md`.
+
+**Bestandskundinnen vor dem Hub-Start (seit 06.11.2026):** Hatte die Kundin vor dem **29.10.2026** mindestens einen bezahlten Termin (`stats_historic_appointments`, `state = PAID`, nicht gelöscht), liegt die Erlaubnis im Altsystem vor. `App\Services\Forms\LegacyMinorConsent::onFile()` entscheidet das an einer Stelle; das Ergebnis kommt als `minorConsentLegacy` im Termin-JSON (`/hub/appointment/{branch}/{id}/data`, Web **und** App) und als `minor_consent_legacy` in `/api/forms/submissions/client/{id}` (Kundenakte). Das Formular bleibt sichtbar, zählt aber nicht als Pflicht (`isFormRequired()` in `appointment-unified.js` bzw. `AppointmentDetailModel`) und trägt statt „Pflicht · minderjährig" das blaue Abzeichen **„Liegt im Altsystem vor"**; die Kundenakte zeigt dieselbe Angabe in der Zeile der Erlaubnis. Ein nur angelegtes Profil oder eine Online-Buchung ohne Besuch zählt bewusst nicht (Entscheidung Jan, 06.11.2026). Ältere App-Builds kennen das Feld nicht und sperren weiter, bis sie aktualisiert sind.
 
 **Zweite Unterschrift per Link (Mitunterzeichner):** Bekommt die zweite Person (z.B. der andere Elternteil) ihren Teil per E-Mail, trägt die Kachel **„1 von 2 Unterschriften"** und „Wartet auf die zweite Unterschrift per Link"; die Pflicht gilt erst als erfüllt, wenn sie unterschrieben hat. Ein Tipp auf die Kachel öffnet ein Modal mit Empfängerin, Datum, Link zu den bisherigen Angaben und **„Link erneut senden"**. Technik der Teil-Links: `SHARED-FORM-SYSTEM.md` → „Mitunterzeichner-Links".
 
