@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — einziehen, ablösen, Rücklastschrift anhängen, abgleichen",
  "eyebrow": "Verträge · Einzüge",
  "footerArea": "Verträge",
- "stand": "16.09.2026",
- "version": "1.0",
+ "stand": "09.11.2026",
+ "version": "1.1",
  "notes": [
   "**Jede Rate ist eine eigene Lastschrift** — es gibt keine Abos und keinen Automatismus.",
   "**„Betrag per SEPA einziehen“ holt sofort Geld.** Vorschau lesen, Betrag prüfen, dann klicken.",
@@ -251,7 +251,7 @@
     {
      "n": 3,
      "title": "RLS-Gebühr",
-     "text": "Der Schalter **„RLS-Gebühr mit einziehen“** schlägt die Gebühr auf die angehängte Rate."
+     "text": "Der Schalter **„RLS-Gebühr mit einziehen“** schlägt die Gebühr auf die angehängte Rate. Sie gilt dann mit deren Einzug als bezahlt — die alte Zeile zeigt „RLS-Gebühr im angehängten Einzug“, ein Knopf „Gebühr bezahlt“ erscheint dort nicht mehr."
     },
     {
      "n": 4,

@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — Kundenservice statt Zendesk: Tickets finden, lesen, per E-Mail oder WhatsApp antworten, interne Notizen schreiben, neue Tickets anlegen und die Kundin zuordnen",
  "eyebrow": "Kundenservice · Tickets",
  "footerArea": "Kundenservice",
- "stand": "03.11.2026",
- "version": "1.1",
+ "stand": "09.11.2026",
+ "version": "1.2",
  "notes": [
   "**Kundenservice** findest du in der Seitenleiste unter **Betrieb**. Jede Mail an kundenservice@ wird automatisch zu einem Ticket; Antworten der Kundin landen im selben Ticket.",
   "Eine Antwort geht als **E-Mail** raus (oder als **WhatsApp**, wenn die Kundin so geschrieben hat). **Interne Notizen** sieht nur das Team.",
@@ -110,7 +110,7 @@
      ],
      [
       "Gelöst / Geschlossen",
-      "erledigt; eine neue Mail der Kundin öffnet es wieder"
+      "erledigt; eine neue Mail der Kundin öffnet es wieder — und du selbst über ⋯ → „Wieder öffnen“ oder einfach mit einer Antwort, auch wenn das Ticket schon geschlossen ist"
      ]
     ]
    }

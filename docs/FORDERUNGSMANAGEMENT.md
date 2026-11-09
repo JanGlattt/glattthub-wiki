@@ -151,7 +151,7 @@ Vier Einstiege eröffnen Fälle **automatisch** (`DebtCaseIntakeService`):
    Eskalation.
 2. **Direktzahler**: Vertrag mit Direktzahlung, Abschluss über 28 Tage her,
    nicht bezahlt → Fall in Stufe „Kontaktaufnahme" (täglicher Prüflauf 07:15).
-3. **SEPA-Mandatsentzug**: Entzieht der Kunde (oder seine Bank) das Mandat,
+3. **SEPA-Mandatsentzug**: Entzieht der Kunde (oder seine Bank in seinem Auftrag) das Mandat,
    wird die Restsumme fällig und ein Fall mit Gesamtforderung eröffnet.
    Seit 08/2026 kann dieser Einstieg auch **bewusst aus dem Widerruf-Prozess**
    ausgelöst werden: Beim manuellen Mandats-Storno auf der Widerruf-Detailseite
@@ -204,7 +204,7 @@ Hinweis oben auf der Fall-Detailseite beide Zahlen.
 | **Sanft** | RLS, Altschulden ≤ 50 € | 1. Zahlungserinnerung (E-Mail, 7 T) → 2. Zahlungserinnerung + Androhung Terminabsage (E-Mail, 7 T) → Monitoring (nächster Einzugstermin + 3 + 10 T; nur beim ersten Ausrutscher) → letzte Mahnung per Post `letter_final_soft` (10 T, kündigt das Anhängen an) | Rate ans Planende anhängen (keine Gebühr); Gesamtsumme fällig gestellt oder Nicht-RLS-Einstieg → 250-€-Entscheid |
 | **Sanft, Neustart nach 2. RLS** (seit 09.09.2026) | RLS-Entscheid „von vorne" | 1. + 2. Zahlungserinnerung (E-Mail, je 7 T; nur nicht angehängte Forderungen) → **kein** Monitoring → 1. Mahnung (Post, 10 T) → letzte Mahnung (Post, mit/ohne Fälligstellung) | anhängen bzw. 250-€-Entscheid |
 | **Hart** | RLS, Altschulden > 50 € (oder harter Neustart) | Zahlungserinnerung über alle offenen Schulden + SEPA pausieren (E-Mail, 7 T) → 1. postalische Mahnung (10 T) → letzte Mahnung `letter_postal_final` über die gesamte Restsumme (Post, 14 T; Fälligstellung Standard ab 2 RLS) | 250-€-Entscheid: ≤ 250 € abschreiben (WNB), > 250 € gerichtliches Mahnverfahren. Ohne Fälligstellung stattdessen `letter_final_soft` (10 T) → Rate anhängen |
-| **Mandatsentzug** | Webhook (`origin` bank/customer), Widerruf-Storno mit Häkchen, Abgabe aus dem Widerruf | E-Mail-Anmahnung der Restsumme (7 T; i. d. R. extern durch den Kundenservice → als „extern erledigt" nachtragen) → **direkt** letzte Mahnung per Post über die Restsumme (keine 1. Mahnung dazwischen) | 250-€-Entscheid |
+| **Mandatsentzug** | Webhook (`origin` bank/customer, **nicht** bei bankseitiger Ursache — siehe unten), Widerruf-Storno mit Häkchen, Abgabe aus dem Widerruf | E-Mail-Anmahnung der Restsumme (7 T; i. d. R. extern durch den Kundenservice → als „extern erledigt" nachtragen) → **direkt** letzte Mahnung per Post über die Restsumme (keine 1. Mahnung dazwischen) | 250-€-Entscheid |
 | **Direktzahler** | Direktzahlung, ≥ 28 Tage nach Abschluss unbezahlt | Start in Stufe „Kontaktaufnahme"; Forderungsbasis ist der Vertragsrest, „Rate anhängen" entfällt | 250-€-Entscheid |
 | **Kundenkonto (ohne Vertrag)** | Saldo ≥ 20 € seit 14 Tagen, oder manuell | 1. Zahlungserinnerung (E-Mail) → 2. Zahlungserinnerung (E-Mail) → **direkt** 1. postalische Mahnung → letzte Mahnung; kein Monitoring, kein Anhängen (kein Zahlungsplan) | 250-€-Entscheid |
 | **Gerichtlich** (eigener Bereich `area = judicial`) | 250-€-Entscheid > 250 € | Mahnbescheid → Widerspruch? → Vollstreckungsbescheid → Einspruch? → Zwangsvollstreckung → PfÜB/Gerichtsvollzieher; Zustelldatum je Bescheid setzt die 14-Tage-Frist als Wiedervorlage | RZV holt den Fall zurück in die außergerichtliche Bearbeitung; geplatzte RZV-Rate zurück ins Verfahren |
@@ -502,11 +502,62 @@ können eigene Vorlagen-Varianten hinterlegt werden (`dunning_templates`, Cluste
   sanfter Weg — damit läuft der übliche Gang 1./2. Zahlungserinnerung →
   Monitoring. Für PfÜB-/Vergleichs-RZVs bleibt es bei „Plan anpassen".
   Bei Selbstzahlern zeigt der Tab „Ratenzahlung" den **Ratenplan mit Stand je Rate**:
-  `RzvPlanProgress` rechnet die Zahlungseingänge seit Abschluss der Vereinbarung
-  (`created_at`) der Reihe nach auf die Raten an — eine Sonderzahlung über mehrere
-  Raten (Fall OS003717, 15.10.2026) deckt so die ersten Raten voll, die nächste
-  teilweise. Die geplatzte RZV-Rate erhöht die Hauptforderung dabei nicht (die Schuld bestand schon —
+  `RzvPlanProgress` nimmt als gezahlt, was vom vereinbarten Betrag laut Fall nicht
+  mehr offen ist (`DebtCaseBalanceService::forCase()['open']`, derselbe Saldo wie in
+  der Übersicht), und rechnet diesen Betrag der Reihe nach auf die Raten an — eine
+  Sonderzahlung über mehrere Raten (Fall OS003717, 15.10.2026) deckt so die ersten
+  Raten voll, die nächste teilweise. Bis 09.11.2026 zählten nur Zahlungseingänge ab
+  dem Anlagedatum der Vereinbarung; bei BI005725 (Fall 2809) war die September-Rate
+  mit dem 01.09. erfasst, die Vereinbarung am 02.09. angelegt — die Rate fiel heraus
+  und erst die November-Zahlung „bezahlte" den Oktober (Asana Janine, 04.11.2026).
+  Beide Knöpfe („Zahlungseingang erfassen" in der Seitenleiste, „Zahlung verbuchen"
+  unter dem Plan) öffnen denselben Dialog; keine Rate wird fest als bezahlt markiert. Die geplatzte RZV-Rate erhöht die Hauptforderung dabei nicht (die Schuld bestand schon —
   `DebtCaseBalanceService::rlsPrincipals()` schließt RZV-Raten aus).
+
+#### Konto erloschen oder gesperrt: Bitte um neue Bankverbindung (seit 09.11.2026)
+
+Gibt die Bank die Lastschrift mit einem **Konto-Code** zurück (AC04 Konto erloschen,
+AC06 gesperrt, AC01 Konto existiert nicht, AG01/AG02 Lastschrift nicht zugelassen,
+RR01 Bankverbindung fehlerhaft, AC13), hat die Kundin nichts widerrufen — die
+Bankverbindung ist nur unbrauchbar. GoCardless kündigt dann auch das Mandat
+(`mandates.cancelled`, `origin = bank`, `cause` z. B. `bank_account_closed`). Bis
+09.11.2026 wertete der Hub das wie einen Entzug durch die Kundin und stellte die gesamte
+Restsumme fällig (Asana Janine, 04.11.2026: OS003724 AC06, OS003350 AC04).
+
+- `GoCardlessFailureReason::indicatesInvalidBankDetails($code)` und
+  `mandateEndedByBank($cause, $reasonCode)` entscheiden nach Ursache/Bankcode — die
+  Herkunft `origin = bank` allein reicht nicht, denn auch ein Widerruf der Kundin bei
+  ihrer Bank kommt mit `origin = bank` (`cause = mandate_cancelled`, MD01).
+- `DebtCaseIntakeService::handleBouncedPayment()` setzt bei Konto-Codes
+  `debt_cases.bank_details_invalid_at`; der Fall bleibt ein normaler RLS-Fall (sanft/hart
+  nach Altschulden). `handleMandateEndedByBank()` (aus dem Webhook) setzt den Vermerk am
+  laufenden Fall, stellt **nichts** fällig und eröffnet **keinen** Fall; die Rücklastschrift
+  selbst (`payments.failed`) eröffnet ihn. Das Mandat trägt den Grund in `gocardless_error`
+  („Von der Bank beendet: Konto erloschen …").
+- `DebtCaseActionService::nextAction()`: sanfter Weg, Stufe „Neu" mit Vermerk → Vorlage
+  **`reminder_bank_details`** („1. Zahlungserinnerung + neue Bankverbindung", Frist 14 Tage)
+  statt `reminder_1_soft`; danach läuft die Kette wie gewohnt weiter. Die Vorlage enthält
+  den Platzhalter **`{{mandatslink}}`**: `DunningMessageService` lässt sich dafür über
+  `MandateLinkService::linkForDunning()` den Einmal-Link „Neues Mandat anfordern" geben
+  (Kanal `dunning`, gültig bis zur Zahlungsfrist; ein noch offener Link wird wiederverwendet
+  und verlängert). Ohne Platzhalter im Text entsteht kein Token (Vorschauen).
+- Fallseite: Seitenleiste „Fall-Informationen" zeigt „Bankverbindung: Unbrauchbar · neue erbeten".
+- Bestand: `receivables:reclassify-bank-ended-mandates --dry-run` stellt Fälle „SEPA-Mandat
+  entzogen" mit Konto-Code an der geplatzten Rate auf Rücklastschrift um (nur Stufe „Neu",
+  einzelne Fälle per `--case=`).
+
+#### RLS-Gebühr bei angehängter Rate (seit 09.11.2026)
+
+Wird eine geplatzte Rate samt Gebühr ans Planende gehängt, steckt die Gebühr in der
+angehängten Rate (`appended_fee_cents`) und kommt mit deren Einzug in den Fall
+(`handleAppendedSeriesSettled`). Der Vertrag bot trotzdem „Gebühr bezahlt" an; der Knopf
+spiegelte 10 € als Zahlung in den Fall, und die Mahnung zog die Gebühr zweimal ab
+(„Bereits gezahlt −10,00 €" neben „Bereits im SEPA-Einzug −169,96 €", Fall H004096).
+Jetzt: `ContractPayment::appendedFeeCarrier()` kennt die tragende Rate;
+`SettlementCaseSyncService::desiredMirrors()` spiegelt die Gebühr dann nicht,
+`settleBouncedPayment()` lehnt „Gebühr bezahlt" mit 422 ab, der Zahlungen-Tab zeigt
+„RLS-Gebühr im angehängten Einzug" (`return_fee_in_appended`) ohne Knopf. Bestand:
+`receivables:repair-appended-fee-mirrors --dry-run`.
 
 #### Ruhend, RLS-Entscheid, Abschreiben, Notizen
 
@@ -968,7 +1019,8 @@ Kippt die Füllung im Dunkelmodus weg, bleibt er als Schaltfläche erkennbar.
 eskalierenden Bogen: Gold wird Signalrot (Akzentlinie, Stufenzeile, Betrag,
 Summenlinie, Wash des Betrags-Blocks), dazu kommt der Konsequenz-Block
 (SEPA-Einzüge gestoppt, Fälligstellung möglich), das Gesprächsangebot entfällt.
-Derzeit nur `reminder_hard` — die Anmahnung der Restsumme nach Mandatsentzug
+Derzeit `reminder_hard` und `reminder_bank_details` (Konto erloschen/gesperrt, 14 Tage, mit
+`{{mandatslink}}`) — die Anmahnung der Restsumme nach Mandatsentzug
 bleibt bewusst im Standard-Bogen, dort hat der Kunde meist selbst gekündigt.
 Der Button bleibt in beiden Fällen dunkel: rot auf rotem Grund verliert die
 Signalwirkung, die der Betrag darüber aufbaut.

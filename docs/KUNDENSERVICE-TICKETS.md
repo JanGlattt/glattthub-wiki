@@ -186,7 +186,12 @@ Werte am Postfach (Admin → System → Kundenservice-Postfach), Lauf alle 15 Mi
 
 - **Eingangsbestätigung** (Start: aus) auf neue Kundinnen-Mails, nie auf Abwesenheitsnotizen,
   setzt kein `first_response_at`.
-- **Gelöst → Geschlossen** nach `close_after_days` (4).
+- **Gelöst → Geschlossen** nach `close_after_days` (4). Geschlossene Tickets lassen sich seit
+  09.11.2026 **wieder öffnen** (⋯ → „Wieder öffnen", Web und App) und haben weiter ein
+  Antwortfeld — eine Antwort öffnet das Ticket (Status „Wartet auf Kundin"). `applyStatus()`
+  leert dabei `closed_at`, `solved_at` und `follow_up_at` und protokolliert `reopened`; sonst
+  sortierte das Kundenportal nach dem alten Schließdatum und die Regeln schlössen es gleich
+  wieder (Asana Janine, 09.11.2026: Ticket 10179 schloss sich nach 14 Tagen, kein Weg zurück).
 - **Wartet auf Kundin → Gelöst** nach `pending_solve_after_days` (14), ohne Prüfung, nicht bei
   gesetzter Wiedervorlage.
 - **Wiedervorlage fällig** → wieder offen, Push `support_tickets.follow_up_due`.
@@ -492,6 +497,8 @@ damit (Jan, 10.10.2026).
 
 ## Changelog
 
+- **09.11.2026** — Geschlossene Tickets wieder öffnen (⋯-Menü) und direkt beantworten; Zeitstempel
+  werden geleert, Ereignis `reopened`.
 - **03.11.2026** — Anhänge laden einzeln vorab hoch und werden verkleinert (PDF per Ghostscript,
   Fotos als JPEG); Upload-Grenze 25 MB, eigene Meldung bei 413, höchstens 20 MB je Nachricht.
 - **24.10.2026** — Selbst abgeschlossene Tickets in Prüfung verschwinden aus „Meine Tickets“ (Asana

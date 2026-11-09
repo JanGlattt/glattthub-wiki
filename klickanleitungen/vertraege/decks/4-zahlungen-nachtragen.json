@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — Rate nachtragen, freie Zahlung verbuchen, erste Rate bestätigen, RLS ausgleichen",
  "eyebrow": "Verträge · Zahlungen buchen",
  "footerArea": "Verträge",
- "stand": "16.09.2026",
- "version": "1.0",
+ "stand": "09.11.2026",
+ "version": "1.1",
  "notes": [
   "**Nachtragen bewegt kein Geld** — es hält nur fest, dass etwas eingegangen ist.",
   "**Zahlungsart ist immer Pflicht**, das Eingangsdatum immer der Tag, an dem das Geld bei uns war.",
@@ -341,7 +341,7 @@
     {
      "n": 3,
      "title": "Gebühr",
-     "text": "Wurde eine **RLS-Gebühr** erhoben, lässt sich hier festhalten, dass auch sie bezahlt ist."
+     "text": "Wurde eine **RLS-Gebühr** erhoben, lässt sich hier festhalten, dass auch sie bezahlt ist. Steckt die Gebühr in einer angehängten Rate, geht das nicht — sie wird mit deren Einzug verrechnet."
     },
     {
      "n": 4,

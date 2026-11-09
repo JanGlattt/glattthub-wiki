@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für den glatttHub — die Arbeitsliste, woher die Fälle kommen, Fall ohne Vertrag anlegen",
   "eyebrow": "Forderungen · Übersicht",
   "footerArea": "Forderungen",
-  "stand": "24.10.2026",
-  "version": "1.1",
+  "stand": "09.11.2026",
+  "version": "1.2",
   "notes": [
     "Die Startseite ist eine **Arbeitsliste**: „Zu erledigen“ ist der einzige Topf, der Arbeit bedeutet.",
     "Der **Einstieg bestimmt den Weg** — sanft, hart oder ohne Vertrag.",
@@ -134,7 +134,7 @@
           ],
           [
             "**Mandat entzogen**",
-            "Die Kundin hat das SEPA-Mandat widerrufen",
+            "Die Kundin hat das SEPA-Mandat widerrufen — nicht, wenn ihre Bank das Konto geschlossen oder gesperrt hat: das bleibt eine Rücklastschrift, die Erinnerung bittet um eine neue Bankverbindung",
             "eigener Einstieg: Restsumme per E-Mail anmahnen"
           ],
           [

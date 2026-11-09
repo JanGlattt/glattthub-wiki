@@ -323,6 +323,26 @@ Kunde → SEPA-Formular → FormSubmission
                               (subscription_id → Contract)
 ```
 
+### Papiervertrag nachtragen: `contracts:create-manual` (seit 09.11.2026)
+
+Der Hub hat keine Seite „Vertrag anlegen". Fehlt ein vor Ort unterschriebener Vertrag im Hub
+(Asana Janine, 05.11.2026: BI007354, Unterschrift 28.10., Abbuchungsstart 15.11.), legt ihn
+der Befehl über denselben Service wie die Institutsseite an — ohne zweiten Phorest-Kauf, wenn
+das Abo dort schon steht, und ohne GoCardless (Mandat `pending` mit IBAN; Mandat und
+Zahlungsplan legt das Büro danach im SEPA-Reiter an):
+
+```bash
+php artisan contracts:create-manual --client=<Phorest-ID> --client-number=BI007354 \
+  --branch=<Phorest-Branch-ID> --price-list=1 --zones=achseln,bikini,intim,unterschenkel_links,unterschenkel_rechts \
+  --months=19 --monthly=199,95 --signed=2026-10-28 --first-payment=2026-11-15 \
+  --iban=DE… --holder="Vorname Nachname" --phorest-booked --dry-run
+```
+
+Das Paket muss in der Preisliste stehen (Zonen × Raten × Rate), `--months` zählt Rate 1
+mit (18 Monate + 1. Sitzung = 19), ein zweiter Vertrag am selben Unterschriftstag wird
+abgelehnt. Vertragsnummer `JJJJ.MM.TT-<Kundennummer>`, `source = manual`. Auf Prod läuft
+der Befehl lokal gegen den Proxy (Wissen `artisan-command-auf-prod-ausfuehren`).
+
 ### Datenfluss: Weiterer Vertrag (Bestandskunde)
 
 ```
@@ -821,6 +841,7 @@ $clientMandate = $service->processSepaFormSubmission($sepaSubmission);
 | Methode | Beschreibung |
 |---|---|
 | `createFromSubmission()` | Erstellt Contract + ggf. ClientMandate aus FormSubmission, triggert Phorest-Kauf |
+| `createFromInstituteCapture()` | Institutsseite und `contracts:create-manual`: Vertrag aktiv, Mandat pending mit IBAN, kein GoCardless; `source` (`institute`/`manual`), `skip_phorest_purchase` (Abo schon in Phorest → `phorest_purchase_status = skipped`), `client_external_id` (Kundennummer ohne Phorest-Abruf) |
 | `prepareMandateForContract()` | Sucht bestehendes ClientMandate oder erstellt neues. Speichert Zahlplan-Daten auf Contract |
 | `processSepaFormSubmission()` | Findet ClientMandate per client_id, vervollständigt mit Bankdaten |
 | `completeMandateFromSepaForm()` | Aktiviert alle Draft-Contracts des Mandats, dispatcht Sync-Job |
@@ -1103,6 +1124,16 @@ public function getRemainingAmountCentsAttribute(): int
 
 **Vorteil:** Kein Risiko dass Webhook-Verarbeitung den Counter inkonsistent macht (z.B. bei Chargebacks oder Retries).
 
+**Altsystem-Einzug (Legacy-Block, Verträge vor dem 01.06.2026):** `legacyCollectedCents()` nimmt den
+manuell gepflegten Wert, sonst `computedLegacyCollectedCents()` = Vertragssumme − Rate 1 −
+dokumentierte SEPA-Raten − Gutschein-/Werber-Anteile. Seit 09.11.2026 ist der rechnerische Wert
+nach oben begrenzt auf die Monatsraten **zwischen dem ersten SEPA-Einzug und der ersten im Hub
+dokumentierten Rate** (`legacyWindowCapCents()`, Monate gerundet, weil der Einzugstag beim
+Wechsel ins GoCardless-Raster rutscht). Ohne diese Grenze wanderte jede stornierte Restrate ins
+Altsystem: Stoppt ein Mandat (Konto gesperrt, falsche Bankverbindung), storniert der Hub alle
+Folgeraten, und der Vertrag stand auf „nichts mehr offen" (Asana Janine, 09.11.2026). Das
+Forderungsmanagement nutzt weiterhin nur den manuellen Wert (`documentedRemainingCents()`).
+
 ## Cloud Deployment
 
 ```env
@@ -1348,6 +1379,12 @@ Die Update-Blöcke seit April 2026 in der Reihenfolge ihres Entstehens — jewei
 (Asana-Bug, Fall, Entscheidung), der fachlichen Wirkung und der technischen Umsetzung. Neue
 Erkenntnisse werden **nicht** hier, sondern oben an der thematisch passenden Stelle eingearbeitet;
 die Chronik wächst nur um den Verweis. Bedienung: Nutzerhandbuch, Serie „Verträge".
+### Update 09.11.2026 — Papiervertrag nachtragen, RLS-Gebühr in angehängter Rate, Altsystem-Fenster
+
+Asana-Bugs von Janine (04.–09.11.2026): `contracts:create-manual` (siehe „Papiervertrag nachtragen"),
+„Gebühr bezahlt" bei angehängter Rate gesperrt (Wiki Forderungsmanagement), rechnerischer
+Altsystem-Block nur bis zur ersten dokumentierten Rate (siehe „Restbetrag-Berechnung").
+
 ### Update 21.08.2026 — „Gezahlte Rate nachtragen" (fehlende Zeile dokumentieren)
 
 Asana-Bug „Zahlung pausierte Lastschrift" (Fall Roppel BS000955): Eine bei der
