@@ -6,8 +6,8 @@
  "of": 30,
  "audience": "institut",
  "footerArea": "App",
- "stand": "02.11.2026",
- "version": "1.21",
+ "stand": "09.11.2026",
+ "version": "1.22",
  "nr": 3,
  "title": [
   "Termine und die",
@@ -83,7 +83,7 @@
     {
      "n": 2,
      "title": "Mitarbeiterin",
-     "text": "Unter dem Timer: Wer behandelt. Antippen ändert die Zuordnung (schreibt nach Phorest). Daneben seit November 2026 **„No Show“**: kurzfristig abgesagt oder nicht gekommen → Absage-Spalte, Stornieren → nur mit Begründung, wenn es weniger als 24 Stunden sind. In der Terminliste geht das auch per Wischen nach links — dort stehen **No Show** und **Verlegen** nebeneinander, und im No-Show-Blatt führt **„Stattdessen umbuchen“** direkt zum Verlegen. Laufende Termine („Im Gange“) lassen sich weder absagen noch verlegen; bei No-Shows steht die Uhrzeit in der Liste in Rot. In der Notiz-Karte der Übersicht lässt sich außerdem jederzeit eine **Notiz zu diesem Termin** hinzufügen, ohne ihn zu beenden."
+     "text": "Unter dem Timer: Wer behandelt. Antippen ändert die Zuordnung (schreibt nach Phorest). Daneben seit November 2026 **„No Show / Stornieren“**: kurzfristig abgesagt oder nicht gekommen → Absage-Spalte, Stornieren → nur mit Begründung, wenn es weniger als 24 Stunden sind. In der Terminliste geht das auch per Wischen nach links — dort stehen **No Show** und **Verlegen** nebeneinander, und im No-Show-Blatt führt **„Stattdessen umbuchen“** direkt zum Verlegen. Laufende Termine („Im Gange“) lassen sich weder absagen noch verlegen; bei No-Shows steht die Uhrzeit in der Liste in Rot. In der Notiz-Karte der Übersicht lässt sich außerdem jederzeit eine **Notiz zu diesem Termin** hinzufügen, ohne ihn zu beenden."
     },
     {
      "n": 3,

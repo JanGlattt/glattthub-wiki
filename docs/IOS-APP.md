@@ -1241,7 +1241,11 @@ Einstellungszettel öffnen in Stufe 1 noch als Web-Blatt über der nativen Seite
   (`undoHandover()`). Details in `APPOINTMENT-VIEW.md`, „Direkt behandeln nach Vertragsabschluss". **Seit 21.09.2026
   nativ:** `DirectTreatmentSheet`/`DirectTreatmentModel` (gleicher Raum, Paket-Services zum
   An-/Abwählen, „Kauf nachholen", „Neu laden") und `FollowUpBookingSheet`/`FollowUpBookingModel`
-  (Terminabstand-Schnellwahl + freie Wochen, darüber seit 26.10.2026 „Letzte Behandlung vor …“ aus
+  (Terminabstand-Schnellwahl + freie Wochen — das freie Feld sucht seit 09.11.2026 erst nach einer
+  Tipp-Pause von 600 ms, jede Suche trägt eine Laufnummer und nur die jüngste Antwort zählt, ein
+  programmatischer Datumswechsel löscht die Wochenwahl nicht mehr; vorher gewann beim Tippen „12“ die
+  Antwort für „1“ und die Slots passten nicht zum Datum, Hub-Feedback 09.11.2026 — darüber seit
+  26.10.2026 „Letzte Behandlung vor …“ aus
   `last_interval`, Institut, Datum, Services, Slot-Pillen je Tag mit
   „ohne Lücke" grün, Buchen mit Rückfrage, „Überspringen") in `BookingSheets.swift`. Beide sprechen
   JSON-Endpunkte des `Hub\BookingApiController`: `GET/POST hub/appointment/{b}/{id}/direct-treatment

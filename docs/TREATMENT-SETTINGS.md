@@ -270,14 +270,25 @@ Einstellungszettel" und Knopf „Sitzung nachtragen") und in der Terminansicht (
   (`appointment` = aus dem Termin, `backfill` = Nachtrag); `phorest_appointment_id` ist seit der
   Migration `2026_10_11_100000` nullable. Die Migration füllt `treated_at` bestehender Einträge aus
   `stats_historic_appointments`, deshalb braucht die Kundenakte Phorest nur noch für Einträge ohne
-  Datum. Verlauf und **Sitzungsnummern sortieren nach `treated_at`** — ein Nachtrag von 2025 wird
+  Datum. **Seit 09.11.2026 schreibt auch die Terminansicht `treated_at` und `source` beim Speichern**
+  (`saveTreatmentSettings`, Termindatum aus Phorest) — bis dahin blieben Termin-Zettel ohne Datum
+  (Prod: 3.307 Zeilen an 548 Terminen), und bei einem in Phorest gelöschten und neu angelegten Termin
+  stand die Sitzung „ohne Datum“ und „offen“ (BS001135, 27.10.2026). Bestand:
+  `treatments:fill-treated-at --dry-run` (aus dem Spiegel, auch gelöschte Zeilen). Verlauf und
+  **Sitzungsnummern sortieren nach `treated_at`** — ein Nachtrag von 2025 wird
   Sitzung 1, der Hub-Eintrag rückt nach (`TreatmentBackfillService::renumber`, auch nach Löschen).
 - **Sitzungen zur Vorbelegung** (`TreatmentBackfillService::sessions`): vergangene Termine der
   Kundin aus `stats_historic_appointments`, nur `PAID`, gruppiert nach Tag + Behandlerin + Standort.
   Beratungen (`consultation_services.is_consultation`), Desinfektion, Extrazeit, Flow und Wartung
   zählen nicht als Zone, gehören aber zur Gruppe — der Zettel kann an jeder Termin-ID der Gruppe
-  hängen. Zonen werden aus den Leistungsnamen erraten (Zonenname im Namen), Ganzkörper lässt die
-  Auswahl offen. „offen" = Gruppe ohne Eintrag; die Anzahl ist der Hinweis in der Akte.
+  hängen — oder, seit 09.11.2026, nur am **Tag** (`treated_at = Sitzungstag`), weil ein in Phorest
+  neu angelegter Termin neue IDs bekommt. Zonen werden aus den Leistungsnamen erraten: voller
+  Zonenname, Namensteile ab fünf Zeichen („Unterschenkel“, „Rücken“) und die Aliase der
+  Körperzonen-Zuordnung ab fünf Zeichen als ganzes Wort („INTIMZONE“ → intim); Ganzkörper lässt die
+  Auswahl offen. „offen" = Gruppe ohne Eintrag; die Anzahl ist der Hinweis in der Akte. **„teilweise“**
+  (seit 09.11.2026) = Zettel vorhanden, aber eine gebuchte Zone fehlt (`missing_zone_keys`; Paare wie
+  Unterschenkel/Arme/Rücken gelten mit einer Seite als erfasst, `PAIRED_ZONE_KEYS`) — Anlass H004300,
+  03.11.2026: Füße erfasst, Gesäß vergessen, die Sitzung galt als erfasst.
 - **Regeln (Jan):** Pflicht nur Datum und mindestens eine Zone; Behandlerin darf „unbekannt" sein,
   Werte dürfen leer bleiben. Etikett **„Papier"** mit der eintragenden Person bleibt dauerhaft.
   Löschen dürfen Ersteller, Leitung und Büro (Recht `delete_treatment_backfill`, erbt von
@@ -417,6 +428,9 @@ altem und neuem Wert, Person und Zeitpunkt nachvollziehbar.
   wer `delete_treatment_backfill` hat (Leitung, Büro); anders als beim Löschen gilt das für **alle**
   Einträge (`TreatmentSetting::canBeEditedBy()`). Route `PATCH /hub/treatment-settings/{id}` mit
   `can:manage_treatment_settings`, die Eintrags-Prüfung im Service antwortet 403.
+- **Datum:** änderbar bei Nachträgen **und** (seit 09.11.2026) bei Termin-Zetteln ohne `treated_at`
+  (Web `canEditDate`, iOS `TreatmentCorrectionSheet`); ein Termin-Zettel mit Datum bleibt gesperrt
+  („kommt aus Phorest“).
 - **Felder:** Behandlerin (`staff_id` bzw. Freitext `staff_name`), Laserkopf, Skintel/Hauttyp, Haar,
   Empfehlung, genutzte Werte, Notiz, Bereich, `second.*` für die zweite Einstellung. Das **Datum** nur bei
   Nachträgen (beim Termin kommt es aus Phorest → 422, in der Zukunft → 422); nach einer Datumsänderung

@@ -9,8 +9,8 @@
  "subtitle": "Klickanleitung für die Terminansicht im glatttHub — vom Tagesplan bis zum laufenden Termin",
  "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
- "stand": "02.11.2026",
- "version": "1.9",
+ "stand": "09.11.2026",
+ "version": "1.10",
  "notes": [
   "Gilt für **jedes Beratungsgespräch**: Der Termin wird im Hub gestartet, alle Formulare laufen direkt im Termin.",
   "Bei Problemen oder Fehlermeldungen: **Asana-Task ans Büro** — siehe Dokument „Probleme & Fehlermeldungen“."
@@ -137,7 +137,7 @@
    "sub": "Zwei Dinge, die bis November 2026 nur in Phorest gingen: einen Termin absagen und eine Notiz schreiben, ohne den Termin zu beenden.",
    "card": {
     "title": "No Show & Notiz",
-    "text": "„No Show“ in der Seitenspalte, Notizfeld in der Notiz-Karte"
+    "text": "„No Show / Stornieren“ in der Seitenspalte, Notizfeld in der Notiz-Karte"
    },
    "left": {
     "shot": "b1c-absagen-dialog"
@@ -151,7 +151,7 @@
     {
      "n": 1,
      "title": "No Show",
-     "text": "Knopf **„No Show“** in der Seitenspalte (nur vor dem Start). Der Hub zeigt, wie lange es bis zum Termin ist."
+     "text": "Knopf **„No Show / Stornieren“** in der Seitenspalte (nur vor dem Start). Der Hub zeigt, wie lange es bis zum Termin ist."
     },
     {
      "n": 2,

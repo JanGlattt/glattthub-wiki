@@ -10,8 +10,8 @@
  "subtitle": "Klickanleitung für den Abschluss des Beratungsgesprächs — Behandlung sofort anschließen, Kasse, Folgetermin, Terminnotiz",
  "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
- "stand": "02.11.2026",
- "version": "1.9",
+ "stand": "09.11.2026",
+ "version": "1.10",
  "notes": [
   "**Jeder** Beratungstermin wird über **„Termin beenden“** abgeschlossen — auch ohne Verkauf. Erst dann gilt er in Phorest als erledigt.",
   "Die **Terminnotiz ist Pflicht** und wandert automatisch nach Phorest. Bei **Direkt behandeln** reicht **eine** Notiz — die kommt am Ende der Behandlung; die Beratung bekommt automatisch den Vermerk „Direkt im Anschluss behandelt“.",
@@ -262,7 +262,7 @@
     {
      "n": 4,
      "title": "Terminnotiz, Ergebnis der Beratung & „Termin jetzt beenden“",
-     "text": "Pflichtfeld ausfüllen und bestätigen. Ohne Text: „Bitte gib eine Terminnotiz ein.“ **Bei einem Beratungstermin** (auch Beratung + Behandlung) ohne Vertrag steht darüber **„Ergebnis der Beratung“** — eine der vier Optionen ist Pflicht: Neuer Termin vereinbart, Überlegt noch, Nicht behandelbar, Sonstiges. Wurde gerade ein Folgetermin gebucht, ist „Neuer Termin“ schon gewählt. Wurde ein **Vertrag** unterschrieben, erfasst der Hub „Vertrag abgeschlossen“ automatisch. Die Notiz ist zugleich die Notiz zum Ergebnis — Beratungen auf der Institutsseite nachzutragen ist nicht mehr nötig. **Achseln im Beratungsgespräch mitbehandelt?** Dafür gibt es kein Kästchen — die Werte gehören in den **Einstellungszettel** (Zone Achseln). Der goldene Punkt im Dialog erinnert daran, solange die Zone fehlt; grün heißt eingetragen."
+     "text": "Pflichtfeld ausfüllen und bestätigen. Ohne Text: „Bitte gib eine Terminnotiz ein.“ **Bei einem Beratungstermin** (auch Beratung + Behandlung) ohne Vertrag steht darüber **„Ergebnis der Beratung“** — eine der vier Optionen ist Pflicht: Neuer Termin vereinbart, Überlegt noch, Nicht behandelbar, Sonstiges. Wurde gerade ein Folgetermin gebucht, ist „Neuer Termin“ schon gewählt. Wurde ein **Vertrag** unterschrieben, erfasst der Hub „Vertrag abgeschlossen“ automatisch. Die Notiz ist zugleich die Notiz zum Ergebnis — Beratungen auf der Institutsseite nachzutragen ist nicht mehr nötig. **Achseln im Beratungsgespräch mitbehandelt?** Dafür gibt es kein Kästchen — die Werte gehören in den **Einstellungszettel** (Zone Achseln). Der goldene Punkt im Dialog erinnert daran, solange die Zone fehlt; grün heißt eingetragen. Ist für eine **gebuchte Zone kein Einstellungszettel** gespeichert, fragt der Hub vor dem Beenden nach — „Zurück zum Zettel“ oder bewusst „Trotzdem beenden“."
     },
     {
      "n": 5,

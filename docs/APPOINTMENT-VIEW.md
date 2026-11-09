@@ -231,6 +231,19 @@ Aufräumen), Getter `plannedStartLabel`, `plannedEndLabel`, `currentTimeLabel`,
 `remainingMinutes`/`remainingIsOver`/`remainingTimeLabel`. Styles `.apt-detail-session-*`
 in `theme_glattt.css`. Test: `AppointmentDetailLayoutTest`.
 
+### Einstellungszettel-Prüfung beim Beenden (seit 09.11.2026)
+
+Gesäß gebucht, nur Füße erfasst — der Termin wurde trotzdem beendet, die Lücke fiel erst in der
+Akte auf (H004300, 03.11.2026). `appendAppointmentNote` prüft deshalb vor dem Schreiben:
+`TreatmentBackfillService::missingZoneNamesForRows($rows)` leitet die gebuchten Zonen aus den
+Leistungsnamen der Termin-Gruppe ab (gleiche Erkennung wie der Nachtragen-Assistent) und vergleicht
+mit den Zetteln an den Termin-IDs. Fehlt eine Zone, antwortet der Server **422 mit
+`settings_missing`** (Zonennamen, Paare einmal) und der Frage „Trotzdem beenden?“; Web
+(`GlatttConfirm`) und App (Alert) senden dann `settings_confirmed: true`. Nur Oberflächen, die die
+Rückfrage kennen, schicken `settings_check_supported` — ältere App-Builds beenden weiter wie bisher
+(gleiches Muster wie `consultation_outcome_supported`). Direkt-Übergaben (`direct_treatment`) und
+Leistungen ohne Zone (Ganzkörper, Beratung) lösen keine Rückfrage aus.
+
 ### Beratungsergebnis beim Beenden (seit 17.10.2026)
 
 Ab dem Stichtag füllt niemand mehr die Institutsseite „Beratungsgespräche erfassen“ aus. Der
@@ -269,7 +282,10 @@ Wischen in der Terminliste — nur mit dem Buchungsrecht `manage_appointment_boo
 („Im Gange", eingecheckt) lassen sich weder absagen noch stornieren noch umbuchen** (Jan
 02.11.2026; der Server sperrt `CHECKED_IN` zusätzlich, „Verlegen" folgt derselben Regel).
 
-Das Ganze heißt in der Oberfläche **„No Show"** (Jan 02.11.2026: nicht „Absagen"). Zwei Wege:
+Das Ganze heißt in der Oberfläche **„No Show"** (Jan 02.11.2026: nicht „Absagen"); der Knopf in der
+Terminansicht und in der App heißt seit 09.11.2026 **„No Show / Stornieren"**, weil die Teams den
+Storno hinter „No Show" nicht gefunden haben (Hub-Feedback: „ich kann Termine nicht stornieren").
+Zwei Wege:
 
 - **No Show (kurzfristig abgesagt oder nicht gekommen):** Der Termin wandert in die Phorest-Spalte „Absage
   weniger als 24 st / Nicht gekommen" des Instituts (`BookingService::moveToCancellationColumn()`,
