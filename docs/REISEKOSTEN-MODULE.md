@@ -175,7 +175,7 @@ erstattet.
 
 **An- und Abreise:**
 
-- **Auto:** Abfahrtsort per Adresssuche (Nominatim-Geocoding füllt Straße, PLZ, Stadt),
+- **Auto:** Abfahrtsort per Adresssuche (füllt Straße, PLZ, Stadt; verzeiht Tippfehler),
   Ziel = Institut (Phorest-Filiale) oder anderes Ziel (Adresssuche), Entfernung automatisch
   über OSRM-Routing oder manuell, „Hin- und Rückfahrt" (Standard an) verdoppelt die Strecke.
   Berechnung: `X km × 2 × 0,30 €/km = Y,YY €` (`km_rate` 0,30).
@@ -285,6 +285,10 @@ hochladen (jetzt sichert der Hub den Entwurf dafür selbst).
 User-Agent, `throttle:60,1`). Vorher fragten Browser und App Nominatim/OSRM direkt; jetzt nutzen
 Web und App dieselben Endpunkte, und die Koordinaten (`departure_lat/lon`, `destination_lat/lon`)
 werden mitgespeichert. Institute liefern ihre Koordinaten aus Phorest.
+
+Seit 03.11.2026 delegiert `geocode()` an die gemeinsame Adress-Suche der Formulare
+(`AddressSearchService`: Photon + Tippfehler-Korrektur, Nominatim nur als Rückfall) und liefert
+weiterhin nur Treffer mit Hausnummer und Koordinaten — siehe FORM-EDITOR.md, „Adress-Suche“.
 
 **Abfahrt aus der Personal-Akte (seit 29.09.2026, TestFlight-Befund 179):**
 `GET /travel-expenses/address/{askdanteUserId}` liefert Straße, PLZ und Ort aus `HrEmployeeProfile`
@@ -668,7 +672,7 @@ Arten mit Namen. Befehl und Knopf teilen `App\Services\AbsenceTypeSyncService`
 |--------|-----------|----------|
 | **askDANTE API** | Mitarbeiterliste, Abwesenheiten | `my.askdante.com` |
 | **Phorest API** | Institut-/Filialliste für Zielauswahl | Branches-Endpoint |
-| **Nominatim** | Geocoding für Abfahrtsort und freie Zieladresse — seit 26.09.2026 nur noch über den Hub | `nominatim.openstreetmap.org` |
+| **Photon / Nominatim** | Geocoding für Abfahrtsort und freie Zieladresse — über den Hub, seit 03.11.2026 Photon mit Nominatim als Rückfall | `photon.komoot.io`, `nominatim.openstreetmap.org` |
 | **OSRM** | Routenberechnung (Entfernung in km) — seit 26.09.2026 nur noch über den Hub | `router.project-osrm.org` |
 
 ---
@@ -740,8 +744,8 @@ ALTER TABLE travel_expenses
 
 | Datum | Änderung |
 |---|---|
+| 04.11.2026 | Admin-Knopf „Aus askDANTE abrufen“ für Abwesenheitsarten (Zeitraum wählbar), Abgleich als `AbsenceTypeSyncService` für Befehl und Knopf |
 | 27.09.2026 | Mehrtägige Dienstreise (TestFlight-Befund 68): Einstiegsfrage „ist das eine Dienstreise zu ein und demselben Ort?“, `trip_days` mit Nacht je Tag (übernachtet/heimgefahren), Verkehrsmittel, Strecke, Ticket und Start je Tag; Rechnung je Tag; App mit Assistent + „Tage & Nächte“, Web mit Frage + Abschnitt, Web-Freigabe zeigt den Ablauf |
 | 26.09.2026 | Überarbeitung Stufe 2 und 3: Seiten in Partials + eigene JS-Dateien, Theme-Klassen statt ~360 Inline-Styles, Dropdown-/Flatpickr-Komponenten (auch Uhrzeiten), Stat-Strip, Skeletons, Adresssuche/Strecke über den Hub mit gespeicherten Koordinaten, Beleg-Abruf, Status „ausgezahlt“ mit CSV für die Lohnbuchhaltung, nächtlicher Abgleich der Abwesenheitsarten; Übernachtungs-Schalter war unsichtbar |
 | 26.09.2026 | Überarbeitung Stufe 1 (Jan): Freigabe-Route repariert, Hotelbeleg, Pauschale nur bei erlaubter Abwesenheitsart (serverseitig), eintägige Reise korrekt (Carbon-Float), Statusübergänge (eingereicht gesperrt/zurückziehen, abgelehnt erneut einreichen, Entwurf löschen), Eigentum am Konto mit Policy, `me`-Endpunkt, Meldungen an die Mitarbeiterin, eigene Ablehnungs-/Anmerkungsfelder, Tests. Befunde und native Entwürfe: [Artefakt](https://claude.ai/artifact/5EgnPnbSoKDnsfbxUZdEqW) |
 | 03/2026 | Modul erstellt (mehrtägige Arbeitszeit, Hotel/Verpflegung, Hin-/Rückfahrt), Freigabe |
-| 04.11.2026 | Admin-Knopf „Aus askDANTE abrufen“ für Abwesenheitsarten (Zeitraum wählbar), Abgleich als `AbsenceTypeSyncService` für Befehl und Knopf |

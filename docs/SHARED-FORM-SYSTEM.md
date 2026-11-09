@@ -138,7 +138,7 @@ Alpine.js-Komponente `sharedFormFill(form, shareToken, contextData)`. Abgespeckt
 - ✅ Validierung (Required, E-Mail, IBAN MOD-97, Datum-Constraints)
 - ✅ Bedingte Sichtbarkeit (show_condition)
 - ✅ Platzhalter-Ersetzung ({{client.firstName}})
-- ✅ Adresssuche (Nominatim)
+- ✅ Adresssuche (über den Hub: `/api/shared/form/{token}/address-search`, siehe FORM-EDITOR.md)
 - ✅ Flatpickr Datums-Picker
 - ✅ BIC-Lookup aus IBAN
 - ❌ Kein Phorest Change Tracking

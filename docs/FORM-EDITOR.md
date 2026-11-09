@@ -120,7 +120,7 @@ einzelnen Feld.
 | `number` | Zahlenfeld | Eingabe |
 | `email` | E-Mail-Feld mit Validierung | Eingabe |
 | `date` | Datumsauswahl | Eingabe |
-| `address_lookup` | Adress-Suche mit Validierung (Nominatim/OSM) | Eingabe |
+| `address_lookup` | Adress-Suche beim Tippen mit Tippfehler-Korrektur (über den Hub, Photon/OSM) | Eingabe |
 | `radio` | Single-Choice (Radio Buttons) | Auswahl |
 | `checkbox` | Multi-Choice (Checkboxen) | Auswahl |
 | `dropdown` | Dropdown-Auswahl | Auswahl |
@@ -983,18 +983,91 @@ Das HTML-Template (`resources/views/emails/templates/form-submission-modern.html
 
 ## Adress-Suche (Address Lookup)
 
-Das `address_lookup`-Feld ermöglicht eine Adressvalidierung direkt im Formular, ähnlich wie in Online-Shops. Es nutzt die kostenlose **OpenStreetMap Nominatim API** für Autocomplete und Validierung.
+**Für Endanwender:** Das Feld schlägt beim Tippen Adressen vor — schon nach drei Buchstaben,
+auch bei Tippfehlern („Niderwall 2“ → Niederwall 2, Bielefeld) und auch nur Straßen, wenn die
+Hausnummer noch fehlt. Eine Auswahl füllt Straße, PLZ und Ort in den Formularfeldern darunter.
+Findet die Suche nichts, sagt sie das und bittet, die Adresse direkt einzutragen.
 
-### Funktionsweise
+### Warum über den Hub (seit 03.11.2026)
 
-1. **Autocomplete**: Benutzer tippt eine Adresse → nach 400ms wird Nominatim abgefragt → Vorschläge erscheinen in einem Dropdown
-2. **Auswahl**: Bei Klick auf einen Vorschlag werden die konfigurierten Zielfelder (Straße, PLZ, Stadt) automatisch befüllt
-3. **Rückwärts-Validierung**: Wenn Zielfelder bereits vorausgefüllt sind (z.B. aus Phorest-Kontext), werden die Werte kombiniert und gegen Nominatim validiert
-4. **Status-Anzeige**: Grüner Haken = Adresse verifiziert, Gelbes Warndreieck = nicht verifizierbar
+Bis 11/2026 fragte der Browser **Nominatim** direkt. Das Feld wurde kaum genutzt, aus vier Gründen:
+Nominatim findet nur ganze Wörter (`Niederwall 2 Biel` → 0 Treffer; die Nutzungsregeln verbieten
+Autocomplete sogar), Treffer ohne Hausnummer wurden ausgefiltert (`Niederwall` → leere Liste),
+es gab keine Rückmeldung bei „nichts gefunden“, und Tippfehler fanden nie etwas. Jetzt sucht der
+Hub, und Formulare und Reisekosten teilen sich eine Stelle (`AddressSearchService`).
+
+### Ablauf einer Suche
+
+1. **Photon** (OpenStreetMap von komoot, für Vorschläge beim Tippen gebaut) mit dem Suchtext,
+   nur Typ `house`/`street`, Länderfilter aus `country_codes` (bei `de` zusätzlich Bounding-Box).
+   Photon verzeiht Tippfehler im **Ort** („Bielfeld“) und ein fehlendes Wortende, nicht aber einen
+   Fehler **mitten im Straßennamen** („Niderwall“, „Hauptsrasse“, „Jöllenbeker“).
+2. **Tippfehler-Korrektur:** Passt kein Treffer zur eingetippten Straße (bzw. keine Hausnummer,
+   wenn eine getippt wurde), sucht der Hub im eigenen **Straßenverzeichnis** `address_streets`
+   die ähnlichsten Namen (Levenshtein auf normalisierter Schreibweise: Umlaute → ae/oe/ue, ß → ss,
+   „Str.“ → strasse; erlaubt 1 Fehler ab 5, 2 ab 9, 3 ab 15 Zeichen; Ort aus der Eingabe muss
+   ebenfalls passen). Die besten drei Kandidaten gehen mit Hausnummer und Ort erneut an Photon;
+   findet Photon die Hausnummer nicht, bleibt die Straße als Vorschlag. Korrigierte Vorschläge
+   tragen `corrected: true` (Abzeichen „Schreibweise korrigiert“).
+3. **Rückfall Nominatim**, wenn Photon nach zwei Versuchen (429/50x) nicht antwortet — dann nur
+   ganze Adressen, die Korrektur läuft aber auch dort.
+4. **Sortierung:** nächste Schreibweise zur Eingabe → passende Hausnummer → PLZ aus den Regionen
+   um die Institute → Hausnummern vor Straßen → Photons Reihenfolge. Höchstens 6 Vorschläge,
+   Ergebnis 7 Tage im Cache (`address-search:*`), Ausfälle werden nicht gecacht.
+
+### Straßenverzeichnis (`address_streets`)
+
+- Quelle: **OpenPLZ-API** (`openplzapi.org/de`): je Kreis die Orte mit PLZ
+  (`Districts/{AGS}/Localities`), dann je PLZ die Straßen (`Streets?postalCode=`, 50 je Seite).
+  Abgekürzte Namen („Hauptstr.“) werden als „Hauptstraße“ gespeichert, sonst findet Photon die
+  Hausnummer nicht. Straßen anderer Orte mit derselben PLZ fallen weg.
+- Regionen: Kreise rund um die Institute, als Kreisschlüssel in `config/address_search.php`
+  (24 Kreise, ~80.000 Straßen). Neues Institut → Kreise dort ergänzen.
+- **Befüllt sich selbst:** Fehlt ein Kreis oder ist er älter als 90 Tage, stößt die erste Suche
+  mit Korrekturbedarf `ImportAddressStreetRegion` je Kreis an (höchstens einmal am Tag,
+  Verbindung/Queue `media`, weil ein Kreis bis zu zwei Minuten braucht und die Standard-Verbindung
+  nach 90 s doppelt starten würde). Kein Cloud-Scheduler-Job nötig.
+- Von Hand: `php artisan address:import-streets [Kreisschlüssel] [--queue]`.
+- Kein Unique-Index: MySQL-Sortierung hält „Waldschlösschen“ und „Waldschlößchen“ für gleich;
+  entdoppelt wird beim Import über PLZ + Ort + normalisierten Namen.
+- **Overpass ist als Quelle ungeeignet:** Am 03.11.2026 liefen alle drei öffentlichen Server
+  schon bei einem einzelnen Kreis in 502/504 bzw. Zeitablauf.
+
+### Endpunkte
+
+| Route | Zugriff | Zweck |
+|---|---|---|
+| `GET /api/forms/address-search?q=&countries=` | `auth` + `view_forms` | Hub-Formulare (Ausfüllen, Terminansicht) |
+| `GET /api/shared/form/{token}/address-search?q=&countries=` | gültiger Share-Token | geteilte Formular-Links |
+| `GET /travel-expenses/geocode?q=` | wie Reisekosten | nutzt denselben Dienst, nur Hausnummern mit Koordinaten |
+
+Eigene Drossel `address-search` (120/Minute je Person bzw. IP) — bewusst **nicht** `throttle:api`
+der Formular-Gruppe, sonst würde das Tippen die übrigen Formular-Aufrufe ausbremsen (geteilter
+Zähler, siehe Wissen `laravel-throttle-zaehler-geteilt`).
+
+Antwort je Vorschlag: `type` (`house`/`street`), `street` (mit Hausnummer), `street_name`,
+`house_number`, `postal_code`, `city`, `state`, `country`, `lat`, `lon`, `display_name_short`,
+`display_name_detail`, `corrected`.
+
+### Oberfläche (`public/js/components/address-lookup.js`)
+
+- Alpine-Komponente `addressLookup(field)`; der Rahmen (`form-fill.js`, `shared-form-fill.js`)
+  liefert `values`, `errors`, `shouldShowField()` und `addressSearchUrl()`. Das Skript wird auf
+  allen Seiten mit Formularen **vor** dem Formular-Skript geladen (`hub/forms/fill`,
+  `forms/shared-fill`, `hub/appointment-unified`).
+- Ab 3 Zeichen, 300 ms Pause, Reihenfolge-Schutz (`_seq`): eine langsame alte Antwort
+  überschreibt nie die neue.
+- Pfeiltasten + Enter wählen (Enter schickt dann nicht das Formular ab), Esc schließt.
+- **Straße ohne Hausnummer gewählt:** Straße, PLZ und Ort sind sofort in den Zielfeldern, der
+  Cursor bleibt für die Hausnummer im Feld; die nächste Suche hängt PLZ und Ort an.
+- Keine Treffer / Dienst nicht erreichbar → Hinweis in der Liste statt leerer Fläche.
+- Liste per `x-teleport="body"` und `position: fixed`, Lage aus dem Eingabefeld (nach unten oder
+  oben, Höhe begrenzt) — wird in Modalen und Karten nie abgeschnitten.
+- Vorbefüllte Zielfelder (Phorest-Kunde): Text wird angezeigt und still geprüft; passt ein Treffer
+  mit gleicher Straße und PLZ → „Adresse übernommen“, sonst leiser Hinweis „nicht im Verzeichnis
+  gefunden — bitte kurz prüfen“ (vorher gelbe Warnung bei jeder Abweichung).
 
 ### Editor-Konfiguration
-
-Im Editor können folgende Zielfelder konfiguriert werden:
 
 | Setting | Beschreibung |
 |---------|-------------|
@@ -1003,36 +1076,32 @@ Im Editor können folgende Zielfelder konfiguriert werden:
 | `target_city_field` | Feldname des Textfelds für die Stadt |
 | `country_codes` | Kommagetrennte ISO-Ländercodes (Standard: `de`) |
 
-### Nominatim API
-
-- **Endpoint**: `https://nominatim.openstreetmap.org/search`
-- **Rate-Limit**: Max. 1 Request/Sekunde (via 400ms Debounce)
-- **Kosten**: Kostenlos (OSM-basiert)
-- **User-Agent**: `glatttHub/1.0` (Pflicht laut Nominatim Usage Policy)
-- **Sprache**: Deutsch (`accept-language: de`)
-
-### Vorausfüllung & Validierung
-
-Wenn das Formular mit Phorest-Kontext geladen wird und Adressfelder vorausgefüllt sind (`client.address.street`, `client.address.postalCode`, `client.address.city`), wird automatisch:
-
-1. Die vorausgefüllten Werte zu einem Suchtext kombiniert
-2. Nominatim mit diesem Text abgefragt
-3. Das Ergebnis als Validierungsstatus angezeigt (✓ verifiziert / ⚠ nicht verifizierbar)
-
 ### Gespeicherter Wert
 
-Das `address_lookup`-Feld speichert den angezeigten Adresstext (z.B. "Musterstraße 42, 28195 Bremen"). Die eigentlichen Adresskomponenten werden in den Zielfeldern gespeichert.
+Das `address_lookup`-Feld speichert den angezeigten Adresstext (z. B. „Musterstraße 42, 28195
+Bremen“). Die Adressteile stehen in den Zielfeldern.
+
+### Fallstricke
+
+- Photon und OpenPLZ sind **öffentliche Dienste ohne Zusage**. Photon drosselt in Spitzen mit
+  503; bei Wachstum Photon selbst betreiben (Deutschland-Auszug) und `ADDRESS_PHOTON_URL` setzen.
+- Die Korrektur deckt nur Straßen in den konfigurierten Kreisen ab; außerhalb hilft nur Photons
+  eigene Toleranz.
+- In Tests Photon/OpenPLZ immer mit `Http::fake` abfangen (`tests/Feature/AddressSearchTest.php`).
 
 ### Beteiligte Dateien
 
 | Datei | Verantwortung |
 |-------|--------------|
-| `app/Models/FormField.php` | `TYPE_ADDRESS_LOOKUP` Konstante & Registrierung |
-| `resources/views/partials/form-fields/_field-renderer.blade.php` | Feld-Template mit Autocomplete-UI |
-| `public/js/components/form-fill.js` | `searchAddress()`, `selectAddressSuggestion()`, `validateExistingAddress()` |
-| `public/js/components/form-editor.js` | Default-Settings, Icon |
-| `resources/views/hub/forms/editor.blade.php` | Preview & Zielfeld-Konfiguration |
-| `public/css/components/form-fill.css` | Dropdown & Status-Styling |
+| `app/Services/Address/AddressSearchService.php` | Photon, Korrektur, Rückfall, Sortierung |
+| `app/Services/Address/StreetIndexImporter.php` | Straßenverzeichnis aus OpenPLZ |
+| `app/Jobs/ImportAddressStreetRegion.php`, `app/Console/Commands/ImportAddressStreets.php` | Import im Hintergrund / von Hand |
+| `app/Http/Controllers/AddressSearchController.php` | Endpunkte Hub + geteilter Link |
+| `config/address_search.php` | Dienste, Cache, Kreise |
+| `public/js/components/address-lookup.js` | Feld-Logik (Alpine) |
+| `resources/views/partials/form-fields/_field-renderer.blade.php` | Feld-Template |
+| `app/Services/TravelExpenses/TravelRouteService.php` | Reisekosten nutzen `geocode()` → derselbe Dienst |
+| `public/css/theme_glattt.css` (Abschnitt „Address Lookup“) | Liste, Hinweise |
 
 ## Hinweise
 
