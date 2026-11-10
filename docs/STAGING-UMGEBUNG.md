@@ -96,7 +96,8 @@ php artisan migrate --force --isolated
 
 | Komponente | Produktion | Staging |
 |------------|-----------|---------|
-| **Cloud Run Service** | `glattthub-web` | `glattthub-web-staging` |
+| **Cloud Run Service** | `glattthub-web` (2 vCPU / 2 GiB, min 1) | `glattthub-web-staging` (min 0) |
+| **Queue-Worker + Reverb** | `glattthub-worker` (1 vCPU / 2 GiB, min 1) | `glattthub-worker-staging` (min 0, Weck-Job `wake-worker-staging` Mo–Sa 06–20 Uhr) |
 | **Cloud SQL Instanz** | `glattthub:europe-west3:glattthub` | Gleiche Instanz |
 | **Datenbank** | `glattthub` | `glattthub_staging` |
 | **DB-User** | `glattthub_user` | `glattthub_staging` |
@@ -106,7 +107,10 @@ php artisan migrate --force --isolated
 | **Build Trigger** | Push auf `main` (global) | Push auf `develop` (global) |
 | **Artifact Registry** | `glattthub-docker` | `glattthub-docker` (gleich) |
 
-Custom Domains, Load Balancer, SSL und IAP: siehe [Cloud-Infrastruktur](CLOUD-INFRASTRUKTUR.md)
+Custom Domains, Load Balancer, SSL und IAP: siehe [Cloud-Infrastruktur](CLOUD-INFRASTRUKTUR.md).
+Staging schläft nachts und sonntags (Worker und Reverb skalieren auf null): Die erste Echtzeit-Verbindung
+am Morgen dauert ein paar Sekunden, nächtlich eingereihte Jobs laufen ab 06:00 Uhr. Hintergrund und
+Zahlen: [Cloud-Infrastruktur, Abschnitt „Kosten und Dimensionierung“](CLOUD-INFRASTRUKTUR.md#kosten-und-dimensionierung).
 
 ### Environment-Variablen (Unterschiede zu Prod)
 

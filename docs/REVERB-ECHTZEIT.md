@@ -82,17 +82,25 @@ bekommt man ihn nicht.
 
 ### Der Dienst
 
-- Cloud Run `glattthub-reverb` (Prod) / `glattthub-reverb-staging`, **dasselbe Image** wie der Hub,
-  Entrypoint `/entrypoint-reverb.sh` (`php artisan reverb:start --host=0.0.0.0 --port=$PORT`, ohne
-  Migrationen).
-- Ein Knoten: `min-instances=1`, `max-instances=1` — kein Redis-Scaling nötig. `--concurrency 1000`,
+- **Seit 10.11.2026 läuft Reverb im Worker-Dienst mit** (`glattthub-worker` bzw.
+  `glattthub-worker-staging`): Programm `reverb` in `docker/supervisord-worker.conf`
+  (`php artisan reverb:start --host=0.0.0.0 --port=$PORT`) lauscht auf dem Cloud-Run-Port und ersetzt
+  den früheren Mini-Health-Server; `GET /up` ist der Startup-Probe. Grund: Beide Dienste waren
+  dauerhaft wach und CPU-leicht (Reverb 1 %, Worker 12 %), der eigene Reverb-Dienst kostete ~55 €/Monat
+  je Umgebung. Die Dienste `glattthub-reverb` / `glattthub-reverb-staging` wurden gelöscht, die
+  Serverless-NEGs der Backend-Services zeigen auf den Worker. Siehe [Queue-Worker](QUEUE-WORKER.md).
+- Ein Knoten: `max-instances=1` — kein Redis-Scaling nötig. `--concurrency 1000`,
   `--timeout 3600` (längste WebSocket-Dauer; pusher-js verbindet danach selbst neu),
   `--no-cpu-throttling` (Ping-Timer laufen auch zwischen Anfragen), Cloud SQL angebunden (Reverb
-  prüft über den Cache-Store `database` auf `reverb:restart`).
-- `cloudbuild(-staging).yaml` deployt ihn **nur, wenn er existiert** (wie der Worker) und lässt den
-  Build bei einem Fehler nicht scheitern. Solange niemand ihn anlegt, ändert sich am Deploy nichts.
+  prüft über den Cache-Store `database` auf `reverb:restart`). Prod `min-instances=1`; Staging
+  `min-instances=0` — offene Verbindungen und der Weck-Job `wake-worker-staging` halten die Instanz
+  tagsüber wach, nachts schläft sie und der erste Verbindungsaufbau dauert ein paar Sekunden.
+- `cloudbuild(-staging).yaml` kennt keinen eigenen Reverb-Schritt mehr; der Worker-Schritt trägt
+  `--allow-unauthenticated --ingress internal-and-cloud-load-balancing --timeout 3600 --concurrency 1000`.
+  `/entrypoint-reverb.sh` bleibt im Image als Rückweg für einen getrennten Dienst (siehe Rollback).
 - Beim Deploy laufen kurz alte und neue Revision parallel; bis die alten Verbindungen neu
-  verbinden, greift die 10-s-Abfrage.
+  verbinden, greift die 10-s-Abfrage. Ein Worker-Deploy trennt damit auch die WebSockets — genau wie
+  vorher ein Reverb-Deploy, nur dass es jetzt derselbe Moment ist.
 - Am Load Balancer: eigene Serverless-NEG + Backend-Service **ohne IAP**. Für Serverless-NEGs
   lässt sich am Backend-Service kein Zeitlimit setzen — für WebSockets gilt das
   Cloud-Run-Zeitlimit (3600 s).
@@ -223,10 +231,10 @@ Ab jetzt aktualisiert jeder Push auch den Reverb-Dienst.
 
 | | Staging | Prod |
 |---|---|---|
-| Cloud Run | `glattthub-reverb-staging` | `glattthub-reverb` |
+| Cloud Run (seit 10.11.2026) | `glattthub-worker-staging` (Programm `reverb`) | `glattthub-worker` (Programm `reverb`) |
 | Secrets | `reverb-app-id-staging`, `reverb-app-key-staging`, `reverb-app-secret-staging` | `reverb-app-id`, `reverb-app-key`, `reverb-app-secret` |
 | Host | `live.staging.hub.glattt.com` | `live.hub.glattt.com` |
-| Serverless-NEG | `neg-glattthub-staging-reverb` | `neg-glattthub-prod-reverb` |
+| Serverless-NEG | `neg-glattthub-staging-worker` → Worker-Dienst | `neg-glattthub-prod-worker` → Worker-Dienst |
 | Backend-Service | `backend-glattthub-staging-reverb` (IAP aus) | `backend-glattthub-prod-reverb` (IAP aus) |
 | Path-Matcher in `urlmap-glattthub` | `live-staging-matcher` | `live-prod-matcher` |
 | Zertifikat (an `proxy-glattthub`) | `cert-glattthub-staging-live` | `cert-glattthub-prod-live` |
@@ -234,9 +242,15 @@ Ab jetzt aktualisiert jeder Push auch den Reverb-Dienst.
 ### Abschalten / Rollback
 
 `BROADCAST_CONNECTION=log` an Web und Worker setzen (oder die `REVERB_*`-Secrets entfernen) —
-`LiveConfig` liefert dann `null`, alle Clients fragen wieder im Sekundentakt. Der Reverb-Dienst
-kann weiterlaufen oder gelöscht werden (`gcloud run services delete $SVC`); der Build überspringt
-ihn danach wieder.
+`LiveConfig` liefert dann `null`, alle Clients fragen wieder im Sekundentakt.
+
+Soll Reverb wieder als **getrennter Dienst** laufen (etwa weil der Worker ihn stört): Dienst mit
+`scripts/reverb-setup.sh <env> setup` aus `/entrypoint-reverb.sh` anlegen, am Backend-Service
+`backend-glattthub-<env>-reverb` die NEG des Worker-Dienstes durch eine NEG des neuen Dienstes
+ersetzen (`gcloud compute backend-services add-backend … --network-endpoint-group=…`, dann
+`remove-backend`), das Programm `reverb` in `docker/supervisord-worker.conf` wieder durch einen
+Port-Listener ersetzen und den Reverb-Deploy-Schritt in `cloudbuild(-staging).yaml` aus der
+Git-Historie vor dem 10.11.2026 zurückholen.
 
 ### Lokal
 
@@ -266,6 +280,10 @@ In `.env`: `REVERB_APP_ID/KEY/SECRET` beliebig, `REVERB_HOST=localhost`, `REVERB
 Verwandt: [Cloud-Infrastruktur](CLOUD-INFRASTRUKTUR.md) · [Queue-Worker](QUEUE-WORKER.md)
 
 ## Changelog
+
+- 10.11.2026 — Kostensenkung: Reverb läuft im Worker-Dienst mit (Programm `reverb` ersetzt den
+  Health-Server), eigene Reverb-Dienste gelöscht, Backend-Services zeigen auf den Worker; Staging
+  skaliert auf null (Weck-Job `wake-worker-staging`). Ersparnis ~110 €/Monat über beide Umgebungen.
 
 - 03.10.2026 — Bildschirme nutzen den Dienst mit: `screen.changed`, Kanal `private-screens.monitor`,
   Verbindungsstatus aus dem Reverb-Prozess. Einrichtungsskript wie unten (Schritte unverändert).

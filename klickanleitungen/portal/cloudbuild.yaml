@@ -16,10 +16,30 @@ substitutions:
 
 options:
   logging: CLOUD_LOGGING_ONLY
-  machineType: E2_HIGHCPU_8
+  # Standardmaschine des Default-Pools (e2-standard-2, 2.500 Freiminuten im Monat) statt
+  # E2_HIGHCPU_8 (0,016 $/Min): Im Oktober 2026 kosteten ~1.000 Builds à 10 Minuten 159 €.
+  # Der Build dauert damit etwas länger, bleibt aber unter dem Build-Timeout.
 timeout: 2400s
 
 steps:
+  # Überholte Builds desselben Triggers abbrechen (Kostensenkung 10.11.2026): Bei schnell
+  # aufeinander folgenden Pushes baute bisher jeder Stand zu Ende — im Oktober 2026 liefen
+  # 273 von 592 Staging-Builds noch, als der nächste startete. Der neueste Build gewinnt.
+  # Fehler in diesem Schritt brechen den Build nie ab.
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        MY_START=$(gcloud builds describe ${BUILD_ID} --region ${LOCATION} --project ${PROJECT_ID} --format='value(createTime)' 2>/dev/null) || exit 0
+        for ID in $(gcloud builds list --ongoing --region ${LOCATION} --project ${PROJECT_ID} \
+            --filter="substitutions.TRIGGER_NAME=\"${TRIGGER_NAME}\" AND id!=\"${BUILD_ID}\" AND createTime<\"$${MY_START}\"" \
+            --format='value(id)' 2>/dev/null); do
+          echo "Breche überholten Build $${ID} ab"
+          gcloud builds cancel $${ID} --region ${LOCATION} --project ${PROJECT_ID} >/dev/null 2>&1 || true
+        done
+        exit 0
+
   # 1) Screenshots aus dem Bucket (Struktur <serie>/shots/<name>.png)
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
     id: shots

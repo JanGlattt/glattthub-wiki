@@ -13,10 +13,13 @@ Push-Benachrichtigungen, Superchat-Webhooks und andere Hintergrund-Aufgaben werd
 - **Vorher:** Cloud Scheduler rief minütlich `POST /api/cron/process-queue` auf (`CronController::processQueue`) — max. 20 Jobs/Minute, `Artisan::call('queue:work --once')` in Schleife (Framework-Boot pro Job), bis zu 60s Latenz.
 - **Jetzt:** Eigener Cloud-Run-Service `glattthub-worker` (Staging: `glattthub-worker-staging`) aus **demselben Container-Image** wie der Web-Service, aber mit Entrypoint `/entrypoint-worker.sh`:
   - kein nginx/php-fpm, keine Migrationen (fährt der Web-Service beim Deploy; `--isolated`-Lock verhindert Doppel-Migration ohnehin)
-  - supervisord (`docker/supervisord-worker.conf`) startet zwei Prozesse:
-    - `health`: `php -S 0.0.0.0:$PORT docker/worker-health.php` — minimaler HTTP-Listener für den Cloud-Run-Startup-Probe
+  - supervisord (`docker/supervisord-worker.conf`) startet diese Prozesse:
+    - `reverb`: `php artisan reverb:start --host=0.0.0.0 --port=$PORT` — **Echtzeit (Laravel Reverb) läuft seit 10.11.2026 im Worker mit** und ist zugleich der Port-Listener für den Cloud-Run-Startup-Probe (`GET /up` antwortet 200). Vorher lief ein eigener Reverb-Dienst (~55 €/Monat je Umgebung) neben einem Mini-Health-Server; beides ist entfallen. Details: [Echtzeit mit Laravel Reverb](REVERB-ECHTZEIT.md).
+    - `queue-push`: nur die `push`-Warteschlange, `--sleep=0.5` (Chat-Mitteilungen ohne Wartezeit)
     - `queue-worker`: `php artisan queue:work --queue=push,default --tries=3 --max-time=3600 --sleep=3` — `--max-time` beendet den Prozess stündlich gegen Memory-Leaks, Supervisor startet neu
-- Cloud-Run-Konfiguration: `--no-cpu-throttling` (CPU immer zugeteilt, sonst hungert der Worker zwischen Requests), `min-instances=1`, `max-instances=1`, `--no-allow-unauthenticated`, 1 vCPU / 1 GiB. Kosten grob 25–50 €/Monat.
+    - `queue-media` (ffmpeg, glatttipedia-Videos), `queue-stats` (Statistik-Cache, bis 25 Minuten je Job), `portal-outbox` (Aufträge des Kundenportals)
+- Cloud-Run-Konfiguration: `--no-cpu-throttling` (CPU immer zugeteilt, sonst hungert der Worker zwischen Requests), `max-instances=1`, **1 vCPU / 2 GiB** (seit 10.11.2026; die CPU lag 14 Tage lang bei höchstens 14 % von 2 vCPU, der Speicher bei ~1 GiB — ffmpeg und Chromium brauchen den Puffer), `--allow-unauthenticated` + `--ingress internal-and-cloud-load-balancing` (der Load Balancer erreicht Reverb über den Host `live.hub.glattt.com`, sonst kommt nichts an), `--timeout 3600` (längste WebSocket-Dauer), `--concurrency 1000`.
+- **Prod:** `min-instances=1`, dauerhaft wach (~64 €/Monat). **Staging:** `min-instances=0` — der Scheduler-Job `wake-worker-staging` ruft `GET /up` alle drei Minuten Mo–Sa 06–20 Uhr (Europe/Berlin) auf, dadurch bleibt genau eine Instanz zu Arbeitszeiten wach; nachts und sonntags skaliert Staging auf null, liegengebliebene Jobs laufen am Morgen. Offene WebSocket-Verbindungen halten die Instanz ebenfalls wach. Ein Job, der genau beim Herunterfahren läuft, bricht ab (Staging-Risiko, bewusst in Kauf genommen).
 
 ### Deploy
 

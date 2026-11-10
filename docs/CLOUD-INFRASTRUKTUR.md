@@ -43,6 +43,31 @@ Die Google-Anmeldung erfolgt einmalig pro Session — danach erscheint das norma
 | **Artifact Registry** | `glattthub-docker` | `glattthub-docker` (gleich) |
 | **IAP** | Domain `labrado-schlueter.com` | Einzelne Nutzer |
 
+### Kosten und Dimensionierung
+
+Stand Oktober 2026 kostete das Projekt 840 €/Monat; davon entfielen 377 € auf Cloud Run, 163 € auf
+Cloud SQL, 159 € auf Cloud Build und 77 € auf die Artifact Registry. Ursache war fast nie Last,
+sondern Konfiguration: vier dauerhaft wache Dienste (Worker und Reverb je Umgebung), 1.000 Builds im
+Monat auf `E2_HIGHCPU_8`, 519 GB Images ohne Bereinigung. Das Zielbild seit 10.11.2026 (Entscheidung
+Jan: Cloud Run bleibt) liegt bei ~300 €/Monat. Die Messwerte dazu (14 Tage Monitoring): Web p95
+13 % CPU bei im Mittel 2,4 Instanzen, Worker p95 12 % von 2 vCPU, Reverb 1 %, Cloud SQL im Mittel
+16 % CPU mit Stundenspitzen bis 52 %.
+
+| Baustein | Regel seit 10.11.2026 | Warum |
+|---|---|---|
+| **Dauerhaft wache Dienste** | Nur `glattthub-worker` (Prod) mit `min-instances=1`; Reverb läuft darin mit ([Queue-Worker](QUEUE-WORKER.md)). Staging-Worker `min-instances=0` mit Weck-Job `wake-worker-staging` (`GET /up`, alle 3 Minuten Mo–Sa 06–20 Uhr). | Jeder wache Dienst mit 1 vCPU kostet ~55 €/Monat, egal ob er arbeitet. |
+| **Worker-Größe** | 1 vCPU / 2 GiB | CPU-Spitzen 14 %; Speicher ~1 GiB, ffmpeg und Chromium brauchen Puffer. |
+| **Web** | 2 vCPU / 2 GiB, `min-instances=1`, CPU-Throttling | Ohne Mindestinstanz 20–30 s Kaltstart beim ersten Aufruf am Morgen. |
+| **Cloud SQL** | `db-custom-2-8192` bleibt; Sparen nur über Commitment (1 Jahr 25 %, 3 Jahre 52 %) | Eine Stufe kleiner würde die Statistikseiten in Spitzen spürbar bremsen. |
+| **Cloud Build** | Standardmaschine des Default-Pools (2.500 Freiminuten), erster Schritt bricht überholte Builds desselben Triggers ab | `E2_HIGHCPU_8` kostete 0,016 $/Minute; 273 von 592 Staging-Builds liefen noch, als der nächste startete. |
+| **Artifact Registry** | Bereinigungsregel aktiv: Tag `cache` behalten, 10 neueste Versionen je Image behalten, älter als 14 Tage löschen | Cloud Run hält eine eigene Kopie des Images, laufende Revisionen hängen nicht an der Registry. |
+| **TURN-VM** | `e2-micro` reicht (coturn) | Nur Relay-Kandidaten für Chat-Anrufe. |
+
+Neue dauerhaft laufende Dienste (`--no-cpu-throttling`, `min-instances` > 0) brauchen eine
+Begründung in diesem Abschnitt. Monitoring-Abfragen für die Werte oben: Cloud Monitoring,
+Metriken `run.googleapis.com/container/cpu/utilizations` (Perzentil 95 je Tag) und
+`cloudsql.googleapis.com/database/cpu/utilization`.
+
 ### Load Balancer
 
 Da Cloud Run in `europe-west3` keine Domain Mappings unterstützt, werden Custom Domains über einen **Global External Application Load Balancer** realisiert.
