@@ -87,8 +87,13 @@ bekommt man ihn nicht.
   (`php artisan reverb:start --host=0.0.0.0 --port=$PORT`) lauscht auf dem Cloud-Run-Port und ersetzt
   den früheren Mini-Health-Server; `GET /up` ist der Startup-Probe. Grund: Beide Dienste waren
   dauerhaft wach und CPU-leicht (Reverb 1 %, Worker 12 %), der eigene Reverb-Dienst kostete ~55 €/Monat
-  je Umgebung. Die Dienste `glattthub-reverb` / `glattthub-reverb-staging` wurden gelöscht, die
-  Serverless-NEGs der Backend-Services zeigen auf den Worker. Siehe [Queue-Worker](QUEUE-WORKER.md).
+  je Umgebung. Die eigenen Dienste `glattthub-reverb(-staging)` entfallen; am Load Balancer zeigt
+  je Umgebung ein eigener Backend-Service `backend-glattthub-<env>-live` auf die Serverless-NEG des
+  Worker-Dienstes, und der Path-Matcher `live-<env>-matcher` der URL-Map auf diesen Backend-Service.
+  **Ein Backend-Service verträgt nur eine Serverless-NEG je Region** — ein Dienst wird deshalb nie
+  per `add-backend`/`remove-backend` umgehängt (Lücke mit 503), sondern über einen zweiten
+  Backend-Service und einen URL-Map-Import (unterbrechungsfrei, Propagation 1–3 Minuten).
+  Siehe [Queue-Worker](QUEUE-WORKER.md).
 - Ein Knoten: `max-instances=1` — kein Redis-Scaling nötig. `--concurrency 1000`,
   `--timeout 3600` (längste WebSocket-Dauer; pusher-js verbindet danach selbst neu),
   `--no-cpu-throttling` (Ping-Timer laufen auch zwischen Anfragen), Cloud SQL angebunden (Reverb
@@ -235,7 +240,7 @@ Ab jetzt aktualisiert jeder Push auch den Reverb-Dienst.
 | Secrets | `reverb-app-id-staging`, `reverb-app-key-staging`, `reverb-app-secret-staging` | `reverb-app-id`, `reverb-app-key`, `reverb-app-secret` |
 | Host | `live.staging.hub.glattt.com` | `live.hub.glattt.com` |
 | Serverless-NEG | `neg-glattthub-staging-worker` → Worker-Dienst | `neg-glattthub-prod-worker` → Worker-Dienst |
-| Backend-Service | `backend-glattthub-staging-reverb` (IAP aus) | `backend-glattthub-prod-reverb` (IAP aus) |
+| Backend-Service | `backend-glattthub-staging-live` (IAP aus, Cloud Armor `block-attacker`) | `backend-glattthub-prod-live` (IAP aus, Cloud Armor `block-attacker`) — in der URL-Map erst nach dem Prod-Merge vom 11.11.2026 aktiv, bis dahin `backend-glattthub-prod-reverb` |
 | Path-Matcher in `urlmap-glattthub` | `live-staging-matcher` | `live-prod-matcher` |
 | Zertifikat (an `proxy-glattthub`) | `cert-glattthub-staging-live` | `cert-glattthub-prod-live` |
 
@@ -245,12 +250,13 @@ Ab jetzt aktualisiert jeder Push auch den Reverb-Dienst.
 `LiveConfig` liefert dann `null`, alle Clients fragen wieder im Sekundentakt.
 
 Soll Reverb wieder als **getrennter Dienst** laufen (etwa weil der Worker ihn stört): Dienst mit
-`scripts/reverb-setup.sh <env> setup` aus `/entrypoint-reverb.sh` anlegen, am Backend-Service
-`backend-glattthub-<env>-reverb` die NEG des Worker-Dienstes durch eine NEG des neuen Dienstes
-ersetzen (`gcloud compute backend-services add-backend … --network-endpoint-group=…`, dann
-`remove-backend`), das Programm `reverb` in `docker/supervisord-worker.conf` wieder durch einen
-Port-Listener ersetzen und den Reverb-Deploy-Schritt in `cloudbuild(-staging).yaml` aus der
-Git-Historie vor dem 10.11.2026 zurückholen.
+`scripts/reverb-setup.sh <env> setup` aus `/entrypoint-reverb.sh` anlegen (das Skript legt NEG und
+Backend-Service `backend-glattthub-<env>-reverb` an), die URL-Map exportieren, im Path-Matcher
+`live-<env>-matcher` den `defaultService` auf diesen Backend-Service setzen und wieder importieren
+(`gcloud compute url-maps export/import urlmap-glattthub --global`), das Programm `reverb` in
+`docker/supervisord-worker.conf` wieder durch einen Port-Listener ersetzen und den
+Reverb-Deploy-Schritt in `cloudbuild(-staging).yaml` aus der Git-Historie vor dem 10.11.2026
+zurückholen.
 
 ### Lokal
 
