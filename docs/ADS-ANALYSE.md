@@ -76,7 +76,7 @@ Kosten-Karten weisen darauf hin.
 
 | Vorgang | Anleitung |
 |---|---|
-| Bericht öffnen, Kosten und Klicks, Buchungen und Verträge, Grenzen der Zuordnung | Berichte 14 |
+| Bericht öffnen, Kosten und Klicks, Buchungen und Verträge, Buchungsergebnis nach Herkunft, Grenzen der Zuordnung | Berichte 14 |
 | Zeitraum und Standort, Kennzahlen-Zeile, Diagramm/Tabelle, Export | Berichte 0 |
 | Besucherströme und Buchungs-Trichter vor der Buchung | Berichte 15 |
 | Ads-Zahlen im wöchentlichen Office-Meeting (CPL, ROAS) | Berichte 11 |
@@ -103,28 +103,54 @@ scopeOrganic($q)       → NOT (gclid OR fbclid OR utm_medium IN ('cpc','paid','
 Zusätzlich `isAd()` / `isOrganic()` je Datensatz — dieselbe Klassifikation nutzen Herkunfts-Analyse,
 Quellen-Karten und die Tages-Auswertung.
 
-**Termin-Status** über `booking_trackings.appointment_id → stats_historic_appointments.appointment_id`:
+**Termin-Status — eine Stelle für die ganze Seite (seit 11.11.2026).** Jede Online-Buchung bekommt
+über `AdsAnalysisService::resolveBookingOutcomes()` genau ein Ergebnis. KPI-Kacheln, Kampagnen,
+Coupon-Codes, Monatsentwicklung, Ads vs. Organisch und die Karte „Buchungsergebnis nach Herkunft"
+rufen alle diese Methode — es gibt keine zweite Einordnung mehr. Die Prüfung läuft in dieser
+Reihenfolge (`classifyAppointment()`):
 
-| Status | Bedingung | Beschreibung |
+| Ergebnis | Bedingung | Beschreibung |
 |--------|-----------|-------------|
-| **Stattgefunden** | `state IN ('COMPLETED', 'PAID')` | Termin wurde durchgeführt |
-| **No-Show** | `state IN ('BOOKED','CONFIRMED','CHECKED_IN','NO_SHOW') AND appointment_date < heute` | Vergangener Termin ohne Abschluss |
-| **Zukünftig** | `appointment_date >= heute AND state NOT IN ('CANCELLED')` | Noch nicht auswertbar |
-| **Abgesagt** | `state = 'CANCELLED'` | Termin wurde storniert |
+| **Gelöscht** (`deleted`) | `deleted = 1` und kein Nachfolgetermin | In Phorest gelöscht |
+| **Storniert** (`cancelled`) | `activation_state = 'CANCELED'` (oder `state = 'CANCELLED'`) und kein Nachfolgetermin | In Phorest abgesagt und nicht wiedergekommen |
+| **Wahrgenommen** (`completed`) | `state IN ('COMPLETED', 'PAID')` | Termin wurde durchgeführt |
+| **Noch offen** (`upcoming`) | `appointment_date >= heute` | Noch nicht auswertbar |
+| **No-Show** (`no_show`) | `state IN ('BOOKED','CONFIRMED','CHECKED_IN','NO_SHOW')` und Termin vorbei | Nie beendet — enthält die Phorest-Spalte „Absage weniger als 24 st / Nicht gekommen" |
+| **Ohne Status** (`unknown`) | nichts davon, oder kein Termin auffindbar | erscheint nur, wenn > 0 |
 
-**Service-Methode:** `AdsAnalysisService::getAppointmentStatusBreakdown($query)` — nimmt einen
-`BookingTracking`-Query, holt die `appointment_id`s und berechnet den Status-Breakdown per SQL
-CASE-Aggregation.
+!!! warning "Fallstrick: Phorest storniert nicht über `state`"
+    Ein abgesagter Termin behält `state = 'BOOKED'`; die Absage steht in
+    `activation_state = 'CANCELED'`. Bis 11.11.2026 prüfte die Seite nur `state = 'CANCELLED'` (kommt
+    in den Daten nicht vor) und wertete `deleted` gar nicht aus — stornierte und gelöschte Termine
+    zählten deshalb als **No-Show**. Prod-Zählung für Buchungen ab 01.06.2026: von 918 vermeintlichen
+    No-Shows waren 350 Stornos und 38 Löschungen, echte No-Shows 532.
 
-**Formeln:**
+**Datenquellen der Einordnung**, in dieser Reihenfolge:
+
+1. `stats_historic_appointments` über `appointment_id` (roh per `DB::table`, weil der `date`-Cast des
+   Models Stringvergleiche bricht).
+2. **Gelöscht oder storniert + Nachfolger = verlegt** (`successorOutcomes()`): Wird eine Beratung in
+   Phorest verlegt, entsteht oft ein neuer Termin mit neuer ID und der alte wird gelöscht; oder die
+   Kundin sagt ab und kommt an einem neuen Termin doch. Die Buchung bekommt dann das Ergebnis des
+   Nachfolgers — frühester nicht gelöschter, nicht stornierter Beratungstermin derselben Kundin im
+   selben Institut ab dem Buchungstag, der nicht selbst eine Online-Buchung ist (die zählt in ihrer
+   eigenen Zeile). Auf Prod traf das 9 von 38 gelöschten und 99 von 350 stornierten Terminen.
+3. `upcoming_consultations` für Termine, die der Spiegel noch nicht kennt (fast immer zukünftige).
+4. Erst danach die Phorest-API (höchstens 50 Termine je Aufruf, gecacht).
+
+**Formeln — alle Quoten rechnen auf fällige Termine:**
 
 ```
-Conversion Rate  = Verträge ÷ stattgefundene Termine × 100
-No-Show-Rate     = No-Shows ÷ (stattgefundene + No-Shows) × 100
+fällig (due)     = wahrgenommen + No-Show + storniert + gelöscht      (ohne „noch offen")
+Conversion Rate  = Verträge ÷ wahrgenommene Termine × 100
+No-Show-Rate     = No-Shows ÷ fällige Termine × 100
+Wahrnehmungsquote = wahrgenommen ÷ fällige Termine × 100
 ```
 
-Termine in der Zukunft werden weder für die Conversion noch für die No-Show-Rate herangezogen — so
-ergibt sich ein realistisches Bild der tatsächlichen Abschlussquote.
+Zukünftige Termine stehen nie im Nenner — sonst sähe ein laufender Monat besser aus, als er ist. Bis
+11.11.2026 rechnete die No-Show-Rate auf „wahrgenommen + No-Show"; mit Storno und Löschung im Nenner
+ergeben wahrgenommen, No-Show, storniert und gelöscht zusammen 100 %. Die Kachel „No-Show-Rate (Ads)"
+nennt im Untertitel „X von Y fälligen Terminen".
 
 ### Kennzahlen der KPI-Zeile
 
@@ -165,6 +191,13 @@ Vergleichswerte zur Vorperiode (gleich langer Zeitraum davor).
 
 
 ### Die Analyse-Karten im Einzelnen
+
+**Hinweis in den Info-Panels (seit 11.11.2026):** Alle Karten mit Plattform- oder Herkunftszahlen
+(Kampagnen, Quellen je Monat, Buchungsergebnis, Buchungen pro Tag, Kosten pro Lead, Herkunfts-Analyse,
+Zuordnungslücke) tragen denselben Absatz „Meta-Anstoß landet oft bei Google": Viele Kundinnen sehen
+zuerst eine Meta-Anzeige, googeln danach nach glattt und klicken die Google-Anzeige — gezählt wird der
+letzte Klick. Der Wortlaut steht einmal in `resources/views/components/ads-cross-platform-note.blade.php`
+(`<x-ads-cross-platform-note />`), nie je Karte kopieren.
 
 Seit 07/2026 folgt die Seite dem verbindlichen **Statistik-Bauplan**: Acht der zehn Analyse-Karten
 sind zweiseitig — das **Diagramm ist die Standard-Ansicht**, die vollständige Tabelle liegt als
@@ -240,6 +273,38 @@ Herkunfts-Analyse (Einstieg/entry_referrer).
 - **Umschalter** oben rechts: *Alle / Nur Anzeigen / Nur Organisch* (wirkt sofort, ohne Neuladen)
 - **Legende** klickbar: einzelne Quellen ein-/ausblenden (Auswahl bleibt beim Filterwechsel erhalten)
 - Organische Buchungen ohne erfassten Einstieg (vor Einführung des Trackings) werden ausgeblendet
+
+#### Buchungsergebnis nach Herkunft (seit 11.11.2026)
+
+Statistik `ads.booking-outcomes`: Was aus den Online-Buchungen geworden ist, je Klickherkunft
+(Herkunft = Einstieg, dieselbe Klassifikation wie „Buchungen pro Quelle & Monat"). Anders als dort
+bleibt **„Unbekannt" sichtbar**, damit die Zeilensumme alle Buchungen ergibt.
+
+- **Ergebnis** (Standard): gestapelte waagerechte Balken je Herkunft — wahrgenommen, No-Show,
+  storniert, gelöscht, noch offen. Schalter **Anzahl | Anteil**; „Anteil" legt alle Herkünfte auf
+  100 %. Das Diagramm zeigt die zehn stärksten Herkünfte, die Tabelle alle.
+- **Verlauf**: No-Show-Quote je Herkunft und Buchungsmonat als Linien. Monate mit weniger als
+  `AdsAnalysisService::OUTCOME_TREND_MIN_DUE` (30) fälligen Terminen einer Herkunft fehlen im
+  Diagramm; die Tabelle zeigt sie mit der Zahl der fälligen Termine in Klammern.
+- Kennzahlen-Zeile über dem Diagramm: Buchungen, Wahrgenommen, No-Show, Storniert, Gelöscht.
+- Tabellenspalten: Herkunft, Buchungen, Wahrgenommen, No-Show, Storniert, Gelöscht, Noch offen,
+  Wahrnehmungsquote, No-Show-Quote (beide auf fällige Termine).
+
+Kein Service-Filter: Online buchbar sind nur „Nur gratis Beratungsgespräch" (98,6 % der Buchungen)
+und „Beratung & Behandlung" — beide enthalten ein Beratungsgespräch.
+
+Endpunkt `GET /hub/reports/ads-analysis/booking-outcomes` → `getBookingOutcomesBySource()` liefert
+`sources[]` (je Herkunft die Zählung, `due`, `show_rate`, `no_show_rate` und `monthly[Monat]`),
+`totals`, `months` und `min_due`. Partial `resources/views/statistics/ads/booking-outcomes.blade.php`,
+JS-Komponente `ads.booking-outcomes` in `public/js/statistics/ads.js`, CSV-Quellen
+`ads-booking-outcomes` und `ads-booking-outcomes-monthly`, Test
+`tests/Feature/AdsBookingOutcomesTest.php`. In der App: `AdsBookingOutcomesCard`
+(`MarketingOfficeReportCards.swift`) mit Anzahl | Anteil | Verlauf.
+
+**Abgesagt und doch gekommen:** Eine stornierte Buchung, nach der die Kundin an einem neuen Termin doch
+zur Beratung kam, zählt wie ein verlegter Termin mit dem Ergebnis des späteren Termins (Entscheidung
+Jan, 11.11.2026; Prod: 99 von 350 Stornos hatten einen späteren Beratungstermin, 80 davon
+wahrgenommen). „Storniert" heißt hier also: abgesagt und nicht wiedergekommen.
 
 #### Buchungen pro Tag (seit 07/2026, Quellen-Ansicht seit 08/2026)
 
@@ -565,6 +630,7 @@ GoogleAdsService (app/Services/)
 | `tests/Unit/MetaAdsServiceTest.php` | Unit-Tests Meta |
 | `tests/Feature/AdsAnalysisMetaTest.php` | Feature-Tests Meta |
 | `tests/Feature/AdsMonthlySourceBreakdownTest.php` | Feature-Tests Quellen-Monate & Kosten pro Lead |
+| `tests/Feature/AdsBookingOutcomesTest.php` | Feature-Tests Buchungsergebnis nach Herkunft + gemeinsame Termin-Einordnung (Storno, gelöscht/verlegt, fällige Termine) |
 | `tests/Feature/AdsDailyBookingsTest.php` | Feature-Tests Buchungen pro Tag (Gesamt, Quellen, Plattform-Leads, CSV) |
 
 ### Routes
@@ -576,6 +642,7 @@ GET  /hub/reports/ads-analysis/kpis                   → kpis
 GET  /hub/reports/ads-analysis/campaigns              → campaigns
 GET  /hub/reports/ads-analysis/monthly                → monthly        (inkl. total_spend_cents & cost_per_lead_cents)
 GET  /hub/reports/ads-analysis/monthly-sources        → monthlySources (Buchungen pro Quelle × Monat, Anzeige/organisch)
+GET  /hub/reports/ads-analysis/booking-outcomes       → bookingOutcomes (Ergebnis je Klickherkunft: wahrgenommen, No-Show, storniert, gelöscht, offen + Monatsverlauf)
 GET  /hub/reports/ads-analysis/attribution-gap        → attributionGap (gemeldete Leads vs. eigenes Tracking je Monat/Plattform)
 GET  /hub/reports/ads-analysis/daily-bookings         → dailyBookings  (Buchungen pro Tag: Gesamtreihe + 7-Tage-Schnitt, Quellen-Serien je Tag, plattform-gemeldete Leads)
 GET  /hub/reports/ads-analysis/sources                → sources        (Letzte Seite vor Buchung / referrer)
@@ -594,7 +661,7 @@ Alle Routes: Middleware-Gruppe `can:view_report_ads_analysis`.
 
 - **Buchungsdaten:** `booking_trackings` — UTM-Parameter, gclid, fbclid, Device-Infos
 - **Vertragsdaten:** `contracts` — Verknüpfung über `client_id`
-- **Termin-Status:** `stats_historic_appointments` — Verknüpfung über `appointment_id`
+- **Termin-Status:** `stats_historic_appointments` — Verknüpfung über `appointment_id`; Termine, die dort noch fehlen, aus `upcoming_consultations`
 - **Notizen:** `ad_campaign_notes` — strukturierte Kampagnen-Infos
 - **KPZ:** `contracts.body_zone_count`
 - **Vertragswert:** `contracts.monthly_amount_cents` (in Cents)
@@ -927,6 +994,15 @@ composer require googleads/google-ads-php
 ---
 
 ## Chronik der Änderungen (neueste zuerst)
+
+### 11.11.2026 — Buchungsergebnis nach Herkunft, No-Show-Zählung korrigiert
+
+- Neue Karte `ads.booking-outcomes` (Web, Eigenes Dashboard, App) mit zwei CSV-Quellen.
+- Termin-Einordnung an **einer** Stelle (`resolveBookingOutcomes()`): Storno über
+  `activation_state = 'CANCELED'`, gelöschte Termine mit Nachfolger-Suche, noch nicht gespiegelte
+  Termine aus `upcoming_consultations`. Vorher zählten stornierte und gelöschte Termine als No-Show.
+- Alle Quoten der Seite rechnen auf fällige Termine; betroffen sind KPI-Kachel, Kampagnen,
+  Coupon-Codes, Monatsentwicklung, Ads vs. Organisch und die Kampagnen-Detailansicht.
 
 Die größeren Umbauten dieser Seite mit Anlass und Wirkung. Neue Erkenntnisse werden **nicht** hier,
 sondern oben an der thematisch passenden Stelle eingearbeitet; die Chronik wächst nur um den Anlass.

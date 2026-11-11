@@ -143,6 +143,10 @@ Die CSVs sind für **Excel (deutsch)** optimiert und lassen sich per Doppelklick
   und `ads-sources-daily` (Langformat Tag × Quelle × Art) lesen nur
   `booking_trackings`; `ads-daily-bookings` enthält zusätzlich die
   plattform-gemeldeten Leads je Tag (Meta Klick-Leads, Google Conversions).
+  `ads-booking-outcomes` (je Herkunft: Buchungen, wahrgenommen, No-Show, storniert,
+  gelöscht, offen, Quoten auf fällige Termine, Summenzeile) und
+  `ads-booking-outcomes-monthly` (Langformat Monat × Herkunft mit No-Show-Quote)
+  nutzen dieselbe Termin-Einordnung wie die Karte.
 - **Streaming**: `response()->streamDownload()` + `fputcsv` — auch große Exporte
   laufen speicherschonend.
 - Dateiname: `{key}_{date_from}_{date_to}.csv` bzw. `{key}_{heute}.csv`.

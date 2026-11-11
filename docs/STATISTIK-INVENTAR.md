@@ -95,7 +95,7 @@ Endpoints einheitlich: `branch_id, date_from, date_to, consultation_only, gender
 | Monatliche Übersicht | `/phorest/reports/client-courses/monthly` | B (+`months`, nie gesendet) | (c) | reine Tabelle; Endpoint auf `date_from/to` heben |
 | KPI-Zeile | `…/kpis` | B | (d)/(c) | KPIs werden **clientseitig** gebaut; Zeitraum fest; Cache-Key ohne Zeitraum |
 
-### Ads-Analyse (`view_report_ads_analysis`) — 9 Statistiken
+### Ads-Analyse (`view_report_ads_analysis`) — 10 Statistiken
 
 Endpoints einheitlich: `branch_id, date_from, date_to, platform, campaign`. Kein `months`.
 
@@ -106,6 +106,7 @@ Endpoints einheitlich: `branch_id, date_from, date_to, platform, campaign`. Kein
 | Monatliche Entwicklung | `/monthly` | R B + | (d) | teilt Endpoint+Loader+State mit Kostenverlauf |
 | Kostenverlauf & Kosten pro Lead | `/monthly` | R B + | (d) | dito |
 | Buchungen pro Quelle & Monat | `/monthly-sources` | R B +, Radio | (b) | |
+| Buchungsergebnis nach Herkunft | `/booking-outcomes` | R B +, Radio | (a) | seit 11.11.2026 direkt als Registry-Karte gebaut; zwei Ansichten (Ergebnis/Verlauf) in einer Karte |
 | Buchungen pro Tag | `/daily-bookings` | R B + Kampagne | (a) | Musterfall (einzige Ads-Karte mit `x-chart-table`) |
 | Herkunfts-Analyse | `/sources` **+** `/entry-sources` | R B + | (d) | zwei Endpoints in einer Karte |
 | Suchbegriffe (Wortwolke) | `/search-terms` | R B + | (d) | Fremd-Library wordcloud2 |

@@ -2245,7 +2245,9 @@ Karte. Was die App nicht nachbaut, öffnet ⋯ „Hub-Fassung öffnen".
   dazu `ClientRefreshShareCard`/`ClientRefreshGapCard`/`ClientRefreshZonesCard` für die Auffrischung
   nach Paketende, HR-Kennzahlen mit `HrMonthlyCard` für Monatsreihen mit
   wählbarer Kennzahl), `MarketingOfficeReportCards.swift` (Ads-Analyse, Besucher-Funnel, eigene
-  Office-Karten mit `OfficeMonthlyCard`). Das Office-Teammeeting nutzt die Verkaufs-, Termin-,
+  Office-Karten mit `OfficeMonthlyCard`; seit 11.11.2026 `AdsBookingOutcomesCard` — Buchungsergebnis nach
+  Herkunft als gestapelte Säulen je Herkunft mit Umschalter Anzahl | Anteil | Verlauf, Snapshot
+  `testRenderAdsBookingOutcomes`). Das Office-Teammeeting nutzt die Verkaufs-, Termin-,
   Widerruf- und Ads-Karten wieder; sie laufen über denselben Schalter in `ReportStatisticCard`.
 - **Bewusste Abweichungen:** Die Suchbegriff-Wortwolke ist eine Rangliste. Die Besucher-Listen
   (Funnel-Vergleich, Herkunft, Geräte, Top-Unterseiten) teilen sich `VisitorListCard`, deren Tabelle
