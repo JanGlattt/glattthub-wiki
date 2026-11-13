@@ -21,8 +21,15 @@ Projektwissen `.github/knowledge/tvos-app-bauplan.md`.
     (oder „Office (Zentrale)" für Bildschirme im Büro), einer Zone (Schaufenster, Empfang, Raum,
     Büro) und einer Ausrichtung zugeordnet. Danach
     läuft der Fernseher ohne Anmeldung. Die Liste zeigt je Bildschirm, ob er online ist und was gerade
-    läuft; über das Menü lassen sich „Neu laden", „Neustart" und „Cache leeren" senden, ein Bildschirm
-    deaktivieren oder trennen.
+    läuft; über die Symbolknöpfe lassen sich „Neu laden", „Neustart" und „Cache leeren" senden, ein Bildschirm
+    in die Ruhe schicken (Mond) oder entfernen (Papierkorb — der Fernseher zeigt dann wieder einen Code).
+
+    **Ruhezeiten:** Der Knopf „Ruhezeiten" legt fest, wann keine Playlist läuft, etwa nachts —
+    Wochentage, von–bis, für alle Bildschirme, einzelne Standorte oder einzelne Bildschirme, wahlweise
+    **Standby** (Standby-Bildschirm des Instituts) oder **Schwarz** (schwarzes Bild ohne Ton). „Ruhe
+    jetzt" an der Karte wirkt sofort, für 1 Stunde, 4 Stunden, bis morgen 6 Uhr oder bis auf Widerruf.
+    Der Fernseher selbst bleibt eingeschaltet. Voreingestellt ist die Regel **„Nachtruhe"**: täglich
+    22:00–06:00 schwarz auf allen Playlist-Bildschirmen (Kennzahlen-Bildschirme ausgenommen).
 
     Was läuft, kommt aus den Reitern derselben Hub-Seite: **Medien** (Bilder und Videos bis 1 GB),
     **Kundenstimmen** (frei erfasst oder aus einer Google-Bewertung des Bonus-Boards übernommen, auf
@@ -190,6 +197,65 @@ dann kürzeres Tagesfenster, dann neuere ID. Kein Treffer: `screens.default_play
 `is_default`, sonst Standby. `program()` sammelt alle Umschaltpunkte (Gültigkeitskanten **sekundengenau**,
 Fensterkanten je Tag, Mitternacht bei Wochentagsplänen) und fasst gleiche Nachbarn zusammen. Die Seite
 **Bildschirme → Programm heute** zeigt dieselbe Auflösung je Bildschirm.
+
+### Ruhezeiten (seit 13.11.2026)
+
+Wunsch Jan, 13.11.2026: Bildschirme sollen zu festen Zeiten (nachts) und auf Knopfdruck Standby zeigen
+oder schwarz bleiben.
+
+- **Tabelle `screen_quiet_periods`** (Modell `ScreenQuietPeriod`): `mode` (`standby` | `black`),
+  `branch_ids`/`screen_ids` (null = alle), `modes` (Art des Bildschirms: `signage`/`kpi`, null = beide), `weekdays`, `start_time`/`end_time` (über Mitternacht erlaubt,
+  beide leer = ganztägig), `valid_from`/`valid_until`, `adhoc`, `active`, Soft-Delete. Zwei Arten:
+  **feste Regel** (`adhoc = false`) und **„Ruhe jetzt"** (`adhoc = true`, genau ein Bildschirm,
+  `valid_until` = Ende oder null für „bis auf Widerruf"). Bewusst **eine eigene Tabelle** statt
+  Zeitplänen ohne Playlist: `screen_schedules.playlist_id` bleibt Pflicht, Editor und Admin setzen
+  die Playlist überall voraus.
+- **Ziel und Zeitfenster** teilen sich Zeitpläne und Ruhezeiten über das Trait
+  `App\Models\Concerns\HasScreenTimeWindow` (`targets()`, `specificity()`, `window()`,
+  `coversMoment()`, `describeTime()`).
+- **Auflösung:** `ScreenScheduleResolver::resolveAt()` prüft zuerst die Ruhezeiten und liefert dann
+  `playlist = null`, `quiet = <Regel>` — eine Ruhezeit schlägt jeden Zeitplan **und** „Jetzt zeigen".
+  Unter mehreren gewinnt „Ruhe jetzt", dann die engere, dann die neuere. `program()` nimmt die Kanten
+  der Ruhezeiten auf und fasst Nachbarn mit gleicher Art zusammen. Der Scope `active()` blendet
+  abgelaufene Regeln aus.
+- **Manifest:** jeder Programmabschnitt trägt `quiet` (`standby` | `black` | null); der ETag ändert sich
+  damit. `ScreenLiveObserver` führt `ScreenQuietPeriod` als Inhaltsmodell — die Fernseher holen das
+  Manifest nach dem Speichern sofort.
+- **TV-App ab 1.3.0** (`ProgramSegment.quiet`, `QuietMode`, `ScreenState.quietMode`, `RootView`):
+  Schwarz zeigt `Theme.black` ohne Wiedergabe, Standby den Standby-Bildschirm — beides **auch im
+  Kennzahlen-Modus**. Ein laufendes Beratungsgespräch geht vor. Der Heartbeat meldet
+  `type = quiet`.
+- **Ältere Apps (vor 1.3.0)** kennen das Feld nicht. Bei `standby` zeigen sie wegen der fehlenden
+  Playlist ohnehin Standby. Bei `black` bekommen sie einen **Rückfall**: Der Abschnitt nennt
+  `playlist_id = -1`, und das Manifest enthält eine künstliche Playlist „Ruhezeit (schwarz)" mit einem
+  Bild-Element (3600 s, ohne Übergang) auf das Medium `-1` — ein schwarzes PNG
+  (`public/images/screens/black.png`), ausgeliefert über **`GET /api/tv/black.png`**
+  (`TvBlackImageController`, öffentlich: der TV lädt Medien ohne Gerätenachweis, und nur `/api/*` liegt
+  vor IAP). Die Playlist steht für jede App im Manifest; ab 1.3.0 gewinnt `quiet`. Negative Kennungen
+  kollidieren mit keiner echten Playlist. **Im Kennzahlen-Modus** hilft der Rückfall nicht — alte Apps
+  blättern dort weiter ihre Seiten; die Karte sagt das („App zu alt: Seiten laufen weiter",
+  `ScreenQuietPeriod::BLACK_MIN_APP_VERSION`).
+- **Nachtruhe als Startwert:** Migration `2026_11_13_100100_seed_night_quiet_period_for_screens` legt
+  die Regel „Nachtruhe" an (täglich 22:00–06:00, schwarz, `modes = ["signage"]`), sofern noch keine
+  feste Ruhezeit existiert; in Tests nicht.
+- **Grenze:** „Schwarz" ist ein schwarzes Bild, kein Ausschalten. Eine tvOS-App kann das Apple TV nicht
+  schlafen legen und sich vor allem nicht selbst wieder wecken; der Fernseher bleibt an (Panel und
+  Hintergrundbeleuchtung je nach Gerät).
+- **Hub** (`Hub\Screens\QuietHubController`, Recht `manage_screens_hub`):
+  `POST/PUT/DELETE /hub/screens/quiet-periods[/{id}]` für Regeln, `POST /hub/screens/devices/{screen}/quiet`
+  (`mode`, `duration` = `1h` | `4h` | `morning` | `open`) und `DELETE …/quiet` für „Ruhe jetzt". Ein neuer
+  Aufruf ersetzt die laufende Ruhe; `valid_from` wird auf die Minute gerundet, weil das Programm an der
+  Minutengrenze beginnt. `GET /hub/screens/data` liefert `quiet_periods` und je Bildschirm `quiet`
+  (läuft gerade, mit Ende) bzw. `next_quiet` (nächste in 24 h). Verlauf: `quiet_started`, `quiet_ended`.
+- **Oberfläche:** Knopf „Ruhezeiten" im Seitenkopf (Liste und Formular in einem Fenster), Mond-Knopf an
+  der Karte (wird zur Sonne, solange „Ruhe jetzt" läuft). Der Mond **ersetzt „Deaktivieren"** — das
+  sperrte den Fernseher ganz (410, Hinweisbild). Altbestand mit `disabled_at` zeigt an derselben Stelle
+  „Aktivieren"; Routen `disable`/`enable` und der Admin bleiben. „Trennen" heißt **„Entfernen"**
+  (Papierkorb, gleiche Wirkung: Soft-Delete + Gerät widerrufen); „Cache leeren" trägt dafür das
+  Archiv-Symbol.
+- **Abfragen:** `data()` lädt Zeitpläne, Ruhezeiten und die globale Standard-Playlist einmal und reicht
+  sie in den Resolver (`candidates($screen, $all)`, Parameter `$globalDefault`). Vorher fragte jeder
+  Programmabschnitt jedes Bildschirms die Standard-Playlist neu ab.
 
 ### Mediathek und Direkt-Upload
 
@@ -370,8 +436,8 @@ bestehen (Kennzahlen-Seiten je Bildschirm werden bis zum Seiten-Baukasten weiter
 - **Seite `/hub/screens`** (`Hub\Screens\ScreenHubController`, View `hub/screens/index.blade.php`,
   Logik `public/js/screens-hub.js`): vier Reiter — **Bildschirme** (Karten mit Online-Status, „Läuft
   gerade" aus dem Heartbeat, „Laut Plan" aus dem Resolver; Kopplung per Code; Einstellungen mit
-  Standby-Layout/-Texten und Live-Vorschau; Befehle Neu laden/Neustart/Cache leeren; Deaktivieren,
-  Trennen), **Playlists** (Karten mit Zeitplan-Zusammenfassung; Neu, Duplizieren, Löschen, Vorschau,
+  Standby-Layout/-Texten und Live-Vorschau; Befehle Neu laden/Neustart/Cache leeren; Ruhe jetzt,
+  Entfernen; Ruhezeiten siehe eigener Abschnitt), **Playlists** (Karten mit Zeitplan-Zusammenfassung; Neu, Duplizieren, Löschen, Vorschau,
   „Jetzt zeigen"), **Medien** (Direkt-Upload wie im Admin, Raster mit Poster, Titel inline, Standort
   und Rolle je Medium, Verwendung, Neu verarbeiten, Löschschutz bei Verwendung), **Kundenstimmen**
   (anlegen/bearbeiten, Freigabe umschalten, Google-Import mit Suche; Einwilligungsregel wie im Admin).
@@ -746,11 +812,15 @@ Render-Seite und Proxy nur mit Ticket, Render-Job ohne Chromium, Admin-Formular 
 `tests/Feature/ScreenPagesTest.php` (Seiten-Endpunkt mit Rechten und Einbrennschutz, Beratungen heute,
 Ereignisse und Medienfehler, `screens:watch` offline/online/Abweichung, Hub-Baukasten mit Rasterprüfung,
 Vorschau und Verlauf), `tests/Feature/ScreensHubTest.php` (Hub-Seite, Office als Standort, Foto der
-Kundenstimme). Swift: `DashboardPagerTests` (Seitenschnitt, Pager, Zahlenformat, Tendenz, Karten-Medium),
+Kundenstimme, Ruhezeiten-Regeln, Ruhe jetzt mit Manifest, Abfragen wachsen nicht mit den Geräten);
+Ruhezeiten im Resolver-Test (schlägt „Jetzt zeigen", Ziel, Programm-Kanten) und in
+`ProgramSchedulerTests` (Swift). Swift: `DashboardPagerTests` (Seitenschnitt, Pager, Zahlenformat, Tendenz, Karten-Medium),
 `PagePagerTests` (Blättern, Auto-Wechsel, Seite bleibt bei neuen Daten, Einbrennschutz). Konventionstests: `CronScheduleCoverageTest`, `PermissionCatalogTest`,
 `AdminNavigationGroupTest`, `EnvExampleConventionTest`.
 
 ## Changelog
+
+- **13.11.2026** — Ruhezeiten: feste Regeln (Standby oder schwarz, Ziel alle/Standorte/Bildschirme) und „Ruhe jetzt" je Bildschirm, im Manifest als `quiet` je Programmabschnitt, TV-App ab 1.3.0; „Trennen" heißt „Entfernen", der Mond ersetzt „Deaktivieren"; Standard-Playlist wird je Seitenaufruf nur noch einmal geladen.
 
 - **15.10.2026** — Seiten-Baukasten: Kacheln tauschen beim Verschieben die Plätze, Größe ändern bis zur freien Grenze und zweiter Griff unten links (Kacheln ließen sich im vollen Raster nicht verschieben oder vergrößern).
 - **13.10.2026 (Nachmittag)** — Büro-Fernseher zeigte „Stand 12:28“ um 13:22: Bildschirm-Nutzer bekommt `view_appointments`, Kennzahlen-Bildschirme fragen jede Minute nach, teure Kacheln im Hintergrund neu gerechnet; TV-App zeigt als „Stand“ den letzten Abgleich.
