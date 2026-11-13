@@ -190,6 +190,17 @@ Formular, Notizzeile am Termin und `promo_code` im Booking-Tracking. Seit 0.35.0
 Kundeninformation für Neukundinnen ohne Online-Code). Fachregeln, Code-Format, Hub-Seite und Einrichtung:
 [Black November (Umschlag-Aktion)](BLACK-NOVEMBER-AKTION.md).
 
+### Probebehandlung statt Beratungsgespräch (seit 0.36.0, 13.11.2026)
+
+Das Einstiegsangebot auf glattt.com heißt seit 13.11.2026 **„kostenlose und unverbindliche
+Probebehandlung inkl. Beratungsgespräch“** (weiterhin 45 Minuten): Eine Körperzone wird zur Probe
+behandelt, damit die Kundin direkt spürt, wie angenehm sich die Behandlung dank der Kühlung des
+Lasers anfühlt. Knöpfe lauten „Kostenlose Probebehandlung sichern“, Vorzeilen „Kostenlose
+Probebehandlung · 45 Minuten“, Termin-Zeilen „Nächste freie Probebehandlung: …“. Die
+Probebehandlung steht immer vorn (nie „Beratung inkl. Probebehandlung“), es heißt „kostenlos“,
+nicht „gratis“. Die Slot-Bezeichnung „Beratung + Behandlung (90 Min)“ und neutrale Verweise
+(„Einzelheiten in der Beratung“) bleiben.
+
 ## Für Entwickler
 
 ### Dateien (im Plugin)
@@ -254,6 +265,26 @@ Beim Seitenaufruf werden Services + Verfügbarkeiten im Hintergrund vorgeladen, 
 - Beratungs-Staff-Erkennung: `glattt_get_beratung_staff_ids()` — Phorest-Staff je Branch, Name enthält „beratung" (case-insensitive, matcht „BI Nur für Beratungen" etc.), 12h-Transient; bei API-Fehler kein Caching und Ausdünnung ohne Präferenz.
 - Konfigurierbar ohne Release: `add_filter('glattt_slot_gap_minutes', fn() => 30);` — `0` deaktiviert die Ausdünnung.
 - Verifikation (Juli 2026, 2 Wochen Live-Daten): 661 → 496 Slots (−25 %), Beratungs-Staff-Anteil 74 % → 81 %; PHP-Implementierung deckungsgleich mit Referenz-Simulation.
+
+### Wortlaut des Angebots: wo er steht (0.36.x)
+
+Der Wortlaut ist über fünf Orte verteilt — bei der nächsten Umbenennung alle prüfen:
+
+- **Plugin-Standards**: `shortcode_atts()` in `kopfbild.php`, `abschluss.php`, `ablauf.php`,
+  `preise.php`, `umland.php`, `bezahlung.php`, `koerperkarte.php`, `termin-zeile.php`,
+  `preis-kopf.php` (auch das Schema.org-Angebot), dazu `cta.php`, `frontend-booking.php`,
+  `zonen-seite.php`, `standorte-kompakt.php`, `llms.php`, `freunde.php` und `booking-frontend.js`.
+  Jede Vorgabe steht **doppelt**: im Shortcode und in `includes/wpbakery.php` — beide müssen
+  gleich lauten, weil WPBakery Werte nicht speichert, die dem Element-Standard entsprechen.
+  Seiten ohne eigenen Wert übernehmen eine neue Vorgabe deshalb automatisch.
+- **Seiteninhalte**: Attribute der Elemente und Fließtexte in `content.raw` (per REST änderbar).
+- **FAQ-Einträge** (`glattt_faq`) und **E-Mail-Vorlagen** (`admin.php?page=glattt-emails`): nur
+  über das Bearbeitungsformular; die FAQ-Liste blättert zu je 20 Einträgen (`paged=`).
+- **Einstellungen**: Knopftext des Rechners (`wpglattt_rechner_config[texte][cta_text]`),
+  Yoast-Titel und -Beschreibung je Seite (nur über den Editor).
+- **WPCode**: Das Snippet „Fliegender Buchungsbutton“ (#11307) lieferte den Vorgänger des
+  schwebenden Knopfs weiter in den Quelltext jeder Seite (`#glattt-cta`, per `hidden` versteckt
+  und von `cta.js` entfernt). Seit 13.11.2026 deaktiviert — der Knopf kommt nur noch aus dem Plugin.
 
 ### Deployment & Debugging
 
