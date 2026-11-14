@@ -201,6 +201,18 @@ Probebehandlung steht immer vorn (nie „Beratung inkl. Probebehandlung“), es 
 nicht „gratis“. Die Slot-Bezeichnung „Beratung + Behandlung (90 Min)“ und neutrale Verweise
 („Einzelheiten in der Beratung“) bleiben.
 
+### Maximaler Buchungsvorlauf (seit 0.37.0, 14.11.2026)
+
+Online sind Termine nur für die nächsten **21 Tage** buchbar. Wer später kommen möchte, sieht am Ende des Kalenders
+einen Hinweis mit der Telefonnummer des Instituts und einem WhatsApp-Knopf. Grund: Je länger der Vorlauf, desto
+seltener wird der Termin wahrgenommen (63 % bei 0–2 Tagen, 45 % bei 15–21, 34 % ab 29 Tagen — vor allem, weil
+häufiger storniert wird).
+
+Die Zahl steht im WordPress-Admin unter **Buchung → Einstellungen → Maximaler Buchungsvorlauf** (`0` = unbegrenzt)
+und lässt sich je Institut unter **Institute → Institut bearbeiten** überschreiben (leer = allgemeiner Wert). Ist
+im Fenster einmal gar nichts frei, bleibt die erste freie Woche danach buchbar. Der Verlege-Link aus der
+Terminerinnerung richtet sich nach demselben Wert.
+
 ## Für Entwickler
 
 ### Dateien (im Plugin)
@@ -265,6 +277,28 @@ Beim Seitenaufruf werden Services + Verfügbarkeiten im Hintergrund vorgeladen, 
 - Beratungs-Staff-Erkennung: `glattt_get_beratung_staff_ids()` — Phorest-Staff je Branch, Name enthält „beratung" (case-insensitive, matcht „BI Nur für Beratungen" etc.), 12h-Transient; bei API-Fehler kein Caching und Ausdünnung ohne Präferenz.
 - Konfigurierbar ohne Release: `add_filter('glattt_slot_gap_minutes', fn() => 30);` — `0` deaktiviert die Ausdünnung.
 - Verifikation (Juli 2026, 2 Wochen Live-Daten): 661 → 496 Slots (−25 %), Beratungs-Staff-Anteil 74 % → 81 %; PHP-Implementierung deckungsgleich mit Referenz-Simulation.
+
+### Maximaler Buchungsvorlauf (0.37.0)
+
+- **Plugin** `includes/vorlauf.php`: `glattt_vorlauf_tage()` (Option `glattt_max_lead_days`, je Institut
+  `glattt_max_lead_days_branch`), Grenze = Tagesende von heute + N Tage in der Website-Zeitzone. Der Server filtert in
+  `glattt_get_availability` und `glattt_get_b2b_slots` und lehnt in `glattt_book_appointment` ab — das Skript begrenzt
+  nur die Navigation und zeigt die Karte. Wochen vollständig hinter der Grenze kosten keine Phorest-Anfrage.
+- **Ausnahme-Woche** (`glattt_vorlauf_ausnahme()`, 5 Minuten zwischengespeichert): im Fenster kein freier Termin →
+  erste freie Woche danach bleibt buchbar. Das Skript erkennt sie an einem Termin hinter der Grenze in der Antwort.
+- **Hub** `App\Services\Booking\WebsiteBookingWindow`: liest `GET /wp-json/glattt/v1/vorlauf`
+  (`{ "default": 21, "branches": { "<branchId>": 14 } }`, 10 Minuten Cache, bei Ausfall der letzte Stand, sonst
+  `config('booking.website_max_lead_days')`) und begrenzt den Verlege-Link reiner Beratungen
+  (`RescheduleSlotFinder::find()`, `lastSelectableDay()` für Seite und App). Buchungen durch Mitarbeiterinnen und
+  „Termin vorziehen“ bleiben unbegrenzt. Tests: `tests/Feature/WebsiteBookingWindowTest.php`; in `phpunit.xml` ist die
+  Adresse leer.
+- **Fallstricke:** Die Instituts-Zeile wird per `REPLACE` geschrieben — deshalb liegt der Instituts-Wert in einer
+  Option, nicht in einer neuen Spalte. Begleitbuchungen sind ausgenommen (Zeit aus dem Token), B+B-Termine haben keine
+  Ausnahme-Woche. Plugin und Hub immer gemeinsam ändern.
+- **Messung:** Matomo `Buchung / Vorlauf-Hinweis`, `Kontakt / Vorlauf Anruf`, `Kontakt / Vorlauf WhatsApp`.
+  Grundlage: `glattt-ads/audit/2026-11-14-vorlauf-show-rate.md`.
+- **Prüfstand:** `preview/standortseite.php?aufbau=kopfbild&vorlauf=21` (`fenster=leer` = Ausnahme-Woche),
+  `php preview/vorlauf-test.php` (24 Prüfungen der Server-Logik).
 
 ### Wortlaut des Angebots: wo er steht (0.36.x)
 

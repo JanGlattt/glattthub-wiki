@@ -176,6 +176,9 @@ daneben, keine B+B-Leistung. B+B ist in Phorest ebenfalls als Beratung markiert 
 Beratung (Booking)“, „Gratis Beratungsgespräch und erste Sitzung“) und wird deshalb über den Namen
 (`behandlung|sitzung`) ausgenommen — B+B verlegt weiter über die Hub-Slotsuche.
 
+- **Maximaler Buchungsvorlauf wie auf glattt.com (seit 14.11.2026).** Der Link einer reinen Beratung zeigt nur die
+  nächsten 21 Tage (Wert aus dem WordPress-Admin, `WebsiteBookingWindow`); Einzelheiten in
+  `WORDPRESS-BUCHUNGSWIDGET.md`, Abschnitt „Maximaler Buchungsvorlauf“.
 - **Slots exakt wie auf glattt.com.** `WebsiteConsultationSlotService` fragt die
   Phorest-Online-Verfügbarkeit (`isOnlineAvailability`) für genau diesen Beratungs-Service ab und
   dünnt sie aus wie das Buchungs-Plugin (`glattt_thin_availability_slots()`, WPglatttBooking
