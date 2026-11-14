@@ -214,6 +214,12 @@ und lässt sich je Institut unter **Institute → Institut bearbeiten** übersch
 im Fenster einmal gar nichts frei, bleibt die erste freie Woche danach buchbar. Der Verlege-Link aus der
 Terminerinnerung richtet sich nach demselben Wert.
 
+### Terminwahl: vier Zeiten je Tag (seit 0.38.0, 14.11.2026)
+
+Der Kalender zeigt je Tag höchstens **vier Zeiten** — eine je Tageszeit (morgens, mittags, nachmittags, abends). „Alle 12
+Zeiten“ zeigt die vollständige Liste des Tages in zeitlicher Reihenfolge. Viele Zeiten sollen die Kundin nicht erschlagen
+und nicht beliebig wirken. Die Uhrzeit steht im Chip mit großer Stunde und klein hochgestellten Minuten.
+
 ## Für Entwickler
 
 ### Dateien (im Plugin)
@@ -278,6 +284,19 @@ Beim Seitenaufruf werden Services + Verfügbarkeiten im Hintergrund vorgeladen, 
 - Beratungs-Staff-Erkennung: `glattt_get_beratung_staff_ids()` — Phorest-Staff je Branch, Name enthält „beratung" (case-insensitive, matcht „BI Nur für Beratungen" etc.), 12h-Transient; bei API-Fehler kein Caching und Ausdünnung ohne Präferenz.
 - Konfigurierbar ohne Release: `add_filter('glattt_slot_gap_minutes', fn() => 30);` — `0` deaktiviert die Ausdünnung.
 - Verifikation (Juli 2026, 2 Wochen Live-Daten): 661 → 496 Slots (−25 %), Beratungs-Staff-Anteil 74 % → 81 %; PHP-Implementierung deckungsgleich mit Referenz-Simulation.
+
+### Terminwahl: vier Zeiten je Tag (0.38.0)
+
+- `waehleVorn()` in `booking-frontend.js`: je Tageszeit (bis 11, 11–14, 14–17, ab 17 Uhr) eine Zeit; Rang „noch nicht vorn
+  gestanden in dieser Woche + Rand eines freien Blocks“ → „neu“ → „Rand“ → früheste. Rand = Abstand zur Nachbarzeit über
+  55 Minuten. Sind alle Uhrzeiten einer Tageszeit durch, beginnt die Reihe von vorn. Auffüllen bis vier, bis zu fünf Zeiten
+  stehen alle da. Deterministisch, kein Zufall.
+- Gilt für Wochenraster (`renderGridTimeslots`) und Tagesliste (`renderTagesliste`); aufgeklappte Tage merkt `tageOffen`
+  je Institut und Datum. B+B-Termine stehen immer da; Kopfbild-Pillen und Schnellbuchung sind unverändert.
+- **Fallstrick:** Das Skript kennt nur freie Zeiten — „Rand“ kann auch Öffnungsbeginn oder -ende sein. Die Auswahl
+  bevorzugt bestimmte Zeiten; wer eine gerechte Verteilung braucht, ändert `rang()`.
+- Chip: `zeitChip()` (`.zt-h`/`.zt-m`), volle Uhrzeit im `aria-label`. Matomo `Buchung / Alle Zeiten`.
+- Kein A/B-Test (bewusst für alle ausgerollt): Die Wirkung lässt sich nur am Vorher/Nachher ablesen.
 
 ### Maximaler Buchungsvorlauf (0.37.0)
 
