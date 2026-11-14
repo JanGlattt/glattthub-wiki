@@ -203,8 +203,9 @@ nicht „gratis“. Die Slot-Bezeichnung „Beratung + Behandlung (90 Min)“ un
 
 ### Maximaler Buchungsvorlauf (seit 0.37.0, 14.11.2026)
 
-Online sind Termine nur für die nächsten **21 Tage** buchbar. Wer später kommen möchte, sieht am Ende des Kalenders
-einen Hinweis mit der Telefonnummer des Instituts und einem WhatsApp-Knopf. Grund: Je länger der Vorlauf, desto
+Online sind Termine nur für die nächsten **21 Tage** buchbar. Wer später kommen möchte, sieht in der letzten
+buchbaren Woche direkt unter der Wochenzeile eine schmale Leiste mit „Anrufen“ und „WhatsApp“ (seit 0.37.2; der Pfeil „→“
+lässt sie aufleuchten), in der Handy-Liste eine Karte am Ende. Grund: Je länger der Vorlauf, desto
 seltener wird der Termin wahrgenommen (63 % bei 0–2 Tagen, 45 % bei 15–21, 34 % ab 29 Tagen — vor allem, weil
 häufiger storniert wird).
 
@@ -295,7 +296,10 @@ Beim Seitenaufruf werden Services + Verfügbarkeiten im Hintergrund vorgeladen, 
 - **Fallstricke:** Die Instituts-Zeile wird per `REPLACE` geschrieben — deshalb liegt der Instituts-Wert in einer
   Option, nicht in einer neuen Spalte. Begleitbuchungen sind ausgenommen (Zeit aus dem Token), B+B-Termine haben keine
   Ausnahme-Woche. Plugin und Hub immer gemeinsam ändern.
-- **Messung:** Matomo `Buchung / Vorlauf-Hinweis`, `Kontakt / Vorlauf Anruf`, `Kontakt / Vorlauf WhatsApp`.
+- **Wochenwechsel ohne Sprung (0.37.1):** `hoeheHalten()`/`hoeheFreigeben()` halten beim Laden die Höhe des Rasters fest und
+  lassen sie danach auf das neue Maß gleiten — vorher fiel die Karte zusammen und die Seite sprang.
+- **Messung:** Matomo `Buchung / Vorlauf-Hinweis`, `Buchung / Vorlauf-Pfeil` (Klick auf „→“ am Ende), `Kontakt / Vorlauf Anruf`,
+  `Kontakt / Vorlauf WhatsApp`.
   Grundlage: `glattt-ads/audit/2026-11-14-vorlauf-show-rate.md`.
 - **Prüfstand:** `preview/standortseite.php?aufbau=kopfbild&vorlauf=21` (`fenster=leer` = Ausnahme-Woche),
   `php preview/vorlauf-test.php` (24 Prüfungen der Server-Logik).
