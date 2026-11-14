@@ -298,6 +298,22 @@ Beim Seitenaufruf werden Services + Verfügbarkeiten im Hintergrund vorgeladen, 
 - Chip: `zeitChip()` (`.zt-h`/`.zt-m`), volle Uhrzeit im `aria-label`. Matomo `Buchung / Alle Zeiten`.
 - Kein A/B-Test (bewusst für alle ausgerollt): Die Wirkung lässt sich nur am Vorher/Nachher ablesen.
 
+### Handy: nie an der Fensterhöhe messen (0.38.1–0.38.3)
+
+Am iPhone feuert `resize` beim normalen Scrollen, weil die Safari-Leiste ein- und ausfährt. Drei Stellen ließen die
+Seite dadurch springen und sind behoben:
+
+- **Kopfbild** (`kopfbildHandyMasse()`): Bildschirmhöhe als fester Wert in `--kb-screen` statt `100svh`; neu gemessen
+  wird nur bei geänderter Breite.
+- **Preis-Kopf** (`includes/preis-kopf.php`): Überlappung der Kopfzeile in Seiten-Koordinaten, gedeckelt; `--gpk-screen`
+  fest; Klasse `ist-niedrig` statt `@media (max-height: 700px)`. Vorher wuchs das Foto gescrollt bei jedem `resize`.
+- **Regel für alles Neue:** keine Höhen aus `100svh`/`innerHeight` nachführen, keine `@media (max-height)`. Prüfrezept:
+  Playwright `iPhone 14`, scrollen, Fensterhöhe 664 → 750 → 664 setzen, `scrollHeight` vergleichen.
+
+Im selben Zug: Der Buchungsknopf rückt am Handy über das Aktions-Abzeichen (`--gcta-abzeichen`), die Tagesliste gilt
+unter 768 px für jede Widget-Variante (`listenModus()`), nach der Standortwahl rollt die Seite an den Kartenanfang
+(`kartenAnfangZeigen()`), und „+5 ›“ in der Liste zählt alle weiteren Zeiten und klappt den Tag auf.
+
 ### Maximaler Buchungsvorlauf (0.37.0)
 
 - **Plugin** `includes/vorlauf.php`: `glattt_vorlauf_tage()` (Option `glattt_max_lead_days`, je Institut
