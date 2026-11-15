@@ -114,6 +114,14 @@ ist wieder online buchbar.
 Ohne den Schalter läuft alles mit (Aufforderung, Stand, Statistik), storniert wird aber nichts — so
 lässt sich der Ablauf je Standort erst beobachten.
 
+**Der ganze Ablauf an einer Stelle: Admin → Betrieb → „Ablauf Probebehandlung“** (`App\Filament\Pages\ConsultationFlow`,
+seit 15.11.2026). Die fünf Schritte werden an drei Orten gepflegt (Beratungs-WhatsApp, Terminerinnerungen, Überlegt
+noch); die Seite liest sie je Standort in der Reihenfolge, in der die Kundin sie erlebt — Danke und Gutschein,
+Bestätigung anfordern, Nachfrage, Frist und Storno, Erinnerung mit Weg — mit Zeitpunkt, Vorlage, Kanälen und Stand
+(eingerichtet / fehlt / aus, mit Grund) und einem Knopf zur richtigen Stelle. Der Schalter für den automatischen
+Storno lässt sich dort direkt umlegen. Die Seite speichert nichts Eigenes (`ConsultationFlowOverview`); welche Regel
+für einen Standort gilt, bestimmt dieselbe Auswahl wie beim Versand (`AppointmentReminderService::ruleFor()`).
+
 **Fachregeln** (alle in `AppointmentConfirmationService`):
 
 - **Kurzfristig gebucht = bestätigt.** Liegt zwischen Buchung (`upcoming_appointments.booked_at`,
