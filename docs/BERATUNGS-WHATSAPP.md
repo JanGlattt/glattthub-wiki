@@ -59,6 +59,23 @@ und lässt Fehlversuche wiederholen.
 
 ### Buchungsbestätigung per E-Mail aus dem Hub (seit 15.11.2026)
 
+**Probebehandlung: persönlicher Brief der Institutsleitung (seit 15.11.2026 abends).** Die Standard-Fassung ist kein
+Fließtext mehr, sondern ein Brief mit festen Bausteinen (`BookingConfirmationMailer::letter()`, Block `$welcome` in
+`emails/appointment-reminder.blade.php`): Institutsfoto als Kopfbild, Anrede „Hi …, ich bin …“, Zeile „In N Tagen
+sehen wir uns“, Termin-Karte mit Verlege-Knopf, drei Schritte „Wir nehmen uns 45 Minuten nur für Dich“, Kasten
+„Kurz bestätigen“ (nur wenn die Regel des Standorts eine Bestätigung verlangt und genug Vorlauf bleibt), Anfahrt
+(Adresse + Wegzeile), Unterschrift mit Profilbild und der Gutschein als P.S. mit Knopf (wie die Danke-WhatsApp nur
+zur ersten Beratung; derselbe Kauf-Link, also dasselbe Angebot des Gutschein-Tests). Editierbar bleibt nur die
+Einleitung (`confirmation_mail_body`, zusätzlicher Platzhalter `{{institut_ort}}`) und der Betreff.
+
+- **Absenderin:** Hub-Konto je Standort unter Kundennachrichten → Standorte & Kanäle
+  (`customer_message_branch_settings.sender_user_id`). Ohne Konto: „Schön, dass Du kommst …“ und „Dein Team von glattt …“.
+- **Bilder:** `MailImages` liefert Institutsfoto (erstes Bild aus `institute_images`, 1280 × 400) und Profilbild
+  (160 × 160) über `/shared/mail-bild/{kind}/{branch}/{signatur}.jpg` aus — ohne Anmeldung, weil Mailprogramme sonst
+  nichts laden, mit HMAC-Signatur gegen Durchprobieren, einen Tag gecacht. Die Signatur enthält den Dateipfad:
+  Ein neues Bild bekommt eine neue Adresse.
+- „Beratung + Behandlung“ in einem Termin behält den bisherigen Aufbau mit den Behandlungshinweisen.
+
 Bis 15.11.2026 verschickte das WordPress-Plugin die Bestätigung einer Online-Buchung aus eigenen Vorlagen
 (`wp_glattt_email_templates`, fünf Stück: Standard, Bremen, je mit einer Fassung für „Beratung + Behandlung“).
 Jetzt kann der Hub sie übernehmen — im Layout aller Termin-Mails (Termin-Karte, Knopf „Termin verlegen oder
