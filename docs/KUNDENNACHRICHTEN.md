@@ -148,6 +148,49 @@ Termin wahrgenommen, Verträge, verkaufte KPZ, Vertragswert, Gutschein-Einnahmen
 (Gutscheinwert minus Preis je Kauf). Alle Quoten beziehen sich auf die verschickten Links; der Zeitraum auf
 den Tag, an dem der Link entstand.
 
+### Ablauf zur Probebehandlung („Kontakt vor BGs“, seit 15.11.2026)
+
+Eingerichtet per Migration `setup_probebehandlung_message_flow` für fünf Standorte (Magdeburg nicht): die Superchat-Vorlagen
+„Probebehandlung 1–5“ (Ordner „Probebehandlung“ je WhatsApp-Konto), je Standort eine Erinnerungsregel
+„Probebehandlung <Stadt>“ mit drei Stufen und SMS-/E-Mail-Rückfall.
+
+| Schritt | Wer | Wo im Hub |
+|---|---|---|
+| E-Mail zur Buchung | Hub (seit 15.11.2026, Plugin 0.39.0 übergibt) | Karte „Buchungsbestätigung“ |
+| WhatsApp 1 / 1b Danke und Gutschein | Hub | Karte „Buchungsbestätigung“ |
+| WhatsApp 2 Bestätigung anfordern, 72 h | Hub | Karte „Terminbestätigung“, Stufe der Regel |
+| WhatsApp 3 Nachfrage, 48 h | Hub | wie oben |
+| Frist 36 h, Storno, WhatsApp 4 | Hub (Storno-Schalter je Regel) | Karte „Terminbestätigung“ |
+| Sprachnachricht mit Wegvideo | Leitung von Hand | Terminübersicht, Liste „Sprachnachrichten“ |
+| Erinnerung 3 h | ausgeschaltet | Karte „Erinnerung mit Weg“ |
+
+**Nur neue Buchungen.** `config('customer_messages.confirmation_required_since')` (15.11.2026, 17 Uhr): Termine, die
+vorher gebucht wurden, bekommen in `AppointmentConfirmationService::ensureFor()` den Stand `not_required` — keine
+Aufforderung, keine Frist, kein Storno. Anlass war der Vorfall beim Einschalten (siehe Changelog).
+
+**Kurzfristige Buchungen.** Weniger als 72 Stunden zwischen Buchung und Termin: keine Bestätigung. Die Danke-Nachricht
+nimmt dann `short_notice_template_id` der Beratungs-WhatsApp (`ConsultationWhatsappSetting::templateFor()`,
+Vorlage „Probebehandlung 1b“ ohne den Satz zur Bestätigung, gleiche Platzhalter). Ist die Kurzfrist-Vorlage nicht
+genehmigt, fällt der Versand auf die Standard-Vorlage zurück.
+
+**Stufen ein- und ausschalten.** `appointment_reminder_stages.enabled`: Eine ausgeschaltete Stufe behält Vorlage und
+Texte, wird aber nicht versendet. Schalter im Regelformular („Stufe aktiv“) und je Standort in der Karte
+„Erinnerung mit Weg“. Ohne aktive Stufe „Bestätigung anfordern“ verlangt die Regel keine Bestätigung
+(`AppointmentReminderRule::confirmationRequestStage()`), es gibt dann weder Frist noch Storno.
+
+**Aktionszeile.** Platzhalter `promo_line` (WhatsApp-Variable „Aktionszeile“) bzw. `{{aktion}}` in SMS und E-Mail der
+Terminerinnerungen: `PromoLine::resolve()` fragt `PromoEnvelopeService::status()` und liefert den gezogenen Gewinn
+(„… wartet auf Dich: 150 € Startbonus“), „Umschlag vor Ort ziehen“ für Neukundinnen ohne Gewinn oder den
+Ausweichtext — auch bei Terminen nach dem Ende der Aktion und wenn die Website nicht antwortet. Standardtexte in
+`config/customer_messages.php`, je WhatsApp-Variable überschreibbar. Sie steht in der Stufe „3 Stunden vorher“, die
+zurzeit ausgeschaltet ist.
+
+!!! warning "Fallstrick: Scharfschalten zeitgesteuerter Nachrichten"
+    „Kurzfristig“ bemisst sich am Abstand Buchung → Termin, nicht am Abstand Einschalten → Termin. Eine neue Regel
+    erfasst deshalb sofort alle bestehenden Termine im Zeitfenster. Neue zeitgesteuerte Nachrichten immer mit einem
+    Stichtag für die Buchung einführen, vorher gegen Prod zählen, was der erste Lauf erfasst, und einen Storno erst
+    nach einem beobachteten Lauf von Hand einschalten.
+
 ### Einwilligungen
 
 `CustomerMessageCatalog::consentRules()` dokumentiert die Regel je Art (zum Termin, nach einer Leistung,
@@ -164,3 +207,8 @@ Standort-Einstellungen, Gutschein-Test einschalten, Protokoll), `tests/Feature/C
 ## Changelog
 
 - **15.11.2026** — Bereich gebaut (Etappe 1 und 2 des Konzepts), zusammen mit dem Gutschein-Test.
+- **15.11.2026** — Ablauf zur Probebehandlung eingerichtet. Beim ersten Lauf (16:22 Uhr) gingen Aufforderungen und
+  Nachfragen an 24 Kundinnen mit bereits gebuchten Terminen; der Storno wurde um 16:28 Uhr gestoppt, storniert wurde
+  nichts. Seitdem Stichtag für Buchungen. Am selben Tag: Erinnerung 3 Stunden vorher ausgeschaltet (Schalter je
+  Stufe), Kurzfrist-Vorlage 1b, Liste „Sprachnachrichten“ in der Terminübersicht, Buchungs-E-Mail aus dem Hub
+  (Plugin 0.39.0).

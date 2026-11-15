@@ -651,3 +651,20 @@ kompakt als `modal-glattt-sm`) bzw. `Livewire.dispatch('open-reschedule-modal')`
 Seite eingebundene `reschedule-slot-modal`; nach `appointment-cancelled`/`appointment-rescheduled`
 lädt die Liste neu. `data-can-book` am Listen-Container. Regeln und Endpunkte:
 `APPOINTMENT-VIEW.md`, Abschnitt „Termin absagen".
+
+## Sprachnachrichten vor der Probebehandlung (seit 15.11.2026)
+
+Vor jeder Probebehandlung schickt die Leitung eine persönliche Sprachnachricht mit Wegvideo aus WhatsApp (Ablauf
+„Kontakt vor BGs“, siehe [Kundennachrichten](KUNDENNACHRICHTEN.md)). Der Hub verschickt sie nicht, er führt nur die
+Tagesliste und den Haken.
+
+- **Abzeichen** „Sprachnachricht offen“ / „Sprachnachricht gesendet“ an jeder gebuchten Beratung ab heute
+  (`renderVoiceBadge()` in `appointments.js`; nicht an vergangenen Tagen, abgesagten Terminen und der Absage-Spalte).
+- **Haken** über das Menü an der Uhrzeit oder die Liste „Sprachnachrichten“ im Seitenkopf (Knopf erscheint nur an
+  Tagen mit Probebehandlungen, mit der Zahl offener Nachrichten). Die Liste zeigt je Kundin das Gerüst zum freien
+  Sprechen mit Vorname, Uhrzeit und dem Vornamen der angemeldeten Person.
+- **Daten:** `appointment_voice_messages` (`appointment_id` eindeutig, `sent_at`, `sent_by_user_id`). Endpunkt
+  `POST /phorest/appointment-voice-message` (`can:view_appointments`, Standort-Bindung), Stand als `voice_sent_at`
+  in `GET /phorest/appointment-reminder-status` und im Tages-Endpunkt der App.
+- **App:** Zeile mit Knopf „Abhaken“ / „Zurücknehmen“ in der nativen Terminübersicht
+  (`AppointmentCard.voiceLine`), die Liste mit dem Gerüst-Text gibt es dort nicht.

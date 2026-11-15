@@ -62,6 +62,11 @@ gesendet, übersprungen oder fehlgeschlagen ist.
 !!! info "Menü seit 15.11.2026"
     Regeln, Kanäle, Protokoll und Opt-in-Vormerke stehen nicht mehr einzeln im Admin-Menü, sondern öffnen sich aus **Betrieb → Kundennachrichten** (Karten „Terminbestätigung“, „Erinnerung mit Weg“, „Erinnerung an die Behandlung“). Der Superchat-Kanal je Standort wird dort unter „Standorte & Kanäle“ gepflegt; neue Platzhalter „Wegzeile“ und „Absendername“. Siehe [Kundennachrichten](KUNDENNACHRICHTEN.md).
 
+!!! info "Seit 15.11.2026: Stufen einzeln ausschaltbar, Aktionszeile, Stichtag"
+    Jede Stufe hat den Schalter „Stufe aktiv“ (`appointment_reminder_stages.enabled`). Neuer Platzhalter „Aktionszeile“
+    (`promo_line`, in SMS und E-Mail `{{aktion}}`). Die Terminbestätigung mit Frist gilt nur für Buchungen ab dem
+    Stichtag in `config/customer_messages.php`. Details: [Kundennachrichten](KUNDENNACHRICHTEN.md#ablauf-zur-probebehandlung-kontakt-vor-bgs-seit-15112026).
+
 ### Fachregeln: Auslöser, Kanäle, Voraussetzungen
 
 - Vor jedem gebuchten Termin prüft der Hub alle 15 Minuten, ob eine
