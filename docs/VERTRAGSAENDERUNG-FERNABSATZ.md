@@ -129,6 +129,35 @@ Fernabsatz-Widerrufsrecht, der Vertrag entsteht sofort aktiv.
   31.07.2026: GoCardless nur manuell). Offene GoCardless-Einzüge des Altvertrags werden nur
   gemeldet (Anzahl in der Benachrichtigung), nicht storniert.
 
+- **Zahlungsplan des Folgevertrags (seit 15.11.2026):** Der Dialog „Neuen Zahlungsplan anlegen“
+  im Reiter „Zahlungen & SEPA“ schlägt dieselben Beträge vor wie die automatische Anlage — also
+  mit dem Guthaben aus dem Altvertrag. Vorher baute der Browser den Vorschlag allein und kannte
+  nur den Abschluss-Rabatt; das Büro legte Folgeverträge mit vollen Raten an (OS004026,
+  OS003982, H004902 — von Hand korrigiert). Der Server liefert die fertige Raten-Map über
+  `GoCardlessPaymentPlanService::signingCascadeProposal()` in
+  `contractDetailConfig.signingCascadePlan` (`fresh`, `rate1_amount_cents`, `rate1_documented`,
+  `rates`, `offset_cents`), `buildPaymentSchedule()` in `contract-detail.js` übernimmt sie;
+  `signingDiscountReductions` bleibt nur der Rückfall. Regeln:
+    - Die Methode ist **rein lesend**: keine Phorest-Abfrage, nichts wird gespeichert oder
+      eingelöst, Fehler ergeben einen leeren Vorschlag statt einer kaputten Vertragsseite.
+    - Hinterlegte Kaskade (`signing_cascade`) wird vollständig übernommen (Rabatt, Guthaben,
+      Freunde-werben, Gutscheine — dort schon verrechnet bzw. eingelöst). Ohne hinterlegte
+      Kaskade nur Rabatt + Guthaben: Den offenen Freunde-werben-Rabatt zieht
+      `createGoCardless()` selbst ab (sonst doppelt), Gutscheine laufen über die Auswahl im Dialog.
+    - Nur für einen **frischen Plan** (`fresh`: noch keine SEPA-Rate bezahlt — das prüft der
+      Server, der Browser kennt die Zahlungsstände im Dialog nicht) und nur bei unveränderter
+      Monatsrate. Gibt es Rate 1 schon als Zeile, gilt deren Betrag (auch 0 €).
+    - **Summenzeile:** `total_value_cents` des Folgevertrags enthält das Guthaben **nicht**
+      (voller Paketpreis). Der Dialog zeigt deshalb „Beim Abschluss verrechnet“ (`offset_cents`)
+      und rechnet es in die Differenz ein — sonst stünde dort „Abweichung vom Vertragswert“ in
+      Höhe des Guthabens.
+    - **Fallstrick „Raten anpassen“** (`updatePaymentPlan`-Plausibilität im
+      `ContractController`): Dort gilt weiter Rate 1 + Legacy + Gutscheine + Freunde-werben +
+      SEPA-Raten = Vertragswert, **ohne** das Guthaben. Wer bei einem Folgevertrag die Raten um
+      das Guthaben kürzt, bekommt die Abweichung gemeldet, muss sie bestätigen und kommentieren —
+      und der Vertragswert sinkt dabei um den gekürzten Betrag (so geschehen bei OS004026 und
+      H004902). Noch offen: das Guthaben in dieser Prüfung als eigenen Posten führen.
+
 - **Phorest-Abos des Altvertrags (seit 15.11.2026):** Sobald der Folgevertrag in Phorest gekauft
   ist, archiviert der Hub die Abos des abgelösten Vertrags (`archived = true`, Ablaufdatum
   bleibt) — sonst stehen sie weiter mit Rest in der Kundenakte und das Institut behandelt Zonen,
@@ -246,6 +275,10 @@ erklärtem Widerruf des Altvertrags. Für **Upgrades** gilt der Weg bewusst noch
 
 ## Changelog
 
+- 15.11.2026 — Der Dialog „Neuen Zahlungsplan anlegen“ nimmt die Abschluss-Kaskade vom Server
+  (`signingCascadeProposal()`): Guthaben aus dem Altvertrag, Freunde-werben und Gutscheine
+  stehen im Vorschlag, die Summenzeile rechnet das Guthaben ein. Vorher volle Raten bei
+  Folgeverträgen (OS004026, OS003982, H004902).
 - 15.11.2026 — Beim Wirksamwerden archiviert der Hub die Phorest-Abos des abgelösten Vertrags
   (gemeinsame Regel mit dem Upselling in `PredecessorCourseArchiver`); Unklares geht als Notiz am
   Altvertrag und als Verlaufseintrag im Widerrufsfall ans Büro (Anlass OS004026).

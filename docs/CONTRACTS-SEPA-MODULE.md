@@ -1379,6 +1379,18 @@ er `gocardless_reset`, das die ENUM-Spalte `contract_changes.change_type` nicht 
 endete mit einem Serverfehler, **nachdem** die Verknüpfung schon gelöst war (kein einziger
 solcher Eintrag in Prod). Neue Verlaufs-Typen brauchen immer zuerst eine Migration der Spalte.
 
+### Mandat im Hub „storniert", bei GoCardless aktiv
+
+„Zahlungsplan stornieren" (`cancelGoCardlessPlan()`) storniert den Plan, nicht das Mandat. Bis
+15.11.2026 setzte der Schritt trotzdem `client_mandates.status = cancelled`; der gleich danach
+neu angelegte Plan zog normal ein, der SEPA-Reiter zeigte aber dauerhaft „Storniert" — bei
+geteiltem Mandat auch am Schwestervertrag (elf aktive Verträge im Befund vom 15.11.2026, keiner
+davon mit unbekanntem Dauerauftrag). Seitdem bleibt der Mandats-Status unberührt. Bestand:
+`php artisan contracts:fix-cancelled-mandate-status [--dry-run] [--mandate=ID …]` prüft lokal
+stornierte Mandate mit offenen GoCardless-Raten an einem aktiven Vertrag, liest je Mandat den
+**Live-Status** und stellt nur lebende Mandate (active/submitted/pending_submission) um; liest
+bei GoCardless, schreibt nur lokal.
+
 ### Dauerauftrag an einem Mandat, das der Hub nicht kennt
 
 Altverträge können bei GoCardless über einen Dauerauftrag (Subscription) an einem Mandat laufen,

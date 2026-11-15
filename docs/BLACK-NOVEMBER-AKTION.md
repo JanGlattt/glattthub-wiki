@@ -213,8 +213,11 @@ gingen so ohne den gewonnenen Rabatt raus (bei 1-KPZ-Verträgen keiner). Seitdem
   nach `Contract::signingDiscountReductions()` über den Weg von „Raten anpassen"
   (`ContractController::updatePaymentPlan()` — nur geänderte GoCardless-Raten werden storniert und
   neu angelegt; die Ersatzrate bekommt wieder die ursprüngliche Nummer). `--tier` legt die Stufe
-  für Verträge fest, deren Code nicht an der Buchung hängt. Nur gelistet werden Verträge mit
-  hinterlegter Werbung, bereits geänderten oder nicht mehr änderbaren ersten Raten. Tests
+  für Verträge fest, deren Code nicht an der Buchung hängt. Beim Abschluss verrechnete Extras
+  (Freunde-werben, Gutscheine — erkennbar an der Raten-Notiz) bleiben erhalten: Der Aktionsrabatt
+  kommt zuerst, die Extras wandern auf die nächsten Raten, `contract_referrals.discount_allocation`
+  zieht nach (Jan, 15.11.2026: der Aktionsrabatt gilt zusätzlich). Nur gelistet werden Verträge
+  mit von Hand geänderten oder nicht mehr änderbaren ersten Raten. Tests
   `RepairDroppedPromoDiscountsCommandTest`.
 
 ### Hub: Statistik „Black November: Umschläge & Verträge"
