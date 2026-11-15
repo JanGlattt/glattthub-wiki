@@ -194,6 +194,29 @@ Abgelehnt werden ein anderer Aktionsrabatt als der gewonnene, ein Aktionsrabatt 
 Kundin und (bei gesetztem Geheimnis) ein nicht gültig signierter Code; Rabatte ohne Kürzel bleiben
 frei wählbar. Test `PromoDiscountGuardTest`.
 
+**Der gewonnene Rabatt darf nicht verloren gehen (Jan, 15.11.2026):** Bis dahin wählte
+`promoApply()` den Rabatt „genau einmal je Liste" vor. `onBodyZonesChanged()` setzt den Rabatt aber
+bei **jedem** Zonen-Tipp zurück und lädt die Preise neu — mit mehreren Zonen oder Ganzkörper war die
+Vorwahl weg, der Hinweis „Rabatt vorausgewählt" blieb stehen. 15 aktive Verträge seit 29.10.2026
+gingen so ohne den gewonnenen Rabatt raus (bei 1-KPZ-Verträgen keiner). Seitdem:
+
+- `promoApply()` greift immer, wenn kein Rabatt gewählt ist — nach jedem Preis-Laden und auch,
+  wenn im Dropdown „Kein Rabatt" gewählt wird (`onDiscountChanged()`). Ein bewusst gewählter
+  anderer Rabatt bleibt stehen; der Hinweis zeigt über `promoSelected()`, ob der Aktionsrabatt
+  wirklich im Preis ist.
+- `PromoCodeService::assertPromoNotDropped()` an denselben drei Stellen wie die Prüfung oben:
+  Eine Einreichung **ohne** Rabatt wird abgelehnt, wenn die Kundin einen gültig signierten Code hat
+  und die Preisliste heute den Rabatt ihrer Stufe führt. Keine Sperre, wenn sie den Aktionsrabatt
+  schon an einem (Nicht-Entwurfs-)Vertrag hat — Zusatz- und Folgeverträge bleiben möglich.
+- Bestand: `php artisan promo:repair-dropped-discounts [--dry-run] [--contract=ID …]
+  [--tier=ID:BN26-100P …]` setzt den Rabatt der Gewinnstufe und mindert die ersten offenen Raten
+  nach `Contract::signingDiscountReductions()` über den Weg von „Raten anpassen"
+  (`ContractController::updatePaymentPlan()` — nur geänderte GoCardless-Raten werden storniert und
+  neu angelegt; die Ersatzrate bekommt wieder die ursprüngliche Nummer). `--tier` legt die Stufe
+  für Verträge fest, deren Code nicht an der Buchung hängt. Nur gelistet werden Verträge mit
+  hinterlegter Werbung, bereits geänderten oder nicht mehr änderbaren ersten Raten. Tests
+  `RepairDroppedPromoDiscountsCommandTest`.
+
 ### Hub: Statistik „Black November: Umschläge & Verträge"
 
 Statistik `besucher.black-november` auf der Seite **Besucher & Buchungs-Funnel** (und damit im
@@ -331,6 +354,10 @@ mit Aktionsrabatt zählen unabhängig von der Herkunft des Codes.
 - Bindung „ein Umschlag pro Person" an die Mobilnummer im Hub (heute nur Cookie).
 
 ## Chronik
+
+- **15.11.2026** — Vorwahl ging beim Antippen mehrerer Zonen verloren (Asana H005082): Vorwahl
+  nach jedem Preis-Laden, Server lehnt den Abschluss ohne gewonnenen Rabatt ab, Befehl
+  `promo:repair-dropped-discounts` für den Bestand.
 
 - **03.11.2026** — Umschlag in der Kundeninformation für Neukundinnen mit Beratungsgespräch ohne
   Online-Code (Web + App ohne Build): Plugin 0.35.0 (`glattt_umschlag_hub`), Hub
