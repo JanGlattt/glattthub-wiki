@@ -64,7 +64,7 @@ Alle Analyse-Karten sind zweiseitig: **Diagramm als Standard-Ansicht, Tabelle al
 | Karte | Diagramm | Tabelle |
 |---|---|---|
 | **Aktueller Buchungsstand** | Balken je Institut × Zeitfenster (Heute/3/7/14/28 Tage/Monatsende), Kennzahlen-Zeile darüber | Standort-Tabelle mit denselben Zeitfenstern; hinter „Heute" und „3 Tage" steht jeweils direkt die Vergleichsspalte **Ø Heute** bzw. **Ø 3 Tage** |
-| **Kalenderübersicht** | Kalender der nächsten 28 Tage (Termine, freie Slots, Auslastungs-Ampel; Ansicht „pro Standort" mit Mini-Balken; „+2 Wochen laden" seit 09.11.2026 als eigene Zeile unter dem Raster — in der letzten Wochenzeile landete die Kachel bei vollen Wochen in der KW-Spalte) — bewusste Ausnahme ohne Register: Der Kalender ist bereits die tabellarische Darstellung | — |
+| **Kalenderübersicht** | Kalender der nächsten 28 Tage (Termine, freie Slots, Auslastungs-Ampel; Ansicht „pro Standort" mit Mini-Balken; „+2 Wochen laden" seit 09.11.2026 als eigene Zeile unter dem Raster — in der letzten Wochenzeile landete die Kachel bei vollen Wochen in der KW-Spalte; seit 15.11.2026 unter jedem Wochentag der **Ø gebuchter Beratungen** — groß 6 Monate, klein 1/3/12 Monate) — bewusste Ausnahme ohne Register: Der Kalender ist bereits die tabellarische Darstellung | — |
 | **Freie Slots — nächste 3 Wochen** | Gestapelte Balken der freien Slots je Institut pro Tag + Linien „Davon Prime Time" (gestrichelt) und „Gebuchte BGs"; Kennzahlen-Zeile (Freie Slots, Prime Time, Gebuchte BGs, Engpass-Tage); Karten-Switch „Alle Slots / Nur Prime Time" fokussiert alle Werte auf die Prime-Time-Slots | Heatmap-Matrix Tag × Institut (Muster No-show-Matrix): freie Slots groß mit stufenlosem Rot→Grün-Hintergrund (verankert an den Schwellen: 0 = sattes Rot, um 6 neutral, ab 12 sattes Grün), darunter klein Prime-Anteil und gebuchte BGs; Σ-Spalte mit eigener Skala; Sonntage/regionale Feiertage als „–" (geschlossen) |
 | **Entwicklung geplanter Beratungsgespräche** | Stichtags-Zeitreihe seit Juni 2023 (Zeitfenster 1/3/7/28 Tage, gleitender Ø, Gesamt/Standorte) | Stichtage gruppiert Jahr → Quartal → Monat; Gruppenzeilen zeigen den letzten Stichtag der Periode (Bestandsgröße, keine Summe) |
 | **Historischer Buchungsvergleich** | Balken „Stand <Vergleichsdatum>" vs. „Aktuell" je Zeitfenster; Vergleichsdatum frei wählbar (flatpickr) | Standort-Aufschlüsselung mit Trend-Badges (aktuell mehr/weniger gebucht) |
@@ -84,6 +84,7 @@ Jede Karte hat ein Info-Panel (ℹ️) mit Erklärung, Spaltenbeschreibung, Auff
 
 - Geplante Beratungsgespräche pro Tag & Institut
 - Buchungsstand je Institut (Heute, 3/7/14/28 Tage, Monatsende & Ø-Vergleich)
+- Ø gebuchte Beratungen je Wochentag (letzter Monat, 3, 6 & 12 Monate) — `upcoming-consultations-weekday-averages`, seit 15.11.2026
 - Entwicklung geplanter Beratungsgespräche (Stichtags-Zeitreihe)
 - Buchungsstand-Verlauf pro Monat (7/14/28 Tage)
 - Freie Beratungsslots je Institut, Wochentag & Uhrzeit
@@ -130,6 +131,35 @@ Die Karte „Aktueller Buchungsstand" zeigte „Heute" nur im Stat-Strip und ein
   weiter aus `appointments[date]`.
 - **Vergleichsspalten Ø Heute / Ø 3 Tage:** `ReportController::consultationWeekdayAverages(?string $branchId)` mittelt die **gebuchten** Beratungen (`StatsHistoricAppointment` mit `active()`) am **gleichen Wochentag** der letzten zwölf Wochen (Konstante `ReportController::WEEKDAY_AVERAGE_WEEKS`) — für „Heute" die zwölf vorangegangenen gleichen Wochentage, für „3 Tage" dieselben Wochentags-Fenster. Bewusst kein flacher Kalenderschnitt: Sonn- und Feiertage würden ihn systematisch drücken. Bewusst „gebucht" statt „stattgefunden" (also inkl. No-Shows), weil die Ist-Werte daneben ebenfalls gebuchte Termine sind. Die Rechnung liegt in `App\Services\ConsultationWeekdayAverageService` (`forBranch()`, Konstante `WEEKS = 12`) und versorgt **alle drei** Verbraucher: `upcomingConsultationsData` → `branches_breakdown[].stats.avg_today/avg_3_days` + `total_stats`, `upcomingConsultationsKpi` → `by_branch[].avg_today/avg_3_days` + Gesamt, sowie die Export-Quelle `upcoming-consultations-branches`. Bewusst ein eigener Service statt einer Kopie je Verbraucher — genau die Doppelpflege hatte bei den Zeitfenstern schon zu abweichenden Zahlen geführt. Institute ohne Historie fallen auf `0` zurück. Die Spaltenreihenfolge entsteht clientseitig (`tableColumnKeys()` in `termine.js` bzw. `getTableColumnKeys()` in `reports.blade.php`) durch Verschränken: jeder Ø-Wert direkt hinter seinem Ist-Wert. Nur in den **Tabellen** und im CSV-Export — das Diagramm bleibt bei den Zeitfenstern, Ist-Werte und Mittelwerte gehören nicht in dieselbe Balkengruppe. Im CSV schneidet der gemeinsame Formatter (`ExportController`) bei glatten Werten die Nachkommastelle ab (`2.0` → `2`, `2.1` → `2,1`) — der Wert stimmt, nur die Darstellung weicht von der Tabelle ab.
 - **Achtung `x-data`:** Der KPI-Block der Berichte-Übersicht (`resources/views/hub/reports.blade.php`) steht in einem `x-data="…"`-Attribut. Ein **gerades** Anführungszeichen in einem Kommentar dort beendet das Attribut — der restliche JS-Code landet als sichtbarer Text auf der Seite. In diesem Block keine Anführungszeichen in Kommentaren verwenden.
+
+### Wochentags-Schnitt in der Kalenderübersicht (15.11.2026)
+
+Damit sich ein Kalendertag einschätzen lässt („14 gebuchte Beratungen am Montag — viel oder wenig?“),
+steht in der Kopfzeile der Kalenderübersicht unter jedem Wochentag (Mo–Sa) der Durchschnitt der
+**gebuchten** Beratungen an diesem Wochentag: groß die letzten **6 Monate**, klein darunter
+**1M · 3M · 12M**, alle vier im Tooltip ausgeschrieben. Entscheidungen Jan, 15.11.2026:
+
+- **Rollierend bis gestern** (nicht abgeschlossene Kalendermonate): `1m` = gestern minus 1 Monat + 1 Tag
+  bis gestern, entsprechend 3/6/12 Monate (`subMonthsNoOverflow`, sonst läuft der Monatsletzte über).
+- **Gebucht** wie im Kalender und bei Ø Heute: `StatsHistoricAppointment::active()` — Stornos und
+  gelöschte Termine fallen raus, No-Shows zählen mit.
+- **Feiertage zählen nicht als Wochentag:** ohne Standortfilter nur bundesweite
+  (`is_all_branches`), mit Standort die dort geltenden (`HolidayService::getHolidaysForDateRange`).
+  Sonntage haben keinen Wert.
+- **Neues Institut:** Der Zeitraum beginnt frühestens am ersten Tag mit einer Beratung im Fenster —
+  sonst würde z. B. der 12-Monats-Schnitt eines gerade eröffneten Instituts mit Monaten ohne Betrieb
+  verdünnt.
+
+Technik: `ConsultationWeekdayAverageService::weekdayPeriodAverages(?string $branchId)` (Konstante
+`PERIODS`), eine gruppierte Abfrage über 12 Monate mit `>=`/`<` statt `whereDate`. Ausgeliefert unter
+`data.weekday_averages` von `upcomingConsultationsData` (also mit dessen Cache, Gruppe
+`booking-live`) — bewusst **unter `data`**, weil die App von Berichts-Endpunkten nur diesen Teil liest.
+Form: `{periods: [{key, months}], by_weekday: {1..6: {1m, 3m, 6m, 12m}}}`, Werte `null`, wenn es
+im Zeitraum keinen solchen Wochentag gab. Web: `weekdayHeads` + `weekdayAvg()` in `termine.js`, Klassen
+`.calendar-weekday-avg*` im Theme (bis 640 px nur der große Wert, bis 480 px Kurzname darüber).
+App: `ReportCalendarGrid(weekdayNotes:)` zeigt groß den 6-Monats-Wert, auf dem iPad zusätzlich die
+kleine Zeile; ein angetippter Tag listet im Detail alle vier Werte seines Wochentags. CSV-Quelle
+`upcoming-consultations-weekday-averages` nutzt dieselbe Methode.
 
 ### Freie Slots — nächste 3 Wochen (07.08.2026)
 
