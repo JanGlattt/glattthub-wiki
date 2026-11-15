@@ -116,6 +116,14 @@ verbindet Nachrichten mit Kundinnen, Verträgen und Ankündigungen.
 - **Lesebestätigung** (Ankündigungen): `requires_ack` am Beitrag, eine Zeile in
   `chat_acknowledgements` je Person; `today.acknowledgements` listet offene.
 
+### Fehler-Räume (seit 15.11.2026)
+
+Raumtyp `laser_error` je gemeldetem Laserfehler, angelegt von `App\Services\Laser\LaserErrorChatService`
+(Mitglieder: alle am Standort des Lasers, Melderin, Laser-Service). `system_key = laser-error:{id}` macht ihn
+zum System-Raum (kein Umbenennen, keine Mitgliederpflege von Hand), `subject` im Raum-Payload sagt Web und
+App, dass sie oben die Fehlerkarte laden (`/hub/laser/api/errors/{id}/card`). „Behoben“ archiviert den Raum;
+`canPost` sperrt archivierte Räume ohnehin. Details im Wiki `LASER-MODUL.md`, Abschnitt „Fehler-Chat“.
+
 ### Standard-Gruppen
 
 `ChatRoomService::syncStandardRooms()` läuft beim Laden der Chatseite (gedrosselt auf zehn
@@ -703,6 +711,8 @@ Anrufe), `tests/js/chat-call.test.mjs` (Epochen, Spur, Endtexte), `ios/glatttHub
 
 ## Changelog
 
+- **15.11.2026** — Fehler-Räume (`laser_error`) je Laserfehler mit angehefteter Fehlerkarte in Web und App;
+  Raum-Payload trägt `subject`.
 - **22.10.2026 (robuster und glatter)** — Abgleich-Fehler der App behoben und überwacht, Torwächter bei abgelaufener Sitzung, Sticker/GIF mit
   Antwort und Warteschlange, Chat-Profil „Kontaktkarte“ (Medien, Dateien, Links), Glättung (Formatter, stabile Kennung, ein Scroll, Plattencache),
   Push-Öffnen ohne Schiebe-Animation, Messvorrichtung. App 1.5.2.

@@ -179,6 +179,11 @@ Veröffentlichen fragt die Änderungszeile ab. Die Felder des Seitenpanels halte
 `.form-glattt-group`. Uploads gehen an `/hub/wissen/medien` (Disk
 `config('wissen.media_disk')`, lokal `public`, in der Cloud `gcs`).
 
+**Rechtschreibprüfung (Jan, 15.11.2026):** Die Wurzel `.wissen-editor` trägt `spellcheck="true"` und
+`lang="de"`; beides erbt jedes Feld und jeder Editor.js-Block. Unterstrichen wird vom Browser, Vorschläge
+gibt es per Rechtsklick — in der Desktop-App über das eigene Kontextmenü (siehe `DESKTOP-APP.md`,
+„Rechtschreibung“). Bewusst kein LanguageTool/keine Grammatikprüfung: keine Texte an Dritte, keine Kosten.
+
 ### Startseite, Aktionen, Historie, Neuigkeiten (18.10.2026)
 
 - **Startseite** des Raums ist eine Block-Seite (`kind = start`, Bereich `system`, inaktiv, nie im Baum oder in
@@ -347,6 +352,7 @@ Tests `tests/Feature/WissenTest.php`, `WissenImportTest.php`, `tests/Unit/Knowle
 
 ## Changelog
 
+- **15.11.2026** — Rechtschreibprüfung im Editor (Deutsch, Vorschläge per Rechtsklick; Desktop-App ab 1.2.14).
 - **21.10.2026** — Live-Organigramm aus den Hub-Konten (`reports_to_user_id`), Baum mit Fokus-Ansicht, Eskalationskette über zwei Ebenen, Korrektur „&amp;“.
 - **19.10.2026 (Feedback-Runde)** — Editor im Dunkelmodus, Blöcke Person/Institut/FAQ/Organigramm, BPMN mit Verantwortlichen und Risiken plus Anleitungsseite, Text neben Bildern, Lightbox, glatttBert-Fokus und Vorschlag, Suche mit Tippfehlern/Füllwörtern/Sinn, Führungskraft-Anlässe, Drive-Videos.
 - **19.10.2026** — Stufe 2 (Prozess-Block mit Bahnen-Diagramm, echte BPMN-Diagramme mit bpmn-js, Versionsvergleich, Rückmeldungen, Prüf-Erinnerung, Bereich wechseln) und Stufe 3 (Was ist neu, Pflichtseiten, Kiosk für die Institut-iPads, Drive-Dokumente); Katalog-Modul „Wissen“ mit drei Anlässen.

@@ -387,6 +387,23 @@ Die Drag-Region wird bei drei Events neu erstellt (Sicherheit gegen SPA-Navigati
 - `livewire:navigated` — Nach Livewire SPA-Navigation
 - `setInterval(ensureDragRegion, 1000)` — Fallback
 
+### Rechtschreibung im Kontextmenü (seit 1.2.14)
+
+Chromium unterstreicht falsch geschriebene Wörter (macOS-Prüfung, Sprache aus den Systemeinstellungen),
+die **Vorschläge** kennt aber nur das `context-menu`-Ereignis des Hauptprozesses (`params.misspelledWord`,
+`dictionarySuggestions`). Weil das Preload sein eigenes Menü zeichnet und `preventDefault()` ruft, kam dieses
+Ereignis bis 1.2.13 nie an — Wellenlinie ja, Korrektur nein. Seit 1.2.14:
+
+1. In **Eingabefeldern** lässt das Preload den Rechtsklick durch (kein `preventDefault`) und merkt sich Ziel
+   und Position.
+2. `tabs.cjs` (`wireView`) schickt bei `params.isEditable` `electron-ctx:edit-menu` mit Fehlerwort und bis zu
+   sechs Vorschlägen an die Seite.
+3. Das Preload zeichnet daraus dasselbe Menü, Vorschläge oben (`electron-edit:replace-misspelling`), dazu
+   „ins Wörterbuch aufnehmen“ (`electron-edit:learn-word` → `session.addWordToSpellCheckerDictionary`).
+   Kommt nach 250 ms nichts (älteres Hauptprogramm), erscheint das Menü ohne Vorschläge.
+
+Gilt in jedem Eingabefeld des Hubs; die glatttipedia setzt zusätzlich `lang="de"` am Editor.
+
 ### Anmeldestatus aller Tabs (seit 1.2.3)
 
 Alle Tabs teilen sich einen Cookie-Speicher und damit eine Sitzung. Bis 1.2.2 blieb nach dem
@@ -973,6 +990,7 @@ Das Profil wird nur bei Änderungen der Berechtigungen neu erzeugt; `asc-profile
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 15.11.2026 | 1.2.14 | Rechtschreib-Vorschläge und „ins Wörterbuch aufnehmen“ im Rechtsklick-Menü von Eingabefeldern |
 | 01.11.2026 | 1.2.13 | **Tab-Leiste bleibt im Farbschema der Seite:** Dokumente und Bilder schalten die Leiste nicht mehr hell, sie übernehmen das Schema der Seite, aus der sie geöffnet wurden; die Leiste bleibt nach dem Start nicht mehr hell hängen |
 | 01.11.2026 | Hub (SW 2.1.8) | **Vertrag lud weiter herunter:** Der Service Worker fing den PDF-Aufruf ab, die Desktop-App erkannte ihn nicht als Seitenaufruf. Dokument-Adressen laufen jetzt am Worker vorbei — ohne neue App-Version |
 | 30.10.2026 | 1.2.12 | **Dokumente immer im neuen Tab statt als Download:** Vertrag, SEPA-Mandat, Kundenservice-Anlage und jedes andere PDF/Bild aus dem Hub öffnet in einem neuen Tab, auch wenn der Link im selben Tab lädt oder der Server `attachment`/`octet-stream` schickt; Herunterladen über die PDF-Ansicht |

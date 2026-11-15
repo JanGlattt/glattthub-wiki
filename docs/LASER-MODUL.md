@@ -85,7 +85,7 @@ Behördenanzeige laufen dort nativ — Anleitung App 5.
 | Wartung Schritt 2: Impulse, FLOW und die Pflichtfotos des Lasers | Laser 4 |
 | Wartung Schritt 3: Handstück, Laserköpfe, Skintel, Defekt melden | Laser 5 |
 | Wartung Schritt 4: Lager-Check, Abschluss, Protokoll wiederfinden | Laser 6 |
-| Fehler erfassen, die Fehlercodes | Laser 7 |
+| Fehler erfassen, die Fehlercodes, Gespräch zum Fehler | Laser 7 |
 | Reparatur anlegen, versenden, Rückkehr verbuchen | Laser 8 |
 | STK und Behördenanzeige erfassen | Laser 9 |
 | Anbauteil im Detail: Stammdaten, Wartungen, Verlauf | Laser 10 |
@@ -181,7 +181,15 @@ inkl. Rechnungs-Upload. Das Teil erscheint danach in der interaktiven Geräte-An
 verbaut" und ist bei der nächsten Laser-Inventarisierung als vorhandenes Teil wählbar.
 
 **Fehler erfassen** (Reiter *Fehler*): Fehlercode (bekannte Codes 005–110, Sanduhr blau/weiß,
-„ohne Fehler abgestürzt" oder Freitext), Beschreibung und **Foto und/oder Video**.
+„ohne Fehler abgestürzt" oder Freitext), optional das **betroffene Bauteil**, Beschreibung und
+**Foto und/oder Video**.
+
+**Gespräch zum Fehler** (seit 15.11.2026): Jede Meldung öffnet einen eigenen Raum im Team-Chat.
+Alle am Standort des Lasers, die Melderin und der Laser-Service lesen mit und bekommen Antworten als
+Mitteilung. Oben im Raum steht der Fehler als Karte (Status, Bauteil, Fotos, „Zum Laser“); der
+Laser-Service setzt dort „In Bearbeitung“ und „Behoben“. „Behoben“ schließt das Gespräch, es bleibt am
+Laser und — mit zugeordnetem Bauteil — in der Teile-Akte lesbar. Der Push zur Meldung öffnet direkt
+diesen Raum.
 
 **Reparatur-Ablauf**: *Anlegen* (Asset, Defektbeschreibung, manuell oder automatisch bei Defekt)
 → *Versenden* (Versanddatum, Dienstleister, Zieladresse, Tracking, Kostenvoranschlag; bei
@@ -334,6 +342,39 @@ Alle Tabellen mit Prefix `laser_` (bzw. `lasers`). Migrationen: `database/migrat
 | `ConsumableService` | Bestandsführung pro Standort, Low-Stock, fällige Wechsel |
 | `LaserDashboardService` | Dashboard-KPIs + Warnlisten |
 | `LaserReportService` | Aggregationen für die 6 Reports |
+
+### Fehler-Chat (seit 15.11.2026, Entwurf 2 „Chat-Raum mit angehefteter Fehlerkarte“)
+
+**Absicht (Jan, 15.11.2026):** Auf einen gemeldeten Fehler antworten, ohne neue Oberfläche — der
+bestehende Team-Chat trägt das Gespräch (Fotos, Sprachnachricht, Push mit Direkt-Antwort, Abgleich).
+
+- **Raum je Fehler:** `chat_rooms.type = laser_error`, `system_key = laser-error:{id}` (damit gelten die
+  Schutzregeln der System-Räume: nicht umbenennen, keine Mitglieder von Hand), `subject_type/subject_id`
+  zeigen auf den Fehler. `laser_errors.chat_room_id` verweist zurück.
+- **Mitglieder** (`LaserErrorChatService::memberIds`): alle Chat-berechtigten Konten mit
+  `home_branch_id` = `laser_locations.branch_id` des Lasers (Entscheidung Jan: „Alle am Standort“), die
+  Melderin und alle mit `manage_laser_repairs`. Wer den Raum später aus der Akte öffnet
+  (`POST /hub/laser/api/errors/{id}/chat`), tritt bei — auch für Altfehler ohne Raum, die dabei einen
+  bekommen.
+- **Reihenfolge beim Melden:** `LaserErrorService::record()` legt Fehler, Bauteil und Raum an und ruft
+  **danach** `HubNotificationDispatcher::laserErrorReported()` — der Push verlinkt `/hub/chat/raum/{id}`.
+  Der `NotificationEventObserver` meldet `LaserError` deshalb nicht mehr selbst (sonst gäbe es den Raum
+  beim Push noch nicht). Ohne Raum fällt der Link auf `/hub/laser/devices/{sn}#errors` zurück; vorher
+  zeigte er nur auf die Geräteliste, App und Web öffneten nie den Fehler.
+- **Bauteil:** `laser_errors.part_type` (`component` | `attachment`) + `part_id`, nur Teile, die am Laser
+  verbaut sind (`parsePart`). Setzen beim Melden (`part_ref`) oder später von Laser-Service bzw. Melderin.
+- **Status:** `FehlerStatus` hatte bis 15.11.2026 keinen Schreibweg (alles blieb „Offen“). Jetzt
+  `POST …/status` (nur `manage_laser_repairs`), mit Vermerk im Raum (`system` = `laser_error_status`).
+  `BEHOBEN` setzt `resolved_at`/`resolved_by_user_id`, archiviert den Raum (`archived_at` + alle
+  Mitgliedschaften `is_archived`) — schreibgeschützt und aus den Chatlisten; „Wieder öffnen“ holt ihn zurück.
+- **Karte:** `GET …/card` liefert Code, Status, Bauteil, Medien (temporäre URLs), Laser-Pfad, Rechte und
+  Bauteil-Auswahl. Die Raumliste trägt nur `subject` — die Karte lädt der Client beim Öffnen, damit die
+  Chatliste keine Laser-Abfragen braucht. Web `loadLaserCard()` in `public/js/chat.js`, App
+  `LaserErrorPinCard` (`ios/glatttHub/Laser/LaserErrorChat.swift`); beide laden bei einem Vermerk
+  `laser_error_*` neu.
+- **Akten:** Fehler-Zeilen tragen `part_label`, `chat_room_id`, `replies` (ohne Vermerke), `last_reply`;
+  die Teile-Akte (`partDetail`) listet `errors` des Bauteils. Web-Reiter *Fehler*: Spalten Bauteil und
+  Gespräch, Antworten-Zahl per `withCount` (keine Abfrage je Zeile, Test misst es).
 
 ### Livewire-Komponenten
 

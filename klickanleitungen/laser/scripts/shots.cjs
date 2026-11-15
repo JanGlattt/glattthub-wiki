@@ -332,12 +332,20 @@ const PLAN = [
   { name: 'l22-fehler-reiter', url: GERAET, steps: [['loaded'], reiter('Fehler')], marks: [
     { id: 'erfassen', kind: 'badge', n: 1, ...L.byText('button.btn-glattt-danger', 'Fehler erfassen'), at: 'r' },
     { id: 'liste', kind: 'badge', n: 2, ...L.byText('.card-glattt-title', 'Fehler'), at: 'l' },
+    { id: 'gespraech', kind: 'badge', n: 3, ...L.byText('th', 'Gespräch'), at: 't' },
+  ] },
+  // Laser 7, Seite 4 (seit 15.11.2026): Gespräch zum Fehler im Chat — Knopf im Fehler-Reiter öffnet den Raum
+  { name: 'l22b-fehler-gespraech', url: GERAET, steps: [['loaded'], reiter('Fehler'), ['click', 'button.btn-glattt-secondary', 'Antworten', 3500]], marks: [
+    { id: 'karte', kind: 'badge', n: 1, sel: '.chat-laser-card', at: 'l' },
+    { id: 'antworten', kind: 'badge', n: 2, sel: '.chat-composer, .chat-input, textarea', at: 'l' },
+    { id: 'status', kind: 'badge', n: 3, ...L.byText('.chat-laser-card button', 'Behoben'), at: 'r' },
   ] },
   { name: 'l23-fehler-erfassen', url: GERAET, steps: [['loaded'], reiter('Fehler'), ereignis('open-error-modal')], clip: '.modal-glattt', marks: [
     { id: 'code', kind: 'badge', n: 1, ...L.byText('.modal-glattt .input-glattt-floating-label', 'Fehlercode'), at: 'l' },
-    { id: 'zeit', kind: 'badge', n: 2, ...L.byText('.modal-glattt .input-glattt-floating-label', 'Aufgetreten am'), at: 'l' },
-    { id: 'text', kind: 'badge', n: 3, ...L.byText('.modal-glattt .form-glattt-label', 'Beschreibung'), at: 'l' },
-    { id: 'medien', kind: 'badge', n: 4, ...L.byText('.modal-glattt .form-glattt-label', 'Medien'), at: 'l' },
+    { id: 'bauteil', kind: 'badge', n: 2, ...L.byText('.modal-glattt .input-glattt-floating-label', 'Betroffenes Bauteil (optional)'), at: 'l' },
+    { id: 'zeit', kind: 'badge', n: 3, ...L.byText('.modal-glattt .input-glattt-floating-label', 'Aufgetreten am'), at: 'l' },
+    { id: 'text', kind: 'badge', n: 4, ...L.byText('.modal-glattt .form-glattt-label', 'Beschreibung'), at: 'l' },
+    { id: 'medien', kind: 'badge', n: 5, ...L.byText('.modal-glattt .form-glattt-label', 'Medien'), at: 'l' },
   ] },
   { name: 'l24-fehlercodes', url: GERAET, steps: [['loaded'], reiter('Fehler'), ereignis('open-error-modal'), dropdownAuf('Fehlercode')], clip: '.modal-glattt', marks: [
     { id: 'liste', kind: 'chip', label: 'Code antippen', sel: '.modal-glattt .dropdown-glattt-option', at: 'l' },

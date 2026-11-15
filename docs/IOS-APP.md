@@ -1657,6 +1657,27 @@ Drei Fallstricke, alle am 23.09.2026 aufgelaufen:
 Aufnahme von Foto **oder** Video über `MediaCameraPicker` (`mediaTypes` mit `.image` und
 `.movie`, 60 s Obergrenze) — der `CameraPicker` der Einstellungszettel bleibt beim Bild.
 
+### Fehler-Chat am Laserfehler (seit 15.11.2026, Entwurf 2)
+
+Jan wählte am 15.11.2026 aus drei Entwürfen (iPhone + iPad) **Entwurf 2 „Chat-Raum mit angehefteter
+Fehlerkarte“**: Das Gespräch ist ein normaler Raum des nativen Chats, kein eigener Bildschirm.
+
+- **Push „Laser-Störung“** verlinkt `/hub/chat/raum/{id}` — öffnet schon mit älteren Builds den Raum
+  (ohne Karte). Ohne Raum fällt er auf `/hub/laser/devices/{sn}#errors` zurück, das `LaserTarget(url:)`
+  als Geräteakte mit Reiter Fehler öffnet.
+- **Karte oben im Raum:** `LaserErrorPinCard` (`Laser/LaserErrorChat.swift`), eingehängt in
+  `ChatRoomView`, sobald `room.subject.type == "laser_error"`. Lädt `GET hub/laser/api/errors/{id}/card`,
+  neu bei jedem Vermerk `system` = `laser_error_*` (Schlüssel `reloadKey`). Knöpfe umbrechend
+  (`FlowLayout`, kein seitliches Scrollen — Dynamic Type), ≥ 44 pt; Bauteil als `Menu`, „Behoben“ mit
+  `confirmationDialog`. Im Snapshot ersetzt eine Beschriftung das `Menu` (ImageRenderer zeichnet es nicht).
+- **Akten:** `LaserErrorLogRow` in Geräteakte (Reiter Fehler) und Teile-Akte („Fehler an diesem Bauteil“)
+  mit Antworten-Zahl und letzter Antwort; Tipp → `POST …/errors/{id}/chat` (anlegen/beitreten) →
+  `navigate(toPath:)`.
+- **Melden:** `LaserErrorView` bietet „Bauteil (optional)“ aus `parts` der Geräteliste und nach dem
+  Speichern „Zum Gespräch“.
+- **Nachweis:** `LaserAppSnapshotTests.testRenderLaserErrorChat` (iPhone/iPad, hell/dunkel),
+  `testLaserErrorChatParsing`; PHP `tests/Feature/Laser/LaserErrorChatTest.php`.
+
 ### Admin-Backend in der App (seit 23.09.2026)
 
 Das Filament-Backend läuft als gewöhnliche Web-Seite, braucht aber drei Sonderregeln:

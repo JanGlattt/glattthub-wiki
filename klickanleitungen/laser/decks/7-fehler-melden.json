@@ -10,19 +10,20 @@
   "Fehler",
   "melden"
  ],
- "subtitle": "Klickanleitung für den glatttHub — einen Laser-Fehler erfassen: Fehlercode, Beschreibung, Foto oder Video",
+ "subtitle": "Klickanleitung für den glatttHub — einen Laser-Fehler erfassen und im Gespräch zum Fehler klären: Fehlercode, Bauteil, Foto oder Video, Antworten",
  "eyebrow": "Laser · Fehler",
  "footerArea": "Laser",
- "stand": "18.09.2026",
- "version": "1.0",
+ "stand": "15.11.2026",
+ "version": "1.1",
  "notes": [
   "Fehler werden **sofort** gemeldet, nicht erst bei der Wartung. Jeder Eintrag steht am Gerät und fließt in die Fehlerquote der Reports.",
-  "Bekannte **Fehlercodes 005–110**, Sanduhr blau/weiß und „ohne Fehler abgestürzt“ stehen zur Auswahl; alles andere als Freitext."
+  "Bekannte **Fehlercodes 005–110**, Sanduhr blau/weiß und „ohne Fehler abgestürzt“ stehen zur Auswahl; alles andere als Freitext.",
+  "Jeder Fehler hat ein **Gespräch im Chat**: Alle am Standort des Lasers, die Melderin und der Laser-Service lesen mit und antworten. „Behoben“ schließt das Gespräch, es bleibt am Laser lesbar."
  ],
  "pages": [
   {
    "h1": "Der Fehler-Reiter",
-   "sub": "Auf der Geräteseite listet **Fehler** alle Meldungen mit Code, Beschreibung und Status.",
+   "sub": "Auf der Geräteseite listet **Fehler** alle Meldungen mit Code, Bauteil, Status und dem Gespräch dazu.",
    "card": {
     "title": "Der Fehler-Reiter",
     "text": "Gemeldete Fehler des Geräts"
@@ -41,12 +42,17 @@
      "n": 2,
      "title": "Liste",
      "text": "Wann aufgetreten, welcher Code, wer gemeldet hat und ob der Fehler noch offen ist."
+    },
+    {
+     "n": 3,
+     "title": "Gespräch",
+     "text": "Der Knopf zeigt die Zahl der Antworten und öffnet das Gespräch zum Fehler im Chat."
     }
    ]
   },
   {
    "h1": "Fehler erfassen",
-   "sub": "Code wählen, Zeitpunkt setzen, beschreiben, Foto oder Video anhängen — speichern.",
+   "sub": "Code wählen, betroffenes Bauteil angeben, Zeitpunkt setzen, beschreiben, Foto oder Video anhängen — speichern.",
    "card": {
     "title": "Fehler erfassen",
     "text": "Code, Zeitpunkt, Beschreibung, Medien"
@@ -63,16 +69,21 @@
     },
     {
      "n": 2,
+     "title": "Bauteil (optional)",
+     "text": "Ist klar, welches Teil betroffen ist (z. B. Handstück), hier auswählen. Der Fehler steht dann auch in der Akte dieses Teils."
+    },
+    {
+     "n": 3,
      "title": "Aufgetreten am",
      "text": "Datum und Uhrzeit des Fehlers — nicht der Meldung."
     },
     {
-     "n": 3,
+     "n": 4,
      "title": "Beschreibung",
      "text": "Wann und wie es passiert ist: welche Behandlung, welches Handstück, was davor geschah."
     },
     {
-     "n": 4,
+     "n": 5,
      "title": "Medien",
      "text": "Foto **und/oder Video** vom Display. Das Video ist hier erlaubt — in der Wartung nicht."
     }
@@ -100,6 +111,39 @@
      "text": "Antippen übernimmt Code und Bezeichnung."
     }
    ]
+  },
+  {
+   "h1": "Antworten im Gespräch",
+   "sub": "Jede Meldung öffnet ein **Gespräch im Chat**. Oben steht der Fehler, darunter wird geantwortet — mit Text, Foto oder Sprachnachricht.",
+   "card": {
+    "title": "Antworten im Gespräch",
+    "text": "Fehlerkarte, Antworten, Status"
+   },
+   "left": {
+    "shot": "l22b-fehler-gespraech"
+   },
+   "leftCaption": "Das Gespräch zum Fehler mit der angehefteten Fehlerkarte.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Fehlerkarte",
+     "text": "Code, Beschreibung, Status, Bauteil und Fotos. „Zum Laser“ öffnet den Fehler-Reiter des Geräts."
+    },
+    {
+     "n": 2,
+     "title": "Antworten",
+     "text": "Wie in jedem Chat. Alle am Standort, die Melderin und der Laser-Service bekommen die Antwort als Mitteilung."
+    },
+    {
+     "n": 3,
+     "title": "Status",
+     "text": "Der Laser-Service setzt „In Bearbeitung“ und „Behoben“. Behoben schließt das Gespräch, es bleibt am Laser lesbar."
+    }
+   ],
+   "hint": {
+    "kind": "info",
+    "text": "**Aus der Mitteilung direkt ins Gespräch:** Wer einen gemeldeten Fehler antippt, landet sofort in diesem Gespräch — auch in der App."
+   }
   }
  ]
 }
