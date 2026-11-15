@@ -39,9 +39,11 @@ const PLAN = [
   seite('a3-produkte', '/admin/voucher-products'),
   seite('a3-bestellungen', '/admin/voucher-orders'),
   { name: 'a3-sonderfaelle', url: '/admin/voucher-orders', wait: 3500, steps: [ersterEintrag, ['wait', 1500]] },
-  seite('a4-erinnerungen', '/admin/appointment-reminder-rules'),
-  seite('a4-bg-whatsapp', '/admin/consultation-whatsapp-settings'),
-  seite('a4-bewertung', '/admin/review-whatsapp-settings'),
+  // Bereich „Kundennachrichten“ (seit 15.11.2026) — ersetzt die Einzelseiten Erinnerungen / Beratungs-WhatsApp / Bewertung
+  seite('a4-kundennachrichten', '/admin/kundennachrichten'),
+  seite('a4-nachricht', '/admin/kundennachrichten?nachricht=terminbestaetigung'),
+  seite('a4-standorte', '/admin/kundennachrichten?reiter=branches'),
+  seite('a4-protokoll', '/admin/kundennachrichten?reiter=log'),
   // Benachrichtigungs-Katalog: Reiter „Anlässe & Regeln" (Schnell-Schalter) und eine Regel im Formular
   { name: 'a4-anlaesse', url: '/admin/notifications', wait: 4000, steps: [['wait', 800]], marks: [
     { id: 'reiter', kind: 'badge', n: 1, sel: '.fi-tabs', at: 'l' },
