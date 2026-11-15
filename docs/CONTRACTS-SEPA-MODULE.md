@@ -1425,7 +1425,24 @@ gelöscht und der Vertrag stand ohne Raten da (H000616, 13.11.2026). Dazu gehör
 „Erste Rate vor Ort bezahlt" bei einem Vertrag mit allen Raten per SEPA läuft über **Zahlung
 verbuchen** mit Raten-Auswahl (`recordExternalPayments`, `payment_ids`): Plan anlegen, dann den
 vor Ort gezahlten Betrag auf die ersten Raten buchen — deren GoCardless-Einzüge werden dabei
-storniert.
+storniert. Hat der Vertrag noch **gar keinen** Plan, erledigt
+`php artisan contracts:record-onsite-and-plan {Vertrag} --amount=59,99 [--received-at=…]
+[--method=cash] [--dry-run]` beides ohne Umweg: Die ersten Raten des Soll-Plans, die der Betrag
+**genau** deckt, entstehen als bezahlte Zeilen ohne GoCardless-Einzug, der Rest als
+Einzelzahlungen bei GoCardless.
+
+### Befehle gegen Prod: `scripts/prod-artisan.sh`
+
+Das Skript fährt ein artisan-Command lokal gegen die Prod-Datenbank (eigenes gcloud-Login nötig).
+Seit 15.11.2026 reicht es auch die Zugänge der externen Dienste aus der Cloud-Run-Umgebung durch
+(`GOCARDLESS_ENVIRONMENT`, `GOCARDLESS_LIVE_ACCESS_TOKEN`, Phorest-Zugang, `PROMO_CODE_SECRET` —
+Klartext-Wert oder Secret) und bricht ab, wenn einer fehlt. Vorher lief jeder Befehl, der
+GoCardless oder Phorest anspricht, mit der lokalen `.env`: gegen die GoCardless-**Sandbox**,
+während er die Prod-Datenbank schrieb. Befehle dieser Art: `contracts:relink-gocardless` (ohne
+`--mandate` sucht er bei unbekannter gespeicherter ID auch das echte Mandat wie „GoCardless
+prüfen"), `promo:repair-dropped-discounts`, `contracts:record-onsite-and-plan`,
+`phorest:archive-client-courses {Client-ID} --name="Abo.LS-39" [--before=JJJJ-MM-TT]` (abgelöste
+Abos einer Kundin archivieren; ohne `--name` nur Anzeige). Immer zuerst `--dry-run`.
 
 ### Legacy-Verträge ohne ClientMandate
 

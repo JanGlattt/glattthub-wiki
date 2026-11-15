@@ -1611,4 +1611,5 @@ Fall, Saldo = Restsumme, Marker als Notizen, Idempotenz.
 | Datum | Änderung |
 |---|---|
 | 15.11.2026 | 50-€-Weiche zählt erledigte Forderungen nicht mehr als Altschuld (H004794) |
+| 15.11.2026 | Befehl `receivables:end-rzv {Fall} [--reentry=restart\|final\|decision] [--user=ID] [--dry-run]` — dieselbe Aktion wie der Knopf, für Korrekturen über `scripts/prod-artisan.sh` |
 | 15.11.2026 | „Vereinbarung nicht eingehalten": laufende und geplatzte RZV beenden, Wiedereinstieg im Dialog wählen (`reentry`), Sperre bei offenen GoCardless-Einzügen; Häkchen „SEPA-Einzüge jetzt pausieren" im Versand-Dialog der 1. Mahnung (`sepa_pause_option`, `pause_sepa`); beides auch nativ in der App |
