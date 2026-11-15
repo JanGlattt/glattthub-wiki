@@ -1363,6 +1363,70 @@ Contract.first_payment_date
 
 **Fallback:** Wenn kein Datumsfeld mit dieser Einstellung vorhanden ist, wird `now()->addMonth()->startOfMonth()` (1. des Folgemonats) verwendet.
 
+### Mandats-ID bei GoCardless unbekannt („Mandat bei GoCardless nicht gefunden")
+
+Liefert `GET /mandates/{id}` ein echtes **404**, kennt GoCardless die gespeicherte ID nicht (Fall
+H004635, 12.11.2026: fünf Verträge trugen IDs aus einem Testlauf vom 20.04.2026). Der SEPA-Reiter
+unterscheidet das seit 15.11.2026 von einem API-Ausfall: `getGoCardlessDetails()` antwortet mit
+`mandate_missing: true` (404) bzw. 502, wenn GoCardless nur nicht geliefert hat. Bei
+`mandate_missing` erscheint „GoCardless neu verknüpfen": `resetGocardlessLink()` leert die
+GoCardless-IDs (Mandat → `pending`), danach findet „GoCardless prüfen"
+(`checkGoCardlessForMandate`) das echte Mandat über Phorest-Client-ID, Referenz oder Kundennummer.
+Ein API-Ausfall ist **kein** Grund zum Zurücksetzen — dort bleibt die Verknüpfung gesperrt.
+
+Der Verlaufseintrag des Zurücksetzens nutzt den Typ `mandate_updated`. Bis 15.11.2026 schrieb
+er `gocardless_reset`, das die ENUM-Spalte `contract_changes.change_type` nicht kennt: Der Knopf
+endete mit einem Serverfehler, **nachdem** die Verknüpfung schon gelöst war (kein einziger
+solcher Eintrag in Prod). Neue Verlaufs-Typen brauchen immer zuerst eine Migration der Spalte.
+
+### Dauerauftrag an einem Mandat, das der Hub nicht kennt
+
+Altverträge können bei GoCardless über einen Dauerauftrag (Subscription) an einem Mandat laufen,
+das am Vertrag nicht hinterlegt ist. Der Hub zeigt dann „keine offenen Raten", während weiter
+eingezogen wird; ein Bankwechsel legte ein **zweites**, leeres Mandat daneben an (BS000890,
+11.11.2026). Seit 15.11.2026:
+
+- `GoCardlessMandateService::changeBankAccount()` prüft vorab alle aktiven Daueraufträge des
+  GoCardless-Kunden (`listSubscriptions(['customer' => …])`). Läuft einer, der an keinem Vertrag
+  des Mandats steht, bricht der Bankwechsel mit einer Meldung ab — nichts wird angelegt.
+  Antwortet GoCardless nicht, wird nicht blockiert.
+- Der Bankwechsel hält die abgelöste Mandats-ID im Verlauf fest (`mandate_updated`,
+  `gocardless_mandate_id` alt → neu) und stellt ein lokal storniertes/fehlgeschlagenes/abgelaufenes
+  Mandat auf `pending` — vorher blieb „Storniert" stehen, obwohl GoCardless „Ausstehend" meldete.
+- Datenkorrektur: `php artisan contracts:relink-gocardless {Vertrag} [--mandate=MD…] [--subscription=SB…]
+  [--accept-customer-change] [--dry-run]` hängt den Vertrag an das vorhandene Mandat und
+  hinterlegt den Dauerauftrag. **Ohne `--mandate`** sucht der Befehl den laufenden Dauerauftrag
+  selbst (aktive Daueraufträge des am Hub-Mandat gespeicherten GoCardless-Kunden, die an keinem
+  Vertrag stehen — eindeutig nur bei genau einem); niemand muss dafür ins GoCardless-Dashboard. Der Befehl **liest** bei GoCardless (Mandat, Bankkonto,
+  Dauerauftrag) und schreibt nur lokal; er prüft, dass der Dauerauftrag aktiv ist und an genau
+  diesem Mandat hängt, und verlangt bei abweichendem GoCardless-Kunden eine ausdrückliche
+  Bestätigung. Danach im Reiter „Zahlungen & SEPA" neu laden. Ausführung auf Prod über
+  `scripts/prod-artisan.sh`, immer zuerst `--dry-run`.
+
+### Abschluss-Rabatt größer als zwei Raten minus 2 € (0-€-Rate)
+
+GoCardless nimmt keine Lastschrift unter 1 € an. `Contract::signingDiscountReductions()` verteilt
+den Abschluss-Rabatt deshalb als Kaskade über **alle** Folgeraten: Rate 1 nimmt, was sie fassen
+kann (vor Ort die ganze Rate, per SEPA bis auf 1 €), jede weitere SEPA-Rate sinkt höchstens auf
+1 €, der Rest wandert weiter (Entscheidung Jan, 15.11.2026). Der unterschriebene Vertragswert
+bleibt exakt erhalten. Vorher landete der ganze Rest auf Rate 2: 150 € Startbonus bei 59,99 € Rate
+ergab 1 € / 0 € — die Plan-Anlage scheiterte nach der ersten Rate, die Platzhalter waren schon
+gelöscht und der Vertrag stand ohne Raten da (H000616, 13.11.2026). Dazu gehören:
+
+- `plannedInstallmentCents($n)` ist der Soll-Betrag jeder Rate; `buildSigningCascade()` und der
+  Dialog „Neuen Zahlungsplan anlegen" (`signingDiscountReductions` in `contractDetailConfig`)
+  nutzen dieselbe Verteilung.
+- `createIndividualPaymentPlan()` prüft vor dem ersten GoCardless-Aufruf, dass keine Rate unter
+  1 € liegt, und stellt bei jedem Fehler die gelöschten lokalen Platzhalter wieder her
+  (`onlyTrashed()->restore()`), bevor die Ausnahme weitergereicht wird.
+- `createGoCardless()` validiert die Ratennummer gegen `Contract::firstSepaInstallmentNumber()`
+  statt hart `min:2` (der Dialog war für „alle Raten per SEPA" unbenutzbar) und meldet auf Deutsch.
+
+„Erste Rate vor Ort bezahlt" bei einem Vertrag mit allen Raten per SEPA läuft über **Zahlung
+verbuchen** mit Raten-Auswahl (`recordExternalPayments`, `payment_ids`): Plan anlegen, dann den
+vor Ort gezahlten Betrag auf die ersten Raten buchen — deren GoCardless-Einzüge werden dabei
+storniert.
+
 ### Legacy-Verträge ohne ClientMandate
 
 Alte Verträge die noch kein `client_mandate_id` haben, werden über die Legacy-Fallbacks bedient:
@@ -1379,6 +1443,12 @@ Die Update-Blöcke seit April 2026 in der Reihenfolge ihres Entstehens — jewei
 (Asana-Bug, Fall, Entscheidung), der fachlichen Wirkung und der technischen Umsetzung. Neue
 Erkenntnisse werden **nicht** hier, sondern oben an der thematisch passenden Stelle eingearbeitet;
 die Chronik wächst nur um den Verweis. Bedienung: Nutzerhandbuch, Serie „Verträge".
+### Update 15.11.2026 — Unbekanntes Mandat, fremder Dauerauftrag, 0-€-Rate
+
+Asana-Bugs von Janine (11.–13.11.2026): H004635 (siehe „Mandats-ID bei GoCardless unbekannt"),
+BS000890 (siehe „Dauerauftrag an einem Mandat, das der Hub nicht kennt", neuer Befehl
+`contracts:relink-gocardless`), H000616 (siehe „Abschluss-Rabatt größer als zwei Raten minus 2 €").
+
 ### Update 09.11.2026 — Papiervertrag nachtragen, RLS-Gebühr in angehängter Rate, Altsystem-Fenster
 
 Asana-Bugs von Janine (04.–09.11.2026): `contracts:create-manual` (siehe „Papiervertrag nachtragen"),

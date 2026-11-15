@@ -146,7 +146,14 @@ Vier Einstiege eröffnen Fälle **automatisch** (`DebtCaseIntakeService`):
    Sind die Altschulden inzwischen beglichen (Zahlung verbucht, Rate als bezahlt
    vermerkt), rutscht der Fall auf „sanft" und die Timeline bekommt eine Notiz
    (Fall BI006504, 21.10.2026 — vorher blieb er hart und zog die Vorlage „alle
-   offenen Schulden / SEPA gestoppt"). Ausgenommen sind reaktivierte Fälle
+   offenen Schulden / SEPA gestoppt"). Als Altschuld zählt eine geplatzte Rate nur,
+   solange ihre Forderung offen ist: Wurde der Fall ihres Vertrags nach der
+   Fälligkeit **erledigt geschlossen** (bezahlt, abgeschrieben, angehängt beglichen)
+   und läuft dort kein neuer Fall, bleibt sie außen vor
+   (`DebtCaseIntakeService::hasOldDebtsAboveThreshold()`, seit 15.11.2026). Die Rate
+   selbst behält den Status „failed" — bei H004794 schickte die beim Downgrade
+   abgeschriebene Rate des Vorgängervertrags die erste Rücklastschrift des
+   Nachfolgers auf den harten Weg. Ausgenommen sind reaktivierte Fälle
    (`case_resumed`) und Fälle ab der zweiten RLS: dort ist „hart" eine bewusste
    Eskalation.
 2. **Direktzahler**: Vertrag mit Direktzahlung, Abschluss über 28 Tage her,
@@ -406,6 +413,37 @@ können eigene Vorlagen-Varianten hinterlegt werden (`dunning_templates`, Cluste
   **kein** Schreiben erzeugt (Message-Eintrag mit Status „extern", ohne PDF).
 - Beim Eintritt in den postalischen Mahnweg wird der Kunde **in Phorest
   archiviert** (Button, Pflicht laut Prozess; `archiveInPhorest()`).
+- **SEPA-Pause mit der 1. Mahnung (Jan, 15.11.2026)**: Der Versand-Dialog der
+  1. postalischen Mahnung (Aktion `letter_postal_1` — derselbe Schlüssel im
+  harten Weg, im sanften Weg ab der zweiten RLS und bei Fällen ohne Vertrag)
+  zeigt das Häkchen **„SEPA-Einzüge jetzt pausieren (N offene Raten werden bei
+  GoCardless storniert)"**, vorbelegt an. Mit Häkchen heißt der Knopf
+  „Lastschrift pausieren & 1. Mahnung erzeugen"; abgewählt warnt der Dialog,
+  dass die Einzüge weiterlaufen. Der getrennte Knopf „SEPA-Einzüge pausieren"
+  in der Aktionen-Karte bleibt.
+    - `DebtCaseActionService::sepaPauseOption($case, $action)` liefert
+      `{available: true, open_installments: N}` oder `null`. Angeboten wird
+      nur, was `ContractPauseService::pauseIndefinite()` auch ausführen kann:
+      SEPA-Vertrag, aktiv, nicht pausiert, Mandat mit GoCardless-ID,
+      `sepa_paused_at` leer und mindestens eine offene Rate (`scheduled`/
+      `pending`, ab `firstSepaInstallmentNumber()`, mit GoCardless-Zahlung —
+      dieselbe Auswahl wie `openRates()` der Pause).
+    - `GET …/action-preview` und `GET …/{case}/data` geben das als
+      `sepa_pause_option` mit (Web und App teilen die Regel).
+    - `POST …/action` nimmt `pause_sepa` (boolean, optional). Bei `true` und
+      verfügbarer Option läuft **zuerst** `pauseSepa()` (Vertragspause +
+      Storno der offenen GoCardless-Raten, Verlaufseintrag mit Nutzer), dann
+      der Brief. Schlägt die Pause fehl → 422 „Die SEPA-Einzüge konnten nicht
+      pausiert werden — die Mahnung wurde nicht erzeugt. …", der Fall bleibt
+      auf seiner Stufe. Fehlt das Feld (ältere App-Builds) oder gibt es die
+      Option an der Stufe nicht, wird nichts pausiert. Antwort trägt
+      `sepa_paused`.
+    - GoCardless wird ausschließlich durch diesen bestätigten Klick angefasst
+      (Regel „GoCardless nie automatisch").
+    - Fallstrick: Die Pause ist nicht rückrollbar. Scheitert **danach** der
+      Brief (z. B. fehlende Anschrift), meldet der Hub „Die SEPA-Einzüge wurden
+      pausiert, das Schreiben aber nicht erzeugt: …" — die Vorschau fängt
+      solche Fehler aber schon vor dem Ausführen ab.
 
 #### Zahlungen, Kosten und Ratenzahlungsvereinbarung
 
@@ -493,14 +531,46 @@ können eigene Vorlagen-Varianten hinterlegt werden (`dunning_templates`, Cluste
   **Platzt eine GoCardless-RZV-Rate, eskaliert der Fall bewusst NICHT
   automatisch**: Die Vereinbarung wird als „geplatzt" markiert, die 10-€-Gebühr
   gebucht und der Fall sofort vorgelegt (Badge „RZV geplatzt") — ob weiter
-  gemahnt oder der Plan angepasst wird, entscheidet das Büro. **„Regulär
-  weitermahnen"** (Knopf im Tab „Ratenzahlung", nur bei geplatzter Vereinbarung,
-  `POST /hub/receivables/{case}/rzv/{agreement}/resume-dunning`,
-  `ReceivablesController::resumeDunningAfterRzv()`) ist für RZVs gedacht, die
-  nur den normalen Vertragseinzug wieder aufnehmen (Fall BI006547, 16.10.2026):
-  Die Vereinbarung wird auf „storniert" gesetzt, der Fall geht in Stufe „Neu",
-  sanfter Weg — damit läuft der übliche Gang 1./2. Zahlungserinnerung →
-  Monitoring. Für PfÜB-/Vergleichs-RZVs bleibt es bei „Plan anpassen".
+  gemahnt oder der Plan angepasst wird, entscheidet das Büro.
+  **„Vereinbarung nicht eingehalten" (Jan, 15.11.2026, Fall BI006235)**: Knopf
+  im Tab „Ratenzahlung" für **laufende und geplatzte** Vereinbarungen — vorher
+  gab es „Regulär weitermahnen" nur nach einer GoCardless-Rücklastschrift
+  (Status „geplatzt"), eine gebrochene Selbstzahler-Vereinbarung hing ohne
+  Aktion in Stufe „RZV läuft". Der Dialog fragt, **wo der Fall wieder
+  einsteigt**:
+
+    | Wahl (`reentry`) | Stufe danach | nächster Schritt laut `nextAction()` |
+    |---|---|---|
+    | `restart` „Von vorn – 1. Zahlungserinnerung" | „Neu", Weg **sanft** | 1. Zahlungserinnerung (Mandatsentzug: Restsumme per E-Mail anmahnen) |
+    | `final` „Letzte Mahnung" | „1. Mahnung" (`postal_1`), Weg bleibt | Letzte Mahnung erzeugen |
+    | `decision` „250-€-Entscheid" | „Entscheid" (`decision`), Weg bleibt | Entscheid ausführen (250-€-Weiche) |
+
+    Die drei Stufen sind genau die, nach denen alle drei Leitern (hart, sanft,
+    ohne Vertrag) den jeweiligen Schritt anbieten. Die Vereinbarung wird auf
+    „storniert" gesetzt, Frist und Wiedervorlage geleert (der Fall ist sofort
+    fällig) und die Wahl mit Nutzer im Verlauf protokolliert (`stage_changed`,
+    Payload `rzv_agreement_id`, `reentry`).
+
+    - **Vorbelegung:** `final`, wenn vor Anlage der Vereinbarung schon eine
+      1. oder letzte Mahnung am Fall hing (`debt_case_messages.stage` in
+      `postal_1`/`postal_final`, nicht verworfen), sonst `restart`.
+    - **Sperre:** Eine **laufende** Vereinbarung mit GoCardless-Einzug, deren
+      verknüpfte Raten noch offen sind (`scheduled`/`pending`/`submitted`),
+      lässt sich hier nicht beenden — der Hub storniert bei GoCardless nichts
+      automatisch, die Einzüge liefen sonst neben der Mahnung weiter. Statt des
+      Knopfs steht der Grund da (Raten zuerst im SEPA-Tab stornieren oder Plan
+      ändern). Geplatzte GoCardless-Vereinbarungen bleiben wie bisher beendbar,
+      ihre übrigen Raten werden nicht angefasst.
+    - **Regel an einer Stelle:** `DebtCaseActionService::rzvBreachOptions()`
+      (`available`, `blocked_reason`, `default`, `options[key,label,hint]`) —
+      `caseContext()` reicht sie als `$rzvBreach` an die Web-Seite und als
+      `rzv.breach` an `GET …/{case}/data` (App).
+      `endRzvAndResumeDunning()` führt aus.
+    - **Endpunkt:** `POST /hub/receivables/{case}/rzv/{agreement}/resume-dunning`
+      mit `reentry` (`restart`|`final`|`decision`). **Ohne** `reentry` gilt das
+      Verhalten vom 16.10.2026 (Fall BI006547): nur geplatzte Vereinbarung an
+      einem Fall mit Vertrag, Neustart im sanften Weg — sonst 422. Falscher
+      Zustand → 422 mit deutscher Meldung.
   Bei Selbstzahlern zeigt der Tab „Ratenzahlung" den **Ratenplan mit Stand je Rate**:
   `RzvPlanProgress` nimmt als gezahlt, was vom vereinbarten Betrag laut Fall nicht
   mehr offen ist (`DebtCaseBalanceService::forCase()['open']`, derselbe Saldo wie in
@@ -1308,6 +1378,10 @@ offenen RLS, stornierte beobachtete Rate), `RzvAgreementTest` (GC-Verknüpfung, 
 Auto-Eskalation, Plan-Anpassung beider Einzugsarten, RZV nach PfÜB: Rückkehr
 in die außergerichtliche Bearbeitung und zurück), `DebtCasePaymentVoidTest`
 (Storno: Nachweis, Wiedereröffnung, RZV läuft weiter, Ausnahmen, Rechte),
+`RzvBreachAndSepaPauseTest` („Vereinbarung nicht eingehalten": alle drei
+Wiedereinstiege, Vorbelegung, Sperre bei offenen GoCardless-Einzügen, altes
+Verhalten ohne `reentry`; SEPA-Pause mit der 1. Mahnung: Option erscheint/fehlt,
+Pause vor dem Brief, kein Brief bei gescheiterter Pause, ohne Feld wie bisher),
 `RzvIndividualPlanTest` (individueller Ratenplan inkl. Summen-Prüfung,
 Mandats-Neuanlage aus dem Fall mit GC-Ratenanlage, Al-Kaki-Migration), `AppendedDebitsTest`
 (Mischfall: zahlbarer Rest in Schreiben und Bezahllinks, Brief-Ankündigung des
@@ -1531,3 +1605,10 @@ Fall, Saldo = Restsumme, Marker als Notizen, Idempotenz.
   `--worksheet=…`, dann `--execute`)
 - Feinkonzept: härtere Eskalation bei Cluster „aktiv widersprochen",
   Bündelung mehrerer Verträge eines Kunden, automatischer Wochenreport
+
+## Changelog
+
+| Datum | Änderung |
+|---|---|
+| 15.11.2026 | 50-€-Weiche zählt erledigte Forderungen nicht mehr als Altschuld (H004794) |
+| 15.11.2026 | „Vereinbarung nicht eingehalten": laufende und geplatzte RZV beenden, Wiedereinstieg im Dialog wählen (`reentry`), Sperre bei offenen GoCardless-Einzügen; Häkchen „SEPA-Einzüge jetzt pausieren" im Versand-Dialog der 1. Mahnung (`sepa_pause_option`, `pause_sepa`); beides auch nativ in der App |

@@ -89,7 +89,9 @@ Begründung nicht an (`UpsellingRules::missingSetting()`).
    Verkäufe blieben ohne Abos). Ohne Mandat kauft weiter erst die SEPA-Unterschrift. `zonesToPurchase()` lässt im Modus `keep_remaining` die alten Zonen
    weg; `archivePredecessorCourses()` archiviert im Modus `full_package` (und bei einem
    Ganzkörper-Nachfolger) nur Pakete mit dem Kaufdatum des alten Phorest-Kaufs — sonst Notiz am
-   alten Vertrag fürs Büro.
+   alten Vertrag fürs Büro. Zuordnung und Archivieren liegen seit 15.11.2026 in
+   `App\Services\Contracts\PredecessorCourseArchiver` — dieselbe Regel nutzt die
+   [Vertragsänderung im Fernabsatz](VERTRAGSAENDERUNG-FERNABSATZ.md).
 7. GoCardless bleibt manuell: Das Büro legt den Plan an und stoppt die Raten des alten Vertrags
    (`ReplacedContractCollectionService`, vorbelegter Haken im SEPA-Reiter).
 
@@ -134,3 +136,6 @@ Ersetzen nicht (der Vorgänger wird `modified`).
 - 03.11.2026 — Neuer Vertrag einer Bestandskundin wird automatisch Zusatzvertrag; Ratenverträge mit
   bestehendem Mandat kaufen sofort in Phorest; fehlende Käufe (BI001863, BS000947, BS000740) per
   Migration nachgeholt.
+- 15.11.2026 — Zuordnung und Archivieren der alten Pakete in `PredecessorCourseArchiver`
+  herausgezogen (gemeinsam mit der Vertragsänderung im Fernabsatz); Verhalten des Upsellings
+  unverändert.

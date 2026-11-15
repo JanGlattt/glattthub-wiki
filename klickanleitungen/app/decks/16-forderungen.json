@@ -6,8 +6,8 @@
   "of": 30,
   "audience": "leitung",
   "footerArea": "App",
-  "stand": "27.09.2026",
-  "version": "1.0",
+  "stand": "15.11.2026",
+  "version": "1.1",
   "nr": 16,
   "title": [
     "Forderungen",
@@ -120,7 +120,7 @@
         {
           "n": 4,
           "title": "Leiste unten",
-          "text": "**Zahlung** erfassen (mit Zuordnung geplatzter Raten), **Notiz**, **RZV** festhalten und **Mehr**: extern nachtragen, Kosten mit Beleg, Bezahllink, ruhend stellen, Phorest archivieren, SEPA pausieren, Anschrift, abschreiben."
+          "text": "**Zahlung** erfassen (mit Zuordnung geplatzter Raten), **Notiz**, **RZV** festhalten und **Mehr**: extern nachtragen, Kosten mit Beleg, Bezahllink, ruhend stellen, Phorest archivieren, SEPA pausieren, Anschrift, abschreiben. Im Reiter **Ratenzahlung** beendet **Vereinbarung nicht eingehalten …** eine gebrochene Vereinbarung — das Blatt fragt, wo der Fall wieder einsteigt (von vorn, letzte Mahnung, 250-€-Entscheid)."
         }
       ],
       "hint": {
@@ -157,7 +157,7 @@
         {
           "n": 4,
           "title": "Senden",
-          "text": "**Jetzt per Zendesk senden** (E-Mail) oder **PDF erzeugen und Fall weiterschalten** (Brief) — das PDF öffnet zum Drucken oder Teilen, der Fall rückt in die nächste Stufe."
+          "text": "**Jetzt per Zendesk senden** (E-Mail) oder **PDF erzeugen und Fall weiterschalten** (Brief) — das PDF öffnet zum Drucken oder Teilen, der Fall rückt in die nächste Stufe. Bei der **1. Mahnung** steht darüber der Schalter **SEPA-Einzüge jetzt pausieren** (vorbelegt an): Der Knopf heißt dann **Lastschrift pausieren & 1. Mahnung erzeugen**; ausgeschaltet warnt das Blatt, dass die Einzüge weiterlaufen."
         }
       ],
       "hint": {

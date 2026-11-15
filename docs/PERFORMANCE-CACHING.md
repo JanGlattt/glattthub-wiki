@@ -134,7 +134,13 @@ damit von Anfang an gecacht (Arbeitsregel Jan, 17.10.2026).
 Service-Wrapper, 21 per `cachedReport()`/`ReportsOverviewCache`). `cachedReport()` nimmt seit 31.10.2026
 `refresh` aus dem Schlüssel und rechnet bei `refresh=1` denselben Eintrag sofort neu (vorher entstand ein
 zweiter Schlüssel mit `refresh=1`, der beim nächsten Klick selbst veraltet war → zwei Klicks nötig); die
-Antwort trägt `generated_at` für die „Stand HH:MM"-Anzeige. Was dennoch kalt bleibt: der
+Antwort trägt `generated_at` für die „Stand HH:MM"-Anzeige. Seit 15.11.2026 fallen außerdem **leere
+Parameter** aus dem Schlüssel: Die iOS-App schickte bei „Alle Standorte" `branch_id=` (→ `null`), Web und
+Wärmplan lassen den Parameter weg — zwei Einträge für dieselbe Antwort, von denen nur der Web-Eintrag
+gewärmt wurde; die App zeigte dadurch bis zu 48 Stunden alte Zahlen („Zukünftige Beratungsgespräche").
+`ReportsOverviewCache::touchLive()` markiert seitdem auch die Gruppe `widgets` (Kennzahlen der
+Berichte-Übersicht, Widgets und Uhr liegen als zweite Schicht über den Buchungs-Kennzahlen und blieben
+sonst bis zu 30 Minuten hinter der Detailseite zurück). Was dennoch kalt bleibt: der
 allererste Aufruf einer Filterkombination, die seit zwei Tagen niemand geöffnet hat, und Zeiträume
 außerhalb des Monatsstandards, die kein Wärmplan vorrechnet.
 

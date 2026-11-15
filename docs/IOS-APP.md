@@ -2221,8 +2221,17 @@ jede Auswertung mit Diagramm und Tabelle, Heatmaps mit Zahlen in jeder Zelle, Ka
   **absteigend** — die Karten sortieren selbst; die Buchungseingänge liefern `days` als Objekt je Datum.
   Die Belegliste „Stornierte Beratungstermine der nächsten 14 Tage" ist eine bewusste Einzelposten-Liste
   ohne Diagramm und bleibt über ⋯ „Hub-Fassung öffnen" erreichbar.
+- **Aktualität wie im Web (seit 15.11.2026):** `ReportPageModel.baseItems()` schickt bei „Alle
+  Standorte" **keinen** leeren `branch_id` (das Web lässt ihn weg; sonst entsteht am Server ein eigener,
+  nie gewärmter Cache-Eintrag — die App zeigte bis zu 48 Stunden alte Buchungszahlen, der Server
+  ignoriert leere Parameter inzwischen auch selbst). Ziehen zum Aktualisieren hängt für Karten mit
+  `refresh_interval` (liefert `/api/app/reports/page` je Karte) `refresh=1` an — nur für genau diesen
+  Ladelauf (`refreshToken == reloadToken`), schwere Karten rechnen dabei nicht neu. Bei der Rückkehr in
+  die App (`scenePhase == .active`) lädt die Seite nach, wenn der Stand älter als fünf Minuten ist
+  (`reloadIfStale()`); einen Timer gibt es bewusst nicht.
 - **Nachweis:** `AppointmentReportsUITests` (alle vier Seiten gegen den lokalen Hub, keine Web-Karte),
-  PHP `AppReportsTest` (jede Karte der vier Seiten hat einen Baustein).
+  PHP `AppReportsTest` (jede Karte der vier Seiten hat einen Baustein), `BookingLiveCacheTest`
+  (leerer Standort-Parameter teilt den Eintrag von „Alle Standorte").
 - **„Buchungen am …“** (seit 03.11.2026, Entwurf 2 „Eigene Seite“): Ein Tipp auf einen Tag der Karte
   Buchungseingänge öffnet die native Detailseite `BookingDayView` unter dem App-eigenen Pfad
   `/hub/reports/buchungseingang/{JJJJ-MM-TT}` (`BookingDayTarget`, Fabrik `hub.reports` in `TabBarHost` —
@@ -2401,10 +2410,12 @@ den **gerichtlichen Fällen**, zum **Kundenkonto-Fall** und zu den Vorlagen (Hub
 **Fallakte**: Name, Fall, Vertrag, Einstieg; Status, Weg und Frist als Marken; Hinweise bei ruhendem
 Fall, offener RLS-Entscheidung und offenem Kundenkonto; die Karte **Nächster Schritt** mit genau
 einem Knopf; die Reiter **Überblick** (Forderungsaufstellung mit Positionen, Kosten, Zahlungen,
-angehängte Lastschriften, Fall, Verknüpfungen), **Ratenzahlung** und **Gericht** (nur wenn es sie
-gibt) und **Verlauf** (Notiz, Zeitleiste, das Schreiben am Eintrag mit Wortlaut, PDF und Zendesk).
+angehängte Lastschriften, Fall, Verknüpfungen), **Ratenzahlung** (seit 15.11.2026 mit „Vereinbarung
+nicht eingehalten …“: Blatt mit der Wahl des Wiedereinstiegs, Optionen und Vorbelegung aus `rzv.breach`)
+und **Gericht** (nur wenn es sie gibt) und **Verlauf** (Notiz, Zeitleiste, das Schreiben am Eintrag mit Wortlaut, PDF und Zendesk).
 Der Schritt öffnet das **Schreiben in echter Optik**: Betreff (E-Mail), „Text anpassen“, „Gesamtsumme
-fällig stellen“ (wo das Web es anbietet), Anschrift korrigieren (Brief) und ein Knopf — E-Mail per
+fällig stellen“ (wo das Web es anbietet), bei der 1. Mahnung der Schalter „SEPA-Einzüge jetzt pausieren“
+(vorbelegt an, aus `sepa_pause_option`; die App schickt `pause_sepa`), Anschrift korrigieren (Brief) und ein Knopf — E-Mail per
 Zendesk oder PDF mit Vorschau zum Drucken und Teilen. Unten die Leiste Zahlung · Notiz · RZV · Mehr
 (extern nachtragen, Kosten mit Beleg, Bezahllink, ruhend stellen/fortsetzen, Phorest archivieren,
 SEPA pausieren/fortsetzen, Anschrift, abschreiben). Auf dem iPad stehen Liste und Akte nebeneinander.
@@ -3414,6 +3425,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 15.11.2026 | (nächster Build) | **Forderungen:** „Vereinbarung nicht eingehalten …“ im Reiter Ratenzahlung (Blatt `ReceivableRzvBreachSheet`, Optionen und Vorbelegung aus `rzv.breach`, `POST …/rzv/{agreement}/resume-dunning` mit `reentry`); Schritt-Blatt der 1. Mahnung mit Schalter „SEPA-Einzüge jetzt pausieren“ (`sepa_pause_option` → `pause_sepa`). Kein TestFlight-Build |
 | 01.11.2026 | 1.7.1 (131) | **glattt Coach Etappe 2b + 3**: Video-Kundin über Simli-WebRTC (eigener Client, Ton als Rückfall), Zuweisungen verwalten für Leitung/Büro, Feier-Karte nach bestandener Prüfung, Cockpit-Abschnitt „Mein glattt Coach“. |
 | 31.10.2026 | 1.7.1 (130) | **glattt Coach nativ** (Mehr-Seite, nur Super-Admin): Startseite „Plan zuerst“, Gesprächsraum im Vollbild mit Zuhören auf dem Gerät, Google-Stimme, Souffleur, Ergebnis und Verlauf. |
 | 26.10.2026 | (vor Freigabe) | **CarPlay** (Entwurf 1 „Drei Reiter“: Gespräche, Team, Institute mit Anruf/Nachricht/Route), **Siri im Team-Chat** (vorlesen, antworten, gelesen), Siri-Sätze mit KPZ zuerst plus „Körperzonen im Monat“ und „Neue Nachrichten“, alle vier Widgets im CarPlay-Widget-Bereich. CarPlay/SiriKit-Berechtigung bis zu Apples Freigabe nur im Simulator. |

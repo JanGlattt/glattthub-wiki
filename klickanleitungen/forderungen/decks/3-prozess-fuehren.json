@@ -10,11 +10,11 @@
   "Den Prozess",
   "führen"
  ],
- "subtitle": "Klickanleitung für den glatttHub — die Stufen, Schreiben erzeugen und versenden, Gesamtsumme fällig stellen, RLS-Entscheid",
+ "subtitle": "Klickanleitung für den glatttHub — die Stufen, Schreiben erzeugen und versenden, SEPA-Einzüge mit der 1. Mahnung pausieren, Gesamtsumme fällig stellen, RLS-Entscheid",
  "eyebrow": "Forderungen · Prozess",
  "footerArea": "Forderungen",
- "stand": "16.09.2026",
- "version": "1.0",
+ "stand": "15.11.2026",
+ "version": "1.1",
  "notes": [
   "Der Hub schlägt **genau einen** nächsten Schritt vor — ausgelöst wird er von Hand.",
   "**Fällig stellen ist folgenreich:** Danach geht es um die ganze Restsumme, nicht um eine Rate.",
@@ -142,7 +142,7 @@
     {
      "n": 4,
      "title": "Ausführen",
-     "text": "E-Mail wird versendet, ein Brief als **PDF erzeugt** und zur Post gegeben."
+     "text": "E-Mail wird versendet, ein Brief als **PDF erzeugt** und zur Post gegeben. Bei der **1. Mahnung** heißt der Knopf **„Lastschrift pausieren & 1. Mahnung erzeugen“**, solange das Häkchen zur SEPA-Pause gesetzt ist."
     }
    ],
    "notes": [
@@ -157,6 +157,10 @@
     {
      "title": "Ein Brief muss noch zur Post",
      "text": "Der Hub erzeugt das PDF. Drucken, kuvertieren und einwerfen passiert außerhalb — die Frist läuft trotzdem ab dem Erzeugen."
+    },
+    {
+     "title": "1. Mahnung: Die SEPA-Einzüge pausieren gleich mit",
+     "text": "Im Fenster der 1. Mahnung steht das Häkchen **„SEPA-Einzüge jetzt pausieren“** — vorbelegt an, mit der Zahl der offenen Raten, die bei GoCardless storniert werden. Der Hub pausiert zuerst und erzeugt dann den Brief; klappt die Pause nicht, entsteht kein Brief. Wer das Häkchen herausnimmt, sieht den Warnhinweis: Die Einzüge laufen weiter, trotz Mahnung wird die nächste Rate abgebucht. Das Häkchen erscheint nur, wenn es etwas zu pausieren gibt (SEPA-Vertrag, nicht schon pausiert, offene Raten)."
     }
    ],
    "table": {
@@ -180,6 +184,10 @@
      [
       "Gesamte Restsumme fällig stellen",
       "Schalter, wo er angeboten wird — siehe nächste Seite"
+     ],
+     [
+      "SEPA-Einzüge jetzt pausieren",
+      "Häkchen im Fenster der 1. Mahnung, vorbelegt an — abwählen nur bewusst"
      ]
     ]
    },

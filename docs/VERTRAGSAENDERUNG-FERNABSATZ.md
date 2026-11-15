@@ -129,6 +129,22 @@ Fernabsatz-Widerrufsrecht, der Vertrag entsteht sofort aktiv.
   31.07.2026: GoCardless nur manuell). Offene GoCardless-Einzüge des Altvertrags werden nur
   gemeldet (Anzahl in der Benachrichtigung), nicht storniert.
 
+- **Phorest-Abos des Altvertrags (seit 15.11.2026):** Sobald der Folgevertrag in Phorest gekauft
+  ist, archiviert der Hub die Abos des abgelösten Vertrags (`archived = true`, Ablaufdatum
+  bleibt) — sonst stehen sie weiter mit Rest in der Kundenakte und das Institut behandelt Zonen,
+  die nicht mehr zum Vertrag gehören (Anlass OS004026). Regel wie beim Upselling
+  (`PredecessorCourseArchiver`): Kurs-IDs aus den Körperzonen des Altvertrags (plus
+  Ganzkörper-Abo), Kaufdatum = `phorest_purchased_at` des Altvertrags; ohne Kaufdatum
+  (Altvertrag aus dem Import) nur, wenn es je Zone **genau ein** älteres Abo gibt. Abos ab dem
+  Kauftag des Folgevertrags bleiben immer stehen — das sind die neuen. Was nicht eindeutig ist
+  oder wozu Phorest kein Abo mit der Kurs-ID der Zone kennt (Alt-Abos wie „Abo.LS-…“ tragen oft
+  andere Kurse), wird **nicht** angefasst, sondern dem Büro gemeldet: Notiz am Altvertrag
+  („Vertragsänderung TT.MM.JJJJ: Abos des abgelösten Vertrags in Phorest bitte von Hand
+  archivieren (…)“) und Eintrag im Verlauf des Widerrufsfalls. Ohne Phorest-Kauf (Ratenzahler
+  ohne unterschriebenes Mandat, Kauf gescheitert) wird nichts archiviert — das holt der spätere
+  Kauf nach. Die Einheiten des neuen Abos auf die vertraglichen Restsitzungen zu setzen, bleibt
+  Handarbeit.
+
 ### Bausteine
 
 | Baustein | Datei |
@@ -143,7 +159,8 @@ Fernabsatz-Widerrufsrecht, der Vertrag entsteht sofort aktiv.
 | Tageslauf | `contracts:activate-pending-changes` (06:30, `--dry-run`, `--date=`), Cron-Route `POST /api/cron/activate-pending-contract-changes` |
 | Setup | `php artisan forms:setup-contract-change [--publish]` — Formular + Rechtsdokument (idempotent) |
 | Migration | `2026_09_11_100000_add_pending_status_and_distance_change_fields_to_contracts_table` |
-| Tests | `tests/Feature/ContractChangeOfferTest.php` |
+| Alt-Abos archivieren (gemeinsam mit dem Upselling) | `app/Services/Contracts/PredecessorCourseArchiver.php`, Aufruf nach dem Kauf in `PhorestContractPurchaseService::createFromContract()` |
+| Tests | `tests/Feature/ContractChangeOfferTest.php`, `tests/Feature/ContractChangeCourseArchiveTest.php` |
 
 ### Datenmodell
 
@@ -179,7 +196,10 @@ Neue Fall-Ereignisse (`ContractCancellationEvent`): `change_offer_sent`,
    `ContractCreationService::createPendingMandateForContract()`), Fall auf
    Abgeschlossen/Downgrade, `computeAndStoreSigningCascade()` (Guthaben als erster
    `$consume()`-Schritt in `buildSigningCascade()`, gespeichert als
-   `predecessor_credit_allocation`), Phorest-Kauf, `RevocationOutcomeService::apply()`,
+   `predecessor_credit_allocation`), Phorest-Kauf (danach
+   `PredecessorCourseArchiver::archiveAfterContractChange()` — synchron im Kauf, wirft nie,
+   erkennt den Fernabsatz-Folgevertrag an `conclusion_channel = distance` und dem Widerrufsfall
+   mit `follow_up_contract_id`), `RevocationOutcomeService::apply()`,
    Observer-Anlässe (`contractCreated`, Bonus-Gutschein-Job) nachgeholt,
    Hub-Benachrichtigung. **Kein Zahlungsplan, kein GoCardless-Aufruf.**
 4. `withdraw()`: Folgevertrag `cancelled`, Fall `follow_up_contract_id = null`,
@@ -223,3 +243,9 @@ Wirksamkeit nichts geleistet. Zu prüfen vom Anwalt: Wortlaut der Klauseln,
 § 361 Abs. 2 BGB (Umgehungsverbot), Fortführungsklausel für Fälle mit bereits
 erklärtem Widerruf des Altvertrags. Für **Upgrades** gilt der Weg bewusst noch nicht
 (neue Zonen dürften vor Fristende nicht behandelt werden).
+
+## Changelog
+
+- 15.11.2026 — Beim Wirksamwerden archiviert der Hub die Phorest-Abos des abgelösten Vertrags
+  (gemeinsame Regel mit dem Upselling in `PredecessorCourseArchiver`); Unklares geht als Notiz am
+  Altvertrag und als Verlaufseintrag im Widerrufsfall ans Büro (Anlass OS004026).

@@ -10,11 +10,11 @@
   "Ratenzahlungs-",
   "vereinbarung"
  ],
- "subtitle": "Klickanleitung für den glatttHub — RZV abschließen, Plan ändern, laufende Vereinbarung verfolgen",
+ "subtitle": "Klickanleitung für den glatttHub — RZV abschließen, Plan ändern, laufende Vereinbarung verfolgen, nicht eingehaltene Vereinbarung beenden",
  "eyebrow": "Forderungen · RZV",
  "footerArea": "Forderungen",
- "stand": "09.11.2026",
- "version": "1.3",
+ "stand": "15.11.2026",
+ "version": "1.4",
  "notes": [
   "Eine RZV ist **immer eine Einzelfallentscheidung** — es gibt keine Regel und keinen Automatismus.",
   "Solange sie läuft, **mahnt der Hub nicht** — er beobachtet nur die Raten.",
@@ -267,7 +267,7 @@
     },
     {
      "title": "„RZV geplatzt“ ist ein eigener Topf",
-     "text": "Bleibt eine Rate aus, erscheint der Fall in der Arbeitsliste. Dann ist zu entscheiden: **Zahlungsplan ändern** (die Vereinbarung läuft weiter) oder **Regulär weitermahnen**. Letzteres passt, wenn die Vereinbarung nur den normalen Vertragseinzug wieder aufgenommen hat: Die Vereinbarung wird beendet, der Fall startet von vorn mit der 1. Zahlungserinnerung."
+     "text": "Bleibt eine Rate aus, erscheint der Fall in der Arbeitsliste. Dann ist zu entscheiden: **Zahlungsplan ändern** (die Vereinbarung läuft weiter) oder **Vereinbarung nicht eingehalten** — die Vereinbarung wird beendet und der Fall wieder gemahnt (nächste Seite)."
     },
     {
      "title": "Der Fall schließt sich mit der letzten Rate",
@@ -301,6 +301,53 @@
       "Bei Bestandsfällen: RZV-Raten plus reguläre Vertragsraten"
      ]
     ]
+   }
+  },
+  {
+   "h1": "Vereinbarung nicht eingehalten",
+   "sub": "Die Kundin zahlt die vereinbarten Raten nicht — dann wird die Vereinbarung beendet und der Fall wieder gemahnt.",
+   "layout": "text",
+   "card": {
+    "title": "Nicht eingehalten",
+    "text": "Vereinbarung beenden und weitermahnen"
+   },
+   "sections": [
+    {
+     "h2": "Der Knopf im Reiter „Ratenzahlung“",
+     "text": "Unter dem Plan steht **„Vereinbarung nicht eingehalten“** — bei laufenden Vereinbarungen (auch Selbstzahler, bei denen keine Lastschrift platzen kann) und bei geplatzten. Er ersetzt den früheren Knopf „Regulär weitermahnen“."
+    },
+    {
+     "h2": "Der Dialog fragt, wo der Fall wieder einsteigt",
+     "text": "Drei Möglichkeiten stehen zur Wahl. Der Hub belegt vor: **Letzte Mahnung**, wenn vor der Vereinbarung schon eine Mahnung per Post rausging — sonst **Von vorn**. Mit **„Vereinbarung beenden“** wird die Vereinbarung als storniert geführt, der Fall steht sofort wieder unter „Zu erledigen“, und die Wahl steht mit Namen im Verlauf."
+    },
+    {
+     "h2": "Bei Lastschrift-Vereinbarungen mit offenen Einzügen gesperrt",
+     "text": "Läuft die Vereinbarung über GoCardless und sind noch Einzüge offen, zeigt der Hub statt des Knopfs einen Hinweis: Die Einzüge würden sonst neben der Mahnung weiterlaufen. Dann zuerst die offenen Raten im SEPA-Tab des Vertrags stornieren oder den Zahlungsplan ändern. Platzt ein Einzug, liegt der Fall von selbst zur Entscheidung vor."
+    }
+   ],
+   "table": {
+    "head": [
+     "Wahl",
+     "Was danach ansteht"
+    ],
+    "rows": [
+     [
+      "**Von vorn – 1. Zahlungserinnerung**",
+      "Der Fall startet im sanften Weg neu: 1. und 2. Zahlungserinnerung, dann weiter wie üblich"
+     ],
+     [
+      "**Letzte Mahnung**",
+      "Der Fall steht wieder nach der 1. Mahnung — als Nächstes wird die letzte Mahnung per Post erzeugt"
+     ],
+     [
+      "**250-€-Entscheid**",
+      "Der Mahnweg gilt als durchlaufen — als Nächstes der Entscheid: über 250 € Gericht, darunter Abschreibung („Forderungen 6“)"
+     ]
+    ]
+   },
+   "hint": {
+    "kind": "warn",
+    "text": "**Beenden lässt sich nicht zurücknehmen.** Soll die Kundin doch weiter in Raten zahlen, wird eine neue Vereinbarung festgehalten. Bei Unsicherheit erst anrufen — oder den Plan ändern statt beenden."
    }
   }
  ]
