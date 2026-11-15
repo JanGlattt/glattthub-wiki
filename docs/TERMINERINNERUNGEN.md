@@ -137,6 +137,9 @@ lässt sich der Ablauf je Standort erst beobachten.
 - **Nie stornieren, wenn die Aufforderung niemanden erreicht hat** (keine Einwilligung, keine Nummer,
   alles fehlgeschlagen): Der Besuch bekommt den Stand `unreachable` und steht in der Terminübersicht
   als „Nicht erreicht — anrufen“.
+- **Notiz in Phorest.** Vor dem Storno schreibt der Hub eine gestempelte Terminnotiz („Automatisch
+  storniert: Termin nicht bestätigt bis … (Aufforderung am … per …)“) — vorher, weil stornierte Zeilen
+  keine Notiz mehr annehmen; einmal je Besuch, ein Fehler bremst den Storno nicht. Kein Push ans Team.
 - **Nach dem Storno** entsteht ein Fall „Nicht bestätigt“ in der Liste [Überlegt noch](UEBERLEGT-NOCH.md)
   (`StillConsideringCase::REASON_UNCONFIRMED`) und die Kundin bekommt sofort die Nachricht mit ihrem
   Link für einen neuen Termin (WhatsApp, sonst E-Mail); ohne Buchung steht sie nach zwei Tagen zum Anrufen an.
@@ -145,6 +148,9 @@ lässt sich der Ablauf je Standort erst beobachten.
 `confirmation` (`state`, `deadline_label`, `via_label`, `can_confirm`); die Karte zeigt „Bestätigung
 ausstehend“ (mit Frist im Tooltip), „Nicht erreicht — anrufen“ oder „Zugesagt“ (mit dem Weg der
 Bestätigung). `POST /phorest/appointment-confirmation/confirm` trägt die Zusage des Instituts ein.
+Die **App** bekommt denselben Stand als Feld `confirmation` je Termin in `GET /api/app/appointments`
+(`AppAppointmentsService::day()`, außerhalb des Caches angehängt) und zeigt ihn als Zeile in der Terminkarte
+mit dem Knopf „Bestätigen“ (auch als Wischen nach rechts); gespeichert wird über denselben POST.
 
 **Mitzählen.** `appointment_confirmations` hält je Besuch und Termindatum den Stand (Frist, Kanäle der
 Aufforderung, Weg und Kanal der Reaktion, Art der Absage, neue Buchung nach dem Storno),
@@ -162,9 +168,8 @@ plant danach die Nachrichten ein — kein eigener Scheduler-Job.
 
 **Fallstricke.**
 
-- Das Format der Schnellantwort im Superchat-Webhook ist nicht am echten Knopf geprüft: gelesen wird
-  der Text aus `content.body`/`text`, ersatzweise `title`/`payload`/`button.text`. Die erste echte
-  Antwort steht mit `raw_payload` in `superchat_messages` — dort nachsehen, falls sie nicht bestätigt.
+- Die Schnellantwort kommt als gewöhnliche WhatsApp-Nachricht mit dem Knopftext an (Jan, 15.11.2026);
+  verglichen wird der Text der eingehenden Nachricht (`ProcessSuperchatWebhookJob::handleMessage()`).
 - Vorlagen mit Schnellantwort-Knopf **und** Link legt Jan in Superchat an; der Hub kennt nur
   Vorlagen-ID und Platzhalter. Der Knopftext muss dem Feld an der Regel entsprechen.
 - Ein vom Team stornierter oder verlegter Termin beendet den Stand als `obsolete` („vom Team

@@ -969,6 +969,14 @@ Wischgeste vom Rand führen in die Liste zurück. Aktualisiert wird beim Wiederk
   Wurzel aktivieren kein WebView (Pfad-Markierung, Bridge-Ziel). Zweiter Tipp: `nativeScrollToTop[key]`.
   iPad-Drehung ohne Tab-Leiste setzt das aktive WebView auf `primary` zurück.
 
+**Terminbestätigung (seit 15.11.2026).** Termine mit Bestätigungspflicht tragen in `/api/app/appointments` das Feld
+`confirmation` (`state`, `deadline_label`, `via_label`, `can_confirm`; im Swift-Modell optional, ältere Hub-Stände
+liefern es nicht). Die Karte zeigt darunter eine Zeile: „Bestätigung ausstehend · Frist …“, „Nicht erreicht — bitte
+anrufen“ oder „Zugesagt · <Weg>“. Solange `can_confirm` gilt, steht daneben der Knopf „Bestätigen“ (Abkürzung: nach
+rechts wischen); nach der Rückfrage speichert `POST /phorest/appointment-confirmation/confirm` über die Web-Sitzung und
+die Liste lädt neu. Bild: `AppointmentsSnapshotTests.testRenderConfirmationStates`. Fachregeln:
+[Terminerinnerungen](TERMINERINNERUNGEN.md).
+
 ### Native Kundenseiten (Tab „Kunden", seit 22.09.2026)
 
 **Für Endanwender:** Der Kunden-Tab ist nativ: Suchfeld (Name, Kunden-Nr., Telefon, E-Mail — wie
