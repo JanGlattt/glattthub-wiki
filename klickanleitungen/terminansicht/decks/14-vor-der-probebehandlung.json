@@ -1,0 +1,164 @@
+{
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Terminansicht",
+ "audience": "institut",
+ "footerArea": "Terminansicht",
+ "out": "../pdf/Terminansicht-14-Vor-der-Probebehandlung",
+ "nr": 14,
+ "of": 14,
+ "title": [
+  "Vor der Probebehandlung:",
+  "Zusage und Sprachnachricht"
+ ],
+ "subtitle": "Klickanleitung für den glatttHub — Zusage der Kundin eintragen und die persönliche Sprachnachricht abhaken, direkt in der Terminübersicht",
+ "eyebrow": "Terminansicht · Vor dem Termin",
+ "stand": "15.11.2026",
+ "version": "1.0",
+ "notes": [
+  "Vor jeder Probebehandlung zählen zwei Dinge: **Hat die Kundin zugesagt?** und **Hat sie die persönliche Sprachnachricht bekommen?**",
+  "Beides steht an der Terminkarte und lässt sich dort **mit einem Klick abhaken**.",
+  "Die Sprachnachricht verschickt nicht der Hub — sie kommt von der Leitung aus WhatsApp. Der Hub führt nur die Liste."
+ ],
+ "pages": [
+  {
+   "h1": "Was an der Terminkarte steht",
+   "sub": "Unter dem Termin-Status stehen zwei kleine Abzeichen: die Zusage und die Sprachnachricht.",
+   "card": {
+    "title": "Abzeichen lesen",
+    "text": "Zusage, Sprachnachricht, Knopf oben"
+   },
+   "left": {
+    "shot": "v1-uebersicht"
+   },
+   "leftCaption": "Die Terminübersicht mit dem Filter „Beratung“: je Probebehandlung zwei Abzeichen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zusage",
+     "text": "**„Bestätigung ausstehend“** = die Kundin wurde gefragt und hat noch nicht geantwortet. **„Nicht erreicht — anrufen“** = die Nachricht kam auf keinem Weg an. **„Zusage offen“** = es gibt noch keine Zusage. **„Zugesagt“** (grün) = alles gut."
+    },
+    {
+     "n": 2,
+     "title": "Sprachnachricht",
+     "text": "**„Sprachnachricht offen“** (orange) oder **„Sprachnachricht gesendet“** (grün)."
+    },
+    {
+     "n": 3,
+     "title": "Knopf oben",
+     "text": "**„Sprachnachrichten“** im Seitenkopf zeigt, wie viele an diesem Tag noch offen sind, und öffnet die Tagesliste."
+    },
+    {
+     "n": 4,
+     "title": "Nur Probebehandlungen",
+     "text": "Die Abzeichen stehen nur an gebuchten Beratungen von heute und später — nicht an Behandlungen und nicht an vergangenen Tagen."
+    }
+   ],
+   "hint": {
+    "text": "**Der Filter „Beratung“** oben rechts zeigt nur die Probebehandlungen — so sieht man auf einen Blick, was noch offen ist."
+   }
+  },
+  {
+   "h1": "Mit einem Klick abhaken",
+   "sub": "Die Abzeichen sind Knöpfe. Ein Klick genügt, die Karte muss nicht geöffnet werden.",
+   "card": {
+    "title": "Abhaken",
+    "text": "Klick aufs Abzeichen oder Menü"
+   },
+   "left": {
+    "shot": "v4-gesendet"
+   },
+   "right": {
+    "shot": "v2-menue"
+   },
+   "leftCaption": "Nach dem Klick: „Sprachnachricht gesendet“ an der ersten Karte.",
+   "rightCaption": "Dasselbe geht über das Menü an der Uhrzeit.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Sprachnachricht abhaken",
+     "text": "Auf **„Sprachnachricht offen“** klicken — das Abzeichen wird grün. Ein weiterer Klick nimmt den Haken zurück."
+    },
+    {
+     "n": 2,
+     "title": "Zusage eintragen",
+     "text": "Hat die Kundin am Telefon oder am Tresen zugesagt: auf **„Zusage offen“**, **„Bestätigung ausstehend“** oder **„Nicht erreicht“** klicken. Danach steht dort **„Zugesagt“**."
+    },
+    {
+     "n": 3,
+     "title": "Über das Menü",
+     "text": "Ein Klick auf die **Uhrzeit** öffnet das Menü mit **„Termin bestätigen“** und **„Sprachnachricht gesendet“** — neben No Show, Stornieren und Umbuchen."
+    },
+    {
+     "n": 4,
+     "title": "In der App",
+     "text": "In der Terminübersicht der App stehen dieselben zwei Zeilen mit den Knöpfen **„Bestätigen“** und **„Abhaken“**."
+    }
+   ],
+   "hint": {
+    "text": "**Eine eingetragene Zusage lässt sich nicht zurücknehmen.** Sie stoppt die Frist der Terminbestätigung — der Termin wird dann nicht mehr automatisch freigegeben. Also nur eintragen, wenn die Kundin wirklich zugesagt hat."
+   },
+   "notes": [
+    {
+     "title": "Bestätigung mit Frist",
+     "text": "Wer mit mehr als 72 Stunden Vorlauf bucht, wird 72 und 48 Stunden vorher um Bestätigung gebeten. Ohne Antwort bis 36 Stunden vorher gibt der Hub den Termin frei. Am Abzeichen steht die Frist, wenn man mit der Maus darüber bleibt."
+    },
+    {
+     "title": "Nicht erreicht",
+     "text": "Hier bitte **anrufen**. Sagt die Kundin zu, die Zusage eintragen — sonst passiert mit dem Termin nichts, er wird nie ohne erreichte Kundin freigegeben."
+    }
+   ]
+  },
+  {
+   "h1": "Die Tagesliste „Sprachnachrichten“",
+   "sub": "Alle Probebehandlungen des Tages mit dem Gerüst zum Sprechen.",
+   "card": {
+    "title": "Tagesliste",
+    "text": "Gerüst, Reihenfolge, Abhaken"
+   },
+   "left": {
+    "shot": "v3-liste"
+   },
+   "leftCaption": "Die Liste mit aufgeklapptem Gerüst für die erste Kundin.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Liste öffnen",
+     "text": "Knopf **„Sprachnachrichten“** oben in der Terminübersicht. Für die Termine von morgen früh vorher den **nächsten Tag** wählen."
+    },
+    {
+     "n": 2,
+     "title": "Gerüst aufklappen",
+     "text": "**„Gerüst zum Sprechen“** zeigt den Text mit Vornamen und Uhrzeit der Kundin."
+    },
+    {
+     "n": 3,
+     "title": "Sprechen und senden",
+     "text": "In WhatsApp als **Sprachnachricht** aufnehmen, danach das **Wegvideo** des Standorts mit Google-Maps-Pin schicken."
+    },
+    {
+     "n": 4,
+     "title": "Abhaken",
+     "text": "**„Als gesendet abhaken“** — die Zeile wird grau, der Zähler am Knopf sinkt."
+    }
+   ],
+   "hint": {
+    "text": "**Nicht ablesen.** Den Text als Gerüst nehmen und frei sprechen, unter 30 Sekunden. Eine perfekt klingende Nachricht wirkt automatisiert."
+   },
+   "notes": [
+    {
+     "title": "Wann senden",
+     "text": "**Nachmittagstermine morgens**, **Termine am nächsten Morgen am Vorabend**. Wer am selben Tag bucht, bekommt die Nachricht direkt danach."
+    },
+    {
+     "title": "Was sagen",
+     "text": "Konkret machen, was passiert: Zonen ansehen, kurzer Hauttest, Probebehandlung. Das nimmt die Unsicherheit, die oft hinter dem Nichterscheinen steckt."
+    },
+    {
+     "title": "Black November",
+     "text": "Den gezogenen Gewinn erwähnen — oder ankündigen, dass die Kundin ihren Umschlag vor Ort zieht."
+    }
+   ]
+  }
+ ]
+}
