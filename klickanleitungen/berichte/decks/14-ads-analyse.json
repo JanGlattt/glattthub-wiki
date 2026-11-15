@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für die Berichte im glatttHub — Google Ads und Meta Ads: Kosten, Buchungen, Verträge und KPZ",
  "eyebrow": "Berichte · Werbung",
  "footerArea": "Berichte",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "11.11.2026",
+ "version": "1.1",
  "notes": [
   "Der Bericht verbindet **Werbekosten** mit dem, was daraus wurde — Buchungen, Verträge, Körperzonen.",
   "Möglich wird das durch die **Buchungs-Nachverfolgung**: Jede Online-Buchung trägt ihre Herkunft mit.",
@@ -134,6 +134,43 @@
    }
   },
   {
+   "h1": "Was aus den Buchungen wird",
+   "sub": "Je Klickherkunft: erschienen, nicht gekommen, storniert oder gelöscht.",
+   "card": {
+    "title": "Buchungsergebnis",
+    "text": "Wahrgenommen, No-Show, storniert, gelöscht"
+   },
+   "left": {
+    "shot": "r14-ergebnis"
+   },
+   "leftCaption": "Karte „Buchungsergebnis nach Herkunft“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Anzahl oder Anteil",
+     "text": "**Anzahl** zeigt, wie viel eine Herkunft bringt. **Anteil** legt alle Herkünfte auf 100 % — so fällt die mit den meisten Ausfällen sofort auf."
+    },
+    {
+     "n": 2,
+     "title": "Die Farben lesen",
+     "text": "Grün = **wahrgenommen**, Rot = **No-Show**, Gelb = **storniert**, Grau = **gelöscht**, Blau = **noch offen** (Termin kommt erst)."
+    },
+    {
+     "n": 3,
+     "title": "Verlauf",
+     "text": "**Verlauf** zeigt die No-Show-Quote je Herkunft Monat für Monat — daran sieht man, ob eine Maßnahme wirkt."
+    },
+    {
+     "n": 4,
+     "title": "Tabelle",
+     "text": "Über das Register am Kartenrand stehen alle Zahlen und die Quoten je Herkunft als Tabelle bereit."
+    }
+   ],
+   "hint": {
+    "text": "**Quoten zählen nur fällige Termine.** Termine in der Zukunft stehen nicht im Nenner. Wer verlegt oder absagt und an einem neuen Termin doch kommt, zählt mit dem Ergebnis des neuen Termins. Eine Absage ist kein No-Show."
+   }
+  },
+  {
    "h1": "Grenzen der Zuordnung",
    "sub": "Was der Bericht nicht wissen kann.",
    "card": {
@@ -147,6 +184,10 @@
      "Warum"
     ],
     "rows": [
+     [
+      "Meta-Anstoß, Google-Klick",
+      "Viele sehen zuerst eine Meta-Anzeige, googeln dann nach glattt und klicken die Google-Anzeige — die Buchung zählt bei Google, Meta wirkt schwächer, als es ist"
+     ],
      [
       "Telefonbuchungen",
       "Keine Nachverfolgung — sie fehlen in der Zuordnung, obwohl Werbung sie ausgelöst haben kann"

@@ -163,6 +163,7 @@ const PLAN = [
   kopf('r14-kopf', '/hub/reports/ads-analysis'),
   karte('r14-kosten', '/hub/reports/ads-analysis', 'Kostenverlauf & Kosten pro Lead'),
   karte('r14-kette', '/hub/reports/ads-analysis', 'Buchungen pro Quelle & Monat'),
+  karte('r14-ergebnis', '/hub/reports/ads-analysis', 'Buchungsergebnis nach Herkunft'),
   // ── 15 Besucher & Buchungs-Funnel
   kopf('r15-kopf', '/hub/reports/visitor-funnel'),
   karte('r15-herkunft', '/hub/reports/visitor-funnel', 'Herkunft der Besucher'),

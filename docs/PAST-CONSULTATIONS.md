@@ -30,6 +30,13 @@ sind ausgefallen, wie entwickelt sich das je Institut und Monat, zu welchen Woch
 läuft es gut, und — seit 08/2026 — wie hängt der **Buchungsvorlauf** mit Erscheinen und Abschluss
 zusammen. Der Standort-Filter der Seitenleiste wirkt seit 07/2026 lückenlos auf alle Karten.
 
+**Rückblick ganz oben (seit 15.11.2026).** Ein Kalender der letzten vier Wochen bis gestern zeigt je
+Tag Beratungen, No-Show-Quote, die am Beratungstag verkauften KPZ (klein darunter widerrufen bzw.
+Widerruf offen), Conversion Rate und KPZ pro BG — wahlweise alle Werte oder eine Kennzahl als Heatmap,
+gesamt oder je Institut. Ein Klick auf einen Tag zeigt alle Beratungen des Tages mit Ergebnis, Vertrag,
+Beraterin und Herkunft. Darunter der Verlauf von KPZ pro BG, Conversion und No-Show mit gleitendem
+Durchschnitt. Die Ampel vergleicht mit dem Durchschnitt der letzten sechs Monate.
+
 **Was „nicht erschienen" heißt.** Als No-Show zählt ein vergangener Termin mit Status *NO_SHOW*,
 *BOOKED*, *CONFIRMED* oder *CHECKED_IN* — also auch der nie final gepflegte Termin; stornierte und
 gelöschte Termine zählen gar nicht. **Termine von heute, die noch anstehen, bleiben komplett außen
@@ -75,6 +82,8 @@ weiterhin konzernweite Zahlen — direkt neben korrekt gefilterten KPIs.
 | Karte | Standard-Ansicht | Tabellen-Lasche |
 |---|---|---|
 | **KPI-Zeile** | personalisierbare Kennzahlen (kpi-dashboard, Drag & Drop) | — |
+| **Rückblick Beratungsgespräche** (seit 15.11.2026) | Kalender der letzten 4 Wochen bis gestern mit KW-Spalte; Werkzeugzeile **Kennzahl** (Alle / Beratungen / No-Show / KPZ / Conversion / KPZ pro BG), **Standorte** (Gesamt / Vergleichen, nur bei „Alle Standorte“), **Kanal** (Alle / Online / Offline); Klick auf einen Tag → Tagesliste | — bewusst ohne Lasche: der Kalender ist die Tabelle; „Vergleichen“ hängt eine Vergleichstabelle der Institute an |
+| **KPZ pro BG, Conversion & No-Show je Tag** (seit 15.11.2026) | **Ein Bild** (drei Ø-Linien, zwei Achsen), **Drei Bilder** (untereinander), **Je Standort** (eine Kennzahl je Institut); Glättung Ø 7/14/28 Tage | Tagestabelle, Monate aufklappbar, Quoten aus Summen |
 | **Beratungsgespräche-Analyse** | Diagramm mit Metrik-Umschalter: **Beratungen** (Balken + No-Show-Quote als Linie) oder **No-Shows** (gestapelt Stattgefunden/Nicht stattgefunden + Quote); **Standorte** = gruppierte Balken je Institut (bei „No-Shows" gestapelt: Stattgefunden voll, No-Show-Anteil schraffiert), Quoten als Linien (rechte %-Achse); Zoom-Leiste | die Ampel-Tabelle Monat × Institut (Anzahl oder No-Show %) mit Wochen-Drilldown und Klick auf jede Zelle → Termine-Liste |
 | **Wochentag & Uhrzeit** | Heatmap Wochentag × Stunde (Gesamt oder Mini-Heatmaps je Standort), Filter-Drawer (Status, Buchungstyp, Zeitraum) | dieselben Werte als Zahlen-Tabelle mit Summen |
 | **No-show-Matrix** („Analyse Gigi") | Verlaufs-Diagramm der gewählten Kennzahl je Institut; seit 18.10.2026 Schalter **Alle / Online / Offline** (Parameter `art`, über `consultation_services.is_online` — online „Nur gratis Beratungsgespräch“, offline „..Beratungsgespräch“, nie über die Phorest-Quelle) | die bekannte Ampel-Matrix (Quote/Gebucht/Erschienen, Färbungs-Vergleichsmodus, „Frühere Zeiträume laden") |
@@ -115,8 +124,42 @@ anstehenden Tagestermine als „nicht erschienen" gewertet würden (Bug 08/2026)
 |--------|--------|
 | `consultation-noshow-monthly` | No-show-Statistik pro Monat & Institut (deckt die Beratungsgespräche-Analyse und die Matrix auf Monatsebene, inkl. Quartal/Jahr-Aggregation per Tabellenkalkulation) |
 | `consultation-weekday-time` | Termine/Erschienen/No-Shows/Quote je Wochentag & Stunde |
+| `consultation-review-daily` | Rückblick je Tag & Institut: Beratungen, erschienen, No-Show (+ Quote), Abschlüsse am Tag, verkaufte KPZ, davon widerrufen (+ KPZ), Widerruf offen, Conversion, KPZ pro BG (seit 15.11.2026; ohne Zeitraum die letzten 3 Monate) |
 | `consultation-lead-success` | Vorlauf & Termin-Erfolg: Buchungen, Show-Rate, Ausfallquote (inkl. Stornos < 24 h), Abschlussquote & Ø KPZ je Vorlauf-Gruppe und Kanal (Alle/Online/Offline) — exakt die Zahlen der Karte |
 | `follow-up-result` | Nachfass-Ergebnis je Institut und Grund: auf der Liste, kontaktiert, Link, gebucht, Vertrag, Vertragswert (seit 18.10.2026) |
+
+### Rückblick Beratungsgespräche — Definitionen und Technik (15.11.2026)
+
+Entscheidungen Jan, 15.11.2026 (Entwürfe: https://claude.ai/artifact/JbsZnBbEuuU97ZL5Kk5tsh — gewählt „Web A + B
+kombiniert“ mit Standortvergleich und „App 1 · Wie im Hub“ mit denselben Umschaltern):
+
+- **Beratung** = aktiver, entschiedener Termin eines Beratungs-Services (`active()->settled()`), bis gestern.
+  Doppelzeilen derselben Kundin am selben Tag zählen **einmal** (erschienen gewinnt) — sonst blähen
+  Raum-Spalten die No-Shows auf. Dadurch kann die Zahl minimal unter der No-show-Matrix liegen, die nicht
+  dedupliziert.
+- **No-Show** = nur nicht erschienen, Zählweise der No-show-Matrix; Quote = No-Show ÷ Beratungen.
+- **Abschluss** = Vertrag derselben Kundin, **am Beratungstag** unterschrieben, nur bei erschienener
+  Beratung; zählt auch, wenn er später widerrufen wurde. **KPZ** = verkaufte KPZ (`sold_body_zones`,
+  Fallback `body_zone_count`; bei stornierten Verträgen `body_zone_count`, weil die verkauften KPZ dort
+  gekürzt sein können). **Widerrufen** = Reaktion „akzeptiert“ oder Vertrag storniert (wie die
+  Widerruf-Statistik), **offen** = Reaktion „offen“.
+- **Conversion** = Abschlüsse ÷ erschienene, **KPZ pro BG** = KPZ ÷ erschienene.
+- **Kanal** über `consultation_services.is_online` (online gebucht / offline gebucht), wie die No-show-Matrix.
+- **Ampel** am Ø der letzten 6 Monate (`reference`): ≥ 10 % besser grün, ± 10 % gelb, ≥ 10 % schwächer rot;
+  Mengen (Beratungen, KPZ) je geöffnetem Tag. Unter jedem Wochentag der Ø dieses Wochentags.
+- **Gleitender Ø** über 7/14/28 Kalendertage, Quoten aus den Fenstersummen; der Verlauf lädt dafür
+  28 Tage Vorlauf mit (`lead_from`).
+
+Technik: `App\Services\ConsultationReviewService` (`calendar()`, `trend()`, `reference()`, `day()`,
+`days()`), Cache-Gruppe `consultation-review` über `StatisticsCache` (Rezepte für den Worker),
+`flushCache()` aus `ContractObserver` und `ContractCancellationObserver`. Endpunkte
+`/phorest/reports/consultation-review/{calendar,trend,day}` (`refresh=1` rechnet sofort neu). Registry
+`termine.consultation-review` (native H) und `termine.consultation-review-trend` (native D), JS in
+`statistics/termine.js` (Ansichten je Person in `localStorage` `consultation-review-view`), neue
+Theme-Klasse `.card-glattt-toolbar` (Werkzeugzeile, bricht nur zwischen ganzen Gruppen um) und
+`.review-*`. App: `ConsultationReviewCards.swift`; „Ein Bild“ streckt KPZ pro BG auf die
+Prozentskala und beschriftet die rechte Achse mit den echten Werten. Tests:
+`ConsultationReviewTest`, Snapshots `testRenderConsultationReview`.
 
 ### Vorlauf & Termin-Erfolg — Definitionen
 
