@@ -28,6 +28,17 @@ Beratungsterminen das Ergebnis der Beratung als Pflicht ab; ein Vertrag im Termi
 
 ## Für Entwickler
 
+### Vierter Grund: „Nicht bestätigt“ (seit 15.11.2026)
+
+Storniert der Hub einen Termin, weil die [Terminbestätigung](TERMINERINNERUNGEN.md#terminbestatigung-mit-frist-seit-15112026)
+bis zur Frist ausblieb, legt `AppointmentConfirmationService::followUp()` sofort einen Fall mit
+`reason = unconfirmed` an (`outcome = unconfirmed`, „nicht bestätigt“) und verschickt über
+`StillConsideringLinkSender::sendAutomatic()` die Nachricht mit dem Buchungslink — WhatsApp-Vorlage
+und E-Mail stehen je Standort im Admin „Überlegt noch“, Abschnitt „Nicht bestätigt“
+(`unconfirmed_template_id`, `unconfirmed_variable_mapping`, `unconfirmed_email_subject/_body`;
+zusätzliche Platzhalter Termin-Datum und -Uhrzeit). Ohne Buchung steht der Fall nach
+`MISSED_CALL_AFTER_DAYS` Tagen zum Anrufen an. Je Kundin bleibt es bei höchstens einem laufenden Fall.
+
 ### Absicht und Entscheidungen (Jan, 17.10.2026)
 
 - **Keine Automatik.** Der Anruf kommt zuerst, die WhatsApp hängt am Anruf („ich schick dir gleich

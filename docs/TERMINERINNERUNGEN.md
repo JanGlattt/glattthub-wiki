@@ -94,7 +94,89 @@ gesendet, übersprungen oder fehlgeschlagen ist.
   automatisch; der neue Termin bekommt eigene — auch wenn er in Phorest verschoben
   wurde und seine `appointment_id` behalten hat (seit 02.11.2026, siehe Fallstrick unten).
 
+### Terminbestätigung mit Frist (seit 15.11.2026)
+
+Für Probebehandlungen und Beratungen kann eine Regel die **Bestätigung des Termins verlangen** (Jan,
+15.11.2026): 72 Stunden vorher geht die Aufforderung raus, 48 Stunden vorher eine Nachfrage, und wer
+bis 36 Stunden vorher nicht reagiert, verliert den Termin — er wird in Phorest storniert und der Slot
+ist wieder online buchbar.
+
+**Einrichten (Admin → Erinnerungen, Regel der Terminart „Beratung“):**
+
+| Baustein | Einstellung |
+|---|---|
+| Stufe „72 Stunden vorher“ | Zweck **Bestätigung anfordern** — startet die Frist |
+| Stufe „48 Stunden vorher“ | Zweck **Nachfrage, solange nicht bestätigt** (eigene Vorlage) |
+| Stufe „3 Stunden vorher“ | Zweck **Erinnerung** (wie bisher) |
+| Abschnitt „Terminbestätigung“ | Frist in Stunden (Standard 36), Text des Schnellantwort-Knopfs (Standard „Ich komme“), Schalter **automatisch stornieren** |
+| Admin → Überlegt noch, Abschnitt „Nicht bestätigt“ | Vorlage und E-Mail für die Nachricht nach dem Storno |
+
+Ohne den Schalter läuft alles mit (Aufforderung, Stand, Statistik), storniert wird aber nichts — so
+lässt sich der Ablauf je Standort erst beobachten.
+
+**Fachregeln** (alle in `AppointmentConfirmationService`):
+
+- **Kurzfristig gebucht = bestätigt.** Liegt zwischen Buchung (`upcoming_appointments.booked_at`,
+  ersatzweise `first_seen_at`) und Termin weniger Vorlauf als die Aufforderungs-Stufe, bekommt der
+  Besuch den Stand `not_required`; Aufforderung und Nachfrage werden als „übersprungen“ protokolliert.
+- **Frist** = N Stunden vor dem Termin; fällt sie vor 9 oder ab 21 Uhr, läuft sie bis 9 Uhr am
+  nächsten Morgen (`deadlineFor()`). Storniert wird nur zwischen 9 und 21 Uhr. Der Platzhalter
+  „Frist der Terminbestätigung“ (`confirmation_deadline`, in SMS/E-Mail `{{bestaetigung_frist}}`)
+  nennt die tatsächliche Uhrzeit, z. B. „Dienstag, 09:00 Uhr“.
+- **Kanäle.** WhatsApp allein genügt. Ist WhatsApp nicht möglich oder schlägt fehl, bekommen **SMS
+  und E-Mail beide** die Aufforderung (bei gewöhnlichen Erinnerungen bleibt es bei einer Nachricht).
+  Ist die WhatsApp nach 60 Minuten nicht zugestellt (`CheckConfirmationDeliveryJob`, Superchat
+  Analytics), gehen SMS und E-Mail nach. Aufforderung und Nachfrage teilen sich **einen Link** —
+  der Klick auf die erste Nachricht gilt auch nach der Nachfrage noch.
+- **Bestätigen** kann die Kundin per **Schnellantwort** in WhatsApp (eingehende Nachricht, deren Text
+  dem Knopf entspricht — Emojis und Satzzeichen zählen nicht; Freitext bestätigt nicht und wird nur
+  als „hat geantwortet“ vermerkt) oder über den **Link** (bestätigen, verlegen, absagen). Das
+  **Institut** bestätigt in der Terminübersicht über das Menü an der Uhrzeit („Termin bestätigen“).
+- **Absage der Kundin über den Link:** bis 24 Stunden vor dem Termin echter Storno in Phorest, danach
+  Absage-Spalte des Instituts (siehe nächster Abschnitt).
+- **Nie stornieren, wenn die Aufforderung niemanden erreicht hat** (keine Einwilligung, keine Nummer,
+  alles fehlgeschlagen): Der Besuch bekommt den Stand `unreachable` und steht in der Terminübersicht
+  als „Nicht erreicht — anrufen“.
+- **Nach dem Storno** entsteht ein Fall „Nicht bestätigt“ in der Liste [Überlegt noch](UEBERLEGT-NOCH.md)
+  (`StillConsideringCase::REASON_UNCONFIRMED`) und die Kundin bekommt sofort die Nachricht mit ihrem
+  Link für einen neuen Termin (WhatsApp, sonst E-Mail); ohne Buchung steht sie nach zwei Tagen zum Anrufen an.
+
+**Stand in der Terminübersicht.** `GET /phorest/appointment-reminder-status` liefert je Termin zusätzlich
+`confirmation` (`state`, `deadline_label`, `via_label`, `can_confirm`); die Karte zeigt „Bestätigung
+ausstehend“ (mit Frist im Tooltip), „Nicht erreicht — anrufen“ oder „Zugesagt“ (mit dem Weg der
+Bestätigung). `POST /phorest/appointment-confirmation/confirm` trägt die Zusage des Instituts ein.
+
+**Mitzählen.** `appointment_confirmations` hält je Besuch und Termindatum den Stand (Frist, Kanäle der
+Aufforderung, Weg und Kanal der Reaktion, Art der Absage, neue Buchung nach dem Storno),
+`appointment_confirmation_events` jeden Schritt. Der Kanal der Reaktion kommt aus der Kennung am Link
+(`?k=s` SMS, `?k=e` E-Mail), sonst aus dem Protokoll zum Link. Daraus rechnet die Statistik-Karte
+**Terminbestätigung** (`termine.appointment-confirmations`, Seite „Zukünftige Beratungsgespräche“,
+Export-Quelle `appointment-confirmations`): bestätigt (Schnellantwort/Link/Institut), verlegt, selbst
+abgesagt, automatisch storniert, nicht erreicht, ausstehend, kurzfristig gebucht, Ø Stunden bis zur
+Reaktion, neu belegte Slots, neue Buchung binnen sieben Tagen nach dem Storno (möglicher Fehlstorno)
+und die Show-Rate bestätigter gegen kurzfristig gebuchte Termine.
+
+**Ablauf im Takt.** `reminders:dispatch` (alle 15 Minuten) setzt zuerst die Fristen durch
+(`enforceDeadlines()`: Abgleich mit dem Terminspiegel, Storno, „nicht erreicht“, Fehlstorno-Blick) und
+plant danach die Nachrichten ein — kein eigener Scheduler-Job.
+
+**Fallstricke.**
+
+- Das Format der Schnellantwort im Superchat-Webhook ist nicht am echten Knopf geprüft: gelesen wird
+  der Text aus `content.body`/`text`, ersatzweise `title`/`payload`/`button.text`. Die erste echte
+  Antwort steht mit `raw_payload` in `superchat_messages` — dort nachsehen, falls sie nicht bestätigt.
+- Vorlagen mit Schnellantwort-Knopf **und** Link legt Jan in Superchat an; der Hub kennt nur
+  Vorlagen-ID und Platzhalter. Der Knopftext muss dem Feld an der Regel entsprechen.
+- Ein vom Team stornierter oder verlegter Termin beendet den Stand als `obsolete` („vom Team
+  geändert“) — er zählt nicht als Reaktion der Kundin.
+
 ### Absage über den Link: Absage-Spalte statt Storno (seit 13.10.2026)
+
+!!! note "Seit 15.11.2026: bis 24 Stunden vorher echter Storno"
+    Sagt die Kundin mindestens 24 Stunden vor dem Termin ab, wird der Termin in Phorest **storniert**
+    (`BookingService::cancelOnly()`), damit der Slot wieder buchbar ist. Unter 24 Stunden gilt
+    weiter die Absage-Spalte wie unten beschrieben (`AppointmentConfirmationService::clientCancelKind()`).
+
 
 Sagt die Kundin über den Erinnerungs-Link ab, wird der Termin in Phorest **nicht storniert**,
 sondern in die Spalte „XX. Absage weniger als 24 st / Nicht gekommen“ des Instituts verschoben
