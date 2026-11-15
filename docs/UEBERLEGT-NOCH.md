@@ -28,6 +28,9 @@ Beratungsterminen das Ergebnis der Beratung als Pflicht ab; ein Vertrag im Termi
 
 ## Für Entwickler
 
+!!! info "Menü seit 15.11.2026"
+    Die Admin-Einstellungen (Vorlagen für „Überlegt noch“, „Termin verpasst“, „Reaktivierung“, „Nicht bestätigt“) öffnen sich aus **Betrieb → Kundennachrichten**, je Nachricht mit eigenem Schalter je Standort. Siehe [Kundennachrichten](KUNDENNACHRICHTEN.md).
+
 ### Vierter Grund: „Nicht bestätigt“ (seit 15.11.2026)
 
 Storniert der Hub einen Termin, weil die [Terminbestätigung](TERMINERINNERUNGEN.md#terminbestatigung-mit-frist-seit-15112026)

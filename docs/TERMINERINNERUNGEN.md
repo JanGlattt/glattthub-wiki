@@ -59,6 +59,9 @@ gesendet, übersprungen oder fehlgeschlagen ist.
 
 ## Für Entwickler
 
+!!! info "Menü seit 15.11.2026"
+    Regeln, Kanäle, Protokoll und Opt-in-Vormerke stehen nicht mehr einzeln im Admin-Menü, sondern öffnen sich aus **Betrieb → Kundennachrichten** (Karten „Terminbestätigung“, „Erinnerung mit Weg“, „Erinnerung an die Behandlung“). Der Superchat-Kanal je Standort wird dort unter „Standorte & Kanäle“ gepflegt; neue Platzhalter „Wegzeile“ und „Absendername“. Siehe [Kundennachrichten](KUNDENNACHRICHTEN.md).
+
 ### Fachregeln: Auslöser, Kanäle, Voraussetzungen
 
 - Vor jedem gebuchten Termin prüft der Hub alle 15 Minuten, ob eine

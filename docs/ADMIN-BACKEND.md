@@ -248,6 +248,8 @@ Jan, 19.09.2026: Stufe 1 + 2 jetzt, Stufe 3 fallweise.
 
 ## Changelog
 
+- **15.11.2026** — Bereich „Kundennachrichten“ unter Betrieb: zwölf Menüpunkte (Beratungs-WhatsApp, Terminerinnerungen mit Kanälen, Protokoll und Opt-in-Vormerken, Formular-Links, Termin vorziehen mit Angeboten, Überlegt noch, Zufriedenheitsbefragung, Trinkgeld-&-Qualität-Einstellungen, Ablauf Probebehandlung) stehen nicht mehr im Menü und öffnen sich aus dem Bereich. Resources bekommen dafür den Trait `CustomerMessagePart` bzw. `CustomerMessageLogPart`. Siehe [Kundennachrichten](KUNDENNACHRICHTEN.md).
+
 - **24.10.2026 (Sicherheitsreview)** — Die Schranke gilt auch für Livewire-Aktualisierungen: `authMiddleware([...], isPersistent: true)` im
   `AdminPanelProvider`, denn jede Admin-Aktion (Speichern, Zugang senden, Passkeys) läuft über `POST /livewire/update`, wo Livewire nur
   **persistente** Middleware wiederholt. Dort zählt nur eine geworfene Antwort als Abbruch (`Utils::applyMiddleware` bricht nur bei

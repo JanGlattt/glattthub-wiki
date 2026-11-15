@@ -87,6 +87,21 @@ absagen“, Institutsfuß, Kalenderdatei) und zusätzlich zur WhatsApp „Danke 
 - **Grenze:** Sagt der Hub zu und scheitert danach (Phorest dreimal nicht erreichbar, Mail-Server), bekommt
   die Kundin keine E-Mail; der Eintrag steht dann mit Grund als `failed` im Protokoll.
 
+### Wo die Einstellungen stehen (seit 15.11.2026)
+
+Der Menüpunkt „Beratungs-WhatsApp“ ist im Bereich **Betrieb → Kundennachrichten** aufgegangen: Karte
+„Buchungsbestätigung“, je Standort Schalter und „Bearbeiten“ (öffnet dieses Formular). Kanal und Sendefenster
+kommen aus „Standorte & Kanäle“ und werden beim Speichern dort hierher übernommen. Siehe
+[Kundennachrichten](KUNDENNACHRICHTEN.md).
+
+### Gutschein-Test: mehrere Angebote per Zufall (seit 15.11.2026)
+
+Eingeschaltet (Karte „Buchungsbestätigung“ → „Gutschein-Test einstellen“) zieht
+`ConsultationVoucherLink::resolve()` je Kundin gleichverteilt eines der hinterlegten Gutschein-Produkte statt des
+Produkts am Standort; die Kundin behält ihr Angebot auf jedem Kanal und bei jeder weiteren Buchung. Die Vorlage
+braucht dafür die Platzhalter „Gutscheinwert“ und „Preis“ (`voucher_value`, `voucher_price`) statt eines festen
+Betrags. Details und Auswertung: [Kundennachrichten](KUNDENNACHRICHTEN.md#gutschein-test).
+
 ### Konfiguration je Standort (Fachregeln)
 
 Eine Zeile je Phorest-Standort (`consultation_whatsapp_settings`), angelegt über
