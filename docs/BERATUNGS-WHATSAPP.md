@@ -57,6 +57,36 @@ und lässt Fehlversuche wiederholen.
 
 ## Für Entwickler
 
+### Buchungsbestätigung per E-Mail aus dem Hub (seit 15.11.2026)
+
+Bis 15.11.2026 verschickte das WordPress-Plugin die Bestätigung einer Online-Buchung aus eigenen Vorlagen
+(`wp_glattt_email_templates`, fünf Stück: Standard, Bremen, je mit einer Fassung für „Beratung + Behandlung“).
+Jetzt kann der Hub sie übernehmen — im Layout aller Termin-Mails (Termin-Karte, Knopf „Termin verlegen oder
+absagen“, Institutsfuß, Kalenderdatei) und zusätzlich zur WhatsApp „Danke und Gutschein“ (Jan, 15.11.2026).
+
+- **Einschalten** je Standort: Admin → Beratungs-WhatsApp → Abschnitt „Buchungsbestätigung per E-Mail“
+  (`consultation_whatsapp_settings.confirmation_mail_enabled`), dort auch Betreff und Text beider Fassungen
+  und die Kopie (BCC; Standard: Institut und `beratungstermine@glattt.com`, „-“ = keine). Leere Felder =
+  Standardtexte aus `ConsultationWhatsappSetting::DEFAULT_CONFIRMATION_*`; Bremen hat per Migration den
+  Parkhinweis (Bre-Park) im Text.
+- **Ablauf:** Das Plugin meldet die Buchung an `POST /api/v1/booking-tracking`. `BookingTrackingObserver`
+  plant `SendBookingConfirmationMailJob` ein (3 Versuche, falls Phorest den Termin noch nicht liefert);
+  `BookingConfirmationMailer` holt Termin und Kundin aus Phorest, erzeugt den Verlege-Link
+  (`ReminderLinkService`) und verschickt `AppointmentReminderMail` mit der Kennzeichnung „Buchungsbestätigung“.
+  Protokoll je Termin in `booking_confirmation_mails` (unique `appointment_id` — nie doppelt). Keine
+  Einwilligungsprüfung: Die Bestätigung einer Buchung ist weder Werbung noch Erinnerung.
+- **Fassung „Beratung + Behandlung“** greift, wenn der Beratungs-Service zugleich eine Behandlung ist
+  (Name enthält „Behandlung“ oder „Sitzung“, wie in `ReminderLinkService::pureConsultationServiceId()`).
+- **Übergabe mit dem Plugin (WPglatttBooking ab 0.39.0):** Die Antwort des Tracking-Endpunkts trägt
+  `confirmation_mail: true|false` (`BookingConfirmationMailer::handles()`: Schalter am Standort an und
+  Beratungs-Service). Mit der Plugin-Option „Der glatttHub verschickt die Buchungsbestätigung“ meldet das
+  Plugin zuerst an den Hub und verschickt nur dann selbst, wenn der Hub nicht antwortet, einen Fehler
+  liefert oder „nein“ sagt. **Reihenfolge beim Ausrollen:** erst Hub auf Prod und Schalter je Standort,
+  dann Plugin hochladen und Option setzen — ältere Plugin-Versionen senden einfach weiter selbst (dann
+  käme die Mail doppelt, sobald der Hub-Schalter an ist).
+- **Grenze:** Sagt der Hub zu und scheitert danach (Phorest dreimal nicht erreichbar, Mail-Server), bekommt
+  die Kundin keine E-Mail; der Eintrag steht dann mit Grund als `failed` im Protokoll.
+
 ### Konfiguration je Standort (Fachregeln)
 
 Eine Zeile je Phorest-Standort (`consultation_whatsapp_settings`), angelegt über
