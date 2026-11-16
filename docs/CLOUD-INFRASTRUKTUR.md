@@ -176,7 +176,7 @@ IAP schützt die Web-App mit einer Google-Anmeldung, die **vor** dem normalen Ap
 
 | Umgebung | Zugriff | IAM Member |
 |----------|---------|------------|
-| **Produktion** | Alle Google Workspace-Nutzer + jan explizit | `domain:labrado-schlueter.com`, `user:jan@labrado-schlueter.com` |
+| **Produktion** | Alle Google Workspace-Nutzer + jan explizit | `domain:labrado-schlueter.com`, `domain:glattt.com` (seit 16.11.2026, Konten der Institute), `user:jan@labrado-schlueter.com` — dasselbe am Nutzerhandbuch `backend-glattthub-hilfe` |
 | **Staging** | Einzelne Nutzer | `user:jan@labrado-schlueter.com` |
 
 **Wichtig:** IAP greift nur bei Zugriff über den Load Balancer (Custom Domains). Die `*.run.app`-Adressen der Dienste umgingen den Load Balancer und damit IAP — bis zum 23.09.2026 stand die Login-Seite von Prod **und** Staging dort ohne Google-Anmeldung offen (Befund beim Sicherheits-Review, siehe [Gerätevertrauen-Plan](GERAETEVERTRAUEN-PLAN.md)). Seitdem haben beide Web-Dienste den Ingress `internal-and-cloud-load-balancing`, gesetzt per `gcloud run services update … --ingress` und festgeschrieben in `cloudbuild.yaml` / `cloudbuild-staging.yaml`: Die `run.app`-Adressen antworten mit 404, jeder Zugriff läuft über den ALB. Alle Cloud-Scheduler-Jobs zeigen seither auf die Custom Domains — ein Job mit `run.app`-Ziel liefe ins Leere, `php artisan cron:audit` meldet ihn als Fehler.
