@@ -10,11 +10,12 @@
  "subtitle": "Klickanleitung für das erste Formular im Beratungsgespräch — Stammdaten prüfen, Gesundheitsfragen, Einwilligungen, Unterschrift",
  "eyebrow": "Terminansicht · Beratungsgespräch",
  "footerArea": "Terminansicht",
- "stand": "18.10.2026",
- "version": "1.2",
+ "stand": "16.11.2026",
+ "version": "1.3",
  "notes": [
   "Voraussetzung: Der Termin **läuft** (Teil A). Die Formulare werden **gemeinsam mit der Kundin** am Tablet ausgefüllt.",
-  "Das Formular kann auch **an die Kundin weitergegeben** werden (Teil E) — sie füllt es dann selbst aus."
+  "Das Formular kann auch **an die Kundin weitergegeben** werden (Teil E) — sie füllt es dann selbst aus.",
+  "Ist die Kundeninformation unterschrieben, ist im Beratungsgespräch der **Einstellungszettel offen** — werden Achseln gratis mitbehandelt, gehören die Werte direkt dorthin, nicht auf einen Papierzettel."
  ],
  "pages": [
   {

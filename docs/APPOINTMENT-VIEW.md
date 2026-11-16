@@ -69,6 +69,9 @@ Kasse, Folgetermin und Pflicht-Notiz und schließt den Termin in Phorest ab.
   vorige eingereicht ist.
 - **Pflichtformulare sperren den Einstellungszettel**, nicht den Termin-Start: Fehlt z.B. die
   Sitzungsbestätigung, springt die Ansicht nach dem Start direkt zur Formularauswahl.
+- **Im Beratungsgespräch reicht die Kundeninformation** (seit 16.11.2026): Werden dort z. B. Achseln
+  gratis mitbehandelt, ist der Einstellungszettel offen, sobald die Kundeninformation unterschrieben
+  ist — die Sitzungsbestätigung der mitgebuchten „Desinfektion“ sperrt dort nicht.
 - **Offene Beträge werden beim Beenden geklärt.** Ein roter Hinweis zeigt Kundenkonto-Schulden
   und unbezahlte Zusatz-Services; „Wird nicht bezahlt" braucht eine Begründung und informiert das Büro.
 - **Direkt behandeln:** Nach einem Vertragsabschluss kann der Behandlungstermin sofort in derselben
@@ -404,6 +407,7 @@ sie aber in dieser Reihenfolge aus. Bei „einmalig pro Kunde" zählt eine früh
 **Pflichtformulare vor Behandlung:**
 
 - Formulare können im Formular-Editor als **Pflichtformular** markiert werden (siehe `FORM-EDITOR.md`). Passt ein solches Formular zu den Dienstleistungen des Termins, ist der **Einstellungszettel gesperrt**, bis alle Pflichtformulare ausgefüllt sind — die Kachel zeigt ein Schloss, ein Klick nennt die fehlenden Formulare per Toast.
+- **Beratungstermine (seit 16.11.2026, Rückmeldung Marie):** Enthält der Termin einen Beratungs-Service, zählen nur Pflichtformulare, deren `service_ids` einen dieser Beratungs-Services treffen — in Prod die **Kundeninformation & Einverständniserklärung** (Pflicht-Flag dafür im Formular-Editor setzen). Pflichtformulare der mitgebuchten Behandlung (Sitzungsbestätigung an „Desinfektion“) sperren dort nicht, damit gratis mitbehandelte Achseln sofort in den Einstellungszettel kommen. Die Beratungs-Services liefert `GET /phorest/appointment/{b}/{a}/consultation-outcome` als `consultation_service_ids` (`AppointmentConsultationOutcome::status()`); Web `isFormRequired()`/`formBelongsToConsultation()` in `appointment-unified.js`, App gleichnamig in `AppointmentDetailModel`. Solange der Status noch lädt, gilt die strengere Regel. Das Minderjährigen-Formular bleibt unabhängig davon Pflicht. Tests: `AppointmentConsultationOutcomeTest`, `AppointmentDetailSnapshotTests.testConsultationLocksOnlyByConsultationForms`.
 - Der **Termin-Start (= Check-in) bleibt möglich** — fehlen Pflichtformulare, springt die Ansicht nach dem Start direkt zur Formular-Auswahl statt zu den Session-Kacheln. In der Formular-Liste tragen unerfüllte Pflichtformulare ein gelbes **„Pflicht"-Badge**.
 - Die Gültigkeit ist pro Formular konfiguriert: **einmalig pro Kunde** (jede frühere Einreichung zählt) oder **bei jedem Termin neu** (Einreichung mit dieser Termin-ID nötig). Ein Überspringen ist nicht möglich.
 - Der grüne „Ausgefüllt"-Haken auf den Formular-Kacheln wird beim Laden aus den bestehenden Einreichungen des Termins vorbefüllt und übersteht damit auch einen Seiten-Reload.

@@ -39,7 +39,8 @@ einzelnen Feld.
   fest, inklusive bestätigter Rechtsdokument-Fassung und Unterschrift; das PDF ist die
   Ausfertigung dazu.
 - **Pflichtformulare sperren den Ablauf.** Ist ein Formular als Pflicht vor der Behandlung
-  markiert, bleibt der Einstellungszettel gesperrt, bis es vorliegt.
+  markiert, bleibt der Einstellungszettel gesperrt, bis es vorliegt. Im Beratungsgespräch zählen
+  nur Pflichtformulare, die an einem Beratungs-Service hängen (Kundeninformation, seit 16.11.2026).
 - **Bedingte Felder verstecken, was nicht gebraucht wird** — sie werden erst sichtbar (und erst
   dann pflichtig), wenn ihre Bedingung zutrifft.
 - **Minderjährige und Mitunterzeichner** ergänzen eine zweite Person: vor Ort oder per Link mit

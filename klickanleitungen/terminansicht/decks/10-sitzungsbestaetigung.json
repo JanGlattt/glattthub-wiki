@@ -13,12 +13,13 @@
  "subtitle": "Klickanleitung für den glatttHub — vor jeder Behandlung die Sitzungsbestätigung mit der Kundin ausfüllen: Kontaktdaten prüfen, Einwilligungen, aktuelle AGB, Unterschrift",
  "eyebrow": "Terminansicht · Behandlungstermin",
  "footerArea": "Terminansicht",
- "stand": "28.09.2026",
- "version": "1.1",
+ "stand": "16.11.2026",
+ "version": "1.2",
  "notes": [
   "Die **Sitzungsbestätigung** ist ein **Pflichtformular bei jedem Behandlungstermin** — der Hub sperrt den Einstellungszettel, bis sie ausgefüllt ist.",
   "Sie bestätigt die Kontaktdaten der Kundin, die Einwilligungen zu Terminerinnerung und Kontaktaufnahme, dass sich nichts an der Vorgeschichte geändert hat, die aktuellen AGB — mit Ort, Datum und Unterschrift.",
-  "Das Formular gilt **nur für diesen Termin**; beim nächsten Behandlungstermin wird es erneut ausgefüllt."
+  "Das Formular gilt **nur für diesen Termin**; beim nächsten Behandlungstermin wird es erneut ausgefüllt.",
+  "**Im Beratungsgespräch** sperrt sie den Einstellungszettel nicht — dort reicht die unterschriebene Kundeninformation, etwa wenn Achseln gratis mitbehandelt werden."
  ],
  "pages": [
   {
