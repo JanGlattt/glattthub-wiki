@@ -57,12 +57,12 @@ Ticket wieder und die Zuständige bekommt eine Meldung.
 
 | Baustein | Pfad | Aufgabe |
 |---|---|---|
-| Abruf | `App\Services\Support\MailboxPoller` (`support:poll-mailbox`, Cron `poll-support-mailbox`, minütlich) | IMAP per webklex, UID-Merker in `support_mailbox_states`, nie Flags setzen oder löschen |
+| Abruf | `App\Services\Support\MailboxPoller` (`support:poll-mailbox`, Cron `poll-support-mailbox`, minütlich) | IMAP per webklex, UID-Merker in `support_mailbox_states`, nie Flags setzen oder löschen; bei Verbindung „Google Workspace“ übernimmt `GmailMailboxPoller` (Gmail-API) |
 | Verarbeitung | `InboundMailProcessor::process(string $rawMime)` | Parsen, Zuordnung, Bounce/Abwesenheit erkennen, Weiterleitungen der Standorte (`ForwardedMailParser`), Spam-Sperre |
 | Kundin | `SupportClientMatcher` | über `client_statistics.email`, Standort aus Heimat-Institut |
 | Fachlogik | `SupportTicketService` | einzige Stelle für Status, Antworten, Notizen, Zuweisung, Zusammenführen, Vier-Augen (`ReviewerPicker`) |
 | Lesen | `SupportTicketQuery` | Ansichten, Liste, Detail mit Verlauf, Zugriffsrechte, Vorgänge, Zusammenführen-Vorschlag |
-| Versand | `SupportMailer` + `SendSupportReplyJob` | SMTP des Postfachs, Message-ID/In-Reply-To/References aus der gespeicherten Nachricht |
+| Versand | `SupportMailer` + `SendSupportReplyJob` | SMTP des Postfachs oder Gmail-API (`gmail-api`-Transport), Message-ID/In-Reply-To/References aus der gespeicherten Nachricht |
 | Regeln | `SupportRulesService` (`support:run-rules`, alle 15 Min.) | Eingangsbestätigung, Gelöst → Geschlossen, Wartet → Gelöst, Wiedervorlage, Umfrage |
 | Umschalter | `App\Support\SupportMode::usesHub()` | Postfach „live“ → alle Zendesk-Stellen antworten aus Hub-Tickets (`ZendeskCompat`) |
 | Import | `ZendeskImportService`, `ImportZendeskStepJob`, Admin „Zendesk-Import“ | Historie in Schritten über die Queue, Nummern bleiben |
@@ -426,7 +426,35 @@ meldet „Neue Mail im Kundenservice“ ans Team — die rohe Bestätigung, die 
 die Kundin schickte (Betreff „Kundenportal: Thema · Kundennummer“ mit ihrem eigenen Text), entfällt
 damit (Jan, 10.10.2026).
 
+### Postfach bei Google Workspace (seit 16.11.2026)
+
+glattt.com liegt seit dem 16.11.2026 bei Google (MX `smtp.google.com`). Das Postfach kundenservice@
+ist ein Gmail-Konto; `info@` und `noreply@` sind Aliase darauf. Admin → Kundenservice-Postfach →
+**Verbindung „Google Workspace“** (`support_mailbox_settings.transport = gmail`): kein Passwort, kein
+IMAP/SMTP — Lesen und Antworten laufen über die Domain-Delegation (`GoogleDelegation`, `GmailApi`,
+Voraussetzungen siehe [E-Mail Versand](EMAIL-VERSAND.md)).
+
+- **Abruf** (`GmailMailboxPoller`): Suche `{in:inbox in:spam}`, älteste zuerst, höchstens 50 je Lauf.
+  Stand in `support_mailbox_states` unter dem Ordner `gmail:<konto>`: `cursor_ms` = Gmail-
+  `internalDate` der neuesten verarbeiteten Mail, `seen_ids` = Gmail-IDs der letzten 10 Minuten. Jeder
+  Lauf fragt ab Cursor − 10 Minuten und überspringt die gesehenen IDs. Erster Lauf ab jetzt.
+- **Spam** (Entscheidung Jan, 16.11.2026: nichts verlieren): Mails aus dem Gmail-Spam werden eingelesen.
+  Ein neues Ticket bekommt das Kennzeichen `spam_verdacht` (Listenzeile „Spam-Verdacht“, Kopf „Spam-Verdacht
+  (Gmail)“), keine Eingangsbestätigung, keine Mitteilung ans Team, Ereignis `spam_suspected`. Antworten
+  in bestehenden Tickets laufen normal.
+- **Postfach wechseln:** Ändert sich Verbindungsart, Server, Konto oder Ordner, setzt das Speichern
+  `SupportMailboxState::FULL_IMPORT` — der nächste Abruf liest das neue Postfach **einmal vollständig**
+  (Dubletten fängt die Message-ID ab). Anlass: Beim Umzug lagen die Mails seit der MX-Umstellung schon im
+  neuen Postfach und wären als „Altbestand“ übersprungen worden. Die allererste Einrichtung liest
+  weiter erst ab jetzt.
+- **Eigene Absender:** Mails von der Postfach-Adresse **und** vom allgemeinen Absender (`noreply@`, aus
+  `email_settings`) werden nie zum Ticket (`InboundMailProcessor::ownAddresses()`).
+
 ### Fallstricke
+
+- **MX-Umstellung fällt nicht auf** (16.11.2026): Nach dem Wechsel von glattt.com zu Google fand der
+  IMAP-Abruf bei IONOS einfach nichts mehr — ohne Fehler, `last_error` blieb leer. Bemerkt nur an der
+  Zahl der Tickets (letzte Mail 11:18).
 
 - **Upload-Grenze 25 MB je Anfrage** (nginx `client_max_body_size` + PHP `post_max_size` in
   `docker/nginx.conf`, bis 03.11.2026 20 MB): nginx antwortet mit 413 als **HTML**, Laravel sieht die
@@ -496,6 +524,10 @@ damit (Jan, 10.10.2026).
   `anhaenge-upload-grenze-413.md`
 
 ## Changelog
+
+- **16.11.2026** — Postfach über Google Workspace: Verbindung „Google Workspace“ (Gmail-API, ohne
+  Passwort) für Abruf und Antworten, Spam wird als „Spam-Verdacht“ eingelesen, Postfach-Wechsel liest
+  das neue Postfach einmal vollständig.
 
 - **09.11.2026** — Geschlossene Tickets wieder öffnen (⋯-Menü) und direkt beantworten; Zeitstempel
   werden geleert, Ereignis `reopened`.

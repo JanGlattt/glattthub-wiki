@@ -19,9 +19,11 @@ und das Debugging**; die Pflege der Einstellungen und die Test-Mail stehen im Nu
 **Was das Modul leistet.** Statt Zugangsdaten in Konfigurationsdateien zu verteilen, stehen Host,
 Port, Verschlüsselung, Benutzername, Passwort (verschlüsselt gespeichert) und Absender einmal im
 Admin-Backend. Änderungen wirken sofort, eine Test-Mail prüft die Verbindung. Jede versendete Mail
-ist danach im zentralen [E-Mail-Protokoll](EMAIL-PROTOKOLL.md) nachvollziehbar. Für IONOS gilt:
-Host `smtp.ionos.de` (nicht `.com`), Port 465 mit SSL; ein 535-Fehler bedeutet fast immer falsches
-Passwort oder falschen Host.
+ist danach im zentralen [E-Mail-Protokoll](EMAIL-PROTOKOLL.md) nachvollziehbar.
+
+Seit dem 16.11.2026 liegt glattt.com im Google Workspace. Der Hub verschickt deshalb über die
+**Gmail-API**: Absender `noreply@glattt.com` (Alias des Kontos `kundenservice@`), Antworten an
+`kundenservice@`, ohne Passwort. SMTP bleibt als Rückfall wählbar.
 
 **Wo was erledigt wird:**
 
@@ -68,6 +70,33 @@ Passwort oder falschen Host.
   - PDF wird erzeugt (falls nicht vorhanden)
   - PDF wird als Attachment versendet
   - Versand via `Mail::raw()` mit `attachData(...)`
+
+### Versandweg Google Workspace (Gmail-API, seit 16.11.2026)
+
+Admin → E-Mail Versand → **Versandweg „Google Workspace“**. Der Hub sendet dann jede Mail über die
+Gmail-API im Namen des eingetragenen Google-Kontos (`username`, z. B. `kundenservice@glattt.com`);
+Host, Port und Passwort sind ausgeblendet und werden nicht gebraucht.
+
+- **Transport:** `App\Mail\Transport\GmailApiTransport` (Laravel-Treiber `gmail-api`, registriert
+  im `AppServiceProvider`, Mailer `gmail` in `config/mail.php`). `MailSettingsService::apply()` setzt
+  bei `mailer = gmail` den Standard-Mailer und das Konto.
+- **Anmeldung ohne Schlüssel:** `App\Services\Google\GoogleDelegation` lässt das Anmelde-JWT vom
+  IAM-Dienst signieren (`iamcredentials … :signJwt`) und tauscht es bei `oauth2.googleapis.com` gegen
+  ein Token im Namen des Kontos. Dienstkonto mit der Delegation: `google.delegation_service_account`
+  (Standard `glatttbert-knowledge-base@glattthub`, Client-ID 118060121939585387594). Lokal (ohne
+  `K_SERVICE`) geht derselbe Weg über den JSON-Schlüssel.
+- **Voraussetzungen (einmalig):** Gmail-API im Projekt `glattthub` an; Rolle „Ersteller von
+  Dienstkonto-Tokens“ für `99200336070-compute@developer.gserviceaccount.com` auf dem
+  Delegations-Konto; in der Admin-Konsole bei der Client-ID die Bereiche `gmail.readonly` und
+  `gmail.send` **zusätzlich** zu den Drive-/Sites-Bereichen; `noreply@` als Alias von kundenservice@
+  und dort unter „Senden als“ eingetragen.
+- **Bcc:** Symfony streicht die Bcc-Zeile aus der Rohmail; die Gmail-API liest Empfänger nur aus
+  Kopfzeilen. Der Transport setzt alle Umschlag-Empfänger, die nicht in To/Cc stehen, als Bcc wieder
+  davor (Kopie an buero@ bei den Kunden-App-Mails).
+- **Grenze:** 2.000 Mails am Tag je Konto. Der Hub lag im Herbst 2026 bei ~120 am Tag, Spitze 374.
+- **Fehlerbilder:** 403 beim Signieren = Rolle fehlt; `unauthorized_client` = Bereiche nicht in der
+  Delegation; „has not been used“ = Gmail-API im Projekt aus. Ein Absender ohne „Senden als“ wird von
+  Gmail still durch das Konto ersetzt.
 
 ### Konfiguration (SMTP)
 
@@ -153,6 +182,8 @@ try {
 - `routes/api.php`
 
 ### Verwandte Dokumentation
+
+- [Kundenservice-Tickets](KUNDENSERVICE-TICKETS.md) – Postfach kundenservice@ über dieselbe Gmail-Delegation
 
 - [E-Mail-Protokoll](EMAIL-PROTOKOLL.md) – zentrales Protokoll aller versendeten Mails
 - [Benutzer-Einladungssystem](./USER-INVITATION-SYSTEM.md) – Nutzt MailSettingsService fuer den Einladungs-E-Mail-Versand
