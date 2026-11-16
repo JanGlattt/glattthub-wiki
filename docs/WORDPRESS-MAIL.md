@@ -10,8 +10,8 @@ unter **Werkzeuge → glattt Mail** eine Testmail schicken.
 
 | | |
 |---|---|
-| **Repo / Ablage** | Google Drive `Wordpress-Plugins/WPMail/WPglatttMail` (ZIP `WPglatttMail-0.1.0.zip` daneben) |
-| **Version** | 0.1.0 (16.11.2026) |
+| **Repo / Ablage** | privat `JanGlattt/WPglatttMail`, Arbeitskopie Google Drive `Wordpress-Plugins/WPMail/WPglatttMail` (ZIP daneben) |
+| **Version** | 0.1.1 (16.11.2026, auf glattt.com aktiv; WP Mail SMTP gelöscht) |
 | **Verbindung** | `smtp-relay.gmail.com:587`, STARTTLS, **ohne** Benutzer/Passwort, HELO `www.glattt.com` |
 | **Voraussetzung** | Admin-Konsole → Apps → Gmail → Routing → SMTP-Relay-Dienst: „Nur Adressen in meinen Domains“, Anmeldung über die IP des Servers (Webserver 85.13.152.77), TLS erforderlich |
 
@@ -32,3 +32,7 @@ unter **Werkzeuge → glattt Mail** eine Testmail schicken.
 - **Shared Hosting:** Die ausgehende IP kann von der Webserver-IP abweichen. Bei „Invalid credentials
   for relay [IP]“ steht die richtige IP in der Meldung — diese im Relay freigeben.
 - Der Hub verschickt über die Gmail-API, nicht über diesen Relay ([E-Mail Versand](EMAIL-VERSAND.md)).
+- **Fehlertext:** PHPMailer meldet nur „Die Daten wurden nicht akzeptiert“. Seit 0.1.1 hängt das Protokoll
+  die Antwort des Google-Servers an (Code + Text). Erster Befund 16.11.2026: Die erste Mail an das gerade
+  angelegte Konto `laserakademie@glattt.com` wurde abgelehnt, eine Minute später angenommen — neue Konten
+  brauchen einen Moment, bis Google sie zustellt.
