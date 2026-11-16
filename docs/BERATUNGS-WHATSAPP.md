@@ -83,7 +83,7 @@ absagen“, Institutsfuß, Kalenderdatei) und zusätzlich zur WhatsApp „Danke 
 
 - **Einschalten** je Standort: Admin → Beratungs-WhatsApp → Abschnitt „Buchungsbestätigung per E-Mail“
   (`consultation_whatsapp_settings.confirmation_mail_enabled`), dort auch Betreff und Text beider Fassungen
-  und die Kopie (BCC; Standard: Institut und `beratungstermine@glattt.com`, „-“ = keine). Leere Felder =
+  und die Kopie (BCC; Standard: nur das Institut — `beratungstermine@` gibt es seit 16.11.2026 nicht mehr, „-“ = keine). Leere Felder =
   Standardtexte aus `ConsultationWhatsappSetting::DEFAULT_CONFIRMATION_*`; Bremen hat per Migration den
   Parkhinweis (Bre-Park) im Text.
 - **Ablauf:** Das Plugin meldet die Buchung an `POST /api/v1/booking-tracking`. `BookingTrackingObserver`
