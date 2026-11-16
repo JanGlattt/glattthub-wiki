@@ -447,6 +447,10 @@ Voraussetzungen siehe [E-Mail Versand](EMAIL-VERSAND.md)).
   (Dubletten fängt die Message-ID ab). Anlass: Beim Umzug lagen die Mails seit der MX-Umstellung schon im
   neuen Postfach und wären als „Altbestand“ übersprungen worden. Die allererste Einrichtung liest
   weiter erst ab jetzt.
+- **Nur Prod liest und schreibt** (`SupportMailboxSetting::liveMailboxAllowed()`): Staging bekommt jede Nacht
+  die Prod-Datenbank samt Postfach-Einstellung und läuft unter demselben Dienstkonto. Außerhalb von Prod
+  gibt der Abruf „off“ zurück und `SupportMailer` schreibt nur ins Log. Ausnahme bewusst per
+  `SUPPORT_MAILBOX_OUTSIDE_PRODUCTION=true`.
 - **Eigene Absender:** Mails von der Postfach-Adresse **und** vom allgemeinen Absender (`noreply@`, aus
   `email_settings`) werden nie zum Ticket (`InboundMailProcessor::ownAddresses()`).
 
