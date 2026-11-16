@@ -26,6 +26,7 @@ zusammen, und wo berühren sie den glatttHub.
 | **WPglatttRechner** | Kostenrechner Rasieren/Waxing | Kampagnen- und Ratgeberseiten | 0.8.1 | [Rechner](WORDPRESS-RECHNER.md) |
 | **WPglatttReviews** | Google-Bewertungen, Karussell und Trust-Leiste | Startseite, Standortseiten, Preise | 0.5.1 | [Bewertungen](WORDPRESS-BEWERTUNGEN.md) |
 | **WPglatttMedien** | Ordner in der Mediathek | **nur WP-Admin**, nichts auf der Website | 1.0.0 | [Medien-Ordner](WORDPRESS-MEDIEN-ORDNER.md) |
+| **WPglatttMail** | alle Website-Mails über den SMTP-Relay von Google Workspace (seit 16.11.2026) | **nur WP-Admin** (Werkzeuge → glattt Mail) | 0.1.0 | [Mail](WORDPRESS-MAIL.md) |
 
 ### Wie sie zusammenhängen
 

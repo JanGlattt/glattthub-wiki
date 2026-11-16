@@ -300,6 +300,7 @@ nav:
       - Rechner: WORDPRESS-RECHNER.md
       - Bewertungen: WORDPRESS-BEWERTUNGEN.md
       - Medien-Ordner: WORDPRESS-MEDIEN-ORDNER.md
+      - Mail (Google-Relay): WORDPRESS-MAIL.md
 
   - Nutzerhandbuch:
     - nutzerhandbuch/index.md
