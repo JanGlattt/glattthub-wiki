@@ -119,7 +119,7 @@ verbindet Nachrichten mit Kundinnen, Verträgen und Ankündigungen.
 ### Fehler-Räume (seit 15.11.2026)
 
 Raumtyp `laser_error` je gemeldetem Laserfehler, angelegt von `App\Services\Laser\LaserErrorChatService`
-(Mitglieder: alle am Standort des Lasers, Melderin, Laser-Service). `system_key = laser-error:{id}` macht ihn
+(Mitglieder: alle am Standort des Lasers, Melderin, Rollen der Regel „Laser-Störung“). `system_key = laser-error:{id}` macht ihn
 zum System-Raum (kein Umbenennen, keine Mitgliederpflege von Hand), `subject` im Raum-Payload sagt Web und
 App, dass sie oben die Fehlerkarte laden (`/hub/laser/api/errors/{id}/card`). „Behoben“ archiviert den Raum;
 `canPost` sperrt archivierte Räume ohnehin. Details im Wiki `LASER-MODUL.md`, Abschnitt „Fehler-Chat“.

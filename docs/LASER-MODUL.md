@@ -185,7 +185,7 @@ verbaut" und ist bei der nächsten Laser-Inventarisierung als vorhandenes Teil w
 **Foto und/oder Video**.
 
 **Gespräch zum Fehler** (seit 15.11.2026): Jede Meldung öffnet einen eigenen Raum im Team-Chat.
-Alle am Standort des Lasers, die Melderin und der Laser-Service lesen mit und bekommen Antworten als
+Alle am Standort des Lasers, die Melderin und die Rollen der Regel „Laser-Störung“ (heute admin und Büro) lesen mit und bekommen Antworten als
 Mitteilung. Oben im Raum steht der Fehler als Karte (Status, Bauteil, Fotos, „Zum Laser“); der
 Laser-Service setzt dort „In Bearbeitung“ und „Behoben“. „Behoben“ schließt das Gespräch, es bleibt am
 Laser und — mit zugeordnetem Bauteil — in der Teile-Akte lesbar. Der Push zur Meldung öffnet direkt
@@ -353,7 +353,10 @@ bestehende Team-Chat trägt das Gespräch (Fotos, Sprachnachricht, Push mit Dire
   zeigen auf den Fehler. `laser_errors.chat_room_id` verweist zurück.
 - **Mitglieder** (`LaserErrorChatService::memberIds`): alle Chat-berechtigten Konten mit
   `home_branch_id` = `laser_locations.branch_id` des Lasers (Entscheidung Jan: „Alle am Standort“), die
-  Melderin und alle mit `manage_laser_repairs`. Wer den Raum später aus der Akte öffnet
+  Melderin und die Rollen bzw. fest eingetragenen Personen der Regel `laser_service/error_reported`
+  (Jan, 16.11.2026). Bewusst **nicht** deren Rechte: `manage_laser_repairs` haben in Prod auch Institute MA
+  und Leitung — der erste Raum hatte 37 Mitglieder aus allen Standorten. `syncMembers()` bringt einen
+  bestehenden Raum auf die Regel (Migration `resync_laser_error_chat_members`). Wer den Raum später aus der Akte öffnet
   (`POST /hub/laser/api/errors/{id}/chat`), tritt bei — auch für Altfehler ohne Raum, die dabei einen
   bekommen.
 - **Reihenfolge beim Melden:** `LaserErrorService::record()` legt Fehler, Bauteil und Raum an und ruft
