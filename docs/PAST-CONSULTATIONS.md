@@ -83,7 +83,7 @@ weiterhin konzernweite Zahlen — direkt neben korrekt gefilterten KPIs.
 |---|---|---|
 | **KPI-Zeile** | personalisierbare Kennzahlen (kpi-dashboard, Drag & Drop) | — |
 | **Rückblick Beratungsgespräche** (seit 15.11.2026) | Kalender der letzten 4 Wochen bis gestern mit KW-Spalte; Werkzeugzeile **Kennzahl** (Alle / Beratungen / No-Show / KPZ / Conversion / KPZ pro BG), **Standorte** (Gesamt / Vergleichen, nur bei „Alle Standorte“), **Kanal** (Alle / Online / Offline); Klick auf einen Tag → Tagesliste | — bewusst ohne Lasche: der Kalender ist die Tabelle; „Vergleichen“ hängt eine Vergleichstabelle der Institute an |
-| **KPZ pro BG, Conversion & No-Show je Tag** (seit 15.11.2026) | **Ein Bild** (drei Ø-Linien, zwei Achsen), **Drei Bilder** (untereinander), **Je Standort** (eine Kennzahl je Institut); Glättung Ø 7/14/28 Tage | Tagestabelle, Monate aufklappbar, Quoten aus Summen |
+| **KPZ pro BG, Conversion & No-Show je Tag** (seit 15.11.2026) | **Ein Bild** (drei Ø-Linien, zwei Achsen), **Drei Bilder** (untereinander), **Je Standort** (eine Kennzahl je Institut); Glättung Ø 7/14/28 Tage; Zeitleiste über 24 Monate (Start: letzte 3 Monate) | Tagestabelle, Monate aufklappbar, Quoten aus Summen |
 | **Beratungsgespräche-Analyse** | Diagramm mit Metrik-Umschalter: **Beratungen** (Balken + No-Show-Quote als Linie) oder **No-Shows** (gestapelt Stattgefunden/Nicht stattgefunden + Quote); **Standorte** = gruppierte Balken je Institut (bei „No-Shows" gestapelt: Stattgefunden voll, No-Show-Anteil schraffiert), Quoten als Linien (rechte %-Achse); Zoom-Leiste | die Ampel-Tabelle Monat × Institut (Anzahl oder No-Show %) mit Wochen-Drilldown und Klick auf jede Zelle → Termine-Liste |
 | **Wochentag & Uhrzeit** | Heatmap Wochentag × Stunde (Gesamt oder Mini-Heatmaps je Standort), Filter-Drawer (Status, Buchungstyp, Zeitraum) | dieselben Werte als Zahlen-Tabelle mit Summen |
 | **No-show-Matrix** („Analyse Gigi") | Verlaufs-Diagramm der gewählten Kennzahl je Institut; seit 18.10.2026 Schalter **Alle / Online / Offline** (Parameter `art`, über `consultation_services.is_online` — online „Nur gratis Beratungsgespräch“, offline „..Beratungsgespräch“, nie über die Phorest-Quelle) | die bekannte Ampel-Matrix (Quote/Gebucht/Erschienen, Färbungs-Vergleichsmodus, „Frühere Zeiträume laden") |
@@ -149,6 +149,10 @@ kombiniert“ mit Standortvergleich und „App 1 · Wie im Hub“ mit denselben 
   Mengen (Beratungen, KPZ) je geöffnetem Tag. Unter jedem Wochentag der Ø dieses Wochentags.
 - **Gleitender Ø** über 7/14/28 Kalendertage, Quoten aus den Fenstersummen; der Verlauf lädt dafür
   28 Tage Vorlauf mit (`lead_from`).
+- **Zeitleiste** (seit 17.11.2026): Zoom-Regler unter dem Diagramm wie in den übrigen Statistiken,
+  über 24 Monate (`history_from`, `TREND_HISTORY_MONTHS`), Startfenster die letzten 92 Tage. `from`/`to`
+  bleiben dieses Startfenster — die App zeichnet weiterhin nur die 92 Tage. Der gewählte Ausschnitt
+  überlebt Wechsel von Darstellung, Glättung und Kanal (`trendZoom`, Kategorie-Werte `TT.MM.JJJJ`).
 
 Technik: `App\Services\ConsultationReviewService` (`calendar()`, `trend()`, `reference()`, `day()`,
 `days()`), Cache-Gruppe `consultation-review` über `StatisticsCache` (Rezepte für den Worker),
