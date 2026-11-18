@@ -6,8 +6,8 @@
   "of": 30,
   "audience": "leitung",
   "footerArea": "App",
-  "stand": "28.09.2026",
-  "version": "1.0",
+  "stand": "18.11.2026",
+  "version": "1.1",
   "nr": 20,
   "title": [
     "Bonus-Verwaltung",
@@ -22,7 +22,7 @@
   "pages": [
     {
       "h1": "Den Monat im Griff",
-      "sub": "Oben der Monat mit Pfeilen, darunter die Karte Monatsabschluss als Checkliste. Danach die offenen Widerrufe, die Minimalziele, die Wert-Korrekturen und die Stände dieses Monats.",
+      "sub": "Oben der Monat mit Pfeilen, darunter die Karte Monatsabschluss als Checkliste. Danach die offenen Widerrufe, die Minimalziele, die Wert-Korrekturen, die Springertage und die Stände dieses Monats.",
       "card": {
         "title": "Monat",
         "text": "Checkliste, Widerrufe, Ziele"
@@ -55,6 +55,43 @@
       ],
       "hint": {
         "text": "Nach einem **finalen Stand** sind Ziele, Entscheidungen, Korrekturen und Einfrieren gesperrt — die Seite zeigt dann oben das Schloss."
+      }
+    },
+    {
+      "h1": "Springertage",
+      "sub": "Hilft eine Kollegin in einem anderen Institut aus, bekommt dieses Institut +3 KPZ, ihr Stamminstitut −5 KPZ. Die Tage kommen aus askDANTE.",
+      "card": {
+        "title": "Springertage",
+        "text": "Aushilfe ausgleichen, Einsatzort nachtragen"
+      },
+      "left": {
+        "shot": "bonus-admin-springer-light"
+      },
+      "leftCaption": "Abschnitt **Springertage** auf der Monatsseite (auf dem iPad als eigener Reiter).",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Ausgleich je Institut",
+          "text": "Grün = Hilfe bekommen, rot = ausgeholfen. Der Wert steckt im **KPZ Ist** des Instituts auf dem Bonus-Board."
+        },
+        {
+          "n": 2,
+          "title": "Einsatzort fehlt",
+          "text": "askDANTE kennt nur den Tag. Fehlt der Einsatzort, Zeile antippen und unter **Ausgeholfen in** das Institut wählen — erst dann zählt der Tag. Die Checkliste zeigt solche Tage als offenen Punkt."
+        },
+        {
+          "n": 3,
+          "title": "Ergänzen",
+          "text": "**Ergänzen** öffnet das Blatt: Tag, Person (das Stamminstitut füllt sich selbst), Institut, in dem ausgeholfen wurde."
+        },
+        {
+          "n": 4,
+          "title": "Nicht zählen",
+          "text": "Langer Druck: **Nicht zählen** nimmt einen askDANTE-Tag heraus, **Entfernen** löscht einen von Hand ergänzten, **Wieder zählen** holt ihn zurück."
+        }
+      ],
+      "hint": {
+        "text": "Springertage zählen nur in den **Instituts-KPZ** (Team- und Leitungsziele, Challenges) — nie im persönlichen Bonus. Jeder Tag zählt voll."
       }
     },
     {

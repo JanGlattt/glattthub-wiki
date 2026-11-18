@@ -665,7 +665,7 @@ hängen und verschiedene Leute betreffen:
 | **Bonus-Board 2 – Challenges verstehen** | Mitarbeiterin | Monats-Challenge, Ranking (auch relativ), Blind-Challenge, Serien |
 | **Bonus-Board 3 – Bonus-Board für die Leitung** | Leitung | Institute vs. Minimalziele mit Ampel, Boni je Mitarbeiterin, offene Widerrufe, CSV/PDF |
 | **Bonus-Board 4 – Regeln & Challenges anlegen** | Büro | vierstufiger Assistent, Monatsbindung der Challenges, Minimalziele, Sichtbarkeit |
-| **Bonus-Board 5 – Monatsabschluss** | Büro | Widerrufe zählen/nicht zählen/parken, Wert-Korrekturen, einfrieren, Google-Bewertungen |
+| **Bonus-Board 5 – Monatsabschluss** | Büro | Widerrufe zählen/nicht zählen/parken, Wert-Korrekturen, Springertage, einfrieren, Google-Bewertungen |
 
 **Aufnahme braucht zwei Läufe und zwei Monate.** Zwei Zugänge, weil O und P zeigen sollen, was
 eine Mitarbeiterin sieht (mit Verwaltungsrecht stünden dort Werkzeuge, die sie nie hat);

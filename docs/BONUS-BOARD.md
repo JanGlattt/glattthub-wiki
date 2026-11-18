@@ -31,6 +31,7 @@ Bedienung Schritt für Schritt steht im Nutzerhandbuch.
     - [Fachregeln: Boni-Baukasten](#fachregeln-boni-baukasten-regeln-challenges)
     - [glatttolympia: Disziplinen, Medaillen, Jury](#glatttolympia-disziplinen-medaillen-jury)
     - [Minimalziele, Widerrufe, Korrekturen, Monatsabschluss](#minimalziele-widerrufe-korrekturen-monatsabschluss)
+    - [Springertage](#springertage)
     - [Google-Bewertungen](#google-bewertungen)
     - [Bonus-Klassen](#bonus-klassen)
     - [Datenmodell](#datenmodell)
@@ -72,6 +73,11 @@ eingefrorenen, versionierten Stand ab, der die Auszahlungsbasis ist.
   weitere Freezes gesperrt; das Board zeigt für diesen Monat den eingefrorenen Stand.
 - **Drei Sichtstufen, drei Rechte:** eigene Zahlen, eigenes Institut (Standortleitung), alle
   Institute (Büro).
+- **Springertage verschieben Instituts-KPZ.** Hilft eine Mitarbeiterin einen Tag in einem
+  anderen Institut aus, bekommt dieses Institut +3 KPZ und ihr Stamminstitut −5 KPZ — als
+  Ausgleich für die fehlende Kraft. Die Tage kommen aus askDANTE (Abwesenheit
+  „Springereinsatz"), weitere ergänzt die Verwaltung von Hand. Persönliche KPZ und der
+  Unternehmens-Gesamtwert bleiben echte Verkäufe.
 - **Google-Bewertungen werden einzeln von Hand erfasst** (keine API, keine Scraper); der
   Positiv-Saldo je Institut × Monat ist das Google-Mindestziel.
 
@@ -83,7 +89,7 @@ eingefrorenen, versionierten Stand ab, der die Auszahlungsbasis ist.
 | Challenges erkennen, Ranking lesen, Blind-Challenge, Serien und Meilensteine | Bonus-Board 2 |
 | Management-Sicht öffnen, Institute vs. Minimalziele, Boni je Mitarbeiterin, offene Widerrufe, Stand herausgeben (CSV/PDF) | Bonus-Board 3 |
 | Verwaltung öffnen, Regel-Assistent (Grundlagen & Empfänger, Kennzahl & Bedingung, Prämie & Extras), Challenge für einen Monat, Minimalziele und Sichtbarkeit | Bonus-Board 4 |
-| Widerrufe entscheiden (zählt / zählt nicht / parken), Wert-Korrekturen, Monat einfrieren, Google-Bewertungen pflegen | Bonus-Board 5 |
+| Widerrufe entscheiden (zählt / zählt nicht / parken), Wert-Korrekturen, Springertage, Monat einfrieren, Google-Bewertungen pflegen | Bonus-Board 5 |
 | Bonus-Klasse und askDANTE-Verknüpfung am Benutzer setzen | Admin 1 |
 | Bonus-Auszahlungen | Admin 7 |
 | Kachel „Mein Bonus" auf der Startseite | Grundlagen 6 |
@@ -412,6 +418,49 @@ Abschnitt Medaillenspiegel + Disziplinen (`BonusBoardExporter::olympiadForPdf()`
 - **Sichtbarkeit je Nutzerin**: Regeln pro Nutzerin gezielt ein-/ausblenden —
   zusätzlich zur Regel-Sichtbarkeit (nur Empfängerinnen / Instituts-Team / alle).
 
+### Springertage
+
+Entscheidung Jan, 18.11.2026. Ein **Springertag** ist ein Tag, an dem eine Mitarbeiterin in
+einem anderen als ihrem Stamminstitut aushilft. Im Bonus bekommt das Institut, das Hilfe
+bekommt, **+3 KPZ** (`kpz_credit`), das Stamminstitut **−5 KPZ** (`kpz_debit`) — je Tag,
+immer voll (auch bei einem halben Tag in askDANTE).
+
+**Wo es wirkt:** nur in den **Instituts-KPZ** (`kpz_sold`, Scope `branch`) — also Team- und
+Leitungsziele, Überverkauf, Instituts-Übersicht und **auch Monats-Challenges** (Rankings,
+„alle Teams am Minimalziel", glatttolympia; anders als geparkte Widerrufe). Persönliche KPZ
+und der Unternehmens-Gesamtwert (`company`) bleiben echte Verkäufe; unterm Strich würden sonst
+2 KPZ je Tag verschwinden. Die Werte liegen **je Eintrag** in der Tabelle; Standard aus
+`config/bonus.php` (`springer_day.credit`/`debit`), damit eine spätere Änderung abgeschlossene
+Monate nicht umschreibt.
+
+**Quelle askDANTE.** Der askDANTE-Sync (`askdante:sync`) gleicht danach den laufenden und den
+Vormonat ab (`App\Services\Bonus\SpringerDaySync::syncMonth()`), die Verwaltung bei jedem Aufruf
+der Karte den gewählten Monat. Grundlage sind `hr_daily_times` mit `absence_reason = CUSTOM` und
+`absence_name` „Springereinsatz…" (Abwesenheitsart `CUSTOM:Springereinsatz`, dieselbe wie bei den
+Reisekosten) für Nutzerinnen mit `hr_employee_id`. Stamminstitut = `home_branch_id` bzw.
+`phorest_branch_id` des Hub-Kontos.
+
+**Einsatzort.** askDANTE kennt das Zielinstitut nicht. Reihenfolge:
+
+1. Reisekosten-Abrechnung, deren Zeitraum den Tag abdeckt (`travel_expenses.destination_branch_id`,
+   über `askdante_user_id`) → `target_source = travel`;
+2. Phorest-Dienstplan (`getStaffWorkTimeTable`, WORKING-Schicht in genau einem anderen Institut,
+   Staff → Konto über `ChatDutyService::staffToUser()`, 6 h im Cache) → `roster`;
+3. sonst leer: Die Karte zeigt „Institut fehlt", der Tag **zählt erst, wenn die Verwaltung den
+   Einsatzort einträgt** (`manual`).
+
+**Was die Verwaltung tun kann** (Karte „Springertage" unter den Wert-Korrekturen, Web und App):
+weitere Tage ergänzen (Tag → Person → Stamminstitut, vorbelegt aus dem Konto → Einsatzort),
+Einsatzort nachtragen oder ändern, einen askDANTE-Tag **nicht zählen** lassen (`excluded`; Löschen
+ginge nicht, der nächste Abgleich brächte ihn zurück) und wieder einschließen. Von Hand gesetzte
+Angaben überschreibt der Abgleich nie; askDANTE-Tage, die dort gelöscht wurden, verschwinden nur,
+solange niemand sie angefasst hat. Ein Tag je Person. Final eingefrorene Monate sind gesperrt.
+
+**Anzeige:** Instituts-Tabelle und PDF nennen unter „KPZ Ist" „davon +6 / −5 aus Springertagen",
+die Ziel-Karten „Springertage: +3 KPZ aus Springertagen — nur für den Bonus", der CSV-Export hat
+die Spalte „davon Springertage". Darum weicht „KPZ Ist" wie bei geparkten Widerrufen von der
+Verkaufsstatistik ab.
+
 ### Google-Bewertungen
 
 `/hub/bonus/google-bewertungen`. Die Google-API ist nicht nutzbar (und Scraper verstoßen
@@ -455,6 +504,7 @@ Migration `2026_08_12_100100_create_bonus_board_tables`:
 | `bonus_rule_achievements` | Beim Einfrieren persistierte Monatsergebnisse — Serien-Basis |
 | `bonus_board_freezes` | Versionierte Monatsstände (kompletter Board-Payload als JSON, `is_final`) |
 | `bonus_value_overrides` | Wert-Korrekturen mit Pflicht-Begründung (Audit-Trail) |
+| `bonus_springer_days` | Springertage (Migration `2026_11_18_100000`): `day`, `user_id` (eindeutig je Tag), `home_branch_id`, `target_branch_id` (leer = Einsatzort fehlt), `kpz_credit`/`kpz_debit`, `source` (askdante/manual), `target_source` (travel/roster/manual), `excluded`, `note` |
 | `bonus_revocation_decisions` | Entscheidung je offenem Widerruf × Monat, getrennt `team_decision` / `personal_decision` (count / exclude / park) |
 | `bonus_board_visits` | Letzter Besuch + Snapshot für die Celebration |
 | `bonus_visibility_overrides` | Per-User-Feinsteuerung der Regel-Sichtbarkeit |
@@ -559,7 +609,12 @@ Das Standard-Bonussystem wird per Migration
   Besuchs-Snapshot (verbraucht die Celebration nicht).
 - `BonusAdminController` — Regeln-CRUD (Challenges auch mit
   `manage_challenges`, Standard-Regeln nur mit `manage_bonus_rules`),
-  Minimalziele, Freezes, Korrekturen, Widerruf-Entscheidungen, Sichtbarkeit.
+  Minimalziele, Freezes, Korrekturen, Widerruf-Entscheidungen, Sichtbarkeit,
+  Springertage: `GET /hub/bonus/springertage?month=` (gleicht vorher askDANTE ab; `rows`,
+  `summary` je Institut, `defaults`), `POST` (von Hand, 422 bei gleichem Institut oder schon
+  vorhandenem Tag), `PUT /{id}` (Einsatzort/Stamminstitut/`excluded`/Notiz), `DELETE /{id}`
+  (von Hand → löschen, askDANTE → `excluded`). Alles unter `manage_bonus_rules`. Die Nutzerliste
+  der Verwaltung (Blade und `/hub/bonus/verwaltung/data`) trägt seit 18.11.2026 `branch_id`.
 - `GoogleReviewController` — Erfassung/Liste/Löschen, Recht `manage_google_reviews`.
 - glatttolympia: `GET /hub/bonus/olympiade/data?month=` (Olympiade, Disziplinen mit Jury-Stand,
   Vorlagen-Katalog, Rechte), `POST /hub/bonus/olympiade` (aus dem Katalog anlegen),
@@ -625,6 +680,9 @@ Korrekturen, Serien, Freeze, %-Aufschlag, Bonusberechtigung ohne Arbeitstag,
 Widerrufs-Felder), `tests/Feature/BonusBoardPageTest.php`
 (Rechte, Endpoints, Sichtbarkeit, finale Sperre, Management-Anreicherung,
 Kundennamen, CSV-/PDF-Export), `tests/Feature/HrUserLinkServiceTest.php` (askDANTE-Verknüpfung),
+`tests/Feature/BonusSpringerDayTest.php` (Springertage: nur Instituts-KPZ, auch in Challenges,
+ohne Einsatzort/ausgeschlossen kein Effekt, askDANTE-Abgleich mit Reisekosten, Handarbeit bleibt,
+Endpunkte, Sperre bei finalem Freeze),
 `tests/Unit/UserBonusClassTest.php` (Stichtag Monatsende),
 `tests/Unit/GoogleReviewBalanceTest.php` (Zählweise).
 
@@ -667,6 +725,10 @@ Kundennamen, CSV-/PDF-Export), `tests/Feature/HrUserLinkServiceTest.php` (askDAN
   `BonusMetricKindTest`, `BonusEngineTest::test_schnitt_*`.
 - **Abwesenheitstage** = Krankheit + Urlaub + Sonderurlaub (ohne Wochenende,
   Feiertag, Überstundenabbau); Korrektur über Override `absence_days`.
+- **Springertage (18.11.2026):** Ausgleich wirkt in `BonusMetricResolver::computeKpzSold()` nur
+  bei Scope `branch` und unabhängig von `withParked` (Jan: Challenges zählen sie mit, den
+  Gesamtwert nicht). Das Regelergebnis trägt `springer` (Saldo), die Instituts-Zeile
+  `kpz_springer_in/out(_days)`. Wert-Korrekturen behalten die Felder (`applyOverride`).
 - **Sachprämien/Team-Budgets** fließen nicht in die €-Summe ein — sie werden
   als Prämientext angezeigt.
 - Die Kachel nutzt einen eigenen `/tile`-Endpoint, damit der Startseiten-Besuch

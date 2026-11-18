@@ -1844,7 +1844,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Eigene Dashboards | nativ | Kacheln, KPI-Zeile, Zeitraum wie im Web (seit 27.09.2026); Anlegen im eingebetteten Assistenten, Bearbeiten/Teilen in der Hub-Fassung |
 | Kundenportal (Büro) | nativ | Posteingang mit Kontext (seit 02.10.2026): Aufträge nach Art, Auftrag mit Restbetrag/nächster Rate/Forderungen, Bankverbindung alt → neu, Unterschrift, Prüfpunkte, Übernehmen/Verteilen mit Rückfrage, Ablehnen mit Grund; Erledigt, Konten mit Suche |
 | Unternehmensverträge | nativ | Fristen zuerst (seit 28.09.2026): Kennzahlen, Kosten nach Typ/Standort, Kündigungsfristen mit Ampel, Verträge nach Typ, Vertragsseite mit Dokumenten und Historie; Anlegen/Bearbeiten als eingebettetes Hub-Blatt (Wizard mit KI-Analyse) |
-| Bonus-Verwaltung | nativ | Monat im Griff (seit 28.09.2026): Abschluss-Checkliste, offene Widerrufe mit Segmented Control je Fall und Bereich, Minimalziele, Wert-Korrekturen, Zwischenstand/Final einfrieren (final ab Folgemonat, Warnung bei offenen Fällen), Unterseite Regelwerk mit Chips und Regel-Akte, Regel-Assistent in vier Schritten nativ, Sichtbarkeit je Nutzerin; iPad Abschnitte links |
+| Bonus-Verwaltung | nativ | Monat im Griff (seit 28.09.2026): Abschluss-Checkliste, offene Widerrufe mit Segmented Control je Fall und Bereich, Minimalziele, Wert-Korrekturen, Springertage (seit 18.11.2026), Zwischenstand/Final einfrieren (final ab Folgemonat, Warnung bei offenen Fällen), Unterseite Regelwerk mit Chips und Regel-Akte, Regel-Assistent in vier Schritten nativ, Sichtbarkeit je Nutzerin; iPad Abschnitte links |
 | Formulare | nativ | Liste und Akte (seit 28.09.2026): Suche, Chips, Marken, Erscheint bei, Beim Absenden, Aufbau, letzte Einreichungen mit PDF; Ausfüllen und Editor als eingebettete Hub-Blätter (`?shell=native`), Editor nur am iPad — Entscheidung Jan 28.09.2026: Web-Engine bleibt, kein nativer Nachbau |
 | Bildschirme, Report-Mails, Audit, Conversion-Upload | entfällt | Verwaltung am Schreibtisch; in der App als Web-Seite erreichbar |
 | Einstellungen | nativ | Eine Seite (seit 27.09.2026): Darstellung, Diese App, Beratungs-Cache, API-Zugänge; iPad Abschnitte links |
@@ -2740,6 +2740,11 @@ direkt darunter: je Fall Vertrag, Kundin, BG-Person und KPZ, dazu zwei Zeilen **
 Widerruf öffnen). **Minimalziele** zeigen Team, Leitung und Google je Institut (grau = aus dem
 Vormonat übernommen) und werden über „Bearbeiten“ im Blatt geändert. **Wert-Korrekturen** listen
 Kennzahl, Bezug, alt → neu und Begründung; „Neue“ öffnet das Blatt, langer Druck entfernt.
+**Springertage** (seit 18.11.2026, iPad eigener Reiter) zeigen den KPZ-Ausgleich je Institut und jeden
+Tag mit Quelle (askDANTE / von Hand / zählt nicht); fehlt der Einsatzort, steht der Tag als offener Punkt
+in der Checkliste. Antippen öffnet das Blatt (Einsatzort nachtragen), „Ergänzen“ legt einen Tag an,
+langer Druck schließt aus bzw. entfernt — dieselben Endpunkte `hub/bonus/springertage` wie im Web
+(`BonusSpringerSection`, `BonusSpringerSheet`, Snapshot `bonus-admin-springer`).
 **Zwischenstand einfrieren** geht jederzeit, **Final einfrieren** erst ab dem Folgemonat und mit
 Warnung, wenn noch Fälle offen sind. Unter **Regelwerk** liegen Bonus-Regeln, Challenges und die
 Sichtbarkeit je Nutzerin: eine Liste mit Suche und Chips (Alle, Aktiv, Regeln, Challenges, Serie,

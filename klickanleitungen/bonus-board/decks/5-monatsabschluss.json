@@ -7,13 +7,13 @@
   "Monatsabschluss",
   "im Bonus-Board"
  ],
- "subtitle": "Klickanleitung für die Bonus-Verwaltung im glatttHub — Widerrufe entscheiden, korrigieren, einfrieren, Bewertungen pflegen",
+ "subtitle": "Klickanleitung für die Bonus-Verwaltung im glatttHub — Widerrufe entscheiden, korrigieren, Springertage, einfrieren, Bewertungen pflegen",
  "eyebrow": "Bonus-Board · Monatsabschluss",
  "footerArea": "Bonus-Board",
- "stand": "18.09.2026",
- "version": "1.0",
+ "stand": "18.11.2026",
+ "version": "1.1",
  "notes": [
-  "**Reihenfolge:** erst Widerrufe entscheiden, dann korrigieren, dann einfrieren — danach ist der Monat zu.",
+  "**Reihenfolge:** erst Widerrufe entscheiden, dann korrigieren und Springertage prüfen, dann einfrieren — danach ist der Monat zu.",
   "Der Abschluss läuft **nicht automatisch**: Ohne diesen Ablauf bleibt der Monat ewig vorläufig.",
   "**Serien und Auszahlungen** entstehen erst mit dem Einfrieren — ein nicht abgeschlossener Monat fehlt in jeder Reihe."
  ],
@@ -105,6 +105,57 @@
    "hint": {
     "kind": "warn",
     "text": "**Eine Korrektur ist das letzte Mittel.** Liegt die Ursache in der Regel (falsche Kennzahl, falsche Bedingung), gehört sie in die Regel — sonst muss dieselbe Korrektur jeden Monat neu gesetzt werden und niemand versteht später die Zahlen."
+   }
+  },
+  {
+   "h1": "Springertage",
+   "sub": "Hilft eine Kollegin einen Tag in einem anderen Institut aus, bekommt dieses Institut +3 KPZ und ihr Stamminstitut −5 KPZ.",
+   "card": {
+    "title": "Springertage",
+    "text": "Aushilfe zwischen Instituten ausgleichen"
+   },
+   "left": {
+    "shot": "s5-springertage"
+   },
+   "leftCaption": "Karte **„Springertage“** in der Bonus-Verwaltung, unter den Wert-Korrekturen.",
+   "right": {
+    "shot": "s6-springertag-ergaenzen"
+   },
+   "rightCaption": "Fenster **„Springertag ergänzen“**: Tag, Person, Stamminstitut, Einsatzort.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Ausgleich je Institut",
+     "text": "Oben steht je Institut, wie viele KPZ die Springertage im Monat bringen oder kosten. Der Wert steckt im **KPZ Ist** des Instituts."
+    },
+    {
+     "n": 2,
+     "title": "„Institut fehlt“",
+     "text": "askDANTE meldet nur, **dass** jemand springt. Der Hub sucht den Einsatzort in der Reisekosten-Abrechnung und im Dienstplan. Findet er nichts, auf den Stift tippen und das Institut eintragen — vorher zählt der Tag nicht."
+    },
+    {
+     "n": 3,
+     "title": "Quelle",
+     "text": "**askDANTE** = aus dem Dienstplan übernommen, **von Hand** = hier ergänzt, **zählt nicht** = bewusst herausgenommen (Papierkorb; mit dem Pfeil wieder einschließen)."
+    },
+    {
+     "n": 4,
+     "title": "Ergänzen",
+     "text": "„Springertag ergänzen“ für Einsätze, die nicht in askDANTE stehen: Tag, Person — das Stamminstitut füllt sich selbst — und das Institut, in dem ausgeholfen wurde."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Wo es zählt",
+     "text": "Nur in den **Instituts-KPZ**: Team- und Leitungsziele und Challenges. Der **persönliche** Bonus und der Unternehmenswert bleiben bei den echten Verkäufen."
+    },
+    {
+     "title": "Immer ein voller Tag",
+     "text": "Auch ein halber Springereinsatz zählt +3 / −5."
+    }
+   ],
+   "hint": {
+    "text": "**Vor dem Einfrieren prüfen:** Steht noch „Institut fehlt“ in der Liste, fehlen dem Monat KPZ-Ausgleiche. Die Checkliste in der App zeigt das als offenen Punkt."
    }
   },
   {
