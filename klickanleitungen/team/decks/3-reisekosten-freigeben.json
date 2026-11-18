@@ -138,7 +138,7 @@
       "left": {
         "shot": "p12-auszahlung"
       },
-      "leftCaption": "Die Karte **Auszahlung**: genehmigte, offene Abrechnungen bis Ende des gewählten Monats und der Betrag, darunter die beiden Schritte.",
+      "leftCaption": "Die Karte **Auszahlung**: genehmigte, offene Abrechnungen bis Ende des gewählten Monats und der Betrag, darunter CSV, PDF-Belege und Markieren.",
       "steps": [
         {
           "n": 1,

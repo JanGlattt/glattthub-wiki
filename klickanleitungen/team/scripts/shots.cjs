@@ -141,7 +141,8 @@ const PLAN = [
   { name: 'p12-auszahlung', url: '/hub/staff/reisekosten/freigabe', steps: [['loaded'], ['wait', 2500]], marks: [
     { id: 'offen', kind: 'badge', n: 1, ...L.byText('.stat-strip-glattt-label', 'Genehmigt, offen'), at: 'l' },
     { id: 'csv', kind: 'badge', n: 2, ...L.byText('a.btn-glattt', 'CSV für die Lohnbuchhaltung'), at: 't' },
-    { id: 'markieren', kind: 'badge', n: 3, ...L.byText('button.btn-glattt', 'Als ausgezahlt markieren'), at: 't' },
+    { id: 'pdf', kind: 'badge', n: 3, ...L.byText('a.btn-glattt', 'PDF-Belege für die Steuerberatung'), at: 't' },
+    { id: 'markieren', kind: 'badge', n: 4, ...L.byText('button.btn-glattt', 'Als ausgezahlt markieren'), at: 't' },
   ] },
 ];
 

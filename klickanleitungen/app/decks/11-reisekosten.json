@@ -6,8 +6,8 @@
   "of": 30,
   "audience": "institute",
   "footerArea": "App",
-  "stand": "29.09.2026",
-  "version": "1.3",
+  "stand": "18.11.2026",
+  "version": "1.4",
   "nr": 11,
   "title": [
     "Reisekosten in der App",
@@ -243,6 +243,43 @@
       "hint": {
         "kind": "warn",
         "text": "**Nicht liegen lassen.** Eine ungeprüfte Abrechnung sieht für die Kollegin aus wie eine abgelehnte — lieber zügig mit klarem Grund ablehnen als wochenlang offen lassen."
+      }
+    },
+    {
+      "h1": "PDF-Beleg für die Steuerberatung",
+      "sub": "Ab „genehmigt“ gibt es zu jeder Abrechnung ein PDF mit allen Angaben und den Belegen.",
+      "card": {
+        "title": "PDF-Beleg",
+        "text": "Deckblatt und Belege in einem Dokument"
+      },
+      "left": {
+        "shot": "travel-review-approved-light"
+      },
+      "leftCaption": "Eine genehmigte Abrechnung in der Freigabe — unten der Knopf für den PDF-Beleg.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Abrechnung öffnen",
+          "text": "In der Freigabe eine **genehmigte** oder **ausgezahlte** Abrechnung antippen."
+        },
+        {
+          "n": 2,
+          "title": "PDF-Beleg",
+          "text": "Unten **PDF-Beleg für die Steuerberatung** antippen — der Hub erstellt das Dokument, die Vorschau öffnet sich."
+        },
+        {
+          "n": 3,
+          "title": "Was drin steht",
+          "text": "Seite 1 ist das Deckblatt: Mitarbeiterin mit Personalnummer, Freigabe, Reise, Tage & Nächte, Arbeitszeiten und Kostenaufstellung. Danach folgt jeder Beleg als eigene Seite."
+        },
+        {
+          "n": 4,
+          "title": "Teilen oder sichern",
+          "text": "Über das Teilen-Symbol der Vorschau per Mail weiterleiten oder in **Dateien** sichern."
+        }
+      ],
+      "hint": {
+        "text": "**Alle Abrechnungen eines Monats auf einmal** gibt es im Web: Karte **Auszahlung** auf der Freigabe-Seite, Knopf **PDF-Belege für die Steuerberatung**."
       }
     },
     {
