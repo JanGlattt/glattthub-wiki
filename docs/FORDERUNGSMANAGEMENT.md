@@ -654,6 +654,15 @@ Jetzt: `ContractPayment::appendedFeeCarrier()` kennt die tragende Rate;
 „RLS-Gebühr im angehängten Einzug" (`return_fee_in_appended`) ohne Knopf. Bestand:
 `receivables:repair-appended-fee-mirrors --dry-run`.
 
+Hängen an einer Rate auch Gebühren **anderer** Fälle (HB000838, 17.11.2026: Oktober- und
+Juni-Gebühr an der Oktober-Rate, die Juni-Gebühr gehörte zu einem geschlossenen Fall), zählt
+seit 19.11.2026 nur der Teil, den der Fall selbst als Kosten führt (`debt_cost_items` mit
+`source_payment_id` = Ursprungsrate). Das gilt für „im Einzug“
+(`DebtCaseBalanceService::appendedPendingSums()`) und für die Gutschrift beim Einzug. Läuft ein
+Fall mit angehängter Rate nach einer neuen RLS „von vorn“, schreibt
+`DebtCaseIntakeService::creditAppendedPayment()` den späteren Einzug gut (idempotent über den
+Spiegel `source_contract_payment_id`) und schließt den Fall bei 0 €. Vorher blieb die Rate offen.
+
 #### Ruhend, RLS-Entscheid, Abschreiben, Notizen
 
 - **Fall ruhend stellen (Geparkt / Beim Anwalt / Wartend)**: manuelle
@@ -1642,6 +1651,7 @@ Fall, Saldo = Restsumme, Marker als Notizen, Idempotenz.
 
 | Datum | Änderung |
 |---|---|
+| 19.11.2026 | Mitangehängte fremde Gebühren mindern die Mahnung nicht mehr (HB000838); Einzug einer angehängten Rate wird auch nach Neustart des Falls gutgeschrieben |
 | 18.11.2026 | Über den Fall bezahlte Raten zählen bei Restsummen-Fällen nur einmal (`settledThroughCaseSums()`, Bs000751); „Fall wieder öffnen“ für bezahlt geschlossene Fälle mit Rest; „Forderungsfall eröffnen“ an geplatzten Raten ohne Fall (H004635); Befehle `contracts:void-duplicate`, `contracts:complete-paid`, `phorest:archive-client-courses --on=` |
 | 15.11.2026 | 50-€-Weiche zählt erledigte Forderungen nicht mehr als Altschuld (H004794) |
 | 15.11.2026 | Befehl `receivables:end-rzv {Fall} [--reentry=restart\|final\|decision] [--user=ID] [--dry-run]` — dieselbe Aktion wie der Knopf, für Korrekturen über `scripts/prod-artisan.sh` |
