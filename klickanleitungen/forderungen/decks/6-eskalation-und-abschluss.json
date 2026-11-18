@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für den glatttHub — 250-€-Weiche, gerichtliches Mahnverfahren, ruhend stellen, abschreiben",
   "eyebrow": "Forderungen · Eskalation",
   "footerArea": "Forderungen",
-  "stand": "24.10.2026",
-  "version": "1.2",
+  "stand": "18.11.2026",
+  "version": "1.3",
   "notes": [
     "Die **250-€-Weiche rechnet mit der offenen Summe inklusive Kosten** — vorher prüfen.",
     "Im **gerichtlichen Verfahren schlägt der Hub nur eines vor: die Wiedervorlage** — 21 Tage nach Zustellung steht der Fall wieder in „Zu erledigen“.",
@@ -320,7 +320,7 @@
         "rows": [
           [
             "**bezahlt**",
-            "Die Forderung ist vollständig ausgeglichen"
+            "Die Forderung ist vollständig ausgeglichen. Steht danach doch noch etwas offen, zeigt der Fall die Karte **„Noch offen“** mit **Fall wieder öffnen**"
           ],
           [
             "**abgeschrieben (WNB)**",

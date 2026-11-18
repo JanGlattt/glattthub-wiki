@@ -181,6 +181,17 @@ Vier Einstiege eröffnen Fälle **automatisch** (`DebtCaseIntakeService`):
     stuft den bestehenden Fall auf die Restsumme hoch (Verlaufseintrag
     „Gesamte Restsumme fällig gestellt").
 
+**Fall zu einer geplatzten Rate von Hand (seit 18.11.2026):** Kam eine Rücklastschrift nie
+sauber über den Webhook an, steht die Rate im Zahlplan auf „geplatzt“, aber ohne Fall
+(H004635: GoCardless-IDs aus einem Testlauf, die Novemberrate hatte keinen Fall). Der
+Zahlungen-Tab des Vertrags zeigt dann an der Zeile **„Forderungsfall eröffnen“** (Recht
+`manage_receivables`, `POST /hub/contracts/{contract}/payments/{payment}/open-case`,
+`ContractController::openDebtCaseForPayment()`). Der Knopf ruft
+`DebtCaseIntakeService::handleBouncedPayment()` auf, also denselben Weg wie der Webhook:
+10 € RLS-Gebühr, 50-€-Weiche, laufender Fall wird fortgeschrieben. Angeboten wird er nur bei
+geplatzten Raten ohne je RLS gebuchte Gebühr (`debt_cost_items.source_payment_id`, auch
+gelöschte); die Menge wird für alle Raten in einer Abfrage bestimmt.
+
 **Kundenkonto-Fall von Hand:** Die 20-€/14-Tage-Regel greift bewusst nicht sofort. Für alles
 darunter oder für eilige Fälle gibt es auf der Übersichtsseite den Button
 **„Kundenkonto-Fall"** (Recht `manage_receivables`). Das Modal hat seit 28.08.2026 **zwei
@@ -374,6 +385,20 @@ können eigene Vorlagen-Varianten hinterlegt werden (`dunning_templates`, Cluste
   BS000912 nach dem Setzen des Legacy-Werts auf 0 plötzlich 2.159,46 € statt
   2.039,49 €. **Für das Büro:** Stimmt die Restsumme nicht, den Legacy-Wert
   am Vertrag pflegen (Summe der Star-Money-Einzüge ohne Rate 1).
+- **Über den Fall bezahlte Raten zählen nur einmal (seit 18.11.2026, Bs000751):** Bei
+  Fällen mit Restsumme als Hauptforderung sank beim Bezahlen über den Fall der Vertragsrest
+  (Rate am Vertrag „bezahlt“) **und** der Fall bekam einen Eingang. Die Rate wurde doppelt
+  abgezogen, bei Bs000751 schloss sich der Fall mit 0 €. Seitdem rechnet
+  `DebtCaseBalanceService::settledThroughCaseSums()` diese Raten zur Hauptforderung zurück.
+  Erkannt werden sie über die Zahlungsreferenz (Mollie-ID an Fall-Eingang und Rate) oder
+  über den Spiegel (`source_contract_payment_id`, Komponente `rate`). Am 18.11.2026 waren in
+  Prod vier Fälle betroffen (3021, 3027, 3030, 2949). Die beiden aktiven Fälle 3027 und
+  3030 forderten je 119,97 € zu wenig.
+- **Falscher Legacy-Wert macht den Rest zu null:** Der Legacy-Wert ist die Summe der
+  Star-Money-Einzüge **ohne** Rate 1. Enthält er die Vor-Ort-Rate mit, zieht der Hub sie
+  zweimal ab (einmal im Wert, einmal als undokumentierte Rate 1). Bei Bs000751 standen
+  am 18.11.2026 neun statt acht Raten im Wert, deshalb galt die offene Novemberrate als
+  bezahlt.
 - **Vorlagen-Weiche der letzten Mahnung (24.08.2026)**: Die Vorlage folgt dem
   Forderungsumfang. Mit Fälligstellung der Gesamtsumme bleibt es bei
   `letter_postal_final` (Eskalations-Bogen, 14 Tage). **Ohne** Fälligstellung
@@ -681,6 +706,13 @@ Jetzt: `ContractPayment::appendedFeeCarrier()` kennt die tragende Rate;
   für Zahlungen, die nach der WNB doch noch eingehen (Fall BI005401,
   21.10.2026): Der Eingang wird danach normal verbucht, der Fall schließt sich
   mit Ausgang „bezahlt". Die Archivierung in Phorest wird nicht zurückgenommen.
+- **„Fall wieder öffnen“ (seit 18.11.2026)**: Ein als *bezahlt* oder *angehängt beglichen*
+  geschlossener Fall, bei dem nach heutiger Rechnung noch etwas offen ist, zeigt in der
+  Seitenleiste die Karte „Noch offen“ mit Knopf (Recht `manage_receivables`,
+  `POST /hub/receivables/{case}/reopen-settled`, `DebtCaseActionService::canReopenSettled()`
+  / `reopenSettled()`). Wie bei der zurückgenommenen Abschreibung bleibt die Stufe, es gibt
+  keine Frist, und im Verlauf steht `case_resumed` mit dem offenen Betrag. Anlass war
+  Bs000751: Der Fall schloss sich trotz offener Novemberrate (siehe oben).
 - **Notiz hinzufügen**: Freitext-Kommentar direkt in der Verlauf-Card der
   Fall-Seite (Recht `manage_receivables`) — mit Autor und Zeitstempel in der
   Timeline, mehrzeilig möglich. Ersetzt die Kommentar-Spalten der alten
@@ -1610,6 +1642,7 @@ Fall, Saldo = Restsumme, Marker als Notizen, Idempotenz.
 
 | Datum | Änderung |
 |---|---|
+| 18.11.2026 | Über den Fall bezahlte Raten zählen bei Restsummen-Fällen nur einmal (`settledThroughCaseSums()`, Bs000751); „Fall wieder öffnen“ für bezahlt geschlossene Fälle mit Rest; „Forderungsfall eröffnen“ an geplatzten Raten ohne Fall (H004635); Befehle `contracts:void-duplicate`, `contracts:complete-paid`, `phorest:archive-client-courses --on=` |
 | 15.11.2026 | 50-€-Weiche zählt erledigte Forderungen nicht mehr als Altschuld (H004794) |
 | 15.11.2026 | Befehl `receivables:end-rzv {Fall} [--reentry=restart\|final\|decision] [--user=ID] [--dry-run]` — dieselbe Aktion wie der Knopf, für Korrekturen über `scripts/prod-artisan.sh` |
 | 15.11.2026 | „Vereinbarung nicht eingehalten": laufende und geplatzte RZV beenden, Wiedereinstieg im Dialog wählen (`reentry`), Sperre bei offenen GoCardless-Einzügen; Häkchen „SEPA-Einzüge jetzt pausieren" im Versand-Dialog der 1. Mahnung (`sepa_pause_option`, `pause_sepa`); beides auch nativ in der App |

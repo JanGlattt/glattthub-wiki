@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — einziehen, ablösen, Rücklastschrift anhängen, abgleichen",
  "eyebrow": "Verträge · Einzüge",
  "footerArea": "Verträge",
- "stand": "09.11.2026",
- "version": "1.1",
+ "stand": "18.11.2026",
+ "version": "1.2",
  "notes": [
   "**Jede Rate ist eine eigene Lastschrift** — es gibt keine Abos und keinen Automatismus.",
   "**„Betrag per SEPA einziehen“ holt sofort Geld.** Vorschau lesen, Betrag prüfen, dann klicken.",
@@ -269,7 +269,11 @@
      "text": "Die angehängte Rate wird erst zu ihrem Fälligkeitsdatum eingezogen, wie jede andere auch."
     },
     {
-     "title": "Das Forderungsmanagement kennt diesen Schritt",
+     "title": "Geplatzt, aber ohne Forderungsfall?",
+   "text": "Normalerweise eröffnet der Hub den Fall von selbst. Fehlt er, weil die Rücklastschrift nie sauber ankam, steht an der Zeile **„Forderungsfall eröffnen“**. Der Knopf bucht die 10 € RLS-Gebühr und legt den Fall an, oder ein laufender Fall übernimmt die Rate (Recht Forderungsmanagement)."
+  },
+  {
+   "title": "Das Forderungsmanagement kennt diesen Schritt",
      "text": "Im Prozess heißt er **„Geplatzte Rate ans Planende anhängen“** und steht dort nach der letzten Mahnung („Forderungen 3“). Wer hier vorgreift, nimmt dem Fall seinen nächsten Schritt."
     }
    ],
