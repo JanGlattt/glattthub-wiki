@@ -13,12 +13,12 @@
   "subtitle": "Klickanleitung für den glatttHub — eingereichte Abrechnungen prüfen, freigeben oder begründet ablehnen",
   "eyebrow": "Team · Freigabe",
   "footerArea": "Team",
-  "stand": "26.09.2026",
-  "version": "1.2",
+  "stand": "18.11.2026",
+  "version": "1.3",
   "notes": [
     "Freigegeben wird, was **sachlich richtig** ist — die rechnerische Prüfung macht der Hub.",
     "**Eine Ablehnung braucht immer einen Grund** — er ist das Einzige, was die Kollegin zu sehen bekommt. Die **eigene** Abrechnung gibt niemand selbst frei.",
-    "Genehmigte Abrechnungen gehen über die **Lohnbuchhaltung** in die Auszahlung — die Freigabe gibt ihr die CSV und markiert danach genau diese Abrechnungen als ausgezahlt."
+    "Genehmigte Abrechnungen gehen über die **Lohnbuchhaltung** in die Auszahlung — die Freigabe gibt ihr die CSV, der **Steuerberatung** die PDF-Belege und markiert danach genau diese Abrechnungen als ausgezahlt."
   ],
   "pages": [
     {
@@ -130,10 +130,10 @@
     },
     {
       "h1": "Auszahlen über die Lohnbuchhaltung",
-      "sub": "Oben auf der Freigabe-Seite steht, was genehmigt, aber noch nicht ausgezahlt ist — mit Summe, CSV und Markieren.",
+      "sub": "Oben auf der Freigabe-Seite steht, was genehmigt, aber noch nicht ausgezahlt ist — mit Summe, CSV, PDF-Belegen und Markieren.",
       "card": {
         "title": "Auszahlung",
-        "text": "CSV, dann markieren"
+        "text": "CSV, PDF-Belege, dann markieren"
       },
       "left": {
         "shot": "p12-auszahlung"
@@ -152,11 +152,16 @@
         },
         {
           "n": 3,
-          "title": "Als ausgezahlt markieren",
-          "text": "Erst wenn die Datei bei der Lohnbuchhaltung ist: **Als ausgezahlt markieren** und bestätigen. Markiert werden genau die Abrechnungen der Datei — was danach genehmigt wird, bleibt für den nächsten Lauf offen."
+          "title": "PDF-Belege für die Steuerberatung",
+          "text": "**PDF-Belege für die Steuerberatung** lädt ein Dokument mit denselben Abrechnungen wie die CSV: je Abrechnung ein Deckblatt mit allen Angaben, dahinter die angehängten Belege als eigene Seiten. Eine einzelne Abrechnung gibt es ab „genehmigt“ über **PDF-Beleg** im Fenster oder das Symbol neben dem Status."
         },
         {
           "n": 4,
+          "title": "Als ausgezahlt markieren",
+          "text": "Erst wenn CSV und PDF raus sind: **Als ausgezahlt markieren** und bestätigen. Markiert werden genau die Abrechnungen der Datei — was danach genehmigt wird, bleibt für den nächsten Lauf offen."
+        },
+        {
+          "n": 5,
           "title": "Danach",
           "text": "Die Abrechnungen stehen auf **Ausgezahlt**; die Mitarbeiterin sieht das in ihrer Liste und in der App."
         }

@@ -40,6 +40,10 @@ und endet mit einer von zwei Entscheidungen: **Genehmigen** oder **Ablehnen**.
   Ansicht („Details"), nicht mehr änderbar.
 - **Nie die eigene.** Wer selbst Reisekosten hat, sieht die eigene Abrechnung in der Liste,
   kann sie aber nicht freigeben oder ablehnen (seit 26.09.2026).
+- **PDF-Beleg für die Steuerberatung.** Ab „genehmigt“ gibt es je Abrechnung ein PDF:
+  Deckblatt mit allen Angaben, dahinter jeder angehängte Beleg als eigene Seite. Die Karte
+  „Auszahlung“ liefert neben der CSV ein Sammel-PDF genau der Abrechnungen der CSV
+  (seit 18.11.2026).
 
 **Wo was erledigt wird:**
 
@@ -144,6 +148,7 @@ Seit Stufe 3 (26.09.2026) steht oben auf der Freigabe-Seite die Karte **Auszahlu
 |---|---|
 | `GET /travel-expenses/approval/payout?month=JJJJ-MM` | genehmigte, nicht ausgezahlte Abrechnungen mit `approved_at` bis Monatsende: Anzahl, Summe, IDs |
 | `GET /travel-expenses/approval/payout/export?month=` | CSV (Semikolon, Dezimalkomma, BOM): Personalnummer (aus `hr_employees`), Name, Zeitraum, Art, Fahrt, Hotel, Verpflegung, Zusatzkosten, Gesamt, genehmigt am/von, ID; Summenzeile |
+| `GET /travel-expenses/approval/payout/pdf?month=` | Sammel-PDF für die Steuerberatung: dieselben Abrechnungen wie die CSV, je Deckblatt + Belege, hintereinander |
 | `POST /travel-expenses/approval/payout` `{ids}` | genau diese IDs auf `paid` (`paid_by/at`); was nicht mehr genehmigt/offen ist, wird übersprungen und gezählt |
 
 Maßgeblich ist der **Tag der Genehmigung**, nicht der Reisetag — so fällt nichts zwischen zwei
@@ -151,6 +156,31 @@ Läufe. Die Seite markiert die IDs aus der Vorschau, nicht „alles Offene“: w
 Markieren genehmigt wird, bleibt für den nächsten Lauf. Belege öffnen sich über
 `/travel-expenses/receipts/{id}/file` (gestreamt, Rechte geprüft) — vorher waren sie in der
 Freigabe nur aufgelistet.
+
+### PDF-Beleg für die Steuerberatung
+
+Seit 18.11.2026 (Jan): `TravelExpensePdfService` baut je Abrechnung ein PDF, das ohne
+Rückfrage bei der Steuerberatung verständlich ist.
+
+- **Deckblatt** (`resources/views/pdf/travel-expense.blade.php`, dompdf mit
+  `FontSettingsService::pdfOptions()` — ohne die Optionen fällt dompdf auf Helvetica
+  zurück): Mitarbeiterin mit Personalnummer (`HrEmployee::payrollPersonnelNumber()`, wie die
+  Lohnliste), Freigabe (eingereicht/genehmigt/ausgezahlt mit Person und Zeit), Reise, Tage &
+  Nächte (`tripPlan()`), Arbeitszeiten mit gestellten Mahlzeiten, Kostenaufstellung mit
+  Erstattungsbetrag, Anmerkungen, Belegliste mit Anlagen-Nummer. Fußzeile aus den
+  PDF-Einstellungen (`PdfSetting::footer_lines`).
+- **Belege** folgen in der Reihenfolge der Liste als eigene Seiten. PDFs unverändert, Fotos
+  aus der Zeit vor der Umwandlung beim Hochladen werden über
+  `ReceiptPdfConverter::imageToPdf()` zur A4-Seite. Ein unlesbarer Beleg steht auf dem
+  Deckblatt als „nicht angehängt“ — das PDF entsteht trotzdem.
+- **Zusammenfügen** über Ghostscript (`gs -sDEVICE=pdfwrite`, im Docker-Image wie beim
+  `PdfCompressorService`). Fehlt `gs`, bricht der Abruf mit Fehler ab statt ein PDF ohne
+  Belege zu liefern.
+- **Erst ab `approved`/`paid`** (`TravelExpensePdfService::canExport`, `approvalShow` liefert
+  `can_export_pdf`). Einzel-PDF unter dem Freigaberecht, Sammel-PDF unter
+  `pay_travel_expenses`.
+- Die Adressen enden auf `/pdf` — der Service Worker lässt sie damit durch
+  (Dokument-Muster seit SW 2.1.8), die Desktop-App öffnet sie als Dokument.
 
 ### Routes
 
@@ -167,6 +197,7 @@ Freigabe nur aufgelistet.
 | GET | `/travel-expenses/absence-types` | `absenceTypes()` | Abwesenheitsarten mit `travel_expenses=true` |
 | GET | `/travel-expenses/approval` | `approvalIndex()` | Liste aller eingereichten/genehmigten/abgelehnten Anträge (Filter `month`, `absence_type_id`, `user_id`, `status`) — steht vor den `{travelExpense}`-Routen, sonst fängt `show()` sie ab (Fehler bis 26.09.2026) |
 | GET | `/travel-expenses/approval/{travelExpense}` | `approvalShow()` | Einzelnen Antrag mit Details laden |
+| GET | `/travel-expenses/approval/{travelExpense}/pdf` | `approvalPdf()` | PDF-Beleg (Deckblatt + Belege), erst ab genehmigt |
 | POST | `/travel-expenses/approval/{travelExpense}/approve` | `approve()` | Antrag genehmigen (mit optionalen Korrekturen) |
 | POST | `/travel-expenses/approval/{travelExpense}/reject` | `reject()` | Antrag ablehnen (mit Pflicht-Begründung) |
 
@@ -214,7 +245,9 @@ END
 
 #### `approvalShow(TravelExpense $travelExpense)`
 
-Lädt einen einzelnen Antrag mit den Relationen `absenceType` und `receipts`.
+Lädt einen einzelnen Antrag mit `absenceType`, `receipts`, `submitter`, `approver`,
+`rejecter`, `payer`. Die vier Konten bekommen `append('name')` — `users.name` ist ein
+Accessor und fehlte sonst im JSON („Eingereicht … von undefined“, bis 18.11.2026).
 
 #### `approve(Request $request, TravelExpense $travelExpense)`
 
@@ -351,6 +384,7 @@ protected $appends = ['display_name'];
 
 | Datum | Änderung |
 |---|---|
+| 18.11.2026 | PDF-Beleg für die Steuerberatung (je Abrechnung und als Sammel-PDF zur Auszahlung); Modal-Fehler behoben: „eingereicht von undefined“, Beleg-Symbol füllte das ganze Fenster (Heroicon ohne Maße) |
 | 26.09.2026 | Stufe 2/3: Seite in Partials + `public/js/reisekosten-freigabe.js`, Filter als Dropdowns (Reisemonat, Status, Art, Mitarbeiterin), Stat-Strip, Belege öffnen, Karte „Auszahlung“ mit CSV und Markieren, Status „ausgezahlt“ |
 | 26.09.2026 | Liste wieder erreichbar (Routen-Reihenfolge), keine Selbstfreigabe, `approval_notes`/`rejected_by`/`rejected_at`, Hinweis „Erneut eingereicht", Meldungen an die Mitarbeiterin |
 | 20.03.2026 | Freigabe erstellt |
