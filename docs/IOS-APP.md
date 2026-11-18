@@ -1825,7 +1825,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Termin buchen | nativ | Slot-Finder als Detailseite im Termine-Tab: Kundin (seit 02.11.2026 mit „Letzte Behandlung vor …" aus `last_interval`, Abstand bis zum gewählten Tag in der Rückfrage), Institut, ab wann, Paket-Leistungen, seit 02.11.2026 Auffrischung neben FLEX (beide eingeklappt), im Verlegen-Modus Leistungen und Art aus `reschedule-context` (Beratung → Website-Slots ohne Tageskalender), Vorschläge je Tag, Rückfrage am Slot, iPad-Raster (seit 26.09.2026); Einstiege Plus in der Terminliste, Kundenübersicht, ⌘N; Folgetermin/Verlegen aus der Terminansicht bleiben im Blatt |
 | Verträge | nativ | Liste + Vertragsseite mit vier Reitern (seit 25.09.2026); GoCardless/Ratenplan/Bearbeiten als Web-Blatt; Preislisten, Mappings Web; Freunde werben nativ (27.09.2026) |
 | Gutscheine | nativ | Tresen-Suche (Seriennummer, Scan, Kundin), Gutscheinkarte mit Restwert/Gültigkeit/Kundin-Korrektur, neuer Gutschein, Guthaben-Karte in der Kundenübersicht (seit 26.09.2026); Bestand mit Kennzahlen bleibt Web |
-| Reisekosten | nativ | Anspruchstage aus askDANTE, Assistent für neue Reisen (auch mehrtägig mit Tagen & Nächten, seit 27.09.2026), Reisekarte mit Live-Summe und fünf Abschnitten, Belege mit Kamera/Scanner, Einreichen/Zurückziehen/Löschen, Register Freigabe mit Berichtigen und Entscheidung (seit 26.09.2026); Web-Freigabeseite bleibt Web |
+| Reisekosten | nativ | Anspruchstage aus askDANTE, Assistent für neue Reisen (auch mehrtägig mit Tagen & Nächten, seit 27.09.2026), Reisekarte mit Live-Summe und fünf Abschnitten, Belege mit Kamera/Scanner, Einreichen/Zurückziehen/Löschen, Register Freigabe mit Berichtigen und Entscheidung (seit 26.09.2026), PDF-Beleg für die Steuerberatung ab genehmigt (seit 18.11.2026); Web-Freigabeseite bleibt Web |
 | App-Geräte | nativ | Liste mit Suche, Chips, Kennzahlen, offene Codes und Geräte nach Institut; Code ausstellen in drei Schritten mit QR und Teilen-Blatt (AirDrop), Code zurückziehen, Gerät widerrufen im Steckbrief; iPad-Split, Ausstellen als Popover (seit 26.09.2026); Einlösen bleibt `EnrollmentSheet` |
 | Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild mit Hub-Profilbild und Zeile „Was ansteht“ (seit 25.10.2026), Akte (Überblick, Vergütung, Zeit, Konto, Vorsorge — betriebliche Altersvorsorge mit Blatt „Stand ändern“ für das Büro, seit 25.10.2026), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten (seit 27.09.2026); Teamliste- und Lohnliste-Import bleiben Web (Datei-Upload im Büro), Checklisten Eintritt/Austritt vorerst ausgeblendet |
 | Institute | nativ | Karte zuerst (seit 27.09.2026): Nadeln in Hub-Farbe, Blatt mit Liste/Institut, Unterseiten Kennzahlen, Team, Verwaltung |
@@ -3077,6 +3077,14 @@ solange etwas fehlt; eingereichte Abrechnungen lassen sich zurückziehen, abgele
 Freigeben (mit Anmerkung) oder Ablehnen (mit Grund); die eigene Abrechnung gibt niemand selbst
 frei. Ohne Netz bleiben Liste und zuletzt geöffnete Karten lesbar. Auf dem iPad steht die
 Liste links, die Reisekarte rechts.
+
+**PDF-Beleg für die Steuerberatung (seit 18.11.2026):** Genehmigte und ausgezahlte Abrechnungen
+zeigen in der Freigabe unten den Knopf **PDF-Beleg für die Steuerberatung**. Er lädt über
+`HubSession.download` denselben Endpunkt wie das Web (`travel-expenses/approval/{id}/pdf`:
+Deckblatt + Belege) und öffnet ihn per `quickLookPreview` mit Teilen/Sichern
+(`TravelCardViewModel.canExportPdf`/`loadPdf()`). Das Sammel-PDF zur Auszahlung bleibt Web.
+Snapshot `travel-review-approved` in `TravelExpensesSnapshotTests`. Fachlich:
+[Reisekosten-Freigabe](REISEKOSTEN-FREIGABE.md#pdf-beleg-fur-die-steuerberatung).
 
 **Neue Reise per Assistent (seit 27.09.2026, TestFlight-Befund 68):** Ein offener Anspruchstag
 öffnet `TravelAssistantView` statt der leeren Karte — Tage & Ort (mit der Frage „ist das eine
