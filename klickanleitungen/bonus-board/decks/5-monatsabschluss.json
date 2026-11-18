@@ -11,7 +11,7 @@
  "eyebrow": "Bonus-Board · Monatsabschluss",
  "footerArea": "Bonus-Board",
  "stand": "18.11.2026",
- "version": "1.1",
+ "version": "1.2",
  "notes": [
   "**Reihenfolge:** erst Widerrufe entscheiden, dann korrigieren und Springertage prüfen, dann einfrieren — danach ist der Monat zu.",
   "Der Abschluss läuft **nicht automatisch**: Ohne diesen Ablauf bleibt der Monat ewig vorläufig.",
@@ -109,7 +109,7 @@
   },
   {
    "h1": "Springertage",
-   "sub": "Hilft eine Kollegin einen Tag in einem anderen Institut aus, bekommt dieses Institut +3 KPZ und ihr Stamminstitut −5 KPZ.",
+   "sub": "Hilft eine Kollegin einen Tag in einem anderen Institut aus, bekommt ihr Stamminstitut +3 KPZ und das aufnehmende Institut −5 KPZ.",
    "card": {
     "title": "Springertage",
     "text": "Aushilfe zwischen Instituten ausgleichen"
@@ -151,7 +151,7 @@
     },
     {
      "title": "Immer ein voller Tag",
-     "text": "Auch ein halber Springereinsatz zählt +3 / −5."
+     "text": "Auch ein halber Springereinsatz zählt +3 / −5. In der Liste steht der erste Wert für das Stamminstitut, der zweite für das Institut, in dem ausgeholfen wurde."
     }
    ],
    "hint": {

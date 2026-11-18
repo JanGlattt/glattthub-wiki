@@ -7,7 +7,7 @@
   "audience": "leitung",
   "footerArea": "App",
   "stand": "18.11.2026",
-  "version": "1.1",
+  "version": "1.2",
   "nr": 20,
   "title": [
     "Bonus-Verwaltung",
@@ -59,7 +59,7 @@
     },
     {
       "h1": "Springertage",
-      "sub": "Hilft eine Kollegin in einem anderen Institut aus, bekommt dieses Institut +3 KPZ, ihr Stamminstitut −5 KPZ. Die Tage kommen aus askDANTE.",
+      "sub": "Hilft eine Kollegin in einem anderen Institut aus, bekommt ihr Stamminstitut +3 KPZ, das aufnehmende Institut −5 KPZ. Die Tage kommen aus askDANTE.",
       "card": {
         "title": "Springertage",
         "text": "Aushilfe ausgleichen, Einsatzort nachtragen"
@@ -72,7 +72,7 @@
         {
           "n": 1,
           "title": "Ausgleich je Institut",
-          "text": "Grün = Hilfe bekommen, rot = ausgeholfen. Der Wert steckt im **KPZ Ist** des Instituts auf dem Bonus-Board."
+          "text": "Grün = Personal abgegeben (+3 je Tag), rot = Aushilfe bekommen (−5 je Tag). Der Wert steckt im **KPZ Ist** des Instituts auf dem Bonus-Board."
         },
         {
           "n": 2,

@@ -74,8 +74,8 @@ eingefrorenen, versionierten Stand ab, der die Auszahlungsbasis ist.
 - **Drei Sichtstufen, drei Rechte:** eigene Zahlen, eigenes Institut (Standortleitung), alle
   Institute (Büro).
 - **Springertage verschieben Instituts-KPZ.** Hilft eine Mitarbeiterin einen Tag in einem
-  anderen Institut aus, bekommt dieses Institut +3 KPZ und ihr Stamminstitut −5 KPZ — als
-  Ausgleich für die fehlende Kraft. Die Tage kommen aus askDANTE (Abwesenheit
+  anderen Institut aus, bekommt ihr abgebendes Stamminstitut +3 KPZ (Ausgleich für die
+  fehlende Kraft) und das aufnehmende Institut −5 KPZ (es verkauft mit fremder Hilfe). Die Tage kommen aus askDANTE (Abwesenheit
   „Springereinsatz"), weitere ergänzt die Verwaltung von Hand. Persönliche KPZ und der
   Unternehmens-Gesamtwert bleiben echte Verkäufe.
 - **Google-Bewertungen werden einzeln von Hand erfasst** (keine API, keine Scraper); der
@@ -421,8 +421,8 @@ Abschnitt Medaillenspiegel + Disziplinen (`BonusBoardExporter::olympiadForPdf()`
 ### Springertage
 
 Entscheidung Jan, 18.11.2026. Ein **Springertag** ist ein Tag, an dem eine Mitarbeiterin in
-einem anderen als ihrem Stamminstitut aushilft. Im Bonus bekommt das Institut, das Hilfe
-bekommt, **+3 KPZ** (`kpz_credit`), das Stamminstitut **−5 KPZ** (`kpz_debit`) — je Tag,
+einem anderen als ihrem Stamminstitut aushilft. Im Bonus bekommt das **abgebende
+Stamminstitut +3 KPZ** (`kpz_credit`), das **aufnehmende Institut −5 KPZ** (`kpz_debit`) — je Tag,
 immer voll (auch bei einem halben Tag in askDANTE).
 
 **Wo es wirkt:** nur in den **Instituts-KPZ** (`kpz_sold`, Scope `branch`) — also Team- und
@@ -456,8 +456,8 @@ ginge nicht, der nächste Abgleich brächte ihn zurück) und wieder einschließe
 Angaben überschreibt der Abgleich nie; askDANTE-Tage, die dort gelöscht wurden, verschwinden nur,
 solange niemand sie angefasst hat. Ein Tag je Person. Final eingefrorene Monate sind gesperrt.
 
-**Anzeige:** Instituts-Tabelle und PDF nennen unter „KPZ Ist" „davon +6 / −5 aus Springertagen",
-die Ziel-Karten „Springertage: +3 KPZ aus Springertagen — nur für den Bonus", der CSV-Export hat
+**Anzeige:** Instituts-Tabelle und PDF nennen unter „KPZ Ist" „davon +6 aus Springertagen" bzw. „davon −10 aus Springertagen",
+die Ziel-Karten „Springertage: −5 KPZ aus Springertagen — nur für den Bonus", der CSV-Export hat
 die Spalte „davon Springertage". Darum weicht „KPZ Ist" wie bei geparkten Widerrufen von der
 Verkaufsstatistik ab.
 
@@ -725,7 +725,9 @@ Endpunkte, Sperre bei finalem Freeze),
   `BonusMetricKindTest`, `BonusEngineTest::test_schnitt_*`.
 - **Abwesenheitstage** = Krankheit + Urlaub + Sonderurlaub (ohne Wochenende,
   Feiertag, Überstundenabbau); Korrektur über Override `absence_days`.
-- **Springertage (18.11.2026):** Ausgleich wirkt in `BonusMetricResolver::computeKpzSold()` nur
+- **Springertage (18.11.2026):** Richtung: Stamminstitut (`home_branch_id`) +`kpz_credit`, aufnehmendes
+  Institut (`target_branch_id`) −`kpz_debit` (`BonusSpringerDay::adjustmentsForMonth()`; die erste
+  Prod-Fassung vom 18.11.2026 hatte es vertauscht). Ausgleich wirkt in `BonusMetricResolver::computeKpzSold()` nur
   bei Scope `branch` und unabhängig von `withParked` (Jan: Challenges zählen sie mit, den
   Gesamtwert nicht). Das Regelergebnis trägt `springer` (Saldo), die Instituts-Zeile
   `kpz_springer_in/out(_days)`. Wert-Korrekturen behalten die Felder (`applyOverride`).
