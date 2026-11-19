@@ -415,6 +415,11 @@ Abschnitt Medaillenspiegel + Disziplinen (`BonusBoardExporter::olympiadForPdf()`
   Notiz). Ein als **final** markierter Stand ist die unveränderliche
   Auszahlungsbasis: weitere Freezes, Korrekturen und Entscheidungen sind dann
   gesperrt, das Board zeigt für diesen Monat den eingefrorenen Stand.
+  Ein **Zwischenstand** lässt sich seit 19.11.2026 **neu berechnen** (frischer Stand mit derselben
+  Notiz ersetzt den alten, z. B. nach korrigierten Minimalzielen) oder **entfernen**; finale Stände
+  nicht. Hintergrund: Das Board zeigt einen Zwischenstand nie an (live gerechnet), aber jedes
+  Einfrieren schreibt die Serien-Ergebnisse `bonus_rule_achievements` — ein alter, falscher Stand
+  hätte die Serien der Folgemonate verfälscht.
 - **Sichtbarkeit je Nutzerin**: Regeln pro Nutzerin gezielt ein-/ausblenden —
   zusätzlich zur Regel-Sichtbarkeit (nur Empfängerinnen / Instituts-Team / alle).
 
@@ -609,7 +614,10 @@ Das Standard-Bonussystem wird per Migration
   Besuchs-Snapshot (verbraucht die Celebration nicht).
 - `BonusAdminController` — Regeln-CRUD (Challenges auch mit
   `manage_challenges`, Standard-Regeln nur mit `manage_bonus_rules`),
-  Minimalziele, Freezes, Korrekturen, Widerruf-Entscheidungen, Sichtbarkeit,
+  Minimalziele, Freezes (`POST /hub/bonus/freezes/{id}/neu` →
+  `BonusCalculationService::refreezeIntermediate()`, `DELETE /hub/bonus/freezes/{id}` →
+  `deleteIntermediate()`, das die Serien-Ergebnisse des Monats auf den jüngsten verbleibenden Stand
+  zurücksetzt bzw. löscht; beide 422 bei finalem Stand), Korrekturen, Widerruf-Entscheidungen, Sichtbarkeit,
   Springertage: `GET /hub/bonus/springertage?month=` (gleicht vorher askDANTE ab; `rows`,
   `summary` je Institut, `defaults`), `POST` (von Hand, 422 bei gleichem Institut oder schon
   vorhandenem Tag), `PUT /{id}` (Einsatzort/Stamminstitut/`excluded`/Notiz), `DELETE /{id}`
@@ -680,6 +688,7 @@ Korrekturen, Serien, Freeze, %-Aufschlag, Bonusberechtigung ohne Arbeitstag,
 Widerrufs-Felder), `tests/Feature/BonusBoardPageTest.php`
 (Rechte, Endpoints, Sichtbarkeit, finale Sperre, Management-Anreicherung,
 Kundennamen, CSV-/PDF-Export), `tests/Feature/HrUserLinkServiceTest.php` (askDANTE-Verknüpfung),
+`tests/Feature/BonusFreezeRefreshTest.php` (Zwischenstand neu berechnen/entfernen, final gesperrt),
 `tests/Feature/BonusSpringerDayTest.php` (Springertage: nur Instituts-KPZ, auch in Challenges,
 ohne Einsatzort/ausgeschlossen kein Effekt, askDANTE-Abgleich mit Reisekosten, Handarbeit bleibt,
 Endpunkte, Sperre bei finalem Freeze),

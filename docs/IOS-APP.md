@@ -2746,7 +2746,8 @@ in der Checkliste. Antippen öffnet das Blatt (Einsatzort nachtragen), „Ergän
 langer Druck schließt aus bzw. entfernt — dieselben Endpunkte `hub/bonus/springertage` wie im Web
 (`BonusSpringerSection`, `BonusSpringerSheet`, Snapshot `bonus-admin-springer`).
 **Zwischenstand einfrieren** geht jederzeit, **Final einfrieren** erst ab dem Folgemonat und mit
-Warnung, wenn noch Fälle offen sind. Unter **Regelwerk** liegen Bonus-Regeln, Challenges und die
+Warnung, wenn noch Fälle offen sind. Am Zwischenstand öffnet „⋯“ **Neu berechnen** bzw. **Entfernen** (seit 19.11.2026,
+`refreshFreeze`/`deleteFreeze`, dieselben Endpunkte wie im Web). Unter **Regelwerk** liegen Bonus-Regeln, Challenges und die
 Sichtbarkeit je Nutzerin: eine Liste mit Suche und Chips (Alle, Aktiv, Regeln, Challenges, Serie,
 Ranking, Inaktiv), Challenges nach Monat; ein Tipp öffnet die **Regel-Akte** mit den Abschnitten des
 Assistenten und Bearbeiten / Deaktivieren / Löschen; „+“ startet den **Assistenten** in vier Schritten

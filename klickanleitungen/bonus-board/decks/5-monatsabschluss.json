@@ -10,8 +10,8 @@
  "subtitle": "Klickanleitung für die Bonus-Verwaltung im glatttHub — Widerrufe entscheiden, korrigieren, Springertage, einfrieren, Bewertungen pflegen",
  "eyebrow": "Bonus-Board · Monatsabschluss",
  "footerArea": "Bonus-Board",
- "stand": "18.11.2026",
- "version": "1.2",
+ "stand": "19.11.2026",
+ "version": "1.3",
  "notes": [
   "**Reihenfolge:** erst Widerrufe entscheiden, dann korrigieren und Springertage prüfen, dann einfrieren — danach ist der Monat zu.",
   "Der Abschluss läuft **nicht automatisch**: Ohne diesen Ablauf bleibt der Monat ewig vorläufig.",
@@ -189,6 +189,11 @@
      "n": 4,
      "title": "Liste prüfen",
      "text": "Darunter steht, **wann**, **von wem** und **wie** eingefroren wurde — die Historie des Monats."
+    },
+    {
+     "n": 5,
+     "title": "Neu berechnen oder entfernen",
+     "text": "Stimmte beim Einfrieren etwas nicht (z. B. ein falsches **Minimalziel**), am Zwischenstand auf den **Kreispfeil** tippen: Der Stand wird mit den heutigen Zahlen neu berechnet und ersetzt den alten. Der **Papierkorb** entfernt ihn — Serien rechnen dann mit dem vorherigen Stand. Finale Stände haben keine Knöpfe."
     }
    ],
    "notes": [
@@ -199,6 +204,10 @@
     {
      "title": "Kein Automatismus",
      "text": "Es gibt **keinen** automatischen Monatsende-Abschluss — bewusst. Der Abschluss ist eine Entscheidung, kein Termin."
+    },
+    {
+     "title": "Erst korrigieren, dann neu berechnen",
+     "text": "Neu berechnen nimmt die Zahlen von **jetzt**: also zuerst Minimalziele, Korrekturen und Springertage richtigstellen, dann den Zwischenstand neu berechnen."
     }
    ],
    "hint": {

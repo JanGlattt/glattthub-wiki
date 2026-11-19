@@ -81,6 +81,7 @@ const want = id => !ONLY.length || ONLY.includes(id);
       { id: 'notiz', kind: 'badge', n: 1, ...L.byText('[data-klick="freeze"] .input-glattt-floating-label', 'Notiz'), at: 'l' },
       { id: 'final', kind: 'badge', n: 2, ...L.byText('[data-klick="freeze"] .checkbox-glattt-label', 'Final einfrieren'), at: 'l' },
       { id: 'knopf', kind: 'frame', color: 'teal', ...L.byText('[data-klick="freeze"] .btn-glattt-primary', 'Stand jetzt einfrieren') },
+      { id: 'neu', kind: 'badge', n: 5, sel: '[data-klick="freeze"] [aria-label="Neu berechnen"]', at: 'l' },
     ]});
     console.log('Hinweis: Monatsabschluss nur fotografiert — nicht eingefroren.');
   }
