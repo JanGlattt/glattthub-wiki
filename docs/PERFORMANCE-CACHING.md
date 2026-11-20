@@ -119,6 +119,27 @@ den Web-Service, damit Cloud Run skaliert statt zu stapeln; der Worker hat einen
 nicht blockieren. Die Cron-Endpunkte legen nur noch den Job auf die Queue — vorher lief der Wärmer
 17 s lang in einem PHP-Worker des Web-Containers.
 
+**Hänger-Schutz (seit 20.11.2026):** Am 19.11.2026 um 11:02 blieb ein Wärm-Lauf (Plan `reports`) in
+einem blockierenden Aufruf stehen, über 24 Stunden lief auf der Queue `stats` nichts mehr, und alle
+Statistiken zeigten den Stand vom Vormittag. Laravels `--timeout` (pcntl-Alarm) greift in einem
+blockierenden C-Aufruf nicht. Seitdem gilt:
+
+- **Harte Grenze von außen:** `queue-stats` läuft unter `timeout -s KILL 3600` (busybox) mit
+  `--max-time=1800` und `--memory=512`. Ein gesunder Prozess endet immer selbst (1800 s + 1500 s
+  Job-Timeout < 3600 s), ein hängender wird spätestens nach einer Stunde beendet und von Supervisor
+  neu gestartet. `--memory=512` passt zum `memory_limit` des Wärm-Laufs; vorher endete der Prozess
+  nach jedem Lauf mit Exit 12 (Standard 128 MB).
+- **Fortschritts-Merker:** `StatisticsWorkerMonitor::begin()/end()` um jede Berechnung im
+  `WarmStatisticsJob` und `RefreshStatisticsCacheJob` (Plan, Klasse::Methode, Argumente),
+  `warmed()` nach jedem vollständigen Wärm-Lauf. Rezepte über 60 s schreiben
+  `[StatisticsCache] Langsame Berechnung` ins Log.
+- **Wächter:** `StatisticsWorkerMonitor::check()` läuft auf dem **Web**-Dienst bei jedem
+  Wärm-Anstoß des Cloud Schedulers (`CronController::dispatchWarmPlan`, alle 5 Minuten), also auch
+  dann, wenn der Worker hängt. Zustand `stuck` (eine Berechnung läuft > 20 Min., mit Bezeichnung)
+  oder `silent` (> 30 Min. kein Wärm-Lauf fertig) → `Log::error` und in Produktion der Anlass
+  „Sync/Job fehlgeschlagen" (`statistik-cache`, höchstens einmal je Stunde). Der Cron-Endpunkt
+  liefert den Zustand als `worker` mit. Staging meldet nicht (Worker schläft nachts).
+
 **Gruppen und Frische:** `sales`/`kunden`/`glattt`/`ads`/`personal`/`widerrufe` 1 h,
 `hr`/`gutscheinaktion`/`widgets`/`booking-intake`/`besucher`/`kundenservice`/`trinkgeld` 15 Min,
 `schulden`/`office`/`bonus` 5 Min, `reports-overview` 15 Min (Phorest-Endpunkte 5 Min), `booking-live` 5 Min
@@ -204,6 +225,7 @@ Auth wie bei allen Cron-Routen über Header `X-Cron-Token` (Secret `services.cro
 - `app/Support/StatisticsCache.php` — gemeinsamer Statistik-Cache (Stale-while-revalidate, Rezepte, Modi)
 - `app/Support/ReportsOverviewCache.php` — Hülle für die Controller-Endpunkte (Gruppe `reports-overview`)
 - `app/Jobs/RefreshStatisticsCacheJob.php`, `app/Jobs/WarmStatisticsJob.php` — Hintergrund-Berechnung und Wärmer (Queue `stats`)
+- `app/Support/StatisticsWorkerMonitor.php` — Lebenszeichen und Wächter der Queue `stats` (Hänger 19.11.2026)
 - `app/Services/Statistics/StatisticsWarmPlan.php` — Wärm-Pläne `reports`, `sales`, `booking-status`
 - `app/Observers/ContractObserver.php` — „frisch bei Änderung" für Verkauf und Tagesmessung
 - `app/Http/Controllers/ReportController.php` — gecachte Endpunkte, Buchungsstand mit `generated_at`/`refresh`
