@@ -31,6 +31,13 @@ Block-Editor: Text, Überschrift, Liste, Hinweis, Schrittfolge, Bild, Galerie, T
 Hub-Link, Aufklappen. Der Entwurf speichert sich selbst; **Veröffentlichen** macht ihn sichtbar und legt
 eine Version mit Änderungszeile an. Jede Seite hat eine Verantwortliche und ein Prüfintervall.
 
+**Was gilt und wie es geht, auf einer Seite (seit 23.11.2026).** Der Fließtext einer Themenseite erklärt die
+Regeln, eine **Anleitung** („Wie beantrage ich Urlaub?“) zeigt die Schritte im Tool mit Bild und Knopf
+dorthin. Jede Anleitung wird nur einmal gepflegt und steht auf der Themenseite und von selbst auf der Seite
+ihres Tools. Unter dem Reiter **Tools** hat jedes Tool (askDANTE, Phorest, Hub-Seiten, Formulare, Geräte) eine
+eigene Seite mit Zugang, Ansprechpartner und allen Anleitungen. Anleitungen nur für die Leitung oder das Büro
+lassen sich dort als „Leitungsaufgaben“ bzw. „Büroprozesse“ zuschalten.
+
 ---
 
 ## Für Entwickler
@@ -306,6 +313,74 @@ gibt es per Rechtsklick — in der Desktop-App über das eigene Kontextmenü (si
 - **Fallstrick:** Editor.js schreibt „&“ als `&amp;` (teils doppelt) in gespeicherte Klartextfelder; `KnowledgeBlocks::plain()`
   decodiert beim Speichern und Anzeigen, sonst erscheint „Learning &amp; Development“.
 
+### Anleitungen und Tool-Seiten (seit 23.11.2026)
+
+Entscheidungen Jan (23.11.2026): „Weg 3, Anleitungen als Bindeglied“, Tool-Abschnitt „Mit Bild“, eigener Reiter
+„Tools“, Fließtext bleibt, einfache Sprache (für Leserinnen heißt es immer „Anleitung“, nie „Aufgabe“).
+
+**Datenmodell.** `knowledge_guides` (Modell `KnowledgeGuide`, SoftDeletes): `uuid` (stabil über Umgebungen),
+`title`, `topic_page_id`, `tool_page_id` (beide optional, `nullOnDelete`), `intro`, `steps` (JSON
+`[{text, hint, audiences}]`), `notes` (JSON `[{title, text, audiences}]`, Zusatz-Absätze wie „Und wer gibt meinen
+Urlaub frei?“), `image`, `video_url`, `video_caption`, `cta_label`, `cta_url`, `audiences`. Tool-Seiten sind
+normale Seiten mit `kind = tool` und `knowledge_pages.tool_meta` (`category` aus
+`GuideService::TOOL_CATEGORIES`, `logo`, `where`, `launch_url`); das Verzeichnis ist eine Seite mit
+`kind = tools`, die ihre Tool-Unterseiten nach Kategorie zeigt. Weil das Verzeichnis Unterseiten hat, wird es
+im Hauptbereich von selbst ein Reiter des Menübands.
+
+**Blöcke.** `guide` speichert nur `{guide_id, collapsed}` — nie den Inhalt. `KnowledgeBlocks::visibleFor()`
+löst alle Anleitungen einer Seite in einer Abfrage auf (`resolveGuides()` → `data.guide`) und filtert
+Anleitung, Schritte und Zusätze auf die Zielgruppen der Leserin; gelöschte oder gesperrte Anleitungen fallen
+weg. `guides` ist ein Platzhalter auf Tool-Seiten („Anleitungen zu diesem Tool“); fehlt er, hängt
+`page.blade.php` die Liste ans Seitenende. `collapsed` zeigt die Anleitung als aufklappbare Frage.
+
+**Eine Stelle, die auflöst: `App\Services\Wissen\GuideService`.** `resolve()`/`resolveMany()` (Form für
+Blade, App und Editor-Vorschau), `forTool()` (Anleitungen eines Tools nach Thema), `directory()`,
+`toolInfo()`/`shortName()` (Kürzel-Kachel ohne Logo: „askDANTE“ → „aD“), `save()`/`delete()` (frischen danach
+`search_text` und den glatttBert-Artikel aller Seiten auf, die die Anleitung zeigen), `usage()`/`usageTitles()`
+(wo steht sie), `searchHits()`, `toolLinks()` (für „Womit“ im Prozess-Block). Die Redaktion (`$editor`) sieht
+jede Anleitung, auch die fremder Zielgruppen.
+
+**Ansichten.** `partials/blocks/guide.blade.php` (Tool-Abschnitt: Kopfzeile mit Logo/Kürzel, Name, Ort, „Mehr
+über …“, Schritte, Bild daneben, Video, Zusätze, Knopf ins Tool; ohne Bild nur die Kopfzeile),
+`partials/blocks/tool-guides.blade.php` (Liste der Tool-Seite mit Zusatzfilter), `partials/tool-directory`,
+`partials/tool-logo`. Zusatzfilter: Anleitungen mit eigener Zielgruppe sind auf der Tool-Seite zuschaltbar
+(`GuideService::FILTER_LABELS`: `leitung` → „Leitungsaufgaben“, `buero` → „Büroprozesse“), Wahl je Browser in
+`localStorage` (`wissenToolGuides` in `wissen.js`), Standard aus.
+
+**Redaktion.** `/hub/wissen/anleitungen` (`WissenGuideController`, hinter `can:edit_knowledge`): Liste mit „Steht
+auf“ und Warnung, wenn das gewählte Thema die Anleitung noch nicht als Block trägt; Formular als Modal
+(`partials/guide-form.blade.php`, `public/js/wissen-guides.js`), das auch der Seiten-Editor einbindet. Das Modal
+öffnet auf das Fenster-Ereignis `wissen-guide-open` und meldet `wissen-guide-saved` / `wissen-guide-deleted`; der
+Editor-Block `GuideTool` hört darauf und zeigt die neue Vorschau. Im Formular trägt jeder Schritt und jeder
+Zusatz genau eine Zielgruppe („Gilt für“), gespeichert wird eine Liste. Tool-Angaben (Art, Ort, Adresse, Logo)
+stehen im Seitenpanel des Editors, sobald „Art der Seite“ = Tool ist.
+
+**Endpunkte.** `GET /hub/wissen/anleitungen`, `GET /hub/wissen/api/anleitungen`, `GET …/api/anleitungen/{id}`
+(Formulardaten, Verwendung, Vorschau), `POST /hub/wissen/anleitungen`, `PUT|DELETE …/anleitungen/{id}`.
+`GET /hub/wissen/api/seite/{id}` liefert zusätzlich `tool`, `tool_guides`, `tool_directory`; Anleitungs-Blöcke
+tragen `data.guide` und `text`.
+
+**Suche und glatttBert.** Der Text einer Anleitung steht im `search_text` der Themenseite (über den Block) und
+der Tool-Seite. Anleitungen sind eigene Suchtreffer („Anleitung · askDANTE“) mit Anker am Block; sie ersetzen
+den Seitentreffer derselben Seite. In Suchtext und glatttBert-Artikel gelangt **nur der für alle sichtbare
+Teil** (`GuideService::text()`): Anleitungen, Schritte und Zusätze mit eigener Zielgruppe bleiben draußen.
+
+**Export/Import.** `wissen:export` schreibt `guides` (Thema und Tool als Bereich + Slug) und ergänzt
+Anleitungs-Blöcke um `guide_uuid`; `wissen:import-json` legt die Anleitungen über die `uuid` an und stellt die
+Blöcke (auch der Versionen) auf die IDs der Zielumgebung um. Eine Datei mit einzelnen Seiten hängt diese jetzt
+unter ihre bestehende Elternseite. Vorbereitete Inhalte: `database/wissen/seiten/hr-tools-anleitungen.json`
+(Tool-Verzeichnis, askDANTE, Phorest, 16 Anleitungen, eingehängt in Urlaub, Krankmeldungen, NiSV-Schulung
+sowie in die Leitungs-Seiten Urlaubsplanung, Phorest: Schichtplanung & Team, askDante – Zeiterfassung; neue
+Stände als Entwurf).
+
+**Fallstricke.** (1) JSON-Spalten sehen in MySQL anders aus als in SQLite (`"guide_id": 5` gegen
+`"guide_id":5`) — `embeddingPages()` filtert deshalb grob per `LIKE '%guide_id%'` und prüft in PHP genau.
+(2) Zielgruppen sind Erlaubnislisten: „alle außer Leitung“ gibt es nicht, ein Leitungs-Zusatz steht zusätzlich
+zum allgemeinen. (3) Die Redaktion sieht in der Leseansicht auch Anleitungen fremder Zielgruppen, Blöcke mit
+Zielgruppe dagegen weiterhin nur mit eigener Zugehörigkeit. (4) Ältere App-Builds kennen die Blöcke `guide` und
+`guides` nicht und fangen `/hub/wissen/anleitungen` als Bereich ab; `bridge.js` und `wissenReserved` sind ergänzt,
+wirken aber erst mit dem nächsten Build. Die native Darstellung steht aus (drei Entwürfe zuerst).
+
 ### Suche und glatttBert
 
 - Raum-Suche: MySQL `MATCH … AGAINST` (Boolean, Präfix) auf `title, summary, search_text` plus LIKE auf
@@ -348,10 +423,12 @@ Google Sites hat keinen strukturierten Export. Zwei Schritte:
 `app/Services/Wissen/*`, `app/Http/Controllers/Wissen/*`, `app/Models/Knowledge{Space,Page,PageVersion,Audience,Media}.php`,
 `app/Policies/KnowledgePagePolicy.php`, `resources/views/layouts/wissen.blade.php`, `resources/views/wissen/*`,
 `public/js/wissen.js`, `public/js/wissen-editor.js`, Abschnitt „WISSEN“ in `theme_glattt.css`,
-Tests `tests/Feature/WissenTest.php`, `WissenImportTest.php`, `tests/Unit/KnowledgeBlocksTest.php`, `SitesHtmlImporterTest.php`.
+`app/Models/KnowledgeGuide.php`, `app/Services/Wissen/GuideService.php`, `app/Http/Controllers/Wissen/WissenGuideController.php`, `public/js/wissen-guides.js`,
+Tests `tests/Feature/WissenTest.php`, `WissenGuideTest.php`, `WissenImportTest.php`, `tests/Unit/KnowledgeBlocksTest.php`, `SitesHtmlImporterTest.php`.
 
 ## Changelog
 
+- **23.11.2026** — Anleitungen und Tool-Seiten: `knowledge_guides`, Blöcke `guide`/`guides`, Seitenarten Tool und Tool-Verzeichnis, Redaktion „Anleitungen“, Zusatzfilter Leitungsaufgaben/Büroprozesse, Anleitungen als Suchtreffer, Export/Import mit `uuid`.
 - **15.11.2026** — Rechtschreibprüfung im Editor (Deutsch, Vorschläge per Rechtsklick; Desktop-App ab 1.2.14).
 - **21.10.2026** — Live-Organigramm aus den Hub-Konten (`reports_to_user_id`), Baum mit Fokus-Ansicht, Eskalationskette über zwei Ebenen, Korrektur „&amp;“.
 - **19.10.2026 (Feedback-Runde)** — Editor im Dunkelmodus, Blöcke Person/Institut/FAQ/Organigramm, BPMN mit Verantwortlichen und Risiken plus Anleitungsseite, Text neben Bildern, Lightbox, glatttBert-Fokus und Vorschlag, Suche mit Tippfehlern/Füllwörtern/Sinn, Führungskraft-Anlässe, Drive-Videos.
