@@ -1818,5 +1818,55 @@
     },
     "marks": [],
     "ratio": 1.7756410256410255
+  },
+  "wissen-anleitung-light": {
+    "box": {
+      "x": 0,
+      "y": 0,
+      "width": 780,
+      "height": 3000
+    },
+    "ratio": 3.8461538461538463,
+    "marks": []
+  },
+  "wissen-tool-light": {
+    "box": {
+      "x": 0,
+      "y": 0,
+      "width": 780,
+      "height": 2200
+    },
+    "ratio": 2.8205128205128207,
+    "marks": []
+  },
+  "wissen-tool-ipad-light": {
+    "box": {
+      "x": 0,
+      "y": 0,
+      "width": 2360,
+      "height": 1640
+    },
+    "ratio": 0.6949152542372882,
+    "marks": []
+  },
+  "wissen-tools-light": {
+    "box": {
+      "x": 0,
+      "y": 0,
+      "width": 780,
+      "height": 1520
+    },
+    "ratio": 1.9487179487179487,
+    "marks": []
+  },
+  "wissen-anleitung-ipad-light": {
+    "box": {
+      "x": 0,
+      "y": 0,
+      "width": 2360,
+      "height": 1640
+    },
+    "ratio": 0.6949152542372882,
+    "marks": []
   }
 }

@@ -426,8 +426,24 @@ Google Sites hat keinen strukturierten Export. Zwei Schritte:
 `app/Models/KnowledgeGuide.php`, `app/Services/Wissen/GuideService.php`, `app/Http/Controllers/Wissen/WissenGuideController.php`, `public/js/wissen-guides.js`,
 Tests `tests/Feature/WissenTest.php`, `WissenGuideTest.php`, `WissenImportTest.php`, `tests/Unit/KnowledgeBlocksTest.php`, `SitesHtmlImporterTest.php`.
 
+**Einspielen als Entwurf (`--as-draft`, seit 24.11.2026).** Für Inhalte, die erst geprüft werden sollen:
+Bestehende Bereiche und Versionen bleiben unberührt, neue Seiten entstehen als Entwurf, bestehende Seiten bekommen
+den Inhalt der Datei nur in `draft_blocks`. Veröffentlichte Seiten behalten Titel, Art, Platz und Blöcke;
+unveröffentlichte übernehmen zusätzlich Titel, Zusammenfassung, Art, Tool-Angaben und Elternseite. Der bisherige
+Entwurf wird vorher als Fassung im Verlauf gesichert („Entwurf vor dem Einspielen am …“) — auf Prod liegen
+unveröffentlichte Seiten **nur** als Entwurf vor (`blocks` leer), ohne die Sicherung wäre der Stand der Redaktion
+weg. Bild-Adressen in Einspiel-Dateien zeigen auf den öffentlichen Bucket, nie auf `glattthub.local`.
+Aufruf gegen Staging `bash scripts/staging-artisan.sh wissen:import-json <datei> --as-draft` (Trockenlauf), dann mit
+`--apply --no-bert`; gegen Prod dasselbe mit `scripts/prod-artisan.sh`.
+
+**glatttBert.** Zitiert eine Antwort eine Themen- oder Tool-Seite mit Anleitung, hängt
+`GlatttBertService::guideEmbeds()` den Knopf ins Tool als Karte an (`GuideService::launchCards()`: Tool-Seite selbst
+oder die Tools der Anleitungen in den veröffentlichten Blöcken, nur was alle sehen dürfen). Schritte und Seitenlink
+stehen bereits in Antwort und Quellen.
+
 ## Changelog
 
+- **24.11.2026** — `wissen:import-json --as-draft` mit Sicherung des bisherigen Entwurfs, `scripts/staging-artisan.sh`, Tool-Knopf in glatttBert-Antworten, native Darstellung in der App (Entwurf 1 „Wie im Hub“, siehe [iOS-App](IOS-APP.md)).
 - **23.11.2026** — Anleitungen und Tool-Seiten: `knowledge_guides`, Blöcke `guide`/`guides`, Seitenarten Tool und Tool-Verzeichnis, Redaktion „Anleitungen“, Zusatzfilter Leitungsaufgaben/Büroprozesse, Anleitungen als Suchtreffer, Export/Import mit `uuid`.
 - **15.11.2026** — Rechtschreibprüfung im Editor (Deutsch, Vorschläge per Rechtsklick; Desktop-App ab 1.2.14).
 - **21.10.2026** — Live-Organigramm aus den Hub-Konten (`reports_to_user_id`), Baum mit Fokus-Ansicht, Eskalationskette über zwei Ebenen, Korrektur „&amp;“.

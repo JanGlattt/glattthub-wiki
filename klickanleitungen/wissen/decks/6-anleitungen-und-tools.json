@@ -1,0 +1,247 @@
+{
+ "out": "../pdf/Wissen-6-Anleitungen-und-Tools",
+ "meta": "../meta.json",
+ "shots": "../shots",
+ "series": "Wissen",
+ "nr": 6,
+ "of": 6,
+ "audience": "buero",
+ "title": [
+  "Anleitungen",
+  "und Tool-Seiten"
+ ],
+ "subtitle": "Klickanleitung für das Büro — eine Anleitung einmal schreiben, auf der Themenseite und der Tool-Seite zeigen, Tools mit Logo und Adresse anlegen",
+ "eyebrow": "Wissen · Anleitungen",
+ "footerArea": "Wissen",
+ "stand": "24.11.2026",
+ "version": "1.0",
+ "notes": [
+  "Eine **Anleitung** beantwortet eine Frage wie „Wie beantrage ich Urlaub?“ mit Schritten in einem Tool. Du pflegst sie an **einer** Stelle; sie steht dann auf der Seite des Themas und von selbst auf der Seite des Tools.",
+  "Was gilt (zum Beispiel wie viel Urlaub man hat), bleibt Fließtext auf der Themenseite. Die Anleitung zeigt nur, **wie** und **womit** man es macht."
+ ],
+ "pages": [
+  {
+   "h1": "Die Anleitung auf der Themenseite",
+   "sub": "So sieht eine Mitarbeiterin die Anleitung: erst die Frage, dann der Kasten mit dem Tool. Der Kasten sieht bei jedem Tool gleich aus.",
+   "card": {
+    "title": "Themenseite",
+    "text": "Frage, Tool, Schritte, Knopf"
+   },
+   "left": {
+    "shot": "w22-anleitung"
+   },
+   "leftCaption": "Die Seite **Urlaub** mit der Anleitung „Wie beantrage ich Urlaub?“ und dem Bild aus askDANTE.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Frage",
+     "text": "Der Titel der Anleitung steht als Überschrift über dem Kasten."
+    },
+    {
+     "n": 2,
+     "title": "Tool",
+     "text": "Die Kopfzeile zeigt Logo oder Kürzel, den Namen und wo man das Tool findet. **Mehr über …** öffnet die Tool-Seite."
+    },
+    {
+     "n": 3,
+     "title": "Schritte",
+     "text": "Nummerierte Schritte mit kurzem Hinweis darunter. Ein Bild steht rechts daneben, am Handy darunter."
+    },
+    {
+     "n": 4,
+     "title": "Knopf",
+     "text": "Unter den Zusätzen führt der Knopf direkt ins Tool, wenn eine Adresse hinterlegt ist."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Je Zielgruppe",
+     "text": "Schritte und Zusätze „nur Leitung“ oder „nur Büro“ sieht nur, wer dazugehört. Alle anderen sehen dieselbe Anleitung ohne diese Teile."
+    }
+   ]
+  },
+  {
+   "h1": "Die Tool-Seite",
+   "sub": "Jedes Tool hat eine eigene Seite: oben Logo, Ort und der Knopf ins Tool, darunter dein Text und alle Anleitungen zu diesem Tool — ohne dass du dort eine Liste pflegst.",
+   "card": {
+    "title": "Tool-Seite",
+    "text": "Kopf, Text, alle Anleitungen"
+   },
+   "left": {
+    "shot": "w23-tool"
+   },
+   "leftCaption": "Die Tool-Seite **askDANTE**: der Abschnitt mit allen Anleitungen, nach Thema.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zusätzlich anzeigen",
+     "text": "**Leitungsaufgaben** und **Büroprozesse** blenden die Anleitungen dieser Gruppen ein. Der Filter ist zuerst aus und erscheint nur, wenn man solche Anleitungen sehen darf."
+    },
+    {
+     "n": 2,
+     "title": "Thema",
+     "text": "Die Anleitungen stehen unter ihrem Thema; die Überschrift führt zur Themenseite."
+    },
+    {
+     "n": 3,
+     "title": "Aufklappen",
+     "text": "Ein Klick auf die Frage zeigt die Schritte."
+    }
+   ],
+   "notes": []
+  },
+  {
+   "h1": "Der Reiter Tools",
+   "sub": "Unter **Tools** stehen alle Tools nach Art: Programme, glatttHub, Formulare und Vorlagen, Geräte.",
+   "card": {
+    "title": "Tools",
+    "text": "Alle Tools auf einen Blick"
+   },
+   "left": {
+    "shot": "w24-tools"
+   },
+   "leftCaption": "Das Verzeichnis mit den Tool-Karten und der Zahl der Anleitungen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Art",
+     "text": "Jede Art hat eine eigene Überschrift; leere Arten erscheinen nicht."
+    },
+    {
+     "n": 2,
+     "title": "Karte",
+     "text": "Die Karte zeigt Name, kurze Beschreibung und wie viele Anleitungen es gibt. Ein Klick öffnet die Tool-Seite."
+    }
+   ],
+   "notes": []
+  },
+  {
+   "h1": "Anleitungen pflegen",
+   "sub": "Alle Anleitungen findest du unter **Redaktion → Anleitungen**. Hier legst du neue an und siehst, auf welchen Seiten jede steht.",
+   "card": {
+    "title": "Redaktion",
+    "text": "Liste aller Anleitungen"
+   },
+   "left": {
+    "shot": "w25-anleitungen"
+   },
+   "leftCaption": "Die Liste mit Tool, Thema und der Spalte **Steht auf**.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Suchen",
+     "text": "Das Feld filtert nach Titel, Tool oder Thema."
+    },
+    {
+     "n": 2,
+     "title": "Steht auf",
+     "text": "Hier siehst du jede Seite, die die Anleitung zeigt. Steht dort nichts, ist sie noch nirgends eingesetzt."
+    },
+    {
+     "n": 3,
+     "title": "Bearbeiten",
+     "text": "Öffnet das Formular. **Neue Anleitung** oben rechts legt eine leere an."
+    }
+   ],
+   "notes": []
+  },
+  {
+   "h1": "Das Formular",
+   "sub": "Eine Anleitung besteht aus Titel, Tool, Thema, einem kurzen Satz, den Schritten und bei Bedarf Zusätzen, Bild und Video.",
+   "card": {
+    "title": "Formular",
+    "text": "Einmal schreiben, überall aktuell"
+   },
+   "left": {
+    "shot": "w26-formular"
+   },
+   "leftCaption": "Das Formular einer Anleitung mit zwei Schritten.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Titel, Tool, Thema",
+     "text": "Schreibe den Titel als Frage. Das Tool bestimmt, auf welcher Tool-Seite die Anleitung erscheint; das Thema ist die Seite, zu der sie gehört."
+    },
+    {
+     "n": 2,
+     "title": "Schritte",
+     "text": "Ein Schritt je Zeile, in einfachen Worten. Der Hinweis darunter ist freiwillig. Mit den Pfeilen änderst du die Reihenfolge."
+    },
+    {
+     "n": 3,
+     "title": "Gilt für",
+     "text": "Steht hier „nur Leitung“ oder „nur Büro“, sehen nur diese den Schritt."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Speichern wirkt sofort",
+     "text": "Nach dem Speichern zeigen alle Seiten den neuen Stand. Ein eigenes Veröffentlichen gibt es für Anleitungen nicht."
+    },
+    {
+     "title": "Löschen",
+     "text": "Eine gelöschte Anleitung verschwindet von allen Seiten, auf denen sie stand."
+    }
+   ]
+  },
+  {
+   "h1": "Anleitung in eine Seite einsetzen",
+   "sub": "Im Seiten-Editor fügst du den Block **Anleitung** ein und wählst eine aus. Der Block zeigt eine Vorschau, den Text änderst du im Formular.",
+   "card": {
+    "title": "Editor",
+    "text": "Block Anleitung"
+   },
+   "left": {
+    "shot": "w27-block"
+   },
+   "leftCaption": "Der Block im Editor der Seite **Urlaub** mit Vorschau der Schritte.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Block",
+     "text": "Über das Plus den Block **Anleitung** wählen und die Anleitung aussuchen — oder dort gleich eine neue anlegen."
+    },
+    {
+     "n": 2,
+     "title": "Bearbeiten und tauschen",
+     "text": "**Bearbeiten** öffnet das Formular, **Andere wählen** tauscht die Anleitung. Die grüne Zeile nennt die Seiten, auf denen sie noch steht."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Eingeklappt",
+     "text": "Weitere Fragen einer Seite kannst du eingeklappt zeigen; sie öffnen sich beim Antippen."
+    }
+   ]
+  },
+  {
+   "h1": "Ein Tool anlegen",
+   "sub": "Ein Tool ist eine Seite mit der Art **Tool**. Lege sie unter dem Reiter Tools an und fülle die Angaben im Seitenpanel.",
+   "card": {
+    "title": "Editor",
+    "text": "Art der Seite: Tool"
+   },
+   "left": {
+    "shot": "w28-toolseite"
+   },
+   "leftCaption": "Die Tool-Seite **askDANTE** im Editor mit den Tool-Angaben rechts.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Angaben",
+     "text": "**Art des Tools**, **Wo finde ich es?** und die **Adresse zum Öffnen**. Sie stehen im Kopf der Tool-Seite und in jeder Anleitung zu diesem Tool."
+    }
+   ],
+   "notes": [
+    {
+     "title": "Logo",
+     "text": "Mit **Logo hochladen** bekommt das Tool sein Bild. Ohne Logo zeigt die Kachel ein Kürzel aus dem Namen."
+    },
+    {
+     "title": "Hub-Seiten",
+     "text": "Für Seiten im glatttHub trägst du die Adresse im Hub ein, zum Beispiel /hub/kasse, und verlinkst im Text die passende Klickanleitung."
+    }
+   ]
+  }
+ ]
+}

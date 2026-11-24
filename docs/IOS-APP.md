@@ -1831,7 +1831,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Institute | nativ | Karte zuerst (seit 27.09.2026): Nadeln in Hub-Farbe, Blatt mit Liste/Institut, Unterseiten Kennzahlen, Team, Verwaltung |
 | Bewertungen & Trinkgeld | nativ | Rangliste mit meiner Zeile (seit 29.09.2026; seit 30.10.2026 Sterne zuerst + Reiter Bewertungen mit Filter, Kundin antippen → Akte): Kennzahlen, Segment Sterne/Bewertungen/Trinkgeld/Auszahlung, Zeitraum-Chips, Person als Blatt (iPad daneben), Kommentare nur mit Recht; Startseiten-Karte „Meine Bewertungen“, Beenden-Schalter, Kunden-Sperre |
 | Überlegt noch | nativ | Anrufliste (seit 17.10.2026, Welle 2 seit 18.10.2026: Termin verpasst, Reiter Reaktivierung mit Sammelversand): Reiter Offen/Link/Erledigt, Akte mit Link per WhatsApp, Termin buchen, Nicht erreicht, Ergebnis-Blatt nach dem Anruf; iPad Liste + Akte |
-| Wissen (glatttipedia) | nativ | Leseansicht „Wie im Hub“ (seit 19.10.2026): Umschalter Institut · Büro · Leitung, Kapitelliste, Suche, Fließtext mit Sprungliste, Pflichtseite bestätigen, Hilfreich/Veraltet, Lightbox; iPad Seitenleiste · Text · Inhaltsverzeichnis. Redaktion und Kiosk bleiben Web |
+| Wissen (glatttipedia) | nativ | Leseansicht „Wie im Hub“ (seit 19.10.2026): Umschalter Institut · Büro · Leitung, Kapitelliste, Suche, Fließtext mit Sprungliste, Pflichtseite bestätigen, Hilfreich/Veraltet, Lightbox; iPad Seitenleiste · Text · Inhaltsverzeichnis. Seit 24.11.2026 Anleitungen, Tool-Seiten mit Zusatzfilter und Tool-Verzeichnis. Redaktion und Kiosk bleiben Web |
 | Zufriedenheit | nativ | Drei Stapel (seit 27.09.2026): Folgeaufgaben mit Anrufen/Termin buchen, Kandidatinnen mit Senden (Rückfrage, Kanal-Hinweis) und Überspringen, Verlauf mit Chips, Detailkarte; Standort-Einstellungen bleiben im Admin |
 | Forderungen | nativ | Arbeitsliste und Akte (seit 27.09.2026): Kennzahlen, drei Register, Bestand nach Stufe, gerichtliche Fälle, Fallakte mit nächstem Schritt, Schreiben-Vorschau, alle Aktionen der Seitenspalte; neues SEPA-Mandat eingebettet, Vorlagen Web |
 | Freunde werben, Google-Bewertungen | nativ | „Aufgabe zuerst“ (seit 27.09.2026): Überweisungsstapel mit Kopier-Knöpfen; Bewertungen schnell erfassen |
@@ -2533,6 +2533,20 @@ eigenem Kopf, iPad drei Spalten ab 1000 pt), `WissenBlocks` (alle Blocktypen aus
 BPMN aus dem Klartext, Menüs/Picker/TextField im Snapshot als statische Nachbildung). Snapshots
 `WissenSnapshotTests` (`wissen-list`, `wissen-page`, `wissen-ipad`), Hub-Test
 `seiten_json_traegt_klartext_pfad_unterseiten_bestaetigung_und_rueckmeldung_fuer_die_app`. Wiki [Wissen](WISSEN.md).
+
+**Anleitungen und Tool-Seiten (seit 24.11.2026, ab Build 139).** Jan folgte der Empfehlung: Entwurf 1 „Wie im Hub“
+(drei Entwürfe mit iPad: https://claude.ai/artifact/Vvtq9Aj52dTz97nkUfTLAm). `WissenGuides.swift` setzt den Block
+`guide` als Karte im Lesefluss (`WissenGuideCard`: Frage, Einleitung, Tool-Kopfzeile mit Logo oder Kürzel-Kachel,
+Schritte, Bild, Video-Link, Zusätze, Knopf ins Tool; in regulärer Breite steht das Bild neben den Schritten),
+eingeklappte Anleitungen als `WissenDisclosure`. Tool-Seiten (`kind = tool`) bekommen `WissenToolHead` und
+`WissenToolGuidesSection` — alle Anleitungen nach Thema mit Zusatzfilter „Leitungsaufgaben / Büroprozesse“
+(`@AppStorage("wissen-anleitungen-filter")`, Standard aus, wie im Web); steht der Block `guides` auf der Seite,
+erscheint die Liste dort statt am Ende. Das Tool-Verzeichnis (`kind = tools`) zeigt `WissenToolDirectory`. Daten
+kommen fertig aufgelöst aus `hub/wissen/api/seite/{id}` (`blocks[].data.guide`, `tool`, `tool_guides`,
+`tool_directory`) — die Zielgruppe filtert der Hub, alle neuen Felder sind optional. **Ältere Builds** zeigen an
+einem Anleitungs-Block den Hinweis „Dieser Inhalt („guide“) wird in einer neueren Fassung angezeigt“ und auf
+Tool-Seiten nur den Text. Snapshots `wissen-anleitung`, `wissen-tool`, `wissen-tools` (+ `-ipad`), Modelltest
+`testGuidesAndToolPagesParse`.
 
 ### Native Zufriedenheit (Mehr-Seite, seit 27.09.2026)
 

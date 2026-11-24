@@ -1,6 +1,6 @@
 # Klickanleitungen Wissen — Quellen
 
-Quellen der Serie **Wissen 1–5** (glatttipedia: lesen, schreiben, Prozesse, Redaktion, Kiosk).
+Quellen der Serie **Wissen 1–6** (glatttipedia: lesen, schreiben, Prozesse, Redaktion, Kiosk, Anleitungen und Tools).
 Standard und Deck-Format: `klickanleitungen/README.md` und Wiki `docs/KLICKANLEITUNGEN.md`.
 
 | Dokument | Inhalt | Für |
@@ -10,6 +10,7 @@ Standard und Deck-Format: `klickanleitungen/README.md` und Wiki `docs/KLICKANLEI
 | **3 — Prozesse als Diagramm** | Prozess-Block (Wer/Was/Womit/Entscheidung), Umwandlung in BPMN, Modeler, Leseansicht mit Textfassung | Büro |
 | **4 — Struktur, Startseite & Redaktion** | Struktur und Reihenfolge, Home-Seite je Bereich, Rückmeldungen und Prüfung, Versionsvergleich, Drive-Dokumente | Büro |
 | **5 — Am Institut-iPad** | Knopf glatttipedia auf der Institutsseite, Kiosk ohne Anmeldung | Institut |
+| **6 — Anleitungen und Tool-Seiten** | Anleitung auf der Themenseite, Tool-Seite mit Zusatzfilter, Reiter Tools, Redaktion „Anleitungen“ mit Formular, Block im Editor, Tool anlegen | Büro |
 
 ## Aufnahme
 
@@ -18,6 +19,7 @@ Lokal gegen den eigenen Hub (`.env.example` → `.env`, `mask.example.json` → 
 ```bash
 cd klickanleitungen/wissen
 bash scripts/run-all.sh            # flow1 … flow5
+node scripts/flow6.cjs              # Anleitungen und Tools (Seiten über KLICK_WISSEN_TOPIC/_TOOL/_TOOLS/_TOPIC_ID/_TOOL_ID; lokal ohne Passwort: KLICK_COOKIE="name=wert")
 ```
 
 Voraussetzungen im lokalen Hub: Seite „Urlaub“ im Institut-Alltag veröffentlicht und als Pflichtseite
@@ -29,3 +31,5 @@ Die Flows ändern nichts: Dialoge werden abgebrochen, der Modeler nicht übernom
 ## Stand
 
 **v1.0 (19.10.2026):** Texte, Decks und Aufnahmeskripte fertig; Screenshots aus dem lokalen Lauf 19.10.2026.
+
+**v1.1 (24.11.2026):** Deck 6 „Anleitungen und Tool-Seiten“ neu, Screenshots w22–w28 aus dem lokalen Lauf 24.11.2026; Decks 1–5 auf „von 6“.
