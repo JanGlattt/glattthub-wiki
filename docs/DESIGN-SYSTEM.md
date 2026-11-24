@@ -1,7 +1,7 @@
 # GLATTT Design System
 
 **Version:** 2.0 (Konsolidiert)  
-**Letzte Aktualisierung:** März 2026
+**Letzte Aktualisierung:** November 2026
 
 Das GLATTT Design System ist das zentrale Styling-Framework für den glatttHub. Es definiert alle visuellen Komponenten, Farben, Typografie und Interaktionsmuster.
 
@@ -115,6 +115,41 @@ derselbe, die Bausteine liegen in `ios/glatttHub/Start/HubComponents.swift` und 
 
 Nie `Font.system` oder `systemGroupedBackground` direkt, keine eigene Karte je Seite. Regeln und
 Fallstricke: `.github/instructions/ios.instructions.md`.
+
+## ◻️ Ecken: Squircle statt Kreisbogen
+
+Seit 24.11.2026 zeichnet das Theme die großen Flächen mit Squircle-Ecken (`corner-shape: squircle`) —
+die weiche Eckenform, die man von Apple-Oberflächen kennt. Betroffen sind Karten, Modale (mit Kopf
+und Fuß), Toasts, Hinweise, Stat-Strips, Tabellen-Rahmen, Text-Knöpfe, Eingabefelder, Dropdowns und
+das Segmented Control.
+
+| Umgebung | Ecken |
+|---|---|
+| Desktop-App (Electron), Chrome, Edge (Chromium ab 139) | Squircle |
+| Safari, Web-Ansichten der iOS-App, Firefox | wie bisher rund (Stand 24.11.2026) |
+
+**So ist es gebaut** (Abschnitt „SQUIRCLE" am Ende von `public/css/theme_glattt.css`):
+
+- `--squircle-scale` ist `1`, in `@supports (corner-shape: squircle)` wird es `1.85`.
+- Die Grundregeln der betroffenen Komponenten multiplizieren ihren Radius damit:
+  `border-radius: calc(1rem * var(--squircle-scale))`. Der Faktor gleicht aus, dass eine
+  Squircle-Kurve bei gleichem Radius eckiger wirkt; bei 1,85 schneidet sie die Ecke so tief an wie
+  der frühere Kreisbogen (1,5 wirkte im Vergleich sichtbar eckiger).
+- Eine Selektor-Liste im selben Abschnitt setzt `corner-shape: squircle`.
+
+**Neue Komponente aufnehmen:** Selektor in die Liste **und** Radius der Grundregel auf die
+`calc()`-Schreibweise umstellen. Überschreibungen an anderer Stelle (mobil `0`, einseitige Radien)
+bleiben, wie sie sind.
+
+**Fallstricke**
+
+- Kreise und Pillen (`50%`, `999px`) gehören nie in die Liste — sie würden zum Kissen.
+  `.btn-glattt-icon` und `.btn-glattt-export` sind deshalb ausdrücklich auf `round` zurückgesetzt.
+- `corner-shape` vererbt sich nicht: Pseudo-Elemente mit `border-radius: inherit` (Karten-Register)
+  stehen selbst in der Liste.
+- Das Admin-Backend (Filament) und PDFs sind nicht betroffen.
+
+---
 
 ## 🔘 Buttons
 
