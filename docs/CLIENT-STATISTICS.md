@@ -51,7 +51,8 @@ Geschlecht, woher (Postleitzahl, Entfernung zum Institut, vermutete Namensherkun
 Kanal gewonnen, und wie viele von ihnen gehen den Weg von der Beratung zum Vertrag? Der Bericht
 zeigt eine Kennzahlen-Zeile, Demografie, Conversion-Funnel und Akquisekanäle, Entfernungs- und
 Körperzonen-Verteilung, die **Sitzungen je Körperzone** (wie viele Sitzungen Kundinnen an einer Zone
-wirklich nutzen) samt Auffrischungen einmal oder mehrfach, Widerrufs-Analyse nach Gruppen, eine Einzugsgebiets-Karte, Top-Postleitzahlen,
+wirklich nutzen) samt Auffrischungen einmal oder mehrfach, die **aktiven Körperzonen mit Behandlungsrate**
+(wie viele laufende Pakete im Monat tatsächlich behandelt werden) samt ruhendem Bestand, Widerrufs-Analyse nach Gruppen, eine Einzugsgebiets-Karte, Top-Postleitzahlen,
 Persona-Segmente (Geschlecht × Altersgruppe) und die Herkunftsverteilung. Alle Karten sind
 zweiseitig (Diagramm, Tabelle dahinter); nur die Leaflet-Karte hat kein Register.
 
@@ -309,6 +310,72 @@ wie viel vom Paket genutzt wird, nicht den medizinischen Bedarf.
 - **Zonen-Namen ergänzt (Jan, 05.11.2026):** `BIKINZONE`/`BIKNIZONE` (Katalog-Tippfehler), `GANZK`
   (Ganzkörper), `BEINE` (Ober- + Unterschenkel), `PERIANAL` (Intimbereich) — gilt auch für den
   Einstellungszettel. „2 kleine Zonen" bleibt ohne Zone und steht in `unmapped`.
+
+#### 3e. Aktive Körperzonen & Behandlungsrate (vier Karten, seit 24.11.2026)
+
+**Für Endanwender:** Wie viele Körperzonen-Pakete laufen — und welcher Anteil davon wird im Monat
+wirklich behandelt? Ein **Paket** ist ein Phorest-Abo mit mindestens 6 Sitzungen, also eine Zone einer
+Kundin. **Aktiv** ist ein offenes Paket mit Sitzung oder Kauf in den letzten 12 Monaten, **behandelt**
+eines mit mindestens einer bezahlten Sitzung im Monat; die **Behandlungsrate** ist behandelt ÷ aktiv.
+Karten: **Aktive Körperzonen & Behandlungsrate** (Verlauf je Monat), **Behandlungsrate je Institut**,
+**Behandlungsrate je Körperzone** und **Offene Pakete nach letzter Sitzung** (Bestand heute, in
+Bewegung oder ruhend, mit offenen Sitzungen). Jede Karte schaltet zwischen **Pakete** und **KPZ**
+(Ganzkörper zählt als 6) sowie zwischen Balken und Fläche. Zwischen zwei Sitzungen liegen 8 bis 12
+Wochen — bei eingehaltenem Rhythmus wären 40–50 % je Monat zu erwarten.
+
+!!! nutzerhandbuch "Bedienung: Berichte 8 – Der glattt-Kunde, Seite „Wie viele Zonen behandeln wir im Monat?""
+    https://hilfe.hub.glattt.com/berichte/8/
+
+**Für Entwickler:**
+
+- **Definitionen (Jan, 24.11.2026):** Paket = Zeile in `stats_client_courses` mit
+  `total_initial_units >= ZONE_ACTIVITY_MIN_UNITS` (6), ohne `Freund%`. Ein Abo hat genau eine Leistung
+  (`stats_client_course_items`), ist also eine Zone; Ganzkörper ist ein Paket und zählt in der KPZ-Sicht
+  als `ZONE_ACTIVITY_FULL_BODY_KPZ` (6). **Sitzung** = bezahlter Termin (`state = PAID`, `deleted = 0`)
+  mit der Leistung des Abos; kauft eine Kundin dieselbe Leistung zweimal, gehört die Sitzung zum
+  jüngsten Paket, das am Tag schon gekauft war. Dazu `Erste.Sitz …` (Rate 1 vor Ort läuft nicht über die
+  Abo-Leistung): zugeordnet dem Paket derselben Zone, das höchstens 31 Tage davor/danach gekauft wurde
+  und an dem Tag noch keine Sitzung hat.
+- **Offen im Monat:** bis Monatsende gekauft und (heute Restsitzungen, nicht archiviert, nicht
+  `not_found_in_api`) **oder** letzte Sitzung im Monat oder später. Phorest liefert keinen historischen
+  Reststand — auf 0 gesetzte Abos (Storno, Upgrade, Wissen `phorest-abo-rest-nicht-aufgebraucht`) fallen
+  so nach ihrer letzten Sitzung heraus, statt rückwirkend zu verschwinden.
+- **Aktiv im Monat:** offen und Sitzung oder Kauf in den `ZONE_ACTIVITY_WINDOW_MONTHS` (12) Monaten bis
+  einschließlich des Monats (monatsgenau). **Behandelt:** Sitzung im Monat.
+- **Aggregate:** Bestandsgrößen werden nie summiert. `branches`/`zone_types`/`overall` liefern den
+  Durchschnitt der vollen Monate und die Rate aus den Summen (Σ behandelt ÷ Σ aktiv); der laufende Monat
+  (`partial`) bleibt heraus, solange es einen vollen gibt. Zonen und Institute ohne aktives Paket im
+  Zeitraum entfallen.
+- **Monate:** gewählter Zeitraum, ohne Auswahl `ZONE_ACTIVITY_DEFAULT_MONTHS` (12) volle Monate plus
+  der laufende; höchstens `ZONE_ACTIVITY_MAX_MONTHS` (36), frühestens `ZONE_ACTIVITY_FIRST_MONTH`
+  (2024-01 — Terminhistorie ab 01/2023 plus 12 Monate Rückblick).
+- **Bestand** (`stock`): Pakete mit Rest zum heutigen Tag nach letzter Sitzung
+  (`ZONE_ACTIVITY_STOCK_BUCKETS`: bis 3, 3–6, 6–12 Monate und „neu“ = in Bewegung; 12–24, über 24
+  Monate und „nie behandelt, Kauf über 6 Monate her“ = ruhend), je Stufe `zones`, `kpz`, `clients`,
+  `open_sessions` und Anteile. Der Zeitraum-Filter wirkt hier nicht (`fixed_range` „Stand heute“).
+- **Zone eines Pakets:** Abo-Name über `PlannedZoneResolver`; Ganzkörper `ganzkoerper`, paarige Zonen
+  über `SESSION_NEED_MERGED_UNITS`, mehrere Zonen in einem Abo („Beine“) `mehrere`, „2 kleine Zonen“
+  `kleine_zonen`, sonst `sonstige`.
+- **Ein Endpunkt, vier Routen:** `ClientStatisticsService::getZoneActivity($filters)` (Cache-Schlüssel
+  `zone-activity-v1` mit Tagesdatum) → `months[]` (`zones|kpz{open, active, treated, rate}`,
+  `clients{active, treated, rate}`, `zones_per_client`, `partial`), `overall`, `latest`, `branches[]`,
+  `zone_types[]`, `stock{rows, total, dormant, as_of}`, `meta`. Routen `…/zone-activity-trend|branches|
+  zones|stock` → `ClientStatisticsController::zoneActivity()`. Standort = Institut des Abo-Kaufs
+  (`BranchVisibility::filterIds`).
+- **Speicher:** Die rund 110.000 Sitzungen werden per `cursor()` gelesen (`whereExists` statt Join,
+  Zuordnung über eine Leistungs-Karte je Kundin) — als Objektliste lag die Spitze bei 220 MB, das
+  FPM-Limit ist 256 MB. Lokal rund 1 s und 50 MB über der Grundlast.
+- Registry `kunden.zone-activity-trend` (full), `-branches`/`-stock` (half), `-zones` (full). Partials
+  `statistics/kunden/zone-activity-*.blade.php`, JS `public/js/statistics/kunden.js` (Mixin
+  `zoneActivity` mit `zaUnit`, Achsen über `zaAxes`: Tausenderpunkt, rechte Achse frei skaliert).
+  CSV-Quellen `clients-zone-activity-trend|branches|zones|stock` (immer Pakete **und** KPZ). App:
+  `ClientZoneActivityTrendCard|BranchesCard|ZonesCard|StockCard` — Säule gestapelt „behandelt“ +
+  „aktiv, nicht behandelt“, Rate im Tipp und in der Tabelle.
+- Tests: `ClientStatisticsPageTest::test_zone_activity_counts_active_and_treated_packages`; Snapshot
+  `ReportPageSnapshotTests.testRenderZoneActivity`.
+- **Grenzen:** Rund 10 % der `Erste.Sitz`-Termine finden kein Paket (Kauf mehr als 31 Tage entfernt) —
+  die Rate ist dadurch leicht zu niedrig. „Nie behandelt“ enthält Abos der CRM-Übernahme vom 31.12.2022,
+  deren Sitzungen vor der Terminhistorie liegen können.
 
 #### 4. Körperzonen-Verteilung & Widerrufs-Analyse (nebeneinander)
 

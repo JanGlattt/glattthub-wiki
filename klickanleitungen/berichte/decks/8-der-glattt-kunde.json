@@ -10,11 +10,11 @@
   "Der glattt-",
   "Kunde"
  ],
- "subtitle": "Klickanleitung für die Berichte im glatttHub — Demografie, Einzugsgebiet, Akquisekanäle (auch je Standort), Auffrischung nach dem Paket, Sitzungsbedarf je Zone und Conversion",
+ "subtitle": "Klickanleitung für die Berichte im glatttHub — Demografie, Einzugsgebiet, Akquisekanäle (auch je Standort), Auffrischung nach dem Paket, Sitzungsbedarf je Zone, Behandlungsrate der aktiven Zonen und Conversion",
  "eyebrow": "Berichte · Kundenstruktur",
  "footerArea": "Berichte",
- "stand": "05.11.2026",
- "version": "1.4",
+ "stand": "24.11.2026",
+ "version": "1.5",
  "notes": [
   "Der Bericht beantwortet: **Wer sind unsere Kundinnen — und woher kommen sie?**",
   "Grundlage ist der ausgewertete Kundenbestand, nicht einzelne Kundendaten.",
@@ -296,6 +296,77 @@
    "hint": {
     "kind": "info",
     "text": "Hier zählt jede Auffrischung, auch bei Kundinnen, die noch in Behandlung sind. Der Zeitraum bezieht sich auf die **letzte Auffrischung**."
+   }
+  },
+  {
+   "h1": "Wie viele Zonen behandeln wir im Monat?",
+   "sub": "Aktive Pakete und der Anteil, der im Monat wirklich zur Sitzung kommt.",
+   "card": {
+    "title": "Behandlungsrate",
+    "text": "Aktiv, behandelt, Rate je Monat"
+   },
+   "left": {
+    "shot": "r8-behandlungsrate"
+   },
+   "leftCaption": "Je Monat die aktiven und die behandelten Pakete; die gestrichelte Linie ist die Behandlungsrate. Der laufende Monat trägt ein Sternchen.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Pakete oder KPZ",
+     "text": "Ein **Paket** ist ein Abo, also eine Körperzone einer Kundin. In der Sicht **KPZ** zählt Ganzkörper als 6 Körperzonen."
+    },
+    {
+     "n": 2,
+     "title": "Balken oder Fläche",
+     "text": "Dieselben Zahlen als Säulen oder als Linien mit Fläche."
+    },
+    {
+     "n": 3,
+     "title": "Ø Behandlungsrate",
+     "text": "Anteil der aktiven Pakete, der im Monat mindestens eine bezahlte Sitzung hatte — über alle vollen Monate des Zeitraums. **Aktiv** heißt: offen und in den letzten 12 Monaten behandelt oder gekauft."
+    },
+    {
+     "n": 4,
+     "title": "Je Institut und je Zone",
+     "text": "Die Karten „Behandlungsrate je Institut“ und „Behandlungsrate je Körperzone“ darunter zeigen dieselbe Rate aufgeteilt, als Durchschnitt der vollen Monate."
+    }
+   ],
+   "hint": {
+    "kind": "info",
+    "text": "Zwischen zwei Sitzungen liegen 8 bis 12 Wochen. Kämen alle im Rhythmus, läge die Rate bei **40 bis 50 %** — der Abstand dazu sind Kundinnen, die ihren Termin schieben."
+   }
+  },
+  {
+   "h1": "Was liegt im Bestand und ruht?",
+   "sub": "Offene Pakete zum heutigen Tag, gestaffelt nach der letzten Sitzung.",
+   "card": {
+    "title": "Offener Bestand",
+    "text": "In Bewegung oder ruhend"
+   },
+   "left": {
+    "shot": "r8-bestand"
+   },
+   "leftCaption": "Grün sind Pakete mit einer Sitzung in den letzten 12 Monaten und neue Pakete, orange alles, was länger ruht.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Pakete oder KPZ",
+     "text": "Wie in der Verlaufskarte: ein Abo je Zone oder Ganzkörper als 6 Körperzonen."
+    },
+    {
+     "n": 2,
+     "title": "Anteil ruhend",
+     "text": "So viel vom offenen Bestand wurde seit über 12 Monaten nicht behandelt oder nach dem Kauf nie begonnen."
+    },
+    {
+     "n": 3,
+     "title": "Offene Sitzungen",
+     "text": "In der **Tabelle** steht je Stufe, wie viele Kundinnen betroffen sind und wie viele bezahlte Sitzungen noch offen sind."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "Diese Karte zeigt immer den **Stand von heute** — der Zeitraum-Filter wirkt hier nicht, der Standort schon (Institut, in dem das Abo gekauft wurde)."
    }
   },
   {
