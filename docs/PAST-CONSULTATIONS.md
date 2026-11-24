@@ -37,6 +37,14 @@ gesamt oder je Institut. Ein Klick auf einen Tag zeigt alle Beratungen des Tages
 Beraterin und Herkunft. Darunter der Verlauf von KPZ pro BG, Conversion und No-Show mit gleitendem
 Durchschnitt. Die Ampel vergleicht mit dem Durchschnitt der letzten sechs Monate.
 
+**Was mit den gebuchten Beratungen passiert ist (seit 24.11.2026).** Die Kennzahl **„Vorher weg“** zeigt
+je Tag, welcher Anteil der *jemals für diesen Tag gebuchten* Beratungen vorher **storniert**, **verlegt**
+oder **gelöscht** wurde — diese Termine standen am Tag nicht mehr im Kalender und fehlten bisher in jeder
+Zahl der Karte (rund ein Fünftel aller Buchungen). Die Tagesliste führt sie mit Terminnotiz, neuem
+Termin und **Auslöser** auf: Kundin selbst (Link, App, Schnellantwort), Institut (Hub oder Phorest) oder
+Automatik (nicht bestätigt). Im Verlauf darunter gibt es dafür die Linien-Sätze „Verbleib“ und
+„Auslöser“. No-Show, Conversion und KPZ pro BG rechnen unverändert auf den Beratungen am Tag.
+
 **Was „nicht erschienen" heißt.** Als No-Show zählt ein vergangener Termin mit Status *NO_SHOW*,
 *BOOKED*, *CONFIRMED* oder *CHECKED_IN* — also auch der nie final gepflegte Termin; stornierte und
 gelöschte Termine zählen gar nicht. **Termine von heute, die noch anstehen, bleiben komplett außen
@@ -82,8 +90,8 @@ weiterhin konzernweite Zahlen — direkt neben korrekt gefilterten KPIs.
 | Karte | Standard-Ansicht | Tabellen-Lasche |
 |---|---|---|
 | **KPI-Zeile** | personalisierbare Kennzahlen (kpi-dashboard, Drag & Drop) | — |
-| **Rückblick Beratungsgespräche** (seit 15.11.2026) | Kalender der letzten 4 Wochen bis gestern mit KW-Spalte; Werkzeugzeile **Kennzahl** (Alle / Beratungen / No-Show / KPZ / Conversion / KPZ pro BG), **Standorte** (Gesamt / Vergleichen, nur bei „Alle Standorte“), **Kanal** (Alle / Online / Offline); Klick auf einen Tag → Tagesliste | — bewusst ohne Lasche: der Kalender ist die Tabelle; „Vergleichen“ hängt eine Vergleichstabelle der Institute an |
-| **KPZ pro BG, Conversion & No-Show je Tag** (seit 15.11.2026) | **Ein Bild** (drei Ø-Linien, zwei Achsen), **Drei Bilder** (untereinander), **Je Standort** (eine Kennzahl je Institut); Glättung Ø 7/14/28 Tage; Zeitleiste über 24 Monate (Start: letzte 3 Monate) | Tagestabelle, Monate aufklappbar, Quoten aus Summen |
+| **Rückblick Beratungsgespräche** (seit 15.11.2026) | Kalender der letzten 4 Wochen bis gestern mit KW-Spalte; Werkzeugzeile **Kennzahl** (Alle / Beratungen / No-Show / KPZ / Conversion / KPZ pro BG / Vorher weg — seit 24.11.2026), **Standorte** (Gesamt / Vergleichen, nur bei „Alle Standorte“), **Kanal** (Alle / Online / Offline); Klick auf einen Tag → Tagesliste | — bewusst ohne Lasche: der Kalender ist die Tabelle; „Vergleichen“ hängt eine Vergleichstabelle der Institute an |
+| **KPZ pro BG, Conversion & No-Show je Tag** (seit 15.11.2026) | **Kennzahlen** Ergebnis / Verbleib / Auslöser (seit 24.11.2026; Verbleib = erschienen, storniert, verlegt, gelöscht in % der jemals gebuchten, Auslöser = Kundin selbst, Institut, Automatik, unbekannt); **Ein Bild** (Ø-Linien, bei „Ergebnis“ zwei Achsen), **Drei/Vier Bilder** (untereinander), **Je Standort** (eine Kennzahl je Institut); Glättung Ø 7/14/28 Tage; Zeitleiste über 24 Monate (Start: letzte 3 Monate) | Tagestabelle, Monate aufklappbar, Quoten aus Summen |
 | **Beratungsgespräche-Analyse** | Diagramm mit Metrik-Umschalter: **Beratungen** (Balken + No-Show-Quote als Linie) oder **No-Shows** (gestapelt Stattgefunden/Nicht stattgefunden + Quote); **Standorte** = gruppierte Balken je Institut (bei „No-Shows" gestapelt: Stattgefunden voll, No-Show-Anteil schraffiert), Quoten als Linien (rechte %-Achse); Zoom-Leiste | die Ampel-Tabelle Monat × Institut (Anzahl oder No-Show %) mit Wochen-Drilldown und Klick auf jede Zelle → Termine-Liste |
 | **Wochentag & Uhrzeit** | Heatmap Wochentag × Stunde (Gesamt oder Mini-Heatmaps je Standort), Filter-Drawer (Status, Buchungstyp, Zeitraum) | dieselben Werte als Zahlen-Tabelle mit Summen |
 | **No-show-Matrix** („Analyse Gigi") | Verlaufs-Diagramm der gewählten Kennzahl je Institut; seit 18.10.2026 Schalter **Alle / Online / Offline** (Parameter `art`, über `consultation_services.is_online` — online „Nur gratis Beratungsgespräch“, offline „..Beratungsgespräch“, nie über die Phorest-Quelle) | die bekannte Ampel-Matrix (Quote/Gebucht/Erschienen, Färbungs-Vergleichsmodus, „Frühere Zeiträume laden") |
@@ -124,7 +132,7 @@ anstehenden Tagestermine als „nicht erschienen" gewertet würden (Bug 08/2026)
 |--------|--------|
 | `consultation-noshow-monthly` | No-show-Statistik pro Monat & Institut (deckt die Beratungsgespräche-Analyse und die Matrix auf Monatsebene, inkl. Quartal/Jahr-Aggregation per Tabellenkalkulation) |
 | `consultation-weekday-time` | Termine/Erschienen/No-Shows/Quote je Wochentag & Stunde |
-| `consultation-review-daily` | Rückblick je Tag & Institut: Beratungen, erschienen, No-Show (+ Quote), Abschlüsse am Tag, verkaufte KPZ, davon widerrufen (+ KPZ), Widerruf offen, Conversion, KPZ pro BG (seit 15.11.2026; ohne Zeitraum die letzten 3 Monate) |
+| `consultation-review-daily` | Rückblick je Tag & Institut: Beratungen, erschienen, No-Show (+ Quote), Abschlüsse am Tag, verkaufte KPZ, davon widerrufen (+ KPZ), Widerruf offen, Conversion, KPZ pro BG (seit 15.11.2026; ohne Zeitraum die letzten 3 Monate); seit 24.11.2026 zusätzlich jemals gebucht, vorher storniert / verlegt / gelöscht, „Vorher weg %“, „Erschienen von allen gebuchten %“ und der Auslöser (Kundin selbst, Institut, Automatik, unbekannt) |
 | `consultation-lead-success` | Vorlauf & Termin-Erfolg: Buchungen, Show-Rate, Ausfallquote (inkl. Stornos < 24 h), Abschlussquote & Ø KPZ je Vorlauf-Gruppe und Kanal (Alle/Online/Offline) — exakt die Zahlen der Karte |
 | `follow-up-result` | Nachfass-Ergebnis je Institut und Grund: auf der Liste, kontaktiert, Link, gebucht, Vertrag, Vertragswert (seit 18.10.2026) |
 
@@ -164,6 +172,65 @@ Theme-Klasse `.card-glattt-toolbar` (Werkzeugzeile, bricht nur zwischen ganzen G
 `.review-*`. App: `ConsultationReviewCards.swift`; „Ein Bild“ streckt KPZ pro BG auf die
 Prozentskala und beschriftet die rechte Achse mit den echten Werten. Tests:
 `ConsultationReviewTest`, Snapshots `testRenderConsultationReview`.
+
+### Verbleib und Terminverlauf (24.11.2026)
+
+Anlass (Jan, 24.11.2026): hohe Buchungseingänge, aber wenige Termine im Kalender — die Karte zählte nur,
+was am Tag noch im Kalender stand. Prod-Zählung August bis November 2026: von 1.911 jemals gebuchten
+Beratungen erschienen 55 %, 26 % No-Show, 17 % vorher storniert, 2 % gelöscht; 80 % der verschwundenen
+Termine hatten in den 60 Tagen danach keinen neuen Beratungstermin. Stornos fallen zu 28 % in die letzten
+24 Stunden, zu 37 % auf 24–72 Stunden; mit dem Vorlauf steigt der Storno-Anteil (0–2 Tage: 9 %, ab 15 Tage:
+27 %), der No-Show-Anteil nicht.
+
+**Definitionen (Entscheidungen Jan, 24.11.2026 — nicht still ändern):**
+
+- **Jemals gebucht** = Beratungen am Tag + storniert + gelöscht + verlegt. Je Kundin und Tag eine Zeile;
+  wer am Tag eine Beratung im Kalender hatte, zählt nicht zusätzlich als verschwunden (Storno und
+  Ersatztermin am selben Tag).
+- **Verlegt** = storniert oder gelöscht, **und** dieselbe Kundin hat innerhalb von 60 Tagen
+  (`MOVED_WINDOW_DAYS`) einen anderen Beratungstermin — später, oder früher und *nach* dem verschwundenen
+  angelegt (vorgezogen). Was aus dem neuen Termin wurde, zählt an dessen Tag. Dazu Termine, die das
+  Institut **direkt in Phorest** auf einen anderen Tag geschoben hat (gleiche ID, nur der Terminverlauf
+  kennt den alten Tag).
+- **Storniert / gelöscht** = abgesagt bzw. gelöscht und nicht wiedergekommen (wie die Ads-Analyse).
+- **Bezugsgröße:** No-Show, Conversion und KPZ pro BG bleiben auf den Beratungen am Tag — die bekannten
+  Zahlen und die Ampel ändern sich nicht. Nur „Vorher weg“ und die Linien „Verbleib“/„Auslöser“ rechnen
+  auf „jemals gebucht“.
+- **Auslöser:** Kundin selbst / Institut / Automatik, aufgezeichnet seit
+  `AppointmentLifecycleEvent::RECORDING_SINCE` (25.11.2026). Davor „unbekannt“. Ein Storno oder eine
+  Löschung nach diesem Datum **ohne** Hub-Ereignis ist direkt in Phorest passiert und zählt als Institut —
+  auch die telefonische Absage, die das Institut einträgt.
+
+**Terminverlauf** (`appointment_lifecycle_events`): Ereignisse `moved`, `cancelled`, `short_notice`
+(in die Absage-Spalte verschoben — der Termin bleibt aktiv und zählt weiter als No-Show) mit `actor`
+(`client`/`staff`/`auto`), `via` (`link`/`hub`/`phorest`/`automation`), bisheriger und neuer Zeit.
+
+- Einzige Schreibstelle ist `App\Services\Appointments\AppointmentLifecycleRecorder`. Die Hub-Wege
+  melden über `BookingService` (`reschedule()`, `cancelOnly()`, `moveToCancellationColumn()`) — damit
+  sind Buchungslink, Kunden-App, Terminbestätigung, „Termin absagen“ und die Verlege-Fenster abgedeckt,
+  ohne dass ein Aufrufer etwas tun muss.
+- Den Auslöser bestimmt `App\Support\AppointmentActor::current()`: angemeldetes Hub-Konto = Institut,
+  Befehl/Worker = Automatik, unangemeldeter Aufruf = Kundin selbst. Ein Weg, auf den das nicht passt
+  (z. B. ein Worker, der im Auftrag einer Kundin handelt), setzt ihn mit `AppointmentActor::as()`.
+- Verschiebungen direkt in Phorest erkennen `sync:upcoming-appointments` und
+  `sync:upcoming-consultations`: gleiche ID an einem anderen Tag → `recordPhorestMove()` (je Termin und
+  Ausgangszeit ein Ereignis, auch wenn beide Abgleiche es sehen). Reine Uhrzeit-Wechsel am selben Tag
+  werden nicht festgehalten.
+
+**Fallstricke:**
+
+- Phorest überschreibt beim Storno `source` mit `TERMINAL` — die Buchungsquelle eines stornierten Termins
+  steht danach nur noch in `booking_trackings` bzw. am Beratungs-Service (`is_online`).
+- `upcoming_consultations`/`upcoming_appointments` werden nach 7 Tagen geleert und taugen nicht als
+  Historie; die Terminhistorie kennt nur den letzten Stand. Rückwirkend gibt es deshalb keine
+  Verschiebungen in Phorest (Schätzung über das Beratungs-WhatsApp-Protokoll: rund 5 % der Erstbuchungen).
+- Die Linie „Verlegt“ und der Satz „Auslöser“ haben am 25.11.2026 einen Bruch (Beginn der Aufzeichnung).
+- Der Änderungsverlauf `stats_historic_appointment_changes` schrieb bis 24.11.2026 bei jedem Abgleich
+  eine Zeile je Termin, weil `11:20:00` gegen `11:20:00.000` als Änderung galt (2,2 Mio. Zeilen in einem
+  Monat). Der Abgleich speichert Uhrzeiten jetzt ohne Millisekunden, der Observer vergleicht Uhrzeit und
+  Datum formatunabhängig. Die Alt-Zeilen (nur `start_time`/`end_time`) sind Rauschen.
+
+Tests: `ConsultationReviewTest` (Verbleib, Auslöser, Phorest-Verschiebung), `AppointmentLifecycleTest`.
 
 ### Vorlauf & Termin-Erfolg — Definitionen
 
@@ -250,6 +317,8 @@ waren tot (kein Aufrufer) und wurden mitsamt Routen entfernt.
 | `public/js/weekday-time-analysis.js` | Heatmap-Karte (eigene App, Register Heatmap ⇄ Tabelle) |
 | `public/js/no-show-matrix.js` | Matrix-Karte (eigene App, neu mit Verlaufs-Diagramm + Branch-Filter) |
 | `app/Services/ReportExportService.php` | CSV-Quellen `consultation-*` |
+| `app/Services/ConsultationReviewService.php` | Rückblick: Tagessummen, Verbleib (`vanished()`), Tagesliste |
+| `app/Services/Appointments/AppointmentLifecycleRecorder.php`, `app/Support/AppointmentActor.php`, `app/Models/AppointmentLifecycleEvent.php` | Terminverlauf: wer hat verlegt/storniert, Verschiebungen direkt in Phorest |
 | `app/Services/ConsultationLeadSuccessService.php` | Rechenkern „Vorlauf & Termin-Erfolg" (Buckets, Zonen, Kanal-Heuristik, Vertrags-Matching) |
 | `resources/views/statistics/termine/lead-success.blade.php` + `public/js/statistics/termine.js` (`termine.lead-success`) | Statistik-Karte nach Registry-Konvention (auch als Dashboard-Kachel) |
 | `tests/Feature/PastConsultationsPageTest.php` | Seiten-Skelett, Branch-Filter (inkl. Cache), Export-Quellen |
