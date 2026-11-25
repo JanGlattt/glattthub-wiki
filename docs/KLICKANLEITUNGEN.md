@@ -43,6 +43,17 @@ Dieselbe Regel steht als Guideline in `.github/copilot-instructions.md` (Abschni
 
 ---
 
+## Klickanleitung und glatttipedia: wer beschreibt was (ab 25.11.2026)
+
+Die Klickanleitung sagt, **wo man klickt**; die glatttipedia sagt, **was wir tun und warum**. Eine glatttipedia-Seite beschreibt keine Klickwege durch den Hub, sondern bindet den Vorgang über den Baustein „Klickanleitung“ ein — die Schritte kommen dann aus dem Deck (Details: `WISSEN.md`, Abschnitt „Baustein Klickanleitung“).
+
+Für die Decks heißt das:
+
+- Jeder Vorgang (Seite eines Decks) hat eine feste Kennung `<serie>/<nr>/<kennung>`. Die Kennung ist das Feld **`id`** der Seite oder, ohne es, der Titel als Slug.
+- **Vor dem Umbenennen** eines Vorgangs, auf den die glatttipedia verweist, der Seite eine `id` mit der bisherigen Kennung geben. Die Builder ignorieren das Feld.
+- Die Schritte müssen **für sich verständlich** sein (Titel + ein bis zwei Sätze), weil die glatttipedia sie ohne Screenshot zeigt.
+- Konkrete Werte einer einzelnen Aktion (Prozente, Daten, Namen) gehören nicht ins Deck, sondern in die glatttipedia.
+
 ## Design-Standard (verbindlich)
 
 ### Format

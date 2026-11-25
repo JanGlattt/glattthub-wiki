@@ -14,7 +14,7 @@
  "eyebrow": "Admin · Gutschein-Verkauf",
  "footerArea": "Admin-Panel",
  "stand": "25.11.2026",
- "version": "1.1",
+ "version": "1.2",
  "notes": [
   "Der Online-Verkauf von Gutscheinen: **Produkte festlegen, Bestellungen verfolgen, Zustellung prüfen.**",
   "Bezahlt wird über den Zahlungsdienstleister; der Gutschein entsteht danach **automatisch in Phorest**.",
@@ -134,11 +134,66 @@
    }
   },
   {
-   "h1": "Saison und Aktion",
-   "sub": "Weihnachten, Silvester und Rabatt-Aktionen einstellen.",
+   "id": "aktions-produkt-anlegen",
+   "h1": "Aktions-Produkt anlegen",
+   "sub": "Ein Gutschein mit Rabatt, dessen geschenkter Teil früher verfällt.",
+   "card": {
+    "title": "Aktion",
+    "text": "Wunschbetrag, Rabatt, Teilverfall"
+   },
+   "left": {
+    "shot": "a3-aktion-produkt"
+   },
+   "leftCaption": "Das Produkt-Formular mit dem Abschnitt „Teilverfall des Bonus-Guthabens“.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Produkt öffnen",
+     "text": "Admin-Bereich → Verkauf → Gutschein-Produkte → Erstellen."
+    },
+    {
+     "n": 2,
+     "title": "Angebot",
+     "text": "Name und Beschreibung. Preismodell „Wunschbetrag“: Mindestbetrag, Höchstbetrag, Schrittweite und eine Rabattstaffel. Die Staffel beginnt beim Mindestbetrag, sonst gibt es darunter keinen Rabatt. Kauf-Limit leer = unbegrenzt."
+    },
+    {
+     "n": 3,
+     "title": "Gültigkeit",
+     "text": "Gilt für den bezahlten Teil (Grundbetrag), üblich 36 Monate."
+    },
+    {
+     "n": 4,
+     "title": "Teilverfall des Bonus-Guthabens",
+     "text": "Abschnitt aufklappen. Festes Ablaufdatum für den geschenkten Teil eintragen; „Bonus gültig für“ bleibt dann leer."
+    },
+    {
+     "n": 5,
+     "title": "Nur eines pro Person",
+     "text": "Schalter „Nur ein Aktions-Guthaben pro Person“ an und einen Namen der Aktion vergeben. Gutscheine mit demselben Namen zählen gemeinsam."
+    },
+    {
+     "n": 6,
+     "title": "Checkout & Institut",
+     "text": "„Gebunden an Käufer“ aus, sonst gibt es keinen Geschenkgutschein. Standard-Institut wählen, ohne ist das Produkt im Shop nicht kaufbar."
+    },
+    {
+     "n": 7,
+     "title": "Shop & Sichtbarkeit",
+     "text": "„Im Shop anzeigen“ an, „Verkauf bis“ setzen, „Aktiv“ an. Sortierung 1 stellt das Produkt nach vorn. Unten auf Erstellen."
+    }
+   ],
+   "hint": {
+    "kind": "warn",
+    "text": "Den Namen einer laufenden Aktion nicht mehr ändern — sonst zählen alte und neue Gutscheine getrennt."
+   }
+  },
+  {
+   "id": "saison-planen",
+   "h1": "Saison planen",
+   "sub": "Wann Shop-Seite, Kauf-Mail und Gutschein-Gestalter geschmückt sind.",
    "card": {
     "title": "Saison",
-    "text": "Zeitraum planen, Aktion am Produkt"
+    "text": "Thema und Zeitraum"
    },
    "left": {
     "shot": "a3-saison"
@@ -147,28 +202,63 @@
    "steps": [
     {
      "n": 1,
-     "title": "Zeitraum anlegen",
-     "text": "Thema (Weihnachten oder Silvester), Von und Bis. In dieser Zeit sind Shop-Seite und Kauf-Mail geschmückt, und der Gutschein-Gestalter bietet die passenden Motive an."
+     "title": "Liste öffnen",
+     "text": "Admin-Bereich → Verkauf → Gutschein-Saison. Dort stehen alle geplanten Zeiträume mit ihrem Stand (Geplant, Läuft, Vorbei)."
     },
     {
      "n": 2,
-     "title": "Zwei Zeiträume",
-     "text": "Überschneiden sie sich, gilt der später begonnene — Silvester löst Weihnachten von selbst ab."
+     "title": "Zeitraum anlegen",
+     "text": "Auf „Zeitraum anlegen“ klicken, Thema wählen (Weihnachten oder Silvester), Von und Bis eintragen."
     },
     {
      "n": 3,
-     "title": "Aktion am Produkt",
-     "text": "Im Produkt unter Bonus-Guthaben: festes Ablaufdatum, Schalter „Nur ein Aktions-Guthaben pro Person“ und der Name der Aktion."
+     "title": "Zwei Zeiträume",
+     "text": "Überschneiden sie sich, gilt der später begonnene. So löst Silvester Weihnachten von selbst ab."
     },
     {
      "n": 4,
-     "title": "Was die Kundin sieht",
-     "text": "Die Bedingung steht auf Shop-Karte, Kasse, E-Mail, Beleg und auf dem Geschenkgutschein — dort mit beiden Codes und beiden Ablaufdaten."
+     "title": "Motive",
+     "text": "Die Motive der Saison bleiben im Gutschein-Gestalter noch 14 Tage nach dem Ende wählbar."
     },
     {
      "n": 5,
-     "title": "Einlösen",
-     "text": "Am Aktions-Guthaben steht in Phorest eine Notiz: pro Person nur eines einlösen. Bei der Verrechnung mit einem Vertrag sperrt der Hub ein zweites selbst."
+     "title": "Abschalten",
+     "text": "Mit dem Schalter „Aktiv“ ruht ein Zeitraum, ohne dass er gelöscht wird."
+    }
+   ]
+  },
+  {
+   "id": "aktion-pruefen",
+   "h1": "Aktion prüfen",
+   "sub": "Vor dem Start einmal aus Sicht der Kundin ansehen.",
+   "card": {
+    "title": "Kontrolle",
+    "text": "Shop-Seite und Kasse"
+   },
+   "left": {
+    "shot": "a3-aktion-pruefen"
+   },
+   "leftCaption": "Die Shop-Seite mit dem Aktions-Produkt.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Shop-Seite öffnen",
+     "text": "In der Liste der Gutschein-Produkte oben auf „Shop-Seite“ klicken."
+    },
+    {
+     "n": 2,
+     "title": "Karte lesen",
+     "text": "Das Aktions-Produkt steht vorn. Auf der Karte stehen Rabatt, Gültigkeit des Bonus-Guthabens und der Satz „Pro Person nur ein Aktions-Guthaben einlösbar.“"
+    },
+    {
+     "n": 3,
+     "title": "Preis prüfen",
+     "text": "Den Wert verstellen. Unter dem Regler steht, was die Kundin zahlt."
+    },
+    {
+     "n": 4,
+     "title": "Kasse ansehen",
+     "text": "In den Warenkorb legen und zur Kasse gehen. Dort stehen Teilverfall und Aktionsbedingung noch einmal. Kaufen musst Du nichts."
     }
    ]
   },

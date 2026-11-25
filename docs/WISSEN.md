@@ -381,6 +381,27 @@ Zielgruppe dagegen weiterhin nur mit eigener Zugehörigkeit. (4) Ältere App-Bui
 `guides` nicht und fangen `/hub/wissen/anleitungen` als Bereich ab; `bridge.js` und `wissenReserved` sind ergänzt,
 wirken aber erst mit dem nächsten Build. Die native Darstellung steht aus (drei Entwürfe zuerst).
 
+### Baustein „Klickanleitung“ (seit 25.11.2026)
+
+**Arbeitsteilung (Jan, 25.11.2026):** Die Klickanleitung im Nutzerhandbuch sagt, **wo man klickt** (allgemein, je Hub-Seite, mit Screenshot). Die glatttipedia sagt, **was wir tun und warum** (der Vorgang, seine Werte, Regeln, Zuständigkeiten). Eine glatttipedia-Seite erzählt deshalb keine Klickwege durch den Hub nach, sondern bindet den Vorgang der Klickanleitung ein. Anlass war der Artikel „Gutschein-Aktion einrichten“, der dieselben Schritte beschrieb wie „Admin 3“.
+
+- **Block `klickanleitung`** speichert nur `ref`, die feste Kennung eines Vorgangs: `<serie>/<nr>/<kennung>`, z. B. `admin/3/aktions-produkt-anlegen`. Die Kennung ist die `id` der Deck-Seite oder, ohne sie, der Titel (`h1`) als Slug (`KlickanleitungSyncService::ref()`). Die Position taugt nicht — sie verschiebt sich, sobald jemand eine Seite davor einfügt.
+- **Inhalt kommt aus dem Abgleich:** `wiki:sync` legt je Vorgang neben dem Fließtext für glatttBert jetzt `knowledge_articles.guide_ref` und `structured` ab (Serie, Nummer, Deck-Titel, Stand, Titel, Untertitel, Schritte, Tabelle, Notizen, Hinweis). `KnowledgeBlocks::visibleFor()` löst alle Blöcke einer Seite in einer Abfrage auf (`KlickanleitungBlocks::resolveMany()`) und hängt das Ergebnis als `data.anleitung` an. Gespeichert wird davon nichts — ändert sich das Deck, ändert sich die Seite mit dem nächsten Abgleich.
+- **Anzeige:** Karte mit Serie, Titel und Stand, darunter die Schritte zum Aufklappen (`partials/blocks/klickanleitung`), am Ende der Link „Mit Bildern im Nutzerhandbuch ansehen“ auf genau diesen Vorgang. Bilder zeigt der Block nicht: Die Screenshots liegen in einem Bucket, den nur das Portal liest.
+- **Kiosk und App:** Der Text kommt aus dem Hub, deshalb funktioniert der Block auch dort, wo das Nutzerhandbuch (Google-Anmeldung) nicht erreichbar ist. Am Kiosk entfällt der Link. An die App geht der Block als Hinweis + Schrittfolge (`KlickanleitungBlocks::asBasicBlocks()` in `pageData`), weil ausgelieferte Builds unbekannte Bausteine nur als „wird in einer neueren Fassung angezeigt“ zeichnen.
+- **Vorgang fehlt** (umbenannt, entfernt, noch nicht abgeglichen): Der Block bleibt stehen und sagt „gerade nicht verfügbar“; die Redaktion sieht die Kennung dazu.
+- **Editor:** Werkzeug „Klickanleitung“ mit Suche über alle Vorgänge (`GET /hub/wissen/api/klickanleitungen`, `KlickanleitungBlocks::catalog()`).
+- **Suche und glatttBert:** `blockText()` liefert die Schritte mit, die Seite ist also über die Begriffe der Klickanleitung auffindbar.
+
+**Fallstricke:**
+
+- **Reihenfolge beim Ausrollen:** erst das Deck ins Wiki-Repo pushen, dann `wiki:sync` (läuft nachts, sonst von Hand), dann die Seite veröffentlichen bzw. einspielen. Vorher zeigt die Seite „nicht verfügbar“.
+- **Umbenennen:** Wer den Titel eines Vorgangs ändert, auf den die glatttipedia verweist, gibt der Deck-Seite vorher eine `id` mit der bisherigen Kennung. Die Builder des Nutzerhandbuchs ignorieren das Feld.
+- **Der Abgleich läuft nachts.** Eine Änderung am Deck steht erst am nächsten Tag in der glatttipedia.
+- **Was in die Klickanleitung gehört, muss dort auch stehen.** Fehlt dem Deck die Feld-für-Feld-Erklärung, wandert sie beim Umstellen einer Seite dorthin — nicht zurück in den Artikel.
+
+Tests: `tests/Feature/WissenKlickanleitungBlockTest.php`.
+
 ### Suche und glatttBert
 
 - Raum-Suche: MySQL `MATCH … AGAINST` (Boolean, Präfix) auf `title, summary, search_text` plus LIKE auf
@@ -454,3 +475,4 @@ stehen bereits in Antwort und Quellen.
 - **18.10.2026 (nachts)** — Struktur-Editor in der Redaktion (Ziehen und Pfeile), Befehl `wissen:struktur`, Büro-Prozesse nach der Navigation der alten Google Site gegliedert (10 Kapitel), Kapitelseiten listen Unterseiten, Werkzeug-Reiter werden bei Platznot zu Symbolen.
 - **18.10.2026 (spät)** — Flyouts unter den Reitern, Kapitel-Band für Büro und Leitung (`nav_mode`), Priorität+-Menü „Weitere …“, Editor mit fester Aktionsleiste, Rückgängig, Ziehen, Wortzahl, Blöcke Checkliste/Zitat/Code/Einbettung; Importer setzt Eltern und Titel aus dem Sites-Pfad.
 - **18.10.2026** — Stufe 1 auf `feature/wissen`: Raum, Zielgruppen, Block-Editor, Suche, glatttBert-Quelle, Import-Werkzeuge; nachmittags Startseite als Block-Seite, Aktionen mit Gültigkeit und Historie, Neuigkeiten als Banner/Modal.
+- **25.11.2026:** Baustein „Klickanleitung“ — glatttipedia-Seiten binden Vorgänge des Nutzerhandbuchs ein, statt Klickwege nachzuerzählen; erster Einsatz im Artikel „Gutschein-Aktion einrichten“.
