@@ -38,6 +38,7 @@ const PLAN = [
   seite('a2-recht', '/admin/legal-documents'),
   seite('a3-produkte', '/admin/voucher-products'),
   seite('a3-bestellungen', '/admin/voucher-orders'),
+  seite('a3-saison', '/admin/voucher-shop-seasons'),
   { name: 'a3-sonderfaelle', url: '/admin/voucher-orders', wait: 3500, steps: [ersterEintrag, ['wait', 1500]] },
   // Bereich „Kundennachrichten“ (seit 15.11.2026) — ersetzt die Einzelseiten Erinnerungen / Beratungs-WhatsApp / Bewertung
   seite('a4-kundennachrichten', '/admin/kundennachrichten'),

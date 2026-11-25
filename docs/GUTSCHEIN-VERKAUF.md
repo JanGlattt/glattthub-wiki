@@ -132,7 +132,7 @@ Bei rabattierten Produkten (Gutscheinwert > Kaufpreis) kann das **Bonus-Guthaben
 | Bonus-Guthaben | = Gutscheinwert − Kaufpreis (z.B. 40 €) | eigene, kürzere Frist |
 
 - Beide Gutscheine haben eigene 8-stellige Seriennummern und referenzieren sich gegenseitig in den Phorest-Notizen.
-- Die Kundin sieht den Teilverfall **vor dem Kauf** auf der Checkout-Seite, erhält beide Codes in der E-Mail (mit Hinweis auf das frühere Ablaufdatum) und auf dem Beleg werden beide Anteile ausgewiesen.
+- Die Kundin sieht den Teilverfall **vor dem Kauf** auf der Checkout-Seite, erhält beide Codes in der E-Mail (mit Hinweis auf das frühere Ablaufdatum) und auf dem Beleg werden beide Anteile ausgewiesen. Der Geschenkgutschein zum Ausdrucken trägt beide Codes auf einem Blatt.
 - Phorest setzt den Verfall selbst durch — kein Cron-Job, keine nachträgliche Saldo-Änderung.
 - Damit bleibt der bezahlte Betrag die volle Regeldauer gültig (rechtlich relevant), nur der geschenkte Bonus verfällt früher.
 - Kampagnen-Links der Beratungs-WhatsApp setzen ein festes `bonus_valid_until_date` am Bestell-Item (Beratungstag) — siehe `BERATUNGS-WHATSAPP.md`.
@@ -254,18 +254,57 @@ Die Return-Seite zeigt bei Pending/Erfolg eine animierte Sequenz (Kasse → Umsc
 
 ### Geschenkgutschein-PDF & Personenbindung
 
-**Verhalten:** Über den Button in der Kauf-Mail öffnet die Kundin eine öffentliche Seite (kein Login) mit einer **Live-Vorschau** des Geschenkgutscheins im Design der glattt Welcome-Karte („Bye Rasieren. Hallo Freiheit."). Drei optionale Felder — **Für**, **Von**, **Anlass** — spiegeln sich beim Tippen sofort in der Vorschau; leere Felder erscheinen nicht im PDF. „PDF-Gutschein herunterladen" erzeugt ein **A5-Querformat-PDF** zum Ausdrucken oder digitalen Verschicken: links der **Gutscheinwert im goldenen Kasten** (Cents hochgestellt), darunter die Personalisierung; unten rechts auf dem Gold-Bogen der weiße **Einlöse-Kasten** mit QR-Code (enthält den Gutscheincode, funktioniert gedruckt wie vom Bildschirm), Code in 4er-Gruppen und Ablaufdatum. Bei Teilverfall gibt es **je Code ein eigenes PDF** (Grundbetrag und Bonus-Guthaben haben je einen eigenen Link in der Mail). Es wird nichts gespeichert — jeder Download rendert frisch mit den aktuellen Feldwerten. Nach einer **Stornierung** funktioniert der Link nicht mehr; bei Produkten mit **„Gebunden an Käufer"** gibt es die Option gar nicht.
+**Verhalten:** Über den Button in der Kauf-Mail öffnet die Kundin eine öffentliche Seite (kein Login) mit einer **Live-Vorschau** des Geschenkgutscheins. Drei optionale Felder — **Für**, **Von**, **Anlass** — spiegeln sich beim Tippen sofort in der Vorschau; leere Felder erscheinen nicht im PDF. Darunter wählt sie ein **Motiv**: „Klassisch“ („Bye Rasieren. Hallo Freiheit.“) gibt es immer, Saison-Motive (Goldener Winter, Geschenkpapier, Winternacht, Silvester) nur, solange ein Saison-Zeitraum läuft (siehe [Saison](#saison-weihnachten-silvester)). „PDF-Gutschein herunterladen“ erzeugt ein **A5-Querformat-PDF**: links der **Gutscheinwert im Kasten** (Cents hochgestellt), darunter die Personalisierung; rechts auf dem Bogen der weiße **Einlöse-Kasten** mit QR-Code, Code in 4er-Gruppen und Ablaufdatum.
+
+**Eine Position = ein Geschenkgutschein** (seit 25.11.2026): Bei Teilverfall trägt der Gutschein **beide Codes** — zwei Einlöse-Kästen (Grundbetrag, Bonus- bzw. Aktions-Guthaben) mit je eigenem QR-Code und Ablaufdatum, eine Zeile mit der Aufteilung („100 € Grundbetrag + 100 € Aktions-Guthaben (nur bis 31.01.2027)“) und im Kleingedruckten der Hinweis auf das frühere Ablaufdatum. Beide Seriennummern führen zum selben Gutschein, die Mail zeigt deshalb nur **einen** Knopf je Position. Vorher gab es je Code ein eigenes PDF — zum Verschenken unbrauchbar. Es wird nichts gespeichert — jeder Download rendert frisch mit den aktuellen Feldwerten. Nach einer **Stornierung** funktioniert der Link nicht mehr; bei Produkten mit **„Gebunden an Käufer"** gibt es die Option gar nicht.
 
 **Umsetzung:**
 
 - **Zugriff**: `voucher_orders.gift_token` (`Str::random(64)`, unique) wird in `SendVoucherEmailJob` vor dem Versand erzeugt (`VoucherOrder::ensureGiftToken()`) — nur wenn mindestens eine Position nicht personengebunden ist. Auflösung in `SharedVoucherController::resolveGiftPart()`: 404 bei unbekanntem Token, fremder Seriennummer, personengebundener Position oder Status außerhalb `voucher_created|delivered` (→ Storno entwertet die Links). `VoucherOrder::giftPartForSerial()` liefert den Anteil (Grund- oder Bonus-Gutschein) mit Wert, Ablauf und Label.
 - **Personenbindung**: `voucher_products.buyer_bound` + Snapshot `voucher_order_items.buyer_bound` (gesetzt in `createOrderWithItems()`, Filament-Toggle „Gebunden an Käufer"). Hinweise: Kaufseite (`$buyerBound` in `VoucherCheckoutPage`), Kassen-Positionsliste (`buyer_bound` im Cart-Item-Array), Warenkorb-Popover (`note` im `cartPayload()`), Shop-Karte (ersetzt „ideal als Geschenk") und Kauf-Mail (statt Geschenk-Button).
-- **PDF**: `resources/views/pdf/voucher-gift.blade.php` (dompdf, A5 quer, `margin: 0`): `public/images/WelcomeKarte-print.jpg` als Ganzseiten-Hintergrund (2480px = 300 DPI; **JPEG und direkter Dateipfad statt PNG/Base64** — PNGs dekodiert dompdf komplett über GD und Daten-URIs legt es als Temp-Datei ab, der JPEG-Pfad kommt ohne GD und ohne Schreibzugriffe aus), Overlays absolut positioniert in pt. Die **Live-Vorschau** (`resources/views/shared/voucher-gift.blade.php`, Vanilla-JS, kein Livewire) nutzt dasselbe JPEG und spiegelt dieselbe Geometrie in Prozentwerten (`cqw`-Einheiten) — Änderungen am PDF-Layout immer in beiden Dateien nachziehen. dompdf-`temp_dir` ist das System-Temp (`/tmp`, auf Cloud Run garantiert beschreibbar), nur `font_dir`/`font_cache` liegen in `storage/fonts`.
+- **Daten**: `VoucherOrder::giftVoucherForSerial()` liefert je Position Gesamtwert, `codes` (ein oder zwei Einträge mit Seriennummer, Wert, Ablauf, Label) und `once_per_person`; `SharedVoucherController::resolveGiftVoucher()` reicht sie an Seite und PDF.
+- **Motive**: `App\Support\VoucherGiftMotifs` — je Motiv Schlüssel, Label, Saison-Thema und die Farben für alles, was das PDF über das Bild legt (`box`, `label`, `ink`, `muted`). Das Bild selbst (Fläche, Bogen, Logo, Überschrift in Lato, Schmuck) liegt unter `public/images/voucher-motifs/<schlüssel>.jpg` (2480 px = 300 DPI) plus `-thumb.jpg` für den Wähler. Gebaut werden die Bilder aus `scripts/voucher-motifs/motifs.html` mit `build.cjs` (Playwright aus dem Wiki-Repo; Aufruf steht im Skript). **Das Silvester-Motiv trägt die Jahreszahl im Bild** — einmal je Saison neu bauen. Die Auswahl kommt als Query-Parameter `motif`; unbekannte oder nicht mehr wählbare Motive fallen auf „Klassisch“.
+- **PDF**: `resources/views/pdf/voucher-gift.blade.php` (dompdf, A5 quer, `margin: 0`): Motiv-Bild als Ganzseiten-Hintergrund (**JPEG und direkter Dateipfad** — PNGs dekodiert dompdf über GD, Daten-URIs legt es als Temp-Datei ab), Overlays in pt. Die Web-Vorschau spiegelt dieselbe Geometrie in `cqw` und setzt die Motiv-Farben als CSS-Variablen (`--gift-box` …). Wer eine Position verschiebt, ändert **beide** Dateien.
 - **QR-Code**: `chillerlan/php-qrcode` (bereits als Dependency vorhanden), PNG via GD, **Fehlerkorrektur-Level H** (30 % Redundanz), Inhalt = Gutscheincode — zentral in `App\Services\VoucherQrService` (`dataUri()` für Geschenk-Seite/PDF, `png()` für die Mail), damit alle Ausspielungen identisch rendern. In der **Kauf-Mail** wird der QR je Code als **CID-Inline-Anhang** eingebettet (`$message->embedData()` im Template) — Gmail/Outlook blockieren Daten-URIs in `<img>`; beim Browser-Rendering (Vorschau/Tests) existiert `$message` nicht, dann greift der Daten-URI-Fallback.
-- **Schrift im PDF**: Das Geschenk-PDF nutzt die Hausschrift (Lato, bzw. die im Admin gewählte) über `pdf.partials.app-font-face`; normal, fett und kursiv (Anlass-Zeile) sind eigene Schnitte. Die dompdf-Schrift-Optionen kommen zentral aus dem `AppServiceProvider` — nie `->setOptions(…pdfOptions())` am fertigen PDF, sonst steht das erste PDF je Instanz in Helvetica (behoben 24.11.2026, Details in `FONT-EINSTELLUNGEN.md`). Die Überschrift „Bye Rasieren. Hallo Freiheit.“ ist Teil des Hintergrundbilds und bleibt in der Markenschrift Dosis.
-- **Personalisierung** läuft als Query-Parameter (`to`/`from`/`message`, validiert auf Maximallängen) — nichts wird gespeichert, jeder Download rendert frisch.
+- **Schrift im PDF**: Das Geschenk-PDF nutzt die Hausschrift (Lato, bzw. die im Admin gewählte) über `pdf.partials.app-font-face`; normal, fett und kursiv (Anlass-Zeile) sind eigene Schnitte. Die dompdf-Schrift-Optionen kommen zentral aus dem `AppServiceProvider` — nie `->setOptions(…pdfOptions())` am fertigen PDF, sonst steht das erste PDF je Instanz in Helvetica (behoben 24.11.2026, Details in `FONT-EINSTELLUNGEN.md`). Auch die Überschrift im Motiv-Bild steht seit 25.11.2026 in Lato (Light + Bold), vorher Dosis.
+- **Personalisierung** läuft als Query-Parameter (`to`/`from`/`message`/`motif`, validiert auf Maximallängen) — nichts wird gespeichert, jeder Download rendert frisch.
 - **E-Mail-Templates** (Kauf + Storno): eigene warme Dark-Mode-Palette (`prefers-color-scheme` + Outlook-`[data-ogsc]`/`[data-ogsb]`), `color-scheme`-Metas gegen Client-Invertierung, `mail-nolink`/`x-apple-data-detectors` gegen blaue Auto-Links auf Codes und Daten. Im Gutschein-Panel: QR-Code im weißen Kasten (Weiß wird im Dark Mode per `!important` erzwungen — Scanner-Kontrast) und der Geschenk-Link als „bulletproof" Tabellen-Button (Dark Mode: helleres Gold mit dunkler Schrift).
-- **Tests**: `tests/Feature/VoucherSales/GiftPdfTest.php` (Seite, PDF-Download, Token-/Serial-Schutz, Storno, Personenbindung, Mail-Links/-Hinweis, QR-Codes in der Mail).
+- **Tests**: `tests/Feature/VoucherSales/GiftPdfTest.php` (Seite, PDF-Download, Token-/Serial-Schutz, Storno, Personenbindung, ein Knopf je Position, beide Codes auf einem Gutschein, QR-Codes in der Mail), `VoucherPromoAndSeasonTest.php` (Motive nach Saison, Bilder vorhanden).
+
+### Saison (Weihnachten, Silvester)
+
+Seit 25.11.2026 kann der Gutschein-Verkauf ein **Saison-Kleid** tragen. Im Admin unter **Verkauf → Gutschein-Saison** wird nur geplant, *wann* welches Thema gilt (Tabelle `voucher_shop_seasons`: `theme`, `starts_at`, `ends_at`, `active`; Recht `manage_voucher_products`). *Was* ein Thema ausmacht, steht im Code:
+
+| Wo | Was sich ändert | Quelle |
+|---|---|---|
+| Shop-Seite `/shared/gutscheine` | Überschrift, Text, Countdown-Marke („Noch 14 Tage bis Heiligabend“), Schmuck hinter dem Inhalt: Goldschnee und ein Schlitten, der alle 30 Sekunden über den Seitenkopf zieht (Weihnachten), Goldkonfetti (Silvester) | `App\Support\VoucherShopSeasonLook`, Partial `shared/partials/voucher-season-sky`, Theme-Abschnitt „GUTSCHEIN-SHOP — Saison“ |
+| Kauf-Mail | goldenes Textband über dem Logo | `VoucherPurchasedMail` (`season`) |
+| Gutschein-Gestalter | Saison-Motive wählbar, das erste ist vorausgewählt | `VoucherGiftMotifs::available()` |
+
+- Überschneiden sich zwei Zeiträume, gilt der **später begonnene** (`VoucherShopSeason::current()`) — Silvester löst so Weihnachten ab, ohne dass jemand den Weihnachts-Zeitraum kürzen muss.
+- Die **Motive bleiben 14 Tage nach Saison-Ende wählbar** (`MOTIF_GRACE_DAYS`): Wer am 24.12. kauft, druckt auch im Januar noch weihnachtlich.
+- Der Schmuck ist reines CSS, liegt `position: fixed` hinter dem Inhalt (`pointer-events: none`) und steht bei „Bewegung reduzieren“ still.
+- Ein neues Thema braucht: Konstante + Label in `VoucherShopSeason::THEMES`, Texte in `VoucherShopSeasonLook`, Schmuck im Partial/Theme, Motive in `VoucherGiftMotifs` samt Bild.
+
+### Aktionsbedingung „nur ein Aktions-Guthaben pro Person“
+
+Für die Weihnachtsaktion 2026 (50 % auf Gutscheine bis 200 €, die rabattierte Hälfte nur bis 31.01.2027 einlösbar) gilt: Kaufen darf jede so viele Gutscheine, wie sie will — **einlösen** kann eine Person aber nur **ein** Aktions-Guthaben. Kommt jemand mit mehreren Aktionsgutscheinen, zählen von den weiteren nur die Grundbeträge.
+
+**Einrichten (nur Admin, kein Code):** Wunschbetrag-Produkt mit Höchstwert 200 € und einer Rabattstaffel 50 %, Bonus-Gültigkeit als festes Datum, Kauffenster, Kauf-Limit unbegrenzt — dazu im Abschnitt Bonus-Guthaben der Schalter **„Nur ein Aktions-Guthaben pro Person“** und der **Name der Aktion** (`voucher_products.bonus_once_per_person`, `promo_label`; Snapshot auf `voucher_order_items`). Gutscheine mit demselben Aktionsnamen zählen gemeinsam.
+
+**Wo die Bedingung steht** — Wortlaut einmal in `App\Support\VoucherPromoTerms`:
+
+| Für wen | Wo |
+|---|---|
+| Käuferin | Shop-Karte, Kasse (Einzelkauf und Warenkorb), Kauf-Mail („Aktionsbedingung“), Beleg |
+| Beschenkte | Geschenkgutschein: Zeile unter dem Wert, Kleingedrucktes, Einlöse-Kasten „Aktions-Guthaben“ mit fettem Ablaufdatum; im Gestalter zusätzlich als Hinweis |
+| Team | Notiz am Phorest-Gutschein des Aktions-Guthabens (`VoucherPromoTerms::staffNote()`) |
+
+**Was technisch durchgesetzt wird:**
+
+- **Vertrags-Verrechnung im Hub** (SEPA-Dialog, Vertragsformular, Tageserfassung): `ContractVoucherService::assertPromoBonusLimit()` lehnt ab, wenn zwei Aktions-Guthaben derselben Aktion zusammen angefordert werden oder die Kundin (über `contracts.client_id` → `contract_voucher_redemptions`) schon eines eingelöst hat. Grundbeträge und Gutscheine anderer Aktionen bleiben unberührt.
+- **Phorest-Kasse** (Einlösen bei der Behandlung): Hier kann der Hub nichts sperren — Phorest kennt die Regel nicht. Das Team liest sie in der Gutschein-Notiz; das ist eine Arbeitsregel, keine Sperre.
+- Die automatischen Einlösungen nach der Unterschrift (`ContractCreationService`, `GoCardlessPaymentPlanService`) prüfen bewusst nicht erneut: Die Prüfung liegt am Eingang, ein Abbruch nach der Unterschrift würde den Vertrag ohne Plan zurücklassen.
 
 ### Wunschbetrag, Rabattstaffeln & Kauffenster
 

@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für das Admin-Panel im glatttHub — Gutschein-Produkte, Bestellungen und Zustellung",
  "eyebrow": "Admin · Gutschein-Verkauf",
  "footerArea": "Admin-Panel",
- "stand": "15.09.2026",
- "version": "1.0",
+ "stand": "25.11.2026",
+ "version": "1.1",
  "notes": [
   "Der Online-Verkauf von Gutscheinen: **Produkte festlegen, Bestellungen verfolgen, Zustellung prüfen.**",
   "Bezahlt wird über den Zahlungsdienstleister; der Gutschein entsteht danach **automatisch in Phorest**.",
@@ -132,6 +132,45 @@
    "hint": {
     "text": "**Der Hub erstattet kein Geld.** Rückzahlungen laufen über den Zahlungsdienstleister; hier wird nur festgehalten, dass es passiert ist."
    }
+  },
+  {
+   "h1": "Saison und Aktion",
+   "sub": "Weihnachten, Silvester und Rabatt-Aktionen einstellen.",
+   "card": {
+    "title": "Saison",
+    "text": "Zeitraum planen, Aktion am Produkt"
+   },
+   "left": {
+    "shot": "a3-saison"
+   },
+   "leftCaption": "Die Saison-Zeiträume unter Verkauf → Gutschein-Saison.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Zeitraum anlegen",
+     "text": "Thema (Weihnachten oder Silvester), Von und Bis. In dieser Zeit sind Shop-Seite und Kauf-Mail geschmückt, und der Gutschein-Gestalter bietet die passenden Motive an."
+    },
+    {
+     "n": 2,
+     "title": "Zwei Zeiträume",
+     "text": "Überschneiden sie sich, gilt der später begonnene — Silvester löst Weihnachten von selbst ab."
+    },
+    {
+     "n": 3,
+     "title": "Aktion am Produkt",
+     "text": "Im Produkt unter Bonus-Guthaben: festes Ablaufdatum, Schalter „Nur ein Aktions-Guthaben pro Person“ und der Name der Aktion."
+    },
+    {
+     "n": 4,
+     "title": "Was die Kundin sieht",
+     "text": "Die Bedingung steht auf Shop-Karte, Kasse, E-Mail, Beleg und auf dem Geschenkgutschein — dort mit beiden Codes und beiden Ablaufdaten."
+    },
+    {
+     "n": 5,
+     "title": "Einlösen",
+     "text": "Am Aktions-Guthaben steht in Phorest eine Notiz: pro Person nur eines einlösen. Bei der Verrechnung mit einem Vertrag sperrt der Hub ein zweites selbst."
+    }
+   ]
   },
   {
    "h1": "Rund um den Verkauf",
