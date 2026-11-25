@@ -610,7 +610,7 @@ Das Standard-Bonussystem wird per Migration
   `/hub/bonus/export/{csv|pdf}?month=` (Gate `manage_bonus_rules`) liefert den
   Export über `App\Services\Bonus\BonusBoardExporter` (Zeilen/Spalten fürs
   CSV, `pdfData()` für `resources/views/pdf/bonus-board.blade.php`, dompdf A4
-  quer mit `FontSettingsService::pdfOptions()`). `/tile` ist der Startseiten-Endpoint **ohne**
+  quer; Schrift-Optionen zentral, siehe `FONT-EINSTELLUNGEN.md`). `/tile` ist der Startseiten-Endpoint **ohne**
   Besuchs-Snapshot (verbraucht die Celebration nicht).
 - `BonusAdminController` — Regeln-CRUD (Challenges auch mit
   `manage_challenges`, Standard-Regeln nur mit `manage_bonus_rules`),

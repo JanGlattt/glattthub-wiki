@@ -162,9 +162,8 @@ Freigabe nur aufgelistet.
 Seit 18.11.2026 (Jan): `TravelExpensePdfService` baut je Abrechnung ein PDF, das ohne
 Rückfrage bei der Steuerberatung verständlich ist.
 
-- **Deckblatt** (`resources/views/pdf/travel-expense.blade.php`, dompdf mit
-  `FontSettingsService::pdfOptions()` — ohne die Optionen fällt dompdf auf Helvetica
-  zurück): Mitarbeiterin mit Personalnummer (`HrEmployee::payrollPersonnelNumber()`, wie die
+- **Deckblatt** (`resources/views/pdf/travel-expense.blade.php`, dompdf; die
+  Schrift-Optionen kommen zentral aus dem `AppServiceProvider`, siehe `FONT-EINSTELLUNGEN.md`): Mitarbeiterin mit Personalnummer (`HrEmployee::payrollPersonnelNumber()`, wie die
   Lohnliste), Freigabe (eingereicht/genehmigt/ausgezahlt mit Person und Zeit), Reise, Tage &
   Nächte (`tripPlan()`), Arbeitszeiten mit gestellten Mahlzeiten, Kostenaufstellung mit
   Erstattungsbetrag, Anmerkungen, Belegliste mit Anlagen-Nummer. Fußzeile aus den
