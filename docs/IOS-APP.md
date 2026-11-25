@@ -1628,6 +1628,20 @@ wie im Hub (`KomponentenTyp::parentTyp()`) zur Top-Unit, die Pumpe zur Bottom-Un
   `tests/Feature/Laser/LaserAppApiTest.php` (9 Tests: Räume, Werkbank, Akte, Teile, Reparatur-Kette
   mit Rechnung, STK/Behörde, Rechte).
 
+- **Wartungsprotokoll ansehen (seit 25.11.2026, Entwurf 1 „Protokoll-Blatt“):** Von drei Entwürfen
+  (Protokoll-Blatt, Fotos zuerst, Liste und Protokoll nebeneinander — Artefakt „Wartungsprotokoll
+  ansehen“) wählte Jan das Blatt. Tippen auf eine Wartung (Geräteakte → Wartungen, Teile-Akte, Kachel
+  „letzte Wartung“, in der Raum-Sicht „Protokoll KW … ansehen“ an der Laser-Karte) öffnet
+  `LaserProtocolSheet`: die vier Abschnitte des Assistenten, Fotos beim Abschnitt; ab 640 pt Breite
+  (iPad, `presentationSizing(.page)` ab iOS 18) Werte links und Fotos rechts. Knöpfe zur Wartung davor
+  und danach, PDF über `HubSession.download` + Quick Look. `LaserPhotoViewer` (Vollbild, wischen,
+  Zoom) ist ein eigener Baustein. Endpunkt `GET hub/laser/api/app/protocols/{id}` — derselbe wie das
+  Web-Modal; Fotos kommen verkleinert über die Hub-Sitzung (`ChatImageCache`, Platte + Speicher),
+  nie als Original. Offline: einmal geöffnete Protokolle aus dem `OfflineStore`. Ältere Hubs senden
+  `last_maintenance_id` nicht — dann fehlt nur der Direkteinstieg. Nachweis:
+  `LaserAppSnapshotTests.testRenderLaserProtocol` (iPhone und iPad, hell/dunkel) und
+  `testProtocolParsing`; Bilder `laser-protocol-*` in Klickanleitung App 5.
+
 ### Laser-Störung melden (seit 23.09.2026)
 
 `ios/glatttHub/Laser/LaserErrorView.swift` — Schnellzugriff „Laser-Fehler" im Cockpit
@@ -1820,7 +1834,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | Kunden | nativ | Liste + Übersicht (`/api/app/clients`); seit 28.09.2026 alle neun Registerkarten nativ als Unterseiten mit Reiter-Leiste (iPad rechts neben der Übersicht), Kundeninfos bearbeiten, Superchat-Chat mit Vorlagen-Schublade |
 | Benachrichtigungen | nativ | Mitteilungsliste im Mehr-Sheet / iPad-Popover, In-App-Banner |
 | Kasse | nativ | Kassenabschluss (seit 29.09.2026): Monatsliste „Tag für Tag“, Zählen mit Waage und Ziffernblock, Scheine/Münzen als Bilder, iPad Liste + Tag; CSV-Export Web — Details [KASSE.md](KASSE.md) |
-| Laser | nativ | Raum-Sicht des Instituts, Werkbank „Alle“, Geräteakte mit acht Reitern, Teile-Akte, Reparatur/STK/Behörde nativ, Wartungsassistent, Störung melden (seit 26.09.2026); Inventarisieren, Stammdaten, Verbrauchsmaterial, Berichte Web |
+| Laser | nativ | Raum-Sicht des Instituts, Werkbank „Alle“, Geräteakte mit acht Reitern, Teile-Akte, Reparatur/STK/Behörde nativ, Wartungsassistent, Störung melden (seit 26.09.2026), Wartungsprotokoll mit Fotos ansehen (seit 25.11.2026); Inventarisieren, Stammdaten, Verbrauchsmaterial, Berichte Web |
 | Bonus-Board | nativ | Mehr-Seite, beide Sichten, Export per Teilen-Blatt |
 | Termin buchen | nativ | Slot-Finder als Detailseite im Termine-Tab: Kundin (seit 02.11.2026 mit „Letzte Behandlung vor …" aus `last_interval`, Abstand bis zum gewählten Tag in der Rückfrage), Institut, ab wann, Paket-Leistungen, seit 02.11.2026 Auffrischung neben FLEX (beide eingeklappt), im Verlegen-Modus Leistungen und Art aus `reschedule-context` (Beratung → Website-Slots ohne Tageskalender), Vorschläge je Tag, Rückfrage am Slot, iPad-Raster (seit 26.09.2026); Einstiege Plus in der Terminliste, Kundenübersicht, ⌘N; Folgetermin/Verlegen aus der Terminansicht bleiben im Blatt |
 | Verträge | nativ | Liste + Vertragsseite mit vier Reitern (seit 25.09.2026); GoCardless/Ratenplan/Bearbeiten als Web-Blatt; Preislisten, Mappings Web; Freunde werben nativ (27.09.2026) |
@@ -3474,6 +3488,7 @@ Geplant: `ios/glatttHub/` (App), `ios/glatttHubWidgets/` (Extension), `ios/Confi
 
 | Datum | Version | Änderung |
 |---|---|---|
+| 25.11.2026 | (nächster Build) | **Laser: Wartungsprotokoll ansehen** (Entwurf 1 „Protokoll-Blatt“): Blatt mit allen Werten und Fotos einer Wartung aus Geräteakte, Teile-Akte, Kachel „letzte Wartung“ und Raum-Sicht; iPad zweispaltig, Foto-Betrachter mit Wischen und Zoom, PDF über Quick Look, Nachbar-Wartungen, Offline-Stand. |
 | 15.11.2026 | (nächster Build) | **Forderungen:** „Vereinbarung nicht eingehalten …“ im Reiter Ratenzahlung (Blatt `ReceivableRzvBreachSheet`, Optionen und Vorbelegung aus `rzv.breach`, `POST …/rzv/{agreement}/resume-dunning` mit `reentry`); Schritt-Blatt der 1. Mahnung mit Schalter „SEPA-Einzüge jetzt pausieren“ (`sepa_pause_option` → `pause_sepa`). Kein TestFlight-Build |
 | 01.11.2026 | 1.7.1 (131) | **glattt Coach Etappe 2b + 3**: Video-Kundin über Simli-WebRTC (eigener Client, Ton als Rückfall), Zuweisungen verwalten für Leitung/Büro, Feier-Karte nach bestandener Prüfung, Cockpit-Abschnitt „Mein glattt Coach“. |
 | 31.10.2026 | 1.7.1 (130) | **glattt Coach nativ** (Mehr-Seite, nur Super-Admin): Startseite „Plan zuerst“, Gesprächsraum im Vollbild mit Zuhören auf dem Gerät, Google-Stimme, Souffleur, Ergebnis und Verlauf. |

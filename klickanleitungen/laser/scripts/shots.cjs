@@ -42,6 +42,22 @@ const ereignis = (name, mitLaserId = true) => ['fn', async (page, L) => {
   await L.wait(page, 1500);
 }];
 
+/** Wartungsprotokoll öffnen: die jüngste Wartung mit Fotos (sonst die erste Zeile), warten bis die Bilder da sind. */
+const protokollOeffnen = ['fn', async (page, L) => {
+  const ok = await page.evaluate(() => {
+    const rows = [...document.querySelectorAll('tr.table-glattt-row-action')].filter(e => e.offsetParent !== null);
+    const row = rows.find(r => /\d/.test(r.querySelector('.table-glattt-row-action-hint')?.textContent || '')) || rows[0];
+    if (row) row.click();
+    return !!row;
+  });
+  if (!ok) console.log('KEINE WARTUNG IN DER LISTE');
+  await page.waitForFunction(() => {
+    const imgs = [...document.querySelectorAll('.laser-protocol-photo img')].filter(e => e.offsetParent !== null);
+    return document.querySelector('.laser-protocol-layout') && imgs.every(i => i.complete && i.naturalWidth > 0);
+  }, null, { timeout: 30000 }).catch(() => console.log('PROTOKOLL NICHT GELADEN'));
+  await L.wait(page, 1200);
+}];
+
 /** Sichtbares Fenster: Abschnitt/Element nach oben scrollen (das Fenster scrollt selbst). */
 const imFenster = (sel, text) => ['fn', async (page, L) => {
   const ok = await page.evaluate(([s, t]) => {
@@ -327,6 +343,20 @@ const PLAN = [
   { name: 'l21-protokolle-teil', url: ANBAUTEIL, steps: [['loaded'], reiter('Wartungen')], marks: [
     { id: 'laser', kind: 'badge', n: 1, ...L.byText('th', 'Laser'), at: 't' },
     { id: 'werte', kind: 'badge', n: 2, ...L.byText('th', 'Zustand'), at: 't' },
+  ] },
+  // Wartungsprotokoll ansehen (seit 25.11.2026): Zeile der Wartungsliste öffnet das Protokoll mit Fotos
+  { name: 'l21b-protokoll-ansehen', url: GERAET, steps: [['loaded'], reiter('Wartungen'), protokollOeffnen], clip: '.modal-glattt', marks: [
+    { id: 'nachbar', kind: 'badge', n: 1, sel: '.laser-protocol-toolbar button:nth-of-type(2)', at: 'r' },
+    { id: 'werte', kind: 'badge', n: 2, ...L.byText('.laser-protocol-section-title', '2 · Laser'), at: 'l' },
+    { id: 'fotos', kind: 'badge', n: 3, sel: '.laser-protocol-photos', at: 'l' },
+    { id: 'pdf', kind: 'badge', n: 4, ...L.byText('.laser-protocol-toolbar a', 'Als PDF'), at: 'l' },
+  ] },
+  { name: 'l21c-protokoll-foto', url: GERAET, steps: [['loaded'], reiter('Wartungen'), protokollOeffnen, ['fn', async (page, L) => {
+    await page.evaluate(() => { const m = [...document.querySelectorAll('.laser-protocol-photo')].filter(e => e.offsetParent !== null); if (m[1]) m[1].click(); });
+    await L.wait(page, 2500);
+  }]], marks: [
+    { id: 'pfeil', kind: 'badge', n: 1, sel: '.lightbox-glattt-nav:last-of-type', at: 'l' },
+    { id: 'titel', kind: 'badge', n: 2, sel: '.lightbox-glattt-caption', at: 'r' },
   ] },
   // Laser 7: Fehler
   { name: 'l22-fehler-reiter', url: GERAET, steps: [['loaded'], reiter('Fehler')], marks: [

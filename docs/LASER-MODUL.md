@@ -29,6 +29,7 @@ Altdaten-Import**; die Bedienung Schritt für Schritt steht im Nutzerhandbuch.
     - [Berechtigungen](#berechtigungen)
     - [Oberfläche: Seiten, Reiter und Assistenten](#oberflache-seiten-reiter-und-assistenten)
     - [Wartungsassistent: Countdown, Pflichtfotos, Entwurf](#wartungsassistent-countdown-pflichtfotos-entwurf)
+    - [Wartungsprotokoll ansehen](#wartungsprotokoll-ansehen-seit-25112026)
     - [Datenmodell (Tabellen)](#datenmodell-tabellen)
     - [Enums](#enums)
     - [Services](#services)
@@ -84,7 +85,7 @@ Behördenanzeige laufen dort nativ — Anleitung App 5.
 | Wartung Schritt 1: Flow Maintenance, Countdown, unterbrochener Entwurf | Laser 3 |
 | Wartung Schritt 2: Impulse, FLOW und die Pflichtfotos des Lasers | Laser 4 |
 | Wartung Schritt 3: Handstück, Laserköpfe, Skintel, Defekt melden | Laser 5 |
-| Wartung Schritt 4: Lager-Check, Abschluss, Protokoll wiederfinden | Laser 6 |
+| Wartung Schritt 4: Lager-Check, Abschluss, Protokoll wiederfinden und mit Fotos ansehen, PDF | Laser 6 |
 | Fehler erfassen, die Fehlercodes, Gespräch zum Fehler | Laser 7 |
 | Reparatur anlegen, versenden, Rückkehr verbuchen | Laser 8 |
 | STK und Behördenanzeige erfassen | Laser 9 |
@@ -297,6 +298,48 @@ nur noch Pflicht, wenn ein Teil montiert ist (wie in der App).
 !!! nutzerhandbuch "Bedienung: Laser 5 – Wartung 3: Anbauteile"
     https://hilfe.hub.glattt.com/laser/5/
 
+### Wartungsprotokoll ansehen (seit 25.11.2026)
+
+Die Wartungsliste zeigte je Wartung nur Datum, KW, Person, Pulses und FLOW; alle weiteren Werte und
+die bis zu 19 Fotos lagen gespeichert vor, waren aber nirgends abrufbar. Seitdem öffnet ein Klick auf
+eine Wartung das ganze Protokoll — nur lesend, ein abgeschlossenes Protokoll wird nicht bearbeitet.
+
+- **Eine Antwort für drei Oberflächen:** `MaintenanceProtocolViewService::detail()` liefert Kopf,
+  die vier Abschnitte des Assistenten (`flow`, `machine` mit `pulses_delta` zur Vorwartung, `parts`,
+  `stock`), `comment`, `photo_groups` (Fotos nach Bereich in Assistenten-Reihenfolge), `previous`/`next`
+  (Nachbar-Wartung desselben Lasers) und `pdf_path`. Web-Modal, Blatt der App und PDF lesen genau
+  diese Struktur — eine neue Angabe im Protokoll wird dort ergänzt, nicht je Oberfläche.
+- **Endpunkte** (Recht `view_laser`): `GET hub/laser/api/app/protocols/{id}`,
+  `GET …/protocols/{id}/photos/{mediaId}/{thumb|full}`, `GET hub/laser/protocols/{id}/pdf`.
+  Der Altbestand (`source = legacy`) bleibt über den globalen Scope ausgeblendet (404).
+- **Fotos nie als Original:** Ein Wartungsfoto darf 10 MB groß sein. Die Foto-Route liefert ein
+  verkleinertes JPEG (`thumb` 480 px, `full` 2000 px, fürs PDF 900 px), dreht Hochkant-Aufnahmen nach
+  EXIF und legt das Ergebnis einmal je Größe neben das Original (`laser/photo-derived/{id}-{kante}.jpg`,
+  derselbe Speicher). Die Antwort ist `private, immutable` für eine Woche. Kein signierter
+  Bucket-Link an die Oberfläche: Das Recht prüft jede Anfrage, die App lädt über die Hub-Sitzung.
+- **Kachel am Foto (`laser_media_files.slot`):** Bis dahin trug ein Foto nur die Beschriftung der
+  Kachel — „Innen“ und „Außen“ gibt es beim großen und beim kleinen Kopf. Der Assistent schreibt seit
+  25.11.2026 den Kachel-Schlüssel mit (`LaserMediaService::adoptStored(…, $slot)`); die Migration
+  `2026_11_25_100000_add_slot_to_laser_media_files` trägt den Bestand aus Beschriftung und
+  Übernahme-Reihenfolge nach und überspringt Kacheln nicht montierter Anbauteile (keine Seriennummer
+  im Protokoll). Fotos ohne Kachel erscheinen unter „Weitere Fotos“.
+- **Lager-Häkchen und Wasserfilter** fragt der Assistent im Hub nicht ab; sie stammen nur aus der
+  Wartungsliste. Das Protokoll zeigt sie deshalb nur, wenn mindestens eines gesetzt ist.
+- **Web:** Partial `hub/laser/partials/maintenance-protocol-modal` + `public/js/laser-protocol.js`
+  (`laserProtocolModal()`), geöffnet per Fenster-Ereignis `open-maintenance-protocol` (`{ id }`).
+  Eingebunden in Geräteakte, Komponenten- und Anbauteil-Seite und im Dashboard (Datum der letzten
+  Wartung an der Laser-Karte; der Knopf liegt in einem Navigate-Link und stoppt deshalb `mousedown`).
+  Bildvorschau mit Pfeilen und Pfeiltasten durch alle Fotos; Escape schließt erst das Foto, dann das
+  Fenster. Theme-Abschnitt „LASER — Wartungsprotokoll ansehen“.
+- **PDF:** `MaintenanceProtocolPdfService` + `pdf/laser-maintenance-protocol` (dompdf, Schrift über
+  die zentralen Optionen); Fotos eingebettet, drei je Zeile, je Bereich ein Block.
+- **App:** `LaserProtocolView.swift`, siehe `IOS-APP.md`, Abschnitt „Native Laser-Seite“.
+- **Tests:** `tests/Feature/Laser/MaintenanceProtocolViewTest.php` (Abschnitte, Nachbarn, Foto
+  verkleinert und abgelegt, fremdes Foto 404, PDF, Recht, Altbestand, Abfragen konstant, Migration).
+
+!!! nutzerhandbuch "Bedienung: Laser 6 – Wartung 4: Lager und Abschluss"
+    https://hilfe.hub.glattt.com/laser/6/
+
 ### Datenmodell (Tabellen)
 
 Alle Tabellen mit Prefix `laser_` (bzw. `lasers`). Migrationen: `database/migrations/2026_06_27_100000` … `100019`.
@@ -421,6 +464,10 @@ optional), `POST …/lasers/{id}/authority` (`nachweis` optional) — dieselben 
 und `ComplianceForm`, Antwort 422 mit `errors`. Institute entstehen aus `LaserLocation.branch_id`
 (Phorest-Branch-ID) über `AppBranchList`; Standorte ohne Institut bilden `zentrallager`. Details der
 App-Seite: `IOS-APP.md`, Abschnitt „Native Laser-Seite“.
+
+**Wartungsprotokoll** (seit 25.11.2026, `view_laser`): `GET hub/laser/api/app/protocols/{id}`,
+`GET …/protocols/{id}/photos/{mediaId}/{thumb|full}` und `GET hub/laser/protocols/{id}/pdf` — siehe
+„Wartungsprotokoll ansehen“.
 
 ### Tests
 

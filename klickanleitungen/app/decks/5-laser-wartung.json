@@ -6,19 +6,20 @@
  "of": 30,
  "audience": "institut",
  "footerArea": "App",
- "stand": "25.10.2026",
- "version": "1.3",
+ "stand": "25.11.2026",
+ "version": "1.4",
  "nr": 5,
  "title": [
   "Laser",
   "in der App"
  ],
- "subtitle": "Klickanleitung für die glatttHub-App — Räume des Instituts mit Laser und Aufgaben von heute, Werkbank über alle Institute, Geräteakte mit Reparatur, STK und Behördenanzeige; der Wartungs-Assistent in vier Schritten",
+ "subtitle": "Klickanleitung für die glatttHub-App — Räume des Instituts mit Laser und Aufgaben von heute, Werkbank über alle Institute, Geräteakte mit Reparatur, STK und Behördenanzeige; Wartungsprotokolle mit Fotos ansehen; der Wartungs-Assistent in vier Schritten",
  "eyebrow": "App · Laser",
  "notes": [
   "Die Laser-Seite beginnt beim **Raum**: Das iPad zeigt die Räume des eigenen Instituts, in jedem Raum seinen Laser und rechts, was heute daran zu tun ist.",
   "**„Alle“** ist die Werkbank fürs Büro: vier Kennzahlen, alle offenen Fälle über alle Institute, Kurzberichte.",
   "Die **Geräteakte** hat dieselben acht Reiter wie der Hub; Reparatur, STK und Behördenanzeige werden dort **nativ** erfasst — mit Rechnung oder Protokoll aus Kamera, Fotos oder Datei.",
+  "Jedes **Wartungsprotokoll** lässt sich ansehen: Tippen auf eine Wartung zeigt alle Werte und Fotos, auf Wunsch als PDF.",
   "Die wöchentliche Wartung läuft in der App **nativ**: Kamera direkt an der Kachel, Ziffernblock für Impulse, der Countdown zählt sichtbar mit.",
   "Es gelten **dieselben Regeln** wie im Hub: Der Server zählt die fünf Minuten, **jede Foto-Kachel ist Pflicht**, Impulse dürfen nicht sinken, Skintel-Tests 0–50.",
   "Der **Entwurf** ist derselbe wie im Hub — im Browser begonnen, in der App fortgesetzt oder umgekehrt."
@@ -169,6 +170,48 @@
    "hint": {
     "text": "Inventarisieren, Stammdaten, Verbrauchsmaterial und die sechs Berichte bleiben Seiten im Hub (Menü ⋯ oben rechts).",
     "kind": "info"
+   }
+  },
+  {
+   "h1": "Wartungsprotokoll ansehen",
+   "sub": "Geräteakte → Wartungen: Tippen auf eine Wartung öffnet das Protokoll mit allen Werten und Fotos. Auf dem iPad stehen die Werte links und die Fotos rechts.",
+   "card": {
+    "title": "Protokoll",
+    "text": "Werte, Fotos, PDF"
+   },
+   "left": {
+    "shot": "laser-protocol-light"
+   },
+   "leftCaption": "iPhone: die vier Abschnitte des Assistenten, die Fotos stehen beim Abschnitt, zu dem sie gehören.",
+   "right": {
+    "shot": "laser-protocol-ipad-light"
+   },
+   "rightCaption": "iPad: Werte links, alle Fotos nach Bereich rechts.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Protokoll öffnen",
+     "text": "In der Geräteakte unter **Wartungen** oder in der Akte eines Teils auf eine Wartung tippen. Schneller geht es in der Raum-Sicht über **„Protokoll KW … ansehen“** an der Laser-Karte oder über die Kachel **letzte Wartung** in der Akte."
+    },
+    {
+     "n": 2,
+     "title": "Blättern",
+     "text": "Oben führen zwei Knöpfe mit der Kalenderwoche zur Wartung davor und danach."
+    },
+    {
+     "n": 3,
+     "title": "Foto groß",
+     "text": "Ein Foto antippen: Vollbild, **wischen** durch alle Bilder der Wartung, mit zwei Fingern oder Doppeltipp vergrößern."
+    },
+    {
+     "n": 4,
+     "title": "PDF",
+     "text": "Der Knopf **PDF** öffnet das Protokoll mit allen Fotos als Dokument — von dort teilen oder drucken."
+    }
+   ],
+   "hint": {
+    "kind": "info",
+    "text": "Ohne Netz zeigt die App ein Protokoll, das schon einmal geöffnet war, mit dem Hinweis „Kein Netz · Stand …“."
    }
   },
   {

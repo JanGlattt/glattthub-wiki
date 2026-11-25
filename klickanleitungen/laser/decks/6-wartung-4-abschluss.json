@@ -10,14 +10,15 @@
   "Wartung 4:",
   "Lager und Abschluss"
  ],
- "subtitle": "Klickanleitung für den glatttHub — Schritt 4 der Wartung: Verbrauch erfassen, Kommentar, Wartung abschließen und das Protokoll wiederfinden",
+ "subtitle": "Klickanleitung für den glatttHub — Schritt 4 der Wartung: Verbrauch erfassen, Kommentar, Wartung abschließen, das Protokoll wiederfinden und mit allen Fotos ansehen",
  "eyebrow": "Laser · Wöchentliche Wartung",
  "footerArea": "Laser",
- "stand": "10.10.2026",
- "version": "1.1",
+ "stand": "25.11.2026",
+ "version": "1.2",
  "notes": [
   "Der letzte Schritt schreibt das **Protokoll**: verbrauchtes Chiller-Fluid, gezählte Lux-Lotion, Kommentar, dann **Wartung abschließen**.",
-  "Beim Abschluss passiert automatisch: Protokoll mit allen Fotos, Historien-Eintrag, Zustände an den Teilen, Bestände am Standort aktualisiert — und bei „Defekt“ ein Reparatur-Vorgang."
+  "Beim Abschluss passiert automatisch: Protokoll mit allen Fotos, Historien-Eintrag, Zustände an den Teilen, Bestände am Standort aktualisiert — und bei „Defekt“ ein Reparatur-Vorgang.",
+  "Jedes abgeschlossene Protokoll lässt sich **ansehen**: ein Klick auf die Wartung zeigt alle Werte und Fotos — und gibt das Ganze als PDF aus."
  ],
  "pages": [
   {
@@ -81,6 +82,48 @@
      "text": "Pulses und Zustand zum Zeitpunkt der Wartung — so sieht man, wann Risse zum ersten Mal auftraten."
     }
    ]
+  },
+  {
+   "h1": "Das Protokoll ansehen",
+   "sub": "Ein Klick auf eine Wartung öffnet das ganze Protokoll: links die Werte in der Reihenfolge des Assistenten, rechts die Fotos nach Bereich.",
+   "card": {
+    "title": "Das Protokoll ansehen",
+    "text": "Werte, Fotos, Nachbar-Wartung, PDF"
+   },
+   "left": {
+    "shot": "l21b-protokoll-ansehen"
+   },
+   "leftCaption": "Das Protokoll einer Wartung — geöffnet aus dem Reiter „Wartungen“ des Geräts.",
+   "right": {
+    "shot": "l21c-protokoll-foto"
+   },
+   "rightCaption": "Ein Foto groß: Pfeile oder Pfeiltasten gehen durch alle Bilder der Wartung, darunter stehen Bereich und Kachel.",
+   "steps": [
+    {
+     "n": 1,
+     "title": "Vorherige und nächste Wartung",
+     "text": "Die Knöpfe mit der Kalenderwoche blättern zur Wartung davor oder danach — ohne das Fenster zu schließen. So lassen sich zwei Wochen vergleichen."
+    },
+    {
+     "n": 2,
+     "title": "Werte",
+     "text": "Flow Maintenance und Reinigung, FLOW (LMP), Pulses der Maschine **mit dem Zuwachs seit der Vorwartung**, je Anbauteil Seriennummer, Zustand und Messwerte, dann Chiller-Fluid, Lux-Lotion und Kommentar."
+    },
+    {
+     "n": 3,
+     "title": "Fotos",
+     "text": "Nach Bereich sortiert: Laser, Handstück, großer und kleiner Kopf, Skintel. Die Spalte „Protokoll“ in der Liste zeigt schon vorher, wie viele Fotos eine Wartung hat."
+    },
+    {
+     "n": 4,
+     "title": "Als PDF",
+     "text": "Öffnet das Protokoll mit allen Fotos als Dokument — zum Weitergeben an Hersteller, Reparaturdienst oder Behörde."
+    }
+   ],
+   "hint": {
+    "kind": "info",
+    "text": "Dasselbe Fenster öffnet sich aus den Wartungen eines Teils („Laser 10“) und im Dashboard über das Datum der letzten Wartung an der Laser-Karte. Wartungen aus der früheren Wartungsliste haben keine Fotos."
+   }
   }
  ]
 }
