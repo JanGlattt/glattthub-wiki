@@ -42,7 +42,7 @@ je Tag, welcher Anteil der *jemals für diesen Tag gebuchten* Beratungen vorher 
 oder **gelöscht** wurde — diese Termine standen am Tag nicht mehr im Kalender und fehlten bisher in jeder
 Zahl der Karte (rund ein Fünftel aller Buchungen). Die Tagesliste führt sie mit Terminnotiz, neuem
 Termin und **Auslöser** auf: Kundin selbst (Link, App, Schnellantwort), Institut (Hub oder Phorest) oder
-Automatik (nicht bestätigt). Im Verlauf darunter gibt es dafür die Linien-Sätze „Verbleib“ und
+Automatik (nicht bestätigt). Jede Zeile nennt die Kundin mit Namen und **Kundennummer**. Im Verlauf darunter gibt es dafür die Linien-Sätze „Verbleib“ und
 „Auslöser“. No-Show, Conversion und KPZ pro BG rechnen unverändert auf den Beratungen am Tag.
 
 **Was „nicht erschienen" heißt.** Als No-Show zählt ein vergangener Termin mit Status *NO_SHOW*,
@@ -197,9 +197,26 @@ Termine hatten in den 60 Tagen danach keinen neuen Beratungstermin. Stornos fall
   Zahlen und die Ampel ändern sich nicht. Nur „Vorher weg“ und die Linien „Verbleib“/„Auslöser“ rechnen
   auf „jemals gebucht“.
 - **Auslöser:** Kundin selbst / Institut / Automatik, aufgezeichnet seit
-  `AppointmentLifecycleEvent::RECORDING_SINCE` (25.11.2026). Davor „unbekannt“. Ein Storno oder eine
+  `AppointmentLifecycleEvent::RECORDING_SINCE` (25.11.2026). Davor „unbekannt“ — **außer** die
+  Terminbestätigung kennt den Grund (seit 26.11.2026, `confirmationActors()`): `appointment_confirmations`
+  mit Stand `auto_cancelled` = Automatik („Termin nicht bestätigt“), `cancelled_by_client` = Kundin selbst
+  („über den Link abgesagt“), zugeordnet über Kundin und Termintag. Das gilt für Tagesliste **und**
+  Tagessummen (`gone_auto`/`gone_client`), reicht also bis zum 15.11.2026 zurück. Ein Ereignis des
+  Terminverlaufs hat Vorrang. Die Tagesliste schreibt für den Rest „Auslöser nicht aufgezeichnet“. Ein Storno oder eine
   Löschung nach diesem Datum **ohne** Hub-Ereignis ist direkt in Phorest passiert und zählt als Institut —
   auch die telefonische Absage, die das Institut einträgt.
+
+- **Namen und Kundennummer der Tagesliste (seit 26.11.2026):** `clients()` fragt der Reihe nach
+  `client_statistics`, den vollständigen Phorest-Spiegel `phorest_clients` (Neukundinnen fehlen in der
+  Kundenstatistik bis zum nächsten Abgleich — vorher standen sie als „Unbekannt“ in der Liste),
+  `appointment_confirmations.client_name` und erst für den Rest Phorest selbst (gebündelt über
+  `ClientDataResolver::resolveBulk()`, höchstens 40 je Aufruf). Die Kundennummer ist Phorests `externalId`;
+  sie fehlt zu Recht, solange sie noch nicht vergeben ist (Vergabe beim ersten Terminstart). Die Zahl der
+  Abfragen wächst nicht mit den Zeilen (gemessen: 37 Abfragen bei 31 Beratungen).
+- **Spaltenbreiten der Tagesliste:** Klasse `review-day-table` am Tabellenelement. „Ergebnis“ ist auf
+  20 rem begrenzt, die Terminnotiz bricht um und endet nach drei Zeilen (voller Text im Tooltip). Die Regel
+  braucht zwei Klassen (`.booking-inbox-sub.review-gone-note`), weil `.booking-inbox-table .booking-inbox-sub`
+  weiter unten im Theme sonst wieder `nowrap` setzt — genau das schob bis 26.11.2026 „Herkunft“ aus dem Fenster.
 
 **Terminverlauf** (`appointment_lifecycle_events`): Ereignisse `moved`, `cancelled`, `short_notice`
 (in die Absage-Spalte verschoben — der Termin bleibt aktiv und zählt weiter als No-Show) mit `actor`
