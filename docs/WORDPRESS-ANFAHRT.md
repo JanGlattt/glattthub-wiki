@@ -125,6 +125,12 @@ und der **Fußweg zum Institut** wird eingeblendet — dem Straßenverlauf folge
 nicht als Luftlinie. Daneben erscheint eine Fahne mit Name, Gehzeit und den
 Linien in ihrer gewohnten Form.
 
+**Ziel der großen Route:** Institute übergeben Google Maps ihre Koordinate. **Eigene Orte** (`ort-…`,
+z. B. die Laser Akademie) übergeben seit 0.7.1 **Name und Anschrift** („glattt Laser Akademie,
+Jakobistraße 13a, 30163 Hannover“): Mit der nackten Koordinate wählt Google das nächstliegende Geschäft am
+Punkt — im Eckgebäude der Akademie war das ein fremder Laden. Regel: `wpglattt_anf_ziel_route()` in
+`includes/render.php`; der Name des Ortes sollte so lauten wie der Google-Eintrag.
+
 **Die Route wird einmal im Backend berechnet und gespeichert.** Unter *Anfahrt →
 Fußwege berechnen* fragt das Plugin je Punkt einmal den Routendienst
 (FOSSGIS-OSRM, Fußgänger-Profil, kein Schlüssel) und legt die Punktfolge in der
