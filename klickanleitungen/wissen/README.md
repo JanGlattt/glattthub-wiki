@@ -33,3 +33,5 @@ Die Flows ändern nichts: Dialoge werden abgebrochen, der Modeler nicht übernom
 **v1.0 (19.10.2026):** Texte, Decks und Aufnahmeskripte fertig; Screenshots aus dem lokalen Lauf 19.10.2026.
 
 **v1.1 (24.11.2026):** Deck 6 „Anleitungen und Tool-Seiten“ neu, Screenshots w22–w28 aus dem lokalen Lauf 24.11.2026; Decks 1–5 auf „von 6“.
+
+**v1.2 von Deck 2 (27.11.2026):** Editor mit „Neue Zeile“, Ausrichtung im Block-Menü und Listen-Pfeilen « »; `flow2.cjs` nimmt dazu `w8`, `w9` und neu `w9b-block-menue` auf. Beispielseite ist eine Seite mit Absatz **und** Liste am Anfang (`KLICK_WISSEN_DEMO`, Standard 313) — die Schreibmarke steht für `w8` in der Liste, sonst fehlen die Pfeile in der Leiste.

@@ -195,7 +195,8 @@ und die Kunden-Sperre laufen unter `view_appointment_detail`.
 | `GET /hub/staff/trinkgeld/data` | Ranking + `me` + `team_size` + `scope` + `kpis` (Statistik `personal.tip-ranking`) |
 | `GET /hub/staff/trinkgeld/kpis` | KPI-Portfolio der Quelle `trinkgeld` |
 | `GET /hub/staff/trinkgeld/verlauf` | Monate (Statistik `personal.tip-history`) |
-| `GET /hub/staff/trinkgeld/bewertungen` | Einzelbewertungen (`staff_user_id`, `filter` = `comment`/`critical`, `limit`, `offset`); Antwort mit `counts` (all/comment/critical, folgen der Behandlerin), `staff` (Auswahlliste, folgt nicht der Behandlerin), `service_short`, `staff_name` (Vor- und Nachname) sowie `branch_short`/`branch_name`/`branch_color` (Standort-Abzeichen) je Zeile; Namen der Auswahlliste vollständig, `can_read_comments` |
+| `GET /hub/staff/trinkgeld/bewertungen` | Einzelbewertungen (`staff_user_id`, `filter` = `comment`/`critical`, `limit`, `offset`); Antwort mit `counts` (all/comment/critical, folgen der Behandlerin), `staff` (Auswahlliste, folgt nicht der Behandlerin), `service_short`, `session_number` (die wievielte Sitzung, `null` = nicht bestimmbar), `staff_name` (Vor- und Nachname) sowie `branch_short`/`branch_name`/`branch_color` (Standort-Abzeichen) je Zeile; Namen der Auswahlliste vollständig, `can_read_comments` |
+| `GET /hub/staff/trinkgeld/sitzungen` | Sterne nach Sitzungsnummer (Statistik `personal.rating-by-session`): `buckets` (1 … 9, `10+`) mit `ratings_count` und je Skala `count_today|overall`, `avg_stars_today|overall`, `dist_today|overall` (fünf Einträge, Index 0 = 1 Stern), dazu `unknown` (nicht bestimmbar), `total`, `scope` |
 | `GET /hub/staff/trinkgeld/auszahlung` | Monate mit Behandlerinnen (Statistik `personal.tip-payouts`) |
 | `GET /hub/staff/trinkgeld/me` | Eigene Kachel (Startseite Web) — dieselben Daten liefert `GET /api/app/start` als `tips` |
 | `POST /api/webhooks/mollie` | Webhook (dritter Zweig: `treatment_tips.mollie_payment_id`) |
@@ -251,7 +252,32 @@ Team-Sicht entscheidet `TipStatisticsService` anhand von `view_team_tips`.
   steht in `tipsPage.isCritical()` und `TipsRatingRow.isCritical` (App). `shortServices()` macht aus
   Phorest-Servicenamen eine Kurzform („Abo.LS-39 ACHSELN, ..Desinfektion" → „Achseln"; Präfixe,
   Desinfektion/Extrazeit fallen weg, Versalien werden normal geschrieben).
-- CSV-Export: `tip-ranking`, `tip-history` (auch auf der Mitarbeiterperformance), `tip-payouts`
+- **Sitzungsnummer (Maren Schlüter / Jan, 27.11.2026):** der wievielte **bezahlte Behandlungstag** der
+  Kundin bis einschließlich des bewerteten Termins. `Treatments\TreatmentSessionCounter` liest den
+  Termin-Spiegel `stats_historic_appointments` mit denselben Regeln wie die Sitzungen des
+  Nachtrag-Assistenten (`TreatmentBackfillService::sessions()`): nur `state = PAID`, nicht gelöscht
+  (`deleted`), nicht storniert (`activation_state != CANCELED`), keine Beratung
+  (`consultation_services.is_consultation`, Join über die **Service-ID**), keine Begleitleistung
+  (`NonTreatmentServices`: Desinfektion, Extrazeit, Haaranalyse, QK, „Vertrag unterschreiben“ …).
+  Mehrere Termine am selben Tag sind **eine** Sitzung. Nummer = Behandlungstage **vor** dem Tag + 1 —
+  der bewertete Tag zählt immer mit, auch wenn der Spiegel ihn erst beim nächsten Abgleich als bezahlt
+  führt; `null`, wenn Kundin oder Datum fehlen oder der Spiegel keinen einzigen Behandlungstag der
+  Kundin kennt. Papier-Nachträge (`treatment_settings`) fließen nicht ein — gezählt werden Termine.
+  Gebündelt: `treatmentDays()` holt die Tage aller Kundinnen einer Seite in **einer** Abfrage (je
+  1.000 Kundinnen), `numberOn()` zählt in PHP. Die Belegliste zeigt „Intim, Brust, Bauch · 7. Sitzung“
+  (`tipsPage.serviceLine()`, App `TipsRatingRow.serviceLine`).
+- **`personal.rating-by-session` „Sterne nach Sitzungsnummer“** (27.11.2026, Route
+  `hub.staff.tips.rating-by-session`, `TipStatisticsService::ratingsBySession()`, gecacht wie die
+  Nachbarn über `StatisticsCache`): Bewertungen im Zeitraum nach `responded_at` (wie Ranking und
+  Verlauf), Team oder nur ich, Standort über `BranchVisibility`. Rubriken 1. … 9. Sitzung einzeln,
+  ab der 10. gebündelt (`SESSION_BUCKET_MAX`), immer alle zehn; nicht bestimmbare in `unknown`
+  (Hinweis über dem Diagramm, eigene CSV-Zeile). Diagramm: gestapelte Balken = Bewertungen je Sitzung
+  nach 1–5 Sternen (Ampel aus den Statusfarben), Linie Ø Sterne (rechte Achse 1–5), Umschalter
+  `sessionScale` Behandlung | Ergebnis (wirkt auch auf die Tabelle; Ø dort aus den Summen
+  abgeleitet). Partial `rating-by-session.blade.php`, auf der Seite unter dem Verlauf.
+  **Lesehilfe:** Bewertungen gibt es erst seit 09/2026 — hohe Sitzungsnummern stammen von
+  Bestandskundinnen, die 1. Sitzung von Neukundinnen; kleine Rubriken schwanken stark.
+- CSV-Export: `rating-by-session` (je Sitzung beide Skalen mit Ø, Anzahl und 1–5 Sternen), `tip-ranking`, `tip-history` (auch auf der Mitarbeiterperformance), `tip-payouts`
   (Spalten Trinkgeld, Auszahlung an die Behandlerin, Gebühr (Unternehmen) — keine Netto-Spalte mehr).
 - Benachrichtigungs-Katalog `treatment_feedback`: `tip_received` und `rating_received` an die
   Behandlerin (`event_owners`), `low_rating` (≤ 2 Sterne auf einer Skala) an `view_team_tips`.
@@ -449,6 +475,7 @@ automatische Nachricht nach jeder Behandlung (Booking-Masterplan, Entscheidungen
 
 | Datum | Änderung |
 |---|---|
+| 27.11.2026 | Sitzungsnummer an jeder Bewertung (`session_number`, „Intim, Brust, Bauch · 7. Sitzung“) und Statistik „Sterne nach Sitzungsnummer“ (`personal.rating-by-session`, Endpunkt `…/sitzungen`, CSV `rating-by-session`), Web und App; Zählung im `TreatmentSessionCounter` |
 | 30.10.2026 | Seite heißt „Bewertungen & Trinkgeld“, Sterne zuerst (KPIs, Ranking und Verlauf mit Umschalter Sterne/Trinkgeld), Bewertungen als kompakte Zeilen mit Filter Alle/Kommentar/Kritik/Behandlerin und Link zur Kundenakte, Behandlung in Kurzform, Auszahlungen nach unten; Fix: die drei Karten blieben seit 29.09. leer (`shared is not defined`); App: Reiter „Bewertungen“ mit Filter und Kundin antippen |
 | 29.10.2026 | Nachricht nach der Behandlung nicht mehr abwählbar: Schalter „Team darf abwählen“ je Standort (Standard aus); ohne ihn keine Abwahl beim Beenden, keine Sperre im Kundenprofil, alte Team-Sperren wirken nicht, nur die Abmeldung der Kundin zählt |
 | 17.10.2026 | Bewertungs-Motor Etappe 1: Google-Knopf ab 4 Sternen bis zum ersten Klick (Zähl-Umweg), Danke-WhatsApp am Folgetag, Rückruf mit Wunschzeit als Kundenservice-Ticket, Pflichtfeld, freier Trinkgeld-Betrag schaltbar mit Obergrenze, Trinkgeld-Satz als Vorlagen-Variable, manueller Bewertungs-Knopf ruht |

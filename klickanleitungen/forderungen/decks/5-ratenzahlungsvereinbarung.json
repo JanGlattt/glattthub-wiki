@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — RZV abschließen, Plan ändern, laufende Vereinbarung verfolgen, nicht eingehaltene Vereinbarung beenden",
  "eyebrow": "Forderungen · RZV",
  "footerArea": "Forderungen",
- "stand": "15.11.2026",
- "version": "1.4",
+ "stand": "27.11.2026",
+ "version": "1.5",
  "notes": [
   "Eine RZV ist **immer eine Einzelfallentscheidung** — es gibt keine Regel und keinen Automatismus.",
   "Solange sie läuft, **mahnt der Hub nicht** — er beobachtet nur die Raten.",
@@ -40,7 +40,7 @@
     },
     {
      "h2": "Der Fall bleibt in Arbeit",
-     "text": "Anders als nach einer Zahlung schließt sich nichts. Die Stufe wechselt auf **„RZV — Ratenzahlung läuft“**, und jede Rate wird als Zahlungseingang erfasst. Bleibt eine aus, erscheint der Fall unter **„RZV geplatzt“**."
+     "text": "Anders als nach einer Zahlung schließt sich nichts. Die Stufe wechselt auf **„RZV — Ratenzahlung läuft“**, und jede Rate wird zum Zahlungseingang im Fall: Per GoCardless eingezogene Raten schreibt der Hub selbst gut, überwiesene erfasst das Büro. Bleibt eine aus, erscheint der Fall unter **„RZV geplatzt“**."
     }
    ],
    "table": {
@@ -59,7 +59,7 @@
      ],
      [
       "Kundin will selbst überweisen",
-      "keine der beiden Optionen ankreuzen"
+      "keine der beiden Optionen ankreuzen. Gibt es noch keinen Fall (keine geplatzte Rate), ihn zuerst im Vertrag über „Aktionen“ → **„Forderungsfall eröffnen“** anlegen („Verträge 4“)"
      ],
      [
       "Bestandsfall mit laufenden Raten",
@@ -247,12 +247,12 @@
     {
      "n": 2,
      "title": "Zahlung verbuchen",
-     "text": "Bei Überweisung wird jede Rate von Hand erfasst."
+     "text": "Bei Überweisung wird jede Rate von Hand erfasst. Per GoCardless eingezogene Raten bucht der Hub selbst — nicht noch einmal erfassen."
     },
     {
      "n": 3,
      "title": "GoCardless-Status",
-     "text": "Bei Lastschrift steht der Einzugsstand je Rate. Zahlt die Kundin selbst, zeigt der **Ratenplan** darunter, welche Raten bezahlt, teilweise bezahlt oder offen sind. Gezahlt ist, was vom vereinbarten Betrag laut Fall nicht mehr offen ist — derselbe Stand wie in der Übersicht; der Betrag wird der Reihe nach auf die Raten angerechnet, auch eine Sonderzahlung über mehrere Raten oder eine Zahlung, die schon vor dem Anlegen der Vereinbarung einging."
+     "text": "Bei Lastschrift steht der Einzugsstand je Rate; ist sie eingezogen, steht im Verlauf „RZV-Rate per SEPA eingezogen — … € dem Fall automatisch gutgeschrieben“. Zahlt die Kundin selbst, zeigt der **Ratenplan** darunter, welche Raten bezahlt, teilweise bezahlt oder offen sind. Gezahlt ist, was vom vereinbarten Betrag laut Fall nicht mehr offen ist — derselbe Stand wie in der Übersicht; der Betrag wird der Reihe nach auf die Raten angerechnet, auch eine Sonderzahlung über mehrere Raten oder eine Zahlung, die schon vor dem Anlegen der Vereinbarung einging."
     },
     {
      "n": 4,
@@ -264,6 +264,10 @@
     {
      "title": "Bei Überweisung passiert nichts von allein",
      "text": "Jede eingehende Rate muss erfasst werden („Forderungen 4“). Wer das versäumt, mahnt eine bezahlte Rate."
+    },
+    {
+     "title": "Eingezogene Raten bucht der Hub",
+     "text": "Geht eine Rate der Vereinbarung per GoCardless durch, steht sie ohne dein Zutun als Zahlung im Fall, und die Wiedervorlage rückt zur nächsten Rate. Unter **„Zahlung prüfen“** erscheint der Fall nur noch bei einer Rücklastschrift. Ausnahme: **kombinierte Pläne** (Vertragsrate und Forderungsanteil in einer Lastschrift) bucht weiter das Büro."
     },
     {
      "title": "„RZV geplatzt“ ist ein eigener Topf",
@@ -298,7 +302,7 @@
      ],
      [
       "Kombinierter Zahlungsplan",
-      "Bei Bestandsfällen: RZV-Raten plus reguläre Vertragsraten"
+      "Bei Bestandsfällen: RZV-Raten plus reguläre Vertragsraten — diese Einzüge bucht weiter das Büro"
      ]
     ]
    }

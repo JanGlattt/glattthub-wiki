@@ -1843,7 +1843,7 @@ Kiosk-Tageserfassung wird nicht nativ nachgebaut (läuft zu einem festen Datum a
 | App-Geräte | nativ | Liste mit Suche, Chips, Kennzahlen, offene Codes und Geräte nach Institut; Code ausstellen in drei Schritten mit QR und Teilen-Blatt (AirDrop), Code zurückziehen, Gerät widerrufen im Steckbrief; iPad-Split, Ausstellen als Popover (seit 26.09.2026); Einlösen bleibt `EnrollmentSheet` |
 | Personal + Lohnmonat | nativ | Personen aus dem askDANTE-Abbild mit Hub-Profilbild und Zeile „Was ansteht“ (seit 25.10.2026), Akte (Überblick, Vergütung, Zeit, Konto, Vorsorge — betriebliche Altersvorsorge mit Blatt „Stand ändern“ für das Büro, seit 25.10.2026), Hub-Konto anlegen in fünf Schritten, Lohnmonat mit Abschluss, TXT-Übergabe und Brief an die Steuerberatung, Lohnarten (seit 27.09.2026); Teamliste- und Lohnliste-Import bleiben Web (Datei-Upload im Büro), Checklisten Eintritt/Austritt vorerst ausgeblendet |
 | Institute | nativ | Karte zuerst (seit 27.09.2026): Nadeln in Hub-Farbe, Blatt mit Liste/Institut, Unterseiten Kennzahlen, Team, Verwaltung |
-| Bewertungen & Trinkgeld | nativ | Rangliste mit meiner Zeile (seit 29.09.2026; seit 30.10.2026 Sterne zuerst + Reiter Bewertungen mit Filter, Kundin antippen → Akte): Kennzahlen, Segment Sterne/Bewertungen/Trinkgeld/Auszahlung, Zeitraum-Chips, Person als Blatt (iPad daneben), Kommentare nur mit Recht; Startseiten-Karte „Meine Bewertungen“, Beenden-Schalter, Kunden-Sperre |
+| Bewertungen & Trinkgeld | nativ | Rangliste mit meiner Zeile (seit 29.09.2026; seit 30.10.2026 Sterne zuerst + Reiter Bewertungen mit Filter, Kundin antippen → Akte): Kennzahlen, Segment Sterne/Bewertungen/Trinkgeld/Auszahlung, Zeitraum-Chips, Person als Blatt (iPad daneben), Kommentare nur mit Recht; Startseiten-Karte „Meine Bewertungen“, Beenden-Schalter, Kunden-Sperre; seit 27.11.2026 Sitzungsnummer je Bewertung und Karte „Sterne nach Sitzungsnummer“ im Reiter Sterne |
 | Überlegt noch | nativ | Anrufliste (seit 17.10.2026, Welle 2 seit 18.10.2026: Termin verpasst, Reiter Reaktivierung mit Sammelversand): Reiter Offen/Link/Erledigt, Akte mit Link per WhatsApp, Termin buchen, Nicht erreicht, Ergebnis-Blatt nach dem Anruf; iPad Liste + Akte |
 | Wissen (glatttipedia) | nativ | Leseansicht „Wie im Hub“ (seit 19.10.2026): Umschalter Institut · Büro · Leitung, Kapitelliste, Suche, Fließtext mit Sprungliste, Pflichtseite bestätigen, Hilfreich/Veraltet, Lightbox; iPad Seitenleiste · Text · Inhaltsverzeichnis. Seit 24.11.2026 Anleitungen, Tool-Seiten mit Zusatzfilter und Tool-Verzeichnis. Redaktion und Kiosk bleiben Web |
 | Zufriedenheit | nativ | Drei Stapel (seit 27.09.2026): Folgeaufgaben mit Anrufen/Termin buchen, Kandidatinnen mit Senden (Rückfrage, Kanal-Hinweis) und Überspringen, Verlauf mit Chips, Detailkarte; Standort-Einstellungen bleiben im Admin |
@@ -2608,7 +2608,7 @@ ist gold hervorgehoben; wer nur sich sehen darf, sieht seinen Platz im Verhältn
 Tipp öffnet die **Person** (Sterne beider Skalen, Trinkgeld, Bewertungen mit Kommentaren — nur
 mit Recht). Der Reiter **Bewertungen** listet jede Bewertung als Karte (Kundin, Datum, Behandlerin,
 Behandlung in Kurzform, Lob-/Problem-Karten, Kommentar, rechts beide Sterne in Ampelfarbe; Kritik
-mit rotem Rand) mit den Filtern Alle · Mit Kommentar · Kritik — ein Tipp öffnet die Kundenakte. **Auszahlung** listet je Monat brutto, Gebühr (vorläufig oder endgültig), netto und ob
+mit rotem Rand) mit den Filtern Alle · Mit Kommentar · Kritik — ein Tipp öffnet die Kundenakte; hinter den Zonen steht seit 27.11.2026 die Sitzungsnummer („Beine · 7. Sitzung“). Im Reiter **Sterne** zeigt unter der Rangliste die Karte **„Sterne nach Sitzungsnummer“**, wie die Kundinnen je nach Anzahl ihrer Sitzungen bewerten (Säulen nach 1–5 Sternen, Linie Ø, Diagramm oder Tabelle). **Auszahlung** listet je Monat brutto, Gebühr (vorläufig oder endgültig), netto und ob
 der Monat über den Lohnmonat ausgezahlt ist. Auf dem iPad stehen Liste und Person nebeneinander.
 Die **Startseite** zeigt nach „Mein Bonus“ die Karte „Meine Bewertungen“ (Trinkgeld diesen Monat
 mit Abstand zum nächsten Platz, Bewertung diesen Monat, Platz im Team, letzter Kommentar).
@@ -2623,6 +2623,18 @@ Nachricht senden“ (nur dieses Mal / dauerhaft) bzw. „Diesmal trotzdem senden
 
 **Für Entwickler:**
 
+- **Sitzungsnummer und „Sterne nach Sitzungsnummer“ (27.11.2026):** `TipsRatingRow.sessionNumber`
+  (`session_number`, optional) → `serviceLine`. Die Karte lädt `GET /hub/staff/trinkgeld/sitzungen`
+  in `TipsModel.load()` als eigenen Versuch (`try?` — ein Hub-Stand ohne den Endpunkt lässt die
+  Seite stehen, die Karte fehlt dann) nach `RatingBySessionStats` (alle Felder optional, auch im
+  Offline-Stand `TipsSnapshot.sessionStats`). `TipsSessionStatsCard` (Reiter Sterne, iPhone unter
+  der Rangliste, iPad in der linken Spalte) nutzt den Kartenrahmen `ReportStatFrame` nach dem Muster
+  „Wie im Hub“; `RatingBySessionChart` zeichnet mit Swift Charts gestapelte Säulen (links Anzahl)
+  und die Ø-Linie auf dieselbe Achse umgerechnet (rechte Marken 0–5 ★) — feste Rubriken, deshalb
+  ohne Wisch-Fenster; Legende blendet Reihen aus, Tipp auf eine Säule zeigt die Werte.
+  `RatingBySessionCard` (in `MoreReportCards.swift`, Verteiler `SalesStatisticCards`) ist dieselbe
+  Karte als Kachel im Eigenen Dashboard (Registry `native: B`). Snapshots `tips-session-stats*`
+  und `report-card-rating-by-session`.
 - **Sterne zuerst (Jan, 30.10.2026):** `TipsModel.Segment` = `stars, ratings, tips, payouts`,
   Start `.stars`; `rows` sortiert nur im Reiter `.tips` nach Betrag. Reiter `.ratings`
   (`TipsRatingsSection`): „Alle“ aus dem Seitenabruf, die Filter `comment`/`critical` holt

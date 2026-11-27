@@ -553,6 +553,29 @@ können eigene Vorlagen-Varianten hinterlegt werden (`dunning_templates`, Cluste
   lassen und die RZV-Raten separat anlegen (genau das macht die Checkbox
   „Raten neu per GoCardless einziehen"); kombinierte Pläne sind ein
   Bestands-Muster aus der SEPA-Tab-Zeit.
+  **Eingezogene RZV-Raten schreibt der Hub selbst gut (seit 27.11.2026).** Geht eine Rate der
+  Vereinbarung per GoCardless durch, bucht `DebtCaseIntakeService::creditRzvCollection()` (aus
+  `handlePaymentSettled()`) einen Eingang mit `source_component = rzv_rate`
+  (`DebtCasePayment::COMPONENT_RZV_RATE`, Methode GoCardless, Datum des Einzugs) — idempotent über
+  diesen Spiegel. Danach rückt die Wiedervorlage auf den nächsten offenen Einzug + 13 Tage; der
+  Fall steht also nicht mehr nach jeder Rate unter „Zahlung prüfen“, sondern nur noch bei einer
+  Rücklastschrift. Geschlossen wird mit dem **letzten** Einzug bei 0 € (Ausgang `rzv`) — nicht
+  schon, wenn der Fall rechnerisch bei 0 € steht, die Vereinbarung aber über mehr lautet
+  (H004645: Vereinbarung über den Flexpreis). Bleibt nach dem letzten Einzug etwas offen, liegt der
+  Fall zur Entscheidung vor. Platzt eine schon gutgeschriebene Rate nachträglich (späte
+  Rücklastschrift, Chargeback), entfernt `handleBouncedPayment()` die Gutschrift wieder.
+  **Kombinierte Pläne bleiben Handarbeit** (verknüpfte Einzüge tragen mehr als die Vereinbarung:
+  welcher Teil dem Fall gehört, steht nirgends). Eigener Spiegel-Typ, damit der
+  `SettlementCaseSyncService` (Abgleich manueller Begleichungen) die Gutschrift nie anfasst; im
+  Fall ist sie wie jeder Spiegel nicht stornierbar.
+  Bei **Restsummen-Fällen** (Hauptforderung = Vertragsrest) sind die RZV-Raten die Vertragsraten:
+  Jeder Einzug senkte den Rest und damit die Hauptforderung, ein Eingang stand nirgends (OS004130:
+  3.199,20 € statt der angemahnten 3.599,10 €). `settledThroughCaseSums()` rechnet die über
+  `rzv_rate` gespiegelten Raten deshalb zurück — Hauptforderung bleibt stehen, die Einzüge stehen
+  als Zahlungen daneben.
+  Bestand: `receivables:credit-rzv-collections [--dry-run] [--case=ID]` bucht eingezogene,
+  nie gebuchte RZV-Raten nach — **nur** in Fällen ohne Eingang von Hand seit Beginn der
+  Vereinbarung; Fälle mit Handbuchung und kombinierte Pläne listet der Befehl zur Prüfung auf.
   **Platzt eine GoCardless-RZV-Rate, eskaliert der Fall bewusst NICHT
   automatisch**: Die Vereinbarung wird als „geplatzt" markiert, die 10-€-Gebühr
   gebucht und der Fall sofort vorgelegt (Badge „RZV geplatzt") — ob weiter
@@ -1651,6 +1674,7 @@ Fall, Saldo = Restsumme, Marker als Notizen, Idempotenz.
 
 | Datum | Änderung |
 |---|---|
+| 27.11.2026 | Per GoCardless eingezogene RZV-Raten werden automatisch gutgeschrieben (`creditRzvCollection()`, Spiegel `rzv_rate`, Wiedervorlage zur nächsten Rate, Schließen mit dem letzten Einzug); Restsummen-Fälle behalten dabei ihre Hauptforderung (OS004130); Befehl `receivables:credit-rzv-collections`; Einstieg `manual`: „Forderungsfall eröffnen“ im Aktionen-Menü des Zahlungen-Reiters ohne geplatzte Rate (OS003395, `openManualCase()`, Route `hub.contracts.open-case`, Rechte `manage_receivables` + `manage_gocardless`); `receivables:repair-appended-fee-mirrors --include-cancelled --contract=…` für Gebühren-Spiegel an stornierten oder gelöschten angehängten Raten (H004645) |
 | 19.11.2026 | Mitangehängte fremde Gebühren mindern die Mahnung nicht mehr (HB000838); Einzug einer angehängten Rate wird auch nach Neustart des Falls gutgeschrieben |
 | 18.11.2026 | Über den Fall bezahlte Raten zählen bei Restsummen-Fällen nur einmal (`settledThroughCaseSums()`, Bs000751); „Fall wieder öffnen“ für bezahlt geschlossene Fälle mit Rest; „Forderungsfall eröffnen“ an geplatzten Raten ohne Fall (H004635); Befehle `contracts:void-duplicate`, `contracts:complete-paid`, `phorest:archive-client-courses --on=` |
 | 15.11.2026 | 50-€-Weiche zählt erledigte Forderungen nicht mehr als Altschuld (H004794) |

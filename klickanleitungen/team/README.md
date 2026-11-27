@@ -9,6 +9,7 @@ Deck-Format: `klickanleitungen/README.md` und Wiki `docs/KLICKANLEITUNGEN.md`.
 | **2 — Reisekosten erfassen** | Anspruchstage, Fahrt, Verpflegung, Einreichen | Institute | v1.0, Screenshots offen |
 | **3 — Reisekosten freigeben** | Eingänge prüfen, Belege ansehen, entscheiden | Büro | v1.0, Screenshots offen |
 | **6 — glattt Coach: Beratung trainieren** | Startseite mit Wochenstand, Modul und Kundentyp, Gesprächsraum mit Souffleur, Ergebnis, Zuweisungen für Leitung/Büro, Verlauf mit Statistiken | Institute (Zuweisungen: Leitung/Büro) | v1.0 (01.11.2026), lokal gegen Beispieldaten (`scripts/coach.cjs`) |
+| **5 — Bewertungen & Trinkgeld** | Nachricht nach der Behandlung, Bewertungsseite, Seite „Bewertungen & Trinkgeld“ mit Karte „Sterne nach Sitzungsnummer“, Bewertungsliste mit Sitzungsnummer | Institute | v1.4 (27.11.2026), `t4`/`t4b`/`t5` lokal gegen erfundene Bewertungen (`scripts/reshoot-trinkgeld.cjs`; Sitzungsnummern brauchen bezahlte Behandlungstage der Beispiel-Kundinnen in `stats_historic_appointments`) |
 | **4 — Lohnmonat und Vergütung** | Lohnliste, Einmalzahlung, Brief an die Steuerberatung, Lohnarten, Lohnliste übernehmen (CSV), Vergütung | Büro | v1.2 (27.09.2026), Bilder mit erfundenen Personen |
 
 Dokument 2 richtet sich an die Institute — jede reicht ihre eigenen Reisekosten ein. 1 und 3

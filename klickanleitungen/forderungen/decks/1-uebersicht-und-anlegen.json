@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für den glatttHub — die Arbeitsliste, woher die Fälle kommen, Fall ohne Vertrag anlegen",
   "eyebrow": "Forderungen · Übersicht",
   "footerArea": "Forderungen",
-  "stand": "09.11.2026",
-  "version": "1.2",
+  "stand": "27.11.2026",
+  "version": "1.3",
   "notes": [
     "Die Startseite ist eine **Arbeitsliste**: „Zu erledigen“ ist der einzige Topf, der Arbeit bedeutet.",
     "Der **Einstieg bestimmt den Weg** — sanft, hart oder ohne Vertrag.",
@@ -99,11 +99,11 @@
     },
     {
       "h1": "Woher die Fälle kommen",
-      "sub": "Vier Einstiege — sie bestimmen, wie hart der Fall geführt wird.",
+      "sub": "Fünf Einstiege — sie bestimmen, wie hart der Fall geführt wird.",
       "layout": "text",
       "card": {
         "title": "Woher die Fälle kommen",
-        "text": "Die vier Einstiege"
+        "text": "Die fünf Einstiege"
       },
       "sections": [
         {
@@ -141,6 +141,11 @@
             "**Kundenkonto**",
             "Offenes Konto ohne Vertrag, z.B. aus dem Institut",
             "ohne Vertrag — nach der 2. Erinnerung direkt Postweg"
+          ],
+          [
+            "**Von Hand eröffnet**",
+            "Das Büro wählt im Vertrag unter „Aktionen“ den Eintrag **„Forderungsfall eröffnen“** — ohne geplatzte Rate, z. B. für eine Selbstzahlerin, die monatlich überweist („Verträge 4“)",
+            "führt den offenen Vertragsrest, nichts wird fällig gestellt — danach die Ratenzahlungsvereinbarung („Forderungen 5“)"
           ]
         ]
       },

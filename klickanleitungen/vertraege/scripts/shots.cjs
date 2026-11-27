@@ -27,7 +27,16 @@ const PLAN = [
   { name: 'vt3-aufbau', url: '/hub/contracts/' + L.CONTRACT, reiter: 'Zahlungen & SEPA' },
   { name: 'vt3-ratenzeile', url: '/hub/contracts/' + L.CONTRACT, reiter: 'Zahlungen & SEPA' },
   { name: 'vt3-summen', url: '/hub/contracts/' + L.CONTRACT, reiter: 'Zahlungen & SEPA' },
-  { name: 'vt4-aktionen', url: '/hub/contracts/' + L.CONTRACT, reiter: 'Zahlungen & SEPA' },
+  // Aufgeklapptes Menü „Aktionen“ (seit 27.11.2026 mit „Forderungsfall eröffnen“ — braucht die Rechte
+  // manage_receivables + manage_gocardless und einen Vertrag ohne laufenden Fall: KLICK_CONTRACT_MENU)
+  { name: 'vt4-aktionen', url: '/hub/contracts/' + L.CONTRACT_MENU, reiter: 'Zahlungen & SEPA', menue: true, verwerfen: true,
+    marks: [
+      { id: 'aktionen', kind: 'chip', label: 'Aktionen', sel: '.action-menu-glattt-trigger', at: 'l' },
+      { id: 'verbuchen', kind: 'badge', n: 2, ...L.byText('.action-menu-glattt-item', 'Zahlung verbuchen'), at: 'l' },
+      { id: 'nachtragen', kind: 'badge', n: 1, ...L.byText('.action-menu-glattt-item', 'Gezahlte Rate nachtragen'), at: 'l' },
+      { id: 'einziehen', kind: 'badge', n: 4, ...L.byText('.action-menu-glattt-item', 'Betrag einziehen'), at: 'l' },
+      { id: 'fall', kind: 'badge', n: 5, ...L.byText('.action-menu-glattt-item', 'Forderungsfall eröffnen'), at: 'l' },
+    ] },
   { name: 'vt4-nachtragen', url: '/hub/contracts/' + L.CONTRACT, oeffne: 'Rate nachtragen', verwerfen: true },
   { name: 'vt4-verbuchen', url: '/hub/contracts/' + L.CONTRACT, oeffne: 'Zahlung verbuchen', verwerfen: true },
   { name: 'vt4-erste-rate', url: '/hub/contracts/' + L.CONTRACT, reiter: 'Zahlungen & SEPA' },
@@ -77,8 +86,19 @@ const PLAN = [
         if (!ok) { console.log('NICHT GEFUNDEN:', p.oeffne, '— Beschriftung geaendert oder Recht fehlt'); }
         await L.wait(page, 1200);
       }
+      if (p.menue) {
+        // Menü aufklappen und so weit rollen, dass alle Einträge im Bild stehen — nichts darin wird gedrückt
+        await L.clickText(page, '.action-menu-glattt-trigger', 'Aktionen', 800);
+        await page.evaluate(() => {
+          const panel = [...document.querySelectorAll('.action-menu-glattt-panel')].find(e => e.offsetParent !== null && e.dataset.open === 'true');
+          if (!panel) return;
+          const b = panel.getBoundingClientRect();
+          if (b.bottom > window.innerHeight - 12) window.scrollBy({ top: b.bottom - window.innerHeight + 12, behavior: 'instant' });
+        });
+        await L.wait(page, 500);
+      }
       await L.wait(page, 800);
-      await L.shot(page, p.name, {});
+      await L.shot(page, p.name, { marks: p.marks || [], noScroll: !!p.menue });
       if (p.verwerfen) { await page.keyboard.press('Escape'); await L.wait(page, 600); letzte = null; }
     } catch (e) {
       console.log('FEHLER bei', p.name, '—', e.message.split('\n')[0]);

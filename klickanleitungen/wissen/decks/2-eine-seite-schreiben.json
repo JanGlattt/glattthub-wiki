@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für die Redaktion — neue Seite anlegen, Blöcke setzen, Sichtbarkeit wählen, veröffentlichen",
  "eyebrow": "Wissen · Redaktion",
  "footerArea": "Wissen",
- "stand": "25.11.2026",
- "version": "1.1",
+ "stand": "27.11.2026",
+ "version": "1.2",
  "notes": [],
  "pages": [
   {
@@ -62,7 +62,7 @@
     {
      "n": 1,
      "title": "Leiste",
-     "text": "Zurück, Pfad, Speicherstand, Rückgängig/Wiederholen, Panel ein/aus, **Vorschau**, **Sichern**, **Veröffentlichen**. Der Entwurf sichert sich auch von selbst."
+     "text": "Zurück, Pfad, Speicherstand, **Neue Zeile**, in Listen die Pfeile **«** und **»**, Rückgängig/Wiederholen, Panel ein/aus, **Vorschau**, **Sichern**, **Veröffentlichen**. Der Entwurf sichert sich auch von selbst."
     },
     {
      "n": 2,
@@ -101,13 +101,24 @@
     },
     {
      "n": 3,
+     "title": "Klickanleitung einbinden",
+     "text": "Wo eine Seite Klicks im Hub beschreiben würde: Block „Klickanleitung“ wählen und den Vorgang suchen. Die Schritte kommen aus dem Nutzerhandbuch und bleiben von selbst aktuell — nicht abtippen."
+    }
+   ],
+   "right": {
+    "shot": "w9b-block-menue"
+   },
+   "rightCaption": "Das Block-Menü hinter **⋮⋮**: Ausrichtung für Text und Überschrift, darunter „Sichtbar für“.",
+   "rightSteps": [
+    {
+     "n": 4,
      "title": "Sichtbarkeit je Block",
      "text": "Über die Block-Einstellungen (⋮⋮ › **Sichtbar für**) kann ein einzelner Block nur für Büro oder Leitung gelten — alle anderen sehen ihn nicht."
     },
     {
-     "n": 4,
-     "title": "Klickanleitung einbinden",
-     "text": "Wo eine Seite Klicks im Hub beschreiben würde: Block „Klickanleitung“ wählen und den Vorgang suchen. Die Schritte kommen aus dem Nutzerhandbuch und bleiben von selbst aktuell — nicht abtippen."
+     "n": 5,
+     "title": "Neue Zeile, Ausrichtung, Einrücken",
+     "text": "**Neue Zeile** in der Leiste (oder Umschalt+Eingabe) beginnt eine Zeile ohne Abstand im selben Absatz — Eingabe allein macht einen neuen Absatz. Text und Überschrift richtest du über ⋮⋮ aus: **Linksbündig, Zentriert, Rechtsbündig, Blocksatz**. In Listen rücken die Pfeile **«** und **»** in der Leiste einen Punkt aus und ein (auch Tab und Umschalt+Tab)."
     }
    ],
    "notes": [

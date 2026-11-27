@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für den glatttHub — Rate nachtragen, freie Zahlung verbuchen, erste Rate bestätigen, RLS ausgleichen",
  "eyebrow": "Verträge · Zahlungen buchen",
  "footerArea": "Verträge",
- "stand": "09.11.2026",
- "version": "1.1",
+ "stand": "27.11.2026",
+ "version": "1.2",
  "notes": [
   "**Nachtragen bewegt kein Geld** — es hält nur fest, dass etwas eingegangen ist.",
   "**Zahlungsart ist immer Pflicht**, das Eingangsdatum immer der Tag, an dem das Geld bei uns war.",
@@ -31,7 +31,7 @@
    "left": {
     "shot": "vt4-aktionen"
    },
-   "leftCaption": "Die Aktionen am rechten Rand einer Ratenzeile.",
+   "leftCaption": "Das Menü **„Aktionen“** im Reiter „Zahlungen & SEPA“ — die Einträge richten sich nach Vertrag und Recht.",
    "steps": [
     {
      "n": 1,
@@ -52,6 +52,11 @@
      "n": 4,
      "title": "Geld soll abgebucht werden",
      "text": "**Nicht hier** — das ist ein Einzug, „Verträge 5“."
+    },
+    {
+     "n": 5,
+     "title": "Selbstzahlerin zahlt in Raten",
+     "text": "**„Forderungsfall eröffnen“** gibt den offenen Vertragsrest ins Forderungsmanagement — nichts wird fällig gestellt, keine Gebühr gebucht. Die Ratenzahlungsvereinbarung legst du danach im Fall an („Forderungen 5“). Der Eintrag steht nur bei offenem Rest und ohne laufenden Fall im Menü und braucht die Rechte für Forderungen und GoCardless."
     }
    ],
    "notes": [

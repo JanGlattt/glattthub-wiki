@@ -114,6 +114,16 @@ Ersetzen nicht (der Vorgänger wird `modified`).
 - **6 KPZ = Ganzkörper** (je nach `max_body_zones`): Der Nachfolger wird als ein GK-Paket gekauft,
   die alten Zonen-Pakete werden archiviert — unabhängig vom Sitzungs-Modus.
 - Jede Zone ist in Phorest ein **eigenes Kunden-Paket** (`body_zones.phorest_course_id`).
+- **Von Hand gebuchte Abos tragen andere Kurs-IDs.** Die meisten laufenden Verträge haben Abos aus
+  dem alten Katalog („Abo.LS-39 ACHSELN“, „Abo.LS-19 GANZKÖRPER“), nicht die Hub-Kurse. Bis
+  27.11.2026 suchte das Fenster nur über `phorest_course_id`, meldete „keine offenen Pakete“ und
+  sperrte das Ersetzen (BI007475, BI007489). `ContractCourseMatcher` ordnet jetzt zuerst über die
+  Kurs-ID zu, sonst über den Namen des Abos (`PlannedZoneResolver`, dieselbe Namens-Zuordnung wie
+  beim Einstellungszettel); ein Treffer über die ID geht vor. Der `PredecessorCourseArchiver`
+  nutzt den Namen nur, wenn der Altvertrag **keinen** Hub-Kauf hat (`phorest_purchased_at` leer).
+- **Mindestzahl offener Sitzungen und alte Abos:** Die Abos starten bei 8 (die erste Sitzung wird
+  als „Erste.Sitz“ gebucht). Eine Regel „mindestens 7“ lässt das Ersetzen also nur bis zur ersten
+  Abo-Sitzung zu.
 - `predecessor_credit_cents` ist `NOT NULL` — Zusatzvertrag mit 0, nie `null` (legte bis
   25.10.2026 still keinen Vertrag an; das Formular meldet Fehler der Vertragsanlage nicht).
 - Verträge mit wiederverwendetem Mandat bis 03.11.2026 ohne Phorest-Kauf: Die Migration
@@ -139,3 +149,6 @@ Ersetzen nicht (der Vorgänger wird `modified`).
 - 15.11.2026 — Zuordnung und Archivieren der alten Pakete in `PredecessorCourseArchiver`
   herausgezogen (gemeinsam mit der Vertragsänderung im Fernabsatz); Verhalten des Upsellings
   unverändert.
+- 27.11.2026 — Pakete werden auch über den Abo-Namen erkannt (`ContractCourseMatcher`), beim Prüfen
+  der offenen Sitzungen und beim Archivieren der Alt-Abos; Vertragsänderung im Fernabsatz stempelt
+  mehr KPZ als „Upgrade“ (`ContractChangeOfferService::reactionFor()`).

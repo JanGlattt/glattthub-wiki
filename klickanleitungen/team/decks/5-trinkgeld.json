@@ -13,8 +13,8 @@
  "subtitle": "Klickanleitung für das Institut im glatttHub — was die Kundin nach der Behandlung bekommt und wo Trinkgeld und Sterne stehen",
  "eyebrow": "Team · Bewertungen & Trinkgeld",
  "footerArea": "Team",
- "stand": "30.10.2026",
- "version": "1.3",
+ "stand": "27.11.2026",
+ "version": "1.4",
  "notes": [
   "Nach jeder **beendeten Behandlung** bekommt die Kundin verzögert eine Nachricht mit ihrem Bewertungslink — per WhatsApp, SMS oder E-Mail, je nachdem, was am Standort eingestellt ist und wozu sie eingewilligt hat.",
   "Das **Trinkgeld kommt zu 100 % bei dir an** — ohne Abzug, die Gebühr des Zahlungsanbieters trägt glattt. Ausgezahlt wird es in voller Höhe mit dem Lohn des Folgemonats.",
@@ -135,6 +135,10 @@
     "shot": "t4-seite-trinkgeld"
    },
    "leftCaption": "Kennzahlen (Sterne zuerst), Zeitraum und das Ranking je Behandlerin — die eigene Zeile hervorgehoben.",
+   "right": {
+    "shot": "t4b-sterne-nach-sitzung"
+   },
+   "rightCaption": "Die Karte „Sterne nach Sitzungsnummer“ — Balken je Sitzung, die Linie ist der Ø (Beispielwerte).",
    "steps": [
     {
      "n": 1,
@@ -150,6 +154,11 @@
      "n": 3,
      "title": "Sterne oder Trinkgeld",
      "text": "Die Karten **„Sterne & Trinkgeld je Behandlerin“** und **„… im Verlauf“** zeigen zuerst die Sterne (Balken je Behandlerin bzw. Bewertungen je Monat). Mit dem Umschalter **Sterne | Trinkgeld** oben rechts wechselst du auf das Trinkgeld; über das Register am Rand gibt es jede Karte auch als Tabelle."
+    },
+    {
+     "n": 4,
+     "title": "Sterne nach Sitzungsnummer",
+     "text": "Die Karte zeigt, wie die Kundinnen **je nach Anzahl ihrer Sitzungen** bewerten: je Sitzung (1. bis 9., ab der 10. zusammengefasst) die Bewertungen nach 1 bis 5 Sternen als Balken und den **Ø als Linie**. Oben rechts wechselst du zwischen **Behandlung** und **Ergebnis**."
     }
    ],
    "notes": [
@@ -192,6 +201,11 @@
     },
     {
      "n": 4,
+     "title": "Die wievielte Sitzung",
+     "text": "Hinter den behandelten Zonen steht, die **wievielte Sitzung** es war — zum Beispiel „Intimzone, Brust, Bauch · 7. Sitzung“. Gezählt werden die bezahlten Behandlungstage der Kundin bis zu diesem Termin; Beratung und Qualitätskontrolle zählen nicht."
+    },
+    {
+     "n": 5,
      "title": "Sterne auf einen Blick",
      "text": "Rechts stehen die Sterne für die **Behandlung** und das **Ergebnis** — grün bei 5, gelb bei 4, rot ab 3 abwärts. Hat die Kundin Trinkgeld gegeben, steht der Betrag darunter."
     }

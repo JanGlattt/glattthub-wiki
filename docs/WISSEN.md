@@ -186,6 +186,32 @@ Veröffentlichen fragt die Änderungszeile ab. Die Felder des Seitenpanels halte
 `.form-glattt-group`. Uploads gehen an `/hub/wissen/medien` (Disk
 `config('wissen.media_disk')`, lokal `public`, in der Cloud `gcs`).
 
+**Zeilenumbruch im Fließtext (27.11.2026):** Eine neue Zeile ohne Absatz-Abstand ist ein `<br>` im Text des
+Blocks (`INLINE_TAGS` in `KnowledgeBlocks`). Drei Wege setzen ihn: Umschalt+Eingabe, der Knopf **Neue Zeile** in
+der Editor-Leiste (`insertLineBreak()`, für das iPad) und das Inline-Werkzeug `lineBreak` (`LineBreakInline`).
+Das Inline-Werkzeug hat einen zweiten Zweck: Sein `sanitize` (`br: true`) lässt `<br>` in jedem Block mit
+Inline-Leiste durch den Editor.js-Sanitizer — die Überschrift würde ihn sonst beim Speichern entfernen. Der Knopf
+arbeitet an der zuletzt gemerkten Schreibmarke (`selectionchange` → `trackCaret()`, Range als Closure-Variable,
+nicht in den Alpine-Daten) und hält sie per `@mousedown.prevent`. Fallstricke: Das List-Werkzeug hält Einträge
+mit `white-space: pre-wrap`, der Browser schreibt dort `\n` statt `<br>` — `listBreaksToHtml()` wandelt das vor
+dem Speichern um. `sanitizeInline()` macht jede Variante zum nackten `<br>`, entfernt die Platzhalter-Umbrüche
+am Feldende und das `&nbsp;`, das der Browser nach einem Umbruch vor einem Leerzeichen setzt. Für Suche,
+glatttBert und Inhaltsverzeichnis wird der Umbruch zum Leerzeichen (`stripInline()`), im Absatz zur eigenen Zeile
+— so sieht ihn der Versionsvergleich als Änderung. Die Checkliste (Editor.js Checklist) nimmt keinen Umbruch an.
+
+**Ausrichtung (27.11.2026):** Absatz und Überschrift (`KnowledgeBlocks::ALIGNABLE_TYPES`) tragen die Block-Tune
+`align` (`AlignTune`, vier Einträge im Block-Menü). Editor.js liefert `tunes.align.value`, gespeichert wird
+`data.align` mit `center`, `right` oder `justify` (`ALIGNMENTS`); linksbündig ist der Standard und wird nicht
+gespeichert, unbekannte Werte fallen in `KnowledgeBlocks::alignment()` weg. `toEditor()` gibt den Wert als Tune
+zurück. Leseansicht: Klassen `.wissen-align-center|right|justify` am `<p>` bzw. an der Überschrift, im Editor
+`.wissen-ed-align-*` am Tune-Wrapper (beide in `theme_glattt.css` bei „Text neben Bildern“). Nicht verwechseln
+mit `data.align` des Bild-Blocks (Text neben dem Bild). Die App liest `data.align` in
+`WissenBlock.textAlignment`; Blocksatz kann SwiftUI-`Text` nicht und bleibt dort linksbündig.
+
+**Listen einrücken (27.11.2026):** Das List-Werkzeug kennt nur Tab und Umschalt+Tab. Steht die Schreibmarke in
+einer Liste (`caretIn === 'list'`), zeigt die Leiste zwei Knöpfe; `indentListItem()` schickt dem Eintrag ein
+`keydown` mit `Tab` — das Werkzeug hört darauf am Listen-Wrapper. Bei einem Update von `@editorjs/list` prüfen.
+
 **Rechtschreibprüfung (Jan, 15.11.2026):** Die Wurzel `.wissen-editor` trägt `spellcheck="true"` und
 `lang="de"`; beides erbt jedes Feld und jeder Editor.js-Block. Unterstrichen wird vom Browser, Vorschläge
 gibt es per Rechtsklick — in der Desktop-App über das eigene Kontextmenü (siehe `DESKTOP-APP.md`,
@@ -464,6 +490,7 @@ stehen bereits in Antwort und Quellen.
 
 ## Changelog
 
+- **27.11.2026** — Editor: Zeilenumbruch im Fließtext (Knopf „Neue Zeile“, Inline-Werkzeug, Hinweis ⇧↵), Ausrichtung für Absatz und Überschrift (`data.align`, Klassen `.wissen-align-*`, auch nativ), Knöpfe zum Ein- und Ausrücken von Listenpunkten.
 - **24.11.2026** — `wissen:import-json --as-draft` mit Sicherung des bisherigen Entwurfs, `scripts/staging-artisan.sh`, Tool-Knopf in glatttBert-Antworten, native Darstellung in der App (Entwurf 1 „Wie im Hub“, siehe [iOS-App](IOS-APP.md)).
 - **23.11.2026** — Anleitungen und Tool-Seiten: `knowledge_guides`, Blöcke `guide`/`guides`, Seitenarten Tool und Tool-Verzeichnis, Redaktion „Anleitungen“, Zusatzfilter Leitungsaufgaben/Büroprozesse, Anleitungen als Suchtreffer, Export/Import mit `uuid`.
 - **15.11.2026** — Rechtschreibprüfung im Editor (Deutsch, Vorschläge per Rechtsklick; Desktop-App ab 1.2.14).

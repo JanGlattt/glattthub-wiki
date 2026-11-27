@@ -154,6 +154,15 @@ Endpoints einheitlich `date_from/date_to/branch_id`. **Kein DataScope** (Gehalts
 
 Kapazität (`/capacity`), Produktivität (`/productivity`), Personalkosten (`/costs`, Permission `view_hr_salaries`!), Abwesenheiten (`/absence`), Fluktuation (`/turnover`), Befristungs-Radar (`/contract-radar`, Zeitraum ohne Wirkung → `fixed_range`), Personalstruktur (`/structure`), Institutsvergleich (`/branches`, Seiteneffekt `branchNames` auflösen), Mitarbeiter im Detail (`/employees`), Datenqualität (`/data-quality`). KPI-Zeile (22 KPIs) = (d).
 
+### Bewertungen & Trinkgeld (Seite Team → Bewertungen & Trinkgeld; `view_tips`) — 4 Statistiken
+
+`personal.tip-ranking`, `personal.tip-history` (beide auch auf der Mitarbeiterperformance), `personal.tip-payouts` und seit
+27.11.2026 `personal.rating-by-session` („Sterne nach Sitzungsnummer“: je Sitzung der Kundin — 1. … 9., ab der 10. gebündelt —
+Verteilung 1–5 Sterne und Ø, Skala Behandlung/Ergebnis). Endpoints `/hub/staff/trinkgeld/data|verlauf|auszahlung|sitzungen`
+mit `date_from/date_to/branch_id`, Team nur mit `view_team_tips`. Export `tip-ranking`, `tip-history`, `tip-payouts`,
+`rating-by-session` (Seite `tips`). Die Belegliste der Einzelbewertungen ist bewusst keine Kachel (Einzeldatensätze).
+Wiki [Trinkgeld & Qualität](TRINKGELD-QUALITAET.md).
+
 ### glattt Coach (Seite Team → glattt Coach, Verlauf; `use_glattt_coach`) — 2 Statistiken (seit 01.11.2026)
 
 `personal.coach-scores` (Prüfungen, bestanden, Ø Score je Monat; Übungen und Dimensionen in der Tabelle) und

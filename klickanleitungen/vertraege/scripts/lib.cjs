@@ -9,6 +9,7 @@ S.requireEnv([
 
 const CONTRACT = process.env.KLICK_CONTRACT || null;   // Ratenzahler MIT SEPA-Mandat, einige Raten bezahlt, einige offen — ID aus /hub/contracts/<ID>
 const CONTRACT_LEGACY = process.env.KLICK_CONTRACT_LEGACY || null;   // Optional: Legacy-Vertrag fuer vt5-legacy (Altsystem-Block)
+const CONTRACT_MENU = process.env.KLICK_CONTRACT_MENU || CONTRACT;   // Optional: Vertrag OHNE laufenden Forderungsfall und mit offenem Rest — nur dort zeigt das Aktionen-Menü „Forderungsfall eröffnen“ (vt4-aktionen)
 const SEARCH = process.env.KLICK_SEARCH || null;   // Suchbegriff fuer die Trefferzeile in Dokument 1 (Nachname der Beispielkundin)
 
-module.exports = { ...S, CONTRACT, CONTRACT_LEGACY, SEARCH };
+module.exports = { ...S, CONTRACT, CONTRACT_LEGACY, CONTRACT_MENU, SEARCH };

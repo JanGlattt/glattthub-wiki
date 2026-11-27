@@ -67,6 +67,7 @@ speichert erst der Knopf darin. Der Lauf drückt ihn nicht.
 | `vt4-erste-rate` | eine Preisliste **mit Vor-Ort-Rate** — bei „alle Raten per SEPA“ gibt es den Vorgang nicht |
 | `vt4-rls-ausgleich`, `vt5-anhaengen` | mindestens eine **geplatzte Lastschrift** im Plan |
 | `vt5-legacy` | `KLICK_CONTRACT_LEGACY`: einen **Altvertrag** mit Altsystem-Block |
+| `vt4-aktionen` | `KLICK_CONTRACT_MENU` (optional): einen Vertrag **ohne laufenden Forderungsfall** mit offenem Rest, Zugang mit `manage_receivables` + `manage_gocardless` — nur dann steht „Forderungsfall eröffnen“ im aufgeklappten Menü „Aktionen“ (seit 27.11.2026; das Menü wird nur geöffnet, nichts darin gedrückt) |
 | `vt8-*` | offene Einträge im Warnband **„Fehlgeschlagene Imports“** |
 
 Fehlt etwas, meldet der Ablauf es und die Seite bleibt ein Platzhalter.

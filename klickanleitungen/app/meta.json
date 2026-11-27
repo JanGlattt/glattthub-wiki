@@ -1276,7 +1276,7 @@
       "width": 780,
       "height": 780
     },
-    "ratio": 1.0,
+    "ratio": 1,
     "marks": []
   },
   "treatment-backfill-ipad-second-light": {
@@ -1804,20 +1804,20 @@
       "x": 0,
       "y": 0,
       "width": 780,
-      "height": 1660
+      "height": 1800
     },
     "marks": [],
-    "ratio": 2.128205128205128
+    "ratio": 2.3076923076923075
   },
   "tips-ratings-light": {
     "box": {
       "x": 0,
       "y": 0,
       "width": 780,
-      "height": 1385
+      "height": 1400
     },
     "marks": [],
-    "ratio": 1.7756410256410255
+    "ratio": 1.794871794871795
   },
   "wissen-anleitung-light": {
     "box": {

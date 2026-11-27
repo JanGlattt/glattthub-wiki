@@ -13,8 +13,8 @@
   "subtitle": "Klickanleitung für die glatttHub-App auf iPhone und iPad — Sterne, Bewertungen mit Filter, Trinkgeld, Auszahlung, die Karte auf der Startseite und der Hinweis beim Beenden",
   "eyebrow": "App · Bewertungen & Trinkgeld",
   "footerArea": "App",
-  "stand": "30.10.2026",
-  "version": "1.3",
+  "stand": "27.11.2026",
+  "version": "1.4",
   "notes": [
     "Die App zeigt **dieselben Zahlen wie die Web-Seite** (Team → Bewertungen & Trinkgeld) — Sterne, Bewertungen, Trinkgeld, Auszahlung, Kommentare je Recht.",
     "Nach unten ziehen lädt neu. Ohne Netz zeigt die Seite den **letzten Stand** mit Uhrzeit.",
@@ -47,6 +47,11 @@
           "n": 3,
           "title": "Deine Zeile",
           "text": "Deine Zeile ist **gold hervorgehoben**. Siehst du nur dich, steht darüber dein Platz im Verhältnis zum Team."
+        },
+        {
+          "n": 4,
+          "title": "Sterne nach Sitzungsnummer",
+          "text": "Unter der Rangliste zeigt die Karte, wie die Kundinnen **je nach Anzahl ihrer Sitzungen** bewerten: Säulen je Sitzung nach 1 bis 5 Sternen, die Linie ist der Ø. Umschalter **Behandlung | Ergebnis**, oben rechts Diagramm oder Tabelle; ein Tipp auf eine Säule zeigt ihre Werte."
         }
       ]
     },
@@ -74,6 +79,11 @@
         },
         {
           "n": 3,
+          "title": "Die wievielte Sitzung",
+          "text": "Hinter den Zonen steht, die **wievielte Sitzung** es war — zum Beispiel „Beine · 7. Sitzung“ (bezahlte Behandlungstage der Kundin bis zu diesem Termin)."
+        },
+        {
+          "n": 4,
           "title": "Sterne",
           "text": "Rechts **Behandlung** und **Ergebnis** als Zahl — grün bei 5, gelb bei 4, rot ab 3 abwärts; ein Trinkgeld steht darunter."
         }
