@@ -10,8 +10,8 @@
   "subtitle": "Klickanleitung für die Bonus-Verwaltung im glatttHub — vom Assistenten über die Minimalziele bis zur Sichtbarkeit",
   "eyebrow": "Bonus-Board · Verwaltung",
   "footerArea": "Bonus-Board",
-  "stand": "02.11.2026",
-  "version": "1.1",
+  "stand": "27.11.2026",
+  "version": "1.2",
   "notes": [
     "**Das Bonussystem ist eine Einstellung, kein Programm** — jede Regel wird hier angelegt, nichts davon steht im Code.",
     "Eine Regel wirkt **rückwirkend auf den laufenden Monat**: Wer heute etwas ändert, ändert die Zahlen von heute Nacht.",
@@ -220,6 +220,45 @@
       ],
       "hint": {
         "text": "**Eine Challenge bearbeiten** ändert sie für **alle** Teilnehmerinnen, auch rückwirkend im laufenden Monat. Läuft der Monat schon, lieber eine neue Challenge anlegen, statt die laufende umzudeuten."
+      }
+    },
+    {
+      "id": "papierzettel-challenge",
+      "h1": "Challenge: Papierzettel nachtragen",
+      "sub": "Ein Team überträgt alte Behandlungseinstellungen in den Hub — das Board zählt mit.",
+      "card": {
+        "title": "Nachgetragene KPZ",
+        "text": "Teilnehmerinnen, Zählzeitraum, gemeinsames Ziel"
+      },
+      "left": {
+        "shot": "r10-papierzettel-challenge"
+      },
+      "leftCaption": "Schritt 3 der Challenge — Kennzahl „Nachgetragene KPZ (Papierzettel)“ mit Zählzeitraum.",
+      "steps": [
+        {
+          "n": 1,
+          "title": "Kennzahl wählen",
+          "text": "**Nachgetragene KPZ (Papierzettel)**. Jede nachgetragene Zone je Sitzung zählt als 1 KPZ — 5 Zonen in 9 Sitzungen sind 45 KPZ."
+        },
+        {
+          "n": 2,
+          "title": "Bezug",
+          "text": "**Team gemeinsam** addiert alle Teilnehmerinnen zu einem Stand. „Jede für sich“ misst jede einzeln."
+        },
+        {
+          "n": 3,
+          "title": "Zählzeitraum",
+          "text": "Start- und Enddatum. Das Ende liegt im Challenge-Monat, der **Start darf davor liegen** (frühestens im Vormonat) — etwa Challenge für Dezember, gezählt ab dem 26.11. Es zählt der **Tag der Eingabe**, nicht das Behandlungsdatum."
+        },
+        {
+          "n": 4,
+          "title": "Ziel",
+          "text": "Bedingung **Fester Schwellenwert**, zum Beispiel 9.000. In Schritt 4 folgt die Prämie."
+        }
+      ],
+      "hint": {
+        "kind": "info",
+        "text": "**Wer zählt:** nur die Nutzerinnen, die in Schritt 2 als Empfängerinnen angekreuzt sind — wer die Prämie bekommt, zählt auch. Gezählt werden nur Papier-Nachträge **mit Werten** (Joule oder Millisekunden). Auf dem Board sieht jede den gemeinsamen Stand und ihren **eigenen Beitrag**; neue Einträge erscheinen nach bis zu fünf Minuten. Die Challenge erscheint erst im Board ihres Monats — Einträge aus den Tagen davor stehen dann schon im Stand."
       }
     },
     {

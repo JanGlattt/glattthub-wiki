@@ -6,7 +6,7 @@
 #
 # Zwei Laeufe noetig, weil die Bilder verschiedene Rechte zeigen sollen:
 #   1) Zugang OHNE Management-Recht  → flow1 flow2        (Dokumente O, P)
-#   2) Zugang MIT Verwaltungs-Recht  → flow3 flow4 flow5  (Dokumente Q, R, S)
+#   2) Zugang MIT Verwaltungs-Recht  → flow3 flow4 flow4b flow5  (Dokumente Q, R, S)
 # Aufruf:  bash scripts/run-all.sh [flow1 flow2 …]   (ohne Angabe: alle)
 set -u
 cd "$(dirname "$0")/.." || exit 1
@@ -22,7 +22,7 @@ if [ ! -f mask.json ]; then
   echo "!!! mask.json fehlt — das Board zeigt echte Kolleginnen. Kopie von mask.example.json anlegen."; exit 2
 fi
 
-FLOWS=${*:-"flow1 flow2 flow3 flow4 flow5"}
+FLOWS=${*:-"flow1 flow2 flow3 flow4 flow4b flow5"}
 echo "### Lauf gegen $KLICK_BASE · Monat $KLICK_MONTH (laufend: ${KLICK_MONTH_OPEN:-—})"
 for f in $FLOWS; do
   echo "### $f"

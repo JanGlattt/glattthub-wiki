@@ -246,6 +246,22 @@ Sichtbarkeit.
   Standard ist bei **Challenges das normale Standortziel**, bei regulären
   Regeln das Leitungs-Minimalziel; beides lässt sich je Regel fest
   erzwingen. Ohne eigenes Leitungs-Minimalziel gilt immer das Standortziel.
+- **Nachgetragene KPZ (Papierzettel)** — Kennzahl für Challenges, bei denen ein Team alte
+  Behandlungseinstellungen in den Hub überträgt (Büro-Challenge Dezember 2026, Jan 27.11.2026).
+  Eine nachgetragene Zone in einer Sitzung zählt als 1 KPZ (5 Zonen in 9 Sitzungen = 45 KPZ).
+  Es zählen nur Papier-Nachträge **mit Werten** (Joule oder Millisekunden) und nur Einträge der
+  **Teilnehmerinnen aus Schritt 2** — wer die Prämie bekommt, zählt auch. Bezug „Team gemeinsam“
+  addiert alle Teilnehmerinnen zu einem Stand, „Jede für sich“ misst einzeln. Bei einer
+  Monats-Challenge lässt sich ein **Zählzeitraum** festlegen: Das Ende liegt im Challenge-Monat,
+  der Start darf davor liegen (frühestens am Ersten des Vormonats — „Challenge für Dezember,
+  gezählt wird ab dem 26.11.“). Maßgeblich ist der Tag der Eingabe, nicht das Behandlungsdatum.
+  Die Challenge erscheint erst im Board ihres Monats; Einträge aus den Tagen davor stehen dann
+  schon im Stand. In der App kennen Regel-Assistent (`BonusRuleForm`: `periodFrom`/`periodUntil`,
+  `metricHasPeriod` aus dem Katalog) und Board (`periodText()`, `ownValueText()`) dieselben
+  Felder ab dem nächsten Build; ältere Builds zeigen den Stand ohne die beiden Hinweise. Das Ziel ist ein
+  fester Schwellenwert. Auf dem Board sieht jede Teilnehmerin den gemeinsamen Stand und nur ihren
+  **eigenen Beitrag**; die Management-Sicht zeigt den Beitrag je Person. Die Hochrechnung läuft
+  auf das Ende des Zählzeitraums, nicht auf das Monatsende.
 - **Ranking-Challenge** (Bedingung „Ranking-Challenge (Plätze mit
   Preisen)", Prämie „Preise je Platz"): Teams (Institute aus Schritt 2, leer
   = alle mit Minimalziel) oder einzelne Mitarbeiterinnen werden nach der
@@ -740,6 +756,21 @@ Endpunkte, Sperre bei finalem Freeze),
   bei Scope `branch` und unabhängig von `withParked` (Jan: Challenges zählen sie mit, den
   Gesamtwert nicht). Das Regelergebnis trägt `springer` (Saldo), die Instituts-Zeile
   `kpz_springer_in/out(_days)`. Wert-Korrekturen behalten die Felder (`applyOverride`).
+- **Kennzahlen mit eigenem Zählzeitraum** (`'period' => true` in `internalMetrics()`, bisher
+  nur `backfill_kpz`): `resolve()` nimmt dafür `$options` (`from`, `until`, `user_ids`), die
+  `BonusCalculationService::metricOptions()` aus der Regel baut — Zeitraum aus
+  `condition_config.period_from/period_until` (`BonusRule::metricPeriod()`), Zählende = die
+  Empfängerinnen der Regel (`ruleRecipientIds`, in `applyRule()` gesetzt). Der Scope `company`
+  bedeutet bei diesen Kennzahlen „alle Teilnehmerinnen zusammen“, nicht „alle Institute“.
+  `computeBackfillKpz()` zählt `treatment_settings` mit `source = backfill`, `parent_id IS NULL`
+  (roh abgefragt, der globale Scope greift dort nicht), `not_treated = 0`, Werten in `used_jules`
+  oder `used_ms` und `created_at` im Zeitraum. Das Regelergebnis trägt `period` und — beim
+  gemeinsamen Ziel — `own_value`. Der Controller verwirft den Zeitraum bei anderen Kennzahlen und
+  bei Regeln ohne Challenge-Monat und antwortet mit 422, wenn das Ende außerhalb des Monats oder
+  der Start vor dem Ersten des Vormonats liegt. Der Board-Stand
+  kommt aus dem Statistik-Cache (5 Minuten): neue Nachträge erscheinen mit dieser Verzögerung.
+  Neue Schlüssel in `condition_config` brauchen eine eigene Validierungsregel, sonst verwirft
+  `validated()` sie still.
 - **Sachprämien/Team-Budgets** fließen nicht in die €-Summe ein — sie werden
   als Prämientext angezeigt.
 - Die Kachel nutzt einen eigenen `/tile`-Endpoint, damit der Startseiten-Besuch
